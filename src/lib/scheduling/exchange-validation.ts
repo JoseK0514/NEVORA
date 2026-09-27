@@ -1,4 +1,4 @@
-import { durationMinutes } from "@/lib/date-utils";
+import { durationMinutes } from "../date-utils";
 
 type ShiftForExchange = {
   id: string;
