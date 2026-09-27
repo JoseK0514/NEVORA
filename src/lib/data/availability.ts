@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getDb } from "@/lib/db";
+import { getDb, queryRows } from "@/lib/db";
 
 export type AvailabilityRecord = {
   id: string;
@@ -14,12 +14,14 @@ function timeValue(value: unknown) {
 
 export async function listAvailability(employeeId: string): Promise<AvailabilityRecord[]> {
   const sql = getDb();
-  const rows = await sql.query(
-    `SELECT id, day_of_week, start_time, end_time
-     FROM availability_windows
-     WHERE employee_id = $1
-     ORDER BY day_of_week, start_time`,
-    [employeeId],
+  const rows = queryRows(
+    await sql.query(
+      `SELECT id, day_of_week, start_time, end_time
+       FROM availability_windows
+       WHERE employee_id = $1
+       ORDER BY day_of_week, start_time`,
+      [employeeId],
+    ),
   );
 
   return rows.map((row) => {
