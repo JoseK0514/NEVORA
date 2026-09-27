@@ -8,6 +8,7 @@ import { currentDateInPuertoRico } from "@/lib/date-utils";
 import {
   approveCoverageExchange,
   approveSwapExchange,
+  cancelExchange,
   claimCoverage,
   createCoverageOffer,
   createSwapProposal,
@@ -469,4 +470,22 @@ export async function reviewExchangeAction(formData: FormData) {
   revalidatePath("/app/exchange");
   revalidatePath("/app/schedule");
   redirect(exchangeUrl("?approved=1"));
+}
+
+
+export async function cancelExchangeAction(formData: FormData) {
+  const session = await requireSession();
+  const exchangeId = String(formData.get("exchangeId") ?? "");
+
+  const cancelled = await cancelExchange({
+    exchangeId,
+    employeeId: session.id,
+  });
+
+  if (!cancelled) {
+    redirect(exchangeUrl("?error=EXCHANGE_UNAVAILABLE"));
+  }
+
+  revalidatePath("/app/exchange");
+  redirect(exchangeUrl("?cancelled=1"));
 }
