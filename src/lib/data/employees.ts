@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { getDb, queryRows } from "@/lib/db";
 import type { Employee, Location, UserRole } from "@/lib/domain";
 
 type EmployeeRow = {
@@ -82,35 +82,35 @@ export async function listLocations(): Promise<Location[]> {
 
 export async function findEmployeeCredential(employeeId: string) {
   const sql = getDb();
-  const rows = await sql.query(
-    `SELECT
-       e.id,
-       e.first_name,
-       e.last_name,
-       e.role,
-       e.primary_location_id,
-       e.active,
-       c.password_hash,
-       c.must_change_password
-     FROM employees e
-     JOIN employee_credentials c ON c.employee_id = e.id
-     WHERE upper(e.id) = upper($1)
-     LIMIT 1`,
-    [employeeId],
+  const rows = queryRows<{
+    id: string;
+    first_name: string;
+    last_name: string;
+    role: UserRole;
+    primary_location_id: string;
+    active: boolean;
+    password_hash: string;
+    must_change_password: boolean;
+  }>(
+    await sql.query(
+      `SELECT
+         e.id,
+         e.first_name,
+         e.last_name,
+         e.role,
+         e.primary_location_id,
+         e.active,
+         c.password_hash,
+         c.must_change_password
+       FROM employees e
+       JOIN employee_credentials c ON c.employee_id = e.id
+       WHERE upper(e.id) = upper($1)
+       LIMIT 1`,
+      [employeeId],
+    ),
   );
 
-  return rows[0] as
-    | {
-        id: string;
-        first_name: string;
-        last_name: string;
-        role: UserRole;
-        primary_location_id: string;
-        active: boolean;
-        password_hash: string;
-        must_change_password: boolean;
-      }
-    | undefined;
+  return rows[0];
 }
 
 export async function insertEmployee(input: {
