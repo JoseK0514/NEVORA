@@ -531,3 +531,24 @@ export async function approveSwapExchange(input: {
 
   return Boolean(rows[0]);
 }
+
+
+export async function cancelExchange(input: {
+  exchangeId: string;
+  employeeId: string;
+}) {
+  const sql = getDb();
+  const rows = await sql.query(
+    `UPDATE shift_exchanges
+     SET status = 'CANCELLED',
+         resolved_by = $2,
+         resolved_at = now()
+     WHERE id = $1
+       AND requested_by_employee_id = $2
+       AND status IN ('OPEN', 'EMPLOYEE_PENDING')
+     RETURNING id`,
+    [input.exchangeId, input.employeeId],
+  );
+
+  return Boolean(rows[0]);
+}
