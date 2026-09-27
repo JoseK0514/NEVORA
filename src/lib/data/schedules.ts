@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getDb } from "@/lib/db";
+import { getDb, queryRows } from "@/lib/db";
 import type { ScheduleStatus, UserRole } from "@/lib/domain";
 
 export type ScheduleShiftRow = {
@@ -53,24 +53,26 @@ export async function listWeekShifts({
     conditions.push("s.status = 'PUBLISHED'");
   }
 
-  const rows = await sql.query(
-    `SELECT
-       sh.id,
-       sh.schedule_id,
-       sh.employee_id,
-       e.first_name || ' ' || e.last_name AS employee_name,
-       s.location_id,
-       sh.date,
-       sh.start_time,
-       sh.end_time,
-       sh.notes,
-       s.status AS schedule_status
-     FROM shifts sh
-     JOIN schedules s ON s.id = sh.schedule_id
-     JOIN employees e ON e.id = sh.employee_id
-     WHERE ${conditions.join(" AND ")}
-     ORDER BY sh.date, sh.start_time, e.first_name, e.last_name`,
-    values,
+  const rows = queryRows(
+    await sql.query(
+      `SELECT
+         sh.id,
+         sh.schedule_id,
+         sh.employee_id,
+         e.first_name || ' ' || e.last_name AS employee_name,
+         s.location_id,
+         sh.date,
+         sh.start_time,
+         sh.end_time,
+         sh.notes,
+         s.status AS schedule_status
+       FROM shifts sh
+       JOIN schedules s ON s.id = sh.schedule_id
+       JOIN employees e ON e.id = sh.employee_id
+       WHERE ${conditions.join(" AND ")}
+       ORDER BY sh.date, sh.start_time, e.first_name, e.last_name`,
+      values,
+    ),
   );
 
   return rows.map((row) => {
@@ -92,12 +94,14 @@ export async function listWeekShifts({
 
 export async function listScheduleStatuses(weekStart: string): Promise<LocationScheduleStatus[]> {
   const sql = getDb();
-  const rows = await sql.query(
-    `SELECT id, location_id, status
-     FROM schedules
-     WHERE week_start = $1
-     ORDER BY location_id`,
-    [weekStart],
+  const rows = queryRows(
+    await sql.query(
+      `SELECT id, location_id, status
+       FROM schedules
+       WHERE week_start = $1
+       ORDER BY location_id`,
+      [weekStart],
+    ),
   );
 
   return rows.map((row) => {
@@ -121,7 +125,7 @@ export async function getShiftValidationContext({
 }) {
   const sql = getDb();
 
-  const [employeeRows, shiftRows, availabilityRows, timeOffRows, weeklyRows] =
+  const [employeeRowsRaw, shiftRowsRaw, availabilityRowsRaw, timeOffRowsRaw, weeklyRowsRaw] =
     await Promise.all([
       sql.query(
         `SELECT
@@ -177,6 +181,12 @@ export async function getShiftValidationContext({
         [employeeId, weekStart],
       ),
     ]);
+
+  const employeeRows = queryRows(employeeRowsRaw);
+  const shiftRows = queryRows(shiftRowsRaw);
+  const availabilityRows = queryRows(availabilityRowsRaw);
+  const timeOffRows = queryRows(timeOffRowsRaw);
+  const weeklyRows = queryRows(weeklyRowsRaw);
 
   const employee = employeeRows[0] as
     | { active: boolean; eligible_location_ids: string[] | null }
@@ -235,13 +245,15 @@ export async function ensureSchedule({
   const sql = getDb();
   const id = randomUUID();
 
-  const rows = await sql.query(
-    `INSERT INTO schedules (id, location_id, week_start, created_by)
-     VALUES ($1, $2, $3, $4)
-     ON CONFLICT (location_id, week_start)
-     DO UPDATE SET updated_at = now()
-     RETURNING id`,
-    [id, locationId, weekStart, createdBy],
+  const rows = queryRows(
+    await sql.query(
+      `INSERT INTO schedules (id, location_id, week_start, created_by)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (location_id, week_start)
+       DO UPDATE SET updated_at = now()
+       RETURNING id`,
+      [id, locationId, weekStart, createdBy],
+    ),
   );
 
   return String((rows[0] as { id: string }).id);
@@ -287,16 +299,18 @@ export async function publishSchedule({
 }) {
   const sql = getDb();
 
-  const rows = await sql.query(
-    `UPDATE schedules
-     SET status = 'PUBLISHED',
-         published_by = $3,
-         published_at = now(),
-         updated_at = now()
-     WHERE location_id = $1
-       AND week_start = $2
-     RETURNING id`,
-    [locationId, weekStart, managerId],
+  const rows = queryRows(
+    await sql.query(
+      `UPDATE schedules
+       SET status = 'PUBLISHED',
+           published_by = $3,
+           published_at = now(),
+           updated_at = now()
+       WHERE location_id = $1
+         AND week_start = $2
+       RETURNING id`,
+      [locationId, weekStart, managerId],
+    ),
   );
 
   return Boolean(rows[0]);
@@ -315,25 +329,27 @@ export async function getShiftForManagement(
   shiftId: string,
 ): Promise<ManagementShift | null> {
   const sql = getDb();
-  const rows = await sql.query(
-    `SELECT
-       sh.id,
-       sh.schedule_id,
-       sh.employee_id,
-       e.first_name || ' ' || e.last_name AS employee_name,
-       s.location_id,
-       s.week_start,
-       sh.date,
-       sh.start_time,
-       sh.end_time,
-       sh.notes,
-       s.status AS schedule_status
-     FROM shifts sh
-     JOIN schedules s ON s.id = sh.schedule_id
-     JOIN employees e ON e.id = sh.employee_id
-     WHERE sh.id = $1
-     LIMIT 1`,
-    [shiftId],
+  const rows = queryRows(
+    await sql.query(
+      `SELECT
+         sh.id,
+         sh.schedule_id,
+         sh.employee_id,
+         e.first_name || ' ' || e.last_name AS employee_name,
+         s.location_id,
+         s.week_start,
+         sh.date,
+         sh.start_time,
+         sh.end_time,
+         sh.notes,
+         s.status AS schedule_status
+       FROM shifts sh
+       JOIN schedules s ON s.id = sh.schedule_id
+       JOIN employees e ON e.id = sh.employee_id
+       WHERE sh.id = $1
+       LIMIT 1`,
+      [shiftId],
+    ),
   );
 
   const item = rows[0] as Record<string, unknown> | undefined;
@@ -363,24 +379,26 @@ export async function updateShift(input: {
   notes?: string;
 }) {
   const sql = getDb();
-  const rows = await sql.query(
-    `UPDATE shifts
-     SET employee_id = $2,
-         date = $3,
-         start_time = $4,
-         end_time = $5,
-         notes = $6,
-         updated_at = now()
-     WHERE id = $1
-     RETURNING id`,
-    [
-      input.shiftId,
-      input.employeeId,
-      input.date,
-      input.startTime,
-      input.endTime,
-      input.notes ?? null,
-    ],
+  const rows = queryRows(
+    await sql.query(
+      `UPDATE shifts
+       SET employee_id = $2,
+           date = $3,
+           start_time = $4,
+           end_time = $5,
+           notes = $6,
+           updated_at = now()
+       WHERE id = $1
+       RETURNING id`,
+      [
+        input.shiftId,
+        input.employeeId,
+        input.date,
+        input.startTime,
+        input.endTime,
+        input.notes ?? null,
+      ],
+    ),
   );
 
   return Boolean(rows[0]);
@@ -388,17 +406,19 @@ export async function updateShift(input: {
 
 export async function deleteShift(shiftId: string) {
   const sql = getDb();
-  const rows = await sql.query(
-    `DELETE FROM shifts sh
-     WHERE sh.id = $1
-       AND NOT EXISTS (
-         SELECT 1
-         FROM shift_exchanges x
-         WHERE x.source_shift_id = sh.id
-            OR x.target_shift_id = sh.id
-       )
-     RETURNING sh.id`,
-    [shiftId],
+  const rows = queryRows(
+    await sql.query(
+      `DELETE FROM shifts sh
+       WHERE sh.id = $1
+         AND NOT EXISTS (
+           SELECT 1
+           FROM shift_exchanges x
+           WHERE x.source_shift_id = sh.id
+              OR x.target_shift_id = sh.id
+         )
+       RETURNING sh.id`,
+      [shiftId],
+    ),
   );
 
   return Boolean(rows[0]);
