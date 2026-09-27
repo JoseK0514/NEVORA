@@ -305,3 +305,101 @@ export async function publishSchedule({
 export function roleCanManageSchedule(role: UserRole) {
   return role === "OWNER" || role === "MANAGER";
 }
+
+
+export type ManagementShift = ScheduleShiftRow & {
+  weekStart: string;
+};
+
+export async function getShiftForManagement(
+  shiftId: string,
+): Promise<ManagementShift | null> {
+  const sql = getDb();
+  const rows = await sql.query(
+    `SELECT
+       sh.id,
+       sh.schedule_id,
+       sh.employee_id,
+       e.first_name || ' ' || e.last_name AS employee_name,
+       s.location_id,
+       s.week_start,
+       sh.date,
+       sh.start_time,
+       sh.end_time,
+       sh.notes,
+       s.status AS schedule_status
+     FROM shifts sh
+     JOIN schedules s ON s.id = sh.schedule_id
+     JOIN employees e ON e.id = sh.employee_id
+     WHERE sh.id = $1
+     LIMIT 1`,
+    [shiftId],
+  );
+
+  const item = rows[0] as Record<string, unknown> | undefined;
+  if (!item) return null;
+
+  return {
+    id: String(item.id),
+    scheduleId: String(item.schedule_id),
+    employeeId: String(item.employee_id),
+    employeeName: String(item.employee_name),
+    locationId: String(item.location_id),
+    weekStart: dateValue(item.week_start),
+    date: dateValue(item.date),
+    startTime: timeValue(item.start_time),
+    endTime: timeValue(item.end_time),
+    notes: item.notes ? String(item.notes) : undefined,
+    scheduleStatus: item.schedule_status as ScheduleStatus,
+  };
+}
+
+export async function updateShift(input: {
+  shiftId: string;
+  employeeId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  notes?: string;
+}) {
+  const sql = getDb();
+  const rows = await sql.query(
+    `UPDATE shifts
+     SET employee_id = $2,
+         date = $3,
+         start_time = $4,
+         end_time = $5,
+         notes = $6,
+         updated_at = now()
+     WHERE id = $1
+     RETURNING id`,
+    [
+      input.shiftId,
+      input.employeeId,
+      input.date,
+      input.startTime,
+      input.endTime,
+      input.notes ?? null,
+    ],
+  );
+
+  return Boolean(rows[0]);
+}
+
+export async function deleteShift(shiftId: string) {
+  const sql = getDb();
+  const rows = await sql.query(
+    `DELETE FROM shifts sh
+     WHERE sh.id = $1
+       AND NOT EXISTS (
+         SELECT 1
+         FROM shift_exchanges x
+         WHERE x.source_shift_id = sh.id
+            OR x.target_shift_id = sh.id
+       )
+     RETURNING sh.id`,
+    [shiftId],
+  );
+
+  return Boolean(rows[0]);
+}
