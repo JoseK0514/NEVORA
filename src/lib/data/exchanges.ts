@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getDb } from "@/lib/db";
+import { getDb, queryRows } from "@/lib/db";
 import type { ExchangeKind } from "@/lib/domain";
 
 export type ExchangeShift = {
@@ -154,7 +154,8 @@ function mapExchange(row: unknown): ExchangeRecord {
 
 export async function getPublishedShift(shiftId: string): Promise<ExchangeShift | null> {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `SELECT
        sh.id AS source_shift_id,
        sh.schedule_id AS source_schedule_id,
@@ -174,6 +175,7 @@ export async function getPublishedShift(shiftId: string): Promise<ExchangeShift 
        AND s.status = 'PUBLISHED'
      LIMIT 1`,
     [shiftId],
+    ),
   );
 
   const row = rows[0] as Record<string, unknown> | undefined;
@@ -185,7 +187,8 @@ export async function listEmployeePublishedShifts(
   fromDate: string,
 ): Promise<ExchangeShift[]> {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `SELECT
        sh.id AS source_shift_id,
        sh.schedule_id AS source_schedule_id,
@@ -212,6 +215,7 @@ export async function listEmployeePublishedShifts(
        )
      ORDER BY sh.date, sh.start_time`,
     [employeeId, fromDate],
+    ),
   );
 
   return rows.map((row) => mapShift(row as Record<string, unknown>, "source"));
@@ -222,7 +226,8 @@ export async function listSwapTargets(
   requesterEmployeeId: string,
 ): Promise<ExchangeShift[]> {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `SELECT
        sh.id AS source_shift_id,
        sh.schedule_id AS source_schedule_id,
@@ -249,6 +254,7 @@ export async function listSwapTargets(
        )
      ORDER BY sh.date, sh.start_time, e.first_name, e.last_name`,
     [requesterEmployeeId, sourceShift.weekStart],
+    ),
   );
 
   return rows.map((row) => mapShift(row as Record<string, unknown>, "source"));
@@ -259,7 +265,8 @@ export async function listOpenCoverage(
   fromDate: string,
 ): Promise<ExchangeRecord[]> {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `${EXCHANGE_SELECT}
      WHERE x.kind = 'COVERAGE'
        AND x.status = 'OPEN'
@@ -268,6 +275,7 @@ export async function listOpenCoverage(
        AND source_schedule.status = 'PUBLISHED'
      ORDER BY source.date, source.start_time`,
     [employeeId, fromDate],
+    ),
   );
 
   return rows.map(mapExchange);
@@ -275,13 +283,15 @@ export async function listOpenCoverage(
 
 export async function listIncomingSwaps(employeeId: string): Promise<ExchangeRecord[]> {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `${EXCHANGE_SELECT}
      WHERE x.kind = 'SWAP'
        AND x.status = 'EMPLOYEE_PENDING'
        AND x.target_employee_id = $1
      ORDER BY x.created_at DESC`,
     [employeeId],
+    ),
   );
 
   return rows.map(mapExchange);
@@ -291,13 +301,15 @@ export async function listEmployeeExchangeActivity(
   employeeId: string,
 ): Promise<ExchangeRecord[]> {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `${EXCHANGE_SELECT}
      WHERE x.requested_by_employee_id = $1
         OR x.target_employee_id = $1
      ORDER BY x.created_at DESC
      LIMIT 20`,
     [employeeId],
+    ),
   );
 
   return rows.map(mapExchange);
@@ -305,10 +317,12 @@ export async function listEmployeeExchangeActivity(
 
 export async function listManagerPendingExchanges(): Promise<ExchangeRecord[]> {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `${EXCHANGE_SELECT}
      WHERE x.status = 'MANAGER_PENDING'
      ORDER BY x.created_at`,
+    ),
   );
 
   return rows.map(mapExchange);
@@ -316,11 +330,13 @@ export async function listManagerPendingExchanges(): Promise<ExchangeRecord[]> {
 
 export async function getExchange(exchangeId: string): Promise<ExchangeRecord | null> {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `${EXCHANGE_SELECT}
      WHERE x.id = $1
      LIMIT 1`,
     [exchangeId],
+    ),
   );
 
   return rows[0] ? mapExchange(rows[0]) : null;
@@ -352,7 +368,8 @@ export async function claimCoverage(input: {
   employeeId: string;
 }) {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `UPDATE shift_exchanges
      SET target_employee_id = $2,
          status = 'MANAGER_PENDING'
@@ -362,6 +379,7 @@ export async function claimCoverage(input: {
        AND requested_by_employee_id <> $2
      RETURNING id`,
     [input.exchangeId, input.employeeId],
+    ),
   );
 
   return Boolean(rows[0]);
@@ -404,7 +422,8 @@ export async function respondToSwap(input: {
   accept: boolean;
 }) {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `UPDATE shift_exchanges
      SET status = $3,
          resolved_by = CASE WHEN $3 = 'DENIED' THEN $2 ELSE resolved_by END,
@@ -415,6 +434,7 @@ export async function respondToSwap(input: {
        AND target_employee_id = $2
      RETURNING id`,
     [input.exchangeId, input.employeeId, input.accept ? "MANAGER_PENDING" : "DENIED"],
+    ),
   );
 
   return Boolean(rows[0]);
@@ -425,7 +445,8 @@ export async function denyExchange(input: {
   managerId: string;
 }) {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `UPDATE shift_exchanges
      SET status = 'DENIED',
          resolved_by = $2,
@@ -434,6 +455,7 @@ export async function denyExchange(input: {
        AND status = 'MANAGER_PENDING'
      RETURNING id`,
     [input.exchangeId, input.managerId],
+    ),
   );
 
   return Boolean(rows[0]);
@@ -445,7 +467,8 @@ export async function approveCoverageExchange(input: {
 }) {
   const sql = getDb();
 
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `WITH exchange_to_apply AS (
        SELECT
          id,
@@ -475,6 +498,7 @@ export async function approveCoverageExchange(input: {
        AND EXISTS (SELECT 1 FROM shifted)
      RETURNING x.id`,
     [input.exchangeId, input.managerId],
+    ),
   );
 
   return Boolean(rows[0]);
@@ -486,7 +510,8 @@ export async function approveSwapExchange(input: {
 }) {
   const sql = getDb();
 
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `WITH exchange_to_apply AS (
        SELECT
          x.id,
@@ -527,6 +552,7 @@ export async function approveSwapExchange(input: {
        AND (SELECT count(*) FROM shifted) = 2
      RETURNING x.id`,
     [input.exchangeId, input.managerId],
+    ),
   );
 
   return Boolean(rows[0]);
@@ -538,7 +564,8 @@ export async function cancelExchange(input: {
   employeeId: string;
 }) {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `UPDATE shift_exchanges
      SET status = 'CANCELLED',
          resolved_by = $2,
@@ -548,6 +575,7 @@ export async function cancelExchange(input: {
        AND status IN ('OPEN', 'EMPLOYEE_PENDING')
      RETURNING id`,
     [input.exchangeId, input.employeeId],
+    ),
   );
 
   return Boolean(rows[0]);
