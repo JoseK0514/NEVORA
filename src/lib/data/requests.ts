@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getDb } from "@/lib/db";
+import { getDb, queryRows } from "@/lib/db";
 import type { RequestStatus } from "@/lib/domain";
 
 export type TimeOffListItem = {
@@ -45,7 +45,8 @@ function mapRequest(row: unknown): TimeOffListItem {
 
 export async function listEmployeeTimeOffRequests(employeeId: string) {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `SELECT
        r.id,
        r.employee_id,
@@ -62,6 +63,7 @@ export async function listEmployeeTimeOffRequests(employeeId: string) {
      WHERE r.employee_id = $1
      ORDER BY r.created_at DESC`,
     [employeeId],
+    ),
   );
 
   return rows.map(mapRequest);
@@ -69,7 +71,8 @@ export async function listEmployeeTimeOffRequests(employeeId: string) {
 
 export async function listPendingTimeOffRequests() {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `SELECT
        r.id,
        r.employee_id,
@@ -85,6 +88,7 @@ export async function listPendingTimeOffRequests() {
      JOIN employees e ON e.id = r.employee_id
      WHERE r.status = 'PENDING'
      ORDER BY r.start_date, r.created_at`,
+    ),
   );
 
   return rows.map(mapRequest);
@@ -128,7 +132,8 @@ export async function reviewTimeOffRequest(input: {
   status: "APPROVED" | "DENIED";
 }) {
   const sql = getDb();
-  const rows = await sql.query(
+  const rows = queryRows(
+    await sql.query(
     `UPDATE time_off_requests
      SET status = $3,
          reviewed_by = $2,
@@ -137,6 +142,7 @@ export async function reviewTimeOffRequest(input: {
        AND status = 'PENDING'
      RETURNING id`,
     [input.requestId, input.managerId, input.status],
+    ),
   );
 
   return Boolean(rows[0]);
