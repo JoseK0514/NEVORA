@@ -238,7 +238,14 @@ export async function proposeSwapAction(formData: FormData) {
     getPublishedShift(targetShiftId),
   ]);
 
-  if (!source || !target || source.date < currentDateInPuertoRico()) {
+  const today = currentDateInPuertoRico();
+
+  if (
+    !source ||
+    !target ||
+    source.date < today ||
+    target.date < today
+  ) {
     redirect(exchangeUrl("?error=INVALID_SHIFT"));
   }
 
