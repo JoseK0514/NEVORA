@@ -65,6 +65,8 @@ describe("validateSwapRequest", () => {
         sourceEmployeeId: "FC-001",
         targetShiftId: "shift-1",
         targetEmployeeId: "FC-002",
+        sourceWeekStart: "2026-09-28",
+        targetWeekStart: "2026-09-28",
       }),
     ).toEqual({ valid: false, code: "SAME_SHIFT" });
   });
@@ -77,6 +79,8 @@ describe("validateSwapRequest", () => {
         sourceEmployeeId: "FC-009",
         targetShiftId: "shift-2",
         targetEmployeeId: "FC-002",
+        sourceWeekStart: "2026-09-28",
+        targetWeekStart: "2026-09-28",
       }),
     ).toEqual({ valid: false, code: "NOT_SHIFT_OWNER" });
   });
@@ -89,6 +93,8 @@ describe("validateSwapRequest", () => {
         sourceEmployeeId: "FC-001",
         targetShiftId: "shift-2",
         targetEmployeeId: "FC-001",
+        sourceWeekStart: "2026-09-28",
+        targetWeekStart: "2026-09-28",
       }),
     ).toEqual({ valid: false, code: "SAME_EMPLOYEE" });
   });
@@ -101,7 +107,24 @@ describe("validateSwapRequest", () => {
         sourceEmployeeId: "FC-001",
         targetShiftId: "shift-2",
         targetEmployeeId: "FC-002",
+        sourceWeekStart: "2026-09-28",
+        targetWeekStart: "2026-09-28",
       }),
     ).toEqual({ valid: true });
   });
+
+  it("rejects swaps across different schedule weeks", () => {
+    expect(
+      validateSwapRequest({
+        requesterEmployeeId: "FC-001",
+        sourceShiftId: "shift-1",
+        sourceEmployeeId: "FC-001",
+        targetShiftId: "shift-2",
+        targetEmployeeId: "FC-002",
+        sourceWeekStart: "2026-09-28",
+        targetWeekStart: "2026-10-05",
+      }),
+    ).toEqual({ valid: false, code: "DIFFERENT_WEEK" });
+  });
+
 });
