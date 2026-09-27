@@ -138,6 +138,7 @@ export async function getShiftValidationContext({
       ),
       sql.query(
         `SELECT
+           sh.id,
            sh.employee_id,
            s.location_id,
            sh.date,
@@ -191,6 +192,7 @@ export async function getShiftValidationContext({
     existingShifts: shiftRows.map((row) => {
       const item = row as Record<string, unknown>;
       return {
+        id: String(item.id),
         employeeId: String(item.employee_id),
         locationId: String(item.location_id),
         date: dateValue(item.date),
