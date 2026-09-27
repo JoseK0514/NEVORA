@@ -16,6 +16,7 @@ import {
   listOpenCoverage,
 } from "@/lib/data/exchanges";
 import {
+  cancelExchangeAction,
   claimCoverageAction,
   offerCoverageAction,
   respondSwapAction,
@@ -68,6 +69,7 @@ export default async function ExchangePage({
     swapDeclined?: string;
     reviewed?: string;
     approved?: string;
+    cancelled?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -99,7 +101,9 @@ export default async function ExchangePage({
                 ? "The exchange was approved and the schedule was updated."
                 : params.reviewed
                   ? "The exchange was reviewed."
-                  : undefined;
+                  : params.cancelled
+                    ? "The exchange request was cancelled."
+                    : undefined;
 
   return (
     <>
@@ -309,17 +313,26 @@ export default async function ExchangePage({
                   {formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)} · {exchange.sourceShift.locationName}
                 </span>
               </div>
-              <StatusPill
-                tone={
-                  exchange.status === "APPROVED"
-                    ? "success"
-                    : ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status)
-                      ? "warning"
-                      : "neutral"
-                }
-              >
-                {statusLabel(exchange.status)}
-              </StatusPill>
+              <div className="activity-status">
+                <StatusPill
+                  tone={
+                    exchange.status === "APPROVED"
+                      ? "success"
+                      : ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status)
+                        ? "warning"
+                        : "neutral"
+                  }
+                >
+                  {statusLabel(exchange.status)}
+                </StatusPill>
+                {exchange.requestedByEmployeeId === session.id &&
+                ["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? (
+                  <form action={cancelExchangeAction}>
+                    <input type="hidden" name="exchangeId" value={exchange.id} />
+                    <button className="text-button danger" type="submit">Cancel</button>
+                  </form>
+                ) : null}
+              </div>
             </div>
           )) : (
             <div className="empty-state">
