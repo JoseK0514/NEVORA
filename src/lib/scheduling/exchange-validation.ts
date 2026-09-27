@@ -43,11 +43,13 @@ export function validateSwapRequest(input: {
   sourceEmployeeId: string;
   targetShiftId: string;
   targetEmployeeId: string;
+  sourceWeekStart: string;
+  targetWeekStart: string;
 }):
   | { valid: true }
   | {
       valid: false;
-      code: "SAME_SHIFT" | "NOT_SHIFT_OWNER" | "SAME_EMPLOYEE";
+      code: "SAME_SHIFT" | "NOT_SHIFT_OWNER" | "SAME_EMPLOYEE" | "DIFFERENT_WEEK";
     } {
   if (input.sourceShiftId === input.targetShiftId) {
     return { valid: false, code: "SAME_SHIFT" };
@@ -59,6 +61,10 @@ export function validateSwapRequest(input: {
 
   if (input.sourceEmployeeId === input.targetEmployeeId) {
     return { valid: false, code: "SAME_EMPLOYEE" };
+  }
+
+  if (input.sourceWeekStart !== input.targetWeekStart) {
+    return { valid: false, code: "DIFFERENT_WEEK" };
   }
 
   return { valid: true };
