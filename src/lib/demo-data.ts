@@ -40,7 +40,7 @@ export const employees: Employee[] = [
 ];
 
 export const demoShifts: Shift[] = [
-  { id: "shift-1", scheduleWeekId: "week-1", employeeId: "FC-0018", locationId: "loc-1", date: "2026-09-28", startTime: "06:00", endTime: "14:00" },
-  { id: "shift-2", scheduleWeekId: "week-1", employeeId: "FC-0019", locationId: "loc-1", date: "2026-09-28", startTime: "07:00", endTime: "15:00" },
-  { id: "shift-3", scheduleWeekId: "week-1", employeeId: "FC-0020", locationId: "loc-2", date: "2026-09-28", startTime: "10:00", endTime: "18:00" },
+  { id: "shift-1", scheduleId: "schedule-1", employeeId: "FC-0018", locationId: "loc-1", date: "2026-09-28", startTime: "06:00", endTime: "14:00" },
+  { id: "shift-2", scheduleId: "schedule-1", employeeId: "FC-0019", locationId: "loc-1", date: "2026-09-28", startTime: "07:00", endTime: "15:00" },
+  { id: "shift-3", scheduleId: "schedule-2", employeeId: "FC-0020", locationId: "loc-2", date: "2026-09-28", startTime: "10:00", endTime: "18:00" },
 ];

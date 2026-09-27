@@ -3,10 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { managerNavigation } from "@/lib/navigation";
+import { logout } from "@/app/login/actions";
+import type { UserRole } from "@/lib/domain";
+import { navigationForRole } from "@/lib/navigation";
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({
+  children,
+  user,
+}: {
+  children: ReactNode;
+  user: {
+    firstName: string;
+    lastName: string;
+    role: UserRole;
+  };
+}) {
   const pathname = usePathname();
+  const navigation = navigationForRole(user.role);
+  const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
 
   return (
     <div className="app-shell">
@@ -20,7 +34,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </Link>
 
         <nav className="sidebar-nav" aria-label="Primary navigation">
-          {managerNavigation.map((item) => {
+          {navigation.map((item) => {
             const active =
               item.href === "/app" ? pathname === "/app" : pathname.startsWith(item.href);
 
@@ -37,11 +51,14 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="sidebar-profile">
-          <div className="avatar">JM</div>
-          <div>
-            <strong>Jose</strong>
-            <small>Owner</small>
+          <div className="avatar">{initials}</div>
+          <div className="sidebar-profile-copy">
+            <strong>{user.firstName} {user.lastName}</strong>
+            <small>{user.role[0]}{user.role.slice(1).toLowerCase()}</small>
           </div>
+          <form action={logout}>
+            <button className="sidebar-logout" type="submit">Sign out</button>
+          </form>
         </div>
       </aside>
 
@@ -51,13 +68,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="brand-mark">F</span>
             <strong>Fuel Scheduler</strong>
           </Link>
-          <span className="role-chip">Owner</span>
+          <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>
         </header>
 
         <div className="page-frame">{children}</div>
 
         <nav className="mobile-nav" aria-label="Mobile navigation">
-          {managerNavigation.slice(0, 5).map((item) => {
+          {navigation.slice(0, 5).map((item) => {
             const active =
               item.href === "/app" ? pathname === "/app" : pathname.startsWith(item.href);
 

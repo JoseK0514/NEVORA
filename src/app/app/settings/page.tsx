@@ -1,12 +1,15 @@
 import { PageHeader } from "@/components/page-header";
+import { requireRoles } from "@/lib/auth/permissions";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  await requireRoles(["OWNER"]);
+
   return (
     <>
       <PageHeader
         eyebrow="Owner controls"
         title="Settings"
-        description="Business rules will live here instead of being hard-coded into scheduling screens."
+        description="Business rules live here instead of being hard-coded into scheduling screens."
       />
       <section className="panel settings-list">
         <div><strong>Locations</strong><span>Configure the two Fuel Coffee Drive locations.</span><button className="button ghost">Manage</button></div>

@@ -12,28 +12,41 @@ All feature work lands in `development` first and moves to `main` only after val
 ## Current foundation
 
 - Next.js 16 + React 19 + TypeScript
-- Responsive manager application shell
-- Desktop and mobile scheduling layouts
-- Employee, availability, request, exchange, and settings routes
-- Scheduling-first domain types
-- GitHub Actions validation for type checking, linting, and production builds
-
-## Initial scope
-
-- Two Fuel Coffee Drive locations
-- Employee scheduling
-- Employee availability
-- Time-off requests
-- Shift coverage / shift swaps
-- Manager approval workflows
-- Draft and published schedules
-- Mobile-first employee experience
+- Neon/PostgreSQL-ready database layer
+- Employee-ID/password authentication with hashed credentials and opaque sessions
+- Role-aware application shell for Owner, Manager, Lead, and Employee
+- Database-backed employee list and employee creation
+- Responsive desktop/mobile scheduling interface
+- Scheduling validation engine with unit tests
+- GitHub Actions validation for tests, type checking, linting, and production builds
 
 ## Employee record
 
-Required: ID, first name, last name, phone number, and role.
+Required:
+- Employee ID
+- First name
+- Last name
+- Phone number
+- Role
 
-Email is optional. Roles are Owner, Manager, Lead, and Employee.
+Optional:
+- Email
+
+Roles are Owner, Manager, Lead, and Employee. Credentials are stored separately from employee profile data.
+
+## Database setup
+
+1. Create a Neon PostgreSQL project.
+2. Set `DATABASE_URL` from `.env.example`.
+3. Apply `db/migrations/0001_initial.sql`.
+4. Fill the bootstrap owner variables in your local environment.
+5. Create the first owner:
+
+```bash
+npm run bootstrap:owner
+```
+
+The migration seeds the two initial location records as `Location 1` and `Location 2`.
 
 ## Local development
 
@@ -47,6 +60,7 @@ Then open `http://localhost:3000`.
 ## Validation
 
 ```bash
+npm test
 npm run typecheck
 npm run lint
 npm run build

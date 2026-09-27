@@ -21,16 +21,27 @@ Scheduling attributes:
 - Eligible locations
 - Active/inactive status
 
+Passwords and sessions are intentionally stored separately from the employee profile.
+
 ## Core workflows
 
 1. Employee availability feeds the scheduling rules engine.
 2. Approved time-off requests block conflicting shifts.
-3. Managers build weekly schedules in draft.
-4. The validator checks location eligibility, availability, approved leave, and overlapping shifts.
-5. Managers publish a completed schedule.
+3. Each location has its own weekly draft/published schedule.
+4. Cross-location conflict checks still operate globally by employee.
+5. The validator checks location eligibility, availability, approved leave, overlapping shifts, and weekly hours.
 6. Employees can offer a shift for coverage or propose a direct swap.
 7. Another employee must meet the scheduling criteria.
 8. Shift ownership does not change until manager approval.
+
+## Authentication
+
+- Employee ID + password.
+- Passwords are hashed with Node.js scrypt and a random salt.
+- Browser sessions use random opaque tokens.
+- Only a SHA-256 hash of the session token is stored in PostgreSQL.
+- Session cookies are HTTP-only and use SameSite=Lax.
+- Authentication credentials are not part of the employee profile table.
 
 ## Primary routes
 
@@ -38,20 +49,19 @@ Scheduling attributes:
 - /app
 - /app/schedule
 - /app/employees
+- /app/employees/new
 - /app/availability
 - /app/requests
 - /app/exchange
 - /app/settings
 
-Employee-specific views will reuse the same domain model and responsive shell rather than creating a separate application.
-
 ## Roles
 
 ### Owner
-Full access across locations.
+Full access across both locations, including owner settings.
 
 ### Manager
-Schedule management, employee management, requests, approvals, and publishing. Exact scope can later be limited by location.
+Schedule management, employee management, requests, approvals, and publishing.
 
 ### Lead
 Employee capabilities plus selected operational permissions. Approval authority is intentionally not hard-coded yet.
@@ -59,24 +69,27 @@ Employee capabilities plus selected operational permissions. Approval authority 
 ### Employee
 Own schedule, own availability, time-off requests, offer shifts, claim eligible open shifts, and propose/accept swaps.
 
-## Data model direction
+## PostgreSQL model
 
-The application will eventually persist:
+The initial migration creates:
 - locations
 - employees
 - employee_location_eligibility
+- employee_credentials
+- employee_sessions
 - availability_windows
+- availability_exceptions
 - time_off_requests
-- schedule_weeks
+- schedules
 - shifts
 - shift_exchanges
 - notifications
 
-Database and authentication providers are intentionally not coupled to the first UI commit. Neon/PostgreSQL remains the preferred database direction, but schema migrations and auth should be introduced as their own reviewed foundation step.
+Schedules are unique per location and week, allowing one Fuel location to remain in draft while the other is already published.
 
 ## Branch workflow
 
 - development: active implementation and validation
 - main: stable, production-ready changes only
 
-Changes should be validated on development before promotion to main.
+Changes are validated on development before promotion to main.

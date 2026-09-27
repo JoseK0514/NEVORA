@@ -29,8 +29,9 @@ export type AvailabilityWindow = {
 
 export type ScheduleStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
-export type ScheduleWeek = {
+export type Schedule = {
   id: string;
+  locationId: string;
   weekStart: string;
   status: ScheduleStatus;
   publishedAt?: string;
@@ -38,7 +39,7 @@ export type ScheduleWeek = {
 
 export type Shift = {
   id: string;
-  scheduleWeekId: string;
+  scheduleId: string;
   employeeId: string;
   locationId: string;
   date: string;

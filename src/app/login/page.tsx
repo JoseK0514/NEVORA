@@ -1,4 +1,12 @@
-export default function LoginPage() {
+import { login } from "@/app/login/actions";
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const params = await searchParams;
+
   return (
     <main className="auth-page">
       <section className="auth-card">
@@ -10,21 +18,27 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="form-stack">
+        {params.error ? (
+          <p className="form-error">Employee ID or password is incorrect.</p>
+        ) : null}
+
+        <form action={login} className="form-stack">
           <label>
             Employee ID
-            <input placeholder="FC-0001" autoComplete="username" />
+            <input name="employeeId" placeholder="FC-0001" autoComplete="username" required />
           </label>
           <label>
             Password
-            <input type="password" placeholder="••••••••" autoComplete="current-password" />
+            <input
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              autoComplete="current-password"
+              required
+            />
           </label>
-          <button type="button" className="button primary full">Sign In</button>
-        </div>
-
-        <p className="auth-note">
-          Authentication wiring will be added after the employee and permission model is finalized.
-        </p>
+          <button type="submit" className="button primary full">Sign In</button>
+        </form>
       </section>
     </main>
   );
