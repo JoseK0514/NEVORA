@@ -18,7 +18,7 @@ import {
   weekDates,
   weekStartFor,
 } from "@/lib/date-utils";
-import { publishScheduleAction } from "@/app/app/schedule/actions";
+import { copyPreviousWeekAction, publishScheduleAction } from "@/app/app/schedule/actions";
 
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_SHIFT: "The shift information is incomplete or outside this week.",
@@ -30,6 +30,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   INVALID_TIME_RANGE: "Shift end time must be after the start time.",
   INVALID_PUBLISH: "The schedule could not be published.",
   NO_SCHEDULE: "There is no schedule to publish for that location yet.",
+  SHIFT_HAS_EXCHANGE_HISTORY: "This shift has exchange history and cannot be deleted. Edit it instead.",
 };
 
 const WARNING_MESSAGES: Record<string, string> = {
@@ -50,6 +51,11 @@ export default async function SchedulePage({
     error?: string;
     warning?: string;
     published?: string;
+    updated?: string;
+    deleted?: string;
+    copied?: string;
+    skipped?: string;
+    copyWarnings?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -138,6 +144,10 @@ export default async function SchedulePage({
           <>
             <Link className="button secondary" href={`/app/schedule?week=${previousWeek}`}>Previous</Link>
             <Link className="button secondary" href={`/app/schedule?week=${nextWeek}`}>Next</Link>
+            <form action={copyPreviousWeekAction}>
+              <input type="hidden" name="weekStart" value={weekStart} />
+              <button className="button secondary" type="submit">Copy Previous Week</button>
+            </form>
             <Link className="button primary" href={`/app/schedule/new?week=${weekStart}`}>+ Add Shift</Link>
           </>
         }
@@ -152,6 +162,19 @@ export default async function SchedulePage({
       {params.published ? (
         <p className="form-success">
           {locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.
+        </p>
+      ) : null}
+      {params.updated ? <p className="form-success">Shift updated.</p> : null}
+      {params.deleted ? <p className="form-success">Shift deleted.</p> : null}
+      {params.copied !== undefined ? (
+        <p className={Number(params.skipped ?? 0) > 0 ? "form-warning" : "form-success"}>
+          Copied {params.copied} shift{params.copied === "1" ? "" : "s"} from the previous week.
+          {Number(params.skipped ?? 0) > 0
+            ? ` ${params.skipped} shift${params.skipped === "1" ? "" : "s"} skipped because of current scheduling conflicts.`
+            : ""}
+          {Number(params.copyWarnings ?? 0) > 0
+            ? ` ${params.copyWarnings} copied shift${params.copyWarnings === "1" ? "" : "s"} include manager warnings.`
+            : ""}
         </p>
       ) : null}
 
@@ -227,10 +250,14 @@ export default async function SchedulePage({
                 return (
                   <div className="schedule-cell" key={date}>
                     {shifts.map((shift) => (
-                      <div className="shift-block" key={shift.id}>
+                      <Link
+                        className="shift-block"
+                        href={`/app/schedule/edit?shiftId=${shift.id}`}
+                        key={shift.id}
+                      >
                         <strong>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</strong>
                         <span>{locations.find((location) => location.id === shift.locationId)?.shortName}</span>
-                      </div>
+                      </Link>
                     ))}
                     <Link
                       className="add-cell"
@@ -259,13 +286,17 @@ export default async function SchedulePage({
                 <Link className="text-link" href={`/app/schedule/new?week=${weekStart}&date=${date}`}>+ Add shift</Link>
               </div>
               {dayShifts.length ? dayShifts.map((shift) => (
-                <div className="mobile-shift" key={shift.id}>
+                <Link
+                  className="mobile-shift editable-mobile-shift"
+                  href={`/app/schedule/edit?shiftId=${shift.id}`}
+                  key={shift.id}
+                >
                   <div>
                     <strong>{shift.employeeName}</strong>
                     <span>{locations.find((location) => location.id === shift.locationId)?.shortName}</span>
                   </div>
                   <b>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</b>
-                </div>
+                </Link>
               )) : <p className="muted">No shifts yet.</p>}
             </article>
           );
