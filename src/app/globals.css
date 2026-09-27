@@ -696,3 +696,22 @@ button { cursor: pointer; }
   font-weight: 800;
 }
 .text-button.danger { color: #9b4938; }
+
+
+.shift-block { transition: 140ms ease; }
+.shift-block:hover { background: var(--soft-caramel); transform: translateY(-1px); }
+.editable-mobile-shift { color: inherit; }
+.editable-mobile-shift:hover { background: #fbf8f3; }
+.danger-button {
+  background: transparent;
+  border-color: #dfb8ad;
+  color: #9b4938;
+}
+.danger-button:hover { background: #f8e6e0; }
+.shift-edit-footer { justify-content: space-between; align-items: center; }
+.form-footer-right { display: flex; gap: 9px; }
+
+@media (max-width: 760px) {
+  .shift-edit-footer { grid-template-columns: 1fr; }
+  .form-footer-right { display: grid; grid-template-columns: 1fr 1fr; }
+}
