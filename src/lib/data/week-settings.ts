@@ -189,6 +189,20 @@ export async function replaceWeeklyAvailability(
           now()
         )`,
     ),
+    sql`INSERT INTO weekly_availability_submissions (
+      week_start,
+      employee_id,
+      submitted_at,
+      updated_at
+    ) VALUES (
+      ${weekStart},
+      ${employeeId},
+      now(),
+      now()
+    )
+    ON CONFLICT (week_start, employee_id)
+    DO UPDATE SET
+      updated_at = now()`,
   ];
 
   await sql.transaction(queries);

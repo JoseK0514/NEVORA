@@ -3,6 +3,8 @@ import { PageHeader } from "@/components/page-header";
 import { AvailabilityEditor } from "@/components/availability-editor";
 import { requireSession } from "@/lib/auth/session";
 import { listAvailability } from "@/lib/data/availability";
+import { getAvailabilitySubmissionStatus } from "@/lib/data/availability-submissions";
+import type { AvailabilitySubmissionStatus } from "@/lib/assistance/availability-submission";
 import {
   getUpcomingAvailabilityWeek,
   getWeekSettings,
@@ -51,6 +53,44 @@ function buildState(
   ) as AvailabilityState;
 }
 
+function submissionStatusCopy(status: AvailabilitySubmissionStatus) {
+  if (status.state === "LOCKED") {
+    if (!status.submitted) {
+      return {
+        label: "Locked · not submitted",
+        detail: "No weekly availability was submitted before the deadline.",
+      };
+    }
+
+    return {
+      label: "Locked · submitted",
+      detail:
+        status.windowCount === 0
+          ? "You submitted that you are unavailable for the entire week."
+          : "Your submitted weekly availability is locked for this schedule.",
+    };
+  }
+
+  if (status.state === "SUBMITTED_UNAVAILABLE") {
+    return {
+      label: "Submitted · unavailable all week",
+      detail: "Management can see that you intentionally submitted no available hours.",
+    };
+  }
+
+  if (status.state === "SUBMITTED") {
+    return {
+      label: "Submitted",
+      detail: "Management can see that your weekly availability is complete.",
+    };
+  }
+
+  return {
+    label: "Not submitted",
+    detail: "Submit this week before the deadline so management can schedule accurately.",
+  };
+}
+
 export default async function AvailabilityPage({
   searchParams,
 }: {
@@ -72,10 +112,16 @@ export default async function AvailabilityPage({
 
   let initialAvailability = buildState(normalAvailability);
   let settings = null;
+  let submissionStatus: AvailabilitySubmissionStatus | null = null;
 
   if (selectedWeek) {
-    settings = await getWeekSettings(selectedWeek);
-    const weekly = await listWeeklyAvailability(session.id, selectedWeek);
+    const [weekSettings, weekly, status] = await Promise.all([
+      getWeekSettings(selectedWeek),
+      listWeeklyAvailability(session.id, selectedWeek),
+      getAvailabilitySubmissionStatus(session.id, selectedWeek),
+    ]);
+    settings = weekSettings;
+    submissionStatus = status;
 
     if (settings?.availabilityDeadline) {
       initialAvailability = buildState(weekly);
@@ -92,6 +138,10 @@ export default async function AvailabilityPage({
       settings?.availabilityDeadline &&
       requestTime > new Date(settings.availabilityDeadline).getTime(),
   );
+  const submissionCopy = submissionStatus
+    ? submissionStatusCopy(submissionStatus)
+    : null;
+
   return (
     <div className="availability-page">
       <PageHeader
@@ -141,6 +191,27 @@ export default async function AvailabilityPage({
               {formatPuertoRicoDateTime(settings.availabilityDeadline)}
             </span>
           </div>
+        </section>
+      ) : null}
+
+      {selectedWeek && submissionStatus && submissionCopy ? (
+        <section
+          className={
+            submissionStatus.submitted
+              ? "availability-submission-status submitted"
+              : "availability-submission-status pending"
+          }
+        >
+          <div>
+            <strong>{submissionCopy.label}</strong>
+            <span>{submissionCopy.detail}</span>
+          </div>
+          {submissionStatus.updatedAt ? (
+            <small>
+              Last updated{" "}
+              {formatPuertoRicoDateTime(submissionStatus.updatedAt)}
+            </small>
+          ) : null}
         </section>
       ) : null}
 

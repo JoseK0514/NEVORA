@@ -4712,3 +4712,48 @@ small,
   flex-basis: 38px;
   border-radius: 0;
 }
+
+/* Weekly availability submission status */
+.availability-submission-status {
+  margin: 10px 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 253, 249, .72);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.availability-submission-status > div {
+  display: grid;
+  gap: 2px;
+}
+
+.availability-submission-status strong {
+  font-size: 12.5px;
+  font-weight: var(--weight-semibold);
+}
+
+.availability-submission-status span,
+.availability-submission-status small {
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+.availability-submission-status.submitted {
+  background: color-mix(in srgb, var(--soft-green) 55%, var(--surface));
+}
+
+.availability-submission-status.pending {
+  background: color-mix(in srgb, var(--soft-amber) 48%, var(--surface));
+}
+
+@media (max-width: 600px) {
+  .availability-submission-status {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
