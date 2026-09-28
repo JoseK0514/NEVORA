@@ -374,6 +374,13 @@ export async function getShiftForManagement(
          sh.end_time,
          sh.notes,
          sh.is_designated_lead,
+         EXISTS (
+           SELECT 1
+           FROM shift_callouts c
+           WHERE c.shift_id = sh.id
+             AND c.employee_id = sh.employee_id
+             AND c.status = 'APPROVED'
+         ) AS approved_callout,
          s.status AS schedule_status
        FROM shifts sh
        JOIN schedules s ON s.id = sh.schedule_id
@@ -399,6 +406,7 @@ export async function getShiftForManagement(
     endTime: timeValue(item.end_time),
     notes: item.notes ? String(item.notes) : undefined,
     isDesignatedLead: Boolean(item.is_designated_lead),
+    isCalloutApproved: Boolean(item.approved_callout),
     scheduleStatus: item.schedule_status as ScheduleStatus,
   };
 }
