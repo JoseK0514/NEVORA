@@ -25,7 +25,6 @@ export type AvailabilityWindow = {
   dayOfWeek: number;
   startTime: string;
   endTime: string;
-  isDesignatedLead?: boolean;
 };
 
 export type ScheduleStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
@@ -46,6 +45,7 @@ export type Shift = {
   date: string;
   startTime: string;
   endTime: string;
+  isDesignatedLead?: boolean;
 };
 
 export type RequestStatus = "PENDING" | "APPROVED" | "DENIED" | "CANCELLED";
