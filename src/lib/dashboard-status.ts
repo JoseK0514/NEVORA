@@ -1,3 +1,5 @@
+import type { ManagerActionItem } from "./assistance/manager-actions";
+
 export type DashboardLocationCoverage = {
   locationId: string;
   locationName: string;
@@ -32,6 +34,7 @@ export function buildManagerDashboardStatus(input: {
   hasPublishedSchedule: boolean;
   availabilityDeadlineSet: boolean;
   coverageRulesConfigured: boolean;
+  managerActions?: ManagerActionItem[];
 }) {
   const locationReadiness = input.locations.map((location) => {
     const schedule = input.scheduleStatuses.find(
@@ -96,5 +99,6 @@ export function buildManagerDashboardStatus(input: {
     unacknowledgedCount,
     setupAttentionCount,
     attentionCount,
+    actionItemCount: input.managerActions?.length ?? 0,
   };
 }

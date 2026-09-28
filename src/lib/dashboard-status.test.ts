@@ -2,6 +2,45 @@ import { describe, expect, it } from "vitest";
 import { buildManagerDashboardStatus } from "./dashboard-status";
 
 describe("buildManagerDashboardStatus", () => {
+  it("reports the normalized manager action count separately from attention areas", () => {
+    const result = buildManagerDashboardStatus({
+      locations: [],
+      scheduleStatuses: [],
+      underTargetCount: 0,
+      overTargetCount: 0,
+      unconfiguredTargetCount: 0,
+      pendingTimeOffCount: 0,
+      pendingExchangeCount: 0,
+      pendingCalloutCount: 0,
+      scheduledEmployees: 0,
+      acknowledgedEmployees: 0,
+      hasPublishedSchedule: false,
+      availabilityDeadlineSet: true,
+      coverageRulesConfigured: true,
+      managerActions: [
+        {
+          id: "A",
+          type: "TIME_OFF",
+          priority: "REVIEW",
+          title: "Time-off request",
+          detail: "A request needs review.",
+          href: "/app/requests?tab=team",
+        },
+        {
+          id: "B",
+          type: "AVAILABILITY_MISSING",
+          priority: "MISSING_INPUT",
+          title: "Availability not submitted",
+          detail: "An employee has not submitted.",
+          href: "/app/availability",
+        },
+      ],
+    });
+
+    expect(result.attentionCount).toBe(0);
+    expect(result.actionItemCount).toBe(2);
+  });
+
   it("summarizes location readiness and manager attention", () => {
     const result = buildManagerDashboardStatus({
       locations: [
