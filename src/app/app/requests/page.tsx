@@ -79,7 +79,7 @@ export default async function RequestsPage({
       <PageHeader
         eyebrow="Scheduling requests"
         title="Time Off"
-        description="Request and manage your time away."
+        description="Request time away and keep track of approvals."
       />
 
       {params.error ? (
@@ -124,11 +124,10 @@ export default async function RequestsPage({
       <section className="timeoff-workspace">
         {activeTab === "new" ? (
           <article className="panel timeoff-panel timeoff-form-panel">
-            <div className="timeoff-panel-heading">
+            <div className="timeoff-panel-heading timeoff-new-heading">
               <div>
-                <p className="eyebrow">New request</p>
                 <h2>Request time off</h2>
-                <p>Choose your dates, request type, and add a note if needed.</p>
+                <p>Choose your dates and request type. Add a note only if needed.</p>
               </div>
             </div>
             <TimeOffForm />
