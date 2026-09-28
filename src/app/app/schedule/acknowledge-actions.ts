@@ -26,6 +26,7 @@ export async function acknowledgeScheduleAction(formData: FormData) {
     redirect(`/app/schedule?week=${weekStart}&error=NO_SCHEDULE`);
   }
 
+  revalidatePath("/app");
   revalidatePath("/app/schedule");
   redirect(`/app/schedule?week=${weekStart}&acknowledged=1`);
 }

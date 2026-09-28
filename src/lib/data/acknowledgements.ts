@@ -1,4 +1,12 @@
-import { getDb, queryRows } from "@/lib/db";
+import { getDb, queryRows } from "../db";
+import {
+  buildAcknowledgementState,
+  type EmployeeAcknowledgementState,
+} from "../assistance/acknowledgement-state";
+import {
+  getLatestPublicationRevision,
+  listRevisionShifts,
+} from "./publication-revisions";
 
 export type AcknowledgementSummary = {
   scheduledEmployees: number;
@@ -10,28 +18,38 @@ export async function acknowledgeScheduleWeek(input: {
   employeeId: string;
 }) {
   const sql = getDb();
-  const rows = queryRows<{ employee_id: string }>(
+  const rows = queryRows<{ employee_id: string; publication_revision_id: string }>(
     await sql.query(
-      `INSERT INTO schedule_acknowledgements (
+      `WITH latest_revision AS (
+         SELECT id
+         FROM schedule_publication_revisions
+         WHERE week_start = $1
+         ORDER BY revision_number DESC
+         LIMIT 1
+       )
+       INSERT INTO schedule_acknowledgements (
          week_start,
          employee_id,
+         publication_revision_id,
          acknowledged_at
        )
        SELECT
          $1,
          $2,
+         r.id,
          now()
+       FROM latest_revision r
        WHERE EXISTS (
          SELECT 1
-         FROM shifts sh
-         JOIN schedules s ON s.id = sh.schedule_id
-         WHERE s.week_start = $1
-           AND s.status = 'PUBLISHED'
-           AND sh.employee_id = $2
+         FROM schedule_publication_revision_shifts rs
+         WHERE rs.revision_id = r.id
+           AND rs.employee_id = $2
        )
        ON CONFLICT (week_start, employee_id)
-       DO UPDATE SET acknowledged_at = now()
-       RETURNING employee_id`,
+       DO UPDATE SET
+         publication_revision_id = EXCLUDED.publication_revision_id,
+         acknowledged_at = now()
+       RETURNING employee_id, publication_revision_id`,
       [input.weekStart, input.employeeId],
     ),
   );
@@ -39,14 +57,20 @@ export async function acknowledgeScheduleWeek(input: {
   return Boolean(rows[0]);
 }
 
-export async function hasAcknowledgedScheduleWeek(
+export async function getEmployeeAcknowledgementState(
   weekStart: string,
   employeeId: string,
-) {
+): Promise<EmployeeAcknowledgementState> {
+  const latest = await getLatestPublicationRevision(weekStart);
+
+  if (!latest) {
+    return buildAcknowledgementState({ employeeId });
+  }
+
   const sql = getDb();
-  const rows = queryRows(
+  const rows = queryRows<{ publication_revision_id: string | null }>(
     await sql.query(
-      `SELECT 1
+      `SELECT publication_revision_id
        FROM schedule_acknowledgements
        WHERE week_start = $1
          AND employee_id = $2
@@ -54,42 +78,124 @@ export async function hasAcknowledgedScheduleWeek(
       [weekStart, employeeId],
     ),
   );
+  const acknowledgedRevisionId = rows[0]?.publication_revision_id ?? undefined;
 
-  return rows.length > 0;
+  if (
+    !acknowledgedRevisionId ||
+    acknowledgedRevisionId === latest.id
+  ) {
+    return buildAcknowledgementState({
+      employeeId,
+      acknowledgementRevisionId: acknowledgedRevisionId,
+      latestRevisionId: latest.id,
+    });
+  }
+
+  const [acknowledgedRevisionShifts, latestRevisionShifts] = await Promise.all([
+    listRevisionShifts(acknowledgedRevisionId),
+    listRevisionShifts(latest.id),
+  ]);
+
+  return buildAcknowledgementState({
+    employeeId,
+    acknowledgementRevisionId: acknowledgedRevisionId,
+    latestRevisionId: latest.id,
+    acknowledgedRevisionShifts,
+    latestRevisionShifts,
+  });
+}
+
+export async function hasAcknowledgedScheduleWeek(
+  weekStart: string,
+  employeeId: string,
+) {
+  const state = await getEmployeeAcknowledgementState(weekStart, employeeId);
+  return state.acknowledged;
 }
 
 export async function getAcknowledgementSummary(
   weekStart: string,
 ): Promise<AcknowledgementSummary> {
+  const latest = await getLatestPublicationRevision(weekStart);
+  if (!latest) {
+    return { scheduledEmployees: 0, acknowledgedEmployees: 0 };
+  }
+
+  const latestShifts = await listRevisionShifts(latest.id);
+  const scheduledEmployeeIds = Array.from(
+    new Set(latestShifts.map((shift) => shift.employeeId)),
+  );
+
+  if (!scheduledEmployeeIds.length) {
+    return { scheduledEmployees: 0, acknowledgedEmployees: 0 };
+  }
+
   const sql = getDb();
-  const rows = queryRows<{
-    scheduled_employees: string | number;
-    acknowledged_employees: string | number;
+  const acknowledgementRows = queryRows<{
+    employee_id: string;
+    publication_revision_id: string | null;
   }>(
     await sql.query(
-      `WITH scheduled AS (
-         SELECT DISTINCT sh.employee_id
-         FROM shifts sh
-         JOIN schedules s ON s.id = sh.schedule_id
-         WHERE s.week_start = $1
-           AND s.status = 'PUBLISHED'
-       )
-       SELECT
-         (SELECT count(*) FROM scheduled) AS scheduled_employees,
-         (
-           SELECT count(*)
-           FROM scheduled se
-           JOIN schedule_acknowledgements a
-             ON a.employee_id = se.employee_id
-            AND a.week_start = $1
-         ) AS acknowledged_employees`,
+      `SELECT employee_id, publication_revision_id
+       FROM schedule_acknowledgements
+       WHERE week_start = $1`,
       [weekStart],
     ),
   );
+  const acknowledgementMap = new Map(
+    acknowledgementRows.map((row) => [
+      row.employee_id,
+      row.publication_revision_id ?? undefined,
+    ]),
+  );
+
+  const priorRevisionIds = Array.from(
+    new Set(
+      scheduledEmployeeIds
+        .map((employeeId) => acknowledgementMap.get(employeeId))
+        .filter(
+          (revisionId): revisionId is string =>
+            Boolean(revisionId) && revisionId !== latest.id,
+        ),
+    ),
+  );
+  const priorShiftEntries = await Promise.all(
+    priorRevisionIds.map(async (revisionId) => [
+      revisionId,
+      await listRevisionShifts(revisionId),
+    ] as const),
+  );
+  const priorShiftsByRevision = new Map(priorShiftEntries);
+
+  let acknowledgedEmployees = 0;
+
+  for (const employeeId of scheduledEmployeeIds) {
+    const acknowledgedRevisionId = acknowledgementMap.get(employeeId);
+
+    if (!acknowledgedRevisionId) continue;
+
+    const state =
+      acknowledgedRevisionId === latest.id
+        ? buildAcknowledgementState({
+            employeeId,
+            acknowledgementRevisionId: acknowledgedRevisionId,
+            latestRevisionId: latest.id,
+          })
+        : buildAcknowledgementState({
+            employeeId,
+            acknowledgementRevisionId: acknowledgedRevisionId,
+            latestRevisionId: latest.id,
+            acknowledgedRevisionShifts:
+              priorShiftsByRevision.get(acknowledgedRevisionId),
+            latestRevisionShifts: latestShifts,
+          });
+
+    if (state.acknowledged) acknowledgedEmployees += 1;
+  }
 
   return {
-    scheduledEmployees: Number(rows[0]?.scheduled_employees ?? 0),
-    acknowledgedEmployees: Number(rows[0]?.acknowledged_employees ?? 0),
+    scheduledEmployees: scheduledEmployeeIds.length,
+    acknowledgedEmployees,
   };
 }
 

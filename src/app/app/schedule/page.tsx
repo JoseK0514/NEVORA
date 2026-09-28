@@ -39,7 +39,7 @@ import { getWeekSettings } from "@/lib/data/week-settings";
 import { listHourFairness } from "@/lib/data/hour-fairness";
 import {
   getAcknowledgementSummary,
-  hasAcknowledgedScheduleWeek,
+  getEmployeeAcknowledgementState,
 } from "@/lib/data/acknowledgements";
 import { acknowledgeScheduleAction } from "@/app/app/schedule/acknowledge-actions";
 
@@ -122,7 +122,7 @@ export default async function SchedulePage({
     coverageWindows,
     weekSettings,
     acknowledgementSummary,
-    employeeAcknowledged,
+    employeeAcknowledgement,
     fairnessHistory,
   ] = await Promise.all([
     listLocations(),
@@ -141,8 +141,13 @@ export default async function SchedulePage({
       ? getAcknowledgementSummary(weekStart)
       : Promise.resolve({ scheduledEmployees: 0, acknowledgedEmployees: 0 }),
     !manager
-      ? hasAcknowledgedScheduleWeek(weekStart, session.id)
-      : Promise.resolve(false),
+      ? getEmployeeAcknowledgementState(weekStart, session.id)
+      : Promise.resolve({
+          acknowledged: false,
+          acknowledgedRevisionId: undefined,
+          latestRevisionId: undefined,
+          needsAcknowledgement: false,
+        }),
     manager ? listHourFairness(weekStart) : Promise.resolve([]),
   ]);
 
@@ -191,25 +196,31 @@ export default async function SchedulePage({
           <p className="form-success">Schedule acknowledged.</p>
         ) : null}
 
-        {hasPublishedShifts ? (
-          <section className={employeeAcknowledged ? "schedule-ack-bar acknowledged" : "schedule-ack-bar"}>
+        {hasPublishedShifts && employeeAcknowledgement.latestRevisionId ? (
+          <section
+            className={
+              employeeAcknowledgement.acknowledged
+                ? "schedule-ack-bar acknowledged"
+                : "schedule-ack-bar"
+            }
+          >
             <div>
               <strong>
-                {employeeAcknowledged
+                {employeeAcknowledgement.acknowledged
                   ? "Schedule acknowledged"
                   : "Please acknowledge this schedule"}
               </strong>
               <span>
-                {employeeAcknowledged
-                  ? "Management can see that you reviewed this published week."
-                  : "Confirm that you have reviewed your published shifts."}
+                {employeeAcknowledgement.acknowledged
+                  ? "Management can see that you reviewed your current published shifts."
+                  : "Your published schedule changed or has not been acknowledged yet."}
               </span>
             </div>
-            {!employeeAcknowledged ? (
+            {employeeAcknowledgement.needsAcknowledgement ? (
               <form action={acknowledgeScheduleAction}>
                 <input type="hidden" name="weekStart" value={weekStart} />
                 <button className="button primary" type="submit">
-                  Acknowledge Schedule
+                  Acknowledge schedule
                 </button>
               </form>
             ) : (

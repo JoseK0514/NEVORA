@@ -195,10 +195,6 @@ export async function publishScheduleAction(formData: FormData) {
     managerId: session.id,
   });
 
-  if (published) {
-    await clearWeekAcknowledgements(weekStart);
-  }
-
   revalidatePath("/app/schedule");
   redirect(
     scheduleUrl(
