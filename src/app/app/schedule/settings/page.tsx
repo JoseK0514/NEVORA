@@ -34,6 +34,16 @@ export default async function ScheduleSettingsPage({
     listCoverageWindows(),
   ]);
 
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
   return (
     <div className="schedule-settings-page">
       <PageHeader
@@ -69,47 +79,115 @@ export default async function ScheduleSettingsPage({
         <p className="form-success">Coverage window removed.</p>
       ) : null}
 
-      <form action={saveScheduleHealthSettingsAction} className="schedule-settings-form">
-        <section className="panel schedule-rule-panel">
-          <div className="schedule-rule-heading">
-            <div>
-              <p className="eyebrow">Coverage</p>
-              <h2>Staff required per shift</h2>
-              <p>
-                Coverage is calculated across actual overlapping shift times. You can also
-                require a designated lead to be present during covered periods.
-              </p>
+      <div className="schedule-settings-form">
+        <form
+          action={saveScheduleHealthSettingsAction}
+          className="schedule-settings-core-form"
+        >
+          <section className="panel schedule-rule-panel">
+            <div className="schedule-rule-heading">
+              <div>
+                <p className="eyebrow">Coverage</p>
+                <h2>Staff required per shift</h2>
+                <p>
+                  Coverage is calculated across actual overlapping shift times.
+                  You can also require a designated lead to be present during
+                  covered periods.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="staffing-settings-grid">
-            {staffing.map((location) => (
-              <label className="staffing-setting-card" key={location.locationId}>
-                <span>{location.locationName}</span>
-                <strong>
-                  <input
-                    type="number"
-                    name={`staffing-${location.locationId}`}
-                    defaultValue={location.minimumStaffPerShift}
-                    min={1}
-                    max={100}
-                    step={1}
-                    required
-                  />
-                  <small>employees</small>
-                </strong>
-                <span className="staffing-lead-toggle">
-                  <input
-                    type="checkbox"
-                    name={`lead-${location.locationId}`}
-                    defaultChecked={location.requiresDesignatedLead}
-                  />
-                  <span>Designated lead required</span>
-                </span>
-              </label>
-            ))}
+            <div className="staffing-settings-grid">
+              {staffing.map((location) => (
+                <label
+                  className="staffing-setting-card"
+                  key={location.locationId}
+                >
+                  <span>{location.locationName}</span>
+                  <strong>
+                    <input
+                      type="number"
+                      name={`staffing-${location.locationId}`}
+                      defaultValue={location.minimumStaffPerShift}
+                      min={1}
+                      max={100}
+                      step={1}
+                      required
+                    />
+                    <small>employees</small>
+                  </strong>
+                  <span className="staffing-lead-toggle">
+                    <input
+                      type="checkbox"
+                      name={`lead-${location.locationId}`}
+                      defaultChecked={location.requiresDesignatedLead}
+                    />
+                    <span>Designated lead required</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </section>
+
+          <section className="panel schedule-rule-panel">
+            <div className="schedule-rule-heading">
+              <div>
+                <p className="eyebrow">Hours balance</p>
+                <h2>Employee weekly targets</h2>
+                <p>
+                  Leave a target blank if that employee should not be included
+                  in the weekly hours review.
+                </p>
+              </div>
+            </div>
+
+            <div className="hour-target-list">
+              {employees.map((employee) => {
+                const location = locations.find(
+                  (item) => item.id === employee.primaryLocationId,
+                );
+
+                return (
+                  <label className="hour-target-row" key={employee.employeeId}>
+                    <span className="hour-target-employee">
+                      <strong>{employee.employeeName}</strong>
+                      <small>
+                        {employee.employeeId} · {employee.role[0]}
+                        {employee.role.slice(1).toLowerCase()} ·{" "}
+                        {location?.shortName ?? "—"}
+                      </small>
+                    </span>
+
+                    <span className="hour-target-input">
+                      <input
+                        type="number"
+                        name={`target-${employee.employeeId}`}
+                        defaultValue={employee.targetWeeklyHours ?? ""}
+                        min={0}
+                        max={168}
+                        step={0.25}
+                        placeholder="Not set"
+                      />
+                      <small>hrs / week</small>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </section>
+
+          <div className="schedule-settings-savebar">
+            <div>
+              <strong>Schedule health rules</strong>
+              <span>
+                Changes apply to the weekly management view immediately.
+              </span>
+            </div>
+            <button className="button primary" type="submit">
+              Save Settings
+            </button>
           </div>
-        </section>
+        </form>
 
         <section className="panel schedule-rule-panel">
           <div className="schedule-rule-heading">
@@ -126,7 +204,11 @@ export default async function ScheduleSettingsPage({
           <form action={addCoverageWindowAction} className="coverage-window-form">
             <label>
               Location
-              <select name="locationId" required defaultValue={locations[0]?.id}>
+              <select
+                name="locationId"
+                required
+                defaultValue={locations[0]?.id}
+              >
                 {locations.map((location) => (
                   <option key={location.id} value={location.id}>
                     {location.shortName}
@@ -176,15 +258,6 @@ export default async function ScheduleSettingsPage({
                 const location = locations.find(
                   (item) => item.id === window.locationId,
                 );
-                const dayNames = [
-                  "Sunday",
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                  "Friday",
-                  "Saturday",
-                ];
 
                 return (
                   <div className="coverage-window-row" key={window.id}>
@@ -194,14 +267,19 @@ export default async function ScheduleSettingsPage({
                         {dayNames[window.dayOfWeek]}
                       </strong>
                       <span>
-                        {formatTime(window.startTime)} – {formatTime(window.endTime)}
+                        {formatTime(window.startTime)} –{" "}
+                        {formatTime(window.endTime)}
                         {window.minimumStaff
                           ? ` · ${window.minimumStaff} staff`
                           : " · location default"}
                       </span>
                     </div>
                     <form action={deleteCoverageWindowAction}>
-                      <input type="hidden" name="windowId" value={window.id} />
+                      <input
+                        type="hidden"
+                        name="windowId"
+                        value={window.id}
+                      />
                       <button className="text-button danger" type="submit">
                         Remove
                       </button>
@@ -219,63 +297,7 @@ export default async function ScheduleSettingsPage({
             )}
           </div>
         </section>
-
-        <section className="panel schedule-rule-panel">
-          <div className="schedule-rule-heading">
-            <div>
-              <p className="eyebrow">Hours balance</p>
-              <h2>Employee weekly targets</h2>
-              <p>
-                Leave a target blank if that employee should not be included in
-                the weekly hours review.
-              </p>
-            </div>
-          </div>
-
-          <div className="hour-target-list">
-            {employees.map((employee) => {
-              const location = locations.find(
-                (item) => item.id === employee.primaryLocationId,
-              );
-
-              return (
-                <label className="hour-target-row" key={employee.employeeId}>
-                  <span className="hour-target-employee">
-                    <strong>{employee.employeeName}</strong>
-                    <small>
-                      {employee.employeeId} · {employee.role[0]}
-                      {employee.role.slice(1).toLowerCase()} · {location?.shortName ?? "—"}
-                    </small>
-                  </span>
-
-                  <span className="hour-target-input">
-                    <input
-                      type="number"
-                      name={`target-${employee.employeeId}`}
-                      defaultValue={employee.targetWeeklyHours ?? ""}
-                      min={0}
-                      max={168}
-                      step={0.25}
-                      placeholder="Not set"
-                    />
-                    <small>hrs / week</small>
-                  </span>
-                </label>
-              );
-            })}
-          </div>
-        </section>
-
-        <div className="schedule-settings-savebar">
-          <div>
-            <strong>Schedule health rules</strong>
-            <span>Changes apply to the weekly management view immediately.</span>
-          </div>
-          <button className="button primary" type="submit">
-            Save Settings
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }
