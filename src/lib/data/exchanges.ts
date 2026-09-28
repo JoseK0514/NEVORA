@@ -478,12 +478,15 @@ export async function approveCoverageExchange(input: {
     await sql.query(
     `WITH exchange_to_apply AS (
        SELECT
-         id,
-         source_shift_id,
-         requested_by_employee_id,
-         target_employee_id
-       FROM shift_exchanges
-       WHERE id = $1
+         x.id,
+         x.source_shift_id,
+         x.requested_by_employee_id,
+         x.target_employee_id,
+         target_employee.role AS target_role
+       FROM shift_exchanges x
+       JOIN employees target_employee
+         ON target_employee.id = x.target_employee_id
+       WHERE x.id = $1
          AND kind = 'COVERAGE'
          AND status = 'MANAGER_PENDING'
          AND target_employee_id IS NOT NULL
@@ -491,6 +494,10 @@ export async function approveCoverageExchange(input: {
      shifted AS (
        UPDATE shifts sh
        SET employee_id = x.target_employee_id,
+           is_designated_lead = (
+             sh.is_designated_lead
+             AND x.target_role IN ('OWNER', 'MANAGER', 'LEAD')
+           ),
            updated_at = now()
        FROM exchange_to_apply x
        WHERE sh.id = x.source_shift_id
@@ -525,7 +532,11 @@ export async function approveSwapExchange(input: {
          x.source_shift_id,
          x.target_shift_id,
          x.requested_by_employee_id,
-         x.target_employee_id
+         x.target_employee_id,
+         source.is_designated_lead AS source_is_designated_lead,
+         target.is_designated_lead AS target_is_designated_lead,
+         requester_employee.role AS requester_role,
+         target_employee.role AS target_role
        FROM shift_exchanges x
        JOIN shifts source
          ON source.id = x.source_shift_id
@@ -533,6 +544,10 @@ export async function approveSwapExchange(input: {
        JOIN shifts target
          ON target.id = x.target_shift_id
         AND target.employee_id = x.target_employee_id
+       JOIN employees requester_employee
+         ON requester_employee.id = x.requested_by_employee_id
+       JOIN employees target_employee
+         ON target_employee.id = x.target_employee_id
        WHERE x.id = $1
          AND x.kind = 'SWAP'
          AND x.status = 'MANAGER_PENDING'
@@ -545,6 +560,15 @@ export async function approveSwapExchange(input: {
          WHEN sh.id = x.source_shift_id THEN x.target_employee_id
          WHEN sh.id = x.target_shift_id THEN x.requested_by_employee_id
          ELSE sh.employee_id
+       END,
+       is_designated_lead = CASE
+         WHEN sh.id = x.source_shift_id THEN
+           x.source_is_designated_lead
+           AND x.target_role IN ('OWNER', 'MANAGER', 'LEAD')
+         WHEN sh.id = x.target_shift_id THEN
+           x.target_is_designated_lead
+           AND x.requester_role IN ('OWNER', 'MANAGER', 'LEAD')
+         ELSE sh.is_designated_lead
        END,
        updated_at = now()
        FROM exchange_to_apply x
