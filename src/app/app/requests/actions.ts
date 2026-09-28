@@ -43,7 +43,7 @@ export async function requestTimeOffAction(formData: FormData) {
   });
 
   revalidatePath("/app/requests");
-  redirect("/app/requests?submitted=1");
+  redirect("/app/requests?tab=my&submitted=1");
 }
 
 export async function reviewTimeOffAction(formData: FormData) {
@@ -52,7 +52,7 @@ export async function reviewTimeOffAction(formData: FormData) {
   const decision = String(formData.get("decision") ?? "");
 
   if (!requestId || (decision !== "APPROVED" && decision !== "DENIED")) {
-    redirect("/app/requests?error=review");
+    redirect("/app/requests?tab=team&error=review");
   }
 
   await reviewTimeOffRequest({
@@ -62,5 +62,5 @@ export async function reviewTimeOffAction(formData: FormData) {
   });
 
   revalidatePath("/app/requests");
-  redirect("/app/requests?reviewed=1");
+  redirect("/app/requests?tab=team&reviewed=1");
 }
