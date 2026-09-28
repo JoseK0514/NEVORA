@@ -728,3 +728,215 @@ button { cursor: pointer; }
   font-size: 12px;
 }
 .auth-secondary a { color: var(--coffee); font-weight: 850; }
+
+
+/* Shift Exchange — compact operational layout */
+.exchange-summary-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: -2px 0 22px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--line);
+  box-shadow: 0 8px 24px rgba(59, 42, 29, .05);
+}
+
+.exchange-summary-item {
+  min-width: 0;
+  padding: 15px 17px;
+  background: rgba(255, 253, 249, .92);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 12px;
+  align-items: center;
+}
+
+.exchange-summary-item span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.exchange-summary-item strong {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 24px;
+  letter-spacing: -.04em;
+}
+
+.exchange-summary-item small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.exchange-priority-section { margin-top: 24px; }
+
+.compact-heading {
+  margin-bottom: 11px;
+  align-items: center;
+}
+
+.compact-heading h2 {
+  margin: 3px 0 0;
+  font-size: 21px;
+  letter-spacing: -.03em;
+}
+
+.exchange-workspace {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.exchange-pane {
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(59, 42, 29, .055);
+}
+
+.exchange-pane-header {
+  min-height: 78px;
+  padding: 17px 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid var(--line);
+  background: #fbf8f3;
+}
+
+.exchange-pane-header h2 {
+  margin: 3px 0 0;
+  font-size: 20px;
+  letter-spacing: -.03em;
+}
+
+.exchange-compact-list { display: grid; }
+
+.exchange-compact-row {
+  min-height: 78px;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.exchange-compact-row:first-child { border-top: 0; }
+
+.exchange-row-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.exchange-row-copy strong {
+  font-size: 14px;
+  letter-spacing: -.01em;
+}
+
+.exchange-row-copy span,
+.exchange-row-copy small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.exchange-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+
+.exchange-empty-inline {
+  min-height: 132px;
+  padding: 26px 22px;
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.exchange-empty-inline strong {
+  font-size: 15px;
+  letter-spacing: -.015em;
+}
+
+.exchange-empty-inline span {
+  max-width: 370px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.exchange-history-section { margin-top: 24px; }
+
+.exchange-history-panel {
+  padding: 0 20px;
+  box-shadow: 0 10px 30px rgba(59, 42, 29, .045);
+}
+
+.exchange-history-panel .history-empty {
+  min-height: 96px;
+}
+
+@media (max-width: 1040px) {
+  .exchange-summary-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .exchange-summary-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 0;
+    border-radius: 14px;
+  }
+
+  .exchange-summary-item {
+    min-height: 76px;
+    padding: 12px 13px;
+  }
+
+  .exchange-summary-item strong { font-size: 21px; }
+
+  .exchange-workspace {
+    grid-template-columns: 1fr;
+    margin-top: 18px;
+  }
+
+  .exchange-pane-header {
+    min-height: 68px;
+    padding: 14px 15px;
+  }
+
+  .exchange-compact-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 11px;
+    padding: 14px 15px;
+  }
+
+  .exchange-row-actions,
+  .exchange-row-actions form,
+  .exchange-compact-row > form {
+    width: 100%;
+  }
+
+  .exchange-row-actions .button,
+  .exchange-compact-row > form .button {
+    width: 100%;
+  }
+
+  .exchange-empty-inline {
+    min-height: 112px;
+    padding: 22px 16px;
+  }
+
+  .exchange-history-panel { padding: 0 15px; }
+}
