@@ -15,6 +15,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   APPROVED_TIME_OFF: "That employee has approved time off during this shift.",
   EMPLOYEE_INACTIVE: "Inactive employees cannot be scheduled.",
   INVALID_TIME_RANGE: "Shift end time must be after the start time.",
+  INVALID_SHIFT_LEAD:
+    "Only an Owner, Manager, or Lead can be the designated shift lead.",
 };
 
 export default async function EditShiftPage({
@@ -103,6 +105,18 @@ export default async function EditShiftPage({
               <input type="time" name="endTime" defaultValue={shift.endTime} required />
             </label>
           </div>
+
+          <label className="checkbox-row shift-lead-checkbox">
+            <input
+              type="checkbox"
+              name="isDesignatedLead"
+              defaultChecked={shift.isDesignatedLead}
+            />
+            <span>
+              Designated lead for this shift
+              <small>Only Owner, Manager, or Lead roles can be assigned.</small>
+            </span>
+          </label>
 
           <div className="form-footer shift-edit-footer">
             <button

@@ -2,6 +2,10 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { isManagerRole } from "@/lib/auth/permissions";
+import {
+  listEmployeeCallouts,
+  listPendingCallouts,
+} from "@/lib/data/callouts";
 import { requireSession } from "@/lib/auth/session";
 import {
   currentDateInPuertoRico,
@@ -22,6 +26,10 @@ import {
   respondSwapAction,
   reviewExchangeAction,
 } from "@/app/app/exchange/actions";
+import {
+  cancelCalloutAction,
+  reviewCalloutAction,
+} from "@/app/app/exchange/callout/actions";
 
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_SHIFT: "That shift is no longer available for exchange.",
@@ -42,6 +50,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   INVALID_DECISION: "That response could not be processed.",
   NOT_TARGET_EMPLOYEE: "Only the employee receiving the swap request can accept it.",
   EXCHANGE_CHANGED: "The schedule changed before approval. Review the request again.",
+  CALLOUT_EXISTS: "This shift already has an active call-out request.",
 };
 
 function statusLabel(status: string) {
@@ -58,6 +67,18 @@ function statusTone(status: string) {
     return "warning" as const;
   }
   return "neutral" as const;
+}
+
+function calloutReason(code: string) {
+  const labels: Record<string, string> = {
+    ILLNESS: "Illness / sick",
+    FAMILY_EMERGENCY: "Family emergency",
+    TRANSPORTATION: "Transportation issue",
+    SCHOOL: "School conflict",
+    PERSONAL_EMERGENCY: "Personal emergency",
+    OTHER: "Other",
+  };
+  return labels[code] ?? code;
 }
 
 function shiftDate(date: string) {
@@ -82,6 +103,10 @@ export default async function ExchangePage({
     reviewed?: string;
     approved?: string;
     cancelled?: string;
+    calloutSubmitted?: string;
+    calloutApproved?: string;
+    calloutDenied?: string;
+    calloutCancelled?: string;
     tab?: string;
   }>;
 }) {
@@ -90,18 +115,34 @@ export default async function ExchangePage({
   const today = currentDateInPuertoRico();
   const params = await searchParams;
 
-  const [myShifts, openCoverage, incomingSwaps, activity, managerPending] =
-    await Promise.all([
-      listEmployeePublishedShifts(session.id, today),
-      listOpenCoverage(session.id, today),
-      listIncomingSwaps(session.id),
-      listEmployeeExchangeActivity(session.id),
-      manager ? listManagerPendingExchanges() : Promise.resolve([]),
-    ]);
+  const [
+    myShifts,
+    openCoverage,
+    incomingSwaps,
+    activity,
+    managerPending,
+    myCallouts,
+    managerCallouts,
+  ] = await Promise.all([
+    listEmployeePublishedShifts(session.id, today),
+    listOpenCoverage(session.id, today),
+    listIncomingSwaps(session.id),
+    listEmployeeExchangeActivity(session.id),
+    manager ? listManagerPendingExchanges() : Promise.resolve([]),
+    listEmployeeCallouts(session.id),
+    manager ? listPendingCallouts() : Promise.resolve([]),
+  ]);
 
   const validTabs = ["my", "coverage", "requests", "history"];
   const activeTab = validTabs.includes(params.tab ?? "") ? params.tab! : "my";
-  const requestCount = incomingSwaps.length + managerPending.length;
+  const myPendingCallouts = myCallouts.filter(
+    (callout) => callout.status === "PENDING",
+  );
+  const requestCount =
+    incomingSwaps.length +
+    managerPending.length +
+    managerCallouts.length +
+    myPendingCallouts.length;
 
   const successMessage =
     params.offered
@@ -120,14 +161,22 @@ export default async function ExchangePage({
                   ? "The exchange was reviewed."
                   : params.cancelled
                     ? "The exchange request was cancelled."
-                    : undefined;
+                    : params.calloutSubmitted
+                      ? "Call-out submitted for manager review."
+                      : params.calloutApproved
+                        ? "Call-out approved. The shift is now open for coverage."
+                        : params.calloutDenied
+                          ? "The call-out request was declined."
+                          : params.calloutCancelled
+                            ? "The pending call-out was cancelled."
+                            : undefined;
 
   return (
     <div className="exchange-page">
       <PageHeader
         eyebrow="Schedule flexibility"
         title="Shift Exchange"
-        description="Offer a shift, find coverage, or trade with a coworker."
+        description="Offer a shift, find coverage, trade with a coworker, or report that you are unable to work."
       />
 
       {params.error ? (
@@ -180,7 +229,7 @@ export default async function ExchangePage({
               <div>
                 <p className="eyebrow">My upcoming shifts</p>
                 <h2>My shifts</h2>
-                <p>Select an upcoming shift to offer for coverage or trade.</p>
+                <p>Offer it, trade it, or submit an unable-to-work request.</p>
               </div>
             </div>
 
@@ -195,7 +244,13 @@ export default async function ExchangePage({
                     <div className="exchange-shift-time">
                       <strong>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</strong>
                     </div>
-                    <div className="exchange-shift-actions">
+                    <div className="exchange-shift-actions three-actions">
+                      <Link
+                        className="button danger-button"
+                        href={`/app/exchange/callout?shiftId=${shift.id}`}
+                      >
+                        Unable to work
+                      </Link>
                       <form action={offerCoverageAction}>
                         <input type="hidden" name="sourceShiftId" value={shift.id} />
                         <button className="button secondary" type="submit">Offer</button>
@@ -265,6 +320,102 @@ export default async function ExchangePage({
 
         {activeTab === "requests" ? (
           <div className="exchange-requests-view">
+            {managerCallouts.length ? (
+              <section className="exchange-request-section">
+                <div className="exchange-section-heading">
+                  <div>
+                    <p className="eyebrow">Call-outs</p>
+                    <h2>Unable-to-work requests</h2>
+                  </div>
+                  <StatusPill tone="warning">
+                    {managerCallouts.length} pending
+                  </StatusPill>
+                </div>
+
+                <div className="exchange-request-cards">
+                  {managerCallouts.map((callout) => (
+                    <article className="panel exchange-request-card" key={callout.id}>
+                      <div className="exchange-request-copy">
+                        <span className="exchange-request-kind">Call-out request</span>
+                        <h3>{callout.employeeName}</h3>
+                        <p>
+                          {shiftDate(callout.date)} · {formatTime(callout.startTime)} – {formatTime(callout.endTime)}
+                        </p>
+                        <span>{callout.locationName}</span>
+                        <p className="exchange-secondary-shift">
+                          {calloutReason(callout.reasonCode)}
+                          {callout.reasonNote ? ` · ${callout.reasonNote}` : ""}
+                        </p>
+                      </div>
+
+                      <form action={reviewCalloutAction} className="exchange-request-actions">
+                        <input type="hidden" name="calloutId" value={callout.id} />
+                        <button
+                          className="button secondary"
+                          name="decision"
+                          value="DENIED"
+                          type="submit"
+                        >
+                          Decline
+                        </button>
+                        <button
+                          className="button primary"
+                          name="decision"
+                          value="APPROVED"
+                          type="submit"
+                        >
+                          Approve & Open Coverage
+                        </button>
+                      </form>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {myCallouts.length ? (
+              <section className="exchange-request-section">
+                <div className="exchange-section-heading">
+                  <div>
+                    <p className="eyebrow">My call-outs</p>
+                    <h2>Unable-to-work requests</h2>
+                  </div>
+                </div>
+
+                <div className="exchange-request-cards">
+                  {myCallouts.slice(0, 6).map((callout) => (
+                    <article className="panel exchange-request-card" key={callout.id}>
+                      <div className="exchange-request-copy">
+                        <span className="exchange-request-kind">
+                          {calloutReason(callout.reasonCode)}
+                        </span>
+                        <h3>
+                          {shiftDate(callout.date)} · {formatTime(callout.startTime)} – {formatTime(callout.endTime)}
+                        </h3>
+                        <p>{callout.locationName}</p>
+                        {callout.reasonNote ? (
+                          <p className="exchange-secondary-shift">{callout.reasonNote}</p>
+                        ) : null}
+                      </div>
+
+                      <div className="callout-status-row">
+                        <StatusPill tone={statusTone(callout.status)}>
+                          {statusLabel(callout.status)}
+                        </StatusPill>
+                        {callout.status === "PENDING" ? (
+                          <form action={cancelCalloutAction}>
+                            <input type="hidden" name="calloutId" value={callout.id} />
+                            <button className="text-button danger" type="submit">
+                              Cancel request
+                            </button>
+                          </form>
+                        ) : null}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
             {managerPending.length ? (
               <section className="exchange-request-section">
                 <div className="exchange-section-heading">
@@ -359,7 +510,7 @@ export default async function ExchangePage({
                 <div className="exchange-focused-empty">
                   <span className="exchange-empty-mark" aria-hidden="true">✓</span>
                   <strong>No requests need your attention</strong>
-                  <span>Coverage approvals and swap requests will appear here.</span>
+                  <span>Call-outs, coverage approvals, and swap requests will appear here.</span>
                 </div>
               </article>
             ) : null}

@@ -2753,3 +2753,607 @@ button { cursor: pointer; }
     justify-content: space-between;
   }
 }
+
+
+.shift-lead-checkbox {
+  margin-top: 2px;
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fbf8f3;
+  align-items: flex-start;
+}
+
+.shift-lead-checkbox > span {
+  display: grid;
+  gap: 2px;
+}
+
+.shift-lead-checkbox small {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.staffing-setting-card {
+  flex-wrap: wrap;
+}
+
+.staffing-lead-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.staffing-lead-toggle input {
+  width: 16px;
+  min-height: 16px;
+  margin: 0;
+}
+
+
+
+/* Scheduling assistance */
+.schedule-health-metrics {
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+}
+
+.schedule-deadline-strip,
+.schedule-ack-bar {
+  min-height: 68px;
+  margin: 12px 0;
+  padding: 11px 13px 11px 16px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #fbf8f3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.schedule-deadline-strip > div,
+.schedule-ack-bar > div {
+  display: grid;
+  gap: 3px;
+}
+
+.schedule-deadline-strip strong,
+.schedule-ack-bar strong {
+  font-size: 13px;
+}
+
+.schedule-deadline-strip span,
+.schedule-ack-bar span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.schedule-deadline-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.schedule-deadline-form input {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0 10px;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.schedule-ack-bar {
+  background: var(--soft-amber);
+  border-color: #ead4ad;
+}
+
+.schedule-ack-bar.acknowledged {
+  background: var(--soft-green);
+  border-color: #cfe2d5;
+}
+
+.availability-deadline-banner {
+  min-height: 68px;
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border: 1px solid #ead4ad;
+  border-radius: 15px;
+  background: var(--soft-amber);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.availability-deadline-banner.locked {
+  background: #eee8e2;
+  border-color: var(--line);
+}
+
+.availability-deadline-banner > div {
+  display: grid;
+  gap: 3px;
+}
+
+.availability-deadline-banner strong {
+  font-size: 13px;
+}
+
+.availability-deadline-banner span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.callout-layout {
+  align-items: start;
+}
+
+.callout-shift-summary {
+  display: grid;
+  gap: 7px;
+}
+
+.callout-warning {
+  margin-top: 13px;
+  padding: 12px 13px;
+  border-radius: 12px;
+  background: var(--soft-amber);
+  display: grid;
+  gap: 4px;
+}
+
+.callout-warning strong {
+  font-size: 12px;
+}
+
+.callout-warning span {
+  color: var(--amber);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.employee-form textarea {
+  width: 100%;
+  min-height: 88px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-strong);
+  padding: 11px 12px;
+  color: var(--ink);
+  outline: none;
+  resize: vertical;
+  font: inherit;
+  font-size: 13px;
+}
+
+.employee-form textarea:focus {
+  border-color: var(--caramel);
+  box-shadow: 0 0 0 3px rgba(197, 139, 85, .12);
+}
+
+.exchange-shift-actions.three-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.callout-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.health-issue-actions {
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+}
+
+.health-find-link {
+  color: var(--coffee);
+  font-size: 9.5px;
+  font-weight: 850;
+}
+
+.health-find-link:hover {
+  text-decoration: underline;
+}
+
+.coverage-suggestions-page .page-description {
+  max-width: 760px;
+}
+
+.suggestion-explainer {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.suggestion-explainer > div {
+  display: grid;
+  gap: 4px;
+}
+
+.suggestion-explainer strong {
+  font-size: 13px;
+}
+
+.suggestion-explainer span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.suggestion-list {
+  padding: 0 18px;
+}
+
+.suggestion-row {
+  min-height: 78px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 34px minmax(180px, 1fr) minmax(135px, .65fr) 80px auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.suggestion-row:first-child {
+  border-top: 0;
+}
+
+.suggestion-rank {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--soft-caramel);
+  color: var(--coffee-dark);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.suggestion-person,
+.suggestion-hours,
+.suggestion-history {
+  display: grid;
+  gap: 3px;
+}
+
+.suggestion-person strong,
+.suggestion-hours strong,
+.suggestion-history strong {
+  font-size: 12px;
+}
+
+.suggestion-person span,
+.suggestion-hours span,
+.suggestion-history span {
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.suggestion-history {
+  text-align: center;
+}
+
+.template-layout {
+  align-items: start;
+}
+
+.template-save-panel,
+.template-list-panel {
+  min-height: 240px;
+}
+
+.template-save-panel h2 {
+  margin: 4px 0 5px;
+  font-size: 20px;
+}
+
+.template-save-panel .employee-form {
+  margin-top: 18px;
+}
+
+.template-list {
+  display: grid;
+}
+
+.template-row {
+  min-height: 68px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.template-row:first-child {
+  border-top: 0;
+}
+
+.template-row > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.template-row strong {
+  font-size: 13px;
+}
+
+.template-row span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.template-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.coverage-window-form {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1.2fr .9fr .8fr .8fr 1.2fr auto;
+  align-items: end;
+  gap: 9px;
+}
+
+.coverage-window-form label {
+  display: grid;
+  gap: 5px;
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.coverage-window-form label > span {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.coverage-window-form input,
+.coverage-window-form select {
+  min-height: 39px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0 9px;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.coverage-window-list {
+  display: grid;
+}
+
+.coverage-window-row {
+  min-height: 60px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.coverage-window-row:first-child {
+  border-top: 0;
+}
+
+.coverage-window-row > div {
+  display: grid;
+  gap: 3px;
+}
+
+.coverage-window-row strong {
+  font-size: 12px;
+}
+
+.coverage-window-row span {
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.compact-rule-empty {
+  min-height: 110px;
+}
+
+.publish-readiness-panel {
+  margin: 12px 0;
+  padding: 17px;
+  border: 1px solid #ead4ad;
+  border-radius: 17px;
+  background: #fff9ef;
+  box-shadow: 0 9px 26px rgba(59, 42, 29, .05);
+}
+
+.publish-readiness-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.publish-readiness-heading h2 {
+  margin: 4px 0;
+  font-size: 20px;
+  letter-spacing: -.03em;
+}
+
+.publish-readiness-heading p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.publish-readiness-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.publish-readiness-grid > div {
+  min-height: 74px;
+  padding: 11px 12px;
+  border: 1px solid #eadfc9;
+  border-radius: 12px;
+  background: rgba(255,255,255,.55);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 10px;
+}
+
+.publish-readiness-grid span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.publish-readiness-grid strong {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 22px;
+}
+
+.publish-readiness-grid small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.publish-readiness-actions {
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px solid #eadfc9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .coverage-window-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .coverage-window-form .button {
+    width: 100%;
+  }
+
+  .suggestion-row {
+    grid-template-columns: 34px 1fr auto;
+  }
+
+  .suggestion-hours,
+  .suggestion-history {
+    grid-column: 2;
+  }
+
+  .suggestion-row > .button {
+    grid-column: 3;
+    grid-row: 1 / span 3;
+  }
+}
+
+@media (max-width: 760px) {
+  .schedule-deadline-strip,
+  .schedule-ack-bar,
+  .availability-deadline-banner,
+  .suggestion-explainer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .schedule-deadline-form {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-deadline-form .button,
+  .availability-deadline-banner .button {
+    width: 100%;
+  }
+
+  .exchange-shift-actions.three-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .callout-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .suggestion-row {
+    grid-template-columns: 30px 1fr;
+    gap: 10px;
+  }
+
+  .suggestion-hours,
+  .suggestion-history {
+    grid-column: 2;
+  }
+
+  .suggestion-row > .button {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    width: 100%;
+  }
+
+  .template-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .coverage-window-form {
+    grid-template-columns: 1fr 1fr;
+    padding: 13px 14px;
+  }
+
+  .coverage-window-form label:first-child,
+  .coverage-window-form label:nth-child(5),
+  .coverage-window-form .button {
+    grid-column: 1 / -1;
+  }
+
+  .coverage-window-row {
+    padding: 11px 14px;
+  }
+
+  .publish-readiness-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .publish-readiness-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .publish-readiness-actions .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .coverage-window-form,
+  .publish-readiness-grid,
+  .publish-readiness-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .template-actions {
+    flex-direction: column;
+  }
+}

@@ -213,6 +213,13 @@ export async function listEmployeePublishedShifts(
          WHERE (x.source_shift_id = sh.id OR x.target_shift_id = sh.id)
            AND x.status IN ('OPEN', 'EMPLOYEE_PENDING', 'MANAGER_PENDING')
        )
+       AND NOT EXISTS (
+         SELECT 1
+         FROM shift_callouts c
+         WHERE c.shift_id = sh.id
+           AND c.employee_id = sh.employee_id
+           AND c.status IN ('PENDING', 'APPROVED')
+       )
      ORDER BY sh.date, sh.start_time`,
     [employeeId, fromDate],
     ),

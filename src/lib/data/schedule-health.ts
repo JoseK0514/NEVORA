@@ -1,9 +1,20 @@
+import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 
 export type LocationStaffingSetting = {
   locationId: string;
   locationName: string;
   minimumStaffPerShift: number;
+  requiresDesignatedLead: boolean;
+};
+
+export type CoverageWindow = {
+  id: string;
+  locationId: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  minimumStaff?: number;
 };
 
 export type EmployeeHourTarget = {
@@ -21,7 +32,8 @@ export async function listLocationStaffingSettings(): Promise<LocationStaffingSe
       `SELECT
          l.id AS location_id,
          l.short_name AS location_name,
-         COALESCE(s.minimum_staff_per_shift, 1) AS minimum_staff_per_shift
+         COALESCE(s.minimum_staff_per_shift, 1) AS minimum_staff_per_shift,
+         COALESCE(s.requires_designated_lead, true) AS requires_designated_lead
        FROM locations l
        LEFT JOIN location_staffing_settings s
          ON s.location_id = l.id
@@ -36,6 +48,7 @@ export async function listLocationStaffingSettings(): Promise<LocationStaffingSe
       locationId: String(item.location_id),
       locationName: String(item.location_name),
       minimumStaffPerShift: Number(item.minimum_staff_per_shift),
+      requiresDesignatedLead: Boolean(item.requires_designated_lead),
     };
   });
 }
@@ -85,6 +98,7 @@ export async function saveLocationStaffingSettings(
   settings: Array<{
     locationId: string;
     minimumStaffPerShift: number;
+    requiresDesignatedLead: boolean;
   }>,
 ) {
   const sql = getDb();
@@ -94,15 +108,18 @@ export async function saveLocationStaffingSettings(
       sql`INSERT INTO location_staffing_settings (
         location_id,
         minimum_staff_per_shift,
+        requires_designated_lead,
         updated_at
       ) VALUES (
         ${setting.locationId},
         ${setting.minimumStaffPerShift},
+        ${setting.requiresDesignatedLead},
         now()
       )
       ON CONFLICT (location_id)
       DO UPDATE SET
         minimum_staff_per_shift = EXCLUDED.minimum_staff_per_shift,
+        requires_designated_lead = EXCLUDED.requires_designated_lead,
         updated_at = now()`,
   );
 
@@ -139,4 +156,84 @@ export async function saveEmployeeHourTargets(
   if (queries.length) {
     await sql.transaction(queries);
   }
+}
+
+
+export async function listCoverageWindows(): Promise<CoverageWindow[]> {
+  const sql = getDb();
+  const rows = queryRows(
+    await sql.query(
+      `SELECT
+         id,
+         location_id,
+         day_of_week,
+         start_time,
+         end_time,
+         minimum_staff
+       FROM location_coverage_windows
+       ORDER BY location_id, day_of_week, start_time`,
+    ),
+  );
+
+  return rows.map((row) => {
+    const item = row as Record<string, unknown>;
+    return {
+      id: String(item.id),
+      locationId: String(item.location_id),
+      dayOfWeek: Number(item.day_of_week),
+      startTime: String(item.start_time).slice(0, 5),
+      endTime: String(item.end_time).slice(0, 5),
+      minimumStaff:
+        item.minimum_staff === null || item.minimum_staff === undefined
+          ? undefined
+          : Number(item.minimum_staff),
+    };
+  });
+}
+
+
+export async function createCoverageWindow(input: {
+  locationId: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  minimumStaff?: number;
+}) {
+  const sql = getDb();
+  const rows = queryRows<{ id: string }>(
+    await sql.query(
+      `INSERT INTO location_coverage_windows (
+         id,
+         location_id,
+         day_of_week,
+         start_time,
+         end_time,
+         minimum_staff
+       ) VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id`,
+      [
+        randomUUID(),
+        input.locationId,
+        input.dayOfWeek,
+        input.startTime,
+        input.endTime,
+        input.minimumStaff ?? null,
+      ],
+    ),
+  );
+
+  return rows[0]?.id ?? null;
+}
+
+export async function deleteCoverageWindow(windowId: string) {
+  const sql = getDb();
+  const rows = queryRows<{ id: string }>(
+    await sql.query(
+      `DELETE FROM location_coverage_windows
+       WHERE id = $1
+       RETURNING id`,
+      [windowId],
+    ),
+  );
+  return Boolean(rows[0]);
 }

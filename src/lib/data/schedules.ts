@@ -12,6 +12,8 @@ export type ScheduleShiftRow = {
   startTime: string;
   endTime: string;
   notes?: string;
+  isDesignatedLead: boolean;
+  isCalloutApproved: boolean;
   scheduleStatus: ScheduleStatus;
 };
 
@@ -65,6 +67,14 @@ export async function listWeekShifts({
          sh.start_time,
          sh.end_time,
          sh.notes,
+         sh.is_designated_lead,
+         EXISTS (
+           SELECT 1
+           FROM shift_callouts c
+           WHERE c.shift_id = sh.id
+             AND c.employee_id = sh.employee_id
+             AND c.status = 'APPROVED'
+         ) AS approved_callout,
          s.status AS schedule_status
        FROM shifts sh
        JOIN schedules s ON s.id = sh.schedule_id
@@ -87,6 +97,8 @@ export async function listWeekShifts({
       startTime: timeValue(item.start_time),
       endTime: timeValue(item.end_time),
       notes: item.notes ? String(item.notes) : undefined,
+      isDesignatedLead: Boolean(item.is_designated_lead),
+      isCalloutApproved: Boolean(item.approved_callout),
       scheduleStatus: item.schedule_status as ScheduleStatus,
     };
   });
@@ -130,6 +142,7 @@ export async function getShiftValidationContext({
       sql.query(
         `SELECT
            e.active,
+           e.role,
            COALESCE(
              array_agg(elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL),
              ARRAY[]::text[]
@@ -137,7 +150,7 @@ export async function getShiftValidationContext({
          FROM employees e
          LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id
          WHERE e.id = $1
-         GROUP BY e.id, e.active`,
+         GROUP BY e.id, e.active, e.role`,
         [employeeId],
       ),
       sql.query(
@@ -155,10 +168,20 @@ export async function getShiftValidationContext({
         [employeeId, date],
       ),
       sql.query(
-        `SELECT day_of_week, start_time, end_time
+        `WITH weekly AS (
+           SELECT day_of_week, start_time, end_time
+           FROM weekly_availability_windows
+           WHERE employee_id = $1
+             AND week_start = $2
+         )
+         SELECT day_of_week, start_time, end_time
+         FROM weekly
+         UNION ALL
+         SELECT day_of_week, start_time, end_time
          FROM availability_windows
-         WHERE employee_id = $1`,
-        [employeeId],
+         WHERE employee_id = $1
+           AND NOT EXISTS (SELECT 1 FROM weekly)`,
+        [employeeId, weekStart],
       ),
       sql.query(
         `SELECT start_date, end_date, start_time, end_time
@@ -189,7 +212,11 @@ export async function getShiftValidationContext({
   const weeklyRows = queryRows(weeklyRowsRaw);
 
   const employee = employeeRows[0] as
-    | { active: boolean; eligible_location_ids: string[] | null }
+    | {
+        active: boolean;
+        role: UserRole;
+        eligible_location_ids: string[] | null;
+      }
     | undefined;
 
   if (!employee) return null;
@@ -197,6 +224,7 @@ export async function getShiftValidationContext({
   return {
     employee: {
       active: employee.active,
+      role: employee.role,
       eligibleLocationIds: employee.eligible_location_ids ?? [],
     },
     existingShifts: shiftRows.map((row) => {
@@ -266,14 +294,16 @@ export async function insertShift(input: {
   startTime: string;
   endTime: string;
   notes?: string;
+  isDesignatedLead?: boolean;
 }) {
   const sql = getDb();
   const id = randomUUID();
 
   await sql.query(
     `INSERT INTO shifts (
-       id, schedule_id, employee_id, date, start_time, end_time, notes
-     ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+       id, schedule_id, employee_id, date, start_time, end_time, notes,
+       is_designated_lead
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
     [
       id,
       input.scheduleId,
@@ -282,6 +312,7 @@ export async function insertShift(input: {
       input.startTime,
       input.endTime,
       input.notes ?? null,
+      input.isDesignatedLead ?? false,
     ],
   );
 
@@ -342,6 +373,7 @@ export async function getShiftForManagement(
          sh.start_time,
          sh.end_time,
          sh.notes,
+         sh.is_designated_lead,
          s.status AS schedule_status
        FROM shifts sh
        JOIN schedules s ON s.id = sh.schedule_id
@@ -366,6 +398,7 @@ export async function getShiftForManagement(
     startTime: timeValue(item.start_time),
     endTime: timeValue(item.end_time),
     notes: item.notes ? String(item.notes) : undefined,
+    isDesignatedLead: Boolean(item.is_designated_lead),
     scheduleStatus: item.schedule_status as ScheduleStatus,
   };
 }
@@ -377,6 +410,7 @@ export async function updateShift(input: {
   startTime: string;
   endTime: string;
   notes?: string;
+  isDesignatedLead?: boolean;
 }) {
   const sql = getDb();
   const rows = queryRows(
@@ -387,6 +421,7 @@ export async function updateShift(input: {
            start_time = $4,
            end_time = $5,
            notes = $6,
+           is_designated_lead = $7,
            updated_at = now()
        WHERE id = $1
        RETURNING id`,
@@ -397,6 +432,7 @@ export async function updateShift(input: {
         input.startTime,
         input.endTime,
         input.notes ?? null,
+        input.isDesignatedLead ?? false,
       ],
     ),
   );

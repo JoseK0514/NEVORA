@@ -5,6 +5,7 @@ import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
+  listCoverageWindows,
   listEmployeeHourTargets,
   listLocationStaffingSettings,
 } from "@/lib/data/schedule-health";
@@ -15,6 +16,8 @@ import {
 import {
   addDays,
   currentDateInPuertoRico,
+  formatPuertoRicoDateTime,
+  formatPuertoRicoDateTimeInput,
   durationMinutes,
   formatDayLabel,
   formatTime,
@@ -26,10 +29,19 @@ import {
   calculateScheduleHealth,
   type HourBalance,
 } from "@/lib/scheduling/schedule-health";
+import { buildPublishReadiness } from "@/lib/scheduling/publish-readiness";
 import {
   copyPreviousWeekAction,
   publishScheduleAction,
+  setAvailabilityDeadlineAction,
 } from "@/app/app/schedule/actions";
+import { getWeekSettings } from "@/lib/data/week-settings";
+import { listHourFairness } from "@/lib/data/hour-fairness";
+import {
+  getAcknowledgementSummary,
+  hasAcknowledgedScheduleWeek,
+} from "@/lib/data/acknowledgements";
+import { acknowledgeScheduleAction } from "@/app/app/schedule/acknowledge-actions";
 
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_SHIFT: "The shift information is incomplete or outside this week.",
@@ -39,6 +51,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   APPROVED_TIME_OFF: "That employee has approved time off during the selected shift.",
   EMPLOYEE_INACTIVE: "Inactive employees cannot be scheduled.",
   INVALID_TIME_RANGE: "Shift end time must be after the start time.",
+  INVALID_SHIFT_LEAD:
+    "Only an Owner, Manager, or Lead can be the designated shift lead.",
   INVALID_PUBLISH: "The schedule could not be published.",
   NO_SCHEDULE: "There is no schedule to publish for that location yet.",
   SHIFT_HAS_EXCHANGE_HISTORY:
@@ -85,6 +99,9 @@ export default async function SchedulePage({
     copied?: string;
     skipped?: string;
     copyWarnings?: string;
+    deadlineSaved?: string;
+    acknowledged?: string;
+    publishCheck?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -101,6 +118,11 @@ export default async function SchedulePage({
     employees,
     staffingSettings,
     employeeTargets,
+    coverageWindows,
+    weekSettings,
+    acknowledgementSummary,
+    employeeAcknowledged,
+    fairnessHistory,
   ] = await Promise.all([
     listLocations(),
     listWeekShifts({
@@ -112,6 +134,15 @@ export default async function SchedulePage({
     manager ? listEmployees() : Promise.resolve([]),
     manager ? listLocationStaffingSettings() : Promise.resolve([]),
     manager ? listEmployeeHourTargets() : Promise.resolve([]),
+    manager ? listCoverageWindows() : Promise.resolve([]),
+    manager ? getWeekSettings(weekStart) : Promise.resolve(null),
+    manager
+      ? getAcknowledgementSummary(weekStart)
+      : Promise.resolve({ scheduledEmployees: 0, acknowledgedEmployees: 0 }),
+    !manager
+      ? hasAcknowledgedScheduleWeek(weekStart, session.id)
+      : Promise.resolve(false),
+    manager ? listHourFairness(weekStart) : Promise.resolve([]),
   ]);
 
   const requestedLocation = params.location ?? "";
@@ -129,6 +160,8 @@ export default async function SchedulePage({
   const nextWeek = addDays(weekStart, 7);
 
   if (!manager) {
+    const hasPublishedShifts = allShifts.length > 0;
+
     return (
       <>
         <PageHeader
@@ -152,6 +185,37 @@ export default async function SchedulePage({
             </div>
           }
         />
+
+        {params.acknowledged ? (
+          <p className="form-success">Schedule acknowledged.</p>
+        ) : null}
+
+        {hasPublishedShifts ? (
+          <section className={employeeAcknowledged ? "schedule-ack-bar acknowledged" : "schedule-ack-bar"}>
+            <div>
+              <strong>
+                {employeeAcknowledged
+                  ? "Schedule acknowledged"
+                  : "Please acknowledge this schedule"}
+              </strong>
+              <span>
+                {employeeAcknowledged
+                  ? "Management can see that you reviewed this published week."
+                  : "Confirm that you have reviewed your published shifts."}
+              </span>
+            </div>
+            {!employeeAcknowledged ? (
+              <form action={acknowledgeScheduleAction}>
+                <input type="hidden" name="weekStart" value={weekStart} />
+                <button className="button primary" type="submit">
+                  Acknowledge Schedule
+                </button>
+              </form>
+            ) : (
+              <StatusPill tone="success">Acknowledged</StatusPill>
+            )}
+          </section>
+        ) : null}
 
         <section className="schedule-mobile employee-week">
           {dates.map((date) => {
@@ -182,6 +246,8 @@ export default async function SchedulePage({
                               (location) => location.id === shift.locationId,
                             )?.shortName
                           }
+                          {shift.isDesignatedLead ? " · Lead" : ""}
+                          {shift.isCalloutApproved ? " · Call-out approved" : ""}
                         </span>
                       </div>
                     </div>
@@ -198,29 +264,35 @@ export default async function SchedulePage({
   }
 
   const activeEmployees = employees.filter((employee) => employee.active);
+  const effectiveShifts = allShifts.filter((shift) => !shift.isCalloutApproved);
   const targetMap = new Map(
     employeeTargets.map((target) => [target.employeeId, target.targetWeeklyHours]),
   );
 
   const health = calculateScheduleHealth({
-    shifts: allShifts.map((shift) => ({
+    shifts: effectiveShifts.map((shift) => ({
       id: shift.id,
       employeeId: shift.employeeId,
       locationId: shift.locationId,
       date: shift.date,
       startTime: shift.startTime,
       endTime: shift.endTime,
+      employeeName: shift.employeeName,
+      isDesignatedLead: shift.isDesignatedLead,
     })),
     locations: staffingSettings.map((setting) => ({
       id: setting.locationId,
       name: setting.locationName,
       minimumStaffPerShift: setting.minimumStaffPerShift,
+      requiresDesignatedLead: setting.requiresDesignatedLead,
     })),
     employees: activeEmployees.map((employee) => ({
       id: employee.id,
       name: `${employee.firstName} ${employee.lastName}`,
       targetWeeklyHours: targetMap.get(employee.id),
     })),
+    coverageWindows,
+    weekDates: dates,
   });
 
   const coverageGaps = health.coverageBlocks.filter((block) => !block.covered);
@@ -235,6 +307,23 @@ export default async function SchedulePage({
   );
   const configuredTargetCount =
     activeEmployees.length - health.unconfiguredTargetCount;
+  const publishLocation =
+    params.publishCheck &&
+    locations.some((location) => location.id === params.publishCheck)
+      ? params.publishCheck
+      : undefined;
+  const publishReadiness = publishLocation
+    ? buildPublishReadiness({
+        locationId: publishLocation,
+        locationCoverage: health.locationCoverage,
+        underTargetCount: health.underTargetCount,
+        overTargetCount: health.overTargetCount,
+        unconfiguredTargetCount: health.unconfiguredTargetCount,
+      })
+    : undefined;
+  const fairnessMap = new Map(
+    fairnessHistory.map((item) => [item.employeeId, item.priorUnderTargetWeeks]),
+  );
 
   return (
     <>
@@ -255,6 +344,12 @@ export default async function SchedulePage({
               href={`/app/schedule?week=${nextWeek}`}
             >
               Next
+            </Link>
+            <Link
+              className="button secondary"
+              href={`/app/schedule/templates?week=${weekStart}`}
+            >
+              Templates
             </Link>
             <form action={copyPreviousWeekAction}>
               <input type="hidden" name="weekStart" value={weekStart} />
@@ -292,6 +387,9 @@ export default async function SchedulePage({
       ) : null}
       {params.updated ? <p className="form-success">Shift updated.</p> : null}
       {params.deleted ? <p className="form-success">Shift deleted.</p> : null}
+      {params.deadlineSaved ? (
+        <p className="form-success">Availability deadline updated.</p>
+      ) : null}
       {params.copied !== undefined ? (
         <p
           className={
@@ -328,6 +426,33 @@ export default async function SchedulePage({
           ))}
         </div>
       </div>
+
+      <section className="schedule-deadline-strip">
+        <div>
+          <p className="eyebrow">Availability cutoff</p>
+          <strong>
+            {weekSettings?.availabilityDeadline
+              ? formatPuertoRicoDateTime(weekSettings.availabilityDeadline)
+              : "No deadline set"}
+          </strong>
+          <span>
+            Weekly availability is frozen for this schedule once the cutoff passes.
+          </span>
+        </div>
+        <form action={setAvailabilityDeadlineAction} className="schedule-deadline-form">
+          <input type="hidden" name="weekStart" value={weekStart} />
+          <input
+            type="datetime-local"
+            name="availabilityDeadline"
+            defaultValue={formatPuertoRicoDateTimeInput(
+              weekSettings?.availabilityDeadline,
+            )}
+          />
+          <button className="button secondary" type="submit">
+            {weekSettings?.availabilityDeadline ? "Update Deadline" : "Set Deadline"}
+          </button>
+        </form>
+      </section>
 
       <section className="schedule-health-panel">
         <div className="schedule-health-heading">
@@ -390,6 +515,22 @@ export default async function SchedulePage({
               {health.unconfiguredTargetCount
                 ? `${health.unconfiguredTargetCount} not configured`
                 : "All active employees configured"}
+            </small>
+          </article>
+          <article className="schedule-health-metric">
+            <span>Acknowledged</span>
+            <strong>
+              {acknowledgementSummary.scheduledEmployees
+                ? `${acknowledgementSummary.acknowledgedEmployees}/${acknowledgementSummary.scheduledEmployees}`
+                : "—"}
+            </strong>
+            <small>
+              {acknowledgementSummary.scheduledEmployees
+                ? acknowledgementSummary.acknowledgedEmployees ===
+                  acknowledgementSummary.scheduledEmployees
+                  ? "Everyone has reviewed the published week"
+                  : `${acknowledgementSummary.scheduledEmployees - acknowledgementSummary.acknowledgedEmployees} still need to acknowledge`
+                : "Appears after publishing"}
             </small>
           </article>
         </div>
@@ -456,12 +597,31 @@ export default async function SchedulePage({
                           </strong>
                           <span>
                             {formatTime(block.startTime)} – {formatTime(block.endTime)}
+                            {block.leadNames.length
+                              ? ` · Lead: ${block.leadNames.join(", ")}`
+                              : block.requiresLead
+                                ? " · No lead assigned"
+                                : ""}
                           </span>
                         </div>
+                        <div className="health-issue-actions">
                         <span className="health-gap">
-                          {block.assignedStaff}/{block.requiredStaff} · Need {block.gap}
+                          {block.gap
+                            ? `${block.assignedStaff}/${block.requiredStaff} · Need ${block.gap}`
+                            : block.requiresLead && !block.leadCovered
+                              ? "Lead missing"
+                              : "Review"}
                         </span>
+                        {block.gap ? (
+                          <Link
+                            className="health-find-link"
+                            href={`/app/schedule/coverage?week=${weekStart}&date=${block.date}&locationId=${block.locationId}&start=${block.startTime}&end=${block.endTime}`}
+                          >
+                            Find employee
+                          </Link>
+                        ) : null}
                       </div>
+                    </div>
                     );
                   })}
                   {coverageGaps.length > 8 ? (
@@ -498,6 +658,9 @@ export default async function SchedulePage({
                         <strong>{balance.employeeName}</strong>
                         <span>
                           {balance.scheduledHours}h scheduled · {balance.targetHours}h target
+                          {(fairnessMap.get(balance.employeeId) ?? 0) > 0
+                            ? ` · ${fairnessMap.get(balance.employeeId)} prior week${fairnessMap.get(balance.employeeId) === 1 ? "" : "s"} short`
+                            : ""}
                         </span>
                       </div>
                       <span
@@ -527,6 +690,65 @@ export default async function SchedulePage({
           </div>
         )}
       </section>
+
+      {publishLocation && publishReadiness ? (
+        <section className="publish-readiness-panel">
+          <div className="publish-readiness-heading">
+            <div>
+              <p className="eyebrow">Publish check</p>
+              <h2>Review before publishing {publishReadiness.locationName}</h2>
+              <p>
+                You can still publish, but these items deserve an intentional review.
+              </p>
+            </div>
+            <StatusPill tone="warning">Needs review</StatusPill>
+          </div>
+
+          <div className="publish-readiness-grid">
+            <div>
+              <span>Coverage gaps</span>
+              <strong>{publishReadiness.coverageGaps}</strong>
+              <small>
+                {publishReadiness.missingLeadBlocks
+                  ? `${publishReadiness.missingLeadBlocks} include missing lead coverage`
+                  : "Headcount / lead coverage review"}
+              </small>
+            </div>
+            <div>
+              <span>Below target</span>
+              <strong>{publishReadiness.underTargetCount}</strong>
+              <small>Employees who may need more hours</small>
+            </div>
+            <div>
+              <span>Above target</span>
+              <strong>{publishReadiness.overTargetCount}</strong>
+              <small>Employees with extra scheduled hours</small>
+            </div>
+            <div>
+              <span>Targets missing</span>
+              <strong>{publishReadiness.unconfiguredTargetCount}</strong>
+              <small>Employees not included in hour checks</small>
+            </div>
+          </div>
+
+          <div className="publish-readiness-actions">
+            <Link
+              className="button secondary"
+              href={`/app/schedule?week=${weekStart}`}
+            >
+              Back to Schedule
+            </Link>
+            <form action={publishScheduleAction}>
+              <input type="hidden" name="weekStart" value={weekStart} />
+              <input type="hidden" name="locationId" value={publishLocation} />
+              <input type="hidden" name="confirmWarnings" value="yes" />
+              <button className="button primary" type="submit">
+                Publish Anyway
+              </button>
+            </form>
+          </div>
+        </section>
+      ) : null}
 
       <section className="publish-strip">
         {locations.map((location) => {
@@ -594,7 +816,7 @@ export default async function SchedulePage({
         </div>
 
         {activeEmployees.map((employee) => {
-          const employeeWeekShifts = allShifts.filter(
+          const employeeWeekShifts = effectiveShifts.filter(
             (shift) => shift.employeeId === employee.id,
           );
           const weeklyMinutes = employeeWeekShifts.reduce(
@@ -707,6 +929,7 @@ export default async function SchedulePage({
                             (location) => location.id === shift.locationId,
                           )?.shortName
                         }
+                        {shift.isDesignatedLead ? " · Lead" : ""}
                       </span>
                     </div>
                     <b>

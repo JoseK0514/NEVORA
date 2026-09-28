@@ -25,6 +25,7 @@ export type AvailabilityWindow = {
   dayOfWeek: number;
   startTime: string;
   endTime: string;
+  isDesignatedLead?: boolean;
 };
 
 export type ScheduleStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";

@@ -7,7 +7,10 @@ import {
   clearAvailability,
   type AvailabilityState,
 } from "@/lib/availability-presets";
-import { saveAvailabilityAction } from "@/app/app/availability/actions";
+import {
+  saveAvailabilityAction,
+  saveWeeklyAvailabilityAction,
+} from "@/app/app/availability/actions";
 
 const WEEKDAYS = [
   { dayOfWeek: 1, label: "Monday" },
@@ -24,8 +27,12 @@ const WEEKEND = [
 
 export function AvailabilityEditor({
   initialAvailability,
+  weekStart,
+  locked = false,
 }: {
   initialAvailability: AvailabilityState;
+  weekStart?: string;
+  locked?: boolean;
 }) {
   const [availability, setAvailability] = useState(initialAvailability);
 
@@ -71,6 +78,7 @@ export function AvailabilityEditor({
             type="checkbox"
             name={`available-${day.dayOfWeek}`}
             checked={value.available}
+            disabled={locked}
             onChange={(event) =>
               updateDay(day.dayOfWeek, { available: event.target.checked })
             }
@@ -91,6 +99,7 @@ export function AvailabilityEditor({
                 type="time"
                 name={`start-${day.dayOfWeek}`}
                 value={value.startTime}
+                disabled={locked}
                 onChange={(event) =>
                   updateDay(day.dayOfWeek, { startTime: event.target.value })
                 }
@@ -105,6 +114,7 @@ export function AvailabilityEditor({
                 type="time"
                 name={`end-${day.dayOfWeek}`}
                 value={value.endTime}
+                disabled={locked}
                 onChange={(event) =>
                   updateDay(day.dayOfWeek, { endTime: event.target.value })
                 }
@@ -120,8 +130,13 @@ export function AvailabilityEditor({
     );
   }
 
+  const formAction = weekStart
+    ? saveWeeklyAvailabilityAction
+    : saveAvailabilityAction;
+
   return (
-    <form action={saveAvailabilityAction} className="availability-workspace">
+    <form action={formAction} className="availability-workspace">
+      {weekStart ? <input type="hidden" name="weekStart" value={weekStart} /> : null}
       <section className="availability-quickbar" aria-label="Quick availability setup">
         <div>
           <p className="eyebrow">Quick setup</p>
@@ -131,6 +146,7 @@ export function AvailabilityEditor({
           <button
             type="button"
             className="button secondary compact-button"
+            disabled={locked}
             onClick={() => setAvailability((current) => applyWeekdays(current))}
           >
             Apply Mon–Fri
@@ -138,6 +154,7 @@ export function AvailabilityEditor({
           <button
             type="button"
             className="button secondary compact-button"
+            disabled={locked}
             onClick={() => setAvailability((current) => applyAllDays(current))}
           >
             Apply Every Day
@@ -145,6 +162,7 @@ export function AvailabilityEditor({
           <button
             type="button"
             className="text-button availability-clear"
+            disabled={locked}
             onClick={() => setAvailability((current) => clearAvailability(current))}
           >
             Clear All
@@ -172,23 +190,37 @@ export function AvailabilityEditor({
 
       <div className="availability-savebar">
         <div>
-          <strong>{dirty ? "Unsaved changes" : "Availability up to date"}</strong>
+          <strong>
+            {locked
+              ? "Availability locked"
+              : dirty
+                ? "Unsaved changes"
+                : "Availability up to date"}
+          </strong>
           <span>
-            {dirty
-              ? "Save when your weekly availability looks right."
-              : "Changes will be used for future scheduling checks."}
+            {locked
+              ? "The deadline for this schedule week has passed."
+              : dirty
+                ? "Save when your availability looks right."
+                : weekStart
+                  ? "This weekly submission is used for the selected schedule."
+                  : "Changes will be used as your normal scheduling baseline."}
           </span>
         </div>
         <div className="availability-save-actions">
           <button
             className="button secondary"
             type="button"
-            disabled={!dirty}
+            disabled={locked || !dirty}
             onClick={() => setAvailability(initialAvailability)}
           >
             Reset
           </button>
-          <button className="button primary" type="submit" disabled={!dirty}>
+          <button
+            className="button primary"
+            type="submit"
+            disabled={locked || !dirty}
+          >
             Save Availability
           </button>
         </div>

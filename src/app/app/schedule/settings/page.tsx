@@ -3,23 +3,35 @@ import { PageHeader } from "@/components/page-header";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
 import {
+  listCoverageWindows,
   listEmployeeHourTargets,
   listLocationStaffingSettings,
 } from "@/lib/data/schedule-health";
-import { saveScheduleHealthSettingsAction } from "@/app/app/schedule/settings/actions";
+import {
+  addCoverageWindowAction,
+  deleteCoverageWindowAction,
+  saveScheduleHealthSettingsAction,
+} from "@/app/app/schedule/settings/actions";
+import { formatTime } from "@/lib/date-utils";
 
 export default async function ScheduleSettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; saved?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    saved?: string;
+    windowSaved?: string;
+    windowDeleted?: string;
+  }>;
 }) {
   await requireRoles(MANAGER_ROLES);
   const params = await searchParams;
 
-  const [staffing, employees, locations] = await Promise.all([
+  const [staffing, employees, locations, coverageWindows] = await Promise.all([
     listLocationStaffingSettings(),
     listEmployeeHourTargets(),
     listLocations(),
+    listCoverageWindows(),
   ]);
 
   return (
@@ -39,12 +51,22 @@ export default async function ScheduleSettingsPage({
         <p className="form-error">
           {params.error === "invalid_staffing"
             ? "Staffing requirements must be whole numbers between 1 and 100."
-            : "Weekly hour targets must be between 0 and 168 hours."}
+            : params.error === "invalid_hours"
+              ? "Weekly hour targets must be between 0 and 168 hours."
+              : params.error === "duplicate_window"
+                ? "That coverage window already exists."
+                : "Enter a valid day, time range, and optional staffing override."}
         </p>
       ) : null}
 
       {params.saved ? (
         <p className="form-success">Schedule health settings updated.</p>
+      ) : null}
+      {params.windowSaved ? (
+        <p className="form-success">Coverage window added.</p>
+      ) : null}
+      {params.windowDeleted ? (
+        <p className="form-success">Coverage window removed.</p>
       ) : null}
 
       <form action={saveScheduleHealthSettingsAction} className="schedule-settings-form">
@@ -54,8 +76,8 @@ export default async function ScheduleSettingsPage({
               <p className="eyebrow">Coverage</p>
               <h2>Staff required per shift</h2>
               <p>
-                Employees working the same location, date, start time, and end time
-                count toward the same shift block.
+                Coverage is calculated across actual overlapping shift times. You can also
+                require a designated lead to be present during covered periods.
               </p>
             </div>
           </div>
@@ -76,8 +98,125 @@ export default async function ScheduleSettingsPage({
                   />
                   <small>employees</small>
                 </strong>
+                <span className="staffing-lead-toggle">
+                  <input
+                    type="checkbox"
+                    name={`lead-${location.locationId}`}
+                    defaultChecked={location.requiresDesignatedLead}
+                  />
+                  <span>Designated lead required</span>
+                </span>
               </label>
             ))}
+          </div>
+        </section>
+
+        <section className="panel schedule-rule-panel">
+          <div className="schedule-rule-heading">
+            <div>
+              <p className="eyebrow">Coverage windows</p>
+              <h2>Expected shift periods</h2>
+              <p>
+                These recurring windows let Schedule Health detect a completely
+                missing shift, including periods with zero employees scheduled.
+              </p>
+            </div>
+          </div>
+
+          <form action={addCoverageWindowAction} className="coverage-window-form">
+            <label>
+              Location
+              <select name="locationId" required defaultValue={locations[0]?.id}>
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.shortName}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Day
+              <select name="dayOfWeek" defaultValue="1" required>
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+                <option value="0">Sunday</option>
+              </select>
+            </label>
+            <label>
+              Start
+              <input type="time" name="startTime" required />
+            </label>
+            <label>
+              End
+              <input type="time" name="endTime" required />
+            </label>
+            <label>
+              Staff override <span>Optional</span>
+              <input
+                type="number"
+                name="minimumStaff"
+                min={1}
+                max={100}
+                step={1}
+                placeholder="Use location default"
+              />
+            </label>
+            <button className="button secondary" type="submit">
+              Add Window
+            </button>
+          </form>
+
+          <div className="coverage-window-list">
+            {coverageWindows.length ? (
+              coverageWindows.map((window) => {
+                const location = locations.find(
+                  (item) => item.id === window.locationId,
+                );
+                const dayNames = [
+                  "Sunday",
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                ];
+
+                return (
+                  <div className="coverage-window-row" key={window.id}>
+                    <div>
+                      <strong>
+                        {location?.shortName ?? window.locationId} ·{" "}
+                        {dayNames[window.dayOfWeek]}
+                      </strong>
+                      <span>
+                        {formatTime(window.startTime)} – {formatTime(window.endTime)}
+                        {window.minimumStaff
+                          ? ` · ${window.minimumStaff} staff`
+                          : " · location default"}
+                      </span>
+                    </div>
+                    <form action={deleteCoverageWindowAction}>
+                      <input type="hidden" name="windowId" value={window.id} />
+                      <button className="text-button danger" type="submit">
+                        Remove
+                      </button>
+                    </form>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="empty-state compact-rule-empty">
+                <strong>No coverage windows yet.</strong>
+                <span>
+                  Add the recurring shift periods management expects each week.
+                </span>
+              </div>
+            )}
           </div>
         </section>
 

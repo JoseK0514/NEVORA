@@ -7,8 +7,18 @@ import {
 } from "./schedule-health";
 
 const locations: HealthLocation[] = [
-  { id: "loc-1", name: "FUEL - 2", minimumStaffPerShift: 2 },
-  { id: "loc-2", name: "FUEL - 110", minimumStaffPerShift: 6 },
+  {
+    id: "loc-1",
+    name: "FUEL - 2",
+    minimumStaffPerShift: 2,
+    requiresDesignatedLead: true,
+  },
+  {
+    id: "loc-2",
+    name: "FUEL - 110",
+    minimumStaffPerShift: 6,
+    requiresDesignatedLead: true,
+  },
 ];
 
 const employees: HealthEmployee[] = [
@@ -18,42 +28,149 @@ const employees: HealthEmployee[] = [
 ];
 
 describe("calculateScheduleHealth", () => {
-  it("marks a shift block covered when assigned staff meets the location target", () => {
+  it("counts overlapping shifts across time instead of requiring identical shift times", () => {
     const shifts: HealthShift[] = [
-      { id: "1", employeeId: "E-1", locationId: "loc-1", date: "2026-09-28", startTime: "06:00", endTime: "14:00" },
-      { id: "2", employeeId: "E-2", locationId: "loc-1", date: "2026-09-28", startTime: "06:00", endTime: "14:00" },
+      {
+        id: "1",
+        employeeId: "E-1",
+        employeeName: "Ana",
+        locationId: "loc-1",
+        date: "2026-09-28",
+        startTime: "06:00",
+        endTime: "14:00",
+        isDesignatedLead: true,
+      },
+      {
+        id: "2",
+        employeeId: "E-2",
+        employeeName: "Luis",
+        locationId: "loc-1",
+        date: "2026-09-28",
+        startTime: "08:00",
+        endTime: "16:00",
+      },
+    ];
+
+    const health = calculateScheduleHealth({ shifts, locations, employees });
+
+    expect(health.coverageBlocks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          startTime: "06:00",
+          endTime: "08:00",
+          assignedStaff: 1,
+          gap: 1,
+          covered: false,
+        }),
+        expect.objectContaining({
+          startTime: "08:00",
+          endTime: "14:00",
+          assignedStaff: 2,
+          gap: 0,
+          leadCovered: true,
+          leadNames: ["Ana"],
+          covered: true,
+        }),
+        expect.objectContaining({
+          startTime: "14:00",
+          endTime: "16:00",
+          assignedStaff: 1,
+          gap: 1,
+          covered: false,
+        }),
+      ]),
+    );
+  });
+
+  it("marks a fully staffed period not ready when no designated lead is present", () => {
+    const shifts: HealthShift[] = [
+      {
+        id: "1",
+        employeeId: "E-1",
+        employeeName: "Ana",
+        locationId: "loc-1",
+        date: "2026-09-28",
+        startTime: "06:00",
+        endTime: "14:00",
+      },
+      {
+        id: "2",
+        employeeId: "E-2",
+        employeeName: "Luis",
+        locationId: "loc-1",
+        date: "2026-09-28",
+        startTime: "06:00",
+        endTime: "14:00",
+      },
     ];
 
     const health = calculateScheduleHealth({ shifts, locations, employees });
 
     expect(health.coverageBlocks[0]).toMatchObject({
-      locationId: "loc-1",
       assignedStaff: 2,
-      requiredStaff: 2,
       gap: 0,
-      covered: true,
+      staffCovered: true,
+      leadCovered: false,
+      covered: false,
     });
+    expect(health.coverageSummary.missingLeadBlocks).toBe(1);
   });
 
-  it("shows exactly how many employees are missing from an understaffed shift block", () => {
-    const shifts: HealthShift[] = Array.from({ length: 5 }, (_, index) => ({
-      id: String(index + 1),
-      employeeId: `E-${index + 1}`,
-      locationId: "loc-2",
-      date: "2026-09-28",
-      startTime: "06:00",
-      endTime: "14:00",
-    }));
+  it("reports the designated lead name for a covered period", () => {
+    const shifts: HealthShift[] = [
+      {
+        id: "1",
+        employeeId: "E-1",
+        employeeName: "Ana",
+        locationId: "loc-1",
+        date: "2026-09-28",
+        startTime: "06:00",
+        endTime: "14:00",
+        isDesignatedLead: true,
+      },
+      {
+        id: "2",
+        employeeId: "E-2",
+        employeeName: "Luis",
+        locationId: "loc-1",
+        date: "2026-09-28",
+        startTime: "06:00",
+        endTime: "14:00",
+      },
+    ];
 
     const health = calculateScheduleHealth({ shifts, locations, employees });
 
     expect(health.coverageBlocks[0]).toMatchObject({
-      assignedStaff: 5,
+      covered: true,
+      leadCovered: true,
+      leadNames: ["Ana"],
+    });
+  });
+
+  it("detects a completely empty required coverage window", () => {
+    const health = calculateScheduleHealth({
+      shifts: [],
+      locations,
+      employees,
+      coverageWindows: [
+        {
+          locationId: "loc-2",
+          dayOfWeek: 1,
+          startTime: "06:00",
+          endTime: "14:00",
+        },
+      ],
+      weekDates: ["2026-09-28"],
+    });
+
+    expect(health.coverageBlocks[0]).toMatchObject({
+      locationId: "loc-2",
+      assignedStaff: 0,
       requiredStaff: 6,
-      gap: 1,
+      gap: 6,
       covered: false,
     });
-    expect(health.coverageSummary.uncoveredBlocks).toBe(1);
   });
 
   it("flags employees below target hours including employees with no scheduled hours", () => {
@@ -104,11 +221,29 @@ describe("calculateScheduleHealth", () => {
     expect(health.unconfiguredTargetCount).toBe(1);
   });
 
-  it("summarizes coverage by location so management can see when a store is fully covered", () => {
+  it("summarizes readiness by location across time segments", () => {
     const shifts: HealthShift[] = [
-      { id: "1", employeeId: "A", locationId: "loc-1", date: "2026-09-28", startTime: "06:00", endTime: "14:00" },
+      {
+        id: "1",
+        employeeId: "A",
+        employeeName: "Lead",
+        locationId: "loc-1",
+        date: "2026-09-28",
+        startTime: "06:00",
+        endTime: "14:00",
+        isDesignatedLead: true,
+      },
       { id: "2", employeeId: "B", locationId: "loc-1", date: "2026-09-28", startTime: "06:00", endTime: "14:00" },
-      { id: "3", employeeId: "A", locationId: "loc-1", date: "2026-09-28", startTime: "14:00", endTime: "22:00" },
+      {
+        id: "3",
+        employeeId: "A",
+        employeeName: "Lead",
+        locationId: "loc-1",
+        date: "2026-09-28",
+        startTime: "14:00",
+        endTime: "22:00",
+        isDesignatedLead: true,
+      },
     ];
 
     const health = calculateScheduleHealth({ shifts, locations, employees: [] });

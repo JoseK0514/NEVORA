@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
+  createCoverageWindow,
+  deleteCoverageWindow,
   listEmployeeHourTargets,
   listLocationStaffingSettings,
   saveEmployeeHourTargets,
@@ -28,6 +30,8 @@ export async function saveScheduleHealthSettingsAction(formData: FormData) {
     return {
       locationId: location.locationId,
       minimumStaffPerShift: value,
+      requiresDesignatedLead:
+        formData.get(`lead-${location.locationId}`) === "on",
     };
   });
 
@@ -61,4 +65,62 @@ export async function saveScheduleHealthSettingsAction(formData: FormData) {
   revalidatePath("/app/schedule");
   revalidatePath("/app/schedule/settings");
   redirect("/app/schedule/settings?saved=1");
+}
+
+
+export async function addCoverageWindowAction(formData: FormData) {
+  await requireRoles(MANAGER_ROLES);
+
+  const locationId = String(formData.get("locationId") ?? "");
+  const dayOfWeek = Number(formData.get("dayOfWeek"));
+  const startTime = String(formData.get("startTime") ?? "");
+  const endTime = String(formData.get("endTime") ?? "");
+  const minimumRaw = String(formData.get("minimumStaff") ?? "").trim();
+  const minimumStaff = minimumRaw ? Number(minimumRaw) : undefined;
+
+  if (
+    !locationId ||
+    !Number.isInteger(dayOfWeek) ||
+    dayOfWeek < 0 ||
+    dayOfWeek > 6 ||
+    !/^\d{2}:\d{2}$/.test(startTime) ||
+    !/^\d{2}:\d{2}$/.test(endTime) ||
+    startTime >= endTime ||
+    (minimumStaff !== undefined &&
+      (!Number.isInteger(minimumStaff) ||
+        minimumStaff < 1 ||
+        minimumStaff > 100))
+  ) {
+    redirect("/app/schedule/settings?error=invalid_window");
+  }
+
+  try {
+    await createCoverageWindow({
+      locationId,
+      dayOfWeek,
+      startTime,
+      endTime,
+      minimumStaff,
+    });
+  } catch {
+    redirect("/app/schedule/settings?error=duplicate_window");
+  }
+
+  revalidatePath("/app/schedule");
+  revalidatePath("/app/schedule/settings");
+  redirect("/app/schedule/settings?windowSaved=1");
+}
+
+export async function deleteCoverageWindowAction(formData: FormData) {
+  await requireRoles(MANAGER_ROLES);
+  const windowId = String(formData.get("windowId") ?? "");
+
+  if (!windowId) {
+    redirect("/app/schedule/settings?error=invalid_window");
+  }
+
+  await deleteCoverageWindow(windowId);
+  revalidatePath("/app/schedule");
+  revalidatePath("/app/schedule/settings");
+  redirect("/app/schedule/settings?windowDeleted=1");
 }

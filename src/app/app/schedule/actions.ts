@@ -4,6 +4,17 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { addDays, isDateInWeek } from "@/lib/date-utils";
+import { setAvailabilityDeadline } from "@/lib/data/week-settings";
+import { clearWeekAcknowledgements } from "@/lib/data/acknowledgements";
+import { listEmployees } from "@/lib/data/employees";
+import {
+  listCoverageWindows,
+  listEmployeeHourTargets,
+  listLocationStaffingSettings,
+} from "@/lib/data/schedule-health";
+import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
+import { buildPublishReadiness } from "@/lib/scheduling/publish-readiness";
+import { weekDates } from "@/lib/date-utils";
 import {
   deleteShift,
   ensureSchedule,
@@ -32,6 +43,7 @@ export async function createShiftAction(formData: FormData) {
   const startTime = String(formData.get("startTime") ?? "");
   const endTime = String(formData.get("endTime") ?? "");
   const notes = String(formData.get("notes") ?? "").trim();
+  const isDesignatedLead = formData.get("isDesignatedLead") === "on";
 
   if (
     !weekStart ||
@@ -53,6 +65,13 @@ export async function createShiftAction(formData: FormData) {
 
   if (!context) {
     redirect(scheduleUrl(weekStart, "&error=EMPLOYEE_NOT_FOUND"));
+  }
+
+  if (
+    isDesignatedLead &&
+    !["OWNER", "MANAGER", "LEAD"].includes(context.employee.role)
+  ) {
+    redirect(scheduleUrl(weekStart, "&error=INVALID_SHIFT_LEAD"));
   }
 
   const validation = validateShift({
@@ -85,8 +104,10 @@ export async function createShiftAction(formData: FormData) {
     startTime,
     endTime,
     notes: notes || undefined,
+    isDesignatedLead,
   });
 
+  await clearWeekAcknowledgements(weekStart);
   revalidatePath("/app/schedule");
 
   const warning = validation.issues.find((issue) => issue.severity === "warning");
@@ -102,9 +123,70 @@ export async function publishScheduleAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const weekStart = String(formData.get("weekStart") ?? "");
   const locationId = String(formData.get("locationId") ?? "");
+  const confirmWarnings = formData.get("confirmWarnings") === "yes";
 
   if (!weekStart || !locationId) {
     redirect("/app/schedule?error=INVALID_PUBLISH");
+  }
+
+  if (!confirmWarnings) {
+    const [shifts, employees, staffing, targets, coverageWindows] =
+      await Promise.all([
+        listWeekShifts({ weekStart }),
+        listEmployees(),
+        listLocationStaffingSettings(),
+        listEmployeeHourTargets(),
+        listCoverageWindows(),
+      ]);
+
+    const targetMap = new Map(
+      targets.map((target) => [target.employeeId, target.targetWeeklyHours]),
+    );
+    const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
+    const health = calculateScheduleHealth({
+      shifts: effectiveShifts.map((shift) => ({
+        id: shift.id,
+        employeeId: shift.employeeId,
+        employeeName: shift.employeeName,
+        locationId: shift.locationId,
+        date: shift.date,
+        startTime: shift.startTime,
+        endTime: shift.endTime,
+        isDesignatedLead: shift.isDesignatedLead,
+      })),
+      locations: staffing.map((setting) => ({
+        id: setting.locationId,
+        name: setting.locationName,
+        minimumStaffPerShift: setting.minimumStaffPerShift,
+        requiresDesignatedLead: setting.requiresDesignatedLead,
+      })),
+      employees: employees
+        .filter((employee) => employee.active)
+        .map((employee) => ({
+          id: employee.id,
+          name: `${employee.firstName} ${employee.lastName}`,
+          targetWeeklyHours: targetMap.get(employee.id),
+        })),
+      coverageWindows,
+      weekDates: weekDates(weekStart),
+    });
+
+    const readiness = buildPublishReadiness({
+      locationId,
+      locationCoverage: health.locationCoverage,
+      underTargetCount: health.underTargetCount,
+      overTargetCount: health.overTargetCount,
+      unconfiguredTargetCount: health.unconfiguredTargetCount,
+    });
+
+    if (readiness.hasWarnings) {
+      redirect(
+        scheduleUrl(
+          weekStart,
+          `&publishCheck=${encodeURIComponent(locationId)}`,
+        ),
+      );
+    }
   }
 
   const published = await publishSchedule({
@@ -112,6 +194,10 @@ export async function publishScheduleAction(formData: FormData) {
     weekStart,
     managerId: session.id,
   });
+
+  if (published) {
+    await clearWeekAcknowledgements(weekStart);
+  }
 
   revalidatePath("/app/schedule");
   redirect(
@@ -134,6 +220,7 @@ export async function updateShiftAction(formData: FormData) {
   const startTime = String(formData.get("startTime") ?? "");
   const endTime = String(formData.get("endTime") ?? "");
   const notes = String(formData.get("notes") ?? "").trim();
+  const isDesignatedLead = formData.get("isDesignatedLead") === "on";
 
   const existing = await getShiftForManagement(shiftId);
 
@@ -156,6 +243,17 @@ export async function updateShiftAction(formData: FormData) {
 
   if (!context) {
     redirect(scheduleUrl(existing.weekStart, "&error=EMPLOYEE_NOT_FOUND"));
+  }
+
+  if (
+    isDesignatedLead &&
+    !["OWNER", "MANAGER", "LEAD"].includes(context.employee.role)
+  ) {
+    redirect(
+      `/app/schedule/edit?shiftId=${encodeURIComponent(
+        shiftId,
+      )}&error=INVALID_SHIFT_LEAD`,
+    );
   }
 
   const adjusted =
@@ -205,12 +303,14 @@ export async function updateShiftAction(formData: FormData) {
     startTime,
     endTime,
     notes: notes || undefined,
+    isDesignatedLead,
   });
 
   if (!updated) {
     redirect(scheduleUrl(existing.weekStart, "&error=INVALID_SHIFT"));
   }
 
+  await clearWeekAcknowledgements(existing.weekStart);
   revalidatePath("/app/schedule");
   const warning = validation.issues.find((issue) => issue.severity === "warning");
 
@@ -239,6 +339,7 @@ export async function deleteShiftAction(formData: FormData) {
     );
   }
 
+  await clearWeekAcknowledgements(existing.weekStart);
   revalidatePath("/app/schedule");
   redirect(scheduleUrl(existing.weekStart, "&deleted=1"));
 }
@@ -306,6 +407,7 @@ export async function copyPreviousWeekAction(formData: FormData) {
       startTime: shift.startTime,
       endTime: shift.endTime,
       notes: shift.notes,
+      isDesignatedLead: shift.isDesignatedLead,
     });
 
     copied += 1;
@@ -315,6 +417,10 @@ export async function copyPreviousWeekAction(formData: FormData) {
     }
   }
 
+  if (copied > 0) {
+    await clearWeekAcknowledgements(targetWeekStart);
+  }
+
   revalidatePath("/app/schedule");
   redirect(
     scheduleUrl(
@@ -322,4 +428,42 @@ export async function copyPreviousWeekAction(formData: FormData) {
       `&copied=${copied}&skipped=${skipped}&copyWarnings=${warnings}`,
     ),
   );
+}
+
+
+export async function setAvailabilityDeadlineAction(formData: FormData) {
+  const session = await requireRoles(MANAGER_ROLES);
+  const weekStart = String(formData.get("weekStart") ?? "");
+  const deadlineLocal = String(formData.get("availabilityDeadline") ?? "").trim();
+
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(weekStart) ||
+    !isDateInWeek(weekStart, weekStart)
+  ) {
+    redirect("/app/schedule?error=INVALID_SHIFT");
+  }
+
+  let deadlineIso: string | undefined;
+
+  if (deadlineLocal) {
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(deadlineLocal)) {
+      redirect(scheduleUrl(weekStart, "&error=INVALID_DEADLINE"));
+    }
+
+    const parsed = new Date(`${deadlineLocal}:00-04:00`);
+    if (Number.isNaN(parsed.getTime())) {
+      redirect(scheduleUrl(weekStart, "&error=INVALID_DEADLINE"));
+    }
+    deadlineIso = parsed.toISOString();
+  }
+
+  await setAvailabilityDeadline({
+    weekStart,
+    deadlineIso,
+    updatedBy: session.id,
+  });
+
+  revalidatePath("/app/schedule");
+  revalidatePath("/app/availability");
+  redirect(scheduleUrl(weekStart, "&deadlineSaved=1"));
 }

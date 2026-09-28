@@ -87,3 +87,36 @@ export function durationMinutes(startTime: string, endTime: string) {
 
   return Math.max(0, toMinutes(endTime) - toMinutes(startTime));
 }
+
+
+export function formatPuertoRicoDateTimeInput(iso?: string) {
+  if (!iso) return "";
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Puerto_Rico",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(iso));
+
+  const values = Object.fromEntries(
+    parts
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value]),
+  );
+
+  return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}`;
+}
+
+export function formatPuertoRicoDateTime(iso: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Puerto_Rico",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(iso));
+}

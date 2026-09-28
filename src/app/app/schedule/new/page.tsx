@@ -17,6 +17,8 @@ export default async function NewShiftPage({
     date?: string;
     employeeId?: string;
     locationId?: string;
+    start?: string;
+    end?: string;
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
@@ -89,13 +91,31 @@ export default async function NewShiftPage({
           <div className="form-columns">
             <label>
               Start
-              <input type="time" name="startTime" required />
+              <input
+                type="time"
+                name="startTime"
+                defaultValue={params.start ?? ""}
+                required
+              />
             </label>
             <label>
               End
-              <input type="time" name="endTime" required />
+              <input
+                type="time"
+                name="endTime"
+                defaultValue={params.end ?? ""}
+                required
+              />
             </label>
           </div>
+
+          <label className="checkbox-row shift-lead-checkbox">
+            <input type="checkbox" name="isDesignatedLead" />
+            <span>
+              Designated lead for this shift
+              <small>Only Owner, Manager, or Lead roles can be assigned.</small>
+            </span>
+          </label>
 
           <div className="form-footer">
             <Link className="button secondary" href={`/app/schedule?week=${weekStart}`}>
