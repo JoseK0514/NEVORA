@@ -1,0 +1,125 @@
+export type NotificationEvent = {
+  employeeId: string;
+  type: string;
+  title: string;
+  body: string;
+  actionHref?: string;
+  eventKey: string;
+};
+
+function eventKey(...parts: string[]) {
+  return parts.join(":");
+}
+
+export function buildSchedulePublicationNotification(input: {
+  employeeId: string;
+  revisionId: string;
+  firstPublication: boolean;
+  changed: boolean;
+}): NotificationEvent | null {
+  if (!input.firstPublication && !input.changed) {
+    return null;
+  }
+
+  const changed = !input.firstPublication;
+
+  return {
+    employeeId: input.employeeId,
+    type: changed ? "SCHEDULE_CHANGED" : "SCHEDULE_PUBLISHED",
+    title: changed ? "Schedule updated" : "Schedule published",
+    body: changed
+      ? "Your published schedule changed. Review your latest shifts."
+      : "Your schedule is ready to review and acknowledge.",
+    actionHref: "/app/schedule",
+    eventKey: eventKey("schedule", input.revisionId, input.employeeId),
+  };
+}
+
+export function buildTimeOffOutcomeNotification(input: {
+  employeeId: string;
+  requestId: string;
+  status: "APPROVED" | "DENIED";
+}): NotificationEvent {
+  const approved = input.status === "APPROVED";
+
+  return {
+    employeeId: input.employeeId,
+    type: approved ? "TIME_OFF_APPROVED" : "TIME_OFF_DENIED",
+    title: approved ? "Time off approved" : "Time off declined",
+    body: approved
+      ? "Your time-off request was approved."
+      : "Your time-off request was declined. Review the request for details.",
+    actionHref: "/app/requests?tab=my",
+    eventKey: eventKey(
+      "time-off",
+      input.requestId,
+      input.status,
+      input.employeeId,
+    ),
+  };
+}
+
+export function buildCalloutOutcomeNotification(input: {
+  employeeId: string;
+  calloutId: string;
+  status: "APPROVED" | "DENIED";
+}): NotificationEvent {
+  const approved = input.status === "APPROVED";
+
+  return {
+    employeeId: input.employeeId,
+    type: approved ? "CALLOUT_APPROVED" : "CALLOUT_DENIED",
+    title: approved ? "Call-out approved" : "Call-out declined",
+    body: approved
+      ? "Your unable-to-work request was approved and coverage is open."
+      : "Your unable-to-work request was declined.",
+    actionHref: "/app/exchange?tab=requests",
+    eventKey: eventKey(
+      "callout",
+      input.calloutId,
+      input.status,
+      input.employeeId,
+    ),
+  };
+}
+
+export function buildSwapResponseRequestedNotification(input: {
+  employeeId: string;
+  exchangeId: string;
+  requesterName: string;
+}): NotificationEvent {
+  return {
+    employeeId: input.employeeId,
+    type: "SWAP_RESPONSE_REQUIRED",
+    title: "Shift swap request",
+    body: `${input.requesterName} asked to trade shifts with you.`,
+    actionHref: "/app/exchange?tab=requests",
+    eventKey: eventKey("swap-response", input.exchangeId, input.employeeId),
+  };
+}
+
+export function buildExchangeOutcomeNotification(input: {
+  employeeId: string;
+  exchangeId: string;
+  status: "APPROVED" | "DENIED";
+  kind: "COVERAGE" | "SWAP";
+}): NotificationEvent {
+  const approved = input.status === "APPROVED";
+  const noun = input.kind === "SWAP" ? "Swap" : "Coverage request";
+
+  return {
+    employeeId: input.employeeId,
+    type: `${input.kind}_${input.status}`,
+    title: `${noun} ${approved ? "approved" : "declined"}`,
+    body: approved
+      ? `Your ${noun.toLowerCase()} was approved.`
+      : `Your ${noun.toLowerCase()} was declined.`,
+    actionHref: "/app/exchange?tab=history",
+    eventKey: eventKey(
+      "exchange",
+      input.exchangeId,
+      input.status,
+      input.employeeId,
+    ),
+  };
+}
