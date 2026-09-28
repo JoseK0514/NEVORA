@@ -72,10 +72,6 @@ export async function submitCalloutAction(formData: FormData) {
     redirect("/app/exchange?tab=my&error=CALLOUT_EXISTS");
   }
 
-  if (decision === "APPROVED") {
-    await clearWeekAcknowledgements(callout.weekStart);
-  }
-
   revalidatePath("/app/exchange");
   revalidatePath("/app/schedule");
   redirect("/app/exchange?tab=requests&calloutSubmitted=1");
@@ -109,6 +105,10 @@ export async function reviewCalloutAction(formData: FormData) {
 
   if (!updated) {
     redirect("/app/exchange?tab=requests&error=EXCHANGE_CHANGED");
+  }
+
+  if (decision === "APPROVED") {
+    await clearWeekAcknowledgements(callout.weekStart);
   }
 
   revalidatePath("/app/exchange");
