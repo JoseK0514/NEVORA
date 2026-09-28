@@ -108,9 +108,9 @@ export default async function ExchangePage({
   return (
     <>
       <PageHeader
-        eyebrow="Employee self-service"
+        eyebrow="Schedule flexibility"
         title="Shift Exchange"
-        description="Offer a shift or request a direct swap. Nobody's published schedule changes until management approves it."
+        description="Offer coverage or trade shifts without changing the published schedule until everyone involved and management approve."
       />
 
       {params.error ? (
@@ -120,20 +120,43 @@ export default async function ExchangePage({
       ) : null}
       {successMessage ? <p className="form-success">{successMessage}</p> : null}
 
-      {manager ? (
-        <section className="manager-request-section">
-          <div className="section-heading">
+      <section className="exchange-summary-bar" aria-label="Shift exchange overview">
+        {manager ? (
+          <div className="exchange-summary-item">
+            <span>Manager approvals</span>
+            <strong>{managerPending.length}</strong>
+            <small>{managerPending.length ? "Needs review" : "All clear"}</small>
+          </div>
+        ) : null}
+        <div className="exchange-summary-item">
+          <span>My eligible shifts</span>
+          <strong>{myShifts.length}</strong>
+          <small>Available to offer or swap</small>
+        </div>
+        <div className="exchange-summary-item">
+          <span>Open coverage</span>
+          <strong>{openCoverage.length}</strong>
+          <small>Available from the team</small>
+        </div>
+        <div className="exchange-summary-item">
+          <span>Swap requests</span>
+          <strong>{incomingSwaps.length}</strong>
+          <small>{incomingSwaps.length ? "Waiting on you" : "Nothing waiting"}</small>
+        </div>
+      </section>
+
+      {manager && managerPending.length ? (
+        <section className="exchange-priority-section">
+          <div className="section-heading compact-heading">
             <div>
               <p className="eyebrow">Manager approval</p>
-              <h2>Exchange requests waiting on you</h2>
+              <h2>Needs your review</h2>
             </div>
-            <StatusPill tone={managerPending.length ? "warning" : "success"}>
-              {managerPending.length} pending
-            </StatusPill>
+            <StatusPill tone="warning">{managerPending.length} pending</StatusPill>
           </div>
 
           <div className="request-review-grid">
-            {managerPending.length ? managerPending.map((exchange) => (
+            {managerPending.map((exchange) => (
               <article className="panel request-card" key={exchange.id}>
                 <div>
                   <p className="eyebrow">
@@ -164,101 +187,14 @@ export default async function ExchangePage({
                   </button>
                 </form>
               </article>
-            )) : (
-              <article className="panel empty-state">
-                <strong>No exchanges need manager approval.</strong>
-                <span>Claimed coverage and accepted swaps will appear here.</span>
-              </article>
-            )}
+            ))}
           </div>
         </section>
       ) : null}
 
-      <section className="exchange-section">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">My upcoming shifts</p>
-            <h2>Need to change a shift?</h2>
-          </div>
-        </div>
-
-        <div className="exchange-card-grid">
-          {myShifts.length ? myShifts.map((shift) => (
-            <article className="panel exchange-shift-card" key={shift.id}>
-              <div>
-                <p className="eyebrow">{shift.locationName}</p>
-                <h2>{shiftDate(shift.date)}</h2>
-                <p className="large-detail">
-                  {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
-                </p>
-              </div>
-              <p className="muted">
-                You stay responsible for this shift until an approved exchange changes the schedule.
-              </p>
-              <div className="exchange-actions">
-                <form action={offerCoverageAction}>
-                  <input type="hidden" name="sourceShiftId" value={shift.id} />
-                  <button className="button secondary" type="submit">Offer Shift</button>
-                </form>
-                <Link
-                  className="button primary"
-                  href={`/app/exchange/swap?sourceShiftId=${shift.id}`}
-                >
-                  Request Swap
-                </Link>
-              </div>
-            </article>
-          )) : (
-            <article className="panel empty-state">
-              <strong>No published shifts available to exchange.</strong>
-              <span>Only future published shifts can be offered or swapped.</span>
-            </article>
-          )}
-        </div>
-      </section>
-
-      <section className="exchange-section">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Coverage board</p>
-            <h2>Available shifts</h2>
-          </div>
-          <StatusPill tone={openCoverage.length ? "info" : "neutral"}>
-            {openCoverage.length} open
-          </StatusPill>
-        </div>
-
-        <div className="exchange-card-grid">
-          {openCoverage.length ? openCoverage.map((exchange) => (
-            <article className="panel exchange-shift-card" key={exchange.id}>
-              <div className="panel-heading">
-                <div>
-                  <p className="eyebrow">{exchange.sourceShift.locationName}</p>
-                  <h2>{shiftDate(exchange.sourceShift.date)}</h2>
-                </div>
-                <StatusPill tone="info">Open</StatusPill>
-              </div>
-              <p className="large-detail">
-                {formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}
-              </p>
-              <p className="muted">Offered by {exchange.requestedByName}</p>
-              <form action={claimCoverageAction}>
-                <input type="hidden" name="exchangeId" value={exchange.id} />
-                <button className="button primary full" type="submit">I Can Take This Shift</button>
-              </form>
-            </article>
-          )) : (
-            <article className="panel empty-state">
-              <strong>No open shifts right now.</strong>
-              <span>Shifts offered by other employees will appear here.</span>
-            </article>
-          )}
-        </div>
-      </section>
-
       {incomingSwaps.length ? (
-        <section className="exchange-section">
-          <div className="section-heading">
+        <section className="exchange-priority-section">
+          <div className="section-heading compact-heading">
             <div>
               <p className="eyebrow">Your response</p>
               <h2>Swap requests</h2>
@@ -266,7 +202,7 @@ export default async function ExchangePage({
             <StatusPill tone="warning">{incomingSwaps.length} waiting</StatusPill>
           </div>
 
-          <div className="exchange-card-grid">
+          <div className="request-review-grid">
             {incomingSwaps.map((exchange) => (
               <article className="panel request-card" key={exchange.id}>
                 <div>
@@ -294,50 +230,135 @@ export default async function ExchangePage({
         </section>
       ) : null}
 
-      <section className="exchange-section">
-        <div className="section-heading">
+      <section className="exchange-workspace">
+        <article className="panel exchange-pane">
+          <div className="exchange-pane-header">
+            <div>
+              <p className="eyebrow">My upcoming shifts</p>
+              <h2>Offer or trade a shift</h2>
+            </div>
+            <StatusPill>{myShifts.length}</StatusPill>
+          </div>
+
+          {myShifts.length ? (
+            <div className="exchange-compact-list">
+              {myShifts.map((shift) => (
+                <div className="exchange-compact-row" key={shift.id}>
+                  <div className="exchange-row-copy">
+                    <strong>{shiftDate(shift.date)}</strong>
+                    <span>
+                      {formatTime(shift.startTime)} – {formatTime(shift.endTime)} · {shift.locationName}
+                    </span>
+                  </div>
+                  <div className="exchange-row-actions">
+                    <form action={offerCoverageAction}>
+                      <input type="hidden" name="sourceShiftId" value={shift.id} />
+                      <button className="button secondary" type="submit">Offer</button>
+                    </form>
+                    <Link
+                      className="button primary"
+                      href={`/app/exchange/swap?sourceShiftId=${shift.id}`}
+                    >
+                      Swap
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="exchange-empty-inline">
+              <strong>No shifts available to exchange</strong>
+              <span>Future published shifts will appear here automatically.</span>
+            </div>
+          )}
+        </article>
+
+        <article className="panel exchange-pane">
+          <div className="exchange-pane-header">
+            <div>
+              <p className="eyebrow">Coverage board</p>
+              <h2>Available shifts</h2>
+            </div>
+            <StatusPill tone={openCoverage.length ? "info" : "neutral"}>
+              {openCoverage.length} open
+            </StatusPill>
+          </div>
+
+          {openCoverage.length ? (
+            <div className="exchange-compact-list">
+              {openCoverage.map((exchange) => (
+                <div className="exchange-compact-row" key={exchange.id}>
+                  <div className="exchange-row-copy">
+                    <strong>{shiftDate(exchange.sourceShift.date)}</strong>
+                    <span>
+                      {formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)} · {exchange.sourceShift.locationName}
+                    </span>
+                    <small>Offered by {exchange.requestedByName}</small>
+                  </div>
+                  <form action={claimCoverageAction}>
+                    <input type="hidden" name="exchangeId" value={exchange.id} />
+                    <button className="button primary" type="submit">Take Shift</button>
+                  </form>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="exchange-empty-inline">
+              <strong>No open shifts right now</strong>
+              <span>Team coverage requests will appear here when someone offers a shift.</span>
+            </div>
+          )}
+        </article>
+      </section>
+
+      <section className="exchange-history-section">
+        <div className="section-heading compact-heading">
           <div>
             <p className="eyebrow">History</p>
             <h2>My exchange activity</h2>
           </div>
         </div>
 
-        <article className="panel request-list">
-          {activity.length ? activity.map((exchange) => (
-            <div className="request-list-row" key={exchange.id}>
-              <div>
-                <strong>
-                  {exchange.kind === "COVERAGE" ? "Coverage" : "Swap"} · {shiftDate(exchange.sourceShift.date)}
-                </strong>
-                <span>
-                  {formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)} · {exchange.sourceShift.locationName}
-                </span>
-              </div>
-              <div className="activity-status">
-                <StatusPill
-                  tone={
-                    exchange.status === "APPROVED"
-                      ? "success"
-                      : ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status)
-                        ? "warning"
-                        : "neutral"
-                  }
-                >
-                  {statusLabel(exchange.status)}
-                </StatusPill>
-                {exchange.requestedByEmployeeId === session.id &&
-                ["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? (
-                  <form action={cancelExchangeAction}>
-                    <input type="hidden" name="exchangeId" value={exchange.id} />
-                    <button className="text-button danger" type="submit">Cancel</button>
-                  </form>
-                ) : null}
-              </div>
+        <article className="panel exchange-history-panel">
+          {activity.length ? (
+            <div className="request-list">
+              {activity.map((exchange) => (
+                <div className="request-list-row" key={exchange.id}>
+                  <div>
+                    <strong>
+                      {exchange.kind === "COVERAGE" ? "Coverage" : "Swap"} · {shiftDate(exchange.sourceShift.date)}
+                    </strong>
+                    <span>
+                      {formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)} · {exchange.sourceShift.locationName}
+                    </span>
+                  </div>
+                  <div className="activity-status">
+                    <StatusPill
+                      tone={
+                        exchange.status === "APPROVED"
+                          ? "success"
+                          : ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status)
+                            ? "warning"
+                            : "neutral"
+                      }
+                    >
+                      {statusLabel(exchange.status)}
+                    </StatusPill>
+                    {exchange.requestedByEmployeeId === session.id &&
+                    ["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? (
+                      <form action={cancelExchangeAction}>
+                        <input type="hidden" name="exchangeId" value={exchange.id} />
+                        <button className="text-button danger" type="submit">Cancel</button>
+                      </form>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
             </div>
-          )) : (
-            <div className="empty-state">
-              <strong>No exchange activity yet.</strong>
-              <span>Your coverage and swap requests will appear here.</span>
+          ) : (
+            <div className="exchange-empty-inline history-empty">
+              <strong>No exchange activity yet</strong>
+              <span>Your coverage and swap history will stay here once you start using it.</span>
             </div>
           )}
         </article>
