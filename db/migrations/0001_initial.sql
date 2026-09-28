@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS locations (
 
 INSERT INTO locations (id, name, short_name)
 VALUES
-  ('loc-1', 'Fuel Coffee Drive · Location 1', 'Location 1'),
-  ('loc-2', 'Fuel Coffee Drive · Location 2', 'Location 2')
+  ('loc-1', 'FUEL - 2', 'FUEL - 2'),
+  ('loc-2', 'FUEL - 110', 'FUEL - 110')
 ON CONFLICT (id) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS employees (
