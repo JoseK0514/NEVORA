@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/brand-mark";
 import { login } from "@/app/login/actions";
 
 export default async function LoginPage({
@@ -12,10 +13,10 @@ export default async function LoginPage({
     <main className="auth-page">
       <section className="auth-card">
         <div className="auth-brand">
-          <span className="brand-mark large">F</span>
+          <BrandMark large />
           <div>
             <p className="eyebrow">Fuel Coffee Drive</p>
-            <h1>Employee Scheduling</h1>
+            <h1>Employee scheduling</h1>
           </div>
         </div>
 
@@ -41,12 +42,12 @@ export default async function LoginPage({
               required
             />
           </label>
-          <button type="submit" className="button primary full">Sign In</button>
+          <button type="submit" className="button primary full">Sign in</button>
         </form>
 
         <div className="auth-secondary">
           <span>First time here?</span>
-          <Link href="/activate">Activate Account</Link>
+          <Link href="/activate">Activate account</Link>
         </div>
       </section>
     </main>

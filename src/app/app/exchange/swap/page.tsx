@@ -49,7 +49,7 @@ export default async function SwapPage({
     <>
       <PageHeader
         eyebrow="Direct swap"
-        title="Choose a Shift"
+        title="Choose a shift"
         description="The other employee must accept first. Management must approve before either schedule changes."
         actions={<Link className="button secondary" href="/app/exchange">Cancel</Link>}
       />
@@ -94,7 +94,7 @@ export default async function SwapPage({
 
               <div className="form-footer">
                 <Link className="button secondary" href="/app/exchange">Cancel</Link>
-                <button className="button primary" type="submit">Send Swap Request</button>
+                <button className="button primary" type="submit">Send swap request</button>
               </div>
             </form>
           ) : (

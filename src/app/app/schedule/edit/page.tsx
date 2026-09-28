@@ -47,7 +47,7 @@ export default async function EditShiftPage({
     <>
       <PageHeader
         eyebrow="Schedule"
-        title="Edit Shift"
+        title="Edit shift"
         description="Changes are revalidated against both locations, availability, approved time off, and weekly hours."
         actions={
           <Link className="button secondary" href={`/app/schedule?week=${shift.weekStart}`}>
@@ -130,7 +130,7 @@ export default async function EditShiftPage({
               <Link className="button secondary" href={`/app/schedule?week=${shift.weekStart}`}>
                 Cancel
               </Link>
-              <button className="button primary" type="submit">Save Changes</button>
+              <button className="button primary" type="submit">Save changes</button>
             </div>
           </div>
         </form>

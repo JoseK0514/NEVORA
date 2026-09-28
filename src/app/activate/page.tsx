@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/brand-mark";
 import { activateAccountAction } from "@/app/activate/actions";
 
 export default async function ActivatePage({
@@ -12,10 +13,10 @@ export default async function ActivatePage({
     <main className="auth-page">
       <section className="auth-card">
         <div className="auth-brand">
-          <span className="brand-mark large">F</span>
+          <BrandMark large />
           <div>
             <p className="eyebrow">Fuel Coffee Drive</p>
-            <h1>Activate Account</h1>
+            <h1>Activate account</h1>
           </div>
         </div>
 
@@ -62,7 +63,7 @@ export default async function ActivatePage({
               required
             />
           </label>
-          <button type="submit" className="button primary full">Activate Account</button>
+          <button type="submit" className="button primary full">Activate account</button>
         </form>
 
         <div className="auth-secondary">

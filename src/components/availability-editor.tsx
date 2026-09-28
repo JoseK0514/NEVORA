@@ -140,7 +140,7 @@ export function AvailabilityEditor({
       <section className="availability-quickbar" aria-label="Quick availability setup">
         <div>
           <p className="eyebrow">Quick setup</p>
-          <span>Use Monday's hours as the starting point.</span>
+          <span>Use Monday&apos;s hours as the starting point.</span>
         </div>
         <div className="availability-quick-actions">
           <button

@@ -26,7 +26,7 @@ body {
   margin: 0;
   color: var(--ink);
   background: var(--canvas);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -3356,4 +3356,1359 @@ button { cursor: pointer; }
   .template-actions {
     flex-direction: column;
   }
+}
+
+/* Weekly Schedule — compact manager workspace */
+.schedule-primary-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.schedule-week-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.schedule-primary-actions .button {
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+.schedule-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+
+.schedule-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.schedule-toolbar-actions form {
+  display: flex;
+}
+
+.schedule-toolbar-actions .button {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
+.schedule-deadline-strip {
+  min-height: 54px;
+  margin: 0 0 10px;
+  padding: 8px 10px 8px 14px;
+  border-radius: 13px;
+  background: rgba(255, 253, 249, .68);
+  box-shadow: none;
+}
+
+.schedule-deadline-strip > div {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 1px;
+}
+
+.schedule-deadline-strip .eyebrow {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+}
+
+.schedule-deadline-strip strong {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 12px;
+}
+
+.schedule-deadline-strip > div > span {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 10px;
+}
+
+.schedule-deadline-form input {
+  min-height: 34px;
+  width: 190px;
+}
+
+.schedule-deadline-form .button {
+  min-height: 34px;
+  padding: 0 11px;
+  font-size: 11px;
+}
+
+.schedule-health-panel {
+  margin: 0 0 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 253, 249, .72);
+  box-shadow: 0 7px 22px rgba(59, 42, 29, .035);
+}
+
+.schedule-health-heading {
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.schedule-health-heading h2 {
+  margin: 3px 0 2px;
+  font-size: 19px;
+}
+
+.schedule-health-heading p:last-child {
+  font-size: 10.5px;
+}
+
+.schedule-health-heading .button {
+  min-height: 34px;
+}
+
+.schedule-health-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.schedule-health-metric {
+  min-height: 68px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: #fbf8f3;
+}
+
+.schedule-health-metric > strong {
+  font-size: 20px;
+}
+
+.location-health-grid {
+  gap: 7px;
+  margin-top: 7px;
+}
+
+.location-health-card {
+  min-height: 66px;
+  padding: 10px 11px;
+  grid-template-columns: minmax(145px, 1fr) minmax(135px, .9fr) auto;
+  gap: 10px 12px;
+  background: var(--surface);
+}
+
+.location-health-copy,
+.location-health-state {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.location-health-copy strong {
+  font-size: 13px;
+}
+
+.location-health-copy span,
+.location-coverage-note {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.location-health-state {
+  justify-items: start;
+}
+
+.location-coverage-note.clear {
+  color: var(--green);
+}
+
+.location-coverage-note.warning {
+  color: var(--amber);
+}
+
+.location-health-card form {
+  display: flex;
+  align-items: center;
+}
+
+.location-health-card .button {
+  min-width: 82px;
+  min-height: 34px;
+}
+
+.schedule-health-review-grid {
+  gap: 7px;
+  margin-top: 7px;
+}
+
+.schedule-health-review-heading {
+  min-height: 50px;
+  padding: 9px 11px;
+}
+
+.schedule-health-review-heading h3 {
+  font-size: 14px;
+}
+
+.health-issue-row {
+  min-height: 50px;
+  padding: 8px 11px;
+}
+
+.schedule-setup-note {
+  margin-top: 7px;
+  padding: 9px 11px;
+
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #fbf8f3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.schedule-setup-note > div {
+  display: grid;
+  gap: 2px;
+}
+
+.schedule-setup-note strong {
+  font-size: 11.5px;
+}
+
+.schedule-setup-note span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.schedule-setup-note .text-link {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+}
+
+@media (max-width: 760px) {
+  .schedule-primary-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .schedule-week-nav {
+    flex: 1;
+  }
+
+  .schedule-week-nav .button {
+    flex: 1;
+  }
+
+  .schedule-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .schedule-toolbar-actions {
+    justify-content: flex-end;
+  }
+
+  .schedule-deadline-strip {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .schedule-deadline-form {
+    grid-template-columns: 1fr auto;
+  }
+
+  .schedule-deadline-form input {
+    width: 100%;
+  }
+
+  .schedule-health-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .schedule-health-metric:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .location-health-card {
+    grid-template-columns: 1fr auto;
+  }
+
+  .location-health-state {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .location-health-card form {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .schedule-setup-note {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 430px) {
+  .schedule-primary-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-week-nav {
+    width: 100%;
+  }
+
+  .schedule-primary-actions > .button {
+    width: 100%;
+  }
+
+  .schedule-toolbar-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .schedule-toolbar-actions .button {
+    width: 100%;
+  }
+
+  .schedule-health-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-health-metric:last-child {
+    grid-column: auto;
+  }
+
+  .location-health-card {
+    grid-template-columns: 1fr;
+  }
+
+  .location-health-state,
+  .location-health-card form {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .location-health-card .button {
+    width: 100%;
+  }
+
+  .schedule-setup-note {
+    flex-direction: column;
+  }
+}
+
+/* Weekly Schedule — enterprise clarity pass */
+.schedule-health-metrics {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fbf8f3;
+}
+
+.schedule-health-metric {
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.schedule-health-metric:first-child {
+  border-left: 0;
+}
+
+.location-health-grid {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.location-health-card {
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.location-health-card:first-child {
+  border-left: 0;
+}
+
+.schedule-health-review {
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.schedule-desktop {
+  border-radius: 15px !important;
+  box-shadow: 0 10px 26px rgba(59, 42, 29, .045);
+}
+
+.schedule-head {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  background: #f8f4ed;
+}
+
+.schedule-head > span:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 8;
+  background: #f8f4ed;
+}
+
+.schedule-row:not(.schedule-head) > strong:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding-left: 14px;
+  background: var(--surface);
+  box-shadow: 1px 0 0 var(--line);
+}
+
+.schedule-row:not(.schedule-head):hover > strong:first-child,
+.schedule-row:not(.schedule-head):hover .schedule-cell,
+.schedule-row:not(.schedule-head):hover .hours-health-cell {
+  background-color: #fdfaf5;
+}
+
+.schedule-today-head {
+  background: #f4e8da !important;
+  color: var(--coffee-dark) !important;
+}
+
+.schedule-today-cell {
+  background: rgba(197, 139, 85, .055);
+}
+
+.add-cell {
+  min-height: 30px;
+  border-color: transparent;
+  background: rgba(244, 238, 230, .48);
+  color: #887b72;
+}
+
+.add-cell:hover {
+  border-color: var(--caramel);
+  background: var(--soft-caramel);
+  color: var(--coffee);
+}
+
+.day-card.today {
+  border-color: #dfc4a8;
+  box-shadow: 0 0 0 2px rgba(197, 139, 85, .08);
+}
+
+.schedule-setup-note {
+  border-style: dashed;
+  background: rgba(251, 248, 243, .68);
+}
+
+@media (max-width: 760px) {
+  .schedule-health-metric {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .schedule-health-metric:first-child {
+    border-top: 0;
+  }
+
+  .location-health-card {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .location-health-card:first-child {
+    border-top: 0;
+  }
+
+  .schedule-row:not(.schedule-head) > strong:first-child {
+    position: static;
+    box-shadow: none;
+  }
+}
+
+/* Manager dashboard — operations console */
+.manager-dashboard .page-header {
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.manager-dashboard .page-header h1 {
+  font-size: 40px;
+  letter-spacing: -.03em;
+}
+
+.manager-dashboard .page-description {
+  max-width: 700px;
+  font-size: 14px;
+}
+
+.manager-dashboard .page-actions .button {
+  min-height: 42px;
+  padding-inline: 17px;
+}
+
+.manager-week-context {
+  min-height: 48px;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 253, 249, .62);
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.manager-week-context > div {
+  display: grid;
+  gap: 1px;
+}
+
+.manager-week-context strong {
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .055em;
+  color: var(--muted);
+}
+
+.manager-week-context span {
+  font-size: 11.5px;
+  font-weight: 750;
+  color: var(--ink);
+}
+
+.manager-week-context .text-link {
+  margin-left: auto;
+  font-size: 10.5px;
+}
+
+.manager-overview-strip {
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.manager-overview-item {
+  min-height: 82px;
+  padding: 12px 14px;
+  border-left: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 10px;
+  transition: background 160ms ease;
+}
+
+.manager-overview-item:first-child {
+  border-left: 0;
+}
+
+.manager-overview-item:hover {
+  background: #fbf8f3;
+}
+
+.manager-overview-item > span {
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.manager-overview-item > strong {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 23px;
+  line-height: 1;
+  letter-spacing: -.035em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.manager-overview-item > small {
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.manager-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, .75fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.manager-attention-panel,
+.manager-location-panel {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.manager-section-heading {
+  min-height: 68px;
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--line);
+  background: #fbf8f3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.manager-section-heading > div {
+  display: grid;
+  gap: 3px;
+}
+
+.manager-section-heading h2 {
+  margin: 0;
+  font-size: 17px;
+  letter-spacing: -.02em;
+}
+
+.manager-section-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.manager-attention-list,
+.manager-location-list {
+  display: grid;
+}
+
+.manager-attention-row {
+  min-height: 66px;
+  padding: 10px 15px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.manager-attention-row:first-child {
+  border-top: 0;
+}
+
+.manager-attention-row > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.manager-attention-row strong {
+  font-size: 12px;
+  letter-spacing: -.005em;
+}
+
+.manager-attention-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+.manager-attention-row .text-link {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+}
+
+.manager-all-clear {
+  min-height: 128px;
+  padding: 22px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.manager-all-clear strong {
+  font-size: 15px;
+}
+
+.manager-all-clear span {
+  max-width: 430px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.manager-location-row {
+  min-height: 76px;
+  padding: 11px 13px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(125px, 1fr) minmax(120px, .9fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.manager-location-row:first-child {
+  border-top: 0;
+}
+
+.manager-location-copy,
+.manager-location-state {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.manager-location-copy strong {
+  font-size: 12.5px;
+}
+
+.manager-location-copy span,
+.manager-location-state small {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.manager-location-state {
+  justify-items: start;
+}
+
+.manager-location-row .button {
+  min-width: 68px;
+  min-height: 34px;
+}
+
+.manager-quick-actions {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 253, 249, .68);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.manager-quick-actions > div {
+  min-width: 200px;
+  display: grid;
+  gap: 2px;
+}
+
+.manager-quick-actions h2 {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: -.015em;
+}
+
+.manager-quick-actions p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.manager-quick-actions nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.manager-quick-actions .button {
+  min-height: 34px;
+  padding-inline: 11px;
+  font-size: 10.5px;
+}
+
+@media (max-width: 1080px) {
+  .manager-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-location-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .manager-location-row {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .manager-location-row:first-child {
+    border-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .manager-dashboard .page-header h1 {
+    font-size: 31px;
+  }
+
+  .manager-week-context {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .manager-week-context .text-link {
+    margin-left: 0;
+  }
+
+  .manager-overview-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .manager-overview-item {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .manager-overview-item:nth-child(odd) {
+    border-right: 1px solid var(--line);
+  }
+
+  .manager-overview-item:nth-child(-n + 2) {
+    border-top: 0;
+  }
+
+  .manager-location-list {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-location-row {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .manager-location-row:first-child {
+    border-top: 0;
+  }
+
+  .manager-quick-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .manager-quick-actions nav {
+    justify-content: stretch;
+  }
+
+  .manager-quick-actions .button {
+    flex: 1 1 calc(50% - 6px);
+  }
+}
+
+@media (max-width: 430px) {
+  .manager-overview-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-overview-item {
+    border-right: 0 !important;
+    border-top: 1px solid var(--line) !important;
+  }
+
+  .manager-overview-item:first-child {
+    border-top: 0 !important;
+  }
+
+  .manager-attention-row {
+    align-items: flex-start;
+  }
+
+  .manager-attention-row span {
+    white-space: normal;
+  }
+
+  .manager-location-row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .manager-location-state {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .manager-location-row > .button {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .manager-quick-actions nav {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .manager-quick-actions .button {
+    width: 100%;
+  }
+}
+
+/* Manager dashboard — typography refinement */
+.manager-dashboard {
+  font-size: 14px;
+}
+
+.manager-dashboard .page-header h1 {
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -.025em;
+}
+
+.manager-dashboard .page-description {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.manager-dashboard .button,
+.manager-dashboard .text-link {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.manager-dashboard .status-pill {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.manager-week-context strong {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.manager-week-context span {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.manager-overview-item > span {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.manager-overview-item > strong {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.manager-overview-item > small {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.manager-section-heading h2 {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -.015em;
+}
+
+.manager-section-heading p {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.manager-attention-row strong {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.manager-attention-row span {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.manager-location-copy strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.manager-location-copy span,
+.manager-location-state small {
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.manager-quick-actions h2 {
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.manager-quick-actions p {
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.manager-quick-actions .button {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.manager-all-clear strong {
+  font-weight: 650;
+}
+
+/* Application typography system — shared across all product surfaces */
+:root {
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: var(--weight-regular);
+}
+
+.page-header h1,
+.auth-card h1 {
+  font-weight: var(--weight-bold);
+  letter-spacing: -.03em;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.auth-card .eyebrow {
+  color: var(--caramel);
+}
+
+.button,
+.text-link,
+.sidebar-logout {
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+}
+
+.status-pill,
+.role-chip {
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+}
+
+.nav-link,
+.mobile-nav-link {
+  font-weight: var(--weight-medium);
+}
+
+.nav-link.active,
+.mobile-nav-link.active {
+  font-weight: var(--weight-semibold);
+}
+
+.brand strong,
+.sidebar-profile strong {
+  font-weight: var(--weight-semibold);
+}
+
+.avatar,
+.brand-mark {
+  font-weight: var(--weight-semibold);
+}
+
+.panel-heading h2,
+.request-card h2,
+.section-heading h2,
+.schedule-health-heading h2,
+.publish-readiness-heading h2,
+.timeoff-panel-heading h2,
+.team-request-heading h2,
+.exchange-focus-heading h2,
+.exchange-section-heading h2,
+.manager-section-heading h2 {
+  font-weight: var(--weight-semibold);
+  letter-spacing: -.015em;
+}
+
+.request-card h3,
+.exchange-request-copy h3 {
+  font-weight: var(--weight-semibold);
+  letter-spacing: -.01em;
+}
+
+.form-stack label,
+.employee-form label,
+.availability-times label,
+.employee-form legend {
+  font-weight: var(--weight-semibold);
+}
+
+.schedule-head {
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.segmented button,
+.segmented a,
+.timeoff-tabs a,
+.exchange-tabs a {
+  font-weight: var(--weight-medium);
+  letter-spacing: 0;
+}
+
+.segmented button.selected,
+.segmented a.selected,
+.timeoff-tabs a.selected,
+.exchange-tabs a.selected {
+  font-weight: var(--weight-semibold);
+}
+
+.page-description,
+.muted,
+.auth-note {
+  font-weight: var(--weight-regular);
+}
+
+small,
+.manager-overview-item > small,
+.manager-section-heading p,
+.manager-attention-row span,
+.manager-location-copy span,
+.manager-location-state small,
+.manager-quick-actions p {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.manager-week-context strong,
+.manager-overview-item > span {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.manager-week-context span,
+.manager-attention-row strong,
+.manager-location-copy strong {
+  font-weight: var(--weight-semibold);
+}
+
+@media (max-width: 760px) {
+  body {
+    font-size: 14px;
+  }
+
+  .page-header h1,
+  .manager-dashboard .page-header h1 {
+    letter-spacing: -.025em;
+  }
+}
+
+/* Application typography system — metadata and dense surfaces */
+.exchange-request-kind,
+.availability-time-range label > span,
+.schedule-health-metric > span,
+.publish-readiness-grid span {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.mobile-nav-link,
+.shift-block span,
+.add-cell,
+.availability-times label,
+.exchange-tab-count,
+.tab-count,
+.exchange-tabs a,
+.timeoff-tabs a,
+.availability-time-separator,
+.schedule-health-metric > small,
+.location-health-card > small,
+.health-issue-row > div span,
+.health-over,
+.publish-coverage,
+.hours-health-cell span,
+.hour-target-input small,
+.hour-target-employee small,
+.schedule-settings-savebar span,
+.suggestion-history span,
+.coverage-window-form label,
+.coverage-window-row span,
+.publish-readiness-grid small,
+.schedule-deadline-strip > div > span,
+.schedule-health-heading p:last-child,
+.location-coverage-note,
+.schedule-setup-note span,
+.schedule-setup-note .text-link {
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+.coverage-window-form label,
+.availability-times label {
+  font-weight: var(--weight-semibold);
+}
+
+@media (max-width: 390px) {
+  .mobile-nav-link {
+    font-size: 11px;
+  }
+}
+
+/* Application typography system — final hierarchy normalization */
+.page-header h1 {
+  font-size: 34px;
+  line-height: 1.08;
+  font-weight: var(--weight-bold);
+  letter-spacing: -.025em;
+}
+
+.auth-card h1 {
+  font-size: 32px;
+  line-height: 1.08;
+  font-weight: var(--weight-bold);
+  letter-spacing: -.025em;
+}
+
+.manager-dashboard .page-header h1 {
+  font-size: 34px;
+  line-height: 1.08;
+  font-weight: var(--weight-bold);
+  letter-spacing: -.025em;
+}
+
+.brand-mark,
+.avatar,
+.exchange-empty-mark,
+.empty-state-mark,
+.review-avatar,
+.suggestion-rank {
+  font-weight: var(--weight-bold);
+}
+
+.shift-cell,
+.large-detail,
+.employee-row strong,
+.text-button,
+.auth-secondary a,
+.exchange-tab-count,
+.tab-count,
+.request-type-fieldset legend,
+.request-type-switch button,
+.field-label-row > span:first-child,
+.availability-switch-label,
+.health-over,
+.publish-coverage,
+.hours-health-cell span,
+.staffing-setting-card > span,
+.staffing-setting-card input,
+.health-find-link,
+.coverage-window-form label {
+  font-weight: var(--weight-semibold);
+}
+
+.exchange-request-kind,
+.availability-time-range label > span,
+.schedule-health-metric > span,
+.publish-readiness-grid span,
+.manager-week-context strong,
+.manager-overview-item > span {
+  font-weight: var(--weight-medium);
+}
+
+.page-header h1,
+.auth-card h1,
+.panel-heading h2,
+.request-card h2,
+.section-heading h2,
+.schedule-health-heading h2,
+.publish-readiness-heading h2,
+.timeoff-panel-heading h2,
+.team-request-heading h2,
+.exchange-focus-heading h2,
+.exchange-section-heading h2,
+.manager-section-heading h2 {
+  text-wrap: balance;
+}
+
+@media (max-width: 760px) {
+  .page-header h1,
+  .manager-dashboard .page-header h1 {
+    font-size: 29px;
+  }
+
+  .auth-card h1 {
+    font-size: 28px;
+  }
+}
+
+/* Fuel brand logo */
+.brand-mark.brand-mark-logo {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+  color: inherit;
+}
+
+.brand-mark.brand-mark-logo.large {
+  width: 58px;
+  height: 58px;
+  flex-basis: 58px;
+  border-radius: 0;
+}
+
+.brand-logo-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand.compact .brand-mark.brand-mark-logo {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  border-radius: 0;
 }

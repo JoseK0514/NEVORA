@@ -47,7 +47,7 @@ export default async function CalloutPage({
     <>
       <PageHeader
         eyebrow="Shift call-out"
-        title="Unable to Work This Shift"
+        title="Unable to work this shift"
         description="Submit the reason management needs to review. Your shift does not change until the request is approved."
         actions={
           <Link className="button secondary" href="/app/exchange?tab=my">

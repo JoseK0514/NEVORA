@@ -78,7 +78,7 @@ export default async function RequestsPage({
     <div className="timeoff-page">
       <PageHeader
         eyebrow="Scheduling requests"
-        title="Time Off"
+        title="Time off"
         description="Request time away and keep track of approvals."
       />
 
@@ -113,7 +113,7 @@ export default async function RequestsPage({
             href="/app/requests?tab=team"
             aria-current={activeTab === "team" ? "page" : undefined}
           >
-            Team Requests
+            Team requests
             <span className={pending.length ? "tab-count attention" : "tab-count"}>
               {pending.length}
             </span>
@@ -228,7 +228,7 @@ export default async function RequestsPage({
               <article className="panel timeoff-panel compact-empty-panel">
                 <div className="timeoff-empty-state">
                   <span className="empty-state-mark" aria-hidden="true">✓</span>
-                  <strong>You're all caught up</strong>
+                  <strong>You&apos;re all caught up</strong>
                   <span>New employee time-off requests will appear here.</span>
                 </div>
               </article>

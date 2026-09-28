@@ -144,7 +144,7 @@ export default async function CoverageSuggestionsPage({
     <div className="coverage-suggestions-page">
       <PageHeader
         eyebrow="Coverage assistant"
-        title="Suggested Employees"
+        title="Suggested employees"
         description={`${location?.shortName ?? locationId} · ${day.weekday} ${day.day} · ${formatTime(startTime)}–${formatTime(endTime)}`}
         actions={
           <Link className="button secondary" href={`/app/schedule?week=${weekStart}`}>

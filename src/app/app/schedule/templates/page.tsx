@@ -40,7 +40,7 @@ export default async function ScheduleTemplatesPage({
     <div className="template-page">
       <PageHeader
         eyebrow="Schedule shortcuts"
-        title="Schedule Templates"
+        title="Schedule templates"
         description={`Save a strong schedule pattern and reuse it for ${formatWeekRange(weekStart)} with all normal conflict checks.`}
         actions={
           <Link className="button secondary" href={`/app/schedule?week=${weekStart}`}>

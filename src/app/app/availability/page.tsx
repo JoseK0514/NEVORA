@@ -84,12 +84,14 @@ export default async function AvailabilityPage({
     }
   }
 
+  // Server-rendered deadline status intentionally reflects the current request time.
+  // eslint-disable-next-line react-hooks/purity
+  const requestTime = Date.now();
   const locked = Boolean(
     selectedWeek &&
       settings?.availabilityDeadline &&
-      Date.now() > new Date(settings.availabilityDeadline).getTime(),
+      requestTime > new Date(settings.availabilityDeadline).getTime(),
   );
-
   return (
     <div className="availability-page">
       <PageHeader
@@ -103,7 +105,7 @@ export default async function AvailabilityPage({
         actions={
           selectedWeek ? (
             <Link className="button secondary" href="/app/availability">
-              Normal Availability
+              Normal availability
             </Link>
           ) : undefined
         }
@@ -123,7 +125,7 @@ export default async function AvailabilityPage({
             className="button primary"
             href={`/app/availability?week=${upcomingWeek.weekStart}`}
           >
-            Submit Weekly Availability
+            Submit weekly availability
           </Link>
         </section>
       ) : null}

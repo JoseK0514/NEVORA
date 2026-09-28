@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BrandMark } from "@/components/brand-mark";
 import type { ReactNode } from "react";
 import { logout } from "@/app/login/actions";
 import type { UserRole } from "@/lib/domain";
@@ -26,7 +27,7 @@ export function AppShell({
     <div className="app-shell">
       <aside className="sidebar">
         <Link href="/app" className="brand" aria-label="Fuel Scheduler home">
-          <span className="brand-mark">F</span>
+          <BrandMark />
           <span>
             <strong>Fuel</strong>
             <small>Scheduler</small>
@@ -65,7 +66,7 @@ export function AppShell({
       <main className="app-main">
         <header className="mobile-header">
           <Link href="/app" className="brand compact">
-            <span className="brand-mark">F</span>
+            <BrandMark />
             <strong>Fuel Scheduler</strong>
           </Link>
           <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>

@@ -18,7 +18,7 @@ export default async function EmployeesPage() {
         eyebrow="Team"
         title="Employees"
         description="Employee profiles stay intentionally simple and scheduling-focused."
-        actions={<Link className="button primary" href="/app/employees/new">+ Add Employee</Link>}
+        actions={<Link className="button primary" href="/app/employees/new">Add employee</Link>}
       />
 
       <section className="panel">

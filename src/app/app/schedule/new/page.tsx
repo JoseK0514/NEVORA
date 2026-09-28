@@ -39,7 +39,7 @@ export default async function NewShiftPage({
     <>
       <PageHeader
         eyebrow="Schedule"
-        title="Add Shift"
+        title="Add shift"
         description="The server checks both locations, approved time off, availability, and weekly hours before saving."
         actions={
           <Link className="button secondary" href={`/app/schedule?week=${weekStart}`}>
@@ -121,7 +121,7 @@ export default async function NewShiftPage({
             <Link className="button secondary" href={`/app/schedule?week=${weekStart}`}>
               Cancel
             </Link>
-            <button className="button primary" type="submit">Add Shift</button>
+            <button className="button primary" type="submit">Add shift</button>
           </div>
         </form>
       </section>

@@ -17,7 +17,7 @@ export default async function NewEmployeePage({
     <>
       <PageHeader
         eyebrow="Team"
-        title="Add Employee"
+        title="Add employee"
         description="Only scheduling information is collected. Email remains optional."
         actions={<Link className="button secondary" href="/app/employees">Cancel</Link>}
       />
@@ -85,7 +85,7 @@ export default async function NewEmployeePage({
           </div>
 
           <fieldset>
-            <legend>Eligible Locations</legend>
+            <legend>Eligible locations</legend>
             <p>Primary location is always included automatically.</p>
             <div className="checkbox-grid">
               {locations.map((location) => (
@@ -108,7 +108,7 @@ export default async function NewEmployeePage({
 
           <div className="form-footer">
             <Link className="button secondary" href="/app/employees">Cancel</Link>
-            <button className="button primary" type="submit">Create Employee</button>
+            <button className="button primary" type="submit">Create employee</button>
           </div>
         </form>
       </section>

@@ -175,7 +175,7 @@ export default async function ExchangePage({
     <div className="exchange-page">
       <PageHeader
         eyebrow="Schedule flexibility"
-        title="Shift Exchange"
+        title="Shift exchange"
         description="Offer a shift, find coverage, trade with a coworker, or report that you are unable to work."
       />
 
@@ -364,7 +364,7 @@ export default async function ExchangePage({
                           value="APPROVED"
                           type="submit"
                         >
-                          Approve & Open Coverage
+                          Approve & open coverage
                         </button>
                       </form>
                     </article>

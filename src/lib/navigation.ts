@@ -6,15 +6,15 @@ const managementNavigation = [
   { href: "/app/employees", label: "Employees" },
   { href: "/app/availability", label: "Availability" },
   { href: "/app/requests", label: "Requests" },
-  { href: "/app/exchange", label: "Shift Exchange" },
+  { href: "/app/exchange", label: "Shift exchange" },
 ] as const;
 
 const employeeNavigation = [
   { href: "/app", label: "Home" },
-  { href: "/app/schedule", label: "My Schedule" },
+  { href: "/app/schedule", label: "My schedule" },
   { href: "/app/availability", label: "Availability" },
   { href: "/app/requests", label: "Requests" },
-  { href: "/app/exchange", label: "Shift Exchange" },
+  { href: "/app/exchange", label: "Shift exchange" },
 ] as const;
 
 export function navigationForRole(role: UserRole) {

@@ -48,7 +48,7 @@ export default async function ScheduleSettingsPage({
     <div className="schedule-settings-page">
       <PageHeader
         eyebrow="Schedule health"
-        title="Staffing & Hour Targets"
+        title="Staffing & hour targets"
         description="Define what a complete schedule looks like so Fuel Scheduler can point out coverage gaps and employees who may be short on hours."
         actions={
           <Link className="button secondary" href="/app/schedule">

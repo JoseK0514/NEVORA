@@ -19,12 +19,12 @@ export default async function SettingsPage() {
           <button className="button ghost">Manage</button>
         </div>
         <div>
-          <strong>Roles & Permissions</strong>
+          <strong>Roles & permissions</strong>
           <span>Owner, Manager, Lead, and Employee access.</span>
           <button className="button ghost">Manage</button>
         </div>
         <div>
-          <strong>Scheduling Rules</strong>
+          <strong>Scheduling rules</strong>
           <span>Staffing coverage targets and employee weekly hour goals.</span>
           <Link className="button ghost" href="/app/schedule/settings">
             Manage

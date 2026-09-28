@@ -107,7 +107,8 @@ export default async function SchedulePage({
   const session = await requireSession();
   const manager = isManagerRole(session.role);
   const params = await searchParams;
-  const currentWeek = weekStartFor(currentDateInPuertoRico());
+  const today = currentDateInPuertoRico();
+  const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const dates = weekDates(weekStart);
 
@@ -166,7 +167,7 @@ export default async function SchedulePage({
       <>
         <PageHeader
           eyebrow={formatWeekRange(weekStart)}
-          title="My Schedule"
+          title="My schedule"
           description="Only published shifts appear here."
           actions={
             <div className="week-nav">
@@ -305,8 +306,6 @@ export default async function SchedulePage({
   const overTarget = health.hourBalances.filter(
     (balance) => balance.status === "OVER",
   );
-  const configuredTargetCount =
-    activeEmployees.length - health.unconfiguredTargetCount;
   const publishLocation =
     params.publishCheck &&
     locations.some((location) => location.id === params.publishCheck)
@@ -329,41 +328,31 @@ export default async function SchedulePage({
     <>
       <PageHeader
         eyebrow={formatWeekRange(weekStart)}
-        title="Weekly Schedule"
-        description="Build both locations, track staffing coverage and employee hours, then publish when the week is ready."
+        title="Weekly schedule"
+        description="Build the week, resolve coverage and hour issues, then publish each location."
         actions={
-          <>
-            <Link
-              className="button secondary"
-              href={`/app/schedule?week=${previousWeek}`}
-            >
-              Previous
-            </Link>
-            <Link
-              className="button secondary"
-              href={`/app/schedule?week=${nextWeek}`}
-            >
-              Next
-            </Link>
-            <Link
-              className="button secondary"
-              href={`/app/schedule/templates?week=${weekStart}`}
-            >
-              Templates
-            </Link>
-            <form action={copyPreviousWeekAction}>
-              <input type="hidden" name="weekStart" value={weekStart} />
-              <button className="button secondary" type="submit">
-                Copy Previous Week
-              </button>
-            </form>
+          <div className="schedule-primary-actions">
+            <div className="schedule-week-nav">
+              <Link
+                className="button secondary"
+                href={`/app/schedule?week=${previousWeek}`}
+              >
+                Previous
+              </Link>
+              <Link
+                className="button secondary"
+                href={`/app/schedule?week=${nextWeek}`}
+              >
+                Next
+              </Link>
+            </div>
             <Link
               className="button primary"
               href={`/app/schedule/new?week=${weekStart}`}
             >
               + Add Shift
             </Link>
-          </>
+          </div>
         }
       />
 
@@ -407,7 +396,7 @@ export default async function SchedulePage({
         </p>
       ) : null}
 
-      <div className="toolbar">
+      <div className="schedule-toolbar">
         <div className="segmented">
           <Link
             className={selectedLocation === "all" ? "selected" : ""}
@@ -425,18 +414,33 @@ export default async function SchedulePage({
             </Link>
           ))}
         </div>
+
+        <div className="schedule-toolbar-actions">
+          <Link
+            className="button ghost compact-button"
+            href={`/app/schedule/templates?week=${weekStart}`}
+          >
+            Templates
+          </Link>
+          <form action={copyPreviousWeekAction}>
+            <input type="hidden" name="weekStart" value={weekStart} />
+            <button className="button ghost compact-button" type="submit">
+              Copy Previous Week
+            </button>
+          </form>
+        </div>
       </div>
 
       <section className="schedule-deadline-strip">
         <div>
-          <p className="eyebrow">Availability cutoff</p>
+          <p className="eyebrow">Availability deadline</p>
           <strong>
             {weekSettings?.availabilityDeadline
               ? formatPuertoRicoDateTime(weekSettings.availabilityDeadline)
               : "No deadline set"}
           </strong>
           <span>
-            Weekly availability is frozen for this schedule once the cutoff passes.
+            Changes lock for this schedule after the deadline.
           </span>
         </div>
         <form action={setAvailabilityDeadlineAction} className="schedule-deadline-form">
@@ -449,7 +453,7 @@ export default async function SchedulePage({
             )}
           />
           <button className="button secondary" type="submit">
-            {weekSettings?.availabilityDeadline ? "Update Deadline" : "Set Deadline"}
+            {weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline"}
           </button>
         </form>
       </section>
@@ -457,15 +461,14 @@ export default async function SchedulePage({
       <section className="schedule-health-panel">
         <div className="schedule-health-heading">
           <div>
-            <p className="eyebrow">Schedule health</p>
-            <h2>Is the week ready?</h2>
+            <p className="eyebrow">All-location readiness</p>
+            <h2>Week readiness</h2>
             <p>
-              Coverage and employee hours update automatically as shifts are
-              added or changed.
+              Coverage, employee hours, and published-schedule acknowledgements.
             </p>
           </div>
           <Link className="button secondary compact-button" href="/app/schedule/settings">
-            Configure Targets
+            Scheduling Rules
           </Link>
         </div>
 
@@ -487,34 +490,18 @@ export default async function SchedulePage({
           </article>
 
           <article className="schedule-health-metric">
-            <span>Below target</span>
-            <strong>{health.underTargetCount}</strong>
-            <small>
-              {health.underTargetCount
-                ? "Employees may be missing hours"
-                : "No hour shortfalls"}
-            </small>
-          </article>
-
-          <article className="schedule-health-metric">
-            <span>Above target</span>
-            <strong>{health.overTargetCount}</strong>
-            <small>
-              {health.overTargetCount
-                ? "Review extra scheduled hours"
-                : "No employees over target"}
-            </small>
-          </article>
-
-          <article className="schedule-health-metric">
-            <span>Hour targets set</span>
+            <span>Hours review</span>
             <strong>
-              {configuredTargetCount}/{activeEmployees.length}
+              {health.underTargetCount +
+                health.overTargetCount +
+                health.unconfiguredTargetCount}
             </strong>
             <small>
-              {health.unconfiguredTargetCount
-                ? `${health.unconfiguredTargetCount} not configured`
-                : "All active employees configured"}
+              {health.underTargetCount || health.overTargetCount
+                ? `${health.underTargetCount} below · ${health.overTargetCount} above target`
+                : health.unconfiguredTargetCount
+                  ? `${health.unconfiguredTargetCount} target missing`
+                  : "No employee hour issues"}
             </small>
           </article>
           <article className="schedule-health-metric">
@@ -536,55 +523,81 @@ export default async function SchedulePage({
         </div>
 
         <div className="location-health-grid">
-          {health.locationCoverage.map((location) => (
-            <article className="location-health-card" key={location.locationId}>
-              <div>
-                <strong>{location.locationName}</strong>
-                <span>{location.requiredStaffPerShift} staff required per shift</span>
-              </div>
-              <StatusPill
-                tone={
-                  location.totalBlocks === 0
-                    ? "neutral"
-                    : location.fullyCovered
-                      ? "success"
-                      : "warning"
-                }
-              >
-                {location.totalBlocks === 0
-                  ? "No shifts yet"
-                  : location.fullyCovered
-                    ? "All covered"
-                    : `${location.uncoveredBlocks} gap${location.uncoveredBlocks === 1 ? "" : "s"}`}
-              </StatusPill>
-              {location.totalBlocks ? (
-                <small>
-                  {location.coveredBlocks}/{location.totalBlocks} shift blocks meet target
-                </small>
-              ) : (
-                <small>Add shifts to begin coverage tracking.</small>
-              )}
-            </article>
-          ))}
+          {health.locationCoverage.map((location) => {
+            const schedule = statuses.find(
+              (item) => item.locationId === location.locationId,
+            );
+            const published = schedule?.status === "PUBLISHED";
+
+            return (
+              <article className="location-health-card" key={location.locationId}>
+                <div className="location-health-copy">
+                  <strong>{location.locationName}</strong>
+                  <span>
+                    {location.requiredStaffPerShift} staff per shift
+                    {location.totalBlocks
+                      ? ` · ${location.coveredBlocks}/${location.totalBlocks} periods ready`
+                      : ""}
+                  </span>
+                </div>
+
+                <div className="location-health-state">
+                  <StatusPill
+                    tone={published ? "success" : schedule ? "warning" : "neutral"}
+                  >
+                    {published ? "Published" : schedule ? "Draft" : "Not started"}
+                  </StatusPill>
+                  <span
+                    className={
+                      location.totalBlocks === 0
+                        ? "location-coverage-note"
+                        : location.fullyCovered
+                          ? "location-coverage-note clear"
+                          : "location-coverage-note warning"
+                    }
+                  >
+                    {location.totalBlocks === 0
+                      ? "Coverage starts when shifts are added"
+                      : location.fullyCovered
+                        ? "Coverage clear"
+                        : `${location.uncoveredBlocks} gap${location.uncoveredBlocks === 1 ? "" : "s"} to resolve`}
+                  </span>
+                </div>
+
+                <form action={publishScheduleAction}>
+                  <input type="hidden" name="weekStart" value={weekStart} />
+                  <input
+                    type="hidden"
+                    name="locationId"
+                    value={location.locationId}
+                  />
+                  <button
+                    className="button secondary compact-button"
+                    type="submit"
+                    disabled={!schedule || published}
+                  >
+                    {published ? "Published" : "Publish"}
+                  </button>
+                </form>
+              </article>
+            );
+          })}
         </div>
 
         {(coverageGaps.length > 0 ||
           underTarget.length > 0 ||
-          overTarget.length > 0 ||
-          health.unconfiguredTargetCount > 0) && (
+          overTarget.length > 0) ? (
           <div className="schedule-health-review-grid">
-            <article className="schedule-health-review">
-              <div className="schedule-health-review-heading">
-                <div>
-                  <p className="eyebrow">Coverage</p>
-                  <h3>Needs coverage</h3>
+            {coverageGaps.length ? (
+              <article className="schedule-health-review">
+                <div className="schedule-health-review-heading">
+                  <div>
+                    <p className="eyebrow">Coverage</p>
+                    <h3>Needs attention</h3>
+                  </div>
+                  <StatusPill tone="warning">{coverageGaps.length}</StatusPill>
                 </div>
-                <StatusPill tone={coverageGaps.length ? "warning" : "success"}>
-                  {coverageGaps.length}
-                </StatusPill>
-              </div>
 
-              {coverageGaps.length ? (
                 <div className="health-issue-list">
                   {coverageGaps.slice(0, 8).map((block) => {
                     const label = formatDayLabel(block.date);
@@ -605,23 +618,21 @@ export default async function SchedulePage({
                           </span>
                         </div>
                         <div className="health-issue-actions">
-                        <span className="health-gap">
-                          {block.gap
-                            ? `${block.assignedStaff}/${block.requiredStaff} · Need ${block.gap}`
-                            : block.requiresLead && !block.leadCovered
-                              ? "Lead missing"
-                              : "Review"}
-                        </span>
-                        {block.gap ? (
-                          <Link
-                            className="health-find-link"
-                            href={`/app/schedule/coverage?week=${weekStart}&date=${block.date}&locationId=${block.locationId}&start=${block.startTime}&end=${block.endTime}`}
-                          >
-                            Find employee
-                          </Link>
-                        ) : null}
+                          <span className="health-gap">
+                            {block.gap
+                              ? `${block.assignedStaff}/${block.requiredStaff} · Need ${block.gap}`
+                              : "Lead missing"}
+                          </span>
+                          {block.gap ? (
+                            <Link
+                              className="health-find-link"
+                              href={`/app/schedule/coverage?week=${weekStart}&date=${block.date}&locationId=${block.locationId}&start=${block.startTime}&end=${block.endTime}`}
+                            >
+                              Find employee
+                            </Link>
+                          ) : null}
+                        </div>
                       </div>
-                    </div>
                     );
                   })}
                   {coverageGaps.length > 8 ? (
@@ -630,27 +641,21 @@ export default async function SchedulePage({
                     </p>
                   ) : null}
                 </div>
-              ) : (
-                <p className="health-all-clear">
-                  All scheduled shift blocks meet their staffing target.
-                </p>
-              )}
-            </article>
+              </article>
+            ) : null}
 
-            <article className="schedule-health-review">
-              <div className="schedule-health-review-heading">
-                <div>
-                  <p className="eyebrow">Hours balance</p>
-                  <h3>Employees to review</h3>
+            {underTarget.length || overTarget.length ? (
+              <article className="schedule-health-review">
+                <div className="schedule-health-review-heading">
+                  <div>
+                    <p className="eyebrow">Hours balance</p>
+                    <h3>Employees to review</h3>
+                  </div>
+                  <StatusPill tone="warning">
+                    {underTarget.length + overTarget.length}
+                  </StatusPill>
                 </div>
-                <StatusPill
-                  tone={underTarget.length || overTarget.length ? "warning" : "success"}
-                >
-                  {underTarget.length + overTarget.length}
-                </StatusPill>
-              </div>
 
-              {underTarget.length || overTarget.length ? (
                 <div className="health-issue-list">
                   {[...underTarget, ...overTarget].slice(0, 8).map((balance) => (
                     <div className="health-issue-row" key={balance.employeeId}>
@@ -677,18 +682,27 @@ export default async function SchedulePage({
                     </div>
                   ))}
                 </div>
-              ) : health.unconfiguredTargetCount ? (
-                <p className="health-all-clear">
-                  Set weekly hour targets to activate employee hour-balance alerts.
-                </p>
-              ) : (
-                <p className="health-all-clear">
-                  All configured employees are on target.
-                </p>
-              )}
-            </article>
+              </article>
+            ) : null}
           </div>
-        )}
+        ) : null}
+
+        {health.unconfiguredTargetCount > 0 ? (
+          <div className="schedule-setup-note">
+            <div>
+              <strong>
+                {health.unconfiguredTargetCount} employee hour target{" "}
+                {health.unconfiguredTargetCount === 1 ? "is" : "are"} not set
+              </strong>
+              <span>
+                Add the missing weekly target to complete hours-balance checks.
+              </span>
+            </div>
+            <Link className="text-link" href="/app/schedule/settings">
+              Set target
+            </Link>
+          </div>
+        ) : null}
       </section>
 
       {publishLocation && publishReadiness ? (
@@ -750,64 +764,16 @@ export default async function SchedulePage({
         </section>
       ) : null}
 
-      <section className="publish-strip">
-        {locations.map((location) => {
-          const schedule = statuses.find(
-            (item) => item.locationId === location.id,
-          );
-          const published = schedule?.status === "PUBLISHED";
-          const coverage = health.locationCoverage.find(
-            (item) => item.locationId === location.id,
-          );
-
-          return (
-            <div className="publish-location" key={location.id}>
-              <div className="publish-location-copy">
-                <strong>{location.shortName}</strong>
-                <div>
-                  <StatusPill
-                    tone={published ? "success" : schedule ? "warning" : "neutral"}
-                  >
-                    {published ? "Published" : schedule ? "Draft" : "Not started"}
-                  </StatusPill>
-                  {coverage?.totalBlocks ? (
-                    <span
-                      className={
-                        coverage.fullyCovered
-                          ? "publish-coverage clear"
-                          : "publish-coverage warning"
-                      }
-                    >
-                      {coverage.fullyCovered
-                        ? "Coverage clear"
-                        : `${coverage.uncoveredBlocks} coverage gap${coverage.uncoveredBlocks === 1 ? "" : "s"}`}
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-              <form action={publishScheduleAction}>
-                <input type="hidden" name="weekStart" value={weekStart} />
-                <input type="hidden" name="locationId" value={location.id} />
-                <button
-                  className="button secondary"
-                  type="submit"
-                  disabled={!schedule || published}
-                >
-                  {published ? "Published" : "Publish"}
-                </button>
-              </form>
-            </div>
-          );
-        })}
-      </section>
-
       <section className="schedule-desktop panel flush">
         <div className="schedule-row schedule-head">
           <span>Employee</span>
           {dates.map((date) => {
             const label = formatDayLabel(date);
             return (
-              <span key={date}>
+              <span
+                key={date}
+                className={date === today ? "schedule-today-head" : undefined}
+              >
                 {label.weekday} {label.day.split(" ")[1]}
               </span>
             );
@@ -843,7 +809,14 @@ export default async function SchedulePage({
                     : selectedLocation;
 
                 return (
-                  <div className="schedule-cell" key={date}>
+                  <div
+                    className={
+                      date === today
+                        ? "schedule-cell schedule-today-cell"
+                        : "schedule-cell"
+                    }
+                    key={date}
+                  >
                     {shifts.map((shift) => (
                       <Link
                         className="shift-block"
