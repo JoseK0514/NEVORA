@@ -4,7 +4,7 @@ import { activateAccountAction } from "@/app/activate/actions";
 export default async function ActivatePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; employeeId?: string }>;
 }) {
   const params = await searchParams;
 
@@ -30,7 +30,13 @@ export default async function ActivatePage({
         <form action={activateAccountAction} className="form-stack">
           <label>
             Employee ID
-            <input name="employeeId" placeholder="JN-001" autoComplete="username" required />
+            <input
+              name="employeeId"
+              placeholder="JN-001"
+              defaultValue={params.employeeId ?? ""}
+              autoComplete="username"
+              required
+            />
           </label>
           <label>
             Phone Number
