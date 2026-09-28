@@ -2014,3 +2014,203 @@ button { cursor: pointer; }
     font-size: 12px;
   }
 }
+
+
+/* Time Off — compact request form refinement */
+.timeoff-page .page-header {
+  margin-bottom: 14px;
+}
+
+.timeoff-page .page-header h1 {
+  font-size: clamp(34px, 3.2vw, 42px);
+}
+
+.timeoff-page .page-description {
+  max-width: 520px;
+  font-size: 15px;
+}
+
+.timeoff-tabs {
+  min-height: 46px;
+  margin-bottom: 14px;
+  padding: 3px;
+  border-radius: 12px;
+}
+
+.timeoff-tabs a {
+  min-height: 36px;
+  padding: 0 13px;
+  border-radius: 9px;
+}
+
+.timeoff-workspace {
+  width: min(820px, 100%);
+}
+
+.timeoff-form-panel {
+  width: min(760px, 100%);
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 9px 28px rgba(59, 42, 29, .05);
+}
+
+.timeoff-new-heading {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+}
+
+.timeoff-new-heading h2 {
+  margin: 0 0 4px;
+  font-size: 19px;
+}
+
+.timeoff-new-heading p {
+  max-width: 520px;
+  font-size: 12px !important;
+}
+
+.timeoff-form {
+  gap: 15px;
+}
+
+.timeoff-date-grid {
+  gap: 12px;
+}
+
+.timeoff-form label {
+  gap: 6px;
+}
+
+.timeoff-form input {
+  min-height: 42px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.timeoff-type-row {
+  display: grid;
+  grid-template-columns: minmax(270px, 320px) 1fr;
+  align-items: end;
+  gap: 16px;
+}
+
+.request-type-fieldset legend {
+  margin-bottom: 6px;
+}
+
+.request-type-switch {
+  width: 100%;
+  padding: 3px;
+  border-radius: 10px;
+}
+
+.request-type-switch button {
+  min-height: 36px;
+  border-radius: 8px;
+  font-size: 11.5px;
+}
+
+.timeoff-type-hint {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.partial-time-fields {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  gap: 9px;
+}
+
+.partial-time-fields input {
+  min-height: 38px;
+}
+
+.timeoff-reason {
+  margin-top: 1px;
+}
+
+.timeoff-form textarea {
+  min-height: 74px;
+  border-radius: 10px;
+  padding: 10px 11px;
+  font-size: 13px;
+}
+
+.timeoff-actionbar {
+  min-height: 58px;
+  margin-top: 1px;
+  padding-top: 13px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.timeoff-actionbar p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.timeoff-submit {
+  min-width: 132px;
+  min-height: 40px;
+}
+
+@media (max-width: 760px) {
+  .timeoff-page .page-header h1 {
+    font-size: 31px;
+  }
+
+  .timeoff-form-panel {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .timeoff-new-heading {
+    margin-bottom: 14px;
+    padding-bottom: 13px;
+  }
+
+  .timeoff-date-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeoff-type-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .timeoff-type-hint {
+    margin: -2px 0 0;
+  }
+
+  .partial-time-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .timeoff-actionbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .timeoff-actionbar p {
+    text-align: center;
+  }
+
+  .timeoff-submit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .partial-time-fields {
+    grid-template-columns: 1fr;
+  }
+}
