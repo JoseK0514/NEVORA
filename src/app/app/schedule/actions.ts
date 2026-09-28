@@ -6,6 +6,7 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { addDays, isDateInWeek, weekStartFor } from "@/lib/date-utils";
 import { setAvailabilityDeadline } from "@/lib/data/week-settings";
 import { clearWeekAcknowledgements } from "@/lib/data/acknowledgements";
+import { publishScheduleWithRevision } from "@/lib/data/publication-revisions";
 import { listEmployees } from "@/lib/data/employees";
 import {
   listCoverageWindows,
@@ -22,7 +23,6 @@ import {
   getShiftValidationContext,
   insertShift,
   listWeekShifts,
-  publishSchedule,
   updateShift,
 } from "@/lib/data/schedules";
 import { copyShiftDate } from "@/lib/scheduling/copy-week";
@@ -189,7 +189,7 @@ export async function publishScheduleAction(formData: FormData) {
     }
   }
 
-  const published = await publishSchedule({
+  const { published } = await publishScheduleWithRevision({
     locationId,
     weekStart,
     managerId: session.id,

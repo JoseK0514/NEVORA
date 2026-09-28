@@ -319,34 +319,6 @@ export async function insertShift(input: {
   return id;
 }
 
-export async function publishSchedule({
-  locationId,
-  weekStart,
-  managerId,
-}: {
-  locationId: string;
-  weekStart: string;
-  managerId: string;
-}) {
-  const sql = getDb();
-
-  const rows = queryRows(
-    await sql.query(
-      `UPDATE schedules
-       SET status = 'PUBLISHED',
-           published_by = $3,
-           published_at = now(),
-           updated_at = now()
-       WHERE location_id = $1
-         AND week_start = $2
-       RETURNING id`,
-      [locationId, weekStart, managerId],
-    ),
-  );
-
-  return Boolean(rows[0]);
-}
-
 export function roleCanManageSchedule(role: UserRole) {
   return role === "OWNER" || role === "MANAGER";
 }

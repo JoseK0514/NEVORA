@@ -155,3 +155,7 @@ export function didEmployeeShiftSetChange(
 ) {
   return diffEmployeePublishedShifts(previous, next, employeeId).length > 0;
 }
+
+export function shouldRetryRevisionConflict(code: string) {
+  return code === "23505";
+}

@@ -3,6 +3,7 @@ import {
   didEmployeeShiftSetChange,
   diffEmployeePublishedShifts,
   diffPublishedShifts,
+  shouldRetryRevisionConflict,
   type PublishedShiftSnapshot,
 } from "./publication-diff";
 
@@ -140,5 +141,13 @@ describe("diffPublishedShifts", () => {
         "E-2",
       ),
     ).toBe(true);
+  });
+});
+
+describe("shouldRetryRevisionConflict", () => {
+  it("retries only PostgreSQL unique conflicts", () => {
+    expect(shouldRetryRevisionConflict("23505")).toBe(true);
+    expect(shouldRetryRevisionConflict("23503")).toBe(false);
+    expect(shouldRetryRevisionConflict("")).toBe(false);
   });
 });
