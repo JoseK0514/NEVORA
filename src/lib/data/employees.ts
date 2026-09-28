@@ -122,7 +122,7 @@ export async function insertEmployee(input: {
   role: UserRole;
   primaryLocationId: string;
   eligibleLocationIds: string[];
-  passwordHash: string;
+  passwordHash?: string;
 }) {
   const sql = getDb();
   const eligible = Array.from(
@@ -141,8 +141,6 @@ export async function insertEmployee(input: {
       ${input.role},
       ${input.primaryLocationId}
     )`,
-    sql`INSERT INTO employee_credentials (employee_id, password_hash)
-        VALUES (${input.id}, ${input.passwordHash})`,
     ...eligible.map(
       (locationId) =>
         sql`INSERT INTO employee_location_eligibility (employee_id, location_id)
@@ -150,5 +148,48 @@ export async function insertEmployee(input: {
     ),
   ];
 
+  if (input.passwordHash) {
+    queries.splice(
+      1,
+      0,
+      sql`INSERT INTO employee_credentials (employee_id, password_hash)
+          VALUES (${input.id}, ${input.passwordHash})`,
+    );
+  }
+
   await sql.transaction(queries);
+}
+
+export async function activateEmployeeCredential(input: {
+  employeeId: string;
+  phone: string;
+  passwordHash: string;
+}) {
+  const sql = getDb();
+  const phoneDigits = input.phone.replace(/\D/g, "");
+
+  const rows = queryRows<{ employee_id: string }>(
+    await sql.query(
+      `INSERT INTO employee_credentials (
+         employee_id,
+         password_hash,
+         must_change_password
+       )
+       SELECT
+         e.id,
+         $3,
+         false
+       FROM employees e
+       LEFT JOIN employee_credentials c
+         ON c.employee_id = e.id
+       WHERE upper(e.id) = upper($1)
+         AND regexp_replace(e.phone, '[^0-9]', '', 'g') = $2
+         AND e.active = true
+         AND c.employee_id IS NULL
+       RETURNING employee_id`,
+      [input.employeeId, phoneDigits, input.passwordHash],
+    ),
+  );
+
+  return rows[0]?.employee_id ?? null;
 }

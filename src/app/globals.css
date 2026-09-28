@@ -715,3 +715,16 @@ button { cursor: pointer; }
   .shift-edit-footer { grid-template-columns: 1fr; }
   .form-footer-right { display: grid; grid-template-columns: 1fr 1fr; }
 }
+
+
+.auth-secondary {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.auth-secondary a { color: var(--coffee); font-weight: 850; }

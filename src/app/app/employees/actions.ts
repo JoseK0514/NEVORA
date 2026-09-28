@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { hashPassword } from "@/lib/auth/password";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { insertEmployee } from "@/lib/data/employees";
 import type { UserRole } from "@/lib/domain";
@@ -23,7 +22,6 @@ export async function createEmployeeAction(formData: FormData) {
     .getAll("eligibleLocationIds")
     .map(String)
     .filter(Boolean);
-  const temporaryPassword = String(formData.get("temporaryPassword") ?? "");
 
   if (
     !id ||
@@ -31,8 +29,7 @@ export async function createEmployeeAction(formData: FormData) {
     !lastName ||
     !phone ||
     !ROLES.includes(role) ||
-    !primaryLocationId ||
-    temporaryPassword.length < 8
+    !primaryLocationId
   ) {
     redirect("/app/employees/new?error=invalid");
   }
@@ -40,8 +37,6 @@ export async function createEmployeeAction(formData: FormData) {
   if (role === "OWNER" && session.role !== "OWNER") {
     redirect("/app/employees/new?error=permission");
   }
-
-  const passwordHash = await hashPassword(temporaryPassword);
 
   try {
     await insertEmployee({
@@ -53,12 +48,11 @@ export async function createEmployeeAction(formData: FormData) {
       role,
       primaryLocationId,
       eligibleLocationIds,
-      passwordHash,
     });
   } catch {
     redirect("/app/employees/new?error=save");
   }
 
   revalidatePath("/app/employees");
-  redirect("/app/employees");
+  redirect("/app/employees?created=1");
 }

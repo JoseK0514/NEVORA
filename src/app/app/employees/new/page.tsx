@@ -29,7 +29,7 @@ export default async function NewEmployeePage({
               ? "Only an owner can create another owner."
               : params.error === "save"
                 ? "Employee could not be saved. Check that the ID and email are not already in use."
-                : "Complete all required fields and use a temporary password of at least 8 characters."}
+                : "Complete all required employee fields."}
           </p>
         ) : null}
 
@@ -101,11 +101,10 @@ export default async function NewEmployeePage({
             </div>
           </fieldset>
 
-          <label>
-            Temporary Password
-            <input name="temporaryPassword" type="password" minLength={8} required />
-            <small>The employee will use this with their Employee ID to sign in.</small>
-          </label>
+          <p className="form-help">
+            The employee creates their own password from the Activate Account screen
+            using the Employee ID and phone number entered here.
+          </p>
 
           <div className="form-footer">
             <Link className="button secondary" href="/app/employees">Cancel</Link>
