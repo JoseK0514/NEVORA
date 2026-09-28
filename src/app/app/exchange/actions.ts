@@ -190,7 +190,7 @@ export async function offerCoverageAction(formData: FormData) {
     shift.employeeId !== session.id ||
     shift.date < currentDateInPuertoRico()
   ) {
-    redirect(exchangeUrl("?error=INVALID_SHIFT"));
+    redirect(exchangeUrl("?tab=my&error=INVALID_SHIFT"));
   }
 
   try {
@@ -199,11 +199,11 @@ export async function offerCoverageAction(formData: FormData) {
       requestedByEmployeeId: session.id,
     });
   } catch {
-    redirect(exchangeUrl("?error=SHIFT_ALREADY_OFFERED"));
+    redirect(exchangeUrl("?tab=my&error=SHIFT_ALREADY_OFFERED"));
   }
 
   revalidatePath("/app/exchange");
-  redirect(exchangeUrl("?offered=1"));
+  redirect(exchangeUrl("?tab=my&offered=1"));
 }
 
 export async function claimCoverageAction(formData: FormData) {
@@ -213,7 +213,7 @@ export async function claimCoverageAction(formData: FormData) {
   const validation = await validateCoverageEligibility(session.id, exchangeId);
 
   if (!validation.valid) {
-    redirect(exchangeUrl(`?error=${encodeURIComponent(validation.code)}`));
+    redirect(exchangeUrl(`?tab=coverage&error=${encodeURIComponent(validation.code)}`));
   }
 
   const claimed = await claimCoverage({
@@ -222,11 +222,11 @@ export async function claimCoverageAction(formData: FormData) {
   });
 
   if (!claimed) {
-    redirect(exchangeUrl("?error=EXCHANGE_TAKEN"));
+    redirect(exchangeUrl("?tab=coverage&error=EXCHANGE_TAKEN"));
   }
 
   revalidatePath("/app/exchange");
-  redirect(exchangeUrl("?claimed=1"));
+  redirect(exchangeUrl("?tab=coverage&claimed=1"));
 }
 
 export async function proposeSwapAction(formData: FormData) {
@@ -247,7 +247,7 @@ export async function proposeSwapAction(formData: FormData) {
     source.date < today ||
     target.date < today
   ) {
-    redirect(exchangeUrl("?error=INVALID_SHIFT"));
+    redirect(exchangeUrl("?tab=my&error=INVALID_SHIFT"));
   }
 
   const requestCheck = validateSwapRequest({
@@ -261,7 +261,7 @@ export async function proposeSwapAction(formData: FormData) {
   });
 
   if (!requestCheck.valid) {
-    redirect(exchangeUrl(`?error=${encodeURIComponent(requestCheck.code)}`));
+    redirect(exchangeUrl(`?tab=my&error=${encodeURIComponent(requestCheck.code)}`));
   }
 
   const [requesterContext, targetContext] = await Promise.all([
@@ -278,7 +278,7 @@ export async function proposeSwapAction(formData: FormData) {
   ]);
 
   if (!requesterContext || !targetContext) {
-    redirect(exchangeUrl("?error=EMPLOYEE_NOT_FOUND"));
+    redirect(exchangeUrl("?tab=my&error=EMPLOYEE_NOT_FOUND"));
   }
 
   const requesterAdjusted = prepareExchangeContext(
@@ -333,7 +333,7 @@ export async function proposeSwapAction(formData: FormData) {
   );
 
   if (blocking) {
-    redirect(exchangeUrl(`?error=${encodeURIComponent(blocking.code)}`));
+    redirect(exchangeUrl(`?tab=my&error=${encodeURIComponent(blocking.code)}`));
   }
 
   try {
@@ -344,11 +344,11 @@ export async function proposeSwapAction(formData: FormData) {
       targetEmployeeId: target.employeeId,
     });
   } catch {
-    redirect(exchangeUrl("?error=SHIFT_ALREADY_OFFERED"));
+    redirect(exchangeUrl("?tab=my&error=SHIFT_ALREADY_OFFERED"));
   }
 
   revalidatePath("/app/exchange");
-  redirect(exchangeUrl("?swapRequested=1"));
+  redirect(exchangeUrl("?tab=my&swapRequested=1"));
 }
 
 export async function respondSwapAction(formData: FormData) {
@@ -364,15 +364,15 @@ export async function respondSwapAction(formData: FormData) {
     });
 
     if (!updated) {
-      redirect(exchangeUrl("?error=EXCHANGE_UNAVAILABLE"));
+      redirect(exchangeUrl("?tab=requests&error=EXCHANGE_UNAVAILABLE"));
     }
 
     revalidatePath("/app/exchange");
-    redirect(exchangeUrl("?swapDeclined=1"));
+    redirect(exchangeUrl("?tab=requests&swapDeclined=1"));
   }
 
   if (decision !== "ACCEPTED") {
-    redirect(exchangeUrl("?error=INVALID_DECISION"));
+    redirect(exchangeUrl("?tab=requests&error=INVALID_DECISION"));
   }
 
   const validation = await validateSwapEligibility(exchangeId);
@@ -397,11 +397,11 @@ export async function respondSwapAction(formData: FormData) {
   });
 
   if (!updated) {
-    redirect(exchangeUrl("?error=EXCHANGE_UNAVAILABLE"));
+    redirect(exchangeUrl("?tab=requests&error=EXCHANGE_UNAVAILABLE"));
   }
 
   revalidatePath("/app/exchange");
-  redirect(exchangeUrl("?swapAccepted=1"));
+  redirect(exchangeUrl("?tab=requests&swapAccepted=1"));
 }
 
 export async function reviewExchangeAction(formData: FormData) {
@@ -411,7 +411,7 @@ export async function reviewExchangeAction(formData: FormData) {
   const exchange = await getExchange(exchangeId);
 
   if (!exchange || exchange.status !== "MANAGER_PENDING") {
-    redirect(exchangeUrl("?error=EXCHANGE_UNAVAILABLE"));
+    redirect(exchangeUrl("?tab=requests&error=EXCHANGE_UNAVAILABLE"));
   }
 
   if (decision === "DENIED") {
@@ -421,16 +421,16 @@ export async function reviewExchangeAction(formData: FormData) {
     });
     revalidatePath("/app/exchange");
     revalidatePath("/app/schedule");
-    redirect(exchangeUrl("?reviewed=1"));
+    redirect(exchangeUrl("?tab=requests&reviewed=1"));
   }
 
   if (decision !== "APPROVED") {
-    redirect(exchangeUrl("?error=INVALID_DECISION"));
+    redirect(exchangeUrl("?tab=requests&error=INVALID_DECISION"));
   }
 
   if (exchange.kind === "COVERAGE") {
     if (!exchange.targetEmployeeId) {
-      redirect(exchangeUrl("?error=EXCHANGE_UNAVAILABLE"));
+      redirect(exchangeUrl("?tab=requests&error=EXCHANGE_UNAVAILABLE"));
     }
 
     const validation = await validateCoverageEligibility(
@@ -439,7 +439,7 @@ export async function reviewExchangeAction(formData: FormData) {
     );
 
     if (!validation.valid) {
-      redirect(exchangeUrl(`?error=${encodeURIComponent(validation.code)}`));
+      redirect(exchangeUrl(`?tab=requests&error=${encodeURIComponent(validation.code)}`));
     }
 
     const approved = await approveCoverageExchange({
@@ -448,13 +448,13 @@ export async function reviewExchangeAction(formData: FormData) {
     });
 
     if (!approved) {
-      redirect(exchangeUrl("?error=EXCHANGE_CHANGED"));
+      redirect(exchangeUrl("?tab=requests&error=EXCHANGE_CHANGED"));
     }
   } else {
     const validation = await validateSwapEligibility(exchangeId);
 
     if (!validation.valid) {
-      redirect(exchangeUrl(`?error=${encodeURIComponent(validation.code)}`));
+      redirect(exchangeUrl(`?tab=requests&error=${encodeURIComponent(validation.code)}`));
     }
 
     const approved = await approveSwapExchange({
@@ -463,13 +463,13 @@ export async function reviewExchangeAction(formData: FormData) {
     });
 
     if (!approved) {
-      redirect(exchangeUrl("?error=EXCHANGE_CHANGED"));
+      redirect(exchangeUrl("?tab=requests&error=EXCHANGE_CHANGED"));
     }
   }
 
   revalidatePath("/app/exchange");
   revalidatePath("/app/schedule");
-  redirect(exchangeUrl("?approved=1"));
+  redirect(exchangeUrl("?tab=requests&approved=1"));
 }
 
 
@@ -483,9 +483,9 @@ export async function cancelExchangeAction(formData: FormData) {
   });
 
   if (!cancelled) {
-    redirect(exchangeUrl("?error=EXCHANGE_UNAVAILABLE"));
+    redirect(exchangeUrl("?tab=history&error=EXCHANGE_UNAVAILABLE"));
   }
 
   revalidatePath("/app/exchange");
-  redirect(exchangeUrl("?cancelled=1"));
+  redirect(exchangeUrl("?tab=history&cancelled=1"));
 }
