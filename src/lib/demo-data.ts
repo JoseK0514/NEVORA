@@ -1,8 +1,8 @@
 import type { Employee, Location, Shift } from "@/lib/domain";
 
 export const locations: Location[] = [
-  { id: "loc-1", name: "Fuel Coffee Drive · Location 1", shortName: "Location 1", active: true },
-  { id: "loc-2", name: "Fuel Coffee Drive · Location 2", shortName: "Location 2", active: true },
+  { id: "loc-1", name: "FUEL - 2", shortName: "FUEL - 2", active: true },
+  { id: "loc-2", name: "FUEL - 110", shortName: "FUEL - 110", active: true },
 ];
 
 export const employees: Employee[] = [
