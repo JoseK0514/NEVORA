@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
-import { isManagerRole } from "@/lib/auth/permissions";
+import { isTimeOffReviewerRole } from "@/lib/auth/permissions";
 import { requireSession } from "@/lib/auth/session";
 import {
   listEmployeeTimeOffRequests,
@@ -59,7 +59,7 @@ export default async function RequestsPage({
   }>;
 }) {
   const session = await requireSession();
-  const manager = isManagerRole(session.role);
+  const manager = isTimeOffReviewerRole(session.role);
   const params = await searchParams;
 
   const [mine, pending] = await Promise.all([
