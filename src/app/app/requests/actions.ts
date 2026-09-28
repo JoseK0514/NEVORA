@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/auth/session";
-import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
+import { TIME_OFF_REVIEW_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
   createTimeOffRequest,
   reviewTimeOffRequest,
@@ -47,7 +47,7 @@ export async function requestTimeOffAction(formData: FormData) {
 }
 
 export async function reviewTimeOffAction(formData: FormData) {
-  const session = await requireRoles(MANAGER_ROLES);
+  const session = await requireRoles(TIME_OFF_REVIEW_ROLES);
   const requestId = String(formData.get("requestId") ?? "");
   const decision = String(formData.get("decision") ?? "");
 
