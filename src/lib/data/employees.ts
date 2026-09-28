@@ -193,3 +193,30 @@ export async function activateEmployeeCredential(input: {
 
   return rows[0]?.employee_id ?? null;
 }
+
+
+export async function getEmployeeActivationState(employeeId: string) {
+  const sql = getDb();
+  const rows = queryRows<{
+    id: string;
+    active: boolean;
+    has_credential: boolean;
+  }>(
+    await sql.query(
+      `SELECT
+         e.id,
+         e.active,
+         EXISTS (
+           SELECT 1
+           FROM employee_credentials c
+           WHERE c.employee_id = e.id
+         ) AS has_credential
+       FROM employees e
+       WHERE upper(e.id) = upper($1)
+       LIMIT 1`,
+      [employeeId],
+    ),
+  );
+
+  return rows[0] ?? null;
+}
