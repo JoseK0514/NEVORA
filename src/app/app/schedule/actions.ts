@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { addDays, isDateInWeek } from "@/lib/date-utils";
+import { addDays, isDateInWeek, weekStartFor } from "@/lib/date-utils";
 import { setAvailabilityDeadline } from "@/lib/data/week-settings";
 import { clearWeekAcknowledgements } from "@/lib/data/acknowledgements";
 import { listEmployees } from "@/lib/data/employees";
@@ -438,7 +438,7 @@ export async function setAvailabilityDeadlineAction(formData: FormData) {
 
   if (
     !/^\d{4}-\d{2}-\d{2}$/.test(weekStart) ||
-    !isDateInWeek(weekStart, weekStart)
+    weekStartFor(weekStart) !== weekStart
   ) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
