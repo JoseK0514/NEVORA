@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { isManagerRole } from "@/lib/auth/permissions";
@@ -6,10 +7,8 @@ import {
   listEmployeeTimeOffRequests,
   listPendingTimeOffRequests,
 } from "@/lib/data/requests";
-import {
-  requestTimeOffAction,
-  reviewTimeOffAction,
-} from "@/app/app/requests/actions";
+import { reviewTimeOffAction } from "@/app/app/requests/actions";
+import { TimeOffForm } from "@/app/app/requests/time-off-form";
 import { formatTime } from "@/lib/date-utils";
 
 function dateLabel(date: string) {
@@ -39,6 +38,16 @@ function requestRange(request: {
   return `${dates} · Full day`;
 }
 
+function statusTone(status: string) {
+  if (status === "APPROVED") return "success" as const;
+  if (status === "PENDING") return "warning" as const;
+  return "neutral" as const;
+}
+
+function statusLabel(status: string) {
+  return status[0] + status.slice(1).toLowerCase();
+}
+
 export default async function RequestsPage({
   searchParams,
 }: {
@@ -46,6 +55,7 @@ export default async function RequestsPage({
     error?: string;
     submitted?: string;
     reviewed?: string;
+    tab?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -57,12 +67,19 @@ export default async function RequestsPage({
     manager ? listPendingTimeOffRequests() : Promise.resolve([]),
   ]);
 
+  const activeTab =
+    params.tab === "my"
+      ? "my"
+      : params.tab === "team" && manager
+        ? "team"
+        : "new";
+
   return (
-    <>
+    <div className="timeoff-page">
       <PageHeader
         eyebrow="Scheduling requests"
         title="Time Off"
-        description="Request time off here. Approved requests automatically become scheduling blocks."
+        description="Request and manage your time away."
       />
 
       {params.error ? (
@@ -75,132 +92,151 @@ export default async function RequestsPage({
         <p className="form-success">The request was reviewed.</p>
       ) : null}
 
-      <section className="content-grid two request-layout">
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">New request</p>
-              <h2>Request time off</h2>
+      <nav className="timeoff-tabs" aria-label="Time off sections">
+        <Link
+          className={activeTab === "new" ? "selected" : ""}
+          href="/app/requests?tab=new"
+          aria-current={activeTab === "new" ? "page" : undefined}
+        >
+          New Request
+        </Link>
+        <Link
+          className={activeTab === "my" ? "selected" : ""}
+          href="/app/requests?tab=my"
+          aria-current={activeTab === "my" ? "page" : undefined}
+        >
+          My Requests
+        </Link>
+        {manager ? (
+          <Link
+            className={activeTab === "team" ? "selected" : ""}
+            href="/app/requests?tab=team"
+            aria-current={activeTab === "team" ? "page" : undefined}
+          >
+            Team Requests
+            <span className={pending.length ? "tab-count attention" : "tab-count"}>
+              {pending.length}
+            </span>
+          </Link>
+        ) : null}
+      </nav>
+
+      <section className="timeoff-workspace">
+        {activeTab === "new" ? (
+          <article className="panel timeoff-panel timeoff-form-panel">
+            <div className="timeoff-panel-heading">
+              <div>
+                <p className="eyebrow">New request</p>
+                <h2>Request time off</h2>
+                <p>Choose your dates, request type, and add a note if needed.</p>
+              </div>
             </div>
-          </div>
+            <TimeOffForm />
+          </article>
+        ) : null}
 
-          <form action={requestTimeOffAction} className="employee-form">
-            <div className="form-columns">
-              <label>
-                Start Date
-                <input type="date" name="startDate" required />
-              </label>
-              <label>
-                End Date
-                <input type="date" name="endDate" required />
-              </label>
+        {activeTab === "my" ? (
+          <article className="panel timeoff-panel request-history-panel">
+            <div className="timeoff-panel-heading">
+              <div>
+                <p className="eyebrow">My requests</p>
+                <h2>Request history</h2>
+                <p>Track the status of your submitted time-off requests.</p>
+              </div>
             </div>
 
-            <label className="checkbox-row partial-toggle">
-              <input type="checkbox" name="partialDay" />
-              <span>This is only part of the day</span>
-            </label>
-
-            <div className="form-columns">
-              <label>
-                Start Time <span>Only for partial-day requests</span>
-                <input type="time" name="startTime" />
-              </label>
-              <label>
-                End Time <span>Only for partial-day requests</span>
-                <input type="time" name="endTime" />
-              </label>
-            </div>
-
-            <label>
-              Reason <span>Optional</span>
-              <input name="reason" maxLength={250} placeholder="Optional note for management" />
-            </label>
-
-            <div className="form-footer">
-              <button className="button primary" type="submit">Submit Request</button>
-            </div>
-          </form>
-        </article>
-
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">My requests</p>
-              <h2>Request history</h2>
-            </div>
-          </div>
-
-          <div className="request-list">
-            {mine.length ? mine.map((request) => (
-              <div className="request-list-row" key={request.id}>
-                <div>
-                  <strong>{requestRange(request)}</strong>
-                  {request.reason ? <span>{request.reason}</span> : null}
+            <div className="request-list timeoff-request-list">
+              {mine.length ? (
+                mine.map((request) => (
+                  <div className="request-list-row timeoff-request-row" key={request.id}>
+                    <div className="request-row-copy">
+                      <strong>{requestRange(request)}</strong>
+                      {request.reason ? (
+                        <span>{request.reason}</span>
+                      ) : (
+                        <span>{request.startTime ? "Partial-day request" : "Full-day request"}</span>
+                      )}
+                    </div>
+                    <StatusPill tone={statusTone(request.status)}>
+                      {statusLabel(request.status)}
+                    </StatusPill>
+                  </div>
+                ))
+              ) : (
+                <div className="timeoff-empty-state">
+                  <span className="empty-state-mark" aria-hidden="true">—</span>
+                  <strong>No time-off requests yet</strong>
+                  <span>Your submitted requests will appear here.</span>
                 </div>
-                <StatusPill
-                  tone={
-                    request.status === "APPROVED"
-                      ? "success"
-                      : request.status === "PENDING"
-                        ? "warning"
-                        : "neutral"
-                  }
-                >
-                  {request.status[0]}{request.status.slice(1).toLowerCase()}
-                </StatusPill>
+              )}
+            </div>
+          </article>
+        ) : null}
+
+        {activeTab === "team" && manager ? (
+          <div className="team-request-view">
+            <div className="team-request-heading">
+              <div>
+                <p className="eyebrow">Manager review</p>
+                <h2>Team requests</h2>
+                <p>
+                  {pending.length
+                    ? `${pending.length} request${pending.length === 1 ? "" : "s"} waiting for review.`
+                    : "No requests are waiting for review."}
+                </p>
               </div>
-            )) : (
-              <div className="empty-state">
-                <strong>No requests yet.</strong>
-                <span>Your submitted requests will appear here.</span>
+            </div>
+
+            {pending.length ? (
+              <div className="request-review-grid timeoff-review-grid">
+                {pending.map((request) => (
+                  <article className="panel request-card timeoff-review-card" key={request.id}>
+                    <div className="review-card-copy">
+                      <div className="review-card-topline">
+                        <span className="review-avatar" aria-hidden="true">
+                          {request.employeeName
+                            .split(" ")
+                            .map((part) => part[0])
+                            .join("")
+                            .slice(0, 2)
+                            .toUpperCase()}
+                        </span>
+                        <div>
+                          <h2>{request.employeeName}</h2>
+                          <p>{requestRange(request)}</p>
+                        </div>
+                      </div>
+                      {request.reason ? (
+                        <p className="review-reason">{request.reason}</p>
+                      ) : (
+                        <p className="review-reason muted">No reason provided.</p>
+                      )}
+                    </div>
+
+                    <form action={reviewTimeOffAction} className="request-actions">
+                      <input type="hidden" name="requestId" value={request.id} />
+                      <button className="button secondary" name="decision" value="DENIED" type="submit">
+                        Decline
+                      </button>
+                      <button className="button primary" name="decision" value="APPROVED" type="submit">
+                        Approve
+                      </button>
+                    </form>
+                  </article>
+                ))}
               </div>
+            ) : (
+              <article className="panel timeoff-panel compact-empty-panel">
+                <div className="timeoff-empty-state">
+                  <span className="empty-state-mark" aria-hidden="true">✓</span>
+                  <strong>You're all caught up</strong>
+                  <span>New employee time-off requests will appear here.</span>
+                </div>
+              </article>
             )}
           </div>
-        </article>
+        ) : null}
       </section>
-
-      {manager ? (
-        <section className="manager-request-section">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Manager review</p>
-              <h2>Pending team requests</h2>
-            </div>
-            <StatusPill tone={pending.length ? "warning" : "success"}>
-              {pending.length} pending
-            </StatusPill>
-          </div>
-
-          <div className="request-review-grid">
-            {pending.length ? pending.map((request) => (
-              <article className="panel request-card" key={request.id}>
-                <div>
-                  <p className="eyebrow">Time off</p>
-                  <h2>{request.employeeName}</h2>
-                  <p>{requestRange(request)}</p>
-                  {request.reason ? <p>{request.reason}</p> : null}
-                </div>
-
-                <form action={reviewTimeOffAction} className="request-actions">
-                  <input type="hidden" name="requestId" value={request.id} />
-                  <button className="button secondary" name="decision" value="DENIED" type="submit">
-                    Deny
-                  </button>
-                  <button className="button primary" name="decision" value="APPROVED" type="submit">
-                    Approve
-                  </button>
-                </form>
-              </article>
-            )) : (
-              <article className="panel empty-state">
-                <strong>Nothing waiting for review.</strong>
-                <span>New employee time-off requests will show here.</span>
-              </article>
-            )}
-          </div>
-        </section>
-      ) : null}
-    </>
+    </div>
   );
 }
