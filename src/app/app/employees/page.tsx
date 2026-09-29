@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
+import { formatPhoneNumber } from "@/lib/phone";
 
 export default async function EmployeesPage() {
   await requireRoles(MANAGER_ROLES);
@@ -18,7 +19,7 @@ export default async function EmployeesPage() {
         eyebrow="Team"
         title="Employees"
         description="Employee profiles stay intentionally simple and scheduling-focused."
-        actions={<Link className="button primary" href="/app/employees/new">Add employee</Link>}
+        actions={<Link className="button primary" href="/app/employees/new">Add Employee</Link>}
       />
 
       <section className="panel">
@@ -36,7 +37,7 @@ export default async function EmployeesPage() {
                   <div className="avatar">{employee.firstName[0]}{employee.lastName[0]}</div>
                   <div>
                     <strong>{employee.firstName} {employee.lastName}</strong>
-                    <span>{employee.id} · {employee.phone}</span>
+                    <span>{employee.id} · {formatPhoneNumber(employee.phone)}</span>
                   </div>
                 </div>
                 <span>{employee.role[0]}{employee.role.slice(1).toLowerCase()}</span>

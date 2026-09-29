@@ -16,7 +16,7 @@ export default async function LoginPage({
           <BrandMark large />
           <div>
             <p className="eyebrow">Fuel Coffee Drive</p>
-            <h1>Employee scheduling</h1>
+            <h1>Employee Scheduling</h1>
           </div>
         </div>
 
@@ -42,12 +42,12 @@ export default async function LoginPage({
               required
             />
           </label>
-          <button type="submit" className="button primary full">Sign in</button>
+          <button type="submit" className="button primary full">Sign In</button>
         </form>
 
         <div className="auth-secondary">
           <span>First time here?</span>
-          <Link href="/activate">Activate account</Link>
+          <Link href="/activate">Activate Account</Link>
         </div>
       </section>
     </main>

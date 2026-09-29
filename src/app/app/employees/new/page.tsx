@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { PhoneInput } from "@/components/phone-input";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
 import { createEmployeeAction } from "@/app/app/employees/actions";
@@ -17,7 +18,7 @@ export default async function NewEmployeePage({
     <>
       <PageHeader
         eyebrow="Team"
-        title="Add employee"
+        title="Add Employee"
         description="Only scheduling information is collected. Email remains optional."
         actions={<Link className="button secondary" href="/app/employees">Cancel</Link>}
       />
@@ -53,7 +54,7 @@ export default async function NewEmployeePage({
           <div className="form-columns">
             <label>
               Phone Number
-              <input name="phone" inputMode="tel" required />
+              <PhoneInput name="phone" required />
             </label>
             <label>
               Email <span>Optional</span>
@@ -85,7 +86,7 @@ export default async function NewEmployeePage({
           </div>
 
           <fieldset>
-            <legend>Eligible locations</legend>
+            <legend>Eligible Locations</legend>
             <p>Primary location is always included automatically.</p>
             <div className="checkbox-grid">
               {locations.map((location) => (
@@ -108,7 +109,7 @@ export default async function NewEmployeePage({
 
           <div className="form-footer">
             <Link className="button secondary" href="/app/employees">Cancel</Link>
-            <button className="button primary" type="submit">Create employee</button>
+            <button className="button primary" type="submit">Create Employee</button>
           </div>
         </form>
       </section>

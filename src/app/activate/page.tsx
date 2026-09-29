@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
+import { PhoneInput } from "@/components/phone-input";
 import { activateAccountAction } from "@/app/activate/actions";
 
 export default async function ActivatePage({
@@ -16,7 +17,7 @@ export default async function ActivatePage({
           <BrandMark large />
           <div>
             <p className="eyebrow">Fuel Coffee Drive</p>
-            <h1>Activate account</h1>
+            <h1>Activate Account</h1>
           </div>
         </div>
 
@@ -41,7 +42,7 @@ export default async function ActivatePage({
           </label>
           <label>
             Phone Number
-            <input name="phone" inputMode="tel" autoComplete="tel" required />
+            <PhoneInput name="phone" autoComplete="tel" required />
           </label>
           <label>
             Create Password
@@ -63,7 +64,7 @@ export default async function ActivatePage({
               required
             />
           </label>
-          <button type="submit" className="button primary full">Activate account</button>
+          <button type="submit" className="button primary full">Activate Account</button>
         </form>
 
         <div className="auth-secondary">

@@ -3,12 +3,13 @@
 import { redirect } from "next/navigation";
 import { hashPassword } from "@/lib/auth/password";
 import { activateEmployeeCredential } from "@/lib/data/employees";
+import { normalizePhoneNumber } from "@/lib/phone";
 
 export async function activateAccountAction(formData: FormData) {
   const employeeId = String(formData.get("employeeId") ?? "")
     .trim()
     .toUpperCase();
-  const phone = String(formData.get("phone") ?? "").trim();
+  const phone = normalizePhoneNumber(String(formData.get("phone") ?? ""));
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
