@@ -80,14 +80,19 @@ function coverageAction(
   weekStart: string,
   gap: ManagerCoverageGapInput,
 ): ManagerActionItem {
+  const leadOnly = gap.gap === 0;
   const people = gap.gap === 1 ? "1 employee" : `${gap.gap} employees`;
 
   return {
     id: `COVERAGE:${gap.key}`,
     type: "COVERAGE_GAP",
     priority: "URGENT",
-    title: `Coverage gap at ${gap.locationName}`,
-    detail: `${gap.date} · ${gap.startTime}–${gap.endTime} · Need ${people}`,
+    title: leadOnly
+      ? `Lead coverage missing at ${gap.locationName}`
+      : `Coverage gap at ${gap.locationName}`,
+    detail: leadOnly
+      ? `${gap.date} · ${gap.startTime}–${gap.endTime} · Designated lead required`
+      : `${gap.date} · ${gap.startTime}–${gap.endTime} · Need ${people}`,
     href:
       `/app/schedule/coverage?week=${encode(weekStart)}` +
       `&date=${encode(gap.date)}` +

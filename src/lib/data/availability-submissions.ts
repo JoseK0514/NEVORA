@@ -125,3 +125,70 @@ export async function getAvailabilitySubmissionSummary(weekStart: string) {
     missingEmployeeIds: row?.missing_employee_ids ?? [],
   };
 }
+
+export type AvailabilitySubmissionListItem = AvailabilitySubmissionStatus & {
+  employeeId: string;
+  employeeName: string;
+};
+
+export async function listAvailabilitySubmissionStatuses(
+  weekStart: string,
+): Promise<AvailabilitySubmissionListItem[]> {
+  const sql = getDb();
+  const rows = queryRows<{
+    employee_id: string;
+    employee_name: string;
+    submitted_at: Date | string | null;
+    updated_at: Date | string | null;
+    window_count: string | number;
+    deadline_passed: boolean;
+  }>(
+    await sql.query(
+      `WITH window_counts AS (
+         SELECT employee_id, count(*) AS window_count
+         FROM weekly_availability_windows
+         WHERE week_start = $1
+         GROUP BY employee_id
+       ),
+       deadline AS (
+         SELECT COALESCE(availability_deadline < now(), false) AS passed
+         FROM schedule_week_settings
+         WHERE week_start = $1
+       )
+       SELECT
+         e.id AS employee_id,
+         e.first_name || ' ' || e.last_name AS employee_name,
+         s.submitted_at,
+         s.updated_at,
+         COALESCE(w.window_count, 0) AS window_count,
+         COALESCE((SELECT passed FROM deadline), false) AS deadline_passed
+       FROM employees e
+       LEFT JOIN weekly_availability_submissions s
+         ON s.employee_id = e.id
+        AND s.week_start = $1
+       LEFT JOIN window_counts w ON w.employee_id = e.id
+       WHERE e.active = true
+       ORDER BY e.first_name, e.last_name`,
+      [weekStart],
+    ),
+  );
+
+  return rows.map((row) => {
+    const submitted = Boolean(row.submitted_at);
+    const windowCount = Number(row.window_count ?? 0);
+    const state = buildAvailabilitySubmissionState({
+      submitted,
+      windowCount,
+      deadlinePassed: Boolean(row.deadline_passed),
+    });
+
+    return {
+      employeeId: row.employee_id,
+      employeeName: row.employee_name,
+      ...state,
+      windowCount,
+      submittedAt: isoValue(row.submitted_at),
+      updatedAt: isoValue(row.updated_at),
+    };
+  });
+}

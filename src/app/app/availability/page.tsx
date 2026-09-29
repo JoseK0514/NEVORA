@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { AvailabilityEditor } from "@/components/availability-editor";
+import { StatusPill } from "@/components/status-pill";
 import { requireSession } from "@/lib/auth/session";
+import { isManagerRole } from "@/lib/auth/permissions";
 import { listAvailability } from "@/lib/data/availability";
-import { getAvailabilitySubmissionStatus } from "@/lib/data/availability-submissions";
+import {
+  getAvailabilitySubmissionStatus,
+  listAvailabilitySubmissionStatuses,
+  type AvailabilitySubmissionListItem,
+} from "@/lib/data/availability-submissions";
 import type { AvailabilitySubmissionStatus } from "@/lib/assistance/availability-submission";
 import {
   getUpcomingAvailabilityWeek,
@@ -53,6 +59,12 @@ function buildState(
   ) as AvailabilityState;
 }
 
+function managerSubmissionLabel(status: AvailabilitySubmissionListItem) {
+  if (!status.submitted) return "Not submitted";
+  if (status.windowCount === 0) return "Submitted · unavailable all week";
+  return "Submitted";
+}
+
 function submissionStatusCopy(status: AvailabilitySubmissionStatus) {
   if (status.state === "LOCKED") {
     if (!status.submitted) {
@@ -98,9 +110,11 @@ export default async function AvailabilityPage({
     error?: string;
     saved?: string;
     week?: string;
+    employeeId?: string;
   }>;
 }) {
   const session = await requireSession();
+  const manager = isManagerRole(session.role);
   const params = await searchParams;
   const currentWeek = weekStartFor(currentDateInPuertoRico());
   const selectedWeek = validWeek(params.week) ? params.week! : undefined;
@@ -113,15 +127,20 @@ export default async function AvailabilityPage({
   let initialAvailability = buildState(normalAvailability);
   let settings = null;
   let submissionStatus: AvailabilitySubmissionStatus | null = null;
+  let managerStatuses: AvailabilitySubmissionListItem[] = [];
 
   if (selectedWeek) {
-    const [weekSettings, weekly, status] = await Promise.all([
+    const [weekSettings, weekly, status, teamStatuses] = await Promise.all([
       getWeekSettings(selectedWeek),
       listWeeklyAvailability(session.id, selectedWeek),
       getAvailabilitySubmissionStatus(session.id, selectedWeek),
+      manager
+        ? listAvailabilitySubmissionStatuses(selectedWeek)
+        : Promise.resolve([]),
     ]);
     settings = weekSettings;
     submissionStatus = status;
+    managerStatuses = teamStatuses;
 
     if (settings?.availabilityDeadline) {
       initialAvailability = buildState(weekly);
@@ -141,6 +160,9 @@ export default async function AvailabilityPage({
   const submissionCopy = submissionStatus
     ? submissionStatusCopy(submissionStatus)
     : null;
+  const managerSubmittedCount = managerStatuses.filter(
+    (status) => status.submitted,
+  ).length;
 
   return (
     <div className="availability-page">
@@ -212,6 +234,54 @@ export default async function AvailabilityPage({
               {formatPuertoRicoDateTime(submissionStatus.updatedAt)}
             </small>
           ) : null}
+        </section>
+      ) : null}
+
+      {manager && selectedWeek ? (
+        <section className="panel availability-team-status">
+          <div className="availability-team-heading">
+            <div>
+              <h2>Team availability</h2>
+              <p>
+                {managerSubmittedCount}/{managerStatuses.length} active employees
+                submitted for this week.
+              </p>
+            </div>
+            <StatusPill
+              tone={
+                managerSubmittedCount === managerStatuses.length
+                  ? "success"
+                  : "warning"
+              }
+            >
+              {managerStatuses.length - managerSubmittedCount} missing
+            </StatusPill>
+          </div>
+
+          <div className="availability-team-list">
+            {managerStatuses.map((status) => (
+              <div
+                className={
+                  params.employeeId === status.employeeId
+                    ? "availability-team-row selected"
+                    : "availability-team-row"
+                }
+                id={`availability-${status.employeeId}`}
+                key={status.employeeId}
+              >
+                <div>
+                  <strong>{status.employeeName}</strong>
+                  <span>{status.employeeId}</span>
+                </div>
+                <div className="availability-team-state">
+                  <StatusPill tone={status.submitted ? "success" : "warning"}>
+                    {managerSubmissionLabel(status)}
+                  </StatusPill>
+                  {status.state === "LOCKED" ? <small>Locked</small> : null}
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
       ) : null}
 

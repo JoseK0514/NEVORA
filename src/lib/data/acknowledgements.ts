@@ -207,3 +207,24 @@ export async function clearWeekAcknowledgements(weekStart: string) {
     [weekStart],
   );
 }
+
+export async function listUnacknowledgedEmployeeIds(weekStart: string) {
+  const latest = await getLatestPublicationRevision(weekStart);
+  if (!latest) return [];
+
+  const latestShifts = await listRevisionShifts(latest.id);
+  const employeeIds = Array.from(
+    new Set(latestShifts.map((shift) => shift.employeeId)),
+  );
+
+  const states = await Promise.all(
+    employeeIds.map(async (employeeId) => ({
+      employeeId,
+      state: await getEmployeeAcknowledgementState(weekStart, employeeId),
+    })),
+  );
+
+  return states
+    .filter(({ state }) => state.needsAcknowledgement)
+    .map(({ employeeId }) => employeeId);
+}

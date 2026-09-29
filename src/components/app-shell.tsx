@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
+import { NavIcon } from "@/components/nav-icon";
 import type { ReactNode } from "react";
 import { logout } from "@/app/login/actions";
 import type { UserRole } from "@/lib/domain";
@@ -22,6 +23,13 @@ export function AppShell({
   const pathname = usePathname();
   const navigation = navigationForRole(user.role);
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
+  const activeHref = navigation
+    .filter((item) =>
+      item.href === "/app"
+        ? pathname === "/app"
+        : pathname === item.href || pathname.startsWith(`${item.href}/`),
+    )
+    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   return (
     <div className="app-shell">
@@ -36,8 +44,7 @@ export function AppShell({
 
         <nav className="sidebar-nav" aria-label="Primary navigation">
           {navigation.map((item) => {
-            const active =
-              item.href === "/app" ? pathname === "/app" : pathname.startsWith(item.href);
+            const active = item.href === activeHref;
 
             return (
               <Link
@@ -45,7 +52,10 @@ export function AppShell({
                 href={item.href}
                 className={active ? "nav-link active" : "nav-link"}
               >
-                {item.label}
+                <span className="nav-icon">
+                  <NavIcon name={item.icon} />
+                </span>
+                <span>{item.label}</span>
               </Link>
             );
           })}
@@ -76,8 +86,7 @@ export function AppShell({
 
         <nav className="mobile-nav" aria-label="Mobile navigation">
           {navigation.slice(0, 5).map((item) => {
-            const active =
-              item.href === "/app" ? pathname === "/app" : pathname.startsWith(item.href);
+            const active = item.href === activeHref;
 
             return (
               <Link
@@ -85,7 +94,13 @@ export function AppShell({
                 href={item.href}
                 className={active ? "mobile-nav-link active" : "mobile-nav-link"}
               >
-                {item.label === "Dashboard" ? "Home" : item.label}
+                {item.label === "Dashboard"
+                  ? "Home"
+                  : item.label === "Shift requests"
+                    ? "Shifts"
+                    : item.label === "My schedule"
+                      ? "Schedule"
+                      : item.label}
               </Link>
             );
           })}

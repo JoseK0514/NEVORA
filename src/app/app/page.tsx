@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
+import {
+  ManagerDashboard,
+  type ManagerDashboardView,
+} from "@/components/manager-dashboard";
 import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import {
+  addDays,
   currentDateInPuertoRico,
-  formatDayLabel,
-  formatPuertoRicoDateTime,
-  formatTime,
+  durationMinutes,
   formatWeekRange,
   weekDates,
   weekStartFor,
@@ -24,10 +27,17 @@ import {
   listScheduleStatuses,
   listWeekShifts,
 } from "@/lib/data/schedules";
-import { getAcknowledgementSummary } from "@/lib/data/acknowledgements";
+import {
+  getAcknowledgementSummary,
+  listUnacknowledgedEmployeeIds,
+} from "@/lib/data/acknowledgements";
+import { getAvailabilitySubmissionSummary } from "@/lib/data/availability-submissions";
 import { getWeekSettings } from "@/lib/data/week-settings";
+import { listLocations } from "@/lib/data/employees";
+import { getLatestPublicationRevision } from "@/lib/data/publication-revisions";
 import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
 import { buildManagerDashboardStatus } from "@/lib/dashboard-status";
+import { buildManagerActionItems } from "@/lib/assistance/manager-actions";
 
 function employeeDashboard(firstName: string) {
   return (
@@ -99,23 +109,46 @@ function employeeDashboard(firstName: string) {
   );
 }
 
-function readinessLabel(state: string) {
-  if (state === "PUBLISHED") return "Published";
-  if (state === "READY") return "Ready to publish";
-  if (state === "NEEDS_ATTENTION") return "Needs attention";
-  return "Not started";
+const DASHBOARD_VIEWS: ManagerDashboardView[] = [
+  "overview",
+  "schedule",
+  "team",
+  "requests",
+  "activity",
+];
+
+function validDashboardView(value?: string): ManagerDashboardView {
+  return DASHBOARD_VIEWS.includes(value as ManagerDashboardView)
+    ? (value as ManagerDashboardView)
+    : "overview";
 }
 
-export default async function DashboardPage() {
+function validWeek(value?: string) {
+  return (
+    value &&
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    weekStartFor(value) === value
+  );
+}
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string; week?: string }>;
+}) {
   const session = await requireSession();
   const manager = isManagerRole(session.role);
+  const params = await searchParams;
 
   if (!manager) {
     return employeeDashboard(session.firstName);
   }
 
-  const today = currentDateInPuertoRico();
-  const weekStart = weekStartFor(today);
+  const currentWeek = weekStartFor(currentDateInPuertoRico());
+  const weekStart = validWeek(params.week) ? params.week! : currentWeek;
+  const view = validDashboardView(params.view);
+  const previousWeek = addDays(weekStart, -7);
+  const nextWeek = addDays(weekStart, 7);
 
   const [
     shifts,
@@ -128,6 +161,10 @@ export default async function DashboardPage() {
     pendingCallouts,
     acknowledgements,
     weekSettings,
+    availabilitySubmissionSummary,
+    unacknowledgedEmployeeIds,
+    locations,
+    latestRevision,
   ] = await Promise.all([
     listWeekShifts({ weekStart }),
     listScheduleStatuses(weekStart),
@@ -139,6 +176,10 @@ export default async function DashboardPage() {
     listPendingCallouts(),
     getAcknowledgementSummary(weekStart),
     getWeekSettings(weekStart),
+    getAvailabilitySubmissionSummary(weekStart),
+    listUnacknowledgedEmployeeIds(weekStart),
+    listLocations(),
+    getLatestPublicationRevision(weekStart),
   ]);
 
   const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
@@ -186,6 +227,82 @@ export default async function DashboardPage() {
     (schedule) => schedule.status === "PUBLISHED",
   );
 
+  const employeeNameMap = new Map(
+    employeeTargets.map((employee) => [
+      employee.employeeId,
+      employee.employeeName,
+    ]),
+  );
+
+  const managerActions = buildManagerActionItems({
+    weekStart,
+    coverageGaps: health.coverageBlocks
+      .filter((block) => !block.covered)
+      .map((block) => ({
+        key: block.key,
+        locationId: block.locationId,
+        locationName: block.locationName,
+        date: block.date,
+        startTime: block.startTime,
+        endTime: block.endTime,
+        gap: block.gap,
+      })),
+    hourIssues: [
+      ...health.hourBalances.flatMap((balance) =>
+        balance.status === "ON_TARGET"
+          ? []
+          : [
+              {
+                employeeId: balance.employeeId,
+                employeeName: balance.employeeName,
+                kind: balance.status as "UNDER" | "OVER",
+                scheduledHours: balance.scheduledHours,
+                targetHours: balance.targetHours,
+              },
+            ],
+      ),
+      ...employeeTargets
+        .filter((employee) => employee.targetWeeklyHours === undefined)
+        .map((employee) => ({
+          employeeId: employee.employeeId,
+          employeeName: employee.employeeName,
+          kind: "TARGET_MISSING" as const,
+        })),
+    ],
+    pendingRequests: [
+      ...pendingTimeOff.map((request) => ({
+        id: request.id,
+        kind: "TIME_OFF" as const,
+        employeeName: request.employeeName,
+        createdAt: request.createdAt,
+      })),
+      ...pendingExchanges.map((request) => ({
+        id: request.id,
+        kind: "EXCHANGE" as const,
+        employeeName: request.requestedByName,
+        createdAt: request.createdAt,
+      })),
+      ...pendingCallouts.map((request) => ({
+        id: request.id,
+        kind: "CALLOUT" as const,
+        employeeName: request.employeeName,
+        createdAt: request.createdAt,
+      })),
+    ],
+    missingAvailability: availabilitySubmissionSummary.missingEmployeeIds.map(
+      (employeeId) => ({
+        employeeId,
+        employeeName: employeeNameMap.get(employeeId) ?? employeeId,
+      }),
+    ),
+    unacknowledgedEmployees: unacknowledgedEmployeeIds.map((employeeId) => ({
+      employeeId,
+      employeeName: employeeNameMap.get(employeeId) ?? employeeId,
+    })),
+    availabilityDeadlineSet: Boolean(weekSettings?.availabilityDeadline),
+    coverageRulesConfigured,
+  });
+
   const dashboard = buildManagerDashboardStatus({
     locations: health.locationCoverage,
     scheduleStatuses,
@@ -200,356 +317,86 @@ export default async function DashboardPage() {
     hasPublishedSchedule,
     availabilityDeadlineSet: Boolean(weekSettings?.availabilityDeadline),
     coverageRulesConfigured,
+    managerActions,
   });
 
-  const hourIssues = health.hourBalances.filter(
-    (balance) => balance.status !== "ON_TARGET",
+  const dates = weekDates(weekStart);
+  const coverageGaps = health.coverageBlocks.filter((block) => !block.covered);
+  const daySummaries = dates.map((date) => ({
+    date,
+    weekday: new Date(`${date}T12:00:00Z`).toLocaleDateString("en-US", {
+      weekday: "short",
+      timeZone: "UTC",
+    }),
+    day: String(Number(date.slice(-2))),
+    shiftCount: effectiveShifts.filter((shift) => shift.date === date).length,
+    gapCount: coverageGaps.filter((block) => block.date === date).length,
+  }));
+
+  const balanceMap = new Map(
+    health.hourBalances.map((balance) => [balance.employeeId, balance]),
   );
-  const firstCoverageGap = health.coverageBlocks.find(
-    (block) => !block.covered,
-  );
-  const firstHourIssue = hourIssues[0];
+  const hourRows = employeeTargets.map((employee) => {
+    const balance = balanceMap.get(employee.employeeId);
+    const scheduledHours = balance
+      ? balance.scheduledHours
+      : Math.round(
+          (effectiveShifts
+            .filter((shift) => shift.employeeId === employee.employeeId)
+            .reduce(
+              (sum, shift) =>
+                sum + durationMinutes(shift.startTime, shift.endTime),
+              0,
+            ) /
+            60) *
+            100,
+        ) / 100;
+
+    return {
+      employeeId: employee.employeeId,
+      employeeName: employee.employeeName,
+      scheduledHours,
+      targetHours: employee.targetWeeklyHours,
+      status: balance
+        ? balance.status
+        : ("TARGET_MISSING" as const),
+    };
+  });
 
   return (
-    <div className="manager-dashboard">
-      <PageHeader
-        title={`Welcome, ${session.firstName}`}
-        description={
-          dashboard.attentionCount
-            ? `${formatWeekRange(weekStart)} · ${dashboard.attentionCount} area${dashboard.attentionCount === 1 ? "" : "s"} need attention`
-            : `${formatWeekRange(weekStart)} · Everything is on track`
-        }
-        actions={
-          <Link className="button primary" href={`/app/schedule?week=${weekStart}`}>
-            Open schedule
-          </Link>
-        }
-      />
-
-      <section className="manager-week-context">
-        <div>
-          <strong>This week</strong>
-          <span>{formatWeekRange(weekStart)}</span>
-        </div>
-        <div>
-          <strong>Availability deadline</strong>
-          <span>
-            {weekSettings?.availabilityDeadline
-              ? formatPuertoRicoDateTime(weekSettings.availabilityDeadline)
-              : "Not set"}
-          </span>
-        </div>
-        {!weekSettings?.availabilityDeadline ? (
-          <Link className="text-link" href={`/app/schedule?week=${weekStart}`}>
-            Set deadline
-          </Link>
-        ) : null}
-      </section>
-
-      <section className="manager-overview-strip" aria-label="Weekly status">
-        <Link href={`/app/schedule?week=${weekStart}`} className="manager-overview-item">
-          <span>Schedule</span>
-          <strong>
-            {dashboard.readyLocationCount}/{staffingSettings.length}
-          </strong>
-          <small>locations ready</small>
-        </Link>
-
-        <Link href="#needs-attention" className="manager-overview-item">
-          <span>Coverage</span>
-          <strong>
-            {!coverageRulesConfigured
-              ? "Needs setup"
-              : dashboard.totalCoverageGaps || "Clear"}
-          </strong>
-          <small>
-            {!coverageRulesConfigured
-              ? "coverage rules needed"
-              : dashboard.totalCoverageGaps
-                ? "staffing gaps"
-                : "no staffing gaps"}
-          </small>
-        </Link>
-
-        <Link href="#needs-attention" className="manager-overview-item">
-          <span>Employee hours</span>
-          <strong>{dashboard.hoursReviewCount}</strong>
-          <small>
-            {dashboard.hoursReviewCount === 1
-              ? "employee to review"
-              : "employees to review"}
-          </small>
-        </Link>
-
-        <Link href="#needs-attention" className="manager-overview-item">
-          <span>Requests</span>
-          <strong>{dashboard.pendingRequestCount}</strong>
-          <small>
-            {dashboard.pendingRequestCount === 1
-              ? "pending approval"
-              : "pending approvals"}
-          </small>
-        </Link>
-      </section>
-
-      <section className="manager-dashboard-grid">
-        <article className="manager-attention-panel" id="needs-attention">
-          <div className="manager-section-heading">
-            <div>
-              <h2>Needs attention</h2>
-              <p>Prioritized items that can block or weaken this week.</p>
-            </div>
-            <StatusPill tone={dashboard.attentionCount ? "warning" : "success"}>
-              {dashboard.attentionCount
-                ? `${dashboard.attentionCount} area${dashboard.attentionCount === 1 ? "" : "s"}`
-                : "All clear"}
-            </StatusPill>
-          </div>
-
-          {dashboard.attentionCount ? (
-            <div className="manager-attention-list">
-              {!coverageRulesConfigured ? (
-                <div className="manager-attention-row">
-                  <div>
-                    <strong>Coverage periods are not fully configured</strong>
-                    <span>
-                      Add expected shift windows so the system can detect a
-                      completely missing shift.
-                    </span>
-                  </div>
-                  <Link className="text-link" href="/app/schedule/settings">
-                    Configure
-                  </Link>
-                </div>
-              ) : null}
-
-              {dashboard.totalCoverageGaps > 0 && firstCoverageGap ? (
-                <div className="manager-attention-row">
-                  <div>
-                    <strong>
-                      {dashboard.totalCoverageGaps} coverage gap
-                      {dashboard.totalCoverageGaps === 1 ? "" : "s"}
-                    </strong>
-                    <span>
-                      {firstCoverageGap.locationName} ·{" "}
-                      {formatDayLabel(firstCoverageGap.date).weekday}{" "}
-                      {formatTime(firstCoverageGap.startTime)}–
-                      {formatTime(firstCoverageGap.endTime)}
-                      {dashboard.totalCoverageGaps > 1
-                        ? ` · +${dashboard.totalCoverageGaps - 1} more`
-                        : ""}
-                    </span>
-                  </div>
-                  <Link
-                    className="text-link"
-                    href={`/app/schedule?week=${weekStart}`}
-                  >
-                    Resolve
-                  </Link>
-                </div>
-              ) : null}
-
-              {pendingCallouts.length || pendingExchanges.length ? (
-                <div className="manager-attention-row">
-                  <div>
-                    <strong>
-                      {pendingCallouts.length + pendingExchanges.length} shift
-                      request
-                      {pendingCallouts.length + pendingExchanges.length === 1
-                        ? ""
-                        : "s"}{" "}
-                      awaiting approval
-                    </strong>
-                    <span>
-                      {pendingCallouts.length} call-out
-                      {pendingCallouts.length === 1 ? "" : "s"} ·{" "}
-                      {pendingExchanges.length} coverage/swap
-                    </span>
-                  </div>
-                  <Link className="text-link" href="/app/exchange?tab=requests">
-                    Review
-                  </Link>
-                </div>
-              ) : null}
-
-              {pendingTimeOff.length ? (
-                <div className="manager-attention-row">
-                  <div>
-                    <strong>
-                      {pendingTimeOff.length} time-off request
-                      {pendingTimeOff.length === 1 ? "" : "s"} waiting
-                    </strong>
-                    <span>
-                      {pendingTimeOff[0].employeeName} ·{" "}
-                      {pendingTimeOff[0].startDate}
-                      {pendingTimeOff.length > 1
-                        ? ` · +${pendingTimeOff.length - 1} more`
-                        : ""}
-                    </span>
-                  </div>
-                  <Link className="text-link" href="/app/requests?tab=team">
-                    Review
-                  </Link>
-                </div>
-              ) : null}
-
-              {dashboard.hoursReviewCount > 0 ? (
-                <div className="manager-attention-row">
-                  <div>
-                    <strong>
-                      {dashboard.hoursReviewCount} employee hour item
-                      {dashboard.hoursReviewCount === 1 ? "" : "s"} to review
-                    </strong>
-                    <span>
-                      {firstHourIssue
-                        ? `${firstHourIssue.employeeName} · ${firstHourIssue.scheduledHours}/${firstHourIssue.targetHours}h`
-                        : `${health.unconfiguredTargetCount} weekly target${health.unconfiguredTargetCount === 1 ? "" : "s"} missing`}
-                    </span>
-                  </div>
-                  <Link
-                    className="text-link"
-                    href={
-                      firstHourIssue
-                        ? `/app/schedule?week=${weekStart}`
-                        : "/app/schedule/settings"
-                    }
-                  >
-                    Review
-                  </Link>
-                </div>
-              ) : null}
-
-              {!weekSettings?.availabilityDeadline ? (
-                <div className="manager-attention-row">
-                  <div>
-                    <strong>Availability deadline is not set</strong>
-                    <span>
-                      Set the cutoff before employees finalize this schedule week.
-                    </span>
-                  </div>
-                  <Link
-                    className="text-link"
-                    href={`/app/schedule?week=${weekStart}`}
-                  >
-                    Set deadline
-                  </Link>
-                </div>
-              ) : null}
-
-              {dashboard.unacknowledgedCount > 0 ? (
-                <div className="manager-attention-row">
-                  <div>
-                    <strong>
-                      {dashboard.unacknowledgedCount} employee
-                      {dashboard.unacknowledgedCount === 1 ? "" : "s"} have not
-                      acknowledged
-                    </strong>
-                    <span>
-                      Published schedules were sent but are still awaiting review.
-                    </span>
-                  </div>
-                  <Link
-                    className="text-link"
-                    href={`/app/schedule?week=${weekStart}`}
-                  >
-                    View
-                  </Link>
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <div className="manager-all-clear">
-              <strong>No action needed</strong>
-              <span>
-                Both locations are covered and there are no pending scheduling
-                issues.
-              </span>
-            </div>
-          )}
-        </article>
-
-        <article className="manager-location-panel">
-          <div className="manager-section-heading">
-            <div>
-              <h2>Location readiness</h2>
-              <p>Schedule and coverage status for each Fuel location.</p>
-            </div>
-            <Link className="text-link" href={`/app/schedule?week=${weekStart}`}>
-              Open schedule
-            </Link>
-          </div>
-
-          <div className="manager-location-list">
-            {dashboard.locationReadiness.map((location) => (
-              <div className="manager-location-row" key={location.locationId}>
-                <div className="manager-location-copy">
-                  <strong>{location.locationName}</strong>
-                  <span>
-                    {location.totalBlocks
-                      ? `${location.coveredBlocks}/${location.totalBlocks} coverage periods ready`
-                      : "No schedule coverage yet"}
-                  </span>
-                </div>
-
-                <div className="manager-location-state">
-                  <StatusPill
-                    tone={
-                      location.state === "PUBLISHED" ||
-                      location.state === "READY"
-                        ? "success"
-                        : location.state === "NEEDS_ATTENTION"
-                          ? "warning"
-                          : "neutral"
-                    }
-                  >
-                    {readinessLabel(location.state)}
-                  </StatusPill>
-                  {location.coverageGaps ? (
-                    <small>
-                      {location.coverageGaps} gap
-                      {location.coverageGaps === 1 ? "" : "s"}
-                    </small>
-                  ) : null}
-                </div>
-
-                <Link
-                  className="button secondary compact-button"
-                  href={`/app/schedule?week=${weekStart}&location=${location.locationId}`}
-                >
-                  Open
-                </Link>
-              </div>
-            ))}
-          </div>
-        </article>
-      </section>
-
-      <section className="manager-quick-actions">
-        <div>
-          <h2>Quick actions</h2>
-          <p>Common scheduling tasks without hunting through the app.</p>
-        </div>
-        <nav aria-label="Manager quick actions">
-          <Link className="button primary" href={`/app/schedule/new?week=${weekStart}`}>
-            Add shift
-          </Link>
-          <Link className="button secondary" href="/app/requests?tab=team">
-            Review time off
-          </Link>
-          <Link className="button secondary" href="/app/exchange?tab=requests">
-            Shift requests
-          </Link>
-          <Link className="button secondary" href="/app/availability">
-            Availability
-          </Link>
-          <Link className="button secondary" href="/app/employees">
-            Employees
-          </Link>
-          <Link className="button ghost" href="/app/schedule/settings">
-            Scheduling rules
-          </Link>
-        </nav>
-      </section>
-    </div>
+    <ManagerDashboard
+      firstName={session.firstName}
+      weekStart={weekStart}
+      weekLabel={formatWeekRange(weekStart)}
+      previousWeek={previousWeek}
+      nextWeek={nextWeek}
+      view={view}
+      readyLocationCount={dashboard.readyLocationCount}
+      totalLocations={locations.length}
+      availabilitySubmitted={availabilitySubmissionSummary.submittedEmployees}
+      activeEmployees={availabilitySubmissionSummary.activeEmployees}
+      unavailableAllWeek={availabilitySubmissionSummary.unavailableAllWeek}
+      coverageIssueCount={dashboard.totalCoverageGaps}
+      coverageConfigured={coverageRulesConfigured}
+      pendingRequestCount={dashboard.pendingRequestCount}
+      managerActions={managerActions}
+      locations={dashboard.locationReadiness}
+      days={daySummaries}
+      hours={hourRows}
+      requestCounts={{
+        timeOff: pendingTimeOff.length,
+        exchange: pendingExchanges.length,
+        callout: pendingCallouts.length,
+      }}
+      latestRevision={
+        latestRevision
+          ? {
+              revisionNumber: latestRevision.revisionNumber,
+              sourceType: latestRevision.sourceType,
+              createdAt: latestRevision.createdAt,
+            }
+          : null
+      }
+    />
   );
 }

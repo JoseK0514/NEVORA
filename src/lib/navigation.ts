@@ -1,25 +1,37 @@
 import type { UserRole } from "@/lib/domain";
+import type { NavIconName } from "@/components/nav-icon";
 
-const managementNavigation = [
-  { href: "/app", label: "Dashboard" },
-  { href: "/app/schedule", label: "Schedule" },
-  { href: "/app/employees", label: "Employees" },
-  { href: "/app/availability", label: "Availability" },
-  { href: "/app/requests", label: "Requests" },
-  { href: "/app/exchange", label: "Shift exchange" },
-] as const;
+export type NavigationItem = {
+  href: string;
+  label: string;
+  icon: NavIconName;
+};
 
-const employeeNavigation = [
-  { href: "/app", label: "Home" },
-  { href: "/app/schedule", label: "My schedule" },
-  { href: "/app/availability", label: "Availability" },
-  { href: "/app/requests", label: "Requests" },
-  { href: "/app/exchange", label: "Shift exchange" },
-] as const;
+const managementNavigation: NavigationItem[] = [
+  { href: "/app", label: "Dashboard", icon: "dashboard" },
+  { href: "/app/schedule", label: "Schedule", icon: "schedule" },
+  { href: "/app/availability", label: "Availability", icon: "availability" },
+  { href: "/app/requests", label: "Time off", icon: "timeOff" },
+  { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
+  { href: "/app/employees", label: "Employees", icon: "employees" },
+  { href: "/app/schedule/templates", label: "Templates", icon: "templates" },
+  { href: "/app/schedule/settings", label: "Scheduling rules", icon: "rules" },
+];
+
+const employeeNavigation: NavigationItem[] = [
+  { href: "/app", label: "Home", icon: "dashboard" },
+  { href: "/app/schedule", label: "My schedule", icon: "schedule" },
+  { href: "/app/availability", label: "Availability", icon: "availability" },
+  { href: "/app/requests", label: "Time off", icon: "timeOff" },
+  { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
+];
 
 export function navigationForRole(role: UserRole) {
   if (role === "OWNER") {
-    return [...managementNavigation, { href: "/app/settings", label: "Settings" }];
+    return [
+      ...managementNavigation,
+      { href: "/app/settings", label: "Settings", icon: "settings" as const },
+    ];
   }
 
   if (role === "MANAGER") {

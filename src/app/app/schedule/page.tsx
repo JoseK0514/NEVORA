@@ -334,37 +334,20 @@ export default async function SchedulePage({
   const fairnessMap = new Map(
     fairnessHistory.map((item) => [item.employeeId, item.priorUnderTargetWeeks]),
   );
+  const hoursReviewCount =
+    health.underTargetCount +
+    health.overTargetCount +
+    health.unconfiguredTargetCount;
+  const weekReviewCount =
+    coverageGaps.length +
+    hoursReviewCount +
+    Number(!weekSettings?.availabilityDeadline);
 
   return (
     <>
       <PageHeader
-        eyebrow={formatWeekRange(weekStart)}
         title="Weekly schedule"
-        description="Build the week, resolve coverage and hour issues, then publish each location."
-        actions={
-          <div className="schedule-primary-actions">
-            <div className="schedule-week-nav">
-              <Link
-                className="button secondary"
-                href={`/app/schedule?week=${previousWeek}`}
-              >
-                Previous
-              </Link>
-              <Link
-                className="button secondary"
-                href={`/app/schedule?week=${nextWeek}`}
-              >
-                Next
-              </Link>
-            </div>
-            <Link
-              className="button primary"
-              href={`/app/schedule/new?week=${weekStart}`}
-            >
-              + Add Shift
-            </Link>
-          </div>
-        }
+        description="Build the week, resolve what needs attention, then publish each location."
       />
 
       {params.error ? (
@@ -407,131 +390,189 @@ export default async function SchedulePage({
         </p>
       ) : null}
 
-      <div className="schedule-toolbar">
-        <div className="segmented">
-          <Link
-            className={selectedLocation === "all" ? "selected" : ""}
-            href={`/app/schedule?week=${weekStart}`}
-          >
-            All Locations
-          </Link>
-          {locations.map((location) => (
-            <Link
-              key={location.id}
-              className={selectedLocation === location.id ? "selected" : ""}
-              href={`/app/schedule?week=${weekStart}&location=${location.id}`}
-            >
-              {location.shortName}
-            </Link>
-          ))}
-        </div>
-
-        <div className="schedule-toolbar-actions">
-          <Link
-            className="button ghost compact-button"
-            href={`/app/schedule/templates?week=${weekStart}`}
-          >
-            Templates
-          </Link>
-          <form action={copyPreviousWeekAction}>
-            <input type="hidden" name="weekStart" value={weekStart} />
-            <button className="button ghost compact-button" type="submit">
-              Copy Previous Week
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <section className="schedule-deadline-strip">
-        <div>
-          <p className="eyebrow">Availability deadline</p>
-          <strong>
-            {weekSettings?.availabilityDeadline
-              ? formatPuertoRicoDateTime(weekSettings.availabilityDeadline)
-              : "No deadline set"}
-          </strong>
-          <span>
-            Changes lock for this schedule after the deadline.
-          </span>
-        </div>
-        <form action={setAvailabilityDeadlineAction} className="schedule-deadline-form">
-          <input type="hidden" name="weekStart" value={weekStart} />
-          <input
-            type="datetime-local"
-            name="availabilityDeadline"
-            defaultValue={formatPuertoRicoDateTimeInput(
-              weekSettings?.availabilityDeadline,
-            )}
-          />
-          <button className="button secondary" type="submit">
-            {weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline"}
-          </button>
-        </form>
-      </section>
-
-      <section className="schedule-health-panel">
-        <div className="schedule-health-heading">
-          <div>
-            <p className="eyebrow">All-location readiness</p>
-            <h2>Week readiness</h2>
-            <p>
-              Coverage, employee hours, and published-schedule acknowledgements.
-            </p>
+      <section className="schedule-operations-shell">
+        <div className="schedule-operations-toolbar">
+          <div className="schedule-location-control" aria-label="Schedule location">
+            <div className="segmented">
+              <Link
+                className={selectedLocation === "all" ? "selected" : ""}
+                href={`/app/schedule?week=${weekStart}`}
+              >
+                All locations
+              </Link>
+              {locations.map((location) => (
+                <Link
+                  key={location.id}
+                  className={selectedLocation === location.id ? "selected" : ""}
+                  href={`/app/schedule?week=${weekStart}&location=${location.id}`}
+                >
+                  {location.shortName}
+                </Link>
+              ))}
+            </div>
           </div>
-          <Link className="button secondary compact-button" href="/app/schedule/settings">
-            Scheduling Rules
-          </Link>
+
+          <div className="schedule-period-control" aria-label="Schedule week">
+            <Link
+              className="schedule-period-arrow"
+              href={`/app/schedule?week=${previousWeek}`}
+              aria-label="Previous week"
+            >
+              ‹
+            </Link>
+            <div>
+              <span>Week</span>
+              <strong>{formatWeekRange(weekStart)}</strong>
+            </div>
+            <Link
+              className="schedule-period-arrow"
+              href={`/app/schedule?week=${nextWeek}`}
+              aria-label="Next week"
+            >
+              ›
+            </Link>
+          </div>
+
+          <div className="schedule-command-actions">
+            <Link
+              className="button secondary compact-button"
+              href={`/app/schedule/templates?week=${weekStart}`}
+            >
+              Templates
+            </Link>
+
+            <details className="schedule-more-menu">
+              <summary className="button ghost compact-button">More</summary>
+              <div className="schedule-more-popover">
+                <form action={copyPreviousWeekAction}>
+                  <input type="hidden" name="weekStart" value={weekStart} />
+                  <button className="schedule-menu-action" type="submit">
+                    <strong>Copy previous week</strong>
+                    <span>Bring last week’s shifts into this week.</span>
+                  </button>
+                </form>
+
+                <Link className="schedule-menu-action" href="/app/schedule/settings">
+                  <strong>Scheduling rules</strong>
+                  <span>Coverage requirements and employee hour targets.</span>
+                </Link>
+
+                <div className="schedule-menu-divider" />
+
+                <form
+                  action={setAvailabilityDeadlineAction}
+                  className="schedule-menu-deadline"
+                >
+                  <input type="hidden" name="weekStart" value={weekStart} />
+                  <label>
+                    <span>Availability deadline</span>
+                    <input
+                      type="datetime-local"
+                      name="availabilityDeadline"
+                      defaultValue={formatPuertoRicoDateTimeInput(
+                        weekSettings?.availabilityDeadline,
+                      )}
+                    />
+                  </label>
+                  <button className="button secondary compact-button" type="submit">
+                    {weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}
+                  </button>
+                </form>
+              </div>
+            </details>
+
+            <Link
+              className="button primary compact-button schedule-add-shift"
+              href={`/app/schedule/new?week=${weekStart}`}
+            >
+              + Add shift
+            </Link>
+          </div>
         </div>
 
-        <div className="schedule-health-metrics">
-          <article className="schedule-health-metric">
-            <span>Shift coverage</span>
-            <strong>
-              {health.coverageSummary.totalBlocks
-                ? `${health.coverageSummary.coveredBlocks}/${health.coverageSummary.totalBlocks}`
-                : "—"}
-            </strong>
-            <small>
-              {health.coverageSummary.totalBlocks === 0
-                ? "No shift blocks yet"
-                : health.coverageSummary.uncoveredBlocks === 0
-                  ? "All scheduled shifts covered"
-                  : `${health.coverageSummary.uncoveredBlocks} need coverage`}
-            </small>
-          </article>
+        <details className="schedule-review-details">
+          <summary className="schedule-status-strip">
+            <span className="schedule-status-item">
+              <small>Availability</small>
+              <strong>
+                {weekSettings?.availabilityDeadline ? "Deadline set" : "Not set"}
+              </strong>
+              <em>
+                {weekSettings?.availabilityDeadline
+                  ? formatPuertoRicoDateTime(weekSettings.availabilityDeadline)
+                  : "Set before employees finalize availability"}
+              </em>
+            </span>
 
-          <article className="schedule-health-metric">
-            <span>Hours review</span>
-            <strong>
-              {health.underTargetCount +
-                health.overTargetCount +
-                health.unconfiguredTargetCount}
-            </strong>
-            <small>
-              {health.underTargetCount || health.overTargetCount
-                ? `${health.underTargetCount} below · ${health.overTargetCount} above target`
-                : health.unconfiguredTargetCount
-                  ? `${health.unconfiguredTargetCount} target missing`
-                  : "No employee hour issues"}
-            </small>
-          </article>
-          <article className="schedule-health-metric">
-            <span>Acknowledged</span>
-            <strong>
-              {acknowledgementSummary.scheduledEmployees
-                ? `${acknowledgementSummary.acknowledgedEmployees}/${acknowledgementSummary.scheduledEmployees}`
-                : "—"}
-            </strong>
-            <small>
-              {acknowledgementSummary.scheduledEmployees
-                ? acknowledgementSummary.acknowledgedEmployees ===
-                  acknowledgementSummary.scheduledEmployees
-                  ? "Everyone has reviewed the published week"
-                  : `${acknowledgementSummary.scheduledEmployees - acknowledgementSummary.acknowledgedEmployees} still need to acknowledge`
-                : "Appears after publishing"}
-            </small>
-          </article>
-        </div>
+            <span className="schedule-status-item">
+              <small>Coverage</small>
+              <strong>
+                {health.coverageSummary.totalBlocks === 0
+                  ? "No shifts yet"
+                  : health.coverageSummary.uncoveredBlocks
+                    ? `${health.coverageSummary.uncoveredBlocks} gap${health.coverageSummary.uncoveredBlocks === 1 ? "" : "s"}`
+                    : "Clear"}
+              </strong>
+              <em>
+                {health.coverageSummary.totalBlocks
+                  ? `${health.coverageSummary.coveredBlocks}/${health.coverageSummary.totalBlocks} periods covered`
+                  : "Coverage updates as shifts are added"}
+              </em>
+            </span>
+
+            <span className="schedule-status-item">
+              <small>Employee hours</small>
+              <strong>{hoursReviewCount ? `${hoursReviewCount} issue${hoursReviewCount === 1 ? "" : "s"}` : "Clear"}</strong>
+              <em>
+                {hoursReviewCount
+                  ? "Review targets and scheduled hours"
+                  : "No hour-balance issues"}
+              </em>
+            </span>
+
+            <span className="schedule-status-item">
+              <small>Acknowledgements</small>
+              <strong>
+                {acknowledgementSummary.scheduledEmployees
+                  ? `${acknowledgementSummary.acknowledgedEmployees}/${acknowledgementSummary.scheduledEmployees}`
+                  : "After publish"}
+              </strong>
+              <em>
+                {acknowledgementSummary.scheduledEmployees
+                  ? "Published schedule review"
+                  : "Appears once schedules are published"}
+              </em>
+            </span>
+
+            <span className="schedule-review-trigger">
+              <span>
+                Review week
+                <small>
+                  {weekReviewCount
+                    ? `${weekReviewCount} item${weekReviewCount === 1 ? "" : "s"}`
+                    : "Ready"}
+                </small>
+              </span>
+              <b aria-hidden="true">⌄</b>
+            </span>
+          </summary>
+
+          <div className="schedule-review-content">
+            <div className="schedule-review-heading">
+              <div>
+                <h2>Week readiness</h2>
+                <p>
+                  Review location publishing, coverage, employee hours, and
+                  acknowledgements only when you need the detail.
+                </p>
+              </div>
+              <Link
+                className="button secondary compact-button"
+                href="/app/schedule/settings"
+              >
+                Scheduling rules
+              </Link>
+            </div>
 
         <div className="location-health-grid">
           {health.locationCoverage.map((location) => {
@@ -714,6 +755,8 @@ export default async function SchedulePage({
             </Link>
           </div>
         ) : null}
+          </div>
+        </details>
       </section>
 
       {publishLocation && publishReadiness ? (

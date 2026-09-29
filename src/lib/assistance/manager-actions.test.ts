@@ -153,6 +153,31 @@ describe("buildManagerActionItems", () => {
     );
   });
 
+  it("describes lead-only coverage gaps without claiming zero employees are needed", () => {
+    const [item] = buildManagerActionItems({
+      weekStart: "2026-09-28",
+      coverageGaps: [
+        {
+          key: "lead-gap",
+          locationId: "loc-1",
+          locationName: "FUEL - 2",
+          date: "2026-09-30",
+          startTime: "08:00",
+          endTime: "12:00",
+          gap: 0,
+        },
+      ],
+      availabilityDeadlineSet: true,
+      coverageRulesConfigured: true,
+    });
+
+    expect(item).toMatchObject({
+      type: "COVERAGE_GAP",
+      title: "Lead coverage missing at FUEL - 2",
+      detail: "2026-09-30 · 08:00–12:00 · Designated lead required",
+    });
+  });
+
   it("returns no actions when there are no issues", () => {
     expect(
       buildManagerActionItems({
