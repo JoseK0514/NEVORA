@@ -493,7 +493,7 @@ export default async function SchedulePage({
                     />
                   </label>
                   <button className="button secondary compact-button" type="submit">
-                    {weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}
+                    {weekSettings?.availabilityDeadline ? "Update" : "Set Deadline"}
                   </button>
                 </form>
               </div>
@@ -503,7 +503,7 @@ export default async function SchedulePage({
               className="button primary compact-button schedule-add-shift"
               href={`/app/schedule/new?week=${weekStart}`}
             >
-              + Add shift
+              + Add Shift
             </Link>
           </div>
         </div>
@@ -697,8 +697,8 @@ export default async function SchedulePage({
               <article className="schedule-health-review">
                 <div className="schedule-health-review-heading">
                   <div>
-                    <p className="eyebrow">Coverage</p>
-                    <h3>Needs attention</h3>
+                    <p className="eyebrow">COVERAGE</p>
+                    <h3>Needs Attention</h3>
                   </div>
                   <StatusPill tone="warning">{coverageGaps.length}</StatusPill>
                 </div>
@@ -753,8 +753,8 @@ export default async function SchedulePage({
               <article className="schedule-health-review">
                 <div className="schedule-health-review-heading">
                   <div>
-                    <p className="eyebrow">Hours balance</p>
-                    <h3>Employees to review</h3>
+                    <p className="eyebrow">HOURS BALANCE</p>
+                    <h3>Employees to Review</h3>
                   </div>
                   <StatusPill tone="warning">
                     {underTarget.length + overTarget.length}
@@ -816,7 +816,7 @@ export default async function SchedulePage({
         <section className="publish-readiness-panel">
           <div className="publish-readiness-heading">
             <div>
-              <p className="eyebrow">Publish check</p>
+              <p className="eyebrow">PUBLISH CHECK</p>
               <h2>Review before publishing {publishReadiness.locationName}</h2>
               <p>
                 You can still publish, but these items deserve an intentional review.
@@ -914,7 +914,7 @@ export default async function SchedulePage({
                   {(employee.lastName[0] ?? "").toUpperCase()}
                 </span>
                 <span className="schedule-employee-copy">
-                  <strong>
+                  <strong title={`${employee.firstName} ${employee.lastName}`}>
                     {employee.firstName} {employee.lastName}
                   </strong>
                   <small>
@@ -969,7 +969,7 @@ export default async function SchedulePage({
                       href={`/app/schedule/new?week=${weekStart}&date=${date}&employeeId=${employee.id}&locationId=${preferredLocation}`}
                     >
                       <span aria-hidden="true">+</span>
-                      Add shift
+                      Add Shift
                     </Link>
                   </div>
                 );
@@ -1040,7 +1040,7 @@ export default async function SchedulePage({
               className="button primary compact-button"
               href={`/app/schedule/new?week=${weekStart}`}
             >
-              + Add shift
+              + Add Shift
             </Link>
           </span>
         </section>
@@ -1102,7 +1102,7 @@ export default async function SchedulePage({
               className="button primary compact-button"
               href={`/app/schedule/new?week=${weekStart}&date=${selectedMobileDate}${selectedLocation === "all" ? "" : `&locationId=${selectedLocation}`}`}
             >
-              + Add shift
+              + Add Shift
             </Link>
           </div>
 
