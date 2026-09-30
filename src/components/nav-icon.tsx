@@ -19,7 +19,8 @@ export type NavIconName =
   | "employee"
   | "lead"
   | "clock"
-  | "logout";
+  | "logout"
+  | "search";
 
 export function NavIcon({
   name,
@@ -205,6 +206,15 @@ export function NavIcon({
       <svg {...common}>
         <circle cx="12" cy="8" r="3.1" />
         <path d="M5.3 20c.4-4.2 2.6-6.3 6.7-6.3s6.3 2.1 6.7 6.3" />
+      </svg>
+    );
+  }
+
+  if (name === "search") {
+    return (
+      <svg {...common}>
+        <circle cx="10.6" cy="10.6" r="6.2" />
+        <path d="m15.2 15.2 4.4 4.4" />
       </svg>
     );
   }
