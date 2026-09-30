@@ -8,6 +8,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { logout } from "@/app/login/actions";
 import type { UserRole } from "@/lib/domain";
 import { navigationForRole } from "@/lib/navigation";
+import { isMobileKeyboardVisible } from "@/lib/mobile-keyboard";
 
 export function AppShell({
   children,
@@ -55,6 +56,45 @@ export function AppShell({
     return () => {
       document.removeEventListener("pointerdown", closeOutside);
       document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    function updateKeyboardState() {
+      if (!viewport) return;
+      const focused = document.activeElement;
+      const hasFocusedField = focused instanceof HTMLElement &&
+        focused.matches("input:not([type='checkbox']):not([type='radio']), select, textarea, [contenteditable='true']");
+      const mobileNav = document.querySelector(".mobile-nav");
+      const hasMobileNavigation = !!mobileNav && getComputedStyle(mobileNav).display !== "none";
+
+      document.documentElement.classList.toggle("mobile-keyboard-open", isMobileKeyboardVisible({
+        hasFocusedField,
+        hasMobileNavigation,
+        layoutHeight: document.documentElement.clientHeight,
+        visualHeight: viewport.height,
+      }));
+    }
+
+    function updateAfterFocus() {
+      window.requestAnimationFrame(updateKeyboardState);
+    }
+
+    viewport.addEventListener("resize", updateKeyboardState);
+    window.addEventListener("resize", updateKeyboardState);
+    document.addEventListener("focusin", updateAfterFocus);
+    document.addEventListener("focusout", updateAfterFocus);
+    updateKeyboardState();
+
+    return () => {
+      viewport.removeEventListener("resize", updateKeyboardState);
+      window.removeEventListener("resize", updateKeyboardState);
+      document.removeEventListener("focusin", updateAfterFocus);
+      document.removeEventListener("focusout", updateAfterFocus);
+      document.documentElement.classList.remove("mobile-keyboard-open");
     };
   }, []);
 

@@ -11,6 +11,7 @@
   .timeoff-page .timeoff-tabs a {
     flex: 1 1 0;
     min-width: 0;
+    min-height: 44px;
     gap: 4px;
     padding: 0 5px;
     font-size: 11px;
@@ -24,7 +25,8 @@
   }
 }
 @media (max-width: 360px) {
-  .timeoff-page .timeoff-tabs a { padding: 0 3px; font-size: 10px; gap: 3px; }
+  .timeoff-page .timeoff-tabs a { padding: 0 3px; font-size: 10px; gap: 2px; }
+  .timeoff-page .timeoff-tabs .tab-count { min-width: 16px; padding-inline: 2px; }
 }
 @media (min-width: 761px) and (max-width: 950px) {
   .timeoff-page .timeoff-new-layout { grid-template-columns: minmax(0, 1fr); }
