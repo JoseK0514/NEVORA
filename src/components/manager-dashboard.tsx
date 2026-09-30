@@ -209,7 +209,7 @@ function LocationReadiness({
             key={location.locationId}
           >
             <span className="dashboard-location-icon">
-              <NavIcon name="location" size={18} />
+              <NavIcon name="location" size={20} />
             </span>
             <span className="dashboard-location-copy">
               <span>
@@ -240,6 +240,7 @@ function WeekSummary({
   weekStart: string;
 }) {
   const maxShifts = Math.max(1, ...days.map((day) => day.shiftCount));
+  const totalShifts = days.reduce((sum, day) => sum + day.shiftCount, 0);
 
   return (
     <section className="dashboard-panel dashboard-week-panel">
@@ -269,6 +270,18 @@ function WeekSummary({
           })}
         </div>
       </div>
+
+      {totalShifts === 0 ? (
+        <div className="dashboard-week-empty">
+          <span className="dashboard-week-empty-icon" aria-hidden="true">
+            <NavIcon name="calendar" size={17} />
+          </span>
+          <span>
+            <strong>No shifts scheduled yet</strong>
+            <small>Once shifts are assigned, you’ll see the weekly distribution here.</small>
+          </span>
+        </div>
+      ) : null}
     </section>
   );
 }
