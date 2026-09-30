@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import { isTimeOffReviewerRole } from "@/lib/auth/permissions";
 import { requireSession } from "@/lib/auth/session";
@@ -9,7 +9,7 @@ import {
 } from "@/lib/data/requests";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { TimeOffForm } from "@/app/app/requests/time-off-form";
-import { formatTime } from "@/lib/date-utils";
+import { currentDateInPuertoRico, formatTime } from "@/lib/date-utils";
 
 function dateLabel(date: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -74,13 +74,21 @@ export default async function RequestsPage({
         ? "team"
         : "new";
 
+  const currentYear = currentDateInPuertoRico().slice(0, 4);
+  const pendingMine = mine.filter((request) => request.status === "PENDING").length;
+  const approvedMine = mine.filter((request) => request.status === "APPROVED").length;
+  const deniedMine = mine.filter((request) => request.status === "DENIED").length;
+  const thisYearMine = mine.filter((request) => request.startDate.startsWith(currentYear)).length;
+
   return (
     <div className="timeoff-page">
-      <PageHeader
-        eyebrow="Scheduling requests"
-        title="Time off"
-        description="Request time away and keep track of approvals."
-      />
+      <section className="timeoff-hero">
+        <div className="timeoff-hero-copy">
+          <p>Time off</p>
+          <h1>Request time off</h1>
+          <span>Request time away and keep track of approvals.</span>
+        </div>
+      </section>
 
       {params.error ? (
         <p className="form-error">The request could not be saved. Check the dates and times.</p>
@@ -98,6 +106,7 @@ export default async function RequestsPage({
           href="/app/requests?tab=new"
           aria-current={activeTab === "new" ? "page" : undefined}
         >
+          <NavIcon name="requests" size={16} />
           New Request
         </Link>
         <Link
@@ -105,6 +114,7 @@ export default async function RequestsPage({
           href="/app/requests?tab=my"
           aria-current={activeTab === "my" ? "page" : undefined}
         >
+          <NavIcon name="clock" size={16} />
           My Requests
         </Link>
         {manager ? (
@@ -113,6 +123,7 @@ export default async function RequestsPage({
             href="/app/requests?tab=team"
             aria-current={activeTab === "team" ? "page" : undefined}
           >
+            <NavIcon name="employees" size={16} />
             Team requests
             <span className={pending.length ? "tab-count attention" : "tab-count"}>
               {pending.length}
@@ -123,15 +134,83 @@ export default async function RequestsPage({
 
       <section className="timeoff-workspace">
         {activeTab === "new" ? (
-          <article className="panel timeoff-panel timeoff-form-panel">
-            <div className="timeoff-panel-heading timeoff-new-heading">
-              <div>
-                <h2>Request time off</h2>
-                <p>Choose your dates and request type. Add a note only if needed.</p>
+          <div className="timeoff-new-layout">
+            <article className="panel timeoff-panel timeoff-form-panel">
+              <div className="timeoff-panel-heading timeoff-new-heading">
+                <div>
+                  <h2>Request time off</h2>
+                  <p>Choose your dates and request type. Add a note only if needed.</p>
+                </div>
               </div>
-            </div>
-            <TimeOffForm />
-          </article>
+              <TimeOffForm />
+            </article>
+
+            <aside className="timeoff-side-rail">
+              <section className="timeoff-side-card timeoff-overview-card">
+                <div className="timeoff-side-heading">
+                  <span>
+                    <NavIcon name="calendar" size={18} />
+                    <strong>Request overview</strong>
+                  </span>
+                  <Link href="/app/requests?tab=my">View all</Link>
+                </div>
+
+                <div className="timeoff-overview-grid">
+                  <div className="pending">
+                    <span><NavIcon name="clock" size={20} /></span>
+                    <strong>{pendingMine}</strong>
+                    <small>Pending</small>
+                  </div>
+                  <div className="approved">
+                    <span><NavIcon name="coverage" size={20} /></span>
+                    <strong>{approvedMine}</strong>
+                    <small>Approved</small>
+                  </div>
+                  <div className="declined">
+                    <span><NavIcon name="alert" size={20} /></span>
+                    <strong>{deniedMine}</strong>
+                    <small>Declined</small>
+                  </div>
+                  <div className="total">
+                    <span><NavIcon name="requests" size={20} /></span>
+                    <strong>{thisYearMine}</strong>
+                    <small>Total this year</small>
+                  </div>
+                </div>
+              </section>
+
+              <section className="timeoff-side-card timeoff-how-card">
+                <div className="timeoff-side-heading">
+                  <span>
+                    <NavIcon name="templates" size={18} />
+                    <strong>How it works</strong>
+                  </span>
+                </div>
+
+                <div className="timeoff-steps">
+                  <div>
+                    <span>1</span>
+                    <p><strong>Submit your request</strong><small>Fill in your dates and request type.</small></p>
+                  </div>
+                  <div>
+                    <span>2</span>
+                    <p><strong>Manager reviews</strong><small>You’ll be notified once a decision is made.</small></p>
+                  </div>
+                  <div>
+                    <span>3</span>
+                    <p><strong>Track the status</strong><small>Check My Requests to see the latest updates.</small></p>
+                  </div>
+                </div>
+              </section>
+
+              <section className="timeoff-recharge-card" aria-label="Fuel Coffee Drive">
+                <div>
+                  <strong>Take time<br />to recharge.</strong>
+                  <small>People Fuel Possibility.</small>
+                </div>
+              </section>
+            </aside>
+          </div>
         ) : null}
 
         {activeTab === "my" ? (
