@@ -67,7 +67,6 @@ export function AppShell({
             <strong>{user.firstName} {user.lastName}</strong>
             <small>{user.role[0]}{user.role.slice(1).toLowerCase()}</small>
           </div>
-          <span className="sidebar-profile-chevron" aria-hidden="true">⌄</span>
         </div>
 
         <form action={logout} className="sidebar-signout-form">
@@ -105,11 +104,11 @@ export function AppShell({
                 href={item.href}
                 className={active ? "mobile-nav-link active" : "mobile-nav-link"}
               >
-                {item.label === "Dashboard"
+                {item.href === "/app"
                   ? "Home"
-                  : item.label === "Shift Exchange"
+                  : item.href === "/app/exchange"
                     ? "Shifts"
-                    : item.label === "My schedule"
+                    : item.href === "/app/schedule"
                       ? "Schedule"
                       : item.label}
               </Link>
