@@ -1,5 +1,15 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+export function isValidIsoDate(date: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  const value = new Date(`${date}T12:00:00Z`);
+  return !Number.isNaN(value.getTime()) && value.toISOString().slice(0, 10) === date;
+}
+
+export function isValidWeekStart(date: string) {
+  return isValidIsoDate(date) && new Date(`${date}T12:00:00Z`).getUTCDay() === 1;
+}
+
 export function currentDateInPuertoRico() {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Puerto_Rico",
@@ -29,7 +39,12 @@ export function weekStartFor(date: string) {
 }
 
 export function isDateInWeek(date: string, weekStart: string) {
-  return date >= weekStart && date <= addDays(weekStart, 6);
+  return (
+    isValidIsoDate(date) &&
+    isValidWeekStart(weekStart) &&
+    date >= weekStart &&
+    date <= addDays(weekStart, 6)
+  );
 }
 
 export function weekDates(weekStart: string) {

@@ -5,6 +5,7 @@ import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
   currentDateInPuertoRico,
   isDateInWeek,
+  isValidWeekStart,
   weekStartFor,
 } from "@/lib/date-utils";
 import { createShiftAction } from "@/app/app/schedule/actions";
@@ -24,7 +25,9 @@ export default async function NewShiftPage({
   await requireRoles(MANAGER_ROLES);
   const params = await searchParams;
   const currentWeek = weekStartFor(currentDateInPuertoRico());
-  const weekStart = params.week || currentWeek;
+  const weekStart = params.week && isValidWeekStart(params.week)
+    ? params.week
+    : currentWeek;
   const date =
     params.date && isDateInWeek(params.date, weekStart)
       ? params.date

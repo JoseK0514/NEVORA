@@ -11,7 +11,7 @@ import {
   formatDayLabel,
   formatTime,
   isDateInWeek,
-  weekStartFor,
+  isValidWeekStart,
 } from "@/lib/date-utils";
 import { rankCoverageCandidates } from "@/lib/scheduling/coverage-ranking";
 import { validateShift } from "@/lib/scheduling/validate-shift";
@@ -36,7 +36,7 @@ export default async function CoverageSuggestionsPage({
   const endTime = params.end ?? "";
 
   if (
-    weekStartFor(weekStart) !== weekStart ||
+    !isValidWeekStart(weekStart) ||
     !isDateInWeek(date, weekStart) ||
     !locationId ||
     !/^\d{2}:\d{2}$/.test(startTime) ||

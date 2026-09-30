@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { addDays, isDateInWeek, weekStartFor } from "@/lib/date-utils";
+import { addDays, isDateInWeek, isValidWeekStart } from "@/lib/date-utils";
 import { setAvailabilityDeadline } from "@/lib/data/week-settings";
 import { clearWeekAcknowledgements } from "@/lib/data/acknowledgements";
 import { publishScheduleWithRevision } from "@/lib/data/publication-revisions";
@@ -125,7 +125,7 @@ export async function publishScheduleAction(formData: FormData) {
   const locationId = String(formData.get("locationId") ?? "");
   const confirmWarnings = formData.get("confirmWarnings") === "yes";
 
-  if (!weekStart || !locationId) {
+  if (!isValidWeekStart(weekStart) || !locationId) {
     redirect("/app/schedule?error=INVALID_PUBLISH");
   }
 
@@ -344,7 +344,7 @@ export async function copyPreviousWeekAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const targetWeekStart = String(formData.get("weekStart") ?? "");
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(targetWeekStart)) {
+  if (!isValidWeekStart(targetWeekStart)) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
 
@@ -433,8 +433,7 @@ export async function setAvailabilityDeadlineAction(formData: FormData) {
   const deadlineLocal = String(formData.get("availabilityDeadline") ?? "").trim();
 
   if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(weekStart) ||
-    weekStartFor(weekStart) !== weekStart
+    !isValidWeekStart(weekStart)
   ) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }

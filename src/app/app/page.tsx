@@ -12,6 +12,7 @@ import {
   currentDateInPuertoRico,
   durationMinutes,
   formatWeekRange,
+  isValidWeekStart,
   weekDates,
   weekStartFor,
 } from "@/lib/date-utils";
@@ -124,11 +125,7 @@ function validDashboardView(value?: string): ManagerDashboardView {
 }
 
 function validWeek(value?: string) {
-  return (
-    value &&
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    weekStartFor(value) === value
-  );
+  return Boolean(value && isValidWeekStart(value));
 }
 
 export default async function DashboardPage({
