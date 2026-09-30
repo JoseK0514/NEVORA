@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { NavIcon } from "@/components/nav-icon";
 import {
   applyAllDays,
   applyWeekdays,
@@ -25,6 +26,19 @@ const WEEKEND = [
   { dayOfWeek: 0, label: "Sunday" },
 ];
 
+function minutesBetween(startTime: string, endTime: string) {
+  const [startHour, startMinute] = startTime.split(":").map(Number);
+  const [endHour, endMinute] = endTime.split(":").map(Number);
+  return Math.max(0, endHour * 60 + endMinute - (startHour * 60 + startMinute));
+}
+
+function durationLabel(startTime: string, endTime: string) {
+  const minutes = minutesBetween(startTime, endTime);
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  return `${hours}h ${remainder}m`;
+}
+
 export function AvailabilityEditor({
   initialAvailability,
   weekStart,
@@ -42,6 +56,13 @@ export function AvailabilityEditor({
   );
   const currentSignature = JSON.stringify(availability);
   const dirty = currentSignature !== initialSignature;
+  const availableDays = Object.values(availability).filter((day) => day.available);
+  const totalAvailableMinutes = availableDays.reduce(
+    (sum, day) => sum + minutesBetween(day.startTime, day.endTime),
+    0,
+  );
+  const totalAvailableHours = Math.floor(totalAvailableMinutes / 60);
+  const totalAvailableRemainder = totalAvailableMinutes % 60;
 
   function updateDay(
     dayOfWeek: number,
@@ -70,7 +91,6 @@ export function AvailabilityEditor({
       >
         <div className="availability-day-name">
           <strong>{day.label}</strong>
-          <span>{value.available ? "Available" : "Off"}</span>
         </div>
 
         <label className="availability-switch">
@@ -95,37 +115,47 @@ export function AvailabilityEditor({
           <div className="availability-time-range">
             <label>
               <span>From</span>
-              <input
-                type="time"
-                name={`start-${day.dayOfWeek}`}
-                value={value.startTime}
-                disabled={locked}
-                onChange={(event) =>
-                  updateDay(day.dayOfWeek, { startTime: event.target.value })
-                }
-              />
+              <span className="availability-time-input-wrap">
+                <span className="availability-time-icon" aria-hidden="true">
+                  <NavIcon name="clock" size={16} />
+                </span>
+                <input
+                  type="time"
+                  name={`start-${day.dayOfWeek}`}
+                  value={value.startTime}
+                  disabled={locked}
+                  onChange={(event) =>
+                    updateDay(day.dayOfWeek, { startTime: event.target.value })
+                  }
+                />
+              </span>
             </label>
 
-            <span className="availability-time-separator">to</span>
+            <span className="availability-time-separator">–</span>
 
             <label>
               <span>Until</span>
-              <input
-                type="time"
-                name={`end-${day.dayOfWeek}`}
-                value={value.endTime}
-                disabled={locked}
-                onChange={(event) =>
-                  updateDay(day.dayOfWeek, { endTime: event.target.value })
-                }
-              />
+              <span className="availability-time-input-wrap">
+                <span className="availability-time-icon" aria-hidden="true">
+                  <NavIcon name="clock" size={16} />
+                </span>
+                <input
+                  type="time"
+                  name={`end-${day.dayOfWeek}`}
+                  value={value.endTime}
+                  disabled={locked}
+                  onChange={(event) =>
+                    updateDay(day.dayOfWeek, { endTime: event.target.value })
+                  }
+                />
+              </span>
             </label>
+
+            <span className="availability-duration">
+              {durationLabel(value.startTime, value.endTime)}
+            </span>
           </div>
-        ) : (
-          <div className="availability-off-copy">
-            Not available for scheduling
-          </div>
-        )}
+        ) : null}
       </div>
     );
   }
@@ -138,17 +168,33 @@ export function AvailabilityEditor({
     <form action={formAction} className="availability-workspace">
       {weekStart ? <input type="hidden" name="weekStart" value={weekStart} /> : null}
       <section className="availability-quickbar" aria-label="Quick availability setup">
-        <div>
-          <p className="eyebrow">Quick setup</p>
-          <span>Use Monday&apos;s hours as the starting point.</span>
+        <div className="availability-quick-intro">
+          <span className="availability-quick-icon" aria-hidden="true">
+            <NavIcon name="calendar" size={20} />
+          </span>
+          <span className="availability-quick-copy">
+            <strong>Quick setup</strong>
+            <small>Use Monday&apos;s hours as the starting point.</small>
+          </span>
         </div>
+
+        <div className="availability-summary">
+          <strong>{availableDays.length} of 7 days available</strong>
+          <small>
+            {availableDays.length
+              ? `${totalAvailableHours}h ${totalAvailableRemainder}m total weekly availability`
+              : "No availability set yet."}
+          </small>
+        </div>
+
         <div className="availability-quick-actions">
           <button
             type="button"
-            className="button secondary compact-button"
+            className="button primary compact-button availability-apply-weekdays"
             disabled={locked}
             onClick={() => setAvailability((current) => applyWeekdays(current))}
           >
+            <NavIcon name="templates" size={15} />
             Apply Mon–Fri
           </button>
           <button
@@ -157,11 +203,12 @@ export function AvailabilityEditor({
             disabled={locked}
             onClick={() => setAvailability((current) => applyAllDays(current))}
           >
+            <NavIcon name="calendar" size={15} />
             Apply Every Day
           </button>
           <button
             type="button"
-            className="text-button availability-clear"
+            className="button ghost compact-button availability-clear"
             disabled={locked}
             onClick={() => setAvailability((current) => clearAvailability(current))}
           >
@@ -188,23 +235,28 @@ export function AvailabilityEditor({
         </div>
       </section>
 
-      <div className="availability-savebar">
-        <div>
-          <strong>
-            {locked
-              ? "Availability locked"
-              : dirty
-                ? "Unsaved changes"
-                : "Availability up to date"}
-          </strong>
-          <span>
-            {locked
-              ? "The deadline for this schedule week has passed."
-              : dirty
-                ? "Save when your availability looks right."
-                : weekStart
-                  ? "This weekly submission is used for the selected schedule."
-                  : "Changes will be used as your normal scheduling baseline."}
+      <div className={dirty ? "availability-savebar is-dirty" : "availability-savebar"}>
+        <div className="availability-save-status">
+          <span className="availability-save-icon" aria-hidden="true">
+            <NavIcon name={locked || dirty ? "alert" : "coverage"} size={20} />
+          </span>
+          <span className="availability-save-copy">
+            <strong>
+              {locked
+                ? "Availability locked"
+                : dirty
+                  ? "Unsaved changes"
+                  : "Availability up to date"}
+            </strong>
+            <small>
+              {locked
+                ? "The deadline for this schedule week has passed."
+                : dirty
+                  ? "Save when your availability looks right."
+                  : weekStart
+                    ? "This weekly submission is used for the selected schedule."
+                    : "Changes will be used as your normal scheduling baseline."}
+            </small>
           </span>
         </div>
         <div className="availability-save-actions">
