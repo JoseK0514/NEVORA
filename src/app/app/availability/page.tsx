@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import "./availability-premium.css";
 import { AvailabilityEditor } from "@/components/availability-editor";
 import { StatusPill } from "@/components/status-pill";
 import { requireSession } from "@/lib/auth/session";
@@ -166,22 +166,26 @@ export default async function AvailabilityPage({
 
   return (
     <div className="availability-page">
-      <PageHeader
-        eyebrow={selectedWeek ? "Weekly availability" : "My scheduling inputs"}
-        title={selectedWeek ? `Availability · ${formatWeekRange(selectedWeek)}` : "Availability"}
-        description={
-          selectedWeek
-            ? "Submit the hours you can work for this specific schedule week."
-            : "Set the hours you normally can work. This becomes the baseline for future schedules."
-        }
-        actions={
-          selectedWeek ? (
-            <Link className="button secondary" href="/app/availability">
-              Normal availability
-            </Link>
-          ) : undefined
-        }
-      />
+      <section className="availability-hero">
+        <div className="availability-hero-copy">
+          <p>{selectedWeek ? "Weekly availability" : "Availability"}</p>
+          <h1>
+            {selectedWeek
+              ? `Availability · ${formatWeekRange(selectedWeek)}`
+              : "Set your availability"}
+          </h1>
+          <span>
+            {selectedWeek
+              ? "Submit the hours you can work for this specific schedule week."
+              : "Set the hours you normally can work. This becomes the baseline for future schedules."}
+          </span>
+        </div>
+        {selectedWeek ? (
+          <Link className="button secondary availability-hero-action" href="/app/availability">
+            Normal availability
+          </Link>
+        ) : null}
+      </section>
 
       {!selectedWeek && upcomingWeek?.availabilityDeadline ? (
         <section className="availability-deadline-banner">
