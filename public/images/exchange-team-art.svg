@@ -1,0 +1,24 @@
+<svg width="900" height="420" viewBox="0 0 900 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="900" y2="420" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#F1CFA3"/>
+    <stop offset=".5" stop-color="#C68B54"/>
+    <stop offset="1" stop-color="#3E2C20"/>
+  </linearGradient>
+  <linearGradient id="mount" x1="0" y1="260" x2="900" y2="420" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#7A5942"/>
+    <stop offset="1" stop-color="#2E211A"/>
+  </linearGradient>
+</defs>
+<rect width="900" height="420" rx="28" fill="url(#sky)"/>
+<circle cx="688" cy="86" r="48" fill="#FBE8C8" opacity=".62"/>
+<path d="M0 292C104 250 162 245 237 267C313 289 364 264 430 228C514 182 582 198 654 239C723 279 782 258 900 210V420H0V292Z" fill="#72523D" opacity=".56"/>
+<path d="M0 334C120 288 221 315 322 329C421 343 514 303 614 286C716 270 802 294 900 262V420H0V334Z" fill="url(#mount)" opacity=".78"/>
+<g transform="translate(632 215)">
+  <ellipse cx="96" cy="130" rx="105" ry="18" fill="#21150F" opacity=".35"/>
+  <path d="M35 54H160L150 121C147 140 131 154 111 154H84C64 154 48 140 45 121L35 54Z" fill="#2C1B13"/>
+  <ellipse cx="97" cy="54" rx="62" ry="14" fill="#5E3B28"/>
+  <path d="M160 70C185 70 198 82 196 99C194 116 181 126 156 122" stroke="#2C1B13" stroke-width="11" stroke-linecap="round"/>
+  <text x="72" y="105" fill="#C9854A" font-size="23" font-family="Segoe Script, Brush Script MT, cursive" font-style="italic">Fuel</text>
+</g>
+</svg>
