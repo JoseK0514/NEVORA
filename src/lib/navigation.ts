@@ -12,7 +12,7 @@ const managementNavigation: NavigationItem[] = [
   { href: "/app/schedule", label: "Schedule", icon: "schedule" },
   { href: "/app/availability", label: "Availability", icon: "availability" },
   { href: "/app/requests", label: "Time off", icon: "timeOff" },
-  { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
+  { href: "/app/exchange", label: "Shift Exchange", icon: "exchange" },
   { href: "/app/employees", label: "Employees", icon: "employees" },
   { href: "/app/schedule/templates", label: "Templates", icon: "templates" },
   { href: "/app/schedule/settings", label: "Scheduling rules", icon: "rules" },
@@ -23,7 +23,7 @@ const employeeNavigation: NavigationItem[] = [
   { href: "/app/schedule", label: "My schedule", icon: "schedule" },
   { href: "/app/availability", label: "Availability", icon: "availability" },
   { href: "/app/requests", label: "Time off", icon: "timeOff" },
-  { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
+  { href: "/app/exchange", label: "Shift Exchange", icon: "exchange" },
 ];
 
 export function navigationForRole(role: UserRole) {
