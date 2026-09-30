@@ -2,3 +2,13 @@
 @media (max-width: 430px) { .employees-hero { background-image: linear-gradient(90deg, #fffdf9 0%, #fffdf9 78%, rgba(255,253,249,.45) 100%), url("/images/employees-hero-art.svg"); } }
 
 .employees-filter-group label{position:relative}.employees-filter-group label::after{content:"⌄";position:absolute;right:15px;top:50%;transform:translateY(-55%);color:#6f635b;font-size:19px;line-height:1;pointer-events:none}.employees-filter-group select{-webkit-appearance:none;appearance:none;display:block;height:48px;min-height:48px;padding:0 40px 0 14px}
+
+/* Phase 4: retain the approved metric stack with less height on small phones. */
+@media (max-width: 360px) {
+  .employees-page .employees-summary > div {
+    min-height: 52px;
+    padding: 6px 10px;
+    gap: 8px;
+  }
+  .employees-page .employees-summary-icon { width: 32px; height: 32px; }
+}

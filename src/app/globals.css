@@ -31,8 +31,12 @@
   --fuel-canvas: #f7f1e8;
   --fuel-line: #e8ded2;
   --mobile-nav-bottom: calc(10px + env(safe-area-inset-bottom));
-  --mobile-sticky-bottom: calc(82px + env(safe-area-inset-bottom));
-  --mobile-page-bottom-space: calc(120px + env(safe-area-inset-bottom));
+  --mobile-nav-height: 58px;
+  --mobile-nav-clearance: calc(var(--mobile-nav-bottom) + var(--mobile-nav-height));
+  --mobile-sticky-bottom: calc(var(--mobile-nav-clearance) + 10px);
+  --mobile-action-height: 64px;
+  --mobile-page-bottom-space: calc(var(--mobile-nav-clearance) + 68px);
+  --mobile-page-bottom-with-action: calc(var(--mobile-sticky-bottom) + var(--mobile-action-height) + 24px);
 }
 
 * { box-sizing: border-box; }
@@ -425,7 +429,7 @@ button { cursor: pointer; }
     bottom: var(--mobile-nav-bottom);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    min-height: 58px;
+    min-height: var(--mobile-nav-height);
     padding: 5px;
     background: rgba(63,39,29,.96);
     border: 1px solid rgba(255,255,255,.08);
@@ -9616,6 +9620,44 @@ body {
   .sidebar-logout-row:focus-visible {
     outline: 2px solid var(--caramel);
     outline-offset: 2px;
+  }
+}
+
+/* Phase 4: keep phone content and focused controls above the fixed navigation. */
+@media (max-width: 760px) {
+  html {
+    scroll-padding-bottom: var(--mobile-page-bottom-with-action);
+  }
+
+  .page-frame:has(:is(.availability-savebar, .employee-create-savebar, .schedule-health-savebar)) {
+    padding-bottom: var(--mobile-page-bottom-with-action);
+  }
+
+  .page-frame :is(input, select, textarea):focus {
+    scroll-margin-bottom: var(--mobile-page-bottom-with-action);
+  }
+
+  :is(.schedule-hero, .availability-hero, .timeoff-hero, .exchange-hero, .employee-create-hero, .schedule-health-hero, .settings-hero)::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, #fffdf9 0%, rgba(255,253,249,.99) 76%, rgba(255,253,249,.4) 100%);
+  }
+
+  :is(.availability-page .availability-hero, .timeoff-page .timeoff-hero, .exchange-page .exchange-hero, .employee-create-page .employee-create-hero, .schedule-health-page .schedule-health-hero, .settings-page .settings-hero) {
+    background-position: 78% 54%;
+  }
+
+  .manager-schedule-page .schedule-hero {
+    background-position: 44% 54%;
+  }
+}
+
+@media (max-width: 360px) {
+  :is(.schedule-hero, .availability-hero, .timeoff-hero, .exchange-hero, .employee-create-hero, .schedule-health-hero, .settings-hero)::before {
+    background: linear-gradient(90deg, #fffdf9 0%, rgba(255,253,249,.99) 80%, rgba(255,253,249,.55) 100%);
   }
 }
 

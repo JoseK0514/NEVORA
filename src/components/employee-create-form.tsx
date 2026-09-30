@@ -45,7 +45,7 @@ export function EmployeeCreateForm({
             <NavIcon name="employees" size={21} />
           </span>
           <div>
-            <h2>Employee information</h2>
+            <h2>Employee Information</h2>
             <p>Basic details for the employee profile.</p>
           </div>
         </div>
@@ -125,7 +125,7 @@ export function EmployeeCreateForm({
             <NavIcon name="location" size={21} />
           </span>
           <div>
-            <h2>Role &amp; assignment</h2>
+            <h2>Role &amp; Assignment</h2>
             <p>Set the employee’s role and location access.</p>
           </div>
         </div>
@@ -171,7 +171,7 @@ export function EmployeeCreateForm({
 
           <div className="employee-location-access">
             <div>
-              <strong>Eligible locations</strong>
+              <strong>Eligible Locations</strong>
               <small>Select the locations this employee can be scheduled at.</small>
             </div>
 
@@ -218,7 +218,7 @@ export function EmployeeCreateForm({
             <NavIcon name="settings" size={21} />
           </span>
           <div>
-            <h2>Account activation</h2>
+            <h2>Account Activation</h2>
             <p>No password is needed now.</p>
           </div>
         </div>
@@ -236,6 +236,9 @@ export function EmployeeCreateForm({
         </div>
       </section>
 
+      <p className="employee-create-review-note">
+        Review the information before creating the employee profile.
+      </p>
       <div className="employee-create-savebar">
         <div className="employee-create-save-status">
           <span className="employee-create-save-icon" aria-hidden="true">

@@ -337,7 +337,7 @@ export default async function ScheduleSettingsPage({
 
           <button className="button primary coverage-add-button" type="submit">
             <span aria-hidden="true">+</span>
-            Add window
+            Add Window
           </button>
         </form>
 
@@ -399,7 +399,7 @@ export default async function ScheduleSettingsPage({
             <NavIcon name="coverage" size={20} />
           </span>
           <span>
-            <strong>Schedule health rules up to date</strong>
+            <strong>Rules up to date</strong>
             <small>Changes apply to the weekly management view immediately.</small>
           </span>
         </div>

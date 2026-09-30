@@ -173,7 +173,7 @@ export function AvailabilityEditor({
             <NavIcon name="calendar" size={20} />
           </span>
           <span className="availability-quick-copy">
-            <strong>Quick setup</strong>
+            <strong>Quick Setup</strong>
             <small>Use Monday&apos;s hours as the starting point.</small>
           </span>
         </div>
@@ -241,12 +241,15 @@ export function AvailabilityEditor({
             <NavIcon name={locked || dirty ? "alert" : "coverage"} size={20} />
           </span>
           <span className="availability-save-copy">
-            <strong>
+            <strong className="availability-status-full">
               {locked
                 ? "Availability locked"
                 : dirty
                   ? "Unsaved changes"
                   : "Availability up to date"}
+            </strong>
+            <strong className="availability-status-compact">
+              {locked ? "Locked" : dirty ? "Unsaved changes" : "Up to date"}
             </strong>
             <small>
               {locked
