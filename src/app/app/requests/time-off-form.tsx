@@ -1,22 +1,37 @@
 "use client";
 
 import { useState } from "react";
+import { NavIcon } from "@/components/nav-icon";
 import { requestTimeOffAction } from "@/app/app/requests/actions";
 
 export function TimeOffForm() {
   const [partialDay, setPartialDay] = useState(false);
+  const [noteLength, setNoteLength] = useState(0);
 
   return (
     <form action={requestTimeOffAction} className="employee-form timeoff-form">
-      <div className="form-columns timeoff-date-grid">
-        <label>
-          Start date
-          <input type="date" name="startDate" required />
-        </label>
-        <label>
-          End date
-          <input type="date" name="endDate" required />
-        </label>
+      <div className="timeoff-date-section">
+        <strong className="timeoff-section-label">Dates</strong>
+        <div className="form-columns timeoff-date-grid">
+          <label>
+            Start date
+            <span className="timeoff-input-wrap">
+              <span className="timeoff-input-icon" aria-hidden="true">
+                <NavIcon name="calendar" size={18} />
+              </span>
+              <input type="date" name="startDate" required />
+            </span>
+          </label>
+          <label>
+            End date
+            <span className="timeoff-input-wrap">
+              <span className="timeoff-input-icon" aria-hidden="true">
+                <NavIcon name="calendar" size={18} />
+              </span>
+              <input type="date" name="endDate" required />
+            </span>
+          </label>
+        </div>
       </div>
 
       <div className="timeoff-type-row">
@@ -29,6 +44,7 @@ export function TimeOffForm() {
               aria-pressed={!partialDay}
               onClick={() => setPartialDay(false)}
             >
+              <NavIcon name="calendar" size={16} />
               Full day
             </button>
             <button
@@ -37,6 +53,7 @@ export function TimeOffForm() {
               aria-pressed={partialDay}
               onClick={() => setPartialDay(true)}
             >
+              <NavIcon name="clock" size={16} />
               Partial day
             </button>
           </div>
@@ -66,17 +83,25 @@ export function TimeOffForm() {
           <span>Note</span>
           <span>Optional</span>
         </span>
-        <textarea
-          name="reason"
-          maxLength={250}
-          rows={3}
-          placeholder="Anything management should know?"
-        />
+        <span className="timeoff-textarea-wrap">
+          <textarea
+            name="reason"
+            maxLength={250}
+            rows={3}
+            placeholder="Anything management should know?"
+            onChange={(event) => setNoteLength(event.currentTarget.value.length)}
+          />
+          <small className="timeoff-char-count">{noteLength} / 250</small>
+        </span>
       </label>
 
       <div className="timeoff-actionbar">
-        <p>Requests stay pending until they are reviewed.</p>
+        <p>
+          <span className="timeoff-action-info" aria-hidden="true">i</span>
+          Requests remain pending until they are reviewed.
+        </p>
         <button className="button primary timeoff-submit" type="submit">
+          <NavIcon name="timeOff" size={16} />
           Submit request
         </button>
       </div>
