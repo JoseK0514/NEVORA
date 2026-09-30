@@ -3,7 +3,7 @@ import "./templates-premium.css";
 import { ArchiveTemplateControl } from "@/components/archive-template-control";
 import { PageHeader } from "@/components/page-header";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { currentDateInPuertoRico, formatWeekRange, weekStartFor } from "@/lib/date-utils";
+import { currentDateInPuertoRico, formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
 import { listScheduleTemplates } from "@/lib/data/schedule-templates";
 import {
   applyTemplateAction,
@@ -11,11 +11,7 @@ import {
 } from "@/app/app/schedule/templates/actions";
 
 function validWeek(value?: string) {
-  return (
-    value &&
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    weekStartFor(value) === value
-  );
+  return Boolean(value && isValidWeekStart(value));
 }
 
 export default async function ScheduleTemplatesPage({
@@ -54,6 +50,8 @@ export default async function ScheduleTemplatesPage({
         <p className="form-error">
           {params.error === "save"
             ? "That template could not be saved. The name may already be in use."
+            : params.error === "unavailable"
+              ? "That template is no longer available. Choose a saved template."
             : "Enter a valid template name and schedule week."}
         </p>
       ) : null}

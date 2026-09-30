@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
-import { listWeekShifts } from "@/lib/data/schedules";
-import { weekStartFor } from "@/lib/date-utils";
+import { getDb, queryRows } from "../db";
+import { listWeekShifts } from "./schedules";
+import { isValidWeekStart } from "../date-utils";
 
 export type ScheduleTemplate = {
   id: string;
@@ -60,41 +60,46 @@ export async function listScheduleTemplates(): Promise<ScheduleTemplate[]> {
 
 export async function listTemplateShifts(
   templateId: string,
-): Promise<TemplateShift[]> {
+): Promise<TemplateShift[] | null> {
   const sql = getDb();
   const rows = queryRows(
     await sql.query(
       `SELECT
-         id,
-         template_id,
-         location_id,
-         day_offset,
-         start_time,
-         end_time,
-         employee_id,
-         is_designated_lead,
-         notes
-       FROM schedule_template_shifts
-       WHERE template_id = $1
-       ORDER BY day_offset, start_time, location_id`,
+         ts.id,
+         ts.template_id,
+         ts.location_id,
+         ts.day_offset,
+         ts.start_time,
+         ts.end_time,
+         ts.employee_id,
+         ts.is_designated_lead,
+         ts.notes
+       FROM schedule_templates t
+       LEFT JOIN schedule_template_shifts ts ON ts.template_id = t.id
+       WHERE t.id = $1 AND t.active = true
+       ORDER BY ts.day_offset, ts.start_time, ts.location_id`,
       [templateId],
     ),
   );
 
-  return rows.map((row) => {
-    const item = row as Record<string, unknown>;
-    return {
-      id: String(item.id),
-      templateId: String(item.template_id),
-      locationId: String(item.location_id),
-      dayOffset: Number(item.day_offset),
-      startTime: timeValue(item.start_time),
-      endTime: timeValue(item.end_time),
-      employeeId: item.employee_id ? String(item.employee_id) : undefined,
-      isDesignatedLead: Boolean(item.is_designated_lead),
-      notes: item.notes ? String(item.notes) : undefined,
-    };
-  });
+  if (!rows.length) return null;
+
+  return rows
+    .filter((row) => (row as Record<string, unknown>).id !== null)
+    .map((row) => {
+      const item = row as Record<string, unknown>;
+      return {
+        id: String(item.id),
+        templateId: String(item.template_id),
+        locationId: String(item.location_id),
+        dayOffset: Number(item.day_offset),
+        startTime: timeValue(item.start_time),
+        endTime: timeValue(item.end_time),
+        employeeId: item.employee_id ? String(item.employee_id) : undefined,
+        isDesignatedLead: Boolean(item.is_designated_lead),
+        notes: item.notes ? String(item.notes) : undefined,
+      };
+    });
 }
 
 export async function createTemplateFromWeek(input: {
@@ -102,7 +107,7 @@ export async function createTemplateFromWeek(input: {
   weekStart: string;
   createdBy: string;
 }) {
-  if (weekStartFor(input.weekStart) !== input.weekStart) {
+  if (!isValidWeekStart(input.weekStart)) {
     throw new Error("Invalid week start.");
   }
 
