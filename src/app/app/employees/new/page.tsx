@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
-import { PhoneInput } from "@/components/phone-input";
+import "./employee-create-premium.css";
+import { NavIcon } from "@/components/nav-icon";
+import { EmployeeCreateForm } from "@/components/employee-create-form";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
-import { createEmployeeAction } from "@/app/app/employees/actions";
 
 export default async function NewEmployeePage({
   searchParams,
@@ -15,104 +15,92 @@ export default async function NewEmployeePage({
   const params = await searchParams;
 
   return (
-    <>
-      <PageHeader
-        eyebrow="Team"
-        title="Add Employee"
-        description="Only scheduling information is collected. Email remains optional."
-        actions={<Link className="button secondary" href="/app/employees">Cancel</Link>}
-      />
+    <div className="employee-create-page">
+      <section className="employee-create-hero">
+        <div className="employee-create-hero-copy">
+          <p>Team</p>
+          <h1>Add employee</h1>
+          <span>Create the employee profile used for scheduling and account activation.</span>
+        </div>
 
-      <section className="panel form-panel">
-        {params.error ? (
-          <p className="form-error">
-            {params.error === "permission"
-              ? "Only an owner can create another owner."
-              : params.error === "save"
-                ? "Employee could not be saved. Check that the ID and email are not already in use."
-                : "Complete all required employee fields."}
-          </p>
-        ) : null}
-
-        <form action={createEmployeeAction} className="employee-form">
-          <label>
-            Employee ID
-            <input name="id" placeholder="FC-0021" required />
-          </label>
-
-          <div className="form-columns">
-            <label>
-              First Name
-              <input name="firstName" required />
-            </label>
-            <label>
-              Last Name
-              <input name="lastName" required />
-            </label>
-          </div>
-
-          <div className="form-columns">
-            <label>
-              Phone Number
-              <PhoneInput name="phone" required />
-            </label>
-            <label>
-              Email <span>Optional</span>
-              <input name="email" type="email" />
-            </label>
-          </div>
-
-          <div className="form-columns">
-            <label>
-              Role
-              <select name="role" defaultValue="EMPLOYEE">
-                {session.role === "OWNER" ? <option value="OWNER">Owner</option> : null}
-                <option value="MANAGER">Manager</option>
-                <option value="LEAD">Lead</option>
-                <option value="EMPLOYEE">Employee</option>
-              </select>
-            </label>
-
-            <label>
-              Primary Location
-              <select name="primaryLocationId" required defaultValue={locations[0]?.id}>
-                {locations.map((location) => (
-                  <option key={location.id} value={location.id}>
-                    {location.shortName}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          <fieldset>
-            <legend>Eligible Locations</legend>
-            <p>Primary location is always included automatically.</p>
-            <div className="checkbox-grid">
-              {locations.map((location) => (
-                <label className="checkbox-row" key={location.id}>
-                  <input
-                    type="checkbox"
-                    name="eligibleLocationIds"
-                    value={location.id}
-                  />
-                  <span>{location.name}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-
-          <p className="form-help">
-            The employee creates their own password from the Activate Account screen
-            using the Employee ID and phone number entered here.
-          </p>
-
-          <div className="form-footer">
-            <Link className="button secondary" href="/app/employees">Cancel</Link>
-            <button className="button primary" type="submit">Create Employee</button>
-          </div>
-        </form>
+        <Link className="button secondary employee-create-cancel-top" href="/app/employees">
+          <span aria-hidden="true">×</span>
+          Cancel
+        </Link>
       </section>
-    </>
+
+      {params.error ? (
+        <p className="form-error employee-create-error">
+          {params.error === "permission"
+            ? "Only an owner can create another owner."
+            : params.error === "save"
+              ? "Employee could not be saved. Check that the ID and email are not already in use."
+              : "Complete all required employee fields."}
+        </p>
+      ) : null}
+
+      <section className="employee-create-layout">
+        <EmployeeCreateForm
+          locations={locations.map((location) => ({
+            id: location.id,
+            name: location.name,
+            shortName: location.shortName,
+          }))}
+          canCreateOwner={session.role === "OWNER"}
+        />
+
+        <aside className="employee-setup-rail">
+          <section className="employee-setup-card">
+            <div className="employee-setup-heading">
+              <span className="employee-setup-heading-icon" aria-hidden="true">
+                <NavIcon name="employees" size={24} />
+              </span>
+              <span>
+                <strong>Employee setup</strong>
+                <small>A quick and easy process.</small>
+              </span>
+            </div>
+
+            <div className="employee-setup-steps">
+              <div>
+                <span>1</span>
+                <p>
+                  <strong>Profile</strong>
+                  <small>Add the employee’s basic information, role, and location access.</small>
+                </p>
+              </div>
+              <div>
+                <span>2</span>
+                <p>
+                  <strong>Location access</strong>
+                  <small>Select the locations where they can be scheduled.</small>
+                </p>
+              </div>
+              <div>
+                <span>3</span>
+                <p>
+                  <strong>Employee activates account</strong>
+                  <small>They create their own password using their Employee ID and phone number.</small>
+                </p>
+              </div>
+            </div>
+
+            <div className="employee-setup-help">
+              <span aria-hidden="true">?</span>
+              <p>
+                <strong>Need help?</strong>
+                <small>Contact an admin if you need assistance adding an employee.</small>
+              </p>
+            </div>
+
+            <div className="employee-setup-brand" aria-hidden="true">
+              <span>People</span>
+              <span>Fuel</span>
+              <span>Possibility.</span>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </div>
   );
 }
