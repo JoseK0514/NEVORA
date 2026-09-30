@@ -35,17 +35,13 @@ export default async function SettingsPage() {
             <span>
               <NavIcon name="location" size={18} />
               <strong>{locations.length} active location{locations.length === 1 ? "" : "s"}</strong>
-              <b aria-hidden="true">›</b>
             </span>
             <small>
               {locationNames.length ? locationNames.join("  ·  ") : "No active locations"}
             </small>
           </div>
 
-          <button className="button primary settings-card-action" type="button">
-            Manage locations
-            <span aria-hidden="true">→</span>
-          </button>
+          <p className="settings-card-note">Location management is not available yet.</p>
         </article>
 
         <article className="settings-control-card">
@@ -54,7 +50,7 @@ export default async function SettingsPage() {
           </span>
 
           <div className="settings-card-copy">
-            <h2>Roles &amp; permissions</h2>
+            <h2>Roles &amp; Permissions</h2>
             <p>Manage Owner, Manager, Lead, and Employee access.</p>
           </div>
 
@@ -68,7 +64,7 @@ export default async function SettingsPage() {
           </div>
 
           <Link className="button primary settings-card-action" href="/app/employees">
-            Manage access
+            Manage Access
             <span aria-hidden="true">→</span>
           </Link>
         </article>
@@ -79,7 +75,7 @@ export default async function SettingsPage() {
           </span>
 
           <div className="settings-card-copy">
-            <h2>Scheduling rules</h2>
+            <h2>Scheduling Rules</h2>
             <p>Set staffing coverage targets and employee weekly hour goals.</p>
           </div>
 
@@ -96,7 +92,7 @@ export default async function SettingsPage() {
             className="button primary settings-card-action"
             href="/app/schedule/settings"
           >
-            Manage rules
+            Manage Rules
             <span aria-hidden="true">→</span>
           </Link>
         </article>

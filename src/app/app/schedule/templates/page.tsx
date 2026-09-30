@@ -1,11 +1,12 @@
 import Link from "next/link";
+import "./templates-premium.css";
+import { ArchiveTemplateControl } from "@/components/archive-template-control";
 import { PageHeader } from "@/components/page-header";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { currentDateInPuertoRico, formatWeekRange, weekStartFor } from "@/lib/date-utils";
 import { listScheduleTemplates } from "@/lib/data/schedule-templates";
 import {
   applyTemplateAction,
-  archiveTemplateAction,
   saveTemplateAction,
 } from "@/app/app/schedule/templates/actions";
 
@@ -39,8 +40,8 @@ export default async function ScheduleTemplatesPage({
   return (
     <div className="template-page">
       <PageHeader
-        eyebrow="Schedule shortcuts"
-        title="Schedule templates"
+        eyebrow="SCHEDULE SHORTCUTS"
+        title="Schedule Templates"
         description={`Save a strong schedule pattern and reuse it for ${formatWeekRange(weekStart)} with all normal conflict checks.`}
         actions={
           <Link className="button secondary" href={`/app/schedule?week=${weekStart}`}>
@@ -72,8 +73,8 @@ export default async function ScheduleTemplatesPage({
 
       <section className="content-grid two template-layout">
         <article className="panel template-save-panel">
-          <p className="eyebrow">Create template</p>
-          <h2>Save this week</h2>
+          <p className="eyebrow">CREATE TEMPLATE</p>
+          <h2>Save This Week</h2>
           <p className="muted">
             Saves employee assignments, locations, shift times, notes, and designated leads.
           </p>
@@ -81,7 +82,7 @@ export default async function ScheduleTemplatesPage({
           <form action={saveTemplateAction} className="employee-form">
             <input type="hidden" name="weekStart" value={weekStart} />
             <label>
-              Template name
+              Template Name
               <input
                 name="name"
                 placeholder="Normal Week"
@@ -99,8 +100,8 @@ export default async function ScheduleTemplatesPage({
         <article className="panel template-list-panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Saved templates</p>
-              <h2>Reuse a pattern</h2>
+              <p className="eyebrow">SAVED TEMPLATES</p>
+              <h2>Saved Templates</h2>
             </div>
           </div>
 
@@ -122,13 +123,7 @@ export default async function ScheduleTemplatesPage({
                         Apply
                       </button>
                     </form>
-                    <form action={archiveTemplateAction}>
-                      <input type="hidden" name="weekStart" value={weekStart} />
-                      <input type="hidden" name="templateId" value={template.id} />
-                      <button className="button ghost" type="submit">
-                        Archive
-                      </button>
-                    </form>
+                    <ArchiveTemplateControl templateId={template.id} templateName={template.name} weekStart={weekStart} />
                   </div>
                 </div>
               ))}
