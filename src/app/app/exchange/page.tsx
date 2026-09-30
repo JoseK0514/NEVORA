@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import "./exchange-premium.css";
+import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import { isManagerRole } from "@/lib/auth/permissions";
 import {
@@ -144,6 +145,28 @@ export default async function ExchangePage({
     managerCallouts.length +
     myPendingCallouts.length;
 
+  const offeredCount = activity.filter(
+    (exchange) =>
+      exchange.kind === "COVERAGE" &&
+      exchange.requestedByEmployeeId === session.id &&
+      ["OPEN", "MANAGER_PENDING"].includes(exchange.status),
+  ).length;
+  const tradeCount = activity.filter(
+    (exchange) =>
+      exchange.kind === "SWAP" &&
+      (exchange.requestedByEmployeeId === session.id ||
+        exchange.targetEmployeeId === session.id) &&
+      ["EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status),
+  ).length;
+  const unableCount = myPendingCallouts.length;
+  const pendingPersonalCount =
+    activity.filter(
+      (exchange) =>
+        (exchange.requestedByEmployeeId === session.id ||
+          exchange.targetEmployeeId === session.id) &&
+        ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status),
+    ).length + myPendingCallouts.length;
+
   const successMessage =
     params.offered
       ? "Your shift is now available for another eligible employee to claim."
@@ -173,11 +196,15 @@ export default async function ExchangePage({
 
   return (
     <div className="exchange-page">
-      <PageHeader
-        eyebrow="Schedule flexibility"
-        title="Shift exchange"
-        description="Offer a shift, find coverage, trade with a coworker, or report that you are unable to work."
-      />
+      <section className="exchange-hero">
+        <div className="exchange-hero-copy">
+          <p>Shift exchange</p>
+          <h1>Manage your shifts</h1>
+          <span>
+            Offer a shift, find coverage, trade with a coworker, or report that you are unable to work.
+          </span>
+        </div>
+      </section>
 
       {params.error ? (
         <p className="form-error">
@@ -192,6 +219,7 @@ export default async function ExchangePage({
           href="/app/exchange?tab=my"
           aria-current={activeTab === "my" ? "page" : undefined}
         >
+          <NavIcon name="calendar" size={16} />
           My Shifts
           {myShifts.length ? <span className="exchange-tab-count">{myShifts.length}</span> : null}
         </Link>
@@ -200,6 +228,7 @@ export default async function ExchangePage({
           href="/app/exchange?tab=coverage"
           aria-current={activeTab === "coverage" ? "page" : undefined}
         >
+          <NavIcon name="employees" size={16} />
           Coverage
           {openCoverage.length ? <span className="exchange-tab-count">{openCoverage.length}</span> : null}
         </Link>
@@ -208,6 +237,7 @@ export default async function ExchangePage({
           href="/app/exchange?tab=requests"
           aria-current={activeTab === "requests" ? "page" : undefined}
         >
+          <NavIcon name="exchange" size={16} />
           Requests
           {requestCount ? (
             <span className="exchange-tab-count attention">{requestCount}</span>
@@ -218,18 +248,19 @@ export default async function ExchangePage({
           href="/app/exchange?tab=history"
           aria-current={activeTab === "history" ? "page" : undefined}
         >
+          <NavIcon name="clock" size={16} />
           History
         </Link>
       </nav>
 
-      <section className="exchange-focus-workspace">
+      <section className="exchange-main-layout">
+        <section className="exchange-focus-workspace">
         {activeTab === "my" ? (
-          <article className="panel exchange-focus-panel">
+          <article className="panel exchange-focus-panel exchange-my-shifts-panel">
             <div className="exchange-focus-heading">
               <div>
-                <p className="eyebrow">My upcoming shifts</p>
-                <h2>My shifts</h2>
-                <p>Offer it, trade it, or submit an unable-to-work request.</p>
+                <h2>My upcoming shifts</h2>
+                <p>Here are your scheduled shifts. Take action if needed.</p>
               </div>
             </div>
 
@@ -266,10 +297,22 @@ export default async function ExchangePage({
                 ))}
               </div>
             ) : (
-              <div className="exchange-focused-empty">
-                <span className="exchange-empty-mark" aria-hidden="true">✓</span>
-                <strong>No eligible shifts right now</strong>
+              <div className="exchange-focused-empty exchange-my-empty">
+                <span className="exchange-empty-mark exchange-empty-calendar" aria-hidden="true">
+                  <NavIcon name="calendar" size={28} />
+                </span>
+                <strong>No upcoming shifts right now</strong>
                 <span>Your future published shifts will appear here automatically.</span>
+                <div className="exchange-empty-actions">
+                  <Link className="button primary" href="/app/schedule">
+                    <NavIcon name="calendar" size={16} />
+                    View schedule
+                  </Link>
+                  <a className="button secondary" href="#exchange-help">
+                    <NavIcon name="requests" size={16} />
+                    Learn how shift exchange works
+                  </a>
+                </div>
               </div>
             )}
           </article>
@@ -563,6 +606,81 @@ export default async function ExchangePage({
             )}
           </article>
         ) : null}
+        </section>
+
+        <aside className="exchange-side-rail">
+          <section className="exchange-side-card exchange-overview-card">
+            <div className="exchange-side-heading">
+              <span>
+                <NavIcon name="requests" size={18} />
+                <strong>Request overview</strong>
+              </span>
+              <Link href="/app/exchange?tab=requests">View all</Link>
+            </div>
+
+            <div className="exchange-overview-list">
+              <Link href="/app/exchange?tab=history">
+                <span className="offered"><NavIcon name="timeOff" size={17} /></span>
+                <strong>Shifts offered</strong>
+                <b>{offeredCount}</b>
+                <em>›</em>
+              </Link>
+              <Link href="/app/exchange?tab=requests">
+                <span className="trades"><NavIcon name="exchange" size={17} /></span>
+                <strong>Trades</strong>
+                <b>{tradeCount}</b>
+                <em>›</em>
+              </Link>
+              <Link href="/app/exchange?tab=requests">
+                <span className="unable"><NavIcon name="employee" size={17} /></span>
+                <strong>Unable to work</strong>
+                <b>{unableCount}</b>
+                <em>›</em>
+              </Link>
+              <Link href="/app/exchange?tab=requests">
+                <span className="pending"><NavIcon name="clock" size={17} /></span>
+                <strong>Pending</strong>
+                <b>{pendingPersonalCount}</b>
+                <em>›</em>
+              </Link>
+            </div>
+          </section>
+
+          <details className="exchange-side-card exchange-how-card" id="exchange-help" open>
+            <summary>
+              <span>
+                <NavIcon name="templates" size={18} />
+                <strong>How shift exchange works</strong>
+              </span>
+              <b aria-hidden="true">⌄</b>
+            </summary>
+            <div className="exchange-steps">
+              <div>
+                <span>1</span>
+                <p><strong>Choose a shift</strong><small>Select one of your upcoming shifts.</small></p>
+              </div>
+              <div>
+                <span>2</span>
+                <p><strong>Offer, trade, or report</strong><small>Pick the option that fits your situation.</small></p>
+              </div>
+              <div>
+                <span>3</span>
+                <p><strong>Management reviews</strong><small>You’ll be notified once a decision is made.</small></p>
+              </div>
+              <div>
+                <span>4</span>
+                <p><strong>Track the outcome</strong><small>Check the Requests tab for updates.</small></p>
+              </div>
+            </div>
+          </details>
+
+          <section className="exchange-team-card" aria-label="Fuel Coffee Drive">
+            <div>
+              <strong>Different shifts.<br />Same team.</strong>
+              <small>People Fuel Possibility.</small>
+            </div>
+          </section>
+        </aside>
       </section>
     </div>
   );
