@@ -23,7 +23,7 @@ function actionLabel(type: ManagerActionItem["type"]) {
     case "ACKNOWLEDGEMENT_MISSING":
       return "View";
     case "DEADLINE_MISSING":
-      return "Set deadline";
+      return "Set Deadline";
     case "COVERAGE_RULES_MISSING":
       return "Configure";
   }

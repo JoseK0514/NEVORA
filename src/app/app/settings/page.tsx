@@ -41,7 +41,7 @@ export default async function SettingsPage() {
             </small>
           </div>
 
-          <p className="settings-card-note">Location management is not available yet.</p>
+          <p className="settings-card-note">Management coming soon.</p>
         </article>
 
         <article className="settings-control-card">

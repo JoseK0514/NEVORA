@@ -31,3 +31,23 @@
   .template-archive-confirm { justify-content: flex-start; }
   .template-archive-confirm span { text-align: left; }
 }
+
+/* Phase 4: a quiet Fuel schedule motif in the header. */
+.template-page .page-header {
+  position: relative;
+  overflow: hidden;
+  background-image:
+    linear-gradient(90deg, #fffdf9 0%, rgba(255,253,249,.98) 54%, rgba(255,253,249,.72) 82%, rgba(255,253,249,.5) 100%),
+    url("/images/dashboard-hero-art.svg");
+  background-size: cover;
+  background-position: center 52%;
+}
+.template-page .page-header > * { position: relative; z-index: 1; }
+@media (max-width: 760px) {
+  .template-page .page-header {
+    background-image:
+      linear-gradient(90deg, #fffdf9 0%, rgba(255,253,249,.98) 76%, rgba(255,253,249,.82) 100%),
+      url("/images/dashboard-hero-art.svg");
+    background-position: 58% 54%;
+  }
+}

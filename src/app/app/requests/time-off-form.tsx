@@ -45,7 +45,7 @@ export function TimeOffForm() {
               onClick={() => setPartialDay(false)}
             >
               <NavIcon name="calendar" size={16} />
-              Full day
+              Full Day
             </button>
             <button
               className={partialDay ? "selected" : ""}
@@ -54,7 +54,7 @@ export function TimeOffForm() {
               onClick={() => setPartialDay(true)}
             >
               <NavIcon name="clock" size={16} />
-              Partial day
+              Partial Day
             </button>
           </div>
           <input type="hidden" name="partialDay" value={partialDay ? "on" : ""} />
@@ -102,7 +102,7 @@ export function TimeOffForm() {
         </p>
         <button className="button primary timeoff-submit" type="submit">
           <NavIcon name="timeOff" size={16} />
-          Submit request
+          Submit Request
         </button>
       </div>
     </form>

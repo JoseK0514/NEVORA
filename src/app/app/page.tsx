@@ -56,7 +56,7 @@ function employeeDashboard(firstName: string) {
       <section className="metric-grid">
         <article className="metric-card">
           <span>This week</span>
-          <strong>My shifts</strong>
+          <strong>My Shifts</strong>
           <StatusPill tone="info">Schedule</StatusPill>
         </article>
         <article className="metric-card">
@@ -66,7 +66,7 @@ function employeeDashboard(firstName: string) {
         </article>
         <article className="metric-card">
           <span>Requests</span>
-          <strong>My requests</strong>
+          <strong>My Requests</strong>
           <StatusPill tone="warning">Open</StatusPill>
         </article>
         <article className="metric-card">
@@ -80,7 +80,7 @@ function employeeDashboard(firstName: string) {
         <article className="panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Schedule</p>
+              <p className="eyebrow">SCHEDULE</p>
               <h2>See Your Upcoming Shifts</h2>
             </div>
             <Link href="/app/schedule" className="text-link">
@@ -95,7 +95,7 @@ function employeeDashboard(firstName: string) {
         <article className="panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Self-service</p>
+              <p className="eyebrow">SELF-SERVICE</p>
               <h2>Requests &amp; Coverage</h2>
             </div>
           </div>

@@ -125,7 +125,7 @@ export default async function RequestsPage({
             aria-current={activeTab === "team" ? "page" : undefined}
           >
             <NavIcon name="employees" size={16} />
-            Team requests
+            Team Requests
             <span className={pending.length ? "tab-count attention" : "tab-count"}>
               {pending.length}
             </span>
@@ -218,7 +218,7 @@ export default async function RequestsPage({
           <article className="panel timeoff-panel request-history-panel">
             <div className="timeoff-panel-heading">
               <div>
-                <p className="eyebrow">My requests</p>
+                <p className="eyebrow">MY REQUESTS</p>
                 <h2>Request History</h2>
                 <p>Track the status of your submitted time-off requests.</p>
               </div>
@@ -256,7 +256,7 @@ export default async function RequestsPage({
           <div className="team-request-view">
             <div className="team-request-heading">
               <div>
-                <p className="eyebrow">Manager review</p>
+                <p className="eyebrow">MANAGER REVIEW</p>
                 <h2>Team Requests</h2>
                 <p>
                   {pending.length

@@ -197,8 +197,8 @@ function LocationReadiness({
   return (
     <section className="dashboard-panel dashboard-location-panel">
       <div className="dashboard-panel-heading">
-        <h2>Location readiness</h2>
-        <Link href={`/app/schedule?week=${weekStart}`}>View all</Link>
+        <h2>Location Readiness</h2>
+        <Link href={`/app/schedule?week=${weekStart}`}>View All</Link>
       </div>
 
       <div className="dashboard-location-list">
@@ -245,8 +245,8 @@ function WeekSummary({
   return (
     <section className="dashboard-panel dashboard-week-panel">
       <div className="dashboard-panel-heading">
-        <h2>This week</h2>
-        <Link href={`/app/schedule?week=${weekStart}`}>View schedule</Link>
+        <h2>This Week</h2>
+        <Link href={`/app/schedule?week=${weekStart}`}>View Schedule</Link>
       </div>
 
       <div className="dashboard-week-scroll">
@@ -305,8 +305,8 @@ function TeamAvailability({
   return (
     <section className="dashboard-panel dashboard-availability-panel">
       <div className="dashboard-panel-heading">
-        <h2>Team availability</h2>
-        <Link href={`/app/availability?week=${weekStart}`}>View details</Link>
+        <h2>Team Availability</h2>
+        <Link href={`/app/availability?week=${weekStart}`}>View Details</Link>
       </div>
 
       <div className="dashboard-availability-body">
@@ -394,10 +394,10 @@ function ScheduleTab(props: Props) {
       <section className="dashboard-panel">
         <div className="dashboard-panel-heading">
           <div>
-            <h2>Schedule review</h2>
+            <h2>Schedule Review</h2>
             <p>Coverage, hours, publishing, and acknowledgement items.</p>
           </div>
-          <Link href={`/app/schedule?week=${props.weekStart}`}>Open schedule</Link>
+          <Link href={`/app/schedule?week=${props.weekStart}`}>Open Schedule</Link>
         </div>
         <ManagerActionList
           items={scheduleActions}
@@ -434,8 +434,8 @@ function TeamTab(props: Props) {
 
         <section className="dashboard-panel dashboard-hours-panel">
           <div className="dashboard-panel-heading">
-            <h2>Employee hours</h2>
-            <Link href="/app/schedule/settings">Manage targets</Link>
+            <h2>Employee Hours</h2>
+            <Link href="/app/schedule/settings">Manage Targets</Link>
           </div>
           <div className="dashboard-hours-list">
             {props.hours.length ? props.hours.slice(0, 8).map((item) => (
@@ -495,7 +495,7 @@ function RequestsTab(props: Props) {
       <section className="dashboard-panel">
         <div className="dashboard-panel-heading">
           <div>
-            <h2>Pending requests</h2>
+            <h2>Pending Requests</h2>
             <p>Items waiting for a manager decision.</p>
           </div>
         </div>
@@ -519,7 +519,7 @@ function ActivityTab(props: Props) {
       <section className="dashboard-panel dashboard-activity-panel">
         <div className="dashboard-panel-heading">
           <div>
-            <h2>Current activity</h2>
+            <h2>Current Activity</h2>
             <p>Recent schedule publication and active operational events.</p>
           </div>
         </div>
@@ -581,8 +581,8 @@ export function ManagerDashboard(props: Props) {
     >
       <section className="dashboard-hero">
         <div className="dashboard-hero-copy">
-          <p>Manager dashboard</p>
-          <h1>Welcome back, {props.firstName}.</h1>
+          <p>MANAGER DASHBOARD</p>
+          <h1>Welcome Back, {props.firstName}.</h1>
           <span>Here’s what’s happening this week at Fuel.</span>
         </div>
 
@@ -607,7 +607,7 @@ export function ManagerDashboard(props: Props) {
           </div>
           <Link className="button primary" href={`/app/schedule?week=${props.weekStart}`}>
             <NavIcon name="calendar" size={17} />
-            Open schedule
+            Open Schedule
           </Link>
         </div>
       </section>
@@ -632,7 +632,7 @@ export function ManagerDashboard(props: Props) {
             <section className="dashboard-panel dashboard-attention-panel">
               <div className="dashboard-panel-heading">
                 <div className="dashboard-panel-title-with-count">
-                  <h2>Needs attention</h2>
+                  <h2>Needs Attention</h2>
                   {props.managerActions.length ? (
                     <span
                       className={
@@ -647,7 +647,7 @@ export function ManagerDashboard(props: Props) {
                     </span>
                   ) : null}
                 </div>
-                <Link href={dashboardHref(props.weekStart, "activity")}>View all</Link>
+                <Link href={dashboardHref(props.weekStart, "activity")}>View All</Link>
               </div>
               <ManagerActionList items={props.managerActions} limit={6} />
             </section>

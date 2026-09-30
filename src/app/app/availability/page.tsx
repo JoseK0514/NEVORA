@@ -190,7 +190,7 @@ export default async function AvailabilityPage({
       {!selectedWeek && upcomingWeek?.availabilityDeadline ? (
         <section className="availability-deadline-banner">
           <div>
-            <p className="eyebrow">Upcoming schedule</p>
+            <p className="eyebrow">UPCOMING SCHEDULE</p>
             <strong>{formatWeekRange(upcomingWeek.weekStart)}</strong>
             <span>
               Availability closes{" "}
@@ -209,7 +209,7 @@ export default async function AvailabilityPage({
       {selectedWeek && settings?.availabilityDeadline ? (
         <section className={locked ? "availability-deadline-banner locked" : "availability-deadline-banner"}>
           <div>
-            <p className="eyebrow">{locked ? "Closed" : "Deadline"}</p>
+            <p className="eyebrow">{locked ? "CLOSED" : "DEADLINE"}</p>
             <strong>
               {locked ? "Weekly availability is locked" : "Submit before the cutoff"}
             </strong>

@@ -81,7 +81,7 @@ export default async function NewEmployeePage({
               <div>
                 <span>3</span>
                 <p>
-                  <strong>Employee activates account</strong>
+                  <strong>Employee Activates Account</strong>
                   <small>They create their own password using their Employee ID and phone number.</small>
                 </p>
               </div>
