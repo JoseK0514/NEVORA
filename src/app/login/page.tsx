@@ -10,46 +10,74 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <main className="auth-page">
-      <section className="auth-card">
-        <div className="auth-brand">
+    <main className="auth-page employee-login-page">
+      <div className="employee-login-overlay" aria-hidden="true" />
+      <div className="employee-login-scene-copy" aria-hidden="true">
+        <span>GOOD PEOPLE</span>
+        <strong>GREAT COFFEE</strong>
+      </div>
+
+      <div className="employee-login-shell">
+        <header className="employee-login-brand">
           <BrandMark large />
           <div>
-            <p className="eyebrow">Fuel Coffee Drive</p>
-            <h1>Employee Scheduling</h1>
+            <strong>Fuel Coffee Drive</strong>
+            <span>Employee Portal</span>
           </div>
-        </div>
+        </header>
 
-        {params.error ? (
-          <p className="form-error">Employee ID or password is incorrect.</p>
-        ) : null}
-        {params.activated ? (
-          <p className="form-success">Account activated. You can sign in now.</p>
-        ) : null}
+        <section className="auth-card employee-login-card">
+          <div className="employee-login-heading">
+            <p className="eyebrow">Employee Portal</p>
+            <h1>Employee Login</h1>
+            <p>
+              Access your schedule, availability, requests, time, and profile.
+            </p>
+          </div>
 
-        <form action={login} className="form-stack">
-          <label>
-            Employee ID
-            <input name="employeeId" placeholder="JN-001" autoComplete="username" required />
-          </label>
-          <label>
-            Password
-            <input
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="current-password"
-              required
-            />
-          </label>
-          <button type="submit" className="button primary full">Sign In</button>
-        </form>
+          {params.error ? (
+            <p className="form-error">Employee ID or password is incorrect.</p>
+          ) : null}
+          {params.activated ? (
+            <p className="form-success">Account activated. You can sign in now.</p>
+          ) : null}
 
-        <div className="auth-secondary">
-          <span>First time here?</span>
-          <Link href="/activate">Activate Account</Link>
-        </div>
-      </section>
+          <form action={login} className="form-stack employee-login-form">
+            <label>
+              Employee ID
+              <input
+                name="employeeId"
+                placeholder="Enter your employee ID"
+                autoComplete="username"
+                required
+              />
+            </label>
+            <label>
+              Password
+              <input
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                required
+              />
+            </label>
+            <button type="submit" className="button primary full employee-login-submit">
+              Sign In
+            </button>
+          </form>
+
+          <div className="auth-secondary employee-login-secondary">
+            <span>New employee?</span>
+            <Link href="/activate">Activate your account</Link>
+          </div>
+        </section>
+
+        <footer className="employee-login-footer">
+          <span>Fuel Coffee Drive • Employee Portal</span>
+          <small>People fuel possibility.</small>
+        </footer>
+      </div>
     </main>
   );
 }

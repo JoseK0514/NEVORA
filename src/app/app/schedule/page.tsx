@@ -102,6 +102,7 @@ export default async function SchedulePage({
     deadlineSaved?: string;
     acknowledged?: string;
     publishCheck?: string;
+    day?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -111,6 +112,13 @@ export default async function SchedulePage({
   const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const dates = weekDates(weekStart);
+  const selectedMobileDate =
+    params.day && dates.includes(params.day)
+      ? params.day
+      : dates.includes(today)
+        ? today
+        : dates[0];
+  const selectedMobileLabel = formatDayLabel(selectedMobileDate);
 
   const [
     locations,
@@ -161,6 +169,8 @@ export default async function SchedulePage({
     selectedLocation === "all"
       ? allShifts
       : allShifts.filter((shift) => shift.locationId === selectedLocation);
+  const locationQuery =
+    selectedLocation === "all" ? "" : `&location=${selectedLocation}`;
 
   const previousWeek = addDays(weekStart, -7);
   const nextWeek = addDays(weekStart, 7);
@@ -344,7 +354,7 @@ export default async function SchedulePage({
     Number(!weekSettings?.availabilityDeadline);
 
   return (
-    <>
+    <div className="manager-schedule-page">
       <PageHeader
         title="Weekly schedule"
         description="Build the week, resolve what needs attention, then publish each location."
@@ -396,7 +406,7 @@ export default async function SchedulePage({
             <div className="segmented">
               <Link
                 className={selectedLocation === "all" ? "selected" : ""}
-                href={`/app/schedule?week=${weekStart}`}
+                href={`/app/schedule?week=${weekStart}&day=${selectedMobileDate}`}
               >
                 All locations
               </Link>
@@ -404,7 +414,7 @@ export default async function SchedulePage({
                 <Link
                   key={location.id}
                   className={selectedLocation === location.id ? "selected" : ""}
-                  href={`/app/schedule?week=${weekStart}&location=${location.id}`}
+                  href={`/app/schedule?week=${weekStart}&location=${location.id}&day=${selectedMobileDate}`}
                 >
                   {location.shortName}
                 </Link>
@@ -415,7 +425,7 @@ export default async function SchedulePage({
           <div className="schedule-period-control" aria-label="Schedule week">
             <Link
               className="schedule-period-arrow"
-              href={`/app/schedule?week=${previousWeek}`}
+              href={`/app/schedule?week=${previousWeek}${locationQuery}`}
               aria-label="Previous week"
             >
               ‹
@@ -426,7 +436,7 @@ export default async function SchedulePage({
             </div>
             <Link
               className="schedule-period-arrow"
-              href={`/app/schedule?week=${nextWeek}`}
+              href={`/app/schedule?week=${nextWeek}${locationQuery}`}
               aria-label="Next week"
             >
               ›
@@ -825,10 +835,11 @@ export default async function SchedulePage({
             const label = formatDayLabel(date);
             return (
               <span
+                className={date === today ? "schedule-day-head is-today" : "schedule-day-head"}
                 key={date}
-                className={date === today ? "schedule-today-head" : undefined}
               >
-                {label.weekday} {label.day.split(" ")[1]}
+                <b>{label.weekday}</b>
+                <small>{label.day.split(" ")[1]}</small>
               </span>
             );
           })}
@@ -846,12 +857,23 @@ export default async function SchedulePage({
           );
           const hourBalance = hourBalancesByEmployee.get(employee.id);
           const target = targetMap.get(employee.id);
+          const weeklyHours = weeklyMinutes / 60;
+          const targetProgress =
+            typeof target === "number" && target > 0
+              ? Math.min((weeklyHours / target) * 100, 100)
+              : 0;
 
           return (
             <div className="schedule-row" key={employee.id}>
-              <strong>
-                {employee.firstName} {employee.lastName}
-              </strong>
+              <div className="schedule-employee-cell">
+                <strong>
+                  {employee.firstName} {employee.lastName}
+                </strong>
+                <span>
+                  {employee.role[0]}
+                  {employee.role.slice(1).toLowerCase()}
+                </span>
+              </div>
               {dates.map((date) => {
                 const shifts = visibleShifts.filter(
                   (shift) =>
@@ -886,23 +908,38 @@ export default async function SchedulePage({
                               (location) => location.id === shift.locationId,
                             )?.shortName
                           }
+                          {shift.isDesignatedLead ? " · Lead" : ""}
                         </span>
+                        <small>
+                          {(durationMinutes(shift.startTime, shift.endTime) / 60).toFixed(1)}h
+                        </small>
                       </Link>
                     ))}
                     <Link
                       className="add-cell"
                       href={`/app/schedule/new?week=${weekStart}&date=${date}&employeeId=${employee.id}&locationId=${preferredLocation}`}
                     >
-                      + Add
+                      <span aria-hidden="true">+</span>
+                      Add shift
                     </Link>
                   </div>
                 );
               })}
               <div className="hours hours-health-cell">
-                <strong>
-                  {(weeklyMinutes / 60).toFixed(1)}
-                  {typeof target === "number" ? ` / ${target}` : ""}h
-                </strong>
+                <div className="hours-total">
+                  <strong>{weeklyHours.toFixed(1)}h</strong>
+                  <span>
+                    {typeof target === "number" ? `of ${target}h` : "No target"}
+                  </span>
+                </div>
+                {typeof target === "number" ? (
+                  <div
+                    className="hours-progress"
+                    aria-label={`${weeklyHours.toFixed(1)} of ${target} target hours`}
+                  >
+                    <span style={{ width: `${targetProgress}%` }} />
+                  </div>
+                ) : null}
                 <span
                   className={
                     hourBalance?.status === "UNDER"
@@ -922,55 +959,119 @@ export default async function SchedulePage({
         })}
       </section>
 
-      <section className="schedule-mobile">
-        {dates.map((date) => {
-          const label = formatDayLabel(date);
-          const dayShifts = visibleShifts.filter((shift) => shift.date === date);
+      <section className="schedule-mobile schedule-mobile-manager">
+        <nav className="mobile-day-tabs" aria-label="Schedule day">
+          {dates.map((date) => {
+            const label = formatDayLabel(date);
 
-          return (
-            <article className="day-card" key={date}>
-              <div className="day-heading">
-                <div>
-                  <span>{label.weekday}</span>
-                  <strong>{label.day}</strong>
-                </div>
-                <Link
-                  className="text-link"
-                  href={`/app/schedule/new?week=${weekStart}&date=${date}`}
-                >
-                  + Add shift
-                </Link>
-              </div>
-              {dayShifts.length ? (
-                dayShifts.map((shift) => (
-                  <Link
-                    className="mobile-shift editable-mobile-shift"
-                    href={`/app/schedule/edit?shiftId=${shift.id}`}
-                    key={shift.id}
-                  >
+            return (
+              <Link
+                className={date === selectedMobileDate ? "selected" : ""}
+                href={`/app/schedule?week=${weekStart}${locationQuery}&day=${date}`}
+                key={date}
+              >
+                <span>{label.weekday.slice(0, 3)}</span>
+                <strong>{label.day.split(" ")[1]}</strong>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <article className="mobile-day-workspace">
+          <div className="mobile-day-workspace-heading">
+            <div>
+              <span>{selectedMobileLabel.weekday}</span>
+              <h2>{selectedMobileLabel.day}</h2>
+            </div>
+            <Link
+              className="button primary compact-button"
+              href={`/app/schedule/new?week=${weekStart}&date=${selectedMobileDate}${selectedLocation === "all" ? "" : `&locationId=${selectedLocation}`}`}
+            >
+              + Add shift
+            </Link>
+          </div>
+
+          <div className="mobile-employee-schedule">
+            {activeEmployees.map((employee) => {
+              const employeeDayShifts = visibleShifts.filter(
+                (shift) =>
+                  shift.employeeId === employee.id &&
+                  shift.date === selectedMobileDate,
+              );
+              const preferredLocation =
+                selectedLocation === "all"
+                  ? employee.primaryLocationId
+                  : selectedLocation;
+              const employeeWeekMinutes = effectiveShifts
+                .filter((shift) => shift.employeeId === employee.id)
+                .reduce(
+                  (sum, shift) =>
+                    sum + durationMinutes(shift.startTime, shift.endTime),
+                  0,
+                );
+              const target = targetMap.get(employee.id);
+
+              return (
+                <section className="mobile-employee-day-row" key={employee.id}>
+                  <div className="mobile-employee-summary">
                     <div>
-                      <strong>{shift.employeeName}</strong>
+                      <strong>
+                        {employee.firstName} {employee.lastName}
+                      </strong>
                       <span>
-                        {
-                          locations.find(
-                            (location) => location.id === shift.locationId,
-                          )?.shortName
-                        }
-                        {shift.isDesignatedLead ? " · Lead" : ""}
+                        {employee.role[0]}
+                        {employee.role.slice(1).toLowerCase()}
                       </span>
                     </div>
-                    <b>
-                      {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
-                    </b>
-                  </Link>
-                ))
-              ) : (
-                <p className="muted">No shifts yet.</p>
-              )}
-            </article>
-          );
-        })}
+                    <small>
+                      {(employeeWeekMinutes / 60).toFixed(1)}h
+                      {typeof target === "number" ? ` / ${target}h` : ""}
+                    </small>
+                  </div>
+
+                  {employeeDayShifts.length ? (
+                    employeeDayShifts.map((shift) => (
+                      <Link
+                        className="mobile-shift-card"
+                        href={`/app/schedule/edit?shiftId=${shift.id}`}
+                        key={shift.id}
+                      >
+                        <div>
+                          <strong>
+                            {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
+                          </strong>
+                          <span>
+                            {
+                              locations.find(
+                                (location) => location.id === shift.locationId,
+                              )?.shortName
+                            }
+                            {shift.isDesignatedLead ? " · Lead" : ""}
+                          </span>
+                        </div>
+                        <small>
+                          {(durationMinutes(shift.startTime, shift.endTime) / 60).toFixed(1)}h
+                        </small>
+                      </Link>
+                    ))
+                  ) : (
+                    <Link
+                      className="mobile-empty-shift"
+                      href={`/app/schedule/new?week=${weekStart}&date=${selectedMobileDate}&employeeId=${employee.id}&locationId=${preferredLocation}`}
+                    >
+                      <span aria-hidden="true">+</span>
+                      <div>
+                        <strong>Add shift</strong>
+                        <small>No shift scheduled</small>
+                      </div>
+                    </Link>
+                  )}
+                </section>
+              );
+            })}
+          </div>
+        </article>
       </section>
-    </>
+    </div>
   );
 }

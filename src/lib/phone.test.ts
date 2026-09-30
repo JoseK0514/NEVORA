@@ -3,7 +3,7 @@ import {
   formatPhoneInput,
   formatPhoneNumber,
   normalizePhoneNumber,
-} from "@/lib/phone";
+} from "./phone";
 
 describe("phone formatting", () => {
   it("adds hyphens while a phone number is entered", () => {
