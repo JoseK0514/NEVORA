@@ -34,11 +34,11 @@ export function AppShell({
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <Link href="/app" className="brand" aria-label="Fuel Scheduler home">
+        <Link href="/app" className="brand sidebar-brand" aria-label="Fuel Scheduler home">
           <BrandMark />
-          <span>
-            <strong>Fuel</strong>
-            <small>Scheduler</small>
+          <span className="sidebar-brand-copy">
+            <strong>Fuel.</strong>
+            <small>Coffee Drive</small>
           </span>
         </Link>
 
@@ -67,9 +67,20 @@ export function AppShell({
             <strong>{user.firstName} {user.lastName}</strong>
             <small>{user.role[0]}{user.role.slice(1).toLowerCase()}</small>
           </div>
-          <form action={logout}>
-            <button className="sidebar-logout" type="submit">Sign out</button>
-          </form>
+          <span className="sidebar-profile-chevron" aria-hidden="true">⌄</span>
+        </div>
+
+        <form action={logout} className="sidebar-signout-form">
+          <button className="sidebar-logout sidebar-logout-row" type="submit">
+            <NavIcon name="logout" size={18} />
+            <span>Sign out</span>
+          </button>
+        </form>
+
+        <div className="sidebar-mantra" aria-hidden="true">
+          <span>People</span>
+          <span>Fuel</span>
+          <span>Possibility.</span>
         </div>
       </aside>
 
