@@ -76,7 +76,7 @@ export default async function EmployeesPage() {
 
       <section className="employees-toolbar" aria-label="Employee filters">
         <label className="employees-search">
-          <NavIcon name="requests" size={18} />
+          <NavIcon name="search" size={18} />
           <input type="search" placeholder="Search employees..." aria-label="Search employees" />
         </label>
 
