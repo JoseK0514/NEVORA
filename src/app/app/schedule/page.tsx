@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
@@ -355,10 +356,15 @@ export default async function SchedulePage({
 
   return (
     <div className="manager-schedule-page">
-      <PageHeader
-        title="Weekly schedule"
-        description="Build the week, resolve what needs attention, then publish each location."
-      />
+      <section className="schedule-hero">
+        <div className="schedule-hero-copy">
+          <p>Schedule</p>
+          <h1>Weekly schedule</h1>
+          <span>
+            Build the week, resolve what needs attention, then publish each location.
+          </span>
+        </div>
+      </section>
 
       {params.error ? (
         <p className="form-error">
@@ -430,7 +436,8 @@ export default async function SchedulePage({
             >
               ‹
             </Link>
-            <div>
+            <div className="schedule-period-label">
+              <NavIcon name="calendar" size={15} />
               <span>Week</span>
               <strong>{formatWeekRange(weekStart)}</strong>
             </div>
@@ -445,9 +452,10 @@ export default async function SchedulePage({
 
           <div className="schedule-command-actions">
             <Link
-              className="button secondary compact-button"
+              className="button secondary compact-button schedule-template-button"
               href={`/app/schedule/templates?week=${weekStart}`}
             >
+              <NavIcon name="templates" size={15} />
               Templates
             </Link>
 
@@ -502,68 +510,103 @@ export default async function SchedulePage({
 
         <details className="schedule-review-details">
           <summary className="schedule-status-strip">
-            <span className="schedule-status-item">
-              <small>Availability</small>
-              <strong>
-                {weekSettings?.availabilityDeadline ? "Deadline set" : "Not set"}
-              </strong>
-              <em>
-                {weekSettings?.availabilityDeadline
-                  ? formatPuertoRicoDateTime(weekSettings.availabilityDeadline)
-                  : "Set before employees finalize availability"}
-              </em>
+            <span className="schedule-status-card availability">
+              <span className="schedule-status-icon">
+                <NavIcon name="calendar" size={20} />
+              </span>
+              <span className="schedule-status-copy">
+                <small>Availability</small>
+                <strong>
+                  {weekSettings?.availabilityDeadline ? "Deadline set" : "Not set"}
+                </strong>
+                <em>
+                  {weekSettings?.availabilityDeadline
+                    ? formatPuertoRicoDateTime(weekSettings.availabilityDeadline)
+                    : "Set before employees finalize availability"}
+                </em>
+              </span>
+              <b aria-hidden="true">›</b>
             </span>
 
-            <span className="schedule-status-item">
-              <small>Coverage</small>
-              <strong>
-                {health.coverageSummary.totalBlocks === 0
-                  ? "No shifts yet"
-                  : health.coverageSummary.uncoveredBlocks
-                    ? `${health.coverageSummary.uncoveredBlocks} gap${health.coverageSummary.uncoveredBlocks === 1 ? "" : "s"}`
+            <span className="schedule-status-card coverage">
+              <span className="schedule-status-icon">
+                <NavIcon name="coverage" size={20} />
+              </span>
+              <span className="schedule-status-copy">
+                <small>Coverage</small>
+                <strong>
+                  {health.coverageSummary.totalBlocks === 0
+                    ? "No shifts yet"
+                    : health.coverageSummary.uncoveredBlocks
+                      ? `${health.coverageSummary.uncoveredBlocks} gap${health.coverageSummary.uncoveredBlocks === 1 ? "" : "s"}`
+                      : "Clear"}
+                </strong>
+                <em>
+                  {health.coverageSummary.totalBlocks
+                    ? `${health.coverageSummary.coveredBlocks}/${health.coverageSummary.totalBlocks} periods covered`
+                    : "Coverage updates as shifts are added"}
+                </em>
+              </span>
+              <b aria-hidden="true">›</b>
+            </span>
+
+            <span className="schedule-status-card hours">
+              <span className="schedule-status-icon">
+                <NavIcon name="clock" size={20} />
+              </span>
+              <span className="schedule-status-copy">
+                <small>Employee hours</small>
+                <strong>
+                  {hoursReviewCount
+                    ? `${hoursReviewCount} issue${hoursReviewCount === 1 ? "" : "s"}`
                     : "Clear"}
-              </strong>
-              <em>
-                {health.coverageSummary.totalBlocks
-                  ? `${health.coverageSummary.coveredBlocks}/${health.coverageSummary.totalBlocks} periods covered`
-                  : "Coverage updates as shifts are added"}
-              </em>
+                </strong>
+                <em>
+                  {hoursReviewCount
+                    ? "Review targets and scheduled hours"
+                    : "No hour-balance issues"}
+                </em>
+              </span>
+              <b aria-hidden="true">›</b>
             </span>
 
-            <span className="schedule-status-item">
-              <small>Employee hours</small>
-              <strong>{hoursReviewCount ? `${hoursReviewCount} issue${hoursReviewCount === 1 ? "" : "s"}` : "Clear"}</strong>
-              <em>
-                {hoursReviewCount
-                  ? "Review targets and scheduled hours"
-                  : "No hour-balance issues"}
-              </em>
-            </span>
-
-            <span className="schedule-status-item">
-              <small>Acknowledgements</small>
-              <strong>
-                {acknowledgementSummary.scheduledEmployees
-                  ? `${acknowledgementSummary.acknowledgedEmployees}/${acknowledgementSummary.scheduledEmployees}`
-                  : "After publish"}
-              </strong>
-              <em>
-                {acknowledgementSummary.scheduledEmployees
-                  ? "Published schedule review"
-                  : "Appears once schedules are published"}
-              </em>
+            <span className="schedule-status-card acknowledgements">
+              <span className="schedule-status-icon">
+                <NavIcon name="publish" size={20} />
+              </span>
+              <span className="schedule-status-copy">
+                <small>Acknowledgements</small>
+                <strong>
+                  {acknowledgementSummary.scheduledEmployees
+                    ? `${acknowledgementSummary.acknowledgedEmployees}/${acknowledgementSummary.scheduledEmployees}`
+                    : "After publish"}
+                </strong>
+                <em>
+                  {acknowledgementSummary.scheduledEmployees
+                    ? "Published schedule review"
+                    : "Appears once schedules are published"}
+                </em>
+              </span>
+              <b aria-hidden="true">›</b>
             </span>
 
             <span className="schedule-review-trigger">
-              <span>
-                Review week
-                <small>
+              <span className="schedule-status-icon">
+                <NavIcon name="alert" size={20} />
+              </span>
+              <span className="schedule-status-copy">
+                <small>Review week</small>
+                <strong>
                   {weekReviewCount
                     ? `${weekReviewCount} item${weekReviewCount === 1 ? "" : "s"}`
                     : "Ready"}
-                </small>
+                </strong>
+                <em>Resolve before publishing</em>
               </span>
-              <b aria-hidden="true">⌄</b>
+              {weekReviewCount ? (
+                <span className="schedule-review-badge">{weekReviewCount}</span>
+              ) : null}
+              <b aria-hidden="true">›</b>
             </span>
           </summary>
 
@@ -866,12 +909,18 @@ export default async function SchedulePage({
           return (
             <div className="schedule-row" key={employee.id}>
               <div className="schedule-employee-cell">
-                <strong>
-                  {employee.firstName} {employee.lastName}
-                </strong>
-                <span>
-                  {employee.role[0]}
-                  {employee.role.slice(1).toLowerCase()}
+                <span className="schedule-employee-avatar" aria-hidden="true">
+                  {(employee.firstName[0] ?? "").toUpperCase()}
+                  {(employee.lastName[0] ?? "").toUpperCase()}
+                </span>
+                <span className="schedule-employee-copy">
+                  <strong>
+                    {employee.firstName} {employee.lastName}
+                  </strong>
+                  <small>
+                    {employee.role[0]}
+                    {employee.role.slice(1).toLowerCase()}
+                  </small>
                 </span>
               </div>
               {dates.map((date) => {
@@ -940,23 +989,89 @@ export default async function SchedulePage({
                     <span style={{ width: `${targetProgress}%` }} />
                   </div>
                 ) : null}
-                <span
-                  className={
-                    hourBalance?.status === "UNDER"
-                      ? "hours-under"
-                      : hourBalance?.status === "OVER"
-                        ? "hours-over"
-                        : hourBalance?.status === "ON_TARGET"
-                          ? "hours-good"
-                          : "hours-unset"
-                  }
-                >
-                  {hourBalanceLabel(hourBalance)}
-                </span>
+                {typeof target === "number" ? (
+                  <span
+                    className={
+                      hourBalance?.status === "UNDER"
+                        ? "hours-under"
+                        : hourBalance?.status === "OVER"
+                          ? "hours-over"
+                          : hourBalance?.status === "ON_TARGET"
+                            ? "hours-good"
+                            : "hours-unset"
+                    }
+                  >
+                    {hourBalanceLabel(hourBalance)}
+                  </span>
+                ) : (
+                  <Link
+                    className="hours-unset-link"
+                    href={`/app/schedule/settings?employeeId=${employee.id}`}
+                  >
+                    <NavIcon name="alert" size={12} />
+                    Target not set
+                  </Link>
+                )}
               </div>
             </div>
           );
         })}
+      </section>
+
+      {effectiveShifts.length === 0 ? (
+        <section className="schedule-empty-banner">
+          <span className="schedule-empty-icon" aria-hidden="true">
+            <NavIcon name="calendar" size={19} />
+          </span>
+          <span className="schedule-empty-copy">
+            <strong>No shifts scheduled yet</strong>
+            <small>
+              Start by adding shifts for your team or use a template to save time.
+            </small>
+          </span>
+          <span className="schedule-empty-actions">
+            <Link
+              className="button secondary compact-button"
+              href={`/app/schedule/templates?week=${weekStart}`}
+            >
+              Use a template
+            </Link>
+            <Link
+              className="button primary compact-button"
+              href={`/app/schedule/new?week=${weekStart}`}
+            >
+              + Add shift
+            </Link>
+          </span>
+        </section>
+      ) : null}
+
+      <section className="schedule-brand-strip" aria-label="Fuel Coffee Drive">
+        <div className="schedule-quote-card">
+          <span className="schedule-quote-icon" aria-hidden="true">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M6.2 8.2h12.7v8.1c0 4-2.8 6.5-6.4 6.5s-6.3-2.5-6.3-6.5V8.2Z" />
+              <path d="M18.9 10.3h1.5c2 0 3.4 1.3 3.4 3.1 0 2-1.5 3.3-3.7 3.3h-1.2" />
+              <path d="M9 4.8c0 1 1.1 1.3 1.1 2.2M13 4.2c0 1.1 1.2 1.4 1.2 2.4" />
+            </svg>
+          </span>
+          <span>
+            <strong>
+              “Great teams aren’t built by chance, they’re scheduled with purpose.”
+            </strong>
+            <small>People Fuel Possibility.</small>
+          </span>
+        </div>
+        <div className="schedule-brand-art" aria-hidden="true" />
       </section>
 
       <section className="schedule-mobile schedule-mobile-manager">
