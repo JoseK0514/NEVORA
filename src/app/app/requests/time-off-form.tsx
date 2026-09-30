@@ -4,12 +4,13 @@ import { useState } from "react";
 import { NavIcon } from "@/components/nav-icon";
 import { requestTimeOffAction } from "@/app/app/requests/actions";
 
-export function TimeOffForm() {
+export function TimeOffForm({ requestId }: { requestId: string }) {
   const [partialDay, setPartialDay] = useState(false);
   const [noteLength, setNoteLength] = useState(0);
 
   return (
     <form action={requestTimeOffAction} className="employee-form timeoff-form">
+      <input type="hidden" name="requestId" value={requestId} />
       <div className="timeoff-date-section">
         <strong className="timeoff-section-label">Dates</strong>
         <div className="form-columns timeoff-date-grid">

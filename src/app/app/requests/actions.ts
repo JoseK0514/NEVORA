@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/auth/session";
 import { TIME_OFF_REVIEW_ROLES, requireRoles } from "@/lib/auth/permissions";
+import { isValidIsoDate } from "@/lib/date-utils";
 import {
   createTimeOffRequest,
   reviewTimeOffRequest,
@@ -11,6 +12,7 @@ import {
 
 export async function requestTimeOffAction(formData: FormData) {
   const session = await requireSession();
+  const requestId = String(formData.get("requestId") ?? "");
   const startDate = String(formData.get("startDate") ?? "");
   const endDate = String(formData.get("endDate") ?? "");
   const partialDay = formData.get("partialDay") === "on";
@@ -19,8 +21,9 @@ export async function requestTimeOffAction(formData: FormData) {
   const reason = String(formData.get("reason") ?? "").trim();
 
   if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(startDate) ||
-    !/^\d{4}-\d{2}-\d{2}$/.test(endDate) ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId) ||
+    !isValidIsoDate(startDate) ||
+    !isValidIsoDate(endDate) ||
     startDate > endDate ||
     (partialDay && startDate !== endDate) ||
     (partialDay &&
@@ -34,6 +37,7 @@ export async function requestTimeOffAction(formData: FormData) {
   }
 
   await createTimeOffRequest({
+    requestId,
     employeeId: session.id,
     startDate,
     endDate,

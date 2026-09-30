@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { NavIcon } from "@/components/nav-icon";
 import { PhoneInput } from "@/components/phone-input";
@@ -20,6 +20,7 @@ export function EmployeeCreateForm({
   canCreateOwner: boolean;
 }) {
   const [employeeId, setEmployeeId] = useState("");
+  const submitting = useRef(false);
   const [idError, setIdError] = useState("");
   const [generatingId, startGeneratingId] = useTransition();
   const [primaryLocationId, setPrimaryLocationId] = useState(
@@ -38,7 +39,17 @@ export function EmployeeCreateForm({
   }
 
   return (
-    <form action={createEmployeeAction} className="employee-create-form">
+    <form
+      action={createEmployeeAction}
+      className="employee-create-form"
+      onSubmit={(event) => {
+        if (submitting.current) {
+          event.preventDefault();
+          return;
+        }
+        submitting.current = true;
+      }}
+    >
       <section className="employee-create-section">
         <div className="employee-create-section-heading">
           <span className="employee-create-heading-icon" aria-hidden="true">

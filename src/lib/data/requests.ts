@@ -1,5 +1,4 @@
-import { randomUUID } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
+import { getDb, queryRows } from "../db";
 import type { RequestStatus } from "@/lib/domain";
 
 export type TimeOffListItem = {
@@ -95,6 +94,7 @@ export async function listPendingTimeOffRequests() {
 }
 
 export async function createTimeOffRequest(input: {
+  requestId: string;
   employeeId: string;
   startDate: string;
   endDate: string;
@@ -113,9 +113,10 @@ export async function createTimeOffRequest(input: {
       start_time,
       end_time,
       reason
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+    ON CONFLICT (id) DO NOTHING`,
     [
-      randomUUID(),
+      input.requestId,
       input.employeeId,
       input.startDate,
       input.endDate,

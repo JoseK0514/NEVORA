@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import "./timeoff-premium.css";
 import { NavIcon } from "@/components/nav-icon";
@@ -143,7 +144,7 @@ export default async function RequestsPage({
                   <p>Choose your dates and request type. Add a note only if needed.</p>
                 </div>
               </div>
-              <TimeOffForm />
+              <TimeOffForm requestId={randomUUID()} />
             </article>
 
             <aside className="timeoff-side-rail">
