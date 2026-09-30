@@ -3,11 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { insertEmployee } from "@/lib/data/employees";
+import { generateAvailableEmployeeId, insertEmployee } from "@/lib/data/employees";
 import type { UserRole } from "@/lib/domain";
 import { normalizePhoneNumber } from "@/lib/phone";
 
 const ROLES: UserRole[] = ["OWNER", "MANAGER", "LEAD", "EMPLOYEE"];
+
+export async function generateEmployeeIdAction() {
+  await requireRoles(MANAGER_ROLES);
+  return generateAvailableEmployeeId();
+}
 
 export async function createEmployeeAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
@@ -25,7 +30,7 @@ export async function createEmployeeAction(formData: FormData) {
     .filter(Boolean);
 
   if (
-    !id ||
+    !/^FC-\d{4,}$/.test(id) ||
     !firstName ||
     !lastName ||
     !phone ||
@@ -50,7 +55,10 @@ export async function createEmployeeAction(formData: FormData) {
       primaryLocationId,
       eligibleLocationIds,
     });
-  } catch {
+  } catch (error) {
+    if (error && typeof error === "object" && "constraint" in error && error.constraint === "employees_pkey") {
+      redirect("/app/employees/new?error=id_taken");
+    }
     redirect("/app/employees/new?error=save");
   }
 

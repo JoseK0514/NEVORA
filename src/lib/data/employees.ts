@@ -1,5 +1,6 @@
 import { getDb, queryRows } from "@/lib/db";
 import type { Employee, Location, UserRole } from "@/lib/domain";
+import { randomInt } from "node:crypto";
 
 type EmployeeRow = {
   id: string;
@@ -111,6 +112,20 @@ export async function findEmployeeCredential(employeeId: string) {
   );
 
   return rows[0];
+}
+
+export async function generateAvailableEmployeeId() {
+  const sql = getDb();
+
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const id = `FC-${randomInt(100000, 1000000)}`;
+    const existing = queryRows<{ id: string }>(
+      await sql.query("SELECT id FROM employees WHERE id = $1 LIMIT 1", [id]),
+    );
+    if (existing.length === 0) return id;
+  }
+
+  throw new Error("Could not generate an available employee ID.");
 }
 
 export async function insertEmployee(input: {

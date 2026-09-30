@@ -1,21 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { NavIcon } from "@/components/nav-icon";
 import { PhoneInput } from "@/components/phone-input";
-import { createEmployeeAction } from "@/app/app/employees/actions";
+import { createEmployeeAction, generateEmployeeIdAction } from "@/app/app/employees/actions";
 
 type LocationOption = {
   id: string;
   name: string;
   shortName: string;
 };
-
-function generateEmployeeId() {
-  const suffix = Math.floor(1000 + Math.random() * 9000);
-  return `FC-${suffix}`;
-}
 
 export function EmployeeCreateForm({
   locations,
@@ -24,7 +19,9 @@ export function EmployeeCreateForm({
   locations: LocationOption[];
   canCreateOwner: boolean;
 }) {
-  const [employeeId, setEmployeeId] = useState("FC-0021");
+  const [employeeId, setEmployeeId] = useState("");
+  const [idError, setIdError] = useState("");
+  const [generatingId, startGeneratingId] = useTransition();
   const [primaryLocationId, setPrimaryLocationId] = useState(
     locations[0]?.id ?? "",
   );
@@ -63,19 +60,30 @@ export function EmployeeCreateForm({
                 name="id"
                 value={employeeId}
                 onChange={(event) => setEmployeeId(event.currentTarget.value.toUpperCase())}
-                placeholder="FC-0021"
+                placeholder="Generate or enter an ID"
+                pattern="FC-[0-9]{4,}"
+                title="Use FC- followed by at least four digits"
                 required
               />
               <button
                 className="button secondary employee-generate-id"
                 type="button"
-                onClick={() => setEmployeeId(generateEmployeeId())}
+                disabled={generatingId}
+                onClick={() => startGeneratingId(async () => {
+                  setIdError("");
+                  try {
+                    setEmployeeId(await generateEmployeeIdAction());
+                  } catch {
+                    setIdError("Could not generate an ID. Please try again.");
+                  }
+                })}
               >
                 <span aria-hidden="true">↻</span>
-                Generate ID
+                {generatingId ? "Generating..." : "Generate ID"}
               </button>
             </span>
-            <small>Used to sign in and activate the account.</small>
+            <small>Used to sign in and activate the account. IDs are checked when saved.</small>
+            {idError ? <small className="form-error" role="alert">{idError}</small> : null}
           </label>
 
           <label>

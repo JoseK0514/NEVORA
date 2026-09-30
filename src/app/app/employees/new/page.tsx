@@ -19,7 +19,7 @@ export default async function NewEmployeePage({
       <section className="employee-create-hero">
         <div className="employee-create-hero-copy">
           <p>Team</p>
-          <h1>Add employee</h1>
+          <h1>Add Employee</h1>
           <span>Create the employee profile used for scheduling and account activation.</span>
         </div>
 
@@ -33,6 +33,8 @@ export default async function NewEmployeePage({
         <p className="form-error employee-create-error">
           {params.error === "permission"
             ? "Only an owner can create another owner."
+            : params.error === "id_taken"
+              ? "That Employee ID is already in use. Generate a new ID and try again."
             : params.error === "save"
               ? "Employee could not be saved. Check that the ID and email are not already in use."
               : "Complete all required employee fields."}
@@ -56,7 +58,7 @@ export default async function NewEmployeePage({
                 <NavIcon name="employees" size={24} />
               </span>
               <span>
-                <strong>Employee setup</strong>
+                <strong>Employee Setup</strong>
                 <small>A quick and easy process.</small>
               </span>
             </div>
@@ -72,7 +74,7 @@ export default async function NewEmployeePage({
               <div>
                 <span>2</span>
                 <p>
-                  <strong>Location access</strong>
+                  <strong>Location Access</strong>
                   <small>Select the locations where they can be scheduled.</small>
                 </p>
               </div>
