@@ -107,7 +107,7 @@ export function AppShell({
               >
                 {item.label === "Dashboard"
                   ? "Home"
-                  : item.label === "Shift requests"
+                  : item.label === "Shift Exchange"
                     ? "Shifts"
                     : item.label === "My schedule"
                       ? "Schedule"
