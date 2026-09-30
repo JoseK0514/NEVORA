@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
 import { NavIcon } from "@/components/nav-icon";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { logout } from "@/app/login/actions";
 import type { UserRole } from "@/lib/domain";
 import { navigationForRole } from "@/lib/navigation";
@@ -21,6 +21,7 @@ export function AppShell({
   };
 }) {
   const pathname = usePathname();
+  const mobileMenuRef = useRef<HTMLDetailsElement>(null);
   const navigation = navigationForRole(user.role);
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
   const activeHref = navigation
@@ -30,6 +31,32 @@ export function AppShell({
         : pathname === item.href || pathname.startsWith(`${item.href}/`),
     )
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
+
+  useEffect(() => {
+    mobileMenuRef.current?.removeAttribute("open");
+  }, [pathname]);
+
+  useEffect(() => {
+    function closeOutside(event: PointerEvent) {
+      if (!mobileMenuRef.current?.contains(event.target as Node)) {
+        mobileMenuRef.current?.removeAttribute("open");
+      }
+    }
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape" && mobileMenuRef.current?.open) {
+        mobileMenuRef.current.removeAttribute("open");
+        mobileMenuRef.current.querySelector("summary")?.focus();
+      }
+    }
+
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
 
   return (
     <div className="app-shell">
@@ -72,7 +99,7 @@ export function AppShell({
         <form action={logout} className="sidebar-signout-form">
           <button className="sidebar-logout sidebar-logout-row" type="submit">
             <NavIcon name="logout" size={18} />
-            <span>Sign out</span>
+            <span>Sign Out</span>
           </button>
         </form>
 
@@ -92,7 +119,7 @@ export function AppShell({
           <div className="mobile-header-actions">
             <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>
             {navigation.length > 5 ? (
-              <details className="mobile-more">
+              <details className="mobile-more" ref={mobileMenuRef}>
                 <summary>Menu</summary>
                 <nav aria-label="More navigation">
                   {navigation.slice(5).map((item) => (

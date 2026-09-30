@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ExchangeTabScroller } from "@/components/exchange-tab-scroller";
 import "./exchange-premium.css";
 import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
@@ -213,7 +214,7 @@ export default async function ExchangePage({
       ) : null}
       {successMessage ? <p className="form-success">{successMessage}</p> : null}
 
-      <nav className="exchange-tabs" aria-label="Shift exchange sections">
+      <ExchangeTabScroller activeTab={activeTab}>
         <Link
           className={tabClass(activeTab === "my")}
           href="/app/exchange?tab=my"
@@ -251,7 +252,7 @@ export default async function ExchangePage({
           <NavIcon name="clock" size={16} />
           History
         </Link>
-      </nav>
+      </ExchangeTabScroller>
 
       <section className="exchange-main-layout">
         <section className="exchange-focus-workspace">
@@ -280,7 +281,7 @@ export default async function ExchangePage({
                         className="button danger-button"
                         href={`/app/exchange/callout?shiftId=${shift.id}`}
                       >
-                        Unable to work
+                        Unable to Work
                       </Link>
                       <form action={offerCoverageAction}>
                         <input type="hidden" name="sourceShiftId" value={shift.id} />
@@ -322,7 +323,7 @@ export default async function ExchangePage({
           <article className="panel exchange-focus-panel">
             <div className="exchange-focus-heading">
               <div>
-                <p className="eyebrow">Coverage board</p>
+                <p className="eyebrow">COVERAGE BOARD</p>
                 <h2>Available Coverage</h2>
                 <p>Pick up an eligible shift that a coworker has offered.</p>
               </div>
@@ -367,7 +368,7 @@ export default async function ExchangePage({
               <section className="exchange-request-section">
                 <div className="exchange-section-heading">
                   <div>
-                    <p className="eyebrow">Call-outs</p>
+                    <p className="eyebrow">CALL-OUTS</p>
                     <h2>Unable-to-Work Requests</h2>
                   </div>
                   <StatusPill tone="warning">
@@ -420,7 +421,7 @@ export default async function ExchangePage({
               <section className="exchange-request-section">
                 <div className="exchange-section-heading">
                   <div>
-                    <p className="eyebrow">My call-outs</p>
+                    <p className="eyebrow">MY CALL-OUTS</p>
                     <h2>Unable-to-Work Requests</h2>
                   </div>
                 </div>
@@ -463,7 +464,7 @@ export default async function ExchangePage({
               <section className="exchange-request-section">
                 <div className="exchange-section-heading">
                   <div>
-                    <p className="eyebrow">Manager approval</p>
+                    <p className="eyebrow">MANAGER APPROVAL</p>
                     <h2>Needs Your Review</h2>
                   </div>
                   <StatusPill tone="warning">{managerPending.length} pending</StatusPill>
@@ -511,7 +512,7 @@ export default async function ExchangePage({
               <section className="exchange-request-section">
                 <div className="exchange-section-heading">
                   <div>
-                    <p className="eyebrow">Your response</p>
+                    <p className="eyebrow">YOUR RESPONSE</p>
                     <h2>Swap Requests</h2>
                   </div>
                   <StatusPill tone="warning">{incomingSwaps.length} waiting</StatusPill>
@@ -564,7 +565,7 @@ export default async function ExchangePage({
           <article className="panel exchange-focus-panel">
             <div className="exchange-focus-heading">
               <div>
-                <p className="eyebrow">History</p>
+                <p className="eyebrow">HISTORY</p>
                 <h2>Exchange Activity</h2>
                 <p>Review your previous coverage and swap requests.</p>
               </div>
