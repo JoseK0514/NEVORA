@@ -209,7 +209,7 @@ function LocationReadiness({
             key={location.locationId}
           >
             <span className="dashboard-location-icon">
-              <NavIcon name="dashboard" size={18} />
+              <NavIcon name="location" size={18} />
             </span>
             <span className="dashboard-location-copy">
               <span>
@@ -327,52 +327,35 @@ function TeamAvailability({
   );
 }
 
-function QuickActions({ weekStart }: { weekStart: string }) {
-  const actions = [
-    {
-      label: "Add shift",
-      detail: "Create a new shift",
-      href: `/app/schedule/new?week=${weekStart}`,
-      icon: "schedule" as const,
-    },
-    {
-      label: "Review time off",
-      detail: "Approve or deny requests",
-      href: "/app/requests?tab=team",
-      icon: "timeOff" as const,
-    },
-    {
-      label: "Shift requests",
-      detail: "Manage employee requests",
-      href: "/app/exchange?tab=requests",
-      icon: "exchange" as const,
-    },
-    {
-      label: "Add employee",
-      detail: "Invite and set permissions",
-      href: "/app/employees/new",
-      icon: "employees" as const,
-    },
-  ];
-
+function DashboardBrandStrip() {
   return (
-    <section className="dashboard-panel dashboard-quick-panel">
-      <div className="dashboard-panel-heading">
+    <section className="dashboard-brand-strip" aria-label="Fuel Coffee Drive">
+      <div className="dashboard-quote-card">
+        <span className="dashboard-quote-mark" aria-hidden="true">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 28 28"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M6.2 8.2h12.7v8.1c0 4-2.8 6.5-6.4 6.5s-6.3-2.5-6.3-6.5V8.2Z" />
+            <path d="M18.9 10.3h1.5c2 0 3.4 1.3 3.4 3.1 0 2-1.5 3.3-3.7 3.3h-1.2" />
+            <path d="M9 4.8c0 1 1.1 1.3 1.1 2.2M13 4.2c0 1.1 1.2 1.4 1.2 2.4" />
+          </svg>
+        </span>
         <div>
-          <h2>Quick actions</h2>
-          <p>Common tasks, without hunting through the app.</p>
+          <blockquote>
+            “Great teams aren’t built by chance, they’re scheduled with purpose.”
+          </blockquote>
+          <small>People Fuel Possibility.</small>
         </div>
       </div>
 
-      <div className="dashboard-quick-grid">
-        {actions.map((action) => (
-          <Link href={action.href} key={action.label}>
-            <span><NavIcon name={action.icon} size={18} /></span>
-            <strong>{action.label}</strong>
-            <small>{action.detail}</small>
-          </Link>
-        ))}
-      </div>
+      <div className="dashboard-brand-art" aria-hidden="true" />
     </section>
   );
 }
@@ -584,9 +567,9 @@ export function ManagerDashboard(props: Props) {
       }
     >
       <section className="dashboard-hero">
-        <div>
+        <div className="dashboard-hero-copy">
           <p>Manager dashboard</p>
-          <h1>Welcome, {props.firstName}.</h1>
+          <h1>Welcome back, {props.firstName}.</h1>
           <span>Here’s what’s happening this week at Fuel.</span>
         </div>
 
@@ -598,7 +581,10 @@ export function ManagerDashboard(props: Props) {
             >
               ‹
             </Link>
-            <strong>{props.weekLabel}</strong>
+            <span className="dashboard-week-label">
+              <NavIcon name="calendar" size={16} />
+              <strong>{props.weekLabel}</strong>
+            </span>
             <Link
               href={dashboardHref(props.nextWeek, props.view)}
               aria-label="Next week"
@@ -607,11 +593,13 @@ export function ManagerDashboard(props: Props) {
             </Link>
           </div>
           <Link className="button primary" href={`/app/schedule?week=${props.weekStart}`}>
-            <NavIcon name="schedule" size={17} />
+            <NavIcon name="calendar" size={17} />
             Open schedule
           </Link>
         </div>
       </section>
+
+      <OverviewMetrics {...props} />
 
       <nav className="dashboard-tabs" aria-label="Dashboard views">
         {tabs.map((tab) => (
@@ -627,8 +615,6 @@ export function ManagerDashboard(props: Props) {
 
       {props.view === "overview" ? (
         <div className="dashboard-overview">
-          <OverviewMetrics {...props} />
-
           <div className="dashboard-overview-main">
             <section className="dashboard-panel dashboard-attention-panel">
               <div className="dashboard-panel-heading">
@@ -659,15 +645,7 @@ export function ManagerDashboard(props: Props) {
             </div>
           </div>
 
-          <div className="dashboard-overview-bottom">
-            <TeamAvailability
-              submitted={props.availabilitySubmitted}
-              active={props.activeEmployees}
-              unavailable={props.unavailableAllWeek}
-              weekStart={props.weekStart}
-            />
-            <QuickActions weekStart={props.weekStart} />
-          </div>
+          <DashboardBrandStrip />
         </div>
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />
