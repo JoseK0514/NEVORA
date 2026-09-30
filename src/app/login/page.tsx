@@ -28,7 +28,7 @@ export default async function LoginPage({
 
         <section className="auth-card employee-login-card">
           <div className="employee-login-heading">
-            <p className="eyebrow">Employee Portal</p>
+            <p className="eyebrow">EMPLOYEE PORTAL</p>
             <h1>Employee Login</h1>
             <p>
               Access your schedule, availability, requests, time, and profile.
@@ -69,7 +69,7 @@ export default async function LoginPage({
 
           <div className="auth-secondary employee-login-secondary">
             <span>New employee?</span>
-            <Link href="/activate">Activate your account</Link>
+            <Link href="/activate">Activate Account</Link>
           </div>
         </section>
 

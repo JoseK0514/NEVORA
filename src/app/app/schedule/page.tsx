@@ -183,7 +183,7 @@ export default async function SchedulePage({
       <>
         <PageHeader
           eyebrow={formatWeekRange(weekStart)}
-          title="My schedule"
+          title="My Schedule"
           description="Only published shifts appear here."
           actions={
             <div className="week-nav">
@@ -359,7 +359,7 @@ export default async function SchedulePage({
       <section className="schedule-hero">
         <div className="schedule-hero-copy">
           <p>Schedule</p>
-          <h1>Weekly schedule</h1>
+          <h1>Weekly Schedule</h1>
           <span>
             Build the week, resolve what needs attention, then publish each location.
           </span>
@@ -465,13 +465,13 @@ export default async function SchedulePage({
                 <form action={copyPreviousWeekAction}>
                   <input type="hidden" name="weekStart" value={weekStart} />
                   <button className="schedule-menu-action" type="submit">
-                    <strong>Copy previous week</strong>
+                    <strong>Copy Previous Week</strong>
                     <span>Bring last week’s shifts into this week.</span>
                   </button>
                 </form>
 
                 <Link className="schedule-menu-action" href="/app/schedule/settings">
-                  <strong>Scheduling rules</strong>
+                  <strong>Scheduling Rules</strong>
                   <span>Coverage requirements and employee hour targets.</span>
                 </Link>
 
@@ -613,7 +613,7 @@ export default async function SchedulePage({
           <div className="schedule-review-content">
             <div className="schedule-review-heading">
               <div>
-                <h2>Week readiness</h2>
+                <h2>Week Readiness</h2>
                 <p>
                   Review location publishing, coverage, employee hours, and
                   acknowledgements only when you need the detail.
@@ -623,7 +623,7 @@ export default async function SchedulePage({
                 className="button secondary compact-button"
                 href="/app/schedule/settings"
               >
-                Scheduling rules
+                Scheduling Rules
               </Link>
             </div>
 
@@ -1176,7 +1176,7 @@ export default async function SchedulePage({
                     >
                       <span aria-hidden="true">+</span>
                       <div>
-                        <strong>Add shift</strong>
+                        <strong>Add Shift</strong>
                         <small>No shift scheduled</small>
                       </div>
                     </Link>

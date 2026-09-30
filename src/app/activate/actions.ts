@@ -13,13 +13,11 @@ export async function activateAccountAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
-  if (
-    !employeeId ||
-    !phone ||
-    password.length < 8 ||
-    password !== confirmPassword
-  ) {
-    redirect("/activate?error=invalid");
+  if (!employeeId || !phone || password.length < 8) {
+    redirect(`/activate?error=invalid&employeeId=${encodeURIComponent(employeeId)}`);
+  }
+  if (password !== confirmPassword) {
+    redirect(`/activate?error=mismatch&employeeId=${encodeURIComponent(employeeId)}`);
   }
 
   const passwordHash = await hashPassword(password);
@@ -30,7 +28,7 @@ export async function activateAccountAction(formData: FormData) {
   });
 
   if (!activated) {
-    redirect("/activate?error=not_found");
+    redirect(`/activate?error=not_found&employeeId=${encodeURIComponent(employeeId)}`);
   }
 
   redirect("/login?activated=1");

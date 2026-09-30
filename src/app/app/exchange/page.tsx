@@ -199,7 +199,7 @@ export default async function ExchangePage({
       <section className="exchange-hero">
         <div className="exchange-hero-copy">
           <p>Shift exchange</p>
-          <h1>Manage your shifts</h1>
+          <h1>Shift Exchange</h1>
           <span>
             Offer a shift, find coverage, trade with a coworker, or report that you are unable to work.
           </span>
@@ -259,7 +259,7 @@ export default async function ExchangePage({
           <article className="panel exchange-focus-panel exchange-my-shifts-panel">
             <div className="exchange-focus-heading">
               <div>
-                <h2>My upcoming shifts</h2>
+                <h2>My Upcoming Shifts</h2>
                 <p>Here are your scheduled shifts. Take action if needed.</p>
               </div>
             </div>
@@ -323,7 +323,7 @@ export default async function ExchangePage({
             <div className="exchange-focus-heading">
               <div>
                 <p className="eyebrow">Coverage board</p>
-                <h2>Available coverage</h2>
+                <h2>Available Coverage</h2>
                 <p>Pick up an eligible shift that a coworker has offered.</p>
               </div>
             </div>
@@ -345,7 +345,7 @@ export default async function ExchangePage({
                     <div className="exchange-shift-actions single">
                       <form action={claimCoverageAction}>
                         <input type="hidden" name="exchangeId" value={exchange.id} />
-                        <button className="button primary" type="submit">Take shift</button>
+                        <button className="button primary" type="submit">Take Shift</button>
                       </form>
                     </div>
                   </div>
@@ -368,7 +368,7 @@ export default async function ExchangePage({
                 <div className="exchange-section-heading">
                   <div>
                     <p className="eyebrow">Call-outs</p>
-                    <h2>Unable-to-work requests</h2>
+                    <h2>Unable-to-Work Requests</h2>
                   </div>
                   <StatusPill tone="warning">
                     {managerCallouts.length} pending
@@ -421,7 +421,7 @@ export default async function ExchangePage({
                 <div className="exchange-section-heading">
                   <div>
                     <p className="eyebrow">My call-outs</p>
-                    <h2>Unable-to-work requests</h2>
+                    <h2>Unable-to-Work Requests</h2>
                   </div>
                 </div>
 
@@ -464,7 +464,7 @@ export default async function ExchangePage({
                 <div className="exchange-section-heading">
                   <div>
                     <p className="eyebrow">Manager approval</p>
-                    <h2>Needs your review</h2>
+                    <h2>Needs Your Review</h2>
                   </div>
                   <StatusPill tone="warning">{managerPending.length} pending</StatusPill>
                 </div>
@@ -512,7 +512,7 @@ export default async function ExchangePage({
                 <div className="exchange-section-heading">
                   <div>
                     <p className="eyebrow">Your response</p>
-                    <h2>Swap requests</h2>
+                    <h2>Swap Requests</h2>
                   </div>
                   <StatusPill tone="warning">{incomingSwaps.length} waiting</StatusPill>
                 </div>
@@ -565,7 +565,7 @@ export default async function ExchangePage({
             <div className="exchange-focus-heading">
               <div>
                 <p className="eyebrow">History</p>
-                <h2>Exchange activity</h2>
+                <h2>Exchange Activity</h2>
                 <p>Review your previous coverage and swap requests.</p>
               </div>
             </div>
@@ -613,15 +613,15 @@ export default async function ExchangePage({
             <div className="exchange-side-heading">
               <span>
                 <NavIcon name="requests" size={18} />
-                <strong>Request overview</strong>
+                <strong>Request Overview</strong>
               </span>
-              <Link href="/app/exchange?tab=requests">View all</Link>
+              <Link href="/app/exchange?tab=requests">View All</Link>
             </div>
 
             <div className="exchange-overview-list">
               <Link href="/app/exchange?tab=history">
                 <span className="offered"><NavIcon name="timeOff" size={17} /></span>
-                <strong>Shifts offered</strong>
+                <strong>Shifts Offered</strong>
                 <b>{offeredCount}</b>
                 <em>›</em>
               </Link>
@@ -633,7 +633,7 @@ export default async function ExchangePage({
               </Link>
               <Link href="/app/exchange?tab=requests">
                 <span className="unable"><NavIcon name="employee" size={17} /></span>
-                <strong>Unable to work</strong>
+                <strong>Unable to Work</strong>
                 <b>{unableCount}</b>
                 <em>›</em>
               </Link>
@@ -650,26 +650,26 @@ export default async function ExchangePage({
             <summary>
               <span>
                 <NavIcon name="templates" size={18} />
-                <strong>How shift exchange works</strong>
+                <strong>How Shift Exchange Works</strong>
               </span>
               <b aria-hidden="true">⌄</b>
             </summary>
             <div className="exchange-steps">
               <div>
                 <span>1</span>
-                <p><strong>Choose a shift</strong><small>Select one of your upcoming shifts.</small></p>
+                <p><strong>Choose a Shift</strong><small>Select one of your upcoming shifts.</small></p>
               </div>
               <div>
                 <span>2</span>
-                <p><strong>Offer, trade, or report</strong><small>Pick the option that fits your situation.</small></p>
+                <p><strong>Offer, Trade, or Report</strong><small>Pick the option that fits your situation.</small></p>
               </div>
               <div>
                 <span>3</span>
-                <p><strong>Management reviews</strong><small>You’ll be notified once a decision is made.</small></p>
+                <p><strong>Management Reviews</strong><small>You’ll be notified once a decision is made.</small></p>
               </div>
               <div>
                 <span>4</span>
-                <p><strong>Track the outcome</strong><small>Check the Requests tab for updates.</small></p>
+                <p><strong>Track the Outcome</strong><small>Check the Requests tab for updates.</small></p>
               </div>
             </div>
           </details>

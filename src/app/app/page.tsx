@@ -43,7 +43,7 @@ function employeeDashboard(firstName: string) {
   return (
     <>
       <PageHeader
-        eyebrow="Fuel Coffee Drive"
+        eyebrow="FUEL COFFEE DRIVE"
         title={`Welcome, ${firstName}`}
         description="Your schedule, availability, and shift requests are all in one place."
         actions={
@@ -81,7 +81,7 @@ function employeeDashboard(firstName: string) {
           <div className="panel-heading">
             <div>
               <p className="eyebrow">Schedule</p>
-              <h2>See your upcoming shifts</h2>
+              <h2>See Your Upcoming Shifts</h2>
             </div>
             <Link href="/app/schedule" className="text-link">
               Open
@@ -96,7 +96,7 @@ function employeeDashboard(firstName: string) {
           <div className="panel-heading">
             <div>
               <p className="eyebrow">Self-service</p>
-              <h2>Requests & coverage</h2>
+              <h2>Requests &amp; Coverage</h2>
             </div>
           </div>
           <p className="muted">

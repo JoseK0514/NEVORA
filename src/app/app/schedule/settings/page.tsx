@@ -54,7 +54,7 @@ export default async function ScheduleSettingsPage({
       <section className="schedule-health-hero">
         <div className="schedule-health-hero-copy">
           <p>Scheduling rules</p>
-          <h1>Schedule health rules</h1>
+          <h1>Schedule Health Rules</h1>
           <span>
             Define staffing, weekly hour targets, and expected coverage periods.
           </span>
@@ -154,7 +154,7 @@ export default async function ScheduleSettingsPage({
               <NavIcon name="employees" size={21} />
             </span>
             <div>
-              <h2>Staffing requirements</h2>
+              <h2>Staffing Requirements</h2>
               <p>Set the number of employees needed per shift at each location.</p>
             </div>
           </div>
@@ -186,7 +186,7 @@ export default async function ScheduleSettingsPage({
                     defaultChecked={location.requiresDesignatedLead}
                   />
                   <span>
-                    <strong>Designated lead required</strong>
+                    <strong>Designated Lead Required</strong>
                     <small>A lead must be present during covered periods.</small>
                   </span>
                 </label>
@@ -201,7 +201,7 @@ export default async function ScheduleSettingsPage({
               <NavIcon name="clock" size={21} />
             </span>
             <div>
-              <h2>Employee weekly targets</h2>
+              <h2>Employee Weekly Targets</h2>
               <p>
                 Set expected weekly hours for each employee. Leave blank if an
                 employee should not be included.
@@ -276,7 +276,7 @@ export default async function ScheduleSettingsPage({
             <NavIcon name="calendar" size={21} />
           </span>
           <div>
-            <h2>Expected shift periods</h2>
+            <h2>Coverage Windows</h2>
             <p>Tell Schedule Health when management expects coverage.</p>
           </div>
         </div>
@@ -386,7 +386,7 @@ export default async function ScheduleSettingsPage({
               </small>
               <a className="button secondary" href="#coverage-window-builder">
                 <span aria-hidden="true">+</span>
-                Add first window
+                Add Coverage Window
               </a>
             </div>
           )}

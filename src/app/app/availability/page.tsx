@@ -172,7 +172,7 @@ export default async function AvailabilityPage({
           <h1>
             {selectedWeek
               ? `Availability · ${formatWeekRange(selectedWeek)}`
-              : "Set your availability"}
+              : "Set Your Availability"}
           </h1>
           <span>
             {selectedWeek
@@ -182,7 +182,7 @@ export default async function AvailabilityPage({
         </div>
         {selectedWeek ? (
           <Link className="button secondary availability-hero-action" href="/app/availability">
-            Normal availability
+            Normal Availability
           </Link>
         ) : null}
       </section>
@@ -201,7 +201,7 @@ export default async function AvailabilityPage({
             className="button primary"
             href={`/app/availability?week=${upcomingWeek.weekStart}`}
           >
-            Submit weekly availability
+            Submit Weekly Availability
           </Link>
         </section>
       ) : null}
@@ -245,7 +245,7 @@ export default async function AvailabilityPage({
         <section className="panel availability-team-status">
           <div className="availability-team-heading">
             <div>
-              <h2>Team availability</h2>
+              <h2>Team Availability</h2>
               <p>
                 {managerSubmittedCount}/{managerStatuses.length} active employees
                 submitted for this week.

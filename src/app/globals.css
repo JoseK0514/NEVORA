@@ -5214,6 +5214,43 @@ small,
   }
 }
 
+/* Activation shares the approved sign-in scene, with room for its longer form. */
+.employee-activate-page .employee-login-shell { width: min(500px, 100%); }
+.employee-activate-page .employee-login-card { background: rgba(255, 253, 249, .98); }
+.employee-activate-page .employee-login-form label small { color: var(--muted); font-size: 11px; font-weight: 400; }
+@media (max-width: 760px) {
+  .employee-activate-page { min-height: 100dvh; overflow: visible; }
+  .employee-activate-page .employee-login-shell { padding-block: 12px; }
+}
+
+.eyebrow { text-transform: uppercase; letter-spacing: .14em; }
+
+@media (max-width: 760px) {
+  .mobile-header { position: relative; z-index: 40; }
+  .mobile-header-actions { display: flex; align-items: center; gap: 9px; }
+  .mobile-more { position: relative; }
+  .mobile-more summary { min-height: 40px; padding: 0 11px; display: flex; align-items: center; border: 1px solid var(--fuel-line); border-radius: 10px; background: var(--fuel-ivory); color: var(--fuel-coffee); font-size: 12px; font-weight: 700; list-style: none; cursor: pointer; }
+  .mobile-more summary::-webkit-details-marker { display: none; }
+  .mobile-more summary:focus-visible { outline: 2px solid var(--caramel); outline-offset: 2px; }
+  .mobile-more nav { position: absolute; top: calc(100% + 8px); right: 0; width: min(240px, calc(100vw - 24px)); padding: 7px; display: grid; gap: 2px; border: 1px solid var(--fuel-line); border-radius: 14px; background: var(--fuel-ivory); box-shadow: 0 16px 34px rgba(43,26,18,.18); }
+  .mobile-more nav a { min-height: 44px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; border-radius: 9px; color: var(--fuel-coffee-dark); font-weight: 600; text-decoration: none; }
+  .mobile-more nav a:hover, .mobile-more nav a[aria-current="page"] { background: #f2e7da; }
+  .mobile-more nav a:focus-visible { outline: 2px solid var(--caramel); outline-offset: -2px; }
+}
+@media (max-width: 360px) {
+  .mobile-header-actions { gap: 5px; }
+  .mobile-header-actions .role-chip { font-size: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @media (max-width: 1120px) {
   .schedule-operations-toolbar {
     grid-template-columns: 1fr auto;

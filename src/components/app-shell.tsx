@@ -89,7 +89,27 @@ export function AppShell({
             <BrandMark />
             <strong>Fuel Scheduler</strong>
           </Link>
-          <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>
+          <div className="mobile-header-actions">
+            <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>
+            {navigation.length > 5 ? (
+              <details className="mobile-more">
+                <summary>Menu</summary>
+                <nav aria-label="More navigation">
+                  {navigation.slice(5).map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      aria-current={item.href === activeHref ? "page" : undefined}
+                      onClick={(event) => event.currentTarget.closest("details")?.removeAttribute("open")}
+                    >
+                      <NavIcon name={item.icon} size={18} />
+                      {item.label}
+                    </Link>
+                  ))}
+                </nav>
+              </details>
+            ) : null}
+          </div>
         </header>
 
         <div className="page-frame">{children}</div>

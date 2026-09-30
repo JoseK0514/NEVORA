@@ -86,7 +86,7 @@ export default async function RequestsPage({
       <section className="timeoff-hero">
         <div className="timeoff-hero-copy">
           <p>Time off</p>
-          <h1>Request time off</h1>
+          <h1>Request Time Off</h1>
           <span>Request time away and keep track of approvals.</span>
         </div>
       </section>
@@ -139,7 +139,7 @@ export default async function RequestsPage({
             <article className="panel timeoff-panel timeoff-form-panel">
               <div className="timeoff-panel-heading timeoff-new-heading">
                 <div>
-                  <h2>Request time off</h2>
+                  <h2>Request Time Off</h2>
                   <p>Choose your dates and request type. Add a note only if needed.</p>
                 </div>
               </div>
@@ -151,9 +151,9 @@ export default async function RequestsPage({
                 <div className="timeoff-side-heading">
                   <span>
                     <NavIcon name="calendar" size={18} />
-                    <strong>Request overview</strong>
+                    <strong>Request Overview</strong>
                   </span>
-                  <Link href="/app/requests?tab=my">View all</Link>
+                  <Link href="/app/requests?tab=my">View All</Link>
                 </div>
 
                 <div className="timeoff-overview-grid">
@@ -184,22 +184,22 @@ export default async function RequestsPage({
                 <div className="timeoff-side-heading">
                   <span>
                     <NavIcon name="templates" size={18} />
-                    <strong>How it works</strong>
+                    <strong>How It Works</strong>
                   </span>
                 </div>
 
                 <div className="timeoff-steps">
                   <div>
                     <span>1</span>
-                    <p><strong>Submit your request</strong><small>Fill in your dates and request type.</small></p>
+                    <p><strong>Submit Your Request</strong><small>Fill in your dates and request type.</small></p>
                   </div>
                   <div>
                     <span>2</span>
-                    <p><strong>Manager reviews</strong><small>You’ll be notified once a decision is made.</small></p>
+                    <p><strong>Manager Reviews</strong><small>You’ll be notified once a decision is made.</small></p>
                   </div>
                   <div>
                     <span>3</span>
-                    <p><strong>Track the status</strong><small>Check My Requests to see the latest updates.</small></p>
+                    <p><strong>Track the Status</strong><small>Check My Requests to see the latest updates.</small></p>
                   </div>
                 </div>
               </section>
@@ -219,7 +219,7 @@ export default async function RequestsPage({
             <div className="timeoff-panel-heading">
               <div>
                 <p className="eyebrow">My requests</p>
-                <h2>Request history</h2>
+                <h2>Request History</h2>
                 <p>Track the status of your submitted time-off requests.</p>
               </div>
             </div>
@@ -257,7 +257,7 @@ export default async function RequestsPage({
             <div className="team-request-heading">
               <div>
                 <p className="eyebrow">Manager review</p>
-                <h2>Team requests</h2>
+                <h2>Team Requests</h2>
                 <p>
                   {pending.length
                     ? `${pending.length} request${pending.length === 1 ? "" : "s"} waiting for review.`
