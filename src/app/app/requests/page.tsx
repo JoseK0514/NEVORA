@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "./timeoff-premium.css";
 import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import { isTimeOffReviewerRole } from "@/lib/auth/permissions";
