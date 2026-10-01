@@ -8658,3 +8658,215 @@ body {
     width: 100%;
   }
 }
+
+/* Add Shift — premium focused workspace */
+.new-shift-page {
+  width: 100%;
+  display: grid;
+  place-items: start center;
+  padding: var(--space-lg) 0 80px;
+}
+
+.new-shift-card {
+  width: min(680px, 100%);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-premium);
+  box-shadow: var(--shadow-premium);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.new-shift-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.new-shift-card-header > span {
+  color: var(--color-state-warning);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.new-shift-card-header h1 {
+  margin: 0;
+  color: var(--color-brand-primary);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+
+.new-shift-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.new-shift-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.new-shift-section-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+
+.new-shift-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.new-shift-field > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.new-shift-field input,
+.new-shift-field select {
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 8px;
+  outline: none;
+  background: var(--color-bg-main);
+  padding: 0 14px;
+  color: var(--color-brand-primary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    box-shadow 140ms ease,
+    background 140ms ease;
+}
+
+.new-shift-field input:focus,
+.new-shift-field select:focus {
+  background: var(--color-bg-surface);
+  box-shadow: 0 0 0 3px color-mix(
+    in srgb,
+    var(--color-brand-accent) 16%,
+    transparent
+  );
+}
+
+.new-shift-time-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+.new-shift-lead-toggle {
+  position: relative;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.new-shift-lead-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.new-shift-lead-toggle span {
+  min-height: 40px;
+  padding: 0 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    background 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.new-shift-lead-toggle input:checked + span {
+  background: var(--color-state-success-bg);
+  color: var(--color-state-success);
+}
+
+.new-shift-lead-toggle:focus-within span {
+  box-shadow: 0 0 0 3px color-mix(
+    in srgb,
+    var(--color-brand-accent) 16%,
+    transparent
+  );
+}
+.new-shift-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+.new-shift-action {
+  min-width: 132px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 20px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  transition: opacity 140ms ease;
+}
+
+.new-shift-action:hover {
+  opacity: .86;
+}
+
+.new-shift-action.secondary {
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+}
+
+.new-shift-action.primary {
+  background: var(--color-brand-accent);
+  color: var(--color-bg-surface);
+}
+
+@media (max-width: 640px) {
+  .new-shift-page {
+    padding-top: var(--space-sm);
+  }
+
+  .new-shift-card {
+    padding: var(--space-md);
+    gap: var(--space-md);
+  }
+  .new-shift-card-header h1 {
+    font-size: 25px;
+  }
+
+  .new-shift-form {
+    gap: var(--space-md);
+  }
+
+  .new-shift-time-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .new-shift-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .new-shift-action {
+    min-width: 0;
+    width: 100%;
+  }
+}
