@@ -15,6 +15,21 @@ export function currentDateInPuertoRico() {
   return `${values.year}-${values.month}-${values.day}`;
 }
 
+export function currentTimeInPuertoRico() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Puerto_Rico",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+
+  const values = Object.fromEntries(
+    parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]),
+  );
+
+  return `${values.hour}:${values.minute}`;
+}
+
 export function addDays(date: string, amount: number) {
   const value = new Date(`${date}T12:00:00Z`);
   value.setTime(value.getTime() + amount * DAY_MS);

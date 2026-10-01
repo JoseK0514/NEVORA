@@ -1,22 +1,46 @@
 :root {
-  --canvas: #f6f1e8;
-  --surface: #fffdf9;
-  --surface-strong: #ffffff;
-  --ink: #261e1a;
-  --muted: #786d66;
-  --line: #e7ded2;
+  /* Apple Studio Balanced Palette */
+  --color-bg-main: #F5F5F7;
+  --color-bg-surface: #FFFFFF;
+  --color-brand-primary: #1D1D1F;
+  --color-brand-accent: #0071E3;
+
+  /* Soft Functional Accents */
+  --color-state-success: #1D6F42;
+  --color-state-success-bg: #EAF5EA;
+  --color-state-warning: #A05200;
+  --color-state-warning-bg: #FFF4E5;
+
+  /* Subtle Depth Systems */
+  --color-border-subtle: rgba(0, 0, 0, 0.06);
+  --shadow-premium: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+
+  /* Structural Discipline */
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 32px;
+  --radius-premium: 12px;
+  --font-family-apple: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+
+  /* Existing product aliases during the design-language reset */
+  --canvas: var(--color-bg-main);
+  --surface: var(--color-bg-surface);
+  --surface-strong: var(--color-bg-surface);
+  --ink: var(--color-brand-primary);
+  --muted: #6E6E73;
+  --line: var(--color-border-subtle);
   --coffee: #5a3828;
   --coffee-dark: #3f271d;
   --caramel: #c58b55;
   --soft-caramel: #f0dfcd;
-  --green: #2f6d55;
-  --soft-green: #e5f0e9;
-  --amber: #93601f;
-  --soft-amber: #f6ead4;
-  --blue: #496b78;
-  --soft-blue: #e6eff2;
-  --shadow: 0 16px 45px rgba(59, 42, 29, 0.08);
-  --radius: 20px;
+  --green: var(--color-state-success);
+  --soft-green: var(--color-state-success-bg);
+  --amber: var(--color-state-warning);
+  --soft-amber: var(--color-state-warning-bg);
+  --blue: var(--color-brand-accent);
+  --soft-blue: #EAF3FC;
+  --shadow: var(--shadow-premium);
+  --radius: var(--radius-premium);
 }
 
 * { box-sizing: border-box; }
@@ -4384,7 +4408,7 @@ button { cursor: pointer; }
 
 /* Application typography system — shared across all product surfaces */
 :root {
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-ui: var(--font-family-apple);
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
@@ -8087,5 +8111,223 @@ body {
     width: 48px;
     height: 48px;
     flex-basis: 48px;
+  }
+}
+/* Manager home — Apple Studio reset */
+.dashboard-overview-active {
+  font-family: var(--font-family-apple);
+}
+
+.dashboard-overview-active .dashboard-hero .button.primary {
+  border-radius: 20px;
+  background: var(--color-brand-primary);
+  color: var(--color-bg-surface);
+  box-shadow: none;
+}
+
+.manager-home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, .85fr);
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.manager-home-card {
+  overflow: hidden;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-premium);
+  box-shadow: var(--shadow-premium);
+}
+
+.manager-home-card-header {
+  min-height: 72px;
+  padding: 18px var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.manager-home-card-header h2 {
+  margin: 0;
+  color: var(--color-brand-primary);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+
+.manager-home-count {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.manager-home-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.manager-home-row,
+.manager-floor-row {
+  min-height: 78px;
+  padding: 16px var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.manager-home-row:first-child,
+.manager-floor-row:first-child {
+  border-top: 0;
+}
+
+.manager-home-row-copy,
+.manager-floor-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.manager-home-row-copy strong,
+.manager-floor-copy strong {
+  color: var(--color-brand-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.manager-home-row-copy span,
+.manager-floor-copy small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.manager-home-action {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: var(--color-brand-accent);
+  color: var(--color-bg-surface);
+  font-size: 12px;
+  font-weight: 600;
+  transition: opacity 140ms ease;
+}
+
+.manager-home-action:hover {
+  opacity: .86;
+}
+
+.manager-floor-person {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.manager-floor-avatar {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.manager-floor-status {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border-radius: 20px;
+  background: var(--color-state-success-bg);
+  color: var(--color-state-success);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.manager-home-empty {
+  min-height: 150px;
+  padding: var(--space-lg) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.manager-home-empty > span {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 2px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-state-success-bg);
+  color: var(--color-state-success);
+  font-weight: 600;
+}
+
+.manager-home-empty strong {
+  color: var(--color-brand-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.manager-home-empty small {
+  max-width: 320px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+@media (max-width: 980px) {
+  .manager-home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .manager-home-grid {
+    gap: var(--space-sm);
+  }
+
+  .manager-home-card-header,
+  .manager-home-row,
+  .manager-floor-row {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .manager-home-row,
+  .manager-floor-row {
+    gap: var(--space-sm);
+  }
+
+  .manager-home-row-copy span {
+    white-space: normal;
+  }
+
+  .manager-home-action {
+    min-height: 40px;
   }
 }

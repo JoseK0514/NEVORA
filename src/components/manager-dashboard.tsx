@@ -4,6 +4,7 @@ import { ManagerActionList } from "@/components/manager-action-list";
 import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
+import { formatTime } from "@/lib/date-utils";
 
 export type ManagerDashboardView =
   | "overview"
@@ -44,6 +45,14 @@ export type DashboardRevisionItem = {
   createdAt: string;
 } | null;
 
+export type DashboardOnFloorItem = {
+  employeeId: string;
+  employeeName: string;
+  startTime: string;
+  endTime: string;
+  isDesignatedLead: boolean;
+};
+
 type Props = {
   firstName: string;
   weekStart: string;
@@ -60,6 +69,7 @@ type Props = {
   coverageConfigured: boolean;
   pendingRequestCount: number;
   managerActions: ManagerActionItem[];
+  onFloor: DashboardOnFloorItem[];
   locations: DashboardLocationItem[];
   days: DashboardDayItem[];
   hours: DashboardHourItem[];
@@ -88,12 +98,6 @@ function dashboardHref(
     : `/app?week=${encodeURIComponent(weekStart)}&view=${view}`;
 }
 
-function metricTone(
-  kind: "schedule" | "availability" | "coverage" | "requests",
-) {
-  return `dashboard-metric-icon ${kind}`;
-}
-
 function locationStateLabel(state: DashboardLocationItem["state"]) {
   if (state === "PUBLISHED") return "Published";
   if (state === "READY") return "Ready";
@@ -112,79 +116,6 @@ function revisionSourceLabel(sourceType: string) {
   if (sourceType === "EXCHANGE") return "Shift exchange applied";
   if (sourceType === "CALLOUT") return "Call-out applied";
   return "Published schedule updated";
-}
-
-function OverviewMetrics(props: Props) {
-  const metrics = [
-    {
-      label: "Schedule",
-      value: `${props.readyLocationCount}/${props.totalLocations}`,
-      detail: "locations ready",
-      icon: "schedule" as const,
-      tone: "schedule" as const,
-      visualState: "neutral",
-      href: dashboardHref(props.weekStart, "schedule"),
-    },
-    {
-      label: "Availability",
-      value: `${props.availabilitySubmitted}/${props.activeEmployees}`,
-      detail: "submitted",
-      icon: "availability" as const,
-      tone: "availability" as const,
-      visualState:
-        props.activeEmployees > 0 &&
-        props.availabilitySubmitted === props.activeEmployees
-          ? "healthy"
-          : "neutral",
-      href: dashboardHref(props.weekStart, "team"),
-    },
-    {
-      label: "Coverage",
-      value: props.coverageConfigured
-        ? String(props.coverageIssueCount)
-        : "Setup",
-      detail: props.coverageConfigured ? "issues" : "rules needed",
-      icon: "coverage" as const,
-      tone: "coverage" as const,
-      visualState: !props.coverageConfigured
-        ? "neutral"
-        : props.coverageIssueCount > 0
-          ? "attention"
-          : "healthy",
-      href: dashboardHref(props.weekStart, "schedule"),
-    },
-    {
-      label: "Requests",
-      value: String(props.pendingRequestCount),
-      detail: "pending",
-      icon: "requests" as const,
-      tone: "requests" as const,
-      visualState: "neutral",
-      href: dashboardHref(props.weekStart, "requests"),
-    },
-  ];
-
-  return (
-    <section className="dashboard-metric-grid" aria-label="Weekly manager summary">
-      {metrics.map((metric) => (
-        <Link
-          className={`dashboard-metric-card ${metric.visualState}`}
-          href={metric.href}
-          key={metric.label}
-        >
-          <span className={metricTone(metric.tone)}>
-            <NavIcon name={metric.icon} size={22} />
-          </span>
-          <span className="dashboard-metric-copy">
-            <small>{metric.label}</small>
-            <strong>{metric.value}</strong>
-            <span>{metric.detail}</span>
-          </span>
-          <b aria-hidden="true">›</b>
-        </Link>
-      ))}
-    </section>
-  );
 }
 
 function LocationReadiness({
@@ -323,39 +254,6 @@ function TeamAvailability({
           )}
         </div>
       </div>
-    </section>
-  );
-}
-
-function DashboardBrandStrip() {
-  return (
-    <section className="dashboard-brand-strip" aria-label="Fuel Coffee Drive">
-      <div className="dashboard-quote-card">
-        <span className="dashboard-quote-mark" aria-hidden="true">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 28 28"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M6.2 8.2h12.7v8.1c0 4-2.8 6.5-6.4 6.5s-6.3-2.5-6.3-6.5V8.2Z" />
-            <path d="M18.9 10.3h1.5c2 0 3.4 1.3 3.4 3.1 0 2-1.5 3.3-3.7 3.3h-1.2" />
-            <path d="M9 4.8c0 1 1.1 1.3 1.1 2.2M13 4.2c0 1.1 1.2 1.4 1.2 2.4" />
-          </svg>
-        </span>
-        <div>
-          <blockquote>
-            “Great teams aren’t built by chance, they’re scheduled with purpose.”
-          </blockquote>
-          <small>People Fuel Possibility.</small>
-        </div>
-      </div>
-
-      <div className="dashboard-brand-art" aria-hidden="true" />
     </section>
   );
 }
@@ -557,6 +455,90 @@ function ActivityTab(props: Props) {
   );
 }
 
+function employeeInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+function PendingApprovals({ items }: { items: ManagerActionItem[] }) {
+  const approvals = items
+    .filter((item) => ["TIME_OFF", "EXCHANGE", "CALLOUT"].includes(item.type))
+    .slice(0, 6);
+
+  return (
+    <section className="manager-home-card manager-approvals-card">
+      <div className="manager-home-card-header">
+        <h2>Pending Approvals</h2>
+        <span className="manager-home-count">{approvals.length}</span>
+      </div>
+
+      {approvals.length ? (
+        <div className="manager-home-list">
+          {approvals.map((item) => (
+            <div className="manager-home-row" key={item.id}>
+              <div className="manager-home-row-copy">
+                <strong>{item.title}</strong>
+                <span>{item.detail}</span>
+              </div>
+              <Link className="manager-home-action" href={item.href}>
+                Review
+              </Link>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="manager-home-empty">
+          <span aria-hidden="true">✓</span>
+          <strong>All caught up</strong>
+          <small>No approvals are waiting for review.</small>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function OnFloorNow({ people }: { people: DashboardOnFloorItem[] }) {
+  return (
+    <section className="manager-home-card manager-floor-card">
+      <div className="manager-home-card-header">
+        <h2>Who&apos;s on the Floor Right Now</h2>
+        <span className="manager-home-count">{people.length}</span>
+      </div>
+
+      {people.length ? (
+        <div className="manager-home-list">
+          {people.map((person) => (
+            <div className="manager-floor-row" key={person.employeeId}>
+              <div className="manager-floor-person">
+                <span className="manager-floor-avatar" aria-hidden="true">
+                  {employeeInitials(person.employeeName)}
+                </span>
+                <span className="manager-floor-copy">
+                  <strong>{person.employeeName}</strong>
+                  <small>
+                    {person.isDesignatedLead ? "Shift lead · " : ""}
+                    {formatTime(person.startTime)} – {formatTime(person.endTime)}
+                  </small>
+                </span>
+              </div>
+              <span className="manager-floor-status">On shift</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="manager-home-empty">
+          <strong>No one is scheduled right now</strong>
+          <small>The published schedule has no active shift at this time.</small>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function ManagerDashboard(props: Props) {
   return (
     <div
@@ -599,8 +581,6 @@ export function ManagerDashboard(props: Props) {
         </div>
       </section>
 
-      <OverviewMetrics {...props} />
-
       <nav className="dashboard-tabs" aria-label="Dashboard views">
         {tabs.map((tab) => (
           <Link
@@ -614,38 +594,9 @@ export function ManagerDashboard(props: Props) {
       </nav>
 
       {props.view === "overview" ? (
-        <div className="dashboard-overview">
-          <div className="dashboard-overview-main">
-            <section className="dashboard-panel dashboard-attention-panel">
-              <div className="dashboard-panel-heading">
-                <div className="dashboard-panel-title-with-count">
-                  <h2>Needs attention</h2>
-                  {props.managerActions.length ? (
-                    <span
-                      className={
-                        props.managerActions.some((item) => item.priority === "URGENT")
-                          ? "urgent"
-                          : props.managerActions.some((item) => item.priority === "REVIEW")
-                            ? "review"
-                            : "setup"
-                      }
-                    >
-                      {props.managerActions.length}
-                    </span>
-                  ) : null}
-                </div>
-                <Link href={dashboardHref(props.weekStart, "activity")}>View all</Link>
-              </div>
-              <ManagerActionList items={props.managerActions} limit={6} />
-            </section>
-
-            <div className="dashboard-overview-side">
-              <LocationReadiness locations={props.locations} weekStart={props.weekStart} />
-              <WeekSummary days={props.days} weekStart={props.weekStart} />
-            </div>
-          </div>
-
-          <DashboardBrandStrip />
+        <div className="manager-home-grid">
+          <PendingApprovals items={props.managerActions} />
+          <OnFloorNow people={props.onFloor} />
         </div>
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />
