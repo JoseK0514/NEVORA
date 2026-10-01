@@ -7,29 +7,34 @@ export function TimeOffForm() {
   const [partialDay, setPartialDay] = useState(false);
 
   return (
-    <form action={requestTimeOffAction} className="employee-form timeoff-form">
-      <div className="form-columns timeoff-date-grid">
-        <label>
-          Start date
-          <input type="date" name="startDate" required />
-        </label>
-        <label>
-          End date
-          <input type="date" name="endDate" required />
-        </label>
-      </div>
+    <form action={requestTimeOffAction} className="timeoff-premium-form">
+      <section className="timeoff-premium-section">
+        <span className="timeoff-premium-label">DATES</span>
+        <div className="timeoff-premium-date-row">
+          <label className="timeoff-premium-field">
+            <span>Start Date</span>
+            <input type="date" name="startDate" required />
+          </label>
 
-      <div className="timeoff-type-row">
-        <fieldset className="request-type-fieldset">
-          <legend>Request type</legend>
-          <div className="request-type-switch" role="group" aria-label="Request type">
+          <label className="timeoff-premium-field">
+            <span>End Date</span>
+            <input type="date" name="endDate" required />
+          </label>
+        </div>
+      </section>
+
+      <section className="timeoff-premium-section">
+        <span className="timeoff-premium-label">REQUEST TYPE</span>
+        <fieldset className="timeoff-premium-type">
+          <legend className="sr-only">Request type</legend>
+          <div className="timeoff-premium-segmented" role="group" aria-label="Request type">
             <button
               className={!partialDay ? "selected" : ""}
               type="button"
               aria-pressed={!partialDay}
               onClick={() => setPartialDay(false)}
             >
-              Full day
+              Full Day
             </button>
             <button
               className={partialDay ? "selected" : ""}
@@ -37,49 +42,45 @@ export function TimeOffForm() {
               aria-pressed={partialDay}
               onClick={() => setPartialDay(true)}
             >
-              Partial day
+              Partial Day
             </button>
           </div>
           <input type="hidden" name="partialDay" value={partialDay ? "on" : ""} />
         </fieldset>
 
         {partialDay ? (
-          <div className="form-columns partial-time-fields">
-            <label>
-              Start time
+          <div className="timeoff-premium-date-row">
+            <label className="timeoff-premium-field">
+              <span>Start Time</span>
               <input type="time" name="startTime" required />
             </label>
-            <label>
-              End time
+            <label className="timeoff-premium-field">
+              <span>End Time</span>
               <input type="time" name="endTime" required />
             </label>
           </div>
-        ) : (
-          <p className="timeoff-type-hint">
-            Covers the full selected day or date range.
-          </p>
-        )}
-      </div>
+        ) : null}
+      </section>
 
-      <label className="timeoff-reason">
-        <span className="field-label-row">
+      <section className="timeoff-premium-section">
+        <span className="timeoff-premium-label">OPTIONAL NOTE</span>
+        <label className="timeoff-premium-field">
           <span>Note</span>
-          <span>Optional</span>
-        </span>
-        <textarea
-          name="reason"
-          maxLength={250}
-          rows={3}
-          placeholder="Anything management should know?"
-        />
-      </label>
+          <textarea
+            name="reason"
+            maxLength={250}
+            rows={3}
+            placeholder="Anything management should know?"
+          />
+        </label>
+      </section>
 
-      <div className="timeoff-actionbar">
-        <p>Requests stay pending until they are reviewed.</p>
-        <button className="button primary timeoff-submit" type="submit">
-          Submit request
+      <footer className="timeoff-premium-actions">
+        <small>Requests stay pending until they are reviewed.</small>
+        <button className="timeoff-premium-submit" type="submit">
+          Submit Request
         </button>
-      </div>
+      </footer>
     </form>
   );
 }
