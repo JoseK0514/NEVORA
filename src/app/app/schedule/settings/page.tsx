@@ -183,7 +183,7 @@ export default async function ScheduleSettingsPage({
                 Changes apply to the weekly management view immediately.
               </span>
             </div>
-            <button className="button primary" type="submit">
+            <button className="schedule-settings-save-btn" type="submit">
               Save Settings
             </button>
           </div>
@@ -201,7 +201,10 @@ export default async function ScheduleSettingsPage({
             </div>
           </div>
 
-          <form action={addCoverageWindowAction} className="coverage-window-form">
+          <form
+            action={addCoverageWindowAction}
+            className="coverage-window-form expected-shift-periods"
+          >
             <label>
               Location
               <select
@@ -247,7 +250,7 @@ export default async function ScheduleSettingsPage({
                 placeholder="Use location default"
               />
             </label>
-            <button className="button secondary" type="submit">
+            <button className="schedule-settings-add-window-btn" type="submit">
               Add Window
             </button>
           </form>
