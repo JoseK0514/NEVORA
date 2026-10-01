@@ -10498,3 +10498,60 @@ body {
     flex-wrap: wrap;
   }
 }
+
+/* Form Action Footer Container */
+.timeoff-premium-actions,
+.new-shift-actions,
+form footer {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-top: 32px !important;
+  padding-top: 16px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Symmetrical Apple Pill Buttons - Explicit Matching Heights */
+.timeoff-cancel-btn,
+.timeoff-submit-btn,
+.new-shift-action,
+form footer button,
+form footer a {
+  min-height: 42px !important;
+  height: 42px !important;
+  padding: 0 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 21px !important; /* Perfect continuous capsule pill */
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  border: 0 !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+  transition: opacity 140ms ease !important;
+}
+
+/* Secondary Cancel Style */
+.timeoff-cancel-btn,
+form footer a,
+.secondary {
+  background: var(--color-bg-main) !important;
+  color: var(--color-brand-primary) !important;
+}
+
+/* Primary Submit Style */
+.timeoff-submit-btn,
+form footer button,
+.primary {
+  background: var(--color-brand-accent) !important;
+  color: var(--color-bg-surface) !important;
+}
+
+.timeoff-cancel-btn:hover,
+.timeoff-submit-btn:hover {
+  opacity: 0.88 !important;
+}
