@@ -18,17 +18,13 @@ import {
   currentDateInPuertoRico,
   formatPuertoRicoDateTime,
   formatPuertoRicoDateTimeInput,
-  durationMinutes,
   formatDayLabel,
   formatTime,
   formatWeekRange,
   weekDates,
   weekStartFor,
 } from "@/lib/date-utils";
-import {
-  calculateScheduleHealth,
-  type HourBalance,
-} from "@/lib/scheduling/schedule-health";
+import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
 import { buildPublishReadiness } from "@/lib/scheduling/publish-readiness";
 import {
   copyPreviousWeekAction,
@@ -42,6 +38,7 @@ import {
   getEmployeeAcknowledgementState,
 } from "@/lib/data/acknowledgements";
 import { acknowledgeScheduleAction } from "@/app/app/schedule/acknowledge-actions";
+import { employeeRoleLabel } from "@/lib/employee-display";
 
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_SHIFT: "The shift information is incomplete or outside this week.",
@@ -72,17 +69,6 @@ function validWeek(value?: string) {
     /^\d{4}-\d{2}-\d{2}$/.test(value) &&
     weekStartFor(value) === value
   );
-}
-
-function hourBalanceLabel(balance?: HourBalance) {
-  if (!balance) return "Target not set";
-  if (balance.status === "UNDER") {
-    return `${Math.abs(balance.differenceHours)}h short`;
-  }
-  if (balance.status === "OVER") {
-    return `${balance.differenceHours}h over`;
-  }
-  return "On target";
 }
 
 export default async function SchedulePage({
@@ -118,7 +104,6 @@ export default async function SchedulePage({
       : dates.includes(today)
         ? today
         : dates[0];
-  const selectedMobileLabel = formatDayLabel(selectedMobileDate);
 
   const [
     locations,
@@ -318,9 +303,6 @@ export default async function SchedulePage({
   });
 
   const coverageGaps = health.coverageBlocks.filter((block) => !block.covered);
-  const hourBalancesByEmployee = new Map(
-    health.hourBalances.map((balance) => [balance.employeeId, balance]),
-  );
   const underTarget = health.hourBalances.filter(
     (balance) => balance.status === "UNDER",
   );
@@ -828,249 +810,62 @@ export default async function SchedulePage({
         </section>
       ) : null}
 
-      <section className="schedule-desktop panel flush">
-        <div className="schedule-row schedule-head">
-          <span>Employee</span>
-          {dates.map((date) => {
-            const label = formatDayLabel(date);
-            return (
-              <span
-                className={date === today ? "schedule-day-head is-today" : "schedule-day-head"}
-                key={date}
-              >
-                <b>{label.weekday}</b>
-                <small>{label.day.split(" ")[1]}</small>
-              </span>
+      <section className="standalone-schedule-roster">
+        <div className="standalone-schedule-roster-list">
+          {activeEmployees.map((employee) => {
+            const employeeShifts = visibleShifts.filter(
+              (shift) =>
+                shift.employeeId === employee.id && !shift.isCalloutApproved,
             );
-          })}
-          <span>Hours</span>
-        </div>
 
-        {activeEmployees.map((employee) => {
-          const employeeWeekShifts = effectiveShifts.filter(
-            (shift) => shift.employeeId === employee.id,
-          );
-          const weeklyMinutes = employeeWeekShifts.reduce(
-            (sum, shift) =>
-              sum + durationMinutes(shift.startTime, shift.endTime),
-            0,
-          );
-          const hourBalance = hourBalancesByEmployee.get(employee.id);
-          const target = targetMap.get(employee.id);
-          const weeklyHours = weeklyMinutes / 60;
-          const targetProgress =
-            typeof target === "number" && target > 0
-              ? Math.min((weeklyHours / target) * 100, 100)
-              : 0;
+            return (
+              <div className="standalone-schedule-row" key={employee.id}>
+                <div className="standalone-schedule-employee">
+                  <strong>
+                    {employee.firstName} {employee.lastName}
+                    <span> · {employeeRoleLabel(employee.role)}</span>
+                  </strong>
+                </div>
 
-          return (
-            <div className="schedule-row" key={employee.id}>
-              <div className="schedule-employee-cell">
-                <strong>
-                  {employee.firstName} {employee.lastName}
-                </strong>
-                <span>
-                  {employee.role[0]}
-                  {employee.role.slice(1).toLowerCase()}
-                </span>
-              </div>
-              {dates.map((date) => {
-                const shifts = visibleShifts.filter(
-                  (shift) =>
-                    shift.employeeId === employee.id && shift.date === date,
-                );
-                const preferredLocation =
-                  selectedLocation === "all"
-                    ? employee.primaryLocationId
-                    : selectedLocation;
+                <div
+                  className="standalone-schedule-shifts"
+                  aria-label={`${employee.firstName} ${employee.lastName} shifts`}
+                >
+                  {employeeShifts.map((shift) => {
+                    const day = formatDayLabel(shift.date).weekday;
+                    const location = locations.find(
+                      (item) => item.id === shift.locationId,
+                    );
 
-                return (
-                  <div
-                    className={
-                      date === today
-                        ? "schedule-cell schedule-today-cell"
-                        : "schedule-cell"
-                    }
-                    key={date}
-                  >
-                    {shifts.map((shift) => (
+                    return (
                       <Link
-                        className="shift-block"
+                        className={
+                          shift.isDesignatedLead
+                            ? "standalone-schedule-pill lead"
+                            : "standalone-schedule-pill"
+                        }
                         href={`/app/schedule/edit?shiftId=${shift.id}`}
                         key={shift.id}
                       >
+                        {shift.isDesignatedLead ? (
+                          <span
+                            className="standalone-schedule-lead-dot"
+                            aria-hidden="true"
+                          />
+                        ) : null}
+                        <span>{day}</span>
                         <strong>
                           {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
                         </strong>
-                        <span>
-                          {
-                            locations.find(
-                              (location) => location.id === shift.locationId,
-                            )?.shortName
-                          }
-                          {shift.isDesignatedLead ? " · Lead" : ""}
-                        </span>
-                        <small>
-                          {(durationMinutes(shift.startTime, shift.endTime) / 60).toFixed(1)}h
-                        </small>
+                        <small>{location?.shortName ?? ""}</small>
                       </Link>
-                    ))}
-                    <Link
-                      className="add-cell"
-                      href={`/app/schedule/new?week=${weekStart}&date=${date}&employeeId=${employee.id}&locationId=${preferredLocation}`}
-                    >
-                      <span aria-hidden="true">+</span>
-                      Add shift
-                    </Link>
-                  </div>
-                );
-              })}
-              <div className="hours hours-health-cell">
-                <div className="hours-total">
-                  <strong>{weeklyHours.toFixed(1)}h</strong>
-                  <span>
-                    {typeof target === "number" ? `of ${target}h` : "No target"}
-                  </span>
+                    );
+                  })}
                 </div>
-                {typeof target === "number" ? (
-                  <div
-                    className="hours-progress"
-                    aria-label={`${weeklyHours.toFixed(1)} of ${target} target hours`}
-                  >
-                    <span style={{ width: `${targetProgress}%` }} />
-                  </div>
-                ) : null}
-                <span
-                  className={
-                    hourBalance?.status === "UNDER"
-                      ? "hours-under"
-                      : hourBalance?.status === "OVER"
-                        ? "hours-over"
-                        : hourBalance?.status === "ON_TARGET"
-                          ? "hours-good"
-                          : "hours-unset"
-                  }
-                >
-                  {hourBalanceLabel(hourBalance)}
-                </span>
               </div>
-            </div>
-          );
-        })}
-      </section>
-
-      <section className="schedule-mobile schedule-mobile-manager">
-        <nav className="mobile-day-tabs" aria-label="Schedule day">
-          {dates.map((date) => {
-            const label = formatDayLabel(date);
-
-            return (
-              <Link
-                className={date === selectedMobileDate ? "selected" : ""}
-                href={`/app/schedule?week=${weekStart}${locationQuery}&day=${date}`}
-                key={date}
-              >
-                <span>{label.weekday.slice(0, 3)}</span>
-                <strong>{label.day.split(" ")[1]}</strong>
-              </Link>
             );
           })}
-        </nav>
-
-        <article className="mobile-day-workspace">
-          <div className="mobile-day-workspace-heading">
-            <div>
-              <span>{selectedMobileLabel.weekday}</span>
-              <h2>{selectedMobileLabel.day}</h2>
-            </div>
-            <Link
-              className="button primary compact-button"
-              href={`/app/schedule/new?week=${weekStart}&date=${selectedMobileDate}${selectedLocation === "all" ? "" : `&locationId=${selectedLocation}`}`}
-            >
-              + Add shift
-            </Link>
-          </div>
-
-          <div className="mobile-employee-schedule">
-            {activeEmployees.map((employee) => {
-              const employeeDayShifts = visibleShifts.filter(
-                (shift) =>
-                  shift.employeeId === employee.id &&
-                  shift.date === selectedMobileDate,
-              );
-              const preferredLocation =
-                selectedLocation === "all"
-                  ? employee.primaryLocationId
-                  : selectedLocation;
-              const employeeWeekMinutes = effectiveShifts
-                .filter((shift) => shift.employeeId === employee.id)
-                .reduce(
-                  (sum, shift) =>
-                    sum + durationMinutes(shift.startTime, shift.endTime),
-                  0,
-                );
-              const target = targetMap.get(employee.id);
-
-              return (
-                <section className="mobile-employee-day-row" key={employee.id}>
-                  <div className="mobile-employee-summary">
-                    <div>
-                      <strong>
-                        {employee.firstName} {employee.lastName}
-                      </strong>
-                      <span>
-                        {employee.role[0]}
-                        {employee.role.slice(1).toLowerCase()}
-                      </span>
-                    </div>
-                    <small>
-                      {(employeeWeekMinutes / 60).toFixed(1)}h
-                      {typeof target === "number" ? ` / ${target}h` : ""}
-                    </small>
-                  </div>
-
-                  {employeeDayShifts.length ? (
-                    employeeDayShifts.map((shift) => (
-                      <Link
-                        className="mobile-shift-card"
-                        href={`/app/schedule/edit?shiftId=${shift.id}`}
-                        key={shift.id}
-                      >
-                        <div>
-                          <strong>
-                            {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
-                          </strong>
-                          <span>
-                            {
-                              locations.find(
-                                (location) => location.id === shift.locationId,
-                              )?.shortName
-                            }
-                            {shift.isDesignatedLead ? " · Lead" : ""}
-                          </span>
-                        </div>
-                        <small>
-                          {(durationMinutes(shift.startTime, shift.endTime) / 60).toFixed(1)}h
-                        </small>
-                      </Link>
-                    ))
-                  ) : (
-                    <Link
-                      className="mobile-empty-shift"
-                      href={`/app/schedule/new?week=${weekStart}&date=${selectedMobileDate}&employeeId=${employee.id}&locationId=${preferredLocation}`}
-                    >
-                      <span aria-hidden="true">+</span>
-                      <div>
-                        <strong>Add shift</strong>
-                        <small>No shift scheduled</small>
-                      </div>
-                    </Link>
-                  )}
-                </section>
-              );
-            })}
-          </div>
-        </article>
+        </div>
       </section>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { requestTimeOffAction } from "@/app/app/requests/actions";
 
@@ -77,9 +78,17 @@ export function TimeOffForm() {
 
       <footer className="timeoff-premium-actions">
         <small>Requests stay pending until they are reviewed.</small>
-        <button className="timeoff-premium-submit" type="submit">
-          Submit Request
-        </button>
+        <div className="timeoff-premium-action-buttons">
+          <Link
+            className="timeoff-premium-cancel"
+            href="/app/requests?tab=my"
+          >
+            Cancel
+          </Link>
+          <button className="timeoff-premium-submit" type="submit">
+            Submit Request
+          </button>
+        </div>
       </footer>
     </form>
   );
