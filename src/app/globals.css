@@ -10471,8 +10471,8 @@ form footer {
   justify-content: flex-end !important;
   align-items: center !important;
   gap: 12px !important;
-  margin-top: 32px !important;
-  padding-top: 16px !important;
+  margin-top: 20px !important;
+  padding-top: 0 !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
@@ -10483,6 +10483,8 @@ form footer {
 .new-shift-action,
 form footer button,
 form footer a {
+  min-width: 0 !important;
+  width: min(148px, calc((100% - 12px) / 2)) !important;
   min-height: 42px !important;
   height: 42px !important;
   padding: 0 24px !important;
@@ -10493,6 +10495,7 @@ form footer a {
   font-size: 13px !important;
   font-weight: 600 !important;
   text-decoration: none !important;
+  white-space: nowrap !important;
   border: 0 !important;
   cursor: pointer !important;
   box-sizing: border-box !important;
