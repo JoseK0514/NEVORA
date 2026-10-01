@@ -25,7 +25,7 @@ it.each(["OWNER", "MANAGER"] as const)("prevents a new swap requiring an unavail
 });
 it("does not report a concurrent decline as a successful exchange review", async () => {
   vi.mocked(requireSession).mockResolvedValue({ id: "manager-1", firstName: "Alex", lastName: "Rivera", role: "MANAGER", primaryLocationId: "loc-1" });
-  vi.mocked(getExchange).mockResolvedValue({ id: "exchange-1", kind: "COVERAGE", status: "MANAGER_PENDING", requestedByEmployeeId: "employee-1", requestedByName: "Sam Cruz", sourceShift: source, createdAt: "2030-10-01T12:00:00Z" });
+  vi.mocked(getExchange).mockResolvedValue({ id: "exchange-1", kind: "COVERAGE", status: "MANAGER_PENDING", requestedByEmployeeId: "employee-1", requestedByName: "Sam Cruz", requestedByRole: "EMPLOYEE", sourceShift: source, createdAt: "2030-10-01T12:00:00Z" });
   vi.mocked(denyExchange).mockResolvedValue(false);
   const data = new FormData(); data.set("exchangeId", "exchange-1"); data.set("decision", "DENIED");
   await expect(reviewExchangeAction(data)).rejects.toThrow("error=EXCHANGE_CHANGED");
