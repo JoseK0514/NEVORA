@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
-import type { ExchangeKind } from "@/lib/domain";
+import type { ExchangeKind, UserRole } from "@/lib/domain";
 
 export type ExchangeShift = {
   id: string;
@@ -28,6 +28,7 @@ export type ExchangeRecord = {
     | "EXPIRED";
   requestedByEmployeeId: string;
   requestedByName: string;
+  requestedByRole: UserRole;
   targetEmployeeId?: string;
   targetEmployeeName?: string;
   sourceShift: ExchangeShift;
@@ -66,6 +67,7 @@ const EXCHANGE_SELECT = `
     x.status,
     x.requested_by_employee_id,
     requester.first_name || ' ' || requester.last_name AS requested_by_name,
+    requester.role AS requested_by_role,
     x.target_employee_id,
     target_employee.first_name || ' ' || target_employee.last_name AS target_employee_name,
     x.created_at,
@@ -126,6 +128,7 @@ function mapExchange(row: unknown): ExchangeRecord {
     status: item.status as ExchangeRecord["status"],
     requestedByEmployeeId: String(item.requested_by_employee_id),
     requestedByName: String(item.requested_by_name),
+    requestedByRole: item.requested_by_role as UserRole,
     targetEmployeeId: item.target_employee_id
       ? String(item.target_employee_id)
       : undefined,
