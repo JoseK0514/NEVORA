@@ -10984,3 +10984,402 @@ body {
     width: 100%;
   }
 }
+
+/* Clocker Kiosk — secure iPad terminal */
+.clocker-terminal-page {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: var(--color-bg-main);
+  font-family: var(--font-family-apple);
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.clocker-terminal-page * {
+  box-sizing: border-box;
+}
+
+.clocker-terminal-card {
+  width: min(440px, 100%);
+  max-height: calc(100dvh - 40px);
+  padding: var(--space-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 24px;
+  box-shadow: var(--shadow-premium);
+  text-align: center;
+}
+
+.clocker-terminal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.clocker-terminal-location {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.clocker-terminal-time {
+  display: block;
+  color: var(--color-brand-primary);
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -.045em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.clocker-terminal-date {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.clocker-terminal-pin-view,
+.clocker-terminal-state-view {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.clocker-terminal-pin-view {
+  gap: 18px;
+}
+
+.clocker-terminal-copy h1,
+.clocker-terminal-state-heading h1 {
+  margin: 0;
+  color: var(--color-brand-primary);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -.025em;
+}
+
+.clocker-terminal-copy p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.clocker-terminal-pin-dots {
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.clocker-terminal-pin-dots > span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #D8D8DE;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.clocker-terminal-pin-dots > span.filled {
+  background: var(--color-brand-primary);
+  transform: scale(1.08);
+}
+
+.clocker-terminal-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 74px);
+  gap: 12px 18px;
+  justify-content: center;
+}
+
+.clocker-terminal-key {
+  width: 74px;
+  height: 74px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+  font: inherit;
+  font-size: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 120ms ease, opacity 120ms ease, transform 120ms ease;
+}
+
+.clocker-terminal-key:active {
+  background: #E5E5EA;
+  opacity: .72;
+  transform: scale(.95);
+}
+
+.clocker-terminal-key.utility {
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.clocker-terminal-key.utility > span {
+  font-size: 21px;
+}
+
+.clocker-terminal-state-view {
+  width: 100%;
+  gap: 20px;
+}
+
+.clocker-terminal-state-heading {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  text-align: left;
+}
+
+.clocker-terminal-state-heading > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.clocker-terminal-state-heading > div > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.clocker-terminal-verified {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-state-success-bg);
+  color: var(--color-state-success);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.clocker-terminal-timeline {
+  width: 100%;
+  padding: 2px 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.clocker-terminal-timeline-row {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.clocker-terminal-timeline-row:first-child {
+  border-top: 0;
+}
+
+.clocker-terminal-timeline-row span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.clocker-terminal-timeline-row strong {
+  color: var(--color-brand-primary);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.clocker-terminal-break-card {
+  margin: 10px 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  border-radius: 14px;
+  background: var(--color-bg-main);
+}
+
+.clocker-terminal-break-card span,
+.clocker-terminal-break-card small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.clocker-terminal-break-card strong {
+  color: var(--color-brand-primary);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.clocker-terminal-actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.clocker-terminal-actions > :only-child {
+  grid-column: 1 / -1;
+}
+
+.clocker-terminal-action {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 23px;
+  padding: 0 18px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.clocker-terminal-action:active {
+  opacity: .72;
+  transform: scale(.985);
+}
+
+.clocker-terminal-action.primary {
+  background: var(--color-brand-accent);
+  color: var(--color-bg-surface);
+}
+
+.clocker-terminal-action.secondary {
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+}
+
+.clocker-terminal-action.danger {
+  background: var(--color-state-danger-bg);
+  color: var(--color-state-danger);
+}
+
+.clocker-terminal-success {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--space-lg);
+  background: rgba(245, 245, 247, .94);
+  backdrop-filter: blur(12px);
+}
+
+.clocker-terminal-success-badge {
+  width: min(420px, 100%);
+  padding: 34px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 24px;
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-premium);
+  text-align: center;
+}
+
+.clocker-terminal-success-badge > span {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-state-success-bg);
+  color: var(--color-state-success);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.clocker-terminal-success-badge strong {
+  color: var(--color-brand-primary);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+
+.clocker-terminal-success-badge small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+@media (max-height: 720px) {
+  .clocker-terminal-page {
+    padding: 12px;
+  }
+
+  .clocker-terminal-card {
+    max-height: calc(100dvh - 24px);
+    padding: 24px 30px;
+    gap: 16px;
+  }
+
+  .clocker-terminal-time {
+    font-size: 42px;
+  }
+
+  .clocker-terminal-pin-view {
+    gap: 13px;
+  }
+
+  .clocker-terminal-keypad {
+    grid-template-columns: repeat(3, 62px);
+    gap: 8px 16px;
+  }
+
+  .clocker-terminal-key {
+    width: 62px;
+    height: 62px;
+    font-size: 21px;
+  }
+}
+
+@media (max-width: 520px) {
+  .clocker-terminal-page {
+    padding: 12px;
+  }
+
+  .clocker-terminal-card {
+    padding: 24px 20px;
+  }
+
+  .clocker-terminal-time {
+    font-size: 42px;
+  }
+}
