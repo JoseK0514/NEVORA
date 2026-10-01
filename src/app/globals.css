@@ -10268,33 +10268,38 @@ body {
   font-size: 13px;
   font-weight: 600;
 }
-/* Time Off — premium restrained request form */
+/* Time Off — compact premium request card */
 .timeoff-form-panel {
-  width: min(680px, 100%);
-  background: var(--color-bg-surface);
-  border-radius: var(--radius-premium);
-  box-shadow: var(--shadow-premium);
-  padding: var(--space-lg);
+  width: min(640px, 100%);
   margin: 0 auto;
+  padding: 28px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 16px;
+  background: var(--color-bg-surface);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .045);
 }
 
 .timeoff-new-heading {
-  margin-bottom: var(--space-md);
-  padding-bottom: 0;
-  border-bottom: 0;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
 }
 
 .timeoff-new-heading h2 {
+  margin: 0 0 6px;
   color: var(--color-brand-primary);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
+  line-height: 1.2;
   letter-spacing: -.025em;
 }
 
 .timeoff-new-heading p {
-  max-width: 520px;
+  max-width: 500px;
+  margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
 }
 
@@ -10303,7 +10308,7 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: 22px;
   box-sizing: border-box;
 }
 
@@ -10312,38 +10317,39 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 8px;
   box-sizing: border-box;
 }
 
 .timeoff-premium-label {
   display: block;
+  margin: 0 0 6px;
+  color: #718096;
   font-size: 10px;
   font-weight: 600;
-  color: #718096;
-  letter-spacing: 0.08em;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  margin-bottom: var(--space-xs);
 }
 
 .timeoff-premium-date-row {
   width: 100%;
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
   box-sizing: border-box;
 }
+
 .timeoff-premium-field {
   width: 100%;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
   box-sizing: border-box;
 }
 
-.timeoff-premium-field > span {
+.timeoff-premium-field > span:not(.sr-only) {
   color: var(--muted);
   font-size: 11px;
   font-weight: 500;
@@ -10351,47 +10357,56 @@ body {
 
 .timeoff-premium-field input,
 .timeoff-premium-field textarea {
+  display: block;
   width: 100%;
-  border: 0;
-  border-radius: 8px;
-  background: var(--color-bg-main);
-  padding: 14px;
-  color: var(--color-brand-primary);
-  font-size: 14px;
+  min-width: 0;
   box-sizing: border-box;
+  border: 0;
+  border-radius: 10px;
+  outline: none;
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+  font: inherit;
+  font-size: 14px;
+  transition: box-shadow 140ms ease, background 140ms ease;
+}
+
+.timeoff-premium-field input {
+  min-height: 46px;
+  padding: 0 13px;
 }
 
 .timeoff-premium-field textarea {
-  min-height: 120px;
+  min-height: 92px;
+  padding: 12px 13px;
   resize: vertical;
+  line-height: 1.45;
 }
 
 .timeoff-premium-field input:focus,
-.timeoff-premium-field select:focus,
 .timeoff-premium-field textarea:focus {
   background: var(--color-bg-surface);
-  box-shadow: 0 0 0 3px color-mix(
-    in srgb,
-    var(--color-brand-accent) 16%,
-    transparent
-  );
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-accent) 14%, transparent);
 }
 
 .timeoff-premium-type {
+  width: 100%;
   margin: 0;
   padding: 0;
   border: 0;
 }
 
 .timeoff-premium-segmented {
-  width: min(320px, 100%);
+  width: 100%;
   padding: 4px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
+  box-sizing: border-box;
   border-radius: 12px;
   background: var(--color-bg-main);
 }
+
 .timeoff-premium-segmented button {
   min-height: 38px;
   border: 0;
@@ -10401,16 +10416,62 @@ body {
   font: inherit;
   font-size: 12px;
   font-weight: 600;
-  transition:
-    background 140ms ease,
-    color 140ms ease,
-    box-shadow 140ms ease;
+  transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
 
 .timeoff-premium-segmented button.selected {
   background: var(--color-bg-surface);
   color: var(--color-brand-primary);
-  box-shadow: var(--shadow-premium);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .06);
+}
+
+.timeoff-premium-actions {
+  width: 100%;
+  margin: 2px 0 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.timeoff-cancel-btn,
+.timeoff-submit-btn {
+  width: 136px;
+  min-width: 136px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.timeoff-cancel-btn {
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+}
+
+.timeoff-submit-btn {
+  background: var(--color-brand-accent);
+  color: var(--color-bg-surface);
+}
+
+.timeoff-cancel-btn:hover,
+.timeoff-submit-btn:hover {
+  opacity: .88;
+  transform: translateY(-1px);
 }
 
 .sr-only {
@@ -10461,64 +10522,4 @@ body {
     width: 100%;
   }
 
-}
-
-/* Form Action Footer Container */
-.timeoff-premium-actions,
-.new-shift-actions,
-form footer {
-  display: flex !important;
-  justify-content: flex-end !important;
-  align-items: center !important;
-  gap: 12px !important;
-  margin-top: 20px !important;
-  padding-top: 0 !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* Symmetrical Apple Pill Buttons - Explicit Matching Heights */
-.timeoff-cancel-btn,
-.timeoff-submit-btn,
-.new-shift-action,
-form footer button,
-form footer a {
-  min-width: 0 !important;
-  width: min(148px, calc((100% - 12px) / 2)) !important;
-  min-height: 42px !important;
-  height: 42px !important;
-  padding: 0 24px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 21px !important; /* Perfect continuous capsule pill */
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  text-decoration: none !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-  cursor: pointer !important;
-  box-sizing: border-box !important;
-  transition: opacity 140ms ease !important;
-}
-
-/* Secondary Cancel Style */
-.timeoff-cancel-btn,
-form footer a,
-.secondary {
-  background: var(--color-bg-main) !important;
-  color: var(--color-brand-primary) !important;
-}
-
-/* Primary Submit Style */
-.timeoff-submit-btn,
-form footer button,
-.primary {
-  background: var(--color-brand-accent) !important;
-  color: var(--color-bg-surface) !important;
-}
-
-.timeoff-cancel-btn:hover,
-.timeoff-submit-btn:hover {
-  opacity: 0.88 !important;
 }
