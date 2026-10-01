@@ -18,6 +18,7 @@
   --shadow-premium: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
 
   /* Structural Discipline */
+  --space-xs: 8px;
   --space-sm: 12px;
   --space-md: 20px;
   --space-lg: 32px;
@@ -10081,26 +10082,34 @@ body {
 
 /* Employee Directory — premium profile feed */
 .employee-directory-card {
+  width: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
   background: var(--color-bg-surface);
   border-radius: var(--radius-premium);
   box-shadow: var(--shadow-premium);
 }
 
 .employee-profile-feed {
-  padding: 4px var(--space-sm) var(--space-sm);
+  width: 100%;
+  padding: var(--space-xs);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-xs);
+  box-sizing: border-box;
 }
 
 .employee-profile-row {
+  width: 100%;
   min-height: 76px;
-  padding: 12px 8px;
+  padding: var(--space-sm) var(--space-md);
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   gap: var(--space-md);
+  box-sizing: border-box;
   border-radius: 10px;
   transition: background 140ms ease;
 }
@@ -10113,7 +10122,7 @@ body {
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
 .employee-profile-avatar {
@@ -10133,7 +10142,16 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+}
+
+.employee-profile-copy strong,
+.employee-profile-copy span,
+.employee-profile-copy small {
+  display: block;
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .employee-profile-copy strong {
@@ -10149,6 +10167,7 @@ body {
   font-size: 11px;
   line-height: 1.35;
 }
+
 .employee-profile-actions {
   flex: 0 0 auto;
   display: flex;
@@ -10293,6 +10312,8 @@ body {
 /* Time Off — premium restrained request form */
 .timeoff-form-panel {
   width: min(680px, 100%);
+  max-width: 680px;
+  box-sizing: border-box;
   border: 0;
   border-radius: var(--radius-premium);
   background: var(--color-bg-surface);
@@ -10321,15 +10342,21 @@ body {
 }
 
 .timeoff-premium-form {
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  box-sizing: border-box;
 }
 
 .timeoff-premium-section {
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  box-sizing: border-box;
 }
 
 .timeoff-premium-label {
@@ -10340,14 +10367,20 @@ body {
 }
 
 .timeoff-premium-date-row {
+  width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-sm);
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  box-sizing: border-box;
 }
 .timeoff-premium-field {
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 7px;
+  box-sizing: border-box;
 }
 
 .timeoff-premium-field > span {
@@ -10357,8 +10390,12 @@ body {
 }
 
 .timeoff-premium-field input,
+.timeoff-premium-field select,
 .timeoff-premium-field textarea {
+  display: block;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   border: 0;
   border-radius: 8px;
   outline: none;
@@ -10372,19 +10409,24 @@ body {
     box-shadow 140ms ease;
 }
 
-.timeoff-premium-field input {
+.timeoff-premium-field input,
+.timeoff-premium-field select {
   min-height: 48px;
   padding: 0 14px;
 }
 
 .timeoff-premium-field textarea {
-  min-height: 96px;
-  padding: 13px 14px;
+  display: block;
+  width: 100%;
+  min-height: 120px;
+  padding: var(--space-sm);
   resize: vertical;
   line-height: 1.45;
+  box-sizing: border-box;
 }
 
 .timeoff-premium-field input:focus,
+.timeoff-premium-field select:focus,
 .timeoff-premium-field textarea:focus {
   background: var(--color-bg-surface);
   box-shadow: 0 0 0 3px color-mix(
@@ -10431,14 +10473,17 @@ body {
 }
 
 .timeoff-premium-actions {
-  padding-top: var(--space-sm);
+  width: 100%;
+  margin-top: var(--space-lg);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  box-sizing: border-box;
 }
 
 .timeoff-premium-actions small {
+  margin-right: auto;
   max-width: 320px;
   color: var(--muted);
   font-size: 10px;
@@ -10476,18 +10521,22 @@ body {
 }
 @media (max-width: 640px) {
   .employee-profile-row {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: var(--space-sm);
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .employee-profile-main {
+    flex: 1 1 220px;
   }
 
   .employee-profile-actions {
-    width: 100%;
-    justify-content: space-between;
+    margin-left: auto;
+    justify-content: flex-end;
   }
 
   .employee-profile-view {
-    min-width: 118px;
+    min-width: 108px;
   }
 
   .employee-profile-details {
@@ -10500,7 +10549,7 @@ body {
   }
 
   .timeoff-premium-date-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .timeoff-premium-segmented {
@@ -10508,11 +10557,18 @@ body {
   }
 
   .timeoff-premium-actions {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .timeoff-premium-actions small {
+    flex: 1 1 100%;
+    margin-right: 0;
   }
 
   .timeoff-premium-submit {
-    width: 100%;
+    width: auto;
   }
 }

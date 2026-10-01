@@ -65,7 +65,7 @@ export function TimeOffForm() {
       <section className="timeoff-premium-section">
         <span className="timeoff-premium-label">OPTIONAL NOTE</span>
         <label className="timeoff-premium-field">
-          <span>Note</span>
+          <span className="sr-only">Note</span>
           <textarea
             name="reason"
             maxLength={250}
