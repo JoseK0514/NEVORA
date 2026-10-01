@@ -1,6 +1,4 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
-import { ManagerActionList } from "@/components/manager-action-list";
 import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import { TimeClockWidget } from "@/components/time-clock-widget";
@@ -123,60 +121,6 @@ function revisionSourceLabel(sourceType: string) {
   return "Published schedule updated";
 }
 
-function TeamAvailability({
-  submitted,
-  active,
-  unavailable,
-  weekStart,
-}: {
-  submitted: number;
-  active: number;
-  unavailable: number;
-  weekStart: string;
-}) {
-  const percentage = active ? Math.round((submitted / active) * 100) : 0;
-  const ringStyle = {
-    "--dashboard-availability-progress": `${percentage}%`,
-  } as CSSProperties;
-
-  return (
-    <section className="dashboard-panel dashboard-availability-panel">
-      <div className="dashboard-panel-heading">
-        <h2>Team availability</h2>
-        <Link href={`/app/availability?week=${weekStart}`}>View details</Link>
-      </div>
-
-      <div className="dashboard-availability-body">
-        <div className="dashboard-availability-ring" style={ringStyle}>
-          <span>
-            <strong>{percentage}%</strong>
-            <small>{submitted}/{active}</small>
-            <em>submitted</em>
-          </span>
-        </div>
-
-        <div className="dashboard-availability-legend">
-          <div>
-            <span className="legend-dot submitted" />
-            <span>Submitted</span>
-            <strong>{submitted}</strong>
-          </div>
-          <div>
-            <span className="legend-dot missing" />
-            <span>Not submitted</span>
-            <strong>{Math.max(0, active - submitted)}</strong>
-          </div>
-          {unavailable ? (
-            <small>{unavailable} submitted unavailable all week</small>
-          ) : (
-            <small>Weekly availability status updates automatically.</small>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function scheduleRoleLabel(role: UserRole) {
   if (role === "OWNER") return "Owner";
   if (role === "MANAGER") return "Manager";
@@ -257,37 +201,75 @@ function ScheduleTab(props: Props) {
   );
 }
 
+function DashboardEmptyTray({
+  title,
+  detail,
+}: {
+  title: string;
+  detail: string;
+}) {
+  return (
+    <div className="manager-empty-tray">
+      <span aria-hidden="true">✓</span>
+      <strong>{title}</strong>
+      <small>{detail}</small>
+    </div>
+  );
+}
+
 function TeamTab(props: Props) {
-  const targetMissing = props.hours.filter((item) => item.status === "TARGET_MISSING").length;
+  const targetMissing = props.hours.filter(
+    (item) => item.status === "TARGET_MISSING",
+  ).length;
   const underOrOver = props.hours.filter(
     (item) => item.status === "UNDER" || item.status === "OVER",
   );
+  const availabilityPercentage = props.activeEmployees
+    ? Math.round((props.availabilitySubmitted / props.activeEmployees) * 100)
+    : 0;
 
   return (
-    <div className="dashboard-tab-layout">
-      <section className="dashboard-team-summary">
-        <div><span>Active employees</span><strong>{props.activeEmployees}</strong></div>
-        <div><span>Availability submitted</span><strong>{props.availabilitySubmitted}/{props.activeEmployees}</strong></div>
-        <div><span>Hour targets missing</span><strong>{targetMissing}</strong></div>
-        <div><span>Hours to review</span><strong>{underOrOver.length}</strong></div>
-      </section>
+    <section className="manager-subtab-card">
+      <header className="manager-subtab-header">
+        <div>
+          <span>Team</span>
+          <h2>Team Overview</h2>
+          <p>Availability and scheduled hours for this week.</p>
+        </div>
+        <Link className="manager-subtab-link" href={`/app/availability?week=${props.weekStart}`}>
+          View Availability
+        </Link>
+      </header>
 
-      <div className="dashboard-tab-two-column">
-        <TeamAvailability
-          submitted={props.availabilitySubmitted}
-          active={props.activeEmployees}
-          unavailable={props.unavailableAllWeek}
-          weekStart={props.weekStart}
-        />
+      <div className="manager-team-summary-line" aria-label="Team summary">
+        <div>
+          <strong>{props.activeEmployees}</strong>
+          <span>Active Employees</span>
+        </div>
+        <div>
+          <strong>{availabilityPercentage}%</strong>
+          <span>Availability Submitted</span>
+        </div>
+        <div>
+          <strong>{targetMissing}</strong>
+          <span>Targets Missing</span>
+        </div>
+        <div>
+          <strong>{underOrOver.length}</strong>
+          <span>Hours to Review</span>
+        </div>
+      </div>
 
-        <section className="dashboard-panel dashboard-hours-panel">
-          <div className="dashboard-panel-heading">
-            <h2>Employee hours</h2>
-            <Link href="/app/schedule/settings">Manage targets</Link>
-          </div>
-          <div className="dashboard-hours-list">
-            {props.hours.length ? props.hours.slice(0, 8).map((item) => (
-              <div key={item.employeeId}>
+      <section className="manager-subtab-section">
+        <header className="manager-subtab-section-heading">
+          <h3>Employee Hours</h3>
+          <Link href="/app/schedule/settings">Manage Targets</Link>
+        </header>
+
+        {props.hours.length ? (
+          <div className="manager-team-hours-list">
+            {props.hours.slice(0, 8).map((item) => (
+              <div className="manager-team-hours-row" key={item.employeeId}>
                 <span>
                   <strong>{item.employeeName}</strong>
                   <small>
@@ -314,16 +296,16 @@ function TeamTab(props: Props) {
                         : "On target"}
                 </StatusPill>
               </div>
-            )) : (
-              <div className="dashboard-empty-state compact">
-                <strong>No hour data yet</strong>
-                <span>Hour balance appears as shifts are scheduled.</span>
-              </div>
-            )}
+            ))}
           </div>
-        </section>
-      </div>
-    </div>
+        ) : (
+          <DashboardEmptyTray
+            title="No hour data yet"
+            detail="Scheduled hour balances will appear here as shifts are added."
+          />
+        )}
+      </section>
+    </section>
   );
 }
 
@@ -333,27 +315,41 @@ function RequestsTab(props: Props) {
   );
 
   return (
-    <div className="dashboard-tab-layout">
-      <section className="dashboard-team-summary three">
-        <div><span>Time off</span><strong>{props.requestCounts.timeOff}</strong></div>
-        <div><span>Shift requests</span><strong>{props.requestCounts.exchange}</strong></div>
-        <div><span>Call-outs</span><strong>{props.requestCounts.callout}</strong></div>
-      </section>
-
-      <section className="dashboard-panel">
-        <div className="dashboard-panel-heading">
-          <div>
-            <h2>Pending requests</h2>
-            <p>Items waiting for a manager decision.</p>
-          </div>
+    <section className="manager-subtab-card">
+      <header className="manager-subtab-header">
+        <div>
+          <span>Requests</span>
+          <h2>Pending Requests</h2>
+          <p>Only items waiting for a manager decision appear here.</p>
         </div>
-        <ManagerActionList
-          items={requestActions}
-          emptyTitle="No pending requests"
-          emptyDetail="There are no time-off, shift-exchange, or call-out requests waiting for review."
+        <div className="manager-request-counts" aria-label="Pending request counts">
+          <span>Time Off <strong>{props.requestCounts.timeOff}</strong></span>
+          <span>Trades <strong>{props.requestCounts.exchange}</strong></span>
+          <span>Call-outs <strong>{props.requestCounts.callout}</strong></span>
+        </div>
+      </header>
+
+      {requestActions.length ? (
+        <div className="manager-subtab-list">
+          {requestActions.map((item) => (
+            <div className="manager-subtab-row" key={item.id}>
+              <div className="manager-subtab-row-copy">
+                <strong>{item.title}</strong>
+                <span>{item.detail}</span>
+              </div>
+              <Link className="manager-subtab-action" href={item.href}>
+                Review
+              </Link>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <DashboardEmptyTray
+          title="No pending requests"
+          detail="There are no time-off, shift-trade, or call-out requests waiting for review."
         />
-      </section>
-    </div>
+      )}
+    </section>
   );
 }
 
@@ -361,22 +357,24 @@ function ActivityTab(props: Props) {
   const datedActions = props.managerActions
     .filter((item) => Boolean(item.dateTime))
     .slice(0, 8);
+  const hasActivity = Boolean(props.latestRevision) || datedActions.length > 0;
 
   return (
-    <div className="dashboard-tab-layout">
-      <section className="dashboard-panel dashboard-activity-panel">
-        <div className="dashboard-panel-heading">
-          <div>
-            <h2>Current activity</h2>
-            <p>Recent schedule publication and active operational events.</p>
-          </div>
+    <section className="manager-subtab-card">
+      <header className="manager-subtab-header">
+        <div>
+          <span>Activity</span>
+          <h2>Recent Activity</h2>
+          <p>Schedule publications and active operational events.</p>
         </div>
+      </header>
 
-        <div className="dashboard-activity-list">
+      {hasActivity ? (
+        <div className="manager-activity-list">
           {props.latestRevision ? (
-            <div>
-              <span className="dashboard-activity-icon">
-                <NavIcon name="schedule" size={18} />
+            <div className="manager-activity-row">
+              <span className="manager-activity-icon">
+                <NavIcon name="schedule" size={17} />
               </span>
               <span>
                 <strong>{revisionSourceLabel(props.latestRevision.sourceType)}</strong>
@@ -394,9 +392,18 @@ function ActivityTab(props: Props) {
           ) : null}
 
           {datedActions.map((item) => (
-            <div key={item.id}>
-              <span className="dashboard-activity-icon">
-                <NavIcon name={item.type === "TIME_OFF" ? "timeOff" : item.type === "EXCHANGE" || item.type === "CALLOUT" ? "exchange" : "coverage"} size={18} />
+            <div className="manager-activity-row" key={item.id}>
+              <span className="manager-activity-icon">
+                <NavIcon
+                  name={
+                    item.type === "TIME_OFF"
+                      ? "timeOff"
+                      : item.type === "EXCHANGE" || item.type === "CALLOUT"
+                        ? "exchange"
+                        : "coverage"
+                  }
+                  size={17}
+                />
               </span>
               <span>
                 <strong>{item.title}</strong>
@@ -405,16 +412,14 @@ function ActivityTab(props: Props) {
               <Link href={item.href}>Open</Link>
             </div>
           ))}
-
-          {!props.latestRevision && !datedActions.length ? (
-            <div className="dashboard-empty-state">
-              <strong>No recent activity</strong>
-              <span>New schedule publications and employee requests will appear here.</span>
-            </div>
-          ) : null}
         </div>
-      </section>
-    </div>
+      ) : (
+        <DashboardEmptyTray
+          title="No recent activity"
+          detail="New schedule publications and employee requests will appear here."
+        />
+      )}
+    </section>
   );
 }
 
