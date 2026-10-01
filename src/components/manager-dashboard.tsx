@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { ManagerActionList } from "@/components/manager-action-list";
 import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
+import { TimeClockWidget } from "@/components/time-clock-widget";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
 import { formatTime } from "@/lib/date-utils";
 
@@ -596,7 +597,10 @@ export function ManagerDashboard(props: Props) {
       {props.view === "overview" ? (
         <div className="manager-home-grid">
           <PendingApprovals items={props.managerActions} />
-          <OnFloorNow people={props.onFloor} />
+          <div className="manager-home-right">
+            <TimeClockWidget />
+            <OnFloorNow people={props.onFloor} />
+          </div>
         </div>
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />
