@@ -77,18 +77,15 @@ export function TimeOffForm() {
       </section>
 
       <footer className="timeoff-premium-actions">
-        <small>Requests stay pending until they are reviewed.</small>
-        <div className="timeoff-premium-action-buttons">
-          <Link
-            className="timeoff-premium-cancel"
-            href="/app/requests?tab=my"
-          >
-            Cancel
-          </Link>
-          <button className="timeoff-premium-submit" type="submit">
-            Submit Request
-          </button>
-        </div>
+        <Link
+          className="timeoff-cancel-btn"
+          href="/app/requests?tab=my"
+        >
+          Cancel
+        </Link>
+        <button className="timeoff-submit-btn" type="submit">
+          Submit Request
+        </button>
       </footer>
     </form>
   );

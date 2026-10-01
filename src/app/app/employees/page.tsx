@@ -48,11 +48,13 @@ export default async function EmployeesPage() {
                       <strong>
                         {employee.firstName} {employee.lastName}
                       </strong>
-                      <span>{formatPhoneNumber(employee.phone)}</span>
-                      <small>
+                      <span className="employee-profile-meta">
+                        {formatPhoneNumber(employee.phone)}
+                      </span>
+                      <span className="employee-profile-meta">
                         {primaryLocation?.shortName ?? "Location not assigned"}
                         {!employee.active ? " · Inactive" : ""}
-                      </small>
+                      </span>
                     </div>
                   </div>
 

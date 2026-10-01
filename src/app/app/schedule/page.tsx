@@ -4,15 +4,7 @@ import { StatusPill } from "@/components/status-pill";
 import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
-import {
-  listCoverageWindows,
-  listEmployeeHourTargets,
-  listLocationStaffingSettings,
-} from "@/lib/data/schedule-health";
-import {
-  listScheduleStatuses,
-  listWeekShifts,
-} from "@/lib/data/schedules";
+import { listWeekShifts } from "@/lib/data/schedules";
 import {
   addDays,
   currentDateInPuertoRico,
@@ -24,19 +16,12 @@ import {
   weekDates,
   weekStartFor,
 } from "@/lib/date-utils";
-import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
-import { buildPublishReadiness } from "@/lib/scheduling/publish-readiness";
 import {
   copyPreviousWeekAction,
-  publishScheduleAction,
   setAvailabilityDeadlineAction,
 } from "@/app/app/schedule/actions";
 import { getWeekSettings } from "@/lib/data/week-settings";
-import { listHourFairness } from "@/lib/data/hour-fairness";
-import {
-  getAcknowledgementSummary,
-  getEmployeeAcknowledgementState,
-} from "@/lib/data/acknowledgements";
+import { getEmployeeAcknowledgementState } from "@/lib/data/acknowledgements";
 import { acknowledgeScheduleAction } from "@/app/app/schedule/acknowledge-actions";
 import { employeeRoleLabel } from "@/lib/employee-display";
 
@@ -98,51 +83,25 @@ export default async function SchedulePage({
   const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const dates = weekDates(weekStart);
-  const selectedMobileDate =
-    params.day && dates.includes(params.day)
-      ? params.day
-      : dates.includes(today)
-        ? today
-        : dates[0];
-
-  const [
-    locations,
-    allShifts,
-    statuses,
-    employees,
-    staffingSettings,
-    employeeTargets,
-    coverageWindows,
-    weekSettings,
-    acknowledgementSummary,
-    employeeAcknowledgement,
-    fairnessHistory,
-  ] = await Promise.all([
-    listLocations(),
-    listWeekShifts({
-      weekStart,
-      employeeId: manager ? undefined : session.id,
-      publishedOnly: !manager,
-    }),
-    manager ? listScheduleStatuses(weekStart) : Promise.resolve([]),
-    manager ? listEmployees() : Promise.resolve([]),
-    manager ? listLocationStaffingSettings() : Promise.resolve([]),
-    manager ? listEmployeeHourTargets() : Promise.resolve([]),
-    manager ? listCoverageWindows() : Promise.resolve([]),
-    manager ? getWeekSettings(weekStart) : Promise.resolve(null),
-    manager
-      ? getAcknowledgementSummary(weekStart)
-      : Promise.resolve({ scheduledEmployees: 0, acknowledgedEmployees: 0 }),
-    !manager
-      ? getEmployeeAcknowledgementState(weekStart, session.id)
-      : Promise.resolve({
-          acknowledged: false,
-          acknowledgedRevisionId: undefined,
-          latestRevisionId: undefined,
-          needsAcknowledgement: false,
-        }),
-    manager ? listHourFairness(weekStart) : Promise.resolve([]),
-  ]);
+  const [locations, allShifts, employees, weekSettings, employeeAcknowledgement] =
+    await Promise.all([
+      listLocations(),
+      listWeekShifts({
+        weekStart,
+        employeeId: manager ? undefined : session.id,
+        publishedOnly: !manager,
+      }),
+      manager ? listEmployees() : Promise.resolve([]),
+      manager ? getWeekSettings(weekStart) : Promise.resolve(null),
+      !manager
+        ? getEmployeeAcknowledgementState(weekStart, session.id)
+        : Promise.resolve({
+            acknowledged: false,
+            acknowledgedRevisionId: undefined,
+            latestRevisionId: undefined,
+            needsAcknowledgement: false,
+          }),
+    ]);
 
   const requestedLocation = params.location ?? "";
   const selectedLocation =
@@ -271,69 +230,6 @@ export default async function SchedulePage({
   }
 
   const activeEmployees = employees.filter((employee) => employee.active);
-  const effectiveShifts = allShifts.filter((shift) => !shift.isCalloutApproved);
-  const targetMap = new Map(
-    employeeTargets.map((target) => [target.employeeId, target.targetWeeklyHours]),
-  );
-
-  const health = calculateScheduleHealth({
-    shifts: effectiveShifts.map((shift) => ({
-      id: shift.id,
-      employeeId: shift.employeeId,
-      locationId: shift.locationId,
-      date: shift.date,
-      startTime: shift.startTime,
-      endTime: shift.endTime,
-      employeeName: shift.employeeName,
-      isDesignatedLead: shift.isDesignatedLead,
-    })),
-    locations: staffingSettings.map((setting) => ({
-      id: setting.locationId,
-      name: setting.locationName,
-      minimumStaffPerShift: setting.minimumStaffPerShift,
-      requiresDesignatedLead: setting.requiresDesignatedLead,
-    })),
-    employees: activeEmployees.map((employee) => ({
-      id: employee.id,
-      name: `${employee.firstName} ${employee.lastName}`,
-      targetWeeklyHours: targetMap.get(employee.id),
-    })),
-    coverageWindows,
-    weekDates: dates,
-  });
-
-  const coverageGaps = health.coverageBlocks.filter((block) => !block.covered);
-  const underTarget = health.hourBalances.filter(
-    (balance) => balance.status === "UNDER",
-  );
-  const overTarget = health.hourBalances.filter(
-    (balance) => balance.status === "OVER",
-  );
-  const publishLocation =
-    params.publishCheck &&
-    locations.some((location) => location.id === params.publishCheck)
-      ? params.publishCheck
-      : undefined;
-  const publishReadiness = publishLocation
-    ? buildPublishReadiness({
-        locationId: publishLocation,
-        locationCoverage: health.locationCoverage,
-        underTargetCount: health.underTargetCount,
-        overTargetCount: health.overTargetCount,
-        unconfiguredTargetCount: health.unconfiguredTargetCount,
-      })
-    : undefined;
-  const fairnessMap = new Map(
-    fairnessHistory.map((item) => [item.employeeId, item.priorUnderTargetWeeks]),
-  );
-  const hoursReviewCount =
-    health.underTargetCount +
-    health.overTargetCount +
-    health.unconfiguredTargetCount;
-  const weekReviewCount =
-    coverageGaps.length +
-    hoursReviewCount +
-    Number(!weekSettings?.availabilityDeadline);
 
   return (
     <div className="manager-schedule-page">
@@ -388,7 +284,7 @@ export default async function SchedulePage({
             <div className="segmented">
               <Link
                 className={selectedLocation === "all" ? "selected" : ""}
-                href={`/app/schedule?week=${weekStart}&day=${selectedMobileDate}`}
+                href={`/app/schedule?week=${weekStart}`}
               >
                 All locations
               </Link>
@@ -396,7 +292,7 @@ export default async function SchedulePage({
                 <Link
                   key={location.id}
                   className={selectedLocation === location.id ? "selected" : ""}
-                  href={`/app/schedule?week=${weekStart}&location=${location.id}&day=${selectedMobileDate}`}
+                  href={`/app/schedule?week=${weekStart}&location=${location.id}`}
                 >
                   {location.shortName}
                 </Link>
@@ -482,345 +378,19 @@ export default async function SchedulePage({
           </div>
         </div>
 
-        <details className="schedule-review-details">
-          <summary className="schedule-status-strip">
-            <span className="schedule-status-item">
-              <small>Availability</small>
-              <strong>
-                {weekSettings?.availabilityDeadline ? "Deadline set" : "Not set"}
-              </strong>
-              <em>
-                {weekSettings?.availabilityDeadline
-                  ? formatPuertoRicoDateTime(weekSettings.availabilityDeadline)
-                  : "Set before employees finalize availability"}
-              </em>
-            </span>
 
-            <span className="schedule-status-item">
-              <small>Coverage</small>
-              <strong>
-                {health.coverageSummary.totalBlocks === 0
-                  ? "No shifts yet"
-                  : health.coverageSummary.uncoveredBlocks
-                    ? `${health.coverageSummary.uncoveredBlocks} gap${health.coverageSummary.uncoveredBlocks === 1 ? "" : "s"}`
-                    : "Clear"}
-              </strong>
-              <em>
-                {health.coverageSummary.totalBlocks
-                  ? `${health.coverageSummary.coveredBlocks}/${health.coverageSummary.totalBlocks} periods covered`
-                  : "Coverage updates as shifts are added"}
-              </em>
-            </span>
-
-            <span className="schedule-status-item">
-              <small>Employee hours</small>
-              <strong>{hoursReviewCount ? `${hoursReviewCount} issue${hoursReviewCount === 1 ? "" : "s"}` : "Clear"}</strong>
-              <em>
-                {hoursReviewCount
-                  ? "Review targets and scheduled hours"
-                  : "No hour-balance issues"}
-              </em>
-            </span>
-
-            <span className="schedule-status-item">
-              <small>Acknowledgements</small>
-              <strong>
-                {acknowledgementSummary.scheduledEmployees
-                  ? `${acknowledgementSummary.acknowledgedEmployees}/${acknowledgementSummary.scheduledEmployees}`
-                  : "After publish"}
-              </strong>
-              <em>
-                {acknowledgementSummary.scheduledEmployees
-                  ? "Published schedule review"
-                  : "Appears once schedules are published"}
-              </em>
-            </span>
-
-            <span className="schedule-review-trigger">
-              <span>
-                Review week
-                <small>
-                  {weekReviewCount
-                    ? `${weekReviewCount} item${weekReviewCount === 1 ? "" : "s"}`
-                    : "Ready"}
-                </small>
-              </span>
-              <b aria-hidden="true">⌄</b>
-            </span>
-          </summary>
-
-          <div className="schedule-review-content">
-            <div className="schedule-review-heading">
-              <div>
-                <h2>Week readiness</h2>
-                <p>
-                  Review location publishing, coverage, employee hours, and
-                  acknowledgements only when you need the detail.
-                </p>
-              </div>
-              <Link
-                className="button secondary compact-button"
-                href="/app/schedule/settings"
-              >
-                Scheduling rules
-              </Link>
-            </div>
-
-        <div className="location-health-grid">
-          {health.locationCoverage.map((location) => {
-            const schedule = statuses.find(
-              (item) => item.locationId === location.locationId,
-            );
-            const published = schedule?.status === "PUBLISHED";
-
-            return (
-              <article className="location-health-card" key={location.locationId}>
-                <div className="location-health-copy">
-                  <strong>{location.locationName}</strong>
-                  <span>
-                    {location.requiredStaffPerShift} staff per shift
-                    {location.totalBlocks
-                      ? ` · ${location.coveredBlocks}/${location.totalBlocks} periods ready`
-                      : ""}
-                  </span>
-                </div>
-
-                <div className="location-health-state">
-                  <StatusPill
-                    tone={published ? "success" : schedule ? "warning" : "neutral"}
-                  >
-                    {published ? "Published" : schedule ? "Draft" : "Not started"}
-                  </StatusPill>
-                  <span
-                    className={
-                      location.totalBlocks === 0
-                        ? "location-coverage-note"
-                        : location.fullyCovered
-                          ? "location-coverage-note clear"
-                          : "location-coverage-note warning"
-                    }
-                  >
-                    {location.totalBlocks === 0
-                      ? "Coverage starts when shifts are added"
-                      : location.fullyCovered
-                        ? "Coverage clear"
-                        : `${location.uncoveredBlocks} gap${location.uncoveredBlocks === 1 ? "" : "s"} to resolve`}
-                  </span>
-                </div>
-
-                <form action={publishScheduleAction}>
-                  <input type="hidden" name="weekStart" value={weekStart} />
-                  <input
-                    type="hidden"
-                    name="locationId"
-                    value={location.locationId}
-                  />
-                  <button
-                    className="button secondary compact-button"
-                    type="submit"
-                    disabled={!schedule || published}
-                  >
-                    {published ? "Published" : "Publish"}
-                  </button>
-                </form>
-              </article>
-            );
-          })}
-        </div>
-
-        {(coverageGaps.length > 0 ||
-          underTarget.length > 0 ||
-          overTarget.length > 0) ? (
-          <div className="schedule-health-review-grid">
-            {coverageGaps.length ? (
-              <article className="schedule-health-review">
-                <div className="schedule-health-review-heading">
-                  <div>
-                    <p className="eyebrow">Coverage</p>
-                    <h3>Needs attention</h3>
-                  </div>
-                  <StatusPill tone="warning">{coverageGaps.length}</StatusPill>
-                </div>
-
-                <div className="health-issue-list">
-                  {coverageGaps.slice(0, 8).map((block) => {
-                    const label = formatDayLabel(block.date);
-
-                    return (
-                      <div className="health-issue-row" key={block.key}>
-                        <div>
-                          <strong>
-                            {block.locationName} · {label.weekday} {label.day}
-                          </strong>
-                          <span>
-                            {formatTime(block.startTime)} – {formatTime(block.endTime)}
-                            {block.leadNames.length
-                              ? ` · Lead: ${block.leadNames.join(", ")}`
-                              : block.requiresLead
-                                ? " · No lead assigned"
-                                : ""}
-                          </span>
-                        </div>
-                        <div className="health-issue-actions">
-                          <span className="health-gap">
-                            {block.gap
-                              ? `${block.assignedStaff}/${block.requiredStaff} · Need ${block.gap}`
-                              : "Lead missing"}
-                          </span>
-                          {block.gap ? (
-                            <Link
-                              className="health-find-link"
-                              href={`/app/schedule/coverage?week=${weekStart}&date=${block.date}&locationId=${block.locationId}&start=${block.startTime}&end=${block.endTime}`}
-                            >
-                              Find employee
-                            </Link>
-                          ) : null}
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {coverageGaps.length > 8 ? (
-                    <p className="health-more">
-                      +{coverageGaps.length - 8} additional coverage gaps
-                    </p>
-                  ) : null}
-                </div>
-              </article>
-            ) : null}
-
-            {underTarget.length || overTarget.length ? (
-              <article className="schedule-health-review">
-                <div className="schedule-health-review-heading">
-                  <div>
-                    <p className="eyebrow">Hours balance</p>
-                    <h3>Employees to review</h3>
-                  </div>
-                  <StatusPill tone="warning">
-                    {underTarget.length + overTarget.length}
-                  </StatusPill>
-                </div>
-
-                <div className="health-issue-list">
-                  {[...underTarget, ...overTarget].slice(0, 8).map((balance) => (
-                    <div className="health-issue-row" key={balance.employeeId}>
-                      <div>
-                        <strong>{balance.employeeName}</strong>
-                        <span>
-                          {balance.scheduledHours}h scheduled · {balance.targetHours}h target
-                          {(fairnessMap.get(balance.employeeId) ?? 0) > 0
-                            ? ` · ${fairnessMap.get(balance.employeeId)} prior week${fairnessMap.get(balance.employeeId) === 1 ? "" : "s"} short`
-                            : ""}
-                        </span>
-                      </div>
-                      <span
-                        className={
-                          balance.status === "UNDER"
-                            ? "health-gap"
-                            : "health-over"
-                        }
-                      >
-                        {balance.status === "UNDER"
-                          ? `${Math.abs(balance.differenceHours)}h short`
-                          : `${balance.differenceHours}h over`}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            ) : null}
-          </div>
-        ) : null}
-
-        {health.unconfiguredTargetCount > 0 ? (
-          <div className="schedule-setup-note">
-            <div>
-              <strong>
-                {health.unconfiguredTargetCount} employee hour target{" "}
-                {health.unconfiguredTargetCount === 1 ? "is" : "are"} not set
-              </strong>
-              <span>
-                Add the missing weekly target to complete hours-balance checks.
-              </span>
-            </div>
-            <Link className="text-link" href="/app/schedule/settings">
-              Set target
-            </Link>
-          </div>
-        ) : null}
-          </div>
-        </details>
       </section>
 
-      {publishLocation && publishReadiness ? (
-        <section className="publish-readiness-panel">
-          <div className="publish-readiness-heading">
-            <div>
-              <p className="eyebrow">Publish check</p>
-              <h2>Review before publishing {publishReadiness.locationName}</h2>
-              <p>
-                You can still publish, but these items deserve an intentional review.
-              </p>
-            </div>
-            <StatusPill tone="warning">Needs review</StatusPill>
-          </div>
-
-          <div className="publish-readiness-grid">
-            <div>
-              <span>Coverage gaps</span>
-              <strong>{publishReadiness.coverageGaps}</strong>
-              <small>
-                {publishReadiness.missingLeadBlocks
-                  ? `${publishReadiness.missingLeadBlocks} include missing lead coverage`
-                  : "Headcount / lead coverage review"}
-              </small>
-            </div>
-            <div>
-              <span>Below target</span>
-              <strong>{publishReadiness.underTargetCount}</strong>
-              <small>Employees who may need more hours</small>
-            </div>
-            <div>
-              <span>Above target</span>
-              <strong>{publishReadiness.overTargetCount}</strong>
-              <small>Employees with extra scheduled hours</small>
-            </div>
-            <div>
-              <span>Targets missing</span>
-              <strong>{publishReadiness.unconfiguredTargetCount}</strong>
-              <small>Employees not included in hour checks</small>
-            </div>
-          </div>
-
-          <div className="publish-readiness-actions">
-            <Link
-              className="button secondary"
-              href={`/app/schedule?week=${weekStart}`}
-            >
-              Back to Schedule
-            </Link>
-            <form action={publishScheduleAction}>
-              <input type="hidden" name="weekStart" value={weekStart} />
-              <input type="hidden" name="locationId" value={publishLocation} />
-              <input type="hidden" name="confirmWarnings" value="yes" />
-              <button className="button primary" type="submit">
-                Publish Anyway
-              </button>
-            </form>
-          </div>
-        </section>
-      ) : null}
-
-      <section className="standalone-schedule-roster">
-        <div className="standalone-schedule-roster-list">
-          {activeEmployees.map((employee) => {
+      <section className="schedule-builder-roster">
+        {activeEmployees.map((employee) => {
             const employeeShifts = visibleShifts.filter(
               (shift) =>
                 shift.employeeId === employee.id && !shift.isCalloutApproved,
             );
 
             return (
-              <div className="standalone-schedule-row" key={employee.id}>
-                <div className="standalone-schedule-employee">
+              <div className="schedule-builder-row" key={employee.id}>
+                <div className="schedule-builder-employee">
                   <strong>
                     {employee.firstName} {employee.lastName}
                     <span> · {employeeRoleLabel(employee.role)}</span>
@@ -828,7 +398,7 @@ export default async function SchedulePage({
                 </div>
 
                 <div
-                  className="standalone-schedule-shifts"
+                  className="schedule-builder-shifts"
                   aria-label={`${employee.firstName} ${employee.lastName} shifts`}
                 >
                   {employeeShifts.map((shift) => {
@@ -841,15 +411,15 @@ export default async function SchedulePage({
                       <Link
                         className={
                           shift.isDesignatedLead
-                            ? "standalone-schedule-pill lead"
-                            : "standalone-schedule-pill"
+                            ? "schedule-shift-pill lead"
+                            : "schedule-shift-pill"
                         }
                         href={`/app/schedule/edit?shiftId=${shift.id}`}
                         key={shift.id}
                       >
                         {shift.isDesignatedLead ? (
                           <span
-                            className="standalone-schedule-lead-dot"
+                            className="schedule-shift-lead-dot"
                             aria-hidden="true"
                           />
                         ) : null}
@@ -865,7 +435,6 @@ export default async function SchedulePage({
               </div>
             );
           })}
-        </div>
       </section>
     </div>
   );
