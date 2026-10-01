@@ -8870,3 +8870,267 @@ body {
     width: 100%;
   }
 }
+
+/* Employee Home — premium daily workspace */
+.employee-dashboard {
+  width: 100%;
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+  font-family: var(--font-family-apple);
+}
+
+.employee-dashboard-heading {
+  margin-bottom: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.employee-dashboard-heading > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.employee-dashboard-heading h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -.04em;
+}
+
+.employee-dashboard-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.employee-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, .82fr);
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.employee-dashboard-primary {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.employee-home-card {
+  overflow: hidden;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-premium);
+  box-shadow: var(--shadow-premium);
+}
+
+.employee-home-card-header {
+  min-height: 62px;
+  padding: 16px var(--space-md);
+  display: flex;
+  align-items: center;
+}
+
+.employee-home-card-header h2 {
+  margin: 0;
+  color: var(--color-brand-primary);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+.employee-week-overview {
+  padding-bottom: var(--space-md);
+}
+
+.employee-week-metrics {
+  padding: 8px var(--space-md) var(--space-md);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.employee-week-metrics > div {
+  min-width: 0;
+  padding: 18px;
+  border-radius: 10px;
+  background: var(--color-bg-main);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.employee-week-metrics span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.employee-week-metrics strong {
+  color: var(--color-brand-primary);
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.employee-week-metrics strong.earnings {
+  color: var(--color-state-success);
+}
+.employee-earnings-note {
+  display: block;
+  padding: 0 var(--space-md);
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.employee-upcoming-card {
+  min-width: 0;
+}
+
+.employee-upcoming-list {
+  padding: 0 var(--space-sm) var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.employee-upcoming-pill {
+  min-height: 62px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--color-bg-main);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.employee-upcoming-day {
+  grid-row: 1 / span 2;
+  min-width: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.employee-upcoming-day strong {
+  color: var(--color-brand-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.employee-upcoming-day small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.employee-upcoming-time {
+  color: var(--color-brand-primary);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.employee-upcoming-lead {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-brand-accent);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.employee-upcoming-lead i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-brand-accent);
+}
+
+.employee-home-empty {
+  min-height: 180px;
+  padding: var(--space-lg) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+}
+.employee-home-empty > span {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 3px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-state-success-bg);
+  color: var(--color-state-success);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.employee-home-empty strong {
+  color: var(--color-brand-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.employee-home-empty small {
+  max-width: 280px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .employee-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .employee-dashboard-heading {
+    margin-bottom: var(--space-sm);
+  }
+
+  .employee-dashboard-heading h1 {
+    font-size: 30px;
+  }
+
+  .employee-dashboard-grid,
+  .employee-dashboard-primary {
+    gap: var(--space-sm);
+  }
+
+  .employee-week-metrics {
+    padding-inline: 16px;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .employee-week-metrics > div {
+    padding: 15px 12px;
+  }
+
+  .employee-week-metrics strong {
+    font-size: 21px;
+  }
+
+  .employee-earnings-note {
+    padding-inline: 16px;
+  }
+
+  .employee-home-card-header {
+    padding-inline: 16px;
+  }
+
+  .employee-upcoming-list {
+    padding-inline: 8px;
+  }
+}

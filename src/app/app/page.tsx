@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
-import { StatusPill } from "@/components/status-pill";
+import { EmployeeDashboard } from "@/components/employee-dashboard";
 import {
   ManagerDashboard,
   type ManagerDashboardView,
@@ -40,76 +38,6 @@ import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
 import { buildManagerDashboardStatus } from "@/lib/dashboard-status";
 import { buildManagerActionItems } from "@/lib/assistance/manager-actions";
 
-function employeeDashboard(firstName: string) {
-  return (
-    <>
-      <PageHeader
-        eyebrow="Fuel Coffee Drive"
-        title={`Welcome, ${firstName}`}
-        description="Your schedule, availability, and shift requests are all in one place."
-        actions={
-          <Link className="button primary" href="/app/schedule">
-            My Schedule
-          </Link>
-        }
-      />
-
-      <section className="metric-grid">
-        <article className="metric-card">
-          <span>This week</span>
-          <strong>My shifts</strong>
-          <StatusPill tone="info">Schedule</StatusPill>
-        </article>
-        <article className="metric-card">
-          <span>Availability</span>
-          <strong>Weekly</strong>
-          <StatusPill>Manage</StatusPill>
-        </article>
-        <article className="metric-card">
-          <span>Requests</span>
-          <strong>My requests</strong>
-          <StatusPill tone="warning">Open</StatusPill>
-        </article>
-        <article className="metric-card">
-          <span>Shift exchange</span>
-          <strong>Coverage</strong>
-          <StatusPill tone="success">Available</StatusPill>
-        </article>
-      </section>
-
-      <section className="content-grid two">
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Schedule</p>
-              <h2>See your upcoming shifts</h2>
-            </div>
-            <Link href="/app/schedule" className="text-link">
-              Open
-            </Link>
-          </div>
-          <p className="muted">
-            Only published schedule changes appear in your employee view.
-          </p>
-        </article>
-
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Self-service</p>
-              <h2>Requests & coverage</h2>
-            </div>
-          </div>
-          <p className="muted">
-            Time off, offered shifts, and swaps all use the same scheduling
-            rules before approval.
-          </p>
-        </article>
-      </section>
-    </>
-  );
-}
-
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
   "overview",
   "schedule",
@@ -140,13 +68,40 @@ export default async function DashboardPage({
   const session = await requireSession();
   const manager = isManagerRole(session.role);
   const params = await searchParams;
+  const currentDate = currentDateInPuertoRico();
+  const currentTime = currentTimeInPuertoRico();
+  const currentWeek = weekStartFor(currentDate);
 
   if (!manager) {
-    return employeeDashboard(session.firstName);
+    const publishedShifts = (
+      await listWeekShifts({
+        weekStart: currentWeek,
+        employeeId: session.id,
+        publishedOnly: true,
+      })
+    )
+      .filter((shift) => !shift.isCalloutApproved)
+      .map((shift) => ({
+        id: shift.id,
+        date: shift.date,
+        startTime: shift.startTime,
+        endTime: shift.endTime,
+        isDesignatedLead: shift.isDesignatedLead,
+      }));
+
+    return (
+      <EmployeeDashboard
+        firstName={session.firstName}
+        weekLabel={formatWeekRange(currentWeek)}
+        currentDate={currentDate}
+        currentTime={currentTime}
+        publishedShifts={publishedShifts}
+        hoursWorked={null}
+        estimatedEarnings={null}
+      />
+    );
   }
 
-  const currentDate = currentDateInPuertoRico();
-  const currentWeek = weekStartFor(currentDate);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const view = validDashboardView(params.view);
   const previousWeek = addDays(weekStart, -7);
@@ -191,7 +146,6 @@ export default async function DashboardPage({
   ]);
 
   const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
-  const currentTime = currentTimeInPuertoRico();
   const currentShiftSource =
     weekStart === currentWeek
       ? effectiveShifts
