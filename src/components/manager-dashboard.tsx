@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
-import { TimeClockWidget } from "@/components/time-clock-widget";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
 import { formatDayLabel, formatTime } from "@/lib/date-utils";
 import type { UserRole } from "@/lib/domain";
@@ -566,10 +565,7 @@ export function ManagerDashboard(props: Props) {
       {props.view === "overview" ? (
         <div className="manager-home-grid">
           <PendingApprovals items={props.managerActions} />
-          <div className="manager-home-right">
-            <TimeClockWidget />
-            <OnFloorNow people={props.onFloor} />
-          </div>
+          <OnFloorNow people={props.onFloor} />
         </div>
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />
