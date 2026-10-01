@@ -77,13 +77,16 @@ export default async function DashboardPage({
   const currentWeek = weekStartFor(currentDate);
 
   if (!manager) {
-    const publishedShifts = (
-      await listWeekShifts({
+    const [employeeShifts, employeeLocations] = await Promise.all([
+      listWeekShifts({
         weekStart: currentWeek,
         employeeId: session.id,
         publishedOnly: true,
-      })
-    )
+      }),
+      listLocations(),
+    ]);
+    const locationNames = new Map(employeeLocations.map((location) => [location.id, location.shortName]));
+    const publishedShifts = employeeShifts
       .filter((shift) => !shift.isCalloutApproved)
       .map((shift) => ({
         id: shift.id,
@@ -91,6 +94,7 @@ export default async function DashboardPage({
         startTime: shift.startTime,
         endTime: shift.endTime,
         isDesignatedLead: shift.isDesignatedLead,
+        locationName: locationNames.get(shift.locationId),
       }));
 
     const scheduledHours = calculateScheduledHours(publishedShifts);
@@ -111,6 +115,7 @@ export default async function DashboardPage({
         estimatedEarnings={estimatedEarnings}
         todayShiftLabel="8:00 AM – 4:00 PM"
         todayClockStatus="Off the Clock"
+        todayLocationName={publishedShifts.find((shift) => shift.date === currentDate)?.locationName}
       />
     );
   }
