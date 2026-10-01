@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { TimeClockWidget } from "./time-clock-widget";
 import { formatDayLabel, formatTime } from "../lib/date-utils";
 
@@ -20,11 +21,14 @@ export function isUpcomingEmployeeShift(
   return startTime > currentTime;
 }
 
+export function employeeScheduleHref(weekStart: string, date: string) {
+  return `/app/schedule?week=${encodeURIComponent(weekStart)}&day=${encodeURIComponent(date)}`;
+}
+
 export function formatEmployeeMetric(
-  value: number | null,
+  value: number,
   kind: "hours" | "earnings",
 ) {
-  if (value === null) return "—";
   if (kind === "hours") return `${value.toFixed(1)} hrs`;
 
   return new Intl.NumberFormat("en-US", {
@@ -35,20 +39,22 @@ export function formatEmployeeMetric(
 
 export function EmployeeDashboard({
   firstName,
+  weekStart,
   weekLabel,
   currentDate,
   currentTime,
   publishedShifts,
-  hoursWorked = null,
-  estimatedEarnings = null,
+  hoursWorked,
+  estimatedEarnings,
 }: {
   firstName: string;
+  weekStart: string;
   weekLabel: string;
   currentDate: string;
   currentTime: string;
   publishedShifts: EmployeeUpcomingShift[];
-  hoursWorked?: number | null;
-  estimatedEarnings?: number | null;
+  hoursWorked: number;
+  estimatedEarnings: number;
 }) {
   const upcomingShifts = publishedShifts.filter((shift) =>
     isUpcomingEmployeeShift(
@@ -90,7 +96,7 @@ export function EmployeeDashboard({
             </div>
 
             <small className="employee-earnings-note">
-              *Estimates exclude cash/digital tips.
+              *Based on published shifts; estimates exclude cash/digital tips.
             </small>
           </section>
         </div>
@@ -106,7 +112,11 @@ export function EmployeeDashboard({
                 const day = formatDayLabel(shift.date);
 
                 return (
-                  <div className="employee-upcoming-pill" key={shift.id}>
+                  <Link
+                    className="employee-upcoming-pill"
+                    href={employeeScheduleHref(weekStart, shift.date)}
+                    key={shift.id}
+                  >
                     <span className="employee-upcoming-day">
                       <strong>{day.weekday}</strong>
                       <small>{day.day}</small>
@@ -120,7 +130,7 @@ export function EmployeeDashboard({
                         Designated Lead
                       </span>
                     ) : null}
-                  </div>
+                  </Link>
                 );
               })}
             </div>

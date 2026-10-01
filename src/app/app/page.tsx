@@ -37,6 +37,10 @@ import { getLatestPublicationRevision } from "@/lib/data/publication-revisions";
 import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
 import { buildManagerDashboardStatus } from "@/lib/dashboard-status";
 import { buildManagerActionItems } from "@/lib/assistance/manager-actions";
+import {
+  calculateEstimatedEarnings,
+  calculateScheduledHours,
+} from "@/lib/employee-compensation";
 
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
   "overview",
@@ -89,15 +93,22 @@ export default async function DashboardPage({
         isDesignatedLead: shift.isDesignatedLead,
       }));
 
+    const hoursWorked = calculateScheduledHours(publishedShifts);
+    const estimatedEarnings = calculateEstimatedEarnings(
+      publishedShifts,
+      session.role,
+    );
+
     return (
       <EmployeeDashboard
         firstName={session.firstName}
+        weekStart={currentWeek}
         weekLabel={formatWeekRange(currentWeek)}
         currentDate={currentDate}
         currentTime={currentTime}
         publishedShifts={publishedShifts}
-        hoursWorked={null}
-        estimatedEarnings={null}
+        hoursWorked={hoursWorked}
+        estimatedEarnings={estimatedEarnings}
       />
     );
   }

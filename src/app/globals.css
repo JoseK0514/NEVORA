@@ -9009,6 +9009,24 @@ body {
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 6px 14px;
+  transition:
+    background 140ms ease,
+    transform 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.employee-upcoming-pill:hover {
+  background: #ECECF0;
+  transform: translateY(-1px);
+}
+
+.employee-upcoming-pill:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(
+    in srgb,
+    var(--color-brand-accent) 16%,
+    transparent
+  );
 }
 
 .employee-upcoming-day {
