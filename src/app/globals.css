@@ -9431,3 +9431,300 @@ body {
     width: 100%;
   }
 }
+
+/* Weekly Availability — premium preference picker */
+.availability-preferences-card {
+  width: min(920px, 100%);
+  margin: 0;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-premium);
+  box-shadow: var(--shadow-premium);
+}
+
+.availability-preferences-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.availability-preferences-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.availability-preferences-header > div > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.availability-preferences-header h2 {
+  margin: 0;
+  color: var(--color-brand-primary);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+}
+.availability-locked-chip {
+  min-height: 30px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  background: var(--color-bg-main);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.availability-preferences-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.availability-preference-row {
+  min-height: 76px;
+  padding: var(--space-md) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.availability-preference-row:first-child {
+  border-top: 0;
+}
+
+.availability-preference-day {
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.availability-preference-day strong {
+  color: var(--color-brand-primary);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+
+.availability-preference-day span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.availability-preference-controls {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+.availability-state-pill {
+  position: relative;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.availability-state-pill input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.availability-state-pill > span {
+  min-width: 104px;
+  min-height: 38px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: var(--color-bg-main);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  transition:
+    background 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.availability-state-pill input:checked + span {
+  background: var(--color-state-success-bg);
+  color: var(--color-state-success);
+}
+
+.availability-state-pill input:focus-visible + span {
+  box-shadow: 0 0 0 3px color-mix(
+    in srgb,
+    var(--color-brand-accent) 16%,
+    transparent
+  );
+}
+.availability-inline-times {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.availability-inline-times label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.availability-inline-times label > span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.availability-inline-times input {
+  width: 118px;
+  min-height: 38px;
+  border: 0;
+  border-radius: 8px;
+  outline: none;
+  background: var(--color-bg-main);
+  padding: 0 10px;
+  color: var(--color-brand-primary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.availability-inline-times input:focus {
+  background: var(--color-bg-surface);
+  box-shadow: 0 0 0 3px color-mix(
+    in srgb,
+    var(--color-brand-accent) 16%,
+    transparent
+  );
+}
+
+.availability-time-arrow {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.availability-preferences-actions {
+  padding-top: var(--space-sm);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+.availability-preferences-button {
+  min-width: 142px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 20px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    opacity 140ms ease,
+    background 140ms ease;
+}
+
+.availability-preferences-button.secondary {
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+}
+
+.availability-preferences-button.primary {
+  background: var(--color-brand-accent);
+  color: var(--color-bg-surface);
+}
+
+.availability-preferences-button:hover:not(:disabled) {
+  opacity: .86;
+}
+
+.availability-preferences-button:disabled,
+.availability-state-pill input:disabled + span,
+.availability-inline-times input:disabled {
+  cursor: not-allowed;
+  opacity: .48;
+}
+@media (max-width: 760px) {
+  .availability-preferences-card {
+    padding: var(--space-md);
+    gap: var(--space-md);
+  }
+
+  .availability-preference-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .availability-preference-day {
+    min-width: 0;
+  }
+
+  .availability-preference-controls {
+    justify-content: space-between;
+  }
+
+  .availability-inline-times {
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .availability-inline-times label {
+    flex: 1;
+  }
+
+  .availability-inline-times input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .availability-preference-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .availability-state-pill,
+  .availability-state-pill > span {
+    width: 100%;
+  }
+
+  .availability-inline-times {
+    width: 100%;
+  }
+
+  .availability-preferences-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .availability-preferences-button {
+    min-width: 0;
+    width: 100%;
+  }
+}
