@@ -2,8 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { requireSession } from "@/lib/auth/session";
+import { MANAGER_ROLES, isSelfServiceRole, requireRoles, requireSelfService } from "@/lib/auth/permissions";
 import { currentDateInPuertoRico } from "@/lib/date-utils";
 import {
   approveCoverageExchange,
@@ -182,7 +181,7 @@ async function validateSwapEligibility(exchangeId: string) {
 }
 
 export async function offerCoverageAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/exchange?tab=requests");
   const sourceShiftId = String(formData.get("sourceShiftId") ?? "");
   const shift = await getPublishedShift(sourceShiftId);
 
@@ -208,7 +207,7 @@ export async function offerCoverageAction(formData: FormData) {
 }
 
 export async function claimCoverageAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/exchange?tab=requests");
   const exchangeId = String(formData.get("exchangeId") ?? "");
 
   const validation = await validateCoverageEligibility(session.id, exchangeId);
@@ -231,7 +230,7 @@ export async function claimCoverageAction(formData: FormData) {
 }
 
 export async function proposeSwapAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/exchange?tab=requests");
   const sourceShiftId = String(formData.get("sourceShiftId") ?? "");
   const targetShiftId = String(formData.get("targetShiftId") ?? "");
 
@@ -280,6 +279,10 @@ export async function proposeSwapAction(formData: FormData) {
 
   if (!requesterContext || !targetContext) {
     redirect(exchangeUrl("?tab=my&error=EMPLOYEE_NOT_FOUND"));
+  }
+
+  if (!isSelfServiceRole(targetContext.employee.role)) {
+    redirect(exchangeUrl("?tab=my&error=EMPLOYEE_NOT_ELIGIBLE"));
   }
 
   const requesterAdjusted = prepareExchangeContext(
@@ -353,7 +356,7 @@ export async function proposeSwapAction(formData: FormData) {
 }
 
 export async function respondSwapAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/exchange?tab=requests");
   const exchangeId = String(formData.get("exchangeId") ?? "");
   const decision = String(formData.get("decision") ?? "");
 
@@ -416,10 +419,11 @@ export async function reviewExchangeAction(formData: FormData) {
   }
 
   if (decision === "DENIED") {
-    await denyExchange({
+    const denied = await denyExchange({
       exchangeId,
       managerId: session.id,
     });
+    if (!denied) redirect(exchangeUrl("?tab=requests&error=EXCHANGE_CHANGED"));
     revalidatePath("/app/exchange");
     revalidatePath("/app/schedule");
     redirect(exchangeUrl("?tab=requests&reviewed=1"));
@@ -476,7 +480,7 @@ export async function reviewExchangeAction(formData: FormData) {
 
 
 export async function cancelExchangeAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/exchange?tab=requests");
   const exchangeId = String(formData.get("exchangeId") ?? "");
 
   const cancelled = await cancelExchange({

@@ -254,3 +254,9 @@ export async function cancelPendingCallout(input: {
   );
   return Boolean(rows[0]);
 }
+
+export async function listTeamCalloutHistory(): Promise<CalloutRecord[]> {
+  const sql = getDb();
+  return queryRows(await sql.query(`${CALLOUT_SELECT}
+    WHERE c.status <> 'PENDING' ORDER BY c.created_at DESC LIMIT 30`)).map(mapCallout);
+}

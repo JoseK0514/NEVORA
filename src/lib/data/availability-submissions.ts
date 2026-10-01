@@ -76,6 +76,7 @@ export async function getAvailabilitySubmissionSummary(weekStart: string) {
   const sql = getDb();
   const rows = queryRows<{
     active_employees: string | number;
+    eligible_employees: string | number;
     submitted_employees: string | number;
     unavailable_all_week: string | number;
     missing_employee_ids: string[] | null;
@@ -84,7 +85,7 @@ export async function getAvailabilitySubmissionSummary(weekStart: string) {
       `WITH active AS (
          SELECT id
          FROM employees
-         WHERE active = true
+         WHERE active = true AND role IN ('EMPLOYEE', 'LEAD')
        ),
        submissions AS (
          SELECT employee_id
@@ -98,7 +99,8 @@ export async function getAvailabilitySubmissionSummary(weekStart: string) {
          GROUP BY employee_id
        )
        SELECT
-         count(*) AS active_employees,
+         (SELECT count(*) FROM employees WHERE active = true) AS active_employees,
+         count(*) AS eligible_employees,
          count(s.employee_id) AS submitted_employees,
          count(*) FILTER (
            WHERE s.employee_id IS NOT NULL
@@ -120,6 +122,7 @@ export async function getAvailabilitySubmissionSummary(weekStart: string) {
 
   return {
     activeEmployees: Number(row?.active_employees ?? 0),
+    eligibleEmployees: Number(row?.eligible_employees ?? 0),
     submittedEmployees: Number(row?.submitted_employees ?? 0),
     unavailableAllWeek: Number(row?.unavailable_all_week ?? 0),
     missingEmployeeIds: row?.missing_employee_ids ?? [],
@@ -167,7 +170,7 @@ export async function listAvailabilitySubmissionStatuses(
          ON s.employee_id = e.id
         AND s.week_start = $1
        LEFT JOIN window_counts w ON w.employee_id = e.id
-       WHERE e.active = true
+       WHERE e.active = true AND e.role IN ('EMPLOYEE', 'LEAD')
        ORDER BY e.first_name, e.last_name`,
       [weekStart],
     ),

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
-import { requireSession } from "@/lib/auth/session";
+import { requireSelfService } from "@/lib/auth/permissions";
 import {
   currentDateInPuertoRico,
   formatDayLabel,
@@ -24,7 +24,7 @@ export default async function CalloutPage({
 }: {
   searchParams: Promise<{ shiftId?: string; error?: string }>;
 }) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/exchange?tab=requests");
   const params = await searchParams;
 
   if (!params.shiftId) {

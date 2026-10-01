@@ -2,15 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth/session";
-import { TIME_OFF_REVIEW_ROLES, requireRoles } from "@/lib/auth/permissions";
+import { TIME_OFF_REVIEW_ROLES, requireRoles, requireSelfService } from "@/lib/auth/permissions";
 import {
   createTimeOffRequest,
   reviewTimeOffRequest,
 } from "@/lib/data/requests";
 
 export async function requestTimeOffAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/requests");
   const startDate = String(formData.get("startDate") ?? "");
   const endDate = String(formData.get("endDate") ?? "");
   const partialDay = formData.get("partialDay") === "on";
@@ -55,11 +54,13 @@ export async function reviewTimeOffAction(formData: FormData) {
     redirect("/app/requests?tab=team&error=review");
   }
 
-  await reviewTimeOffRequest({
+  const reviewed = await reviewTimeOffRequest({
     requestId,
     managerId: session.id,
     status: decision,
   });
+
+  if (!reviewed) redirect("/app/requests?tab=team&error=review");
 
   revalidatePath("/app/requests");
   redirect("/app/requests?tab=team&reviewed=1");

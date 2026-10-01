@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
-import { requireSession } from "@/lib/auth/session";
+import { requireSelfService } from "@/lib/auth/permissions";
 import { currentDateInPuertoRico, formatDayLabel, formatTime } from "@/lib/date-utils";
 import {
   getPublishedShift,
@@ -25,7 +25,7 @@ export default async function SwapPage({
 }: {
   searchParams: Promise<{ sourceShiftId?: string }>;
 }) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/exchange?tab=requests");
   const params = await searchParams;
 
   if (!params.sourceShiftId) {

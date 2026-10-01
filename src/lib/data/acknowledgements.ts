@@ -113,6 +113,16 @@ export async function hasAcknowledgedScheduleWeek(
   return state.acknowledged;
 }
 
+async function selfServiceScheduledIds(employeeIds: string[]) {
+  if (!employeeIds.length) return [];
+  const sql = getDb();
+  const rows = queryRows<{ id: string }>(await sql.query(
+    `SELECT id FROM employees WHERE id = ANY($1::text[]) AND role IN ('EMPLOYEE', 'LEAD')`,
+    [employeeIds],
+  ));
+  return rows.map(row => row.id);
+}
+
 export async function getAcknowledgementSummary(
   weekStart: string,
 ): Promise<AcknowledgementSummary> {
@@ -122,9 +132,9 @@ export async function getAcknowledgementSummary(
   }
 
   const latestShifts = await listRevisionShifts(latest.id);
-  const scheduledEmployeeIds = Array.from(
+  const scheduledEmployeeIds = await selfServiceScheduledIds(Array.from(
     new Set(latestShifts.map((shift) => shift.employeeId)),
-  );
+  ));
 
   if (!scheduledEmployeeIds.length) {
     return { scheduledEmployees: 0, acknowledgedEmployees: 0 };
@@ -213,9 +223,9 @@ export async function listUnacknowledgedEmployeeIds(weekStart: string) {
   if (!latest) return [];
 
   const latestShifts = await listRevisionShifts(latest.id);
-  const employeeIds = Array.from(
+  const employeeIds = await selfServiceScheduledIds(Array.from(
     new Set(latestShifts.map((shift) => shift.employeeId)),
-  );
+  ));
 
   const states = await Promise.all(
     employeeIds.map(async (employeeId) => ({

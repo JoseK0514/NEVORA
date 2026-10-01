@@ -254,6 +254,7 @@ export async function listSwapTargets(
      JOIN employees e ON e.id = sh.employee_id
      JOIN locations l ON l.id = s.location_id
      WHERE sh.employee_id <> $1
+       AND e.role IN ('EMPLOYEE', 'LEAD')
        AND s.week_start = $2
        AND s.status = 'PUBLISHED'
        AND NOT EXISTS (
@@ -613,4 +614,18 @@ export async function cancelExchange(input: {
   );
 
   return Boolean(rows[0]);
+}
+
+export async function listManagementCoverage(fromDate: string): Promise<ExchangeRecord[]> {
+  const sql = getDb();
+  return queryRows(await sql.query(`${EXCHANGE_SELECT}
+    WHERE x.kind = 'COVERAGE' AND x.status = 'OPEN'
+      AND source.date >= $1 AND source_schedule.status = 'PUBLISHED'
+    ORDER BY source.date, source.start_time`, [fromDate])).map(mapExchange);
+}
+
+export async function listTeamExchangeActivity(): Promise<ExchangeRecord[]> {
+  const sql = getDb();
+  return queryRows(await sql.query(`${EXCHANGE_SELECT}
+    ORDER BY x.created_at DESC LIMIT 30`)).map(mapExchange);
 }

@@ -59,3 +59,14 @@ export async function replaceAvailability(
 
   await sql.transaction(queries);
 }
+
+export async function listTeamAvailabilityWindows(weekStart?: string): Promise<Array<AvailabilityRecord & { employeeId: string }>> {
+  const sql = getDb();
+  const rows = queryRows<Record<string, unknown>>(await sql.query(
+    weekStart
+      ? `SELECT id, employee_id, day_of_week, start_time, end_time FROM weekly_availability_windows WHERE week_start = $1 ORDER BY employee_id, day_of_week, start_time`
+      : `SELECT id, employee_id, day_of_week, start_time, end_time FROM availability_windows ORDER BY employee_id, day_of_week, start_time`,
+    weekStart ? [weekStart] : [],
+  ));
+  return rows.map(row => ({ id: String(row.id), employeeId: String(row.employee_id), dayOfWeek: Number(row.day_of_week), startTime: timeValue(row.start_time), endTime: timeValue(row.end_time) }));
+}

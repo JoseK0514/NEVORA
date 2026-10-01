@@ -94,6 +94,22 @@ export async function listPendingTimeOffRequests() {
   return rows.map(mapRequest);
 }
 
+export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "DENIED") {
+  const sql = getDb();
+  const rows = queryRows(await sql.query(
+    `SELECT r.id, r.employee_id,
+       e.first_name || ' ' || e.last_name AS employee_name,
+       r.start_date, r.end_date, r.start_time, r.end_time,
+       r.reason, r.status, r.created_at
+     FROM time_off_requests r
+     JOIN employees e ON e.id = r.employee_id
+     WHERE r.status = $1
+     ORDER BY r.start_date DESC, r.created_at DESC`,
+    [status],
+  ));
+  return rows.map(mapRequest);
+}
+
 export async function createTimeOffRequest(input: {
   employeeId: string;
   startDate: string;

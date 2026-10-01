@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth/session";
+import { requireSelfService } from "@/lib/auth/permissions";
 import { replaceAvailability } from "@/lib/data/availability";
 import {
   getWeekSettings,
@@ -11,7 +11,7 @@ import {
 import { weekStartFor } from "@/lib/date-utils";
 
 export async function saveAvailabilityAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/availability");
   const windows: Array<{ dayOfWeek: number; startTime: string; endTime: string }> = [];
 
   for (let day = 0; day < 7; day += 1) {
@@ -35,7 +35,7 @@ export async function saveAvailabilityAction(formData: FormData) {
 
 
 export async function saveWeeklyAvailabilityAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/availability");
   const weekStart = String(formData.get("weekStart") ?? "");
 
   if (

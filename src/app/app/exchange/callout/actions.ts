@@ -2,8 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { requireSession } from "@/lib/auth/session";
+import { MANAGER_ROLES, requireRoles, requireSelfService } from "@/lib/auth/permissions";
 import { currentDateInPuertoRico } from "@/lib/date-utils";
 import {
   approveCalloutAndOpenCoverage,
@@ -26,7 +25,7 @@ const REASONS: CalloutReasonCode[] = [
 ];
 
 export async function submitCalloutAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/exchange?tab=requests");
   const shiftId = String(formData.get("shiftId") ?? "");
   const reasonCode = String(formData.get("reasonCode") ?? "") as CalloutReasonCode;
   const reasonNote = String(formData.get("reasonNote") ?? "").trim();
@@ -121,7 +120,7 @@ export async function reviewCalloutAction(formData: FormData) {
 }
 
 export async function cancelCalloutAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/exchange?tab=requests");
   const calloutId = String(formData.get("calloutId") ?? "");
 
   const cancelled = await cancelPendingCallout({

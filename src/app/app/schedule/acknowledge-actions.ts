@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth/session";
+import { requireSelfService } from "@/lib/auth/permissions";
 import { weekStartFor } from "@/lib/date-utils";
 import { acknowledgeScheduleWeek } from "@/lib/data/acknowledgements";
 
 export async function acknowledgeScheduleAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/schedule");
   const weekStart = String(formData.get("weekStart") ?? "");
 
   if (
