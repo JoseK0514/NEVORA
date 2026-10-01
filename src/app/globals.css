@@ -8435,3 +8435,226 @@ body {
     font-size: 36px;
   }
 }
+
+/* Manager Schedule — Apple roster timeline */
+.schedule-builder {
+  overflow: hidden;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-premium);
+  box-shadow: var(--shadow-premium);
+}
+
+.schedule-builder-header {
+  min-height: 76px;
+  padding: 16px var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.schedule-builder-week {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.schedule-builder-week strong {
+  min-width: 120px;
+  color: var(--color-brand-primary);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -.015em;
+  text-align: center;
+}
+.schedule-builder-week a {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+  font-size: 20px;
+  line-height: 1;
+  transition: opacity 140ms ease;
+}
+
+.schedule-builder-week a:hover {
+  opacity: .72;
+}
+
+.schedule-builder-add {
+  min-height: 40px;
+  padding: 0 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: var(--color-brand-accent);
+  color: var(--color-bg-surface);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity 140ms ease;
+}
+.schedule-builder-add:hover {
+  opacity: .86;
+}
+
+.schedule-builder-roster {
+  padding: 4px var(--space-sm) var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.schedule-builder-row {
+  min-height: 68px;
+  padding: 12px 8px;
+  display: grid;
+  grid-template-columns: minmax(180px, 230px) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-md);
+  border-radius: 10px;
+  transition: background 140ms ease;
+}
+
+.schedule-builder-row:hover {
+  background: rgba(0, 0, 0, .018);
+}
+
+.schedule-builder-employee {
+  min-width: 0;
+}
+
+.schedule-builder-employee strong {
+  display: block;
+  overflow: hidden;
+  color: var(--color-brand-primary);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schedule-builder-employee span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.schedule-builder-shifts {
+  min-width: 0;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.schedule-builder-shifts::-webkit-scrollbar {
+  display: none;
+}
+.schedule-shift-pill {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 8px;
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background 140ms ease,
+    transform 140ms ease;
+}
+
+.schedule-shift-pill:hover {
+  background: #ECECF0;
+  transform: translateY(-1px);
+}
+
+.schedule-shift-pill > span:not(.schedule-shift-lead-dot) {
+  color: var(--muted);
+  font-weight: 500;
+}
+.schedule-shift-pill strong {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.schedule-shift-pill.lead strong {
+  color: var(--color-brand-primary);
+}
+
+.schedule-shift-lead-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--color-brand-accent);
+}
+
+@media (max-width: 760px) {
+  .schedule-builder-header {
+    min-height: 68px;
+    padding: 14px 16px;
+    gap: var(--space-sm);
+  }
+
+  .schedule-builder-week {
+    gap: 8px;
+  }
+
+  .schedule-builder-week strong {
+    min-width: 0;
+    font-size: 13px;
+  }
+  .schedule-builder-week a {
+    width: 32px;
+    height: 32px;
+  }
+
+  .schedule-builder-add {
+    min-height: 38px;
+    padding-inline: 14px;
+  }
+
+  .schedule-builder-roster {
+    padding-inline: 8px;
+  }
+
+  .schedule-builder-row {
+    min-height: 84px;
+    grid-template-columns: 1fr;
+    gap: 9px;
+    padding: 13px 8px;
+  }
+
+  .schedule-builder-shifts {
+    min-height: 36px;
+  }
+}
+
+@media (max-width: 430px) {
+  .schedule-builder-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .schedule-builder-week {
+    justify-content: space-between;
+  }
+
+  .schedule-builder-add {
+    width: 100%;
+  }
+}

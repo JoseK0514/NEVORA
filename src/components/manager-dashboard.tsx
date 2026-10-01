@@ -5,7 +5,8 @@ import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import { TimeClockWidget } from "@/components/time-clock-widget";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
-import { formatTime } from "@/lib/date-utils";
+import { formatDayLabel, formatTime } from "@/lib/date-utils";
+import type { UserRole } from "@/lib/domain";
 
 export type ManagerDashboardView =
   | "overview"
@@ -54,6 +55,21 @@ export type DashboardOnFloorItem = {
   isDesignatedLead: boolean;
 };
 
+export type DashboardScheduleShiftItem = {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  isDesignatedLead: boolean;
+};
+
+export type DashboardScheduleEmployeeItem = {
+  employeeId: string;
+  employeeName: string;
+  role: UserRole;
+  shifts: DashboardScheduleShiftItem[];
+};
+
 type Props = {
   firstName: string;
   weekStart: string;
@@ -70,6 +86,7 @@ type Props = {
   coverageConfigured: boolean;
   pendingRequestCount: number;
   managerActions: ManagerActionItem[];
+  scheduleRoster: DashboardScheduleEmployeeItem[];
   onFloor: DashboardOnFloorItem[];
   locations: DashboardLocationItem[];
   days: DashboardDayItem[];
@@ -99,110 +116,11 @@ function dashboardHref(
     : `/app?week=${encodeURIComponent(weekStart)}&view=${view}`;
 }
 
-function locationStateLabel(state: DashboardLocationItem["state"]) {
-  if (state === "PUBLISHED") return "Published";
-  if (state === "READY") return "Ready";
-  if (state === "NEEDS_ATTENTION") return "Needs attention";
-  return "Not started";
-}
-
-function locationTone(state: DashboardLocationItem["state"]) {
-  if (state === "PUBLISHED" || state === "READY") return "success" as const;
-  if (state === "NEEDS_ATTENTION") return "warning" as const;
-  return "neutral" as const;
-}
-
 function revisionSourceLabel(sourceType: string) {
   if (sourceType === "PUBLISH") return "Schedule published";
   if (sourceType === "EXCHANGE") return "Shift exchange applied";
   if (sourceType === "CALLOUT") return "Call-out applied";
   return "Published schedule updated";
-}
-
-function LocationReadiness({
-  locations,
-  weekStart,
-}: {
-  locations: DashboardLocationItem[];
-  weekStart: string;
-}) {
-  return (
-    <section className="dashboard-panel dashboard-location-panel">
-      <div className="dashboard-panel-heading">
-        <h2>Location readiness</h2>
-        <Link href={`/app/schedule?week=${weekStart}`}>View all</Link>
-      </div>
-
-      <div className="dashboard-location-list">
-        {locations.map((location) => (
-          <Link
-            className="dashboard-location-row"
-            href={`/app/schedule?week=${weekStart}&location=${location.locationId}`}
-            key={location.locationId}
-          >
-            <span className="dashboard-location-icon">
-              <NavIcon name="location" size={18} />
-            </span>
-            <span className="dashboard-location-copy">
-              <span>
-                <strong>{location.locationName}</strong>
-                <StatusPill tone={locationTone(location.state)}>
-                  {locationStateLabel(location.state)}
-                </StatusPill>
-              </span>
-              <small>
-                {location.totalBlocks
-                  ? `${location.coveredBlocks}/${location.totalBlocks} coverage periods · ${location.uncoveredBlocks} gap${location.uncoveredBlocks === 1 ? "" : "s"}`
-                  : "No schedule coverage yet"}
-              </small>
-            </span>
-            <b aria-hidden="true">›</b>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function WeekSummary({
-  days,
-  weekStart,
-}: {
-  days: DashboardDayItem[];
-  weekStart: string;
-}) {
-  const maxShifts = Math.max(1, ...days.map((day) => day.shiftCount));
-
-  return (
-    <section className="dashboard-panel dashboard-week-panel">
-      <div className="dashboard-panel-heading">
-        <h2>This week</h2>
-        <Link href={`/app/schedule?week=${weekStart}`}>View schedule</Link>
-      </div>
-
-      <div className="dashboard-week-scroll">
-        <div className="dashboard-week-grid">
-          {days.map((day) => {
-            const fill = Math.max(10, Math.round((day.shiftCount / maxShifts) * 100));
-            return (
-              <div className="dashboard-week-day" key={day.date}>
-                <small>{day.weekday}</small>
-                <strong>{day.day}</strong>
-                <span className="dashboard-day-bar" aria-hidden="true">
-                  <i style={{ height: `${fill}%` }} />
-                </span>
-                <b>{day.shiftCount}</b>
-                <em>{day.shiftCount === 1 ? "shift" : "shifts"}</em>
-                {day.gapCount ? (
-                  <span className="dashboard-gap-count">{day.gapCount} gap{day.gapCount === 1 ? "" : "s"}</span>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
 }
 
 function TeamAvailability({
@@ -259,39 +177,83 @@ function TeamAvailability({
   );
 }
 
-function ScheduleTab(props: Props) {
-  const scheduleActions = props.managerActions.filter((item) =>
-    [
-      "COVERAGE_GAP",
-      "HOURS_REVIEW",
-      "TARGET_MISSING",
-      "ACKNOWLEDGEMENT_MISSING",
-      "DEADLINE_MISSING",
-      "COVERAGE_RULES_MISSING",
-    ].includes(item.type),
-  );
+function scheduleRoleLabel(role: UserRole) {
+  if (role === "OWNER") return "Owner";
+  if (role === "MANAGER") return "Manager";
+  if (role === "LEAD") return "Lead Barista";
+  return "Barista";
+}
 
+function ScheduleTab(props: Props) {
   return (
-    <div className="dashboard-tab-layout">
-      <div className="dashboard-tab-two-column">
-        <LocationReadiness locations={props.locations} weekStart={props.weekStart} />
-        <WeekSummary days={props.days} weekStart={props.weekStart} />
-      </div>
-      <section className="dashboard-panel">
-        <div className="dashboard-panel-heading">
-          <div>
-            <h2>Schedule review</h2>
-            <p>Coverage, hours, publishing, and acknowledgement items.</p>
-          </div>
-          <Link href={`/app/schedule?week=${props.weekStart}`}>Open schedule</Link>
+    <section className="schedule-builder">
+      <header className="schedule-builder-header">
+        <div className="schedule-builder-week" aria-label="Schedule week">
+          <Link
+            href={dashboardHref(props.previousWeek, "schedule")}
+            aria-label="Previous week"
+          >
+            ‹
+          </Link>
+          <strong>{props.weekLabel}</strong>
+          <Link
+            href={dashboardHref(props.nextWeek, "schedule")}
+            aria-label="Next week"
+          >
+            ›
+          </Link>
         </div>
-        <ManagerActionList
-          items={scheduleActions}
-          emptyTitle="No schedule issues"
-          emptyDetail="Coverage, publishing, hour targets, and acknowledgements are clear for this week."
-        />
-      </section>
-    </div>
+
+        <Link
+          className="schedule-builder-add"
+          href={`/app/schedule/new?week=${props.weekStart}`}
+        >
+          + Add Shift
+        </Link>
+      </header>
+
+      <div className="schedule-builder-roster">
+        {props.scheduleRoster.map((employee) => (
+          <div className="schedule-builder-row" key={employee.employeeId}>
+            <div className="schedule-builder-employee">
+              <strong>
+                {employee.employeeName}
+                <span> · {scheduleRoleLabel(employee.role)}</span>
+              </strong>
+            </div>
+
+            <div
+              className="schedule-builder-shifts"
+              aria-label={`${employee.employeeName} shifts`}
+            >
+              {employee.shifts.map((shift) => {
+                const day = formatDayLabel(shift.date).weekday;
+
+                return (
+                  <Link
+                    className={
+                      shift.isDesignatedLead
+                        ? "schedule-shift-pill lead"
+                        : "schedule-shift-pill"
+                    }
+                    href={`/app/schedule/edit?shiftId=${shift.id}`}
+                    key={shift.id}
+                  >
+                    {shift.isDesignatedLead ? (
+                      <span className="schedule-shift-lead-dot" aria-hidden="true" />
+                    ) : null}
+                    <span>{day}</span>
+                    <strong>
+                      {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
+                    </strong>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -556,30 +518,32 @@ export function ManagerDashboard(props: Props) {
           <span>Here’s what’s happening this week at Fuel.</span>
         </div>
 
-        <div className="dashboard-hero-actions">
-          <div className="dashboard-week-nav">
-            <Link
-              href={dashboardHref(props.previousWeek, props.view)}
-              aria-label="Previous week"
-            >
-              ‹
-            </Link>
-            <span className="dashboard-week-label">
-              <NavIcon name="calendar" size={16} />
-              <strong>{props.weekLabel}</strong>
-            </span>
-            <Link
-              href={dashboardHref(props.nextWeek, props.view)}
-              aria-label="Next week"
-            >
-              ›
+        {props.view !== "schedule" ? (
+          <div className="dashboard-hero-actions">
+            <div className="dashboard-week-nav">
+              <Link
+                href={dashboardHref(props.previousWeek, props.view)}
+                aria-label="Previous week"
+              >
+                ‹
+              </Link>
+              <span className="dashboard-week-label">
+                <NavIcon name="calendar" size={16} />
+                <strong>{props.weekLabel}</strong>
+              </span>
+              <Link
+                href={dashboardHref(props.nextWeek, props.view)}
+                aria-label="Next week"
+              >
+                ›
+              </Link>
+            </div>
+            <Link className="button primary" href={`/app/schedule?week=${props.weekStart}`}>
+              <NavIcon name="calendar" size={17} />
+              Open schedule
             </Link>
           </div>
-          <Link className="button primary" href={`/app/schedule?week=${props.weekStart}`}>
-            <NavIcon name="calendar" size={17} />
-            Open schedule
-          </Link>
-        </div>
+        ) : null}
       </section>
 
       <nav className="dashboard-tabs" aria-label="Dashboard views">

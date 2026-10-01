@@ -34,7 +34,7 @@ import {
 } from "@/lib/data/acknowledgements";
 import { getAvailabilitySubmissionSummary } from "@/lib/data/availability-submissions";
 import { getWeekSettings } from "@/lib/data/week-settings";
-import { listLocations } from "@/lib/data/employees";
+import { listEmployees, listLocations } from "@/lib/data/employees";
 import { getLatestPublicationRevision } from "@/lib/data/publication-revisions";
 import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
 import { buildManagerDashboardStatus } from "@/lib/dashboard-status";
@@ -166,6 +166,7 @@ export default async function DashboardPage({
     weekSettings,
     availabilitySubmissionSummary,
     unacknowledgedEmployeeIds,
+    employees,
     locations,
     latestRevision,
   ] = await Promise.all([
@@ -184,6 +185,7 @@ export default async function DashboardPage({
     getWeekSettings(weekStart),
     getAvailabilitySubmissionSummary(weekStart),
     listUnacknowledgedEmployeeIds(weekStart),
+    listEmployees(),
     listLocations(),
     getLatestPublicationRevision(weekStart),
   ]);
@@ -214,6 +216,28 @@ export default async function DashboardPage({
       startTime: shift.startTime,
       endTime: shift.endTime,
       isDesignatedLead: shift.isDesignatedLead,
+    }));
+
+  const shiftsByEmployee = new Map<string, typeof effectiveShifts>();
+  for (const shift of effectiveShifts) {
+    const employeeShifts = shiftsByEmployee.get(shift.employeeId) ?? [];
+    employeeShifts.push(shift);
+    shiftsByEmployee.set(shift.employeeId, employeeShifts);
+  }
+
+  const scheduleRoster = employees
+    .filter((employee) => employee.active)
+    .map((employee) => ({
+      employeeId: employee.id,
+      employeeName: `${employee.firstName} ${employee.lastName}`,
+      role: employee.role,
+      shifts: (shiftsByEmployee.get(employee.id) ?? []).map((shift) => ({
+        id: shift.id,
+        date: shift.date,
+        startTime: shift.startTime,
+        endTime: shift.endTime,
+        isDesignatedLead: shift.isDesignatedLead,
+      })),
     }));
 
   const targetMap = new Map(
@@ -413,6 +437,7 @@ export default async function DashboardPage({
       coverageConfigured={coverageRulesConfigured}
       pendingRequestCount={dashboard.pendingRequestCount}
       managerActions={managerActions}
+      scheduleRoster={scheduleRoster}
       onFloor={onFloor}
       locations={dashboard.locationReadiness}
       days={daySummaries}
