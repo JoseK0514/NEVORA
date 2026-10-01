@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { TimeClockWidget } from "./time-clock-widget";
 import { formatDayLabel, formatTime } from "../lib/date-utils";
 
 export type EmployeeUpcomingShift = {
@@ -44,8 +43,10 @@ export function EmployeeDashboard({
   currentDate,
   currentTime,
   publishedShifts,
-  hoursWorked,
+  scheduledHours,
   estimatedEarnings,
+  todayShiftLabel,
+  todayClockStatus,
 }: {
   firstName: string;
   weekStart: string;
@@ -53,8 +54,10 @@ export function EmployeeDashboard({
   currentDate: string;
   currentTime: string;
   publishedShifts: EmployeeUpcomingShift[];
-  hoursWorked: number;
+  scheduledHours: number;
   estimatedEarnings: number;
+  todayShiftLabel: string;
+  todayClockStatus: string;
 }) {
   const upcomingShifts = publishedShifts.filter((shift) =>
     isUpcomingEmployeeShift(
@@ -75,7 +78,24 @@ export function EmployeeDashboard({
 
       <div className="employee-dashboard-grid">
         <div className="employee-dashboard-primary">
-          <TimeClockWidget />
+          <section className="employee-home-card employee-today-status">
+            <div className="employee-today-status-header">
+              <span>TODAY&apos;S SHIFT</span>
+            </div>
+
+            <div className="employee-today-status-body">
+              <p>
+                Scheduled: <strong>{todayShiftLabel}</strong>
+              </p>
+              <p>
+                Status: <strong>{todayClockStatus}</strong>
+              </p>
+            </div>
+
+            <small>
+              Clock in and out from your assigned Fuel kiosk.
+            </small>
+          </section>
 
           <section className="employee-home-card employee-week-overview">
             <div className="employee-home-card-header">
@@ -84,11 +104,11 @@ export function EmployeeDashboard({
 
             <div className="employee-week-metrics">
               <div>
-                <span>Hours Worked</span>
-                <strong>{formatEmployeeMetric(hoursWorked, "hours")}</strong>
+                <span>Scheduled Hours</span>
+                <strong>{formatEmployeeMetric(scheduledHours, "hours")}</strong>
               </div>
               <div>
-                <span>Estimated Earnings</span>
+                <span>Est. Earnings</span>
                 <strong className="earnings">
                   {formatEmployeeMetric(estimatedEarnings, "earnings")}
                 </strong>
@@ -96,7 +116,7 @@ export function EmployeeDashboard({
             </div>
 
             <small className="employee-earnings-note">
-              *Based on published shifts; estimates exclude cash/digital tips.
+              *Calculated from published scheduled shifts; excludes tips.
             </small>
           </section>
         </div>

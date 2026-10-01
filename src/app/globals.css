@@ -11383,3 +11383,118 @@ body {
     font-size: 42px;
   }
 }
+
+/* Employee Home — read-only kiosk status */
+.employee-today-status {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.employee-today-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.employee-today-status-header > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.employee-today-status-body {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 10px;
+  background: var(--color-bg-main);
+}
+.employee-today-status-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.employee-today-status-body strong {
+  color: var(--color-brand-primary);
+  font-weight: 600;
+}
+
+.employee-today-status > small {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+/* Employee My Time — Phase 1 route scaffold */
+.employee-my-time-page {
+  width: 100%;
+}
+
+.employee-my-time-card {
+  width: min(720px, 100%);
+  min-height: 260px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-premium);
+  box-shadow: var(--shadow-premium);
+}
+.employee-my-time-empty {
+  min-height: 260px;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.employee-my-time-empty > span {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-bg-main);
+  color: var(--color-brand-primary);
+}
+
+.employee-my-time-empty strong {
+  color: var(--color-brand-primary);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.employee-my-time-empty small {
+  max-width: 380px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .employee-today-status {
+    padding: 16px;
+  }
+
+  .employee-today-status-body {
+    padding: 13px 14px;
+  }
+
+  .employee-my-time-card,
+  .employee-my-time-empty {
+    min-height: 220px;
+  }
+
+  .employee-my-time-empty {
+    padding: var(--space-md);
+  }
+}

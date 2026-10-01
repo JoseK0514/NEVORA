@@ -93,7 +93,7 @@ export default async function DashboardPage({
         isDesignatedLead: shift.isDesignatedLead,
       }));
 
-    const hoursWorked = calculateScheduledHours(publishedShifts);
+    const scheduledHours = calculateScheduledHours(publishedShifts);
     const estimatedEarnings = calculateEstimatedEarnings(
       publishedShifts,
       session.role,
@@ -107,8 +107,10 @@ export default async function DashboardPage({
         currentDate={currentDate}
         currentTime={currentTime}
         publishedShifts={publishedShifts}
-        hoursWorked={hoursWorked}
+        scheduledHours={scheduledHours}
         estimatedEarnings={estimatedEarnings}
+        todayShiftLabel="8:00 AM – 4:00 PM"
+        todayClockStatus="Off the Clock"
       />
     );
   }

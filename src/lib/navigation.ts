@@ -24,6 +24,7 @@ const employeeNavigation: NavigationItem[] = [
   { href: "/app/availability", label: "Availability", icon: "availability" },
   { href: "/app/requests", label: "Time off", icon: "timeOff" },
   { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
+  { href: "/app/my-time", label: "My Time", icon: "clock" },
 ];
 
 export function navigationForRole(role: UserRole) {
