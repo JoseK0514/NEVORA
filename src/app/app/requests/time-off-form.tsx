@@ -8,82 +8,96 @@ export function TimeOffForm() {
   const [partialDay, setPartialDay] = useState(false);
 
   return (
-    <form action={requestTimeOffAction} className="timeoff-premium-form">
-      <section className="timeoff-premium-section">
-        <span className="timeoff-premium-label">DATES</span>
-        <div className="timeoff-premium-date-row">
-          <label className="timeoff-premium-field">
-            <span>Start Date</span>
-            <input type="date" name="startDate" required />
-          </label>
+    <form action={requestTimeOffAction} className="timeoff-settings-form">
+      <section className="timeoff-setting-row">
+        <div className="timeoff-setting-copy">
+          <strong>Dates</strong>
+          <span>Select the days you need away.</span>
+        </div>
 
-          <label className="timeoff-premium-field">
-            <span>End Date</span>
-            <input type="date" name="endDate" required />
+        <div className="timeoff-setting-control">
+          <div className="timeoff-compact-date-row">
+            <label>
+              <span>Start</span>
+              <input type="date" name="startDate" required />
+            </label>
+            <label>
+              <span>End</span>
+              <input type="date" name="endDate" required />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section className="timeoff-setting-row">
+        <div className="timeoff-setting-copy">
+          <strong>Request Type</strong>
+          <span>Choose a full or partial day.</span>
+        </div>
+
+        <div className="timeoff-setting-control">
+          <fieldset className="timeoff-setting-fieldset">
+            <legend className="sr-only">Request type</legend>
+            <div className="timeoff-setting-segmented" role="group" aria-label="Request type">
+              <button
+                className={!partialDay ? "selected" : ""}
+                type="button"
+                aria-pressed={!partialDay}
+                onClick={() => setPartialDay(false)}
+              >
+                Full Day
+              </button>
+              <button
+                className={partialDay ? "selected" : ""}
+                type="button"
+                aria-pressed={partialDay}
+                onClick={() => setPartialDay(true)}
+              >
+                Partial Day
+              </button>
+            </div>
+            <input type="hidden" name="partialDay" value={partialDay ? "on" : ""} />
+          </fieldset>
+
+          {partialDay ? (
+            <div className="timeoff-compact-date-row timeoff-partial-time-row">
+              <label>
+                <span>Start Time</span>
+                <input type="time" name="startTime" required />
+              </label>
+              <label>
+                <span>End Time</span>
+                <input type="time" name="endTime" required />
+              </label>
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="timeoff-setting-row timeoff-note-row">
+        <div className="timeoff-setting-copy">
+          <strong>Optional Note</strong>
+          <span>Add context only if management needs it.</span>
+        </div>
+
+        <div className="timeoff-setting-control">
+          <label className="timeoff-note-field">
+            <span className="sr-only">Optional note</span>
+            <textarea
+              name="reason"
+              maxLength={250}
+              rows={3}
+              placeholder="Anything management should know?"
+            />
           </label>
         </div>
       </section>
 
-      <section className="timeoff-premium-section">
-        <span className="timeoff-premium-label">REQUEST TYPE</span>
-        <fieldset className="timeoff-premium-type">
-          <legend className="sr-only">Request type</legend>
-          <div className="timeoff-premium-segmented" role="group" aria-label="Request type">
-            <button
-              className={!partialDay ? "selected" : ""}
-              type="button"
-              aria-pressed={!partialDay}
-              onClick={() => setPartialDay(false)}
-            >
-              Full Day
-            </button>
-            <button
-              className={partialDay ? "selected" : ""}
-              type="button"
-              aria-pressed={partialDay}
-              onClick={() => setPartialDay(true)}
-            >
-              Partial Day
-            </button>
-          </div>
-          <input type="hidden" name="partialDay" value={partialDay ? "on" : ""} />
-        </fieldset>
-
-        {partialDay ? (
-          <div className="timeoff-premium-date-row">
-            <label className="timeoff-premium-field">
-              <span>Start Time</span>
-              <input type="time" name="startTime" required />
-            </label>
-            <label className="timeoff-premium-field">
-              <span>End Time</span>
-              <input type="time" name="endTime" required />
-            </label>
-          </div>
-        ) : null}
-      </section>
-
-      <section className="timeoff-premium-section">
-        <span className="timeoff-premium-label">OPTIONAL NOTE</span>
-        <label className="timeoff-premium-field">
-          <span className="sr-only">Note</span>
-          <textarea
-            name="reason"
-            maxLength={250}
-            rows={3}
-            placeholder="Anything management should know?"
-          />
-        </label>
-      </section>
-
-      <footer className="timeoff-premium-actions">
-        <Link
-          className="timeoff-cancel-btn"
-          href="/app/requests?tab=my"
-        >
+      <footer className="timeoff-settings-footer">
+        <Link className="timeoff-settings-cancel" href="/app/requests?tab=my">
           Cancel
         </Link>
-        <button className="timeoff-submit-btn" type="submit">
+        <button className="timeoff-settings-submit" type="submit">
           Submit Request
         </button>
       </footer>

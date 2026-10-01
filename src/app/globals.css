@@ -10268,26 +10268,26 @@ body {
   font-size: 13px;
   font-weight: 600;
 }
-/* Time Off — compact premium request card */
+/* Time Off — Apple settings sheet */
 .timeoff-form-panel {
-  width: min(640px, 100%);
+  width: min(760px, 100%);
   margin: 0 auto;
-  padding: 28px;
-  box-sizing: border-box;
-  border: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
   border-radius: 16px;
   background: var(--color-bg-surface);
   box-shadow: 0 10px 30px rgba(0, 0, 0, .045);
 }
 
 .timeoff-new-heading {
-  margin: 0 0 24px;
-  padding: 0;
+  margin: 0;
+  padding: 24px 28px 20px;
   border: 0;
 }
 
 .timeoff-new-heading h2 {
-  margin: 0 0 6px;
+  margin: 0 0 5px;
   color: var(--color-brand-primary);
   font-size: 20px;
   font-weight: 600;
@@ -10296,108 +10296,122 @@ body {
 }
 
 .timeoff-new-heading p {
-  max-width: 500px;
+  max-width: 520px;
   margin: 0;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.45;
 }
 
-.timeoff-premium-form {
+.timeoff-settings-form {
   width: 100%;
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  box-sizing: border-box;
+  border-top: 1px solid var(--color-border-subtle);
 }
 
-.timeoff-premium-section {
+.timeoff-setting-row {
   width: 100%;
-  min-width: 0;
+  padding: 18px 28px;
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.timeoff-setting-copy {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  box-sizing: border-box;
+  gap: 4px;
+  padding-top: 3px;
 }
 
-.timeoff-premium-label {
-  display: block;
-  margin: 0 0 6px;
-  color: #718096;
-  font-size: 10px;
+.timeoff-setting-copy strong {
+  color: var(--color-brand-primary);
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  letter-spacing: -.01em;
 }
 
-.timeoff-premium-date-row {
-  width: 100%;
+.timeoff-setting-copy span {
+  max-width: 155px;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.timeoff-setting-control {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timeoff-compact-date-row {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  box-sizing: border-box;
+  gap: 12px;
 }
 
-.timeoff-premium-field {
-  width: 100%;
+.timeoff-compact-date-row label,
+.timeoff-note-field {
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  box-sizing: border-box;
 }
 
-.timeoff-premium-field > span:not(.sr-only) {
+.timeoff-compact-date-row label > span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
 }
 
-.timeoff-premium-field input,
-.timeoff-premium-field textarea {
-  display: block;
+.timeoff-compact-date-row input,
+.timeoff-note-field textarea {
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
   border: 0;
-  border-radius: 10px;
   outline: none;
+  border-radius: 10px;
   background: var(--color-bg-main);
   color: var(--color-brand-primary);
   font: inherit;
-  font-size: 14px;
-  transition: box-shadow 140ms ease, background 140ms ease;
+  font-size: 13px;
+  transition: background 140ms ease, box-shadow 140ms ease;
 }
 
-.timeoff-premium-field input {
-  min-height: 46px;
-  padding: 0 13px;
+.timeoff-compact-date-row input {
+  height: 44px;
+  padding: 0 12px;
 }
 
-.timeoff-premium-field textarea {
-  min-height: 92px;
-  padding: 12px 13px;
+.timeoff-note-field textarea {
+  min-height: 78px;
+  padding: 11px 12px;
   resize: vertical;
   line-height: 1.45;
 }
 
-.timeoff-premium-field input:focus,
-.timeoff-premium-field textarea:focus {
+.timeoff-compact-date-row input:focus,
+.timeoff-note-field textarea:focus {
   background: var(--color-bg-surface);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-accent) 14%, transparent);
 }
 
-.timeoff-premium-type {
+.timeoff-setting-fieldset {
   width: 100%;
   margin: 0;
   padding: 0;
   border: 0;
 }
 
-.timeoff-premium-segmented {
-  width: 100%;
+.timeoff-setting-segmented {
+  width: min(360px, 100%);
   padding: 4px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -10407,48 +10421,56 @@ body {
   background: var(--color-bg-main);
 }
 
-.timeoff-premium-segmented button {
-  min-height: 38px;
+.timeoff-setting-segmented button {
+  min-height: 36px;
   border: 0;
   border-radius: 9px;
   background: transparent;
   color: var(--muted);
   font: inherit;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
 
-.timeoff-premium-segmented button.selected {
+.timeoff-setting-segmented button.selected {
   background: var(--color-bg-surface);
   color: var(--color-brand-primary);
   box-shadow: 0 1px 5px rgba(0, 0, 0, .06);
 }
 
-.timeoff-premium-actions {
+.timeoff-partial-time-row {
+  margin-top: 2px;
+}
+
+.timeoff-note-row {
+  align-items: start;
+}
+
+.timeoff-settings-footer {
   width: 100%;
-  margin: 2px 0 0;
-  padding: 0;
+  padding: 16px 28px 18px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
   box-sizing: border-box;
+  background: rgba(245, 245, 247, .55);
 }
 
-.timeoff-cancel-btn,
-.timeoff-submit-btn {
-  width: 136px;
-  min-width: 136px;
+.timeoff-settings-cancel,
+.timeoff-settings-submit {
+  width: 122px;
   height: 40px;
   min-height: 40px;
-  padding: 0 18px;
+  padding: 0 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
   border: 0;
   border-radius: 20px;
+  font: inherit;
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
@@ -10458,20 +10480,64 @@ body {
   transition: opacity 140ms ease, transform 140ms ease;
 }
 
-.timeoff-cancel-btn {
+.timeoff-settings-cancel {
   background: var(--color-bg-main);
   color: var(--color-brand-primary);
 }
 
-.timeoff-submit-btn {
+.timeoff-settings-submit {
   background: var(--color-brand-accent);
   color: var(--color-bg-surface);
 }
 
-.timeoff-cancel-btn:hover,
-.timeoff-submit-btn:hover {
+.timeoff-settings-cancel:hover,
+.timeoff-settings-submit:hover {
   opacity: .88;
   transform: translateY(-1px);
+}
+
+@media (max-width: 720px) {
+  .timeoff-setting-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 18px 20px;
+  }
+
+  .timeoff-setting-copy {
+    padding-top: 0;
+  }
+
+  .timeoff-setting-copy span {
+    max-width: none;
+  }
+
+  .timeoff-setting-segmented {
+    width: 100%;
+  }
+
+  .timeoff-settings-footer {
+    padding-inline: 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .timeoff-new-heading {
+    padding: 20px;
+  }
+
+  .timeoff-compact-date-row {
+    grid-template-columns: 1fr;
+  }
+
+  .timeoff-settings-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .timeoff-settings-cancel,
+  .timeoff-settings-submit {
+    width: 100%;
+  }
 }
 
 .sr-only {
