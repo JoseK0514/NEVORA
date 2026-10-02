@@ -1,6 +1,6 @@
 # Phase 3: installable Fuel portal and targeted Web Push
 
-Date: 2026-10-02. **Status: proposed design, awaiting Jose's written-spec approval.** This document does not claim implementation or activation.
+Date: 2026-10-02. **Status: written design approved by Jose, including the delivery-latency and logout clarifications below; implementation-plan review is still required.** This document does not claim implementation or activation.
 
 ## Intent and boundaries
 
@@ -47,11 +47,11 @@ Important gaps confirmed in source: notification builders and `createNotificatio
 
 | Approach | Trade-off |
 | --- | --- |
-| **Recommended: existing PostgreSQL notification outbox + bounded Vercel worker** | Reuses existing events/data, requires no notification vendor or queue service. A supported frequent scheduler is still required for reliable activation |
+| **Recommended: existing PostgreSQL notification outbox + trigger-agnostic bounded worker** | Reuses existing events/data, requires no notification vendor or queue service. A compatible scheduler supplies invocation cadence without owning notification policy or delivery state |
 | Separate managed queue/scheduler | Can improve dispatch latency but adds another service, credentials, costs and operational boundary; do not provision in this phase |
 | Hobby daily processing only | No upgrade cost, but cannot meet timely retry/deadline requirements. This is not an acceptable substitute for the requested behavior |
 
-Prepare the recommended application architecture locally. Leave outbound delivery and scheduler activation disabled. Recommend Vercel Pro for later activation, subject to separate spending authorization; do not add an incompatible high-frequency cron configuration to the current Hobby project.
+Prepare the recommended application architecture locally after the design and plan checkpoints are approved. Leave outbound delivery and scheduler activation disabled. Vercel Pro is one documented activation option, not an architectural dependency or an approved spending decision. Do not add an incompatible high-frequency cron configuration to the current Hobby project.
 
 ## Architecture and file boundaries
 
@@ -77,12 +77,14 @@ No framework/PWA wrapper, UI library, new icon family or Web Push crypto impleme
 
 Reuse `notifications` as the per-recipient durable intent. Extend its metadata with environment, source kind/id/version, due time, expiry, urgency, cancellation and processing state. Preserve `read_at` compatibility, but never equate it with schedule acknowledgement. Existing historical rows are not opted into push or replayed.
 
+**The business change and its notification intent must commit atomically in the same database transaction. A failed or rolled-back business transaction must never create a successful-change notification.** If intent persistence fails, the associated business transaction fails too; an after-commit best-effort intent insert is not an acceptable substitute.
+
 The write pattern is:
 
 1. Read required business state and its exact version; calculate recipients/differences using the existing pure helpers.
 2. In one existing-driver transaction, acquire the common workweek/request lock, recheck the read version and expected status, perform the business change, record any publication snapshot, and insert notification intents plus future reminders.
 3. If a version guard fails, abort the whole transaction and recompute, with at most three attempts. Intents must be conditional on the successful returned mutation, never merely on entering an action.
-4. Commit before delivery. A failed transaction leaves no success intent. Provider errors affect delivery records only.
+4. Commit the business change and durable intents, then return the successful business result. External delivery proceeds independently. A failed transaction leaves no success intent. Provider errors affect delivery records only.
 
 Every application writer touching the same published week must use the same lock/version protocol; lock multiple weeks in sorted order. Reuse and consistently update each affected schedule's existing `updated_at` as a write version, including draft shift writes, and guard the read version vector alongside the latest revision and request status. A draft edit racing publication must trigger recomputation, not an outdated snapshot or recipient list. SQL reads in later statements see earlier writes in the same transaction. Do not rely on data-modifying CTE siblings seeing one another's updated tables: use their `RETURNING` values or separate ordered statements.
 
@@ -137,7 +139,11 @@ Store subscription material encrypted with standard authenticated encryption usi
 
 On subscribe, an existing foreign-owned endpoint/installation is rejected rather than rebound. Account switching detaches the previous browser installation server-side, clears its local ownership generation/visible local notifications where possible, and requires a fresh explicit opt-in and fresh browser subscription for the new account. Concurrent stale tabs cannot restore the prior ownership because server session/installation generation must match.
 
-Explicit logout transactionally detaches this installation and cancels its pending device deliveries before deleting the session. Client unsubscribe/notification clearing is best effort in addition to server detachment; it cannot be the only protection. Use the installation cookie even if the old session expired. Other opted-in devices are unaffected. Failed database detachment is not reported as successful; provider dispatch also fails closed when current account/access state cannot be read.
+**Authentication/session termination takes priority over notification cleanup.** Explicit logout always clears the authentication cookie and exits the signed-in application, independently of bounded server-side session-revocation and push-detachment attempts. A notification table error, timeout or unavailable provider must not prevent signing out. When the database is available, detach this installation, advance its ownership generation and cancel pending device deliveries transactionally; revoke the authentication session independently so failure of that push transaction cannot roll session termination back. Never contact a push provider to complete logout. Other opted-in devices are unaffected.
+
+Attempt client unsubscribe, clear matching local notifications and mark the old installation generation suppressed locally; failures must not trap the user in the application. Retain only a server-verifiable, opaque pending-cleanup receipt/installation proof when reconciliation is incomplete, with bounded lifetime and no subscription secrets or employee details. On the next healthy request, reconcile that receipt before enrollment or account switching; the worker also reconciles detached/invalid installations and rejects generations whose associated authentication session was explicitly revoked. Reconciliation is idempotent. The installation cookie supports cleanup even after the old session expires. A new account must obtain a fresh explicit opt-in and fresh subscription; an unresolved or foreign-owned installation/endpoint cannot be silently rebound or inherited.
+
+Dispatch revalidates current ownership generation, account/access and revocation state immediately before delivery and fails closed when that state cannot be read. Do not describe pending server cleanup as completed: if all durable storage is unavailable, browser sign-out/local suppression can succeed while server revocation/detachment still awaits healthy infrastructure and receipt reconciliation. Already accepted provider messages may be in flight; local generation checks suppress stale-account display where possible. No claim of instantaneous global revocation during a complete storage outage. This recovery limitation never permits cross-account inheritance or weakens enrollment ownership checks.
 
 Expired portal sessions do not by themselves erase deliberate device consent; generic notifications can still arrive for that installation, but opening protected details requires login. Deactivation and lost role/location access suppress delivery at dispatch, and stale subscriptions are revoked/cleaned. Permission changes reconcile on portal open/visibility; unsubscribe works immediately. Provider 404/410 clears invalid subscription material. No promise that already delivered OS notifications can always be recalled.
 
@@ -153,9 +159,21 @@ Five attempts maximum: initial attempt, then approximately 1, 5, 15 and 60 minut
 
 Use explicit short provider TTL bounded by event expiry, stable privacy-safe notification tag/topic, and persistent acceptance state to reduce duplicates. The Web Push library creates standards-compliant request details; a reviewed HTTPS transport provides an absolute abort deadline, restricted destination, no redirects and bounded response bytes. Socket timeout alone is not a full-request deadline.
 
-Separate prompt event dispatch from retry scanning and due-reminder processing. After committing a business event, a bounded awaited dispatch can attempt its eligible immediate deliveries; failure never rolls back the business operation. Durable leftovers remain queued. No unawaited background serverless promise, browser timer or in-memory queue is the reliability mechanism.
+**Business-action latency must not depend on push-provider response time.** Publish Schedule, Time Off decisions, request decisions and schedule changes commit their business change and durable notification intent, then return the successful business result. Their request path never waits for employee-device fan-out, provider delivery or retry processing. External delivery runs independently in the durable worker; provider latency cannot make a manager wait while devices are contacted.
+
+Separate prompt event dispatch from retry scanning and due-reminder processing. An optional post-commit worker kick may enqueue/invoke a supported independently executed worker only if demonstrably nonessential and constrained to a negligible request-time budget; it must not execute device delivery inline. This phase defaults to no request-path kick until a compatible mechanism and latency evidence exist. Failure or absence of a kick leaves intents durable and does not alter the successful business result. No unawaited serverless promise, browser timer or in-memory queue is the reliability mechanism.
+
+**Push-provider delivery, retries and failures occur outside the business transaction.** Provider calls never execute while the publication/request transaction is open. Once that transaction commits, provider failure cannot roll back a valid schedule publication, request decision or other business action, and must not be presented as failure of the committed action. Delivery state records the separate failure for retry or expiry.
 
 Worker batches default to at most ten devices, concurrency two, twenty-second processing budget and eight-second attempt deadline; stop starting work when insufficient budget remains and release unattempted claims. Use Node runtime and explicit endpoint budgets within host limits. Both internal endpoints require a configured server-only bearer secret, timing-safe validation, no public session fallback and no cache. Missing secret means denied access. Workers return aggregate technical outcomes only.
+
+## Scheduler independence
+
+**Notification/event architecture is separate from scheduler integration. Vercel Pro is not a hard dependency.** The reusable server worker owns due-intent selection, reminder revalidation, leasing, provider dispatch, retry decisions, cancellation and expiry. Its callable entry points receive explicit configuration, repositories, provider transport and clock/budget inputs; they do not depend on Vercel request headers, cron expressions, platform SDKs or platform-specific environment variables.
+
+Protected HTTP handlers and a bounded Node worker entry are thin invocation adapters around the same worker. A Vercel cron adapter may invoke those handlers; another compatible, separately authorized scheduler may invoke the same protected HTTPS endpoints or run the same Node entry in an appropriate server environment. Replacing the scheduler changes invocation/configuration only, without rewriting events, recipient rules, subscriptions, outbox records, leases, reminder policy or delivery/retry logic.
+
+Due times, retry times, expiry and completion are persisted in PostgreSQL rather than owned by a scheduler's timers or memory. Prompt dispatch is an independent worker invocation, never inline delivery in a business request; periodic retry scans and due-reminder processing use the same reusable core with separate invocation schedules. Cadence, credentials and execution budgets must be verified for whichever activation option is chosen. No scheduler, paid upgrade or service is provisioned by this design checkpoint.
 
 ## Installation and device UI
 
@@ -188,6 +206,8 @@ A different signed-in user, removed/outdated item or lost access receives a gene
 
 Register the root-served `fuel-portal-sw.js` with explicit scope `/app`, so the exact `/app` entry and `/app/*` are covered. Because scope matching is prefix-based, every handler independently checks exact `/app` or `/app/…`; lookalikes such as `/application` are pass-through. Clocker and authentication routes are outside operational handling. Test both navigation from inside a controlled tab and fresh direct Clocker entry.
 
+**`/clocker/2` and `/clocker/110` remain entirely outside Phase 3.** Neither route registers the portal worker, links portal PWA setup metadata, shows installation/notification prompts, enrolls a shared-device subscription or starts employee notification flows. Worker handlers pass through Clocker requests without interception, caching or offline substitution, including requests initiated from a previously controlled portal tab. Preserve all Clocker workflows and transactions; protected comparisons must verify both routes and tablet orientations.
+
 Online-first: intercept only safe portal GET navigations, request the network without storing private responses, and return a static public offline fallback only on connection failure. Preserve server HTTP/auth errors and redirects. Never cache schedules, profiles, request details, APIs, RSC responses, login responses, sessions, employee time, or Clocker traffic. No offline mutations, background business sync or fake success.
 
 CacheStorage allowlist: the self-contained public offline HTML and explicitly named Fuel icon exports only, in a versioned Fuel-owned cache. No general runtime asset cache, application chunks, query-bearing image/API URLs or broad precache glob. Local worker storage contains only the opaque device ownership generation needed to suppress stale-account notifications; it is not a private data cache.
@@ -208,14 +228,22 @@ Configuration names, never values:
 - `PUSH_ENVIRONMENT` — server-owned test/production isolation; reject production delivery in preview/test contexts.
 - `PUSH_VAPID_PUBLIC_KEY`, `PUSH_VAPID_PRIVATE_KEY`, `PUSH_VAPID_SUBJECT` — runtime configuration, separate keypair per environment; private key server-only.
 - `PUSH_SUBSCRIPTION_ENCRYPTION_KEY` — dedicated at-rest key in the approved secret store.
-- `CRON_SECRET` — internal worker authorization, separate per environment.
+- `NOTIFICATION_WORKER_SECRET` — platform-neutral internal worker authorization, separate per environment. A Vercel cron adapter may map its required `CRON_SECRET` to the same authorized credential; that alias stays in the adapter and does not enter notification business logic.
 - `PUSH_TEST_DELIVERY_ENABLED`, `PUSH_TEST_ACCOUNT_IDS` — default false/empty; server-only authorization of deliberately selected test accounts, with delivery restricted to the current opted-in installation.
 
 Hosting evidence: the actual Fuel dashboard showed Hobby, Fluid Compute enabled, `iad1`, 1 vCPU / 2 GB, and an empty Cron Jobs page. The connected Vercel app listed an unrelated project and its project-detail call had an argument-validation defect; hosting facts were confirmed through read-only signed-in dashboard UI instead. No settings were changed. Production currently follows `main`; this task does not modify or deploy it.
 
 Current official Vercel documentation limits Hobby cron to daily runs with up to hourly invocation variance. That cannot provide five-minute retries/reminder processing. Fluid Compute supports the proposed bounded worker execution, but execution capacity is different from scheduler cadence. Do not configure multiple staggered daily jobs to circumvent the plan restriction.
 
-**Recommended activation solution:** Vercel Pro and a five-minute dispatch/retry scan plus fifteen-minute reminder scan. Current platform price is **$20/month**, including one deploying seat and $20 usage credit; additional seats/usage can cost more. No separate Web Push vendor or Apple Developer membership is needed. This is a recommendation, not spending approval or a fixed total-cost promise. Leave scheduler configuration as documented activation instructions until plan authorization and entitlement are verified.
+Documented activation options:
+
+| Option | Capability / authorization boundary |
+| --- | --- |
+| Vercel Pro with five-minute dispatch/retry scans and fifteen-minute reminder scans | One supported option. Current platform price is **$20/month**, including one deploying seat and $20 usage credit; additional seats/usage can cost more. Requires separate spending and activation authorization; it is not a dependency of the notification engine |
+| Another compatible scheduler using the protected HTTPS handlers or server-side Node entry | Reuses the same durable worker. Verify actual entitlement, cadence, execution limits, security and cost before proposing activation; do not assume an uninspected service is free or already available |
+| Current Hobby daily cron alone | Cannot meet the required retry/reminder cadence; document the limitation rather than silently reducing the requested behavior |
+
+No hosting option is purchased or provisioned here. Do not upgrade Vercel, add a paid service or make a spending decision. No separate Web Push vendor or Apple Developer membership is required for standards-based Web Push. Leave scheduler configuration as documented activation instructions until the chosen option is explicitly authorized and its entitlement is verified.
 
 Activation prerequisites: spec/plan/UI approval; reviewed migration sequence and environment/rollback selection; supported hosting cadence and spending approval; separate protected credentials/database; authorized HTTPS test environment and opted-in test account/device; physical device tests; then separately authorized migration/deployment/opt-in rollout. No always-on Mac production scheduler or public tunnel.
 
@@ -224,10 +252,11 @@ Activation prerequisites: spec/plan/UI approval; reviewed migration sequence and
 Add focused behavior tests, not constant/markup checks:
 
 - Permission gesture and allowed/default/denied/unsupported/revoked states; standalone/install-event truth, iOS instructions, dismissal and device settings.
-- Session-derived ownership, forged ids, malformed/larger bodies, origin/CSRF rejection, provider URL lookalikes/private endpoints, encryption/redaction, duplicate/current-generation constraints, multi-device enrollment, logout/expired-session/account-switch races and deactivation/access loss.
-- Initial/changed/unchanged/unrelated publications across both locations, before/after ownership, successful/failed transactional outcomes, version guards/retries and equivalent acknowledgements.
+- Session-derived ownership, forged ids, malformed/larger bodies, origin/CSRF rejection, provider URL lookalikes/private endpoints, encryption/redaction, duplicate/current-generation constraints, multi-device enrollment, logout/expired-session/account-switch races and deactivation/access loss. Prove that push-cleanup failure/timeouts still clear the authentication cookie and return sign-out, local old-generation suppression is attempted, incomplete cleanup remains identifiable, healthy reconciliation is idempotent and another account cannot inherit the old subscription.
+- Initial/changed/unchanged/unrelated publications across both locations, before/after ownership, successful/failed transactional outcomes, version guards/retries and equivalent acknowledgements. A never-resolving/slow provider must not delay the business response; business actions must complete without invoking the provider, leaving durable intents for independent processing.
 - Deadline/submission-zero-hours precedence, limited acknowledgement reminders, resolution/deadline edits/supersession cancellation, Puerto Rico 21:00/07:00/day boundaries, no catch-up burst and grouped manager summaries.
 - Lease recovery and two concurrent workers, duplicate suppression, bounded attempts/lifetimes/Retry-After, provider acceptance ambiguity, invalid-subscription cleanup and no-subscription state.
+- Scheduler independence: the same worker produces the same persisted decisions through different invocation adapters; platform-specific authentication/configuration remains outside business policy, and provider failure cannot undo an already committed business action.
 - Same-origin deep links, expired login return, forged recipient, removed source, changed user/access, taps without mutations and privacy-safe envelope.
 - Actual local service-worker registration/scope at `/app` and `/app/*`, lookalike/Clocker pass-through, push/click event behavior with synthetic fixture events, offline fallback, CacheStorage contents and no private/RSC/auth/API caching; update waiting and unsaved-form preservation.
 
@@ -235,7 +264,7 @@ Run `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, role regre
 
 Disposable local PostgreSQL integration tests must prove atomic rollback, unique enrollment, ownership detachment and concurrent leasing. If that environment is unavailable, report the missing integration evidence; query mocks cannot prove PostgreSQL concurrency or migration application. No existing database may be substituted.
 
-Final evidence must distinguish unit/mocked tests, disposable-database integration, fixture-browser checks, actual local service-worker tests, synthetic push events, real provider delivery and physical iPhone/Android checks. Closed-app physical delivery and iOS Home Screen behavior remain unperformed until separately authorized. Browser emulation does not prove them.
+Final evidence must distinguish unit/mocked tests, disposable-database integration, fixture-browser checks, actual local service-worker tests, synthetic push events, real provider delivery and physical iPhone/Android checks. **Local, browser and service-worker tests are not proof of real iPhone or Android delivery.** Real provider delivery, closed-app physical delivery and iPhone Home Screen verification remain pending until Jose explicitly authorizes an HTTPS test environment and an opted-in test account/device. Physical Android verification is also a separate activation step. Do not create a tunnel, public preview or deployment to perform those tests without that authorization, and do not mark unperformed device/delivery checks as passed.
 
 After the approved plan is implemented and applicable verification passes, create one local implementation commit `feat: add installable Fuel portal and web push`, without amending prior phases. Report exact changed files/commits, screenshots/fixture preview, event/reminder matrix, configuration names, unapplied migration dependencies, hosting/cost limitations, test boundaries, physical/live tests pending, activation prerequisites and worktree state. Stop for review; no Phase 4 work.
 
