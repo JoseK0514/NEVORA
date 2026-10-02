@@ -67,3 +67,7 @@ npm run build
 ```
 
 See `docs/architecture.md` for the product and workflow blueprint.
+
+For UI work, reuse the [Fuel UI contract](docs/ui/fuel-ui-contract.md). Future
+automation follows the [delivery charter](docs/architecture/fuel-automation-charter.md);
+it records phase boundaries and exclusions, not implemented capabilities.

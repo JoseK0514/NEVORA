@@ -10,6 +10,12 @@ description: >
 
 # Fuel Scheduler UI / UX Skill
 
+Use the repository's [Fuel UI contract](../../../docs/ui/fuel-ui-contract.md)
+for the selected baseline, portal-specific controls, states and review evidence.
+Future automation must follow the bounded phases in the
+[delivery charter](../../../docs/architecture/fuel-automation-charter.md).
+Preserve all other rules below; a new feature does not authorize a new visual style.
+
 ## Product Goal
 
 Fuel Scheduler is an operational workforce scheduling application.
