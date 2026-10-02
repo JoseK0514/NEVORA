@@ -12356,6 +12356,14 @@ body {
 .manager-approvals-card .manager-request-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--color-border-subtle); }
 .manager-approvals-card .manager-request-counts > a { min-width: 0; min-height: 44px; display: grid; align-content: center; gap: 4px; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
 .manager-approvals-card .manager-request-counts strong { color: var(--color-brand-primary); font-weight: 600; }
+.manager-approvals-card .manager-home-action {
+  background: var(--coffee);
+  color: var(--color-bg-surface);
+  transition: background-color 140ms ease;
+}
+.manager-approvals-card .manager-home-action:is(:hover, :active) {
+  background: var(--coffee-dark);
+}
 @media (max-width: 760px) {
   .manager-workflow-row { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
   .manager-workflow-review { width: 100%; justify-items: start; }
