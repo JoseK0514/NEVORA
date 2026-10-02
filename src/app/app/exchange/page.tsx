@@ -218,7 +218,7 @@ export default async function ExchangePage({
                 </div>
                 <form action={claimCoverageAction} className="employee-shift-entry-actions">
                   <input type="hidden" name="exchangeId" value={exchange.id} />
-                  <button className="employee-action primary" type="submit">Claim Shift</button>
+                  <button className="employee-action primary" type="submit"><span>Claim Shift</span></button>
                 </form>
               </div>
             )) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
@@ -234,9 +234,9 @@ export default async function ExchangePage({
                       <span>{shift.locationName}</span>
                     </div>
                     <div className="employee-shift-entry-actions">
-                      <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${shift.id}`}>Unable to Work</Link>
-                      <form action={offerCoverageAction}><input type="hidden" name="sourceShiftId" value={shift.id} /><button className="employee-action" type="submit">Offer Shift</button></form>
-                      <Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${shift.id}`}>Trade Shift</Link>
+                      <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${shift.id}`}><span>Unable to Work</span></Link>
+                      <form action={offerCoverageAction}><input type="hidden" name="sourceShiftId" value={shift.id} /><button className="employee-action" type="submit"><span>Offer Shift</span></button></form>
+                      <Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${shift.id}`}><span>Trade Shift</span></Link>
                     </div>
                   </div>
                 ))}
@@ -253,8 +253,8 @@ export default async function ExchangePage({
                     </div>
                     <form action={respondSwapAction} className="employee-shift-entry-actions">
                       <input type="hidden" name="exchangeId" value={exchange.id} />
-                      <button className="employee-action" name="decision" value="DENIED" type="submit">Decline</button>
-                      <button className="employee-action primary" name="decision" value="ACCEPTED" type="submit">Accept</button>
+                      <button className="employee-action" name="decision" value="DENIED" type="submit"><span>Decline</span></button>
+                      <button className="employee-action primary" name="decision" value="ACCEPTED" type="submit"><span>Accept</span></button>
                     </form>
                   </div>
                 ))}
@@ -271,7 +271,7 @@ export default async function ExchangePage({
                     </div>
                     <div className="employee-shift-entry-actions" data-status={exchange.status}>
                       <StatusPill tone={statusTone(exchange.status)}>{statusLabel(exchange.status)}</StatusPill>
-                      {["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? <form action={cancelExchangeAction}><input type="hidden" name="exchangeId" value={exchange.id} /><button className="employee-action danger" type="submit">Cancel</button></form> : null}
+                      {["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? <form action={cancelExchangeAction}><input type="hidden" name="exchangeId" value={exchange.id} /><button className="employee-action danger" type="submit"><span>Cancel</span></button></form> : null}
                     </div>
                   </div>
                 ))}
@@ -287,7 +287,7 @@ export default async function ExchangePage({
                     </div>
                     <div className="employee-shift-entry-actions" data-status={callout.status}>
                       <StatusPill tone={statusTone(callout.status)}>{statusLabel(callout.status)}</StatusPill>
-                      {callout.status === "PENDING" ? <form action={cancelCalloutAction}><input type="hidden" name="calloutId" value={callout.id} /><button className="employee-action danger" type="submit">Cancel</button></form> : null}
+                      {callout.status === "PENDING" ? <form action={cancelCalloutAction}><input type="hidden" name="calloutId" value={callout.id} /><button className="employee-action danger" type="submit"><span>Cancel</span></button></form> : null}
                     </div>
                   </div>
                 ))}

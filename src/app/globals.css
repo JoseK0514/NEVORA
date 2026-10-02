@@ -8123,7 +8123,6 @@ body {
 }
 
 .dashboard-overview-active .dashboard-hero .button.primary {
-  border-radius: 20px;
   background: var(--color-brand-primary);
   color: var(--color-bg-surface);
   box-shadow: none;
@@ -10858,20 +10857,20 @@ body {
 
 .schedule-settings-page .schedule-settings-save-btn,
 .schedule-settings-page .schedule-settings-add-window-btn {
-  min-height: 42px !important;
-  height: 42px !important;
-  padding: 0 24px !important;
-  border-radius: 21px !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  border: 0 !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  white-space: nowrap !important;
-  box-sizing: border-box !important;
-  transition: opacity 140ms ease !important;
+  min-height: 42px;
+  height: 42px;
+  padding: 0 24px;
+  border-radius: 21px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: opacity 140ms ease;
 }
 
 .schedule-settings-page .schedule-settings-save-btn {
@@ -11936,10 +11935,11 @@ body {
 .employee-shift-entry-copy > small { color: var(--muted); font-size: 11px; line-height: 1.4; overflow-wrap: anywhere; }
 .employee-shift-entry-actions { min-width: 0; min-height: 44px; display: grid; grid-template-columns: repeat(3, 120px); align-items: center; gap: 8px; }
 .employee-shift-entry-actions > form { display: contents; }
-.employee-shift-entry-actions .employee-action { width: 100%; min-width: 0; height: 44px; min-height: 44px; padding: 8px 10px; display: flex; align-items: center; justify-content: center; border-radius: 22px; font-size: 11px; font-weight: 500; line-height: 1.25; white-space: normal; text-align: center; }
+.employee-shift-entry-actions .employee-action { width: 100%; min-width: 0; height: 44px; min-height: 44px; margin: 0; padding: 6px 8px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; border-radius: 22px; font-family: var(--font-family-apple); font-size: 12px; font-weight: 600; line-height: 1.25; letter-spacing: 0; white-space: normal; text-align: center; }
+.employee-shift-entry-actions .employee-action > span { width: 100%; display: block; text-align: center; text-wrap: balance; }
 
 /* Informational statuses stay compact beside the consistent action targets. */
-.employee-shift-entry-actions .status-pill { width: fit-content; max-width: 100%; min-width: 0; min-height: 24px; height: auto; padding: 5px 9px; justify-self: start; border-radius: 999px; font-size: 11px; font-weight: 500; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; text-align: left; }
+.employee-shift-entry-actions .status-pill { width: fit-content; max-width: 100%; min-width: 0; min-height: 24px; height: auto; padding: 5px 9px; justify-self: center; border-radius: 999px; font-size: 11px; font-weight: 500; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; text-align: center; }
 .employee-shift-entry-actions .status-pill.neutral { background: var(--color-bg-main); color: var(--muted); }
 .employee-view-empty { padding: 24px 0; }
 .employee-view-empty strong { font-size: 14px; font-weight: 500; }
@@ -12132,3 +12132,189 @@ body {
 .employee-shell .employee-timeoff-form .timeoff-settings-cancel:hover { background: var(--color-bg-main); }
 .employee-shell .employee-shift-picker-option.active .employee-shift-picker-option-copy > :is(small, span) { color: var(--fuel-coffee); }
 .employee-shell .employee-shift-picker-option-copy > :is(small, span) { color: color-mix(in srgb, var(--muted) 80%, var(--fuel-coffee)); }
+
+
+/* Phase 0 action geometry. Variants keep their existing portal colors. */
+.app-shell :is(
+  .button,
+  .employee-action,
+  .employee-timeoff-form .timeoff-settings-cancel,
+  .employee-timeoff-form .timeoff-settings-submit,
+  .timeoff-settings-cancel,
+  .timeoff-settings-submit,
+  .employee-availability-form .availability-preferences-button,
+  .availability-preferences-button,
+  .marketplace-claim,
+  .marketplace-primary-action,
+  .marketplace-secondary-action,
+  .marketplace-text-action,
+  .manager-home-action,
+  .manager-subtab-action,
+  .schedule-builder-add,
+  .schedule-command-actions .button,
+  .schedule-settings-save-btn,
+  .schedule-settings-add-window-btn,
+  .coverage-window-row .text-button,
+  .employee-profile-view,
+  .new-shift-action
+) {
+  min-width: 0;
+  min-height: 44px;
+  height: auto;
+  padding: 6px 16px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 22px;
+  font-family: var(--font-family-apple);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  white-space: normal;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* Equal tracks only for peer actions; unrelated controls retain natural widths. */
+.app-shell :is(
+  .request-actions,
+  .availability-preferences-actions,
+  .timeoff-settings-footer,
+  .employee-exchange-detail-view .form-footer,
+  .new-shift-actions,
+  .template-actions,
+  .form-footer-right,
+  .employee-form .form-footer:not(.shift-edit-footer)
+) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 8px;
+}
+
+.app-shell :is(.template-actions, .form-footer-right) {
+  width: fit-content;
+  max-width: 100%;
+  margin-left: auto;
+}
+
+
+.app-shell .template-actions > form { display: contents; }
+.app-shell :is(.request-actions, .template-actions, .form-footer-right) .button {
+  width: 100%;
+  min-width: 96px;
+}
+.app-shell :is(.timeoff-settings-footer, .new-shift-actions) > :is(a, button) { width: 100%; }
+.app-shell .employee-shift-entry-actions { align-items: stretch; }
+.app-shell .employee-shift-entry-actions .status-pill { align-self: center; }
+
+.app-shell .marketplace-row-actions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+}
+.app-shell .marketplace-row-actions > form { display: contents; }
+.app-shell .marketplace-row-actions :is(.marketplace-primary-action, .marketplace-secondary-action, .marketplace-text-action) {
+  width: 100%;
+  min-width: 120px;
+}
+.app-shell .marketplace-row-actions .status-pill { align-self: center; justify-self: center; }
+.app-shell .marketplace-request-row { flex-wrap: wrap; }
+
+/* Segmented navigation keeps its established shape and selection treatment. */
+.app-shell :is(.timeoff-tabs > a, .timeoff-setting-segmented > button, .marketplace-segmented > a, .schedule-location-control .segmented > a) {
+  min-height: 44px;
+  height: auto;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+}
+.app-shell :is(.schedule-period-arrow, .schedule-builder-week > a) {
+  min-width: 44px;
+  min-height: 44px;
+}
+.app-shell .schedule-period-control { grid-template-columns: 44px minmax(0, 1fr) 44px; }
+.app-shell .schedule-shift-pill { min-height: 44px; }
+.app-shell .schedule-more-menu > summary::after { margin-left: 0; line-height: 1; }
+
+/* Authentication retains its existing 12px family and full-width action. */
+.auth-card .button {
+  min-height: 44px;
+  line-height: 1.25;
+  text-align: center;
+}
+
+@media (max-width: 1000px) {
+  .app-shell .marketplace-row-actions { width: 100%; }
+  .app-shell .marketplace-row-actions :is(.marketplace-primary-action, .marketplace-secondary-action, .marketplace-text-action) { min-width: 0; }
+}
+@media (max-width: 760px) {
+  .app-shell :is(.request-actions, .template-actions, .form-footer-right) { width: 100%; }
+  .app-shell .timeoff-page:not(.employee-timeoff-view) .timeoff-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .app-shell .timeoff-page:not(.employee-timeoff-view) .timeoff-tabs > a {
+    min-width: 0;
+    padding-inline: 6px;
+  }
+}
+
+.app-shell .dashboard-week-nav { grid-template-columns: 44px minmax(0, auto) 44px; }
+.app-shell .dashboard-week-nav > a { width: 44px; height: 44px; }
+.app-shell .dashboard-tabs > a { min-height: 44px; display: inline-flex; align-items: center; }
+.app-shell .availability-state-pill > span {
+  min-height: 44px;
+  box-sizing: border-box;
+  border-radius: 22px;
+  font-size: 12px;
+  line-height: 1.25;
+  text-align: center;
+}
+.app-shell .availability-inline-times input { min-height: 44px; }
+.app-shell .availability-preference-controls { align-items: flex-end; }
+.app-shell :is(.timeoff-settings-cancel, .timeoff-settings-submit):is(:hover, :active) { transform: none; }
+
+.app-shell .employee-form .form-footer:not(.shift-edit-footer) {
+  grid-template-columns: repeat(2, minmax(0, 160px));
+}
+.app-shell :is(.button, .employee-action) > svg { flex-shrink: 0; display: block; }
+.app-shell :is(.manager-subtab-link, .manager-subtab-section-heading > a, .manager-activity-row > a) {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.25;
+}
+@media (max-width: 760px) {
+  .app-shell .employee-form .form-footer:not(.shift-edit-footer) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Approval pairs fill the footer without shortening its divider. */
+.app-shell .request-actions { width: 100%; }
+
+/* Preserve approved blue/white pairings at readable contrast during interaction. */
+.app-shell :is(
+  .marketplace-claim,
+  .marketplace-primary-action,
+  .manager-home-action,
+  .manager-subtab-action,
+  .employee-profile-view,
+  .new-shift-action.primary,
+  .schedule-settings-save-btn
+):is(:hover, :active) { opacity: 1; }
