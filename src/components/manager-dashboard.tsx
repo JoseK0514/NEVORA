@@ -431,18 +431,23 @@ function employeeInitials(name: string) {
     .join("");
 }
 
-function PendingApprovals({ items }: { items: ManagerActionItem[] }) {
-  const approvals = items
-    .filter((item) => ["TIME_OFF", "EXCHANGE", "CALLOUT"].includes(item.type))
-    .slice(0, 6);
+function PendingApprovals({ items, counts, weekStart }: { items: ManagerActionItem[]; counts: Props["requestCounts"]; weekStart: string }) {
+  const allApprovals = items.filter(item => ["TIME_OFF", "EXCHANGE", "CALLOUT"].includes(item.type));
+  const missingAvailability = items.filter(item => item.type === "AVAILABILITY_MISSING").length;
+  const approvals = allApprovals.slice(0, 6);
 
   return (
     <section className="manager-home-card manager-approvals-card">
       <div className="manager-home-card-header">
         <h2>Pending Approvals</h2>
-        <span className="manager-home-count">{approvals.length}</span>
+        <span className="manager-home-count">{allApprovals.length}</span>
       </div>
 
+      <div className="manager-request-counts" aria-label="Items needing attention">
+        <Link href="/app/requests?tab=pending"><span>Time Off</span><strong>{counts.timeOff} pending</strong></Link>
+        <Link href="/app/exchange?tab=pending"><span>Shift Requests</span><strong>{counts.exchange + counts.callout} {counts.exchange + counts.callout === 1 ? "needs" : "need"} attention</strong></Link>
+        <Link href={`/app/availability?week=${weekStart}`}><span>Availability</span><strong>{missingAvailability} missing</strong></Link>
+      </div>
       {approvals.length ? (
         <div className="manager-home-list">
           {approvals.map((item) => (
@@ -564,7 +569,7 @@ export function ManagerDashboard(props: Props) {
 
       {props.view === "overview" ? (
         <div className="manager-home-grid">
-          <PendingApprovals items={props.managerActions} />
+          <PendingApprovals items={props.managerActions} counts={props.requestCounts} weekStart={props.weekStart} />
           <OnFloorNow people={props.onFloor} />
         </div>
       ) : props.view === "schedule" ? (

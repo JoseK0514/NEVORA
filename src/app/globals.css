@@ -12318,3 +12318,48 @@ body {
   .new-shift-action.primary,
   .schedule-settings-save-btn
 ):is(:hover, :active) { opacity: 1; }
+
+/* Phase 1: Manager review surfaces reuse the approved portal geometry and tokens. */
+.manager-workflow-page { min-width: 0; }
+.manager-workflow-page .manager-workflow-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 480px;
+  max-width: 100%;
+}
+.manager-workflow-page .manager-workflow-tabs > a { white-space: normal; text-align: center; text-wrap: balance; padding: 6px 12px; }
+.manager-workflow-panel { padding: 0 var(--space-md); }
+.manager-workflow-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); padding: var(--space-md) 0; }
+.manager-workflow-heading h2 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -.015em; }
+.manager-workflow-heading > span { font-size: 12px; }
+.manager-workflow-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); padding: var(--space-md) 0; border-top: 1px solid var(--color-border-subtle); }
+.manager-workflow-row.selected { background: var(--color-bg-main); }
+.manager-workflow-copy { min-width: 0; flex: 1; display: grid; gap: 6px; overflow-wrap: anywhere; }
+.manager-workflow-copy h3 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: -.015em; }
+.manager-workflow-copy > :is(span, p) { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.manager-workflow-copy > p { color: var(--color-brand-primary); }
+.manager-workflow-review { width: 248px; max-width: 100%; flex-shrink: 0; display: grid; justify-items: end; gap: var(--space-sm); }
+.manager-workflow-review .request-actions { padding: 0; border: 0; }
+.manager-availability-week { width: fit-content; max-width: 100%; margin: 0 0 var(--space-md); }
+.manager-availability-week > strong { min-width: 0; font-size: 13px; text-align: center; }
+.manager-team-availability .availability-team-heading { flex-wrap: wrap; background: var(--color-bg-main); }
+.manager-team-availability .availability-team-row { align-items: flex-start; padding: var(--space-md); }
+.manager-team-availability .manager-availability-person { flex: 0 1 260px; overflow-wrap: anywhere; }
+.manager-team-availability .manager-availability-status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.manager-team-availability .manager-availability-status small { color: var(--muted); font-size: 11px; }
+.manager-team-availability .manager-availability-hours { flex: 1; min-width: 0; }
+.manager-availability-windows { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; }
+.manager-availability-windows > li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 12px; border-radius: 12px; background: var(--color-bg-main); font-variant-numeric: tabular-nums; }
+.manager-team-availability .status-pill { font-size: 11px; }
+.manager-team-availability .status-pill.success { background: var(--color-state-success-bg); color: var(--color-state-success); }
+.manager-team-availability .status-pill.warning { background: var(--color-state-warning-bg); color: var(--color-state-warning); }
+.manager-approvals-card .manager-request-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--color-border-subtle); }
+.manager-approvals-card .manager-request-counts > a { min-width: 0; min-height: 44px; display: grid; align-content: center; gap: 4px; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.manager-approvals-card .manager-request-counts strong { color: var(--color-brand-primary); font-weight: 600; }
+@media (max-width: 760px) {
+  .manager-workflow-row { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+  .manager-workflow-review { width: 100%; justify-items: start; }
+  .manager-workflow-row > .status-pill { align-self: flex-start; }
+  .manager-team-availability .manager-availability-person { flex-basis: auto; }
+  .manager-team-availability .manager-availability-hours { width: 100%; }
+}

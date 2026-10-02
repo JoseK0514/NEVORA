@@ -624,8 +624,9 @@ export async function listManagementCoverage(fromDate: string): Promise<Exchange
     ORDER BY source.date, source.start_time`, [fromDate])).map(mapExchange);
 }
 
-export async function listTeamExchangeActivity(): Promise<ExchangeRecord[]> {
+export async function listTeamExchangeActivity(completedOnly = false): Promise<ExchangeRecord[]> {
   const sql = getDb();
   return queryRows(await sql.query(`${EXCHANGE_SELECT}
+    ${completedOnly ? "WHERE x.status IN ('APPROVED', 'DENIED', 'CANCELLED', 'EXPIRED')" : ""}
     ORDER BY x.created_at DESC LIMIT 30`)).map(mapExchange);
 }

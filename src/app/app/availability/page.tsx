@@ -1,15 +1,10 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import { ManagerAvailability } from "@/components/manager-availability";
 import { AvailabilityEditor } from "@/components/availability-editor";
-import { StatusPill } from "@/components/status-pill";
 import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listAvailability } from "@/lib/data/availability";
-import {
-  getAvailabilitySubmissionStatus,
-  listAvailabilitySubmissionStatuses,
-  type AvailabilitySubmissionListItem,
-} from "@/lib/data/availability-submissions";
+import { getAvailabilitySubmissionStatus } from "@/lib/data/availability-submissions";
 import type { AvailabilitySubmissionStatus } from "@/lib/assistance/availability-submission";
 import {
   getUpcomingAvailabilityWeek,
@@ -57,12 +52,6 @@ function buildState(
       ];
     }),
   ) as AvailabilityState;
-}
-
-function managerSubmissionLabel(status: AvailabilitySubmissionListItem) {
-  if (!status.submitted) return "Not submitted";
-  if (status.windowCount === 0) return "Submitted · unavailable all week";
-  return "Submitted";
 }
 
 function submissionStatusCopy(status: AvailabilitySubmissionStatus) {
@@ -117,6 +106,8 @@ export default async function AvailabilityPage({
   const manager = isManagerRole(session.role);
   const params = await searchParams;
   const currentWeek = weekStartFor(currentDateInPuertoRico());
+  if (manager) return ManagerAvailability({ week: params.week, currentWeek, employeeId: params.employeeId });
+
   const selectedWeek = validWeek(params.week) ? params.week! : undefined;
 
   const [normalAvailability, upcomingWeek] = await Promise.all([
@@ -127,20 +118,15 @@ export default async function AvailabilityPage({
   let initialAvailability = buildState(normalAvailability);
   let settings = null;
   let submissionStatus: AvailabilitySubmissionStatus | null = null;
-  let managerStatuses: AvailabilitySubmissionListItem[] = [];
 
   if (selectedWeek) {
-    const [weekSettings, weekly, status, teamStatuses] = await Promise.all([
+    const [weekSettings, weekly, status] = await Promise.all([
       getWeekSettings(selectedWeek),
       listWeeklyAvailability(session.id, selectedWeek),
       getAvailabilitySubmissionStatus(session.id, selectedWeek),
-      manager
-        ? listAvailabilitySubmissionStatuses(selectedWeek)
-        : Promise.resolve([]),
     ]);
     settings = weekSettings;
     submissionStatus = status;
-    managerStatuses = teamStatuses;
 
     if (settings?.availabilityDeadline) {
       initialAvailability = buildState(weekly);
@@ -160,37 +146,15 @@ export default async function AvailabilityPage({
   const submissionCopy = submissionStatus
     ? submissionStatusCopy(submissionStatus)
     : null;
-  const managerSubmittedCount = managerStatuses.filter(
-    (status) => status.submitted,
-  ).length;
 
   return (
-    <div className={manager ? "availability-page" : "availability-page employee-view employee-availability-view"}>
-      {!manager ? (
+    <div className="availability-page employee-view employee-availability-view">
         <header className="employee-view-heading">
           <div><p className="employee-view-eyebrow">Work preferences</p><h1>Availability</h1>
             <p className="employee-view-description">{selectedWeek ? formatWeekRange(selectedWeek) : "Set the hours you’re available to work."}</p>
           </div>
           {selectedWeek ? <Link className="employee-action" href="/app/availability">Normal availability</Link> : null}
         </header>
-      ) : (
-      <PageHeader
-        eyebrow={selectedWeek ? "Weekly availability" : "My scheduling inputs"}
-        title={selectedWeek ? `Availability · ${formatWeekRange(selectedWeek)}` : "Availability"}
-        description={
-          selectedWeek
-            ? "Submit the hours you can work for this specific schedule week."
-            : "Set the hours you normally can work. This becomes the baseline for future schedules."
-        }
-        actions={
-          selectedWeek ? (
-            <Link className="button secondary" href="/app/availability">
-              Normal availability
-            </Link>
-          ) : undefined
-        }
-      />
-      )}
 
       {!selectedWeek && upcomingWeek?.availabilityDeadline ? (
         <section className="availability-deadline-banner">
@@ -206,7 +170,7 @@ export default async function AvailabilityPage({
             className="button primary"
             href={`/app/availability?week=${upcomingWeek.weekStart}`}
           >
-            {manager ? "Submit weekly availability" : "Submit for this week"}
+            Submit for this week
           </Link>
         </section>
       ) : null}
@@ -235,7 +199,6 @@ export default async function AvailabilityPage({
         >
           <div>
             <strong>{submissionCopy.label}</strong>
-            {manager ? <span>{submissionCopy.detail}</span> : null}
           </div>
           {submissionStatus.updatedAt ? (
             <small>
@@ -243,54 +206,6 @@ export default async function AvailabilityPage({
               {formatPuertoRicoDateTime(submissionStatus.updatedAt)}
             </small>
           ) : null}
-        </section>
-      ) : null}
-
-      {manager && selectedWeek ? (
-        <section className="panel availability-team-status">
-          <div className="availability-team-heading">
-            <div>
-              <h2>Team availability</h2>
-              <p>
-                {managerSubmittedCount}/{managerStatuses.length} active employees
-                submitted for this week.
-              </p>
-            </div>
-            <StatusPill
-              tone={
-                managerSubmittedCount === managerStatuses.length
-                  ? "success"
-                  : "warning"
-              }
-            >
-              {managerStatuses.length - managerSubmittedCount} missing
-            </StatusPill>
-          </div>
-
-          <div className="availability-team-list">
-            {managerStatuses.map((status) => (
-              <div
-                className={
-                  params.employeeId === status.employeeId
-                    ? "availability-team-row selected"
-                    : "availability-team-row"
-                }
-                id={`availability-${status.employeeId}`}
-                key={status.employeeId}
-              >
-                <div>
-                  <strong>{status.employeeName}</strong>
-                  <span>{status.employeeId}</span>
-                </div>
-                <div className="availability-team-state">
-                  <StatusPill tone={status.submitted ? "success" : "warning"}>
-                    {managerSubmissionLabel(status)}
-                  </StatusPill>
-                  {status.state === "LOCKED" ? <small>Locked</small> : null}
-                </div>
-              </div>
-            ))}
-          </div>
         </section>
       ) : null}
 
@@ -316,7 +231,7 @@ export default async function AvailabilityPage({
         initialAvailability={initialAvailability}
         weekStart={selectedWeek}
         locked={locked}
-        employeeView={!manager}
+        employeeView
       />
     </div>
   );
