@@ -37,6 +37,14 @@ export function formatEmployeeMetric(
   }).format(value);
 }
 
+function ScheduleArrow({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 12h16m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
 export function EmployeeDashboard({
   firstName,
   weekStart,
@@ -99,7 +107,9 @@ export function EmployeeDashboard({
           <section className="employee-home-upcoming" aria-labelledby="employee-upcoming-heading">
             <header className="employee-home-section-heading">
               <h2 id="employee-upcoming-heading">Upcoming Shifts</h2>
-              <Link href={`/app/schedule?week=${encodeURIComponent(weekStart)}`}>My Schedule <span aria-hidden="true">↗</span></Link>
+              <Link href={`/app/schedule?week=${encodeURIComponent(weekStart)}`}>
+                My Schedule <ScheduleArrow />
+              </Link>
             </header>
             {upcomingShifts.length ? (
               <div className="employee-home-agenda-list">
@@ -115,7 +125,7 @@ export function EmployeeDashboard({
                         {shift.locationName ? <small>{shift.locationName}</small> : null}
                         {shift.isDesignatedLead ? <small className="employee-home-lead">Designated Lead</small> : null}
                       </span>
-                      <svg className="employee-home-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+                      <ScheduleArrow className="employee-home-row-arrow" />
                     </Link>
                   );
                 })}
@@ -131,7 +141,13 @@ export function EmployeeDashboard({
           <section className="employee-home-summary" aria-labelledby="employee-week-heading">
             <h2 id="employee-week-heading">This Week</h2>
             <dl className="employee-home-metrics">
-              <div><dt>Scheduled Hours</dt><dd>{formatEmployeeMetric(scheduledHours, "hours")}</dd></div>
+              <div>
+                <dt>Scheduled Hours</dt>
+                <dd>
+                  <span>{formatEmployeeMetric(scheduledHours, "hours").replace(" hrs", "")}</span>
+                  {" "}<small className="employee-home-metric-unit">hrs</small>
+                </dd>
+              </div>
               <div><dt>Est. Earnings</dt><dd>{formatEmployeeMetric(estimatedEarnings, "earnings")}</dd></div>
             </dl>
             <p className="employee-home-disclaimer">*Calculated from published scheduled shifts; excludes tips.</p>

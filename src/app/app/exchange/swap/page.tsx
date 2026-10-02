@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
+import { EmployeeShiftPicker } from "@/components/employee-shift-picker";
 import { requireSelfService } from "@/lib/auth/permissions";
 import { currentDateInPuertoRico, formatDayLabel, formatTime } from "@/lib/date-utils";
 import {
@@ -70,20 +71,17 @@ export default async function SwapPage({
           {targets.length ? (
             <form action={proposeSwapAction} className="employee-form">
               <input type="hidden" name="sourceShiftId" value={source.id} />
-              <label>
-                Requested shift
-                <select name="targetShiftId" defaultValue="" required>
-                  <option value="" disabled>Select a shift</option>
-                  {targets.map((target) => (
-                    <option key={target.id} value={target.id}>
-                      {shiftLabel(target)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-
-
+              <EmployeeShiftPicker options={targets.map((target) => {
+                const targetDate = formatDayLabel(target.date);
+                return {
+                  id: target.id,
+                  label: shiftLabel(target),
+                  dateLabel: `${targetDate.weekday} ${targetDate.day}`,
+                  timeLabel: `${formatTime(target.startTime)} – ${formatTime(target.endTime)}`,
+                  employeeName: target.employeeName,
+                  locationName: target.locationName,
+                };
+              })} />
               <div className="form-footer">
                 <Link className="button secondary" href="/app/exchange">Cancel</Link>
                 <EmployeeSubmitButton className="employee-action primary" pendingText="Sending…">Send swap request</EmployeeSubmitButton>
