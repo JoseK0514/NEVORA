@@ -138,7 +138,7 @@ export default async function SchedulePage({
         {params.acknowledged && !employeeAcknowledgement.acknowledged ? <p className="employee-notice success" role="status">Schedule acknowledged.</p> : null}
 
         {hasPublishedShifts && employeeAcknowledgement.latestRevisionId ? (
-          <div className={employeeAcknowledgement.acknowledged ? "employee-schedule-ack acknowledged" : "employee-schedule-ack"}>
+          <div className={`employee-schedule-ack${employeeAcknowledgement.acknowledged ? " acknowledged" : employeeAcknowledgement.needsAcknowledgement ? " needs-ack" : ""}`}>
             <p>{employeeAcknowledgement.acknowledged ? "Schedule acknowledged" : "Review and acknowledge this week’s schedule."}</p>
             {employeeAcknowledgement.needsAcknowledgement ? (
               <form action={acknowledgeScheduleAction}>
@@ -165,8 +165,8 @@ export default async function SchedulePage({
                       <span>{locations.find((location) => location.id === shift.locationId)?.shortName}</span>
                       {shift.isDesignatedLead || shift.isCalloutApproved ? (
                         <div className="employee-schedule-tags">
-                          {shift.isDesignatedLead ? <small>Designated Lead</small> : null}
-                          {shift.isCalloutApproved ? <small>Call-out approved</small> : null}
+                          {shift.isDesignatedLead ? <small className="employee-designated-lead">Designated Lead</small> : null}
+                          {shift.isCalloutApproved ? <small className="employee-approved-callout">Call-out approved</small> : null}
                         </div>
                       ) : null}
                     </div>

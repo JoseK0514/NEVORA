@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NavIcon } from "@/components/nav-icon";
 import { redirect } from "next/navigation";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { EmployeeShiftPicker } from "@/components/employee-shift-picker";
@@ -89,8 +90,9 @@ export default async function SwapPage({
             </form>
           ) : (
             <div className="empty-state">
-              <strong>No other published shifts are available for a swap this week.</strong>
-              <span>You can still offer your shift for coverage.</span>
+              <span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span>
+              <strong>No shifts to trade</strong>
+              <span>No other published shifts are available this week; you can still offer your shift for coverage.</span>
             </div>
           )}
         </article>

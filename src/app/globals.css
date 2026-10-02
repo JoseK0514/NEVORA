@@ -11992,3 +11992,115 @@ body {
 .employee-shift-picker-error { margin: 0; color: var(--color-state-danger); font-size: 12px; line-height: 1.4; }
 .employee-exchange-detail-view .employee-shift-picker select:not(.sr-only) { height: 64px; padding-inline: 16px; border: 1px solid var(--color-border-subtle); border-radius: 12px; }
 .employee-exchange-detail-view .employee-shift-picker select.sr-only { width: 1px; height: 1px; min-height: 1px; padding: 0; border: 0; }
+
+/* Final Employee / Lead treatment. Fuel tokens stay local to this shell;
+   Manager and Clocker retain their existing palette and approved geometry. */
+.employee-shell {
+  --color-bg-main: color-mix(in srgb, var(--fuel-canvas) 55%, var(--color-bg-surface));
+  --color-brand-accent: color-mix(in srgb, var(--fuel-orange) 68%, var(--fuel-coffee-dark));
+  --employee-brand-soft: color-mix(in srgb, var(--fuel-orange) 12%, var(--color-bg-surface));
+  --employee-rail-muted: color-mix(in srgb, var(--soft-caramel) 80%, var(--fuel-coffee-dark));
+  --employee-rail-hover: color-mix(in srgb, var(--caramel) 10%, transparent);
+  --employee-rail-active: color-mix(in srgb, var(--caramel) 18%, transparent);
+  background: var(--color-bg-main);
+}
+.employee-shell .sidebar {
+  background: var(--fuel-coffee-dark);
+  color: var(--fuel-ivory);
+  border-right-color: var(--fuel-coffee-dark);
+}
+.employee-shell .sidebar :is(.nav-link, .nav-icon, .sidebar-logout-row) { color: var(--employee-rail-muted); }
+.employee-shell .sidebar .nav-link:hover,
+.employee-shell .sidebar .sidebar-logout-row:hover {
+  background: var(--employee-rail-hover);
+  color: var(--fuel-ivory);
+}
+.employee-shell .sidebar .nav-link.active {
+  background: var(--employee-rail-active);
+  color: var(--fuel-ivory);
+}
+.employee-shell .sidebar .nav-link.active .nav-icon { color: var(--caramel); }
+.employee-shell .sidebar-profile { border-top-color: color-mix(in srgb, var(--soft-caramel) 16%, transparent); }
+.employee-shell .sidebar-profile .avatar { background: var(--soft-caramel); color: var(--fuel-coffee-dark); }
+.employee-shell .sidebar-profile-copy strong { color: var(--fuel-ivory); }
+.employee-shell .sidebar-profile-copy small { color: var(--employee-rail-muted); }
+.employee-shell .sidebar :is(a, button):focus-visible { outline-color: var(--caramel); }
+.employee-shell .mobile-header { background: var(--fuel-ivory); }
+.employee-shell .role-chip { background: var(--employee-brand-soft); color: var(--fuel-coffee); }
+.employee-shell .mobile-nav-link.active,
+.employee-shell .employee-more-link.active { background: var(--employee-brand-soft); color: var(--color-brand-accent); }
+.employee-shell .mobile-nav-link:hover,
+.employee-shell .employee-more-link:hover { background: var(--color-bg-main); }
+.employee-shell .employee-more-link.active > svg { color: var(--color-brand-accent); }
+
+/* States use pale local surfaces and legible text, never a colored card. */
+.employee-shell .status-pill.neutral { background: var(--color-bg-main); color: var(--muted); }
+.employee-shell :is(.employee-quiet-status, .status-pill).success { background: var(--color-state-success-bg); color: var(--color-state-success); }
+.employee-shell .status-pill.warning { background: var(--color-state-warning-bg); color: var(--color-state-warning); }
+.employee-shell [data-status="PENDING"] .status-pill { background: var(--color-state-warning-bg); color: var(--color-state-warning); }
+.employee-shell :is([data-status="DENIED"], [data-status="DECLINED"], [data-employee-status="DENIED"]) .status-pill { background: var(--color-state-danger-bg); color: var(--color-state-danger); }
+.employee-shell .employee-action.danger { background: var(--color-state-danger-bg); color: var(--color-state-danger); }
+.employee-shell .employee-action:hover:not(:disabled) { opacity: 1; background: color-mix(in srgb, var(--color-bg-main) 92%, var(--fuel-coffee)); }
+.employee-shell .employee-action.primary:hover:not(:disabled) { background: var(--fuel-coffee); }
+.employee-shell .employee-action.danger:hover:not(:disabled) { background: color-mix(in srgb, var(--color-state-danger-bg) 90%, var(--color-state-danger)); }
+.employee-shell .employee-action:active:not(:disabled) { opacity: .85; }
+
+/* Home keeps the approved surfaces, row rhythm, and charcoal metrics. */
+.employee-shell .employee-home-today { box-shadow: inset 2px 0 var(--caramel), var(--shadow-premium); }
+.employee-shell .employee-home-today > .employee-home-eyebrow { color: var(--color-brand-accent); }
+.employee-shell .employee-home-status > span { color: var(--muted); }
+.employee-shell .employee-home-lead { color: var(--color-brand-accent); }
+.employee-shell .employee-home-metrics dd { color: var(--color-brand-primary); }
+
+/* Schedule: green work state, neutral time off, warm current-day marker. */
+.employee-shell .employee-schedule-shift > strong { color: var(--color-state-success); }
+.employee-shell .employee-schedule-day.today .employee-agenda-date { color: var(--color-brand-accent); }
+.employee-shell .employee-schedule-day.today .employee-agenda-date > span { color: inherit; }
+.employee-shell .employee-schedule-day.selected { background: var(--employee-brand-soft); }
+.employee-shell .employee-schedule-tags .employee-designated-lead { color: var(--color-brand-accent); }
+.employee-shell .employee-schedule-tags .employee-approved-callout { color: var(--color-state-success); }
+.employee-shell .employee-schedule-ack.needs-ack > p {
+  color: var(--color-state-warning);
+  background: var(--color-state-warning-bg);
+  box-shadow: 0 0 0 4px var(--color-state-warning-bg);
+  border-radius: 2px;
+}
+.employee-shell .employee-schedule-ack.acknowledged > p { color: var(--color-state-success); }
+.employee-shell .employee-week-control > a:hover { color: var(--color-brand-primary); background: var(--color-bg-main); }
+
+/* Availability highlights the capsule and deadline, preserving neutral rows. */
+.employee-shell .employee-availability-form .availability-state-pill input:checked + span { background: var(--color-state-success-bg); color: var(--color-state-success); }
+.employee-shell .employee-availability-form .availability-state-pill input:focus-visible + span { outline: 2px solid var(--color-brand-accent); outline-offset: 3px; box-shadow: none; }
+.employee-shell .employee-availability-view .availability-deadline-banner:not(.locked) :is(.eyebrow, strong, span) { color: var(--color-state-warning); }
+.employee-shell .employee-availability-view .availability-deadline-banner .button { background: var(--color-state-warning-bg); color: var(--color-state-warning); }
+.employee-shell .employee-availability-view .availability-submission-status.pending strong { color: var(--color-state-warning); }
+.employee-shell .employee-availability-view .availability-submission-status.submitted strong { color: var(--color-state-success); }
+
+/* Selected tabs and picker share one quiet Fuel tint. */
+.employee-shell .employee-timeoff-view .timeoff-tabs > a.selected,
+.employee-shell .employee-view-tabs > a.selected,
+.employee-shell .employee-timeoff-form .timeoff-setting-segmented button.selected,
+.employee-shell .employee-shift-picker-option.active { background: var(--employee-brand-soft); color: var(--color-brand-accent); }
+.employee-shell .employee-timeoff-view .timeoff-tabs > a:not(.selected):hover,
+.employee-shell .employee-view-tabs > a:not(.selected):hover { color: var(--color-brand-primary); }
+.employee-shell .employee-time-readiness-icon { background: var(--employee-brand-soft); color: var(--color-brand-accent); }
+.employee-shell .employee-exchange-detail-view .callout-warning strong { color: var(--color-state-warning); }
+
+/* Empty states reuse the existing icon grid in the existing top inset. */
+.employee-shell :is(.employee-home-empty-state, .employee-view-empty, .timeoff-empty-state, .employee-exchange-detail-view .empty-state) { position: relative; }
+.employee-shell .employee-empty-icon { position: absolute; top: 2px; left: 0; width: 16px; height: 16px; display: grid; place-items: center; color: var(--color-brand-accent); }
+.employee-shell .employee-exchange-detail-view .employee-empty-icon { top: -2px; }
+.employee-shell .timeoff-empty-state .employee-empty-icon { display: grid; }
+
+/* Quiet 140ms feedback throughout, with explicit keyboard focus. */
+.employee-shell :is(.employee-action, .employee-week-control > a, .mobile-nav-link, .employee-more-link, .timeoff-tabs > a, .employee-view-tabs > a, .employee-shift-picker-trigger, .employee-shift-picker-option, .availability-preferences-button, .timeoff-settings-cancel, .timeoff-settings-submit) { transition: background-color 140ms ease, color 140ms ease, opacity 140ms ease; }
+.employee-shell :is(input:not([type="hidden"]), select, textarea):focus-visible { outline: 2px solid var(--color-brand-accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  /* The system preference must override component transition specificity. */
+  .employee-shell *, .employee-shell *::before, .employee-shell *::after { transition: none !important; }
+}
+.employee-shell .employee-timeoff-form :is(.timeoff-settings-cancel, .timeoff-settings-submit):hover:not(:disabled) { transform: none; opacity: 1; }
+.employee-shell .employee-timeoff-form .timeoff-settings-submit:hover:not(:disabled) { background: var(--fuel-coffee); }
+.employee-shell .employee-timeoff-form .timeoff-settings-cancel:hover { background: var(--color-bg-main); }
+.employee-shell .employee-shift-picker-option.active .employee-shift-picker-option-copy > :is(small, span) { color: var(--fuel-coffee); }
+.employee-shell .employee-shift-picker-option-copy > :is(small, span) { color: color-mix(in srgb, var(--muted) 80%, var(--fuel-coffee)); }

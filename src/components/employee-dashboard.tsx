@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NavIcon } from "./nav-icon";
 import { formatDayLabel, formatTime } from "../lib/date-utils";
 
 export type EmployeeUpcomingShift = {
@@ -132,6 +133,7 @@ export function EmployeeDashboard({
               </div>
             ) : (
               <div className="employee-home-empty-state">
+                <span className="employee-empty-icon"><NavIcon name="schedule" employee size={16} /></span>
                 <strong>You&apos;re all caught up</strong>
                 <p>No more published shifts are scheduled this week.</p>
               </div>

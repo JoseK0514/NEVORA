@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NavIcon } from "@/components/nav-icon";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { isManagerRole } from "@/lib/auth/permissions";
@@ -220,7 +221,7 @@ export default async function ExchangePage({
                   <button className="employee-action primary" type="submit">Claim Shift</button>
                 </form>
               </div>
-            )) : <div className="employee-view-empty"><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
+            )) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
           ) : hasTradeRequests ? (
             <>
               {myShifts.length ? <section className="employee-exchange-section">
@@ -233,7 +234,7 @@ export default async function ExchangePage({
                       <span>{shift.locationName}</span>
                     </div>
                     <div className="employee-shift-entry-actions">
-                      <Link className="employee-action" href={`/app/exchange/callout?shiftId=${shift.id}`}>Unable to Work</Link>
+                      <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${shift.id}`}>Unable to Work</Link>
                       <form action={offerCoverageAction}><input type="hidden" name="sourceShiftId" value={shift.id} /><button className="employee-action" type="submit">Offer Shift</button></form>
                       <Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${shift.id}`}>Trade Shift</Link>
                     </div>
@@ -268,9 +269,9 @@ export default async function ExchangePage({
                       <span>{formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</span>
                       <span>{exchange.sourceShift.locationName}</span>
                     </div>
-                    <div className="employee-shift-entry-actions">
+                    <div className="employee-shift-entry-actions" data-status={exchange.status}>
                       <StatusPill tone={statusTone(exchange.status)}>{statusLabel(exchange.status)}</StatusPill>
-                      {["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? <form action={cancelExchangeAction}><input type="hidden" name="exchangeId" value={exchange.id} /><button className="employee-action" type="submit">Cancel</button></form> : null}
+                      {["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? <form action={cancelExchangeAction}><input type="hidden" name="exchangeId" value={exchange.id} /><button className="employee-action danger" type="submit">Cancel</button></form> : null}
                     </div>
                   </div>
                 ))}
@@ -284,15 +285,15 @@ export default async function ExchangePage({
                       <strong>{marketplaceDate(callout.date)} · {formatTime(callout.startTime)} – {formatTime(callout.endTime)}</strong>
                       <span>{calloutReason(callout.reasonCode)}</span>
                     </div>
-                    <div className="employee-shift-entry-actions">
+                    <div className="employee-shift-entry-actions" data-status={callout.status}>
                       <StatusPill tone={statusTone(callout.status)}>{statusLabel(callout.status)}</StatusPill>
-                      {callout.status === "PENDING" ? <form action={cancelCalloutAction}><input type="hidden" name="calloutId" value={callout.id} /><button className="employee-action" type="submit">Cancel</button></form> : null}
+                      {callout.status === "PENDING" ? <form action={cancelCalloutAction}><input type="hidden" name="calloutId" value={callout.id} /><button className="employee-action danger" type="submit">Cancel</button></form> : null}
                     </div>
                   </div>
                 ))}
               </section> : null}
             </>
-          ) : <div className="employee-view-empty"><strong>No trade requests yet</strong><p>Your offers, swaps, and coverage requests will appear here.</p></div>}
+          ) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>No trade requests yet</strong><p>Your offers, swaps, and coverage requests will appear here.</p></div>}
         </div>
       </div>
     );

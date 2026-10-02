@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NavIcon } from "@/components/nav-icon";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { isTimeOffReviewerRole } from "@/lib/auth/permissions";
@@ -149,7 +150,7 @@ export default async function RequestsPage({
             <div className="request-list timeoff-request-list">
               {mine.length ? (
                 mine.map((request) => (
-                  <div className="request-list-row timeoff-request-row" key={request.id}>
+                  <div className="request-list-row timeoff-request-row" data-employee-status={!manager ? request.status : undefined} key={request.id}>
                     <div className="request-row-copy">
                       {manager ? (
                         <><strong>{requestRange(request)}</strong>
@@ -169,7 +170,7 @@ export default async function RequestsPage({
                 ))
               ) : (
                 <div className="timeoff-empty-state">
-                  <span className="empty-state-mark" aria-hidden="true">—</span>
+                  {manager ? <span className="empty-state-mark" aria-hidden="true">—</span> : <span className="employee-empty-icon"><NavIcon name="timeOff" employee size={16} /></span>}
                   <strong>No time-off requests yet</strong>
                   <span>Your submitted requests will appear here.</span>
                 </div>

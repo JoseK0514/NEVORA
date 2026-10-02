@@ -23,6 +23,7 @@ vi.mock("@/lib/data/acknowledgements", () => import("../../lib/data/acknowledgem
 vi.mock("@/lib/data/schedules", () => import("../../lib/data/schedules"));
 vi.mock("@/lib/scheduling/exchange-validation", () => import("../../lib/scheduling/exchange-validation"));
 vi.mock("@/lib/scheduling/validate-shift", () => import("../../lib/scheduling/validate-shift"));
+vi.mock("@/components/nav-icon", () => import("../../components/nav-icon"));
 vi.mock("@/components/page-header", () => import("../../components/page-header"));
 vi.mock("@/components/status-pill", () => import("../../components/status-pill"));
 vi.mock("@/components/employee-submit-button", () => import("../../components/employee-submit-button"));
