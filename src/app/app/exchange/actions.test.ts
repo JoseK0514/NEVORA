@@ -18,7 +18,7 @@ beforeEach(() => vi.clearAllMocks());
 it.each(["OWNER", "MANAGER"] as const)("prevents a new swap requiring an unavailable %s personal response", async role => {
   vi.mocked(requireSession).mockResolvedValue({ id: "employee-1", firstName: "Sam", lastName: "Cruz", role: "EMPLOYEE", primaryLocationId: "loc-1" });
   vi.mocked(getPublishedShift).mockResolvedValueOnce(source).mockResolvedValueOnce({ ...source, id: "shift-2", employeeId: "manager-1" });
-  const context = { employee: { active: true, role: "EMPLOYEE" as const, eligibleLocationIds: ["loc-1"] }, existingShifts: [], availability: [], approvedTimeOff: [], existingWeeklyMinutes: 0 };
+  const context = { employee: { active: true, role: "EMPLOYEE" as const, eligibleLocationIds: ["loc-1"], targetWeeklyHours: undefined, maximumWeeklyHours: 40 }, existingShifts: [], availability: [], weeklyAvailability: [], availabilityExceptions: [], approvedTimeOff: [], existingWeeklyMinutes: 0 };
   vi.mocked(getShiftValidationContext).mockResolvedValueOnce(context).mockResolvedValueOnce({ ...context, employee: { ...context.employee, role } });
   const data = new FormData(); data.set("sourceShiftId", "shift-1"); data.set("targetShiftId", "shift-2");
   await expect(proposeSwapAction(data)).rejects.toThrow("error=EMPLOYEE_NOT_ELIGIBLE"); expect(createSwapProposal).not.toHaveBeenCalled();

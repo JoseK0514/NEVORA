@@ -188,3 +188,8 @@ describe("buildManagerActionItems", () => {
     ).toEqual([]);
   });
 });
+
+it("preserves the Lead requirement in the suggestion link for a Lead-only gap", () => {
+ const [item] = buildManagerActionItems({ weekStart: "2026-09-28", coverageGaps: [{ key: "lead", locationId: "loc-1", locationName: "FUEL – 2", date: "2026-09-30", startTime: "08:00", endTime: "12:00", gap: 0 }], availabilityDeadlineSet: true, coverageRulesConfigured: true });
+ expect(item.href).toContain("&lead=1");
+});

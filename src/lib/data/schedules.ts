@@ -1,5 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
+import { addDays, weekStartFor } from "../date-utils";
+import { minutesInWorkweek, shiftPeriod } from "../scheduling/periods";
+import { readAvailabilityInputs } from "./availability-inputs";
 import type { ScheduleStatus, UserRole } from "@/lib/domain";
 
 export type ScheduleShiftRow = {
@@ -36,15 +39,19 @@ export async function listWeekShifts({
   weekStart,
   employeeId,
   publishedOnly = false,
+  byBusinessWorkweek = false,
 }: {
   weekStart: string;
   employeeId?: string;
   publishedOnly?: boolean;
+  byBusinessWorkweek?: boolean;
 }): Promise<ScheduleShiftRow[]> {
   const sql = getDb();
 
-  const conditions = ["s.week_start = $1"];
-  const values: Array<string> = [weekStart];
+  const conditions = byBusinessWorkweek
+    ? ["s.status <> 'ARCHIVED'", "((sh.date >= $1 AND sh.date < $2) OR (sh.date = $3 AND sh.end_time < sh.start_time))"]
+    : ["s.week_start = $1"];
+  const values: Array<string> = byBusinessWorkweek ? [weekStart, addDays(weekStart, 7), addDays(weekStart, -1)] : [weekStart];
 
   if (employeeId) {
     values.push(employeeId);
@@ -129,134 +136,84 @@ export async function listScheduleStatuses(weekStart: string): Promise<LocationS
 export async function getShiftValidationContext({
   employeeId,
   date,
-  weekStart,
+  endDate,
 }: {
   employeeId: string;
   date: string;
   weekStart: string;
+  endDate?: string;
 }) {
   const sql = getDb();
-
-  const [employeeRowsRaw, shiftRowsRaw, availabilityRowsRaw, timeOffRowsRaw, weeklyRowsRaw] =
-    await Promise.all([
-      sql.query(
-        `SELECT
-           e.active,
-           e.role,
-           COALESCE(
-             array_agg(elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL),
-             ARRAY[]::text[]
-           ) AS eligible_location_ids
-         FROM employees e
-         LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id
-         WHERE e.id = $1
-         GROUP BY e.id, e.active, e.role`,
-        [employeeId],
-      ),
-      sql.query(
-        `SELECT
-           sh.id,
-           sh.employee_id,
-           s.location_id,
-           sh.date,
-           sh.start_time,
-           sh.end_time
-         FROM shifts sh
-         JOIN schedules s ON s.id = sh.schedule_id
-         WHERE sh.employee_id = $1
-           AND sh.date = $2`,
-        [employeeId, date],
-      ),
-      sql.query(
-        `WITH weekly AS (
-           SELECT day_of_week, start_time, end_time
-           FROM weekly_availability_windows
-           WHERE employee_id = $1
-             AND week_start = $2
-         )
-         SELECT day_of_week, start_time, end_time
-         FROM weekly
-         UNION ALL
-         SELECT day_of_week, start_time, end_time
-         FROM availability_windows
-         WHERE employee_id = $1
-           AND NOT EXISTS (SELECT 1 FROM weekly)`,
-        [employeeId, weekStart],
-      ),
-      sql.query(
-        `SELECT start_date, end_date, start_time, end_time
-         FROM time_off_requests
-         WHERE employee_id = $1
-           AND status = 'APPROVED'
-           AND start_date <= $2
-           AND end_date >= $2`,
-        [employeeId, date],
-      ),
-      sql.query(
-        `SELECT COALESCE(
-           SUM(EXTRACT(EPOCH FROM (sh.end_time - sh.start_time)) / 60),
-           0
-         ) AS weekly_minutes
-         FROM shifts sh
-         JOIN schedules s ON s.id = sh.schedule_id
-         WHERE sh.employee_id = $1
-           AND s.week_start = $2`,
-        [employeeId, weekStart],
-      ),
-    ]);
-
-  const employeeRows = queryRows(employeeRowsRaw);
-  const shiftRows = queryRows(shiftRowsRaw);
-  const availabilityRows = queryRows(availabilityRowsRaw);
-  const timeOffRows = queryRows(timeOffRowsRaw);
-  const weeklyRows = queryRows(weeklyRowsRaw);
-
-  const employee = employeeRows[0] as
-    | {
-        active: boolean;
-        role: UserRole;
-        eligible_location_ids: string[] | null;
-      }
+  const firstWeek = weekStartFor(date),
+    lastWeek = weekStartFor(endDate ?? addDays(date, 1));
+  const [employeeRaw, shiftsRaw, leaveRaw, inputs] = await Promise.all([
+    sql.query(
+      `SELECT e.active, e.role, ss.target_weekly_hours, COALESCE(ss.maximum_weekly_hours, 40) AS maximum_weekly_hours,
+      COALESCE(array_agg(elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL), ARRAY[]::text[]) AS eligible_location_ids
+      FROM employees e LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id
+      LEFT JOIN employee_scheduling_settings ss ON ss.employee_id = e.id WHERE e.id = $1
+      GROUP BY e.id, e.active, e.role, ss.target_weekly_hours, ss.maximum_weekly_hours`,
+      [employeeId],
+    ),
+    sql.query(
+      `SELECT sh.id, sh.employee_id, s.location_id, sh.date, sh.start_time, sh.end_time, sh.is_designated_lead
+      FROM shifts sh JOIN schedules s ON s.id = sh.schedule_id
+      WHERE sh.employee_id = $1 AND sh.date >= $2 AND sh.date < $3 AND s.status <> 'ARCHIVED'
+      AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id = sh.id AND c.employee_id = sh.employee_id AND c.status = 'APPROVED')`,
+      [employeeId, addDays(firstWeek, -1), addDays(lastWeek, 7)],
+    ),
+    sql.query(
+      `SELECT start_date, end_date, start_time, end_time, status FROM time_off_requests
+      WHERE employee_id = $1 AND status = 'APPROVED' AND start_date <= $3 AND end_date >= $2`,
+      [employeeId, date, endDate ?? addDays(date, 1)],
+    ),
+    readAvailabilityInputs(employeeId, firstWeek, lastWeek),
+  ]);
+  const employee = queryRows(employeeRaw)[0] as
+    | Record<string, unknown>
     | undefined;
-
   if (!employee) return null;
-
+  const existingShifts = queryRows(shiftsRaw).map((row) => {
+    const item = row as Record<string, unknown>;
+    return {
+      id: String(item.id),
+      employeeId: String(item.employee_id),
+      locationId: String(item.location_id),
+      date: dateValue(item.date),
+      startTime: timeValue(item.start_time),
+      endTime: timeValue(item.end_time),
+      isDesignatedLead: Boolean(item.is_designated_lead),
+    };
+  });
   return {
     employee: {
-      active: employee.active,
-      role: employee.role,
-      eligibleLocationIds: employee.eligible_location_ids ?? [],
+      active: Boolean(employee.active),
+      role: employee.role as UserRole,
+      eligibleLocationIds:
+        (employee.eligible_location_ids as string[] | null) ?? [],
+      targetWeeklyHours:
+        employee.target_weekly_hours == null
+          ? undefined
+          : Number(employee.target_weekly_hours),
+      maximumWeeklyHours: Number(employee.maximum_weekly_hours ?? 40),
     },
-    existingShifts: shiftRows.map((row) => {
-      const item = row as Record<string, unknown>;
-      return {
-        id: String(item.id),
-        employeeId: String(item.employee_id),
-        locationId: String(item.location_id),
-        date: dateValue(item.date),
-        startTime: timeValue(item.start_time),
-        endTime: timeValue(item.end_time),
-      };
-    }),
-    availability: availabilityRows.map((row) => {
-      const item = row as Record<string, unknown>;
-      return {
-        dayOfWeek: Number(item.day_of_week),
-        startTime: timeValue(item.start_time),
-        endTime: timeValue(item.end_time),
-      };
-    }),
-    approvedTimeOff: timeOffRows.map((row) => {
+    existingShifts,
+    availability: inputs.normal,
+    weeklyAvailability: inputs.weeks,
+    availabilityExceptions: inputs.exceptions,
+    approvedTimeOff: queryRows(leaveRaw).map((row) => {
       const item = row as Record<string, unknown>;
       return {
         startDate: dateValue(item.start_date),
         endDate: dateValue(item.end_date),
         startTime: item.start_time ? timeValue(item.start_time) : undefined,
         endTime: item.end_time ? timeValue(item.end_time) : undefined,
+        status: "APPROVED",
       };
     }),
-    existingWeeklyMinutes: Number(
-      (weeklyRows[0] as { weekly_minutes?: string | number } | undefined)?.weekly_minutes ?? 0,
+    existingWeeklyMinutes: existingShifts.reduce(
+      (sum, shift) => sum + minutesInWorkweek(shiftPeriod(shift), firstWeek),
+      0,
     ),
   };
 }

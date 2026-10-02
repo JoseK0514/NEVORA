@@ -142,6 +142,7 @@ export default async function DashboardPage({
     employees,
     locations,
     latestRevision,
+    healthShifts,
   ] = await Promise.all([
     listWeekShifts({ weekStart }),
     weekStart === currentWeek
@@ -161,6 +162,7 @@ export default async function DashboardPage({
     listEmployees(),
     listLocations(),
     getLatestPublicationRevision(weekStart),
+    listWeekShifts({ weekStart, byBusinessWorkweek: true }),
   ]);
 
   const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
@@ -220,7 +222,7 @@ export default async function DashboardPage({
   );
 
   const health = calculateScheduleHealth({
-    shifts: effectiveShifts.map((shift) => ({
+    shifts: healthShifts.filter(shift => !shift.isCalloutApproved).map((shift) => ({
       id: shift.id,
       employeeId: shift.employeeId,
       employeeName: shift.employeeName,
@@ -239,6 +241,8 @@ export default async function DashboardPage({
     employees: employeeTargets.map((employee) => ({
       id: employee.employeeId,
       name: employee.employeeName,
+      role: employee.role,
+      active: true,
       targetWeeklyHours: targetMap.get(employee.employeeId),
     })),
     coverageWindows,
@@ -275,6 +279,7 @@ export default async function DashboardPage({
         startTime: block.startTime,
         endTime: block.endTime,
         gap: block.gap,
+        requiresLead: block.requiresLead && !block.leadCovered,
       })),
     hourIssues: [
       ...health.hourBalances.flatMap((balance) =>

@@ -1,123 +1,100 @@
 import { describe, expect, it } from "vitest";
 import { rankCoverageCandidates } from "./coverage-ranking";
-
-describe("rankCoverageCandidates", () => {
-  it("filters employees who cannot actually cover the shift", () => {
-    const ranked = rankCoverageCandidates([
+import type { ValidateShiftInput } from "./validate-shift";
+function candidate(
+  employeeId: string,
+  employeeName: string,
+  scheduledHours: number,
+  targetHours: number | undefined,
+  priorUnderTargetWeeks = 0,
+) {
+  const shift = {
+    employeeId,
+    locationId: "loc-1",
+    date: "2026-10-02",
+    startTime: "08:00",
+    endTime: "16:00",
+  };
+  const rules: ValidateShiftInput = {
+    candidate: shift,
+    employee: {
+      active: true,
+      role: "EMPLOYEE",
+      eligibleLocationIds: ["loc-1"],
+      targetWeeklyHours: targetHours,
+    },
+    availability: [{ dayOfWeek: 5, startTime: "06:00", endTime: "18:00" }],
+    existingShifts: scheduledHours
+      ? [
+          {
+            ...shift,
+            date: "2026-09-28",
+            startTime: "00:00",
+            endDate: "2026-09-29",
+            endTime: `${String(scheduledHours - 24).padStart(2, "0")}:00`,
+          },
+        ]
+      : [],
+    approvedTimeOff: [],
+  };
+  if (scheduledHours > 0 && scheduledHours <= 24)
+    rules.existingShifts = [
       {
-        employeeId: "A",
-        employeeName: "Available",
-        eligible: true,
-        active: true,
-        available: true,
-        conflictFree: true,
-        scheduledHours: 20,
-        targetHours: 32,
-        priorUnderTargetWeeks: 1,
+        ...shift,
+        date: "2026-09-28",
+        startTime: "00:00",
+        endTime:
+          scheduledHours === 24
+            ? "24:00"
+            : `${String(scheduledHours).padStart(2, "0")}:00`,
       },
-      {
-        employeeId: "B",
-        employeeName: "Conflict",
-        eligible: true,
-        active: true,
-        available: true,
-        conflictFree: false,
-        scheduledHours: 5,
-        targetHours: 40,
-        priorUnderTargetWeeks: 3,
-      },
-    ]);
-
-    expect(ranked.map((item) => item.employeeId)).toEqual(["A"]);
+    ];
+  return { employeeName, priorUnderTargetWeeks, rules };
+}
+describe("coverage preference ranking uses the shared eligibility engine", () => {
+  it("filters actual overlapping assignments instead of trusting independent boolean flags", () => {
+    const blocked = candidate("B", "Conflict", 5, 40, 3);
+    blocked.rules.existingShifts = [blocked.rules.candidate];
+    expect(
+      rankCoverageCandidates([
+        candidate("A", "Available", 20, 32, 1),
+        blocked,
+      ]).map((item) => item.employeeId),
+    ).toEqual(["A"]);
   });
-
-  it("prioritizes employees who need more hours", () => {
-    const ranked = rankCoverageCandidates([
-      {
-        employeeId: "A",
-        employeeName: "Ana",
-        eligible: true,
-        active: true,
-        available: true,
-        conflictFree: true,
-        scheduledHours: 30,
-        targetHours: 32,
-        priorUnderTargetWeeks: 3,
-      },
-      {
-        employeeId: "B",
-        employeeName: "Luis",
-        eligible: true,
-        active: true,
-        available: true,
-        conflictFree: true,
-        scheduledHours: 18,
-        targetHours: 40,
-        priorUnderTargetWeeks: 0,
-      },
-    ]);
-
-    expect(ranked[0]).toMatchObject({
-      employeeId: "B",
-      hoursNeeded: 22,
-    });
-  });
-
-  it("uses repeated under-target history as a tie breaker", () => {
-    const ranked = rankCoverageCandidates([
-      {
-        employeeId: "A",
-        employeeName: "Ana",
-        eligible: true,
-        active: true,
-        available: true,
-        conflictFree: true,
-        scheduledHours: 24,
-        targetHours: 32,
-        priorUnderTargetWeeks: 1,
-      },
-      {
-        employeeId: "B",
-        employeeName: "Luis",
-        eligible: true,
-        active: true,
-        available: true,
-        conflictFree: true,
-        scheduledHours: 32,
-        targetHours: 40,
-        priorUnderTargetWeeks: 3,
-      },
-    ]);
-
-    expect(ranked.map((item) => item.employeeId)).toEqual(["B", "A"]);
-  });
-
-  it("keeps employees without an hour target eligible but behind equally valid employees who need hours", () => {
-    const ranked = rankCoverageCandidates([
-      {
-        employeeId: "A",
-        employeeName: "No Target",
-        eligible: true,
-        active: true,
-        available: true,
-        conflictFree: true,
-        scheduledHours: 0,
-        priorUnderTargetWeeks: 0,
-      },
-      {
-        employeeId: "B",
-        employeeName: "Needs Hours",
-        eligible: true,
-        active: true,
-        available: true,
-        conflictFree: true,
-        scheduledHours: 28,
-        targetHours: 40,
-        priorUnderTargetWeeks: 0,
-      },
-    ]);
-
-    expect(ranked[0].employeeId).toBe("B");
-    expect(ranked[1].hoursNeeded).toBe(0);
+  it("prioritizes employees who need more target hours", () =>
+    expect(
+      rankCoverageCandidates([
+        candidate("A", "Ana", 30, 32, 3),
+        candidate("B", "Luis", 18, 40),
+      ])[0],
+    ).toMatchObject({ employeeId: "B", hoursNeeded: 22 }));
+  it("uses repeated under-target history as a tie breaker", () =>
+    expect(
+      rankCoverageCandidates([
+        candidate("A", "Ana", 24, 32, 1),
+        candidate("B", "Luis", 32, 40, 3),
+      ]).map((item) => item.employeeId),
+    ).toEqual(["B", "A"]));
+  it("retains employees without a target behind eligible employees needing hours", () =>
+    expect(
+      rankCoverageCandidates([
+        candidate("A", "No target", 0, undefined),
+        candidate("B", "Needs hours", 28, 40),
+      ]).map((item) => item.hoursNeeded),
+    ).toEqual([12, 0]));
+  it("rejects inactive, unavailable, ineligible-location, over-maximum and unqualified Lead candidates", () => {
+    const inputs = [
+      candidate("A", "Inactive", 0, 24),
+      candidate("B", "Unavailable", 0, 24),
+      candidate("C", "Other location", 0, 24),
+      candidate("D", "Over cap", 35, 24),
+      candidate("E", "Not Lead", 0, 24),
+    ];
+    inputs[0].rules.employee.active = false;
+    inputs[1].rules.availability = [];
+    inputs[2].rules.employee.eligibleLocationIds = [];
+    inputs[4].rules.candidate.isDesignatedLead = true;
+    expect(rankCoverageCandidates(inputs)).toEqual([]);
   });
 });

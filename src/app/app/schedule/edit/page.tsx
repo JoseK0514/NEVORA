@@ -1,3 +1,4 @@
+import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
@@ -14,7 +15,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   SHIFT_OVERLAP: "That employee already has an overlapping shift.",
   APPROVED_TIME_OFF: "That employee has approved time off during this shift.",
   EMPLOYEE_INACTIVE: "Inactive employees cannot be scheduled.",
-  INVALID_TIME_RANGE: "Shift end time must be after the start time.",
+  INVALID_TIME_RANGE: "Enter a valid shift date and time period.",
   INVALID_SHIFT_LEAD:
     "Only an Owner, Manager, or Lead can be the designated shift lead.",
 };
@@ -58,7 +59,7 @@ export default async function EditShiftPage({
 
       {params.error ? (
         <p className="form-error">
-          {ERROR_MESSAGES[params.error] ?? "The shift could not be updated."}
+          {ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The shift could not be updated."}
         </p>
       ) : null}
 

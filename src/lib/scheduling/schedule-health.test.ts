@@ -22,7 +22,7 @@ const locations: HealthLocation[] = [
 ];
 
 const employees: HealthEmployee[] = [
-  { id: "E-1", name: "Ana", targetWeeklyHours: 40 },
+  { id: "E-1", name: "Ana", role: "LEAD", active: true, targetWeeklyHours: 40 },
   { id: "E-2", name: "Luis", targetWeeklyHours: 32 },
   { id: "E-3", name: "Mia", targetWeeklyHours: 24 },
 ];
@@ -208,7 +208,7 @@ describe("calculateScheduleHealth", () => {
       shifts,
       locations,
       employees: [
-        { id: "E-1", name: "Ana", targetWeeklyHours: 40 },
+        { id: "E-1", name: "Ana", role: "LEAD", active: true, targetWeeklyHours: 40 },
         { id: "E-9", name: "No target" },
       ],
     });
@@ -246,7 +246,7 @@ describe("calculateScheduleHealth", () => {
       },
     ];
 
-    const health = calculateScheduleHealth({ shifts, locations, employees: [] });
+    const health = calculateScheduleHealth({ shifts, locations, employees: [{ id: "A", name: "Lead", role: "LEAD", active: true }, { id: "B", name: "Barista", role: "EMPLOYEE", active: true }] });
     const fuel2 = health.locationCoverage.find((item) => item.locationId === "loc-1");
 
     expect(fuel2).toMatchObject({

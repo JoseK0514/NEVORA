@@ -1,3 +1,4 @@
+import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { ManagerShiftRequests } from "@/components/manager-shift-requests";
 import { NavIcon } from "@/components/nav-icon";
@@ -167,7 +168,7 @@ export default async function ExchangePage({
     return (
       <div className="employee-view employee-shift-requests-view">
         <header className="employee-view-heading"><div><p className="employee-view-eyebrow">Schedule flexibility</p><h1>Shift Requests</h1></div></header>
-        {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? "The exchange could not be processed."}</p> : null}
+        {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The exchange could not be processed."}</p> : null}
         {successMessage ? <p className="employee-notice success" role="status">{successMessage}</p> : null}
 
         <nav className="employee-view-tabs" aria-label="Shift marketplace views">

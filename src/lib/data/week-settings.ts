@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 
+import { readAvailabilityInputs } from "./availability-inputs";
+import { resolveAvailabilityWeek, type AvailabilityHours } from "../scheduling/availability";
+import { buildWeeklyAvailabilityUpdate } from "../scheduling/weekly-availability";
+
 export type WeekSettings = {
   weekStart: string;
   availabilityDeadline?: string;
@@ -44,6 +48,7 @@ export async function setAvailabilityDeadline(input: {
   const sql = getDb();
 
   const seedQueries = [
+    sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + input.weekStart}, 0))`,
     sql`INSERT INTO schedule_week_settings (
       week_start,
       availability_deadline,
@@ -79,6 +84,7 @@ export async function setAvailabilityDeadline(input: {
            FROM weekly_availability_windows
            WHERE week_start = $1
              AND employee_id = $2
+           UNION ALL SELECT 1 FROM weekly_availability_submissions WHERE week_start = $1 AND employee_id = $2
            LIMIT 1`,
           [input.weekStart, employee.id],
         ),
@@ -131,81 +137,70 @@ export async function listWeeklyAvailability(
   employeeId: string,
   weekStart: string,
 ) {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-      `SELECT id, day_of_week, start_time, end_time
-       FROM weekly_availability_windows
-       WHERE employee_id = $1
-         AND week_start = $2
-       ORDER BY day_of_week, start_time`,
-      [employeeId, weekStart],
-    ),
+  const inputs = await readAvailabilityInputs(employeeId, weekStart);
+  return resolveAvailabilityWeek({ weekStart, ...inputs }).map(
+    (window, index) => ({
+      id: `${employeeId}:${weekStart}:${index}`,
+      ...window,
+    }),
   );
-
-  return rows.map((row) => {
-    const item = row as Record<string, unknown>;
-    return {
-      id: String(item.id),
-      dayOfWeek: Number(item.day_of_week),
-      startTime: String(item.start_time).slice(0, 5),
-      endTime: String(item.end_time).slice(0, 5),
-    };
-  });
 }
+
+export class AvailabilityDeadlineError extends Error {}
+export class AvailabilityConcurrencyError extends Error {}
 
 export async function replaceWeeklyAvailability(
   employeeId: string,
   weekStart: string,
-  windows: Array<{
-    dayOfWeek: number;
-    startTime: string;
-    endTime: string;
-  }>,
+  windows: AvailabilityHours[],
+  changedDays?: number[],
 ) {
   const sql = getDb();
-
-  const queries = [
-    sql`DELETE FROM weekly_availability_windows
-        WHERE employee_id = ${employeeId}
-          AND week_start = ${weekStart}`,
-    ...windows.map(
-      (window) =>
-        sql`INSERT INTO weekly_availability_windows (
-          id,
-          week_start,
-          employee_id,
-          day_of_week,
-          start_time,
-          end_time,
-          updated_at
-        ) VALUES (
-          ${randomUUID()},
-          ${weekStart},
-          ${employeeId},
-          ${window.dayOfWeek},
-          ${window.startTime},
-          ${window.endTime},
-          now()
-        )`,
-    ),
-    sql`INSERT INTO weekly_availability_submissions (
-      week_start,
-      employee_id,
-      submitted_at,
-      updated_at
-    ) VALUES (
-      ${weekStart},
-      ${employeeId},
-      now(),
-      now()
-    )
-    ON CONFLICT (week_start, employee_id)
-    DO UPDATE SET
-      updated_at = now()`,
-  ];
-
-  await sql.transaction(queries);
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const inputs = await readAvailabilityInputs(employeeId, weekStart);
+    const version =
+      inputs.weeks.find((week) => week.weekStart === weekStart)
+        ?.submissionVersion ?? null;
+    const update = buildWeeklyAvailabilityUpdate({
+      weekStart,
+      ...inputs,
+      windows,
+      changedDays,
+    });
+    const queries = [
+      sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + weekStart}, 0))`,
+      // Abort the whole transaction if the deadline passed after the action's check.
+      // The deadline writer shares this lock; recheck wall time after waiting.
+      sql`SELECT 1 / CASE WHEN EXISTS (SELECT 1 FROM schedule_week_settings WHERE week_start = ${weekStart} AND availability_deadline < clock_timestamp()) THEN 0 ELSE 1 END AS deadline_guard`,
+      // Check the exact read version under the lock before converting legacy days.
+      sql`SELECT (CASE WHEN (SELECT updated_at::text FROM weekly_availability_submissions WHERE employee_id = ${employeeId} AND week_start = ${weekStart}) IS NOT DISTINCT FROM ${version} THEN '1' ELSE 'availability_version_conflict' END)::integer AS version_guard`,
+      sql`DELETE FROM weekly_availability_windows WHERE employee_id = ${employeeId} AND week_start = ${weekStart}`,
+      ...update.windows.map(
+        (window) =>
+          sql`INSERT INTO weekly_availability_windows (id, week_start, employee_id, day_of_week, start_time, end_time, updated_at) VALUES (${randomUUID()}, ${weekStart}, ${employeeId}, ${window.dayOfWeek}, ${window.startTime}, ${window.endTime}, now())`,
+      ),
+      ...update.overrides.flatMap((day) => [
+        sql`DELETE FROM availability_exceptions WHERE employee_id = ${employeeId} AND date = ${day.date}`,
+        ...day.exceptions.map(
+          (exception) =>
+            sql`INSERT INTO availability_exceptions (id, employee_id, date, kind, start_time, end_time) VALUES (${randomUUID()}, ${employeeId}, ${day.date}, ${exception.kind}, ${exception.startTime ?? null}, ${exception.endTime ?? null})`,
+        ),
+      ]),
+      sql`INSERT INTO weekly_availability_submissions (week_start, employee_id, submitted_at, updated_at, uses_normal_availability) VALUES (${weekStart}, ${employeeId}, now(), now(), true) ON CONFLICT (week_start, employee_id) DO UPDATE SET updated_at = now(), uses_normal_availability = true`,
+    ];
+    try {
+      await sql.transaction(queries);
+      return;
+    } catch (error) {
+      if ((error as { code?: string }).code === "22P02") continue;
+      if ((error as { code?: string }).code === "22012")
+        throw new AvailabilityDeadlineError("Weekly availability is locked");
+      throw error;
+    }
+  }
+  throw new AvailabilityConcurrencyError(
+    "Availability changed while saving; review the week and try again.",
+  );
 }
 
 export async function getUpcomingAvailabilityWeek(

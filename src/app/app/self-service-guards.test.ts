@@ -9,11 +9,14 @@ import SwapPage from "./exchange/swap/page";
 import CalloutPage from "./exchange/callout/page";
 import { requireSelfService, TIME_OFF_REVIEW_ROLES, SELF_SERVICE_ROLES } from "@/lib/auth/permissions";
 import { requestTimeOffAction, reviewTimeOffAction } from "./requests/actions";
+import { saveScheduleHealthSettingsAction } from "./schedule/settings/actions";
 import { createTimeOffRequest, reviewTimeOffRequest } from "@/lib/data/requests";
 
 vi.mock("@/lib/auth/session", () => ({ requireSession: vi.fn() }));
 // Resolve production aliases locally; no worktree-specific Vitest configuration.
 vi.mock("@/lib/auth/permissions", () => import("../../lib/auth/permissions"));
+vi.mock("@/lib/scheduling/periods", () => import("../../lib/scheduling/periods"));
+vi.mock("@/lib/data/schedule-health", () => import("../../lib/data/schedule-health"));
 vi.mock("@/lib/date-utils", () => import("../../lib/date-utils"));
 vi.mock("@/lib/data/availability", () => import("../../lib/data/availability"));
 vi.mock("@/lib/data/week-settings", () => import("../../lib/data/week-settings"));
@@ -55,7 +58,7 @@ it.each(["EMPLOYEE", "LEAD"] as const)("%s retains the self-service permission b
   const viewer = { id: "viewer", firstName: "Sam", lastName: "Cruz", role, primaryLocationId: "loc-1" };
   vi.mocked(requireSession).mockResolvedValue(viewer);
   expect(await requireSelfService()).toEqual(viewer);
-  for (const review of [reviewTimeOffAction, reviewExchangeAction, reviewCalloutAction]) {
+  for (const review of [reviewTimeOffAction, reviewExchangeAction, reviewCalloutAction, saveScheduleHealthSettingsAction]) {
     await expect(review(new FormData())).rejects.toThrow("redirect:/app");
   }
   expect(getDb).not.toHaveBeenCalled();

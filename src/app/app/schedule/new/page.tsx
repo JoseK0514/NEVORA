@@ -19,6 +19,7 @@ export default async function NewShiftPage({
     locationId?: string;
     start?: string;
     end?: string;
+    lead?: string;
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
@@ -99,7 +100,7 @@ export default async function NewShiftPage({
                 <input
                   type="time"
                   name="endTime"
-                  defaultValue={params.end ?? ""}
+                  defaultValue={params.end === "24:00" ? "00:00" : params.end ?? ""}
                   required
                 />
               </label>
@@ -107,7 +108,7 @@ export default async function NewShiftPage({
           </section>
 
           <label className="new-shift-lead-toggle">
-            <input type="checkbox" name="isDesignatedLead" />
+            <input type="checkbox" name="isDesignatedLead" defaultChecked={params.lead === "1"} />
             <span>Designated Shift Lead</span>
           </label>
         </div>

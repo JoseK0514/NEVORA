@@ -13,6 +13,7 @@ export type ExchangeShift = {
   date: string;
   startTime: string;
   endTime: string;
+  isDesignatedLead?: boolean;
 };
 
 export type ExchangeRecord = {
@@ -57,6 +58,7 @@ function mapShift(row: Record<string, unknown>, prefix: string): ExchangeShift {
     date: dateValue(row[`${prefix}_date`]),
     startTime: timeValue(row[`${prefix}_start_time`]),
     endTime: timeValue(row[`${prefix}_end_time`]),
+    isDesignatedLead: Boolean(row[`${prefix}_is_designated_lead`]),
   };
 }
 
@@ -82,6 +84,7 @@ const EXCHANGE_SELECT = `
     source.date AS source_date,
     source.start_time AS source_start_time,
     source.end_time AS source_end_time,
+    source.is_designated_lead AS source_is_designated_lead,
 
     target_shift.id AS target_shift_id,
     target_shift.schedule_id AS target_schedule_id,
@@ -92,7 +95,8 @@ const EXCHANGE_SELECT = `
     target_schedule.week_start AS target_week_start,
     target_shift.date AS target_date,
     target_shift.start_time AS target_start_time,
-    target_shift.end_time AS target_end_time
+    target_shift.end_time AS target_end_time,
+    target_shift.is_designated_lead AS target_is_designated_lead
 
   FROM shift_exchanges x
   JOIN employees requester
@@ -147,6 +151,7 @@ function mapExchange(row: unknown): ExchangeRecord {
       date: dateValue(item.target_date),
       startTime: timeValue(item.target_start_time),
       endTime: timeValue(item.target_end_time),
+      isDesignatedLead: Boolean(item.target_is_designated_lead),
     } : undefined,
     createdAt:
       item.created_at instanceof Date
@@ -169,7 +174,8 @@ export async function getPublishedShift(shiftId: string): Promise<ExchangeShift 
        s.week_start AS source_week_start,
        sh.date AS source_date,
        sh.start_time AS source_start_time,
-       sh.end_time AS source_end_time
+       sh.end_time AS source_end_time,
+       sh.is_designated_lead AS source_is_designated_lead
      FROM shifts sh
      JOIN schedules s ON s.id = sh.schedule_id
      JOIN employees e ON e.id = sh.employee_id
@@ -202,7 +208,8 @@ export async function listEmployeePublishedShifts(
        s.week_start AS source_week_start,
        sh.date AS source_date,
        sh.start_time AS source_start_time,
-       sh.end_time AS source_end_time
+       sh.end_time AS source_end_time,
+       sh.is_designated_lead AS source_is_designated_lead
      FROM shifts sh
      JOIN schedules s ON s.id = sh.schedule_id
      JOIN employees e ON e.id = sh.employee_id
@@ -248,7 +255,8 @@ export async function listSwapTargets(
        s.week_start AS source_week_start,
        sh.date AS source_date,
        sh.start_time AS source_start_time,
-       sh.end_time AS source_end_time
+       sh.end_time AS source_end_time,
+       sh.is_designated_lead AS source_is_designated_lead
      FROM shifts sh
      JOIN schedules s ON s.id = sh.schedule_id
      JOIN employees e ON e.id = sh.employee_id

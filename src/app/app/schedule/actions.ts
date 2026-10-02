@@ -67,15 +67,9 @@ export async function createShiftAction(formData: FormData) {
     redirect(scheduleUrl(weekStart, "&error=EMPLOYEE_NOT_FOUND"));
   }
 
-  if (
-    isDesignatedLead &&
-    !["OWNER", "MANAGER", "LEAD"].includes(context.employee.role)
-  ) {
-    redirect(scheduleUrl(weekStart, "&error=INVALID_SHIFT_LEAD"));
-  }
 
   const validation = validateShift({
-    candidate: { employeeId, locationId, date, startTime, endTime },
+    candidate: { employeeId, locationId, date, startTime, endTime, isDesignatedLead },
     ...context,
     mode: "MANAGER_SCHEDULE",
   });
@@ -132,7 +126,7 @@ export async function publishScheduleAction(formData: FormData) {
   if (!confirmWarnings) {
     const [shifts, employees, staffing, targets, coverageWindows] =
       await Promise.all([
-        listWeekShifts({ weekStart }),
+        listWeekShifts({ weekStart, byBusinessWorkweek: true }),
         listEmployees(),
         listLocationStaffingSettings(),
         listEmployeeHourTargets(),
@@ -165,6 +159,8 @@ export async function publishScheduleAction(formData: FormData) {
         .map((employee) => ({
           id: employee.id,
           name: `${employee.firstName} ${employee.lastName}`,
+          role: employee.role,
+          active: employee.active,
           targetWeeklyHours: targetMap.get(employee.id),
         })),
       coverageWindows,
@@ -241,30 +237,14 @@ export async function updateShiftAction(formData: FormData) {
     redirect(scheduleUrl(existing.weekStart, "&error=EMPLOYEE_NOT_FOUND"));
   }
 
-  if (
-    isDesignatedLead &&
-    !["OWNER", "MANAGER", "LEAD"].includes(context.employee.role)
-  ) {
-    redirect(
-      `/app/schedule/edit?shiftId=${encodeURIComponent(
-        shiftId,
-      )}&error=INVALID_SHIFT_LEAD`,
-    );
-  }
 
   const adjusted =
     employeeId === existing.employeeId
       ? prepareExchangeContext(
-          {
-            existingShifts: context.existingShifts,
-            existingWeeklyMinutes: context.existingWeeklyMinutes,
-          },
+          context,
           existing,
         )
-      : {
-          existingShifts: context.existingShifts,
-          existingWeeklyMinutes: context.existingWeeklyMinutes,
-        };
+      : context;
 
   const validation = validateShift({
     candidate: {
@@ -273,12 +253,9 @@ export async function updateShiftAction(formData: FormData) {
       date,
       startTime,
       endTime,
+      isDesignatedLead,
     },
-    employee: context.employee,
-    existingShifts: adjusted.existingShifts,
-    availability: context.availability,
-    approvedTimeOff: context.approvedTimeOff,
-    existingWeeklyMinutes: adjusted.existingWeeklyMinutes,
+    ...adjusted,
     mode: "MANAGER_SCHEDULE",
   });
 
@@ -380,6 +357,7 @@ export async function copyPreviousWeekAction(formData: FormData) {
         date,
         startTime: shift.startTime,
         endTime: shift.endTime,
+        isDesignatedLead: shift.isDesignatedLead,
       },
       ...context,
       mode: "MANAGER_SCHEDULE",

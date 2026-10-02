@@ -2,6 +2,7 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 import { requireSession } from "@/lib/auth/session";
+import { getShiftValidationContext } from "@/lib/data/schedules";
 import CoverageSuggestionsPage from "../app/app/schedule/coverage/page";
 import { ManagerTimeOff } from "./manager-time-off";
 import { ManagerAvailability } from "./manager-availability";
@@ -13,6 +14,7 @@ import { listPendingCallouts } from "@/lib/data/callouts";
 
 vi.mock("@/lib/auth/session", () => ({ requireSession: vi.fn() }));
 vi.mock("@/lib/auth/permissions", () => import("../lib/auth/permissions"));
+vi.mock("@/lib/scheduling/periods", () => import("../lib/scheduling/periods"));
 vi.mock("@/lib/date-utils", () => import("../lib/date-utils"));
 vi.mock("@/components/page-header", () => import("./page-header"));
 vi.mock("@/components/status-pill", () => import("./status-pill"));
@@ -27,7 +29,7 @@ vi.mock("@/lib/data/availability-submissions", () => ({ listAvailabilitySubmissi
   {employeeId:"unavailable",employeeName:"Unavailable Person",submitted:true,windowCount:0,state:"SUBMITTED_UNAVAILABLE"},
   {employeeId:"available",employeeName:"Available Person",submitted:true,windowCount:1,state:"SUBMITTED"},
 ]) }));
-vi.mock("@/lib/data/employees", () => ({ listEmployees: async () => [{id:"available",primaryLocationId:"loc"}], listLocations: async () => [{id:"loc",shortName:"FUEL – 2"}] }));
+vi.mock("@/lib/data/employees", () => ({ listEmployees: async () => [{id:"available",firstName:"Sam",lastName:"Rivera",role:"EMPLOYEE",active:true,eligibleLocationIds:["loc"],primaryLocationId:"loc"}], listLocations: async () => [{id:"loc",shortName:"FUEL – 2"}] }));
 vi.mock("@/lib/data/availability", () => ({ listTeamAvailabilityWindows: async () => [
   {id:"window",employeeId:"available",dayOfWeek:1,startTime:"06:00",endTime:"14:00"},
   {id:"seeded",employeeId:"missing",dayOfWeek:1,startTime:"07:00",endTime:"15:00"},
@@ -72,4 +74,13 @@ it("handles an invalid management week without reading or editing personal avail
   const html = renderToStaticMarkup(await ManagerAvailability({week:"2026-99-99",currentWeek:"2026-09-28"}));
   expect(html).toContain("That schedule week is not valid");
   expect(listAvailabilitySubmissionStatuses).toHaveBeenCalledWith("2026-09-28");
+});
+
+it("a Lead-gap suggestion URL rejects otherwise eligible Employees using the shared engine", async () => {
+ vi.mocked(getShiftValidationContext).mockResolvedValue({ employee: { active: true, role: "EMPLOYEE", eligibleLocationIds: ["loc"], targetWeeklyHours: 24, maximumWeeklyHours: 40 }, existingShifts: [], availability: [{ dayOfWeek: 1, startTime: "06:00", endTime: "18:00" }], weeklyAvailability: [], availabilityExceptions: [], approvedTimeOff: [], existingWeeklyMinutes: 0 });
+ const params = { week: "2026-10-05", date: "2026-10-05", locationId: "loc", start: "08:00", end: "16:00" };
+ const general = renderToStaticMarkup(await CoverageSuggestionsPage({ searchParams: Promise.resolve(params) }));
+ expect(general).toContain("1 eligible");
+ const leadOnly = renderToStaticMarkup(await CoverageSuggestionsPage({ searchParams: Promise.resolve({ ...params, lead: "1" }) }));
+ expect(leadOnly).toContain("0 eligible"); expect(leadOnly).toContain("No eligible employees found.");
 });

@@ -60,6 +60,7 @@ async function validateCoverageEligibility(
       date: source.date,
       startTime: source.startTime,
       endTime: source.endTime,
+      isDesignatedLead: source.isDesignatedLead,
     },
     ...context,
     mode: "SHIFT_EXCHANGE",
@@ -120,18 +121,12 @@ async function validateSwapEligibility(exchangeId: string) {
   }
 
   const requesterAdjusted = prepareExchangeContext(
-    {
-      existingShifts: requesterContext.existingShifts,
-      existingWeeklyMinutes: requesterContext.existingWeeklyMinutes,
-    },
+    requesterContext,
     source,
   );
 
   const targetAdjusted = prepareExchangeContext(
-    {
-      existingShifts: targetContext.existingShifts,
-      existingWeeklyMinutes: targetContext.existingWeeklyMinutes,
-    },
+    targetContext,
     target,
   );
 
@@ -142,12 +137,9 @@ async function validateSwapEligibility(exchangeId: string) {
       date: target.date,
       startTime: target.startTime,
       endTime: target.endTime,
+      isDesignatedLead: target.isDesignatedLead,
     },
-    employee: requesterContext.employee,
-    existingShifts: requesterAdjusted.existingShifts,
-    availability: requesterContext.availability,
-    approvedTimeOff: requesterContext.approvedTimeOff,
-    existingWeeklyMinutes: requesterAdjusted.existingWeeklyMinutes,
+    ...requesterAdjusted,
     mode: "SHIFT_EXCHANGE",
   });
 
@@ -158,12 +150,9 @@ async function validateSwapEligibility(exchangeId: string) {
       date: source.date,
       startTime: source.startTime,
       endTime: source.endTime,
+      isDesignatedLead: source.isDesignatedLead,
     },
-    employee: targetContext.employee,
-    existingShifts: targetAdjusted.existingShifts,
-    availability: targetContext.availability,
-    approvedTimeOff: targetContext.approvedTimeOff,
-    existingWeeklyMinutes: targetAdjusted.existingWeeklyMinutes,
+    ...targetAdjusted,
     mode: "SHIFT_EXCHANGE",
   });
 
@@ -286,17 +275,11 @@ export async function proposeSwapAction(formData: FormData) {
   }
 
   const requesterAdjusted = prepareExchangeContext(
-    {
-      existingShifts: requesterContext.existingShifts,
-      existingWeeklyMinutes: requesterContext.existingWeeklyMinutes,
-    },
+    requesterContext,
     source,
   );
   const targetAdjusted = prepareExchangeContext(
-    {
-      existingShifts: targetContext.existingShifts,
-      existingWeeklyMinutes: targetContext.existingWeeklyMinutes,
-    },
+    targetContext,
     target,
   );
 
@@ -307,12 +290,9 @@ export async function proposeSwapAction(formData: FormData) {
       date: target.date,
       startTime: target.startTime,
       endTime: target.endTime,
+      isDesignatedLead: target.isDesignatedLead,
     },
-    employee: requesterContext.employee,
-    existingShifts: requesterAdjusted.existingShifts,
-    availability: requesterContext.availability,
-    approvedTimeOff: requesterContext.approvedTimeOff,
-    existingWeeklyMinutes: requesterAdjusted.existingWeeklyMinutes,
+    ...requesterAdjusted,
     mode: "SHIFT_EXCHANGE",
   });
 
@@ -323,12 +303,9 @@ export async function proposeSwapAction(formData: FormData) {
       date: source.date,
       startTime: source.startTime,
       endTime: source.endTime,
+      isDesignatedLead: source.isDesignatedLead,
     },
-    employee: targetContext.employee,
-    existingShifts: targetAdjusted.existingShifts,
-    availability: targetContext.availability,
-    approvedTimeOff: targetContext.approvedTimeOff,
-    existingWeeklyMinutes: targetAdjusted.existingWeeklyMinutes,
+    ...targetAdjusted,
     mode: "SHIFT_EXCHANGE",
   });
 

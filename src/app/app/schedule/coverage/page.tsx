@@ -4,7 +4,6 @@ import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
-import { listEmployeeHourTargets } from "@/lib/data/schedule-health";
 import { listHourFairness } from "@/lib/data/hour-fairness";
 import { getShiftValidationContext } from "@/lib/data/schedules";
 import {
@@ -14,7 +13,7 @@ import {
   weekStartFor,
 } from "@/lib/date-utils";
 import { rankCoverageCandidates } from "@/lib/scheduling/coverage-ranking";
-import { validateShift } from "@/lib/scheduling/validate-shift";
+import { businessDateStart, shiftPeriod } from "@/lib/scheduling/periods";
 
 export default async function CoverageSuggestionsPage({
   searchParams,
@@ -25,6 +24,7 @@ export default async function CoverageSuggestionsPage({
     locationId?: string;
     start?: string;
     end?: string;
+    lead?: string;
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
@@ -35,108 +35,58 @@ export default async function CoverageSuggestionsPage({
   const startTime = params.start ?? "";
   const endTime = params.end ?? "";
 
+  try { businessDateStart(weekStart); shiftPeriod({ date, startTime, endTime }); } catch { redirect("/app/schedule?error=INVALID_SHIFT"); }
   if (
     weekStartFor(weekStart) !== weekStart ||
     !isDateInWeek(date, weekStart) ||
     !locationId ||
     !/^\d{2}:\d{2}$/.test(startTime) ||
     !/^\d{2}:\d{2}$/.test(endTime) ||
-    startTime >= endTime
+    startTime === endTime
   ) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
 
-  const [employees, targets, fairness, locations] = await Promise.all([
+  const [employees, fairness, locations] = await Promise.all([
     listEmployees(),
-    listEmployeeHourTargets(),
     listHourFairness(weekStart),
     listLocations(),
   ]);
 
-  const targetMap = new Map(
-    targets.map((target) => [target.employeeId, target.targetWeeklyHours]),
-  );
   const fairnessMap = new Map(
     fairness.map((item) => [item.employeeId, item.priorUnderTargetWeeks]),
   );
 
   const inputs = await Promise.all(
     employees.map(async (employee) => {
-      const eligible = employee.eligibleLocationIds.includes(locationId);
-
-      if (!employee.active || !eligible) {
-        return {
-          employeeId: employee.id,
-          employeeName: `${employee.firstName} ${employee.lastName}`,
-          eligible,
-          active: employee.active,
-          available: false,
-          conflictFree: false,
-          scheduledHours: 0,
-          targetHours: targetMap.get(employee.id),
-          priorUnderTargetWeeks: fairnessMap.get(employee.id) ?? 0,
-          role: employee.role,
-          primaryLocationId: employee.primaryLocationId,
-        };
-      }
-
       const context = await getShiftValidationContext({
         employeeId: employee.id,
         date,
         weekStart,
       });
-
-      if (!context) {
-        return {
-          employeeId: employee.id,
-          employeeName: `${employee.firstName} ${employee.lastName}`,
-          eligible,
-          active: employee.active,
-          available: false,
-          conflictFree: false,
-          scheduledHours: 0,
-          targetHours: targetMap.get(employee.id),
-          priorUnderTargetWeeks: fairnessMap.get(employee.id) ?? 0,
-          role: employee.role,
-          primaryLocationId: employee.primaryLocationId,
-        };
-      }
-
-      const result = validateShift({
-        candidate: {
-          employeeId: employee.id,
-          locationId,
-          date,
-          startTime,
-          endTime,
-        },
-        ...context,
-        mode: "SHIFT_EXCHANGE",
-      });
-
-      const codes = new Set(result.issues.map((issue) => issue.code));
-
+      if (!context) return null;
       return {
-        employeeId: employee.id,
         employeeName: `${employee.firstName} ${employee.lastName}`,
-        eligible,
-        active: employee.active,
-        available: !codes.has("OUTSIDE_AVAILABILITY"),
-        conflictFree:
-          !codes.has("SHIFT_OVERLAP") &&
-          !codes.has("APPROVED_TIME_OFF") &&
-          !codes.has("EMPLOYEE_INACTIVE"),
-        scheduledHours:
-          Math.round((context.existingWeeklyMinutes / 60) * 100) / 100,
-        targetHours: targetMap.get(employee.id),
-        priorUnderTargetWeeks: fairnessMap.get(employee.id) ?? 0,
         role: employee.role,
         primaryLocationId: employee.primaryLocationId,
+        priorUnderTargetWeeks: fairnessMap.get(employee.id) ?? 0,
+        rules: {
+          candidate: {
+            employeeId: employee.id,
+            locationId,
+            date,
+            startTime,
+            endTime,
+            isDesignatedLead: params.lead === "1",
+          },
+          ...context,
+        },
       };
     }),
   );
-
-  const candidates = rankCoverageCandidates(inputs);
+  const candidates = rankCoverageCandidates(
+    inputs.filter((input) => input !== null),
+  );
   const location = locations.find((item) => item.id === locationId);
   const day = formatDayLabel(date);
 
@@ -203,7 +153,7 @@ export default async function CoverageSuggestionsPage({
                 </div>
                 <Link
                   className="button primary"
-                  href={`/app/schedule/new?week=${weekStart}&date=${date}&locationId=${locationId}&employeeId=${candidate.employeeId}&start=${startTime}&end=${endTime}`}
+                  href={`/app/schedule/new?week=${weekStart}&date=${date}&locationId=${locationId}&employeeId=${candidate.employeeId}&start=${startTime}&end=${endTime}${params.lead === "1" ? "&lead=1" : ""}`}
                 >
                   Add to Schedule
                 </Link>

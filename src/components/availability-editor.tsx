@@ -57,7 +57,10 @@ export function AvailabilityEditor({
   return (
     <form action={formAction} className={employeeView ? "availability-preferences-card employee-availability-form" : "availability-preferences-card"}>
       {weekStart ? (
-        <input type="hidden" name="weekStart" value={weekStart} />
+        <>
+          <input type="hidden" name="weekStart" value={weekStart} />
+          <input type="hidden" name="changedDays" value={DAYS.filter(day => JSON.stringify(availability[day.dayOfWeek]) !== JSON.stringify(initialAvailability[day.dayOfWeek])).map(day => day.dayOfWeek).join(",")} />
+        </>
       ) : null}
 
       {!employeeView ? <header className="availability-preferences-header">
@@ -156,12 +159,12 @@ export function AvailabilityEditor({
         </button>
 
         {employeeView ? (
-          <EmployeeSubmitButton className="availability-preferences-button primary" pendingText="Saving…" disabled={locked || !dirty}>Save Preferences</EmployeeSubmitButton>
+          <EmployeeSubmitButton className="availability-preferences-button primary" pendingText="Saving…" disabled={locked || !weekStart && !dirty}>Save Preferences</EmployeeSubmitButton>
         ) : (
         <button
           className="availability-preferences-button primary"
           type="submit"
-          disabled={locked || !dirty}
+          disabled={locked || !weekStart && !dirty}
         >
           Save Preferences
         </button>

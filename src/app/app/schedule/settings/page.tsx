@@ -62,7 +62,7 @@ export default async function ScheduleSettingsPage({
           {params.error === "invalid_staffing"
             ? "Staffing requirements must be whole numbers between 1 and 100."
             : params.error === "invalid_hours"
-              ? "Weekly hour targets must be between 0 and 168 hours."
+              ? "Targets and maximums must be between 0 and 168 hours."
               : params.error === "duplicate_window"
                 ? "That coverage window already exists."
                 : "Enter a valid day, time range, and optional staffing override."}
@@ -133,10 +133,10 @@ export default async function ScheduleSettingsPage({
             <div className="schedule-rule-heading">
               <div>
                 <p className="eyebrow">Hours balance</p>
-                <h2>Employee weekly targets</h2>
+                <h2>Employee weekly hours</h2>
                 <p>
-                  Leave a target blank if that employee should not be included
-                  in the weekly hours review.
+                  Targets guide hours balance. Maximums limit scheduled hours.
+                  Leave a target blank to exclude it from the hours review.
                 </p>
               </div>
             </div>
@@ -148,7 +148,7 @@ export default async function ScheduleSettingsPage({
                 );
 
                 return (
-                  <label className="hour-target-row" key={employee.employeeId}>
+                  <div className="hour-target-row" key={employee.employeeId}>
                     <span className="hour-target-employee">
                       <strong>{employee.employeeName}</strong>
                       <small>
@@ -158,19 +158,17 @@ export default async function ScheduleSettingsPage({
                       </small>
                     </span>
 
-                    <span className="hour-target-input">
-                      <input
-                        type="number"
-                        name={`target-${employee.employeeId}`}
-                        defaultValue={employee.targetWeeklyHours ?? ""}
-                        min={0}
-                        max={168}
-                        step={0.25}
-                        placeholder="Not set"
-                      />
-                      <small>hrs / week</small>
-                    </span>
-                  </label>
+                    <div className="employee-hour-inputs">
+                      <label className="employee-hour-field">
+                        <span>Target</span>
+                        <span className="hour-target-input"><input type="number" name={`target-${employee.employeeId}`} aria-label={`${employee.employeeName} target weekly hours`} defaultValue={employee.targetWeeklyHours ?? ""} min={0} max={168} step={0.25} placeholder="Not set" /><small>hrs / week</small></span>
+                      </label>
+                      <label className="employee-hour-field">
+                        <span>Maximum</span>
+                        <span className="hour-target-input"><input type="number" name={`maximum-${employee.employeeId}`} aria-label={`${employee.employeeName} maximum weekly hours`} defaultValue={employee.maximumWeeklyHours ?? 40} min={0} max={168} step={0.25} required /><small>hrs / week</small></span>
+                      </label>
+                    </div>
+                  </div>
                 );
               })}
             </div>

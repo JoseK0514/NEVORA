@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { timeMinutes } from "@/lib/scheduling/periods";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
   createCoverageWindow,
@@ -36,24 +37,32 @@ export async function saveScheduleHealthSettingsAction(formData: FormData) {
   });
 
   const hourTargets = employees.map((employee) => {
-    const raw = String(formData.get(`target-${employee.employeeId}`) ?? "").trim();
-
-    if (!raw) {
-      return {
-        employeeId: employee.employeeId,
-        targetWeeklyHours: undefined,
-      };
-    }
-
-    const value = Number(raw);
-
-    if (!Number.isFinite(value) || value < 0 || value > 168) {
+    const raw = String(
+      formData.get(`target-${employee.employeeId}`) ?? "",
+    ).trim();
+    const maximumRaw = String(
+      formData.get(`maximum-${employee.employeeId}`) ?? "",
+    ).trim();
+    const targetWeeklyHours = raw ? Number(raw) : undefined;
+    const maximumWeeklyHours = Number(maximumRaw);
+    if (
+      !maximumRaw ||
+      !Number.isFinite(maximumWeeklyHours) ||
+      maximumWeeklyHours < 0 ||
+      maximumWeeklyHours > 168 ||
+      (targetWeeklyHours !== undefined &&
+        (!Number.isFinite(targetWeeklyHours) ||
+          targetWeeklyHours < 0 ||
+          targetWeeklyHours > 168))
+    )
       redirect("/app/schedule/settings?error=invalid_hours");
-    }
-
     return {
       employeeId: employee.employeeId,
-      targetWeeklyHours: Math.round(value * 4) / 4,
+      targetWeeklyHours:
+        targetWeeklyHours === undefined
+          ? undefined
+          : Math.round(targetWeeklyHours * 4) / 4,
+      maximumWeeklyHours: Math.round(maximumWeeklyHours * 4) / 4,
     };
   });
 
@@ -74,11 +83,15 @@ export async function addCoverageWindowAction(formData: FormData) {
   const locationId = String(formData.get("locationId") ?? "");
   const dayOfWeek = Number(formData.get("dayOfWeek"));
   const startTime = String(formData.get("startTime") ?? "");
-  const endTime = String(formData.get("endTime") ?? "");
+  const endInput = String(formData.get("endTime") ?? "");
+  const endTime = endInput === "00:00" ? "24:00" : endInput;
   const minimumRaw = String(formData.get("minimumStaff") ?? "").trim();
   const minimumStaff = minimumRaw ? Number(minimumRaw) : undefined;
 
+  let validTimes = true;
+  try { timeMinutes(startTime); timeMinutes(endTime, true); } catch { validTimes = false; }
   if (
+    !validTimes ||
     !locationId ||
     !Number.isInteger(dayOfWeek) ||
     dayOfWeek < 0 ||

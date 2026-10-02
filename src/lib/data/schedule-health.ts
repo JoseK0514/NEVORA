@@ -23,6 +23,7 @@ export type EmployeeHourTarget = {
   role: string;
   primaryLocationId: string;
   targetWeeklyHours?: number;
+  maximumWeeklyHours: number;
 };
 
 export async function listLocationStaffingSettings(): Promise<LocationStaffingSetting[]> {
@@ -32,7 +33,7 @@ export async function listLocationStaffingSettings(): Promise<LocationStaffingSe
       `SELECT
          l.id AS location_id,
          l.short_name AS location_name,
-         COALESCE(s.minimum_staff_per_shift, 1) AS minimum_staff_per_shift,
+         s.minimum_staff_per_shift,
          COALESCE(s.requires_designated_lead, true) AS requires_designated_lead
        FROM locations l
        LEFT JOIN location_staffing_settings s
@@ -44,6 +45,7 @@ export async function listLocationStaffingSettings(): Promise<LocationStaffingSe
 
   return rows.map((row) => {
     const item = row as Record<string, unknown>;
+    if (item.minimum_staff_per_shift == null) throw new Error(`Staffing requirement missing for ${item.location_name}`);
     return {
       locationId: String(item.location_id),
       locationName: String(item.location_name),
@@ -62,7 +64,8 @@ export async function listEmployeeHourTargets(): Promise<EmployeeHourTarget[]> {
          e.first_name || ' ' || e.last_name AS employee_name,
          e.role,
          e.primary_location_id,
-         s.target_weekly_hours
+         s.target_weekly_hours,
+         COALESCE(s.maximum_weekly_hours, 40) AS maximum_weekly_hours
        FROM employees e
        LEFT JOIN employee_scheduling_settings s
          ON s.employee_id = e.id
@@ -86,6 +89,7 @@ export async function listEmployeeHourTargets(): Promise<EmployeeHourTarget[]> {
       employeeName: String(item.employee_name),
       role: String(item.role),
       primaryLocationId: String(item.primary_location_id),
+      maximumWeeklyHours: Number(item.maximum_weekly_hours ?? 40),
       targetWeeklyHours:
         item.target_weekly_hours === null || item.target_weekly_hours === undefined
           ? undefined
@@ -132,6 +136,7 @@ export async function saveEmployeeHourTargets(
   targets: Array<{
     employeeId: string;
     targetWeeklyHours?: number;
+    maximumWeeklyHours: number;
   }>,
 ) {
   const sql = getDb();
@@ -141,15 +146,18 @@ export async function saveEmployeeHourTargets(
       sql`INSERT INTO employee_scheduling_settings (
         employee_id,
         target_weekly_hours,
+        maximum_weekly_hours,
         updated_at
       ) VALUES (
         ${target.employeeId},
         ${target.targetWeeklyHours ?? null},
+        ${target.maximumWeeklyHours},
         now()
       )
       ON CONFLICT (employee_id)
       DO UPDATE SET
         target_weekly_hours = EXCLUDED.target_weekly_hours,
+        maximum_weekly_hours = EXCLUDED.maximum_weekly_hours,
         updated_at = now()`,
   );
 

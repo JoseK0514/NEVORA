@@ -47,7 +47,7 @@ function buildState(
         {
           available: Boolean(existing),
           startTime: existing?.startTime ?? "06:00",
-          endTime: existing?.endTime ?? "18:00",
+          endTime: existing?.endTime === "24:00" ? "00:00" : existing?.endTime ?? "18:00",
         },
       ];
     }),
@@ -128,11 +128,7 @@ export default async function AvailabilityPage({
     settings = weekSettings;
     submissionStatus = status;
 
-    if (settings?.availabilityDeadline) {
-      initialAvailability = buildState(weekly);
-    } else if (weekly.length) {
-      initialAvailability = buildState(weekly);
-    }
+    initialAvailability = buildState(weekly);
   }
 
   // Server-rendered deadline status intentionally reflects the current request time.
@@ -213,7 +209,9 @@ export default async function AvailabilityPage({
         <p className="form-error">
           {params.error === "locked"
             ? "The availability deadline for this week has passed."
-            : params.error === "invalid_week"
+            : params.error === "concurrent"
+              ? "Your availability changed while saving. Review this week and try again."
+              : params.error === "invalid_week"
               ? "That schedule week is not valid."
               : "Every available day needs a valid start and end time."}
         </p>

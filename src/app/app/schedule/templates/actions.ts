@@ -81,13 +81,6 @@ export async function applyTemplateAction(formData: FormData) {
       continue;
     }
 
-    if (
-      templateShift.isDesignatedLead &&
-      !["OWNER", "MANAGER", "LEAD"].includes(context.employee.role)
-    ) {
-      skipped += 1;
-      continue;
-    }
 
     const validation = validateShift({
       candidate: {
@@ -96,6 +89,7 @@ export async function applyTemplateAction(formData: FormData) {
         date,
         startTime: templateShift.startTime,
         endTime: templateShift.endTime,
+        isDesignatedLead: templateShift.isDesignatedLead,
       },
       ...context,
       mode: "MANAGER_SCHEDULE",

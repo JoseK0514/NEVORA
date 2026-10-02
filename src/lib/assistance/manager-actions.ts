@@ -33,6 +33,7 @@ export type ManagerCoverageGapInput = {
   startTime: string;
   endTime: string;
   gap: number;
+  requiresLead?: boolean;
 };
 
 export type ManagerHourIssueInput = {
@@ -98,7 +99,8 @@ function coverageAction(
       `&date=${encode(gap.date)}` +
       `&locationId=${encode(gap.locationId)}` +
       `&start=${encode(gap.startTime)}` +
-      `&end=${encode(gap.endTime)}`,
+      `&end=${encode(gap.endTime)}` +
+      (leadOnly || gap.requiresLead ? "&lead=1" : ""),
     dateTime: `${gap.date}T${gap.startTime}`,
     locationId: gap.locationId,
   };

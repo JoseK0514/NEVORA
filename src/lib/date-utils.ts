@@ -1,8 +1,10 @@
+export const BUSINESS_TIME_ZONE = "America/Puerto_Rico";
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export function currentDateInPuertoRico() {
   const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Puerto_Rico",
+    timeZone: BUSINESS_TIME_ZONE,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -17,7 +19,7 @@ export function currentDateInPuertoRico() {
 
 export function currentTimeInPuertoRico() {
   const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Puerto_Rico",
+    timeZone: BUSINESS_TIME_ZONE,
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
@@ -88,7 +90,7 @@ export function formatDayLabel(date: string) {
 
 export function formatTime(time: string) {
   const [hourString, minute] = time.slice(0, 5).split(":");
-  const hour = Number(hourString);
+  const hour = Number(hourString) % 24;
   const suffix = hour >= 12 ? "PM" : "AM";
   const displayHour = hour % 12 || 12;
   return `${displayHour}:${minute} ${suffix}`;
@@ -100,7 +102,8 @@ export function durationMinutes(startTime: string, endTime: string) {
     return hours * 60 + minutes;
   };
 
-  return Math.max(0, toMinutes(endTime) - toMinutes(startTime));
+  const duration = toMinutes(endTime) - toMinutes(startTime);
+  return duration < 0 ? duration + 1440 : duration;
 }
 
 
@@ -108,7 +111,7 @@ export function formatPuertoRicoDateTimeInput(iso?: string) {
   if (!iso) return "";
 
   const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Puerto_Rico",
+    timeZone: BUSINESS_TIME_ZONE,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -128,7 +131,7 @@ export function formatPuertoRicoDateTimeInput(iso?: string) {
 
 export function formatPuertoRicoDateTime(iso: string) {
   return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Puerto_Rico",
+    timeZone: BUSINESS_TIME_ZONE,
     month: "short",
     day: "numeric",
     hour: "numeric",
