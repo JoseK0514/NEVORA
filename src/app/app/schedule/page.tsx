@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
+import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
@@ -123,109 +124,60 @@ export default async function SchedulePage({
     const hasPublishedShifts = allShifts.length > 0;
 
     return (
-      <>
-        <PageHeader
-          eyebrow={formatWeekRange(weekStart)}
-          title="My schedule"
-          description="Only published shifts appear here."
-          actions={
-            <div className="week-nav">
-              <Link
-                className="button secondary"
-                href={`/app/schedule?week=${previousWeek}`}
-              >
-                Previous
-              </Link>
-              <Link
-                className="button secondary"
-                href={`/app/schedule?week=${nextWeek}`}
-              >
-                Next
-              </Link>
-            </div>
-          }
-        />
+      <div className="employee-view employee-schedule-view">
+        <header className="employee-view-heading">
+          <div><p className="employee-view-eyebrow">Your week</p><h1>My Schedule</h1></div>
+          <nav className="employee-week-control" aria-label="Schedule week">
+            <Link href={`/app/schedule?week=${previousWeek}`} aria-label="Previous week">‹</Link>
+            <strong>{formatWeekRange(weekStart)}</strong>
+            <Link href={`/app/schedule?week=${nextWeek}`} aria-label="Next week">›</Link>
+          </nav>
+        </header>
 
-        {params.acknowledged ? (
-          <p className="form-success">Schedule acknowledged.</p>
-        ) : null}
+        {params.error ? <p className="employee-notice error" role="alert">The schedule could not be acknowledged. Please try again.</p> : null}
+        {params.acknowledged && !employeeAcknowledgement.acknowledged ? <p className="employee-notice success" role="status">Schedule acknowledged.</p> : null}
 
         {hasPublishedShifts && employeeAcknowledgement.latestRevisionId ? (
-          <section
-            className={
-              employeeAcknowledgement.acknowledged
-                ? "schedule-ack-bar acknowledged"
-                : "schedule-ack-bar"
-            }
-          >
-            <div>
-              <strong>
-                {employeeAcknowledgement.acknowledged
-                  ? "Schedule acknowledged"
-                  : "Please acknowledge this schedule"}
-              </strong>
-              <span>
-                {employeeAcknowledgement.acknowledged
-                  ? "Management can see that you reviewed your current published shifts."
-                  : "Your published schedule changed or has not been acknowledged yet."}
-              </span>
-            </div>
+          <div className={employeeAcknowledgement.acknowledged ? "employee-schedule-ack acknowledged" : "employee-schedule-ack"}>
+            <p>{employeeAcknowledgement.acknowledged ? "Schedule acknowledged" : "Review and acknowledge this week’s schedule."}</p>
             {employeeAcknowledgement.needsAcknowledgement ? (
               <form action={acknowledgeScheduleAction}>
                 <input type="hidden" name="weekStart" value={weekStart} />
-                <button className="button primary" type="submit">
-                  Acknowledge schedule
-                </button>
+                <EmployeeSubmitButton className="employee-action primary" pendingText="Acknowledging…">Acknowledge</EmployeeSubmitButton>
               </form>
-            ) : (
-              <StatusPill tone="success">Acknowledged</StatusPill>
-            )}
-          </section>
+            ) : <span className="employee-quiet-status success">Acknowledged</span>}
+          </div>
         ) : null}
 
-        <section className="schedule-mobile employee-week">
+        <section className="employee-view-surface employee-schedule-agenda" aria-label="Published weekly schedule">
           {dates.map((date) => {
             const label = formatDayLabel(date);
             const shifts = visibleShifts.filter((shift) => shift.date === date);
-
             return (
-              <article className="day-card" key={date}>
-                <div className="day-heading">
-                  <div>
-                    <span>{label.weekday}</span>
-                    <strong>{label.day}</strong>
-                  </div>
-                  <StatusPill tone={shifts.length ? "success" : "neutral"}>
-                    {shifts.length ? "Scheduled" : "Off"}
-                  </StatusPill>
-                </div>
-                {shifts.length ? (
-                  shifts.map((shift) => (
-                    <div className="mobile-shift" key={shift.id}>
-                      <div>
-                        <strong>
-                          {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
-                        </strong>
-                        <span>
-                          {
-                            locations.find(
-                              (location) => location.id === shift.locationId,
-                            )?.shortName
-                          }
-                          {shift.isDesignatedLead ? " · Lead" : ""}
-                          {shift.isCalloutApproved ? " · Call-out approved" : ""}
-                        </span>
-                      </div>
+              <article className={`employee-schedule-day${date === today ? " today" : ""}${date === params.day ? " selected" : ""}`} id={`schedule-${date}`} key={date}>
+                <time className="employee-agenda-date" dateTime={date} aria-label={label.day}>
+                  <span>{label.weekday}</span><strong>{date.slice(8)}</strong>
+                </time>
+                <div className="employee-schedule-day-copy">
+                  {shifts.length ? shifts.map((shift) => (
+                    <div className="employee-schedule-shift" key={shift.id}>
+                      <strong>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</strong>
+                      <span>{locations.find((location) => location.id === shift.locationId)?.shortName}</span>
+                      {shift.isDesignatedLead || shift.isCalloutApproved ? (
+                        <div className="employee-schedule-tags">
+                          {shift.isDesignatedLead ? <small>Designated Lead</small> : null}
+                          {shift.isCalloutApproved ? <small>Call-out approved</small> : null}
+                        </div>
+                      ) : null}
                     </div>
-                  ))
-                ) : (
-                  <p className="muted">No published shift.</p>
-                )}
+                  )) : <p className="employee-schedule-off">Off</p>}
+                </div>
+                {date === today ? <span className="employee-schedule-today-label">Today</span> : null}
               </article>
             );
           })}
         </section>
-      </>
+      </div>
     );
   }
 

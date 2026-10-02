@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { PageHeader } from "@/components/page-header";
+import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requireSelfService } from "@/lib/auth/permissions";
 import { currentDateInPuertoRico, formatDayLabel, formatTime } from "@/lib/date-utils";
 import {
@@ -46,13 +46,8 @@ export default async function SwapPage({
   const date = formatDayLabel(source.date);
 
   return (
-    <>
-      <PageHeader
-        eyebrow="Direct swap"
-        title="Choose a shift"
-        description="The other employee must accept first. Management must approve before either schedule changes."
-        actions={<Link className="button secondary" href="/app/exchange">Cancel</Link>}
-      />
+    <div className="employee-view employee-exchange-detail-view">
+      <header className="employee-view-heading"><div><p className="employee-view-eyebrow">Shift trade</p><h1>Choose a shift</h1><p className="employee-view-description">Your teammate accepts first, then management reviews the trade.</p></div></header>
 
       <section className="content-grid two swap-builder">
         <article className="panel">
@@ -87,14 +82,11 @@ export default async function SwapPage({
                 </select>
               </label>
 
-              <p className="form-help">
-                Both employees are rechecked for location eligibility, availability,
-                approved time off, overlaps, and weekly hours before the request moves forward.
-              </p>
+
 
               <div className="form-footer">
                 <Link className="button secondary" href="/app/exchange">Cancel</Link>
-                <button className="button primary" type="submit">Send swap request</button>
+                <EmployeeSubmitButton className="employee-action primary" pendingText="Sending…">Send swap request</EmployeeSubmitButton>
               </div>
             </form>
           ) : (
@@ -105,6 +97,6 @@ export default async function SwapPage({
           )}
         </article>
       </section>
-    </>
+    </div>
   );
 }

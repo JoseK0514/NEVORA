@@ -193,6 +193,111 @@ export default async function ExchangePage({
     managerPending.length > 0 ||
     managerCallouts.length > 0;
 
+  if (!manager) {
+    return (
+      <div className="employee-view employee-shift-requests-view">
+        <header className="employee-view-heading"><div><p className="employee-view-eyebrow">Schedule flexibility</p><h1>Shift Requests</h1></div></header>
+        {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? "The exchange could not be processed."}</p> : null}
+        {successMessage ? <p className="employee-notice success" role="status">{successMessage}</p> : null}
+
+        <nav className="employee-view-tabs" aria-label="Shift marketplace views">
+          <Link className={activeView === "available" ? "selected" : ""} href="/app/exchange?tab=available" aria-current={activeView === "available" ? "page" : undefined}>Available Shifts</Link>
+          <Link className={activeView === "requests" ? "selected" : ""} href="/app/exchange?tab=requests" aria-current={activeView === "requests" ? "page" : undefined}>Your Trade Requests</Link>
+        </nav>
+
+        <div className="employee-view-surface employee-exchange-feed">
+          {activeView === "available" ? (
+            openCoverage.length ? openCoverage.map((exchange) => (
+              <div className="employee-shift-entry" key={exchange.id}>
+                <div className="employee-shift-entry-copy">
+                  <span className="employee-shift-entry-date">{marketplaceDate(exchange.sourceShift.date)}</span>
+                  <strong>{formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</strong>
+                  <span>{exchange.sourceShift.locationName}</span>
+                  <small>{marketplaceDisplayName(exchange.requestedByName)} · {marketplaceRoleLabel(exchange.requestedByRole)}</small>
+                </div>
+                <form action={claimCoverageAction} className="employee-shift-entry-actions">
+                  <input type="hidden" name="exchangeId" value={exchange.id} />
+                  <button className="employee-action primary" type="submit">Claim Shift</button>
+                </form>
+              </div>
+            )) : <div className="employee-view-empty"><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
+          ) : hasTradeRequests ? (
+            <>
+              {myShifts.length ? <section className="employee-exchange-section">
+                <h2>Start a Trade</h2>
+                {myShifts.map((shift) => (
+                  <div className="employee-shift-entry" key={shift.id}>
+                    <div className="employee-shift-entry-copy">
+                      <span className="employee-shift-entry-date">{marketplaceDate(shift.date)}</span>
+                      <strong>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</strong>
+                      <span>{shift.locationName}</span>
+                    </div>
+                    <div className="employee-shift-entry-actions">
+                      <Link className="employee-action" href={`/app/exchange/callout?shiftId=${shift.id}`}>Unable to Work</Link>
+                      <form action={offerCoverageAction}><input type="hidden" name="sourceShiftId" value={shift.id} /><button className="employee-action" type="submit">Offer Shift</button></form>
+                      <Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${shift.id}`}>Trade Shift</Link>
+                    </div>
+                  </div>
+                ))}
+              </section> : null}
+
+              {incomingSwaps.length ? <section className="employee-exchange-section">
+                <h2>Waiting for You</h2>
+                {incomingSwaps.map((exchange) => (
+                  <div className="employee-shift-entry" key={exchange.id}>
+                    <div className="employee-shift-entry-copy">
+                      <strong>{marketplaceDisplayName(exchange.requestedByName)} wants to trade</strong>
+                      <span>{marketplaceDate(exchange.sourceShift.date)} · {formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</span>
+                      <span>{exchange.sourceShift.locationName}</span>
+                    </div>
+                    <form action={respondSwapAction} className="employee-shift-entry-actions">
+                      <input type="hidden" name="exchangeId" value={exchange.id} />
+                      <button className="employee-action" name="decision" value="DENIED" type="submit">Decline</button>
+                      <button className="employee-action primary" name="decision" value="ACCEPTED" type="submit">Accept</button>
+                    </form>
+                  </div>
+                ))}
+              </section> : null}
+
+              {myExchangeActivity.length ? <section className="employee-exchange-section">
+                <h2>Your Requests</h2>
+                {myExchangeActivity.slice(0, 8).map((exchange) => (
+                  <div className="employee-shift-entry" key={exchange.id}>
+                    <div className="employee-shift-entry-copy">
+                      <strong>{exchange.kind === "COVERAGE" ? "Coverage" : "Trade"} · {marketplaceDate(exchange.sourceShift.date)}</strong>
+                      <span>{formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</span>
+                      <span>{exchange.sourceShift.locationName}</span>
+                    </div>
+                    <div className="employee-shift-entry-actions">
+                      <StatusPill tone={statusTone(exchange.status)}>{statusLabel(exchange.status)}</StatusPill>
+                      {["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? <form action={cancelExchangeAction}><input type="hidden" name="exchangeId" value={exchange.id} /><button className="employee-action" type="submit">Cancel</button></form> : null}
+                    </div>
+                  </div>
+                ))}
+              </section> : null}
+
+              {myCallouts.length ? <section className="employee-exchange-section">
+                <h2>Unable-to-Work Requests</h2>
+                {myCallouts.slice(0, 6).map((callout) => (
+                  <div className="employee-shift-entry" key={callout.id}>
+                    <div className="employee-shift-entry-copy">
+                      <strong>{marketplaceDate(callout.date)} · {formatTime(callout.startTime)} – {formatTime(callout.endTime)}</strong>
+                      <span>{calloutReason(callout.reasonCode)}</span>
+                    </div>
+                    <div className="employee-shift-entry-actions">
+                      <StatusPill tone={statusTone(callout.status)}>{statusLabel(callout.status)}</StatusPill>
+                      {callout.status === "PENDING" ? <form action={cancelCalloutAction}><input type="hidden" name="calloutId" value={callout.id} /><button className="employee-action" type="submit">Cancel</button></form> : null}
+                    </div>
+                  </div>
+                ))}
+              </section> : null}
+            </>
+          ) : <div className="employee-view-empty"><strong>No trade requests yet</strong><p>Your offers, swaps, and coverage requests will appear here.</p></div>}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="exchange-page marketplace-page">
       <PageHeader

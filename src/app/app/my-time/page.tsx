@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { NavIcon } from "@/components/nav-icon";
-import { PageHeader } from "@/components/page-header";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { requireSession } from "@/lib/auth/session";
 
@@ -12,23 +11,24 @@ export default async function MyTimePage() {
   }
 
   return (
-    <div className="employee-my-time-page">
-      <PageHeader
-        eyebrow="Employee Time"
-        title="My Time"
-        description="Your kiosk punches and worked-time history will appear here."
-      />
+    <div className="employee-view employee-my-time-view">
+      <header className="employee-view-heading">
+        <div>
+          <p className="employee-view-eyebrow">Your worked time</p>
+          <h1>My Time</h1>
+        </div>
+      </header>
 
-      <section className="employee-my-time-card">
-        <div className="employee-my-time-empty">
-          <span aria-hidden="true">
-            <NavIcon name="clock" size={20} />
-          </span>
-          <strong>Time records are coming next</strong>
-          <small>
-            Phase 2 will populate this page from Fuel kiosk clock-ins,
-            clock-outs, breaks, and approved time corrections.
-          </small>
+      <section className="employee-view-surface employee-time-readiness" aria-labelledby="time-readiness-title">
+        <span className="employee-time-readiness-icon" aria-hidden="true">
+          <NavIcon name="clock" size={20} />
+        </span>
+        <div>
+          <h2 id="time-readiness-title">Timekeeping isn&apos;t connected yet</h2>
+          <p>
+            When timekeeping is connected, your Fuel kiosk clock-ins, clock-outs,
+            breaks, worked hours, and approved corrections will appear here.
+          </p>
         </div>
       </section>
     </div>

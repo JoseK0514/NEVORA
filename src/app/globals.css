@@ -11728,3 +11728,238 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .employee-shell .nav-link, .employee-home-agenda-row { transition: none; }
 }
+
+/* Employee / Lead remaining pages — approved shell and Home are unchanged. */
+.employee-shell .page-frame:has(.employee-view) { width: min(1160px, 100%); padding: 32px 32px 80px; }
+.employee-view { width: min(880px, 100%); color: var(--color-brand-primary); font-family: var(--font-family-apple); }
+.employee-view-heading { margin-bottom: 24px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.employee-view-eyebrow { margin: 0 0 6px; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .08em; line-height: 1.4; text-transform: uppercase; }
+.employee-view-heading h1 { margin: 0; font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -.04em; overflow-wrap: anywhere; }
+.employee-view-description { margin: 7px 0 0; max-width: 560px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.employee-view-surface { min-width: 0; background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-premium); box-shadow: var(--shadow-premium); }
+.employee-action { min-height: 44px; padding: 10px 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 22px; background: var(--color-bg-main); color: var(--color-brand-primary); font: inherit; font-size: 12px; font-weight: 600; line-height: 1.35; text-align: center; }
+.employee-action.primary { background: var(--color-brand-accent); color: var(--color-bg-surface); }
+.employee-action:hover:not(:disabled) { opacity: .8; }
+.employee-action:disabled { cursor: default; opacity: .45; }
+.employee-quiet-status { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 20px; background: var(--color-bg-main); color: var(--muted); font-size: 10px; font-weight: 500; line-height: 1.35; white-space: nowrap; }
+.employee-quiet-status.success { background: var(--color-state-success-bg); color: var(--color-state-success); }
+.employee-notice { margin: 0 0 16px; padding: 12px 16px; border-radius: 8px; background: var(--color-bg-surface); color: var(--muted); font-size: 12px; line-height: 1.5; }
+.employee-notice.error { color: var(--color-state-danger); background: var(--color-state-danger-bg); }
+.employee-notice.success { color: var(--color-state-success); background: var(--color-state-success-bg); }
+.employee-week-control { display: flex; align-items: center; gap: 8px; }
+.employee-week-control > strong { min-width: 135px; font-size: 13px; font-weight: 500; text-align: center; font-variant-numeric: tabular-nums; }
+.employee-week-control > a { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: var(--color-bg-surface); color: var(--muted); font-size: 24px; line-height: 1; }
+.employee-week-control > a:hover { color: var(--color-brand-accent); }
+.employee-schedule-ack { margin-bottom: 16px; display: flex; align-items: center; justify-content: flex-start; gap: 16px; }
+.employee-schedule-ack p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.employee-schedule-ack.acknowledged { min-height: 36px; }
+.employee-schedule-ack form { flex-shrink: 0; }
+.employee-schedule-agenda { padding: 0 20px; }
+.employee-schedule-day { position: relative; min-height: 76px; padding: 16px 0; display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 18px; border-top: 1px solid var(--color-border-subtle); scroll-margin-top: 84px; }
+.employee-schedule-day:first-child { border-top: 0; }
+.employee-schedule-day.today::before { content: ""; position: absolute; left: -20px; top: 16px; bottom: 16px; width: 2px; border-radius: 2px; background: var(--color-brand-accent); }
+.employee-schedule-day.selected { background: var(--color-bg-main); }
+.employee-agenda-date { display: grid; gap: 3px; text-align: center; font-variant-numeric: tabular-nums; }
+.employee-agenda-date > span { color: var(--muted); font-size: 10px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; }
+.employee-agenda-date > strong { font-size: 22px; font-weight: 500; line-height: 1; letter-spacing: -.035em; }
+.employee-schedule-day-copy { min-width: 0; display: grid; gap: 16px; }
+.employee-schedule-shift { min-width: 0; display: grid; gap: 4px; }
+.employee-schedule-shift > strong { font-size: 14px; font-weight: 600; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.employee-schedule-shift > span { color: var(--muted); font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+.employee-schedule-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.employee-schedule-tags small { color: var(--muted); font-size: 10px; line-height: 1.4; }
+.employee-schedule-tags small + small::before { content: "· "; }
+.employee-schedule-off { margin: 0; color: var(--muted); font-size: 13px; }
+.employee-schedule-today-label { color: var(--color-brand-accent); font-size: 10px; font-weight: 500; }
+@media (max-width: 1100px) {
+  .employee-shell .page-frame:has(.employee-view) { padding: 28px 24px 80px; }
+}
+@media (max-width: 760px), (max-width: 1000px) and (max-height: 500px) {
+  .employee-shell .page-frame:has(.employee-view) { padding: 20px 16px calc(100px + env(safe-area-inset-bottom, 0px)); }
+  .employee-view-heading { margin-bottom: 20px; align-items: flex-start; gap: 12px; }
+  .employee-view-heading h1 { font-size: 28px; }
+  .employee-schedule-view .employee-view-heading { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .employee-week-control { width: min(260px, 100%); justify-content: space-between; }
+  .employee-schedule-ack { gap: 12px; }
+  .employee-schedule-ack p { font-size: 11px; }
+  .employee-schedule-ack .employee-action { padding-inline: 12px; font-size: 11px; }
+  .employee-schedule-agenda { padding: 0 16px; }
+  .employee-schedule-day { min-height: 72px; padding-block: 14px; gap: 12px; grid-template-columns: 32px minmax(0, 1fr) auto; }
+  .employee-schedule-day.today::before { left: -16px; }
+  .employee-schedule-shift > strong { font-size: 13px; }
+  .employee-schedule-today-label { display: none; }
+}
+
+/* Employee availability — a compact preference list, with unchanged Manager defaults. */
+.employee-availability-view { max-width: 840px; }
+.employee-availability-view .availability-deadline-banner { margin: 0 0 16px; justify-content: flex-start; padding: 0; border: 0; border-radius: 0; background: transparent; gap: 16px; }
+.employee-availability-view .availability-deadline-banner > div { gap: 4px; }
+.employee-availability-view .availability-deadline-banner .eyebrow { color: var(--muted); font-size: 10px; font-weight: 500; text-transform: none; letter-spacing: 0; }
+.employee-availability-view .availability-deadline-banner strong { color: var(--color-brand-primary); font-size: 13px; font-weight: 500; }
+.employee-availability-view .availability-deadline-banner span { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.employee-availability-view .availability-deadline-banner .button { min-height: 44px; padding: 10px 16px; border: 0; border-radius: 22px; background: var(--color-bg-main); color: var(--color-brand-accent); font-size: 11px; font-weight: 500; }
+.employee-availability-view .availability-submission-status { margin: 0 0 16px; padding: 12px 0; border: 0; border-top: 1px solid var(--color-border-subtle); border-radius: 0; background: transparent; gap: 12px; }
+.employee-availability-view .availability-submission-status strong { color: var(--color-brand-primary); font-size: 12px; font-weight: 500; }
+.employee-availability-view .availability-submission-status span, .employee-availability-view .availability-submission-status small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.employee-availability-view :is(.form-error, .form-success) { margin: 0 0 16px; padding: 12px 16px; border: 0; border-radius: 8px; font-size: 12px; line-height: 1.5; }
+.employee-availability-form { width: 100%; padding: 0 20px; gap: 0; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-premium); box-shadow: var(--shadow-premium); }
+.employee-availability-form .availability-preference-row { min-height: 72px; padding: 14px 0; display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; }
+.employee-availability-form .availability-preference-day { min-width: 0; }
+.employee-availability-form .availability-preference-day strong { font-size: 13px; font-weight: 500; }
+.employee-availability-form .availability-preference-controls { justify-content: flex-start; gap: 12px; }
+.employee-availability-form .availability-state-pill { min-width: 102px; flex: 0 0 102px; }
+.employee-availability-form .availability-state-pill input { inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; pointer-events: auto; }
+.employee-availability-form .availability-state-pill > span { min-height: 44px; min-width: 102px; padding: 8px 10px; gap: 5px; font-size: 11px; font-weight: 500; pointer-events: none; }
+.employee-availability-form .availability-state-pill input:checked + span { background: var(--color-bg-main); color: var(--color-brand-primary); }
+.employee-availability-form .availability-state-pill input:checked + span::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--color-state-success); }
+.employee-availability-form .availability-inline-times { min-width: 0; gap: 8px; }
+.employee-availability-form .availability-inline-times label { min-width: 0; }
+.employee-availability-form .availability-inline-times input { width: 136px; min-width: 0; height: 44px; min-height: 44px; padding: 0 10px; font-size: 16px; font-weight: 400; }
+.employee-availability-form .availability-time-arrow { margin: 0; }
+.employee-availability-form .availability-preferences-actions { padding: 16px 0; gap: 10px; border-top: 1px solid var(--color-border-subtle); }
+.employee-availability-form .availability-preferences-button { min-width: 0; min-height: 44px; padding: 10px 16px; border-radius: 22px; font-size: 12px; font-weight: 600; }
+.employee-availability-form .availability-preferences-button.secondary { color: var(--color-brand-primary); }
+.employee-availability-form .availability-preferences-button.primary { background: var(--color-brand-accent); }
+@media (max-width: 1000px) {
+  .employee-availability-form .availability-preference-row { grid-template-columns: 112px minmax(0, 1fr); }
+  .employee-availability-form .availability-preference-controls { flex-wrap: wrap; }
+}
+@media (max-width: 760px), (max-width: 1000px) and (max-height: 500px) {
+  .employee-availability-view .availability-deadline-banner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+  .employee-availability-view .availability-deadline-banner .button { width: auto; }
+  .employee-availability-form { padding-inline: 16px; }
+  .employee-availability-form .availability-preference-row { grid-template-columns: minmax(0, 1fr) 102px; gap: 8px; padding: 12px 0; }
+  .employee-availability-form .availability-preference-day { min-height: 44px; justify-content: center; }
+  .employee-availability-form .availability-preference-day strong { font-weight: 600; }
+  .employee-availability-form .availability-preference-controls { display: contents; }
+  .employee-availability-form .availability-state-pill { grid-column: 2; grid-row: 1; }
+  .employee-availability-form .availability-inline-times { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) 8px minmax(0, 1fr); width: 100%; gap: 8px; }
+  .employee-availability-form .availability-inline-times input { width: 100%; }
+  .employee-availability-form .availability-preferences-actions { display: flex; flex-wrap: wrap; }
+  .employee-availability-form .availability-preferences-button { flex: 1; min-width: 0; font-size: 11px; padding-inline: 12px; }
+}
+
+/* Employee Time Off — compact request sheet and flat activity history. */
+.employee-timeoff-view { max-width: 640px; }
+.employee-timeoff-view .timeoff-tabs { width: fit-content; max-width: 100%; margin: 0 0 20px; padding: 4px; display: inline-grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; border: 0; border-radius: 10px; background: var(--color-bg-main); box-shadow: none; }
+.employee-timeoff-view .timeoff-tabs > a { min-height: 44px; padding: 10px 16px; justify-content: center; color: var(--muted); font-size: 12px; font-weight: 500; border-radius: 7px; }
+.employee-timeoff-view .timeoff-tabs > a.selected { background: var(--color-bg-surface); color: var(--color-brand-primary); box-shadow: var(--shadow-premium); }
+.employee-timeoff-view .timeoff-form-panel, .employee-timeoff-view .request-history-panel { width: 100%; margin: 0; padding: 0; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-premium); box-shadow: var(--shadow-premium); }
+.employee-timeoff-view .timeoff-panel-heading { margin: 0; padding: 20px 20px 4px; border: 0; }
+.employee-timeoff-view .timeoff-panel-heading h2 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -.025em; }
+.employee-timeoff-view .timeoff-workspace { display: block; }
+.employee-timeoff-view :is(.form-error, .form-success) { margin: 0 0 16px; padding: 12px 16px; border: 0; border-radius: 8px; font-size: 12px; line-height: 1.5; }
+.employee-timeoff-form { border-top: 0; }
+.employee-timeoff-form .timeoff-setting-row { padding: 12px 20px; grid-template-columns: 100px minmax(0, 1fr); gap: 16px; border-bottom: 0; }
+.employee-timeoff-form .timeoff-setting-copy { padding: 0; }
+.employee-timeoff-form .timeoff-setting-copy strong { color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.employee-timeoff-form .timeoff-compact-date-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.employee-timeoff-form .timeoff-compact-date-row input { height: 44px; min-width: 0; max-width: 100%; padding: 0 10px; font-size: 16px; }
+.employee-timeoff-form .timeoff-setting-segmented { width: 100%; padding: 4px; gap: 4px; border-radius: 10px; }
+.employee-timeoff-form .timeoff-setting-segmented button { min-height: 44px; border-radius: 7px; font-size: 12px; font-weight: 500; }
+.employee-timeoff-form .timeoff-note-field textarea { height: 80px; min-height: 80px; font-size: 16px; line-height: 1.45; }
+.employee-timeoff-form .timeoff-settings-footer { padding: 16px 20px 20px; background: transparent; border-top: 1px solid var(--color-border-subtle); gap: 10px; }
+.employee-timeoff-form .timeoff-settings-cancel, .employee-timeoff-form .timeoff-settings-submit { min-width: 136px; width: auto; height: auto; min-height: 44px; padding: 10px 16px; border-radius: 22px; font-size: 12px; line-height: 1.35; }
+.employee-timeoff-form .timeoff-settings-submit:disabled { opacity: .5; cursor: default; }
+.employee-timeoff-view .timeoff-request-list { padding: 0 20px; }
+.employee-timeoff-view .timeoff-request-row { min-height: 92px; padding: 20px 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; border-top: 1px solid var(--color-border-subtle); }
+.employee-timeoff-view .timeoff-request-row:first-child { border-top: 0; }
+.employee-timeoff-view .request-row-copy { min-width: 0; display: grid; gap: 5px; }
+.employee-timeoff-view .request-row-copy > strong { font-size: 14px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.employee-timeoff-view .request-row-copy > span { color: var(--muted); font-size: 12px; line-height: 1.45; white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+.employee-timeoff-view .status-pill { min-height: 0; padding: 5px 9px; font-size: 10px; font-weight: 500; line-height: 1.35; }
+.employee-timeoff-view .status-pill.neutral { background: var(--color-bg-main); color: var(--muted); }
+.employee-timeoff-view .timeoff-empty-state { min-height: 0; padding: 24px 0; align-items: flex-start; text-align: left; gap: 6px; }
+.employee-timeoff-view .timeoff-empty-state .empty-state-mark { display: none; }
+.employee-timeoff-view .timeoff-empty-state strong { font-size: 14px; font-weight: 500; }
+.employee-timeoff-view .timeoff-empty-state > span { color: var(--muted); font-size: 12px; }
+@media (max-width: 760px) {
+  .employee-timeoff-form .timeoff-setting-row { grid-template-columns: 1fr; gap: 8px; }
+  .employee-timeoff-view .timeoff-tabs { width: 100%; }
+  .employee-timeoff-view .timeoff-request-row { padding: 16px 0; }
+  .employee-timeoff-view .request-row-copy > strong { font-size: 13px; }
+  .employee-timeoff-form .timeoff-settings-footer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .employee-timeoff-form .timeoff-settings-cancel, .employee-timeoff-form .timeoff-settings-submit { min-width: 0; width: 100%; padding-inline: 10px; }
+}
+@media (max-width: 374px) {
+  .employee-timeoff-form .timeoff-compact-date-row { grid-template-columns: 1fr; }
+  .employee-timeoff-view .timeoff-panel-heading { padding-inline: 16px; }
+  .employee-timeoff-form .timeoff-setting-row, .employee-timeoff-form .timeoff-settings-footer { padding-inline: 16px; }
+  .employee-timeoff-view .timeoff-request-list { padding-inline: 16px; }
+}
+
+/* Short employee pages retain the approved canvas through the viewport. */
+.employee-shell .app-main:has(.employee-view) { min-height: 100dvh; }
+
+/* Employee shift requests — actions stay with their shift, without Manager controls. */
+.employee-shift-requests-view { max-width: 840px; }
+.employee-view-tabs { width: fit-content; max-width: 100%; margin-bottom: 20px; padding: 4px; display: inline-grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; border-radius: 10px; background: var(--color-bg-main); }
+.employee-view-tabs > a { min-height: 44px; padding: 10px 16px; display: flex; align-items: center; justify-content: center; border-radius: 7px; color: var(--muted); font-size: 12px; font-weight: 500; line-height: 1.35; text-align: center; }
+.employee-view-tabs > a.selected { background: var(--color-bg-surface); color: var(--color-brand-primary); box-shadow: var(--shadow-premium); }
+.employee-exchange-feed { padding: 0 20px; }
+.employee-exchange-section { padding-top: 20px; border-top: 1px solid var(--color-border-subtle); }
+.employee-exchange-section:first-child { border-top: 0; }
+.employee-exchange-section h2 { margin: 0 0 4px; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -.025em; }
+.employee-shift-entry { min-width: 0; padding: 16px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 16px 24px; border-top: 1px solid var(--color-border-subtle); }
+.employee-exchange-feed > .employee-shift-entry:first-child, .employee-exchange-section h2 + .employee-shift-entry { border-top: 0; }
+.employee-shift-entry-copy { min-width: 0; flex: 0 1 280px; display: grid; gap: 4px; }
+.employee-shift-entry-copy > strong { font-size: 14px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.employee-shift-entry-copy > span { color: var(--muted); font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+.employee-shift-entry-copy > .employee-shift-entry-date { color: var(--color-brand-primary); font-size: 12px; font-weight: 500; }
+.employee-shift-entry-copy > small { color: var(--muted); font-size: 11px; line-height: 1.4; overflow-wrap: anywhere; }
+.employee-shift-entry-actions { min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.employee-shift-entry-actions .employee-action { min-width: 0; padding-inline: 14px; font-size: 11px; font-weight: 500; }
+.employee-shift-entry-actions .status-pill { min-height: 0; padding: 5px 9px; font-size: 10px; font-weight: 500; line-height: 1.35; }
+.employee-shift-entry-actions .status-pill.neutral { background: var(--color-bg-main); color: var(--muted); }
+.employee-view-empty { padding: 24px 0; }
+.employee-view-empty strong { font-size: 14px; font-weight: 500; }
+.employee-view-empty p { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+@media (max-width: 760px), (max-width: 1000px) and (max-height: 500px) {
+  .employee-view-tabs { width: 100%; }
+  .employee-view-tabs > a { padding-inline: 10px; font-size: 11px; }
+  .employee-exchange-feed { padding-inline: 16px; }
+  .employee-shift-entry { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .employee-shift-entry-copy > strong { font-size: 13px; }
+  .employee-shift-entry-actions .employee-action { padding-inline: 12px; }
+}
+@media (max-width: 374px) {
+  .employee-shift-entry-actions { gap: 6px; }
+  .employee-shift-entry-actions .employee-action { padding-inline: 10px; font-size: 10px; }
+}
+
+/* Existing employee trade and call-out forms share the request-page discipline. */
+.employee-exchange-detail-view { max-width: 680px; }
+.employee-exchange-detail-view > .content-grid { margin-top: 0; display: block; background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-premium); box-shadow: var(--shadow-premium); }
+.employee-exchange-detail-view > .content-grid > .panel { padding: 20px; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.employee-exchange-detail-view > .content-grid > .panel + .panel { border-top: 1px solid var(--color-border-subtle); }
+.employee-exchange-detail-view .eyebrow { color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.employee-exchange-detail-view .panel h2 { margin: 6px 0; font-size: 17px; font-weight: 600; letter-spacing: -.025em; }
+.employee-exchange-detail-view .panel-heading { margin-bottom: 16px; padding: 0; border: 0; }
+.employee-exchange-detail-view .large-detail { margin: 10px 0 4px; font-size: 20px; font-weight: 600; letter-spacing: -.025em; }
+.employee-exchange-detail-view .muted { font-size: 12px; line-height: 1.5; }
+.employee-exchange-detail-view .callout-warning { margin-top: 16px; padding: 12px 0 0; border: 0; border-top: 1px solid var(--color-border-subtle); border-radius: 0; background: transparent; }
+.employee-exchange-detail-view .callout-warning strong { color: var(--color-brand-primary); font-size: 12px; font-weight: 500; }
+.employee-exchange-detail-view .callout-warning span { color: var(--muted); font-size: 11px; line-height: 1.5; }
+.employee-exchange-detail-view .employee-form { display: grid; gap: 16px; }
+.employee-exchange-detail-view .employee-form > label { min-width: 0; color: var(--muted); font-size: 12px; font-weight: 500; }
+.employee-exchange-detail-view .employee-form label > span { font-size: 11px; }
+.employee-exchange-detail-view .employee-form select { min-width: 0; max-width: 100%; height: 44px; padding: 0 10px; border: 0; background: var(--color-bg-main); font-size: 16px; font-weight: 400; }
+.employee-exchange-detail-view .employee-form textarea { min-height: 100px; height: 100px; border: 0; background: var(--color-bg-main); font-size: 16px; }
+.employee-exchange-detail-view .form-footer { padding: 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+.employee-exchange-detail-view .button.secondary { min-height: 44px; padding: 10px 16px; border: 0; border-radius: 22px; background: var(--color-bg-main); font-size: 12px; font-weight: 600; }
+.employee-exchange-detail-view .empty-state { min-height: 0; padding: 16px 0; align-items: flex-start; text-align: left; }
+.employee-exchange-detail-view .empty-state strong { font-size: 13px; font-weight: 500; }
+.employee-exchange-detail-view .empty-state span { color: var(--muted); font-size: 12px; }
+.employee-exchange-detail-view .form-error { margin: 0 0 16px; padding: 12px 16px; border: 0; font-size: 12px; }
+
+/* My Time stays honest and compact until kiosk timekeeping is connected. */
+.employee-my-time-view { max-width: 640px; }
+.employee-time-readiness { padding: 24px; display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: start; gap: 16px; }
+.employee-time-readiness-icon { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--color-bg-main); color: var(--muted); }
+.employee-time-readiness h2 { margin: 1px 0 7px; font-size: 16px; font-weight: 600; line-height: 1.35; letter-spacing: -.025em; }
+.employee-time-readiness p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+@media (max-width: 760px), (max-width: 1000px) and (max-height: 500px) {
+  .employee-shell .app-main:has(.employee-view) { min-height: calc(100dvh - 60px); }
+  .employee-time-readiness { padding: 20px; gap: 12px; }
+  .employee-time-readiness h2 { font-size: 15px; }
+}

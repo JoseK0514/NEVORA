@@ -75,12 +75,14 @@ export default async function RequestsPage({
         : "new";
 
   return (
-    <div className="timeoff-page">
+    <div className={manager ? "timeoff-page" : "timeoff-page employee-view employee-timeoff-view"}>
+      {!manager ? <header className="employee-view-heading"><div><p className="employee-view-eyebrow">Your requests</p><h1>Time Off</h1></div></header> : (
       <PageHeader
         eyebrow="Scheduling requests"
         title="Time off"
         description="Request time away and keep track of approvals."
       />
+      )}
 
       {params.error ? (
         <p className="form-error">The request could not be saved. Check the dates and times.</p>
@@ -127,10 +129,10 @@ export default async function RequestsPage({
             <div className="timeoff-panel-heading timeoff-new-heading">
               <div>
                 <h2>Request time off</h2>
-                <p>Choose your dates and request type. Add a note only if needed.</p>
+                {manager ? <p>Choose your dates and request type. Add a note only if needed.</p> : null}
               </div>
             </div>
-            <TimeOffForm />
+            <TimeOffForm employeeView={!manager} />
           </article>
         ) : null}
 
@@ -138,9 +140,9 @@ export default async function RequestsPage({
           <article className="panel timeoff-panel request-history-panel">
             <div className="timeoff-panel-heading">
               <div>
-                <p className="eyebrow">My requests</p>
+                {manager ? <p className="eyebrow">My requests</p> : null}
                 <h2>Request history</h2>
-                <p>Track the status of your submitted time-off requests.</p>
+                {manager ? <p>Track the status of your submitted time-off requests.</p> : null}
               </div>
             </div>
 
@@ -149,15 +151,19 @@ export default async function RequestsPage({
                 mine.map((request) => (
                   <div className="request-list-row timeoff-request-row" key={request.id}>
                     <div className="request-row-copy">
-                      <strong>{requestRange(request)}</strong>
-                      {request.reason ? (
-                        <span>{request.reason}</span>
+                      {manager ? (
+                        <><strong>{requestRange(request)}</strong>
+                          {request.reason ? <span>{request.reason}</span> : <span>{request.startTime ? "Partial-day request" : "Full-day request"}</span>}
+                        </>
                       ) : (
-                        <span>{request.startTime ? "Partial-day request" : "Full-day request"}</span>
+                        <><strong>{request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`}</strong>
+                          <span>{request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : "Full day"}</span>
+                          {request.reason ? <span>{request.reason}</span> : null}
+                        </>
                       )}
                     </div>
                     <StatusPill tone={statusTone(request.status)}>
-                      {statusLabel(request.status)}
+                      {!manager && request.status === "DENIED" ? "Declined" : statusLabel(request.status)}
                     </StatusPill>
                   </div>
                 ))

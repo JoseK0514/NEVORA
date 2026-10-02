@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { PageHeader } from "@/components/page-header";
+import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requireSelfService } from "@/lib/auth/permissions";
 import {
   currentDateInPuertoRico,
@@ -44,17 +44,8 @@ export default async function CalloutPage({
   const date = formatDayLabel(shift.date);
 
   return (
-    <>
-      <PageHeader
-        eyebrow="Shift call-out"
-        title="Unable to work this shift"
-        description="Submit the reason management needs to review. Your shift does not change until the request is approved."
-        actions={
-          <Link className="button secondary" href="/app/exchange?tab=my">
-            Cancel
-          </Link>
-        }
-      />
+    <div className="employee-view employee-exchange-detail-view">
+      <header className="employee-view-heading"><div><p className="employee-view-eyebrow">Shift request</p><h1>Unable to Work</h1><p className="employee-view-description">Your shift stays assigned until management approves the request.</p></div></header>
 
       {params.error ? (
         <p className="form-error">
@@ -119,13 +110,11 @@ export default async function CalloutPage({
               <Link className="button secondary" href="/app/exchange?tab=my">
                 Cancel
               </Link>
-              <button className="button primary" type="submit">
-                Submit Call-out
-              </button>
+              <EmployeeSubmitButton className="employee-action primary" pendingText="Submitting…">Submit Call-out</EmployeeSubmitButton>
             </div>
           </form>
         </article>
       </section>
-    </>
+    </div>
   );
 }

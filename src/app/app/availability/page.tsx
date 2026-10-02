@@ -165,7 +165,15 @@ export default async function AvailabilityPage({
   ).length;
 
   return (
-    <div className="availability-page">
+    <div className={manager ? "availability-page" : "availability-page employee-view employee-availability-view"}>
+      {!manager ? (
+        <header className="employee-view-heading">
+          <div><p className="employee-view-eyebrow">Work preferences</p><h1>Availability</h1>
+            <p className="employee-view-description">{selectedWeek ? formatWeekRange(selectedWeek) : "Set the hours you’re available to work."}</p>
+          </div>
+          {selectedWeek ? <Link className="employee-action" href="/app/availability">Normal availability</Link> : null}
+        </header>
+      ) : (
       <PageHeader
         eyebrow={selectedWeek ? "Weekly availability" : "My scheduling inputs"}
         title={selectedWeek ? `Availability · ${formatWeekRange(selectedWeek)}` : "Availability"}
@@ -182,6 +190,7 @@ export default async function AvailabilityPage({
           ) : undefined
         }
       />
+      )}
 
       {!selectedWeek && upcomingWeek?.availabilityDeadline ? (
         <section className="availability-deadline-banner">
@@ -197,7 +206,7 @@ export default async function AvailabilityPage({
             className="button primary"
             href={`/app/availability?week=${upcomingWeek.weekStart}`}
           >
-            Submit weekly availability
+            {manager ? "Submit weekly availability" : "Submit for this week"}
           </Link>
         </section>
       ) : null}
@@ -226,7 +235,7 @@ export default async function AvailabilityPage({
         >
           <div>
             <strong>{submissionCopy.label}</strong>
-            <span>{submissionCopy.detail}</span>
+            {manager ? <span>{submissionCopy.detail}</span> : null}
           </div>
           {submissionStatus.updatedAt ? (
             <small>
@@ -307,6 +316,7 @@ export default async function AvailabilityPage({
         initialAvailability={initialAvailability}
         weekStart={selectedWeek}
         locked={locked}
+        employeeView={!manager}
       />
     </div>
   );
