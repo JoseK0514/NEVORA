@@ -34,6 +34,13 @@ export default async function ScheduleSettingsPage({
     listCoverageWindows(),
   ]);
 
+  function locationLabel(locationId: string, fallback: string) {
+    const label =
+      locations.find((location) => location.id === locationId)?.shortName ??
+      fallback;
+    return label.replace(/^FUEL\s*-\s*(110|2)\b/i, "FUEL – $1");
+  }
+
   const dayNames = [
     "Sunday",
     "Monday",
@@ -103,7 +110,7 @@ export default async function ScheduleSettingsPage({
                   className="staffing-setting-card"
                   key={location.locationId}
                 >
-                  <span>{location.locationName}</span>
+                  <span>{locationLabel(location.locationId, location.locationName)}</span>
                   <strong>
                     <input
                       type="number"
@@ -143,10 +150,6 @@ export default async function ScheduleSettingsPage({
 
             <div className="hour-target-list">
               {employees.map((employee) => {
-                const location = locations.find(
-                  (item) => item.id === employee.primaryLocationId,
-                );
-
                 return (
                   <div className="hour-target-row" key={employee.employeeId}>
                     <span className="hour-target-employee">
@@ -154,7 +157,7 @@ export default async function ScheduleSettingsPage({
                       <small>
                         {employee.employeeId} · {employee.role[0]}
                         {employee.role.slice(1).toLowerCase()} ·{" "}
-                        {location?.shortName ?? "—"}
+                        {locationLabel(employee.primaryLocationId, "—")}
                       </small>
                     </span>
 
@@ -212,7 +215,7 @@ export default async function ScheduleSettingsPage({
               >
                 {locations.map((location) => (
                   <option key={location.id} value={location.id}>
-                    {location.shortName}
+                    {locationLabel(location.id, location.shortName)}
                   </option>
                 ))}
               </select>
@@ -256,15 +259,11 @@ export default async function ScheduleSettingsPage({
           <div className="coverage-window-list">
             {coverageWindows.length ? (
               coverageWindows.map((window) => {
-                const location = locations.find(
-                  (item) => item.id === window.locationId,
-                );
-
                 return (
                   <div className="coverage-window-row" key={window.id}>
                     <div>
                       <strong>
-                        {location?.shortName ?? window.locationId} ·{" "}
+                        {locationLabel(window.locationId, window.locationId)} ·{" "}
                         {dayNames[window.dayOfWeek]}
                       </strong>
                       <span>

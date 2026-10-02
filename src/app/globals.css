@@ -10875,8 +10875,9 @@ body {
 
 .schedule-settings-page .schedule-settings-save-btn {
   margin-left: auto;
-  background: var(--color-brand-accent) !important;
+  background: var(--coffee) !important;
   color: var(--color-bg-surface) !important;
+  transition: background-color 140ms ease;
 }
 
 .schedule-settings-page .schedule-settings-add-window-btn {
@@ -10888,6 +10889,11 @@ body {
 .schedule-settings-page .schedule-settings-save-btn:hover,
 .schedule-settings-page .schedule-settings-add-window-btn:hover {
   opacity: .86;
+}
+
+.schedule-settings-page .schedule-settings-save-btn:is(:hover, :active):not(:disabled) {
+  background: var(--coffee-dark) !important;
+  opacity: 1;
 }
 
 .schedule-settings-page .coverage-window-list {
@@ -12373,6 +12379,10 @@ body {
 }
 
 /* Phase 2 scheduling inputs: paired target/maximum controls within existing rows. */
+.app-shell .schedule-settings-page .schedule-settings-save-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
 .schedule-settings-page .employee-hour-inputs {
   display: flex;
   flex: 0 0 auto;
