@@ -1,6 +1,6 @@
 # NEVORA Workforce — Workspace, Locations & Positions Foundation
 
-**Date:** 2026-10-03, America/Puerto_Rico. **Status:** architectural direction and the ten business clarifications approved by Jose; this written specification and its implementation plan are pending joint review. No product implementation is authorized by this document alone.
+**Date:** 2026-10-03, America/Puerto_Rico. **Status:** architecture and implementation approved by Jose for Subagent-driven execution, with full production fresh-provisioning/schema-distribution deferred. Migration 0008, generic database verification and complete scheduling foundation remain required.
 
 **Exact implementation parent:** `0a12f1f4ac7212a8cbbe195f013407a8bc74c4d5`.
 
@@ -117,9 +117,11 @@ Replace Barista-from-access-role labels with Owner/Manager/Lead/Employee; render
 
 `/clocker/[location]` queries the configured active workspace/location by immutable key. Unknown or inactive location returns the existing safe not-found outcome. Database/configuration failures produce unavailable behavior, never invented Fuel resolution. Remove two-entry static generation. Pass location label and configured timezone to ClockerKiosk; preserve PIN/keypad/break/local success behavior and tablet layout. No personal notification setup on Clocker.
 
-## 10. Existing upgrade and fresh provisioning
+## 10. Existing upgrade and deferred fresh provisioning architecture
 
 **Existing Fuel:** exact migration sequence 0001–0008, after separately authorized migration activation. 0008 backfills workspace/key identity and adds nullable position fields/joins; it does not rename locations, reseed staffing or create coverage/positions/employee qualifications. Existing 2/6 staffing remains customer configuration. Historical files and records remain intact.
+
+**Approved execution scope adjustment:** Migration 0008 and owned local Fuel upgrade/generic-customer database verification remain required now. Full fresh-customer provisioning/schema-distribution implementation is deferred to NEVORA Productization / SaaS-readiness. The architecture below is retained, not deleted. No generated distributable baseline/manifest, pg_dump provisioning workflow, production onboarding CLI/bootstrap or CI schema-distribution drift gate is built in this foundation. Generic fixtures may be inserted directly by owned disposable test setup. This does not prove production onboarding readiness.
 
 **Fresh customer:** a generated schema-only baseline at version 0008, then explicit provisioning inputs: workspace name, workspace timezone and initial location name. Optional short name/key can be supplied; the first location starts Needs setup. There are zero customer rows in the baseline and no Fuel-specific defaults. Provisioning rejects a nonempty customer configuration and cannot overwrite an existing installation. Owner bootstrap explicitly selects a configured active primary location and eligibility; it never assigns loc-1/loc-2 automatically. No public signup.
 
@@ -127,13 +129,13 @@ Migrations remain the schema authority. Generate the baseline from a newly creat
 
 Generate a migration-hash/version manifest alongside the SQL. Restore into a second new owned disposable database and compare schema fingerprints: tables, columns/types/nullability/defaults, constraints/FKs, indexes/predicates, sequences and functions. Verify no customer rows or Fuel defaults exist. CI regeneration/check must fail on byte/manifest drift and schema mismatch, including a changed FK or check constraint. Do not auto-update the baseline to hide a failure. Future migrations update this generated artifact through the documented process; never edit it as a second handwritten schema.
 
-All local generation/restore commands reject an existing or non-loopback target and reject the application's `DATABASE_URL`. Production provisioning and migration authorization remain separate. Generated artifacts/runbooks are prepared here; no real customer is provisioned.
+All local generation/restore commands reject an existing or non-loopback target and reject the application's `DATABASE_URL`. Production provisioning and migration authorization remain separate. Generated artifacts and production runbooks will be implemented in Productization; no real customer is provisioned here.
 
 ## 11. Acceptance and evidence
 
 Retain the explicit Fuel fixture and add fictional Northside Services: three arbitrarily named locations (including a long name, inactive location and newly unconfigured location), multiple job positions and a non-Puerto-Rico workspace timezone. Also parameterize one, five and twenty location cases. These fixtures are not production defaults.
 
-Focused behavior tests must prove: Fuel records survive migration; one/3+/20 locations; name/key rename stability and uniqueness; inactivity; missing setup; required fresh inputs; qualification versus assignment; positionless legacy records; one employee/one position quota; designated Lead plus position; inactive position requirements; overlapping-window quota counts; cross-location overlap; exactly/over maximum; target warning; existing availability/time-off distinctions; template/copy/exchange preservation; position publication/acknowledgement changes; rollback/no intent; workspace timezone boundaries/DST validation; timezone edit races; current notification location access; logout during workspace failure; quiet-hour/reminder cancellation; generic Clocker resolution and invalid/inactive failures; baseline generation/equivalence/drift failure and teardown.
+Focused behavior tests must prove: Fuel records survive migration; one/3+/20 locations; name/key rename stability and uniqueness; inactivity; missing setup; required fresh inputs; qualification versus assignment; positionless legacy records; one employee/one position quota; designated Lead plus position; inactive position requirements; overlapping-window quota counts; cross-location overlap; exactly/over maximum; target warning; existing availability/time-off distinctions; template/copy/exchange preservation; position publication/acknowledgement changes; rollback/no intent; workspace timezone boundaries/DST validation; timezone edit races; current notification location access; logout during workspace failure; quiet-hour/reminder cancellation; generic Clocker resolution and invalid/inactive failures; additive upgrade/history preservation, generic SQL-backed behavior, unchanged historical migration hashes and teardown. Full baseline generation/equivalence/distribution drift testing is deferred with that toolchain.
 
 Run lint, typecheck, full unit tests, relevant scheduling/Phase 3 notification suites, notification QA validator, disposable PostgreSQL integration, production build and `git diff --check`. Inspect package scripts before execution. TDD means behavior assertions fail before the corresponding product implementation; do not substitute import errors, weaken assertions or update protected screenshots automatically.
 
@@ -143,6 +145,6 @@ Capture before edits from the exact parent and after implementation: Owner Setti
 
 Update README, architecture, UI and scheduling contracts to state: NEVORA is generic software; Fuel is one customer; locations/positions/timezone are configured data; access role is not a position; Phase 4 must consume readiness and this same engine. Record Skills as deferred and retain Phase 3 activation restrictions.
 
-Commit only specification/plan documents at this checkpoint. After execution approval, preserve task progress and review evidence locally; create one focused implementation commit only after required verification passes: `feat: generalize Nevora workspace and scheduling foundation`. Do not amend the approved parent or planning commits. User's one-implementation-commit instruction overrides per-task commit defaults.
+The specification and plan are approved for Subagent-driven execution with the narrowed Task 11. Preserve planning commits separately. During execution, preserve task progress and review evidence locally; create one focused implementation commit only after required verification passes: `feat: generalize Nevora workspace and scheduling foundation`. Do not amend the approved parent or planning commits. User's one-implementation-commit instruction overrides per-task commit defaults.
 
-Final implementation handoff includes exact parent, branch/worktree, final SHA and changed-file manifest, migrations/baseline/provisioning model, Fuel/generic results, deferred scope, test commands/results and honest unperformed tests, fresh screenshots/local fixture URL, compatibility risks, activation prerequisites and clean worktree status. Stop for foundation approval. Do not start Phase 4.
+Final implementation handoff includes exact parent, branch/worktree, final SHA and changed-file manifest, migration model and deferred Productization provisioning requirements, Fuel/generic results, deferred scope, test commands/results and honest unperformed tests, fresh screenshots/local fixture URL, compatibility risks, activation prerequisites and clean worktree status. Stop for foundation approval. Do not start Phase 4.

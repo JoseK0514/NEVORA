@@ -4,9 +4,9 @@
 
 **Goal:** Establish configurable workspace, location and position inputs for NEVORA Workforce while preserving Fuel data, Phase 0–3 behavior and the single shared scheduling engine.
 
-**Architecture:** Extend existing location, employee, staffing, coverage, shift and publication models. Keep pure eligibility/time/readiness evaluation separate from authenticated repositories and UI. Migrations remain canonical; a generated seed-free schema supports explicit fresh provisioning, while the existing installation upgrades forward.
+**Architecture:** Extend existing location, employee, staffing, coverage, shift and publication models. Keep pure eligibility/time/readiness evaluation separate from authenticated repositories and UI. Migrations remain canonical; 0008 upgrades the existing installation. Explicit disposable generic-customer fixtures prove runtime independence. Full fresh-customer schema distribution/provisioning is deferred to Productization.
 
-**Tech Stack:** Existing Next.js 16.3.6, React 19.3.0, TypeScript, raw CSS, Neon/PostgreSQL, Vitest, local Playwright and web-push 3.6.7. Plan `@js-temporal/polyfill` 0.5.1 as the one timezone-conversion dependency, installed only after execution approval. PostgreSQL 17 provides isolated schema-generation/integration tooling.
+**Tech Stack:** Existing Next.js 16.3.6, React 19.3.0, TypeScript, raw CSS, Neon/PostgreSQL, Vitest, local Playwright and web-push 3.6.7. Plan `@js-temporal/polyfill` 0.5.1 as the one timezone-conversion dependency, installed only after execution approval. PostgreSQL provides ownership-verified disposable integration testing; no production schema-generation toolchain is built in this foundation.
 
 **Spec:** `docs/superpowers/specs/2026-10-03-nevora-workspace-foundation-design.md` — read the complete specification before each task; task instructions do not replace its constraints.
 
@@ -14,7 +14,7 @@
 
 - Exact implementation parent: `0a12f1f4ac7212a8cbbe195f013407a8bc74c4d5`.
 - Branch `codex/nevora-pre-phase4-foundation`; worktree `/Users/josek0514/.codex/worktrees/nevora-pre-phase4-foundation/Fuel-Scheduler-`. Preserve all other worktrees.
-- Direction is approved; this written specification and implementation plan require review and an execution-method choice before product changes or implementation subagents.
+- Architecture and implementation are approved with the Task 11 scope reduction below. Execute Subagent-driven automatically through normal tasks; stop only for the user-specified exceptional decisions.
 - One configured workspace; no billing, subscriptions, organization switching, invitations, public signup, tenant administration, notification inbox or customer themes.
 - NEVORA → Workforce; VELANI LLC owns the product; Fuel Coffee Drive is existing customer data. Preserve the official transparent wordmark/cyan A and `BrandLockup`.
 - Fuel timezone remains `America/Puerto_Rico`; workweek remains Monday 00:00–next Monday 00:00 in the workspace timezone. Preserve UTC timestamp storage and scheduled wall-minute hour semantics.
@@ -23,7 +23,7 @@
 - Route keys are stable, workspace-unique and URL-safe; preserve `/clocker/2` and `/clocker/110`. Ordinary name edits never change keys.
 - New locations receive no invented staffing, periods or eligibility; readiness is derived. Inactive or non-ready locations cannot silently enter future automatic generation.
 - Do not edit migrations 0001–0007. Prepare 0008 only; no migration to any existing Neon/dev/production database.
-- Generated baseline has zero customer rows and no Fuel defaults; fail verification/CI on drift. Never maintain a second handwritten schema.
+- Defer generated distributable baseline, manifest maintenance, pg_dump provisioning, production onboarding CLI/bootstrap and schema-distribution CI gates. Preserve their architectural design for Productization; create no parallel handwritten schema.
 - Business changes and notification intents remain atomic; no provider IO or provider-dependent action latency. Logout/session termination must not depend on workspace lookup or push cleanup success.
 - Service-worker scope stays `/app/`; no private response caching, Clocker prompts, real device/punch backend or real push activation.
 - No Build Week, Fill Gaps Only, automatic selection/assignment/publishing, Phase 4 work, push, merge, deployment, paid upgrades or scheduler provisioning.
@@ -38,7 +38,7 @@
 1. A timezone edit racing a dated business write must either finish before that record exists or be blocked; it must never reinterpret a record unnoticed. Task 2 owns the concurrent integration test and Task 7 wires scheduling writers.
 2. A multi-qualified employee with overlapping duplicate/conflicting legacy shifts must not fill two simultaneous position slots. Task 6 tests duplicate and conflicting-position input.
 3. Renamed/deactivated catalog records must retain Clocker URL and readable historical shift/request identities. Tasks 4, 5, 7 and 10 exercise these references.
-4. A baseline file may retain its filename while a FK/default/partial-index definition drifts. Task 11 deliberately alters each and asserts the checker fails.
+4. Task 11 proves the additive 0008 upgrade retains Fuel history and generic runtime behavior with direct test fixture setup. Historical migration hashes must remain unchanged; production schema-distribution drift tooling is deferred.
 5. An unavailable workspace lookup must not hold logout hostage or make the worker send with a fabricated zone. Tasks 2 and 8 exercise auth priority and worker failure suppression.
 
 ## File and dependency map
@@ -55,7 +55,7 @@
 | Notification timezone | existing policy/types/config/recipients/reminders/state/worker, internal worker routes/CLI; separate env-only auth config from bound delivery policy |
 | Management UI | existing Settings, employee and Scheduling Rules pages/actions plus new settings Workspace/Locations/Positions routes/forms; scoped globals.css additions |
 | Presentation/Clocker | existing Login/Activate/AppShell and relevant portal labels; configured `/clocker/[location]` resolution, unchanged demo workflow |
-| Provisioning/schema | generated `db/schema/0008_baseline.sql` and `0008_baseline.manifest.json`, new generator/checker/provisioning scripts, owner bootstrap, CI and runbooks |
+| Migration verification | owned local upgrade/generic fixtures, historical migration integrity and teardown; full production schema distribution/provisioning is deferred |
 | Verification/handoff | focused unit/integration tests, new responsive verifier, protected screenshots and foundation evidence report |
 
 Execution preflight captures the immutable exact-parent baseline described in Task 12 Step 1 before any product edits. Then execute Tasks 1–12 in order. Task 9 consumes Tasks 2–8; Task 10 consumes configured repositories/time and completed UI inputs. No parallel implementation writes to shared files. Each completed task records red/green commands, file manifest and reviewer outcome in the local execution log. If Subagent-driven is selected, use a fresh implementer, fresh spec reviewer and fresh code-quality reviewer per task; fix findings before advancing. Keep review evidence outside the final Git index until the final manifest is approved.
@@ -298,30 +298,20 @@ Execution preflight captures the immutable exact-parent baseline described in Ta
 - [ ] **Step 4: Verify behavior and protected branding.** Rerun Step 2; exercise existing four-digit PIN, Clear/Delete and local break/punch demo in both tablet orientations. Confirm manifest/offline branding and `/app` service-worker scope/private-data exclusions are unchanged.
 - [ ] **Step 5: Review remaining hardcode audit.** Classify every Fuel/loc-1/loc-2/2/110/PR occurrence as migration backfill, explicit customer fixture, technical compatibility identifier or eliminated runtime assumption. Record exceptions rather than blindly renaming data.
 
-### Task 11: Deterministic fresh schema, explicit provisioning and CI drift gate
+### Task 11: Migration equivalence and generic-customer database verification
 
-**Files:** Create generated `db/schema/0008_baseline.sql`, `db/schema/0008_baseline.manifest.json`, `scripts/generate-nevora-schema.ts`, `scripts/provision-workspace.ts`, `src/lib/data/provision-workspace.ts`, `src/lib/data/provision-workspace.test.ts`, `docs/architecture/nevora-provisioning.md` and script tests. Modify `scripts/bootstrap-owner.mjs`, `package.json`, `.env.example`, `.github/workflows/ci.yml`, `foundation.integration.ts` and README.
+**Scope adjustment approved by Jose:** Full production fresh-provisioning/schema-distribution tooling is deferred to the NEVORA Productization / SaaS-readiness phase. Keep the architecture in specification section 10; do not generate a distributable baseline/manifest, pg_dump provisioning workflow, production onboarding CLI/bootstrap or CI schema-distribution drift gate.
 
-**Interfaces:**
-- Generator command `npm run schema:generate`; read-only artifact check `npm run schema:check` (both use only new owned loopback databases, then teardown). Neither reads application `DATABASE_URL`.
-- Generated manifest records migration filename/hash sequence 0001–0008, schema version and pinned generator/PostgreSQL toolchain. `--check` compares regenerated bytes/hash manifest and independently restored schema fingerprints; mismatch exits nonzero without writing artifacts.
-- `provisionWorkspace(input: { workspaceName: string; timeZone: string; initialLocationName: string; initialLocationShortName?: string; initialClockerKey?: string }, executor: SqlExecutor): Promise<{ workspace: Workspace; location: Location }>` requires an empty installed customer schema, validates explicit inputs, creates one workspace/first location atomically and leaves staffing/windows/positions/eligibility empty.
-- CLI prepares the above flow; activation is not performed here. Owner bootstrap requires explicitly selected active primary location and supplied optional eligibility IDs; never loc-1/loc-2 defaults. Environment samples contain empty inputs, no credentials/customer defaults.
+**Files:** Extend `src/test/integration/foundation.integration.ts`, `src/test/integration/local-postgres.ts`, generic fixture helpers and focused migration integrity tests. Document deferred requirements in `docs/architecture/nevora-workspace-foundation.md` (Task 12 finalizes documentation). No production provisioner is required.
 
-- [ ] **Step 1: Write fresh/upgrade equivalence tests.** Upgrade one owned DB using exact migrations, generate schema-only artifact, restore in a second empty owned DB, compare all tables/columns/defaults/nullability/FKs/checks/index predicates/functions/sequences. Assert fresh customer tables contain zero rows, then explicitly provision Northside Services/NY/Main Office and observe exactly its workspace/first Needs setup location. Missing any required input or nonempty existing data prevents provisioning; duplicate calls never overwrite customer data.
+**Interfaces:** Retain the owned test-database factory from Task 1. A separate run-owned generic database uses explicit fictional fixture setup. It must not overwrite the upgrade-preservation fixture or any pre-existing database. Generic fixture setup is test-only and is not a claim of production onboarding readiness.
 
-  Representative test: `fresh customer owns its actual first location`; freshExecutor is the new empty-baseline fixture.
-  ```ts
-  const created = await provisionWorkspace({ workspaceName: 'Northside Services', timeZone: 'America/New_York', initialLocationName: 'Main Office' }, freshExecutor);
-  expect(created.workspace).toMatchObject({ name: 'Northside Services', timeZone: 'America/New_York' });
-  expect(created.location.name).toBe('Main Office');
-  // Also query all customer rows: exactly this workspace/location, zero staffing/windows/positions/eligibility.
-  ```
-- [ ] **Step 2: Run red provisioning/drift assertions.** `npm test -- src/lib/data/provision-workspace.test.ts`; `npm run test:foundation:integration -- -t 'fresh provisioning and schema equivalence'`. Assert a changed FK/default/partial index and changed migration hash produce nonzero checker results, not regenerated acceptance.
-- [ ] **Step 3: Implement deterministic generation and fresh provisioning.** Use a pinned PostgreSQL 17 pg_dump/restore toolchain with schema-only/no-owner/no-ACL/no-comments. Normalize known metadata only, reject unknown framing and preserve all DDL. Document the canonical generation command and checks; no hand-edited schema clone. Fresh installer uses only the generated baseline; existing upgrades keep numbered migrations. Guard all local generation/restoration targets and verify teardown ownership.
-- [ ] **Step 4: Add CI enforcement.** Retain current validation jobs. Add a loopback PostgreSQL service and schema/check/integration job using fictional credentials, no live secrets or provider configuration. CI creates new test databases, rejects existing targets and destroys run-owned DBs. Dependency installation/build scripts remain migration-free. Pin the toolchain used for reproducible schema bytes in the generated manifest.
-- [ ] **Step 5: Verify green and cleanup.** Rerun Step 2, `npm run schema:check`, both integration suites and bootstrap parser/SQL tests with explicit generic locations. Confirm prior migration hashes unchanged and every created disposable DB absent after teardown. Do not run provisioning against an existing customer or mark remote Neon transport verified.
-- [ ] **Step 6: Review compatibility/runbook.** Document fresh baseline version 0008 (do not replay 0001–0008 over it), future numbered upgrades, exact prerequisites, timezone lock, backup/rollback activation requirements and no automatic destructive downgrade.
+- [ ] **Step 1: Verify Fuel upgrade/history preservation.** Populate fictional operational/history records on the exact 0001–0007 schema; capture Fuel customer/location IDs, names, 2/6 staffing, coverage/Lead rules, eligibility, schedules, shifts and request history. Apply 0008 and assert preservation, additive nullable position fields and no invented setup.
+- [ ] **Step 2: Prove generic schema/runtime behavior.** In a separately created owned test database, explicitly insert an arbitrary non-Fuel workspace/name, non-Puerto-Rico IANA zone, one/three/five/twenty location cases with arbitrary names/stable keys, positions, memberships and quotas. Any removal of migration seed configuration is confined to that new fictional test database before operational fixture insertion and documented honestly. No production bootstrap tooling. New locations have no invented staffing/windows/eligibility.
+- [ ] **Step 3: Run real repository and scheduling behavior.** Exercise generic configured reads, readiness, qualifications, position/Lead quota evaluation, timezone/workweek limits, dynamic Clocker lookup, shift/template/revision persistence and guarded notification behavior through actual SQL-backed repositories where relevant. Confirm runtime does not require Fuel identifiers or record counts.
+- [ ] **Step 4: Verify history integrity and teardown.** Compare migration 0001–0007 hashes to exact approved parent; assert destructive deletion/referential outcomes remain protected. Reject existing/non-loopback targets and application `DATABASE_URL`. Confirm every created database is absent after this run's ownership-verified teardown.
+- [ ] **Step 5: Run and review evidence.** Run `npm run test:foundation:integration` and relevant notification integration tests with test-only credentials. Record commands/counts and boundaries. Do not claim live Neon behavior or production new-customer provisioning has been tested.
+- [ ] **Step 6: Document deferred Productization work.** Preserve schema generation, baseline/manifest maintenance, pg_dump workflow, provisioning CLI/bootstrap and CI distribution drift gate as future work required before onboarding unrelated real customers. No migration activation, backup/downgrade operation, paid service or customer modification.
 
 ### Task 12: Full regression, responsive evidence, documentation and final commit
 
@@ -330,7 +320,7 @@ Execution preflight captures the immutable exact-parent baseline described in Ta
 **Interfaces:** The verifier uses actual source components and both explicit customer fixtures at local-only origins. Separate fixture actions from SQL persistence evidence. Baseline captures resolve the exact parent source; reports link before/after screenshots, viewport/engine/state and actionable failures. No private/customer data in artifacts.
 
 - [ ] **Step 1: Capture/check the protected baseline before product edits.** Execution preflight runs this step before Task 1 changes product files: locate dependencies without modifying other worktrees; render exact-parent components/styles using a read-only exported baseline and capture the NEVORA approved screens. Retain immutable before images. Baseline identity is the exact parent, not an older Fuel-branded comparison.
-- [ ] **Step 2: Run full verification after Tasks 1–11.** With application DB/provider credentials unset and outbound flags false: `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:notifications:qa`, `npm run test:foundation:integration`, `npm run test:notifications:integration`, `npm run schema:check`, `npm run build`, `git diff --check`. Record actual exit codes, suite/counts and SQL teardown; prerequisites missing are unperformed/blocking checks, not passes. Restore only task-owned generated build deltas if appropriate.
+- [ ] **Step 2: Run full verification after Tasks 1–11.** With application DB/provider credentials unset and outbound flags false: `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:notifications:qa`, `npm run test:foundation:integration`, `npm run test:notifications:integration`, `npm run build`, `git diff --check`. Record actual exit codes, suite/counts and SQL teardown; prerequisites missing are unperformed/blocking checks, not passes. Restore only task-owned generated build deltas if appropriate.
 - [ ] **Step 3: Execute responsive/state browser QA.** Chromium and WebKit at 320/375/390/430/768/1024/1440: Owner Settings/Workspace/Locations/Add/Edit/Positions/employee assignments/Rules; Manager Schedule/Rules/selectors; affected Employee/Lead Home/Schedule/Availability/Time Off/Shift Requests/My Time; Login/Activate and Phase 3 install/device setup. Use one/3+/20-location and long/inactive/missing-setup cases. Check bounds/text ranges, peer size/centering, contrast in normal/hover/pressed/focus, loading/disabled/error/empty/success, keyboard and bottom-nav/safe-area clearance. Fuel and generic Clocker get 1024×768 and 768×1024, including its existing demo transitions.
 
   Representative browser assertion: `Owner location form fits 320px`; measure visible controls as well as page scroll bounds.
@@ -339,10 +329,10 @@ Execution preflight captures the immutable exact-parent baseline described in Ta
   // For each peer action, assert bounding height >= 44 and measured label center matches its control center within 1 CSS px.
   ```
 - [ ] **Step 4: Inspect protected comparisons and service-worker boundary.** Explain each intentional data/input difference; unchanged protected layouts must compare unchanged. Do not mask away broad diffs or accept screenshot updates automatically. Verify `/app/` scope, unchanged public-only caching and no Clocker setup/push behavior. Report actual local service-worker tests separately from physical iPhone/Android/provider delivery, which remain unauthorized/unperformed.
-- [ ] **Step 5: Fix attributable defects and rerun affected checks.** Fresh review examines schema/provisioning, timezone/ownership, quota/race behavior and UI. Fix within approved scope; a new business decision, material architecture change, migration/deployment/cost requirement stops for Jose. Do not weaken assertions, discard work or start automation to get green.
-- [ ] **Step 6: Write final architecture and evidence handoff.** Map source changes/reused components, prepared 0008/generated baseline, Fuel and generic results, complete commands/results, remaining limitations, deferred Skills and activation prerequisites. Confirm Phase 4 must consume configured workspace/active READY locations/eligibility/positions/quotas and the same rules engine.
+- [ ] **Step 5: Fix attributable defects and rerun affected checks.** Fresh review examines schema/history preservation, timezone/ownership, quota/race behavior and UI. Fix within approved scope; a new business decision, material architecture change, migration/deployment/cost requirement stops for Jose. Do not weaken assertions, discard work or start automation to get green.
+- [ ] **Step 6: Write final architecture and evidence handoff.** Map source changes/reused components, prepared 0008 and deferred production provisioning, Fuel and generic results, complete commands/results, remaining limitations, deferred Skills and activation prerequisites. Confirm Phase 4 must consume configured workspace/active READY locations/eligibility/positions/quotas and the same rules engine.
 - [ ] **Step 7: Create the single implementation commit after all required checks/reviews pass.** Review exact `git diff --stat` and manifest; stage only foundation files, never `.env`, credentials or artifact dumps. Commit `feat: generalize Nevora workspace and scheduling foundation`; do not amend previous or planning commits. Verify `git status --short` is clean and record full SHA. No push/merge/deploy.
-- [ ] **Step 8: Stop for foundation review.** Return exact parent and final SHA, branch/worktree, file manifest, model/migration/provisioning summaries, screenshots/gallery/local fixture URL, tests and their honest boundaries, compatibility risks, Fuel/generic confirmation and remaining activation requirements. Do not start Phase 4.
+- [ ] **Step 8: Stop for foundation review.** Return exact parent and final SHA, branch/worktree, file manifest, model/migration summaries and deferred Productization requirements, screenshots/gallery/local fixture URL, tests and their honest boundaries, compatibility risks, Fuel/generic confirmation and remaining activation requirements. Do not start Phase 4.
 
 ## Specification coverage map
 
@@ -356,12 +346,10 @@ Execution preflight captures the immutable exact-parent baseline described in Ta
 | 7 qualification, quota counting, orthogonal Lead | Tasks 5, 6, 7, 9 |
 | 8 publication atomicity and Phase 3 privacy/reliability | Tasks 7, 8, 12 |
 | 9 approved small UI, generic labels, Clocker | Tasks 9, 10, 12 |
-| 10 canonical schema, fresh provisioning and drift | Tasks 1, 11 |
+| 10 additive upgrade and generic SQL proof; production provisioning deferred | Tasks 1, 11, 12 |
 | 11 dual fixtures, matrix, protected QA | Tasks 1–12; final gate Task 12 |
 | 12 docs, one local implementation commit and stop | Task 12 |
 
 ## Execution approval and checkpoint
 
-This plan is ready for Jose's review together with the written specification. Recommended execution: Subagent-driven, because schema/identity, timezone, eligibility and durable notifications have shared contracts whose mistakes would affect scheduling and privacy. A fresh implementer and two fresh reviewers per task can check those boundaries before the next task depends on them. Native execution is also supported by the required executing-plans skill with final independent review.
-
-No implementation method is assumed from the earlier Phase 3 approval. Preserve the method Jose selects for this foundation; do not dispatch implementation subagents, install dependencies, create migrations/baseline artifacts, run provisioning or edit product code before this review. Normal approved tasks then continue automatically within scope; only the specified exceptional decisions require further approval.
+Jose approved Subagent-driven execution with fresh implementer/spec/quality reviews, one final local implementation commit and the narrowed Task 11 above. Tasks 1–10 remain approved in full, Task 12 remains the complete regression/UI/documentation/commit gate. Continue automatically without normal-task approval prompts. No Phase 4, push, merge, deploy, applied customer migration, real push/device activation or paid infrastructure.
