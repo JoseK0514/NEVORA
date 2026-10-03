@@ -17,7 +17,7 @@ function validProof(value: unknown): value is InstallationProof {
     if (!value || typeof value !== 'object')
         return false;
     const p = value as InstallationProof;
-    return (p.associatedSessionHash === undefined || hashPattern.test(p.associatedSessionHash)) && hashPattern.test(p.installationHash) && generationPattern.test(p.generation) && (p.environment === 'test' || p.environment === 'production');
+    return (p.associatedSessionHash === undefined || (typeof p.associatedSessionHash === 'string' && hashPattern.test(p.associatedSessionHash))) && hashPattern.test(p.installationHash) && generationPattern.test(p.generation) && (p.environment === 'test' || p.environment === 'production');
 }
 function purposeKey(key: Uint8Array, purpose: string): Buffer {
     if (key.byteLength !== 32)
@@ -73,7 +73,7 @@ function validReceipt(value: unknown): value is VerifiedCleanupReceipt {
     const issued = Date.parse(r.issuedAt ?? ''), expiry = Date.parse(r.expiresAt ?? '');
     const revocations = r.sessionRevocations;
     if (revocations !== undefined && (!Array.isArray(revocations) || revocations.length + (r.revokeSession === true ? 1 : 0) > MAX_CLEANUP_REVOCATIONS || revocations.some(item => {
-        if (!item || typeof item !== 'object' || !hashPattern.test(item.sessionHash)) return true;
+        if (!item || typeof item !== 'object' || typeof item.sessionHash !== 'string' || !hashPattern.test(item.sessionHash) || typeof item.issuedAt !== 'string' || typeof item.expiresAt !== 'string') return true;
         const from = Date.parse(item.issuedAt), to = Date.parse(item.expiresAt);
         return !Number.isFinite(from) || !Number.isFinite(to) || to <= from || to - from > MAX_LIFETIME_MS;
     }) || new Set(revocations.map(item => item.sessionHash)).size !== revocations.length || (r.revokeSession === true && revocations.some(item => item.sessionHash === r.sessionHash)))) return false;

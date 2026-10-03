@@ -135,3 +135,47 @@ it('multiple_session_recovery_keeps_shared_one_second_abort_budget',async()=>{
     s.deps.revokeSession=async(_hash,signal)=>{signals.push(signal);return new Promise(()=>{});};s.deps.subscriptions=(signal)=>{signals.push(signal);return s.repo;};s.repo.reconcile=async()=>new Promise(()=>{});
     vi.useFakeTimers();const pending=m.reconcilePendingInstallation(s.cookies,s.config,s.deps);await vi.advanceTimersByTimeAsync(1000);expect(await pending).toEqual({state:'pending'});expect(signals).toHaveLength(3);expect(signals.every(signal=>signal.aborted)).toBe(true);expect(s.values.has(CLEANUP_COOKIE)).toBe(true);
 });
+it('confirmed_auth_success_retires_prior_obligation_during_push_only_outage', async () => {
+    const m = await api(); const s = setup();
+    s.values.set(CLEANUP_COOKIE, sealCleanupReceipt({ ...s.proof, sessionHash, revokeSession: true, issuedAt: now.toISOString(), expiresAt: '2026-10-03T12:00:00Z' }, key));
+    s.repo.detach = async () => { throw new Error('push table outage'); };
+    s.repo.reconcile = async () => { throw new Error('push table outage'); };
+    expect(await m.terminatePortalSession({ sessionToken: 'old-session', installation: s.proof, cookies: s.cookies, deps: s.deps })).toEqual({ state: 'pending' });
+    let retained = openCleanupReceipt(s.values.get(CLEANUP_COOKIE)!, key, now)!;
+    expect(retained.revokeSession).toBe(false);
+    expect(retained.issuedAt).toBe(now.toISOString());
+    expect(retained.expiresAt).toBe('2026-10-03T12:00:00Z');
+    for (let i = 0; i < 12; i++) {
+        s.values.set('fuel_session', `renewed-${i}`);
+        expect(await m.terminatePortalSession({ sessionToken: `renewed-${i}`, installation: s.proof, cookies: s.cookies, deps: s.deps })).toEqual({ state: 'pending' });
+        retained = openCleanupReceipt(s.values.get(CLEANUP_COOKIE)!, key, now)!;
+        expect(retained.revokeSession).toBe(false);
+        expect(retained.sessionRevocations ?? []).toEqual([]);
+        expect(retained.recoveryBlocked).not.toBe(true);
+    }
+    s.repo.reconcile = async () => ({ state: 'complete' });
+    expect(await m.reconcilePendingInstallation(s.cookies, s.config, s.deps)).toEqual({ state: 'complete' });
+    expect(s.active.has('other-device')).toBe(true);
+});
+it('partial_reconciliation_retires_only_confirmed_auth_operations_before_deadline', async () => {
+    const m = await api(); const s = setup();
+    const ambiguousHash = createHash('sha256').update('ambiguous-session').digest('hex');
+    s.values.set(CLEANUP_COOKIE, sealCleanupReceipt({ ...s.proof, sessionHash, revokeSession: true, issuedAt: now.toISOString(), expiresAt: '2026-10-03T12:00:00Z', sessionRevocations: [{ sessionHash: ambiguousHash, issuedAt: now.toISOString(), expiresAt: '2026-10-03T12:00:00Z' }] }, key));
+    let finishAmbiguous: (() => void) | undefined;
+    s.deps.revokeSession = async (hash) => { if (hash === ambiguousHash) await new Promise<void>(resolve => { finishAmbiguous = resolve; }); else s.revoked.add(hash); };
+    s.repo.reconcile = async () => { throw new Error('push table outage'); };
+    vi.useFakeTimers();
+    const result = m.reconcilePendingInstallation(s.cookies, s.config, s.deps);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(await result).toEqual({ state: 'pending' });
+    const retained = openCleanupReceipt(s.values.get(CLEANUP_COOKIE)!, key, now)!;
+    expect(retained.revokeSession).toBe(false);
+    expect(retained.sessionRevocations).toEqual([{ sessionHash: ambiguousHash, issuedAt: now.toISOString(), expiresAt: '2026-10-03T12:00:00Z' }]);
+    finishAmbiguous!();
+    await Promise.resolve(); await Promise.resolve();
+    expect(openCleanupReceipt(s.values.get(CLEANUP_COOKIE)!, key, now)?.sessionRevocations).toEqual(retained.sessionRevocations);
+    s.deps.revokeSession = async hash => { s.revoked.add(hash); };
+    s.repo.reconcile = async () => ({ state: 'complete' });
+    expect(await m.reconcilePendingInstallation(s.cookies, s.config, s.deps)).toEqual({ state: 'complete' });
+    expect(s.revoked).toEqual(new Set([sessionHash, ambiguousHash]));
+});

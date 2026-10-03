@@ -1,0 +1,97 @@
+"use client";
+
+import { useEffect, useRef, useState } from 'react';
+import type { UserRole } from '../lib/domain';
+import type { DeviceSetupState } from '../lib/notifications/device-state';
+import { browserRuntime, DeviceController, observeController, type DeviceSnapshot } from '../lib/notifications/device-client';
+
+type InstallEvent = Event & { prompt(): Promise<void>; userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }> };
+type ContentProps = {
+  state: DeviceSetupState; standalone: boolean | 'unknown'; ios: boolean; installPrompt: boolean; testAllowed: boolean; instructions: boolean; message?: string;
+  onEnable(): void; onDismiss(): void; onInstructions(): void; onInstall(): void; onTurnOff(): void; onTest(): void; onRetry(): void;
+};
+const descriptions: Record<DeviceSetupState, string> = {
+  loading: 'Checking this device…', unavailable: 'Notifications are unavailable in this browser or configuration. You can keep using Nuvora.',
+  install: 'Open Nuvora from your Home Screen to set up notifications on this device.', ready: 'Enable notifications for schedule updates and requests on this device.',
+  enabled: 'Notifications are enabled on this device.', denied: 'Notifications are blocked. Restore permission in your browser or device settings, then reopen Nuvora.',
+  revoked: 'Browser notification access changed. Turn off the old enrollment, then check permission in your browser or device settings.',
+  pending: 'Updating this device…', error: 'Device setup needs attention.', dismissed: 'Setup postponed. You can return here whenever you are ready.',
+};
+export function DeviceSetupContent(props: ContentProps) {
+  const pending = props.state === 'loading' || props.state === 'pending';
+  return <div className="portal-device-content" aria-busy={pending}>
+    <h2 id="portal-device-title">Keep Nuvora Handy</h2>
+    <p>Add Nuvora to your Home Screen for quick access to your schedule.</p>
+    {props.standalone === true ? <p>Opened as a standalone app.</p> : <>
+      {props.standalone === 'unknown' ? <p>We cannot confirm whether this window is standalone.</p> : null}
+      <div className="portal-device-actions">
+        <button type="button" className="portal-device-button secondary" onClick={props.installPrompt ? props.onInstall : props.onInstructions}>{props.installPrompt ? 'Add to Home Screen' : 'Show Install Instructions'}</button>
+      </div>
+    </>}
+    {props.instructions ? <p className="portal-device-instructions">{props.ios ? 'In Safari, use Share → Add to Home Screen. Enable “Open as Web App” if offered, then open Nuvora from the new icon.' : 'Open your browser menu and choose Install app or Add to Home Screen if available, then open Nuvora from the new icon.'} Reading these instructions does not install the app.</p> : null}
+    <h3>Stay Updated</h3>
+    <p>Receive important schedule changes and reminders.</p>
+    <p role="status">{descriptions[props.state]}</p>
+    <div className="portal-device-actions">
+      {props.state === 'ready' ? <button type="button" className="portal-device-button primary" onClick={props.onEnable}>Enable Notifications</button> : null}
+      {props.state === 'enabled' || props.state === 'revoked' || props.state === 'denied' || props.state === 'error' ? <button type="button" className="portal-device-button secondary" onClick={props.onTurnOff}>Turn Off</button> : null}
+      {props.state === 'enabled' && props.testAllowed ? <button type="button" className="portal-device-button primary" onClick={props.onTest}>Test Notification</button> : null}
+      {props.state === 'error' || props.state === 'denied' || props.state === 'unavailable' ? <button type="button" className="portal-device-button primary" onClick={props.onRetry}>Check Again</button> : null}
+      {pending ? <button type="button" className="portal-device-button primary" disabled>{props.state === 'loading' ? 'Checking…' : 'Updating…'}</button> : null}
+      {!pending && ['ready', 'install', 'dismissed'].includes(props.state) ? <button type="button" className="portal-device-button secondary" onClick={props.onDismiss}>Not Now</button> : null}
+    </div>
+    {props.message ? <p className="portal-device-message" role={props.state === 'error' ? 'alert' : 'status'}>{props.message}</p> : null}
+  </div>;
+}
+export function PortalDeviceSetup({ role }: { role: UserRole }) {
+  const controller = useRef<DeviceController | null>(null);
+  const popover = useRef<HTMLDivElement>(null);
+  const installEvent = useRef<InstallEvent | null>(null);
+  const offered = useRef(false);
+  const [snapshot, setSnapshot] = useState<DeviceSnapshot | null>(null);
+  const [instructions, setInstructions] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
+  const [installMessage, setInstallMessage] = useState<string>();
+  useEffect(() => {
+    const client = new DeviceController(browserRuntime(), setSnapshot);
+    controller.current = client;
+    const dispose = observeController(client);
+    void client.start();
+    const beforeInstall = (event: Event) => { event.preventDefault(); installEvent.current = event as InstallEvent; setCanInstall(true); };
+    const update = (event: MessageEvent) => {
+      if (event.data?.version === 1 && event.data?.type === 'UPDATE_WAITING') setInstallMessage('An update is ready. Close Nuvora tabs and reopen when your work is saved.');
+    };
+    const visibility = () => { if (document.visibilityState === 'visible') void client.reconcile(); };
+    document.addEventListener('visibilitychange', visibility);
+    window.addEventListener('beforeinstallprompt', beforeInstall);
+    navigator.serviceWorker?.addEventListener('message', update);
+    return () => { dispose(); controller.current = null; document.removeEventListener('visibilitychange', visibility); window.removeEventListener('beforeinstallprompt', beforeInstall); navigator.serviceWorker?.removeEventListener('message', update); };
+  }, []);
+  useEffect(() => {
+    if (offered.current || !snapshot || !['ready', 'install'].includes(snapshot.state)) return;
+    offered.current = true;
+    // A nonmodal offer uses the profile surface, without stealing active form focus.
+    if (document.activeElement === document.body) popover.current?.showPopover();
+  }, [snapshot]);
+  function dismiss() {
+    controller.current?.dismiss();
+    if (!controller.current?.snapshot.message) popover.current?.hidePopover();
+  }
+  async function install() {
+    const event = installEvent.current;
+    if (!event) return;
+    installEvent.current = null; setCanInstall(false);
+    try {
+      await event.prompt();
+      const choice = await event.userChoice;
+      setInstallMessage(choice.outcome === 'accepted' ? 'Browser install request accepted. Open Nuvora from its icon to confirm standalone use.' : 'Install postponed. You can use the browser menu later.');
+    } catch { setInstallMessage('The browser install prompt is unavailable. Use the install instructions.'); setInstructions(true); }
+  }
+  return <div ref={popover} id="portal-device-settings" className="portal-device-settings" popover="auto" aria-labelledby="portal-device-title" data-role={role}
+    onToggle={event => { if (event.newState === 'open') controller.current?.reopen(); }}>
+    <div className="portal-device-heading"><strong>Device settings</strong><button type="button" className="portal-device-close" popoverTarget="portal-device-settings" popoverTargetAction="hide" aria-label="Close device settings">×</button></div>
+    {snapshot ? <DeviceSetupContent state={snapshot.state} standalone={snapshot.standalone} ios={snapshot.capabilities.requiresStandalone} installPrompt={canInstall} testAllowed={snapshot.server.testAllowed} instructions={instructions} message={snapshot.message ?? installMessage}
+      onEnable={() => { void controller.current?.enable(); }} onDismiss={dismiss} onInstructions={() => setInstructions(true)} onInstall={() => { void install(); }} onTurnOff={() => { void controller.current?.turnOff(); }} onTest={() => { void controller.current?.test(); }} onRetry={() => { void controller.current?.start(); }}/>
+      : <p role="status">Checking this device…</p>}
+  </div>;
+}

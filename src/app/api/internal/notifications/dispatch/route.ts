@@ -1,0 +1,13 @@
+import { readNotificationConfig } from '../../../../../lib/notifications/config';
+import { authorizeWorker } from '../../../../../lib/notifications/worker-auth';
+import { createWorkerDeps, runWorker } from '../../../../../lib/notifications/worker';
+export const runtime = 'nodejs';
+export const maxDuration = 30;
+export async function GET(request: Request) {
+  const config = readNotificationConfig(process.env);
+  const headers = { 'Cache-Control': 'no-store' };
+  if (!authorizeWorker(request, config.workerSecret)) return Response.json({ error: 'unauthorized' }, { status: 401, headers });
+  try { return Response.json(await runWorker('dispatch', createWorkerDeps(config)), { headers }); }
+  catch { return Response.json({ error: 'worker_unavailable' }, { status: 503, headers }); }
+}
+export const POST = GET;

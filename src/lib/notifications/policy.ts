@@ -69,7 +69,7 @@ export function retryDecision(input: { attempt: number; now: Date; expiresAt: Da
   const retryAfter = Number.isFinite(result.retryAfterSeconds) ? Math.min(3600, Math.max(0, result.retryAfterSeconds!)) * 1000 : 0;
   let hash = 2166136261;
   for (const char of `${deliveryId}:${attempt}`) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0;
-  const retryAt = new Date(now.getTime() + Math.max(base, retryAfter) + hash % 15001);
+  const retryAt = new Date(now.getTime() + Math.max(base, retryAfter) + hash % (Math.min(15000, Math.floor(base * 0.1)) + 1));
   if (retryAt.getTime() >= expiresAt.getTime()) return { terminal: 'expired' };
   return { retryAt };
 }

@@ -1,3 +1,8 @@
+import { SchedulePublicationChange } from "@/components/schedule-publication-change";
+import { listRevisionShifts } from "@/lib/data/publication-revisions";
+import { sqlNotificationStateRepository } from "@/lib/data/notification-state";
+import { readNotificationConfig } from "@/lib/notifications/config";
+import { ownPublicationChanges } from "@/lib/notifications/device-state";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
@@ -123,6 +128,20 @@ export default async function SchedulePage({
 
   if (!manager) {
     const hasPublishedShifts = allShifts.length > 0;
+    let publicationChanges: ReturnType<typeof ownPublicationChanges> = [];
+    if (readNotificationConfig(process.env).featureEnabled && employeeAcknowledgement.latestRevisionId && employeeAcknowledgement.needsAcknowledgement) {
+      const access = await sqlNotificationStateRepository().recipientAccess(session.id);
+      if (access?.active && access.employeeId === session.id && access.role === session.role) {
+        const [before, after] = await Promise.all([
+          employeeAcknowledgement.acknowledgedRevisionId ? listRevisionShifts(employeeAcknowledgement.acknowledgedRevisionId) : Promise.resolve([]),
+          listRevisionShifts(employeeAcknowledgement.latestRevisionId),
+        ]);
+        publicationChanges = ownPublicationChanges(
+          before.filter(shift => access.allowedLocationIds.includes(shift.locationId)),
+          after.filter(shift => access.allowedLocationIds.includes(shift.locationId)), session.id,
+        );
+      }
+    }
 
     return (
       <div className="employee-view employee-schedule-view">
@@ -149,6 +168,8 @@ export default async function SchedulePage({
             ) : <span className="employee-quiet-status success">Acknowledged</span>}
           </div>
         ) : null}
+
+        <SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} />
 
         <section className="employee-view-surface employee-schedule-agenda" aria-label="Published weekly schedule">
           {dates.map((date) => {

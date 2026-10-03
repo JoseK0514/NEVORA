@@ -14,7 +14,6 @@ import {
   getShiftValidationContext,
   insertShift,
 } from "@/lib/data/schedules";
-import { clearWeekAcknowledgements } from "@/lib/data/acknowledgements";
 import { validateShift } from "@/lib/scheduling/validate-shift";
 
 function templateUrl(weekStart: string, suffix = "") {
@@ -107,6 +106,7 @@ export async function applyTemplateAction(formData: FormData) {
     });
 
     await insertShift({
+      actorEmployeeId: session.id,
       scheduleId,
       employeeId: templateShift.employeeId,
       date,
@@ -121,10 +121,6 @@ export async function applyTemplateAction(formData: FormData) {
     if (validation.issues.some((issue) => issue.severity === "warning")) {
       warnings += 1;
     }
-  }
-
-  if (applied) {
-    await clearWeekAcknowledgements(weekStart);
   }
 
   revalidatePath("/app/schedule");

@@ -88,7 +88,7 @@ export function sqlSubscriptionRepository(executor: SqlExecutor = neonNotificati
         { text: `WITH enrolled AS (
           INSERT INTO push_subscriptions (id, employee_id, installation_hash, environment,
             endpoint_fingerprint, encrypted_material, session_hash, generation, status, expires_at)
-          SELECT $10,$1,$2,$3,$4,$5,$6,$7,'active',$8::timestamptz
+          SELECT $10,$1,$2,$3,$4,$5,$6::text,$7,'active',$8::timestamptz
           WHERE EXISTS (SELECT 1 FROM employee_sessions session JOIN employees e ON e.id = session.employee_id
             WHERE session.token_hash = $6 AND session.employee_id = $1 AND session.expires_at > now() AND e.active = true)
             AND ($9::text IS NULL OR EXISTS (SELECT 1 FROM push_subscriptions
@@ -119,6 +119,35 @@ export function sqlSubscriptionRepository(executor: SqlExecutor = neonNotificati
       return row ? {state:'active',generation:row.generation} : {state:'conflict'};
     },
     detach,
+    async cleanupRemovedSessions(environment, limit) {
+      if (!Number.isInteger(limit) || limit < 1 || limit > 10) throw Error('Invalid cleanup batch limit');
+      const rows = await executor.query<{ id: string }>({
+        // The candidate row lock serializes enrollment's ON CONFLICT update.
+        // SKIP LOCKED leaves an in-flight refresh to the next bounded invocation;
+        // the update also fences the exact current generation/session association.
+        text: `WITH candidates AS MATERIALIZED (
+          SELECT s.id, s.generation, s.session_hash FROM push_subscriptions s
+          WHERE s.environment = $1 AND s.status = 'active'
+            AND NOT EXISTS (SELECT 1 FROM employee_sessions session
+              WHERE session.token_hash = s.session_hash AND session.employee_id = s.employee_id)
+          ORDER BY s.id LIMIT $2 FOR UPDATE OF s SKIP LOCKED
+        ), detached AS (
+          UPDATE push_subscriptions s SET status = 'detached', generation = $3,
+            encrypted_material = NULL, updated_at = now()
+          FROM candidates c WHERE s.id = c.id AND s.environment = $1 AND s.status = 'active'
+            AND s.generation = c.generation AND s.session_hash = c.session_hash
+            AND NOT EXISTS (SELECT 1 FROM employee_sessions session
+              WHERE session.token_hash = s.session_hash AND session.employee_id = s.employee_id)
+          RETURNING s.id, c.generation
+        ), cancelled AS (
+          UPDATE push_deliveries d SET status = 'cancelled', lease_token = NULL,
+            lease_expires_at = NULL, updated_at = now()
+          FROM detached s WHERE d.subscription_id = s.id AND d.generation = s.generation
+            AND d.status IN ('queued','retry_pending','processing') RETURNING d.id
+        ) SELECT id FROM detached`, values: [environment, limit, randomUUID()],
+      });
+      return rows.length;
+    },
     async listActive(recipientId, environment) {
       const rows = await executor.query<Record<string,unknown>>({
         text: `SELECT s.* FROM push_subscriptions s JOIN employees e ON e.id = s.employee_id

@@ -91,15 +91,18 @@ export type SubscriptionRepository = {
   queueSelfTest(input: { proof: InstallationProof; employeeId: string; sessionHash: string; intent: NotificationIntent }): Promise<boolean>;
   enroll(input: OwnedEnrollment): Promise<EnrollmentResult>;
   detach(input: InstallationProof): Promise<CleanupResult>;
+  cleanupRemovedSessions(environment: PushEnvironment, limit: number): Promise<number>;
   listActive(recipientId: string, environment: PushEnvironment): Promise<PushSubscriptionRecord[]>;
   invalidate(subscriptionId: string, generation: string): Promise<void>;
   reconcile(receipt: VerifiedCleanupReceipt): Promise<CleanupResult>;
 };
 export type DeliveryRepository = {
   materialize(intentIds: readonly string[]): Promise<void>;
-  claim(input: { now: Date; limit: number; leaseSeconds: number; mode: 'new' | 'retry' | 'all' }): Promise<DeliveryClaim[]>;
+  claim(input: { now: Date; limit: number; leaseSeconds: number; mode: 'new' | 'retry' | 'all'; recipientIds?: readonly string[] }): Promise<DeliveryClaim[]>;
   finish(claim: DeliveryClaim, result: DeliveryCompletion): Promise<boolean>;
   release(claim: DeliveryClaim): Promise<boolean>;
+  /** Unattempted quiet-hour/due deferral; restores the claimed attempt, retains expiry. */
+  defer(claim: DeliveryClaim, nextAttemptAt: Date): Promise<boolean>;
   cancelForGeneration(installationHash: string, generation: string): Promise<void>;
 };
 
@@ -110,5 +113,5 @@ export type NotificationStateRepository = {
   recipientAccess(employeeId: string): Promise<RecipientAccess | null>;
   readSource(source: SourceRef): Promise<SourceSnapshot | null>;
   check(intent: NotificationIntent, recipientId: string, now: Date): Promise<SourceCheck>;
-  listReminderCandidates(now: Date, limit: number): Promise<SourceSnapshot[]>;
+  listReminderCandidates(now: Date, limit: number, shouldContinue?: () => boolean, visit?: (source: SourceSnapshot) => Promise<void>): Promise<SourceSnapshot[]>;
 };

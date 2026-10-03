@@ -1,4 +1,8 @@
 import { randomUUID } from "node:crypto";
+import { commitPublishedWeekChange, neonNotificationExecutor } from './notification-transactions';
+import { guardedRequestMutation, isRequestTransitionConflict, requestNotificationStatements, requestSnapshot, requestStateGuard } from './request-notifications';
+import { exchangeShiftFromGuarded, type ExchangeRecord } from './exchanges';
+import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { getDb, queryRows } from "@/lib/db";
 
 export type CalloutReasonCode =
@@ -88,40 +92,28 @@ export async function createCallout(input: {
   employeeId: string;
   reasonCode: CalloutReasonCode;
   reasonNote?: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows<{ id: string }>(
-    await sql.query(
-      `INSERT INTO shift_callouts (
-         id,
-         shift_id,
-         employee_id,
-         reason_code,
-         reason_note
-       )
-       SELECT
-         $1,
-         sh.id,
-         sh.employee_id,
-         $4,
-         $5
-       FROM shifts sh
-       JOIN schedules s ON s.id = sh.schedule_id
-       WHERE sh.id = $2
-         AND sh.employee_id = $3
-         AND s.status = 'PUBLISHED'
-       RETURNING id`,
-      [
-        randomUUID(),
-        input.shiftId,
-        input.employeeId,
-        input.reasonCode,
-        input.reasonNote ?? null,
-      ],
-    ),
-  );
-
-  return rows[0]?.id ?? null;
+}, executor: SqlExecutor = neonNotificationExecutor()): Promise<string | null> {
+  const weeks = await executor.query<{ week_start: string }>({ text: `SELECT s.week_start::text AS week_start FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id=$1`, values: [input.shiftId] });
+  const id = randomUUID();
+  const result = await commitPublishedWeekChange({
+    weekStarts: weeks.map(w => w.week_start), actorEmployeeId: input.employeeId, sourceType: 'CALLOUT', sourceId: id,
+    build(state) {
+      const shift = state.shifts.find(s => s.sourceShiftId === input.shiftId);
+      if (!shift || shift.employeeId !== input.employeeId || !state.schedules.some(s => s.id === shift.scheduleId && s.status === 'PUBLISHED')) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
+      const record: CalloutRecord = { ...input, id, employeeName: '', locationName: '', locationId: shift.locationId, weekStart: shift.weekStart, date: shift.date, startTime: shift.startTime, endTime: shift.endTime, status: 'PENDING', createdAt: new Date().toISOString() };
+      return {
+        recipientEmployeeIds: state.recipients.map(r => r.employeeId),
+        afterSchedules: state.schedules, afterShifts: state.shifts,
+        statements: [guardedRequestMutation({
+          text: `INSERT INTO shift_callouts (id,shift_id,employee_id,reason_code,reason_note,created_at)
+            SELECT $1,sh.id,sh.employee_id,$4,$5,$6 FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id
+            WHERE sh.id=$2 AND sh.employee_id=$3 AND s.status='PUBLISHED' RETURNING id`,
+          values: [id,input.shiftId,input.employeeId,input.reasonCode,input.reasonNote ?? null,record.createdAt],
+        }), ...requestNotificationStatements({ after: requestSnapshot('CALLOUT', record), actorEmployeeId: input.employeeId, recipients: state.recipients })],
+      };
+    },
+  }, executor);
+  return result.committed ? id : null;
 }
 
 export async function listPendingCallouts(): Promise<CalloutRecord[]> {
@@ -152,107 +144,71 @@ export async function listEmployeeCallouts(
   return rows.map(mapCallout);
 }
 
-export async function getCallout(calloutId: string): Promise<CalloutRecord | null> {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-      `${CALLOUT_SELECT}
-       WHERE c.id = $1
-       LIMIT 1`,
-      [calloutId],
-    ),
-  );
+export async function getCallout(calloutId: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<CalloutRecord | null> {
+  const rows = await executor.query({ text: `${CALLOUT_SELECT} WHERE c.id=$1 LIMIT 1`, values: [calloutId] });
   return rows[0] ? mapCallout(rows[0]) : null;
 }
 
-export async function approveCalloutAndOpenCoverage(input: {
-  calloutId: string;
-  managerId: string;
-}) {
-  const sql = getDb();
+export async function approveCalloutAndOpenCoverage(input: { calloutId: string; managerId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  return transitionCallout(input.calloutId, input.managerId, 'APPROVED', executor);
+}
+
+export async function denyCallout(input: { calloutId: string; managerId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  return transitionCallout(input.calloutId, input.managerId, 'DENIED', executor);
+}
+
+export async function cancelPendingCallout(input: { calloutId: string; employeeId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  return transitionCallout(input.calloutId, input.employeeId, 'CANCELLED', executor);
+}
+
+async function transitionCallout(calloutId: string, actorEmployeeId: string, status: 'APPROVED' | 'DENIED' | 'CANCELLED', executor: SqlExecutor): Promise<boolean> {
+  const before = await getCallout(calloutId, executor);
+  if (!before || before.status !== 'PENDING' || (status === 'CANCELLED' && before.employeeId !== actorEmployeeId)) return false;
   const exchangeId = randomUUID();
-
-  const rows = queryRows<{ id: string }>(
-    await sql.query(
-      `WITH approved AS (
-         UPDATE shift_callouts c
-         SET status = 'APPROVED',
-             reviewed_by = $2,
-             reviewed_at = now()
-         WHERE c.id = $1
-           AND c.status = 'PENDING'
-           AND NOT EXISTS (
-             SELECT 1
-             FROM shift_exchanges x
-             WHERE x.source_shift_id = c.shift_id
-               AND x.status IN ('OPEN', 'EMPLOYEE_PENDING', 'MANAGER_PENDING')
-           )
-         RETURNING c.id, c.shift_id, c.employee_id
-       ),
-       opened AS (
-         INSERT INTO shift_exchanges (
-           id,
-           kind,
-           source_shift_id,
-           requested_by_employee_id,
-           status
-         )
-         SELECT
-           $3,
-           'COVERAGE',
-           shift_id,
-           employee_id,
-           'OPEN'
-         FROM approved
-         RETURNING id
-       )
-       SELECT approved.id
-       FROM approved
-       JOIN opened ON true`,
-      [input.calloutId, input.managerId, exchangeId],
-    ),
-  );
-
-  return Boolean(rows[0]);
-}
-
-export async function denyCallout(input: {
-  calloutId: string;
-  managerId: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows<{ id: string }>(
-    await sql.query(
-      `UPDATE shift_callouts
-       SET status = 'DENIED',
-           reviewed_by = $2,
-           reviewed_at = now()
-       WHERE id = $1
-         AND status = 'PENDING'
-       RETURNING id`,
-      [input.calloutId, input.managerId],
-    ),
-  );
-  return Boolean(rows[0]);
-}
-
-export async function cancelPendingCallout(input: {
-  calloutId: string;
-  employeeId: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows<{ id: string }>(
-    await sql.query(
-      `UPDATE shift_callouts
-       SET status = 'CANCELLED'
-       WHERE id = $1
-         AND employee_id = $2
-         AND status = 'PENDING'
-       RETURNING id`,
-      [input.calloutId, input.employeeId],
-    ),
-  );
-  return Boolean(rows[0]);
+  try {
+    const result = await commitPublishedWeekChange({
+      weekStarts: [before.weekStart], actorEmployeeId, sourceType: 'CALLOUT', sourceId: calloutId,
+      build(state) {
+        const source = state.shifts.find(s => s.sourceShiftId === before.shiftId);
+        if (!source) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
+        const currentBefore = { ...before, locationId: source.locationId, weekStart: source.weekStart, date: source.date, startTime: source.startTime, endTime: source.endTime };
+        const after = { ...currentBefore, status };
+        const afterShifts = state.shifts.map(s => ({ ...s }));
+        const statements: SqlStatement[] = [requestStateGuard('shift_callouts', calloutId, { status: 'PENDING', shift_id: before.shiftId, employee_id: before.employeeId })];
+        if (status === 'APPROVED' && (!source || source.employeeId !== before.employeeId || !state.schedules.some(s => s.id === source.scheduleId && s.status === 'PUBLISHED'))) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
+        statements.push(guardedRequestMutation({
+          text: `UPDATE shift_callouts SET status=$3,
+            reviewed_by=CASE WHEN $3::text='CANCELLED' THEN reviewed_by ELSE $2 END,
+            reviewed_at=CASE WHEN $3::text='CANCELLED' THEN reviewed_at ELSE now() END
+            WHERE id=$1 AND status='PENDING'
+            AND ($3::text<>'APPROVED' OR NOT EXISTS (SELECT 1 FROM shift_exchanges x WHERE x.source_shift_id=shift_callouts.shift_id AND x.status IN ('OPEN','EMPLOYEE_PENDING','MANAGER_PENDING')))
+            RETURNING id`, values: [calloutId,actorEmployeeId,status],
+        }));
+        if (status === 'APPROVED' && source) {
+          const changed = afterShifts.find(s => s.sourceShiftId === source.sourceShiftId)!;
+          changed.isCalloutApproved = true;
+          changed.approvedCalloutEmployeeId = before.employeeId;
+          changed.hasExchangeHistory = true;
+          const exchange: ExchangeRecord = {
+            id: exchangeId, kind: 'COVERAGE', status: 'OPEN', requestedByEmployeeId: before.employeeId, requestedByName: before.employeeName,
+            requestedByRole: state.recipients.find(r => r.employeeId === before.employeeId)?.role ?? 'EMPLOYEE',
+            sourceShift: exchangeShiftFromGuarded(source), createdAt: new Date().toISOString(),
+          };
+          statements.push(guardedRequestMutation({
+            text: `INSERT INTO shift_exchanges (id,kind,source_shift_id,requested_by_employee_id,status,created_at) VALUES ($1,'COVERAGE',$2,$3,'OPEN',$4) RETURNING id`,
+            values: [exchangeId,before.shiftId,before.employeeId,exchange.createdAt],
+          }));
+          statements.push(...requestNotificationStatements({ after: requestSnapshot('EXCHANGE', exchange), actorEmployeeId, recipients: state.recipients }));
+        }
+        statements.push(...requestNotificationStatements({ before: requestSnapshot('CALLOUT', currentBefore), after: requestSnapshot('CALLOUT', after), actorEmployeeId, recipients: state.recipients }));
+        return { statements, recipientEmployeeIds: state.recipients.map(r => r.employeeId), afterSchedules: state.schedules, afterShifts };
+      },
+    }, executor);
+    return result.committed;
+  } catch (error) {
+    if (isRequestTransitionConflict(error)) return false;
+    throw error;
+  }
 }
 
 export async function listTeamCalloutHistory(): Promise<CalloutRecord[]> {

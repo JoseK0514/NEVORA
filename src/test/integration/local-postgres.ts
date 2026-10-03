@@ -1,0 +1,82 @@
+import { randomUUID } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { Client } from 'pg';
+import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
+
+/** This adapter deliberately does not use the application's DATABASE_URL. Every
+ * batch owns a connection: concurrent tests exercise actual PostgreSQL locks. */
+export async function createDisposableNotificationDatabase(): Promise<{
+  executor: SqlExecutor; connectionString: string; dispose(): Promise<void>;
+}> {
+  if (process.env.DATABASE_URL) throw new Error('Refusing DATABASE_URL; unset it before disposable SQL tests.');
+  const value = process.env.FUEL_TEST_DATABASE_URL;
+  if (!value || process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN !== 'yes') {
+    throw new Error('SQL prerequisites: FUEL_TEST_DATABASE_URL must name a NEW loopback fuel_phase3_test_* database; FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN=yes is required.');
+  }
+  const target = new URL(value);
+  const name = decodeURIComponent(target.pathname.slice(1));
+  if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['127.0.0.1', 'localhost', '[::1]'].includes(target.hostname)
+    || !/^fuel_phase3_test_[a-z0-9_]{1,40}$/.test(name) || target.search || target.hash) {
+    throw new Error('Refusing non-disposable/remote SQL target.');
+  }
+  const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+  const admin = new Client({ connectionString: adminUrl.href, connectionTimeoutMillis: 3000 });
+  await admin.connect();
+  const marker = `fuel-phase3-disposable:${randomUUID()}`;
+  const assertOwned = async () => {
+    const result = await admin.query('SELECT shobj_description(oid, \'pg_database\') AS marker FROM pg_database WHERE datname=$1', [name]);
+    if (result.rows[0]?.marker !== marker) throw new Error('Disposable ownership marker missing; refusing teardown.');
+  };
+  try {
+    if ((await admin.query('SELECT 1 FROM pg_database WHERE datname=$1', [name])).rowCount) throw new Error('Refusing existing database, even if its name has the disposable prefix.');
+    await admin.query(`CREATE DATABASE "${name}"`);
+    await admin.query(`COMMENT ON DATABASE "${name}" IS '${marker}'`);
+    await assertOwned();
+  } catch (error) { await admin.end(); throw error; }
+  let disposed = false;
+  const dispose = async () => {
+    if (disposed) return;
+    await assertOwned();
+    await admin.query(`DROP DATABASE "${name}" WITH (FORCE)`);
+    disposed = true;
+    await admin.end();
+  };
+  const run = async (statements: readonly SqlStatement[], transaction: boolean, signal?: AbortSignal) => {
+    signal?.throwIfAborted();
+    if (disposed) throw new Error('Disposable database was disposed.');
+    const client = new Client({ connectionString: target.href, connectionTimeoutMillis: 3000, statement_timeout: 5000 });
+    await client.connect();
+    const [{ pid }] = (await client.query('SELECT pg_backend_pid() AS pid')).rows;
+    const abort = () => { void admin.query('SELECT pg_cancel_backend($1)', [pid]).catch(() => {}); };
+    signal?.addEventListener('abort', abort, { once: true });
+    try {
+      signal?.throwIfAborted();
+      if (transaction) await client.query('BEGIN');
+      const results: unknown[][] = [];
+      for (const statement of statements) {
+        signal?.throwIfAborted();
+        const result = await client.query(statement.text, [...statement.values]);
+        results.push(result.rows);
+      }
+      signal?.throwIfAborted();
+      if (transaction) await client.query('COMMIT');
+      return results;
+    } catch (error) {
+      if (transaction) await client.query('ROLLBACK').catch(() => {});
+      throw error;
+    } finally { signal?.removeEventListener('abort', abort); await client.end(); }
+  };
+  const executor: SqlExecutor = {
+    query: async <T>(statement: SqlStatement, signal?: AbortSignal) => (await run([statement], false, signal))[0] as T[],
+    transaction: (statements, signal) => run(statements, true, signal),
+  };
+  try {
+    // Exact checked-in sequence, including original transaction boundaries.
+    for (const file of ['0001_initial.sql', '0002_schedule_health.sql', '0003_schedule_assistance.sql', '0004_assistance_layer.sql', '0005_time_clock.sql', '0006_scheduling_rule_inputs.sql', '0007_portal_web_push.sql']) {
+      await assertOwned();
+      await executor.query({ text: await readFile(resolve('db/migrations', file), 'utf8'), values: [] });
+    }
+  } catch (error) { await dispose(); throw error; }
+  return { executor, connectionString: target.href, dispose };
+}

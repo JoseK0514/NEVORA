@@ -12537,3 +12537,65 @@ body {
 .employee-login-scene-copy span {
   color: rgba(255, 255, 255, .9);
 }
+
+/* Nuvora device disclosure: scoped to existing profile surfaces only. */
+.app-shell .portal-profile-trigger {
+  width: 100%; border-right: 0; border-bottom: 0; border-left: 0;
+  border-radius: 0; background: transparent; color: inherit; text-align: left;
+  font: inherit; cursor: pointer;
+}
+.app-shell .portal-role-trigger { min-height: 44px; margin-block: -1px; border: 0; background: transparent; padding: 0 8px; cursor: pointer; }
+.employee-shell .employee-more-profile .portal-more-profile-trigger {
+  display: grid; gap: 2px; min-width: 0; flex: 1; min-height: 44px; padding: 0; border: 0;
+  background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer;
+}
+.portal-device-settings {
+  inset: auto auto max(24px, env(safe-area-inset-bottom)) 24px;
+  width: min(360px, calc(100vw - 32px)); max-height: calc(100dvh - 48px - env(safe-area-inset-bottom));
+  box-sizing: border-box; overflow-y: auto; margin: 0; padding: 20px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--color-bg-surface, #fff); color: var(--color-brand-primary, #18191f);
+  box-shadow: var(--shadow-premium); font-family: inherit;
+}
+.portal-device-settings::backdrop { background: transparent; }
+.portal-device-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.portal-device-heading > strong { font-size: 13px; font-weight: 600; }
+.portal-device-close { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 22px; background: #f6f6f8; color: #18191f; font-size: 22px; cursor: pointer; }
+.portal-device-content { display: grid; gap: 12px; }
+.portal-device-content h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.portal-device-content h3 { margin: 8px 0 0; font-size: 14px; font-weight: 600; }
+.portal-device-content p { margin: 0; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.portal-device-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.portal-device-actions > :only-child { grid-column: 1 / -1; }
+.portal-device-settings .portal-device-button {
+  display: flex; justify-content: center; align-items: center; gap: 8px; min-width: 0; min-height: 44px;
+  border: 0; border-radius: 22px; padding: 6px 16px;
+  font-family: inherit; font-size: 12px; font-weight: 600; line-height: 15px;
+  text-align: center; white-space: normal; cursor: pointer; opacity: 1;
+}
+.portal-device-settings .portal-device-button.primary { background: #4f46c8; color: #fff; }
+.portal-device-settings .portal-device-button.secondary { background: #20232d; color: #fff; }
+.portal-device-settings .portal-device-button.primary:hover,
+.portal-device-settings .portal-device-button.primary:active { background: #4038a8; }
+.portal-device-settings .portal-device-button.secondary:hover,
+.portal-device-settings .portal-device-button.secondary:active { background: #18191f; }
+.portal-device-settings .portal-device-button:disabled { opacity: .55; cursor: default; }
+.portal-device-settings button:focus-visible,
+.app-shell .portal-profile-trigger:focus-visible,
+.app-shell .portal-role-trigger:focus-visible,
+.employee-shell .portal-more-profile-trigger:focus-visible,
+.schedule-publication-change summary:focus-visible { outline: 2px solid #4f46c8; outline-offset: 3px; }
+.app-shell .portal-profile-trigger:focus-visible { outline-color: #eeeefc; }
+.portal-device-message { padding: 12px; border-radius: 8px; background: #f6f6f8; color: #18191f; }
+.employee-schedule-view .schedule-publication-change { margin: 0 0 16px; font-size: 13px; }
+.schedule-publication-change summary { min-height: 44px; padding: 12px 0; cursor: pointer; font-weight: 600; }
+.schedule-publication-change ul { list-style: none; margin: 0; padding: 0 0 12px; }
+.schedule-publication-change li { display: grid; gap: 4px; padding: 8px 0; }
+.employee-view [id^="request-"] { scroll-margin-block: 80px; }
+.employee-view [id^="request-"]:target { outline: 2px solid #4f46c8; outline-offset: -2px; }
+@media (max-width: 760px) {
+  .portal-device-settings { left: 16px; bottom: calc(88px + env(safe-area-inset-bottom)); max-height: calc(100dvh - 112px - env(safe-area-inset-bottom)); }
+}
+
+/* Nuvora module label on the white mobile header: approved secondary text. */
+.mobile-brand-copy small { color: var(--muted); }

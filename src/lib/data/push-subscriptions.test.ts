@@ -1,10 +1,10 @@
 import { expect, it, vi } from 'vitest';
 import type { SqlExecutor, OwnedEnrollment } from '../notifications/types';
 async function setup(rows: unknown[][] = [[] ,[]]) {
-  const module = await import('./push-subscriptions').catch(() => ({}));
-  expect(module).toHaveProperty('sqlSubscriptionRepository');
+  const implementation = await import('./push-subscriptions').catch(() => ({}));
+  expect(implementation).toHaveProperty('sqlSubscriptionRepository');
   const executor = { query:vi.fn().mockResolvedValue([]), transaction:vi.fn().mockResolvedValue(rows) } as unknown as SqlExecutor;
-  return { executor, repository:(module as typeof import('./push-subscriptions')).sqlSubscriptionRepository(executor) };
+  return { executor, repository:(implementation as typeof import('./push-subscriptions')).sqlSubscriptionRepository(executor) };
 }
 const enrollment: OwnedEnrollment = { employeeId:'employee-1', installationHash:'install-hash', environment:'test', endpointFingerprint:'fingerprint', encryptedMaterial:'encrypted-fictional-material', sessionHash:'session-hash', generation:'generation-1', expectedGeneration:null, expiresAt:null };
 it('enrollment_does_not_fabricate_success_on_ownership_conflict', async () => {

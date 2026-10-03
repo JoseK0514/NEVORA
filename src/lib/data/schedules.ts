@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
+import { commitPublishedWeekChange, neonNotificationExecutor, type GuardedWeekState } from "./notification-transactions";
+import type { SqlExecutor } from "../notifications/types";
 import { addDays, weekStartFor } from "../date-utils";
 import { minutesInWorkweek, shiftPeriod } from "../scheduling/periods";
 import { readAvailabilityInputs } from "./availability-inputs";
@@ -218,61 +220,47 @@ export async function getShiftValidationContext({
   };
 }
 
-export async function ensureSchedule({
-  locationId,
-  weekStart,
-  createdBy,
-}: {
-  locationId: string;
-  weekStart: string;
-  createdBy: string;
-}) {
-  const sql = getDb();
-  const id = randomUUID();
+export async function ensureSchedule(input: {
+  locationId: string; weekStart: string; createdBy: string;
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  let scheduleId: string = randomUUID();
+  await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.createdBy,sourceType:'MANAGER_MUTATION',build: state => {
+    const existing=state.schedules.find(s=>s.locationId===input.locationId && s.weekStart===input.weekStart);
+    if(existing) {
+      scheduleId=existing.id;
+      return {statements:[{text:'SELECT 1',values:[]}],afterSchedules:state.schedules,afterShifts:state.shifts};
+    }
+    return {statements:[{text:'INSERT INTO schedules (id,location_id,week_start,created_by) VALUES ($1,$2,$3,$4)',values:[scheduleId,input.locationId,input.weekStart,input.createdBy]}],
+      afterSchedules:[...state.schedules,{id:scheduleId,locationId:input.locationId,weekStart:input.weekStart,status:'DRAFT',updatedAt:''}],afterShifts:state.shifts};
+  }},executor);
+  return scheduleId;
+}
 
-  const rows = queryRows(
-    await sql.query(
-      `INSERT INTO schedules (id, location_id, week_start, created_by)
-       VALUES ($1, $2, $3, $4)
-       ON CONFLICT (location_id, week_start)
-       DO UPDATE SET updated_at = now()
-       RETURNING id`,
-      [id, locationId, weekStart, createdBy],
-    ),
-  );
-
-  return String((rows[0] as { id: string }).id);
+async function mutationWeek(id: string, kind: 'schedule' | 'shift', executor: SqlExecutor) {
+  const [row]=await executor.query<{week_start:string}>({text:kind==='schedule'
+    ? 'SELECT week_start::text FROM schedules WHERE id=$1'
+    : 'SELECT s.week_start::text FROM schedules s JOIN shifts sh ON sh.schedule_id=s.id WHERE sh.id=$1',values:[id]});
+  return row?.week_start;
+}
+function unchanged(state: GuardedWeekState) {
+  return {statements:[],afterSchedules:state.schedules,afterShifts:state.shifts};
 }
 
 export async function insertShift(input: {
-  scheduleId: string;
-  employeeId: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  notes?: string;
-  isDesignatedLead?: boolean;
-}) {
-  const sql = getDb();
-  const id = randomUUID();
-
-  await sql.query(
-    `INSERT INTO shifts (
-       id, schedule_id, employee_id, date, start_time, end_time, notes,
-       is_designated_lead
-     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-    [
-      id,
-      input.scheduleId,
-      input.employeeId,
-      input.date,
-      input.startTime,
-      input.endTime,
-      input.notes ?? null,
-      input.isDesignatedLead ?? false,
-    ],
-  );
-
+  scheduleId: string; employeeId: string; date: string; startTime: string;
+  endTime: string; notes?: string; isDesignatedLead?: boolean; actorEmployeeId: string;
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  const id=randomUUID();
+  const week=await mutationWeek(input.scheduleId,'schedule',executor);
+  if(!week) throw new Error('Schedule no longer exists.');
+  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,sourceType:'MANAGER_MUTATION',sourceId:id,build: state => {
+    const schedule=state.schedules.find(s=>s.id===input.scheduleId);
+    if(!schedule) return unchanged(state);
+    return {statements:[{text:`INSERT INTO shifts (id,schedule_id,employee_id,date,start_time,end_time,notes,is_designated_lead) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+      values:[id,input.scheduleId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false]}],afterSchedules:state.schedules,
+      afterShifts:[...state.shifts,{sourceShiftId:id,scheduleId:input.scheduleId,weekStart:week,locationId:schedule.locationId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:false,hasExchangeHistory:false}]};
+  }},executor);
+  if(!result.committed) throw new Error('Schedule no longer exists.');
   return id;
 }
 
@@ -341,58 +329,28 @@ export async function getShiftForManagement(
 }
 
 export async function updateShift(input: {
-  shiftId: string;
-  employeeId: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  notes?: string;
-  isDesignatedLead?: boolean;
-}) {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-      `UPDATE shifts
-       SET employee_id = $2,
-           date = $3,
-           start_time = $4,
-           end_time = $5,
-           notes = $6,
-           is_designated_lead = $7,
-           updated_at = now()
-       WHERE id = $1
-       RETURNING id`,
-      [
-        input.shiftId,
-        input.employeeId,
-        input.date,
-        input.startTime,
-        input.endTime,
-        input.notes ?? null,
-        input.isDesignatedLead ?? false,
-      ],
-    ),
-  );
-
-  return Boolean(rows[0]);
+  shiftId: string; employeeId: string; date: string; startTime: string;
+  endTime: string; notes?: string; isDesignatedLead?: boolean; actorEmployeeId: string;
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  const week=await mutationWeek(input.shiftId,'shift',executor);
+  if(!week) return false;
+  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,sourceType:'MANAGER_MUTATION',sourceId:input.shiftId,build: state => {
+    if(!state.shifts.some(s=>s.sourceShiftId===input.shiftId)) return unchanged(state);
+    return {statements:[{text:`UPDATE shifts SET employee_id=$2,date=$3,start_time=$4,end_time=$5,notes=$6,is_designated_lead=$7,updated_at=clock_timestamp() WHERE id=$1`,
+      values:[input.shiftId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false]}],afterSchedules:state.schedules,
+      afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.approvedCalloutEmployeeId===input.employeeId || (s.employeeId===input.employeeId && s.isCalloutApproved)}:s)};
+  }},executor);
+  return result.committed;
 }
 
-export async function deleteShift(shiftId: string) {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-      `DELETE FROM shifts sh
-       WHERE sh.id = $1
-         AND NOT EXISTS (
-           SELECT 1
-           FROM shift_exchanges x
-           WHERE x.source_shift_id = sh.id
-              OR x.target_shift_id = sh.id
-         )
-       RETURNING sh.id`,
-      [shiftId],
-    ),
-  );
-
-  return Boolean(rows[0]);
+export async function deleteShift(shiftId: string, actorEmployeeId: string, executor: SqlExecutor = neonNotificationExecutor()) {
+  const week=await mutationWeek(shiftId,'shift',executor);
+  if(!week) return false;
+  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId,sourceType:'MANAGER_MUTATION',sourceId:shiftId,build: state => {
+    const shift=state.shifts.find(s=>s.sourceShiftId===shiftId);
+    if(!shift || shift.hasExchangeHistory) return unchanged(state);
+    return {statements:[{text:`DELETE FROM shifts sh WHERE sh.id=$1 AND NOT EXISTS (SELECT 1 FROM shift_exchanges x WHERE x.source_shift_id=sh.id OR x.target_shift_id=sh.id)`,values:[shiftId]}],
+      afterSchedules:state.schedules,afterShifts:state.shifts.filter(s=>s.sourceShiftId!==shiftId)};
+  }},executor);
+  return result.committed;
 }

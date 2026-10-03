@@ -4,6 +4,8 @@ import { expect, it, vi } from "vitest";
 import LoginPage from "./login/page";
 import ActivatePage from "./activate/page";
 
+vi.mock("@/lib/notifications/destinations", () => import("../lib/notifications/destinations"));
+
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) =>
     createElement("a", { href, ...props }, children),

@@ -41,7 +41,7 @@ export async function readAvailabilityInputs(
   );
 }
 
-function mapAvailabilityInputs(
+export function mapAvailabilityInputs(
   normalRaw: unknown,
   weeklyRaw: unknown,
   submissionsRaw: unknown,

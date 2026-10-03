@@ -9,20 +9,28 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "bootstrap:owner": "node scripts/bootstrap-owner.mjs"
+    "bootstrap:owner": "node scripts/bootstrap-owner.mjs",
+    "notifications:worker": "tsx scripts/fuel-notification-worker.ts",
+    "test:notifications:qa": "node --test scripts/verify-fuel-phase-3-config.check.mjs",
+    "test:notifications:integration": "vitest run --config vitest.notifications-integration.config.mts"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.1.0",
     "next": "16.3.6",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "web-push": "3.6.7"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/pg": "8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/web-push": "3.6.4",
     "eslint": "^9.0.0",
     "eslint-config-next": "16.3.6",
+    "pg": "8.23.1",
+    "tsx": "4.23.15",
     "typescript": "^5.9.0",
     "vitest": "5.0.2"
   }

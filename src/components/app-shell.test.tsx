@@ -54,3 +54,13 @@ it.each(["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const)("renders the Nuvora p
   expect(html).toContain("Powered by VELANI LLC");
   expect(html).not.toContain("Fuel Scheduler");
 });
+
+it.each(['EMPLOYEE','LEAD','MANAGER','OWNER'] as const)('places %s device settings only in existing profile affordances when enabled',role=>{
+ const html=renderToStaticMarkup(<AppShell notificationsEnabled user={{firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
+ expect(html.match(/id="portal-device-settings"/g)).toHaveLength(1);
+ expect(html.match(/popoverTarget="portal-device-settings"/g)?.length).toBeGreaterThanOrEqual(2);
+ expect(html).not.toContain('href="/app/notifications"');
+});
+it('feature off retains the ordinary profile and does not mount setup',()=>{
+ const {html}=render('EMPLOYEE');expect(html).not.toContain('portal-device-settings');expect(html).toContain('<div class="sidebar-profile">');
+});

@@ -103,3 +103,12 @@ export function destinationForSource(source: SourceSnapshot, recipient: Recipien
       return source.employeeId === recipient.employeeId ? '/app' : null;
   }
 }
+
+/** Append only a derived fragment after the existing route/query validation. */
+export function withRequestFragment(candidate: string): string | null {
+  const safe = safeReturnTo(candidate);
+  if (!safe) return null;
+  const url = new URL(safe, 'https://fuel.invalid');
+  const id = url.searchParams.get('requestId');
+  return id && ['/app/requests', '/app/exchange'].includes(url.pathname) ? `${safe}#request-${encodeURIComponent(id)}` : safe;
+}

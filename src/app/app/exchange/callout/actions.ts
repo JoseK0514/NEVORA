@@ -13,7 +13,6 @@ import {
   type CalloutReasonCode,
 } from "@/lib/data/callouts";
 import { getPublishedShift } from "@/lib/data/exchanges";
-import { clearWeekAcknowledgements } from "@/lib/data/acknowledgements";
 
 const REASONS: CalloutReasonCode[] = [
   "ILLNESS",
@@ -104,10 +103,6 @@ export async function reviewCalloutAction(formData: FormData) {
 
   if (!updated) {
     redirect("/app/exchange?tab=requests&error=EXCHANGE_CHANGED");
-  }
-
-  if (decision === "APPROVED") {
-    await clearWeekAcknowledgements(callout.weekStart);
   }
 
   revalidatePath("/app/exchange");

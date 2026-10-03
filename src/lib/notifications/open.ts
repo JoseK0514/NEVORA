@@ -1,4 +1,4 @@
-import { safeNotificationOpenPath, safeReturnTo } from './destinations';
+import { safeNotificationOpenPath, safeReturnTo, withRequestFragment } from './destinations';
 import type { NotificationStateRepository, PushEnvironment } from './types';
 import type { SessionEmployee } from '../auth/session';
 export type NotificationOpenDeps = {
@@ -33,7 +33,7 @@ export function createNotificationOpenHandler(deps: NotificationOpenDeps) {
             const destination = safeReturnTo(check.destination);
             if (!check.deliverable || check.effectiveVersion !== intent.effectiveVersion || !(Date.parse(check.expiresAt) > now.getTime()) || !destination || destination.startsWith('/app/notifications/open'))
                 return unavailable();
-            return redirectTo(destination, request);
+            return redirectTo(withRequestFragment(destination) ?? destination, request);
         }
         catch {
             return unavailable();

@@ -102,7 +102,7 @@ export default async function RequestsPage({
             <div className="request-list timeoff-request-list">
               {mine.length ? (
                 mine.map((request) => (
-                  <div className="request-list-row timeoff-request-row" data-employee-status={request.status} key={request.id}>
+                  <div className="request-list-row timeoff-request-row" id={`request-${request.id}`} tabIndex={-1} data-employee-status={request.status} key={request.id}>
                     <div className="request-row-copy">
                       <><strong>{request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`}</strong>
                         <span>{request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : "Full day"}</span>

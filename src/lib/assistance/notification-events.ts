@@ -1,3 +1,4 @@
+import { NUVORA_BRAND } from "../brand";
 export type NotificationEvent = {
   employeeId: string;
   type: string;
@@ -92,7 +93,7 @@ export function buildSwapResponseRequestedNotification(input: {
     employeeId: input.employeeId,
     type: "SWAP_RESPONSE_REQUIRED",
     title: "Shift swap request",
-    body: `${input.requesterName} asked to trade shifts with you.`,
+    body: `${input.requesterName.trim() || 'A teammate'} asked to trade shifts with you.`,
     actionHref: "/app/exchange?tab=requests",
     eventKey: eventKey("swap-response", input.exchangeId, input.employeeId),
   };
@@ -126,17 +127,17 @@ export function buildExchangeOutcomeNotification(input: {
 
 /** Routine workflow events share this vocabulary with the durable outbox. */
 export function buildAcknowledgementReminderNotification(employeeId: string, revisionId: string): NotificationEvent {
-  return { employeeId, type: 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', title: 'Schedule review reminder', body: 'Open Fuel to review and acknowledge your schedule.', actionHref: '/app/schedule', eventKey: eventKey('schedule-reminder',revisionId,employeeId) };
+  return { employeeId, type: 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', title: 'Schedule review reminder', body: `Open ${NUVORA_BRAND.platformLabel} to review and acknowledge your schedule.`, actionHref: '/app/schedule', eventKey: eventKey('schedule-reminder',revisionId,employeeId) };
 }
 export function buildAvailabilityReminderNotification(employeeId: string, weekStart: string): NotificationEvent {
-  return { employeeId, type: 'AVAILABILITY_REMINDER', title: 'Availability reminder', body: 'Open Fuel to review and submit your availability.', actionHref: '/app/availability', eventKey: eventKey('availability-reminder',weekStart,employeeId) };
+  return { employeeId, type: 'AVAILABILITY_REMINDER', title: 'Availability reminder', body: `Open ${NUVORA_BRAND.platformLabel} to review and submit your availability.`, actionHref: '/app/availability', eventKey: eventKey('availability-reminder',weekStart,employeeId) };
 }
 export function buildManagerReviewNotification(employeeId: string, sourceId: string, coverage = false): NotificationEvent {
-  return { employeeId, type: coverage ? 'COVERAGE_ATTENTION' : 'MANAGER_REVIEW', title: coverage ? 'Coverage needs attention' : 'Requests need review', body: 'Open Fuel to review pending tasks.', eventKey: eventKey('manager-review',sourceId,employeeId) };
+  return { employeeId, type: coverage ? 'COVERAGE_ATTENTION' : 'MANAGER_REVIEW', title: coverage ? 'Coverage needs attention' : 'Requests need review', body: `Open ${NUVORA_BRAND.platformLabel} to review pending tasks.`, eventKey: eventKey('manager-review',sourceId,employeeId) };
 }
 export function buildAvailabilitySummaryNotification(employeeId: string, weekStart: string): NotificationEvent {
-  return { employeeId, type: 'AVAILABILITY_SUMMARY', title: 'Availability review', body: 'Open Fuel to review availability.', actionHref: '/app/availability', eventKey: eventKey('availability-summary',weekStart,employeeId) };
+  return { employeeId, type: 'AVAILABILITY_SUMMARY', title: 'Availability review', body: `Open ${NUVORA_BRAND.platformLabel} to review availability.`, actionHref: '/app/availability', eventKey: eventKey('availability-summary',weekStart,employeeId) };
 }
 export function buildSelfTestNotification(employeeId: string, sourceId: string): NotificationEvent {
-  return { employeeId, type: 'SELF_TEST', title: 'Fuel notification test', body: 'Open Fuel to review your notification settings.', actionHref: '/app', eventKey: eventKey('self-test',sourceId,employeeId) };
+  return { employeeId, type: 'SELF_TEST', title: `${NUVORA_BRAND.platformLabel} notification test`, body: `Open ${NUVORA_BRAND.platformLabel} to review your notification settings.`, actionHref: '/app', eventKey: eventKey('self-test',sourceId,employeeId) };
 }

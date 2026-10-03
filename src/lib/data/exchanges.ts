@@ -1,5 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
+import { commitPublishedWeekChange, neonNotificationExecutor, type GuardedShift } from './notification-transactions';
+import { guardedRequestMutation, isRequestTransitionConflict, requestNotificationStatements, requestSnapshot, requestStateGuard } from './request-notifications';
+import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { ExchangeKind, UserRole } from "@/lib/domain";
 
 export type ExchangeShift = {
@@ -347,61 +350,16 @@ export async function listManagerPendingExchanges(): Promise<ExchangeRecord[]> {
   return rows.map(mapExchange);
 }
 
-export async function getExchange(exchangeId: string): Promise<ExchangeRecord | null> {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-    `${EXCHANGE_SELECT}
-     WHERE x.id = $1
-     LIMIT 1`,
-    [exchangeId],
-    ),
-  );
-
+export async function getExchange(exchangeId: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<ExchangeRecord | null> {
+  const rows = await executor.query({ text: `${EXCHANGE_SELECT} WHERE x.id=$1 LIMIT 1`, values: [exchangeId] });
   return rows[0] ? mapExchange(rows[0]) : null;
 }
 
 export async function createCoverageOffer(input: {
   sourceShiftId: string;
   requestedByEmployeeId: string;
-}) {
-  const sql = getDb();
-  const id = randomUUID();
-
-  await sql.query(
-    `INSERT INTO shift_exchanges (
-       id,
-       kind,
-       source_shift_id,
-       requested_by_employee_id,
-       status
-     ) VALUES ($1, 'COVERAGE', $2, $3, 'OPEN')`,
-    [id, input.sourceShiftId, input.requestedByEmployeeId],
-  );
-
-  return id;
-}
-
-export async function claimCoverage(input: {
-  exchangeId: string;
-  employeeId: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-    `UPDATE shift_exchanges
-     SET target_employee_id = $2,
-         status = 'MANAGER_PENDING'
-     WHERE id = $1
-       AND kind = 'COVERAGE'
-       AND status = 'OPEN'
-       AND requested_by_employee_id <> $2
-     RETURNING id`,
-    [input.exchangeId, input.employeeId],
-    ),
-  );
-
-  return Boolean(rows[0]);
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  return createExchange({ ...input, kind: 'COVERAGE' }, executor);
 }
 
 export async function createSwapProposal(input: {
@@ -409,219 +367,134 @@ export async function createSwapProposal(input: {
   targetShiftId: string;
   requestedByEmployeeId: string;
   targetEmployeeId: string;
-}) {
-  const sql = getDb();
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  return createExchange({ ...input, kind: 'SWAP' }, executor);
+}
+
+async function createExchange(input: {
+  sourceShiftId: string; requestedByEmployeeId: string; kind: ExchangeKind;
+  targetShiftId?: string; targetEmployeeId?: string;
+}, executor: SqlExecutor) {
+  const ids = [input.sourceShiftId, input.targetShiftId].filter((id): id is string => Boolean(id));
+  const weeks = await executor.query<{ week_start: string }>({ text: `SELECT DISTINCT s.week_start::text AS week_start FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id=ANY($1::text[])`, values: [ids] });
   const id = randomUUID();
-
-  await sql.query(
-    `INSERT INTO shift_exchanges (
-       id,
-       kind,
-       source_shift_id,
-       requested_by_employee_id,
-       target_employee_id,
-       target_shift_id,
-       status
-     ) VALUES ($1, 'SWAP', $2, $3, $4, $5, 'EMPLOYEE_PENDING')`,
-    [
-      id,
-      input.sourceShiftId,
-      input.requestedByEmployeeId,
-      input.targetEmployeeId,
-      input.targetShiftId,
-    ],
-  );
-
+  const result = await commitPublishedWeekChange({
+    weekStarts: weeks.map(w => w.week_start), actorEmployeeId: input.requestedByEmployeeId, sourceType: 'EXCHANGE', sourceId: id,
+    build(state) {
+      const source = state.shifts.find(s => s.sourceShiftId === input.sourceShiftId);
+      const target = state.shifts.find(s => s.sourceShiftId === input.targetShiftId);
+      const empty = { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
+      if (!source || source.employeeId !== input.requestedByEmployeeId || !state.schedules.some(s => s.id === source.scheduleId && s.status === 'PUBLISHED')) return empty;
+      if (input.kind === 'SWAP' && (!target || target.employeeId !== input.targetEmployeeId || !state.schedules.some(s => s.id === target.scheduleId && s.status === 'PUBLISHED'))) return empty;
+      const record: ExchangeRecord = {
+        id, kind: input.kind, status: input.kind === 'SWAP' ? 'EMPLOYEE_PENDING' : 'OPEN',
+        requestedByEmployeeId: input.requestedByEmployeeId, requestedByName: '',
+        requestedByRole: state.recipients.find(r => r.employeeId === input.requestedByEmployeeId)?.role ?? 'EMPLOYEE',
+        targetEmployeeId: input.targetEmployeeId, sourceShift: exchangeShiftFromGuarded(source), targetShift: target ? exchangeShiftFromGuarded(target) : undefined,
+        createdAt: new Date().toISOString(),
+      };
+      return {
+        recipientEmployeeIds: state.recipients.map(r => r.employeeId),
+        afterSchedules: state.schedules, afterShifts: state.shifts.map(s => ids.includes(s.sourceShiftId) ? { ...s, hasExchangeHistory: true } : s),
+        statements: [guardedRequestMutation({
+          text: `INSERT INTO shift_exchanges (id,kind,source_shift_id,requested_by_employee_id,target_employee_id,target_shift_id,status,created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
+          values: [id,input.kind,input.sourceShiftId,input.requestedByEmployeeId,input.targetEmployeeId ?? null,input.targetShiftId ?? null,record.status,record.createdAt],
+        }), ...requestNotificationStatements({ after: requestSnapshot('EXCHANGE', record), actorEmployeeId: input.requestedByEmployeeId, recipients: state.recipients })],
+      };
+    },
+  }, executor);
+  if (!result.committed) throw new Error('Exchange changed. Please try again.');
   return id;
 }
 
-export async function respondToSwap(input: {
-  exchangeId: string;
-  employeeId: string;
-  accept: boolean;
-}) {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-    `UPDATE shift_exchanges
-     SET status = $3,
-         resolved_by = CASE WHEN $3 = 'DENIED' THEN $2 ELSE resolved_by END,
-         resolved_at = CASE WHEN $3 = 'DENIED' THEN now() ELSE resolved_at END
-     WHERE id = $1
-       AND kind = 'SWAP'
-       AND status = 'EMPLOYEE_PENDING'
-       AND target_employee_id = $2
-     RETURNING id`,
-    [input.exchangeId, input.employeeId, input.accept ? "MANAGER_PENDING" : "DENIED"],
-    ),
-  );
-
-  return Boolean(rows[0]);
+export async function claimCoverage(input: { exchangeId: string; employeeId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  const before = await getExchange(input.exchangeId, executor);
+  if (!before || before.kind !== 'COVERAGE' || before.status !== 'OPEN' || before.requestedByEmployeeId === input.employeeId) return false;
+  return transitionExchange(before, { ...before, status: 'MANAGER_PENDING', targetEmployeeId: input.employeeId }, input.employeeId, executor);
 }
 
-export async function denyExchange(input: {
-  exchangeId: string;
-  managerId: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-    `UPDATE shift_exchanges
-     SET status = 'DENIED',
-         resolved_by = $2,
-         resolved_at = now()
-     WHERE id = $1
-       AND status = 'MANAGER_PENDING'
-     RETURNING id`,
-    [input.exchangeId, input.managerId],
-    ),
-  );
-
-  return Boolean(rows[0]);
+export async function respondToSwap(input: { exchangeId: string; employeeId: string; accept: boolean }, executor: SqlExecutor = neonNotificationExecutor()) {
+  const before = await getExchange(input.exchangeId, executor);
+  if (!before || before.kind !== 'SWAP' || before.status !== 'EMPLOYEE_PENDING' || before.targetEmployeeId !== input.employeeId) return false;
+  return transitionExchange(before, { ...before, status: input.accept ? 'MANAGER_PENDING' : 'DENIED' }, input.employeeId, executor);
 }
 
-export async function approveCoverageExchange(input: {
-  exchangeId: string;
-  managerId: string;
-}) {
-  const sql = getDb();
-
-  const rows = queryRows(
-    await sql.query(
-    `WITH exchange_to_apply AS (
-       SELECT
-         x.id,
-         x.source_shift_id,
-         x.requested_by_employee_id,
-         x.target_employee_id,
-         target_employee.role AS target_role
-       FROM shift_exchanges x
-       JOIN employees target_employee
-         ON target_employee.id = x.target_employee_id
-       WHERE x.id = $1
-         AND kind = 'COVERAGE'
-         AND status = 'MANAGER_PENDING'
-         AND target_employee_id IS NOT NULL
-     ),
-     shifted AS (
-       UPDATE shifts sh
-       SET employee_id = x.target_employee_id,
-           is_designated_lead = (
-             sh.is_designated_lead
-             AND x.target_role IN ('OWNER', 'MANAGER', 'LEAD')
-           ),
-           updated_at = now()
-       FROM exchange_to_apply x
-       WHERE sh.id = x.source_shift_id
-         AND sh.employee_id = x.requested_by_employee_id
-       RETURNING sh.id
-     )
-     UPDATE shift_exchanges x
-     SET status = 'APPROVED',
-         resolved_by = $2,
-         resolved_at = now()
-     WHERE x.id = $1
-       AND EXISTS (SELECT 1 FROM shifted)
-     RETURNING x.id`,
-    [input.exchangeId, input.managerId],
-    ),
-  );
-
-  return Boolean(rows[0]);
+export async function denyExchange(input: { exchangeId: string; managerId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  const before = await getExchange(input.exchangeId, executor);
+  if (!before || before.status !== 'MANAGER_PENDING') return false;
+  return transitionExchange(before, { ...before, status: 'DENIED' }, input.managerId, executor);
 }
 
-export async function approveSwapExchange(input: {
-  exchangeId: string;
-  managerId: string;
-}) {
-  const sql = getDb();
-
-  const rows = queryRows(
-    await sql.query(
-    `WITH exchange_to_apply AS (
-       SELECT
-         x.id,
-         x.source_shift_id,
-         x.target_shift_id,
-         x.requested_by_employee_id,
-         x.target_employee_id,
-         source.is_designated_lead AS source_is_designated_lead,
-         target.is_designated_lead AS target_is_designated_lead,
-         requester_employee.role AS requester_role,
-         target_employee.role AS target_role
-       FROM shift_exchanges x
-       JOIN shifts source
-         ON source.id = x.source_shift_id
-        AND source.employee_id = x.requested_by_employee_id
-       JOIN shifts target
-         ON target.id = x.target_shift_id
-        AND target.employee_id = x.target_employee_id
-       JOIN employees requester_employee
-         ON requester_employee.id = x.requested_by_employee_id
-       JOIN employees target_employee
-         ON target_employee.id = x.target_employee_id
-       WHERE x.id = $1
-         AND x.kind = 'SWAP'
-         AND x.status = 'MANAGER_PENDING'
-         AND x.target_shift_id IS NOT NULL
-         AND x.target_employee_id IS NOT NULL
-     ),
-     shifted AS (
-       UPDATE shifts sh
-       SET employee_id = CASE
-         WHEN sh.id = x.source_shift_id THEN x.target_employee_id
-         WHEN sh.id = x.target_shift_id THEN x.requested_by_employee_id
-         ELSE sh.employee_id
-       END,
-       is_designated_lead = CASE
-         WHEN sh.id = x.source_shift_id THEN
-           x.source_is_designated_lead
-           AND x.target_role IN ('OWNER', 'MANAGER', 'LEAD')
-         WHEN sh.id = x.target_shift_id THEN
-           x.target_is_designated_lead
-           AND x.requester_role IN ('OWNER', 'MANAGER', 'LEAD')
-         ELSE sh.is_designated_lead
-       END,
-       updated_at = now()
-       FROM exchange_to_apply x
-       WHERE sh.id IN (x.source_shift_id, x.target_shift_id)
-       RETURNING sh.id
-     )
-     UPDATE shift_exchanges x
-     SET status = 'APPROVED',
-         resolved_by = $2,
-         resolved_at = now()
-     WHERE x.id = $1
-       AND (SELECT count(*) FROM shifted) = 2
-     RETURNING x.id`,
-    [input.exchangeId, input.managerId],
-    ),
-  );
-
-  return Boolean(rows[0]);
+export async function approveCoverageExchange(input: { exchangeId: string; managerId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  const before = await getExchange(input.exchangeId, executor);
+  if (!before || before.kind !== 'COVERAGE' || before.status !== 'MANAGER_PENDING' || !before.targetEmployeeId) return false;
+  return transitionExchange(before, { ...before, status: 'APPROVED' }, input.managerId, executor);
 }
 
+export async function approveSwapExchange(input: { exchangeId: string; managerId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  const before = await getExchange(input.exchangeId, executor);
+  if (!before || before.kind !== 'SWAP' || before.status !== 'MANAGER_PENDING' || !before.targetEmployeeId || !before.targetShift) return false;
+  return transitionExchange(before, { ...before, status: 'APPROVED' }, input.managerId, executor);
+}
 
-export async function cancelExchange(input: {
-  exchangeId: string;
-  employeeId: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-    `UPDATE shift_exchanges
-     SET status = 'CANCELLED',
-         resolved_by = $2,
-         resolved_at = now()
-     WHERE id = $1
-       AND requested_by_employee_id = $2
-       AND status IN ('OPEN', 'EMPLOYEE_PENDING')
-     RETURNING id`,
-    [input.exchangeId, input.employeeId],
-    ),
-  );
+export async function cancelExchange(input: { exchangeId: string; employeeId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  const before = await getExchange(input.exchangeId, executor);
+  if (!before || before.requestedByEmployeeId !== input.employeeId || !['OPEN','EMPLOYEE_PENDING'].includes(before.status)) return false;
+  return transitionExchange(before, { ...before, status: 'CANCELLED' }, input.employeeId, executor);
+}
 
-  return Boolean(rows[0]);
+export function exchangeShiftFromGuarded(shift: GuardedShift): ExchangeShift {
+  return { id: shift.sourceShiftId, scheduleId: shift.scheduleId, employeeId: shift.employeeId, employeeName: '', locationId: shift.locationId, locationName: '', weekStart: shift.weekStart, date: shift.date, startTime: shift.startTime, endTime: shift.endTime, isDesignatedLead: shift.isDesignatedLead };
+}
+
+async function transitionExchange(before: ExchangeRecord, after: ExchangeRecord, actorEmployeeId: string, executor: SqlExecutor): Promise<boolean> {
+  try {
+    const result = await commitPublishedWeekChange({
+      weekStarts: [before.sourceShift.weekStart, ...(before.targetShift ? [before.targetShift.weekStart] : [])], actorEmployeeId, sourceType: 'EXCHANGE', sourceId: before.id,
+      build(state) {
+        const source = state.shifts.find(s => s.sourceShiftId === before.sourceShift.id);
+        const target = state.shifts.find(s => s.sourceShiftId === before.targetShift?.id);
+        if (!source || (before.targetShift && !target)) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
+        // Recipient access and expiry use this guarded snapshot, not the earlier
+        // request lookup (a shift may have moved in the interval).
+        const currentBefore = { ...before, sourceShift: exchangeShiftFromGuarded(source), targetShift: target ? exchangeShiftFromGuarded(target) : undefined };
+        const afterShifts = state.shifts.map(s => ({ ...s }));
+        const statements: SqlStatement[] = [requestStateGuard('shift_exchanges', before.id, {
+          status: before.status, kind: before.kind, source_shift_id: before.sourceShift.id,
+          requested_by_employee_id: before.requestedByEmployeeId, target_employee_id: before.targetEmployeeId ?? null, target_shift_id: before.targetShift?.id ?? null,
+        })];
+        if (after.status === 'APPROVED') {
+          const assignments = [{ shift: before.sourceShift, from: before.requestedByEmployeeId, to: before.targetEmployeeId! }, ...(before.kind === 'SWAP' && before.targetShift ? [{ shift: before.targetShift, from: before.targetEmployeeId!, to: before.requestedByEmployeeId }] : [])];
+          for (const assignment of assignments) {
+            const shift = afterShifts.find(s => s.sourceShiftId === assignment.shift.id);
+            const recipient = state.recipients.find(r => r.employeeId === assignment.to);
+            if (!shift || shift.employeeId !== assignment.from || !recipient?.active || !recipient.allowedLocationIds.includes(shift.locationId) || !state.schedules.some(s => s.id === shift.scheduleId && s.status === 'PUBLISHED') || shift.date !== assignment.shift.date || shift.startTime !== assignment.shift.startTime || shift.endTime !== assignment.shift.endTime || shift.locationId !== assignment.shift.locationId) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
+            shift.employeeId = assignment.to;
+            shift.isDesignatedLead = Boolean(shift.isDesignatedLead && ['OWNER','MANAGER','LEAD'].includes(recipient.role));
+            shift.isCalloutApproved = shift.approvedCalloutEmployeeId === assignment.to;
+            statements.push(guardedRequestMutation({
+              text: `UPDATE shifts SET employee_id=$2,is_designated_lead=$3,updated_at=now() WHERE id=$1 AND employee_id=$4 RETURNING id`,
+              values: [shift.sourceShiftId,shift.employeeId,shift.isDesignatedLead,assignment.from],
+            }));
+          }
+        }
+        statements.push(guardedRequestMutation({
+          text: `UPDATE shift_exchanges SET status=$3,target_employee_id=$4,
+            resolved_by=CASE WHEN $3::text IN ('APPROVED','DENIED','CANCELLED') THEN $2 ELSE resolved_by END,
+            resolved_at=CASE WHEN $3::text IN ('APPROVED','DENIED','CANCELLED') THEN now() ELSE resolved_at END
+            WHERE id=$1 AND status=$5 RETURNING id`,
+          values: [before.id,actorEmployeeId,after.status,after.targetEmployeeId ?? null,before.status],
+        }));
+        const currentAfter = { ...after, sourceShift: exchangeShiftFromGuarded(afterShifts.find(s => s.sourceShiftId === source.sourceShiftId)!), targetShift: target ? exchangeShiftFromGuarded(afterShifts.find(s => s.sourceShiftId === target.sourceShiftId)!) : undefined };
+        statements.push(...requestNotificationStatements({ before: requestSnapshot('EXCHANGE', currentBefore), after: requestSnapshot('EXCHANGE', currentAfter), actorEmployeeId, recipients: state.recipients }));
+        return { statements, recipientEmployeeIds: state.recipients.map(r => r.employeeId), afterSchedules: state.schedules, afterShifts };
+      },
+    }, executor);
+    return result.committed;
+  } catch (error) {
+    if (isRequestTransitionConflict(error)) return false;
+    throw error;
+  }
 }
 
 export async function listManagementCoverage(fromDate: string): Promise<ExchangeRecord[]> {

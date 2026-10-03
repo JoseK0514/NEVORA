@@ -1,10 +1,10 @@
 import { expect, it, vi } from 'vitest';
 import type { SqlExecutor, DeliveryClaim } from '../notifications/types';
 async function setup(rows: unknown[][] = [[],[]]) {
-  const module = await import('./push-deliveries').catch(() => ({}));
-  expect(module).toHaveProperty('sqlDeliveryRepository');
+  const implementation = await import('./push-deliveries').catch(() => ({}));
+  expect(implementation).toHaveProperty('sqlDeliveryRepository');
   const executor = { query:vi.fn().mockResolvedValue([]), transaction:vi.fn().mockResolvedValue(rows) } as unknown as SqlExecutor;
-  return { executor, repository:(module as typeof import('./push-deliveries')).sqlDeliveryRepository('test',executor) };
+  return { executor, repository:(implementation as typeof import('./push-deliveries')).sqlDeliveryRepository('test',executor) };
 }
 it('historical_notifications_are_not_replayed', async () => {
   const {repository,executor} = await setup(); await repository.materialize(['intent-1']);
@@ -112,8 +112,31 @@ it('worker_repository_scopes_claims_materialization_and_cleanup_to_its_environme
   expect(claim[0].text).toMatch(/environment = \$1/);
   expect(claim[0].values).toEqual(['test']);
   expect(claim[1].text).toMatch(/n\.environment = \$4/);
-  expect(claim[1].values).toEqual([10,120,'all','test']);
+  expect(claim[1].values).toEqual([10,120,'all','test',null]);
   const cancel = vi.mocked(executor.query).mock.calls[0][0];
   expect(cancel.text).toMatch(/s\.environment = \$3/);
   expect(cancel.values).toEqual(['install-hash','generation-1','test']);
+});
+
+it('quiet_deferral_is_conditional_and_restores_the_unattempted_claim_without_extending_expiry',async()=>{
+  const {repository,executor}=await setup();
+  const claim={deliveryId:'delivery',generation:'generation',leaseToken:'lease'} as DeliveryClaim;
+  expect(await repository.defer(claim,new Date('2030-01-02T11:00:00Z'))).toBe(false);
+  const statement=vi.mocked(executor.query).mock.calls[0][0];
+  expect(statement.values).toEqual(['delivery','generation','lease','test','2030-01-02T11:00:00.000Z']);
+  expect(statement.text).toMatch(/d\.generation = \$2 AND d\.lease_token = \$3/);
+  expect(statement.text).toMatch(/d\.status = 'processing' AND d\.lease_expires_at > now\(\)/);
+  expect(statement.text).toMatch(/attempt_count = attempt_count - 1/);
+  expect(statement.text).toMatch(/\$5::timestamptz >= d\.expires_at THEN 'expired'/);
+  expect(statement.text).not.toMatch(/SET expires_at|expires_at = \$/);
+  expect(statement.text).toMatch(/n\.environment = \$4/);
+  await expect(repository.defer(claim,new Date('invalid'))).rejects.toThrow('Invalid delivery deferral');
+});
+it('test_claims_restrict_accounts_and_summary_seeds_never_claim',async()=>{
+  const {repository,executor}=await setup();
+  await repository.claim({now:new Date(),limit:10,leaseSeconds:120,mode:'all',recipientIds:['allowed']});
+  const statement=vi.mocked(executor.transaction).mock.calls[0][0][1];
+  expect(statement.values).toEqual([10,120,'all','test',['allowed']]);
+  expect(statement.text).toMatch(/n\.employee_id = ANY\(\$5::text\[\]\)/);
+  expect(statement.text).toMatch(/n\.purpose <> 'SUMMARY' OR n\.source_kind = 'MANAGER_SUMMARY'/);
 });

@@ -130,6 +130,8 @@ export async function setAvailabilityDeadline(input: {
     }
   }
 
+  const cancellation = availabilityCancellation(input.weekStart, null, input.deadlineIso ? new Date(input.deadlineIso).toISOString() : null);
+  seedQueries.push(sql.query(cancellation.text, cancellation.values));
   await sql.transaction(seedQueries);
 }
 
@@ -188,6 +190,8 @@ export async function replaceWeeklyAvailability(
       ]),
       sql`INSERT INTO weekly_availability_submissions (week_start, employee_id, submitted_at, updated_at, uses_normal_availability) VALUES (${weekStart}, ${employeeId}, now(), now(), true) ON CONFLICT (week_start, employee_id) DO UPDATE SET updated_at = now(), uses_normal_availability = true`,
     ];
+    const cancellation = availabilityCancellation(weekStart, employeeId, null);
+    queries.push(sql.query(cancellation.text, cancellation.values));
     try {
       await sql.transaction(queries);
       return;
@@ -228,4 +232,28 @@ export async function getUpcomingAvailabilityWeek(
       ? new Date(String(item.availability_deadline)).toISOString()
       : undefined,
   };
+}
+
+/** Called after the business write under its existing availability/week lock.
+ * Mixed summaries retain their other work; their members are re-read at dispatch. */
+function availabilityCancellation(week: string, employeeId: string | null, deadline: string | null) {
+  return {text: `WITH cancelled AS (
+    UPDATE notifications n SET push_state='cancelled',cancelled_at=now()
+    WHERE n.push_state IN ('pending','materialized','no_active_subscription') AND (
+      (n.source_kind='AVAILABILITY' AND n.source_id=$1::text
+        AND (($2::text IS NOT NULL AND n.employee_id=$2 AND n.purpose='REMINDER')
+          OR ($2::text IS NULL AND n.source_version IS DISTINCT FROM $3::text)))
+      OR (n.source_kind='MANAGER_SUMMARY' AND cardinality(n.item_keys)=1 AND EXISTS (
+        SELECT 1 FROM unnest(n.item_keys) k
+        WHERE (CASE WHEN left(k,1)='[' THEN k::jsonb ELSE NULL END)->>0='AVAILABILITY'
+          AND (CASE WHEN left(k,1)='[' THEN k::jsonb ELSE NULL END)->>1=$1::text
+          AND (($2::text IS NULL AND ((CASE WHEN left(k,1)='[' THEN k::jsonb ELSE NULL END)->>2) IS DISTINCT FROM $3::text)
+            OR ($2::text IS NOT NULL AND NOT EXISTS (
+              SELECT 1 FROM employees e WHERE e.active=true AND e.role IN ('EMPLOYEE','LEAD')
+                AND NOT EXISTS (SELECT 1 FROM weekly_availability_submissions s WHERE s.week_start=$1::date AND s.employee_id=e.id AND s.submitted_at IS NOT NULL)
+            )))
+      ))
+    ) RETURNING id
+  ) UPDATE push_deliveries SET status='cancelled',lease_token=NULL,lease_expires_at=NULL,updated_at=now()
+    WHERE notification_id IN (SELECT id FROM cancelled) AND status IN ('queued','retry_pending','processing')`,values:[week,employeeId,deadline]};
 }

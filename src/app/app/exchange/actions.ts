@@ -22,7 +22,6 @@ import {
   validateSwapRequest,
 } from "@/lib/scheduling/exchange-validation";
 import { validateShift } from "@/lib/scheduling/validate-shift";
-import { clearWeekAcknowledgements } from "@/lib/data/acknowledgements";
 
 function exchangeUrl(suffix = "") {
   return `/app/exchange${suffix}`;
@@ -449,7 +448,6 @@ export async function reviewExchangeAction(formData: FormData) {
     }
   }
 
-  await clearWeekAcknowledgements(exchange.sourceShift.weekStart);
   revalidatePath("/app/exchange");
   revalidatePath("/app/schedule");
   redirect(exchangeUrl("?tab=requests&approved=1"));

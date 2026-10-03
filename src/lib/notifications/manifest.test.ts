@@ -1,0 +1,40 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { expect, it, vi } from 'vitest';
+
+vi.mock('@/components/app-shell', () => ({ AppShell: () => null }));
+vi.mock('@/lib/notifications/config', () => import('./config'));
+vi.mock('@/lib/auth/session', () => ({ requireSession: vi.fn() }));
+
+it('manifest_preserves_portal_identity', async () => {
+  expect(existsSync('src/lib/notifications/manifest.ts')).toBe(true);
+  const { manifest } = await import('./manifest');
+  const result = manifest();
+  expect(result).toMatchObject({ id: '/app', start_url: '/app', scope: '/app', name: 'Nuvora', short_name: 'Nuvora', display: 'standalone', theme_color: '#20232D', background_color: '#F6F6F8' });
+  expect(result.icons).toEqual([
+    { src: '/icons/fuel-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+    { src: '/icons/fuel-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+    { src: '/icons/fuel-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+    { src: '/icons/fuel-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+  ]);
+  for (const icon of [...result.icons!, { src: '/icons/fuel-apple-180.png', sizes: '180x180' }]) {
+    const png = readFileSync(`public${icon.src}`); const [width, height] = icon.sizes!.split('x').map(Number);
+    expect(png.subarray(1, 4).toString()).toBe('PNG'); expect(png.readUInt32BE(16)).toBe(width); expect(png.readUInt32BE(20)).toBe(height);
+  }
+});
+it('regular public manifest endpoint returns revalidated metadata', async () => {
+  expect(existsSync('src/app/fuel-portal.webmanifest/route.ts')).toBe(true);
+  const { GET } = await import('../../app/fuel-portal.webmanifest/route'); const response = await GET();
+  expect(response.headers.get('content-type')).toContain('application/manifest+json'); expect(response.headers.get('cache-control')).toContain('no-cache'); expect((await response.json()).start_url).toBe('/app');
+});
+it('portal links manifest and theme without leaking metadata to root or Clocker', async () => {
+  const portal = await import('../../app/app/layout');
+  expect('metadata' in portal && portal.metadata).toMatchObject({ manifest: '/fuel-portal.webmanifest', appleWebApp: { capable: true, title: 'Nuvora' }, icons: { apple: [{ url: '/icons/fuel-apple-180.png', sizes: '180x180', type: 'image/png' }] } });
+  expect('viewport' in portal && portal.viewport).toMatchObject({ themeColor: '#20232D' });
+  expect(existsSync('src/app/manifest.ts')).toBe(false); expect(existsSync('src/app/manifest.webmanifest')).toBe(false);
+  for (const path of ['src/app/layout.tsx', 'src/app/clocker/layout.tsx']) if (existsSync(path)) expect(readFileSync(path, 'utf8')).not.toMatch(/manifest|themeColor|PortalDeviceSetup|fuel-portal-sw/);
+});
+it('worker and manifest headers forbid stale scripts and MIME sniffing', async () => {
+  const { default: config } = await import('../../../next.config');
+  const rules = await config.headers?.();
+  for (const source of ['/fuel-portal-sw.js', '/fuel-portal.webmanifest']) expect(rules?.find(r => r.source === source)?.headers).toEqual(expect.arrayContaining([{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }, { key: 'X-Content-Type-Options', value: 'nosniff' }]));
+});

@@ -44,7 +44,14 @@ export async function boundedCleanupAttempts(operations: readonly ((signal: Abor
         controller.abort();
     }
 }
-function retainPending(cookies: CookieReaderWriter, deps: LogoutDeps, installation?: InstallationProof, sessionHashes: readonly string[] = [], cleanupSessionHash?: string) {
+function retireConfirmedRevocations(receipt: VerifiedCleanupReceipt, confirmed: ReadonlySet<string>): VerifiedCleanupReceipt {
+    return {
+        ...receipt,
+        revokeSession: receipt.revokeSession === true && !confirmed.has(receipt.sessionHash),
+        sessionRevocations: receipt.sessionRevocations?.filter(item => !confirmed.has(item.sessionHash)),
+    };
+}
+function retainPending(cookies: CookieReaderWriter, deps: LogoutDeps, installation?: InstallationProof, sessionHashes: readonly string[] = [], cleanupSessionHash?: string, confirmed: ReadonlySet<string> = new Set()) {
     const prior = cookies.get(CLEANUP_COOKIE)?.value;
     const now = deps.clock();
     const issuedAt = now.toISOString(), expiresAt = new Date(now.getTime() + 14 * 86400000).toISOString();
@@ -52,7 +59,7 @@ function retainPending(cookies: CookieReaderWriter, deps: LogoutDeps, installati
     let value: string | null = null;
     if (prior) {
         const verified = deps.openReceipt(prior);
-        if (verified && installation && verified.environment === installation.environment && verified.installationHash === installation.installationHash && verified.generation === installation.generation) receipt = verified;
+        if (verified && installation && verified.environment === installation.environment && verified.installationHash === installation.installationHash && verified.generation === installation.generation) receipt = retireConfirmedRevocations(verified, confirmed);
     } else if (installation && (sessionHashes.length || cleanupSessionHash)) {
         const sessionHash = sessionHashes[0] ?? cleanupSessionHash!;
         receipt = { ...installation, sessionHash, revokeSession: sessionHashes.includes(sessionHash), issuedAt, expiresAt };
@@ -93,15 +100,16 @@ export async function terminatePortalSession(input: {
     const sessionHash = input.sessionToken ? createHash('sha256').update(input.sessionToken).digest('hex') : undefined;
     const sessionHashes = [...new Set([sessionHash, installation?.associatedSessionHash].filter((hash): hash is string => !!hash))];
     const unrevoked = new Set(sessionHashes);
+    const confirmed = new Set<string>();
     try {
         const operations: ((signal: AbortSignal) => Promise<boolean>)[] = [];
-        for (const hash of sessionHashes) operations.push(async (signal) => { await deps.revokeSession(hash, signal); unrevoked.delete(hash); return true; });
+        for (const hash of sessionHashes) operations.push(async (signal) => { await deps.revokeSession(hash, signal); if (!signal.aborted) { unrevoked.delete(hash); confirmed.add(hash); } return true; });
         if (installation)
             operations.push(async (signal) => (await deps.subscriptions(signal).detach(installation)).state === 'complete');
         const complete = await boundedCleanupAttempts(operations);
         // Missing verification/configuration must never discard an existing proof.
         if (!complete || (!installation && cookies.get(INSTALLATION_COOKIE)) || cookies.get(CLEANUP_COOKIE)) {
-            retainPending(cookies, deps, installation, [...unrevoked], sessionHash ?? installation?.associatedSessionHash);
+            retainPending(cookies, deps, installation, [...unrevoked], sessionHash ?? installation?.associatedSessionHash, confirmed);
             return PENDING;
         }
         return COMPLETE;
@@ -162,12 +170,20 @@ export async function reconcilePendingInstallation(cookies: CookieReaderWriter, 
     const cleanup = verified;
     if (cleanup.recoveryBlocked) return PENDING;
     const sessionHashes = [...new Set([...(cleanup.revokeSession === true ? [cleanup.sessionHash] : []), ...(cleanup.sessionRevocations ?? []).map(item => item.sessionHash)])];
+    const confirmed = new Set<string>();
     const complete = await boundedCleanupAttempts([
-        ...sessionHashes.map(hash => async (signal: AbortSignal) => { await deps.revokeSession(hash, signal); return true; }),
+        ...sessionHashes.map(hash => async (signal: AbortSignal) => { await deps.revokeSession(hash, signal); if (!signal.aborted) confirmed.add(hash); return true; }),
         async (signal) => (await deps.subscriptions(signal).reconcile(cleanup)).state === 'complete',
     ]);
-    if (!complete)
+    if (!complete) {
+        // A push-table outage must not retain already-confirmed auth deletes or
+        // consume the bounded bundle on repeated healthy-auth logouts. Ambiguous
+        // operations remain; re-signing preserves every original lifetime.
+        if (confirmed.size) {
+            try { cookies.set(CLEANUP_COOKIE, sealCleanupReceipt(retireConfirmedRevocations(cleanup, confirmed), key), options(deps.secureCookies)); } catch { /* Existing opaque evidence remains pending. */ }
+        }
         return PENDING;
+    }
     cookies.delete(CLEANUP_COOKIE);
     return COMPLETE;
 }

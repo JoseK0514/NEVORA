@@ -29,3 +29,9 @@ it('associated_session_and_bundle_revocations_are_shape_lifetime_and_capacity_bo
     expect(()=>m.sealCleanupReceipt({...receipt,sessionRevocations:[{...entries[0],expiresAt:'2026-10-20T12:00:00Z'}]},key)).toThrow();
     expect(()=>m.sealCleanupReceipt({...receipt,sessionRevocations:[entries[0],entries[0]]},key)).toThrow();
 });
+it('protected_association_and_revocation_fields_reject_array_coercion', async () => {
+    const m = await api(); const proof = m.createInstallationProof();
+    expect(() => m.sealInstallationProof({ ...proof, associatedSessionHash: ['a'.repeat(64)] as unknown as string }, key)).toThrow();
+    const receipt = { ...proof, sessionHash: 'a'.repeat(64), issuedAt: now.toISOString(), expiresAt: '2026-10-03T12:00:00Z' };
+    expect(() => m.sealCleanupReceipt({ ...receipt, sessionRevocations: [{ sessionHash: ['b'.repeat(64)] as unknown as string, issuedAt: now.toISOString(), expiresAt: receipt.expiresAt }] }, key)).toThrow();
+});

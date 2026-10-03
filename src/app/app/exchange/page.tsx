@@ -15,8 +15,11 @@ import {
   marketplaceRoleLabel,
   marketplaceView,
 } from "@/lib/exchange-marketplace";
-import { listEmployeeCallouts } from "@/lib/data/callouts";
+import { safeReturnTo } from "@/lib/notifications/destinations";
+import { sqlNotificationStateRepository } from "@/lib/data/notification-state";
+import { getCallout, listEmployeeCallouts } from "@/lib/data/callouts";
 import {
+  getExchange,
   listEmployeeExchangeActivity,
   listEmployeePublishedShifts,
   listIncomingSwaps,
@@ -131,6 +134,22 @@ export default async function ExchangePage({
   const myExchangeActivity = activity.filter(
     (exchange) => exchange.requestedByEmployeeId === session.id,
   );
+  const visibleActivity = myExchangeActivity.slice(0, 8);
+  const visibleCallouts = myCallouts.slice(0, 6);
+  // A selected deep link may retain one permitted row beyond the ordinary window.
+  // Default projections and all existing action authorization remain unchanged.
+  if (params.requestId && safeReturnTo(`/app/exchange?tab=requests&requestId=${encodeURIComponent(params.requestId)}`)) {
+    const access = await sqlNotificationStateRepository().recipientAccess(session.id);
+    if (access?.active && access.employeeId === session.id && access.role === session.role) {
+      const selectedExchange = activity.find(row => row.id === params.requestId) ?? await getExchange(params.requestId).catch(() => null);
+      if (selectedExchange && selectedExchange.id === params.requestId && access.allowedLocationIds.includes(selectedExchange.sourceShift.locationId)
+        && (selectedExchange.requestedByEmployeeId === session.id || (selectedExchange.targetEmployeeId === session.id && ['APPROVED', 'DENIED', 'CANCELLED', 'EXPIRED'].includes(selectedExchange.status)))
+        && !visibleActivity.some(row => row.id === selectedExchange.id)) visibleActivity.push(selectedExchange);
+      const selectedCallout = myCallouts.find(row => row.id === params.requestId) ?? await getCallout(params.requestId).catch(() => null);
+      if (selectedCallout && selectedCallout.id === params.requestId && selectedCallout.employeeId === session.id && access.allowedLocationIds.includes(selectedCallout.locationId)
+        && !visibleCallouts.some(row => row.id === selectedCallout.id)) visibleCallouts.push(selectedCallout);
+    }
+  }
   const successMessage =
     params.offered
       ? "Your shift is now available for another eligible employee to claim."
@@ -161,8 +180,8 @@ export default async function ExchangePage({
   const hasTradeRequests =
     myShifts.length > 0 ||
     incomingSwaps.length > 0 ||
-    myExchangeActivity.length > 0 ||
-    myCallouts.length > 0;
+    visibleActivity.length > 0 ||
+    visibleCallouts.length > 0;
 
   if (!manager) {
     return (
@@ -179,7 +198,7 @@ export default async function ExchangePage({
         <div className="employee-view-surface employee-exchange-feed">
           {activeView === "available" ? (
             openCoverage.length ? openCoverage.map((exchange) => (
-              <div className="employee-shift-entry" key={exchange.id}>
+              <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                 <div className="employee-shift-entry-copy">
                   <span className="employee-shift-entry-date">{marketplaceDate(exchange.sourceShift.date)}</span>
                   <strong>{formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</strong>
@@ -215,7 +234,7 @@ export default async function ExchangePage({
               {incomingSwaps.length ? <section className="employee-exchange-section">
                 <h2>Waiting for You</h2>
                 {incomingSwaps.map((exchange) => (
-                  <div className="employee-shift-entry" key={exchange.id}>
+                  <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                     <div className="employee-shift-entry-copy">
                       <strong>{marketplaceDisplayName(exchange.requestedByName)} wants to trade</strong>
                       <span>{marketplaceDate(exchange.sourceShift.date)} · {formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</span>
@@ -230,10 +249,10 @@ export default async function ExchangePage({
                 ))}
               </section> : null}
 
-              {myExchangeActivity.length ? <section className="employee-exchange-section">
+              {visibleActivity.length ? <section className="employee-exchange-section">
                 <h2>Your Requests</h2>
-                {myExchangeActivity.slice(0, 8).map((exchange) => (
-                  <div className="employee-shift-entry" key={exchange.id}>
+                {visibleActivity.map((exchange) => (
+                  <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                     <div className="employee-shift-entry-copy">
                       <strong>{exchange.kind === "COVERAGE" ? "Coverage" : "Trade"} · {marketplaceDate(exchange.sourceShift.date)}</strong>
                       <span>{formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</span>
@@ -241,16 +260,16 @@ export default async function ExchangePage({
                     </div>
                     <div className="employee-shift-entry-actions" data-status={exchange.status}>
                       <StatusPill tone={statusTone(exchange.status)}>{statusLabel(exchange.status)}</StatusPill>
-                      {["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? <form action={cancelExchangeAction}><input type="hidden" name="exchangeId" value={exchange.id} /><button className="employee-action danger" type="submit"><span>Cancel</span></button></form> : null}
+                      {exchange.requestedByEmployeeId === session.id && ["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? <form action={cancelExchangeAction}><input type="hidden" name="exchangeId" value={exchange.id} /><button className="employee-action danger" type="submit"><span>Cancel</span></button></form> : null}
                     </div>
                   </div>
                 ))}
               </section> : null}
 
-              {myCallouts.length ? <section className="employee-exchange-section">
+              {visibleCallouts.length ? <section className="employee-exchange-section">
                 <h2>Unable-to-Work Requests</h2>
-                {myCallouts.slice(0, 6).map((callout) => (
-                  <div className="employee-shift-entry" key={callout.id}>
+                {visibleCallouts.map((callout) => (
+                  <div className="employee-shift-entry" id={`request-${callout.id}`} tabIndex={-1} key={callout.id}>
                     <div className="employee-shift-entry-copy">
                       <strong>{marketplaceDate(callout.date)} · {formatTime(callout.startTime)} – {formatTime(callout.endTime)}</strong>
                       <span>{calloutReason(callout.reasonCode)}</span>

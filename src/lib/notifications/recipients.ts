@@ -1,3 +1,4 @@
+import { NUVORA_BRAND } from "../brand";
 import { randomUUID } from 'node:crypto';
 import { addDays } from '../date-utils';
 import { diffPublishedShifts } from '../assistance/publication-diff';
@@ -90,7 +91,7 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
       const nextStart = Math.min(...personalCurrent.filter(shift => !shift.isCalloutApproved && shiftStart(shift) > now.getTime()).map(shiftStart));
       if (!Number.isFinite(nextStart) || !destinationForSource(destinationSource,recipient)) continue;
       const seed: NotificationIntent = {
-        ...(event ?? {employeeId:recipient.employeeId,type:'SCHEDULE_PUBLISHED',title:'Schedule review',body:'Open Fuel to review your schedule.',eventKey:''}),
+        ...(event ?? {employeeId:recipient.employeeId,type:'SCHEDULE_PUBLISHED',title:'Schedule review',body:`Open ${NUVORA_BRAND.platformLabel} to review your schedule.`,eventKey:''}),
         id:randomUUID(),environment,source:after.source,effectiveVersion:effective,purpose:'EVENT',urgency:'normal',dueAt:new Date(anchor).toISOString(),expiresAt:new Date(Math.min(baseExpiry,nextStart)).toISOString(),actionHref:destinationForSource(destinationSource,recipient)!,
       };
       const reminder = planReminder({intent:seed,now,resolved:false,policy});

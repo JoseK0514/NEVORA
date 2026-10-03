@@ -1,0 +1,19 @@
+import { vi } from 'vitest';
+import { createECDH } from 'node:crypto';
+import { DEFAULT_NOTIFICATION_POLICY } from './policy';
+import { encryptSubscriptionMaterial } from './installation';
+import type { DeliveryClaim, NotificationConfig, NotificationIntent, PushSubscriptionRecord, SqlExecutor } from './types';
+import type { WorkerDeps } from './worker';
+const time = Date.parse('2030-01-01T16:00:00Z');
+const pair = createECDH('prime256v1');
+pair.setPrivateKey(Buffer.alloc(32, 1));
+const key = Buffer.alloc(32, 3);
+export function fixture(count = 1) {
+    let now = time;
+    const config: NotificationConfig = { featureEnabled: true, deliveryEnabled: true, testDeliveryEnabled: true, testAccountIds: ['employee'], environment: 'test', portalOrigin: 'https://example.test', policy: DEFAULT_NOTIFICATION_POLICY, subscriptionEncryptionKey: key.toString('base64url'), workerSecret: 's'.repeat(32), vapidPublicKey: pair.getPublicKey().toString('base64url'), vapidPrivateKey: pair.getPrivateKey().toString('base64url'), vapidSubject: 'mailto:test@example.test' };
+    const intent: NotificationIntent = { id: '12345678-1234-4234-8234-123456789abc', employeeId: 'employee', type: 'TIME_OFF_APPROVED', title: 'private', body: 'private', eventKey: 'event', environment: 'test', source: { kind: 'TIME_OFF', id: 'request', version: 'APPROVED' }, effectiveVersion: 'APPROVED', purpose: 'EVENT', urgency: 'normal', dueAt: new Date(time - 1000).toISOString(), expiresAt: new Date(time + 86400000).toISOString() };
+    const subscriptions: PushSubscriptionRecord[] = Array.from({ length: count }, (_, i) => { const proof = { installationHash: 'a'.repeat(64), generation: `generation-${i}`, environment: 'test' as const }; return { ...proof, id: `subscription-${i}`, employeeId: 'employee', endpointFingerprint: 'fingerprint', encryptedMaterial: encryptSubscriptionMaterial({ endpoint: 'https://fcm.googleapis.com/fcm/send/fixture', expirationTime: null, keys: { p256dh: pair.getPublicKey().toString('base64url'), auth: Buffer.alloc(16, 2).toString('base64url') } }, key, proof), sessionHash: 'session', status: 'active', consentAt: new Date(time - 5000).toISOString(), updatedAt: new Date(time - 5000).toISOString(), expiresAt: null, lastTestAt: null }; });
+    const claims: DeliveryClaim[] = subscriptions.map((s, i) => ({ deliveryId: `delivery-${i}`, intentId: intent.id, subscriptionId: s.id, generation: s.generation, leaseToken: `lease-${i}`, leaseExpiresAt: new Date(time + 120000).toISOString(), attemptCount: 1, intent }));
+    const deps: WorkerDeps = { config, clock: () => new Date(now), executor: { query: vi.fn().mockResolvedValue([]), transaction: vi.fn().mockResolvedValue([]) } as SqlExecutor, state: { findIntent: vi.fn().mockResolvedValue(intent), recipientAccess: vi.fn().mockResolvedValue({ employeeId: 'employee', active: true, role: 'EMPLOYEE', allowedLocationIds: [] }), readSource: vi.fn().mockResolvedValue(null), listReminderCandidates: vi.fn().mockResolvedValue([]), check: vi.fn().mockImplementation(async () => ({ deliverable: true, reason: 'current', effectiveVersion: intent.effectiveVersion, expiresAt: intent.expiresAt, destination: '/app/requests' })) }, deliveries: { materialize: vi.fn().mockResolvedValue(undefined), claim: vi.fn().mockResolvedValue(claims), finish: vi.fn().mockResolvedValue(true), release: vi.fn().mockResolvedValue(true), defer: vi.fn().mockResolvedValue(true), cancelForGeneration: vi.fn().mockResolvedValue(undefined) }, subscriptions: { cleanupRemovedSessions: vi.fn().mockResolvedValue(0), findInstallation: vi.fn(), queueSelfTest: vi.fn(), enroll: vi.fn(), detach: vi.fn(), reconcile: vi.fn(), listActive: vi.fn().mockResolvedValue(subscriptions), invalidate: vi.fn().mockResolvedValue(undefined) }, sender: { send: vi.fn().mockResolvedValue({ kind: 'accepted' }) } };
+    return { deps, intent, claims, subscriptions, setNow: (value: number) => { now = value; } };
+}

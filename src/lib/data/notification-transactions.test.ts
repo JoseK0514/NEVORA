@@ -2,9 +2,9 @@ import { beforeEach, expect, it, vi } from 'vitest';
 const driver = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
 vi.mock('../db', async original => ({ ...await original<typeof import('../db')>(), getDb: () => driver }));
 async function adapter() {
-  const module = await import('./notification-transactions').catch(() => ({}));
-  expect(module).toHaveProperty('neonNotificationExecutor');
-  return (module as typeof import('./notification-transactions')).neonNotificationExecutor();
+  const implementation = await import('./notification-transactions').catch(() => ({}));
+  expect(implementation).toHaveProperty('neonNotificationExecutor');
+  return (implementation as typeof import('./notification-transactions')).neonNotificationExecutor();
 }
 beforeEach(() => { driver.query.mockReset(); driver.transaction.mockReset(); });
 it('ordered_batch_and_abort_signal_belong_to_one_transaction', async () => {

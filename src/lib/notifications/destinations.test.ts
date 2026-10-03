@@ -45,3 +45,11 @@ describe('review regressions: existing role/status task destinations',()=>{
     expect(destinationForSource({...exchange,record:{...exchange.record,status:'APPROVED'}},recipient)).toBe('/app/exchange?tab=history&requestId=coverage-1');
   });
 });
+
+it('adds only the matching encoded request fragment to validated contextual routes',async()=>{
+ const { withRequestFragment }=await import('./destinations');
+ expect(withRequestFragment('/app/requests?tab=my&requestId=request%20a')).toBe('/app/requests?tab=my&requestId=request%20a#request-request%20a');
+ expect(withRequestFragment('/app/exchange?tab=requests&requestId=abc')).toBe('/app/exchange?tab=requests&requestId=abc#request-abc');
+ expect(withRequestFragment('/app/schedule?week=2026-10-05')).toBe('/app/schedule?week=2026-10-05');
+ expect(withRequestFragment('https://foreign.invalid/app/requests?requestId=abc')).toBeNull();
+});

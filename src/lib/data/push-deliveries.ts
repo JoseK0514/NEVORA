@@ -60,6 +60,8 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
           SELECT d.id FROM push_deliveries d JOIN notifications n ON n.id = d.notification_id
             JOIN push_subscriptions s ON s.id = d.subscription_id JOIN employees e ON e.id = s.employee_id
           WHERE d.expires_at > now() AND d.next_attempt_at <= now() AND d.attempt_count < 5
+            AND ($5::text[] IS NULL OR n.employee_id = ANY($5::text[]))
+            AND (n.purpose <> 'SUMMARY' OR n.source_kind = 'MANAGER_SUMMARY')
             AND n.environment = $4 AND n.push_state = 'materialized' AND n.cancelled_at IS NULL AND n.expires_at > now()
             AND s.status = 'active' AND s.generation = d.generation AND e.active = true
             AND s.employee_id = n.employee_id AND s.environment = n.environment
@@ -78,7 +80,7 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
           WHERE d.id IN (SELECT id FROM candidates) RETURNING d.*
         ) SELECT c.id AS delivery_id, c.notification_id, c.subscription_id, c.generation, c.lease_token,
           c.lease_expires_at, c.attempt_count, n.* FROM claimed c JOIN notifications n ON n.id = c.notification_id`,
-          values:[input.limit,input.leaseSeconds,input.mode,environment]},
+          values:[input.limit,input.leaseSeconds,input.mode,environment,input.recipientIds ? [...input.recipientIds] : null]},
       ]);
       return (results[1] as Record<string,unknown>[]).map(mapClaim);
     },
@@ -119,6 +121,22 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
           AND status = 'processing' AND lease_expires_at > now()
           AND notification_id IN (SELECT id FROM notifications WHERE environment = $4) RETURNING id`,
         values:[claim.deliveryId,claim.generation,claim.leaseToken,environment]});
+      return rows.length > 0;
+    },
+    async defer(claim, nextAttemptAt) {
+      if (!Number.isFinite(nextAttemptAt.getTime())) throw new Error('Invalid delivery deferral');
+      const rows = await executor.query({text:`UPDATE push_deliveries d SET
+        status = CASE WHEN $5::timestamptz >= d.expires_at THEN 'expired'
+          WHEN attempt_count = 1 THEN 'queued' ELSE 'retry_pending' END,
+        next_attempt_at = CASE WHEN $5::timestamptz >= d.expires_at THEN d.next_attempt_at
+          ELSE GREATEST(d.next_attempt_at, $5::timestamptz) END,
+        attempt_count = attempt_count - 1, lease_token = NULL, lease_expires_at = NULL, updated_at = now()
+        WHERE d.id = $1 AND d.generation = $2 AND d.lease_token = $3
+          AND d.status = 'processing' AND d.lease_expires_at > now() AND d.attempt_count > 0
+          AND $5::timestamptz > now()
+          AND EXISTS (SELECT 1 FROM notifications n WHERE n.id = d.notification_id AND n.environment = $4
+            AND n.cancelled_at IS NULL AND n.push_state = 'materialized') RETURNING d.id`,
+        values:[claim.deliveryId,claim.generation,claim.leaseToken,environment,nextAttemptAt.toISOString()]});
       return rows.length > 0;
     },
     async cancelForGeneration(installationHash, generation) {

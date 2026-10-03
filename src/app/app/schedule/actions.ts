@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { addDays, isDateInWeek, weekStartFor } from "@/lib/date-utils";
 import { setAvailabilityDeadline } from "@/lib/data/week-settings";
-import { clearWeekAcknowledgements } from "@/lib/data/acknowledgements";
 import { publishScheduleWithRevision } from "@/lib/data/publication-revisions";
 import { listEmployees } from "@/lib/data/employees";
 import {
@@ -92,6 +91,7 @@ export async function createShiftAction(formData: FormData) {
   });
 
   await insertShift({
+    actorEmployeeId: session.id,
     scheduleId,
     employeeId,
     date,
@@ -101,7 +101,6 @@ export async function createShiftAction(formData: FormData) {
     isDesignatedLead,
   });
 
-  await clearWeekAcknowledgements(weekStart);
   revalidatePath("/app/schedule");
 
   const warning = validation.issues.find((issue) => issue.severity === "warning");
@@ -204,7 +203,7 @@ export async function publishScheduleAction(formData: FormData) {
 
 
 export async function updateShiftAction(formData: FormData) {
-  await requireRoles(MANAGER_ROLES);
+  const session = await requireRoles(MANAGER_ROLES);
 
   const shiftId = String(formData.get("shiftId") ?? "");
   const employeeId = String(formData.get("employeeId") ?? "").trim().toUpperCase();
@@ -270,6 +269,7 @@ export async function updateShiftAction(formData: FormData) {
   }
 
   const updated = await updateShift({
+    actorEmployeeId: session.id,
     shiftId,
     employeeId,
     date,
@@ -283,7 +283,6 @@ export async function updateShiftAction(formData: FormData) {
     redirect(scheduleUrl(existing.weekStart, "&error=INVALID_SHIFT"));
   }
 
-  await clearWeekAcknowledgements(existing.weekStart);
   revalidatePath("/app/schedule");
   const warning = validation.issues.find((issue) => issue.severity === "warning");
 
@@ -296,7 +295,7 @@ export async function updateShiftAction(formData: FormData) {
 }
 
 export async function deleteShiftAction(formData: FormData) {
-  await requireRoles(MANAGER_ROLES);
+  const session = await requireRoles(MANAGER_ROLES);
   const shiftId = String(formData.get("shiftId") ?? "");
   const existing = await getShiftForManagement(shiftId);
 
@@ -304,7 +303,7 @@ export async function deleteShiftAction(formData: FormData) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
 
-  const deleted = await deleteShift(shiftId);
+  const deleted = await deleteShift(shiftId, session.id);
 
   if (!deleted) {
     redirect(
@@ -312,7 +311,6 @@ export async function deleteShiftAction(formData: FormData) {
     );
   }
 
-  await clearWeekAcknowledgements(existing.weekStart);
   revalidatePath("/app/schedule");
   redirect(scheduleUrl(existing.weekStart, "&deleted=1"));
 }
@@ -375,6 +373,7 @@ export async function copyPreviousWeekAction(formData: FormData) {
     });
 
     await insertShift({
+      actorEmployeeId: session.id,
       scheduleId,
       employeeId: shift.employeeId,
       date,
@@ -389,10 +388,6 @@ export async function copyPreviousWeekAction(formData: FormData) {
     if (validation.issues.some((issue) => issue.severity === "warning")) {
       warnings += 1;
     }
-  }
-
-  if (copied > 0) {
-    await clearWeekAcknowledgements(targetWeekStart);
   }
 
   revalidatePath("/app/schedule");

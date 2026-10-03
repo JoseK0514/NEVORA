@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
 import { NavIcon } from "@/components/nav-icon";
 import type { ReactNode } from "react";
-import { logout } from "@/app/login/actions";
+import { PortalSignout } from "./portal-signout";
+import { PortalDeviceSetup } from "./portal-device-setup";
 import type { UserRole } from "@/lib/domain";
 import { navigationForRole } from "@/lib/navigation";
 import { NUVORA_BRAND } from "../lib/brand";
@@ -25,7 +26,9 @@ function employeeNavigationLabel(label: string) {
 export function AppShell({
   children,
   user,
+  notificationsEnabled = false,
 }: {
+  notificationsEnabled?: boolean;
   children: ReactNode;
   user: {
     firstName: string;
@@ -50,6 +53,7 @@ export function AppShell({
     )
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
+  const Profile = notificationsEnabled ? "button" : "div";
   return (
     <div className={employee ? "app-shell employee-shell" : "app-shell"}>
       <aside className="sidebar">
@@ -81,21 +85,21 @@ export function AppShell({
           })}
         </nav>
 
-        <div className="sidebar-profile">
+        <Profile className={`sidebar-profile${notificationsEnabled ? " portal-profile-trigger" : ""}`} {...(notificationsEnabled ? { type: "button" as const, popoverTarget: "portal-device-settings", "aria-label": "Profile and device settings" } : {})}>
           <div className="avatar">{initials}</div>
           <div className="sidebar-profile-copy">
             <strong>{user.firstName} {user.lastName}</strong>
             <small>{user.role[0]}{user.role.slice(1).toLowerCase()}</small>
           </div>
           {employee ? null : <span className="sidebar-profile-chevron" aria-hidden="true">⌄</span>}
-        </div>
+        </Profile>
 
-        <form action={logout} className="sidebar-signout-form">
+        <PortalSignout className="sidebar-signout-form">
           <button className="sidebar-logout sidebar-logout-row" type="submit">
             <NavIcon name="logout" size={18} employee={employee} />
             <span>Sign out</span>
           </button>
-        </form>
+        </PortalSignout>
 
         <div className="sidebar-platform-footer">
           <span>{NUVORA_BRAND.workspace}</span>
@@ -112,7 +116,7 @@ export function AppShell({
               <small>{NUVORA_BRAND.module}</small>
             </span>
           </Link>
-          <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>
+          {notificationsEnabled && !employee ? <button type="button" className="role-chip portal-role-trigger" popoverTarget="portal-device-settings" aria-label="Profile and device settings">{user.role[0]}{user.role.slice(1).toLowerCase()}</button> : <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>}
         </header>
 
         <div className="page-frame">{children}</div>
@@ -144,8 +148,8 @@ export function AppShell({
                   </Link>
                 ))}
                 <div className="employee-more-profile">
-                  <div><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "LEAD" ? "Lead" : "Employee"}</small></div>
-                  <form action={logout}><button type="submit"><NavIcon name="logout" employee size={18} /><span>Sign out</span></button></form>
+                  <Profile className={notificationsEnabled ? "portal-more-profile-trigger" : undefined} {...(notificationsEnabled ? { type: "button" as const, popoverTarget: "portal-device-settings", "aria-label": "Profile and device settings" } : {})}><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "LEAD" ? "Lead" : "Employee"}</small></Profile>
+                  <PortalSignout><button type="submit"><NavIcon name="logout" employee size={18} /><span>Sign out</span></button></PortalSignout>
                 </div>
               </div>
             </>
@@ -174,6 +178,7 @@ export function AppShell({
           )}
         </nav>
       </main>
+      {notificationsEnabled ? <PortalDeviceSetup role={user.role} /> : null}
     </div>
   );
 }

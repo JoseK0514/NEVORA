@@ -12,7 +12,7 @@ vi.mock("@/lib/db", () => ({
         mocks.statements.push(statement);
         return statement;
       },
-      { query: mocks.query, transaction: mocks.transaction },
+      { query: (text:string, values:unknown[]) => text.includes('WITH cancelled AS') ? {text,values} : mocks.query(text,values), transaction: mocks.transaction },
     ),
   queryRows: (rows: unknown) => rows,
 }));
@@ -25,6 +25,7 @@ import {
 import {
   replaceWeeklyAvailability,
   listWeeklyAvailability,
+  setAvailabilityDeadline,
 } from "./week-settings";
 
 beforeEach(() => {
@@ -348,4 +349,21 @@ it("repeated concurrent availability changes stop after bounded retries", async 
     replaceWeeklyAvailability("E", "2026-10-05", [], []),
   ).rejects.toThrow("Availability changed while saving");
   expect(mocks.transaction).toHaveBeenCalledTimes(3);
+});
+
+describe('notification cancellation joins availability transactions', () => {
+ it.each([undefined,'2026-10-06T12:00:00Z'])('deadline change/removal cancels superseded work atomically: %s', async deadlineIso => {
+   mocks.query.mockImplementation((text:string,values:unknown[]) => text.includes('WITH cancelled AS') ? {text,values} : []);
+   await setAvailabilityDeadline({weekStart:'2026-10-05',deadlineIso,updatedBy:'M'});
+   const batch = mocks.transaction.mock.calls[0][0];
+   expect(batch).toEqual(expect.arrayContaining([expect.objectContaining({text:expect.stringContaining('UPDATE push_deliveries')})]));
+   const cancellation = batch.find((s:{text?:string})=>s.text?.includes('WITH cancelled AS'));
+   expect(cancellation.values).toEqual(['2026-10-05',null,deadlineIso ? '2026-10-06T12:00:00.000Z' : null]);
+ });
+ it('zero-hour submission cancels its reminder in the same transaction', async()=>{
+   mocks.query.mockImplementation((text:string,values:unknown[]) => text.includes('WITH cancelled AS') ? {text,values} : []);
+   await replaceWeeklyAvailability('E','2026-10-05',[],[]);
+   const batch = mocks.transaction.mock.calls[0][0];
+   expect(batch).toEqual(expect.arrayContaining([expect.objectContaining({text:expect.stringContaining('UPDATE push_deliveries'),values:['2026-10-05','E',null]})]));
+ });
 });
