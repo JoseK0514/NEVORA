@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { safeReturnTo } from "@/lib/notifications/destinations";
-import { BrandMark } from "@/components/brand-mark";
+import { BrandMark, BrandWordmark } from "@/components/brand-mark";
 import { login } from "@/app/login/actions";
 import { NUVORA_BRAND } from "../../lib/brand";
 
@@ -25,7 +25,7 @@ export default async function LoginPage({
         <header className="employee-login-brand">
           <BrandMark large />
           <div>
-            <strong>{NUVORA_BRAND.platform}</strong>
+            <strong><BrandWordmark /></strong>
             <span>{NUVORA_BRAND.module}</span>
           </div>
         </header>

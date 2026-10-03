@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BrandMark } from "@/components/brand-mark";
+import { BrandMark, BrandWordmark } from "@/components/brand-mark";
 import { NavIcon } from "@/components/nav-icon";
 import type { ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
@@ -60,7 +60,7 @@ export function AppShell({
         <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
           <BrandMark />
           <span className="sidebar-brand-copy">
-            <strong>{NUVORA_BRAND.platform}</strong>
+            <strong><BrandWordmark /></strong>
             <small>{NUVORA_BRAND.module}</small>
           </span>
         </Link>
@@ -112,7 +112,7 @@ export function AppShell({
           <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
             <BrandMark />
             <span className="mobile-brand-copy">
-              <strong>{NUVORA_BRAND.platform}</strong>
+              <strong><BrandWordmark /></strong>
               <small>{NUVORA_BRAND.module}</small>
             </span>
           </Link>

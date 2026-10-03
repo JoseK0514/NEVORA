@@ -46,9 +46,9 @@ it.each(["MANAGER", "OWNER"] as const)("preserves the existing %s shell and mobi
   expect(html).not.toContain("sidebar-mantra");
 });
 
-it.each(["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const)("renders the Nuvora platform identity for %s", (role) => {
+it.each(["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const)("renders the NEVORA platform identity for %s", (role) => {
   const { html } = render(role);
-  expect(html).toContain("NUVORA");
+  expect(html).toContain("NEVORA");
   expect(html).toContain("Workforce");
   expect(html).toContain("Fuel Coffee Drive");
   expect(html).toContain("Powered by VELANI LLC");

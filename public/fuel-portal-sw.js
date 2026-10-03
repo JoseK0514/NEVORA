@@ -1,4 +1,4 @@
-/* Nuvora portal only. Register /fuel-portal-sw.js with scope: '/app'.
+/* NEVORA portal only. Register /fuel-portal-sw.js with scope: '/app'.
  * Scope matching is prefix-based; each operational handler also checks paths.
  * To retire: serve this same script/scope with RETIRE=true, disable enrollment
  * and delivery on the server, and let the normal waiting lifecycle complete.
@@ -6,9 +6,9 @@
  */
 const RETIRE = false;
 const CACHE_PREFIX = 'fuel-portal-public-';
-const CACHE_NAME = `${CACHE_PREFIX}v1`;
+const CACHE_NAME = `${CACHE_PREFIX}v2`;
 const OFFLINE = '/fuel-portal-offline.html';
-const PUBLIC_ASSETS = [OFFLINE, '/icons/fuel-192.png', '/icons/fuel-512.png', '/icons/fuel-maskable-192.png', '/icons/fuel-maskable-512.png', '/icons/fuel-apple-180.png'];
+const PUBLIC_ASSETS = [OFFLINE, '/images/nevora-wordmark.png', '/icons/fuel-192.png', '/icons/fuel-512.png', '/icons/fuel-maskable-192.png', '/icons/fuel-maskable-512.png', '/icons/fuel-apple-180.png'];
 const GENERATION = /^[A-Za-z0-9_-]{1,128}$/;
 const MAX_SUPPRESSED = 128;
 let work = Promise.resolve();
@@ -96,7 +96,7 @@ self.addEventListener('fetch', event => {
     try { return await fetch(request); } // Preserve HTTP errors and auth redirects.
     catch {
       const cached = await (await caches.open(CACHE_NAME)).match(OFFLINE);
-      return cached || new Response('Nuvora is offline. Reconnect to continue.', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } });
+      return cached || new Response('NEVORA is offline. Reconnect to continue.', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } });
     }
   })());
 });
@@ -147,13 +147,13 @@ function validEnvelope(value) {
       typeof value.tag !== 'string' || !/^fuel-[a-f0-9]{32}$/.test(value.tag)) return false;
   let title, body;
   if (['SCHEDULE_PUBLISHED', 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER'].includes(value.kind)) {
-    title = 'Your Nuvora Schedule Is Ready'; body = 'Open Nuvora to review your schedule.';
+    title = 'Your NEVORA Schedule Is Ready'; body = 'Open NEVORA to review your schedule.';
   } else if (value.kind === 'SCHEDULE_CHANGED') {
-    title = 'Your Nuvora Schedule Changed'; body = 'Open Nuvora to review your schedule.';
+    title = 'Your NEVORA Schedule Changed'; body = 'Open NEVORA to review your schedule.';
   } else if (value.kind === 'COVERAGE_ATTENTION') {
-    title = 'Coverage Needs Attention'; body = 'Open Nuvora to review coverage.';
+    title = 'Coverage Needs Attention'; body = 'Open NEVORA to review coverage.';
   } else if (['TIME_OFF_APPROVED', 'TIME_OFF_DENIED', 'CALLOUT_APPROVED', 'CALLOUT_DENIED', 'SWAP_RESPONSE_REQUIRED', 'SWAP_APPROVED', 'SWAP_DENIED', 'COVERAGE_APPROVED', 'COVERAGE_DENIED', 'AVAILABILITY_REMINDER', 'AVAILABILITY_SUMMARY', 'MANAGER_REVIEW', 'SELF_TEST'].includes(value.kind)) {
-    title = 'Nuvora Request Update'; body = 'Open Nuvora to review your pending task.';
+    title = 'NEVORA Request Update'; body = 'Open NEVORA to review your pending task.';
   } else return false;
   return value.title === title && value.body === body;
 }

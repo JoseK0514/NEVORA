@@ -43,7 +43,7 @@ const publish = (locationId = 'loc-1', executor = db) => publishScheduleWithRevi
 const claim = (executor = db) => sqlDeliveryRepository('test', executor).claim({ now: new Date(), limit: 10, leaseSeconds: 120, mode: 'all' });
 function intent(overrides: Partial<NotificationIntent> = {}): NotificationIntent {
   const id = `QA-${randomUUID()}`;
-  return { id, employeeId: 'QA-E', type: 'SCHEDULE_PUBLISHED', title: 'Nuvora', body: 'Open Nuvora.', eventKey: id, environment: 'test', source: { kind: 'SCHEDULE', id: week, version: 'QA-v1' }, effectiveVersion: 'QA-v1', purpose: 'REMINDER', urgency: 'normal', dueAt: new Date(Date.now() - 1000).toISOString(), expiresAt: new Date(Date.now() + 3600000).toISOString(), ...overrides };
+  return { id, employeeId: 'QA-E', type: 'SCHEDULE_PUBLISHED', title: 'NEVORA', body: 'Open NEVORA.', eventKey: id, environment: 'test', source: { kind: 'SCHEDULE', id: week, version: 'QA-v1' }, effectiveVersion: 'QA-v1', purpose: 'REMINDER', urgency: 'normal', dueAt: new Date(Date.now() - 1000).toISOString(), expiresAt: new Date(Date.now() + 3600000).toISOString(), ...overrides };
 }
 async function insertIntent(overrides: Partial<NotificationIntent> = {}) {
   const value = intent(overrides); await db.transaction(notificationIntentStatements([value])); return value;

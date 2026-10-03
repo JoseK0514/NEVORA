@@ -132,12 +132,12 @@ describe('routine event vocabulary compatibility',()=>{
 });
 
 // These assertions exercise consumer-visible event copy while protecting existing routes and event keys.
-describe('Nuvora routine notifications', () => {
+describe('NEVORA routine notifications', () => {
   it('brands schedule review without changing its source key or destination', async () => {
     const { buildAcknowledgementReminderNotification } = await import('./notification-events');
     expect(buildAcknowledgementReminderNotification('E-1', 'rev-1')).toEqual({
       employeeId: 'E-1', type: 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', title: 'Schedule review reminder',
-      body: 'Open Nuvora to review and acknowledge your schedule.', actionHref: '/app/schedule',
+      body: 'Open NEVORA to review and acknowledge your schedule.', actionHref: '/app/schedule',
       eventKey: 'schedule-reminder:rev-1:E-1',
     });
   });
@@ -145,12 +145,12 @@ describe('Nuvora routine notifications', () => {
     const { buildAvailabilityReminderNotification, buildAvailabilitySummaryNotification } = await import('./notification-events');
     expect(buildAvailabilityReminderNotification('E-1', '2026-10-05')).toEqual({
       employeeId: 'E-1', type: 'AVAILABILITY_REMINDER', title: 'Availability reminder',
-      body: 'Open Nuvora to review and submit your availability.', actionHref: '/app/availability',
+      body: 'Open NEVORA to review and submit your availability.', actionHref: '/app/availability',
       eventKey: 'availability-reminder:2026-10-05:E-1',
     });
     expect(buildAvailabilitySummaryNotification('M-1', '2026-10-05')).toEqual({
       employeeId: 'M-1', type: 'AVAILABILITY_SUMMARY', title: 'Availability review',
-      body: 'Open Nuvora to review availability.', actionHref: '/app/availability',
+      body: 'Open NEVORA to review availability.', actionHref: '/app/availability',
       eventKey: 'availability-summary:2026-10-05:M-1',
     });
   });
@@ -159,14 +159,14 @@ describe('Nuvora routine notifications', () => {
     expect(buildManagerReviewNotification('M-1', 'summary', coverage)).toEqual({
       employeeId: 'M-1', type: coverage ? 'COVERAGE_ATTENTION' : 'MANAGER_REVIEW',
       title: coverage ? 'Coverage needs attention' : 'Requests need review',
-      body: 'Open Nuvora to review pending tasks.', eventKey: 'manager-review:summary:M-1',
+      body: 'Open NEVORA to review pending tasks.', eventKey: 'manager-review:summary:M-1',
     });
   });
   it('brands the self-test while preserving its portal destination and stable source key', async () => {
     const { buildSelfTestNotification } = await import('./notification-events');
     expect(buildSelfTestNotification('E-1', 'test')).toEqual({
-      employeeId: 'E-1', type: 'SELF_TEST', title: 'Nuvora notification test',
-      body: 'Open Nuvora to review your notification settings.', actionHref: '/app',
+      employeeId: 'E-1', type: 'SELF_TEST', title: 'NEVORA notification test',
+      body: 'Open NEVORA to review your notification settings.', actionHref: '/app',
       eventKey: 'self-test:test:E-1',
     });
   });

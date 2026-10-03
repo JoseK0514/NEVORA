@@ -4,7 +4,7 @@ import { DeviceSetupContent } from './portal-device-setup';
 const base={state:'ready' as const, standalone:false as const, ios:false, installPrompt:false, testAllowed:false, instructions:false, onEnable:()=>{},onDismiss:()=>{},onInstructions:()=>{},onInstall:()=>{},onTurnOff:()=>{},onTest:()=>{},onRetry:()=>{}};
 it('uses approved copy and equal peer action classes',()=>{
  const html=renderToStaticMarkup(<DeviceSetupContent {...base}/>);
- expect(html).toContain('Keep Nuvora Handy'); expect(html).toContain('Add Nuvora to your Home Screen for quick access to your schedule.');
+ expect(html).toContain('id="portal-device-title">Keep '); expect(html).toContain('aria-label="NEVORA"'); expect(html).toContain('/images/nevora-wordmark.png'); expect(html).toContain(' Handy</h2>'); expect(html).toContain('Add NEVORA to your Home Screen for quick access to your schedule.');
  expect(html).toContain('portal-device-actions'); expect(html).toContain('Not Now');
  expect(html).not.toContain('Test Notification');
 });

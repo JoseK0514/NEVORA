@@ -7,13 +7,30 @@ export function BrandMark({ large = false }: { large?: boolean }) {
       aria-hidden="true"
     >
       <Image
-        src="/images/velani-mark.svg"
+        src="/images/nevora-icon.png"
         alt=""
-        width={722}
-        height={684}
+        width={512}
+        height={512}
         className="brand-logo-image"
         sizes={large ? "58px" : "44px"}
         priority={large}
+        draggable={false}
+      />
+    </span>
+  );
+}
+
+/** The official wordmark artwork preserves the cyan detail in the A. */
+export function BrandWordmark() {
+  return (
+    <span className="brand-wordmark" role="img" aria-label="NEVORA">
+      <Image
+        src="/images/nevora-wordmark.png"
+        unoptimized
+        alt=""
+        width={907}
+        height={122}
+        sizes="(max-width: 760px) 102px, 145px"
         draggable={false}
       />
     </span>

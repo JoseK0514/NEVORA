@@ -34,7 +34,7 @@ describe('notification recipient rules', () => {
     const after = schedule([shift('a','s1'),shift('b','s2','2','11:00')],before.currentShifts as PublishedShiftSnapshot[],'r2');
     const intents = build(after,[access('a'),access('b')],before);
     const reminder = intents.find(i=>i.employeeId==='a' && i.purpose==='REMINDER');
-    expect(reminder).toMatchObject({effectiveVersion:'r1',dueAt:'2026-10-05T12:00:00.000Z',title:'Schedule review reminder',body:'Open Nuvora to review and acknowledge your schedule.',actionHref:'/app/schedule?week=2026-10-05'});
+    expect(reminder).toMatchObject({effectiveVersion:'r1',dueAt:'2026-10-05T12:00:00.000Z',title:'Schedule review reminder',body:'Open NEVORA to review and acknowledge your schedule.',actionHref:'/app/schedule?week=2026-10-05'});
     const original = build(before,[access('a')]).find(i=>i.purpose==='REMINDER');
     expect(reminder?.eventKey).toBe(original?.eventKey);
     after.employeePublications = {a:{effectiveVersion:'r1',publishedAt:'2026-10-04T12:00:00Z',acknowledgement:{acknowledged:true,needsAcknowledgement:false,acknowledgedRevisionId:'r1',latestRevisionId:'r1'},acknowledgedRevisionShifts:before.currentShifts}};

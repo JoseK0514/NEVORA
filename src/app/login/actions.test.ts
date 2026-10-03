@@ -17,7 +17,7 @@ it('safe_notification_return_is_preserved_after_successful_login', async () => {
 it.each(['https://evil.test', '//evil.test', '/clocker/2', '/app/%2e%2e', '/application'])('unsafe_return_%s_falls_back_to_app', async (path) => { await expect(login(form(path))).rejects.toThrow('redirect:/app'); });
 it('activation_and_errors_keep_validated_return', async () => { const path = '/app/notifications/open?notificationId=fictional'; state.activation.mockResolvedValue({ active: true, has_credential: false }); await expect(login(form(path))).rejects.toThrow(`redirect:/activate?employeeId=EMPLOYEE&returnTo=${encodeURIComponent(path)}`); await expect(activateAccountAction(form(path))).rejects.toThrow(`redirect:/login?activated=1&returnTo=${encodeURIComponent(path)}`); });
 it('javascript_disabled_native_signout_exits_after_cleanup_rejection', async () => { state.destroy.mockRejectedValue(new Error('storage failure')); await expect(logout()).rejects.toThrow('redirect:/login'); });
-vi.mock('@/components/brand-mark', () => ({ BrandMark: () => null }));
+vi.mock('@/components/brand-mark', () => ({ BrandMark: () => null, BrandWordmark: () => null }));
 vi.mock('@/components/phone-input', () => ({ PhoneInput: () => null }));
 vi.mock('@/app/login/actions', () => import('./actions'));
 vi.mock('@/app/activate/actions', () => import('../activate/actions'));

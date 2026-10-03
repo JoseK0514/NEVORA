@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { expect, it, vi } from 'vitest';
 
@@ -9,7 +10,7 @@ it('manifest_preserves_portal_identity', async () => {
   expect(existsSync('src/lib/notifications/manifest.ts')).toBe(true);
   const { manifest } = await import('./manifest');
   const result = manifest();
-  expect(result).toMatchObject({ id: '/app', start_url: '/app', scope: '/app', name: 'Nuvora', short_name: 'Nuvora', display: 'standalone', theme_color: '#20232D', background_color: '#F6F6F8' });
+  expect(result).toMatchObject({ id: '/app', start_url: '/app', scope: '/app', name: 'NEVORA', short_name: 'NEVORA', display: 'standalone', theme_color: '#20232D', background_color: '#F6F6F8' });
   expect(result.icons).toEqual([
     { src: '/icons/fuel-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
     { src: '/icons/fuel-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -28,7 +29,7 @@ it('regular public manifest endpoint returns revalidated metadata', async () => 
 });
 it('portal links manifest and theme without leaking metadata to root or Clocker', async () => {
   const portal = await import('../../app/app/layout');
-  expect('metadata' in portal && portal.metadata).toMatchObject({ manifest: '/fuel-portal.webmanifest', appleWebApp: { capable: true, title: 'Nuvora' }, icons: { apple: [{ url: '/icons/fuel-apple-180.png', sizes: '180x180', type: 'image/png' }] } });
+  expect('metadata' in portal && portal.metadata).toMatchObject({ manifest: '/fuel-portal.webmanifest', appleWebApp: { capable: true, title: 'NEVORA' }, icons: { apple: [{ url: '/icons/fuel-apple-180.png', sizes: '180x180', type: 'image/png' }] } });
   expect('viewport' in portal && portal.viewport).toMatchObject({ themeColor: '#20232D' });
   expect(existsSync('src/app/manifest.ts')).toBe(false); expect(existsSync('src/app/manifest.webmanifest')).toBe(false);
   for (const path of ['src/app/layout.tsx', 'src/app/clocker/layout.tsx']) if (existsSync(path)) expect(readFileSync(path, 'utf8')).not.toMatch(/manifest|themeColor|PortalDeviceSetup|fuel-portal-sw/);
@@ -37,4 +38,18 @@ it('worker and manifest headers forbid stale scripts and MIME sniffing', async (
   const { default: config } = await import('../../../next.config');
   const rules = await config.headers?.();
   for (const source of ['/fuel-portal-sw.js', '/fuel-portal.webmanifest']) expect(rules?.find(r => r.source === source)?.headers).toEqual(expect.arrayContaining([{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }, { key: 'X-Content-Type-Options', value: 'nosniff' }]));
+});
+
+it('preserves the official NEVORA source and uses its derived compact symbol', () => {
+  const original = readFileSync('public/images/nevora.png');
+  expect(createHash('sha256').update(original).digest('hex')).toBe('3387a115e3bc8e0d41202ba1ba184b6d3819638396f1136b71a4a4df211d274d');
+  const compact = readFileSync('public/images/nevora-icon.png');
+  expect(compact.subarray(1, 4).toString()).toBe('PNG');
+  expect([compact.readUInt32BE(16), compact.readUInt32BE(20)]).toEqual([512, 512]);
+  const mark = readFileSync('src/components/brand-mark.tsx', 'utf8');
+  expect(mark).toContain('/images/nevora-icon.png');
+  expect(mark).not.toContain('velani-mark.svg');
+  expect(mark).toContain('/images/nevora-wordmark.png');
+  const wordmark = readFileSync('public/images/nevora-wordmark.png');
+  expect([wordmark.readUInt32BE(16), wordmark.readUInt32BE(20)]).toEqual([907, 122]);
 });

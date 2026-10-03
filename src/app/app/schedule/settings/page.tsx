@@ -56,7 +56,7 @@ export default async function ScheduleSettingsPage({
       <PageHeader
         eyebrow="Schedule health"
         title="Staffing & hour targets"
-        description="Define what a complete schedule looks like so Nuvora Workforce can point out coverage gaps and employees who may be short on hours."
+        description="Define what a complete schedule looks like so NEVORA Workforce can point out coverage gaps and employees who may be short on hours."
         actions={
           <Link className="button secondary" href="/app/schedule">
             Back to Schedule

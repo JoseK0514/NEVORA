@@ -2,15 +2,15 @@
 name: fuel-scheduler-ui
 description: >
   Use whenever designing, redesigning, reviewing, polishing, or implementing
-  UI/UX for Nuvora Workforce. Fuel Coffee Drive is the current customer/workspace.
+  UI/UX for NEVORA Workforce. Fuel Coffee Drive is the current customer/workspace.
   Applies to manager dashboards, employee dashboards, scheduling, staffing,
   clock-in/clock-out, navigation, mobile layouts, responsive behavior, forms,
   tables, cards, and operational workflows.
 ---
 
-# Nuvora Workforce UI / UX Skill
+# NEVORA Workforce UI / UX Skill
 
-Use the repository's [Nuvora UI contract](../../../docs/ui/fuel-ui-contract.md)
+Use the repository's [NEVORA UI contract](../../../docs/ui/fuel-ui-contract.md)
 for the selected baseline, portal-specific controls, states and review evidence.
 The legacy file path is retained so existing plans remain valid.
 Future automation must follow the bounded phases in the
@@ -19,7 +19,7 @@ Preserve all other rules below; a new feature does not authorize a new visual st
 
 ## Product Goal
 
-Nuvora is a software platform owned by VELANI LLC. Workforce is its operational workforce module. Fuel Coffee Drive is the current customer/workspace.
+NEVORA is a software platform owned by VELANI LLC. Workforce is its operational workforce module. Fuel Coffee Drive is the current customer/workspace.
 
 The interface must help managers and employees understand information quickly,
 make decisions quickly, and complete common tasks with as little friction as
@@ -49,13 +49,13 @@ The goal is:
 
 # Core Design Direction
 
-The approved Apple-style Nuvora Workforce direction remains the source of truth.
+The approved Apple-style NEVORA Workforce direction remains the source of truth.
 
 Do not redesign the entire product every time a screen is improved.
 
 Use:
 
-**Approved Nuvora character + Canva-level cleanliness**
+**Approved NEVORA character + Canva-level cleanliness**
 
 The Canva concepts should be used primarily as references for:
 
@@ -81,30 +81,31 @@ Primary visual language:
 
 - Neutral light-gray canvas and white surfaces
 - Deep midnight structural elements
-- Restrained Nuvora indigo as the primary product accent
-- Soft indigo only for selected/active emphasis
+- Restrained NEVORA blue as the primary product accent
+- Soft blue/cyan only for selected/active emphasis
 - Status colors only when they communicate actual state
 
-Nuvora indigo should draw attention intentionally.
+NEVORA blue should draw attention intentionally.
 
-Do not make every button, icon, label, and border indigo.
+Do not make every button, icon, label, and border blue.
 
 Midnight should provide structure and contrast.
 
 Neutral surfaces should provide calm and breathing room.
 
-Approved Nuvora palette:
+Approved NEVORA palette:
 - Midnight #20232D
-- Indigo #4F46C8
-- Indigo hover/pressed #4038A8
-- Soft indigo #EEEEFC
+- Blue #0756D9
+- Blue hover/pressed #003AAE
+- Soft blue/cyan #F0FBFF
+- Cyan #43CCFB
 - Canvas #F6F6F8
 - Surface #FFFFFF
 - Primary text #18191F
 - Secondary text #676A73
 
 Fuel Coffee Drive branding is workspace context, not the permanent product theme.
-Use the Velani icon as the Nuvora mark where a compact mark is needed.
+Use the NEVORA symbol derived from the official `public/images/nevora.png` upload for compact marks. Never use the old Velani paw. Product brand headings use the original `public/images/nevora-wordmark.png` artwork, including its cyan A detail; do not replace it with typed lettering.
 Use "Powered by VELANI LLC" only in subtle footer/legal/ownership contexts.
 
 Avoid:

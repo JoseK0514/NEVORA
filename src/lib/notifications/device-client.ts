@@ -40,7 +40,7 @@ export class DeviceController {
     this.snapshot = { state: 'loading', server: { ...emptyStatus }, capabilities: runtime.capabilities, standalone: runtime.standalone };
   }
   dispose() { this.dead = true; this.epoch++; }
-  invalidate() { this.publish({ ...this.snapshot.server, phase: 'error', localOwned: false }, 'Account or device ownership changed. Reload Nuvora to check this session.'); this.dispose(); }
+  invalidate() { this.publish({ ...this.snapshot.server, phase: 'error', localOwned: false }, 'Account or device ownership changed. Reload NEVORA to check this session.'); this.dispose(); }
   private current(epoch: number) { return !this.dead && epoch === this.epoch; }
   private publish(server = this.snapshot.server, message?: string) {
     if (this.dead) return;
@@ -178,7 +178,7 @@ export class DeviceController {
       if ((result as {status?:string}).status !== 'queued') throw Error('test unavailable');
       this.publish(this.snapshot.server, 'Test queued. Provider acceptance does not confirm receipt. Wait five minutes before another test.');
     } catch {
-      if (this.current(epoch)) this.publish(this.snapshot.server, 'Test unavailable or rate limited. Wait five minutes, then reload Nuvora to check again.');
+      if (this.current(epoch)) this.publish(this.snapshot.server, 'Test unavailable or rate limited. Wait five minutes, then reload NEVORA to check again.');
     } finally { this.testing = false; }
   }
 }

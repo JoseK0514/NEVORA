@@ -6,7 +6,7 @@ import { requireSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   manifest: "/fuel-portal.webmanifest",
-  appleWebApp: { capable: true, title: "Nuvora" },
+  appleWebApp: { capable: true, title: "NEVORA" },
   icons: { apple: [{ url: "/icons/fuel-apple-180.png", sizes: "180x180", type: "image/png" }] },
 };
 

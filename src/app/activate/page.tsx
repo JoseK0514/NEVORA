@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { safeReturnTo } from "@/lib/notifications/destinations";
-import { BrandMark } from "@/components/brand-mark";
+import { BrandMark, BrandWordmark } from "@/components/brand-mark";
 import { PhoneInput } from "@/components/phone-input";
 import { activateAccountAction } from "@/app/activate/actions";
 import { NUVORA_BRAND } from "../../lib/brand";
@@ -20,7 +20,7 @@ export default async function ActivatePage({
         <div className="auth-brand">
           <BrandMark large />
           <div>
-            <p className="eyebrow">{NUVORA_BRAND.platform} · {NUVORA_BRAND.module}</p>
+            <p className="eyebrow auth-platform"><BrandWordmark /><span>{NUVORA_BRAND.module}</span></p>
             <h1>Activate Account</h1>
             <p className="auth-workspace">{NUVORA_BRAND.workspace}</p>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
+import { BrandWordmark } from './brand-mark';
 import type { UserRole } from '../lib/domain';
 import type { DeviceSetupState } from '../lib/notifications/device-state';
 import { browserRuntime, DeviceController, observeController, type DeviceSnapshot } from '../lib/notifications/device-client';
@@ -11,24 +12,24 @@ type ContentProps = {
   onEnable(): void; onDismiss(): void; onInstructions(): void; onInstall(): void; onTurnOff(): void; onTest(): void; onRetry(): void;
 };
 const descriptions: Record<DeviceSetupState, string> = {
-  loading: 'Checking this device…', unavailable: 'Notifications are unavailable in this browser or configuration. You can keep using Nuvora.',
-  install: 'Open Nuvora from your Home Screen to set up notifications on this device.', ready: 'Enable notifications for schedule updates and requests on this device.',
-  enabled: 'Notifications are enabled on this device.', denied: 'Notifications are blocked. Restore permission in your browser or device settings, then reopen Nuvora.',
+  loading: 'Checking this device…', unavailable: 'Notifications are unavailable in this browser or configuration. You can keep using NEVORA.',
+  install: 'Open NEVORA from your Home Screen to set up notifications on this device.', ready: 'Enable notifications for schedule updates and requests on this device.',
+  enabled: 'Notifications are enabled on this device.', denied: 'Notifications are blocked. Restore permission in your browser or device settings, then reopen NEVORA.',
   revoked: 'Browser notification access changed. Turn off the old enrollment, then check permission in your browser or device settings.',
   pending: 'Updating this device…', error: 'Device setup needs attention.', dismissed: 'Setup postponed. You can return here whenever you are ready.',
 };
 export function DeviceSetupContent(props: ContentProps) {
   const pending = props.state === 'loading' || props.state === 'pending';
   return <div className="portal-device-content" aria-busy={pending}>
-    <h2 id="portal-device-title">Keep Nuvora Handy</h2>
-    <p>Add Nuvora to your Home Screen for quick access to your schedule.</p>
+    <h2 id="portal-device-title">Keep <BrandWordmark /> Handy</h2>
+    <p>Add NEVORA to your Home Screen for quick access to your schedule.</p>
     {props.standalone === true ? <p>Opened as a standalone app.</p> : <>
       {props.standalone === 'unknown' ? <p>We cannot confirm whether this window is standalone.</p> : null}
       <div className="portal-device-actions">
         <button type="button" className="portal-device-button secondary" onClick={props.installPrompt ? props.onInstall : props.onInstructions}>{props.installPrompt ? 'Add to Home Screen' : 'Show Install Instructions'}</button>
       </div>
     </>}
-    {props.instructions ? <p className="portal-device-instructions">{props.ios ? 'In Safari, use Share → Add to Home Screen. Enable “Open as Web App” if offered, then open Nuvora from the new icon.' : 'Open your browser menu and choose Install app or Add to Home Screen if available, then open Nuvora from the new icon.'} Reading these instructions does not install the app.</p> : null}
+    {props.instructions ? <p className="portal-device-instructions">{props.ios ? 'In Safari, use Share → Add to Home Screen. Enable “Open as Web App” if offered, then open NEVORA from the new icon.' : 'Open your browser menu and choose Install app or Add to Home Screen if available, then open NEVORA from the new icon.'} Reading these instructions does not install the app.</p> : null}
     <h3>Stay Updated</h3>
     <p>Receive important schedule changes and reminders.</p>
     <p role="status">{descriptions[props.state]}</p>
@@ -59,7 +60,7 @@ export function PortalDeviceSetup({ role }: { role: UserRole }) {
     void client.start();
     const beforeInstall = (event: Event) => { event.preventDefault(); installEvent.current = event as InstallEvent; setCanInstall(true); };
     const update = (event: MessageEvent) => {
-      if (event.data?.version === 1 && event.data?.type === 'UPDATE_WAITING') setInstallMessage('An update is ready. Close Nuvora tabs and reopen when your work is saved.');
+      if (event.data?.version === 1 && event.data?.type === 'UPDATE_WAITING') setInstallMessage('An update is ready. Close NEVORA tabs and reopen when your work is saved.');
     };
     const visibility = () => { if (document.visibilityState === 'visible') void client.reconcile(); };
     document.addEventListener('visibilitychange', visibility);
@@ -84,7 +85,7 @@ export function PortalDeviceSetup({ role }: { role: UserRole }) {
     try {
       await event.prompt();
       const choice = await event.userChoice;
-      setInstallMessage(choice.outcome === 'accepted' ? 'Browser install request accepted. Open Nuvora from its icon to confirm standalone use.' : 'Install postponed. You can use the browser menu later.');
+      setInstallMessage(choice.outcome === 'accepted' ? 'Browser install request accepted. Open NEVORA from its icon to confirm standalone use.' : 'Install postponed. You can use the browser menu later.');
     } catch { setInstallMessage('The browser install prompt is unavailable. Use the install instructions.'); setInstructions(true); }
   }
   return <div ref={popover} id="portal-device-settings" className="portal-device-settings" popover="auto" aria-labelledby="portal-device-title" data-role={role}

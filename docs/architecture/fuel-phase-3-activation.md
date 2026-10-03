@@ -1,4 +1,4 @@
-# Nuvora Phase 3 activation evidence
+# NEVORA Phase 3 activation evidence
 
 This runbook records the completed local implementation and its activation boundaries. No delivery environment, provider enrollment, live migration or physical-device verification has been activated.
 
@@ -28,7 +28,7 @@ Task 11 executed the emitted SQL against disposable loopback PostgreSQL with fic
 
 ## Final Phase 3 operating contract
 
-The product is **Nuvora**, the module is **Workforce**, and Fuel Coffee Drive is the workspace. Install icons derive from the compact Velani mark. The regular `/fuel-portal.webmanifest` route is linked only by the authenticated `/app` layout. Its name/short name are Nuvora, id/start/scope are `/app`, theme is `#20232D`, and background is `#F6F6F8`. There is no root file-based manifest. `/clocker/2` and `/clocker/110` receive no portal setup, prompts, metadata, enrollment, caching or offline substitution.
+The product is **NEVORA**, the module is **Workforce**, and Fuel Coffee Drive is the workspace. Install icons derive from the official NEVORA symbol; the wordmark preserves its original navy lettering and cyan A detail. The regular `/fuel-portal.webmanifest` route is linked only by the authenticated `/app` layout. Its name/short name are NEVORA, id/start/scope are `/app`, theme is `#20232D`, and background is `#F6F6F8`. There is no root file-based manifest. `/clocker/2` and `/clocker/110` receive no portal setup, prompts, metadata, enrollment, caching or offline substitution.
 
 Implementation is prepared locally. Outbound delivery and scheduler activation remain **off**. No migration has been applied to an existing development, Neon or production database. Task 11 applies exact migrations 0001–0007 only to newly created, ownership-marked `fuel_phase3_test_*` databases on loopback and drops those databases after testing. Its local `pg` transport proves the executed PostgreSQL statements; it does not prove the production Neon HTTP transport or a real authenticated Next-to-database flow.
 
@@ -97,3 +97,6 @@ The Task 11 report records commands, counts, file manifest, logs and screenshot 
 7. Physical iPhone/Android: **not performed; pending separate authorization**.
 
 After separate authorization, use the approved HTTPS environment, deliberately opted-in test account and actual device. On iPhone, verify Safari Add to Home Screen/Open as Web App and launch from that icon before requesting permission; on Android, verify install/standalone identity using the supported browser. On both platforms, close the app, lock the screen, send only the authorized self-test, observe whether the notification appears, tap it, and check expired-session login restoration plus current source/access authorization. Verify denied/revoked permission, logout/account switch, current generation and absence of private lock-screen details. Record platform/browser versions and outcomes. Device emulation, queued delivery, provider acceptance and local synthetic tests never substitute for these steps.
+
+
+Brand correction (2026-10-03): public app name/short name are NEVORA. Original symbol and navy/cyan wordmark are derived from `public/images/nevora.png`; technical Fuel/NUVORA identifiers remain unchanged. Public asset cache v2 uses the existing waiting/update lifecycle and additionally caches only the public wordmark needed by the offline fallback. No ownership, delivery, worker-trigger or private-cache policy changes are included. Fresh visual evidence is a candidate baseline pending Jose review.

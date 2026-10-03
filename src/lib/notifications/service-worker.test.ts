@@ -7,8 +7,8 @@ import type { NotificationIntent } from './types';
 const workerPath = 'public/fuel-portal-sw.js';
 const origin = 'https://portal.example';
 const generation = 'owner-generation-a';
-const envelope = { notificationId: '11111111-1111-4111-8111-111111111111', kind: 'SCHEDULE_CHANGED', ownershipGeneration: generation, expiresAt: '2099-01-01T00:00:00.000Z', tag: `fuel-${'a'.repeat(32)}`, title: 'Your Nuvora Schedule Changed', body: 'Open Nuvora to review your schedule.' };
-const assets = ['/fuel-portal-offline.html', '/icons/fuel-192.png', '/icons/fuel-512.png', '/icons/fuel-maskable-192.png', '/icons/fuel-maskable-512.png', '/icons/fuel-apple-180.png'];
+const envelope = { notificationId: '11111111-1111-4111-8111-111111111111', kind: 'SCHEDULE_CHANGED', ownershipGeneration: generation, expiresAt: '2099-01-01T00:00:00.000Z', tag: `fuel-${'a'.repeat(32)}`, title: 'Your NEVORA Schedule Changed', body: 'Open NEVORA to review your schedule.' };
+const assets = ['/fuel-portal-offline.html', '/images/nevora-wordmark.png', '/icons/fuel-192.png', '/icons/fuel-512.png', '/icons/fuel-maskable-192.png', '/icons/fuel-maskable-512.png', '/icons/fuel-apple-180.png'];
 
 // Browser boundary doubles: actual worker source owns routing, validation and writes.
 function storage() {
@@ -224,14 +224,14 @@ describe('portal service worker source', () => {
     expect(h.windows[0].navigate).not.toHaveBeenCalled(); expect(h.self.clients.openWindow).not.toHaveBeenCalled();
   });
   it('updates retain the normal waiting lifecycle and clean only owned cache versions', async () => {
-    const h = harness(); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('another-app-v1', new Map());
+    const h = harness(); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('fuel-portal-public-v1', new Map()); h.stores.set('another-app-v1', new Map());
     await h.dispatch('install'); await h.dispatch('activate'); await h.message('UPDATE_WAITING');
-    expect(h.stores.has('fuel-portal-public-v0')).toBe(false); expect(h.stores.has('another-app-v1')).toBe(true);
+    expect(h.stores.has('fuel-portal-public-v0')).toBe(false); expect(h.stores.has('fuel-portal-public-v1')).toBe(false); expect(h.stores.has('fuel-portal-public-v2')).toBe(true); expect(h.stores.has('another-app-v1')).toBe(true);
     expect(h.self.skipWaiting).not.toHaveBeenCalled(); expect(h.self.clients.claim).not.toHaveBeenCalled(); expect(h.self.registration.unregister).not.toHaveBeenCalled(); expect(h.windows[0].navigate).not.toHaveBeenCalled();
     expect(h.windows[0].postMessage).toHaveBeenCalledWith({ version: 1, type: 'UPDATE_WAITING' });
   });
   it('retirement variant only removes owned caches and own registration', async () => {
-    const h = harness(undefined, true); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('another-app-v1', new Map());
+    const h = harness(undefined, true); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('fuel-portal-public-v1', new Map()); h.stores.set('another-app-v1', new Map());
     await h.dispatch('install'); await h.dispatch('activate');
     expect(h.self.registration.unregister).toHaveBeenCalledOnce(); expect([...h.stores.keys()]).toEqual(['another-app-v1']); expect(h.writes).toEqual([]); expect(await h.fetchRequest('/app')).toBeUndefined();
     expect(h.self.skipWaiting).not.toHaveBeenCalled(); expect(h.self.clients.claim).not.toHaveBeenCalled();

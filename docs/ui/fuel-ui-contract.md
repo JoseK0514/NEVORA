@@ -1,10 +1,12 @@
-# Nuvora UI contract
+# NEVORA UI contract
 
-> The file path is retained for compatibility with existing plans. The product identity is now **NUVORA**, the current module is **Workforce**, Fuel Coffee Drive is the customer/workspace, and VELANI LLC is the parent company.
+> The file path is retained for compatibility with existing plans. The product identity is now **NEVORA**, the current module is **Workforce**, Fuel Coffee Drive is the customer/workspace, and VELANI LLC is the parent company.
 
-**Reference:** Phase 0, 2026-10-02, plus the Nuvora brand-foundation pass. Preserve the approved Apple-style layouts, spacing, typography, control geometry, responsive behavior, and semantic states. Branding changes do not authorize a redesign.
+**Reference:** Phase 0, 2026-10-02, plus the NEVORA correction pass, 2026-10-03. Preserve the approved Apple-style layouts, spacing, typography, control geometry, responsive behavior, and semantic states. Branding changes do not authorize a redesign.
 
-Nuvora uses a restrained midnight/indigo identity: `#20232D` structural midnight, `#4F46C8` primary indigo, `#4038A8` hover/pressed indigo, `#EEEEFC` soft selection, `#F6F6F8` canvas, `#FFFFFF` surface, `#18191F` primary text, and `#676A73` secondary text. Fuel-specific brown/orange is no longer the permanent software identity. Fuel Coffee Drive remains visible only as workspace context. The Velani icon may be used as the Nuvora mark; `Powered by VELANI LLC` stays subtle in login/footer/legal contexts.
+NEVORA uses a restrained blue/cyan identity derived from the official uploaded logo: `#20232D` structural midnight, `#0756D9` primary blue, `#003AAE` hover/pressed blue, `#43CCFB` cyan, `#F0FBFF` soft selection, `#F6F6F8` canvas, `#FFFFFF` surface, `#18191F` primary text, and `#676A73` secondary text. Fuel-specific brown/orange is no longer the permanent software identity. Fuel Coffee Drive remains visible only as workspace context. Use the derived NEVORA symbol from `public/images/nevora.png`, never the old Velani paw; `Powered by VELANI LLC` stays subtle in login/footer/legal contexts.
+
+Product identity locations render the original `public/images/nevora-wordmark.png` artwork, including the cyan detail in the A. Do not substitute typed lettering or redraw/recolor the wordmark. Keep a white backing so the original navy letters remain legible on the dark sidebar. Plain NEVORA text is appropriate in prose, accessibility labels and system manifest/notification text.
 
 Reuse the actual surface being extended. A feature does not authorize a new theme, new sidebar, schedule matrix, icon family, or uniform page layout. Use raw CSS and existing tokens in `src/app/globals.css`; scope selectors to the affected portal/component. No broad submit override, broad `!important` patch, Tailwind, decorative chart/card, or unrelated cleanup.
 
@@ -14,10 +16,10 @@ Reuse the actual surface being extended. A feature does not authorize a new them
 | --- | --- | --- |
 | Main text | `--color-brand-primary: #18191f` | Headings, body, metrics; preserve charcoal metrics |
 | Secondary text | `--muted: #676a73` | Supporting labels; measure against its actual background |
-| Surfaces | `--color-bg-surface: #fff`, `--color-bg-main: #f6f6f8` | Neutral controls and cards across the Nuvora shell |
-| Nuvora identity | `--nuvora-midnight: #20232d`, `--nuvora-indigo: #4f46c8`, `--nuvora-indigo-hover: #4038a8`, `--nuvora-indigo-soft: #eeeefc` | Structural rail, primary actions, active states, focus, and restrained product accents |
-| Employee action | Scoped `--color-brand-accent` using Nuvora indigo with white text | Existing important actions; use the approved darker indigo on hover/pressed |
-| Manager / Clocker action | Existing geometry with Nuvora primary pairing | Preserve surface-specific hierarchy while replacing old Fuel/blue brand actions with Nuvora indigo where brand-primary behavior is intended |
+| Surfaces | `--color-bg-surface: #fff`, `--color-bg-main: #f6f6f8` | Neutral controls and cards across the NEVORA shell |
+| NEVORA identity | `--nuvora-midnight: #20232d`, `--nevora-blue: #0756d9`, `--nevora-blue-hover: #003aae`, `--nevora-cyan: #43ccfb`, `--nevora-soft: #f0fbff` | Structural rail, primary actions, active states, focus, and restrained product accents |
+| Employee action | Scoped `--color-brand-accent` using NEVORA blue with white text | Existing important actions; use the approved darker blue on hover/pressed |
+| Manager action | Existing geometry with NEVORA primary pairing | Preserve surface-specific hierarchy while replacing product accents with NEVORA blue. Clocker retains its approved behavior, layout, and existing action treatment. |
 | Success | `--color-state-success: #1d6f42` / `--color-state-success-bg: #eaf5ea` | Approved, available, completed |
 | Attention | `--color-state-warning: #a05200` / `--color-state-warning-bg: #fff4e5` | Pending, outstanding, exception |
 | Danger | `--color-state-danger: #b42318` / `--color-state-danger-bg: #fdecec` | Genuine withdrawal/destructive action or error; not form dismissal |
@@ -27,17 +29,17 @@ Keep status meaning in text as well as color. Status labels are compact, noninte
 
 ## Controls and feedback
 
-- **Primary:** only the important action in context; a submit attribute alone does not select the variant. Use the approved Nuvora action pairing while preserving existing geometry and hierarchy.
+- **Primary:** only the important action in context; a submit attribute alone does not select the variant. Use the approved NEVORA action pairing while preserving existing geometry and hierarchy.
 - **Secondary / form Cancel:** neutral surface and charcoal text. Form dismissal remains neutral. Withdrawing a submitted request retains its genuine danger treatment.
 - **Danger:** soft red surface and red text. Employee danger press remains opaque; use the existing hover surface rather than fading text.
 - **Selected:** existing quiet local tint and `aria-pressed`/selected semantics. Employee availability keeps green availability states. Preserve Manager segmented controls.
 - **Hover / pressed:** use the component's existing colors. Keep Employee primary/secondary feedback; retain Clocker press scale. Manager time-off submit, blue action families and Clocker action/Clear presses stay opaque so their small labels retain contrast. The final audit removes the inherited 0.86 hover/press fade from Manager marketplace, quick/review, profile, new-shift primary and settings-save actions; their approved foreground/background colors remain unchanged.
-- **Keyboard:** Employee uses a 2px local accent outline with 3px offset (caramel on its dark rail). Keep visible native focus on Manager and Clocker. Do not suppress it. Test focus inside menus and near viewport edges.
+- **Keyboard:** Employee uses a 2px local accent outline with 3px offset (logo blue/cyan on its dark rail). Keep visible native focus on Manager and Clocker. Do not suppress it. Test focus inside menus and near viewport edges.
 - **Disabled / submitting:** native disabled semantics, existing subdued treatment, stable target size and explicit pending label where the component supplies one. A disabled control is not actionable and contrast exemptions must not be reported as a readable active pairing. Current Manager time-off and Clocker demo have no submitting state; do not invent one during a styling phase.
 - **Success / error:** existing small local message surface with explicit outcome text. Preserve input values and associated validation messages. Do not hide failures to obtain a clean screen.
 - **Empty / unavailable / loading:** use each page's existing explanatory state and useful existing action; distinguish no records from disconnected data. Never fill a missing live state with invented operational numbers.
 
-Measure composited foreground/background, including ancestor opacity, in normal, hover, pressed and focus states. Require at least 4.5:1 for active small text, 3:1 for qualifying large text and essential non-text controls. Before adopting **any new action-color pairing**, show it on representative existing controls and obtain Jose's review. Phase 0 introduces no new pairing. Detailed measurements and known exceptions belong in the phase evidence report.
+Measure composited foreground/background, including ancestor opacity, in normal, hover, pressed and focus states. Require at least 4.5:1 for active small text, 3:1 for qualifying large text and essential non-text controls. The 2026-10-03 correction request authorizes the logo-derived pairing for this pass; its fresh screenshots are a candidate baseline pending Jose's review. Later new pairings require review. Detailed measurements and known exceptions belong in the phase evidence report.
 
 ## Geometry and typography
 
@@ -85,3 +87,12 @@ Intentional dimensions and shapes:
 - Status badges remain compact, natural-width information with no click/focus behavior. They are not action peers.
 
 Evidence: `fuel-ui-phase-0/controls/` in the external Phase 0 artifact directory. Review: `http://127.0.0.1:4186/controls/review.html`. The before snapshot includes the intentional post-`bb4850e` Shift Requests changes; final screenshots show the eight requested action groups plus the 320px Manager Schedule menu. Fictional-data previews and intercepted form actions do not prove live authentication, persistence or punch processing. No Phase 1 work, push, merge or deployment is included.
+
+
+## NEVORA correction record (2026-10-03)
+
+The official upload is tracked as `nevora.png` in `origin/development` commit `409cc180423ad8c0c54f4559797bf70c64f3ea49` (commit subject `nevora-logo.png`). `public/images/nevora.png` preserves its original bytes. Compact marks use `public/images/nevora-icon.png`, a crop of the original symbol, without the wordmark or tagline. Brand names use `public/images/nevora-wordmark.png`, the original navy lettering and cyan A detail cropped directly from the upload, on white backing for contrast; never replace this artwork with ordinary typed lettering. System app names, accessibility labels and prose references remain text. The 180/192/512 and maskable exports preserve existing technical paths. Existing `NUVORA_BRAND`, `--nuvora-*`, Fuel-prefixed routes/configuration/cache prefixes remain compatibility identifiers; their visible content/colors use NEVORA.
+
+Primary blue with white is 6.28:1; hover/pressed blue with white is 9.47:1. Cyan is secondary emphasis, never a white-label primary action. Success/available remains green; actual pending/warnings remain amber; danger remains red. Availability submission is an ordinary primary action, not a warning. Its selectable Available capsule remains a 44px action; noninteractive role labels are 24px capsules with 11px/600 text centered on a 16px line. The acknowledgement warning is a padded, rounded callout rather than a text highlight.
+
+Protected branding changes intentionally alter pixels. Exact pre-correction captures are retained; fresh NEVORA captures are pending human approval, not automatically approved or broadly masked. The Phase 3 architecture, ownership protocol, service-worker `/app` scope, private-data exclusions and Clocker workflow remain unchanged. The public-only cache allowlist additionally includes the wordmark used by the offline page. Public asset cache version v2 retires the preceding brand assets through the existing waiting/update lifecycle.
