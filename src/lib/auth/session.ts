@@ -3,6 +3,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getDb, queryRows } from "@/lib/db";
 import type { UserRole } from "@/lib/domain";
+import { createLogoutDeps, terminatePortalSession } from "@/lib/notifications/logout";
+import { readNotificationConfig, decodePushKey } from "@/lib/notifications/config";
+import { readInstallationProof } from "@/lib/notifications/installation";
 
 const SESSION_COOKIE = "fuel_session";
 const SESSION_DAYS = 14;
@@ -43,17 +46,14 @@ export async function createSession(employeeId: string) {
 
 export async function destroySession() {
   const store = await cookies();
-  const token = store.get(SESSION_COOKIE)?.value;
-
-  if (token) {
-    const sql = getDb();
-    await sql.query(
-      "DELETE FROM employee_sessions WHERE token_hash = $1",
-      [hashToken(token)],
-    );
+  try {
+    const config = readNotificationConfig(process.env);
+    const key = decodePushKey(config.subscriptionEncryptionKey, 32);
+    const installation = key ? readInstallationProof(store, key, config.environment) ?? undefined : undefined;
+    await terminatePortalSession({ sessionToken: store.get(SESSION_COOKIE)?.value, installation, cookies: store, deps: createLogoutDeps(config) });
+  } finally {
+    store.delete(SESSION_COOKIE);
   }
-
-  store.delete(SESSION_COOKIE);
 }
 
 export async function getSession(): Promise<SessionEmployee | null> {

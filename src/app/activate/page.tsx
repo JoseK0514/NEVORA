@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { safeReturnTo } from "@/lib/notifications/destinations";
 import { BrandMark } from "@/components/brand-mark";
 import { PhoneInput } from "@/components/phone-input";
 import { activateAccountAction } from "@/app/activate/actions";
@@ -6,9 +7,11 @@ import { activateAccountAction } from "@/app/activate/actions";
 export default async function ActivatePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; employeeId?: string }>;
+  searchParams: Promise<{ error?: string; employeeId?: string; returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
+  const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
+  const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
 
   return (
     <main className="auth-page">
@@ -30,6 +33,7 @@ export default async function ActivatePage({
         ) : null}
 
         <form action={activateAccountAction} className="form-stack">
+            {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
           <label>
             Employee ID
             <input
@@ -69,7 +73,7 @@ export default async function ActivatePage({
 
         <div className="auth-secondary">
           <span>Already activated?</span>
-          <Link href="/login">Back to Sign In</Link>
+          <Link href={`/login${returnQuery}`}>Back to Sign In</Link>
         </div>
       </section>
     </main>

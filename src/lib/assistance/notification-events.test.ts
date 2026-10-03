@@ -119,3 +119,14 @@ describe("notification event builders", () => {
     });
   });
 });
+
+describe('routine event vocabulary compatibility',()=>{
+  it('builds routine acknowledgement, availability and grouped review events through the existing assistance module', async()=>{
+    const builders=await import('./notification-events');
+    expect(builders.buildAcknowledgementReminderNotification('E-1','rev-1')).toMatchObject({employeeId:'E-1',type:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionHref:'/app/schedule'});
+    expect(builders.buildAvailabilityReminderNotification('E-1','2026-10-05')).toMatchObject({employeeId:'E-1',type:'AVAILABILITY_REMINDER',actionHref:'/app/availability'});
+    expect(builders.buildAvailabilitySummaryNotification('M-1','2026-10-05').eventKey).not.toBe(builders.buildAvailabilitySummaryNotification('M-2','2026-10-05').eventKey);
+    expect(builders.buildManagerReviewNotification('M-1','summary',true).type).toBe('COVERAGE_ATTENTION');
+    expect(builders.buildSelfTestNotification('E-1','test').actionHref).toBe('/app');
+  });
+});

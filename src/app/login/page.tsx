@@ -1,13 +1,16 @@
 import Link from "next/link";
+import { safeReturnTo } from "@/lib/notifications/destinations";
 import { BrandMark } from "@/components/brand-mark";
 import { login } from "@/app/login/actions";
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; activated?: string }>;
+  searchParams: Promise<{ error?: string; activated?: string; returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
+  const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
+  const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
 
   return (
     <main className="auth-page employee-login-page">
@@ -43,6 +46,7 @@ export default async function LoginPage({
           ) : null}
 
           <form action={login} className="form-stack employee-login-form">
+            {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
             <label>
               Employee ID
               <input
@@ -69,7 +73,7 @@ export default async function LoginPage({
 
           <div className="auth-secondary employee-login-secondary">
             <span>New employee?</span>
-            <Link href="/activate">Activate your account</Link>
+            <Link href={`/activate${returnQuery}`}>Activate your account</Link>
           </div>
         </section>
 

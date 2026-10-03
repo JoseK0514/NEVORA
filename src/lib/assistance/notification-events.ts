@@ -123,3 +123,20 @@ export function buildExchangeOutcomeNotification(input: {
     ),
   };
 }
+
+/** Routine workflow events share this vocabulary with the durable outbox. */
+export function buildAcknowledgementReminderNotification(employeeId: string, revisionId: string): NotificationEvent {
+  return { employeeId, type: 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', title: 'Schedule review reminder', body: 'Open Fuel to review and acknowledge your schedule.', actionHref: '/app/schedule', eventKey: eventKey('schedule-reminder',revisionId,employeeId) };
+}
+export function buildAvailabilityReminderNotification(employeeId: string, weekStart: string): NotificationEvent {
+  return { employeeId, type: 'AVAILABILITY_REMINDER', title: 'Availability reminder', body: 'Open Fuel to review and submit your availability.', actionHref: '/app/availability', eventKey: eventKey('availability-reminder',weekStart,employeeId) };
+}
+export function buildManagerReviewNotification(employeeId: string, sourceId: string, coverage = false): NotificationEvent {
+  return { employeeId, type: coverage ? 'COVERAGE_ATTENTION' : 'MANAGER_REVIEW', title: coverage ? 'Coverage needs attention' : 'Requests need review', body: 'Open Fuel to review pending tasks.', eventKey: eventKey('manager-review',sourceId,employeeId) };
+}
+export function buildAvailabilitySummaryNotification(employeeId: string, weekStart: string): NotificationEvent {
+  return { employeeId, type: 'AVAILABILITY_SUMMARY', title: 'Availability review', body: 'Open Fuel to review availability.', actionHref: '/app/availability', eventKey: eventKey('availability-summary',weekStart,employeeId) };
+}
+export function buildSelfTestNotification(employeeId: string, sourceId: string): NotificationEvent {
+  return { employeeId, type: 'SELF_TEST', title: 'Fuel notification test', body: 'Open Fuel to review your notification settings.', actionHref: '/app', eventKey: eventKey('self-test',sourceId,employeeId) };
+}

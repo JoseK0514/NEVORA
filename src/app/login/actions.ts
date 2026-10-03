@@ -4,21 +4,25 @@ import { redirect } from "next/navigation";
 import { findEmployeeCredential, getEmployeeActivationState } from "@/lib/data/employees";
 import { verifyPassword } from "@/lib/auth/password";
 import { createSession, destroySession } from "@/lib/auth/session";
+import { safeReturnTo } from "@/lib/notifications/destinations";
+import { prepareInstallationForLogin } from "@/lib/notifications/logout";
 
 export async function login(formData: FormData) {
+  const returnTo = safeReturnTo(String(formData.get("returnTo") ?? ""));
+  const returnQuery = returnTo ? `&returnTo=${encodeURIComponent(returnTo)}` : "";
   const employeeId = String(formData.get("employeeId") ?? "")
     .trim()
     .toUpperCase();
   const password = String(formData.get("password") ?? "");
 
   if (!employeeId || !password) {
-    redirect("/login?error=invalid");
+    redirect(`/login?error=invalid${returnQuery}`);
   }
 
   const activation = await getEmployeeActivationState(employeeId);
 
   if (activation && activation.active && !activation.has_credential) {
-    redirect(`/activate?employeeId=${encodeURIComponent(employeeId)}`);
+    redirect(`/activate?employeeId=${encodeURIComponent(employeeId)}${returnQuery}`);
   }
 
   const employee = await findEmployeeCredential(employeeId);
@@ -28,14 +32,14 @@ export async function login(formData: FormData) {
     !employee.active ||
     !(await verifyPassword(password, employee.password_hash))
   ) {
-    redirect("/login?error=invalid");
+    redirect(`/login?error=invalid${returnQuery}`);
   }
 
+  await prepareInstallationForLogin(employee.id);
   await createSession(employee.id);
-  redirect("/app");
+  redirect(returnTo ?? "/app");
 }
 
 export async function logout() {
-  await destroySession();
-  redirect("/login");
+  try { await destroySession(); } finally { redirect("/login"); }
 }
