@@ -3,6 +3,8 @@ export const NUVORA_BRAND = {
   platformLabel: "NEVORA",
   module: "Workforce",
   parentCompany: "VELANI LLC",
+  copyright: "© 2026 VELANI LLC. All rights reserved.",
+  ownership: "NEVORA is a product of VELANI LLC.",
   poweredBy: "Powered by VELANI LLC",
   workspace: "Fuel Coffee Drive",
   homeAriaLabel: "NEVORA Workforce home",

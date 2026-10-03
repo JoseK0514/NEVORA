@@ -4,6 +4,9 @@ import { expect, it, vi } from "vitest";
 import LoginPage from "./login/page";
 import ActivatePage from "./activate/page";
 
+vi.mock("@/components/brand-lockup", () => import("../components/brand-lockup"));
+vi.mock("@/components/brand-legal", () => import("../components/brand-legal"));
+
 vi.mock("@/lib/notifications/destinations", () => import("../lib/notifications/destinations"));
 
 vi.mock("next/link", () => ({
@@ -23,6 +26,9 @@ it("brands login as NEVORA Workforce with the Fuel workspace and Velani ownershi
   expect(html).toContain("Fuel Coffee Drive");
   expect(html).toContain("Powered by VELANI LLC");
   expect(html).not.toContain("Fuel Coffee Drive • Employee Portal");
+  expect(html).toContain("© 2026 VELANI LLC. All rights reserved.");
+  expect(html).toContain("NEVORA is a product of VELANI LLC.");
+  expect(html).not.toContain("employee-login-scene-copy");
 });
 
 it("brands activation as NEVORA Workforce", async () => {
@@ -30,4 +36,6 @@ it("brands activation as NEVORA Workforce", async () => {
   expect(html).toContain("NEVORA");
   expect(html).toContain("Workforce");
   expect(html).toContain("Fuel Coffee Drive");
+  expect(html).toContain("© 2026 VELANI LLC. All rights reserved.");
+  expect(html).toContain("NEVORA is a product of VELANI LLC.");
 });

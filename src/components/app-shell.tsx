@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BrandMark, BrandWordmark } from "@/components/brand-mark";
+import { BrandLockup } from "./brand-lockup";
 import { NavIcon } from "@/components/nav-icon";
 import type { ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
@@ -58,11 +58,7 @@ export function AppShell({
     <div className={employee ? "app-shell employee-shell" : "app-shell"}>
       <aside className="sidebar">
         <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
-          <BrandMark />
-          <span className="sidebar-brand-copy">
-            <strong><BrandWordmark /></strong>
-            <small>{NUVORA_BRAND.module}</small>
-          </span>
+          <BrandLockup tone="dark" />
         </Link>
 
         <nav className="sidebar-nav" aria-label="Primary navigation">
@@ -110,11 +106,7 @@ export function AppShell({
       <main className="app-main">
         <header className="mobile-header">
           <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
-            <BrandMark />
-            <span className="mobile-brand-copy">
-              <strong><BrandWordmark /></strong>
-              <small>{NUVORA_BRAND.module}</small>
-            </span>
+            <BrandLockup variant="compact" />
           </Link>
           {notificationsEnabled && !employee ? <button type="button" className="role-chip portal-role-trigger" popoverTarget="portal-device-settings" aria-label="Profile and device settings">{user.role[0]}{user.role.slice(1).toLowerCase()}</button> : <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>}
         </header>

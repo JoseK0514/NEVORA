@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { safeReturnTo } from "@/lib/notifications/destinations";
-import { BrandMark, BrandWordmark } from "@/components/brand-mark";
+import { BrandLockup } from "@/components/brand-lockup";
+import { BrandLegal } from "@/components/brand-legal";
 import { login } from "@/app/login/actions";
 import { NUVORA_BRAND } from "../../lib/brand";
 
@@ -15,19 +16,9 @@ export default async function LoginPage({
 
   return (
     <main className="auth-page employee-login-page">
-      <div className="employee-login-overlay" aria-hidden="true" />
-      <div className="employee-login-scene-copy" aria-hidden="true">
-        <span>{NUVORA_BRAND.workspace}</span>
-        <strong>{NUVORA_BRAND.module}</strong>
-      </div>
-
       <div className="employee-login-shell">
         <header className="employee-login-brand">
-          <BrandMark large />
-          <div>
-            <strong><BrandWordmark /></strong>
-            <span>{NUVORA_BRAND.module}</span>
-          </div>
+          <BrandLockup variant="large" />
         </header>
 
         <section className="auth-card employee-login-card">
@@ -81,6 +72,7 @@ export default async function LoginPage({
         <footer className="employee-login-footer">
           <span>{NUVORA_BRAND.workspace}</span>
           <small>{NUVORA_BRAND.poweredBy}</small>
+          <BrandLegal />
         </footer>
       </div>
     </main>

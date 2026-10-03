@@ -105,7 +105,7 @@ Approved NEVORA palette:
 - Secondary text #676A73
 
 Fuel Coffee Drive branding is workspace context, not the permanent product theme.
-Use the NEVORA symbol derived from the official `public/images/nevora.png` upload for compact marks. Never use the old Velani paw. Product brand headings use the original `public/images/nevora-wordmark.png` artwork, including its cyan A detail; do not replace it with typed lettering.
+Use the NEVORA symbol derived from the official `public/images/nevora.png` upload for compact marks. Never use the old Velani paw. Product brand headings use the shared BrandLockup variants, preserving the original `public/images/nevora-wordmark.png` glyphs and cyan A detail without a visible white rectangular backing. Align Workforce with the visible wordmark edge. The flame alone keeps its compact rounded container. Coffee-themed photography or decorative art must not define the product; Fuel is workspace/location data.
 Use "Powered by VELANI LLC" only in subtle footer/legal/ownership contexts.
 
 Avoid:

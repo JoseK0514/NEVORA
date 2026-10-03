@@ -90,7 +90,7 @@ button { cursor: pointer; }
 }
 
 .brand { display: flex; align-items: center; gap: 12px; }
-.brand > span:last-child { display: grid; }
+.brand > span:last-child:not(.brand-lockup) { display: grid; }
 .brand strong { font-size: 18px; letter-spacing: -0.02em; }
 .brand small { color: #d7c5b9; font-size: 12px; margin-top: 1px; }
 
@@ -7217,10 +7217,7 @@ small,
   place-items: stretch;
   overflow: hidden;
   padding: clamp(24px, 5vw, 72px);
-  background:
-    linear-gradient(180deg, rgba(31, 18, 13, .08) 0%, rgba(31, 18, 13, .56) 100%),
-    linear-gradient(90deg, rgba(44, 25, 17, .34), rgba(44, 25, 17, .02) 58%),
-    url("/fuel-login-cafe.jpg") center 46% / cover no-repeat;
+  background: var(--color-bg-main);
 }
 .employee-login-overlay {
   position: absolute;
@@ -7260,13 +7257,6 @@ small,
 .employee-login-brand strong {
   font-size: 16px;
   letter-spacing: -.02em;
-}
-.employee-login-brand span:last-child {
-  color: rgba(255, 250, 242, .78);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .08em;
 }
 .employee-login-card {
   width: 100%;
@@ -7648,9 +7638,7 @@ body {
   border: 1px solid rgba(87, 58, 44, .09);
   border-radius: 22px;
   overflow: hidden;
-  background-image:
-    linear-gradient(90deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.93) 34%, rgba(255,255,255,.45) 55%, rgba(255,255,255,.05) 76%),
-    url("/images/dashboard-hero-art.svg");
+  background-image: linear-gradient(110deg, #FFFFFF 0%, #FFFFFF 52%, var(--nevora-soft) 100%);
   background-size: cover;
   background-position: center;
   box-shadow: 0 14px 38px rgba(72, 43, 27, .08);
@@ -7962,9 +7950,7 @@ body {
 .dashboard-brand-art {
   min-height: 104px;
   border-color: rgba(43, 26, 18, .1);
-  background:
-    linear-gradient(90deg, rgba(43,26,18,.05), transparent 35%),
-    url("/images/dashboard-beans-art.svg") center / cover no-repeat;
+  background: var(--color-bg-surface);
 }
 
 .dashboard-tab-layout {
@@ -12466,10 +12452,7 @@ body {
 .employee-shell .app-main { background: var(--nuvora-bg); }
 
 .employee-login-page {
-  background:
-    linear-gradient(180deg, rgba(32, 35, 45, .08) 0%, rgba(32, 35, 45, .56) 100%),
-    linear-gradient(90deg, rgba(32, 35, 45, .34), rgba(32, 35, 45, .02) 58%),
-    url("/fuel-login-cafe.jpg") center 46% / cover no-repeat;
+  background: var(--color-bg-main);
 }
 .employee-login-overlay {
   background:
@@ -12481,7 +12464,6 @@ body {
   box-shadow: 0 8px 24px rgba(32, 35, 45, .16);
 }
 .employee-login-brand strong { letter-spacing: .1em; }
-.employee-login-brand span:last-child { color: rgba(255, 255, 255, .78); }
 .employee-login-heading .eyebrow,
 .employee-login-secondary a,
 .auth-secondary a { color: var(--nuvora-indigo); }
@@ -12650,22 +12632,6 @@ body {
 
 .app-shell:not(.employee-shell) .sidebar-logout-row { min-height: 44px; }
 
-/* Original wordmark pixels, including the cyan A. White backing preserves
-   the supplied navy lettering on both light and dark brand locations. */
-.brand-wordmark {
-  display: inline-flex;
-  align-items: center;
-  width: 102px;
-  max-width: 100%;
-  padding: 3px 5px;
-  border-radius: 4px;
-  background: white;
-  vertical-align: middle;
-}
-.brand-wordmark img { display: block; width: 100%; height: auto; }
-.employee-login-brand .brand-wordmark { width: 145px; }
-.auth-platform { display: flex; align-items: center; gap: 8px; }
-
 /* Fit original brand artwork without expanding the established auth card. */
 .auth-brand > div { min-width: 0; }
 .auth-platform { flex-wrap: wrap; }
@@ -12685,3 +12651,57 @@ body {
 
 /* Keep the module label legible on the dark structural rail. */
 .sidebar .sidebar-brand-copy small { color: rgba(240, 251, 255, .72); }
+
+/* One optical brand lockup. The raster remains unchanged; SVG masks remove
+   its white field and trim to the visible glyph bounds. */
+.brand-lockup {
+  --lockup-icon: 42px;
+  --lockup-wordmark: 108px;
+  --lockup-module: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: #071332;
+  text-shadow: none;
+}
+.brand-lockup--compact { --lockup-icon: 32px; --lockup-wordmark: 96px; --lockup-module: 11px; }
+.brand-lockup--large { --lockup-icon: 58px; --lockup-wordmark: 145px; --lockup-module: 12px; }
+.brand-lockup[data-tone] .brand-mark.brand-mark-logo {
+  width: var(--lockup-icon);
+  height: var(--lockup-icon);
+  flex: 0 0 var(--lockup-icon);
+  padding: 5px;
+  border: 0;
+  border-radius: 10px;
+  background: #FFFFFF;
+  box-shadow: none;
+}
+.brand-lockup .brand-lockup-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
+.brand-lockup .brand-wordmark { display: block; width: var(--lockup-wordmark); height: auto; flex: none; background: none; padding: 0; border-radius: 0; }
+.brand-lockup .brand-lockup-module {
+  display: block;
+  margin: 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: var(--lockup-module);
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.brand-lockup[data-tone="dark"] { color: #F8F8FB; }
+.brand-lockup[data-tone="dark"] .brand-lockup-module { color: rgba(240, 251, 255, .72); }
+.sidebar-brand, .employee-shell .sidebar-brand { padding-inline: 8px; }
+.employee-login-brand { padding: 0; text-shadow: none; }
+.employee-login-page { place-items: center; background: var(--color-bg-main); }
+.employee-login-page::before { display: none; }
+.employee-login-shell { margin-inline: auto; }
+.employee-login-card { background: var(--color-bg-surface); border-color: var(--color-border-subtle); box-shadow: var(--shadow-premium); }
+.employee-login-footer, .employee-login-footer small { color: var(--muted); text-shadow: none; }
+.brand-legal { display: grid; gap: 2px; color: var(--muted); }
+.employee-login-footer .brand-legal span, .brand-legal span { font-size: 10px; font-weight: 400; line-height: 16px; letter-spacing: 0; text-transform: none; }
+.auth-activation-shell { width: min(460px, 100%); }
+.auth-activation-shell .auth-card { width: 100%; }
+.auth-activation-heading { margin-block: 20px 24px; }
+.auth-legal { margin-top: 16px; text-align: center; }

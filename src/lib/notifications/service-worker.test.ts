@@ -224,14 +224,14 @@ describe('portal service worker source', () => {
     expect(h.windows[0].navigate).not.toHaveBeenCalled(); expect(h.self.clients.openWindow).not.toHaveBeenCalled();
   });
   it('updates retain the normal waiting lifecycle and clean only owned cache versions', async () => {
-    const h = harness(); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('fuel-portal-public-v1', new Map()); h.stores.set('another-app-v1', new Map());
+    const h = harness(); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('fuel-portal-public-v1', new Map()); h.stores.set('fuel-portal-public-v2', new Map()); h.stores.set('another-app-v1', new Map());
     await h.dispatch('install'); await h.dispatch('activate'); await h.message('UPDATE_WAITING');
-    expect(h.stores.has('fuel-portal-public-v0')).toBe(false); expect(h.stores.has('fuel-portal-public-v1')).toBe(false); expect(h.stores.has('fuel-portal-public-v2')).toBe(true); expect(h.stores.has('another-app-v1')).toBe(true);
+    expect(h.stores.has('fuel-portal-public-v0')).toBe(false); expect(h.stores.has('fuel-portal-public-v1')).toBe(false); expect(h.stores.has('fuel-portal-public-v2')).toBe(false); expect(h.stores.has('fuel-portal-public-v3')).toBe(true); expect(h.stores.has('another-app-v1')).toBe(true);
     expect(h.self.skipWaiting).not.toHaveBeenCalled(); expect(h.self.clients.claim).not.toHaveBeenCalled(); expect(h.self.registration.unregister).not.toHaveBeenCalled(); expect(h.windows[0].navigate).not.toHaveBeenCalled();
     expect(h.windows[0].postMessage).toHaveBeenCalledWith({ version: 1, type: 'UPDATE_WAITING' });
   });
   it('retirement variant only removes owned caches and own registration', async () => {
-    const h = harness(undefined, true); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('fuel-portal-public-v1', new Map()); h.stores.set('another-app-v1', new Map());
+    const h = harness(undefined, true); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('fuel-portal-public-v1', new Map()); h.stores.set('fuel-portal-public-v2', new Map()); h.stores.set('another-app-v1', new Map());
     await h.dispatch('install'); await h.dispatch('activate');
     expect(h.self.registration.unregister).toHaveBeenCalledOnce(); expect([...h.stores.keys()]).toEqual(['another-app-v1']); expect(h.writes).toEqual([]); expect(await h.fetchRequest('/app')).toBeUndefined();
     expect(h.self.skipWaiting).not.toHaveBeenCalled(); expect(h.self.clients.claim).not.toHaveBeenCalled();
