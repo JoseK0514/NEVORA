@@ -2,6 +2,7 @@ import Link from "next/link";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { BrandMark } from "@/components/brand-mark";
 import { login } from "@/app/login/actions";
+import { NUVORA_BRAND } from "../../lib/brand";
 
 export default async function LoginPage({
   searchParams,
@@ -16,22 +17,22 @@ export default async function LoginPage({
     <main className="auth-page employee-login-page">
       <div className="employee-login-overlay" aria-hidden="true" />
       <div className="employee-login-scene-copy" aria-hidden="true">
-        <span>GOOD PEOPLE</span>
-        <strong>GREAT COFFEE</strong>
+        <span>{NUVORA_BRAND.workspace}</span>
+        <strong>{NUVORA_BRAND.module}</strong>
       </div>
 
       <div className="employee-login-shell">
         <header className="employee-login-brand">
           <BrandMark large />
           <div>
-            <strong>Fuel Coffee Drive</strong>
-            <span>Employee Portal</span>
+            <strong>{NUVORA_BRAND.platform}</strong>
+            <span>{NUVORA_BRAND.module}</span>
           </div>
         </header>
 
         <section className="auth-card employee-login-card">
           <div className="employee-login-heading">
-            <p className="eyebrow">Employee Portal</p>
+            <p className="eyebrow">{NUVORA_BRAND.workspace}</p>
             <h1>Employee Login</h1>
             <p>
               Access your schedule, availability, requests, time, and profile.
@@ -78,8 +79,8 @@ export default async function LoginPage({
         </section>
 
         <footer className="employee-login-footer">
-          <span>Fuel Coffee Drive • Employee Portal</span>
-          <small>People fuel possibility.</small>
+          <span>{NUVORA_BRAND.workspace}</span>
+          <small>{NUVORA_BRAND.poweredBy}</small>
         </footer>
       </div>
     </main>

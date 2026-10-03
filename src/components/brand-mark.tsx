@@ -7,10 +7,10 @@ export function BrandMark({ large = false }: { large?: boolean }) {
       aria-hidden="true"
     >
       <Image
-        src="/images/fuel-logo.png"
+        src="/images/velani-mark.svg"
         alt=""
-        width={1334}
-        height={1179}
+        width={722}
+        height={684}
         className="brand-logo-image"
         sizes={large ? "58px" : "44px"}
         priority={large}

@@ -1,6 +1,6 @@
-# Fuel Scheduler
+# Nuvora Workforce
 
-Employee scheduling application for Fuel Coffee Drive.
+Workforce operations platform owned by VELANI LLC. Fuel Coffee Drive is the current customer/workspace.
 
 ## Branch workflow
 
@@ -68,6 +68,6 @@ npm run build
 
 See `docs/architecture.md` for the product and workflow blueprint.
 
-For UI work, reuse the [Fuel UI contract](docs/ui/fuel-ui-contract.md). Future
+For UI work, reuse the [Nuvora UI contract](docs/ui/fuel-ui-contract.md). Future
 automation follows the [delivery charter](docs/architecture/fuel-automation-charter.md);
 it records phase boundaries and exclusions, not implemented capabilities.

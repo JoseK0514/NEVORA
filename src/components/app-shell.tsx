@@ -8,6 +8,7 @@ import type { ReactNode } from "react";
 import { logout } from "@/app/login/actions";
 import type { UserRole } from "@/lib/domain";
 import { navigationForRole } from "@/lib/navigation";
+import { NUVORA_BRAND } from "../lib/brand";
 
 const employeeOrder = [
   "/app", "/app/schedule", "/app/my-time",
@@ -52,11 +53,11 @@ export function AppShell({
   return (
     <div className={employee ? "app-shell employee-shell" : "app-shell"}>
       <aside className="sidebar">
-        <Link href="/app" className="brand sidebar-brand" aria-label="Fuel Scheduler home">
+        <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
           <BrandMark />
           <span className="sidebar-brand-copy">
-            <strong>Fuel.</strong>
-            <small>Coffee Drive</small>
+            <strong>{NUVORA_BRAND.platform}</strong>
+            <small>{NUVORA_BRAND.module}</small>
           </span>
         </Link>
 
@@ -96,18 +97,20 @@ export function AppShell({
           </button>
         </form>
 
-        {employee ? null : <div className="sidebar-mantra" aria-hidden="true">
-          <span>People</span>
-          <span>Fuel</span>
-          <span>Possibility.</span>
-        </div>}
+        <div className="sidebar-platform-footer">
+          <span>{NUVORA_BRAND.workspace}</span>
+          <small>{NUVORA_BRAND.poweredBy}</small>
+        </div>
       </aside>
 
       <main className="app-main">
         <header className="mobile-header">
-          <Link href="/app" className="brand compact">
+          <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
             <BrandMark />
-            <strong>Fuel Scheduler</strong>
+            <span className="mobile-brand-copy">
+              <strong>{NUVORA_BRAND.platform}</strong>
+              <small>{NUVORA_BRAND.module}</small>
+            </span>
           </Link>
           <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>
         </header>

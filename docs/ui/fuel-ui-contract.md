@@ -1,19 +1,23 @@
-# Fuel UI contract
+# Nuvora UI contract
 
-**Reference:** Phase 0, 2026-10-02. Selected visual base: `5e983a6bf6d7b22d3b2f47f96f98d2236060d33e` on `codex/employee-portal-polish-v2`. This records the established interface and narrow refinements; Jose's final Phase 0 visual approval remains pending. Automated checks do not supply human approval.
+> The file path is retained for compatibility with existing plans. The product identity is now **NUVORA**, the current module is **Workforce**, Fuel Coffee Drive is the customer/workspace, and VELANI LLC is the parent company.
 
-Preserve Apple-style restraint and Fuel identity. Reuse the actual surface being extended: Employee espresso/ivory, existing Manager treatment, and the existing Clocker. A feature does not authorize a theme, new sidebar, schedule matrix, icon family, or uniform page layout. Use raw CSS and existing tokens in `src/app/globals.css`; scope selectors to the affected portal/component. No broad root replacement, global submit override, broad `!important` patch, Tailwind, decorative chart/card, or unrelated cleanup.
+**Reference:** Phase 0, 2026-10-02, plus the Nuvora brand-foundation pass. Preserve the approved Apple-style layouts, spacing, typography, control geometry, responsive behavior, and semantic states. Branding changes do not authorize a redesign.
+
+Nuvora uses a restrained midnight/indigo identity: `#20232D` structural midnight, `#4F46C8` primary indigo, `#4038A8` hover/pressed indigo, `#EEEEFC` soft selection, `#F6F6F8` canvas, `#FFFFFF` surface, `#18191F` primary text, and `#676A73` secondary text. Fuel-specific brown/orange is no longer the permanent software identity. Fuel Coffee Drive remains visible only as workspace context. The Velani icon may be used as the Nuvora mark; `Powered by VELANI LLC` stays subtle in login/footer/legal contexts.
+
+Reuse the actual surface being extended. A feature does not authorize a new theme, new sidebar, schedule matrix, icon family, or uniform page layout. Use raw CSS and existing tokens in `src/app/globals.css`; scope selectors to the affected portal/component. No broad submit override, broad `!important` patch, Tailwind, decorative chart/card, or unrelated cleanup.
 
 ## Color roles
 
 | Role | Existing token / pairing | Use |
 | --- | --- | --- |
-| Main text | `--color-brand-primary: #1d1d1f` | Headings, body, metrics; preserve charcoal metrics |
-| Secondary text | `--muted: #6e6e73` | Supporting labels; measure against its actual background |
-| Surfaces | `--color-bg-surface: #fff`, `--color-bg-main` | Neutral controls and cards; Employee main uses its scoped warm canvas mix |
-| Fuel identity | `--fuel-coffee-dark: #2b1a12`, `--fuel-coffee: #573a2c`, `--fuel-ivory: #fffdf9`, `--fuel-canvas: #f7f1e8`, `--fuel-orange: #c77c3c`, `--caramel: #c58b55` | Established rail, canvas, and small brand accents; no orange overload |
-| Employee action | Scoped `--color-brand-accent`, orange 68% mixed with espresso, white text | Existing important actions; coffee/white hover. Do not substitute raw brand orange for small white labels |
-| Manager / Clocker action | Existing local treatment; time-off submit and Clocker primary use `#0071e3` / white | Preserve established surface-specific pairing; Manager schedule also has its existing coffee primary |
+| Main text | `--color-brand-primary: #18191f` | Headings, body, metrics; preserve charcoal metrics |
+| Secondary text | `--muted: #676a73` | Supporting labels; measure against its actual background |
+| Surfaces | `--color-bg-surface: #fff`, `--color-bg-main: #f6f6f8` | Neutral controls and cards across the Nuvora shell |
+| Nuvora identity | `--nuvora-midnight: #20232d`, `--nuvora-indigo: #4f46c8`, `--nuvora-indigo-hover: #4038a8`, `--nuvora-indigo-soft: #eeeefc` | Structural rail, primary actions, active states, focus, and restrained product accents |
+| Employee action | Scoped `--color-brand-accent` using Nuvora indigo with white text | Existing important actions; use the approved darker indigo on hover/pressed |
+| Manager / Clocker action | Existing geometry with Nuvora primary pairing | Preserve surface-specific hierarchy while replacing old Fuel/blue brand actions with Nuvora indigo where brand-primary behavior is intended |
 | Success | `--color-state-success: #1d6f42` / `--color-state-success-bg: #eaf5ea` | Approved, available, completed |
 | Attention | `--color-state-warning: #a05200` / `--color-state-warning-bg: #fff4e5` | Pending, outstanding, exception |
 | Danger | `--color-state-danger: #b42318` / `--color-state-danger-bg: #fdecec` | Genuine withdrawal/destructive action or error; not form dismissal |
@@ -23,7 +27,7 @@ Keep status meaning in text as well as color. Status labels are compact, noninte
 
 ## Controls and feedback
 
-- **Primary:** only the important action in context; a submit attribute alone does not select the variant. Preserve existing Fuel or local Manager/Clocker pairing.
+- **Primary:** only the important action in context; a submit attribute alone does not select the variant. Use the approved Nuvora action pairing while preserving existing geometry and hierarchy.
 - **Secondary / form Cancel:** neutral surface and charcoal text. Form dismissal remains neutral. Withdrawing a submitted request retains its genuine danger treatment.
 - **Danger:** soft red surface and red text. Employee danger press remains opaque; use the existing hover surface rather than fading text.
 - **Selected:** existing quiet local tint and `aria-pressed`/selected semantics. Employee availability keeps green availability states. Preserve Manager segmented controls.

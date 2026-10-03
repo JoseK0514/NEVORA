@@ -1,4 +1,4 @@
-# Phase 3: installable Fuel portal and targeted Web Push
+# Phase 3: installable Nuvora portal and targeted Web Push
 
 Date: 2026-10-02. **Status: written design approved by Jose, including the delivery-latency and logout clarifications below; implementation-plan review is still required.** This document does not claim implementation or activation.
 
@@ -6,7 +6,7 @@ Date: 2026-10-02. **Status: written design approved by Jose, including the deliv
 
 Make the existing portal installable, notify the correct person about a meaningful existing workflow event, open the relevant authenticated task, and stop reminders when that task is resolved. Management handles exceptions through its existing pages.
 
-Use standards-based Web Push and the existing Fuel identity. No SMS/email integration, native application, inbox, chat, activity dashboard, automatic scheduling/swaps/coverage, new eligibility policy, or Clocker changes. Preserve the Phase 0–2 UI contract. No push, merge, deployment, live migration, paid provisioning, public tunnel, or staff campaign is authorized.
+Use standards-based Web Push and the approved Nuvora identity. Fuel Coffee Drive remains the customer/workspace, not the permanent software brand. No SMS/email integration, native application, inbox, chat, activity dashboard, automatic scheduling/swaps/coverage, new eligibility policy, or Clocker changes. Preserve the Phase 0–2 UI contract plus the Nuvora brand foundation. No push, merge, deployment, live migration, paid provisioning, public tunnel, or staff campaign is authorized.
 
 Written-spec approval permits the implementation-plan checkpoint. Implementation follows review of that plan and selection of its execution method. Approving either document does not authorize spending or activation.
 
@@ -20,7 +20,7 @@ Written-spec approval permits the implementation-plan checkpoint. Implementation
 - Other checkouts were preserved, including the dirty primary development checkout. This worktree was initially clean. Existing dependencies were copied locally without adding or changing versions; no product dependency was installed for design work. An initial dependency symlink was rejected by Turbopack and replaced with that local copy.
 - Unchanged baseline: **lint, typecheck, 35 test files / 230 tests, and production build passed**. The build ran with `DATABASE_URL` removed from its environment. Next's generated `next-env.d.ts`/`tsconfig.json` edits were restored; application/configuration files remain identical to the base. These are baseline checks, not Phase 3 implementation, database, browser or device tests.
 
-Applicable instructions: `~/.codex/AGENTS.md`; Superpowers brainstorming and worktree skills; Fuel Scheduler UI, auth-access, data-integrity, and regression-protection skills. Read `docs/ui/fuel-ui-contract.md` and `docs/architecture/fuel-automation-charter.md`. Current user approval of Phase 0–2 supersedes older pending-approval wording in those historical documents; their design and phase boundaries remain binding.
+Applicable instructions: `~/.codex/AGENTS.md`; Superpowers brainstorming and worktree skills; the repository UI skill (legacy path `fuel-scheduler-ui`, now defining Nuvora Workforce), auth-access, data-integrity, and regression-protection skills. Read `docs/ui/fuel-ui-contract.md` and `docs/architecture/fuel-automation-charter.md`. Current user approval of Phase 0–2 plus the Nuvora brand foundation supersedes older pending-approval wording in those historical documents; their design and phase boundaries remain binding.
 
 ## Inventory and reuse
 
@@ -177,14 +177,14 @@ Due times, retry times, expiry and completion are persisted in PostgreSQL rather
 
 ## Installation and device UI
 
-Manifest identity: full name `Centralized Fuel Employee Portal`, short name `Fuel Portal`, stable id `/app`, start URL `/app`, explicit scope `/app`, display `standalone`, Fuel espresso theme `#2b1a12` and ivory background `#fffdf9`. Visible product branding remains unchanged. Export approved logo-based 192/512px ordinary and maskable icons with safe padding, plus a 180px Apple touch icon. Metadata is linked in the authenticated portal layout, not Clocker's layout.
+Manifest identity: full name `Nuvora`, short name `Nuvora`, stable id `/app`, start URL `/app`, explicit scope `/app`, display `standalone`, Nuvora midnight theme `#20232D` and neutral background `#F6F6F8`. Nuvora is the software platform, Workforce is the current module, Fuel Coffee Drive is the workspace, and VELANI LLC is the parent company. Export the approved Velani icon as Nuvora's 192/512px ordinary and maskable app icons with safe padding, plus a 180px Apple touch icon; do not use the full Velani wordmark as the product identity. Metadata is linked in the authenticated portal layout, not Clocker's layout.
 
 Use the existing profile area as a compact nonmodal device-setup disclosure: desktop profile control, Employee/Lead mobile More profile, and Manager/Owner mobile profile/role control. No primary navigation entry or dashboard section. A one-time dismissible setup offer after authentication uses this same surface; it does not block work or request OS permission. Preserve keyboard focus and avoid opening over an active form interaction.
 
 Flow:
 
-1. **Keep Fuel Handy** — “Add Fuel to your Home Screen for quick access to your schedule.” Use a real deferred browser install event when available. Otherwise show instructions without claiming installation occurred.
-2. iPhone/iPad: Share → Add to Home Screen; enable “Open as Web App” if the browser presents it; open Fuel from the new icon. Detect standalone using supported media queries and iOS standalone signal. iOS push setup requires the supported Home Screen context.
+1. **Keep Nuvora Handy** — “Add Nuvora to your Home Screen for quick access to your schedule.” Use a real deferred browser install event when available. Otherwise show instructions without claiming installation occurred.
+2. iPhone/iPad: Share → Add to Home Screen; enable “Open as Web App” if the browser presents it; open Nuvora from the new icon. Detect standalone using supported media queries and iOS standalone signal. iOS push setup requires the supported Home Screen context.
 3. Android: use the browser's actual install prompt when provided, or its menu instructions. An install event/standalone signal describes observed state only; do not infer installation from someone reading instructions.
 4. **Stay Updated** — “Receive important schedule changes and reminders.” Equal 44px **Enable Notifications / Not Now** peers. Request permission directly within the Enable gesture; never on load or after an asynchronous gesture-breaking preflight. Prepare capability/configuration before enabling that action.
 5. “Not Now” suppresses automatic offers for that account/installation until explicitly reopened. Denied permissions are never requested repeatedly; give OS/browser settings guidance. Unsupported/revoked/configuration-unavailable states explain the state without blocking the portal.
@@ -194,7 +194,7 @@ Reuse existing local action variants, 44px/22px capsule geometry, centered 12px/
 
 ## Payloads and safe task opening
 
-Use a separate privacy-safe push projection, not the existing builder's body blindly: “Your Fuel Schedule Is Ready,” “Your Fuel Schedule Changed,” “Fuel Request Update,” or “Coverage Needs Attention,” with generic open-to-review text. No names, medical/absence reasons, management notes, PINs, earnings or payroll details. Detailed changes stay behind authentication.
+Use a separate privacy-safe push projection, not the existing builder's body blindly: “Your Nuvora Schedule Is Ready,” “Your Nuvora Schedule Changed,” “Nuvora Request Update,” or “Coverage Needs Attention,” with generic open-to-review text. No names, medical/absence reasons, management notes, PINs, earnings or payroll details. Detailed changes stay behind authentication.
 
 The payload carries a random notification id, validated kind, expiry, stable tag and opaque installation ownership generation. It does not carry a trusted arbitrary redirect or employee id. The worker constructs only the fixed same-origin `/app/notifications/open?notificationId=…` URL after validating the envelope. A tap navigates; it never approves, accepts, acknowledges or punches.
 
@@ -210,11 +210,11 @@ Register the root-served `fuel-portal-sw.js` with explicit scope `/app`, so the 
 
 Online-first: intercept only safe portal GET navigations, request the network without storing private responses, and return a static public offline fallback only on connection failure. Preserve server HTTP/auth errors and redirects. Never cache schedules, profiles, request details, APIs, RSC responses, login responses, sessions, employee time, or Clocker traffic. No offline mutations, background business sync or fake success.
 
-CacheStorage allowlist: the self-contained public offline HTML and explicitly named Fuel icon exports only, in a versioned Fuel-owned cache. No general runtime asset cache, application chunks, query-bearing image/API URLs or broad precache glob. Local worker storage contains only the opaque device ownership generation needed to suppress stale-account notifications; it is not a private data cache.
+CacheStorage allowlist: the self-contained public offline HTML and explicitly named Nuvora icon exports only, in a versioned Nuvora-owned cache. No general runtime asset cache, application chunks, query-bearing image/API URLs or broad precache glob. Local worker storage contains only the opaque device ownership generation needed to suppress stale-account notifications; it is not a private data cache.
 
 Use `event.waitUntil` for push display/notification clicks and subscription reconciliation. Validate and compare the local installation generation before displaying. Clear matching local notifications on detach where possible. Do not depend on a silent push to update operational data.
 
-Updates wait through the normal worker lifecycle. No automatic `skipWaiting`, forced page reload or takeover of an open unsaved form. New versions are backward-compatible with the small push envelope. A waiting-update message may offer reopening Fuel after finishing work, without reloading automatically. Document rollback by serving the previous compatible worker or a same-scope retirement worker that deletes only Fuel-owned caches and unregisters; server-side delivery can be disabled independently. Never unregister another app's workers/caches.
+Updates wait through the normal worker lifecycle. No automatic `skipWaiting`, forced page reload or takeover of an open unsaved form. New versions are backward-compatible with the small push envelope. A waiting-update message may offer reopening Nuvora after finishing work, without reloading automatically. Document rollback by serving the previous compatible worker or a same-scope retirement worker that deletes only Nuvora-owned caches and unregisters; server-side delivery can be disabled independently. Never unregister another app's workers/caches.
 
 ## Database, configuration and hosting activation
 
