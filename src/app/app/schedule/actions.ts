@@ -1,5 +1,9 @@
 "use server";
 
+import { listPositions } from "@/lib/data/positions";
+
+import { getWorkspace, WorkspaceConcurrencyError } from "@/lib/data/workspaces";
+import { localDateTimeToInstant, shiftBoundaryInstants } from "@/lib/business-time";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -42,6 +46,7 @@ export async function createShiftAction(formData: FormData) {
   const startTime = String(formData.get("startTime") ?? "");
   const endTime = String(formData.get("endTime") ?? "");
   const notes = String(formData.get("notes") ?? "").trim();
+  const positionId = formData.has("positionId") ? String(formData.get("positionId") ?? "").trim() || null : undefined;
   const isDesignatedLead = formData.get("isDesignatedLead") === "on";
 
   if (
@@ -56,8 +61,14 @@ export async function createShiftAction(formData: FormData) {
     redirect(scheduleUrl(weekStart || date, "&error=INVALID_SHIFT"));
   }
 
+  const workspace = await getWorkspace();
+  try { shiftBoundaryInstants({ date, startTime, endTime }, workspace.timeZone); }
+  catch { redirect(scheduleUrl(weekStart, "&error=INVALID_SHIFT")); }
+
   const context = await getShiftValidationContext({
     employeeId,
+    locationId,
+    positionId: positionId || undefined,
     date,
     weekStart,
   });
@@ -68,7 +79,7 @@ export async function createShiftAction(formData: FormData) {
 
 
   const validation = validateShift({
-    candidate: { employeeId, locationId, date, startTime, endTime, isDesignatedLead },
+    candidate: { employeeId, locationId, positionId:positionId || undefined, date, startTime, endTime, isDesignatedLead },
     ...context,
     mode: "MANAGER_SCHEDULE",
   });
@@ -98,6 +109,7 @@ export async function createShiftAction(formData: FormData) {
     startTime,
     endTime,
     notes: notes || undefined,
+    positionId,
     isDesignatedLead,
   });
 
@@ -137,6 +149,7 @@ export async function publishScheduleAction(formData: FormData) {
     );
     const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
     const health = calculateScheduleHealth({
+      positions: await listPositions({includeInactive:true}),
       shifts: effectiveShifts.map((shift) => ({
         id: shift.id,
         employeeId: shift.employeeId,
@@ -145,6 +158,7 @@ export async function publishScheduleAction(formData: FormData) {
         date: shift.date,
         startTime: shift.startTime,
         endTime: shift.endTime,
+        positionId: shift.positionId,
         isDesignatedLead: shift.isDesignatedLead,
       })),
       locations: staffing.map((setting) => ({
@@ -158,6 +172,8 @@ export async function publishScheduleAction(formData: FormData) {
         .map((employee) => ({
           id: employee.id,
           name: `${employee.firstName} ${employee.lastName}`,
+          eligibleLocationIds: employee.eligibleLocationIds,
+          positionIds: employee.positionIds,
           role: employee.role,
           active: employee.active,
           targetWeeklyHours: targetMap.get(employee.id),
@@ -211,6 +227,7 @@ export async function updateShiftAction(formData: FormData) {
   const startTime = String(formData.get("startTime") ?? "");
   const endTime = String(formData.get("endTime") ?? "");
   const notes = String(formData.get("notes") ?? "").trim();
+  const positionId = formData.has("positionId") ? String(formData.get("positionId") ?? "").trim() || null : undefined;
   const isDesignatedLead = formData.get("isDesignatedLead") === "on";
 
   const existing = await getShiftForManagement(shiftId);
@@ -226,8 +243,14 @@ export async function updateShiftAction(formData: FormData) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
 
+  const workspace = await getWorkspace();
+  try { shiftBoundaryInstants({ date, startTime, endTime }, workspace.timeZone); }
+  catch { redirect(`/app/schedule/edit?shiftId=${encodeURIComponent(shiftId)}&error=INVALID_SHIFT`); }
+
   const context = await getShiftValidationContext({
     employeeId,
+    locationId: existing.locationId,
+    positionId: positionId === undefined ? existing.positionId : positionId || undefined,
     date,
     weekStart: existing.weekStart,
   });
@@ -249,6 +272,7 @@ export async function updateShiftAction(formData: FormData) {
     candidate: {
       employeeId,
       locationId: existing.locationId,
+      positionId: positionId === undefined ? existing.positionId : positionId || undefined,
       date,
       startTime,
       endTime,
@@ -276,6 +300,7 @@ export async function updateShiftAction(formData: FormData) {
     startTime,
     endTime,
     notes: notes || undefined,
+    positionId,
     isDesignatedLead,
   });
 
@@ -323,6 +348,7 @@ export async function copyPreviousWeekAction(formData: FormData) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
 
+  const workspace = await getWorkspace();
   const sourceWeekStart = addDays(targetWeekStart, -7);
   const sourceShifts = await listWeekShifts({ weekStart: sourceWeekStart });
 
@@ -337,8 +363,13 @@ export async function copyPreviousWeekAction(formData: FormData) {
       targetWeekStart,
     );
 
+    try { shiftBoundaryInstants({ ...shift, date }, workspace.timeZone); }
+    catch { skipped += 1; continue; }
+
     const context = await getShiftValidationContext({
       employeeId: shift.employeeId,
+      locationId: shift.locationId,
+      positionId: shift.positionId,
       date,
       weekStart: targetWeekStart,
     });
@@ -352,6 +383,7 @@ export async function copyPreviousWeekAction(formData: FormData) {
       candidate: {
         employeeId: shift.employeeId,
         locationId: shift.locationId,
+        positionId: shift.positionId,
         date,
         startTime: shift.startTime,
         endTime: shift.endTime,
@@ -380,6 +412,7 @@ export async function copyPreviousWeekAction(formData: FormData) {
       startTime: shift.startTime,
       endTime: shift.endTime,
       notes: shift.notes,
+      positionId: shift.positionId,
       isDesignatedLead: shift.isDesignatedLead,
     });
 
@@ -413,24 +446,26 @@ export async function setAvailabilityDeadlineAction(formData: FormData) {
   }
 
   let deadlineIso: string | undefined;
+  const conversionWorkspace = deadlineLocal ? await getWorkspace() : undefined;
 
-  if (deadlineLocal) {
-    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(deadlineLocal)) {
-      redirect(scheduleUrl(weekStart, "&error=INVALID_DEADLINE"));
-    }
-
-    const parsed = new Date(`${deadlineLocal}:00-04:00`);
-    if (Number.isNaN(parsed.getTime())) {
-      redirect(scheduleUrl(weekStart, "&error=INVALID_DEADLINE"));
-    }
-    deadlineIso = parsed.toISOString();
+  if (deadlineLocal && conversionWorkspace) {
+    try { deadlineIso = localDateTimeToInstant(deadlineLocal, conversionWorkspace.timeZone); }
+    catch { redirect(scheduleUrl(weekStart, `&error=INVALID_DEADLINE&availabilityDeadline=${encodeURIComponent(deadlineLocal)}`)); }
   }
 
-  await setAvailabilityDeadline({
-    weekStart,
-    deadlineIso,
-    updatedBy: session.id,
-  });
+  try {
+    await setAvailabilityDeadline({
+      weekStart,
+      deadlineIso,
+      conversionWorkspace,
+      updatedBy: session.id,
+    });
+  } catch (error) {
+    if (error instanceof WorkspaceConcurrencyError) {
+      redirect(scheduleUrl(weekStart, `&error=DEADLINE_WORKSPACE_CHANGED&availabilityDeadline=${encodeURIComponent(deadlineLocal)}`));
+    }
+    throw error;
+  }
 
   revalidatePath("/app/schedule");
   revalidatePath("/app/availability");

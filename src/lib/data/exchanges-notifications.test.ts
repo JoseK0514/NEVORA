@@ -97,3 +97,67 @@ it('decision recipients use the guarded current shift location rather than the e
  expect(await denyExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);
  expect(intents(r.batches[0]).filter(n=>n.kind==='EXCHANGE')).toEqual([]);
 });
+it('coverage preserves its assigned position and blocks an unqualified incoming employee',async()=>{
+ const r=fixture('EXCHANGE','MANAGER_PENDING');r.state.shifts[0].positionId='barista';r.row.source_position_id='barista';
+ expect(await approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);
+ expect(JSON.parse(String(r.batches[0].find(s=>s.text.includes('guarded_after'))!.values[1]))[0]).toMatchObject({employeeId:'F',positionId:'barista'});
+ r.state.assignmentFacts.memberships=r.state.assignmentFacts.memberships.filter(m=>m.employeeId!=='F');
+ await expect(approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).rejects.toThrow('not qualified');
+ expect(r.batches).toHaveLength(1);
+});
+it('unrelated request denial preserves an inactive historical position and employee',async()=>{
+ const r=fixture('EXCHANGE','MANAGER_PENDING');r.state.shifts[0].positionId='barista';r.state.assignmentFacts.positions[0].active=false;r.state.assignmentFacts.locations[0].active=false;r.state.recipients[0].active=false;
+ expect(await denyExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);
+ expect(JSON.parse(String(r.batches[0].find(s=>s.text.includes('guarded_after'))!.values[1]))[0]).toMatchObject({employeeId:'E',positionId:'barista'});
+});
+
+function positionedSwapFixture() {
+  const r = fixture('EXCHANGE', 'MANAGER_PENDING');
+  Object.assign(r.row, {
+    kind: 'SWAP', source_position_id: 'barista', target_position_id: 'cashier',
+    target_shift_id: 's2', target_schedule_id: 'b', target_shift_employee_id: 'F',
+    target_location_id: 'L', target_week_start: '2030-10-14', target_date: '2030-10-18',
+    target_start_time: '09:00', target_end_time: '17:00',
+  });
+  r.state.shifts[0].positionId = 'barista';
+  r.state.revisions[0].shifts[0].positionId = 'barista';
+  r.state.schedules.push({ ...r.state.schedules[0], id: 'b', weekStart: '2030-10-14' });
+  r.state.shifts.push({
+    ...r.state.shifts[0], sourceShiftId: 's2', scheduleId: 'b', employeeId: 'F',
+    weekStart: '2030-10-14', date: '2030-10-18', isDesignatedLead: false, positionId: 'cashier',
+  });
+  r.state.revisions.push({
+    ...r.state.revisions[0], id: 'r2', weekStart: '2030-10-14', shifts: [{ ...r.state.shifts[1] }],
+  });
+  return r;
+}
+
+it('two-leg swap retains each source position while reassigning both employees atomically', async () => {
+  const r = positionedSwapFixture();
+  expect(await approveSwapExchange({ exchangeId: 'request-1', managerId: 'M' }, r.executor)).toBe(true);
+  expect(r.batches).toHaveLength(1);
+  const batch = r.batches[0];
+  const after = JSON.parse(String(batch.find(s => s.text.includes('guarded_after'))!.values[1]));
+  expect(after).toEqual([
+    expect.objectContaining({ sourceShiftId: 's1', employeeId: 'F', positionId: 'barista' }),
+    expect.objectContaining({ sourceShiftId: 's2', employeeId: 'E', positionId: 'cashier' }),
+  ]);
+  expect(batch.filter(s => s.text.includes('UPDATE shifts')).map(s => s.values.slice(0, 2))).toEqual([['s1', 'F'], ['s2', 'E']]);
+  expect(batch.filter(s => s.text.includes('INSERT INTO schedule_publication_revisions'))).toHaveLength(2);
+  expect(intents(batch).filter(intent => intent.kind === 'EXCHANGE').map(intent => intent.employee)).toEqual(['E', 'F']);
+});
+
+it.each([
+  { incomingEmployeeId: 'F', requiredPositionId: 'barista' },
+  { incomingEmployeeId: 'E', requiredPositionId: 'cashier' },
+])('two-leg swap rejects missing $incomingEmployeeId / $requiredPositionId qualification before any business batch', async ({ incomingEmployeeId, requiredPositionId }) => {
+  const r = positionedSwapFixture();
+  r.state.assignmentFacts.memberships = r.state.assignmentFacts.memberships.filter(
+    membership => membership.employeeId !== incomingEmployeeId || membership.positionId !== requiredPositionId,
+  );
+  const before = structuredClone(r.state);
+  await expect(approveSwapExchange({ exchangeId: 'request-1', managerId: 'M' }, r.executor)).rejects.toThrow('not qualified');
+  expect(r.executor.transaction).not.toHaveBeenCalled();
+  expect(r.batches).toEqual([]);
+  expect(r.state).toEqual(before);
+});

@@ -1,3 +1,6 @@
+import { listPositions } from "@/lib/data/positions";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate, businessTime } from "@/lib/business-time";
 import { EmployeeDashboard } from "@/components/employee-dashboard";
 import {
   ManagerDashboard,
@@ -7,8 +10,6 @@ import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import {
   addDays,
-  currentDateInPuertoRico,
-  currentTimeInPuertoRico,
   durationMinutes,
   formatWeekRange,
   weekDates,
@@ -70,10 +71,11 @@ export default async function DashboardPage({
   searchParams: Promise<{ view?: string; week?: string }>;
 }) {
   const session = await requireSession();
+  const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);
   const params = await searchParams;
-  const currentDate = currentDateInPuertoRico();
-  const currentTime = currentTimeInPuertoRico();
+  const currentDate = businessDate(new Date(), workspace.timeZone);
+  const currentTime = businessTime(new Date(), workspace.timeZone);
   const currentWeek = weekStartFor(currentDate);
 
   if (!manager) {
@@ -93,7 +95,8 @@ export default async function DashboardPage({
         date: shift.date,
         startTime: shift.startTime,
         endTime: shift.endTime,
-        isDesignatedLead: shift.isDesignatedLead,
+        positionId: shift.positionId,
+      isDesignatedLead: shift.isDesignatedLead,
         locationName: locationNames.get(shift.locationId),
       }));
 
@@ -189,6 +192,7 @@ export default async function DashboardPage({
       employeeName: shift.employeeName,
       startTime: shift.startTime,
       endTime: shift.endTime,
+      positionId: shift.positionId,
       isDesignatedLead: shift.isDesignatedLead,
     }));
 
@@ -204,13 +208,16 @@ export default async function DashboardPage({
     .map((employee) => ({
       employeeId: employee.id,
       employeeName: `${employee.firstName} ${employee.lastName}`,
+      eligibleLocationIds: employee.eligibleLocationIds,
+      positionIds: employee.positionIds,
       role: employee.role,
       shifts: (shiftsByEmployee.get(employee.id) ?? []).map((shift) => ({
         id: shift.id,
         date: shift.date,
         startTime: shift.startTime,
         endTime: shift.endTime,
-        isDesignatedLead: shift.isDesignatedLead,
+        positionId: shift.positionId,
+      isDesignatedLead: shift.isDesignatedLead,
       })),
     }));
 
@@ -222,6 +229,7 @@ export default async function DashboardPage({
   );
 
   const health = calculateScheduleHealth({
+      positions: await listPositions({includeInactive:true}),
     shifts: healthShifts.filter(shift => !shift.isCalloutApproved).map((shift) => ({
       id: shift.id,
       employeeId: shift.employeeId,
@@ -230,6 +238,7 @@ export default async function DashboardPage({
       date: shift.date,
       startTime: shift.startTime,
       endTime: shift.endTime,
+      positionId: shift.positionId,
       isDesignatedLead: shift.isDesignatedLead,
     })),
     locations: staffingSettings.map((location) => ({
@@ -241,6 +250,8 @@ export default async function DashboardPage({
     employees: employeeTargets.map((employee) => ({
       id: employee.employeeId,
       name: employee.employeeName,
+      eligibleLocationIds: employee.eligibleLocationIds,
+      positionIds: employee.positionIds,
       role: employee.role,
       active: true,
       targetWeeklyHours: targetMap.get(employee.employeeId),
@@ -252,7 +263,7 @@ export default async function DashboardPage({
   const coverageRulesConfigured =
     staffingSettings.length > 0 &&
     staffingSettings.every((location) =>
-      coverageWindows.some(
+      location.minimumStaffPerShift !== null && location.requiresDesignatedLead !== null && coverageWindows.some(
         (window) => window.locationId === location.locationId,
       ),
     );
@@ -279,6 +290,7 @@ export default async function DashboardPage({
         startTime: block.startTime,
         endTime: block.endTime,
         gap: block.gap,
+        positionCoverage: block.positionCoverage,
         requiresLead: block.requiresLead && !block.leadCovered,
       })),
     hourIssues: [
@@ -399,6 +411,8 @@ export default async function DashboardPage({
 
   return (
     <ManagerDashboard
+      workspaceName={workspace.name}
+      timeZone={workspace.timeZone}
       firstName={session.firstName}
       weekStart={weekStart}
       weekLabel={formatWeekRange(weekStart)}

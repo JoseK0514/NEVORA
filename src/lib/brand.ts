@@ -6,8 +6,7 @@ export const NUVORA_BRAND = {
   copyright: "© 2026 VELANI LLC. All rights reserved.",
   ownership: "NEVORA is a product of VELANI LLC.",
   poweredBy: "Powered by VELANI LLC",
-  workspace: "Fuel Coffee Drive",
   homeAriaLabel: "NEVORA Workforce home",
   metadataTitle: "NEVORA Workforce",
-  metadataDescription: "Workforce operations for Fuel Coffee Drive",
+  metadataDescription: "Workforce scheduling and operations",
 } as const;

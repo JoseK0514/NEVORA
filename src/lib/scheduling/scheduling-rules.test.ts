@@ -16,9 +16,9 @@ const normal = Array.from({ length: 7 }, (_, dayOfWeek) => ({
   endTime: "18:00",
 }));
 function input(patch: Partial<ValidateShiftInput> = {}): ValidateShiftInput {
-  return {
+  return { workspace: {id:"test-workspace",active:true,timeZone:"America/Puerto_Rico"}, location: {id:"loc-1",workspaceId:"test-workspace",active:true},
     candidate,
-    employee: {
+    employee: { positionIds: [],
       active: true,
       role: "EMPLOYEE",
       eligibleLocationIds: ["loc-1", "loc-2"],
@@ -579,7 +579,7 @@ describe("shared staffing and qualified Lead coverage", () => {
       requiresDesignatedLead: true,
     },
   ];
-  const windows = locations.map((l) => ({
+  const windows = locations.map((l) => ({ positionRequirements: [],
     locationId: l.id,
     dayOfWeek: 5,
     startTime: "08:00",
@@ -590,8 +590,8 @@ describe("shared staffing and qualified Lead coverage", () => {
     { ...candidate, id: "s2", employeeId: "E-2" },
   ];
   const employees = [
-    { id: "E-1", name: "Sam", role: "LEAD" as const, active: true },
-    { id: "E-2", name: "Jamie", role: "EMPLOYEE" as const, active: true },
+    { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [],  id: "E-1", name: "Sam", role: "LEAD" as const, active: true },
+    { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [],  id: "E-2", name: "Jamie", role: "EMPLOYEE" as const, active: true },
   ];
   it("uses stored/supplied 2/6 requirements and isolates each location", () => {
     const result = calculateScheduleHealth({
@@ -672,7 +672,7 @@ describe("shared staffing and qualified Lead coverage", () => {
       locations: [{ ...locations[0], minimumStaffPerShift: 1 }],
       employees,
       coverageWindows: [
-        {
+        { positionRequirements: [],
           locationId: "loc-1",
           dayOfWeek: 1,
           startTime: "00:00",
@@ -751,11 +751,11 @@ describe("workweek and staffing edge regressions", () => {
         },
       ],
       employees: [
-        { id: candidate.employeeId, name: "Sam", role: "LEAD", active: true },
+        { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [],  id: candidate.employeeId, name: "Sam", role: "LEAD", active: true },
       ],
-      locations: [{ id: "loc-1", name: "FUEL – 2", minimumStaffPerShift: 2 }],
+      locations: [{ id: "loc-1", name: "FUEL – 2", minimumStaffPerShift: 2, requiresDesignatedLead: true }],
       coverageWindows: [
-        {
+        { positionRequirements: [],
           locationId: "loc-1",
           dayOfWeek: 5,
           startTime: "08:00",
@@ -783,7 +783,7 @@ describe("workweek and staffing edge regressions", () => {
         { ...candidate, id: "monday", date: "2026-10-05" },
       ],
       employees: [
-        {
+        { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [], active: true,
           id: candidate.employeeId,
           name: "Sam",
           role: "EMPLOYEE",

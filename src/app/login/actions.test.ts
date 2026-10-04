@@ -46,3 +46,6 @@ it.each(['/app/notifications/open?notificationId=fictional', 'https://evil.test'
     expect(hiddenReturns(await LoginPage({ searchParams }))).toEqual(expected);
     expect(hiddenReturns(await ActivatePage({ searchParams }))).toEqual(expected);
 });
+
+// Public identity is an external database read, independent of return-to validation.
+vi.mock('@/lib/data/workspaces', () => ({getPublicWorkspaceName:async()=> 'Northside Services'}));

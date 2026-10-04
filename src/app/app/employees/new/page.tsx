@@ -1,9 +1,12 @@
+import {ConfigurationForm} from "@/components/configuration-form";
+import { listPositions } from "@/lib/data/positions";
+import { EmployeeSchedulingFields } from "@/components/employee-scheduling-fields";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { PhoneInput } from "@/components/phone-input";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
-import { createEmployeeAction } from "@/app/app/employees/actions";
+import { createEmployeeFormAction } from "@/app/app/employees/actions";
 
 export default async function NewEmployeePage({
   searchParams,
@@ -11,7 +14,7 @@ export default async function NewEmployeePage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const session = await requireRoles(MANAGER_ROLES);
-  const locations = await listLocations();
+  const [locations, positions] = await Promise.all([listLocations(), listPositions()]);
   const params = await searchParams;
 
   return (
@@ -34,7 +37,7 @@ export default async function NewEmployeePage({
           </p>
         ) : null}
 
-        <form action={createEmployeeAction} className="employee-form">
+        <ConfigurationForm action={createEmployeeFormAction} className="employee-form">
           <label>
             Employee ID
             <input name="id" placeholder="FC-0021" required />
@@ -64,7 +67,7 @@ export default async function NewEmployeePage({
 
           <div className="form-columns">
             <label>
-              Role
+              Access role
               <select name="role" defaultValue="EMPLOYEE">
                 {session.role === "OWNER" ? <option value="OWNER">Owner</option> : null}
                 <option value="MANAGER">Manager</option>
@@ -75,7 +78,8 @@ export default async function NewEmployeePage({
 
             <label>
               Primary Location
-              <select name="primaryLocationId" required defaultValue={locations[0]?.id}>
+              <select name="primaryLocationId" required defaultValue="">
+                <option value="" disabled>Choose a primary location</option>
                 {locations.map((location) => (
                   <option key={location.id} value={location.id}>
                     {location.shortName}
@@ -85,22 +89,7 @@ export default async function NewEmployeePage({
             </label>
           </div>
 
-          <fieldset>
-            <legend>Eligible Locations</legend>
-            <p>Primary location is always included automatically.</p>
-            <div className="checkbox-grid">
-              {locations.map((location) => (
-                <label className="checkbox-row" key={location.id}>
-                  <input
-                    type="checkbox"
-                    name="eligibleLocationIds"
-                    value={location.id}
-                  />
-                  <span>{location.name}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <EmployeeSchedulingFields locations={locations} positions={positions}/>
 
           <p className="form-help">
             The employee creates their own password from the Activate Account screen
@@ -111,7 +100,7 @@ export default async function NewEmployeePage({
             <Link className="button secondary" href="/app/employees">Cancel</Link>
             <button className="button primary" type="submit">Create Employee</button>
           </div>
-        </form>
+        </ConfigurationForm>
       </section>
     </>
   );

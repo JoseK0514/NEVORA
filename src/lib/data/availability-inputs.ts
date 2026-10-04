@@ -1,3 +1,4 @@
+import type { SqlExecutor } from "../notifications/types";
 import { getDb, queryRows } from "@/lib/db";
 import { addDays } from "../date-utils";
 import type {
@@ -10,8 +11,9 @@ export async function readAvailabilityInputs(
   employeeId: string,
   firstWeek: string,
   lastWeek = firstWeek,
+  executor?: SqlExecutor,
 ) {
-  const sql = getDb();
+  const sql = executor ? {query: (text: string, values: unknown[]) => executor.query({text,values})} : getDb();
   const [normalRaw, weeklyRaw, submissionsRaw, exceptionsRaw] =
     await Promise.all([
       sql.query(

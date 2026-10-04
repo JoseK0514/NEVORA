@@ -1,3 +1,7 @@
+import {listPositions} from "@/lib/data/positions";
+import {EmployeeSchedulingFields} from "@/components/employee-scheduling-fields";
+import {ConfigurationForm} from "@/components/configuration-form";
+import {saveEmployeeSchedulingProfileAction} from "../actions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
@@ -14,9 +18,10 @@ export default async function EmployeeProfilePage({
   await requireRoles(MANAGER_ROLES);
   const { employeeId } = await params;
 
-  const [employees, locations] = await Promise.all([
+  const [employees, locations, positions] = await Promise.all([
     listEmployees(),
-    listLocations(),
+    listLocations({includeInactive:true}),
+    listPositions({includeInactive:true}),
   ]);
   const employee = employees.find((item) => item.id === employeeId);
 
@@ -47,7 +52,7 @@ export default async function EmployeeProfilePage({
           <div>
             <h2>{employee.firstName} {employee.lastName}</h2>
             <span className="employee-role-badge">
-              {employeeRoleLabel(employee.role)}
+              Access role: {employeeRoleLabel(employee.role)}
             </span>
           </div>
         </div>
@@ -71,6 +76,7 @@ export default async function EmployeeProfilePage({
           </div>
         </div>
       </section>
+      <section className="panel form-panel"><h2>Scheduling profile</h2><ConfigurationForm action={saveEmployeeSchedulingProfileAction} className="employee-form scheduling-profile-form"><input type="hidden" name="employeeId" value={employee.id}/><EmployeeSchedulingFields employee={employee} locations={locations} positions={positions}/><button className="button primary" type="submit">Save Scheduling Profile</button></ConfigurationForm></section>
     </div>
   );
 }

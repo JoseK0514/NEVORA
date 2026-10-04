@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { validateShift } from "./validate-shift";
 
-const baseInput = {
+const baseInput = { workspace: {id:"test-workspace",active:true,timeZone:"America/Puerto_Rico"}, location: {id:"loc-1",workspaceId:"test-workspace",active:true},
   candidate: {
     employeeId: "FC-001",
     locationId: "loc-1",
@@ -9,7 +9,7 @@ const baseInput = {
     startTime: "08:00",
     endTime: "16:00",
   },
-  employee: {
+  employee: { positionIds: [],
     active: true,
     role: "EMPLOYEE",
     eligibleLocationIds: ["loc-1", "loc-2"],

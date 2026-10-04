@@ -1,36 +1,4 @@
-export const BUSINESS_TIME_ZONE = "America/Puerto_Rico";
-
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-export function currentDateInPuertoRico() {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: BUSINESS_TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date());
-
-  const values = Object.fromEntries(
-    parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]),
-  );
-
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
-export function currentTimeInPuertoRico() {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: BUSINESS_TIME_ZONE,
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(new Date());
-
-  const values = Object.fromEntries(
-    parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]),
-  );
-
-  return `${values.hour}:${values.minute}`;
-}
 
 export function addDays(date: string, amount: number) {
   const value = new Date(`${date}T12:00:00Z`);
@@ -104,37 +72,4 @@ export function durationMinutes(startTime: string, endTime: string) {
 
   const duration = toMinutes(endTime) - toMinutes(startTime);
   return duration < 0 ? duration + 1440 : duration;
-}
-
-
-export function formatPuertoRicoDateTimeInput(iso?: string) {
-  if (!iso) return "";
-
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: BUSINESS_TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(new Date(iso));
-
-  const values = Object.fromEntries(
-    parts
-      .filter((part) => part.type !== "literal")
-      .map((part) => [part.type, part.value]),
-  );
-
-  return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}`;
-}
-
-export function formatPuertoRicoDateTime(iso: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: BUSINESS_TIME_ZONE,
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(iso));
 }

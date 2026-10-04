@@ -1,7 +1,7 @@
 import { addDays, weekStartFor } from "../date-utils";
 
-// Coordinates represent Puerto Rico business wall time, not worked-time instants.
-// Fuel's workweek is Monday 00:00 through the following Monday 00:00.
+// Coordinates represent workspace business wall time, not worked-time instants.
+// The workspace workweek is Monday 00:00 through the following Monday 00:00.
 export type BusinessPeriod = { start: number; end: number };
 export type ShiftPeriodInput = {
   date: string;

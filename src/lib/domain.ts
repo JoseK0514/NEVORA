@@ -1,3 +1,6 @@
+export type Workspace = { id: string; name: string; timeZone: string; active: boolean; createdAt: string; updatedAt: string };
+export type Position = { id: string; workspaceId: string; name: string; active: boolean; createdAt: string; updatedAt: string };
+
 export type UserRole = "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE";
 
 export type Employee = {
@@ -9,11 +12,14 @@ export type Employee = {
   role: UserRole;
   primaryLocationId: string;
   eligibleLocationIds: string[];
+  positionIds: string[];
   active: boolean;
 };
 
 export type Location = {
   id: string;
+  workspaceId: string;
+  clockerKey: string;
   name: string;
   shortName: string;
   active: boolean;
@@ -46,6 +52,7 @@ export type Shift = {
   startTime: string;
   endTime: string;
   isDesignatedLead?: boolean;
+  positionId?: string;
 };
 
 export type RequestStatus = "PENDING" | "APPROVED" | "DENIED" | "CANCELLED";

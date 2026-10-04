@@ -93,6 +93,8 @@ export async function listRevisionShifts(
          date,
          start_time,
          end_time,
+         position_id,
+         position_name,
          notes,
          is_designated_lead,
          is_callout_approved
@@ -115,6 +117,8 @@ export async function listRevisionShifts(
       date: dateValue(item.date),
       startTime: timeValue(item.start_time),
       endTime: timeValue(item.end_time),
+      positionId: item.position_id ? String(item.position_id) : undefined,
+      positionName: item.position_name ? String(item.position_name) : undefined,
       notes: item.notes ? String(item.notes) : undefined,
       isDesignatedLead: Boolean(item.is_designated_lead),
       isCalloutApproved: Boolean(item.is_callout_approved),

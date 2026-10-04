@@ -6,6 +6,7 @@ import { timeMinutes } from "@/lib/scheduling/periods";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
   createCoverageWindow,
+  replaceCoverageWindowPositionRequirements,
   deleteCoverageWindow,
   listEmployeeHourTargets,
   listLocationStaffingSettings,
@@ -13,7 +14,7 @@ import {
   saveLocationStaffingSettings,
 } from "@/lib/data/schedule-health";
 
-export async function saveScheduleHealthSettingsAction(formData: FormData) {
+async function saveSettings(formData: FormData, inline = false) {
   await requireRoles(MANAGER_ROLES);
 
   const [locations, employees] = await Promise.all([
@@ -25,14 +26,43 @@ export async function saveScheduleHealthSettingsAction(formData: FormData) {
     const value = Number(formData.get(`staffing-${location.locationId}`));
 
     if (!Number.isInteger(value) || value < 1 || value > 100) {
-      redirect("/app/schedule/settings?error=invalid_staffing");
+      validationFailure("invalid_staffing", inline);
     }
 
+    // Interpret the submitted form shape, never a concurrently changed DB shape.
+    const leadChoices = formData.getAll(`lead-choice-${location.locationId}`);
+    const checkboxes = formData.getAll(`lead-${location.locationId}`);
+    const configuredMarkers = formData.getAll(
+      `lead-configured-${location.locationId}`,
+    );
+    let requiresDesignatedLead: boolean;
+    if (leadChoices.length) {
+      if (
+        leadChoices.length !== 1 ||
+        !["true", "false"].includes(String(leadChoices[0])) ||
+        checkboxes.length ||
+        configuredMarkers.length
+      ) {
+        validationFailure("invalid_staffing", inline);
+      }
+      requiresDesignatedLead = leadChoices[0] === "true";
+    } else {
+      // The marker identifies the rendered checkbox contract even when unchecked;
+      // absent or inconsistent fields must never imply false.
+      if (
+        checkboxes.length > 1 ||
+        (checkboxes.length && checkboxes[0] !== "on") ||
+        configuredMarkers.length !== 1 ||
+        configuredMarkers[0] !== "true"
+      ) {
+        validationFailure("invalid_staffing", inline);
+      }
+      requiresDesignatedLead = checkboxes[0] === "on";
+    }
     return {
       locationId: location.locationId,
       minimumStaffPerShift: value,
-      requiresDesignatedLead:
-        formData.get(`lead-${location.locationId}`) === "on",
+      requiresDesignatedLead,
     };
   });
 
@@ -55,7 +85,7 @@ export async function saveScheduleHealthSettingsAction(formData: FormData) {
           targetWeeklyHours < 0 ||
           targetWeeklyHours > 168))
     )
-      redirect("/app/schedule/settings?error=invalid_hours");
+      validationFailure("invalid_hours", inline);
     return {
       employeeId: employee.employeeId,
       targetWeeklyHours:
@@ -73,12 +103,11 @@ export async function saveScheduleHealthSettingsAction(formData: FormData) {
 
   revalidatePath("/app/schedule");
   revalidatePath("/app/schedule/settings");
+  if (inline) return { success: "Schedule health settings updated." };
   redirect("/app/schedule/settings?saved=1");
 }
-
-
-export async function addCoverageWindowAction(formData: FormData) {
-  await requireRoles(MANAGER_ROLES);
+async function addWindow(formData: FormData, inline=false) {
+  const actor = await requireRoles(MANAGER_ROLES);
 
   const locationId = String(formData.get("locationId") ?? "");
   const dayOfWeek = Number(formData.get("dayOfWeek"));
@@ -104,7 +133,7 @@ export async function addCoverageWindowAction(formData: FormData) {
         minimumStaff < 1 ||
         minimumStaff > 100))
   ) {
-    redirect("/app/schedule/settings?error=invalid_window");
+    validationFailure('invalid_window',inline);
   }
 
   try {
@@ -114,13 +143,16 @@ export async function addCoverageWindowAction(formData: FormData) {
       startTime,
       endTime,
       minimumStaff,
+      actorEmployeeId:actor.id,
+      positionRequirements:readRequirements(formData),
     });
   } catch {
-    redirect("/app/schedule/settings?error=duplicate_window");
+    validationFailure('duplicate_window',inline);
   }
 
   revalidatePath("/app/schedule");
   revalidatePath("/app/schedule/settings");
+  if(inline)return {success:"Coverage window added."};
   redirect("/app/schedule/settings?windowSaved=1");
 }
 
@@ -136,4 +168,22 @@ export async function deleteCoverageWindowAction(formData: FormData) {
   revalidatePath("/app/schedule");
   revalidatePath("/app/schedule/settings");
   redirect("/app/schedule/settings?windowDeleted=1");
+}
+
+const inputErrors:Record<string,string>={
+ invalid_staffing:'Staffing requirements must be whole numbers between 1 and 100. Choose whether a designated Lead is required for each unconfigured location.',
+ invalid_hours:'Targets and maximums must be between 0 and 168 hours.',
+ invalid_window:'Enter a valid day, time range, and optional staffing override.',
+ duplicate_window:'Coverage window could not be saved. Check duplicate periods, active positions, and whole-number quantities from 1 to 100.',
+};
+function validationFailure(code:string,inline:boolean):never {if(inline)throw new Error(inputErrors[code]);redirect(`/app/schedule/settings?error=${code}`);}
+function readRequirements(data:FormData){return data.getAll('quotaPositionId').map(String).flatMap(positionId=>{const raw=String(data.get(`quota-${positionId}`)??'').trim();return raw?[{positionId,quantity:Number(raw)}]:[];});}
+export async function saveScheduleHealthSettingsAction(data:FormData):Promise<void>{await saveSettings(data);}
+export async function addCoverageWindowAction(data:FormData):Promise<void>{await addWindow(data);}
+export async function saveScheduleHealthSettingsFormAction(data:FormData){try{return (await saveSettings(data,true))!;}catch(error){return {error:error instanceof Error&&Object.values(inputErrors).includes(error.message)?error.message:'Settings could not be saved. Your entries are preserved.'};}}
+export async function addCoverageWindowFormAction(data:FormData){try{return (await addWindow(data,true))!;}catch(error){return {error:error instanceof Error&&Object.values(inputErrors).includes(error.message)?error.message:'Coverage window could not be saved. Your entries are preserved.'};}}
+export async function replaceCoverageWindowPositionRequirementsAction(data:FormData){
+ const actor=await requireRoles(MANAGER_ROLES);
+ try {await replaceCoverageWindowPositionRequirements({windowId:String(data.get('windowId')??''),requirements:readRequirements(data),actorEmployeeId:actor.id});revalidatePath('/app/schedule/settings');revalidatePath('/app/settings/locations');return {success:'Position quantities updated.'};}
+ catch{return {error:'Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.'};}
 }

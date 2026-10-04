@@ -1,6 +1,8 @@
+import { businessDate } from '../business-time';
+import { workspaceReadGuard } from '../data/workspaces';
 import { createHash, randomUUID } from 'node:crypto';
 import { buildNotificationIntents } from './recipients';
-import { nextRoutineTime, puertoRicoDay } from './policy';
+import { nextRoutineTime, notificationBoundary } from './policy';
 import { destinationForSource, isReviewRole } from './destinations';
 import { summaryMemberKey, summarySourceItems, parseSummaryMember, scheduleSourceSnapshot, evaluateNotificationSource } from '../data/notification-state';
 import { readNotificationWeekState, notificationWeekStateGuard, scheduleWeekLockStatements } from '../data/notification-transactions';
@@ -19,7 +21,7 @@ export function buildSummaryGroup(sources:readonly SummaryInput[],recipient:Reci
     const candidates = sources.flatMap(input=>{
         if (Date.parse(input.expiresAt)<=now.getTime() || !destinationForSource(input.source,recipient)) return [];
         if (input.source.kind==='AVAILABILITY' && Date.parse(input.source.settings.availabilityDeadline ?? '')>now.getTime()) return [];
-        return summarySourceItems(input.source).filter(item=>item.type!=='COVERAGE_GAP' || Date.parse(`${item.dateTime}-04:00`)>now.getTime()).map(item=>({...input,item}));
+        return summarySourceItems(input.source).filter(item=>item.type!=='COVERAGE_GAP' || notificationBoundary(item.dateTime ?? '',policy.timeZone)>now.getTime()).map(item=>({...input,item}));
     });
     let remaining = candidates;
     let high = false;
@@ -27,17 +29,17 @@ export function buildSummaryGroup(sources:readonly SummaryInput[],recipient:Reci
     let fresh: [string,typeof candidates[number]][] = [];
     // Removing consumed urgent work can move the surviving routine group to tomorrow.
     for (let pass=0;pass<2;pass++) {
-        high = remaining.some(({item})=>item.type==='COVERAGE_GAP' && Date.parse(`${item.dateTime}-04:00`)-now.getTime()<=policy.urgentLeadHours*3600000);
+        high = remaining.some(({item})=>item.type==='COVERAGE_GAP' && notificationBoundary(item.dateTime ?? '',policy.timeZone)-now.getTime()<=policy.urgentLeadHours*3600000);
         const collected = remaining.some(input=>input.seedId || input.source.kind==='AVAILABILITY');
         const collectionTime = collected ? now : new Date(now.getTime()+policy.managerCollectionMinutes*60000);
         due = high ? now : nextRoutineTime(collectionTime,policy);
-        const unique = new Map(remaining.map(input=>[summaryMemberKey({source:input.source.source,itemId:input.item.id,budget:input.source.kind==='AVAILABILITY'?'deadline':puertoRicoDay(due)}),input]));
+        const unique = new Map(remaining.map(input=>[summaryMemberKey({source:input.source.source,itemId:input.item.id,budget:input.source.kind==='AVAILABILITY'?'deadline':businessDate(due,policy.timeZone)}),input]));
         fresh = [...unique].filter(([key])=>!consumed.has(key));
         remaining = fresh.map(([,input])=>input);
     }
     if (!fresh.length) return null;
     const itemKeys = fresh.map(([key])=>key).sort();
-    const expiresAt = new Date(Math.min(...fresh.map(([,i])=>Date.parse(i.expiresAt)),...fresh.filter(([,i])=>i.item.type==='COVERAGE_GAP').map(([,i])=>Date.parse(`${i.item.dateTime}-04:00`)))).toISOString();
+    const expiresAt = new Date(Math.min(...fresh.map(([,i])=>Date.parse(i.expiresAt)),...fresh.filter(([,i])=>i.item.type==='COVERAGE_GAP').map(([,i])=>notificationBoundary(i.item.dateTime ?? '',policy.timeZone)))).toISOString();
     if (Date.parse(expiresAt)<=due.getTime()) return null;
     const id = randomUUID();
     const version = createHash('sha256').update(JSON.stringify(itemKeys)).digest('hex');
@@ -60,7 +62,7 @@ async function persistReminder(intent: NotificationIntent, deps:ReminderDeps, wi
     // Account-level budget is independent of installation count or edited deadline version.
     let sql = insert.text.replace('VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,\'pending\')',`SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending'
       WHERE NOT EXISTS (SELECT 1 FROM notifications n WHERE n.environment=$8 AND n.employee_id=$2 AND n.source_kind=$9 AND n.source_id=$10 AND n.purpose='REMINDER'
-        AND (n.event_key=$7 OR (n.due_at AT TIME ZONE 'America/Puerto_Rico')::date=($15::timestamptz AT TIME ZONE 'America/Puerto_Rico')::date))`);
+        AND (n.event_key=$7 OR (n.due_at AT TIME ZONE $18)::date=($15::timestamptz AT TIME ZONE $18)::date))`);
     if (intent.source.kind==='AVAILABILITY') {
         sql = sql.replace('WHERE NOT EXISTS', `WHERE EXISTS (SELECT 1 FROM schedule_week_settings w WHERE w.week_start=$10::text::date AND w.availability_deadline=$11::text::timestamptz AND w.availability_deadline>clock_timestamp())
           AND EXISTS (SELECT 1 FROM employees e WHERE e.id=$2 AND e.active=true AND e.role IN ('EMPLOYEE','LEAD'))
@@ -69,11 +71,11 @@ async function persistReminder(intent: NotificationIntent, deps:ReminderDeps, wi
     }
     for (let attempt=0;attempt<3;attempt++) {
         if (!withinBudget()) return;
-        const guarded: SqlStatement[] = [];
+        const guarded: SqlStatement[] = deps.config.workspace ? workspaceReadGuard(deps.config.workspace) : [];
         if (intent.source.kind==='SCHEDULE') {
             const current = await readNotificationWeekState([intent.source.id],executor);
             const access = current.recipients.find(r=>r.employeeId===intent.employeeId) ?? null;
-            if (!evaluateNotificationSource(intent,access,scheduleSourceSnapshot(current,intent.source.id),deps.clock()).deliverable) return;
+            if (!evaluateNotificationSource(intent,access,scheduleSourceSnapshot(current,intent.source.id),deps.clock(),deps.config.policy).deliverable) return;
             guarded.push(...scheduleWeekLockStatements([intent.source.id]),notificationWeekStateGuard(intent.source.id,current));
         } else {
             guarded.push({text:`SELECT pg_advisory_xact_lock(hashtextextended('availability:' || $1,0))`,values:[intent.source.id]});
@@ -82,8 +84,8 @@ async function persistReminder(intent: NotificationIntent, deps:ReminderDeps, wi
             if (!withinBudget()) return;
             await executor.transaction([
                 ...guarded,
-                {text:`SELECT pg_advisory_xact_lock(hashtextextended('reminder-account:' || $1 || ':' || $2 || ':' || $3,0))`,values:[intent.environment,intent.employeeId,puertoRicoDay(new Date(intent.dueAt))]},
-                {...insert,text:sql},
+                {text:`SELECT pg_advisory_xact_lock(hashtextextended('reminder-account:' || $1 || ':' || $2 || ':' || $3,0))`,values:[intent.environment,intent.employeeId,businessDate(new Date(intent.dueAt),deps.config.policy.timeZone)]},
+                {...insert,text:sql,values:[...insert.values,deps.config.policy.timeZone]},
             ]);
             return;
         } catch (error) {
@@ -101,9 +103,10 @@ async function persistGroup(inputs:readonly SummaryInput[],recipient:RecipientAc
         try {
             if (!withinBudget()) return;
             await executor.transaction([
+                ...(config.workspace ? workspaceReadGuard(config.workspace) : []),
                 // The account lock also fences the deadline lifetime budget across midnight.
                 {text:`SELECT pg_advisory_xact_lock(hashtextextended('manager-account:' || $1 || ':' || $2,0))`,values:[config.environment,recipient.employeeId]},
-                {text:`SELECT pg_advisory_xact_lock(hashtextextended('manager-day:' || $1 || ':' || $2 || ':' || $3,0))`,values:[config.environment,recipient.employeeId,puertoRicoDay(new Date(intent.dueAt))]},
+                {text:`SELECT pg_advisory_xact_lock(hashtextextended('manager-day:' || $1 || ':' || $2 || ':' || $3,0))`,values:[config.environment,recipient.employeeId,businessDate(new Date(intent.dueAt),deps.config.policy.timeZone)]},
                 // A conflict aborts and rebuilds the group with the winner's consumed items.
                 {text:`SELECT (CASE WHEN NOT EXISTS (SELECT 1 FROM notifications WHERE environment=$1 AND employee_id=$2 AND source_kind='MANAGER_SUMMARY' AND purpose='SUMMARY' AND item_keys && $3::text[]) THEN '1' ELSE 'notification_group_conflict' END)::integer`,values:[config.environment,recipient.employeeId,intent.itemKeys]},
                 ...notificationIntentStatements([intent]),
@@ -117,8 +120,8 @@ async function persistGroup(inputs:readonly SummaryInput[],recipient:RecipientAc
 }
 /** Every possible day after consumed urgent work is removed, grouped by logical item. */
 function summaryKeyVariants(inputs:readonly SummaryInput[],now:Date,policy:NotificationPolicy):string[][] {
-    const days = [...new Set([puertoRicoDay(now),puertoRicoDay(nextRoutineTime(now,policy)),puertoRicoDay(nextRoutineTime(new Date(now.getTime()+policy.managerCollectionMinutes*60000),policy))])];
-    return inputs.filter(input=>Date.parse(input.expiresAt)>now.getTime()).flatMap(input=>summarySourceItems(input.source).filter(item=>item.type!=='COVERAGE_GAP' || Date.parse(`${item.dateTime}-04:00`)>now.getTime()).map(item=>(input.source.kind==='AVAILABILITY'?['deadline']:days).map(budget=>summaryMemberKey({source:input.source.source,itemId:item.id,budget}))));
+    const days = [...new Set([businessDate(now,policy.timeZone),businessDate(nextRoutineTime(now,policy),policy.timeZone),businessDate(nextRoutineTime(new Date(now.getTime()+policy.managerCollectionMinutes*60000),policy),policy.timeZone)])];
+    return inputs.filter(input=>Date.parse(input.expiresAt)>now.getTime()).flatMap(input=>summarySourceItems(input.source).filter(item=>item.type!=='COVERAGE_GAP' || notificationBoundary(item.dateTime ?? '',policy.timeZone)>now.getTime()).map(item=>(input.source.kind==='AVAILABILITY'?['deadline']:days).map(budget=>summaryMemberKey({source:input.source.source,itemId:item.id,budget}))));
 }
 function compatibleInputs(inputs:readonly SummaryInput[]):SummaryInput[][] {
     return [inputs.filter(input=>summarySourceItems(input.source).some(item=>item.type==='COVERAGE_GAP')),
@@ -136,13 +139,13 @@ function reminderRecipientStatement(source:SourceSnapshot,now:Date,config:Notifi
     const candidates = selfIds.map(employeeId=>({employeeId,active:true,role:'EMPLOYEE' as const,allowedLocationIds:source.kind==='SCHEDULE'?source.currentShifts.filter(s=>s.employeeId===employeeId).map(s=>s.locationId):[]}));
     const plans = planSourceReminders(source,candidates,now,config.environment,config.policy);
     if (!plans.length) return null;
-    const budgets = Object.fromEntries(plans.map(intent=>[intent.employeeId,{version:intent.effectiveVersion,day:puertoRicoDay(new Date(intent.dueAt)),locations:candidates.find(c=>c.employeeId===intent.employeeId)!.allowedLocationIds}]));
+    const budgets = Object.fromEntries(plans.map(intent=>[intent.employeeId,{version:intent.effectiveVersion,day:businessDate(new Date(intent.dueAt),config.policy.timeZone),locations:candidates.find(c=>c.employeeId===intent.employeeId)!.allowedLocationIds}]));
     return {text:`SELECT id FROM employees e WHERE active=true AND role IN ('EMPLOYEE','LEAD') AND id=ANY($2::text[])
       AND ($4<>'AVAILABILITY' OR NOT EXISTS (SELECT 1 FROM weekly_availability_submissions s WHERE s.week_start=$5::date AND s.employee_id=e.id AND s.submitted_at IS NOT NULL))
       AND ($4<>'SCHEDULE' OR EXISTS (SELECT 1 FROM employee_location_eligibility elig WHERE elig.employee_id=e.id AND elig.location_id IN (SELECT jsonb_array_elements_text($3::jsonb->e.id->'locations'))))
       AND NOT EXISTS (SELECT 1 FROM notifications n WHERE n.environment=$1 AND n.employee_id=e.id AND n.source_kind=$4 AND n.source_id=$5::text AND n.purpose='REMINDER'
-        AND (n.effective_version=$3::jsonb->e.id->>'version' OR (n.due_at AT TIME ZONE 'America/Puerto_Rico')::date=($3::jsonb->e.id->>'day')::date))
-      ORDER BY id LIMIT $6`,values:[config.environment,plans.map(i=>i.employeeId),JSON.stringify(budgets),source.kind,source.source.id,limit]};
+        AND (n.effective_version=$3::jsonb->e.id->>'version' OR (n.due_at AT TIME ZONE $7)::date=($3::jsonb->e.id->>'day')::date))
+      ORDER BY id LIMIT $6`,values:[config.environment,plans.map(i=>i.employeeId),JSON.stringify(budgets),source.kind,source.source.id,limit,config.policy.timeZone]};
 }
 function managerRecipientStatement(input:SummaryInput,now:Date,config:NotificationConfig,limit:number):SqlStatement|null {
     if (!buildSummaryGroup([input],{employeeId:'candidate',role:'MANAGER',active:true,allowedLocationIds:[]},now,config.environment,config.policy,new Set())) return null;

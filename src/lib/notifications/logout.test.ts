@@ -179,3 +179,17 @@ it('partial_reconciliation_retires_only_confirmed_auth_operations_before_deadlin
     expect(await m.reconcilePendingInstallation(s.cookies, s.config, s.deps)).toEqual({ state: 'complete' });
     expect(s.revoked).toEqual(new Set([sessionHash, ambiguousHash]));
 });
+
+it('workspace outage does not prevent cookie termination or account-switch fencing',async()=>{
+ const m=await api();const s=setup();
+ // Workspace is deliberately unavailable; these runtime-only APIs must not read it.
+ const workspace=await import('../data/workspaces');const lookup=vi.spyOn(workspace,'getWorkspace').mockRejectedValue(new Error('workspace unavailable'));
+ try {
+  s.repo.detach=async()=>{throw new Error('cleanup unavailable');};
+  expect(await m.terminatePortalSession({sessionToken:'old-session',installation:s.proof,cookies:s.cookies,deps:s.deps})).toEqual({state:'pending'});
+  expect(s.values.has('fuel_session')).toBe(false);
+  s.repo.reconcile=async()=>{throw new Error('cleanup unavailable');};
+  expect(await m.prepareInstallationForAccount('new-account',s.cookies,s.config,s.deps)).toEqual({state:'pending'});
+  expect(s.values.has(CLEANUP_COOKIE)).toBe(true);expect(lookup).not.toHaveBeenCalled();
+ } finally {lookup.mockRestore();}
+});

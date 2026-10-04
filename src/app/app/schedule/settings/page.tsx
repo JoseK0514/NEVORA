@@ -1,3 +1,6 @@
+import {ConfigurationForm} from "@/components/configuration-form";
+import {PositionQuotaFields} from "@/components/position-quota-fields";
+import {listPositions} from "@/lib/data/positions";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -8,9 +11,10 @@ import {
   listLocationStaffingSettings,
 } from "@/lib/data/schedule-health";
 import {
-  addCoverageWindowAction,
+  addCoverageWindowFormAction,
+  replaceCoverageWindowPositionRequirementsAction,
   deleteCoverageWindowAction,
-  saveScheduleHealthSettingsAction,
+  saveScheduleHealthSettingsFormAction,
 } from "@/app/app/schedule/settings/actions";
 import { formatTime } from "@/lib/date-utils";
 
@@ -27,18 +31,17 @@ export default async function ScheduleSettingsPage({
   await requireRoles(MANAGER_ROLES);
   const params = await searchParams;
 
-  const [staffing, employees, locations, coverageWindows] = await Promise.all([
+  const [staffing, employees, locations, coverageWindows, positions] = await Promise.all([
     listLocationStaffingSettings(),
     listEmployeeHourTargets(),
     listLocations(),
     listCoverageWindows(),
+    listPositions({includeInactive:true}),
   ]);
 
   function locationLabel(locationId: string, fallback: string) {
-    const label =
-      locations.find((location) => location.id === locationId)?.shortName ??
+    return locations.find((location) => location.id === locationId)?.shortName ??
       fallback;
-    return label.replace(/^FUEL\s*-\s*(110|2)\b/i, "FUEL – $1");
   }
 
   const dayNames = [
@@ -67,7 +70,7 @@ export default async function ScheduleSettingsPage({
       {params.error ? (
         <p className="form-error">
           {params.error === "invalid_staffing"
-            ? "Staffing requirements must be whole numbers between 1 and 100."
+            ? "Staffing requirements must be whole numbers between 1 and 100. Choose whether a designated Lead is required for each unconfigured location."
             : params.error === "invalid_hours"
               ? "Targets and maximums must be between 0 and 168 hours."
               : params.error === "duplicate_window"
@@ -87,8 +90,8 @@ export default async function ScheduleSettingsPage({
       ) : null}
 
       <div className="schedule-settings-form">
-        <form
-          action={saveScheduleHealthSettingsAction}
+        <ConfigurationForm
+          action={saveScheduleHealthSettingsFormAction}
           className="schedule-settings-core-form"
         >
           <section className="panel schedule-rule-panel">
@@ -115,7 +118,7 @@ export default async function ScheduleSettingsPage({
                     <input
                       type="number"
                       name={`staffing-${location.locationId}`}
-                      defaultValue={location.minimumStaffPerShift}
+                      defaultValue={location.minimumStaffPerShift ?? undefined}
                       min={1}
                       max={100}
                       step={1}
@@ -123,14 +126,21 @@ export default async function ScheduleSettingsPage({
                     />
                     <small>employees</small>
                   </strong>
-                  <span className="staffing-lead-toggle">
+                  {location.requiresDesignatedLead === null ? <span className="staffing-lead-toggle">
+                    <select name={`lead-choice-${location.locationId}`} defaultValue="" required aria-label="Designated Lead rule">
+                      <option value="" disabled>Choose a Lead rule</option>
+                      <option value="true">Designated Lead required</option>
+                      <option value="false">Designated Lead not required</option>
+                    </select>
+                  </span> : <span className="staffing-lead-toggle">
+                    <input type="hidden" name={`lead-configured-${location.locationId}`} value="true" />
                     <input
                       type="checkbox"
                       name={`lead-${location.locationId}`}
-                      defaultChecked={location.requiresDesignatedLead}
+                      defaultChecked={location.requiresDesignatedLead ?? undefined}
                     />
                     <span>Designated lead required</span>
-                  </span>
+                  </span>}
                 </label>
               ))}
             </div>
@@ -188,7 +198,7 @@ export default async function ScheduleSettingsPage({
               Save Settings
             </button>
           </div>
-        </form>
+        </ConfigurationForm>
 
         <section className="panel schedule-rule-panel">
           <div className="schedule-rule-heading">
@@ -202,8 +212,8 @@ export default async function ScheduleSettingsPage({
             </div>
           </div>
 
-          <form
-            action={addCoverageWindowAction}
+          <ConfigurationForm
+            action={addCoverageWindowFormAction}
             className="coverage-window-form expected-shift-periods"
           >
             <label>
@@ -251,10 +261,11 @@ export default async function ScheduleSettingsPage({
                 placeholder="Use location default"
               />
             </label>
+            <PositionQuotaFields positions={positions.filter(p=>p.active)}/>
             <button className="schedule-settings-add-window-btn" type="submit">
               Add Window
             </button>
-          </form>
+          </ConfigurationForm>
 
           <div className="coverage-window-list">
             {coverageWindows.length ? (
@@ -274,6 +285,7 @@ export default async function ScheduleSettingsPage({
                           : " · location default"}
                       </span>
                     </div>
+                    <ConfigurationForm action={replaceCoverageWindowPositionRequirementsAction} className="position-quota-form"><input type="hidden" name="windowId" value={window.id}/><PositionQuotaFields positions={positions} requirements={window.positionRequirements}/><button className="button secondary" type="submit">Save Position Quantities</button></ConfigurationForm>
                     <form action={deleteCoverageWindowAction}>
                       <input
                         type="hidden"

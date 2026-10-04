@@ -1,3 +1,5 @@
+import { notificationPolicyFor as fixturePolicyFor } from '../../lib/notifications/policy';
+const fixtureNotificationPolicy=fixturePolicyFor('America/Puerto_Rico');
 import { beforeAll, afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createECDH, createHash, randomUUID } from 'node:crypto';
 import { Client } from 'pg';
@@ -14,7 +16,7 @@ import { createSwapProposal, respondToSwap, approveSwapExchange, createCoverageO
 import { createCallout, approveCalloutAndOpenCoverage, denyCallout, cancelPendingCallout } from '../../lib/data/callouts';
 import { terminatePortalSession, reconcilePendingInstallation, type LogoutDeps } from '../../lib/notifications/logout';
 import { CLEANUP_COOKIE, INSTALLATION_COOKIE, openCleanupReceipt, sealCleanupReceipt, sealInstallationProof, encryptSubscriptionMaterial } from '../../lib/notifications/installation';
-import { readNotificationConfig } from '../../lib/notifications/config';
+import { readNotificationConfig as readRuntimeConfig } from '../../lib/notifications/config';
 import { setAvailabilityDeadline, replaceWeeklyAvailability } from '../../lib/data/week-settings';
 import { runDispatch, type WorkerDeps } from '../../lib/notifications/worker';
 import { runReminders } from '../../lib/notifications/reminders';
@@ -368,8 +370,8 @@ describe('logout and reminder SQL', () => {
     if(mode==='budget_resume'){expect(attempts).toBe(1);expect((await sql(`SELECT id FROM notifications WHERE purpose='REMINDER'`))).toHaveLength(0);armed=false;elapsed=0;await runReminders(deps);}else expect(attempts).toBe(3);
     const reminders=await sql<{employee_id:string}>(`SELECT employee_id FROM notifications WHERE purpose='REMINDER' AND source_kind='SCHEDULE'`);expect(reminders).toEqual([{employee_id:'QA-S3'}]);await runReminders(deps);expect((await sql(`SELECT id FROM notifications WHERE purpose='REMINDER'`))).toHaveLength(1);
   });
-  it('availability_zero_hour_submission_and_deadline_summary_use_real_sources', async () => {
-    const actualNow = new Date(); const now = new Date(new Date(actualNow.getTime() - 4 * 3600000).toISOString().slice(0, 10) + 'T16:00:00Z'); const localDay = new Date(now.getTime() - 4 * 3600000).toISOString().slice(0, 10); const day = new Date(`${localDay}T12:00:00Z`); day.setUTCDate(day.getUTCDate() - ((day.getUTCDay() + 6) % 7)); const currentWeek = day.toISOString().slice(0, 10);
+  it.each([8,12,17])('availability_zero_hour_submission_and_deadline_summary_use_real_sources at %i PR', async localHour => {
+    const actualNow = new Date(); const now = new Date(new Date(actualNow.getTime() - 4 * 3600000).toISOString().slice(0, 10) + `T${String(localHour+4).padStart(2,'0')}:00:00Z`); const localDay = new Date(now.getTime() - 4 * 3600000).toISOString().slice(0, 10); const day = new Date(`${localDay}T12:00:00Z`); day.setUTCDate(day.getUTCDate() - ((day.getUTCDay() + 6) % 7)); const currentWeek = day.toISOString().slice(0, 10);
     await sql(`INSERT INTO schedule_week_settings(week_start,availability_deadline,updated_by) VALUES ($1,$2,'QA-M')`, [currentWeek, new Date(now.getTime() + 20 * 3600000).toISOString()]);
     await sql(`INSERT INTO weekly_availability_submissions(week_start,employee_id) VALUES ($1,'QA-E')`, [currentWeek]);
     const config = { ...readNotificationConfig({ PUSH_FEATURE_ENABLED: 'true', PUSH_ENVIRONMENT: 'test' }), featureEnabled: true };
@@ -377,7 +379,7 @@ describe('logout and reminder SQL', () => {
     await runReminders(deps); await runReminders(deps);
     expect((await sql(`SELECT * FROM notifications WHERE source_kind='AVAILABILITY' AND employee_id='QA-E' AND purpose='REMINDER'`))).toHaveLength(0);
     expect((await sql(`SELECT * FROM notifications WHERE source_kind='AVAILABILITY' AND employee_id='QA-F' AND purpose='REMINDER'`))).toHaveLength(1);
-    await sql(`UPDATE schedule_week_settings SET availability_deadline=now()-interval '1 hour'`);
+    await sql(`UPDATE schedule_week_settings SET availability_deadline=$1::timestamptz-interval '1 hour'`,[now.toISOString()]);
     await runReminders(deps); await runReminders(deps);
     expect((await sql(`SELECT * FROM notifications WHERE source_kind='MANAGER_SUMMARY'`))).toHaveLength(2);
   });
@@ -411,12 +413,12 @@ describe('deadline writers and persistent grouping', () => {
     await expect(replaceWeeklyAvailability('QA-F', week, [], [0, 1, 2, 3, 4, 5, 6])).rejects.toThrow(/locked/);
     expect(await count('weekly_availability_submissions')).toBe(1);
   });
-  it('concurrent_manager_groups_consume_distinct_items_once_and_revalidate_resolved_members', async () => {
+  it.each([8,12,17])('concurrent_manager_groups_consume_distinct_items_once_and_revalidate_resolved_members at %i PR', async localHour => {
     await createTimeOffRequest({ employeeId: 'QA-E', startDate: '2030-10-11', endDate: '2030-10-11' }, db);
     await createTimeOffRequest({ employeeId: 'QA-F', startDate: '2030-10-12', endDate: '2030-10-12' }, db);
-    await sql(`UPDATE notifications SET due_at=now()-interval '1 second'`);
     const config = { ...readNotificationConfig({ PUSH_ENVIRONMENT: 'test' }), featureEnabled: true };
-    const now = new Date(new Date(Date.now() - 4 * 3600000).toISOString().slice(0, 10) + 'T16:00:00Z');
+    const now = new Date(new Date(Date.now() - 4 * 3600000).toISOString().slice(0, 10) + `T${String(localHour+4).padStart(2,'0')}:00:00Z`);
+    await sql(`UPDATE notifications SET due_at=$1::timestamptz-interval '1 second'`,[now.toISOString()]);
     let waiting=0,groupConflicts=0;let release!:()=>void;const barrier=new Promise<void>(resolve=>{release=resolve;});
     const synchronized:SqlExecutor={query:db.query,transaction:async statements=>{if(statements.some(s=>s.text.includes('notification_group_conflict'))&&statements[0].values[1]==='QA-M'&&waiting<2){waiting++;if(waiting===2)release();await barrier;}try{return await db.transaction(statements);}catch(error){if((error as {code:string}).code==='22P02'&&(error as Error).message.includes('notification_group_conflict'))groupConflicts++;throw error;}}};
     const state = sqlNotificationStateRepository(db); const deps = { executor: synchronized, state, config, clock: () => now };
@@ -445,19 +447,27 @@ describe('deadline writers and persistent grouping', () => {
     jar.set(CLEANUP_COOKIE, sealCleanupReceipt({ ...receipt, recoveryBlocked: true }, key));
     expect(await reconcilePendingInstallation(cookies, config, deps)).toEqual({ state: 'pending' }); expect(jar.has(CLEANUP_COOKIE)).toBe(true);
   });
-  it('configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants', async () => {
-    const now = new Date(new Date(Date.now()-4*3600000).toISOString().slice(0,10)+'T16:00:00Z'); const day = new Date(now); day.setUTCDate(day.getUTCDate()-((day.getUTCDay()+6)%7)); const currentWeek=day.toISOString().slice(0,10);
+  it.each([8,12,17].flatMap(localHour => ['current-day','Sunday-boundary'].map(calendar => ({ localHour, calendar }))))('configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at $localHour PR ($calendar)', async ({ localHour, calendar }) => {
+    const now = new Date(new Date(Date.now()-4*3600000).toISOString().slice(0,10)+`T${String(localHour+4).padStart(2,'0')}:00:00Z`);
+    if (calendar === 'Sunday-boundary') now.setUTCDate(now.getUTCDate() + (7 - now.getUTCDay()) % 7);
+    const day = new Date(now); day.setUTCDate(day.getUTCDate()-((day.getUTCDay()+6)%7)); const currentWeek=day.toISOString().slice(0,10);
     await sql(`DELETE FROM location_coverage_windows`); await sql(`INSERT INTO schedules(id,location_id,week_start,created_by) VALUES ('QA-current','loc-1',$1,'QA-M')`,[currentWeek]);
     await sql(`INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time,minimum_staff) VALUES ('QA-gap','loc-1',$1,'18:00','19:00',2)`,[now.getUTCDay()]);
-    await createTimeOffRequest({ employeeId:'QA-E',startDate:'2030-10-11',endDate:'2030-10-11' },db); await sql(`UPDATE notifications SET due_at=now()-interval '1 second'`);
+    await createTimeOffRequest({ employeeId:'QA-E',startDate:'2030-10-11',endDate:'2030-10-11' },db); await sql(`UPDATE notifications SET due_at=$1::timestamptz-interval '1 second'`,[now.toISOString()]);
     const state=sqlNotificationStateRepository(db),config={...readNotificationConfig({PUSH_ENVIRONMENT:'test'}),featureEnabled:true}; const deps={executor:db,state,config,clock:()=>now}; await runReminders(deps);
     const groups=await sql<{id:string;due_at:Date;expires_at:Date}>(`SELECT id,due_at,expires_at FROM notifications WHERE source_kind='MANAGER_SUMMARY'`); expect(groups).toHaveLength(4);
     const gapIds:string[]=[]; const routineIds:string[]=[]; for(const row of groups){const intent=await state.findIntent(row.id);const source=await state.readSource(intent!.source);expect(source?.kind).toBe('MANAGER_SUMMARY');if(source?.kind==='MANAGER_SUMMARY'&&source.items.some(item=>item.type==='COVERAGE_GAP'))gapIds.push(row.id);else routineIds.push(row.id);} expect(gapIds).toHaveLength(2);expect(routineIds).toHaveLength(2);
     const gapIntents=await Promise.all(gapIds.map(id=>state.findIntent(id))); await sql('DELETE FROM location_coverage_windows'); await runReminders(deps);
     for(const id of gapIds){const intent=gapIntents.find(value=>value?.id===id);expect((await state.check(intent!,intent!.employeeId,now)).deliverable).toBe(false);expect((await sql('SELECT push_state FROM notifications WHERE id=$1',[id]))[0].push_state).toBe('cancelled');}
     for(const id of routineIds){const row=(await sql<{due_at:Date;expires_at:Date}>('SELECT due_at,expires_at FROM notifications WHERE id=$1',[id]))[0],original=groups.find(g=>g.id===id)!;expect(row).toEqual({due_at:original.due_at,expires_at:original.expires_at});}
+    // Tomorrow may cross into Monday. Coverage reminders require that week's
+    // schedule to exist; retain the same scenario on every real calendar day.
+    const tomorrow = new Date(now); tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    const tomorrowMonday = new Date(tomorrow); tomorrowMonday.setUTCDate(tomorrowMonday.getUTCDate() - ((tomorrowMonday.getUTCDay() + 6) % 7));
+    const tomorrowWeek = tomorrowMonday.toISOString().slice(0, 10);
+    if (tomorrowWeek !== currentWeek) await sql(`INSERT INTO schedules(id,location_id,week_start,created_by) VALUES ('QA-next','loc-1',$1,'QA-M')`, [tomorrowWeek]);
     await sql(`INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time,minimum_staff) VALUES ('QA-gap','loc-1',$1,'08:00','09:00',2)`,[(now.getUTCDay()+1)%7]);
-    const quiet=new Date(now.getTime()+10*3600000);const seen:unknown[][]=[];const traced:SqlExecutor={transaction:db.transaction,query:async<T>(statement:Parameters<SqlExecutor['query']>[0])=>{if(statement.text.includes('jsonb_array_elements($2::jsonb) item'))seen.push([...statement.values]);return db.query<T>(statement);}};
+    const quiet=new Date(now.getTime()+(22-localHour)*3600000);const seen:unknown[][]=[];const traced:SqlExecutor={transaction:db.transaction,query:async<T>(statement:Parameters<SqlExecutor['query']>[0])=>{if(statement.text.includes('jsonb_array_elements($2::jsonb) item'))seen.push([...statement.values]);return db.query<T>(statement);}};
     await runReminders({...deps,executor:traced,clock:()=>quiet});const total=await count('notifications');await runReminders({...deps,executor:traced,clock:()=>quiet});expect(await count('notifications')).toBe(total);expect(seen.length).toBeGreaterThan(0);expect(seen.some(values=>JSON.parse(String(values[1])).some((variants:string[])=>variants.length===2))).toBe(true);
     expect((await sql(`SELECT id FROM notifications WHERE source_kind='MANAGER_SUMMARY'`))).toHaveLength(6);
   });
@@ -596,3 +606,6 @@ describe('real SQL worker recovery with a no-network sender', () => {
     expect((await sql(`SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND query='SELECT pg_sleep(30)' AND state='active'`))).toHaveLength(0);
   }, 25000);
 });
+
+// Explicit Puerto Rico fixture policy; production callers load the configured workspace.
+function readNotificationConfig(env: Record<string,string|undefined>) {return {...readRuntimeConfig(env),policy:fixtureNotificationPolicy};}

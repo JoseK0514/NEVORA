@@ -15,9 +15,9 @@ function candidate(
     startTime: "08:00",
     endTime: "16:00",
   };
-  const rules: ValidateShiftInput = {
+  const rules: ValidateShiftInput = { workspace: {id:"test-workspace",active:true,timeZone:"America/Puerto_Rico"}, location: {id:"loc-1",workspaceId:"test-workspace",active:true},
     candidate: shift,
-    employee: {
+    employee: { positionIds: [],
       active: true,
       role: "EMPLOYEE",
       eligibleLocationIds: ["loc-1"],

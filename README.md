@@ -1,4 +1,4 @@
-# Nuvora Workforce
+# NEVORA Workforce
 
 Workforce operations platform owned by VELANI LLC. Fuel Coffee Drive is the current customer/workspace.
 
@@ -27,26 +27,21 @@ Required:
 - First name
 - Last name
 - Phone number
-- Role
+- Access role
+- Active primary location and explicit eligible locations
 
 Optional:
 - Email
 
-Roles are Owner, Manager, Lead, and Employee. Credentials are stored separately from employee profile data.
+Roles are Owner, Manager, Lead, and Employee. Operational position qualifications are separate optional configuration; they never follow implicitly from an access role. Credentials are stored separately from employee profile data.
 
-## Database setup
+## Workspace foundation and database activation
 
-1. Create a Neon PostgreSQL project.
-2. Set `DATABASE_URL` from `.env.example`.
-3. Apply `db/migrations/0001_initial.sql`.
-4. Fill the bootstrap owner variables in your local environment.
-5. Create the first owner:
+Workspace name/timezone, locations, eligibility and operational positions are configured data. Access roles are separate from positions. Fuel Coffee Drive retains its Puerto Rico timezone, Monday–Sunday week and existing location records. See the [workspace foundation architecture](docs/architecture/nevora-workspace-foundation.md) and [QA review](docs/ui/2026-10-03-nevora-foundation-review.md).
 
-```bash
-npm run bootstrap:owner
-```
+Migration `0008_workspace_positions.sql` is prepared after exact 0001–0007. No existing customer, development or Neon database was migrated by this foundation. Select an environment and review dependencies, backups/restore, legacy names and application compatibility before separately authorizing activation. Build/start do not apply migrations.
 
-The migration seeds the two initial location records as `Location 1` and `Location 2`.
+Fresh-customer schema distribution/provisioning and generic owner bootstrap are deferred to Productization. `bootstrap:owner` is a historical Fuel utility; it is not a verified generic onboarding flow. Test-only generic SQL fixtures must never be used as production provisioning instructions.
 
 ## Local development
 
@@ -68,6 +63,8 @@ npm run build
 
 See `docs/architecture.md` for the product and workflow blueprint.
 
-For UI work, reuse the [Nuvora UI contract](docs/ui/fuel-ui-contract.md). Future
+For UI work, reuse the [NEVORA UI contract](docs/ui/fuel-ui-contract.md). Future
 automation follows the [delivery charter](docs/architecture/fuel-automation-charter.md);
 it records phase boundaries and exclusions, not implemented capabilities.
+
+Disposable SQL verification additionally uses `npm run test:foundation:integration` and `npm run test:notifications:integration` with application `DATABASE_URL` unset, a fresh ownership-marked loopback test database and explicit destructive teardown opt-in. The [QA record](docs/ui/2026-10-03-nevora-foundation-review.md) documents exact tested commands and boundaries. Phase 4, production migration/deployment, provider activation and paid infrastructure remain separate approvals.

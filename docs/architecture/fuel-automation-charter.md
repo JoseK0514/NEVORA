@@ -1,4 +1,4 @@
-# Fuel automation delivery charter
+# NEVORA automation delivery charter
 
 **Scope recorded 2026-10-02.** Principle: **Automate normal work. Surface exceptions.** This is a future delivery contract, not an implementation claim. Phase 0 changes presentation and documentation only. It does not enable automation, apply migrations, change permissions, provision devices or connect services. Jose reviews Phase 0 before any next phase begins.
 
@@ -22,7 +22,7 @@ The sequence below expresses dependencies. Each row needs its own verified inven
 
 | Phase boundary | Required behavior / acceptance contract |
 | --- | --- |
-| Shared eligibility and scheduling drafts | Reuse one server-side eligibility policy across manual scheduling, swaps and coverage. Include active employee, location eligibility, approved time off, availability, overlaps, coverage and required Lead checks. Include **both FUEL – 2 and FUEL – 110** in conflicts and hour totals. Distinguish target hours from maximum hours and specify exception/blocking policy before implementation. Reuse templates/copy previous week; generate automatic weekly **drafts**; respect protected/fixed assignments; offer **Fill Gaps Only** without replacing existing assignments. Manager reviews exceptions and explicitly publishes. Never silently alter a published week |
+| Shared eligibility and scheduling drafts | Reuse one server-side eligibility policy across manual scheduling, swaps and coverage. Include active employee, location eligibility, approved time off, availability, overlaps, coverage and required Lead checks. Include **all configured locations** in conflicts and hour totals (including Fuel’s existing two locations). Distinguish target hours from maximum hours and specify exception/blocking policy before implementation. Reuse templates/copy previous week; generate automatic weekly **drafts**; respect protected/fixed assignments; offer **Fill Gaps Only** without replacing existing assignments. Manager reviews exceptions and explicitly publishes. Never silently alter a published week |
 | Permitted Employee swaps | Obtain both employees' consent; revalidate current rules and both assignments at acceptance, not just request creation. Automatically complete when all rules pass, with no routine manager approval. Update both assignments atomically, notify affected employees, and surface exceptions requiring review. Preserve current manager approval until this later behavior is separately implemented and verified |
 | Replacement staffing | Offer only to eligible candidates. Require voluntary offers/acceptance; never allocate extra hours without acceptance. Make automatic claim confirmation configurable. Revalidate on claim, protect against duplicate/simultaneous claims, expire stale offers, and escalate unfilled or blocked requests without repeatedly notifying people who already responded |
 | Registered-device timekeeping | Implement real server-persisted punches from registered authenticated devices with server-resolved locations and private employee PIN validation. Use accurate timestamps, command retry identity and atomic lifecycle transitions. Employee portal reads punches but cannot create/edit them. Automatically alert management to discrepancies; normal entries need no routine review. Never automatically alter recorded hours to conceal a discrepancy |
@@ -58,3 +58,10 @@ Existing unrelated screens/behaviors are preserved during Phase 0; exclusion fro
 9. **Stop for review.** Do not begin another phase, push, merge, deploy or migrate without the applicable authorization. Jose provides final visual approval.
 
 See [the Phase 0 plan and verification record](../superpowers/plans/2026-10-02-fuel-ui-phase-0.md).
+
+
+## Pre-Phase-4 workspace foundation (2026-10-03)
+
+The historical inventory above remains a phase record. The [current workspace foundation](nevora-workspace-foundation.md) now supplies configured workspace/timezone, arbitrary active locations, derived readiness, separate operational positions and employee qualification, per-window quotas and shared maximum-hour evaluation. Phase 4 must use the existing engine with active READY locations, eligibility, positions/quotas and configured workspace zone. It must not add static Fuel IDs or a second rule implementation.
+
+This foundation does not implement Build Week, Fill Gaps Only, automatic assignment/selection/publishing, scheduler provisioning or production onboarding. Skills, certifications, expirations, documents, training and qualification reminders remain deferred. Production baseline/distribution/provisioning tooling belongs to separately reviewed Productization. Prepared 0008 and local fixtures are not live activation; Phase 3 provider/device/plan restrictions remain in force. Stop for foundation approval before Phase 4.

@@ -4,7 +4,7 @@ import { decodePushKey, readNotificationConfig } from './config';
 import { CLEANUP_COOKIE, INSTALLATION_COOKIE, createInstallationProof, encryptSubscriptionMaterial, readInstallationProof, sealCleanupReceipt, sealInstallationProof } from './installation';
 import type { CookieReader } from './installation';
 import type { SessionEmployee } from '../auth/session';
-import type { DeviceStatus, InstallationProof, InstallationRecord, NotificationConfig, NotificationIntent, SubscriptionRepository } from './types';
+import type { DeviceStatus, InstallationProof, InstallationRecord, PushRuntimeConfig, NotificationIntent, SubscriptionRepository } from './types';
 export type ValidatedSubscription = {
     endpoint: string;
     expirationTime: number | null;
@@ -82,7 +82,7 @@ export type PushCookieStore = CookieReader & {
 };
 import { boundedCleanupAttempts, createLogoutDeps, prepareInstallationForAccount, reconcilePendingInstallation, type LogoutDeps } from "./logout";
 export type PushHandlerDeps = {
-    config: NotificationConfig;
+    config: PushRuntimeConfig;
     cleanupDeps?: LogoutDeps;
     cookies(): Promise<PushCookieStore>;
     session(): Promise<SessionEmployee | null>;

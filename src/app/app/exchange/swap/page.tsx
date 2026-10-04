@@ -1,10 +1,12 @@
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
 import { NavIcon } from "@/components/nav-icon";
 import { redirect } from "next/navigation";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { EmployeeShiftPicker } from "@/components/employee-shift-picker";
 import { requireSelfService } from "@/lib/auth/permissions";
-import { currentDateInPuertoRico, formatDayLabel, formatTime } from "@/lib/date-utils";
+import {  formatDayLabel, formatTime } from "@/lib/date-utils";
 import {
   getPublishedShift,
   listSwapTargets,
@@ -28,6 +30,7 @@ export default async function SwapPage({
   searchParams: Promise<{ sourceShiftId?: string }>;
 }) {
   const session = await requireSelfService("/app/exchange?tab=requests");
+  const workspace = await getWorkspace();
   const params = await searchParams;
 
   if (!params.sourceShiftId) {
@@ -39,7 +42,7 @@ export default async function SwapPage({
   if (
     !source ||
     source.employeeId !== session.id ||
-    source.date < currentDateInPuertoRico()
+    source.date < businessDate(new Date(), workspace.timeZone)
   ) {
     redirect("/app/exchange?error=INVALID_SHIFT");
   }

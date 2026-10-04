@@ -4942,6 +4942,16 @@ small,
   margin: 0;
 }
 
+.schedule-location-control[data-expanded-locations="true"] .segmented {
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.schedule-location-control[data-expanded-locations="true"] .segmented a {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .schedule-period-control {
   min-width: 206px;
   min-height: 40px;
@@ -10659,7 +10669,7 @@ body {
   border-radius: 8px !important;
   min-height: 40px !important;
   padding: 0 12px !important;
-  font-size: 13px !important;
+  font-size: 13px;
   color: var(--color-brand-primary) !important;
   outline: none !important;
   box-sizing: border-box !important;
@@ -12705,3 +12715,90 @@ body {
 .auth-activation-shell .auth-card { width: 100%; }
 .auth-activation-heading { margin-block: 20px 24px; }
 .auth-legal { margin-top: 16px; text-align: center; }
+
+/* Workspace foundation: existing form/control families, scoped to setup surfaces. */
+.configuration-page { display: grid; gap: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+.configuration-fields { display: contents; border: 0; padding: 0; margin: 0; min-width: 0; }
+.configuration-page .configuration-list > div { padding: 24px 0; border-bottom: 1px solid var(--color-border-subtle); }
+.configuration-page .configuration-list > div:first-of-type { padding-top: 0; }
+.configuration-page .configuration-list > div:last-of-type { border-bottom: 0; }
+.configuration-page .configuration-list h2 { margin-bottom: 8px; }
+.configuration-page .configuration-list ul { padding-left: 20px; }
+.configuration-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.configuration-page .button, .scheduling-profile-form .button, .position-quota-form .button {
+ min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+ padding: 6px 16px; border-radius: 22px; text-align: center; font-size: 12px; font-weight: 600; line-height: 15px;
+}
+.configuration-page .button:hover, .configuration-page .button:active,
+.scheduling-profile-form .button:hover, .scheduling-profile-form .button:active,
+.position-quota-form .button:hover, .position-quota-form .button:active { opacity: 1; }
+.configuration-page .button:focus-visible, .scheduling-profile-form .button:focus-visible,
+.position-quota-form .button:focus-visible { outline: 2px solid var(--nevora-blue); outline-offset: 3px; }
+.position-quota-form { display: grid; gap: 12px; width: 100%; }
+.position-quota-fields { display: grid; gap: 12px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.position-quota-fields label { display: grid; gap: 8px; }
+.position-quota-fields input { max-width: 160px; min-height: 44px; }
+.coverage-window-row:has(.position-quota-form) { flex-wrap: wrap; }
+.scheduling-profile-form { display: grid; gap: 20px; }
+@media (max-width: 768px) {
+ .configuration-page input, .configuration-page select, .position-quota-form input,
+ .scheduling-profile-form input, .schedule-settings-page select { font-size: 16px; }
+ .configuration-page .configuration-actions > .button { flex: 1 1 140px; }
+ .configuration-page .form-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+}
+.configuration-page .configuration-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(100%, 468px); }
+.configuration-page .page-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.configuration-page .page-actions:has(> a:only-child) { grid-template-columns: 1fr; }
+.schedule-settings-page .position-quota-fields { grid-column: 1 / -1; }
+@media (max-width: 768px) {
+ .schedule-settings-page.schedule-settings-page input:not([type="checkbox"]):not([type="hidden"]),
+ .schedule-settings-page.schedule-settings-page select,
+ .new-shift-page .new-shift-field input, .new-shift-page .new-shift-field select { font-size: 16px; }
+ .configuration-page .configuration-actions { width: 100%; }
+}
+
+.schedule-settings-page .expected-shift-periods .position-quota-fields { flex: 1 0 100%; }
+.position-quota-form .button { width: min(100%, 240px); }
+.configuration-page .page-actions > * { grid-column: auto; }
+
+/* Large catalogs or long labels use a full selector row; keep compact Fuel geometry. */
+@media (min-width: 761px) {
+  .schedule-operations-toolbar:has(.schedule-location-control[data-expanded-locations="true"]) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .schedule-operations-toolbar:has(.schedule-location-control[data-expanded-locations="true"]) .schedule-location-control {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .schedule-operations-toolbar:has(.schedule-location-control[data-expanded-locations="true"]) .schedule-location-control .segmented {
+    width: 100%;
+  }
+  .schedule-operations-toolbar:has(.schedule-location-control[data-expanded-locations="true"]) .schedule-period-control {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+  .schedule-operations-toolbar:has(.schedule-location-control[data-expanded-locations="true"]) .schedule-command-actions {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+@media (min-width: 761px) and (max-width: 1120px) {
+  .schedule-operations-toolbar:has(.schedule-location-control[data-expanded-locations="true"]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .schedule-operations-toolbar:has(.schedule-location-control[data-expanded-locations="true"]) .schedule-period-control {
+    justify-self: center;
+  }
+  .schedule-operations-toolbar:has(.schedule-location-control[data-expanded-locations="true"]) .schedule-command-actions {
+    grid-column: 1;
+    grid-row: 3;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 760px) {
+  .schedule-location-control[data-expanded-locations="true"] .segmented {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

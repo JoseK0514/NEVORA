@@ -26,7 +26,7 @@ export default async function MyTimePage() {
         <div>
           <h2 id="time-readiness-title">Timekeeping isn&apos;t connected yet</h2>
           <p>
-            When timekeeping is connected, your Fuel kiosk clock-ins, clock-outs,
+            When timekeeping is connected, your Clocker clock-ins, clock-outs,
             breaks, worked hours, and approved corrections will appear here.
           </p>
         </div>

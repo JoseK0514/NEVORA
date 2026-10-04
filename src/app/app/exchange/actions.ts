@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, isSelfServiceRole, requireRoles, requireSelfService } from "@/lib/auth/permissions";
-import { currentDateInPuertoRico } from "@/lib/date-utils";
+import { businessDate } from "@/lib/business-time";
+import { getWorkspace } from "@/lib/data/workspaces";
 import {
   approveCoverageExchange,
   approveSwapExchange,
@@ -44,6 +45,8 @@ async function validateCoverageEligibility(
   const source = exchange.sourceShift;
   const context = await getShiftValidationContext({
     employeeId,
+    locationId: source.locationId,
+    positionId: source.positionId,
     date: source.date,
     weekStart: source.weekStart,
   });
@@ -55,7 +58,8 @@ async function validateCoverageEligibility(
   const result = validateShift({
     candidate: {
       employeeId,
-      locationId: source.locationId,
+    locationId: source.locationId,
+    positionId: source.positionId,
       date: source.date,
       startTime: source.startTime,
       endTime: source.endTime,
@@ -105,11 +109,15 @@ async function validateSwapEligibility(exchangeId: string) {
   const [requesterContext, targetContext] = await Promise.all([
     getShiftValidationContext({
       employeeId: exchange.requestedByEmployeeId,
+      locationId: target.locationId,
+      positionId: target.positionId,
       date: target.date,
       weekStart: target.weekStart,
     }),
     getShiftValidationContext({
       employeeId: exchange.targetEmployeeId,
+      locationId: source.locationId,
+      positionId: source.positionId,
       date: source.date,
       weekStart: source.weekStart,
     }),
@@ -133,6 +141,7 @@ async function validateSwapEligibility(exchangeId: string) {
     candidate: {
       employeeId: exchange.requestedByEmployeeId,
       locationId: target.locationId,
+      positionId: target.positionId,
       date: target.date,
       startTime: target.startTime,
       endTime: target.endTime,
@@ -146,6 +155,7 @@ async function validateSwapEligibility(exchangeId: string) {
     candidate: {
       employeeId: exchange.targetEmployeeId,
       locationId: source.locationId,
+      positionId: source.positionId,
       date: source.date,
       startTime: source.startTime,
       endTime: source.endTime,
@@ -176,7 +186,7 @@ export async function offerCoverageAction(formData: FormData) {
   if (
     !shift ||
     shift.employeeId !== session.id ||
-    shift.date < currentDateInPuertoRico()
+    shift.date < businessDate(new Date(), (await getWorkspace()).timeZone)
   ) {
     redirect(exchangeUrl("?tab=my&error=INVALID_SHIFT"));
   }
@@ -227,7 +237,7 @@ export async function proposeSwapAction(formData: FormData) {
     getPublishedShift(targetShiftId),
   ]);
 
-  const today = currentDateInPuertoRico();
+  const today = businessDate(new Date(), (await getWorkspace()).timeZone);
 
   if (
     !source ||
@@ -255,11 +265,15 @@ export async function proposeSwapAction(formData: FormData) {
   const [requesterContext, targetContext] = await Promise.all([
     getShiftValidationContext({
       employeeId: session.id,
+      locationId: target.locationId,
+      positionId: target.positionId,
       date: target.date,
       weekStart: target.weekStart,
     }),
     getShiftValidationContext({
       employeeId: target.employeeId,
+      locationId: source.locationId,
+      positionId: source.positionId,
       date: source.date,
       weekStart: source.weekStart,
     }),
@@ -286,6 +300,7 @@ export async function proposeSwapAction(formData: FormData) {
     candidate: {
       employeeId: session.id,
       locationId: target.locationId,
+      positionId: target.positionId,
       date: target.date,
       startTime: target.startTime,
       endTime: target.endTime,
@@ -299,6 +314,7 @@ export async function proposeSwapAction(formData: FormData) {
     candidate: {
       employeeId: target.employeeId,
       locationId: source.locationId,
+      positionId: source.positionId,
       date: source.date,
       startTime: source.startTime,
       endTime: source.endTime,

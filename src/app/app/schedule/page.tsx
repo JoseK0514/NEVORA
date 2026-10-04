@@ -1,3 +1,6 @@
+import { ScheduleLocationControl } from "@/components/schedule-location-control";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
 import { SchedulePublicationChange } from "@/components/schedule-publication-change";
 import { listRevisionShifts } from "@/lib/data/publication-revisions";
 import { sqlNotificationStateRepository } from "@/lib/data/notification-state";
@@ -14,9 +17,6 @@ import { listEmployees, listLocations } from "@/lib/data/employees";
 import { listWeekShifts } from "@/lib/data/schedules";
 import {
   addDays,
-  currentDateInPuertoRico,
-  formatPuertoRicoDateTime,
-  formatPuertoRicoDateTimeInput,
   formatDayLabel,
   formatTime,
   formatWeekRange,
@@ -33,6 +33,8 @@ import { acknowledgeScheduleAction } from "@/app/app/schedule/acknowledge-action
 import { employeeRoleLabel } from "@/lib/employee-display";
 
 const ERROR_MESSAGES: Record<string, string> = {
+  DEADLINE_WORKSPACE_CHANGED: "Workspace settings changed while saving. Your deadline was not saved. Review the business timezone and submit again.",
+  INVALID_DEADLINE: "Enter a valid business-local deadline. Daylight saving times that are skipped or occur twice cannot be used.",
   INVALID_SHIFT: "The shift information is incomplete or outside this week.",
   EMPLOYEE_NOT_FOUND: "The selected employee could not be found.",
   LOCATION_NOT_ELIGIBLE: "That employee is not eligible to work at the selected location.",
@@ -70,6 +72,7 @@ export default async function SchedulePage({
     week?: string;
     location?: string;
     error?: string;
+    availabilityDeadline?: string;
     warning?: string;
     published?: string;
     updated?: string;
@@ -84,9 +87,10 @@ export default async function SchedulePage({
   }>;
 }) {
   const session = await requireSession();
+  const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);
   const params = await searchParams;
-  const today = currentDateInPuertoRico();
+  const today = businessDate(new Date(), workspace.timeZone);
   const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const dates = weekDates(weekStart);
@@ -254,7 +258,7 @@ export default async function SchedulePage({
 
       <section className="schedule-operations-shell">
         <div className="schedule-operations-toolbar">
-          <div className="schedule-location-control" aria-label="Schedule location">
+          <ScheduleLocationControl>
             <div className="segmented">
               <Link
                 className={selectedLocation === "all" ? "selected" : ""}
@@ -272,7 +276,7 @@ export default async function SchedulePage({
                 </Link>
               ))}
             </div>
-          </div>
+          </ScheduleLocationControl>
 
           <div className="schedule-period-control" aria-label="Schedule week">
             <Link
@@ -331,9 +335,7 @@ export default async function SchedulePage({
                     <input
                       type="datetime-local"
                       name="availabilityDeadline"
-                      defaultValue={formatPuertoRicoDateTimeInput(
-                        weekSettings?.availabilityDeadline,
-                      )}
+                      defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)}
                     />
                   </label>
                   <button className="button secondary compact-button" type="submit">

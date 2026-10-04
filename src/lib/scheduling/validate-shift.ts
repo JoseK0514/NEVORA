@@ -1,4 +1,6 @@
-import type { UserRole } from "../domain";
+import { shiftBoundaryInstants } from "../business-time";
+import { assignmentCapabilityIssues } from "./capabilities";
+import type { Workspace, Location, Position, UserRole } from "../domain";
 import {
   resolveAvailabilityDay,
   type AvailabilityHours,
@@ -22,6 +24,10 @@ export type ValidationIssueCode =
   | "INVALID_TIME_RANGE"
   | "INVALID_SCHEDULING_INPUT"
   | "EMPLOYEE_INACTIVE"
+  | "LOCATION_INACTIVE"
+  | "POSITION_INELIGIBLE"
+  | "POSITION_INACTIVE"
+  | "POSITION_COVERAGE_GAP"
   | "LOCATION_NOT_ELIGIBLE"
   | "ROLE_INELIGIBLE"
   | "LEAD_REQUIREMENT"
@@ -50,10 +56,15 @@ export type ShiftCandidate = {
   endDate?: string;
   isDesignatedLead?: boolean;
   requiredRole?: UserRole;
+  positionId?: string;
 };
 export type ValidateShiftInput = {
   candidate: ShiftCandidate;
+  workspace: Pick<Workspace, "id" | "active" | "timeZone">;
+  location: Pick<Location, "id" | "workspaceId" | "active">;
+  position?: Position;
   employee: {
+    positionIds: readonly string[];
     active: boolean;
     role: UserRole;
     eligibleLocationIds: readonly string[];
@@ -99,6 +110,10 @@ const messages: Record<ValidationIssueCode, string> = {
   INVALID_SCHEDULING_INPUT:
     "Scheduling inputs need correction before this assignment can be evaluated.",
   EMPLOYEE_INACTIVE: "Inactive employees cannot be scheduled.",
+  LOCATION_INACTIVE: "The location or workspace is inactive or unavailable.",
+  POSITION_INACTIVE: "The assigned position is inactive or unavailable.",
+  POSITION_INELIGIBLE: "Employee is not qualified for the assigned position.",
+  POSITION_COVERAGE_GAP: "This period needs additional employees assigned to required positions.",
   LOCATION_NOT_ELIGIBLE: "Employee is not eligible to work at this location.",
   ROLE_INELIGIBLE: "Employee does not have the required role capability.",
   LEAD_REQUIREMENT: "This position requires a qualified Lead.",
@@ -153,6 +168,7 @@ export function validateShift(input: ValidateShiftInput) {
     if (!candidate.employeeId || !candidate.locationId)
       throw new Error("Missing identity");
     period = shiftPeriod(candidate);
+    shiftBoundaryInstants(candidate, input.workspace.timeZone);
   } catch {
     add("INVALID_TIME_RANGE");
     return result();
@@ -175,9 +191,8 @@ export function validateShift(input: ValidateShiftInput) {
     add("INVALID_SCHEDULING_INPUT");
     return result();
   }
-  if (!employee.active) add("EMPLOYEE_INACTIVE");
-  if (!employee.eligibleLocationIds.includes(candidate.locationId))
-    add("LOCATION_NOT_ELIGIBLE", { locationId: candidate.locationId });
+  for (const code of assignmentCapabilityIssues(input))
+    add(code, code === 'LOCATION_NOT_ELIGIBLE' ? {locationId:candidate.locationId} : undefined);
   if (
     (candidate.isDesignatedLead || candidate.requiredRole === "LEAD") &&
     !isLeadCapable(employee.role)

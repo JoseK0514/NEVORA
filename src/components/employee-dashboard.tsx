@@ -100,7 +100,7 @@ export function EmployeeDashboard({
           {todayLocationName ? <p className="employee-home-location">{todayLocationName}</p> : null}
           <div className="employee-home-status">
             <span>{todayClockStatus}</span>
-            <p>Use the Fuel kiosk to clock in.</p>
+            <p>Use your location’s Clocker to clock in.</p>
           </div>
         </section>
 

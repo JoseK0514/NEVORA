@@ -8,7 +8,7 @@ vi.mock('@/lib/auth/permissions',()=>({ MANAGER_ROLES:['OWNER','MANAGER'],requir
 vi.mock('@/lib/data/callouts',()=>({ approveCalloutAndOpenCoverage:vi.fn(),createCallout:vi.fn(),getCallout:vi.fn(),denyCallout:vi.fn(),cancelPendingCallout:vi.fn() }));
 vi.mock('@/lib/data/exchanges',()=>({ getPublishedShift:vi.fn() }));
 vi.mock('@/lib/data/acknowledgements',()=>({ clearWeekAcknowledgements:vi.fn() }));
-vi.mock('@/lib/date-utils',()=>({ currentDateInPuertoRico:()=> '2030-10-07' }));
+vi.mock('@/lib/business-time',()=>({ businessDate:()=> '2030-10-07' }));
 vi.mock('next/navigation',()=>({ redirect:(path:string)=>{throw new Error(`redirect:${path}`);} }));
 vi.mock('next/cache',()=>({ revalidatePath:vi.fn() }));
 const shift={id:'s1',employeeId:'E',employeeName:'Employee',scheduleId:'a',locationId:'L',locationName:'Location',weekStart:'2030-10-07',date:'2030-10-11',startTime:'09:00',endTime:'17:00'};
@@ -26,3 +26,5 @@ it('callout submission ignores body employee identity',async()=>{
 it('callout cannot be submitted for another employee shift',async()=>{
  vi.mocked(getPublishedShift).mockResolvedValue({...shift,employeeId:'other'});const data=new FormData();data.set('shiftId','s1');data.set('reasonCode','ILLNESS');await expect(submitCalloutAction(data)).rejects.toThrow('error=INVALID_SHIFT');expect(createCallout).not.toHaveBeenCalled();
 });
+
+vi.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));

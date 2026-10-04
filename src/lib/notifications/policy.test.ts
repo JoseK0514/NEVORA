@@ -52,3 +52,16 @@ describe('persisted policy decisions',()=>{
     expect(retryDecision(input)).toEqual(result);
   });
 });
+
+it.each([
+  ['America/Puerto_Rico','2026-10-04T01:00Z','2026-10-04T11:00:00.000Z'],
+  ['America/New_York','2026-03-08T03:00Z','2026-03-08T11:00:00.000Z'],
+  ['America/New_York','2026-11-01T02:00Z','2026-11-01T12:00:00.000Z'],
+  ['Asia/Tokyo','2026-10-03T14:00Z','2026-10-03T22:00:00.000Z'],
+])('quiet hours cross a DST boundary in workspace time: %s %s',(timeZone,now,expected)=>{
+  expect(nextRoutineTime(new Date(now),{...policy,timeZone}).toISOString()).toBe(expected);
+});
+it('reminder budget identity uses the configured local day',()=>{
+  const result=planReminder({intent:{...intent,expiresAt:'2026-10-05T22:00:00Z'},now:new Date('2026-10-04T21:00Z'),resolved:false,policy:{...policy,timeZone:'Asia/Tokyo'}});
+  expect(result?.itemKeys?.[0]).toBe('test:AVAILABILITY:week:a:2026-10-05');
+});

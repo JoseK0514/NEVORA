@@ -4,11 +4,11 @@ Phase 2 extends the existing `validateShift` and `calculateScheduleHealth` domai
 
 ## Business time and hours
 
-Jose confirmed **Monday 00:00, America/Puerto_Rico, through Sunday** for payroll and weekly scheduling limits. `weekStartFor` is the Monday source; `BUSINESS_TIME_ZONE` is the existing Puerto Rico timezone. `scheduling/periods.ts` uses validated business civil dates/time coordinates, UTC arithmetic solely as a timezone-independent coordinate system, and half-open intervals. These coordinates are not UTC punch timestamps or actual worked time.
+Jose confirmed **Monday 00:00, America/Puerto_Rico, through Sunday** for payroll and weekly scheduling limits. `weekStartFor` is the Monday source; the persisted workspace `time_zone` is the current timezone source. Fuel remains configured as `America/Puerto_Rico`; other workspaces explicitly supply their own valid zone. `scheduling/periods.ts` uses validated business civil dates/time coordinates, UTC arithmetic solely as a timezone-independent coordinate system, and half-open intervals. These coordinates are not UTC punch timestamps or actual worked time.
 
 An implicit end earlier than the start means the next calendar day. Equal start/end is invalid for shifts. Explicit `endDate` supports longer proposed periods in the pure engine; the existing single-date persistence can store overnight shifts, not arbitrary multi-day assignments. Every touched day is checked for availability, leave and other shifts; midnight endpoints do not touch the following day. Every affected Monday workweek receives its own hour projection. Sunday 22:00–Monday 04:00 allocates 2 hours to the old workweek and 4 to the new one.
 
-`getShiftValidationContext` reads a complete dated ledger across both Fuel locations for affected workweeks, including prior-Sunday carry-in. It excludes archived schedules, approved released call-outs and explicitly excluded outgoing assignments. Hours do not depend on `schedules.week_start`, visible dates, machine timezone or a caller-provided scalar. The old `existingWeeklyMinutes` field remains for compatibility with existing exchange helpers; the eligibility evaluator ignores it. Dashboard/publish health select actual business dates through the existing shift reader's `byBusinessWorkweek` option. Normal roster queries keep their existing schedule ownership selection.
+`getShiftValidationContext` reads a complete dated ledger across all configured locations for affected workweeks, including prior-Sunday carry-in. It excludes archived schedules, approved released call-outs and explicitly excluded outgoing assignments. Hours do not depend on `schedules.week_start`, visible dates, machine timezone or a caller-provided scalar. The old `existingWeeklyMinutes` field remains for compatibility with existing exchange helpers; the eligibility evaluator ignores it. Dashboard/publish health select actual business dates through the existing shift reader's `byBusinessWorkweek` option. Normal roster queries keep their existing schedule ownership selection.
 
 Only scheduled hours are used. Projections identify their source as `SCHEDULED`. The reusable interval/workweek allocator also feeds schedule-health target balance and historical target fairness. Phase 8 can separately supply authoritative recorded-time intervals and remaining scheduled work through a reviewed adapter; Phase 2 supplies no fake actual hours and does not read or mutate Clocker/time-entry records.
 
@@ -20,10 +20,10 @@ Hard checks in every workflow:
 
 - Valid business date/time/input settings and a known role capability.
 - Active employee and allowed assignment location.
-- Required role; Owner/Manager/Lead qualify for a designated Lead position under the existing application capability policy. This grants no new authentication permission.
+- Required role; Owner/Manager/Lead qualify for a designated Lead responsibility under the existing application capability policy. This grants no new authentication permission.
 - Complete effective availability, including adjacent windows, unavailable gaps and all overnight dates.
 - Approved leave only; pending/denied/cancelled requests do not block.
-- Global overlapping assignments at either Fuel location.
+- Global overlapping assignments across all locations.
 - Configured maximum weekly scheduled hours. Default 40; exactly reaching the maximum is valid. An explicit business maximum can further constrain an employee maximum.
 
 Automatic evaluation defaults to one assignment per touched calendar day, even for nonoverlapping clock times. `policy.maximumShiftsPerDay` changes that business policy without rewriting rules. Explicit existing human `MANAGER_SCHEDULE`/`SHIFT_EXCHANGE` modes surface same-day exceptions as warnings; an explicit daily limit enforces a hard check in those modes too. Existing consent and manager approval workflows remain in place.
@@ -81,3 +81,12 @@ Database-backed activation requires separately authorized environment selection,
 If activation later needs rollback, retain settings, exceptions, submissions and shift history. Older application code does not understand normal-based submissions or overnight constraints. Rehearse an explicit compatibility rollback in isolated data before switching code; do not drop columns or erase overnight shifts to force the old constraints. No rollback or database mutation occurs in Phase 2.
 
 No unresolved workweek business decision remains. Future automation still needs its separately authorized transactional assignment/consent/revalidation workflows; this phase establishes the shared evaluator and current input foundation only.
+
+
+## NEVORA foundation extension (2026-10-03)
+
+The [workspace foundation](nevora-workspace-foundation.md) adds separate active positions, employee qualifications, one optional assigned position per shift and per-window quantities. One distinct employee counts for one assigned position; designated Lead is orthogonal. Inactive/unqualified positions or locations fail assignment validation. New locations have no invented staffing/Lead/coverage/eligibility defaults and derive Needs setup until configured. Phase 4 must restrict candidates to active READY locations and reuse this engine.
+
+Business-time conversion uses explicit persisted workspace timezone, strict DST disambiguation and UTC timestamp storage. Nominal scheduled wall minutes remain unchanged. Timezone edits lock after operational records exist; concurrent writes cannot bypass that boundary. Malformed/nonexistent/ambiguous legacy notification boundaries suppress delivery rather than guessing. Workspace name edits remain possible while timezone is locked.
+
+Migration 0008 is prepared after exact 0001–0007; none is applied to an existing customer database here. Captured publication position labels survive catalog rename/deactivation. Test-only generic SQL setup is not production provisioning. Skills/certifications/training remain deferred, as do automatic scheduling and real timekeeping.

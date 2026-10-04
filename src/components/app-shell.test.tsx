@@ -15,7 +15,7 @@ vi.mock("next/image", () => ({ default: () => null }));
 
 function render(role: "EMPLOYEE" | "LEAD" | "MANAGER" | "OWNER") {
   const html = renderToStaticMarkup(
-    <AppShell user={{ firstName: "Sam", lastName: "Cruz", role }}><h1>My Time</h1></AppShell>,
+    <AppShell workspaceName="Northside Services" user={{ firstName: "Sam", lastName: "Cruz", role }}><h1>My Time</h1></AppShell>,
   );
   return { html, mobile: html.split('aria-label="Mobile navigation"')[1].split("</nav>")[0] };
 }
@@ -50,17 +50,23 @@ it.each(["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const)("renders the NEVORA p
   const { html } = render(role);
   expect(html).toContain("NEVORA");
   expect(html).toContain("Workforce");
-  expect(html).toContain("Fuel Coffee Drive");
+  expect(html).toContain("Northside Services");
+  expect(html).not.toContain("Fuel Coffee Drive");
   expect(html).toContain("Powered by VELANI LLC");
   expect(html).not.toContain("Fuel Scheduler");
 });
 
 it.each(['EMPLOYEE','LEAD','MANAGER','OWNER'] as const)('places %s device settings only in existing profile affordances when enabled',role=>{
- const html=renderToStaticMarkup(<AppShell notificationsEnabled user={{firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
+ const html=renderToStaticMarkup(<AppShell workspaceName="Northside Services" notificationsEnabled user={{firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
  expect(html.match(/id="portal-device-settings"/g)).toHaveLength(1);
  expect(html.match(/popoverTarget="portal-device-settings"/g)?.length).toBeGreaterThanOrEqual(2);
  expect(html).not.toContain('href="/app/notifications"');
 });
 it('feature off retains the ordinary profile and does not mount setup',()=>{
  const {html}=render('EMPLOYEE');expect(html).not.toContain('portal-device-settings');expect(html).toContain('<div class="sidebar-profile">');
+});
+
+it("preserves configured Fuel customer identity in the sidebar", () => {
+  const html = renderToStaticMarkup(<AppShell workspaceName="Fuel Coffee Drive" user={{firstName:"Sam",lastName:"Cruz",role:"EMPLOYEE"}}>Content</AppShell>);
+  expect(html).toContain("Fuel Coffee Drive");
 });

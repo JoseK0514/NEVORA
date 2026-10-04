@@ -21,8 +21,10 @@ const DEMO_SHIFT = "8:00 AM – 4:00 PM";
 
 export function ClockerKiosk({
   locationLabel,
+  timeZone,
 }: {
   locationLabel: string;
+  timeZone: string;
 }) {  const [now, setNow] = useState<Date | null>(null);
   const [pin, setPin] = useState("");
   const [recognized, setRecognized] = useState(false);
@@ -77,7 +79,7 @@ export function ClockerKiosk({
 
   function punchTime() {
     return new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/Puerto_Rico",
+      timeZone,
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
@@ -121,10 +123,10 @@ export function ClockerKiosk({
             {locationLabel}
           </span>
           <time className="clocker-terminal-time" aria-live="off">
-            {now ? formatKioskTime(now) : "--:--:-- --"}
+            {now ? formatKioskTime(now, timeZone) : "--:--:-- --"}
           </time>
           <span className="clocker-terminal-date">
-            {now ? formatKioskDate(now) : "Loading date"}
+            {now ? formatKioskDate(now, timeZone) : "Loading date"}
           </span>
         </header>
 

@@ -3,14 +3,17 @@ import {
   applyKioskPinKey,
   formatBreakCountdown,
   formatElapsedDuration,
-  kioskLocationLabel,
+  formatKioskTime,
+  formatKioskDate,
 } from "./clocker-kiosk";
 
 describe("clocker kiosk helpers", () => {
-  it("maps hardware location slugs", () => {
-    expect(kioskLocationLabel("110")).toBe("FUEL – 110");
-    expect(kioskLocationLabel("2")).toBe("FUEL – 2");
-    expect(kioskLocationLabel("unknown")).toBeNull();
+  it("formats clocks and dates in the explicitly configured business timezone", () => {
+    const date = new Date("2030-10-08T02:30:00Z");
+    expect(formatKioskTime(date, "America/Puerto_Rico")).toBe("10:30:00 PM");
+    expect(formatKioskDate(date, "America/Puerto_Rico")).toBe("Monday, October 7");
+    expect(formatKioskTime(date, "Asia/Tokyo")).toBe("11:30:00 AM");
+    expect(formatKioskDate(date, "Asia/Tokyo")).toBe("Tuesday, October 8");
   });
 
   it("limits PIN entry to four digits", () => {

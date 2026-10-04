@@ -94,3 +94,6 @@ it("does not report an already changed Time Off request as a successful review",
   const data = new FormData(); data.set("requestId", "request-1"); data.set("decision", "APPROVED");
   await expect(reviewTimeOffAction(data)).rejects.toThrow("redirect:/app/requests?tab=team&error=review");
 });
+
+vi.mock("@/lib/business-time",()=>import("../../lib/business-time"));
+vi.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));

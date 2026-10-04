@@ -1,3 +1,4 @@
+import {assignmentFacts} from './assignment-facts.test-support';
 import { expect, it, vi } from 'vitest';
 vi.mock('@/lib/db', () => import('../db'));
 import { ensureSchedule, insertShift, updateShift, deleteShift } from './schedules';
@@ -6,9 +7,9 @@ import type { SqlExecutor, SqlStatement } from '../notifications/types';
 const week='2030-10-07';
 const shift={sourceShiftId:'s1',scheduleId:'a',weekStart:week,locationId:'loc-1',employeeId:'E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',isDesignatedLead:false,isCalloutApproved:false,hasExchangeHistory:false};
 function fixture(published=false) {
-  const state:GuardedWeekState={schedules:[{id:'a',weekStart:week,locationId:'loc-1',status:published?'PUBLISHED':'DRAFT',updatedAt:'2030-10-07 12:00:00.111111+00'}],shifts:[{...shift}],revisions:published?[{id:'r1',weekStart:week,revisionNumber:1,sourceType:'PUBLISH',createdBy:'M',createdAt:'2030-10-07T11:00:00Z',shifts:[{...shift}]}]:[],acknowledgements:[],recipients:[{employeeId:'E',role:'EMPLOYEE',active:true,allowedLocationIds:['loc-1']}]};
+  const state:GuardedWeekState={assignmentFacts:assignmentFacts(),schedules:[{id:'a',weekStart:week,locationId:'loc-1',status:published?'PUBLISHED':'DRAFT',updatedAt:'2030-10-07 12:00:00.111111+00'}],shifts:[{...shift}],revisions:published?[{id:'r1',weekStart:week,revisionNumber:1,sourceType:'PUBLISH',createdBy:'M',createdAt:'2030-10-07T11:00:00Z',shifts:[{...shift}]}]:[],acknowledgements:[],recipients:[{employeeId:'E',role:'EMPLOYEE',active:true,allowedLocationIds:['loc-1']}]};
   const batches:SqlStatement[][]=[];
-  const executor:SqlExecutor={query:vi.fn(async statement=>statement.text.includes('AS state')?[{state:structuredClone(state),read_at:'2030-10-07 12:00:00.111112+00'}]:[{week_start:week}]) as SqlExecutor['query'],transaction:vi.fn(async statements=>{batches.push([...statements]);return statements.map(()=>[]);})};
+  const executor:SqlExecutor={query:vi.fn(async statement=>statement.text.startsWith('SELECT id, name, time_zone')?[{id:'test-workspace',name:'Test',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}]:statement.text.includes('AS state')?[{state:structuredClone(state),read_at:'2030-10-07 12:00:00.111112+00'}]:[{week_start:week}]) as SqlExecutor['query'],transaction:vi.fn(async statements=>{batches.push([...statements]);return statements.map(()=>[]);})};
   return {state,batches,executor};
 }
 const operations={insert:(executor:SqlExecutor)=>insertShift({scheduleId:'a',employeeId:'E',date:'2030-10-12',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M'},executor),update:(executor:SqlExecutor)=>updateShift({shiftId:'s1',employeeId:'E',date:'2030-10-11',startTime:'10:00',endTime:'17:00',actorEmployeeId:'M'},executor),delete:(executor:SqlExecutor)=>deleteShift('s1','M',executor)};
@@ -50,4 +51,17 @@ it('reassigning back to the employee with the approved callout preserves the act
   await updateShift({shiftId:'s1',employeeId:'E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M'},r.executor);
   const guard=r.batches[0].find(s=>s.text.includes('guarded_after'))!;
   expect(JSON.parse(String(guard.values[1]))[0].isCalloutApproved).toBe(true);
+});
+it('create carries position into the write and resulting canonical assignment',async()=>{
+ const r=fixture();await insertShift({...{scheduleId:'a',employeeId:'E',date:'2030-10-12',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M'},positionId:'barista'},r.executor);
+ const guard=r.batches[0].find(s=>s.text.includes('guarded_after'))!;
+ expect(JSON.parse(String(guard.values[1])).find((s:{sourceShiftId:string})=>s.sourceShiftId!=='s1').positionId).toBe('barista');
+ expect(r.batches[0].find(s=>s.text.includes('INSERT INTO shifts'))?.values).toContain('barista');
+});
+it.each([{value:undefined,want:'barista'},{value:null,want:null},{value:'',want:null},{value:'cashier',want:'cashier'}])('edit position $value retains or clears explicitly',async({value,want})=>{
+ const r=fixture(true);r.state.shifts[0].positionId='barista';Object.assign(r.state.revisions[0].shifts[0],{positionId:'barista'});
+ await updateShift({shiftId:'s1',employeeId:'E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M',...(value!==undefined?{positionId:value}:{})},r.executor);
+ const guard=r.batches[0].find(s=>s.text.includes('guarded_after'))!;
+ expect(JSON.parse(String(guard.values[1]))[0].positionId).toBe(want);
+ expect(r.batches[0].some(s=>s.text.includes('INSERT INTO notifications'))).toBe(want!=='barista');
 });

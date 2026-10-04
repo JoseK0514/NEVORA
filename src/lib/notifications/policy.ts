@@ -1,3 +1,6 @@
+import { businessDate, businessTime, localDateTimeToInstant, shiftBoundaryInstants } from '../business-time';
+import { addDays } from '../date-utils';
+import { validateWorkspaceProfile } from '../workspace/validation';
 import { randomUUID } from 'node:crypto';
 import { buildAcknowledgementReminderNotification, buildAvailabilityReminderNotification } from '../assistance/notification-events';
 import type { NotificationIntent, NotificationPolicy, ProviderResult } from './types';
@@ -7,22 +10,21 @@ export const DEFAULT_NOTIFICATION_POLICY: NotificationPolicy = {
   maxAttempts: 5, retryMinutes: [1, 5, 15, 60], leaseSeconds: 120, batchSize: 10, concurrency: 2, budgetMs: 20000, attemptDeadlineMs: 8000,
 };
 const HOUR_MS = 3600000;
-/** Puerto Rico observes UTC-04:00 year round; shift UTC calendar arithmetic to local time. */
-export function puertoRicoDay(now: Date): string {
-  return new Date(now.getTime() - 4 * HOUR_MS).toISOString().slice(0, 10);
+/** Explicit workspace policy; numeric reliability limits remain unchanged. */
+export function notificationPolicyFor(timeZone: string): NotificationPolicy {
+  validateWorkspaceProfile({name:'Workspace',timeZone});
+  return {...DEFAULT_NOTIFICATION_POLICY,timeZone};
+}
+/** Invalid legacy wall boundaries are suppressed instead of guessed. */
+export function notificationBoundary(local: string, timeZone: string): number {
+  try { return Date.parse(localDateTimeToInstant(local,timeZone)); } catch { return NaN; }
 }
 export function nextRoutineTime(now: Date, policy: NotificationPolicy): Date {
-  const local = new Date(now.getTime() - 4 * HOUR_MS);
-  const hour = local.getUTCHours();
-  if (hour >= policy.quietStartHour) {
-    local.setUTCDate(local.getUTCDate() + 1);
-    local.setUTCHours(policy.quietEndHour, 0, 0, 0);
-  } else if (hour < policy.quietEndHour) {
-    local.setUTCHours(policy.quietEndHour, 0, 0, 0);
-  } else {
-    return new Date(now);
-  }
-  return new Date(local.getTime() + 4 * HOUR_MS);
+  const hour=Number(businessTime(now,policy.timeZone).slice(0,2));
+  if (hour>=policy.quietEndHour && hour<policy.quietStartHour) return new Date(now);
+  const day=businessDate(now,policy.timeZone);
+  const target=hour>=policy.quietStartHour ? addDays(day,1) : day;
+  return new Date(localDateTimeToInstant(`${target}T${String(policy.quietEndHour).padStart(2,'0')}:00`,policy.timeZone));
 }
 export function notificationEventKey(intent: Pick<NotificationIntent, 'environment' | 'source' | 'effectiveVersion' | 'employeeId' | 'purpose'>): string {
   return [intent.environment, intent.source.kind, intent.source.id, intent.effectiveVersion, intent.employeeId, intent.purpose].map(encodeURIComponent).join(':');
@@ -56,8 +58,8 @@ export function planReminder(input: { intent: NotificationIntent; now: Date; res
   const prefix = `${notificationEventKey(reminder)}:`;
   reminder.eventKey = intent.purpose === 'REMINDER' && intent.eventKey.startsWith(prefix)
     ? intent.eventKey
-    : `${prefix}${puertoRicoDay(planned)}`;
-  reminder.itemKeys = [reminderItemKey(reminder, puertoRicoDay(due))];
+    : `${prefix}${businessDate(planned,policy.timeZone)}`;
+  reminder.itemKeys = [reminderItemKey(reminder, businessDate(due,policy.timeZone))];
   return reminder;
 }
 export function retryDecision(input: { attempt: number; now: Date; expiresAt: Date; result: ProviderResult; deliveryId: string; policy: NotificationPolicy }): { retryAt?: Date; terminal?: 'failed' | 'expired' } {
@@ -72,4 +74,8 @@ export function retryDecision(input: { attempt: number; now: Date; expiresAt: Da
   const retryAt = new Date(now.getTime() + Math.max(base, retryAfter) + hash % (Math.min(15000, Math.floor(base * 0.1)) + 1));
   if (retryAt.getTime() >= expiresAt.getTime()) return { terminal: 'expired' };
   return { retryAt };
+}
+
+export function notificationShiftStart(shift: {date:string;startTime:string;endTime:string},timeZone:string):number {
+  try {return Date.parse(shiftBoundaryInstants(shift,timeZone).startAt);} catch {return NaN;}
 }

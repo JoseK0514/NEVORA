@@ -12,9 +12,12 @@
     "bootstrap:owner": "node scripts/bootstrap-owner.mjs",
     "notifications:worker": "tsx scripts/fuel-notification-worker.ts",
     "test:notifications:qa": "node --test scripts/verify-fuel-phase-3-config.check.mjs",
-    "test:notifications:integration": "vitest run --config vitest.notifications-integration.config.mts"
+    "test:notifications:integration": "vitest run --config vitest.notifications-integration.config.mts",
+    "test:foundation:integration": "vitest run --config vitest.foundation-integration.config.mts",
+    "test:foundation:qa": "node --test scripts/verify-nevora-foundation-config.check.mjs"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "0.5.1",
     "@neondatabase/serverless": "1.1.0",
     "next": "16.3.6",
     "react": "19.3.0",

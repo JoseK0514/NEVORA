@@ -1,3 +1,4 @@
+import { businessDate } from '../business-time';
 import { NUVORA_BRAND } from "../brand";
 import { randomUUID } from 'node:crypto';
 import { addDays } from '../date-utils';
@@ -10,14 +11,12 @@ import {
   type NotificationEvent,
 } from '../assistance/notification-events';
 import { destinationForSource, isReviewRole, isSelfServiceRecipient, canAccessPublishedAssignment } from './destinations';
-import { nextRoutineTime, notificationEventKey, planReminder, puertoRicoDay } from './policy';
+import { nextRoutineTime, notificationEventKey, planReminder, notificationBoundary, notificationShiftStart } from './policy';
 import type { SourceSnapshot, RecipientAccess, PushEnvironment, NotificationPolicy, NotificationIntent, ScheduleSourceSnapshot } from './types';
 const HOUR_MS = 3600000;
-function shiftStart(shift: { date: string; startTime: string }): number {
-  return Date.parse(`${shift.date}T${shift.startTime.slice(0,5)}:00-04:00`);
-}
 export function buildNotificationIntents(input: { before?: SourceSnapshot; after: SourceSnapshot; actorEmployeeId?: string; recipients: readonly RecipientAccess[]; environment: PushEnvironment; now: Date; policy: NotificationPolicy }): NotificationIntent[] {
   const { after, before, now, policy, environment, actorEmployeeId } = input;
+  const shiftStart = (shift: {date:string;startTime:string;endTime:string}) => notificationShiftStart(shift,policy.timeZone);
   let destinationSource = after;
   if (after.kind === 'SCHEDULE' && before?.kind === 'SCHEDULE') {
     destinationSource = {...after, previousShifts:before.currentShifts};
@@ -25,12 +24,13 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
   const recipients = [...new Map(input.recipients.filter(recipient => recipient.active).map(recipient => [recipient.employeeId,recipient])).values()];
   const intents: NotificationIntent[] = [];
   function make(event: NotificationEvent, recipient: RecipientAccess, options: { expiresAt: number; dueAt?: number; purpose?: NotificationIntent['purpose']; urgency?: NotificationIntent['urgency']; effectiveVersion?: string; itemKeys?: readonly string[] }): NotificationIntent | null {
+    if (!isReviewRole(recipient) && ((after.kind==='EXCHANGE' && !recipient.allowedLocationIds.includes(after.record.sourceShift.locationId)) || (after.kind==='CALLOUT' && !recipient.allowedLocationIds.includes(after.record.locationId)))) return null;
     const actionHref = destinationForSource(destinationSource,recipient);
     if (!actionHref || recipient.employeeId === actorEmployeeId) return null;
     const urgency = options.urgency ?? 'normal';
     const due = new Date(options.dueAt ?? now.getTime());
     const dueAt = urgency === 'high' ? due : nextRoutineTime(due,policy);
-    if (dueAt.getTime() >= options.expiresAt) return null;
+    if (!Number.isFinite(options.expiresAt) || dueAt.getTime() >= options.expiresAt) return null;
     const intent: NotificationIntent = {
       ...event, id:randomUUID(), actionHref, environment, source:after.source,
       effectiveVersion:options.effectiveVersion ?? after.source.version,
@@ -57,6 +57,7 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
     for (const recipient of recipients) {
       const personalPrevious = previous.filter(shift => canAccessPublishedAssignment(recipient,shift));
       const personalCurrent = after.currentShifts.filter(shift => canAccessPublishedAssignment(recipient,shift));
+      if ([...personalPrevious,...personalCurrent].some(shift=>!Number.isFinite(shiftStart(shift)))) continue;
       const personalChanges = diffPublishedShifts(personalPrevious,personalCurrent);
       const changed = personalChanges.length > 0;
       const firstPublication = changed && personalPrevious.length === 0;
@@ -70,7 +71,7 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
       // The original effective revision comes from immutable history, never a global version bump.
       const anchor = Date.parse(publishedAt);
       const effective = effectiveVersion;
-      const baseExpiry = Math.min(anchor+7*24*HOUR_MS,Date.parse(`${addDays(after.revision.weekStart,7)}T00:00:00-04:00`));
+      const baseExpiry = Math.min(anchor+7*24*HOUR_MS,notificationBoundary(`${addDays(after.revision.weekStart,7)}T00:00`,policy.timeZone));
       const changedStarts = personalChanges.flatMap(change => [change.before,change.after]).filter(shift => shift?.employeeId === recipient.employeeId).map(shift => shiftStart(shift!)).filter(start => start >= now.getTime());
       const urgentStart = !firstPublication ? Math.min(...changedStarts.filter(start => start-now.getTime() <= policy.urgentLeadHours*HOUR_MS)) : Infinity;
       const event = buildSchedulePublicationNotification({employeeId:recipient.employeeId,revisionId:effective,firstPublication,changed});
@@ -119,7 +120,7 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
     return intents;
   }
   if (after.kind === 'MANAGER_SUMMARY') {
-    const coverageTime = (dateTime: string) => Date.parse(/(?:Z|[+-]\d{2}:\d{2})$/.test(dateTime) ? dateTime : `${dateTime}-04:00`);
+    const coverageTime = (dateTime: string) => notificationBoundary(dateTime,policy.timeZone);
     const relevant = after.items.filter(item => {
       if (item.type === 'COVERAGE_GAP') return item.dateTime !== undefined && coverageTime(item.dateTime) > now.getTime();
       return ['TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY_MISSING'].includes(item.type);
@@ -130,7 +131,7 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
       const coverageStart = Math.min(...relevant.filter(item=>item.type==='COVERAGE_GAP' && item.dateTime).map(item=>coverageTime(item.dateTime!)).filter(start=>start>=now.getTime()));
       const high = coverageStart-now.getTime() <= policy.urgentLeadHours*HOUR_MS;
       const due = high ? now : nextRoutineTime(new Date(now.getTime()+policy.managerCollectionMinutes*60000),policy);
-      const day = puertoRicoDay(due);
+      const day = businessDate(due,policy.timeZone);
       const itemKeys = relevant.map(item=>[environment,after.weekStart,item.type,item.id,recipient.employeeId,day].map(encodeURIComponent).join(':')).sort();
       const intent = make(buildManagerReviewNotification(recipient.employeeId,after.source.id,relevant.some(item=>item.type==='COVERAGE_GAP')),recipient,{expiresAt:Math.min(Date.parse(after.expiresAt),coverageStart),dueAt:due.getTime(),purpose:'SUMMARY',urgency:high?'high':'normal',itemKeys});
       if (intent) {

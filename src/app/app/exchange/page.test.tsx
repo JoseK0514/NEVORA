@@ -40,3 +40,7 @@ it('selected own callout beyond ordinary six is included without expanding defau
  f.callouts=Array.from({length:8},(_,i)=>({id:`callout-${i}`,shiftId:'shift',employeeId:'self',employeeName:'Fictional',locationId:'2',locationName:'Drive',weekStart:'2026-10-05',date:'2026-10-05',startTime:'08:00',endTime:'12:00',reasonCode:'OTHER',status:'APPROVED',createdAt:'2026-10-03T12:00:00Z'}));
  expect(await html()).not.toContain('id="request-callout-7"');expect(await html('callout-7')).toContain('id="request-callout-7"');
 });
+
+vi.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));
+
+vi.mock("@/lib/business-time",()=>import("../../../lib/business-time"));

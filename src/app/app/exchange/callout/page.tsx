@@ -1,9 +1,10 @@
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requireSelfService } from "@/lib/auth/permissions";
 import {
-  currentDateInPuertoRico,
   formatDayLabel,
   formatTime,
 } from "@/lib/date-utils";
@@ -25,6 +26,7 @@ export default async function CalloutPage({
   searchParams: Promise<{ shiftId?: string; error?: string }>;
 }) {
   const session = await requireSelfService("/app/exchange?tab=requests");
+  const workspace = await getWorkspace();
   const params = await searchParams;
 
   if (!params.shiftId) {
@@ -36,7 +38,7 @@ export default async function CalloutPage({
   if (
     !shift ||
     shift.employeeId !== session.id ||
-    shift.date < currentDateInPuertoRico()
+    shift.date < businessDate(new Date(), workspace.timeZone)
   ) {
     redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
   }

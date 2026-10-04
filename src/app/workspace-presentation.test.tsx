@@ -1,0 +1,32 @@
+import { createElement, type ComponentProps } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { expect, it, vi } from 'vitest';
+import EmployeesPage from './app/employees/page';
+import MyTimePage from './app/my-time/page';
+import { EmployeeDashboard } from '../components/employee-dashboard';
+
+vi.mock('@/lib/auth/permissions', () => ({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>{},isManagerRole:()=>false}));
+vi.mock('@/lib/auth/session', () => ({requireSession:async()=>({role:'EMPLOYEE'})}));
+vi.mock('@/lib/data/employees', () => ({listEmployees:async()=>[],listLocations:async()=>[]}));
+vi.mock('@/lib/employee-display', () => import('../lib/employee-display'));
+vi.mock('@/lib/phone', () => import('../lib/phone'));
+vi.mock('@/components/page-header', () => import('../components/page-header'));
+vi.mock('@/components/nav-icon', () => import('../components/nav-icon'));
+vi.mock('@/lib/date-utils', () => import('../lib/date-utils'));
+vi.mock('next/link', () => ({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
+vi.mock('next/navigation', () => ({redirect:()=>{throw Error('REDIRECT');}}));
+it('uses generic customer copy in the directory and unconnected timekeeping page', async () => {
+  const directory=renderToStaticMarkup(await EmployeesPage());
+  expect(directory).not.toContain('across Fuel');
+});
+it('keeps unconnected timekeeping guidance independent of customer identity', async () => {
+  const time=renderToStaticMarkup(await MyTimePage());
+  expect(time).not.toContain('Fuel kiosk');
+  expect(time).toContain('Clocker');
+  expect(time).toContain('connected yet');
+});
+it('keeps the employee dashboard kiosk guidance independent of customer identity', () => {
+  const html=renderToStaticMarkup(<EmployeeDashboard firstName="Sam" weekStart="2030-10-07" weekLabel="Oct 7 – 13" currentDate="2030-10-07" currentTime="09:00" publishedShifts={[]} scheduledHours={0} estimatedEarnings={0} todayShiftLabel="8:00 AM – 4:00 PM" todayClockStatus="Off the Clock" />);
+  expect(html).not.toContain('Fuel kiosk');
+  expect(html).toContain('Clocker');
+});

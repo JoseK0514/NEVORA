@@ -1,20 +1,21 @@
 import { notFound } from "next/navigation";
 import { ClockerKiosk } from "@/components/clocker-kiosk";
-import { kioskLocationLabel } from "@/lib/clocker-kiosk";
+import { findActiveLocationByClockerKey } from "@/lib/data/locations";
+import { getWorkspace } from "@/lib/data/workspaces";
 
-export function generateStaticParams() {
-  return [{ location: "2" }, { location: "110" }];
-}
+// Resolve configured location identity on every request; never read customer
+// configuration during static production generation.
+export const dynamic = "force-dynamic";
 
 export default async function ClockerPage({
   params,
 }: {
   params: Promise<{ location: string }>;
 }) {
-  const { location } = await params;
-  const locationLabel = kioskLocationLabel(location);
+  const { location: key } = await params;
+  const location = await findActiveLocationByClockerKey(key);
+  if (!location) notFound();
+  const workspace = await getWorkspace();
 
-  if (!locationLabel) notFound();
-
-  return <ClockerKiosk locationLabel={locationLabel} />;
+  return <ClockerKiosk locationLabel={location.name} timeZone={workspace.timeZone} />;
 }

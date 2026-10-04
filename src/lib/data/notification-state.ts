@@ -1,6 +1,10 @@
+import { getWorkspace } from './workspaces';
+import type { Workspace } from '../domain';
+import { businessDate } from '../business-time';
+import { notificationPolicyFor, notificationBoundary, notificationShiftStart } from '../notifications/policy';
 import { neonNotificationExecutor, personalProjections, readNotificationWeekState, type GuardedWeekState } from './notification-transactions';
 import type { NotificationIntent, NotificationStateRepository, RecipientAccess, SourceKind, SourceSnapshot, ScheduleSourceSnapshot, SourceRef, SourceCheck, SqlExecutor } from '../notifications/types';
-import type { UserRole } from '../domain';
+import type { UserRole, Position } from '../domain';
 import { getTimeOffRequest } from './requests';
 import { getExchange } from './exchanges';
 import { getCallout } from './callouts';
@@ -9,10 +13,10 @@ import { mapAvailabilityInputs } from './availability-inputs';
 import { resolveAvailabilityWeek } from '../scheduling/availability';
 import { buildAvailabilitySubmissionState } from '../assistance/availability-submission';
 import { buildManagerActionItems, type ManagerActionItem } from '../assistance/manager-actions';
-import { calculateScheduleHealth, type HealthCoverageWindow, type HealthLocation } from '../scheduling/schedule-health';
+import { calculateScheduleHealth, type HealthCoverageWindow, type HealthLocation, type HealthEmployee } from '../scheduling/schedule-health';
 import { addDays, weekDates, weekStartFor } from '../date-utils';
 import { canAccessPublishedAssignment, destinationForSource, isReviewRole, isSelfServiceRecipient } from '../notifications/destinations';
-import { DEFAULT_NOTIFICATION_POLICY, nextRoutineTime } from '../notifications/policy';
+import { nextRoutineTime } from '../notifications/policy';
 import { buildAcknowledgementState } from '../assistance/acknowledgement-state';
 const SOURCE_KINDS: readonly SourceKind[] = ['SCHEDULE', 'TIME_OFF', 'EXCHANGE', 'CALLOUT', 'AVAILABILITY', 'MANAGER_SUMMARY', 'SELF_TEST'];
 function instant(value: unknown): string | null {
@@ -20,7 +24,7 @@ function instant(value: unknown): string | null {
     return Number.isFinite(time) ? new Date(time).toISOString() : null;
 }
 /** Reads current business records. No copied notification payload is source truth. */
-export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotificationExecutor()): NotificationStateRepository {
+export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotificationExecutor(), workspace?: Workspace): NotificationStateRepository {
     const repository: NotificationStateRepository = {
         async findIntent(notificationId) {
             const [row] = await executor.query<Record<string, unknown>>({ text: `SELECT * FROM notifications WHERE id = $1 AND environment IS NOT NULL AND cancelled_at IS NULL LIMIT 1`, values: [notificationId] });
@@ -39,8 +43,8 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 active: boolean;
                 allowed_location_ids: string[];
             }>({ text: `SELECT e.id, e.role, e.active,
-        COALESCE(array_agg(elig.location_id ORDER BY elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL), ARRAY[]::text[]) AS allowed_location_ids
-        FROM employees e LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id
+        COALESCE(array_agg(elig.location_id ORDER BY elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL AND l.active=true), ARRAY[]::text[]) AS allowed_location_ids
+        FROM employees e LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id LEFT JOIN locations l ON l.id=elig.location_id
         WHERE e.id = $1 GROUP BY e.id, e.role, e.active`, values: [employeeId] });
             if (!row || !['OWNER', 'MANAGER', 'LEAD', 'EMPLOYEE'].includes(row.role))
                 return null;
@@ -55,11 +59,15 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 const record = await getExchange(source.id, executor);
                 if (!record) return null;
                 if (['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(record.status)) {
+                    const zone=(workspace ?? await getWorkspace(executor)).timeZone;
+                    if(!Number.isFinite(notificationShiftStart(record.sourceShift,zone)) || (record.targetShift && !Number.isFinite(notificationShiftStart(record.targetShift,zone)))) return null;
                     const [valid] = await executor.query({text: `SELECT x.id FROM shift_exchanges x
                       JOIN shifts sh ON sh.id=x.source_shift_id JOIN schedules s ON s.id=sh.schedule_id
+                      JOIN locations l ON l.id=s.location_id AND l.active=true
+                      JOIN employee_location_eligibility elig ON elig.employee_id=x.requested_by_employee_id AND elig.location_id=l.id
                       LEFT JOIN shifts target ON target.id=x.target_shift_id LEFT JOIN schedules ts ON ts.id=target.schedule_id
                       WHERE x.id=$1 AND s.status='PUBLISHED' AND sh.employee_id=x.requested_by_employee_id
-                        AND (x.target_shift_id IS NULL OR (ts.status='PUBLISHED' AND target.employee_id=x.target_employee_id))`,values:[source.id]});
+                        AND (x.target_shift_id IS NULL OR (ts.status='PUBLISHED' AND target.employee_id=x.target_employee_id AND EXISTS(SELECT 1 FROM locations tl JOIN employee_location_eligibility te ON te.location_id=tl.id WHERE tl.id=ts.location_id AND tl.active=true AND te.employee_id=x.target_employee_id)))`,values:[source.id]});
                     if (!valid) return null;
                 }
                 return requestSnapshot('EXCHANGE', record);
@@ -68,7 +76,8 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 const record = await getCallout(source.id, executor);
                 if (!record) return null;
                 if (record.status === 'PENDING') {
-                    const [valid] = await executor.query({text: `SELECT c.id FROM shift_callouts c JOIN shifts sh ON sh.id=c.shift_id JOIN schedules s ON s.id=sh.schedule_id WHERE c.id=$1 AND s.status='PUBLISHED' AND sh.employee_id=c.employee_id`,values:[source.id]});
+                    if(!Number.isFinite(notificationShiftStart(record,(workspace ?? await getWorkspace(executor)).timeZone))) return null;
+                    const [valid] = await executor.query({text: `SELECT c.id FROM shift_callouts c JOIN shifts sh ON sh.id=c.shift_id JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id AND l.active=true JOIN employee_location_eligibility elig ON elig.employee_id=c.employee_id AND elig.location_id=l.id WHERE c.id=$1 AND s.status='PUBLISHED' AND sh.employee_id=c.employee_id`,values:[source.id]});
                     if (!valid) return null;
                 }
                 return requestSnapshot('CALLOUT', record);
@@ -80,7 +89,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
             if (source.kind === 'AVAILABILITY') return readAvailabilitySource(source.id, executor);
             if (source.kind === 'MANAGER_SUMMARY') {
                 // A week id is a configured coverage candidate; deliverable groups use a persisted UUID.
-                if (/^\d{4}-\d{2}-\d{2}$/.test(source.id)) return readCoverageSource(source.id,executor);
+                if (/^\d{4}-\d{2}-\d{2}$/.test(source.id)) return readCoverageSource(source.id,executor,(workspace ?? await getWorkspace(executor)).timeZone);
                 const intent = await repository.findIntent(source.id);
                 if (!intent || intent.source.kind !== 'MANAGER_SUMMARY' || intent.source.version !== source.version) return null;
                 const items: ManagerActionItem[] = [];
@@ -96,15 +105,30 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
             const [row] = await executor.query<{employee_id:string;expires_at:string}>({text:`SELECT employee_id, expires_at FROM push_subscriptions WHERE id=$1 AND generation=$2 AND status='active'`,values:[source.id,source.version]});
             return row ? {kind:'SELF_TEST',source:{...source,kind:'SELF_TEST'},updatedAt:'',employeeId:row.employee_id,expiresAt:row.expires_at ? instant(row.expires_at)! : '9999-01-01T00:00:00.000Z'} : null;
         },
-        async check(intent, recipientId, now) {
+        async check(intent, recipientId, now, use = 'delivery') {
             if (intent.employeeId !== recipientId) return rejected(intent,'recipient_mismatch');
             const [recipient, source] = await Promise.all([repository.recipientAccess(recipientId),repository.readSource(intent.source)]);
-            return evaluateNotificationSource(intent, recipient, source, now);
+            try {
+                const current=await getWorkspace(executor);
+                if (workspace && (current.id!==workspace.id || current.timeZone!==workspace.timeZone || current.updatedAt!==workspace.updatedAt)) return rejected(intent,'workspace_changed');
+                if (use==='open') {
+                    const history=checkParticipantHistory(intent,recipient,source,now);
+                    if (history) return history;
+                }
+                const locationIds=source?.kind==='EXCHANGE' ? [source.record.sourceShift.locationId,...(source.record.targetShift ? [source.record.targetShift.locationId] : [])]
+                    : source?.kind==='CALLOUT' ? [source.record.locationId]
+                    : source?.kind==='SCHEDULE' && recipient ? [...source.previousShifts,...source.currentShifts].filter(s=>canAccessPublishedAssignment(recipient,s)).map(s=>s.locationId) : [];
+                if(locationIds.length) {
+                    const active=await executor.query<{id:string}>({text:'SELECT id FROM locations WHERE id=ANY($1::text[]) AND active=true',values:[[...new Set(locationIds)]]});
+                    if(locationIds.some(id=>!active.some(l=>l.id===id))) return rejected(intent,'location_inactive');
+                }
+                return evaluateNotificationSource(intent, recipient, source, now,notificationPolicyFor(current.timeZone));
+            } catch {return rejected(intent,'workspace_unavailable');}
         },
         async listReminderCandidates(now, limit, shouldContinue = () => true, visit) {
             if (!shouldContinue()) return [];
             const bounded = Math.max(1,Math.min(100,Math.floor(limit) || 10));
-            const currentWeek = weekStartFor(new Date(now.getTime()-4*3600000).toISOString().slice(0,10));
+            const currentWeek = weekStartFor(businessDate(now,(workspace ?? await getWorkspace(executor)).timeZone));
             const rows = await executor.query<{kind:'SCHEDULE'|'AVAILABILITY'|'MANAGER_SUMMARY';id:string}>({text:`SELECT kind,id FROM (
               SELECT 'AVAILABILITY' AS kind,week_start::text AS id FROM schedule_week_settings
                 WHERE availability_deadline IS NOT NULL AND availability_deadline > $1::timestamptz - interval '72 hours'
@@ -129,14 +153,31 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
 function rejected(intent: NotificationIntent, reason: string): SourceCheck {
     return {deliverable:false,reason,effectiveVersion:intent.effectiveVersion,expiresAt:intent.expiresAt};
 }
-const shiftStart = (shift: {date:string;startTime:string}) => Date.parse(`${shift.date}T${shift.startTime.slice(0,5)}:00-04:00`);
+
+/** Opening a terminal outcome preserves the current participant's history access.
+ * Delivery still uses all operational restrictions below; payload links grant no access. */
+function checkParticipantHistory(intent: NotificationIntent, recipient: RecipientAccess | null, source: SourceSnapshot | null, now: Date): SourceCheck | null {
+    if (!source || (source.kind!=='EXCHANGE' && source.kind!=='CALLOUT') || !['APPROVED','DENIED'].includes(source.record.status)) return null;
+    const participant=source.kind==='CALLOUT' ? source.record.employeeId===recipient?.employeeId
+        : source.record.requestedByEmployeeId===recipient?.employeeId || source.record.targetEmployeeId===recipient?.employeeId;
+    if (!participant) return null;
+    if (!recipient?.active || recipient.employeeId!==intent.employeeId || intent.purpose!=='EVENT') return rejected(intent,'history_access_lost');
+    if (source.kind!==intent.source.kind || source.source.kind!==intent.source.kind || source.source.id!==intent.source.id || source.source.version!==intent.source.version || source.source.version!==intent.effectiveVersion) return rejected(intent,'source_superseded');
+    const expiry=Date.parse(intent.expiresAt);
+    if (!Number.isFinite(expiry) || expiry<=now.getTime()) return rejected(intent,'expired');
+    const destination=destinationForSource(source,recipient);
+    return destination ? {deliverable:true,reason:'participant_history',effectiveVersion:source.source.version,expiresAt:new Date(expiry).toISOString(),destination} : rejected(intent,'history_access_lost');
+}
+
 /** Persisted lifetime is always an upper bound, including for request outcomes. */
-export function evaluateNotificationSource(intent: NotificationIntent, recipient: RecipientAccess | null, source: SourceSnapshot | null, now: Date): SourceCheck {
+export function evaluateNotificationSource(intent: NotificationIntent, recipient: RecipientAccess | null, source: SourceSnapshot | null, now: Date, policy: import('../notifications/types').NotificationPolicy): SourceCheck {
+    const shiftStart = (shift:{date:string;startTime:string;endTime:string}) => notificationShiftStart(shift,policy.timeZone);
     if (!recipient?.active || recipient.employeeId!==intent.employeeId || !source) return rejected(intent,'source_or_access_lost');
     if (source.kind!==intent.source.kind || source.source.id!==intent.source.id) return rejected(intent,'source_mismatch');
     let expiry = Date.parse(intent.expiresAt);
     let effectiveVersion = source.source.version;
     if (source.kind==='SCHEDULE') {
+        if ([...source.previousShifts,...source.currentShifts].filter(s=>canAccessPublishedAssignment(recipient,s)).some(s=>!Number.isFinite(shiftStart(s)))) return rejected(intent,'invalid_source_boundary');
         const projection = source.employeePublications?.[recipient.employeeId];
         if (!projection) return rejected(intent,'publication_missing');
         effectiveVersion = projection.effectiveVersion;
@@ -146,7 +187,7 @@ export function evaluateNotificationSource(intent: NotificationIntent, recipient
                 acknowledgedRevisionShifts:projection.acknowledgedRevisionShifts?.filter(s=>canAccessPublishedAssignment(recipient,s)),latestRevisionShifts:personal});
             const nextShift = Math.min(...personal.filter(s=>!s.isCalloutApproved && shiftStart(s)>now.getTime()).map(shiftStart));
             if (!isSelfServiceRecipient(recipient) || !acknowledgement.needsAcknowledgement || !Number.isFinite(nextShift)) return rejected(intent,'acknowledgement_resolved');
-            expiry = Math.min(expiry,nextShift,Date.parse(projection.publishedAt)+7*86400000,Date.parse(`${addDays(source.revision.weekStart,7)}T00:00:00-04:00`));
+            expiry = Math.min(expiry,nextShift,Date.parse(projection.publishedAt)+7*86400000,notificationBoundary(`${addDays(source.revision.weekStart,7)}T00:00`,policy.timeZone));
         }
     } else if (source.kind==='AVAILABILITY') {
         const deadline = Date.parse(source.settings.availabilityDeadline ?? '');
@@ -154,7 +195,7 @@ export function evaluateNotificationSource(intent: NotificationIntent, recipient
         expiry = Math.min(expiry,deadline);
     } else if (source.kind==='MANAGER_SUMMARY') {
         if (!isReviewRole(recipient) || !source.items.length) return rejected(intent,'summary_resolved');
-        const coverage = source.items.filter(i=>i.type==='COVERAGE_GAP').map(i=>Date.parse(`${i.dateTime}-04:00`));
+        const coverage = source.items.filter(i=>i.type==='COVERAGE_GAP').map(i=>notificationBoundary(i.dateTime ?? '',policy.timeZone));
         if (intent.urgency==='high' && !coverage.some(start=>start>now.getTime() && start-now.getTime()<=12*3600000)) return rejected(intent,'urgent_source_resolved');
         expiry = Math.min(expiry,Date.parse(source.expiresAt),...coverage);
     } else if (source.kind==='SELF_TEST') {
@@ -163,6 +204,9 @@ export function evaluateNotificationSource(intent: NotificationIntent, recipient
     } else {
         if (intent.purpose==='SUMMARY') return rejected(intent,'collection_seed');
         const record = source.record;
+        if(source.kind==='CALLOUT' && !Number.isFinite(shiftStart(source.record))) return rejected(intent,'invalid_source_boundary');
+        if (source.kind==='CALLOUT' && !recipient.allowedLocationIds.includes(source.record.locationId) && !isReviewRole(recipient)) return rejected(intent,'operational_access_lost');
+        if (source.kind==='EXCHANGE' && !recipient.allowedLocationIds.includes(source.record.sourceShift.locationId) && !isReviewRole(recipient)) return rejected(intent,'operational_access_lost');
         if (['CANCELLED','EXPIRED','PENDING','OPEN','MANAGER_PENDING'].includes(record.status)) return rejected(intent,'request_resolved_or_seed');
         if (source.kind==='EXCHANGE') {
             if (source.record.status==='EMPLOYEE_PENDING' && source.record.targetEmployeeId!==recipient.employeeId) return rejected(intent,'not_response_target');
@@ -173,7 +217,7 @@ export function evaluateNotificationSource(intent: NotificationIntent, recipient
     if (effectiveVersion!==intent.effectiveVersion) return rejected(intent,'source_superseded');
     const destination = destinationForSource(source,recipient);
     if (!destination) return rejected(intent,'access_lost');
-    const allowedTime = intent.urgency==='high' ? now : nextRoutineTime(now,DEFAULT_NOTIFICATION_POLICY);
+    const allowedTime = intent.urgency==='high' ? now : nextRoutineTime(now,policy);
     if (!Number.isFinite(expiry) || expiry<=allowedTime.getTime()) return rejected(intent,'expired');
     return {deliverable:true,reason:'current',effectiveVersion,expiresAt:new Date(expiry).toISOString(),destination};
 }
@@ -224,18 +268,20 @@ async function readAvailabilitySource(week: string, executor: SqlExecutor): Prom
         return {...employee,...buildAvailabilitySubmissionState({submitted:Boolean(marker),windowCount,deadlinePassed:false}),windowCount,submittedAt:marker ? instant(marker.submitted_at) ?? undefined : undefined};
     })};
 }
-async function readCoverageSource(week: string, executor: SqlExecutor): Promise<SourceSnapshot> {
-    const [state,locations,coverageWindows] = await Promise.all([
+async function readCoverageSource(week: string, executor: SqlExecutor,timeZone:string): Promise<SourceSnapshot> {
+    const [state,locations,coverageWindows,employees,positions] = await Promise.all([
         readNotificationWeekState([addDays(week,-7),week],executor),
-        executor.query<HealthLocation>({text:`SELECT l.id,l.short_name AS name,s.minimum_staff_per_shift AS "minimumStaffPerShift",s.requires_designated_lead AS "requiresDesignatedLead" FROM locations l JOIN location_staffing_settings s ON s.location_id=l.id WHERE l.active=true`,values:[]}),
-        executor.query<HealthCoverageWindow>({text:`SELECT location_id AS "locationId",day_of_week AS "dayOfWeek",left(start_time::text,5) AS "startTime",left(end_time::text,5) AS "endTime",minimum_staff AS "minimumStaff" FROM location_coverage_windows`,values:[]}),
+        executor.query<HealthLocation>({text:`SELECT l.id,l.short_name AS name,s.minimum_staff_per_shift AS "minimumStaffPerShift",s.requires_designated_lead AS "requiresDesignatedLead" FROM locations l LEFT JOIN location_staffing_settings s ON s.location_id=l.id WHERE l.active=true`,values:[]}),
+        executor.query<HealthCoverageWindow>({text:`SELECT location_id AS "locationId",day_of_week AS "dayOfWeek",left(start_time::text,5) AS "startTime",left(end_time::text,5) AS "endTime",minimum_staff AS "minimumStaff", COALESCE((SELECT jsonb_agg(jsonb_build_object('positionId',r.position_id,'quantity',r.quantity)) FROM coverage_window_position_requirements r WHERE r.coverage_window_id=location_coverage_windows.id),'[]'::jsonb) AS "positionRequirements" FROM location_coverage_windows`,values:[]}),
+        executor.query<HealthEmployee>({text:`SELECT e.id,e.first_name AS name,e.role,e.active,ARRAY(SELECT location_id FROM employee_location_eligibility WHERE employee_id=e.id) AS "eligibleLocationIds",ARRAY(SELECT ep.position_id FROM employee_positions ep JOIN positions p ON p.id=ep.position_id WHERE ep.employee_id=e.id AND p.active=true) AS "positionIds" FROM employees e`,values:[]}),
+        executor.query<Position>({text:`SELECT id,workspace_id AS "workspaceId",name,active,created_at::text AS "createdAt",updated_at::text AS "updatedAt" FROM positions`,values:[]}),
     ]);
-    const health = calculateScheduleHealth({locations,coverageWindows,weekDates:weekDates(week),employees:state.recipients.map(r=>({id:r.employeeId,name:'',role:r.role,active:r.active})),
-        shifts:state.shifts.filter(s=>!s.isCalloutApproved && state.schedules.some(schedule=>schedule.id===s.scheduleId && schedule.status!=='ARCHIVED')).map(s=>({...s,id:s.sourceShiftId}))});
+    const health = calculateScheduleHealth({locations,coverageWindows,positions,weekDates:weekDates(week),employees,
+        shifts:state.shifts.filter(s=>!s.isCalloutApproved && state.schedules.some(schedule=>schedule.id===s.scheduleId && schedule.status!=='ARCHIVED')).map(s=>({...s,positionId:s.positionId || undefined,id:s.sourceShiftId}))});
     // Health supports existing-shift fallback for its UI. Notifications require an actual configured window.
     const coverageGaps = health.coverageBlocks.filter(b=>!b.covered && coverageWindows.some(w=>w.locationId===b.locationId && w.dayOfWeek===new Date(`${b.date}T12:00:00Z`).getUTCDay() && w.startTime<b.endTime && w.endTime>b.startTime)).map(b=>({...b,requiresLead:!b.leadCovered}));
     return {kind:'MANAGER_SUMMARY',source:{kind:'MANAGER_SUMMARY',id:week,version:'configured'},updatedAt:'',weekStart:week,
-        items:buildManagerActionItems({weekStart:week,coverageGaps,availabilityDeadlineSet:true,coverageRulesConfigured:true}),expiresAt:`${addDays(week,7)}T04:00:00.000Z`};
+        items:buildManagerActionItems({weekStart:week,coverageGaps,availabilityDeadlineSet:true,coverageRulesConfigured:true}),expiresAt:new Date(notificationBoundary(`${addDays(week,7)}T00:00`,timeZone)).toISOString()};
 }
 
 export function scheduleSourceSnapshot(state: GuardedWeekState, week: string): ScheduleSourceSnapshot | null {

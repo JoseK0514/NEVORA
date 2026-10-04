@@ -40,6 +40,9 @@ describe('review regressions: existing role/status task destinations',()=>{
     expect(destinationForSource(scheduleSource,recipient)).toBeNull();
     expect(destinationForSource(scheduleSource,manager)).toBe('/app/schedule?week=2026-10-05');
   });
+  it('terminal request participants retain history after operational eligibility removal',()=>{
+    expect(destinationForSource({...exchange,record:{...exchange.record,status:'APPROVED'}},{...recipient,allowedLocationIds:[]})).toBe('/app/exchange?tab=history&requestId=coverage-1');
+  });
   it('preserves employee exchange outcome and response tabs',()=>{
     expect(destinationForSource(exchange,recipient)).toBe('/app/exchange?tab=requests&requestId=coverage-1');
     expect(destinationForSource({...exchange,record:{...exchange.record,status:'APPROVED'}},recipient)).toBe('/app/exchange?tab=history&requestId=coverage-1');

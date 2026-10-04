@@ -1,3 +1,5 @@
+import {listPositions} from "@/lib/data/positions";
+import {ShiftAssignmentFields} from "@/components/shift-assignment-fields";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -32,10 +34,11 @@ export default async function EditShiftPage({
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
 
-  const [shift, employees, locations] = await Promise.all([
+  const [shift, employees, locations, positions] = await Promise.all([
     getShiftForManagement(params.shiftId),
     listEmployees(),
-    listLocations(),
+    listLocations({includeInactive:true}),
+    listPositions({includeInactive:true}),
   ]);
 
   if (!shift) {
@@ -49,7 +52,7 @@ export default async function EditShiftPage({
       <PageHeader
         eyebrow="Schedule"
         title="Edit shift"
-        description="Changes are revalidated against both locations, availability, approved time off, and weekly hours."
+        description="Changes are revalidated across locations, availability, approved time off, and weekly hours."
         actions={
           <Link className="button secondary" href={`/app/schedule?week=${shift.weekStart}`}>
             Cancel
@@ -68,16 +71,7 @@ export default async function EditShiftPage({
           <input type="hidden" name="shiftId" value={shift.id} />
 
           <div className="form-columns">
-            <label>
-              Employee
-              <select name="employeeId" defaultValue={shift.employeeId} required>
-                {employees.filter((employee) => employee.active).map((employee) => (
-                  <option key={employee.id} value={employee.id}>
-                    {employee.firstName} {employee.lastName} · {employee.id}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <ShiftAssignmentFields employees={employees} positions={positions} employeeId={shift.employeeId} positionId={shift.positionId}/>
 
             <label>
               Location

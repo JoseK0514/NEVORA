@@ -53,3 +53,5 @@ it('preserves the official NEVORA source and uses its derived compact symbol', (
   const wordmark = readFileSync('public/images/nevora-wordmark.png');
   expect([wordmark.readUInt32BE(16), wordmark.readUInt32BE(20)]).toEqual([907, 122]);
 });
+
+vi.mock('@/lib/data/workspaces', () => ({getWorkspace:async()=>({name:'Northside Services',timeZone:'America/New_York'})}));

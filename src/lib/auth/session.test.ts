@@ -1,12 +1,13 @@
 import { beforeEach, afterEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ values: new Map<string, string>(), query: vi.fn(), signals: [] as AbortSignal[] }));
+const state = vi.hoisted(() => ({ values: new Map<string, string>(), query: vi.fn(), signals: [] as AbortSignal[], workspace: vi.fn(() => { throw new Error('workspace unavailable'); }), transaction: vi.fn() }));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: (name: string) => state.values.has(name) ? { value: state.values.get(name)! } : undefined, set: (name: string, value: string) => state.values.set(name, value), delete: (name: string) => state.values.delete(name) }) }));
 vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
-vi.mock('@/lib/db', () => ({ getDb: () => ({ query: state.query }), queryRows: (r: unknown) => r }));
+vi.mock('@/lib/db', () => ({ getDb: () => ({ query: state.query, transaction: state.transaction }), queryRows: (r: unknown) => r }));
 vi.mock('@/lib/notifications/logout', () => import('../notifications/logout'));
 vi.mock('@/lib/notifications/config', () => import('../notifications/config'));
 vi.mock('@/lib/notifications/installation', () => import('../notifications/installation'));
-vi.mock('../db', () => ({ getDb: () => ({ query: state.query }), queryRows: (r: unknown) => r }));
+vi.mock('../db', () => ({ getDb: () => ({ query: state.query, transaction: state.transaction }), queryRows: (r: unknown) => r }));
+vi.mock('@/lib/data/workspaces',()=>({getWorkspace:state.workspace}));
 import { destroySession } from './session';
 beforeEach(() => { state.values.clear(); state.values.set('fuel_session', 'fictional'); state.query.mockReset(); });
 afterEach(() => vi.useRealTimers());
@@ -26,4 +27,13 @@ it('renewed_auth_cookie_and_protected_association_both_revoke_when_push_transpor
     // The injected driver intentionally has no transaction method: push transport
     // fails while independent auth query operations remain available.
     try {await destroySession();expect(sessions).toEqual(new Set(['unrelated-device-session']));expect(state.values.has('fuel_session')).toBe(false);}finally{vi.unstubAllEnvs();}
+});
+
+it('workspace outage never delays cookie deletion or independent session and installation reconciliation',async()=>{
+ const {createInstallationProof,sealInstallationProof,INSTALLATION_COOKIE}=await import('../notifications/installation');
+ const key=Buffer.alloc(32,8);vi.stubEnv('PUSH_SUBSCRIPTION_ENCRYPTION_KEY',key.toString('base64url'));vi.stubEnv('PUSH_ENVIRONMENT','test');vi.stubEnv('FUEL_PORTAL_ORIGIN','https://fuel.example');
+ state.values.set(INSTALLATION_COOKIE,sealInstallationProof(createInstallationProof('test'),key));
+ state.query.mockImplementation(async()=>{expect(state.values.has('fuel_session')).toBe(false);return [];});
+ state.transaction.mockRejectedValue(new Error('cleanup unavailable'));state.workspace.mockClear();
+ try{await destroySession();expect(state.values.has('fuel_session')).toBe(false);expect(state.workspace).not.toHaveBeenCalled();expect(state.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM employee_sessions'),expect.any(Array),expect.any(Object));expect(state.transaction).toHaveBeenCalled();}finally{vi.unstubAllEnvs();}
 });

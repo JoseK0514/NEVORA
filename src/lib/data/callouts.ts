@@ -97,7 +97,7 @@ export async function createCallout(input: {
   const id = randomUUID();
   const result = await commitPublishedWeekChange({
     weekStarts: weeks.map(w => w.week_start), actorEmployeeId: input.employeeId, sourceType: 'CALLOUT', sourceId: id,
-    build(state) {
+    build(state, config) {
       const shift = state.shifts.find(s => s.sourceShiftId === input.shiftId);
       if (!shift || shift.employeeId !== input.employeeId || !state.schedules.some(s => s.id === shift.scheduleId && s.status === 'PUBLISHED')) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
       const record: CalloutRecord = { ...input, id, employeeName: '', locationName: '', locationId: shift.locationId, weekStart: shift.weekStart, date: shift.date, startTime: shift.startTime, endTime: shift.endTime, status: 'PENDING', createdAt: new Date().toISOString() };
@@ -109,7 +109,7 @@ export async function createCallout(input: {
             SELECT $1,sh.id,sh.employee_id,$4,$5,$6 FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id
             WHERE sh.id=$2 AND sh.employee_id=$3 AND s.status='PUBLISHED' RETURNING id`,
           values: [id,input.shiftId,input.employeeId,input.reasonCode,input.reasonNote ?? null,record.createdAt],
-        }), ...requestNotificationStatements({ after: requestSnapshot('CALLOUT', record), actorEmployeeId: input.employeeId, recipients: state.recipients })],
+        }), ...requestNotificationStatements({ after: requestSnapshot('CALLOUT', record), actorEmployeeId: input.employeeId, recipients: state.recipients, config })],
       };
     },
   }, executor);
@@ -168,7 +168,7 @@ async function transitionCallout(calloutId: string, actorEmployeeId: string, sta
   try {
     const result = await commitPublishedWeekChange({
       weekStarts: [before.weekStart], actorEmployeeId, sourceType: 'CALLOUT', sourceId: calloutId,
-      build(state) {
+      build(state, config) {
         const source = state.shifts.find(s => s.sourceShiftId === before.shiftId);
         if (!source) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
         const currentBefore = { ...before, locationId: source.locationId, weekStart: source.weekStart, date: source.date, startTime: source.startTime, endTime: source.endTime };
@@ -198,9 +198,9 @@ async function transitionCallout(calloutId: string, actorEmployeeId: string, sta
             text: `INSERT INTO shift_exchanges (id,kind,source_shift_id,requested_by_employee_id,status,created_at) VALUES ($1,'COVERAGE',$2,$3,'OPEN',$4) RETURNING id`,
             values: [exchangeId,before.shiftId,before.employeeId,exchange.createdAt],
           }));
-          statements.push(...requestNotificationStatements({ after: requestSnapshot('EXCHANGE', exchange), actorEmployeeId, recipients: state.recipients }));
+          statements.push(...requestNotificationStatements({ after: requestSnapshot('EXCHANGE', exchange), actorEmployeeId, recipients: state.recipients, config }));
         }
-        statements.push(...requestNotificationStatements({ before: requestSnapshot('CALLOUT', currentBefore), after: requestSnapshot('CALLOUT', after), actorEmployeeId, recipients: state.recipients }));
+        statements.push(...requestNotificationStatements({ before: requestSnapshot('CALLOUT', currentBefore), after: requestSnapshot('CALLOUT', after), actorEmployeeId, recipients: state.recipients, config }));
         return { statements, recipientEmployeeIds: state.recipients.map(r => r.employeeId), afterSchedules: state.schedules, afterShifts };
       },
     }, executor);

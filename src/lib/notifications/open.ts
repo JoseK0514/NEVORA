@@ -29,7 +29,7 @@ export function createNotificationOpenHandler(deps: NotificationOpenDeps) {
             const recipient = await deps.state.recipientAccess(session.id);
             if (!recipient?.active || recipient.employeeId !== session.id || recipient.role !== session.role)
                 return unavailable();
-            const check = await deps.state.check(intent, session.id, now);
+            const check = await deps.state.check(intent, session.id, now, 'open');
             const destination = safeReturnTo(check.destination);
             if (!check.deliverable || check.effectiveVersion !== intent.effectiveVersion || !(Date.parse(check.expiresAt) > now.getTime()) || !destination || destination.startsWith('/app/notifications/open'))
                 return unavailable();

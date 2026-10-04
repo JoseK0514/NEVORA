@@ -1,5 +1,7 @@
 "use server";
 
+import { getWorkspace } from "@/lib/data/workspaces";
+import { shiftBoundaryInstants } from "@/lib/business-time";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -56,6 +58,7 @@ export async function applyTemplateAction(formData: FormData) {
     redirect(templateUrl(weekStart, "&error=invalid"));
   }
 
+  const workspace = await getWorkspace();
   const templateShifts = await listTemplateShifts(templateId);
 
   let applied = 0;
@@ -69,8 +72,12 @@ export async function applyTemplateAction(formData: FormData) {
     }
 
     const date = addDays(weekStart, templateShift.dayOffset);
+    try { shiftBoundaryInstants({ ...templateShift, date }, workspace.timeZone); }
+    catch { skipped += 1; continue; }
     const context = await getShiftValidationContext({
       employeeId: templateShift.employeeId,
+      locationId: templateShift.locationId,
+      positionId: templateShift.positionId,
       date,
       weekStart,
     });
@@ -85,6 +92,7 @@ export async function applyTemplateAction(formData: FormData) {
       candidate: {
         employeeId: templateShift.employeeId,
         locationId: templateShift.locationId,
+        positionId: templateShift.positionId,
         date,
         startTime: templateShift.startTime,
         endTime: templateShift.endTime,
@@ -113,6 +121,7 @@ export async function applyTemplateAction(formData: FormData) {
       startTime: templateShift.startTime,
       endTime: templateShift.endTime,
       notes: templateShift.notes,
+      positionId: templateShift.positionId,
       isDesignatedLead: templateShift.isDesignatedLead,
     });
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { BrandLockup } from "@/components/brand-lockup";
 import { BrandLegal } from "@/components/brand-legal";
@@ -11,6 +12,7 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string; activated?: string; returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
+  const workspaceName = await getPublicWorkspaceName();
   const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
   const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
 
@@ -23,7 +25,7 @@ export default async function LoginPage({
 
         <section className="auth-card employee-login-card">
           <div className="employee-login-heading">
-            <p className="eyebrow">{NUVORA_BRAND.workspace}</p>
+            <p className="eyebrow">{workspaceName ?? "Workspace unavailable"}</p>
             <h1>Employee Login</h1>
             <p>
               Access your schedule, availability, requests, time, and profile.
@@ -70,7 +72,7 @@ export default async function LoginPage({
         </section>
 
         <footer className="employee-login-footer">
-          <span>{NUVORA_BRAND.workspace}</span>
+          <span>{workspaceName ?? "Workspace unavailable"}</span>
           <small>{NUVORA_BRAND.poweredBy}</small>
           <BrandLegal />
         </footer>

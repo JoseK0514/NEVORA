@@ -1,3 +1,5 @@
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate, formatBusinessDateTime } from "@/lib/business-time";
 import Link from "next/link";
 import { ManagerAvailability } from "@/components/manager-availability";
 import { AvailabilityEditor } from "@/components/availability-editor";
@@ -12,8 +14,6 @@ import {
   listWeeklyAvailability,
 } from "@/lib/data/week-settings";
 import {
-  currentDateInPuertoRico,
-  formatPuertoRicoDateTime,
   formatWeekRange,
   weekStartFor,
 } from "@/lib/date-utils";
@@ -103,10 +103,11 @@ export default async function AvailabilityPage({
   }>;
 }) {
   const session = await requireSession();
+  const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);
   const params = await searchParams;
-  const currentWeek = weekStartFor(currentDateInPuertoRico());
-  if (manager) return ManagerAvailability({ week: params.week, currentWeek, employeeId: params.employeeId });
+  const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
+  if (manager) return ManagerAvailability({ timeZone: workspace.timeZone, week: params.week, currentWeek, employeeId: params.employeeId });
 
   const selectedWeek = validWeek(params.week) ? params.week! : undefined;
 
@@ -159,7 +160,7 @@ export default async function AvailabilityPage({
             <strong>{formatWeekRange(upcomingWeek.weekStart)}</strong>
             <span>
               Availability closes{" "}
-              {formatPuertoRicoDateTime(upcomingWeek.availabilityDeadline)}.
+              {formatBusinessDateTime(upcomingWeek.availabilityDeadline, workspace.timeZone)}.
             </span>
           </div>
           <Link
@@ -179,7 +180,7 @@ export default async function AvailabilityPage({
               {locked ? "Weekly availability is locked" : "Submit before the cutoff"}
             </strong>
             <span>
-              {formatPuertoRicoDateTime(settings.availabilityDeadline)}
+              {formatBusinessDateTime(settings.availabilityDeadline, workspace.timeZone)}
             </span>
           </div>
         </section>
@@ -199,7 +200,7 @@ export default async function AvailabilityPage({
           {submissionStatus.updatedAt ? (
             <small>
               Last updated{" "}
-              {formatPuertoRicoDateTime(submissionStatus.updatedAt)}
+              {formatBusinessDateTime(submissionStatus.updatedAt, workspace.timeZone)}
             </small>
           ) : null}
         </section>

@@ -1,10 +1,10 @@
 import Link from "next/link";
+import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { BrandLockup } from "@/components/brand-lockup";
 import { BrandLegal } from "@/components/brand-legal";
 import { PhoneInput } from "@/components/phone-input";
 import { activateAccountAction } from "@/app/activate/actions";
-import { NUVORA_BRAND } from "../../lib/brand";
 
 export default async function ActivatePage({
   searchParams,
@@ -12,6 +12,7 @@ export default async function ActivatePage({
   searchParams: Promise<{ error?: string; employeeId?: string; returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
+  const workspaceName = await getPublicWorkspaceName();
   const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
   const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
 
@@ -22,7 +23,7 @@ export default async function ActivatePage({
           <BrandLockup variant="large" />
           <div className="auth-activation-heading">
             <h1>Activate Account</h1>
-            <p className="auth-workspace">{NUVORA_BRAND.workspace}</p>
+            <p className="auth-workspace">{workspaceName ?? "Workspace unavailable"}</p>
           </div>
 
           {params.error ? (

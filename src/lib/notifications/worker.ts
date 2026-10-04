@@ -27,7 +27,7 @@ export function createWorkerDeps(config: NotificationConfig, clock: () => Date =
             query: (statement, callerSignal) => raw.query(statement, signal && callerSignal ? AbortSignal.any([signal, callerSignal]) : signal ?? callerSignal),
             transaction: (statements, callerSignal) => raw.transaction(statements, signal && callerSignal ? AbortSignal.any([signal, callerSignal]) : signal ?? callerSignal),
         };
-        return { config, clock, executor, state: sqlNotificationStateRepository(executor), deliveries: sqlDeliveryRepository(config.environment, executor), subscriptions: sqlSubscriptionRepository(executor), sender: createPushSender(config), withSignal: bind };
+        return { config, clock, executor, state: sqlNotificationStateRepository(executor,config.workspace), deliveries: sqlDeliveryRepository(config.environment, executor), subscriptions: sqlSubscriptionRepository(executor), sender: createPushSender(config), withSignal: bind };
     };
     return bind();
 }

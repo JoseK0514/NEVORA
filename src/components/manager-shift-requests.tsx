@@ -1,3 +1,4 @@
+import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
@@ -6,7 +7,7 @@ import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeAc
 import { listPendingCallouts, listTeamCalloutHistory } from "@/lib/data/callouts";
 import { reviewExchangeAction } from "@/app/app/exchange/actions";
 import { reviewCalloutAction } from "@/app/app/exchange/callout/actions";
-import { currentDateInPuertoRico, formatDayLabel, formatTime } from "@/lib/date-utils";
+import {  formatDayLabel, formatTime } from "@/lib/date-utils";
 
 const tabs = [{ id: "pending", label: "Pending" }, { id: "coverage", label: "Open Coverage" }, { id: "activity", label: "Team Activity" }] as const;
 const reasons: Record<string, string> = { ILLNESS: "Illness / sick", FAMILY_EMERGENCY: "Family emergency", TRANSPORTATION: "Transportation issue", SCHOOL: "School conflict", PERSONAL_EMERGENCY: "Personal emergency", OTHER: "Other" };
@@ -31,15 +32,15 @@ function ExchangeCopy({ exchange }: { exchange: ExchangeRecord }) {
   return <div className="manager-workflow-copy"><h3>{exchange.kind === "SWAP" ? "Trade" : "Coverage"} · {exchange.requestedByName}</h3><span>{shiftLabel(exchange.sourceShift)}</span>{exchange.targetEmployeeName ? <span>{exchange.kind === "SWAP" ? "Trading with" : "Claimed by"} {exchange.targetEmployeeName}</span> : null}{exchange.kind === "SWAP" && exchange.targetShift ? <span>{shiftLabel(exchange.targetShift)}</span> : null}</div>;
 }
 
-export async function ManagerShiftRequests({ tab, error, approved, reviewed, calloutApproved, calloutDenied, requestId }: {
-  tab?: string; error?: string; approved?: string; reviewed?: string; calloutApproved?: string; calloutDenied?: string; requestId?: string;
+export async function ManagerShiftRequests({ tab, error, approved, reviewed, calloutApproved, calloutDenied, requestId, timeZone }: {
+  timeZone: string; tab?: string; error?: string; approved?: string; reviewed?: string; calloutApproved?: string; calloutDenied?: string; requestId?: string;
 }) {
   await requireRoles(MANAGER_ROLES);
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
   const [pending, callouts, coverage, exchanges, history] = await Promise.all([
     selected.id === "pending" ? listManagerPendingExchanges() : Promise.resolve([]),
     selected.id === "pending" ? listPendingCallouts() : Promise.resolve([]),
-    selected.id === "coverage" ? listManagementCoverage(currentDateInPuertoRico()) : Promise.resolve([]),
+    selected.id === "coverage" ? listManagementCoverage(businessDate(new Date(), timeZone)) : Promise.resolve([]),
     selected.id === "activity" ? listTeamExchangeActivity(true) : Promise.resolve([]),
     selected.id === "activity" ? listTeamCalloutHistory() : Promise.resolve([]),
   ]);

@@ -1,3 +1,4 @@
+import {assignmentFacts} from './assignment-facts.test-support';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { publishScheduleWithRevision } from './publication-revisions';
 import { commitPublishedWeekChange, type GuardedWeekState } from './notification-transactions';
@@ -5,13 +6,13 @@ import type { SqlExecutor, SqlStatement } from '../notifications/types';
 const week = '2030-10-07';
 const shift = { sourceShiftId:'s1', scheduleId:'a', weekStart:week, locationId:'loc-1', employeeId:'E', date:'2030-10-11', startTime:'09:00', endTime:'17:00', isDesignatedLead:false, isCalloutApproved:false, hasExchangeHistory:false };
 function state(): GuardedWeekState {
-  return { schedules:[{id:'a',locationId:'loc-1',weekStart:week,status:'DRAFT',updatedAt:'2030-10-07 12:00:00.123456+00'}], shifts:[{...shift}], recipients:[{employeeId:'E',role:'EMPLOYEE',active:true,allowedLocationIds:['loc-1','loc-2']},{employeeId:'F',role:'LEAD',active:true,allowedLocationIds:['loc-1','loc-2']}], revisions:[], acknowledgements:[] };
+  return { assignmentFacts:assignmentFacts(), schedules:[{id:'a',locationId:'loc-1',weekStart:week,status:'DRAFT',updatedAt:'2030-10-07 12:00:00.123456+00'}], shifts:[{...shift}], recipients:[{employeeId:'E',role:'EMPLOYEE',active:true,allowedLocationIds:['loc-1','loc-2']},{employeeId:'F',role:'LEAD',active:true,allowedLocationIds:['loc-1','loc-2']}], revisions:[], acknowledgements:[] };
 }
 function recorder(initial = state()) {
   const batches: SqlStatement[][] = [];
   const db = {state:initial};
   const executor: SqlExecutor = {
-    query:vi.fn(async () => [{state:structuredClone(db.state),read_at:'2030-10-07 12:00:00.654321+00'}]) as SqlExecutor['query'],
+    query:vi.fn(async statement => statement.text.startsWith('SELECT id, name, time_zone') ? [{id:'test-workspace',name:'Test',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}] : [{state:structuredClone(db.state),read_at:'2030-10-07 12:00:00.654321+00'}]) as SqlExecutor['query'],
     transaction:vi.fn(async statements => { batches.push([...statements]); return statements.map(() => []); }),
   };
   return {executor,batches,db};

@@ -1,10 +1,13 @@
+import {listPositions} from "@/lib/data/positions";
+import {ShiftAssignmentFields} from "@/components/shift-assignment-fields";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
 import { createShiftAction } from "@/app/app/schedule/actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
   addDays,
-  currentDateInPuertoRico,
   isDateInWeek,
   weekStartFor,
 } from "@/lib/date-utils";
@@ -23,8 +26,9 @@ export default async function NewShiftPage({
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
+  const workspace = await getWorkspace();
   const params = await searchParams;
-  const currentWeek = weekStartFor(currentDateInPuertoRico());
+  const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
   const weekStart = params.week || currentWeek;
   const date =
     params.date && isDateInWeek(params.date, weekStart)
@@ -32,9 +36,10 @@ export default async function NewShiftPage({
       : weekStart;
   const weekEnd = addDays(weekStart, 6);
 
-  const [employees, locations] = await Promise.all([
+  const [employees, locations, positions] = await Promise.all([
     listEmployees(),
     listLocations(),
+    listPositions(),
   ]);
   const locationId = params.locationId ?? locations[0]?.id ?? "";
 
@@ -52,23 +57,7 @@ export default async function NewShiftPage({
         <div className="new-shift-form">
           <section className="new-shift-group">
             <p className="new-shift-section-label">ASSIGN EMPLOYEE</p>
-            <label className="new-shift-field">
-              <span>Employee</span>
-              <select
-                name="employeeId"
-                defaultValue={params.employeeId ?? ""}
-                required
-              >
-                <option value="" disabled>Select employee</option>
-                {employees
-                  .filter((employee) => employee.active)
-                  .map((employee) => (
-                    <option key={employee.id} value={employee.id}>
-                      {employee.firstName} {employee.lastName}
-                    </option>
-                  ))}
-              </select>
-            </label>
+            <ShiftAssignmentFields employees={employees} positions={positions} employeeId={params.employeeId} newShift/>
           </section>
 
           <section className="new-shift-group">

@@ -12,15 +12,21 @@ vi.mock("@/lib/db", () => ({
         mocks.statements.push(statement);
         return statement;
       },
-      { query: (text:string, values:unknown[]) => text.includes('WITH cancelled AS') ? {text,values} : mocks.query(text,values), transaction: mocks.transaction },
+      { query: (text:string, values:unknown[]) => {
+        if (text.includes('created_at::text AS "createdAt"') && text.includes('FROM workspaces')) return [{id:'northside',name:'Northside Services',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}];
+        if (text.includes('FROM workspaces') || text.includes('WITH cancelled AS')) return {text,values};
+        return mocks.query(text,values);
+      }, transaction: mocks.transaction },
     ),
   queryRows: (rows: unknown) => rows,
 }));
+vi.mock("../db", () => import("@/lib/db"));
 import { getShiftValidationContext, listWeekShifts } from "./schedules";
 import {
   listEmployeeHourTargets,
   saveEmployeeHourTargets,
   listLocationStaffingSettings,
+  listCoverageWindows,
 } from "./schedule-health";
 import {
   replaceWeeklyAvailability,
@@ -36,6 +42,7 @@ beforeEach(() => {
 describe("scheduling context repository", () => {
   it("loads actual dated cross-location shifts, explicit submission metadata, normal hours and dated exceptions", async () => {
     mocks.query.mockImplementation(async (text: string) => {
+      if (text.includes("FROM locations l")) return [{id:"loc-1",workspace_id:"w",active:true,workspace_active:true,time_zone:"America/Puerto_Rico"}];
       if (text.includes("FROM employees e"))
         return [
           {
@@ -76,6 +83,7 @@ describe("scheduling context repository", () => {
     });
     const context = await getShiftValidationContext({
       employeeId: "E",
+      locationId: "loc-1",
       date: "2026-10-05",
       weekStart: "2026-09-28",
     });
@@ -244,7 +252,7 @@ it("the final deadline guard uses the current clock after the lock wait", async 
     )?.text,
   ).toContain("availability_deadline < clock_timestamp()");
 });
-it("missing staffing configuration fails explicitly instead of inventing one employee", async () => {
+it("missing staffing configuration stays explicit instead of inventing staff or Lead", async () => {
   mocks.query.mockResolvedValue([
     {
       location_id: "loc-2",
@@ -252,9 +260,7 @@ it("missing staffing configuration fails explicitly instead of inventing one emp
       minimum_staff_per_shift: null,
     },
   ]);
-  await expect(listLocationStaffingSettings()).rejects.toThrow(
-    "Staffing requirement missing for FUEL – 110",
-  );
+  await expect(listLocationStaffingSettings()).resolves.toEqual([{locationId:"loc-2",locationName:"FUEL – 110",minimumStaffPerShift:null,requiresDesignatedLead:null}]);
 });
 
 it("retries a stale legacy conversion after locking and preserves another saved day's override", async () => {
@@ -366,4 +372,18 @@ describe('notification cancellation joins availability transactions', () => {
    const batch = mocks.transaction.mock.calls[0][0];
    expect(batch).toEqual(expect.arrayContaining([expect.objectContaining({text:expect.stringContaining('UPDATE push_deliveries'),values:['2026-10-05','E',null]})]));
  });
+});
+
+it('loads target workspace/location/active qualifications without erasing inactive assigned position', async () => {
+ mocks.query.mockImplementation(async (text: string) => {
+  if (text.includes('FROM employees e')) return [{active:true,role:'LEAD',position_ids:['b'],eligible_location_ids:['l']}];
+  if (text.includes('FROM locations l')) return [{id:'l',workspace_id:'w',active:false,workspace_active:true,time_zone:'America/New_York',position_id:'b',position_name:'Barista',position_active:false,position_workspace_id:'w'}];
+  return [];
+ });
+ const context=await getShiftValidationContext({employeeId:'e',locationId:'l',positionId:'b',date:'2026-10-05',weekStart:'2026-10-05'});
+ expect(context).toMatchObject({workspace:{id:'w',active:true,timeZone:'America/New_York'},location:{id:'l',workspaceId:'w',active:false},position:{id:'b',active:false},employee:{positionIds:['b']}});
+});
+it('coverage reads retain named quotas including inactive catalog requirements', async () => {
+ mocks.query.mockResolvedValue([{id:'window',location_id:'l',day_of_week:1,start_time:'08:00',end_time:'12:00',position_requirements:[{positionId:'b',quantity:2}]}]);
+ expect((await listCoverageWindows())[0]).toMatchObject({positionRequirements:[{positionId:'b',quantity:2}]});
 });

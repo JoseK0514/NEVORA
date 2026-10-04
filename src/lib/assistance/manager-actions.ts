@@ -32,8 +32,9 @@ export type ManagerCoverageGapInput = {
   date: string;
   startTime: string;
   endTime: string;
-  gap: number;
-  requiresLead?: boolean;
+  gap: number | null;
+  requiresLead?: boolean | null;
+  positionCoverage?: {positionId: string; positionName: string; missing: number}[];
 };
 
 export type ManagerHourIssueInput = {
@@ -81,6 +82,20 @@ function coverageAction(
   weekStart: string,
   gap: ManagerCoverageGapInput,
 ): ManagerActionItem {
+  if (gap.gap === null || gap.requiresLead === null) return {
+    id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'REVIEW',
+    title: `Staffing setup needed at ${gap.locationName}`,
+    detail: 'Configure minimum staffing and choose a designated Lead rule.',
+    href: '/app/schedule/settings', locationId: gap.locationId,
+  };
+  const missingPositions = (gap.positionCoverage ?? []).filter(position => position.missing > 0);
+  if (missingPositions.length) return {
+    id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'URGENT',
+    title: `Position coverage missing at ${gap.locationName}`,
+    detail: `${gap.date} · ${gap.startTime}–${gap.endTime} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} missing`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
+    href: `/app/schedule?week=${encode(weekStart)}&locationId=${encode(gap.locationId)}&date=${encode(gap.date)}`,
+    dateTime: `${gap.date}T${gap.startTime}`, locationId: gap.locationId,
+  };
   const leadOnly = gap.gap === 0;
   const people = gap.gap === 1 ? "1 employee" : `${gap.gap} employees`;
 

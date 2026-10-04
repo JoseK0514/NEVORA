@@ -14,3 +14,8 @@ it('uses existing location names and a generic unknown-location label without in
  const html=renderToStaticMarkup(<SchedulePublicationChange changes={changes} locationNames={{known:'FUEL 2'}}/>);
  expect(html).toContain('Location unavailable');expect(html).toContain('FUEL 2');expect(html).not.toContain('QA-internal-uuid');expect(html).not.toContain('Location known');
 });
+it('shows the captured position labels in a position change',()=>{
+ const before={employeeId:'self',locationId:'known',date:'2026-10-05',startTime:'08:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false,positionId:'barista',positionName:'Barista at publication'};
+ const html=renderToStaticMarkup(<SchedulePublicationChange changes={[{type:'POSITION_CHANGED',before,after:{...before,positionId:'cashier',positionName:'Cashier at publication'},affectedEmployeeIds:['self']}]} />);
+ expect(html).toContain('Position changed');expect(html).toContain('Barista at publication');expect(html).toContain('Cashier at publication');
+});

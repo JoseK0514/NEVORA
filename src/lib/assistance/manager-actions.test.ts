@@ -193,3 +193,12 @@ it("preserves the Lead requirement in the suggestion link for a Lead-only gap", 
  const [item] = buildManagerActionItems({ weekStart: "2026-09-28", coverageGaps: [{ key: "lead", locationId: "loc-1", locationName: "FUEL – 2", date: "2026-09-30", startTime: "08:00", endTime: "12:00", gap: 0 }], availabilityDeadlineSet: true, coverageRulesConfigured: true });
  expect(item.href).toContain("&lead=1");
 });
+it('unconfigured staffing prompts setup without invented missing staff or Lead',()=>{const [item]=buildManagerActionItems({weekStart:'2026-09-28',coverageGaps:[{key:'new',locationId:'new',locationName:'New',date:'2026-09-28',startTime:'08:00',endTime:'12:00',gap:null,requiresLead:null}],availabilityDeadlineSet:true,coverageRulesConfigured:true});expect(item.title).toBe('Staffing setup needed at New');expect(item.detail).toContain('Configure');expect(item.href).toBe('/app/schedule/settings');});
+
+it('position-only shortage names the required position without claiming a missing Lead',()=>{
+ const [item]=buildManagerActionItems({weekStart:'2026-10-05',coverageGaps:[{key:'position',locationId:'l',locationName:'Shop',date:'2026-10-05',startTime:'08:00',endTime:'12:00',gap:0,requiresLead:false,positionCoverage:[{positionId:'b',positionName:'Barista',missing:1}]}],availabilityDeadlineSet:true,coverageRulesConfigured:true});
+ expect(item.title).toBe('Position coverage missing at Shop');
+ expect(item.detail).toContain('Barista: 1 missing');
+ expect(item.href).toBe('/app/schedule?week=2026-10-05&locationId=l&date=2026-10-05');
+ expect(item.detail).not.toContain('Designated lead');
+});

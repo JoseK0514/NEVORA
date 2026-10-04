@@ -3,7 +3,7 @@ import { neonNotificationExecutor } from '../data/notification-transactions';
 import { sqlSubscriptionRepository } from '../data/push-subscriptions';
 import { decodePushKey, readNotificationConfig } from './config';
 import { CLEANUP_COOKIE, INSTALLATION_COOKIE, MAX_CLEANUP_REVOCATIONS, MAX_CLEANUP_RECEIPT_BYTES, createInstallationProof, openCleanupReceipt, readInstallationProof, sealCleanupReceipt, sealInstallationProof, type CookieReader } from './installation';
-import type { CleanupResult, InstallationProof, NotificationConfig, InstallationRecord, SubscriptionRepository, VerifiedCleanupReceipt } from './types';
+import type { CleanupResult, InstallationProof, PushRuntimeConfig, InstallationRecord, SubscriptionRepository, VerifiedCleanupReceipt } from './types';
 export type CookieWriter = {
     set(name: string, value: string, options: {
         httpOnly: boolean;
@@ -118,7 +118,7 @@ export async function terminatePortalSession(input: {
         cookies.delete('fuel_session');
     }
 }
-export function createLogoutDeps(config: NotificationConfig): LogoutDeps {
+export function createLogoutDeps(config: PushRuntimeConfig): LogoutDeps {
     const key = decodePushKey(config.subscriptionEncryptionKey, 32);
     const executor = neonNotificationExecutor();
     return {
@@ -129,7 +129,7 @@ export function createLogoutDeps(config: NotificationConfig): LogoutDeps {
         openReceipt: value => key ? openCleanupReceipt(value, key, new Date()) : null,
     };
 }
-export async function reconcilePendingInstallation(cookies: CookieReaderWriter, config: NotificationConfig, deps: LogoutDeps = createLogoutDeps(config)): Promise<CleanupResult> {
+export async function reconcilePendingInstallation(cookies: CookieReaderWriter, config: PushRuntimeConfig, deps: LogoutDeps = createLogoutDeps(config)): Promise<CleanupResult> {
     const pending = cookies.get(CLEANUP_COOKIE)?.value;
     if (!pending)
         return COMPLETE;
@@ -189,7 +189,7 @@ export async function reconcilePendingInstallation(cookies: CookieReaderWriter, 
 }
 /** Authentication may proceed during cleanup outage; the retained proof/receipt
  * blocks device inheritance. A new identity is issued only after verified cleanup. */
-export async function prepareInstallationForAccount(employeeId: string, cookies: CookieReaderWriter, config: NotificationConfig, deps: LogoutDeps = createLogoutDeps(config)): Promise<CleanupResult> {
+export async function prepareInstallationForAccount(employeeId: string, cookies: CookieReaderWriter, config: PushRuntimeConfig, deps: LogoutDeps = createLogoutDeps(config)): Promise<CleanupResult> {
     if ((await reconcilePendingInstallation(cookies, config, deps)).state !== 'complete')
         return PENDING;
     if (!cookies.get(INSTALLATION_COOKIE))

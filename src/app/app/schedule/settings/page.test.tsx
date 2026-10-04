@@ -2,6 +2,7 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 import ScheduleSettingsPage from "./page";
+import { listLocations } from "@/lib/data/employees";
 import { listLocationStaffingSettings } from "@/lib/data/schedule-health";
 import {
   fuelRuleLocations,
@@ -10,6 +11,9 @@ import {
 } from "../../../../test/fixtures/fuel-scheduling-rules";
 import { calculateScheduleHealth } from "../../../../lib/scheduling/schedule-health";
 
+vi.mock("@/lib/data/positions",()=>({listPositions:async()=>[]}));
+vi.mock("@/components/configuration-form",()=>import("../../../../components/configuration-form"));
+vi.mock("@/components/position-quota-fields",()=>import("../../../../components/position-quota-fields"));
 vi.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
   requireRoles: vi.fn(),
@@ -20,11 +24,7 @@ vi.mock(
 );
 vi.mock("@/lib/date-utils", () => import("../../../../lib/date-utils"));
 vi.mock("@/lib/data/employees", () => ({
-  listLocations: async () =>
-    fuelRuleLocations.map((l) => ({
-      ...l,
-      shortName: l.shortName.replace(" – ", " - "),
-    })),
+  listLocations: vi.fn(async () => fuelRuleLocations),
 }));
 vi.mock("@/lib/data/schedule-health", () => ({
   listLocationStaffingSettings: vi.fn(),
@@ -33,6 +33,9 @@ vi.mock("@/lib/data/schedule-health", () => ({
 }));
 vi.mock("@/app/app/schedule/settings/actions", () => ({
   saveScheduleHealthSettingsAction: vi.fn(),
+  saveScheduleHealthSettingsFormAction: vi.fn(),
+  addCoverageWindowFormAction: vi.fn(),
+  replaceCoverageWindowPositionRequirementsAction: vi.fn(),
   addCoverageWindowAction: vi.fn(),
   deleteCoverageWindowAction: vi.fn(),
 }));
@@ -42,6 +45,7 @@ vi.mock("next/link", () => ({
 }));
 
 beforeEach(() => {
+  vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations);
   vi.mocked(listLocationStaffingSettings).mockResolvedValue(
     fuelRuleStaffing.map((s, i) => ({ ...s, locationName: `Fuel ${i + 1}` })),
   );
@@ -155,14 +159,14 @@ it("keeps FUEL – 2 staff isolated from FUEL – 110 during the confirmed weeke
       isDesignatedLead: employeeId === "lead",
     })),
     employees: [
-      {
+      { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [],
         id: "lead",
         name: "Lead",
         role: "LEAD",
         active: true,
         targetWeeklyHours: 7,
       },
-      {
+      { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [],
         id: "barista",
         name: "Barista",
         role: "EMPLOYEE",
@@ -199,4 +203,14 @@ it("keeps FUEL – 2 staff isolated from FUEL – 110 during the confirmed weeke
     ["13:30", "20:00", 0, 6, false],
   ]);
   expect(health.hourBalances.map((b) => b.scheduledHours)).toEqual([7, 7]);
+});
+
+it('unconfigured staffing displays a blank explicit required Lead choice',async()=>{vi.mocked(listLocationStaffingSettings).mockResolvedValue([{locationId:'new',locationName:'New',minimumStaffPerShift:null,requiresDesignatedLead:null}]);const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toMatch(/select[^>]*name="lead-choice-new"[^>]*required/);expect(html).toContain('Choose a Lead rule');expect(html).not.toMatch(/name="staffing-new"[^>]*value="[0-9]/);});
+
+it("preserves configured customer location names without Fuel-specific normalization", async () => {
+  vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(l => ({...l, shortName: l.id === "loc-1" ? "FUEL - 2" : "Northside West"})));
+  const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));
+  expect(html).toContain("FUEL - 2");
+  expect(html).toContain("Northside West");
+  expect(html).not.toContain("FUEL – 2");
 });

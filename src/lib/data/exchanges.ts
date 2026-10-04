@@ -6,6 +6,7 @@ import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { ExchangeKind, UserRole } from "@/lib/domain";
 
 export type ExchangeShift = {
+  positionId?: string;
   id: string;
   scheduleId: string;
   employeeId: string;
@@ -61,6 +62,7 @@ function mapShift(row: Record<string, unknown>, prefix: string): ExchangeShift {
     date: dateValue(row[`${prefix}_date`]),
     startTime: timeValue(row[`${prefix}_start_time`]),
     endTime: timeValue(row[`${prefix}_end_time`]),
+    positionId: row[`${prefix}_position_id`] ? String(row[`${prefix}_position_id`]) : undefined,
     isDesignatedLead: Boolean(row[`${prefix}_is_designated_lead`]),
   };
 }
@@ -87,6 +89,7 @@ const EXCHANGE_SELECT = `
     source.date AS source_date,
     source.start_time AS source_start_time,
     source.end_time AS source_end_time,
+    source.position_id AS source_position_id,
     source.is_designated_lead AS source_is_designated_lead,
 
     target_shift.id AS target_shift_id,
@@ -99,6 +102,7 @@ const EXCHANGE_SELECT = `
     target_shift.date AS target_date,
     target_shift.start_time AS target_start_time,
     target_shift.end_time AS target_end_time,
+    target_shift.position_id AS target_position_id,
     target_shift.is_designated_lead AS target_is_designated_lead
 
   FROM shift_exchanges x
@@ -154,6 +158,7 @@ function mapExchange(row: unknown): ExchangeRecord {
       date: dateValue(item.target_date),
       startTime: timeValue(item.target_start_time),
       endTime: timeValue(item.target_end_time),
+      positionId: item.target_position_id ? String(item.target_position_id) : undefined,
       isDesignatedLead: Boolean(item.target_is_designated_lead),
     } : undefined,
     createdAt:
@@ -178,6 +183,7 @@ export async function getPublishedShift(shiftId: string): Promise<ExchangeShift 
        sh.date AS source_date,
        sh.start_time AS source_start_time,
        sh.end_time AS source_end_time,
+       sh.position_id AS source_position_id,
        sh.is_designated_lead AS source_is_designated_lead
      FROM shifts sh
      JOIN schedules s ON s.id = sh.schedule_id
@@ -212,6 +218,7 @@ export async function listEmployeePublishedShifts(
        sh.date AS source_date,
        sh.start_time AS source_start_time,
        sh.end_time AS source_end_time,
+       sh.position_id AS source_position_id,
        sh.is_designated_lead AS source_is_designated_lead
      FROM shifts sh
      JOIN schedules s ON s.id = sh.schedule_id
@@ -259,6 +266,7 @@ export async function listSwapTargets(
        sh.date AS source_date,
        sh.start_time AS source_start_time,
        sh.end_time AS source_end_time,
+       sh.position_id AS source_position_id,
        sh.is_designated_lead AS source_is_designated_lead
      FROM shifts sh
      JOIN schedules s ON s.id = sh.schedule_id
@@ -380,7 +388,7 @@ async function createExchange(input: {
   const id = randomUUID();
   const result = await commitPublishedWeekChange({
     weekStarts: weeks.map(w => w.week_start), actorEmployeeId: input.requestedByEmployeeId, sourceType: 'EXCHANGE', sourceId: id,
-    build(state) {
+    build(state, config) {
       const source = state.shifts.find(s => s.sourceShiftId === input.sourceShiftId);
       const target = state.shifts.find(s => s.sourceShiftId === input.targetShiftId);
       const empty = { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
@@ -399,7 +407,7 @@ async function createExchange(input: {
         statements: [guardedRequestMutation({
           text: `INSERT INTO shift_exchanges (id,kind,source_shift_id,requested_by_employee_id,target_employee_id,target_shift_id,status,created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
           values: [id,input.kind,input.sourceShiftId,input.requestedByEmployeeId,input.targetEmployeeId ?? null,input.targetShiftId ?? null,record.status,record.createdAt],
-        }), ...requestNotificationStatements({ after: requestSnapshot('EXCHANGE', record), actorEmployeeId: input.requestedByEmployeeId, recipients: state.recipients })],
+        }), ...requestNotificationStatements({ after: requestSnapshot('EXCHANGE', record), actorEmployeeId: input.requestedByEmployeeId, recipients: state.recipients, config })],
       };
     },
   }, executor);
@@ -444,14 +452,14 @@ export async function cancelExchange(input: { exchangeId: string; employeeId: st
 }
 
 export function exchangeShiftFromGuarded(shift: GuardedShift): ExchangeShift {
-  return { id: shift.sourceShiftId, scheduleId: shift.scheduleId, employeeId: shift.employeeId, employeeName: '', locationId: shift.locationId, locationName: '', weekStart: shift.weekStart, date: shift.date, startTime: shift.startTime, endTime: shift.endTime, isDesignatedLead: shift.isDesignatedLead };
+  return { id: shift.sourceShiftId, scheduleId: shift.scheduleId, employeeId: shift.employeeId, employeeName: '', locationId: shift.locationId, locationName: '', weekStart: shift.weekStart, date: shift.date, startTime: shift.startTime, endTime: shift.endTime, positionId:shift.positionId || undefined, isDesignatedLead: shift.isDesignatedLead };
 }
 
 async function transitionExchange(before: ExchangeRecord, after: ExchangeRecord, actorEmployeeId: string, executor: SqlExecutor): Promise<boolean> {
   try {
     const result = await commitPublishedWeekChange({
       weekStarts: [before.sourceShift.weekStart, ...(before.targetShift ? [before.targetShift.weekStart] : [])], actorEmployeeId, sourceType: 'EXCHANGE', sourceId: before.id,
-      build(state) {
+      build(state, config) {
         const source = state.shifts.find(s => s.sourceShiftId === before.sourceShift.id);
         const target = state.shifts.find(s => s.sourceShiftId === before.targetShift?.id);
         if (!source || (before.targetShift && !target)) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
@@ -486,7 +494,7 @@ async function transitionExchange(before: ExchangeRecord, after: ExchangeRecord,
           values: [before.id,actorEmployeeId,after.status,after.targetEmployeeId ?? null,before.status],
         }));
         const currentAfter = { ...after, sourceShift: exchangeShiftFromGuarded(afterShifts.find(s => s.sourceShiftId === source.sourceShiftId)!), targetShift: target ? exchangeShiftFromGuarded(afterShifts.find(s => s.sourceShiftId === target.sourceShiftId)!) : undefined };
-        statements.push(...requestNotificationStatements({ before: requestSnapshot('EXCHANGE', currentBefore), after: requestSnapshot('EXCHANGE', currentAfter), actorEmployeeId, recipients: state.recipients }));
+        statements.push(...requestNotificationStatements({ before: requestSnapshot('EXCHANGE', currentBefore), after: requestSnapshot('EXCHANGE', currentAfter), actorEmployeeId, recipients: state.recipients, config }));
         return { statements, recipientEmployeeIds: state.recipients.map(r => r.employeeId), afterSchedules: state.schedules, afterShifts };
       },
     }, executor);

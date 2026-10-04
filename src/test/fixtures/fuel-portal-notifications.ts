@@ -22,3 +22,6 @@ export const notificationFixtureChanges: readonly PublicationChange[] = [{
   before: { sourceShiftId: 'fictional-shift', employeeId: 'fictional-employee-a', locationId: '2', date: '2026-10-05', startTime: '08:00', endTime: '12:00', isDesignatedLead: false, isCalloutApproved: false },
   after: { sourceShiftId: 'fictional-shift', employeeId: 'fictional-employee-a', locationId: '2', date: '2026-10-05', startTime: '09:00', endTime: '13:00', isDesignatedLead: false, isCalloutApproved: false },
 }];
+
+// Explicit fictional customer identity for notification browser review.
+export { fuelWorkspace as notificationFixtureWorkspace } from './nevora-workspace';

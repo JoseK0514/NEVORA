@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles, requireSelfService } from "@/lib/auth/permissions";
-import { currentDateInPuertoRico } from "@/lib/date-utils";
+import { businessDate } from "@/lib/business-time";
+import { getWorkspace } from "@/lib/data/workspaces";
 import {
   approveCalloutAndOpenCoverage,
   cancelPendingCallout,
@@ -50,7 +51,7 @@ export async function submitCalloutAction(formData: FormData) {
   if (
     !shift ||
     shift.employeeId !== session.id ||
-    shift.date < currentDateInPuertoRico()
+    shift.date < businessDate(new Date(), (await getWorkspace()).timeZone)
   ) {
     redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
   }

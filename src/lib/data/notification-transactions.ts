@@ -1,6 +1,12 @@
+import { workspaceReadGuard } from './workspaces';
+import type { NotificationConfig } from '../notifications/types';
 import { getDb, queryRows } from '../db';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { randomUUID } from 'node:crypto';
+import { assignmentCapabilityIssues, workspaceLocationAvailable } from '../scheduling/capabilities';
+import { schedulingIssueMessage } from '../scheduling/validate-shift';
+import { shiftBoundaryInstants } from '../business-time';
+import type { Position, Workspace, Location } from '../domain';
 import type { ScheduleStatus } from '../domain';
 import type { PublicationRevision, RevisionSourceType } from './publication-revisions';
 import type { PublishedShiftSnapshot } from '../assistance/publication-diff';
@@ -8,7 +14,7 @@ import { diffPublishedShifts } from '../assistance/publication-diff';
 import { buildAcknowledgementState } from '../assistance/acknowledgement-state';
 import { canAccessPublishedAssignment } from '../notifications/destinations';
 import { buildNotificationIntents } from '../notifications/recipients';
-import { readNotificationConfig } from '../notifications/config';
+import { loadWorkspaceNotificationConfig } from '../notifications/config';
 import { notificationIntentStatements } from './notifications';
 import type { EmployeePublicationProjection, RecipientAccess, ScheduleSourceSnapshot } from '../notifications/types';
 /** Neon HTTP transactions are ordered, non-interactive batches. Never await
@@ -37,13 +43,21 @@ export type GuardedSchedule = {
     updatedAt: string;
 };
 export type GuardedShift = PublishedShiftSnapshot & {
+    positionId?: string | null;
     sourceShiftId: string;
     scheduleId: string;
     weekStart: string;
     hasExchangeHistory: boolean;
     approvedCalloutEmployeeId?: string | null;
 };
+export type AssignmentFacts = {
+    workspace: Pick<Workspace,'id'|'active'|'timeZone'>;
+    locations: Pick<Location,'id'|'workspaceId'|'active'>[];
+    positions: Position[];
+    memberships: {employeeId:string;positionId:string}[];
+};
 export type GuardedWeekState = {
+    assignmentFacts: AssignmentFacts;
     schedules: GuardedSchedule[];
     shifts: GuardedShift[];
     revisions: (PublicationRevision & {
@@ -77,16 +91,21 @@ export type WeekMutationResult = {
 const currentShiftsSql = `SELECT sh.id AS "sourceShiftId", sh.schedule_id AS "scheduleId",
   s.week_start::text AS "weekStart", s.location_id AS "locationId", sh.employee_id AS "employeeId",
   sh.date::text AS date, left(sh.start_time::text,5) AS "startTime", left(sh.end_time::text,5) AS "endTime",
-  NULLIF(sh.notes,'') AS notes, sh.is_designated_lead AS "isDesignatedLead",
+  sh.position_id AS "positionId", NULLIF(sh.notes,'') AS notes, sh.is_designated_lead AS "isDesignatedLead",
   EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id=sh.id AND c.employee_id=sh.employee_id AND c.status='APPROVED') AS "isCalloutApproved",
   (SELECT c.employee_id FROM shift_callouts c WHERE c.shift_id=sh.id AND c.status='APPROVED' LIMIT 1) AS "approvedCalloutEmployeeId",
   EXISTS (SELECT 1 FROM shift_exchanges x WHERE x.source_shift_id=sh.id OR x.target_shift_id=sh.id) AS "hasExchangeHistory"
   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=ANY($1::date[])`;
 const revisionShiftsSql = `SELECT source_shift_id AS "sourceShiftId", schedule_id AS "scheduleId", location_id AS "locationId",
   employee_id AS "employeeId", date::text AS date, left(start_time::text,5) AS "startTime", left(end_time::text,5) AS "endTime",
-  notes, is_designated_lead AS "isDesignatedLead", is_callout_approved AS "isCalloutApproved"
+  position_id AS "positionId", position_name AS "positionName", notes, is_designated_lead AS "isDesignatedLead", is_callout_approved AS "isCalloutApproved"
   FROM schedule_publication_revision_shifts WHERE revision_id=r.id`;
 const stateSql = `jsonb_build_object(
+  'assignmentFacts', jsonb_build_object(
+    'workspace',(SELECT jsonb_build_object('id',id,'active',active,'timeZone',time_zone) FROM workspaces WHERE singleton=true),
+    'locations',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'workspaceId',workspace_id,'active',active) ORDER BY id) FROM locations),'[]'::jsonb),
+    'positions',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'workspaceId',workspace_id,'name',name,'active',active,'createdAt',created_at::text,'updatedAt',updated_at::text) ORDER BY id) FROM positions),'[]'::jsonb),
+    'memberships',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',employee_id,'positionId',position_id) ORDER BY employee_id,position_id) FROM employee_positions),'[]'::jsonb)),
   'schedules', COALESCE((SELECT jsonb_agg(t ORDER BY t.id) FROM (
     SELECT id, location_id AS "locationId", week_start::text AS "weekStart", status, updated_at::text AS "updatedAt"
     FROM schedules WHERE week_start=ANY($1::date[])) t),'[]'::jsonb),
@@ -101,7 +120,7 @@ const stateSql = `jsonb_build_object(
     FROM schedule_acknowledgements WHERE week_start=ANY($1::date[])) t),'[]'::jsonb),
   'recipients', COALESCE((SELECT jsonb_agg(t ORDER BY t."employeeId") FROM (
     SELECT e.id AS "employeeId", e.role, e.active,
-    COALESCE((SELECT jsonb_agg(location_id ORDER BY location_id) FROM employee_location_eligibility WHERE employee_id=e.id),'[]'::jsonb) AS "allowedLocationIds"
+    COALESCE((SELECT jsonb_agg(location_id ORDER BY location_id) FROM employee_location_eligibility elig JOIN locations l ON l.id=elig.location_id AND l.active=true WHERE employee_id=e.id),'[]'::jsonb) AS "allowedLocationIds"
     FROM employees e) t),'[]'::jsonb))`;
 /** Shared authoritative read used by reminder/open/worker checks. */
 export async function readNotificationWeekState(weeks: readonly string[], executor: SqlExecutor): Promise<GuardedWeekState> {
@@ -122,13 +141,13 @@ export function scheduleWeekLockStatements(weekStarts: readonly string[]): SqlSt
 function publishedShifts(schedules: readonly GuardedSchedule[], shifts: readonly GuardedShift[], week: string): PublishedShiftSnapshot[] {
     const ids = new Set(schedules.filter(s => s.weekStart === week && s.status === 'PUBLISHED').map(s => s.id));
     return shifts.filter(s => ids.has(s.scheduleId)).map(s => ({
-        sourceShiftId: s.sourceShiftId, scheduleId: s.scheduleId, locationId: s.locationId, employeeId: s.employeeId, date: s.date, startTime: s.startTime, endTime: s.endTime, notes: s.notes || undefined, isDesignatedLead: s.isDesignatedLead, isCalloutApproved: s.isCalloutApproved
+        sourceShiftId: s.sourceShiftId, scheduleId: s.scheduleId, locationId: s.locationId, employeeId: s.employeeId, date: s.date, startTime: s.startTime, endTime: s.endTime, positionId:s.positionId || undefined, positionName:s.positionName || undefined, notes: s.notes || undefined, isDesignatedLead: s.isDesignatedLead, isCalloutApproved: s.isCalloutApproved
     }));
 }
 function canonicalShifts(shifts: readonly PublishedShiftSnapshot[]) {
     return [...shifts].sort((a, b) => (a.sourceShiftId ?? '') < (b.sourceShiftId ?? '') ? -1 : (a.sourceShiftId ?? '') > (b.sourceShiftId ?? '') ? 1 : 0).map(s => ({
         sourceShiftId: s.sourceShiftId, scheduleId: s.scheduleId, locationId: s.locationId, employeeId: s.employeeId, date: s.date,
-        startTime: s.startTime, endTime: s.endTime, notes: s.notes || null, isDesignatedLead: s.isDesignatedLead, isCalloutApproved: s.isCalloutApproved,
+        startTime: s.startTime, endTime: s.endTime, positionId:s.positionId || null, notes: s.notes || null, isDesignatedLead: s.isDesignatedLead, isCalloutApproved: s.isCalloutApproved,
     }));
 }
 export function personalProjections(state: GuardedWeekState, week: string): Record<string, EmployeePublicationProjection> {
@@ -173,15 +192,15 @@ export async function commitPublishedWeekChange(input: {
     actorEmployeeId: string;
     sourceType: RevisionSourceType;
     sourceId?: string;
-    build: (snapshot: GuardedWeekState) => WeekMutationBatch;
+    build: (snapshot: GuardedWeekState, config: NotificationConfig) => WeekMutationBatch;
 }, executor: SqlExecutor = neonNotificationExecutor()): Promise<WeekMutationResult> {
     const weeks = [...new Set(input.weekStarts)].sort();
     if (!weeks.length)
         return {
             committed: false, revisions: []
         };
-    const config = readNotificationConfig(process.env);
     for (let attempt = 0; attempt < 3; attempt++) {
+        const config = await loadWorkspaceNotificationConfig(process.env,executor);
         const [read] = await executor.query<{
             state: GuardedWeekState;
             read_at: string;
@@ -192,13 +211,36 @@ export async function commitPublishedWeekChange(input: {
             throw new Error('Schedule snapshot could not be read.');
         const state = read.state;
         // Builders receive an isolated value so accidental mutation cannot weaken the guard.
-        const batch = input.build(structuredClone(state));
+        const batch = input.build(structuredClone(state),config);
         if (!batch.statements.length)
             return {
                 committed: false, revisions: []
             };
+        // Only a changed assignment requires current eligibility. Retained historical
+        // inactive facts and request-status-only writes must remain readable/writable.
+        const assignments = batch.afterShifts.filter(next => {
+            const before = state.shifts.find(s => s.sourceShiftId === next.sourceShiftId);
+            return !before || ['employeeId','locationId','date','startTime','endTime','isDesignatedLead'].some(key => before[key as keyof GuardedShift] !== next[key as keyof GuardedShift]) || (before.positionId || null) !== (next.positionId || null);
+        });
+        for (const shift of assignments) {
+            const facts=state.assignmentFacts;
+            const employee=state.recipients.find(r=>r.employeeId===shift.employeeId);
+            if (!facts?.workspace) throw new Error('Workspace configuration is unavailable.');
+            const issues=assignmentCapabilityIssues({candidate:shift,workspace:facts.workspace,location:facts.locations.find(l=>l.id===shift.locationId),position:facts.positions.find(p=>p.id===shift.positionId),employee:{active:employee?.active ?? false,eligibleLocationIds:employee?.allowedLocationIds ?? [],positionIds:facts.memberships.filter(m=>m.employeeId===shift.employeeId).map(m=>m.positionId)}});
+            if(issues.length) throw new Error(schedulingIssueMessage(issues[0]));
+            shiftBoundaryInstants(shift,facts.workspace.timeZone);
+        }
         const relevantIds = [...new Set([input.actorEmployeeId, ...state.shifts.map(s => s.employeeId), ...batch.afterShifts.map(s => s.employeeId), ...(batch.recipientEmployeeIds ?? [])])].sort();
+        const newSchedules=batch.afterSchedules.filter(s=>!state.schedules.some(before=>before.id===s.id));
+        for (const schedule of newSchedules) {
+            const facts=state.assignmentFacts;
+            if (!facts?.workspace || !workspaceLocationAvailable(facts.workspace,facts.locations.find(l=>l.id===schedule.locationId),schedule.locationId))
+                throw new Error(schedulingIssueMessage('LOCATION_INACTIVE'));
+        }
+        const locationIds=[...new Set([...assignments.map(s=>s.locationId),...newSchedules.map(s=>s.locationId)])].sort();
+        const positionIds=[...new Set(assignments.flatMap(s=>s.positionId?[s.positionId]:[]))].sort();
         const statements: SqlStatement[] = [
+            ...workspaceReadGuard(config.workspace!),
             ...scheduleWeekLockStatements(weeks),
             // Compatible SHARE locks allow publications on unrelated weeks concurrently.
             // Existing employee creation inserts employees before eligibility; it cannot
@@ -206,6 +248,9 @@ export async function commitPublishedWeekChange(input: {
             {
                 text: 'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE', values: [relevantIds]
             },
+            {text:'SELECT id FROM locations WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE',values:[locationIds]},
+            {text:'SELECT id FROM positions WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE',values:[positionIds]},
+            {text:'LOCK TABLE employee_positions IN SHARE MODE',values:[]},
             {
                 text: 'LOCK TABLE employee_location_eligibility IN SHARE MODE', values: []
             },
@@ -250,9 +295,9 @@ export async function commitPublishedWeekChange(input: {
                 text: `INSERT INTO schedule_publication_revisions (id,week_start,revision_number,source_type,source_id,created_by,created_at,affected_location_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`, values: [revision.id, week, revision.revisionNumber, input.sourceType, revision.sourceId ?? null, input.actorEmployeeId, revision.createdAt, revision.affectedLocationId ?? null]
             });
             statements.push({
-                text: `INSERT INTO schedule_publication_revision_shifts (id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,notes,is_designated_lead,is_callout_approved)
+                text: `INSERT INTO schedule_publication_revision_shifts (id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,notes,is_designated_lead,is_callout_approved,position_id,position_name)
         SELECT $1 || ':' || sh.id,$1,sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time,sh.notes,sh.is_designated_lead,
-        EXISTS(SELECT 1 FROM shift_callouts c WHERE c.shift_id=sh.id AND c.employee_id=sh.employee_id AND c.status='APPROVED')
+        EXISTS(SELECT 1 FROM shift_callouts c WHERE c.shift_id=sh.id AND c.employee_id=sh.employee_id AND c.status='APPROVED'),sh.position_id,(SELECT p.name FROM positions p WHERE p.id=sh.position_id)
         FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=$2 AND s.status='PUBLISHED'`, values: [revision.id, week]
             });
             const projections = personalProjections(state, week);

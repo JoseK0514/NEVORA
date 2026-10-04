@@ -1,6 +1,8 @@
 import { createECDH, timingSafeEqual } from 'node:crypto';
-import { DEFAULT_NOTIFICATION_POLICY } from './policy';
-import type { NotificationConfig } from './types';
+import { notificationPolicyFor } from './policy';
+import { getWorkspace } from '../data/workspaces';
+import type { Workspace } from '../domain';
+import type { NotificationConfig, PushRuntimeConfig, SqlExecutor } from './types';
 /** Canonical unpadded URL-safe encoding only. Never include rejected values in errors. */
 export function decodePushKey(value: unknown, length: number): Buffer | null {
     if (typeof value !== 'string' || !/^[A-Za-z0-9_-]+$/.test(value))
@@ -8,7 +10,7 @@ export function decodePushKey(value: unknown, length: number): Buffer | null {
     const bytes = Buffer.from(value, 'base64url');
     return bytes.length === length && bytes.toString('base64url') === value ? bytes : null;
 }
-export function readNotificationConfig(env: Record<string, string | undefined>): NotificationConfig {
+export function readNotificationConfig(env: Record<string, string | undefined>): PushRuntimeConfig {
     const environment = env.PUSH_ENVIRONMENT === 'production' ? 'production' : 'test';
     const validEnvironment = env.PUSH_ENVIRONMENT === 'test' || env.PUSH_ENVIRONMENT === 'production';
     let portalOrigin = '';
@@ -51,7 +53,7 @@ export function readNotificationConfig(env: Record<string, string | undefined>):
     const ready = featureEnabled && portalOrigin.startsWith('https:') && safeProduction && validPair && validSubject && (env.NOTIFICATION_WORKER_SECRET?.length ?? 0) >= 32;
     const testAccountIds = [...new Set((env.PUSH_TEST_ACCOUNT_IDS ?? '').split(',').map(s => s.trim()).filter(s => /^[A-Za-z0-9_-]{1,128}$/.test(s)))];
     return {
-        environment, portalOrigin, policy: DEFAULT_NOTIFICATION_POLICY, featureEnabled,
+        environment, portalOrigin, featureEnabled,
         deliveryEnabled: ready && env.PUSH_DELIVERY_ENABLED === 'true',
         testDeliveryEnabled: ready && environment === 'test' && env.PUSH_TEST_DELIVERY_ENABLED === 'true' && testAccountIds.length > 0,
         testAccountIds,
@@ -61,4 +63,13 @@ export function readNotificationConfig(env: Record<string, string | undefined>):
         ...(encryptionKey ? { subscriptionEncryptionKey: env.PUSH_SUBSCRIPTION_ENCRYPTION_KEY } : {}),
         ...((env.NOTIFICATION_WORKER_SECRET?.length ?? 0) >= 32 ? { workerSecret: env.NOTIFICATION_WORKER_SECRET } : {}),
     };
+}
+export function bindWorkspaceNotificationConfig(runtime: PushRuntimeConfig, workspace: Workspace): NotificationConfig {
+    return {...runtime, workspace, policy:notificationPolicyFor(workspace.timeZone),
+        featureEnabled:runtime.featureEnabled && workspace.active,
+        deliveryEnabled:runtime.deliveryEnabled && workspace.active,
+        testDeliveryEnabled:runtime.testDeliveryEnabled && workspace.active};
+}
+export async function loadWorkspaceNotificationConfig(env: Record<string,string|undefined>, executor?: SqlExecutor): Promise<NotificationConfig> {
+    return bindWorkspaceNotificationConfig(readNotificationConfig(env),await getWorkspace(executor));
 }

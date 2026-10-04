@@ -5,7 +5,7 @@ import type { SqlExecutor } from "../notifications/types";
 import { addDays, weekStartFor } from "../date-utils";
 import { minutesInWorkweek, shiftPeriod } from "../scheduling/periods";
 import { readAvailabilityInputs } from "./availability-inputs";
-import type { ScheduleStatus, UserRole } from "@/lib/domain";
+import type { ScheduleStatus, UserRole, Position } from "@/lib/domain";
 
 export type ScheduleShiftRow = {
   id: string;
@@ -17,6 +17,7 @@ export type ScheduleShiftRow = {
   startTime: string;
   endTime: string;
   notes?: string;
+  positionId?: string;
   isDesignatedLead: boolean;
   isCalloutApproved: boolean;
   scheduleStatus: ScheduleStatus;
@@ -47,8 +48,8 @@ export async function listWeekShifts({
   employeeId?: string;
   publishedOnly?: boolean;
   byBusinessWorkweek?: boolean;
-}): Promise<ScheduleShiftRow[]> {
-  const sql = getDb();
+}, executor?: SqlExecutor): Promise<ScheduleShiftRow[]> {
+  const sql = executor ? {query:(text:string,values:unknown[])=>executor.query({text,values})} : getDb();
 
   const conditions = byBusinessWorkweek
     ? ["s.status <> 'ARCHIVED'", "((sh.date >= $1 AND sh.date < $2) OR (sh.date = $3 AND sh.end_time < sh.start_time))"]
@@ -76,6 +77,7 @@ export async function listWeekShifts({
          sh.start_time,
          sh.end_time,
          sh.notes,
+         sh.position_id,
          sh.is_designated_lead,
          EXISTS (
            SELECT 1
@@ -105,6 +107,7 @@ export async function listWeekShifts({
       date: dateValue(item.date),
       startTime: timeValue(item.start_time),
       endTime: timeValue(item.end_time),
+      positionId: item.position_id ? String(item.position_id) : undefined,
       notes: item.notes ? String(item.notes) : undefined,
       isDesignatedLead: Boolean(item.is_designated_lead),
       isCalloutApproved: Boolean(item.approved_callout),
@@ -137,20 +140,25 @@ export async function listScheduleStatuses(weekStart: string): Promise<LocationS
 
 export async function getShiftValidationContext({
   employeeId,
+  locationId,
+  positionId,
   date,
   endDate,
 }: {
   employeeId: string;
+  locationId: string;
+  positionId?: string;
   date: string;
   weekStart: string;
   endDate?: string;
-}) {
-  const sql = getDb();
+}, executor?: SqlExecutor) {
+  const sql = executor ? {query: (text: string, values: unknown[]) => executor.query({text,values})} : getDb();
   const firstWeek = weekStartFor(date),
     lastWeek = weekStartFor(endDate ?? addDays(date, 1));
-  const [employeeRaw, shiftsRaw, leaveRaw, inputs] = await Promise.all([
+  const [employeeRaw, shiftsRaw, leaveRaw, inputs, factsRaw] = await Promise.all([
     sql.query(
-      `SELECT e.active, e.role, ss.target_weekly_hours, COALESCE(ss.maximum_weekly_hours, 40) AS maximum_weekly_hours,
+      `SELECT e.active, e.role,
+      ARRAY(SELECT ep.position_id FROM employee_positions ep JOIN positions p ON p.id=ep.position_id WHERE ep.employee_id=e.id AND p.active=true) AS position_ids, ss.target_weekly_hours, COALESCE(ss.maximum_weekly_hours, 40) AS maximum_weekly_hours,
       COALESCE(array_agg(elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL), ARRAY[]::text[]) AS eligible_location_ids
       FROM employees e LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id
       LEFT JOIN employee_scheduling_settings ss ON ss.employee_id = e.id WHERE e.id = $1
@@ -158,7 +166,7 @@ export async function getShiftValidationContext({
       [employeeId],
     ),
     sql.query(
-      `SELECT sh.id, sh.employee_id, s.location_id, sh.date, sh.start_time, sh.end_time, sh.is_designated_lead
+      `SELECT sh.id, sh.employee_id, s.location_id, sh.date, sh.start_time, sh.end_time, sh.is_designated_lead, sh.position_id
       FROM shifts sh JOIN schedules s ON s.id = sh.schedule_id
       WHERE sh.employee_id = $1 AND sh.date >= $2 AND sh.date < $3 AND s.status <> 'ARCHIVED'
       AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id = sh.id AND c.employee_id = sh.employee_id AND c.status = 'APPROVED')`,
@@ -169,12 +177,16 @@ export async function getShiftValidationContext({
       WHERE employee_id = $1 AND status = 'APPROVED' AND start_date <= $3 AND end_date >= $2`,
       [employeeId, date, endDate ?? addDays(date, 1)],
     ),
-    readAvailabilityInputs(employeeId, firstWeek, lastWeek),
+    readAvailabilityInputs(employeeId, firstWeek, lastWeek, executor),
+    sql.query(`SELECT l.id,l.workspace_id,l.active,w.active AS workspace_active,w.time_zone,
+      p.id AS position_id,p.workspace_id AS position_workspace_id,p.name AS position_name,p.active AS position_active,p.created_at::text,p.updated_at::text
+      FROM locations l JOIN workspaces w ON w.id=l.workspace_id LEFT JOIN positions p ON p.id=$2 AND p.workspace_id=w.id WHERE l.id=$1`, [locationId,positionId ?? null]),
   ]);
   const employee = queryRows(employeeRaw)[0] as
     | Record<string, unknown>
     | undefined;
-  if (!employee) return null;
+  const facts = queryRows(factsRaw)[0] as Record<string,unknown> | undefined;
+  if (!employee || !facts) return null;
   const existingShifts = queryRows(shiftsRaw).map((row) => {
     const item = row as Record<string, unknown>;
     return {
@@ -184,11 +196,16 @@ export async function getShiftValidationContext({
       date: dateValue(item.date),
       startTime: timeValue(item.start_time),
       endTime: timeValue(item.end_time),
+      positionId: item.position_id ? String(item.position_id) : undefined,
       isDesignatedLead: Boolean(item.is_designated_lead),
     };
   });
   return {
+    workspace: {id:String(facts.workspace_id),active:Boolean(facts.workspace_active),timeZone:String(facts.time_zone)},
+    location: {id:String(facts.id),workspaceId:String(facts.workspace_id),active:Boolean(facts.active)},
+    position: facts.position_id ? {id:String(facts.position_id),workspaceId:String(facts.position_workspace_id),name:String(facts.position_name),active:Boolean(facts.position_active),createdAt:String(facts.created_at),updatedAt:String(facts.updated_at)} as Position : undefined,
     employee: {
+      positionIds: (employee.position_ids as string[] | null) ?? [],
       active: Boolean(employee.active),
       role: employee.role as UserRole,
       eligibleLocationIds:
@@ -220,6 +237,8 @@ export async function getShiftValidationContext({
   };
 }
 
+export type ShiftValidationContext = NonNullable<Awaited<ReturnType<typeof getShiftValidationContext>>>;
+
 export async function ensureSchedule(input: {
   locationId: string; weekStart: string; createdBy: string;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
@@ -248,7 +267,7 @@ function unchanged(state: GuardedWeekState) {
 
 export async function insertShift(input: {
   scheduleId: string; employeeId: string; date: string; startTime: string;
-  endTime: string; notes?: string; isDesignatedLead?: boolean; actorEmployeeId: string;
+  endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   const id=randomUUID();
   const week=await mutationWeek(input.scheduleId,'schedule',executor);
@@ -256,9 +275,9 @@ export async function insertShift(input: {
   const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,sourceType:'MANAGER_MUTATION',sourceId:id,build: state => {
     const schedule=state.schedules.find(s=>s.id===input.scheduleId);
     if(!schedule) return unchanged(state);
-    return {statements:[{text:`INSERT INTO shifts (id,schedule_id,employee_id,date,start_time,end_time,notes,is_designated_lead) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-      values:[id,input.scheduleId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false]}],afterSchedules:state.schedules,
-      afterShifts:[...state.shifts,{sourceShiftId:id,scheduleId:input.scheduleId,weekStart:week,locationId:schedule.locationId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:false,hasExchangeHistory:false}]};
+    return {statements:[{text:`INSERT INTO shifts (id,schedule_id,employee_id,date,start_time,end_time,notes,is_designated_lead,position_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+      values:[id,input.scheduleId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false,input.positionId || null]}],afterSchedules:state.schedules,
+      afterShifts:[...state.shifts,{sourceShiftId:id,scheduleId:input.scheduleId,weekStart:week,locationId:schedule.locationId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,positionId:input.positionId || undefined,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:false,hasExchangeHistory:false}]};
   }},executor);
   if(!result.committed) throw new Error('Schedule no longer exists.');
   return id;
@@ -275,8 +294,9 @@ export type ManagementShift = ScheduleShiftRow & {
 
 export async function getShiftForManagement(
   shiftId: string,
+  executor?: SqlExecutor,
 ): Promise<ManagementShift | null> {
-  const sql = getDb();
+  const sql = executor ? {query:(text:string,values:unknown[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
       `SELECT
@@ -290,6 +310,7 @@ export async function getShiftForManagement(
          sh.start_time,
          sh.end_time,
          sh.notes,
+         sh.position_id,
          sh.is_designated_lead,
          EXISTS (
            SELECT 1
@@ -321,6 +342,7 @@ export async function getShiftForManagement(
     date: dateValue(item.date),
     startTime: timeValue(item.start_time),
     endTime: timeValue(item.end_time),
+    positionId: item.position_id ? String(item.position_id) : undefined,
     notes: item.notes ? String(item.notes) : undefined,
     isDesignatedLead: Boolean(item.is_designated_lead),
     isCalloutApproved: Boolean(item.approved_callout),
@@ -330,15 +352,17 @@ export async function getShiftForManagement(
 
 export async function updateShift(input: {
   shiftId: string; employeeId: string; date: string; startTime: string;
-  endTime: string; notes?: string; isDesignatedLead?: boolean; actorEmployeeId: string;
+  endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   const week=await mutationWeek(input.shiftId,'shift',executor);
   if(!week) return false;
   const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,sourceType:'MANAGER_MUTATION',sourceId:input.shiftId,build: state => {
-    if(!state.shifts.some(s=>s.sourceShiftId===input.shiftId)) return unchanged(state);
-    return {statements:[{text:`UPDATE shifts SET employee_id=$2,date=$3,start_time=$4,end_time=$5,notes=$6,is_designated_lead=$7,updated_at=clock_timestamp() WHERE id=$1`,
-      values:[input.shiftId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false]}],afterSchedules:state.schedules,
-      afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.approvedCalloutEmployeeId===input.employeeId || (s.employeeId===input.employeeId && s.isCalloutApproved)}:s)};
+    const existing=state.shifts.find(s=>s.sourceShiftId===input.shiftId);
+    if(!existing) return unchanged(state);
+    const positionId=input.positionId === undefined ? existing.positionId : input.positionId || undefined;
+    return {statements:[{text:`UPDATE shifts SET employee_id=$2,date=$3,start_time=$4,end_time=$5,notes=$6,is_designated_lead=$7,position_id=$8,updated_at=clock_timestamp() WHERE id=$1`,
+      values:[input.shiftId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false,positionId || null]}],afterSchedules:state.schedules,
+      afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,positionId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.approvedCalloutEmployeeId===input.employeeId || (s.employeeId===input.employeeId && s.isCalloutApproved)}:s)};
   }},executor);
   return result.committed;
 }

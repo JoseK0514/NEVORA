@@ -100,3 +100,12 @@ Protected branding changes intentionally alter pixels. Exact pre-correction capt
 Final targeted correction: coffee photography, cups, café art and beans cannot define the product visuals. Fuel remains customer/location data only. Authentication uses the neutral canvas; the Manager header uses a restrained white/cyan gradient. Login and Activate include subtle ownership copy: “© 2026 VELANI LLC. All rights reserved.” and “NEVORA is a product of VELANI LLC.” Authenticated pages retain the existing subtle Powered by attribution.
 
 The standalone offline fallback is generated from the same `BrandLockup` with embedded original public PNG bytes. Regenerate with `npx tsx scripts/render-nevora-offline.tsx`; keep it self-contained and free of private/user data. Its cache remains on the existing normal waiting/update lifecycle.
+
+
+## Workspace foundation extension (2026-10-03)
+
+Configured workspace names and arbitrary active location/position catalogs extend the approved surfaces. Owner Workspace/Locations/Positions reuse AppShell, PageHeader and management form geometry. Employee create/profile separate Access role, position qualifications and location eligibility. Manual shifts explicitly choose no position or one active qualified position. Scheduling Rules adds explicit staffing/Lead choices for unconfigured locations and optional position quantities. New locations show derived Needs setup without invented operational values.
+
+Protected comparisons use frozen Fuel inputs from exact parent `0a12f1f4ac7212a8cbbe195f013407a8bc74c4d5`; generic Northside fixture differences are evaluated separately. Position history displays captured labels rather than renamed live catalog labels. Clocker preserves its demo/geometry and uses the stored location label verbatim: an ASCII SQL Fuel name stays ASCII and an en-dash visual fixture stays en dash. This is not authority to rewrite customer labels.
+
+See the [foundation QA review](2026-10-03-nevora-foundation-review.md) for fresh source matrix, geometry/state evidence and intentional pixel changes. Native worker/cache/lifecycle evidence is separate from doubled setup/permission flows. Actual scope remains `/app`; Clocker has no portal setup or worker control. Human foundation review and real provider/physical-device acceptance remain distinct.

@@ -1,8 +1,10 @@
+import { notificationPolicyFor as fixturePolicyFor } from './policy';
+const fixtureNotificationPolicy=fixturePolicyFor('America/Puerto_Rico');
 import { expect, it, vi } from 'vitest';
 vi.mock('@/lib/db',()=>({getDb:()=>{throw new Error('Unexpected database');},queryRows:(rows:unknown)=>rows}));
 import { runReminders, planSourceReminders, buildSummaryGroup } from './reminders';
 import { DEFAULT_NOTIFICATION_POLICY as policy } from './policy';
-import { readNotificationConfig } from './config';
+import { readNotificationConfig as readRuntimeConfig } from './config';
 import type { NotificationIntent, NotificationStateRepository, RecipientAccess, SourceSnapshot, SqlExecutor, SqlStatement } from './types';
 const now = new Date('2026-10-05T12:00:00Z');
 const employees: RecipientAccess[] = [{employeeId:'E',role:'EMPLOYEE',active:true,allowedLocationIds:['2']},{employeeId:'L',role:'LEAD',active:true,allowedLocationIds:['2']},{employeeId:'M',role:'MANAGER',active:true,allowedLocationIds:[]}];
@@ -110,7 +112,7 @@ it('coverage_resolving_before_first_delivery_leaves_routine_seed_in_its_own_quie
  expect(batches.find(batch=>batch.includes(routine))!.at(-1)?.values[0]).toEqual(['leave']);
  const persisted:NotificationIntent={...seeds[0],id:String(routine.values[0]),source:{kind:'MANAGER_SUMMARY',id:String(routine.values[9]),version:String(routine.values[10])},effectiveVersion:String(routine.values[11]),urgency:'normal',dueAt:String(routine.values[14]),expiresAt:String(routine.values[15]),itemKeys:routine.values[16] as string[]};
  const surviving:SourceSnapshot={kind:'MANAGER_SUMMARY',source:{...persisted.source,kind:'MANAGER_SUMMARY'},updatedAt:persisted.dueAt,weekStart:'',expiresAt:persisted.expiresAt,items:[{id:'TIME_OFF:leave',type:'TIME_OFF',priority:'REVIEW',title:'Review',detail:'',href:'/app/requests?tab=pending&requestId=leave'}]};
- expect(evaluateNotificationSource(persisted,employees[2],surviving,night)).toMatchObject({deliverable:true,expiresAt:'2026-10-08T12:00:00.000Z',destination:'/app/requests?tab=pending&requestId=leave'});
+ expect(evaluateNotificationSource(persisted,employees[2],surviving,night,policy)).toMatchObject({deliverable:true,expiresAt:'2026-10-08T12:00:00.000Z',destination:'/app/requests?tab=pending&requestId=leave'});
 });
 
 it('quiet_hour_consumption_lookup_includes_the_rebuilt_tomorrow_key_without_conflict_retries',async()=>{
@@ -215,3 +217,6 @@ it('slow_summary_seed_collection_reserves_a_flush_budget_and_consumes_pending_se
  }
  expect(groupWrites).toBe(2);expect(sourceScans).toBe(3);
 });
+
+// Explicit Puerto Rico fixture policy; production callers load the configured workspace.
+function readNotificationConfig(env: Record<string,string|undefined>) {return {...readRuntimeConfig(env),policy:fixtureNotificationPolicy};}

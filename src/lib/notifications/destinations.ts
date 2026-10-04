@@ -71,8 +71,8 @@ export function destinationForSource(source: SourceSnapshot, recipient: Recipien
       const participant = source.record.requestedByEmployeeId === recipient.employeeId || source.record.targetEmployeeId === recipient.employeeId;
       const reviewer = isReviewRole(recipient);
       if (!participant && !reviewer) return null;
-      if (!reviewer && !recipient.allowedLocationIds.includes(source.record.sourceShift.locationId)) return null;
       const terminal = ['APPROVED','DENIED','CANCELLED','EXPIRED'].includes(source.record.status);
+      if (!terminal && !reviewer && !recipient.allowedLocationIds.includes(source.record.sourceShift.locationId)) return null;
       if (reviewer && source.record.status === 'EMPLOYEE_PENDING') return null;
       const tab = reviewer
         ? terminal ? 'activity' : source.record.status === 'OPEN' ? 'coverage' : 'pending'
@@ -80,7 +80,7 @@ export function destinationForSource(source: SourceSnapshot, recipient: Recipien
       return safeReturnTo(`/app/exchange?tab=${tab}&requestId=${encode(source.record.id)}`);
     }
     case 'CALLOUT':
-      if (!isReviewRole(recipient) && (source.record.employeeId !== recipient.employeeId || !recipient.allowedLocationIds.includes(source.record.locationId))) return null;
+      if (!isReviewRole(recipient) && (source.record.employeeId !== recipient.employeeId || (source.record.status === 'PENDING' && !recipient.allowedLocationIds.includes(source.record.locationId)))) return null;
       return safeReturnTo(`/app/exchange?tab=${isReviewRole(recipient) ? source.record.status === 'PENDING' ? 'pending' : 'activity' : 'requests'}&requestId=${encode(source.record.id)}`);
     case 'AVAILABILITY':
       return isReviewRole(recipient) || isSelfServiceRecipient(recipient) ? safeReturnTo(`/app/availability?week=${encode(source.settings.weekStart)}`) : null;

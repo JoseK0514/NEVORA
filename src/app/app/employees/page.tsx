@@ -21,7 +21,7 @@ export default async function EmployeesPage() {
       <PageHeader
         eyebrow="Team"
         title="Employees"
-        description="A clean directory of the people scheduled across Fuel."
+        description="A clean directory of the people scheduled across your workspace."
         actions={
           <Link className="button primary" href="/app/employees/new">
             Add Employee

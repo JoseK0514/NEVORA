@@ -47,11 +47,13 @@ export type SourceCheck = { deliverable: boolean; reason: string; effectiveVersi
 export type ProviderResult = { kind: 'accepted' } | { kind: 'retry'; errorClass: string; retryAfterSeconds?: number } | { kind: 'invalid_subscription' } | { kind: 'failed'; errorClass: string };
 export type WorkerReport = { claimed: number; accepted: number; retried: number; failed: number; expired: number; cancelled: number; noSubscription: number; disabled: boolean };
 export type NotificationPolicy = {
-  timeZone: 'America/Puerto_Rico'; quietStartHour: 21; quietEndHour: 7;
+  timeZone: string; quietStartHour: 21; quietEndHour: 7;
   availabilityLeadHours: 24; acknowledgementDelayHours: 24; managerCollectionMinutes: 5; urgentLeadHours: 12;
   maxAttempts: 5; retryMinutes: readonly [1, 5, 15, 60]; leaseSeconds: 120; batchSize: 10; concurrency: 2; budgetMs: 20000; attemptDeadlineMs: 8000;
 };
+export type PushRuntimeConfig = Omit<NotificationConfig, 'policy'>;
 export type NotificationConfig = {
+  workspace?: import('../domain').Workspace;
   featureEnabled: boolean; deliveryEnabled: boolean; testDeliveryEnabled: boolean;
   testAccountIds: readonly string[]; environment: PushEnvironment; portalOrigin: string; policy: NotificationPolicy;
   workerSecret?: string; vapidPublicKey?: string; vapidPrivateKey?: string; vapidSubject?: string; subscriptionEncryptionKey?: string;
@@ -112,6 +114,7 @@ export type NotificationStateRepository = {
   findIntent(notificationId: string): Promise<NotificationIntent | null>;
   recipientAccess(employeeId: string): Promise<RecipientAccess | null>;
   readSource(source: SourceRef): Promise<SourceSnapshot | null>;
-  check(intent: NotificationIntent, recipientId: string, now: Date): Promise<SourceCheck>;
+  /** Delivery is the default. Authenticated opens may retain terminal participant history. */
+  check(intent: NotificationIntent, recipientId: string, now: Date, use?: 'delivery' | 'open'): Promise<SourceCheck>;
   listReminderCandidates(now: Date, limit: number, shouldContinue?: () => boolean, visit?: (source: SourceSnapshot) => Promise<void>): Promise<SourceSnapshot[]>;
 };

@@ -61,6 +61,7 @@ export default async function CoverageSuggestionsPage({
     employees.map(async (employee) => {
       const context = await getShiftValidationContext({
         employeeId: employee.id,
+        locationId,
         date,
         weekStart,
       });

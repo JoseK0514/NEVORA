@@ -25,9 +25,11 @@ function employeeNavigationLabel(label: string) {
 
 export function AppShell({
   children,
+  workspaceName,
   user,
   notificationsEnabled = false,
 }: {
+  workspaceName: string;
   notificationsEnabled?: boolean;
   children: ReactNode;
   user: {
@@ -98,7 +100,7 @@ export function AppShell({
         </PortalSignout>
 
         <div className="sidebar-platform-footer">
-          <span>{NUVORA_BRAND.workspace}</span>
+          <span>{workspaceName}</span>
           <small>{NUVORA_BRAND.poweredBy}</small>
         </div>
       </aside>

@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 vi.mock('@/lib/db', () => ({getDb: () => { throw new Error('Unexpected database'); }, queryRows: (rows: unknown) => rows}));
-import { sqlNotificationStateRepository, evaluateNotificationSource } from './notification-state';
+import { sqlNotificationStateRepository as productionStateRepository, evaluateNotificationSource as evaluateWithPolicy } from './notification-state';
 import type { NotificationIntent, SqlExecutor, SqlStatement } from '../notifications/types';
 const row = { id: 'notification', employee_id: 'employee', type: 'TIME_OFF_DECIDED', title: 'Generic', body: 'Generic', event_key: 'event', environment: 'test', source_kind: 'TIME_OFF', source_id: 'request', source_version: 'v1', effective_version: 'v1', purpose: 'EVENT', urgency: 'normal', due_at: '2026-10-02T12:00:00Z', expires_at: '2026-10-03T12:00:00Z', item_keys: [] };
 function setup(rows: unknown[]) { const statements: SqlStatement[] = []; const executor: SqlExecutor = { query: async <T>(statement: SqlStatement) => { statements.push(statement); return rows as T[]; }, transaction: async () => { throw new Error('No business mutations permitted'); } }; return { state: sqlNotificationStateRepository(executor), statements }; }
@@ -77,16 +77,16 @@ it.each(['filled','cancelled','expired','target_access_lost'] as const)('exchang
 it('configured_coverage_uses_health_lead_rules_and_never_invents_location_windows',async()=>{
  const f=fixture('TIME_OFF');f.state.shifts=[];
  let windows:unknown[]=[];
- f.executor.query=async <T>(s:SqlStatement)=>(s.text.includes('AS state')?[{state:f.state}]:s.text.includes('location_staffing_settings')?[{id:'110',name:'FUEL – 110',minimumStaffPerShift:2,requiresDesignatedLead:true}]:windows) as T[];
+ f.executor.query=async <T>(s:SqlStatement)=>(s.text.includes('AS state')?[{state:f.state}]:s.text.includes('FROM employees e')?[{id:'F',name:'Sam',role:'LEAD',active:true,eligibleLocationIds:['110'],positionIds:[]}]:s.text.includes('FROM positions')?[]:s.text.includes('location_staffing_settings')?[{id:'110',name:'FUEL – 110',minimumStaffPerShift:2,requiresDesignatedLead:true}]:windows) as T[];
  const repo=sqlNotificationStateRepository(f.executor);
  const ref={kind:'MANAGER_SUMMARY' as const,id:'2030-10-07',version:'configured'};
  expect(await repo.readSource(ref)).toMatchObject({items:[]});
- windows=[{locationId:'110',dayOfWeek:1,startTime:'08:00',endTime:'12:00',minimumStaff:2}];
+ windows=[{ positionRequirements: [], locationId:'110',dayOfWeek:1,startTime:'08:00',endTime:'12:00',minimumStaff:2}];
  const source=await repo.readSource(ref);
  expect(source).toMatchObject({items:[{type:'COVERAGE_GAP',dateTime:'2030-10-07T08:00',locationId:'110'}]});
  expect(source?.kind==='MANAGER_SUMMARY'&&source.items).toHaveLength(1);
  f.state.shifts=[{...f.state.revisions[0].shifts[0],sourceShiftId:'s',scheduleId:'a',weekStart:'2030-10-07',hasExchangeHistory:false,locationId:'110',date:'2030-10-07',startTime:'08:00',endTime:'12:00',employeeId:'F',isDesignatedLead:true}];
- windows=[{locationId:'110',dayOfWeek:1,startTime:'08:00',endTime:'12:00',minimumStaff:1}];
+ windows=[{ positionRequirements: [], locationId:'110',dayOfWeek:1,startTime:'08:00',endTime:'12:00',minimumStaff:1}];
  expect(await repo.readSource(ref)).toMatchObject({items:[]});
  f.state.shifts[0].isDesignatedLead=false;
  expect(await repo.readSource(ref)).toMatchObject({items:[{type:'COVERAGE_GAP',title:'Lead coverage missing at FUEL – 110'}]});
@@ -114,7 +114,7 @@ it('manager_group_revalidates_each_member_and_keeps_only_unresolved_work',async(
 it('archived_assignments_do_not_fill_configured_coverage',async()=>{
  const f=fixture('TIME_OFF');f.state.schedules[0].status='ARCHIVED';
  f.state.shifts[0].date='2030-10-07';f.state.shifts[0].employeeId='F';
- f.executor.query=async<T>(s:SqlStatement)=>(s.text.includes('AS state')?[{state:f.state}]:s.text.includes('location_staffing_settings')?[{id:'L',name:'Location',minimumStaffPerShift:1,requiresDesignatedLead:false}]:[{locationId:'L',dayOfWeek:1,startTime:'09:00',endTime:'17:00',minimumStaff:1}]) as T[];
+ f.executor.query=async<T>(s:SqlStatement)=>(s.text.includes('AS state')?[{state:f.state}]:s.text.includes('location_staffing_settings')?[{id:'L',name:'Location',minimumStaffPerShift:1,requiresDesignatedLead:false}]:[{ positionRequirements: [], locationId:'L',dayOfWeek:1,startTime:'09:00',endTime:'17:00',minimumStaff:1}]) as T[];
  const source=await sqlNotificationStateRepository(f.executor).readSource({kind:'MANAGER_SUMMARY',id:'2030-10-07',version:'configured'});
  expect(source?.kind==='MANAGER_SUMMARY'&&source.items).toHaveLength(1);
 });
@@ -140,3 +140,27 @@ it('candidate_hydration_checks_budget_before_starting_each_source',async()=>{
  await repo.listReminderCandidates(now,10,()=>allowed);
  expect(hydrating).toBe(1);
 });
+
+it('position-only configured coverage reaches the manager summary with position copy',async()=>{
+ const f=fixture('TIME_OFF');
+ f.state.shifts=[{...f.state.revisions[0].shifts[0],sourceShiftId:'s',scheduleId:'a',weekStart:'2030-10-07',hasExchangeHistory:false,locationId:'110',date:'2030-10-07',startTime:'08:00',endTime:'12:00',employeeId:'F',isDesignatedLead:true}];
+ f.executor.query=async <T>(s:SqlStatement)=>(s.text.includes('AS state')?[{state:f.state}]:s.text.includes('location_staffing_settings')?[{id:'110',name:'Shop',minimumStaffPerShift:1,requiresDesignatedLead:true}]:s.text.includes('FROM employees e')?[{id:'F',name:'Sam',role:'LEAD',active:true,eligibleLocationIds:['110'],positionIds:['b']}]:s.text.includes('FROM positions')?[{id:'b',name:'Barista',workspaceId:'w',active:true}]:[{locationId:'110',dayOfWeek:1,startTime:'08:00',endTime:'12:00',positionRequirements:[{positionId:'b',quantity:1}]}]) as T[];
+ const source=await sqlNotificationStateRepository(f.executor).readSource({kind:'MANAGER_SUMMARY',id:'2030-10-07',version:'configured'});
+ expect(source).toMatchObject({items:[{title:'Position coverage missing at Shop',detail:expect.stringContaining('Barista: 1 missing')}]});
+});
+
+it.each([['2026-03-08','02:30','04:00'],['2026-11-01','01:30','03:00'],['2026-11-01','00:30','01:30']])('invalid legacy DST boundaries suppress even publication events: %s %s–%s',(date,startTime,endTime)=>{
+ const f=fixture('TIME_OFF'),first=f.state.revisions[0];
+ const shift={...first.shifts[0],employeeId:'employee',locationId:'2',date,startTime,endTime};
+ const source={kind:'SCHEDULE' as const,source:{kind:'SCHEDULE' as const,id:'2026-03-02',version:'r1'},updatedAt:'2026-03-01T12:00Z',revision:{...first,weekStart:'2026-03-02'},previousShifts:[],currentShifts:[shift],employeePublications:{employee:{effectiveVersion:'r1',publishedAt:'2026-03-01T12:00Z'}}};
+ const event={...intent,source:source.source,effectiveVersion:'r1',purpose:'EVENT' as const,expiresAt:'2026-12-01T12:00Z'};
+ expect(evaluateNotificationSource(event,access,source,new Date('2026-03-01T12:00Z'),{...policyForTests,timeZone:'America/New_York'}).deliverable).toBe(false);
+});
+import {DEFAULT_NOTIFICATION_POLICY as policyForTests} from '../notifications/policy';
+
+const testWorkspace={id:'test-workspace',name:'Test',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:''};
+function sqlNotificationStateRepository(executor:SqlExecutor) {
+  return productionStateRepository({...executor,query:async<T>(statement:SqlStatement)=>statement.text.startsWith('SELECT id, name, time_zone') ? [testWorkspace] as T[] : statement.text.startsWith('SELECT id FROM locations WHERE id=ANY') ? (statement.values[0] as string[]).map(id=>({id})) as T[] : executor.query<T>(statement)},testWorkspace);
+}
+
+function evaluateNotificationSource(intent:Parameters<typeof evaluateWithPolicy>[0],recipient:Parameters<typeof evaluateWithPolicy>[1],source:Parameters<typeof evaluateWithPolicy>[2],now:Date,policy=policyForTests){return evaluateWithPolicy(intent,recipient,source,now,policy);}

@@ -1,4 +1,6 @@
+import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
+import { employeeRoleLabel } from "../lib/employee-display";
 import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
@@ -68,6 +70,8 @@ export type DashboardScheduleEmployeeItem = {
 };
 
 type Props = {
+  workspaceName: string;
+  timeZone: string;
   firstName: string;
   weekStart: string;
   weekLabel: string;
@@ -120,13 +124,6 @@ function revisionSourceLabel(sourceType: string) {
   return "Published schedule updated";
 }
 
-function scheduleRoleLabel(role: UserRole) {
-  if (role === "OWNER") return "Owner";
-  if (role === "MANAGER") return "Manager";
-  if (role === "LEAD") return "Lead Barista";
-  return "Barista";
-}
-
 function ScheduleTab(props: Props) {
   return (
     <section className="schedule-builder">
@@ -161,7 +158,7 @@ function ScheduleTab(props: Props) {
             <div className="schedule-builder-employee">
               <strong>
                 {employee.employeeName}
-                <span> · {scheduleRoleLabel(employee.role)}</span>
+                <span> · {employeeRoleLabel(employee.role)}</span>
               </strong>
             </div>
 
@@ -378,13 +375,7 @@ function ActivityTab(props: Props) {
               <span>
                 <strong>{revisionSourceLabel(props.latestRevision.sourceType)}</strong>
                 <small>
-                  Revision {props.latestRevision.revisionNumber} · {new Date(props.latestRevision.createdAt).toLocaleString("en-US", {
-                    timeZone: "America/Puerto_Rico",
-                    month: "short",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
+                  Revision {props.latestRevision.revisionNumber} · {formatBusinessTimestamp(props.latestRevision.createdAt, props.timeZone)}
                 </small>
               </span>
             </div>
@@ -524,7 +515,7 @@ export function ManagerDashboard(props: Props) {
         <div className="dashboard-hero-copy">
           <p>Manager dashboard</p>
           <h1>Welcome back, {props.firstName}.</h1>
-          <span>Here’s what’s happening this week at Fuel.</span>
+          <span>Here’s what’s happening this week at {props.workspaceName}.</span>
         </div>
 
         {props.view !== "schedule" ? (

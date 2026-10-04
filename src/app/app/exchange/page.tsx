@@ -1,3 +1,5 @@
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { ManagerShiftRequests } from "@/components/manager-shift-requests";
@@ -6,7 +8,6 @@ import { StatusPill } from "@/components/status-pill";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { requireSession } from "@/lib/auth/session";
 import {
-  currentDateInPuertoRico,
   formatDayLabel,
   formatTime,
 } from "@/lib/date-utils";
@@ -110,11 +111,12 @@ export default async function ExchangePage({
   }>;
 }) {
   const session = await requireSession();
+  const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);
-  const today = currentDateInPuertoRico();
+  const today = businessDate(new Date(), workspace.timeZone);
   const params = await searchParams;
 
-  if (manager) return ManagerShiftRequests(params);
+  if (manager) return ManagerShiftRequests({ ...params, timeZone: workspace.timeZone });
 
   const [
     myShifts,

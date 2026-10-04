@@ -151,3 +151,13 @@ describe("shouldRetryRevisionConflict", () => {
     expect(shouldRetryRevisionConflict("")).toBe(false);
   });
 });
+
+it('position change is personal; labels and absent/null positionless values are not changes', () => {
+  const before = {...shift(),positionId:'barista',positionName:'Barista'};
+  const after = {...before,positionId:'cashier',positionName:'Cashier'};
+  expect(diffPublishedShifts([before],[after])).toEqual([expect.objectContaining({type:'POSITION_CHANGED',affectedEmployeeIds:['E-1']})]);
+  expect(didEmployeeShiftSetChange([before],[after],'E-1')).toBe(true);
+  expect(didEmployeeShiftSetChange([before],[after],'E-2')).toBe(false);
+  expect(diffPublishedShifts([before],[{...before,positionName:'Renamed'}])).toEqual([]);
+  expect(diffPublishedShifts([shift()],[{...shift(),positionId:null}])).toEqual([]);
+});

@@ -1,3 +1,5 @@
+import { getWorkspace, workspaceReadGuard, WorkspaceConcurrencyError } from './workspaces';
+import type { Workspace } from '../domain';
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 
@@ -43,11 +45,15 @@ export async function getWeekSettings(
 export async function setAvailabilityDeadline(input: {
   weekStart: string;
   deadlineIso?: string;
+  /** Server-owned snapshot used to convert civil input. UTC callers omit it. */
+  conversionWorkspace?: Workspace;
   updatedBy: string;
 }) {
   const sql = getDb();
 
+  const workspace = input.conversionWorkspace ?? await getWorkspace();
   const seedQueries = [
+    ...workspaceReadGuard(workspace).map(statement => sql.query(statement.text, [...statement.values])),
     sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + input.weekStart}, 0))`,
     sql`INSERT INTO schedule_week_settings (
       week_start,
@@ -132,7 +138,14 @@ export async function setAvailabilityDeadline(input: {
 
   const cancellation = availabilityCancellation(input.weekStart, null, input.deadlineIso ? new Date(input.deadlineIso).toISOString() : null);
   seedQueries.push(sql.query(cancellation.text, cancellation.values));
-  await sql.transaction(seedQueries);
+  try {
+    await sql.transaction(seedQueries);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('workspace_version_conflict')) {
+      throw new WorkspaceConcurrencyError();
+    }
+    throw error;
+  }
 }
 
 export async function listWeeklyAvailability(
@@ -159,6 +172,7 @@ export async function replaceWeeklyAvailability(
 ) {
   const sql = getDb();
   for (let attempt = 0; attempt < 3; attempt += 1) {
+    const workspace = await getWorkspace();
     const inputs = await readAvailabilityInputs(employeeId, weekStart);
     const version =
       inputs.weeks.find((week) => week.weekStart === weekStart)
@@ -170,6 +184,7 @@ export async function replaceWeeklyAvailability(
       changedDays,
     });
     const queries = [
+      ...workspaceReadGuard(workspace).map(statement => sql.query(statement.text, [...statement.values])),
       sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + weekStart}, 0))`,
       // Abort the whole transaction if the deadline passed after the action's check.
       // The deadline writer shares this lock; recheck wall time after waiting.

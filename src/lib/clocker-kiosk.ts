@@ -1,12 +1,3 @@
-const KIOSK_LOCATIONS: Record<string, string> = {
-  "2": "FUEL – 2",
-  "110": "FUEL – 110",
-};
-
-export function kioskLocationLabel(location: string) {
-  return KIOSK_LOCATIONS[location] ?? null;
-}
-
 export function applyKioskPinKey(
   current: string,
   key: string,
@@ -18,9 +9,9 @@ export function applyKioskPinKey(
   return current + key;
 }
 
-export function formatKioskTime(value: Date) {
+export function formatKioskTime(value: Date, timeZone: string) {
   return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Puerto_Rico",
+    timeZone,
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
@@ -28,9 +19,9 @@ export function formatKioskTime(value: Date) {
   }).format(value);
 }
 
-export function formatKioskDate(value: Date) {
+export function formatKioskDate(value: Date, timeZone: string) {
   return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Puerto_Rico",
+    timeZone,
     weekday: "long",
     month: "long",
     day: "numeric",
