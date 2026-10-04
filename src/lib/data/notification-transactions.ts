@@ -1,3 +1,5 @@
+import type { AssignmentOrigin } from '../domain';
+import type { GenerationClaims } from '../scheduling/generation-claims';
 import { workspaceReadGuard } from './workspaces';
 import type { NotificationConfig } from '../notifications/types';
 import { getDb, queryRows } from '../db';
@@ -43,6 +45,10 @@ export type GuardedSchedule = {
     updatedAt: string;
 };
 export type GuardedShift = PublishedShiftSnapshot & {
+    assignmentOrigin?: AssignmentOrigin;
+    generatedClaims?: GenerationClaims | null;
+    hasCalloutHistory?: boolean;
+    hasPublicationHistory?: boolean;
     positionId?: string | null;
     sourceShiftId: string;
     scheduleId: string;
@@ -91,6 +97,9 @@ export type WeekMutationResult = {
 const currentShiftsSql = `SELECT sh.id AS "sourceShiftId", sh.schedule_id AS "scheduleId",
   s.week_start::text AS "weekStart", s.location_id AS "locationId", sh.employee_id AS "employeeId",
   sh.date::text AS date, left(sh.start_time::text,5) AS "startTime", left(sh.end_time::text,5) AS "endTime",
+  sh.assignment_origin AS "assignmentOrigin", sh.generated_claims AS "generatedClaims",
+  EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id=sh.id) AS "hasCalloutHistory",
+  EXISTS (SELECT 1 FROM schedule_publication_revision_shifts r WHERE r.source_shift_id=sh.id) AS "hasPublicationHistory",
   sh.position_id AS "positionId", NULLIF(sh.notes,'') AS notes, sh.is_designated_lead AS "isDesignatedLead",
   EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id=sh.id AND c.employee_id=sh.employee_id AND c.status='APPROVED') AS "isCalloutApproved",
   (SELECT c.employee_id FROM shift_callouts c WHERE c.shift_id=sh.id AND c.status='APPROVED' LIMIT 1) AS "approvedCalloutEmployeeId",
@@ -267,7 +276,7 @@ export async function commitPublishedWeekChange(input: {
         // that became a no-op must abort/recompute rather than return false success.
         statements.push({
             text: `SELECT (CASE WHEN
-      COALESCE((SELECT jsonb_agg(to_jsonb(t) - 'weekStart' - 'hasExchangeHistory' - 'approvedCalloutEmployeeId' ORDER BY t."sourceShiftId" COLLATE "C") FROM (${currentShiftsSql}) t),'[]'::jsonb)=$2::jsonb
+      COALESCE((SELECT jsonb_agg(to_jsonb(t) - 'weekStart' - 'hasExchangeHistory' - 'approvedCalloutEmployeeId' - 'assignmentOrigin' - 'generatedClaims' - 'hasCalloutHistory' - 'hasPublicationHistory' ORDER BY t."sourceShiftId" COLLATE "C") FROM (${currentShiftsSql}) t),'[]'::jsonb)=$2::jsonb
       AND COALESCE((SELECT jsonb_agg(t ORDER BY t.id COLLATE "C") FROM (
         SELECT id,location_id AS "locationId",week_start::text AS "weekStart",status FROM schedules WHERE week_start=ANY($1::date[])) t),'[]'::jsonb)=$3::jsonb
       THEN '1' ELSE 'schedule_week_version_conflict' END)::integer AS guarded_after`,

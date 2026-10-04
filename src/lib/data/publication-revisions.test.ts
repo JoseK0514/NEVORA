@@ -113,3 +113,30 @@ it('publication retains the schedule source and affected-location metadata',asyn
   const r=recorder();const result=await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
   expect(result.revision).toMatchObject({sourceId:'a',affectedLocationId:'loc-1'});
 });
+
+import { listCapturedShiftPositions } from './publication-revisions';
+it('reads latest captured identities for the exact week/shift batch and projects only position context',async()=>{
+  const query=vi.fn(async(_statement:SqlStatement)=>[
+    {source_shift_id:'archived',position_id:'cashier',position_name:'Original Cashier',notes:'PRIVATE',employee_id:'PRIVATE'},
+    {source_shift_id:'positionless',position_id:null,position_name:null},
+  ]);
+  const executor:SqlExecutor={query:query as SqlExecutor['query'],transaction:vi.fn()};
+  expect(await listCapturedShiftPositions({weekStart:week,shiftIds:['archived','positionless','archived']},executor)).toEqual([
+    {sourceShiftId:'archived',positionId:'cashier',positionName:'Original Cashier'},
+    {sourceShiftId:'positionless',positionId:undefined,positionName:undefined},
+  ]);
+  expect(query).toHaveBeenCalledTimes(1);
+  const statement=query.mock.calls[0][0] as SqlStatement;
+  expect(statement.values).toEqual([week,['archived','positionless']]);
+  const sql=statement.text.replace(/\s+/g,' ');
+  expect(sql).toContain('DISTINCT ON (sh.source_shift_id)');
+  expect(sql).toContain('r.week_start = $1');
+  expect(sql).toContain('sh.source_shift_id = ANY($2::text[])');
+  expect(sql).toContain('ORDER BY sh.source_shift_id, r.revision_number DESC, r.id DESC, sh.id DESC');
+  expect(executor.transaction).not.toHaveBeenCalled();
+});
+it('an empty non-Draft identity batch performs no history read or writes',async()=>{
+  const executor:SqlExecutor={query:vi.fn(),transaction:vi.fn()};
+  expect(await listCapturedShiftPositions({weekStart:week,shiftIds:[]},executor)).toEqual([]);
+  expect(executor.query).not.toHaveBeenCalled();expect(executor.transaction).not.toHaveBeenCalled();
+});

@@ -163,9 +163,8 @@ it('closes a connected worker when backend PID lookup fails', async () => {
 import { getWorkspace, saveWorkspaceProfile, workspaceReadGuard, WorkspaceTimezoneLockedError } from '../../lib/data/workspaces';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 async function workspaceFixture() {
- const db=await createDisposableFoundationDatabase({mode:'upgrade'});
+ const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
  try {
- await db.executor.query({text:await readFile('db/migrations/0008_workspace_positions.sql','utf8'),values:[]});
  await db.executor.query({text:"UPDATE workspaces SET name='Northside Services',time_zone='America/New_York'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Test','Owner','555','OWNER','loc-1'),('manager','Test','Manager','556','MANAGER','loc-1');",values:[]});
  return db;
  } catch(error) {await db.dispose();throw error;}
@@ -380,10 +379,9 @@ it.each(['assignment-first','deactivate-first'])('position membership catalog ra
 it('Task 6 SQL context preserves active qualifications, target location facts and cross-location position ledger', async () => {
   const { getShiftValidationContext } = await import('../../lib/data/schedules');
   const { validateShift } = await import('../../lib/scheduling/validate-shift');
-  const db = await createDisposableFoundationDatabase({mode:'upgrade'});
+  const db = await createDisposableFoundationDatabase({mode:'current-runtime'});
   try {
     const query = (text: string) => db.executor.query({text,values:[]});
-    await query(await readFile('db/migrations/0008_workspace_positions.sql','utf8'));
     await query(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('task6-sam','Sam','Fictional','555666','LEAD','loc-1');
       INSERT INTO employee_location_eligibility VALUES('task6-sam','loc-1'),('task6-sam','loc-2');
       INSERT INTO positions(id,workspace_id,name,active) VALUES('task6-barista','workspace-fuel','Barista',true),('task6-inactive','workspace-fuel','Retired',false);
@@ -494,9 +492,8 @@ it.each(['location','position','qualification','eligibility'].flatMap(fact=>['re
 
 describe('notification workspace policy',()=>{
   it('loads configured zone and filters inactive location access',async()=>{
-    const db=await createDisposableFoundationDatabase({mode:'upgrade'});
+    const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
     try {
-      await db.executor.query({text:await readFile('db/migrations/0008_workspace_positions.sql','utf8'),values:[]});
       await db.executor.query({text:"UPDATE workspaces SET time_zone='Asia/Tokyo'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('notify-test','Test','Worker','555','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('notify-test','loc-1'); UPDATE locations SET active=false WHERE id='loc-1'",values:[]});
       const {sqlNotificationStateRepository}=await import('../../lib/data/notification-state');
       const state=sqlNotificationStateRepository(db.executor);
@@ -507,9 +504,8 @@ describe('notification workspace policy',()=>{
 
 describe('notification workspace policy',()=>{
  it('Tokyo SQL day budget cancels obsolete reminders without replaying a consumed local day',async()=>{
-  const db=await createDisposableFoundationDatabase({mode:'upgrade'});
+  const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
   try{
-   await db.executor.query({text:await readFile('db/migrations/0008_workspace_positions.sql','utf8'),values:[]});
    await db.executor.query({text:"UPDATE workspaces SET time_zone='Asia/Tokyo'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('notify-test','Test','Worker','555','EMPLOYEE','loc-1'); INSERT INTO schedule_week_settings(week_start,availability_deadline,updated_by) VALUES('2030-09-30','2030-10-06T21:00Z','notify-test')",values:[]});
    const {loadWorkspaceNotificationConfig}=await import('../../lib/notifications/config');
    const {sqlNotificationStateRepository}=await import('../../lib/data/notification-state');
@@ -537,9 +533,8 @@ describe('notification workspace policy',()=>{
   }finally{await db.dispose();}
  });
  it.each(([['CALLOUT','APPROVED'],['CALLOUT','DENIED'],['EXCHANGE','APPROVED'],['EXCHANGE','DENIED']] as const).flatMap(([kind,status])=>['inactive_location','removed_eligibility'].map(accessChange=>({kind,status,accessChange}))))('delivery cancels but the actual open handler preserves $kind $status history after $accessChange',async({kind,status,accessChange})=>{
-  const db=await createDisposableFoundationDatabase({mode:'upgrade'});
+  const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
   try{
-   await db.executor.query({text:await readFile('db/migrations/0008_workspace_positions.sql','utf8'),values:[]});
    await db.executor.query({text:"UPDATE workspaces SET time_zone='America/New_York'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('notify-test','Test','Worker','555','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('notify-test','loc-1'); INSERT INTO schedules(id,location_id,week_start,created_by,status) VALUES('notify-schedule','loc-1','2030-10-07','notify-test','PUBLISHED'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('notify-shift','notify-schedule','notify-test','2030-10-11','09:00','17:00'); INSERT INTO shift_callouts(id,shift_id,employee_id,status,reason_code) VALUES('notify-callout','notify-shift','notify-test','APPROVED','ILLNESS')",values:[]});
    const {loadWorkspaceNotificationConfig}=await import('../../lib/notifications/config');
    const {sqlNotificationStateRepository}=await import('../../lib/data/notification-state');
@@ -576,13 +571,10 @@ it("Task 9 atomic profile and coverage quotas persist, retain history, reject gr
   );
   const { createCoverageWindow, replaceCoverageWindowPositionRequirements } =
     await import("../../lib/data/schedule-health");
-  const db = await createDisposableFoundationDatabase({ mode: "upgrade" });
+  const db = await createDisposableFoundationDatabase({ mode: "current-runtime" });
   const q = (text: string, values: unknown[] = []) =>
     db.executor.query<Record<string, unknown>>({ text, values });
   try {
-    await q(
-      await readFile("db/migrations/0008_workspace_positions.sql", "utf8"),
-    );
     await q(
       "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Test','Owner','555','OWNER','loc-1'),('sam','Sam','Rivera','556','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('sam','loc-1'); INSERT INTO positions(id,workspace_id,name) VALUES('p1','workspace-fuel','Cashier'),('p2','workspace-fuel','Barista');",
     );
@@ -712,13 +704,10 @@ it("Task 9 atomic profile and coverage quotas persist, retain history, reject gr
 it("Task 9 selective inactive quota retention keeps unchanged warnings and rejects regrant or edits", async () => {
   const { createCoverageWindow, replaceCoverageWindowPositionRequirements } =
     await import("../../lib/data/schedule-health");
-  const db = await createDisposableFoundationDatabase({ mode: "upgrade" });
+  const db = await createDisposableFoundationDatabase({ mode: "current-runtime" });
   const q = (text: string, values: unknown[] = []) =>
     db.executor.query<Record<string, unknown>>({ text, values });
   try {
-    await q(
-      await readFile("db/migrations/0008_workspace_positions.sql", "utf8"),
-    );
     await q(
       "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Test','Owner','555','OWNER','loc-1'); INSERT INTO positions(id,workspace_id,name) VALUES('a','workspace-fuel','Position A'),('b','workspace-fuel','Position B');",
     );
@@ -1070,6 +1059,7 @@ it('Task 11 generic fixture replacement preserves the upgraded schema catalog', 
   const upgrade=await createDisposableFoundationDatabase({mode:'upgrade'});
   defer(() => upgrade.dispose());
     await upgrade.executor.query({text:await readFile('db/migrations/0008_workspace_positions.sql','utf8'),values:[]});
+    await upgrade.executor.query({text:await readFile('db/migrations/0009_schedule_generation.sql','utf8'),values:[]});
     const generic=await createGenericWorkspaceDatabase();
     defer(() => generic.dispose());
     const catalog=async(executor:SqlExecutor)=>({

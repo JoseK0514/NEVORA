@@ -136,6 +136,16 @@ const messages: Record<ValidationIssueCode, string> = {
 export function schedulingIssueMessage(code: string) {
   return messages[code as ValidationIssueCode];
 }
+/** Shared configured ceiling arithmetic for validation and candidate endpoint enumeration. */
+export function maximumScheduledWeeklyHours(
+  employee: Pick<ValidateShiftInput["employee"], "maximumWeeklyHours">,
+  policy: NonNullable<ValidateShiftInput["policy"]> = {},
+) {
+  return Math.min(
+    employee.maximumWeeklyHours ?? 40,
+    policy.businessMaximumWeeklyHours ?? Infinity,
+  );
+}
 export function validateShift(input: ValidateShiftInput) {
   const { candidate, employee, mode = "AUTOMATIC", policy = {} } = input;
   const issues: ValidationIssue[] = [],
@@ -173,10 +183,7 @@ export function validateShift(input: ValidateShiftInput) {
     add("INVALID_TIME_RANGE");
     return result();
   }
-  const maximum = Math.min(
-      employee.maximumWeeklyHours ?? 40,
-      policy.businessMaximumWeeklyHours ?? Infinity,
-    ),
+  const maximum = maximumScheduledWeeklyHours(employee, policy),
     dailyLimit = policy.maximumShiftsPerDay ?? 1;
   const validHours = (value: number | undefined) =>
     value === undefined ||

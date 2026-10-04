@@ -478,10 +478,12 @@ async function transitionExchange(before: ExchangeRecord, after: ExchangeRecord,
             const recipient = state.recipients.find(r => r.employeeId === assignment.to);
             if (!shift || shift.employeeId !== assignment.from || !recipient?.active || !recipient.allowedLocationIds.includes(shift.locationId) || !state.schedules.some(s => s.id === shift.scheduleId && s.status === 'PUBLISHED') || shift.date !== assignment.shift.date || shift.startTime !== assignment.shift.startTime || shift.endTime !== assignment.shift.endTime || shift.locationId !== assignment.shift.locationId) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
             shift.employeeId = assignment.to;
+            shift.assignmentOrigin = 'MANAGER';
+            shift.generatedClaims = null;
             shift.isDesignatedLead = Boolean(shift.isDesignatedLead && ['OWNER','MANAGER','LEAD'].includes(recipient.role));
             shift.isCalloutApproved = shift.approvedCalloutEmployeeId === assignment.to;
             statements.push(guardedRequestMutation({
-              text: `UPDATE shifts SET employee_id=$2,is_designated_lead=$3,updated_at=now() WHERE id=$1 AND employee_id=$4 RETURNING id`,
+              text: `UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL,employee_id=$2,is_designated_lead=$3,updated_at=now() WHERE id=$1 AND employee_id=$4 RETURNING id`,
               values: [shift.sourceShiftId,shift.employeeId,shift.isDesignatedLead,assignment.from],
             }));
           }

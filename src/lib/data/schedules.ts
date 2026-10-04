@@ -1,3 +1,7 @@
+import type { AssignmentOrigin } from '../domain';
+import type { GenerationClaims } from '../scheduling/generation-claims';
+import { normalizeAssignmentOrigin } from '../scheduling/generation-provenance';
+import { deleteGeneratedDraftShift } from './generation-exclusions';
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 import { commitPublishedWeekChange, neonNotificationExecutor, type GuardedWeekState } from "./notification-transactions";
@@ -8,6 +12,8 @@ import { readAvailabilityInputs } from "./availability-inputs";
 import type { ScheduleStatus, UserRole, Position } from "@/lib/domain";
 
 export type ScheduleShiftRow = {
+  assignmentOrigin?: AssignmentOrigin;
+  generatedClaims?: GenerationClaims | null;
   id: string;
   scheduleId: string;
   employeeId: string;
@@ -78,6 +84,8 @@ export async function listWeekShifts({
          sh.end_time,
          sh.notes,
          sh.position_id,
+         sh.assignment_origin,
+         sh.generated_claims,
          sh.is_designated_lead,
          EXISTS (
            SELECT 1
@@ -108,6 +116,8 @@ export async function listWeekShifts({
       startTime: timeValue(item.start_time),
       endTime: timeValue(item.end_time),
       positionId: item.position_id ? String(item.position_id) : undefined,
+      assignmentOrigin: normalizeAssignmentOrigin(item.assignment_origin),
+      generatedClaims: item.generated_claims as GenerationClaims | null ?? null,
       notes: item.notes ? String(item.notes) : undefined,
       isDesignatedLead: Boolean(item.is_designated_lead),
       isCalloutApproved: Boolean(item.approved_callout),
@@ -166,7 +176,7 @@ export async function getShiftValidationContext({
       [employeeId],
     ),
     sql.query(
-      `SELECT sh.id, sh.employee_id, s.location_id, sh.date, sh.start_time, sh.end_time, sh.is_designated_lead, sh.position_id
+      `SELECT sh.id, sh.employee_id, s.location_id, sh.date, sh.start_time, sh.end_time, sh.is_designated_lead, sh.position_id, sh.assignment_origin, sh.generated_claims
       FROM shifts sh JOIN schedules s ON s.id = sh.schedule_id
       WHERE sh.employee_id = $1 AND sh.date >= $2 AND sh.date < $3 AND s.status <> 'ARCHIVED'
       AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id = sh.id AND c.employee_id = sh.employee_id AND c.status = 'APPROVED')`,
@@ -197,6 +207,8 @@ export async function getShiftValidationContext({
       startTime: timeValue(item.start_time),
       endTime: timeValue(item.end_time),
       positionId: item.position_id ? String(item.position_id) : undefined,
+      assignmentOrigin: normalizeAssignmentOrigin(item.assignment_origin),
+      generatedClaims: item.generated_claims as GenerationClaims | null ?? null,
       isDesignatedLead: Boolean(item.is_designated_lead),
     };
   });
@@ -311,6 +323,8 @@ export async function getShiftForManagement(
          sh.end_time,
          sh.notes,
          sh.position_id,
+         sh.assignment_origin,
+         sh.generated_claims,
          sh.is_designated_lead,
          EXISTS (
            SELECT 1
@@ -343,6 +357,8 @@ export async function getShiftForManagement(
     startTime: timeValue(item.start_time),
     endTime: timeValue(item.end_time),
     positionId: item.position_id ? String(item.position_id) : undefined,
+    assignmentOrigin: normalizeAssignmentOrigin(item.assignment_origin),
+    generatedClaims: item.generated_claims as GenerationClaims | null ?? null,
     notes: item.notes ? String(item.notes) : undefined,
     isDesignatedLead: Boolean(item.is_designated_lead),
     isCalloutApproved: Boolean(item.approved_callout),
@@ -360,19 +376,25 @@ export async function updateShift(input: {
     const existing=state.shifts.find(s=>s.sourceShiftId===input.shiftId);
     if(!existing) return unchanged(state);
     const positionId=input.positionId === undefined ? existing.positionId : input.positionId || undefined;
-    return {statements:[{text:`UPDATE shifts SET employee_id=$2,date=$3,start_time=$4,end_time=$5,notes=$6,is_designated_lead=$7,position_id=$8,updated_at=clock_timestamp() WHERE id=$1`,
+    return {statements:[{text:`UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL,employee_id=$2,date=$3,start_time=$4,end_time=$5,notes=$6,is_designated_lead=$7,position_id=$8,updated_at=clock_timestamp() WHERE id=$1`,
       values:[input.shiftId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false,positionId || null]}],afterSchedules:state.schedules,
-      afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,positionId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.approvedCalloutEmployeeId===input.employeeId || (s.employeeId===input.employeeId && s.isCalloutApproved)}:s)};
+      afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,assignmentOrigin:'MANAGER',generatedClaims:null,positionId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.approvedCalloutEmployeeId===input.employeeId || (s.employeeId===input.employeeId && s.isCalloutApproved)}:s)};
   }},executor);
   return result.committed;
 }
 
 export async function deleteShift(shiftId: string, actorEmployeeId: string, executor: SqlExecutor = neonNotificationExecutor()) {
-  const week=await mutationWeek(shiftId,'shift',executor);
+  const [target]=await executor.query<{week_start:string;assignment_origin?:AssignmentOrigin;status?:ScheduleStatus;workspace_id:string;location_id:string}>({
+    text:`SELECT s.week_start::text,sh.assignment_origin,s.status,l.workspace_id,s.location_id FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id WHERE sh.id=$1`,values:[shiftId]});
+  if(target?.assignment_origin==='GENERATED' && target.status==='DRAFT') {
+    return (await deleteGeneratedDraftShift({shiftId,actorEmployeeId,workspaceId:target.workspace_id,locationId:target.location_id,weekStart:target.week_start},executor)).status==='deleted';
+  }
+  const week=target?.week_start;
   if(!week) return false;
   const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId,sourceType:'MANAGER_MUTATION',sourceId:shiftId,build: state => {
     const shift=state.shifts.find(s=>s.sourceShiftId===shiftId);
     if(!shift || shift.hasExchangeHistory) return unchanged(state);
+    if(shift.assignmentOrigin==='GENERATED' && state.schedules.some(s=>s.id===shift.scheduleId && s.status==='DRAFT')) throw new Error('Generated assignment changed; reload and try again.');
     return {statements:[{text:`DELETE FROM shifts sh WHERE sh.id=$1 AND NOT EXISTS (SELECT 1 FROM shift_exchanges x WHERE x.source_shift_id=sh.id OR x.target_shift_id=sh.id)`,values:[shiftId]}],
       afterSchedules:state.schedules,afterShifts:state.shifts.filter(s=>s.sourceShiftId!==shiftId)};
   }},executor);

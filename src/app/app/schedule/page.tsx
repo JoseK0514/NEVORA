@@ -2,14 +2,16 @@ import { ScheduleLocationControl } from "@/components/schedule-location-control"
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
 import { SchedulePublicationChange } from "@/components/schedule-publication-change";
-import { listRevisionShifts } from "@/lib/data/publication-revisions";
+import { listCapturedShiftPositions, listRevisionShifts } from "@/lib/data/publication-revisions";
 import { sqlNotificationStateRepository } from "@/lib/data/notification-state";
 import { readNotificationConfig } from "@/lib/notifications/config";
 import { ownPublicationChanges } from "@/lib/notifications/device-state";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { StatusPill } from "@/components/status-pill";
+import { ScheduleGenerationControls } from "@/components/schedule-generation-controls";
+import { listPositions } from "@/lib/data/positions";
+import { getScheduleGenerationReview, type ScheduleGenerationReview } from "@/lib/data/schedule-generation-review";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
@@ -47,7 +49,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   INVALID_PUBLISH: "The schedule could not be published.",
   NO_SCHEDULE: "There is no schedule to publish for that location yet.",
   SHIFT_HAS_EXCHANGE_HISTORY:
-    "This shift has exchange history and cannot be deleted. Edit it instead.",
+    "This shift has scheduling history and cannot be deleted. Edit it instead.",
 };
 
 const WARNING_MESSAGES: Record<string, string> = {
@@ -207,6 +209,19 @@ export default async function SchedulePage({
     );
   }
 
+  const [positions, capturedPositions, generationReview] = await Promise.all([
+    listPositions({ includeInactive: true }),
+    listCapturedShiftPositions({
+      weekStart,
+      shiftIds: visibleShifts.filter(shift => shift.scheduleStatus !== "DRAFT").map(shift => shift.id),
+    }),
+    getScheduleGenerationReview({
+      workspaceId: workspace.id, actorEmployeeId: session.id, weekStart,
+      locationScope: selectedLocation === "all" ? { kind: "ALL" } : { kind: "SELECTED", locationIds: [selectedLocation] },
+    }).catch((): ScheduleGenerationReview => ({ editable: false, unavailable: true, attempted: 0, needsSetup: 0, coverage: null, exclusions: [] })),
+  ]);
+  const capturedByShift = new Map(capturedPositions.map(shift => [shift.sourceShiftId, shift]));
+  const positionNames = new Map(positions.map(position => [position.id, position.name]));
   const activeEmployees = employees.filter((employee) => employee.active);
 
   return (
@@ -354,7 +369,7 @@ export default async function SchedulePage({
           </div>
         </div>
 
-
+        <ScheduleGenerationControls key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} selectedLocation={selectedLocation} review={generationReview} />
       </section>
 
       <section className="schedule-builder-roster">
@@ -383,6 +398,9 @@ export default async function SchedulePage({
                       (item) => item.id === shift.locationId,
                     );
 
+                    const captured = shift.scheduleStatus !== "DRAFT" ? capturedByShift.get(shift.id) : undefined;
+                    const positionName = captured ? captured.positionName : shift.positionId ? positionNames.get(shift.positionId) : undefined;
+
                     return (
                       <Link
                         className={
@@ -404,6 +422,7 @@ export default async function SchedulePage({
                           {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
                         </strong>
                         <small>{location?.shortName ?? ""}</small>
+                        {positionName ? <small className="schedule-assigned-position">{positionName}</small> : null}
                       </Link>
                     );
                   })}

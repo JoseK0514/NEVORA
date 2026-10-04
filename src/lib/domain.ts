@@ -1,3 +1,6 @@
+import type { GenerationClaims } from './scheduling/generation-claims';
+export type AssignmentOrigin = 'MANAGER' | 'GENERATED';
+
 export type Workspace = { id: string; name: string; timeZone: string; active: boolean; createdAt: string; updatedAt: string };
 export type Position = { id: string; workspaceId: string; name: string; active: boolean; createdAt: string; updatedAt: string };
 
@@ -44,6 +47,8 @@ export type Schedule = {
 };
 
 export type Shift = {
+  assignmentOrigin?: AssignmentOrigin;
+  generatedClaims?: GenerationClaims | null;
   id: string;
   scheduleId: string;
   employeeId: string;

@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises';
 import { Client } from 'pg';
 import { expect, it, vi } from 'vitest';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
@@ -31,9 +30,8 @@ function form(local = '2030-10-06T09:00') {
   const data = new FormData(); data.set('weekStart', week); data.set('availabilityDeadline', local); return data;
 }
 async function fixture() {
-  const database = await createDisposableFoundationDatabase({ mode: 'upgrade' });
+  const database = await createDisposableFoundationDatabase({ mode: 'current-runtime' });
   try {
-    await database.executor.query({ text: await readFile('db/migrations/0008_workspace_positions.sql', 'utf8'), values: [] });
     await database.executor.query({ text: `UPDATE workspaces SET time_zone='America/New_York';
       INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES
       ('owner','Test','Owner','555','OWNER','loc-1'),('manager','Test','Manager','556','MANAGER','loc-1');

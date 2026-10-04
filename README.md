@@ -43,6 +43,10 @@ Migration `0008_workspace_positions.sql` is prepared after exact 0001–0007. No
 
 Fresh-customer schema distribution/provisioning and generic owner bootstrap are deferred to Productization. `bootstrap:owner` is a historical Fuel utility; it is not a verified generic onboarding flow. Test-only generic SQL fixtures must never be used as production provisioning instructions.
 
+## Automatic weekly drafts
+
+Owner/Manager Build Week and Fill Gaps Only prepare scoped Draft schedules using configured coverage and shared scheduling rules. Review gaps and publish through the existing workflow. See the [automatic scheduler architecture](docs/architecture/nevora-auto-scheduler.md) and [Phase 4 QA record](docs/ui/2026-10-04-nevora-phase-4-review.md). Migration `0009_schedule_generation.sql` is prepared after exact 0001–0008; no customer/Neon activation occurred.
+
 ## Local development
 
 ```bash
@@ -67,4 +71,4 @@ For UI work, reuse the [NEVORA UI contract](docs/ui/fuel-ui-contract.md). Future
 automation follows the [delivery charter](docs/architecture/fuel-automation-charter.md);
 it records phase boundaries and exclusions, not implemented capabilities.
 
-Disposable SQL verification additionally uses `npm run test:foundation:integration` and `npm run test:notifications:integration` with application `DATABASE_URL` unset, a fresh ownership-marked loopback test database and explicit destructive teardown opt-in. The [QA record](docs/ui/2026-10-03-nevora-foundation-review.md) documents exact tested commands and boundaries. Phase 4, production migration/deployment, provider activation and paid infrastructure remain separate approvals.
+Disposable SQL verification additionally uses `npm run test:foundation:integration`, `npm run test:notifications:integration` and `npm run test:generation:integration` with application `DATABASE_URL` unset, a fresh ownership-marked loopback test database and explicit destructive teardown opt-in. The [QA record](docs/ui/2026-10-03-nevora-foundation-review.md) documents exact tested commands and boundaries. Production migration/deployment, provider activation, paid infrastructure and Phase 5 remain separate approvals.

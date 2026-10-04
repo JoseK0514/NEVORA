@@ -150,3 +150,37 @@ export async function publishScheduleWithRevision(input: {
     }},executor);
   return {published:result.committed,...(result.revisions[0]?{revision:result.revisions[0]}:{})};
 }
+
+export type CapturedShiftPosition = {
+  sourceShiftId: string;
+  positionId?: string;
+  positionName?: string;
+};
+
+/** Latest actual capture per requested shift, including rows omitted by newer
+ * snapshots after archival. This read neither changes publication nor exposes
+ * notes or employee details to the Manager position-label projection. */
+export async function listCapturedShiftPositions(
+  input: { weekStart: string; shiftIds: readonly string[] },
+  executor?: SqlExecutor,
+): Promise<CapturedShiftPosition[]> {
+  const shiftIds = [...new Set(input.shiftIds)].sort();
+  if (!shiftIds.length) return [];
+  const statement = {
+    text: `SELECT DISTINCT ON (sh.source_shift_id)
+      sh.source_shift_id, sh.position_id, sh.position_name
+    FROM schedule_publication_revision_shifts sh
+    JOIN schedule_publication_revisions r ON r.id = sh.revision_id
+    WHERE r.week_start = $1 AND sh.source_shift_id = ANY($2::text[])
+    ORDER BY sh.source_shift_id, r.revision_number DESC, r.id DESC, sh.id DESC`,
+    values: [input.weekStart, shiftIds],
+  };
+  const rows = executor
+    ? await executor.query<Record<string, unknown>>(statement)
+    : queryRows(await getDb().query(statement.text, statement.values));
+  return rows.map(row => ({
+    sourceShiftId: String(row.source_shift_id),
+    positionId: row.position_id ? String(row.position_id) : undefined,
+    positionName: row.position_name ? String(row.position_name) : undefined,
+  }));
+}
