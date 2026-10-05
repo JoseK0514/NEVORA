@@ -52,7 +52,7 @@ export async function saveWorkspaceProfile(input: { name: string; timeZone: stri
   assertManagementProof(input.proof,input.actorEmployeeId);
   const profile = validateWorkspaceProfile(input);
   try {
-    const result = await executor.transaction([
+    const statements: SqlStatement[] = [
       { text: 'SELECT id FROM workspaces WHERE singleton=true ORDER BY id FOR UPDATE', values: [] },
       { text: `SELECT (CASE WHEN EXISTS (SELECT 1 FROM workspaces WHERE singleton=true AND active=true) THEN '1' ELSE 'workspace_unavailable' END)::integer`, values: [] },
       { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
@@ -60,8 +60,9 @@ export async function saveWorkspaceProfile(input: { name: string; timeZone: stri
       ...managementSessionStatements(input.proof,input.actorEmployeeId,['OWNER']),
       { text: `SELECT (CASE WHEN EXISTS (SELECT 1 FROM workspaces WHERE singleton=true AND time_zone IS DISTINCT FROM $1) AND (${operationalRecords}) THEN 'workspace_timezone_locked' ELSE '1' END)::integer`, values: [profile.timeZone] },
       { text: `UPDATE workspaces SET name=$1,time_zone=$2,updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE singleton=true AND active=true RETURNING ${fields}`, values: [profile.name, profile.timeZone] },
-    ]);
-    const workspace = result.at(-1)?.[0] as Workspace | undefined;
+    ];
+    const result = await executor.transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId, ['OWNER'])]);
+    const workspace = result[statements.length - 1]?.[0] as Workspace | undefined;
     if (!workspace) throw new WorkspaceUnavailableError();
     return workspace;
   } catch (error) {

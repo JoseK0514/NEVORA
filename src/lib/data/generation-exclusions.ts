@@ -64,6 +64,7 @@ export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:stri
         VALUES($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11)`,values:[id,input.workspaceId,input.weekStart,input.locationId,assignmentStart,assignmentEnd,shift.position_id ?? null,JSON.stringify(shift.generated_claims),shift.id,input.actorEmployeeId,changedAt]},
       {text:'DELETE FROM shifts WHERE id=$1',values:[shift.id]},
       generationSourceGuard(after),
+      ...managementSessionStatements(input.proof,input.actorEmployeeId),
     ]);
     return {status:'deleted',exclusionId:id};
   });
@@ -90,6 +91,7 @@ export async function clearGenerationExclusion(input:ScopeInput & {exclusionId:s
     await executor.transaction([...guards,
       {text:'UPDATE schedule_generation_exclusions SET cleared_by=$2,cleared_at=$3 WHERE id=$1 AND cleared_at IS NULL',values:[input.exclusionId,input.actorEmployeeId,changedAt]},
       generationSourceGuard(after),
+      ...managementSessionStatements(input.proof,input.actorEmployeeId),
     ]);
     return {status:'cleared'};
   });

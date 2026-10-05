@@ -59,6 +59,7 @@ export async function commitRequestTransition(input: { before?: RequestSnapshot;
       { text: `SELECT (CASE WHEN COALESCE((SELECT jsonb_agg(r ORDER BY r."employeeId") FROM (${recipientSql}) r),'[]'::jsonb)=$1::jsonb THEN '1' ELSE 'request_transition_conflict' END)::integer AS access_guarded`, values: [JSON.stringify(recipients)] },
       guardedRequestMutation(input.mutation),
       ...requestNotificationStatements({ ...input, recipients,config:bindWorkspaceNotificationConfig(readNotificationConfig(process.env),workspace) }),
+      ...(input.managementProof ? managementSessionStatements(input.managementProof, input.actorEmployeeId) : []),
     ]);
     return true;
   } catch (error) {

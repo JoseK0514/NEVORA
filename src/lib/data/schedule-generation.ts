@@ -187,7 +187,7 @@ export async function generateWeekDraft(request: GenerationRequest & { proof: Se
       if (parent) weeks.add(parent.weekStart);
     }
     for (const a of plan.additions) for (const week of affectedWorkweeks(a)) weeks.add(week);
-    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...managementSessionStatements(request.proof, request.actorEmployeeId), ...writes, generationInsertedSourceGuard(after,additions.map(row=>String(row.id)),source.shifts.map(row=>String(row.assignment_episode_id)))]);
+    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...managementSessionStatements(request.proof, request.actorEmployeeId), ...writes, generationInsertedSourceGuard(after,additions.map(row=>String(row.id)),source.shifts.map(row=>String(row.assignment_episode_id))), ...managementSessionStatements(request.proof, request.actorEmployeeId)]);
     const scopedParentIds = new Set([...parentByLocation].filter(([locationId]) => plan.demand.locationIds.includes(locationId)).map(([, parent]) => parent.id));
     return {
       status: plan.status,

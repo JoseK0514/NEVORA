@@ -148,7 +148,7 @@ export async function insertEmployee(input: {
     ...employeePositionMembershipStatements({ employeeId: input.id, positionIds: positions }),
   ];
   if (input.passwordHash) statements.push({ text: 'INSERT INTO employee_credentials(employee_id,password_hash) VALUES($1,$2)', values: [input.id, input.passwordHash] });
-  await sql.transaction(statements);
+  await sql.transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId)]);
 }
 
 export async function activateEmployeeCredential(input: {
@@ -299,7 +299,7 @@ export async function updateEmployeeProfile(
   const workspace = await getWorkspace(sql);
   const lockIds = [...new Set([input.actorEmployeeId, input.employeeId])].sort();
 
-  const result = await sql.transaction([
+  const statements: SqlStatement[] = [
     ...workspaceReadGuard(workspace),
     {
       text: `SELECT e.id
@@ -383,6 +383,14 @@ export async function updateEmployeeProfile(
       ],
     },
     ...managementSessionStatements(input.proof, input.actorEmployeeId),
+    // Lifecycle locks and the session SHARE lock pin this authority. Capture its
+    // DB expiry before an intentional self-demotion/deactivation changes the
+    // actor or deletes the session. A final wall-clock check must still roll back
+    // a later blocked write; rechecking the post-edit role would reject valid edits.
+    { text: `SELECT set_config('nevora.profile_authority', jsonb_build_object(
+        'actor',$2::text,'token',$1::text,'expires',expires_at)::text,true)
+        FROM employee_sessions WHERE token_hash=$1 AND employee_id=$2`,
+      values: [input.proof.sessionTokenHash, input.actorEmployeeId] },
     {
       text: `INSERT INTO employee_location_eligibility(employee_id,location_id)
         VALUES($1,$2)
@@ -417,8 +425,15 @@ export async function updateEmployeeProfile(
         input.employeeId,
       ],
     },
-  ]);
-  const written = result.at(-1)?.[0] as { updatedAt: string } | undefined;
+  ];
+  const result = await sql.transaction([...statements, {
+    text: `SELECT (CASE WHEN authority->>'actor'=$1 AND authority->>'token'=$2
+        AND (authority->>'expires')::timestamptz>clock_timestamp()
+        THEN '1' ELSE 'management_authorization' END)::integer
+      FROM (SELECT NULLIF(current_setting('nevora.profile_authority',true),'')::jsonb AS authority) captured`,
+    values: [input.actorEmployeeId, input.proof.sessionTokenHash],
+  }]);
+  const written = result[statements.length - 1]?.[0] as { updatedAt: string } | undefined;
   if (!written) throw new Error('employee_profile_stale');
   return written;
 }
@@ -444,7 +459,7 @@ export async function saveEmployeeSchedulingProfile(
     ...new Set([input.actorEmployeeId, input.employeeId]),
   ].sort();
   try {
-    const result = await sql.transaction([
+    const statements: SqlStatement[] = [
       ...workspaceReadGuard(workspace),
       {
         text: "SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE",
@@ -489,8 +504,9 @@ export async function saveEmployeeSchedulingProfile(
         values: [input.employeeId, locations],
       },
       { text: "UPDATE employees SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=$1 RETURNING updated_at::text AS \"updatedAt\"", values: [input.employeeId] },
-    ]);
-    const written = result.at(-1)?.[0] as { updatedAt: string } | undefined;
+    ];
+    const result = await sql.transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId)]);
+    const written = result[statements.length - 1]?.[0] as { updatedAt: string } | undefined;
     if (!written) throw new Error('profile_stale');
     return written;
   } catch (error) {

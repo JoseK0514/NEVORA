@@ -378,5 +378,9 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
                 before, after: source, actorEmployeeId: input.actorEmployeeId, recipients: state.recipients, environment: config.environment, policy: config.policy, now: new Date(input.observedAt)
             }).filter(intent=>intent.purpose!=='EVENT'||!input.suppressPublicationEventEmployeeIds?.includes(intent.employeeId))));
         }
+ // Publication, history and notification DML may wait after initial authorization.
+ // Recheck wall-clock validity before this SAME transaction can commit.
+ if (input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH')
+     statements.push(...managementSessionStatements(input.proof, input.actorEmployeeId));
  return {guards,statements,revisions};
 }

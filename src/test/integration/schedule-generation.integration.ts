@@ -621,7 +621,11 @@ it('after-state proof detects persisted provenance corruption and rolls back', a
     transaction: s => {
       attempts++;
       const all = [...s];
-      all.splice(-1, 0, {
+      // Target the after-state proof, not the last statement: authorization
+      // now also runs after that proof before COMMIT.
+      const proofIndex = all.findLastIndex(statement => statement.text.includes('generation_source_conflict'));
+      expect(proofIndex).toBeGreaterThan(0);
+      all.splice(proofIndex, 0, {
         text: "UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL",
         values: []
       });

@@ -145,6 +145,7 @@ export async function setAvailabilityDeadline(input: {
 
   const cancellation = availabilityCancellation(input.weekStart, null, input.deadlineIso ? new Date(input.deadlineIso).toISOString() : null);
   seedQueries.push(sql.query(cancellation.text, cancellation.values));
+  seedQueries.push(...managementSessionStatements(input.proof,input.updatedBy).map(statement => sql.query(statement.text,[...statement.values])));
   try {
     await sql.transaction(seedQueries);
   } catch (error) {
