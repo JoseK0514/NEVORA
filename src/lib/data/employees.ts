@@ -18,6 +18,14 @@ type EmployeeRow = {
   position_ids: string[] | null;
 };
 
+type EmployeeManagementRow = EmployeeRow & {
+  updated_at: string;
+};
+
+export type EmployeeManagementProfile = Employee & {
+  updatedAt: string;
+};
+
 export async function listEmployees(executor?: SqlExecutor): Promise<Employee[]> {
   const text = `SELECT
        e.id,
@@ -193,6 +201,213 @@ export async function getEmployeeActivationState(employeeId: string) {
   );
 
   return rows[0] ?? null;
+}
+
+export async function getEmployeeManagementProfile(
+  employeeId: string,
+  executor?: SqlExecutor,
+): Promise<EmployeeManagementProfile | null> {
+  const text = `SELECT
+      e.id,
+      e.first_name,
+      e.last_name,
+      e.phone,
+      e.email,
+      e.role,
+      e.primary_location_id,
+      e.active,
+      e.updated_at::text AS updated_at,
+      ARRAY(
+        SELECT elig.location_id
+        FROM employee_location_eligibility elig
+        WHERE elig.employee_id=e.id
+        ORDER BY elig.location_id
+      ) AS eligible_location_ids,
+      ARRAY(
+        SELECT ep.position_id
+        FROM employee_positions ep
+        WHERE ep.employee_id=e.id
+        ORDER BY ep.position_id
+      ) AS position_ids
+    FROM employees e
+    WHERE e.id=$1
+    LIMIT 1`;
+  const rows = executor
+    ? await executor.query<EmployeeManagementRow>({ text, values: [employeeId] })
+    : queryRows<EmployeeManagementRow>(await getDb().query(text, [employeeId]));
+  const row = rows[0];
+  if (!row) return null;
+  return {
+    id: row.id,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    phone: row.phone,
+    email: row.email ?? undefined,
+    role: row.role,
+    primaryLocationId: row.primary_location_id,
+    eligibleLocationIds: row.eligible_location_ids ?? [],
+    positionIds: row.position_ids ?? [],
+    active: row.active,
+    updatedAt: row.updated_at,
+  };
+}
+
+export async function updateEmployeeProfile(
+  input: {
+    employeeId: string;
+    expectedUpdatedAt: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email?: string;
+    role: UserRole;
+    primaryLocationId: string;
+    active: boolean;
+    actorEmployeeId: string;
+  },
+  executor?: SqlExecutor,
+): Promise<void> {
+  if (!["OWNER", "MANAGER", "LEAD", "EMPLOYEE"].includes(input.role)) {
+    throw new Error("employee_profile_invalid_role");
+  }
+
+  const firstName = input.firstName.trim();
+  const lastName = input.lastName.trim();
+  const phone = input.phone.trim();
+  const email = input.email?.trim() || null;
+  if (
+    !input.employeeId ||
+    !input.expectedUpdatedAt ||
+    !firstName ||
+    !lastName ||
+    !phone ||
+    !input.primaryLocationId
+  ) {
+    throw new Error("employee_profile_invalid");
+  }
+
+  const sql = executor ?? neonNotificationExecutor();
+  const workspace = await getWorkspace(sql);
+  const lockIds = [...new Set([input.actorEmployeeId, input.employeeId])].sort();
+
+  await sql.transaction([
+    ...workspaceReadGuard(workspace),
+    {
+      text: `SELECT e.id
+        FROM employees e
+        WHERE e.id=ANY($1::text[])
+           OR (
+             e.active AND e.role='OWNER'
+             AND EXISTS (
+               SELECT 1
+               FROM employees target
+               WHERE target.id=$2
+                 AND target.role='OWNER'
+                 AND ($3<>'OWNER' OR NOT $4::boolean)
+             )
+           )
+        ORDER BY e.id
+        FOR UPDATE`,
+      values: [lockIds, input.employeeId, input.role, input.active],
+    },
+    {
+      text: `SELECT (CASE WHEN EXISTS (
+        SELECT 1
+        FROM employees actor
+        JOIN employees target ON target.id=$2
+        WHERE actor.id=$1
+          AND actor.active=true
+          AND actor.role IN ('OWNER','MANAGER')
+          AND (
+            actor.role='OWNER'
+            OR (target.role<>'OWNER' AND $3<>'OWNER')
+          )
+      ) THEN '1' ELSE 'employee_profile_permission_denied' END)::integer`,
+      values: [input.actorEmployeeId, input.employeeId, input.role],
+    },
+    {
+      text: `SELECT (CASE WHEN EXISTS (
+        SELECT 1 FROM employees
+        WHERE id=$1 AND updated_at::text=$2
+      ) THEN '1' ELSE 'employee_profile_stale' END)::integer`,
+      values: [input.employeeId, input.expectedUpdatedAt],
+    },
+    {
+      text: `SELECT (CASE WHEN
+        NOT EXISTS (
+          SELECT 1
+          FROM employees target
+          WHERE target.id=$1
+            AND target.active=true
+            AND target.role='OWNER'
+            AND ($2<>'OWNER' OR NOT $3::boolean)
+        )
+        OR (SELECT count(*) FROM employees WHERE active=true AND role='OWNER') > 1
+      THEN '1' ELSE 'employee_profile_last_owner' END)::integer`,
+      values: [input.employeeId, input.role, input.active],
+    },
+    {
+      text: "SELECT id FROM locations WHERE id=$1 AND workspace_id=$2 ORDER BY id FOR SHARE",
+      values: [input.primaryLocationId, workspace.id],
+    },
+    {
+      text: `SELECT (CASE WHEN EXISTS (
+        SELECT 1
+        FROM locations l
+        JOIN employees target ON target.id=$2
+        WHERE l.id=$1
+          AND l.workspace_id=$3
+          AND (
+            l.active=true
+            OR (
+              NOT $4::boolean
+              AND target.active=false
+              AND target.primary_location_id=l.id
+            )
+          )
+      ) THEN '1' ELSE 'employee_profile_location_invalid' END)::integer`,
+      values: [
+        input.primaryLocationId,
+        input.employeeId,
+        workspace.id,
+        input.active,
+      ],
+    },
+    {
+      text: `UPDATE employees
+        SET first_name=$1,
+            last_name=$2,
+            phone=$3,
+            email=$4,
+            role=$5,
+            primary_location_id=$6,
+            active=$7,
+            updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond')
+        WHERE id=$8
+        RETURNING id`,
+      values: [
+        firstName,
+        lastName,
+        phone,
+        email,
+        input.role,
+        input.primaryLocationId,
+        input.active,
+        input.employeeId,
+      ],
+    },
+    {
+      text: `INSERT INTO employee_location_eligibility(employee_id,location_id)
+        VALUES($1,$2)
+        ON CONFLICT DO NOTHING`,
+      values: [input.employeeId, input.primaryLocationId],
+    },
+    {
+      text: `DELETE FROM employee_sessions
+        WHERE employee_id=$1 AND NOT $2::boolean`,
+      values: [input.employeeId, input.active],
+    },
+  ]);
 }
 
 export async function saveEmployeeSchedulingProfile(

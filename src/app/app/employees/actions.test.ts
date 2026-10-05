@@ -3,6 +3,7 @@ const m = vi.hoisted(() => ({
   role: "MANAGER",
   insert: vi.fn(),
   profile: vi.fn(),
+  coreProfile: vi.fn(),
 }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("next/navigation", () => ({
@@ -20,10 +21,12 @@ vi.mock("@/lib/auth/permissions", () => ({
 vi.mock("@/lib/data/employees", () => ({
   insertEmployee: m.insert,
   saveEmployeeSchedulingProfile: m.profile,
+  updateEmployeeProfile: m.coreProfile,
 }));
 vi.mock("@/lib/phone", () => import("../../../lib/phone"));
 import {
   createEmployeeFormAction,
+  saveEmployeeCoreProfileAction,
   saveEmployeeSchedulingProfileAction,
 } from "./actions";
 beforeEach(() => {
@@ -67,6 +70,58 @@ it("invalid required inputs returns local feedback with no write", async () => {
     error: "Complete all required employee fields.",
   });
   expect(m.insert).not.toHaveBeenCalled();
+});
+
+function coreProfileForm(overrides: Record<string, string> = {}) {
+  const data = new FormData();
+  for (const [key, value] of Object.entries({
+    employeeId: "worker",
+    expectedUpdatedAt: "2026-10-05 12:00:00+00",
+    firstName: "Sam",
+    lastName: "Rivera",
+    phone: "7875550101",
+    email: "sam@example.invalid",
+    role: "EMPLOYEE",
+    primaryLocationId: "west",
+    active: "true",
+    actorEmployeeId: "forged",
+    ...overrides,
+  })) data.set(key, value);
+  return data;
+}
+
+it("employee core profile uses the authenticated actor and immutable employee id", async () => {
+  expect(await saveEmployeeCoreProfileAction(coreProfileForm())).toEqual({
+    success: "Employee details updated.",
+  });
+  expect(m.coreProfile).toHaveBeenCalledTimes(1);
+  expect(m.coreProfile.mock.calls[0][0]).toMatchObject({
+    employeeId: "worker",
+    actorEmployeeId: "actor",
+    expectedUpdatedAt: "2026-10-05 12:00:00+00",
+    role: "EMPLOYEE",
+    primaryLocationId: "west",
+    active: true,
+  });
+  expect(m.coreProfile.mock.calls[0][0]).not.toHaveProperty("id");
+});
+
+it("employee core profile rejects incomplete input before writing", async () => {
+  expect(await saveEmployeeCoreProfileAction(new FormData())).toEqual({
+    error: "Complete all required employee details.",
+  });
+  expect(m.coreProfile).not.toHaveBeenCalled();
+});
+
+it.each([
+  ["employee_profile_stale", "changed since you opened"],
+  ["employee_profile_permission_denied", "permission"],
+  ["employee_profile_last_owner", "at least one active Owner"],
+  ["employee_profile_location_invalid", "active primary location"],
+] as const)("employee core profile converts %s into recoverable feedback", async (message, expected) => {
+  m.coreProfile.mockRejectedValueOnce(new Error(message));
+  const result = await saveEmployeeCoreProfileAction(coreProfileForm());
+  expect(result.error).toContain(expected);
 });
 
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:vi.fn()}));

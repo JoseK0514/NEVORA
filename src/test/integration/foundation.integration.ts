@@ -1081,3 +1081,101 @@ it('Task 11 generic fixture replacement preserves the upgraded schema catalog', 
     expect((await getWorkspace(generic.executor)).id).toBe('cooperative-cedar');
   });
 });
+
+
+import { getEmployeeManagementProfile, updateEmployeeProfile } from '../../lib/data/employees';
+
+describe('employee profile lifecycle', () => {
+  it('deactivates and reactivates without deleting history and revokes existing sessions', async () => {
+    const db = await workspaceFixture();
+    const q = (text:string, values:unknown[]=[]) => db.executor.query<Record<string,unknown>>({text, values});
+    try {
+      await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'manager',now()+interval '1 day')", ['a'.repeat(64)]);
+      await q("INSERT INTO schedules(id,location_id,week_start,created_by,status) VALUES('employee-history','loc-1','2030-10-07','owner','PUBLISHED'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('employee-history-shift','employee-history','manager','2030-10-07','08:00','16:00'); INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) VALUES('employee-history-leave','manager','2030-10-08','2030-10-08','APPROVED')");
+      const before = await getEmployeeManagementProfile('manager', db.executor);
+      expect(before).not.toBeNull();
+      await updateEmployeeProfile({
+        employeeId:'manager', expectedUpdatedAt:before!.updatedAt,
+        firstName:'Morgan', lastName:'Manager', phone:'7875550101',
+        email:'morgan@example.invalid', role:'LEAD', primaryLocationId:'loc-1',
+        active:false, actorEmployeeId:'owner',
+      }, db.executor);
+      expect(await q("SELECT first_name,last_name,phone,email,role,active FROM employees WHERE id='manager'")).toEqual([{
+        first_name:'Morgan', last_name:'Manager', phone:'7875550101',
+        email:'morgan@example.invalid', role:'LEAD', active:false,
+      }]);
+      expect(await q("SELECT token_hash FROM employee_sessions WHERE employee_id='manager'")).toEqual([]);
+      expect(await q("SELECT id,employee_id FROM shifts WHERE id='employee-history-shift'")).toEqual([{id:'employee-history-shift',employee_id:'manager'}]);
+      expect(await q("SELECT id,employee_id FROM time_off_requests WHERE id='employee-history-leave'")).toEqual([{id:'employee-history-leave',employee_id:'manager'}]);
+
+      const inactive = await getEmployeeManagementProfile('manager', db.executor);
+      await updateEmployeeProfile({
+        employeeId:'manager', expectedUpdatedAt:inactive!.updatedAt,
+        firstName:'Morgan', lastName:'Manager', phone:'7875550101',
+        email:'morgan@example.invalid', role:'LEAD', primaryLocationId:'loc-1',
+        active:true, actorEmployeeId:'owner',
+      }, db.executor);
+      expect((await getEmployeeManagementProfile('manager', db.executor))?.active).toBe(true);
+      expect(await q("SELECT token_hash FROM employee_sessions WHERE employee_id='manager'")).toEqual([]);
+    } finally { await db.dispose(); }
+  });
+
+  it('enforces Owner authority, last-active-Owner safety and active-primary-location rules', async () => {
+    const db = await workspaceFixture();
+    const q = (text:string, values:unknown[]=[]) => db.executor.query<Record<string,unknown>>({text, values});
+    try {
+      const owner = (await getEmployeeManagementProfile('owner', db.executor))!;
+      await expect(updateEmployeeProfile({
+        employeeId:'owner', expectedUpdatedAt:owner.updatedAt, firstName:'Test', lastName:'Owner',
+        phone:'555', role:'OWNER', primaryLocationId:'loc-1', active:true, actorEmployeeId:'manager',
+      }, db.executor)).rejects.toThrow('employee_profile_permission_denied');
+      await expect(updateEmployeeProfile({
+        employeeId:'owner', expectedUpdatedAt:owner.updatedAt, firstName:'Test', lastName:'Owner',
+        phone:'555', role:'EMPLOYEE', primaryLocationId:'loc-1', active:false, actorEmployeeId:'owner',
+      }, db.executor)).rejects.toThrow('employee_profile_last_owner');
+
+      const manager = (await getEmployeeManagementProfile('manager', db.executor))!;
+      await expect(updateEmployeeProfile({
+        employeeId:'manager', expectedUpdatedAt:manager.updatedAt, firstName:'Test', lastName:'Manager',
+        phone:'556', role:'OWNER', primaryLocationId:'loc-1', active:true, actorEmployeeId:'manager',
+      }, db.executor)).rejects.toThrow('employee_profile_permission_denied');
+
+      await q("UPDATE locations SET active=false WHERE id='loc-2'");
+      await expect(updateEmployeeProfile({
+        employeeId:'manager', expectedUpdatedAt:manager.updatedAt, firstName:'Test', lastName:'Manager',
+        phone:'556', role:'MANAGER', primaryLocationId:'loc-2', active:true, actorEmployeeId:'owner',
+      }, db.executor)).rejects.toThrow('employee_profile_location_invalid');
+    } finally { await db.dispose(); }
+  });
+
+  it('rejects stale profile versions without overwriting the newer employee', async () => {
+    const db = await workspaceFixture();
+    const q = (text:string, values:unknown[]=[]) => db.executor.query<Record<string,unknown>>({text, values});
+    try {
+      const stale = (await getEmployeeManagementProfile('manager', db.executor))!;
+      await q("UPDATE employees SET first_name='Newer',updated_at=updated_at+interval '1 microsecond' WHERE id='manager'");
+      await expect(updateEmployeeProfile({
+        employeeId:'manager', expectedUpdatedAt:stale.updatedAt, firstName:'Stale', lastName:'Manager',
+        phone:'556', role:'MANAGER', primaryLocationId:'loc-1', active:true, actorEmployeeId:'owner',
+      }, db.executor)).rejects.toThrow('employee_profile_stale');
+      expect(await q("SELECT first_name FROM employees WHERE id='manager'")).toEqual([{first_name:'Newer'}]);
+    } finally { await db.dispose(); }
+  });
+
+  it('serializes concurrent Owner demotions so at least one active Owner remains', async () => {
+    const db = await workspaceFixture();
+    try {
+      await db.executor.query({text:"INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner2','Second','Owner','557','OWNER','loc-1')",values:[]});
+      const first = (await getEmployeeManagementProfile('owner', db.executor))!;
+      const second = (await getEmployeeManagementProfile('owner2', db.executor))!;
+      const results = await Promise.allSettled([
+        updateEmployeeProfile({employeeId:'owner',expectedUpdatedAt:first.updatedAt,firstName:'Test',lastName:'Owner',phone:'555',role:'EMPLOYEE',primaryLocationId:'loc-1',active:true,actorEmployeeId:'owner'},db.executor),
+        updateEmployeeProfile({employeeId:'owner2',expectedUpdatedAt:second.updatedAt,firstName:'Second',lastName:'Owner',phone:'557',role:'EMPLOYEE',primaryLocationId:'loc-1',active:true,actorEmployeeId:'owner2'},db.executor),
+      ]);
+      expect(results.filter(result => result.status === 'fulfilled')).toHaveLength(1);
+      expect(results.filter(result => result.status === 'rejected')).toHaveLength(1);
+      expect(String((results.find(result => result.status === 'rejected') as PromiseRejectedResult).reason)).toContain('employee_profile_last_owner');
+      expect(await db.executor.query({text:"SELECT id FROM employees WHERE active AND role='OWNER' ORDER BY id",values:[]})).toHaveLength(1);
+    } finally { await db.dispose(); }
+  });
+});
