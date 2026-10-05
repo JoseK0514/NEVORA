@@ -8,14 +8,14 @@ import type { PunchAction, PunchCommand } from '../../lib/clocker/punch-types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 let proof:ClockerIdentityProof,jar:Map<string,string>,service:ClockerPunchService;
 beforeEach(async()=>{
- f=await createPunchFixture();const identity=await f.identity();proof=identity.proof;
+ f=await createPunchFixture({breaks:true});const identity=await f.identity();proof=identity.proof;
  jar=new Map([['nevora_clocker',f.devices[0].credential],['nevora_clocker_identity',identity.token]]);
  service=new ClockerPunchService(f.key,f.db.executor);
 });
 afterEach(async()=>{if(f)await f.db.dispose();});
 async function command(action:PunchAction='CLOCK_IN'):Promise<PunchCommand>{
  const v=await service.read(proof),s=v.snapshot;
- return {commandId:randomUUID(),action,verificationId:v.verificationId,expected:{revision:s.revision,timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null}};
+ return {...(action==='START_BREAK'?{breakType:{id:f.breakType!.id,version:f.breakType!.version}}:{}),commandId:randomUUID(),action,verificationId:v.verificationId,expected:{revision:s.revision,timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null}};
 }
 function call(body:object,headers:Record<string,string>={},enabled=true,location='2'){
  const request=new Request('http://127.0.0.1:1234/api/clocker/'+location+'/punch',{

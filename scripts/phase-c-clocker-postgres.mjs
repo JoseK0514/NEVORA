@@ -9,7 +9,8 @@ import { randomBytes } from 'node:crypto';
 if (process.env.DATABASE_URL) throw new Error('Unset DATABASE_URL before running owned Clocker tests.');
 const pinUi = process.argv[2] === '--pins-ui';
 const punchHttp = process.argv[2] === '--punches-http';
-const ui = process.argv[2] === '--ui' || pinUi || punchHttp;
+const breaksUi = process.argv[2] === '--breaks-ui';
+const ui = process.argv[2] === '--ui' || pinUi || punchHttp || breaksUi;
 const bin = process.env.NEVORA_TEST_PG_BIN;
 if (!bin || !existsSync(join(bin, 'initdb')) || !existsSync(join(bin, 'pg_ctl'))) {
   throw new Error('NEVORA_TEST_PG_BIN must identify an existing local PostgreSQL bin directory.');
@@ -45,7 +46,7 @@ try {
   };
   delete env.DATABASE_URL;
   const config = process.argv[2] ?? 'vitest.clocker-integration.config.mts';
-  const args = ui ? ['--import','tsx',punchHttp ? 'scripts/phase-c-punch-http-qa.mjs' : pinUi ? 'scripts/phase-c-pins-ui-qa.mjs' : 'scripts/phase-c-devices-ui-qa.mjs'] : ['node_modules/vitest/vitest.mjs', 'run', '--config', config];
+  const args = ui ? ['--import','tsx',breaksUi ? 'scripts/phase-c-breaks-ui-qa.mjs' : punchHttp ? 'scripts/phase-c-punch-http-qa.mjs' : pinUi ? 'scripts/phase-c-pins-ui-qa.mjs' : 'scripts/phase-c-devices-ui-qa.mjs'] : ['node_modules/vitest/vitest.mjs', 'run', '--config', config];
   const result = spawnSync(process.execPath, args, { env, stdio: 'inherit' });
   exitCode = result.status ?? 1;
 } finally {

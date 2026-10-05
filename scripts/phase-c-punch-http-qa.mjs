@@ -23,14 +23,14 @@ async function api(page,payload){return page.evaluate(async data=>{
  }catch{return {networkError:true};}
 },payload);}
 async function command(page,action){const result=await api(page,{operation:'state'});assert.equal(result.status,200,'Punch state route');assert.equal(result.body.state,'ready');const v=result.body,s=v.snapshot;
- return {commandId:randomUUID(),action,verificationId:v.verificationId,expected:{revision:s.revision,timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null}};
+ return {...(action==='START_BREAK'?{breakType:{id:v.breakTypes[0].id,version:v.breakTypes[0].version}}:{}),commandId:randomUUID(),action,verificationId:v.verificationId,expected:{revision:s.revision,timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null}};
 }
 async function verify(page,pin){await page.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor();await page.getByLabel('Employee PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:/^Hi, /}).waitFor();}
 async function done(page){await page.getByRole('button',{name:'Done',exact:true}).click();await page.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});}
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
  const q=(text,values=[])=>app.database.executor.query({text,values});
- for(const file of ['clocker-devices.sql','clocker-pins.sql','clocker-punches.sql'])await q(await readFile('db/phase-c/'+file,'utf8'));
+ for(const file of ['clocker-devices.sql','clocker-pins.sql','clocker-punches.sql','clocker-breaks.sql'])await q(await readFile('db/phase-c/'+file,'utf8'));
  await seedOwnedApp(app.database.executor);
  for(const engine of ['chromium','webkit']){
   const browser=await playwright[engine].launch();browsers.push(browser);
@@ -43,6 +43,7 @@ try{
    await goto(p,`/app/employees/${id}/clocker-pin`);await p.getByLabel('New Clocker PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm Clocker PIN',{exact:true}).fill(pin);
    await p.getByRole('button',{name:'Save PIN',exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();
   }
+  await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) VALUES($1,'workspace-fuel',$2,'REST',15,'QAOWNER','QAOWNER')",['http-rest-'+engine,engine+' rest']);
   await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add Device',exact:true}).click();
   const name=engine+' Punch tablet',dialog=p.getByRole('dialog');await dialog.getByLabel('Device name',{exact:true}).fill(name);
   await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Create Setup Code',exact:true}).click();await dialog.waitFor({state:'hidden'});
@@ -55,7 +56,7 @@ try{
   assert.equal((await q('SELECT count(*)::int AS n FROM time_entries WHERE employee_id=$1',[idA]))[0].n,1);checked(engine+': duplicate HTTP submissions commit one Clock In');
   assert.match(duplicate[0].cache,/no-store/);
   let next=await command(t,'START_BREAK');assert.equal((await api(t,{operation:'execute',command:next})).status,200);
-  assert.equal((await api(t,{operation:'execute',command:{...next,action:'CLOCK_OUT'}})).status,409);checked(engine+': changed payload reuse is rejected');
+  assert.equal((await api(t,{operation:'execute',command:{...next,expected:{...next.expected,revision:999}}})).status,409);checked(engine+': changed payload reuse is rejected');
   const end=await command(t,'END_BREAK'),out=await command(t,'CLOCK_OUT');
   const race=await Promise.all([api(t,{operation:'execute',command:end}),api(t,{operation:'execute',command:out})]);
   assert.deepEqual(race.map(r=>r.status).sort(),[200,409]);

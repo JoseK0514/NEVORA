@@ -9,11 +9,11 @@ import type { SqlExecutor } from '../../lib/notifications/types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 let service:ClockerPunchService;
 let proof:ClockerIdentityProof;
-beforeEach(async()=>{f=await createPunchFixture();service=new ClockerPunchService(f.key,f.db.executor);proof=(await f.identity()).proof;});
+beforeEach(async()=>{f=await createPunchFixture({breaks:true});service=new ClockerPunchService(f.key,f.db.executor);proof=(await f.identity()).proof;});
 afterEach(async()=>{if(f)await f.db.dispose();});
 async function command(action:PunchAction,actor=proof):Promise<PunchCommand>{
  const view=await service.read(actor),s=view.snapshot;
- return {commandId:randomUUID(),action,verificationId:view.verificationId,expected:{revision:s.revision,
+ return {...(action==='START_BREAK'?{breakType:{id:f.breakType!.id,version:f.breakType!.version}}:{}),commandId:randomUUID(),action,verificationId:view.verificationId,expected:{revision:s.revision,
   timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,
   breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null}};
 }

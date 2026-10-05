@@ -1,10 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { registerClockerDevice, redeemClockerEnrollment, authenticateClockerDevice } from '../../lib/clocker/devices.server';
+import { saveBreakType } from '../../lib/clocker/break-types.server';
 import { setEmployeeClockerPin, verifyEmployeeClockerPin, readClockerIdentity } from '../../lib/clocker/pins.server';
 
 /** Fictional employees and owned loopback PostgreSQL only. */
-export async function createPunchFixture(){
+export async function createPunchFixture(options:{breaks?:boolean}={}){
  const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>db.executor.query<T>({text,values});
  const key=Buffer.alloc(32,61),owner={employeeId:'c34-owner',sessionTokenHash:'a'.repeat(64)};
@@ -33,6 +34,8 @@ export async function createPunchFixture(){
    if(!identity)throw Error('Fictional identity unavailable');
    return {...identity,token:verified.token};
   }
-  return {db,q,key,owner,devices,identity};
+  let breakType=null;
+  if(options.breaks){await q(await readFile('db/phase-c/clocker-breaks.sql','utf8'));breakType=await saveBreakType(owner,{name:'Fixture rest',category:'REST',targetMinutes:15,active:true,expectedVersion:0},db.executor);}
+  return {db,q,key,owner,devices,identity,breakType};
  }catch(error){await db.dispose();throw error;}
 }

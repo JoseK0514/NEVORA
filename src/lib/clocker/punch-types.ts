@@ -1,3 +1,4 @@
+import type { BreakType, BreakSelection, BreakTypeSnapshot } from './break-types';
 /** Public clock contracts contain no employee, device-credential or PIN authority. */
 export type PunchAction = 'CLOCK_IN' | 'START_BREAK' | 'END_BREAK' | 'CLOCK_OUT';
 export type PunchExpected = {
@@ -8,15 +9,15 @@ export type PunchExpected = {
 export type PunchSnapshot = {
  revision:number;
  entry:{id:string;locationId:string;clockInAt:string;status:'CLOCKED_IN'|'ON_BREAK';version:number}|null;
- break:{id:string;breakStartAt:string;version:number}|null;
+ break:{id:string;breakStartAt:string;version:number;type:BreakTypeSnapshot|null}|null;
 };
 export type PunchCommand = {
- commandId:string; action:PunchAction; verificationId:string; expected:PunchExpected;
+ commandId:string; action:PunchAction; verificationId:string; expected:PunchExpected; breakType?:BreakSelection;
 };
 export type PunchReceipt = {
  commandId:string; action:PunchAction; timeEntryId:string; breakEntryId:string|null;
- performedAt:string; snapshot:PunchSnapshot;
+ performedAt:string; snapshot:PunchSnapshot; breakType?:BreakTypeSnapshot|null;
 };
 export type PunchView = {
- snapshot:PunchSnapshot; verificationId:string; allowedActions:PunchAction[]; atOtherLocation:boolean;
+ snapshot:PunchSnapshot; verificationId:string; allowedActions:PunchAction[]; atOtherLocation:boolean; breakTypes:BreakType[];
 };

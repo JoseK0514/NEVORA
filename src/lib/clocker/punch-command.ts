@@ -1,6 +1,7 @@
 import type { PunchAction, PunchCommand, PunchExpected } from './punch-types';
-export type PunchErrorCode = 'INVALID_INPUT'|'AUTH_REQUIRED'|'CONTEXT_CHANGED'|'STALE_STATE'|'COMMAND_REUSED'|'INVALID_TRANSITION'|'OTHER_LOCATION'|'INTEGRITY'|'CLOCK_INVALID'|'UNAVAILABLE';
+export type PunchErrorCode = 'INVALID_INPUT'|'AUTH_REQUIRED'|'CONTEXT_CHANGED'|'STALE_STATE'|'COMMAND_REUSED'|'INVALID_TRANSITION'|'OTHER_LOCATION'|'INTEGRITY'|'CLOCK_INVALID'|'UNAVAILABLE'|'BREAK_TYPE_CHANGED';
 const messages:Record<PunchErrorCode,string>={
+ BREAK_TYPE_CHANGED:'This break type changed or is inactive. Reload and choose an available break type.',
  INVALID_INPUT:'Check the clock action and reload its current state.',
  AUTH_REQUIRED:'Verify your PIN again on this registered tablet.',
  CONTEXT_CHANGED:'Tablet verification changed. Do not replay the previous action.',
@@ -25,14 +26,15 @@ export function parseCommandId(value:unknown):string{
  return value;
 }
 export function parsePunchCommand(value:unknown):PunchCommand{
- if(!object(value)||!exact(value,['commandId','action','verificationId','expected'])||
+ if(!object(value)||!exact(value,value.action==='START_BREAK'?['commandId','action','verificationId','expected','breakType']:['commandId','action','verificationId','expected'])||
   typeof value.action!=='string'||!actions.includes(value.action)||
   typeof value.verificationId!=='string'||!/^[a-f0-9]{64}$/.test(value.verificationId)||
   !object(value.expected)||!exact(value.expected,['revision','timeEntryId','timeEntryVersion','breakEntryId','breakEntryVersion']))throw new ClockerPunchError('INVALID_INPUT');
+ if(value.action==='START_BREAK'&&(!object(value.breakType)||!exact(value.breakType,['id','version'])||!id(value.breakType.id)||!integer(value.breakType.version,1)))throw new ClockerPunchError('INVALID_INPUT');
  const e=value.expected;
  if(!integer(e.revision,0)||
   !(e.timeEntryId===null?e.timeEntryVersion===null:id(e.timeEntryId)&&integer(e.timeEntryVersion,1))||
   !(e.breakEntryId===null?e.breakEntryVersion===null:id(e.breakEntryId)&&integer(e.breakEntryVersion,1)&&e.timeEntryId!==null))throw new ClockerPunchError('INVALID_INPUT');
- return {commandId:parseCommandId(value.commandId),action:value.action as PunchAction,verificationId:value.verificationId,
+ return {...(value.action==='START_BREAK'?{breakType:{id:(value.breakType as {id:string}).id,version:(value.breakType as {version:number}).version}}:{}),commandId:parseCommandId(value.commandId),action:value.action as PunchAction,verificationId:value.verificationId,
   expected:{revision:e.revision,timeEntryId:e.timeEntryId,timeEntryVersion:e.timeEntryVersion,breakEntryId:e.breakEntryId,breakEntryVersion:e.breakEntryVersion} as PunchExpected};
 }

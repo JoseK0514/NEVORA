@@ -11,7 +11,7 @@ import type { PunchView, PunchReceipt, PunchSnapshot, PunchAction } from './punc
 function normalize(error:unknown):never{
  if(error instanceof ClockerPunchError)throw error;
  const message=error instanceof Error?error.message:'';
- const business: PunchErrorCode[]=['AUTH_REQUIRED','STALE_STATE','COMMAND_REUSED','INVALID_TRANSITION','OTHER_LOCATION','INTEGRITY','CLOCK_INVALID'];
+ const business: PunchErrorCode[]=['AUTH_REQUIRED','STALE_STATE','COMMAND_REUSED','INVALID_TRANSITION','OTHER_LOCATION','INTEGRITY','CLOCK_INVALID','BREAK_TYPE_CHANGED'];
  for(const code of business)if(message.includes('clocker_punch_'+code))throw new ClockerPunchError(code);
  if(message.includes('clocker_pin_IDENTITY_INVALID')||message.includes('clocker_device_denied'))throw new ClockerPunchError('AUTH_REQUIRED');
  // SQL, token hashes, employee metadata and driver errors never cross this boundary.
@@ -53,11 +53,15 @@ export class ClockerPunchService {
   }catch(error){return normalize(error);}
  }
  async read(proof:ClockerIdentityProof):Promise<PunchView>{
-  const snapshot=await this.guarded<PunchSnapshot>(proof,statement('SELECT clocker_punch_snapshot($1) AS value',[proof.employeeId]));
+  const data=await this.guarded<{snapshot:PunchSnapshot;breakTypes:PunchView['breakTypes']}>(proof,statement(`SELECT jsonb_build_object(
+   'snapshot',clocker_punch_snapshot($1),'breakTypes',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'version',version,'name',name,
+   'category',category,'targetMinutes',target_minutes,'active',active) ORDER BY lower(name),id)
+   FROM clocker_break_types WHERE workspace_id=$2 AND active),'[]'::jsonb)) AS value`,[proof.employeeId,proof.device.workspaceId]));
+  const {snapshot,breakTypes}=data;
   const atOtherLocation=Boolean(snapshot.entry&&snapshot.entry.locationId!==proof.device.locationId);
   const allowedActions:PunchAction[]=atOtherLocation?[]:!snapshot.entry?['CLOCK_IN']:
-   snapshot.entry.status==='ON_BREAK'?['END_BREAK','CLOCK_OUT']:['START_BREAK','CLOCK_OUT'];
-  return {snapshot,verificationId:this.context(proof),allowedActions,atOtherLocation};
+   snapshot.entry.status==='ON_BREAK'?['END_BREAK','CLOCK_OUT']:breakTypes.length?['START_BREAK','CLOCK_OUT']:['CLOCK_OUT'];
+  return {snapshot,verificationId:this.context(proof),allowedActions,atOtherLocation,breakTypes};
  }
  async execute(proof:ClockerIdentityProof,input:unknown):Promise<PunchReceipt>{
   const command=parsePunchCommand(input),expected=this.context(proof);
@@ -66,7 +70,7 @@ export class ClockerPunchService {
   return this.guarded<PunchReceipt>(proof,statement(
    'SELECT clocker_apply_punch($1,$2,$3,$4,$5::uuid,$6,$7::jsonb,$8) AS value',
    [proof.employeeId,proof.device.deviceId,proof.device.locationId,proof.device.credentialVersion,
-    command.commandId,command.action,JSON.stringify(command.expected),requestHash]));
+    command.commandId,command.action,JSON.stringify({...command.expected,...(command.breakType?{breakType:command.breakType}:{})}),requestHash]));
  }
  /** Recovery after fresh PIN verification is read-only and still employee/device scoped.
   * null means no committed receipt was observed, NOT proof that an in-flight request was cancelled. */
