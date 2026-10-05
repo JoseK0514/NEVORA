@@ -52,6 +52,10 @@ The [C6 local checkpoint](phase-c-c6-checkpoint.md) does not close this gate. On
 
 The [C7 checkpoint](phase-c-c7-checkpoint.md) does not close this gate. Codex must independently verify current Owner/Manager-only access at both route and SQL boundaries, session expiry during the actual blocked monitor SELECT, private/no-store responses, honest empty versus unavailable states, position snapshot privacy and preservation of actual overnight history. Retest queued requests after unmount/pause, obsolete-response ordering, 30-second visible-page polling, bounded snapshot/session lifetime, stalled-response recovery, offline/restored-page clearing and mobile navigation clearance. Run `clocker-monitor.integration.ts`, the C7 unit suites and `scripts/phase-c-monitor-ui-qa.mjs`, plus the supplemental layout/recovery script in the checkpoint evidence (or durable equivalent). The final hosted Neon/Preview transport and physical-device checks remain separate mandatory release validation. No automatic production activation is implied.
 
+### C7 release-control reconciliation
+
+[The local merge record](phase-c-c7-release-reconciliation.md) binds C7 `01357cd` and remote release controls `82f53d3` to fresh combined verification. No audit gate is closed by this local merge. CI and hosted/independent release evidence must identify the eventual integrated SHA; an earlier remote CI result does not certify C7 or later C8 changes.
+
 ### Closure record — not completed
 
 Final release SHA: PENDING

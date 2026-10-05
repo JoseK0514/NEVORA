@@ -1,4 +1,8 @@
-# Current checkpoint — C7 Manager live operations
+# Current checkpoint — C7 and release controls reconciled locally
+
+[The C7 release-control reconciliation](phase-c-c7-release-reconciliation.md) preserves the Manager live-operations implementation together with the two remote NEV-AUD-001/CI updates. Fresh combined local verification passed. This checkpoint is not yet pushed and does not close independent release gates. C8 Employee My Time is the next implementation package.
+
+## C7 implementation checkpoint
 
 [The C7 checkpoint](phase-c-c7-checkpoint.md) records the actual-punch Manager card, current-session read protections, polling/privacy behavior and fresh verification. C8 Employee My Time is next. FR-AUTH-001 remains open for Codex final-release verification before production. Earlier checkpoints below are retained history.
 
