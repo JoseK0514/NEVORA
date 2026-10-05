@@ -12,3 +12,5 @@ it('Owner settings exposes working workspace, location and position destinations
 it('makes registered Clocker device setup discoverable from Settings',async()=>{
  expect(renderToStaticMarkup(await SettingsPage())).toContain('href="/app/settings/clocker"');
 });
+
+it('makes operational break configuration discoverable',async()=>{expect(renderToStaticMarkup(await SettingsPage())).toContain('href="/app/settings/breaks"');});

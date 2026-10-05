@@ -17,3 +17,9 @@
 .successMark { display: grid; place-items: center; width: 64px; height: 64px; margin: 8px auto 0; border-radius: 50%; background: #eaf5ea; color: #1d6f42; font-size: 32px; }
 @media(max-width:480px) { .panel { gap: 18px; } .actions { grid-template-columns: 1fr; } .notice { padding: 16px; } }
 @media(prefers-reduced-motion:reduce) { .panel * { transition: none !important; animation: none !important; } .panel button:active { transform: none; } }
+
+.breakOptions { display: grid; gap: 12px; margin: 24px 0; max-height: 44dvh; overflow: auto; padding: 4px; }
+.panel .breakOption { display: grid; gap: 6px; width: 100%; min-height: 68px; height: auto; padding: 16px 20px; border-radius: 16px; text-align: left; justify-items: start; white-space: normal; overflow-wrap: anywhere; }
+.breakOption strong { font-size: 16px; line-height: 1.35; }
+.breakOption span, .breakContext { color: var(--muted, #676a73); font-size: 13px; line-height: 1.5; }
+.breakContext { margin: -8px 0 24px; overflow-wrap: anywhere; }

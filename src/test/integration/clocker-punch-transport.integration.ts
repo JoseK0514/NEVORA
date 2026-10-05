@@ -1,138 +1,130 @@
 import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
-import { afterEach, beforeEach, expect, it } from 'vitest';
-import { createDisposableFoundationDatabase } from './local-postgres';
-import { registerClockerDevice, redeemClockerEnrollment } from '../../lib/clocker/devices.server';
-import { setEmployeeClockerPin } from '../../lib/clocker/pins.server';
-import { handleClockerPin } from '../../lib/clocker/pin-transport.server';
+import { beforeEach, afterEach, expect, it } from 'vitest';
+import { createPunchFixture } from './clocker-punch-fixture';
 import { handleClockerPunch } from '../../lib/clocker/punch-transport.server';
-import type { ClockerCookieStore } from '../../lib/clocker/setup.server';
-import type { PunchState } from '../../lib/clocker/punch-command';
-import type { SqlExecutor } from '../../lib/notifications/types';
-const key=Buffer.alloc(32,67), owner={employeeId:'transport-owner',sessionTokenHash:'a'.repeat(64)};
-let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
-let jar:Map<string,string>,store:ClockerCookieStore;
-const q=<T=Record<string,unknown>>(text:string,values:readonly unknown[]=[])=>db.executor.query<T>({text,values});
-const headers={Host:'127.0.0.1:3001',Origin:'http://127.0.0.1:3001','X-Nevora-Clocker':'1','Content-Type':'application/json'};
-function request(body:unknown,extra:Record<string,string|undefined>={}){return new Request('http://127.0.0.1:3001/api/clocker/2/punch',{method:'POST',headers:{...headers,...Object.fromEntries(Object.entries(extra).filter(([,v])=>v!==undefined))},body:JSON.stringify(body)});}
-function call(body:unknown,extra:Record<string,string|undefined>={},executor:SqlExecutor=db.executor,enabled=true){return handleClockerPunch(request(body,extra),'2',{cookies:store,executor,security:{production:false},key,enabled});}
-async function verify(pin='1234'){
- const response=await handleClockerPin(request({action:'verify',pin}),'2',{cookies:store,executor:db.executor,security:{production:false},key});
- expect(response.status).toBe(200);
-}
-async function view(){const r=await call({operation:'state'});expect(r.status).toBe(200);return r.json();}
-function command(clock:PunchState,action='CLOCK_IN'){
- const e=clock.currentEntry,b=e?.breaks.find(b=>b.endAt===null);
- return {commandId:randomUUID(),action,expectedRevision:clock.revision,expectedEntryId:e?.id??null,expectedEntryVersion:e?.version??null,expectedBreakId:b?.id??null,expectedBreakVersion:b?.version??null};
-}
+import { ClockerPunchService } from '../../lib/clocker/punches.server';
+import type { ClockerIdentityProof } from '../../lib/clocker/pin-identity.server';
+import type { PunchAction, PunchCommand } from '../../lib/clocker/punch-types';
+let f:Awaited<ReturnType<typeof createPunchFixture>>;
+let proof:ClockerIdentityProof,jar:Map<string,string>,service:ClockerPunchService;
 beforeEach(async()=>{
- db=await createDisposableFoundationDatabase({mode:'current-runtime'});
- for(const name of ['clocker-devices','clocker-pins','clocker-punches'])await q(await readFile(`db/phase-c/${name}.sql`,'utf8'));
- await q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES
- ('transport-owner','Test','Owner','555','OWNER','loc-1'),('transport-a','Avery','Test','556','EMPLOYEE','loc-1'),('transport-b','Blair','Test','557','EMPLOYEE','loc-1');
- INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'transport-owner',now()+interval '1 day');
- INSERT INTO employee_location_eligibility VALUES('transport-a','loc-1'),('transport-a','loc-2'),('transport-b','loc-1');`);
- await setEmployeeClockerPin(owner,{employeeId:'transport-a',pin:'1234',expectedVersion:0},key,db.executor);
- await setEmployeeClockerPin(owner,{employeeId:'transport-b',pin:'5678',expectedVersion:0},key,db.executor);
- const p=await registerClockerDevice(owner,{name:'Test tablet',locationId:'loc-1'},db.executor);
- const d=await redeemClockerEnrollment({enrollmentToken:p.enrollmentToken,locationKey:'2'},db.executor);
- jar=new Map([['nevora_clocker',d.credential]]);
- store={get:name=>jar.has(name)?{value:jar.get(name)!}:undefined,set:(name,value)=>{jar.set(name,value);}};
- await verify();
+ f=await createPunchFixture({breaks:true});const identity=await f.identity();proof=identity.proof;
+ jar=new Map([['nevora_clocker',f.devices[0].credential],['nevora_clocker_identity',identity.token]]);
+ service=new ClockerPunchService(f.key,f.db.executor);
 });
-afterEach(async()=>{if(db)await db.dispose();});
-it('returns current state with non-authorizing context, no employee IDs or credentials',async()=>{
- const response=await call({operation:'state'});expect(response.status).toBe(200);
- const data=await response.json();expect(data).toMatchObject({state:'ready',firstName:'Avery',locationId:'loc-1',clock:{revision:0,currentEntry:null}});
- expect(data.context).toMatch(/^[a-f0-9]{64}$/);expect(data.subject).toMatch(/^[a-f0-9]{64}$/);expect(data.context).not.toBe(data.subject);
- expect(JSON.stringify(data)).not.toMatch(/transport-a|transport-owner|nev_dev_|nev_pin_|credentialHash|tokenHash|pinVersion/);
+afterEach(async()=>{if(f)await f.db.dispose();});
+async function command(action:PunchAction='CLOCK_IN'):Promise<PunchCommand>{
+ const v=await service.read(proof),s=v.snapshot;
+ return {...(action==='START_BREAK'?{breakType:{id:f.breakType!.id,version:f.breakType!.version}}:{}),commandId:randomUUID(),action,verificationId:v.verificationId,expected:{revision:s.revision,timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null}};
+}
+function call(body:object,headers:Record<string,string>={},enabled=true,location='2'){
+ const request=new Request('http://127.0.0.1:1234/api/clocker/'+location+'/punch',{
+  method:'POST',headers:{host:'127.0.0.1:1234',origin:'http://127.0.0.1:1234','Content-Type':'application/json','X-Nevora-Clocker':'1',...headers},body:JSON.stringify(body),
+ });
+ return handleClockerPunch(request,location,{enabled,executor:f.db.executor,key:f.key,security:{production:false},
+  cookies:{get:name=>jar.has(name)?{value:jar.get(name)!}:undefined,set:()=>{throw Error('Punches must not replace authentication cookies');}}});
+}
+it('is disabled by default without touching punch data',async()=>{
+ const response=await call({operation:'execute',command:await command()}, {},false);
+ expect(response.status).toBe(503);expect(await response.json()).toMatchObject({state:'disabled'});
+ expect(await f.q('SELECT * FROM clocker_command_ledger')).toEqual([]);
+});
+it('returns real state and committed receipts without credential or employee identity fields',async()=>{
+ const state=await call({operation:'state'});expect(state.status).toBe(200);
+ expect(await state.json()).toMatchObject({state:'ready',snapshot:{revision:0,entry:null,break:null}});
+ const response=await call({operation:'execute',command:await command()});expect(response.status).toBe(200);
+ const body=await response.json();expect(body).toMatchObject({state:'committed',receipt:{action:'CLOCK_IN',snapshot:{revision:1}}});
+ expect(JSON.stringify(body)).not.toMatch(/c34-a|nev_dev_|nev_pin_|tokenHash|credentialHash|request_hash|0123/);
  expect(response.headers.get('cache-control')).toContain('no-store');
+ const replay=await call({operation:'receipt',commandId:body.receipt.commandId,verificationId:(await (await call({operation:'state'})).json()).verificationId});expect(await replay.json()).toEqual(body);
 });
-it('records all four transitions only for the cookie-derived employee',async()=>{
- for(const action of ['CLOCK_IN','START_BREAK','END_BREAK','CLOCK_OUT']){
-  const v=await view();const r=await call({operation:'execute',context:v.context,command:command(v.clock,action)});
-  expect(r.status).toBe(200);expect(await r.json()).toMatchObject({state:'recorded',receipt:{action}});
- }
- expect(await q('SELECT employee_id,status FROM time_entries')).toEqual([{employee_id:'transport-a',status:'CLOCKED_OUT'}]);
- expect(await q('SELECT count(*)::int AS n FROM clocker_command_ledger')).toEqual([{n:4}]);
+it('unknown receipt does not claim a cancelled or failed punch',async()=>{
+ const response=await call({operation:'receipt',commandId:randomUUID(),verificationId:(await (await call({operation:'state'})).json()).verificationId});expect(response.status).toBe(200);
+ expect(await response.json()).toMatchObject({state:'unknown'});
+ expect(await f.q('SELECT * FROM time_entries')).toEqual([]);
 });
-it.each([{Origin:'https://evil.invalid'},{Origin:''},{'Sec-Fetch-Site':'cross-site'},{'X-Nevora-Clocker':'0'},{'Content-Type':'text/plain'}])('blocks unsafe request boundaries before reading or writing SQL',async extra=>{
- const deny:SqlExecutor={query:async()=>{throw Error('unexpected SQL');},transaction:async()=>{throw Error('unexpected SQL');}};
- expect((await call({operation:'state'},extra,deny)).status).toBe(403);
+it('returns the same receipt for an identical repeated HTTP command',async()=>{
+ const c=await command();const one=await (await call({operation:'execute',command:c})).json();
+ expect(await (await call({operation:'execute',command:c})).json()).toEqual(one);
+ expect(await f.q('SELECT count(*)::int AS n FROM time_entries')).toEqual([{n:1}]);
 });
-it.each([{operation:'state',employeeId:'transport-b'},{operation:'execute',context:'x',command:{}},{operation:'reconcile',context:'a'.repeat(64),commandId:'not-a-uuid'},[],null,{operation:'state',padding:'x'.repeat(5000)}])('rejects malformed payloads without a time write',async data=>{
- expect((await call(data)).status).toBe(400);expect(await q('SELECT id FROM time_entries')).toEqual([]);
+it.each(['origin','header','content-type','fetch-site'])('blocks unsafe %s requests before punch writes',async kind=>{
+ const headers:Record<string,string>=kind==='origin'?{origin:'https://evil.invalid'}:kind==='header'?{'X-Nevora-Clocker':'0'}:kind==='content-type'?{'Content-Type':'text/plain'}:{'Sec-Fetch-Site':'cross-site'};
+ expect((await call({operation:'execute',command:await command()},headers)).status).toBe(403);
+ expect(await f.q('SELECT * FROM clocker_command_ledger')).toEqual([]);
 });
-it('rejects forged actor and client time fields within a command',async()=>{
- const v=await view();
- for(const extra of [{employeeId:'transport-b'},{deviceId:'forged'},{clockInAt:'2020-01-01T00:00:00Z'}]){
-  expect((await call({operation:'execute',context:v.context,command:{...command(v.clock),...extra}})).status).toBe(400);
- }
- expect(await q('SELECT id FROM time_entries')).toEqual([]);
+it.each(['employeeId','locationId','deviceId','timestamp','pin'])('rejects forged %s command authority',async field=>{
+ const c={...await command(),[field]:'forged'};
+ expect((await call({operation:'execute',command:c})).status).toBe(400);
+ expect(await f.q('SELECT * FROM time_entries')).toEqual([]);
 });
-it.each(['missing-device','missing-identity','expired','inactive','revoked'])('denies %s verification',async kind=>{
- const v=await view();
- if(kind==='missing-device')jar.delete('nevora_clocker');
- if(kind==='missing-identity')jar.delete('nevora_clocker_identity');
- if(kind==='expired')await q("UPDATE clocker_pin_sessions SET expires_at=clock_timestamp()-interval '1 second'");
- if(kind==='inactive')await q("UPDATE employees SET active=false WHERE id='transport-a'");
- if(kind==='revoked')await q('UPDATE clocker_devices SET active=false,credential_hash=NULL,revoked_at=clock_timestamp()');
- const r=await call({operation:'execute',context:v.context,command:command(v.clock)});expect(r.status).toBe(401);
- expect(await q('SELECT id FROM time_entries')).toEqual([]);
+it.each([{operation:'delete'}, {operation:'state',employeeId:'c34-b'}, {operation:'receipt',commandId:'bad'}, {operation:'execute',command:'x'.repeat(3000)}])('rejects malformed or oversized envelopes',async body=>{
+ expect((await call(body)).status).toBe(400);expect(await f.q('SELECT * FROM time_entries')).toEqual([]);
 });
-it('a stale tab cannot clock the newer employee in using their changed identity cookie',async()=>{
- const old=await view();await verify('5678');const current=await view();expect(current.subject).not.toBe(old.subject);
- const r=await call({operation:'execute',context:old.context,command:command(old.clock)});expect(r.status).toBe(401);
- expect(await q('SELECT id FROM time_entries')).toEqual([]);
+it('requires both the enrolled device and current PIN identity',async()=>{
+ const c=await command();jar.delete('nevora_clocker_identity');
+ expect((await call({operation:'execute',command:c})).status).toBe(401);
+ jar.clear();expect((await call({operation:'state'})).status).toBe(401);
+ expect(await f.q('SELECT * FROM time_entries')).toEqual([]);
 });
-it('fresh PIN verification changes context but retains the same recovery subject',async()=>{
- const old=await view();await verify();const current=await view();expect(current.context).not.toBe(old.context);expect(current.subject).toBe(old.subject);
- expect((await call({operation:'execute',context:old.context,command:command(old.clock)})).status).toBe(401);
+it('a wrong-location request cannot write against another tablet binding',async()=>{
+ expect((await call({operation:'execute',command:await command()}, {},true,'110')).status).toBe(401);
+ expect(await f.q('SELECT * FROM time_entries')).toEqual([]);
 });
-it('retries an identical command without duplication and reconciles its exact receipt',async()=>{
- const v=await view(),cmd=command(v.clock),body={operation:'execute',context:v.context,command:cmd};
- const r=await call(body);const saved=await r.json();expect(r.status).toBe(200);
- expect(await (await call(body)).json()).toEqual(saved);
- expect(await (await call({operation:'reconcile',context:v.context,commandId:cmd.commandId})).json()).toEqual(saved);
- expect((await call({...body,command:{...cmd,expectedRevision:5}})).status).toBe(409);
- expect(await q('SELECT count(*)::int AS n FROM time_entries')).toEqual([{n:1}]);
+it('returns a conflict when the browser command belongs to a previous employee verification',async()=>{
+ const c=await command();const next=await f.identity(0,'4567');jar.set('nevora_clocker_identity',next.token);
+ const response=await call({operation:'execute',command:c});expect(response.status).toBe(409);
+ expect(await response.json()).toMatchObject({code:'CONTEXT_CHANGED'});
+ expect(await f.q('SELECT * FROM time_entries')).toEqual([]);
 });
-it('lost committed database response stays unknown until receipt reconciliation',async()=>{
- const v=await view(),cmd=command(v.clock);
- const lost:SqlExecutor={query:(s,signal)=>db.executor.query(s,signal),transaction:async ss=>{
-  const rows=await db.executor.transaction(ss);if(ss.some(s=>s.text.includes('INSERT INTO clocker_command_ledger')))throw Error('lost SQL response');return rows;
- }};
- const r=await call({operation:'execute',context:v.context,command:cmd},{},lost);expect(r.status).toBe(503);
- expect(await r.json()).toMatchObject({state:'error',code:'UNAVAILABLE'});
- expect(await (await call({operation:'reconcile',context:v.context,commandId:cmd.commandId})).json()).toMatchObject({state:'recorded',receipt:{commandId:cmd.commandId}});
-});
-it('reports stale state rather than recording a different action',async()=>{
- const v=await view();await call({operation:'execute',context:v.context,command:command(v.clock)});
- const r=await call({operation:'execute',context:v.context,command:command(v.clock)});expect(r.status).toBe(409);expect(await r.json()).toMatchObject({code:'STALE'});
- expect(await q('SELECT count(*)::int AS n FROM time_entries')).toEqual([{n:1}]);
-});
-it('returns not_found for an unseen receipt, not an invented successful action',async()=>{
- const v=await view();expect(await (await call({operation:'reconcile',context:v.context,commandId:randomUUID()})).json()).toEqual({state:'not_found'});
- expect(await q('SELECT id FROM time_entries')).toEqual([]);
-});
-it('another employee on the same tablet cannot read a prior employee receipt',async()=>{
- const v=await view(),cmd=command(v.clock);await call({operation:'execute',context:v.context,command:cmd});await verify('5678');const other=await view();
- expect(await (await call({operation:'reconcile',context:other.context,commandId:cmd.commandId})).json()).toEqual({state:'not_found'});
-});
-it('disabled feature performs no SQL and reports unavailable',async()=>{
- const deny:SqlExecutor={query:async()=>{throw Error('unexpected');},transaction:async()=>{throw Error('unexpected');}};
- const r=await call({operation:'state'},{},deny,false);expect(r.status).toBe(503);expect(await r.json()).toMatchObject({code:'DISABLED'});
-});
-it('missing schema never becomes a false off-clock state and errors never echo SQL',async()=>{
- await q('ALTER TABLE clocker_employee_state RENAME TO unavailable_state');
- const r=await call({operation:'state'});expect(r.status).toBe(503);expect(JSON.stringify(await r.json())).not.toMatch(/SELECT|unavailable_state|transport-a|1234/);
+it('maps database outage to unavailable without raw SQL or false empty state',async()=>{
+ await f.q('ALTER TABLE clocker_employee_clock_state RENAME TO broken_state');
+ const response=await call({operation:'state'});expect(response.status).toBe(503);
+ const body=await response.json();expect(body).toMatchObject({state:'unavailable'});
+ expect(JSON.stringify(body)).not.toMatch(/SELECT|broken_state|credential|c34-a/);
 });
 
-it('rejects a different Clocker location route even with valid employee verification',async()=>{
- const r=await handleClockerPunch(request({operation:'state'}),'110',{cookies:store,executor:db.executor,security:{production:false},key,enabled:true});
- expect(r.status).toBe(401);expect(await q('SELECT id FROM time_entries')).toEqual([]);
+// Reconciliation: the tablet UI consumes the canonical server contract, not a second engine.
+it('supplies a non-authorizing recovery subject and current greeting without exposing credentials',async()=>{
+ const r=await call({operation:'state'}),v=await r.json();expect(r.status).toBe(200);
+ expect(v).toMatchObject({firstName:'Avery',locationId:'loc-1',snapshot:{revision:0},breakTypes:[{name:'Fixture rest'}]});
+ expect(v.subject).toMatch(/^[a-f0-9]{64}$/);expect(v.subject).not.toBe(v.verificationId);expect(Date.parse(v.expiresAt)).toBeGreaterThan(Date.now());
+ expect(JSON.stringify(v)).not.toMatch(/c34-a|nev_pin_|nev_dev_|credentialHash|tokenHash/);
 });
-it('rejects a forged same-length screen context rather than trusting its shape',async()=>{
- const v=await view();const r=await call({operation:'execute',context:'0'.repeat(64),command:command(v.clock)});
- expect(r.status).toBe(401);expect(await q('SELECT id FROM time_entries')).toEqual([]);
+it('fresh verification changes execution context but preserves recovery subject for the same employee and device',async()=>{
+ const old=await (await call({operation:'state'})).json(),c=await command();
+ const next=await f.identity();jar.set('nevora_clocker_identity',next.token);
+ const fresh=await (await call({operation:'state'})).json();expect(fresh.verificationId).not.toBe(old.verificationId);
+ expect(fresh.subject).toBe(old.subject);expect(fresh.subject).toMatch(/^[a-f0-9]{64}$/);
+ expect((await call({operation:'execute',command:c})).status).toBe(409);
+ const other=await f.identity(0,'4567');jar.set('nevora_clocker_identity',other.token);
+ expect((await (await call({operation:'state'})).json()).subject).not.toBe(old.subject);
+});
+it('a fresh PIN can recover the old receipt but cannot replay the old command',async()=>{
+ const c=await command(),saved=await (await call({operation:'execute',command:c})).json();
+ const next=await f.identity();jar.set('nevora_clocker_identity',next.token);
+ expect(await (await call({operation:'receipt',commandId:c.commandId,verificationId:(await (await call({operation:'state'})).json()).verificationId})).json()).toEqual(saved);
+ expect((await call({operation:'execute',command:c})).status).toBe(409);
+ expect(await f.q('SELECT count(*)::int AS n FROM time_entries')).toEqual([{n:1}]);
+});
+
+import { rotateClockerDevice, redeemClockerEnrollment, authenticateClockerDevice } from '../../lib/clocker/devices.server';
+it('replacement credentials cannot recover a previous tablet-generation receipt',async()=>{
+ const c=await command();expect((await call({operation:'execute',command:c})).status).toBe(200);
+ const pending=await rotateClockerDevice(f.owner,{deviceId:f.devices[0].device.id,expectedVersion:2},f.db.executor);
+ const enrolled=await redeemClockerEnrollment({enrollmentToken:pending.enrollmentToken,locationKey:'2'},f.db.executor);
+ const grant=await authenticateClockerDevice({credential:enrolled.credential,locationKey:'2'},f.db.executor);expect(grant).not.toBeNull();
+ Object.assign(f.devices[0],grant,{credential:enrolled.credential});
+ const next=await f.identity();jar.set('nevora_clocker',enrolled.credential);jar.set('nevora_clocker_identity',next.token);
+ expect(await (await call({operation:'receipt',commandId:c.commandId,verificationId:(await (await call({operation:'state'})).json()).verificationId})).json()).toMatchObject({state:'unknown'});
+ expect(await f.q('SELECT count(*)::int AS n FROM time_entries')).toEqual([{n:1}]);
+});
+
+it('receipt reconciliation binds the response to the fresh screen verification',async()=>{
+ const c=await command(),saved=await (await call({operation:'execute',command:c})).json();
+ const current=await (await call({operation:'state'})).json();
+ expect(await (await call({operation:'receipt',commandId:c.commandId,verificationId:current.verificationId})).json()).toEqual(saved);
+ const other=await f.identity(0,'4567');jar.set('nevora_clocker_identity',other.token);
+ const late=await call({operation:'receipt',commandId:c.commandId,verificationId:current.verificationId});
+ expect(late.status).toBe(409);expect(await late.json()).toMatchObject({code:'CONTEXT_CHANGED'});
 });

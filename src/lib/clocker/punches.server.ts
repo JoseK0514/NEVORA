@@ -1,106 +1,87 @@
 import 'server-only';
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { neonNotificationExecutor } from '../data/notification-transactions';
 import { getWorkspace, workspaceReadGuard } from '../data/workspaces';
 import { clockerIdentityWriteGuards, type ClockerIdentityProof } from './pin-identity.server';
-import { ClockerPinError } from './pin-authority.server';
-import { ClockerDeviceError } from './devices.server';
-import { ClockerPunchError, parsePunchCommand, type PunchState, type PunchReceipt, type PunchCommand, type PunchErrorCode } from './punch-command';
-import { sql, iso, stateJson, entryJson, punchTime, checkSql, checkedState, checkExpected, mutations } from './punch-sql.server';
-type LedgerRow={employeeId:string;credentialVersion:number;payloadHash:string;receipt:PunchReceipt};
-function failure(error:unknown):never{
+import { pinKeyIdentity } from './pin-crypto.server';
+import { ClockerPunchError, parseCommandId, parsePunchCommand, type PunchErrorCode } from './punch-command';
+import type { PunchView, PunchReceipt, PunchSnapshot, PunchAction } from './punch-types';
+
+function normalize(error:unknown):never{
  if(error instanceof ClockerPunchError)throw error;
- if(error instanceof ClockerPinError&&['FORBIDDEN','IDENTITY_INVALID'].includes(error.code))throw new ClockerPunchError('UNAUTHORIZED');
- if(error instanceof ClockerDeviceError&&error.code==='DEVICE_INVALID')throw new ClockerPunchError('UNAUTHORIZED');
  const message=error instanceof Error?error.message:'';
- if(/clocker_pin_(?:FORBIDDEN|IDENTITY_INVALID)|clocker_device_denied/.test(message))throw new ClockerPunchError('UNAUTHORIZED');
- for(const code of ['INVALID','STALE','TRANSITION','WRONG_LOCATION','COMMAND_REUSED','UNAVAILABLE'] as PunchErrorCode[]){
-  if(message.includes('clocker_punch_'+code))throw new ClockerPunchError(code);
- }
+ const business: PunchErrorCode[]=['AUTH_REQUIRED','STALE_STATE','COMMAND_REUSED','INVALID_TRANSITION','OTHER_LOCATION','INTEGRITY','CLOCK_INVALID','BREAK_TYPE_CHANGED'];
+ for(const code of business)if(message.includes('clocker_punch_'+code))throw new ClockerPunchError(code);
+ if(message.includes('clocker_pin_IDENTITY_INVALID')||message.includes('clocker_device_denied'))throw new ClockerPunchError('AUTH_REQUIRED');
+ // SQL, token hashes, employee metadata and driver errors never cross this boundary.
  throw new ClockerPunchError('UNAVAILABLE');
 }
-async function batch(executor:SqlExecutor,statements:SqlStatement[]){
- try{return await executor.transaction(statements);}catch(error){return failure(error);}
-}
-async function locks(proof:ClockerIdentityProof,executor:SqlExecutor):Promise<SqlStatement[]>{
- const workspace=await getWorkspace(executor);
- if(workspace.id!==proof.device.workspaceId)throw new ClockerPunchError('UNAUTHORIZED');
- return [...workspaceReadGuard(workspace),
-  // Acquire the strongest employee lock first, avoiding SHARE-to-UPDATE races.
-  sql('SELECT id FROM employees WHERE id=$1 FOR UPDATE',[proof.employeeId]),
-  ...clockerIdentityWriteGuards(proof),
-  sql('SELECT id FROM time_entries WHERE employee_id=$1 AND clock_out_at IS NULL ORDER BY id FOR UPDATE',[proof.employeeId]),
-  sql(`SELECT id FROM break_entries WHERE time_entry_id IN(SELECT id FROM time_entries WHERE employee_id=$1 AND clock_out_at IS NULL) ORDER BY id FOR UPDATE`,[proof.employeeId]),
-  // Entry/break locks can wait; recheck expiry after those waits, not before only.
-  ...clockerIdentityWriteGuards(proof),
- ];
-}
-const ledger=(deviceId:string,commandId:string)=>sql(`SELECT employee_id AS "employeeId",credential_version AS "credentialVersion",
- payload_hash AS "payloadHash",result AS receipt FROM clocker_command_ledger WHERE device_id=$1 AND command_id=$2::uuid`,[deviceId,commandId]);
-function sameReceipt(row:LedgerRow,proof:ClockerIdentityProof,hash:string):PunchReceipt{
- if(row.employeeId!==proof.employeeId||row.credentialVersion!==proof.device.credentialVersion||row.payloadHash!==hash)throw new ClockerPunchError('COMMAND_REUSED');
- if(!row.receipt||!row.receipt.entry||!Number.isInteger(row.receipt.revision))throw new ClockerPunchError('UNAVAILABLE');
- return row.receipt;
-}
-async function read(proof:ClockerIdentityProof,executor:SqlExecutor,commandId?:string){
- const rows=await batch(executor,[...await locks(proof,executor),
-  ...(commandId?[ledger(proof.device.deviceId,commandId)]:[]),
-  sql(`SELECT ${stateJson} AS state`,[proof.employeeId]),
- ]);
- return {state:checkedState((rows.at(-1)?.[0] as {state:PunchState}|undefined)?.state as PunchState),
-  ledger:commandId?rows.at(-2)?.[0] as LedgerRow|undefined:undefined};
-}
-export async function readClockerPunchState(proof:ClockerIdentityProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<PunchState>{
- try{return (await read(proof,executor)).state;}catch(error){return failure(error);}
-}
-export async function reconcileClockerPunch(proof:ClockerIdentityProof,commandId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<PunchReceipt|null>{
- parsePunchCommand({commandId,action:'CLOCK_IN',expectedRevision:0,expectedEntryId:null,expectedEntryVersion:null,expectedBreakId:null,expectedBreakVersion:null});
- try{
-  const rows=await batch(executor,[...await locks(proof,executor),ledger(proof.device.deviceId,commandId)]);
-  const row=rows.at(-1)?.[0] as LedgerRow|undefined;
-  return row&&row.employeeId===proof.employeeId&&row.credentialVersion===proof.device.credentialVersion?row.receipt:null;
- }catch(error){return failure(error);}
-}
-/** Only a server-derived identity proof is accepted. No browser actor/time fields. */
-export async function executeClockerPunch(proof:ClockerIdentityProof,input:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<PunchReceipt>{
- const command=parsePunchCommand(input);
- const hash=createHash('sha256').update('nevora-punch-v1\0').update(JSON.stringify(command)).digest('hex');
- try{
-  const initial=await read(proof,executor,command.commandId);
-  if(initial.ledger)return sameReceipt(initial.ledger,proof,hash);
-  checkExpected(command,initial.state,proof.device.locationId);
-  const plan=mutations(command,initial.state,proof.employeeId,proof.device.deviceId,proof.device.locationId,randomUUID(),randomUUID());
-  const statements=[...await locks(proof,executor),
-   checkSql(`${stateJson}=$2::jsonb`,[proof.employeeId,JSON.stringify(initial.state)],'STALE'),
-   ...plan.statements,
-   sql(`INSERT INTO clocker_command_ledger(device_id,command_id,employee_id,credential_version,payload_hash,action,revision,time_entry_id,recorded_at,result)
-    SELECT $1,$2::uuid,$3,$4,$5,$6,es.revision,t.id,${punchTime},
-     jsonb_build_object('commandId',$2::text,'action',$6::text,'revision',es.revision,'recordedAt',${iso(punchTime)},'entry',${entryJson('t')})
-    FROM clocker_employee_state es JOIN time_entries t ON t.employee_id=es.employee_id
-    WHERE es.employee_id=$3 AND t.id=$7`,[proof.device.deviceId,command.commandId,proof.employeeId,proof.device.credentialVersion,hash,command.action,plan.entryId]),
-   checkSql('EXISTS(SELECT 1 FROM clocker_command_ledger WHERE device_id=$1 AND command_id=$2::uuid)',[proof.device.deviceId,command.commandId],'UNAVAILABLE'),
-   // The ledger insert or a trigger can wait. Expiry here rolls back ALL writes.
-   ...clockerIdentityWriteGuards(proof),
-   ledger(proof.device.deviceId,command.commandId),
-  ];
+const statement=(text:string,values:readonly unknown[]=[]):SqlStatement=>({text,values});
+
+/** Persisted writer. Every method requires server-derived current PIN/device proof. */
+export class ClockerPunchService {
+ private readonly key:Buffer;
+ constructor(key:Buffer,private readonly executor:SqlExecutor=neonNotificationExecutor()){
+  if(!Buffer.isBuffer(key)||key.length!==32)throw new ClockerPunchError('UNAVAILABLE');
+  this.key=Buffer.from(key);
+ }
+ private context(proof:ClockerIdentityProof):string{
+  if(!proof?.device||typeof proof.employeeId!=='string'||!/^[a-f0-9]{64}$/.test(proof.tokenHash??'')||
+   proof.keyIdentity!==pinKeyIdentity(this.key))throw new ClockerPunchError('AUTH_REQUIRED');
+  return createHmac('sha256',this.key).update(JSON.stringify(['nevora-punch-context-v1',
+   proof.device.workspaceId,proof.device.deviceId,proof.device.credentialVersion,
+   proof.employeeId,proof.tokenHash,proof.pinVersion,proof.employeeUpdatedAt])).digest('hex');
+ }
+ private async guarded<T>(proof:ClockerIdentityProof,body:SqlStatement):Promise<T>{
+  this.context(proof);
   try{
-   const result=await batch(executor,statements);
-   const row=result.at(-1)?.[0] as LedgerRow|undefined;
-   if(!row)throw new ClockerPunchError('UNAVAILABLE');
-   return sameReceipt(row,proof,hash);
-  }catch(error){
-   if(error instanceof ClockerPunchError&&error.code==='STALE'){
-    // A concurrent identical command may have won the employee lock. Read its
-    // exact saved receipt under CURRENT authority, never create a new command.
-    const result=await batch(executor,[...await locks(proof,executor),ledger(proof.device.deviceId,command.commandId)]);
-    const row=result.at(-1)?.[0] as LedgerRow|undefined;
-    if(row)return sameReceipt(row,proof,hash);
-   }
-   throw error;
-  }
- }catch(error){return failure(error);}
-}
-export interface ClockerPunchService {
- execute(identity:ClockerIdentityProof,command:PunchCommand):Promise<PunchReceipt>;
+   const workspace=await getWorkspace(this.executor);
+   const guards=[...workspaceReadGuard(workspace),
+    // Serialize this employee BEFORE taking device/session locks, preventing lock-order inversions.
+    statement('SELECT id FROM employees WHERE id=$1 FOR UPDATE',[proof.employeeId]),
+    ...clockerIdentityWriteGuards(proof),
+   ];
+   const results=await this.executor.transaction([
+    ...guards,body,
+    // An operation may wait on a deeper time-entry lock. Expiry must roll back all writes.
+    ...clockerIdentityWriteGuards(proof),
+   ]);
+   const row=results[guards.length]?.[0] as {value:T}|undefined;
+   if(!row||!Object.hasOwn(row,'value'))throw new ClockerPunchError('UNAVAILABLE');
+   return row.value;
+  }catch(error){return normalize(error);}
+ }
+ async read(proof:ClockerIdentityProof):Promise<PunchView>{
+  const data=await this.guarded<{snapshot:PunchSnapshot;breakTypes:PunchView['breakTypes']}>(proof,statement(`SELECT jsonb_build_object(
+   'snapshot',clocker_punch_snapshot($1),'breakTypes',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'version',version,'name',name,
+   'category',category,'targetMinutes',target_minutes,'active',active) ORDER BY lower(name),id)
+   FROM clocker_break_types WHERE workspace_id=$2 AND active),'[]'::jsonb)) AS value`,[proof.employeeId,proof.device.workspaceId]));
+  const {snapshot,breakTypes}=data;
+  const atOtherLocation=Boolean(snapshot.entry&&snapshot.entry.locationId!==proof.device.locationId);
+  const allowedActions:PunchAction[]=atOtherLocation?[]:!snapshot.entry?['CLOCK_IN']:
+   snapshot.entry.status==='ON_BREAK'?['END_BREAK','CLOCK_OUT']:breakTypes.length?['START_BREAK','CLOCK_OUT']:['CLOCK_OUT'];
+  return {snapshot,verificationId:this.context(proof),allowedActions,atOtherLocation,breakTypes};
+ }
+ async execute(proof:ClockerIdentityProof,input:unknown):Promise<PunchReceipt>{
+  const command=parsePunchCommand(input),expected=this.context(proof);
+  if(!timingSafeEqual(Buffer.from(command.verificationId,'hex'),Buffer.from(expected,'hex')))throw new ClockerPunchError('CONTEXT_CHANGED');
+  const requestHash=createHash('sha256').update(JSON.stringify(['nevora-punch-command-v1',proof.employeeId,command])).digest('hex');
+  return this.guarded<PunchReceipt>(proof,statement(
+   'SELECT clocker_apply_punch($1,$2,$3,$4,$5::uuid,$6,$7::jsonb,$8) AS value',
+   [proof.employeeId,proof.device.deviceId,proof.device.locationId,proof.device.credentialVersion,
+    command.commandId,command.action,JSON.stringify({...command.expected,...(command.breakType?{breakType:command.breakType}:{})}),requestHash]));
+ }
+ /** Recovery after fresh PIN verification is read-only and still employee/device scoped.
+  * null means no committed receipt was observed, NOT proof that an in-flight request was cancelled. */
+ async receipt(proof:ClockerIdentityProof,commandId:string,screenVerification?:string):Promise<PunchReceipt|null>{
+  const id=parseCommandId(commandId);
+  // The browser must not interpret a receipt lookup performed after another tab
+  // switched the shared identity cookie as evidence about its earlier screen.
+  if(screenVerification!==undefined&&(!/^[a-f0-9]{64}$/.test(screenVerification)||
+    !timingSafeEqual(Buffer.from(screenVerification,'hex'),Buffer.from(this.context(proof),'hex'))))throw new ClockerPunchError('CONTEXT_CHANGED');
+  return this.guarded<PunchReceipt|null>(proof,statement(
+   'SELECT (SELECT result FROM clocker_command_ledger WHERE device_id=$1 AND employee_id=$2 AND command_id=$3::uuid AND credential_version=$4) AS value',
+   [proof.device.deviceId,proof.employeeId,id,proof.device.credentialVersion]));
+ }
 }

@@ -15,7 +15,6 @@ export type ClockMonitor =
   | { state: "ready"; employees: ClockMonitorEmployee[] }
   | { state: "unavailable"; reason: "not_configured" | "schema_missing" | "read_failed" };
 
-// The persisted writer uses a server-derived device/employee identity, never
-// a browser employee ID. Type-only exports cannot expose its server runtime.
-export type { PunchCommand } from './clocker/punch-command';
-export type { ClockerPunchService } from './clocker/punches.server';
+// The implemented server-only writer lives in ./clocker/punches.server.ts.
+// Only these authority-free command/receipt types may be shared with clients.
+export type { PunchCommand, PunchReceipt, PunchSnapshot } from './clocker/punch-types';

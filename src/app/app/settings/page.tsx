@@ -28,6 +28,11 @@ export default async function SettingsPage() {
             "/app/settings/clocker",
           ],
           [
+            "Break Types",
+            "Break classifications and optional reference durations.",
+            "/app/settings/breaks",
+          ],
+          [
             "Positions",
             "Job qualifications, separate from access roles.",
             "/app/settings/positions",

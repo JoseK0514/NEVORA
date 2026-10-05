@@ -1,68 +1,86 @@
 import { expect, it } from 'vitest';
 import { makePunchCommand, punchActions, readPendingPunch, savePendingPunch, forgetPendingPunch, canRetirePendingPunch, parseClockView, parseReceiptReply } from './punch-client';
-import type { PunchState } from './punch-command';
-const uuid='00000000-0000-4000-8000-000000000001';
-const empty:PunchState={revision:0,currentEntry:null};
-const entry={id:'entry-1',version:1,locationId:'loc-1',status:'CLOCKED_IN' as const,clockInAt:'2026-10-05T12:00:00.000000Z',clockOutAt:null,breaks:[]};
-const working:PunchState={revision:1,currentEntry:entry};
-const onBreak:PunchState={revision:2,currentEntry:{...entry,version:2,status:'ON_BREAK',breaks:[{id:'pause-1',version:1,startAt:'2026-10-05T12:30:00.000000Z',endAt:null}]}};
-const subject='c'.repeat(64),context='d'.repeat(64);
+import type { PunchSnapshot } from './punch-types';
+const uuid='00000000-0000-4000-8000-000000000001',subject='c'.repeat(64),verificationId='d'.repeat(64);
+const type={id:'rest-1',version:1,name:'Rest',category:'REST' as const,targetMinutes:15,active:true};
+const entry={id:'entry-1',version:1,locationId:'loc-1',status:'CLOCKED_IN' as const,clockInAt:'2026-10-05T12:00:00.000000+00:00'};
+const empty:PunchSnapshot={revision:0,entry:null,break:null};
+const working:PunchSnapshot={revision:1,entry,break:null};
+const onBreak:PunchSnapshot={revision:2,entry:{...entry,version:2,status:'ON_BREAK'},break:{id:'pause-1',version:1,breakStartAt:'2026-10-05T12:30:00.000000+00:00',type:{id:type.id,version:1,name:'Rest',category:'REST',targetMinutes:15}}};
+function view(snapshot=empty){return {state:'ready' as const,subject,verificationId,firstName:'Avery',expiresAt:'2026-10-05T12:01:00.000Z',locationId:'loc-1',snapshot,atOtherLocation:false,breakTypes:[type],allowedActions:!snapshot.entry?['CLOCK_IN' as const]:snapshot.break?['END_BREAK' as const,'CLOCK_OUT' as const]:['START_BREAK' as const,'CLOCK_OUT' as const]};}
 function storage(){const map=new Map<string,string>();return {getItem:(key:string)=>map.get(key)??null,setItem:(key:string,value:string)=>{map.set(key,value);},removeItem:(key:string)=>{map.delete(key);},map};}
-it('offers only current-state actions at the correct location',()=>{
- expect(punchActions(empty,'loc-1')).toEqual(['CLOCK_IN']);
- expect(punchActions(working,'loc-1')).toEqual(['START_BREAK','CLOCK_OUT']);
- expect(punchActions(onBreak,'loc-1')).toEqual(['END_BREAK','CLOCK_OUT']);
- expect(punchActions(working,'loc-2')).toEqual([]);
+it('offers only current-state actions and never guesses across locations or missing types',()=>{
+ expect(punchActions(view())).toEqual(['CLOCK_IN']);expect(punchActions(view(working))).toEqual(['START_BREAK','CLOCK_OUT']);
+ expect(punchActions(view(onBreak))).toEqual(['END_BREAK','CLOCK_OUT']);
+ expect(punchActions({...view(working),atOtherLocation:true,locationId:'loc-2',allowedActions:[]})).toEqual([]);
+ expect(punchActions({...view(working),breakTypes:[],allowedActions:['CLOCK_OUT']})).toEqual(['CLOCK_OUT']);
 });
-it('copies expected state and entry/break versions rather than guessing or using client time',()=>{
- expect(makePunchCommand('END_BREAK',onBreak,uuid)).toEqual({commandId:uuid,action:'END_BREAK',expectedRevision:2,expectedEntryId:'entry-1',expectedEntryVersion:2,expectedBreakId:'pause-1',expectedBreakVersion:1});
- expect(Object.keys(makePunchCommand('CLOCK_IN',empty,uuid))).not.toContain('employeeId');
+it('copies the canonical verification and exact entry/break expectation without client time',()=>{
+ expect(makePunchCommand('END_BREAK',view(onBreak),uuid)).toEqual({commandId:uuid,action:'END_BREAK',verificationId,expected:{revision:2,timeEntryId:'entry-1',timeEntryVersion:2,breakEntryId:'pause-1',breakEntryVersion:1}});
+ expect(Object.keys(makePunchCommand('CLOCK_IN',view(),uuid))).not.toContain('employeeId');
 });
-it('round-trips only minimal recovery data without names, PINs, times or authentication context',()=>{
- const s=storage(),pending={subject,command:makePunchCommand('CLOCK_IN',empty,uuid)};
+it('requires explicit break selection and preserves the observed version',()=>{
+ expect(()=>makePunchCommand('START_BREAK',view(working),uuid)).toThrow();
+ expect(makePunchCommand('START_BREAK',view(working),uuid,type)).toMatchObject({breakType:{id:'rest-1',version:1}});
+ expect(()=>makePunchCommand('START_BREAK',view(working),uuid,{...type,version:9})).toThrow();
+});
+it('round-trips only minimal recovery intent without names, PINs, times or credentials',()=>{
+ const s=storage(),pending={subject,command:makePunchCommand('CLOCK_IN',view(),uuid)};
  expect(readPendingPunch(s,'2')).toBeNull();savePendingPunch(s,'2',pending);expect(readPendingPunch(s,'2')).toEqual(pending);
- const bytes=[...s.map.values()][0];expect(bytes).not.toMatch(/firstName|expiresAt|pin|token|context|clockInAt/);
+ expect([...s.map.values()][0]).not.toMatch(/firstName|expiresAt|pin|token|clockInAt|nev_dev/);
  forgetPendingPunch(s,'2');expect(readPendingPunch(s,'2')).toBeNull();
 });
-it('fails closed on blocked or silently unwritable storage before a command is sent',()=>{
- const denied={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
- expect(()=>savePendingPunch(denied,'2',{subject,command:makePunchCommand('CLOCK_IN',empty,uuid)})).toThrow();
- const broken={getItem:()=>{throw Error('denied');},setItem:()=>{},removeItem:()=>{}};
- expect(()=>readPendingPunch(broken,'2')).toThrow();
+it('fails closed on blocked or silently unwritable recovery storage',()=>{
+ expect(()=>savePendingPunch({getItem:()=>null,setItem:()=>{},removeItem:()=>{}},'2',{subject,command:makePunchCommand('CLOCK_IN',view(),uuid)})).toThrow();
+ expect(()=>readPendingPunch({getItem:()=>{throw Error('denied');},setItem:()=>{},removeItem:()=>{}},'2')).toThrow();
 });
-it('preserves unresolved commands instead of overwriting them with a new request',()=>{
- const s=storage(),pending={subject,command:makePunchCommand('CLOCK_IN',empty,uuid)};
- savePendingPunch(s,'2',pending);
- expect(()=>savePendingPunch(s,'2',{subject,command:{...pending.command,commandId:'00000000-0000-4000-8000-000000000002'}})).toThrow();
- expect(readPendingPunch(s,'2')).toEqual(pending);
+it('preserves unresolved commands instead of replacing their request ID',()=>{
+ const s=storage(),pending={subject,command:makePunchCommand('CLOCK_IN',view(),uuid)};savePendingPunch(s,'2',pending);
+ expect(()=>savePendingPunch(s,'2',{subject,command:{...pending.command,commandId:'00000000-0000-4000-8000-000000000002'}})).toThrow();expect(readPendingPunch(s,'2')).toEqual(pending);
 });
-it('rejects corrupted or forged recovery records rather than silently discarding them',()=>{
- const s=storage();savePendingPunch(s,'2',{subject,command:makePunchCommand('CLOCK_IN',empty,uuid)});
- const key=[...s.map.keys()][0];s.map.set(key,'{broken');expect(()=>readPendingPunch(s,'2')).toThrow();
- s.map.set(key,JSON.stringify({subject,command:{...makePunchCommand('CLOCK_IN',empty,uuid),employeeId:'forged'}}));expect(()=>readPendingPunch(s,'2')).toThrow();
+it('rejects corrupted or forged recovery records without silently discarding them',()=>{
+ const s=storage();savePendingPunch(s,'2',{subject,command:makePunchCommand('CLOCK_IN',view(),uuid)});const key=[...s.map.keys()][0];
+ s.map.set(key,'{broken');expect(()=>readPendingPunch(s,'2')).toThrow();
+ s.map.set(key,JSON.stringify({subject,command:{...makePunchCommand('CLOCK_IN',view(),uuid),employeeId:'forged'}}));expect(()=>readPendingPunch(s,'2')).toThrow();
 });
-it('only retires an unconfirmed action when its expected state can no longer match',()=>{
- const cmd=makePunchCommand('CLOCK_IN',empty,uuid);
- expect(canRetirePendingPunch(cmd,empty,'loc-1')).toBe(false);
- expect(canRetirePendingPunch(cmd,working,'loc-1')).toBe(true);
- expect(canRetirePendingPunch(makePunchCommand('CLOCK_OUT',working,uuid),working,'loc-2')).toBe(true);
+it('only retires an absent receipt when monotonic state, type or verification makes a later commit impossible',()=>{
+ const cmd=makePunchCommand('CLOCK_IN',view(),uuid);
+ expect(canRetirePendingPunch(cmd,view())).toBe(false);expect(canRetirePendingPunch(cmd,view(working))).toBe(true);
+ expect(canRetirePendingPunch(cmd,{...view(),verificationId:'e'.repeat(64)})).toBe(true);
+ const pause=makePunchCommand('START_BREAK',view(working),uuid,type);
+ expect(canRetirePendingPunch(pause,{...view(working),breakTypes:[{...type,version:2}]})).toBe(true);
 });
-it('validates clock-view identity binding and unavailable data',()=>{
- const value={state:'ready',subject,context,firstName:'Avery',expiresAt:'2026-10-05T12:01:00.000Z',locationId:'loc-1',clock:empty};
- expect(parseClockView(value)).toEqual(value);
- for(const bad of [{...value,context:''},{...value,clock:null},{...value,clock:{revision:-1,currentEntry:null}},{state:'unavailable'}])expect(()=>parseClockView(bad)).toThrow();
+it('validates canonical clock-view identity and unavailable states',()=>{
+ expect(parseClockView(view())).toEqual(view());
+ for(const bad of [{...view(),verificationId:''},{...view(),snapshot:null},{...view(),snapshot:{...empty,revision:-1}},{state:'unavailable'}])expect(()=>parseClockView(bad)).toThrow();
 });
-it('never accepts a receipt for another command or action',()=>{
- const cmd=makePunchCommand('CLOCK_IN',empty,uuid),receipt={commandId:uuid,action:'CLOCK_IN',revision:1,recordedAt:entry.clockInAt,entry};
- expect(parseReceiptReply({state:'recorded',receipt},cmd)).toEqual(receipt);
- for(const bad of [{...receipt,commandId:'another'},{...receipt,action:'CLOCK_OUT'},{...receipt,revision:8},{...receipt,recordedAt:'bad'}])expect(()=>parseReceiptReply({state:'recorded',receipt:bad},cmd)).toThrow();
+it.each(['array-status','invalid-time','missing-break','contradictory-actions','unsafe-type'])('rejects inconsistent view %s',kind=>{
+ const good=view(working),bad:Record<string,unknown>={...good};
+ if(kind==='array-status')bad.snapshot={...working,entry:{...entry,status:['CLOCKED_IN']}};
+ if(kind==='invalid-time')bad.snapshot={...working,entry:{...entry,clockInAt:'nonsense'}};
+ if(kind==='missing-break')bad.snapshot={...working,entry:{...entry,status:'ON_BREAK'}};
+ if(kind==='contradictory-actions')bad.allowedActions=['CLOCK_IN'];
+ if(kind==='unsafe-type')bad.breakTypes=[{...type,targetMinutes:-5}];
+ expect(()=>parseClockView(bad)).toThrow();
+});
+it('never accepts a receipt for another command, action or revision',()=>{
+ const cmd=makePunchCommand('CLOCK_IN',view(),uuid),receipt={commandId:uuid,action:'CLOCK_IN',timeEntryId:entry.id,breakEntryId:null,performedAt:entry.clockInAt,snapshot:working,breakType:null};
+ expect(parseReceiptReply({state:'committed',receipt},cmd)).toEqual(receipt);
+ for(const bad of [{...receipt,commandId:'another'},{...receipt,action:'CLOCK_OUT'},{...receipt,snapshot:{...working,revision:8}},{...receipt,performedAt:'bad'}])expect(()=>parseReceiptReply({state:'committed',receipt:bad},cmd)).toThrow();
+});
+it('rejects a recorded timestamp that disagrees with the confirmed Clock In',()=>{
+ const cmd=makePunchCommand('CLOCK_IN',view(),uuid);
+ expect(()=>parseReceiptReply({state:'committed',receipt:{commandId:uuid,action:'CLOCK_IN',timeEntryId:entry.id,breakEntryId:null,performedAt:'2026-10-05T14:00:00Z',snapshot:working}},cmd)).toThrow();
+});
+it('validates persisted break classification against the exact requested type/version',()=>{
+ const cmd=makePunchCommand('START_BREAK',view(working),uuid,type),receipt={commandId:uuid,action:'START_BREAK',timeEntryId:entry.id,breakEntryId:'pause-1',performedAt:onBreak.break!.breakStartAt,snapshot:onBreak,breakType:onBreak.break!.type};
+ expect(parseReceiptReply({state:'committed',receipt},cmd)).toEqual(receipt);
+ expect(()=>parseReceiptReply({state:'committed',receipt:{...receipt,breakType:{...receipt.breakType,version:5}}},cmd)).toThrow();
 });
 
-it('rejects a non-string status even when it can stringify to a valid clock state',()=>{
- expect(()=>parseClockView({state:'ready',subject,context,firstName:'Avery',expiresAt:'2026-10-05T12:01:00.000Z',locationId:'loc-1',
-  clock:{revision:1,currentEntry:{...entry,status:['CLOCKED_IN']}}})).toThrow();
-});
-it('rejects receipts whose record time disagrees with the confirmed transition',()=>{
- const cmd=makePunchCommand('CLOCK_IN',empty,uuid);
- expect(()=>parseReceiptReply({state:'recorded',receipt:{commandId:uuid,action:'CLOCK_IN',revision:1,recordedAt:'2026-10-05T14:00:00.000000Z',entry}},cmd)).toThrow();
+it('compares recorded break settings semantically rather than by JSON key order',()=>{
+ const cmd=makePunchCommand('START_BREAK',view(working),uuid,type);
+ const reordered={targetMinutes:15,category:'REST',name:'Rest',version:1,id:'rest-1'};
+ const receipt={commandId:uuid,action:'START_BREAK',timeEntryId:entry.id,breakEntryId:'pause-1',performedAt:onBreak.break!.breakStartAt,snapshot:onBreak,breakType:reordered};
+ expect(parseReceiptReply({state:'committed',receipt},cmd)).toEqual(receipt);
 });

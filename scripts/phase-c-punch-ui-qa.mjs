@@ -29,8 +29,19 @@ async function enroll(owner,p,name){
  const code=await owner.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
  await goto(p,'/clocker/2');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect Tablet',exact:true}).click();await idle(p);
 }
+async function editBreak(owner,name,category,minutes){
+ await goto(owner,'/app/settings/breaks');const row=owner.locator('[data-break-type="ui-rest"]');
+ await row.getByRole('button',{name:/^Manage /}).click();await owner.getByRole('button',{name:'Edit',exact:true}).click();const d=owner.getByRole('dialog');
+ await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel('Reference minutes',{exact:true}).fill(String(minutes));
+ await d.getByRole('button',{name:'Save Changes',exact:true}).click();await d.waitFor({state:'hidden'});
+}
+async function archiveBreak(owner,operation){
+ const row=owner.locator('[data-break-type="ui-rest"]');await row.getByRole('button',{name:/^Manage /}).click();await owner.getByRole('button',{name:operation,exact:true}).click();
+ const d=owner.getByRole('dialog');await d.getByRole('button',{name:operation+' Break Type',exact:true}).click();await d.waitFor({state:'hidden'});
+}
 async function idle(p){await p.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
 async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}
+async function startBreak(p){await p.getByRole('button',{name:'Start Break',exact:true}).click();await p.getByRole('heading',{name:'Choose a Break',exact:true}).waitFor();await p.getByRole('button',{name:'Start Fixture rest',exact:true}).click();}
 async function done(p){await p.getByRole('button',{name:'Done',exact:true}).click();await idle(p);}
 async function success(p,action){await p.getByRole('heading',{name:action+' Recorded',exact:true}).waitFor();}
 async function count(){return Number((await q('SELECT count(*)::int AS n FROM clocker_command_ledger'))[0].n);}
@@ -43,8 +54,9 @@ async function geometry(p,label){const v=await p.evaluate(()=>{
 async function shot(p,name){const file=join(evidence,name+'.png');await p.screenshot({path:file,fullPage:true});report.screenshots.push(file);}
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
- for(const name of ['clocker-devices','clocker-pins','clocker-punches'])await q(await readFile(`db/phase-c/${name}.sql`,'utf8'));
+ for(const name of ['clocker-devices','clocker-pins','clocker-punches','clocker-breaks'])await q(await readFile(`db/phase-c/${name}.sql`,'utf8'));
  await seedOwnedApp(app.database.executor);
+ await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) SELECT 'ui-rest',l.workspace_id,'Fixture rest','REST',15,e.id,e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.role='OWNER' ORDER BY e.id LIMIT 1");
  for(const [id,name] of [['PUNCH-A','Avery'],['PUNCH-B','Blair']]){await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'QA','555','EMPLOYEE','loc-1')",[id,name]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);}
  for(const engine of (process.env.PUNCH_QA_ENGINES?.split(',')??['chromium','webkit'])){
   const browser=await playwright[engine].launch();browsers.push(browser);
@@ -59,7 +71,7 @@ try{
   let executeRequests=0;const watch=r=>{if(r.url().endsWith('/punch')&&r.postDataJSON()?.operation==='execute')executeRequests++;};t.on('request',watch);
   const before=await count();await t.getByRole('button',{name:'Clock In',exact:true}).evaluate(e=>{e.click();e.click();});await success(t,'Clock In');
   assert.equal(executeRequests,1);assert.equal(await count(),before+1);checked(engine+': double click records exactly one real Clock In');await shot(t,engine+'-clock-in-success');
-  await done(t);await verify(t);await t.getByRole('button',{name:'Start Break',exact:true}).click();await success(t,'Break Start');await done(t);
+  await done(t);await verify(t);await startBreak(t);await success(t,'Break Start');await done(t);
   await verify(t);await t.getByRole('button',{name:'End Break',exact:true}).waitFor();await shot(t,engine+'-on-break');
   await t.getByRole('button',{name:'End Break',exact:true}).click();await success(t,'Break End');await done(t);
   await verify(t);await t.getByRole('button',{name:'Clock Out',exact:true}).click();await t.getByRole('button',{name:'Keep Working',exact:true}).click();
@@ -84,7 +96,7 @@ try{
   const second=await context(browser),t2=await second.newPage();t2.setDefaultTimeout(15000);t2.on('pageerror',e=>capture('second-tablet',e));
   await enroll(ownerPage,t2,engine+' Second Tablet');await verify(t);await verify(t2);
   await t.getByRole('button',{name:'Start Break',exact:true}).waitFor();await t2.getByRole('button',{name:'Clock Out',exact:true}).waitFor();
-  await t.getByRole('button',{name:'Start Break',exact:true}).click();await success(t,'Break Start');
+  await startBreak(t);await success(t,'Break Start');
   await t2.getByRole('button',{name:'Clock Out',exact:true}).click();await t2.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();
   await t2.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();await t2.getByRole('button',{name:'Check Action Status',exact:true}).click();
   await t2.getByRole('button',{name:'End Break',exact:true}).waitFor();assert.equal(await count(),before+6);checked(engine+': stale second-tablet action refreshes without silently clocking out');
@@ -103,9 +115,9 @@ try{
   // Current verification expiry must block the visible action, not record time.
   await verify(t);await t.getByRole('button',{name:'Start Break',exact:true}).waitFor();
   await q("UPDATE clocker_pin_sessions SET expires_at=clock_timestamp()-interval '1 second'");
-  await t.getByRole('button',{name:'Start Break',exact:true}).click();await t.getByRole('heading',{name:'Verify Your PIN Again',exact:true}).waitFor();
+  await startBreak(t);await t.getByRole('heading',{name:'Verify Your PIN Again',exact:true}).waitFor();
   assert.equal(await count(),before+8);checked(engine+': expired verification never creates a time record');
-  await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Retry Same Action',exact:true}).click();await success(t,'Break Start');await done(t);
+  await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Start Break',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Retry Same Action',exact:true}).count(),0);await startBreak(t);await success(t,'Break Start');await done(t);
   // Responsive controls, keyboard confirmation and clear identity on Escape.
   for(const width of [320,375,390,430,768,1024,1440]){
    await t.setViewportSize({width,height:width<500?844:width===768?1024:900});await verify(t);await t.getByRole('button',{name:'End Break',exact:true}).waitFor();
@@ -127,7 +139,7 @@ try{
   const tab=await tablet.newPage();await goto(tab,'/clocker/2');await verify(tab,'3579');await tab.getByRole('button',{name:'Clock In',exact:true}).waitFor();
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('heading',{name:'Verify Your PIN Again',exact:true}).waitFor();assert.equal(await count(),guardStart);
   await done(tab);await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);
-  await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Retry Same Action',exact:true}).click();await success(t,'Clock In');await done(t);
+  await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Retry Same Action',exact:true}).count(),0);await t.getByRole('button',{name:'Clock In',exact:true}).click();await success(t,'Clock In');await done(t);
   assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id='PUNCH-B'"))[0].n,0);
   await verify(t);await t.getByRole('button',{name:'Clock Out',exact:true}).click();await t.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await success(t,'Clock Out');await done(t);
   await tab.close();checked(engine+': a stale tab cannot clock a newly verified different employee');
@@ -135,6 +147,35 @@ try{
   await verify(t);await t.getByRole('heading',{name:'Clock State Unavailable',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Clock In',exact:true}).count(),0);await shot(t,engine+'-unavailable');
   await t.unroute('**/api/clocker/2/punch');await t.getByRole('button',{name:'Try Again',exact:true}).click();await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();await done(t);
   checked(engine+': an unavailable clock read never displays a false off-clock action');
+  // C5 and the tablet run through one canonical engine, including real Owner edits.
+  const typedStart=await count();await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).click();await success(t,'Clock In');await done(t);
+  await verify(t);
+  for(const viewport of [{width:320,height:740},{width:768,height:1024},{width:1024,height:768}]){
+   await t.setViewportSize(viewport);await t.getByRole('button',{name:'Start Break',exact:true}).click();await t.getByRole('heading',{name:'Choose a Break',exact:true}).waitFor();
+   assert.equal(await count(),typedStart+1,'Opening break choices must not record a break');
+   await geometry(t,engine+': explicit break selection '+viewport.width+'x'+viewport.height);
+   if(viewport.width===320||viewport.width===1024)await shot(t,engine+'-typed-break-selection-'+viewport.width);
+   await t.getByRole('button',{name:'Back',exact:true}).click();
+  }
+  await t.getByRole('button',{name:'Start Break',exact:true}).click();
+  await editBreak(ownerPage,'Meal reference','MEAL',30);
+  await t.getByRole('button',{name:'Start Fixture rest',exact:true}).click();await t.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();
+  assert.equal(await count(),typedStart+1,'A changed type cannot record from a stale choice');
+  await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Start Break',exact:true}).click();
+  assert.equal(await t.getByRole('button',{name:'Start Fixture rest',exact:true}).count(),0);
+  await t.getByRole('button',{name:'Start Meal reference',exact:true}).click();await success(t,'Break Start');await done(t);
+  checked(engine+': stale break selection rejects safely, then requires an explicit current type');
+  await editBreak(ownerPage,'Future rest','REST',5);await archiveBreak(ownerPage,'Archive');
+  await verify(t);await t.getByRole('button',{name:'End Break',exact:true}).waitFor();await t.getByText('Meal reference',{exact:true}).waitFor();
+  await t.getByText('Reference: 30 min',{exact:false}).waitFor();assert.equal(await t.getByText('Future rest',{exact:true}).count(),0);
+  const captured=(await q("SELECT break_type_snapshot AS settings FROM break_entries b JOIN time_entries t ON t.id=b.time_entry_id WHERE t.employee_id='PUNCH-A' ORDER BY b.break_start_at DESC LIMIT 1"))[0].settings;
+  assert.equal(captured.name,'Meal reference');assert.equal(captured.category,'MEAL');assert.equal(captured.targetMinutes,30);
+  await shot(t,engine+'-historical-break-settings');await t.getByRole('button',{name:'End Break',exact:true}).click();await success(t,'Break End');await done(t);
+  await verify(t);await t.getByText('No break types are configured. Ask your Owner to add one.',{exact:true}).waitFor();
+  assert.equal(await t.getByRole('button',{name:'Start Break',exact:true}).count(),0);
+  await t.getByRole('button',{name:'Clock Out',exact:true}).click();await t.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await success(t,'Clock Out');await done(t);
+  assert.equal(await count(),typedStart+4);checked(engine+': archived types preserve captured settings, allow End Break and never invent a new type');
+  await archiveBreak(ownerPage,'Reactivate');await editBreak(ownerPage,'Fixture rest','REST',15);
   const longName='Alexandria'+('x'.repeat(65));await q("UPDATE employees SET first_name=$1,updated_at=clock_timestamp() WHERE id='PUNCH-A'",[longName]);
   await t.setViewportSize({width:320,height:740});await verify(t);await t.getByRole('heading',{name:'Hi, '+longName+'.',exact:true}).waitFor();await geometry(t,engine+': complete long name at 320px');await shot(t,engine+'-long-name-320');
   await t.getByRole('heading',{name:'Hi, '+longName+'.',exact:true}).focus();await t.keyboard.press('Tab');

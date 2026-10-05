@@ -1,0 +1,2 @@
+.metadata { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; color: var(--muted); line-height: 1.5; font-size: 14px; }
+.hint { margin: -8px 0 0 !important; font-size: 12px; }

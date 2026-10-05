@@ -1,34 +1,29 @@
 import { expect, it } from 'vitest';
 import { parsePunchCommand } from './punch-command';
-const base = {
- commandId: 'e5616987-26a9-46d2-829b-d69b611be658', action: 'CLOCK_IN', expectedRevision: 0,
- expectedEntryId: null, expectedEntryVersion: null, expectedBreakId: null, expectedBreakVersion: null,
-};
-it('accepts an explicit off-clock revision without employee or client time fields',()=>{
- expect(parsePunchCommand(base)).toEqual(base);
+const valid=()=>({commandId:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',action:'CLOCK_IN',verificationId:'a'.repeat(64),
+ expected:{revision:0,timeEntryId:null,timeEntryVersion:null,breakEntryId:null,breakEntryVersion:null}});
+it('accepts the exact bounded command contract without coercion',()=>{
+ expect(parsePunchCommand(valid())).toEqual(valid());
+ const next={...valid(),action:'END_BREAK',expected:{revision:2,timeEntryId:'entry',timeEntryVersion:2,breakEntryId:'break',breakEntryVersion:1}};
+ expect(parsePunchCommand(next)).toEqual(next);
 });
-it.each(['START_BREAK','END_BREAK','CLOCK_OUT'])('accepts a version-bound %s', action=>{
- const command={...base,action,expectedRevision:3,expectedEntryId:'legacy-entry',expectedEntryVersion:2,
-  ...(action==='END_BREAK'?{expectedBreakId:'break-1',expectedBreakVersion:1}:{})};
- expect(parsePunchCommand(command)).toEqual(command);
+it.each([null,[],{},'text',{...valid(),employeeId:'forged'},{...valid(),locationId:'forged'},
+ {...valid(),clockInAt:'2020-01-01'}, {...valid(),pin:'0123'},{...valid(),action:'DELETE'},
+ {...valid(),commandId:'not-a-uuid'},{...valid(),verificationId:'short'},
+ {...valid(),expected:{...valid().expected,revision:-1}},
+ {...valid(),expected:{...valid().expected,revision:'0'}},
+ {...valid(),expected:{...valid().expected,revision:1.1}},
+ {...valid(),expected:{...valid().expected,revision:2147483648}},
+ {...valid(),expected:{...valid().expected,timeEntryId:'entry'}},
+ {...valid(),expected:{...valid().expected,timeEntryVersion:1}},
+ {...valid(),expected:{...valid().expected,breakEntryId:'break',breakEntryVersion:1}},
+ {...valid(),expected:{...valid().expected,timeEntryId:'x'.repeat(129),timeEntryVersion:1}},
+ {...valid(),expected:{...valid().expected,actorId:'forged'}},
+])('rejects malformed, contradictory or extra authority without echoing data',input=>{
+ expect(()=>parsePunchCommand(input)).toThrow('Check the clock action and reload its current state.');
 });
-it.each([
- {...base,employeeId:'forged'}, {...base,deviceId:'forged'}, {...base,clockInAt:'2030-01-01'},
- {...base,expectedRevision:-1}, {...base,expectedRevision:1.2}, {...base,expectedRevision:'0'},
- {...base,expectedRevision:2147483648}, {...base,commandId:'not-uuid'}, {...base,action:'PUBLISH'},
- {...base,expectedEntryId:'entry'}, {...base,expectedBreakId:'break'},
- {...base,action:'START_BREAK'}, {...base,action:'END_BREAK'},
- {...base,action:'CLOCK_OUT'}, {...base,extra:true}, null, [], 'CLOCK_IN',
-])('rejects malformed or forged input without echoing submitted values', input=>{
- expect(()=>parsePunchCommand(input)).toThrow('Invalid punch command. Refresh the tablet state before continuing.');
-});
-it('does not silently ignore a missing expectation',()=>{
- const {expectedBreakVersion: _unused,...missing}=base;
- expect(()=>parsePunchCommand(missing)).toThrow();
-});
-it('does not coerce array-valued actions into authorized action names',()=>{
- expect(()=>parsePunchCommand({...base,action:['CLOCK_IN']})).toThrow();
-});
-it('requires a string action even when an array has valid entry expectations',()=>{
- expect(()=>parsePunchCommand({...base,action:['CLOCK_OUT'],expectedEntryId:'entry-1',expectedEntryVersion:1})).toThrow();
+
+it.each(['commandId','verificationId'] as const)('rejects a trailing newline in %s rather than normalizing its identity',field=>{
+ const input={...valid(),[field]:valid()[field]+'\n'};
+ expect(()=>parsePunchCommand(input)).toThrow('Check the clock action and reload its current state.');
 });
