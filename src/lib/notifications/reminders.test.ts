@@ -220,3 +220,15 @@ it('slow_summary_seed_collection_reserves_a_flush_budget_and_consumes_pending_se
 
 // Explicit Puerto Rico fixture policy; production callers load the configured workspace.
 function readNotificationConfig(env: Record<string,string|undefined>) {return {...readRuntimeConfig(env),policy:fixtureNotificationPolicy};}
+
+it('coverage attention keeps one semantic budget per urgency stage across request revisions',()=>{
+ const source:SourceSnapshot={kind:'EXCHANGE',source:{kind:'EXCHANGE',id:'coverage',version:'r:1'},updatedAt:now.toISOString(),semanticNeedKey:'["shift","episode",1]',record:{id:'coverage',requestRevision:1,kind:'COVERAGE',status:'OPEN',requestedByEmployeeId:'E',requestedByName:'',requestedByRole:'EMPLOYEE',createdAt:now.toISOString(),sourceShift:{id:'shift',scheduleId:'s',employeeId:'E',employeeName:'',locationId:'2',locationName:'',weekStart:'2026-10-05',date:'2026-10-05',startTime:'16:00',endTime:'20:00'}}};
+ const input={source,expiresAt:'2026-10-05T20:00:00Z',seedId:'seed',urgency:'normal' as const};
+ const routine=buildSummaryGroup([input],employees[2],now,'test',policy,new Set())!;
+ const escalated={...input,source:{...source,source:{...source.source,version:'r:2'}}};
+ expect(buildSummaryGroup([escalated],employees[2],now,'test',policy,new Set(routine.itemKeys))).toBeNull();
+ const urgent=buildSummaryGroup([{...escalated,urgency:'high'}],employees[2],now,'test',policy,new Set(routine.itemKeys))!;
+ expect(urgent).not.toBeNull();
+ expect(urgent.itemKeys).not.toEqual(routine.itemKeys);
+ expect(buildSummaryGroup([{...input,urgency:'high'}],employees[2],now,'test',policy,new Set(urgent.itemKeys))).toBeNull();
+});

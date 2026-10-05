@@ -5,10 +5,10 @@ import type { NotificationConfig, RecipientAccess, SourceSnapshot, SqlExecutor, 
 import { cancelNotificationStatements, notificationIntentStatements } from './notifications';
 
 export type RequestSnapshot = Extract<SourceSnapshot, { kind: 'TIME_OFF' | 'EXCHANGE' | 'CALLOUT' }>;
-/** These lifecycles never return to an earlier status. Status is the persisted,
- * deterministic version; readers reconstruct it directly from the source row. */
+/** Time off retains status versions. Shift changes use monotonic revisions;
+ * records without a revision are explicitly legacy status-version records. */
 export function requestSnapshot<K extends RequestSnapshot['kind']>(kind: K, record: Extract<RequestSnapshot, { kind: K }>['record']): Extract<RequestSnapshot, { kind: K }> {
-  return { kind, record, source: { kind, id: record.id, version: record.status }, updatedAt: record.createdAt } as Extract<RequestSnapshot, { kind: K }>;
+  return { kind, record, source: { kind, id: record.id, version: kind !== 'TIME_OFF' && 'requestRevision' in record && Number.isSafeInteger(record.requestRevision) && Number(record.requestRevision)>0 ? `r:${record.requestRevision}` : record.status }, updatedAt: record.createdAt } as Extract<RequestSnapshot, { kind: K }>;
 }
 
 /** A conditional no-op aborts the whole batch, including earlier writes. */
@@ -24,11 +24,11 @@ export function requestStateGuard(table: 'shift_exchanges' | 'shift_callouts', i
     values: [id, JSON.stringify(expected)],
   };
 }
-export function requestNotificationStatements(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId: string; recipients: readonly RecipientAccess[]; config: NotificationConfig }): SqlStatement[] {
+export function requestNotificationStatements(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId?: string; recipients: readonly RecipientAccess[]; config: NotificationConfig; observedAt?:string }): SqlStatement[] {
   const {config} = input;
   return [
-    ...(input.before ? cancelNotificationStatements(input.before.source) : []),
-    ...notificationIntentStatements(buildNotificationIntents({ ...input, environment: config.environment, now: new Date(), policy: config.policy })),
+    ...(input.before ? [...cancelNotificationStatements(input.before.source), ...(input.before.kind!=='TIME_OFF' && input.before.source.version.startsWith('r:') ? cancelNotificationStatements({...input.before.source,version:input.before.record.status}) : [])] : []),
+    ...notificationIntentStatements(buildNotificationIntents({ ...input, environment: config.environment, now: new Date(input.observedAt??Date.now()), policy: config.policy })),
   ];
 }
 export function isRequestTransitionConflict(error: unknown): boolean {

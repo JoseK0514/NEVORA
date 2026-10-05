@@ -6,7 +6,7 @@ import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every
  * batch owns a connection: concurrent tests exercise actual PostgreSQL locks. */
-async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundation_test_' | 'nevora_generation_test_', migrations: number): Promise<{
+async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundation_test_' | 'nevora_generation_test_' | 'nevora_exchange_test_', migrations: number): Promise<{
   executor: SqlExecutor; connectionString: string; dispose(): Promise<void>;
 }> {
   if (process.env.DATABASE_URL) throw new Error('Refusing DATABASE_URL; unset it before disposable SQL tests.');
@@ -90,7 +90,7 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
   };
   try {
     // Exact checked-in sequence, including original transaction boundaries.
-    for (const file of ['0001_initial.sql', '0002_schedule_health.sql', '0003_schedule_assistance.sql', '0004_assistance_layer.sql', '0005_time_clock.sql', '0006_scheduling_rule_inputs.sql', '0007_portal_web_push.sql', '0008_workspace_positions.sql', '0009_schedule_generation.sql'].slice(0, migrations)) {
+    for (const file of ['0001_initial.sql', '0002_schedule_health.sql', '0003_schedule_assistance.sql', '0004_assistance_layer.sql', '0005_time_clock.sql', '0006_scheduling_rule_inputs.sql', '0007_portal_web_push.sql', '0008_workspace_positions.sql', '0009_schedule_generation.sql', '0010_shift_coverage_automation.sql'].slice(0, migrations)) {
       await assertOwned();
       await executor.query({ text: await readFile(resolve('db/migrations', file), 'utf8'), values: [] });
     }
@@ -99,12 +99,16 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
 }
 
 export function createDisposableFoundationDatabase({ mode }: { mode: 'upgrade' | 'empty' | 'current-runtime' }) {
-  return createOwnedDatabase('nevora_foundation_test_', mode === 'current-runtime' ? 9 : mode === 'upgrade' ? 7 : 0);
+  return createOwnedDatabase('nevora_foundation_test_', mode === 'current-runtime' ? 10 : mode === 'upgrade' ? 7 : 0);
 }
 export function createDisposableNotificationDatabase() {
-  return createOwnedDatabase('fuel_phase3_test_', 9);
+  return createOwnedDatabase('fuel_phase3_test_', 10);
 }
 
 export function createDisposableGenerationDatabase({mode = 'current-runtime'}: {mode?: 'current-runtime' | 'historical-8'} = {}) {
-  return createOwnedDatabase('nevora_generation_test_', mode === 'historical-8' ? 8 : 9);
+  return createOwnedDatabase('nevora_generation_test_', mode === 'historical-8' ? 8 : 10);
+}
+
+export function createDisposableExchangeDatabase({mode}: {mode: 'historical-9' | 'current-runtime'}) {
+  return createOwnedDatabase('nevora_exchange_test_', mode === 'historical-9' ? 9 : 10);
 }

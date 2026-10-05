@@ -10,13 +10,15 @@ type ShiftOption = {
   timeLabel: string;
   employeeName: string;
   locationName: string;
+  positionLabel?:string;
+  leadLabel?:string;
 };
 
 const subscribe = () => () => {};
 const clientSnapshot = () => true;
 const serverSnapshot = () => false;
 
-export function EmployeeShiftPicker({ options }: { options: ShiftOption[] }) {
+export function EmployeeShiftPicker({ options, onSelect }: { options: ShiftOption[]; onSelect?:(id:string)=>void }) {
   const enhanced = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   const id = useId();
   const container = useRef<HTMLDivElement>(null);
@@ -50,6 +52,7 @@ export function EmployeeShiftPicker({ options }: { options: ShiftOption[] }) {
 
   function choose(index: number) {
     setValue(options[index].id);
+    onSelect?.(options[index].id);
     setInvalid(false);
     setOpen(false);
   }
@@ -115,7 +118,7 @@ export function EmployeeShiftPicker({ options }: { options: ShiftOption[] }) {
           name="targetShiftId"
           required
           value={value}
-          onChange={(event) => setValue(event.target.value)}
+          onChange={(event) => {setValue(event.target.value);onSelect?.(event.target.value);}}
           className={enhanced ? "sr-only" : undefined}
           aria-hidden={enhanced ? true : undefined}
           tabIndex={enhanced ? -1 : undefined}
@@ -154,7 +157,7 @@ export function EmployeeShiftPicker({ options }: { options: ShiftOption[] }) {
             >
               <span className="employee-shift-picker-value">
                 {selected ? (
-                  <><strong>{selected.timeLabel}</strong><small>{selected.dateLabel} · {selected.employeeName} · {selected.locationName}</small></>
+                  <><strong>{selected.timeLabel}</strong><small>{selected.dateLabel} · {selected.employeeName} · {selected.locationName} · {selected.positionLabel} · {selected.leadLabel}</small></>
                 ) : <span>Select a shift</span>}
               </span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
@@ -182,7 +185,7 @@ export function EmployeeShiftPicker({ options }: { options: ShiftOption[] }) {
                     <span className="employee-shift-picker-option-copy">
                       <small>{option.dateLabel}</small>
                       <strong>{option.timeLabel}</strong>
-                      <span>{option.employeeName} · {option.locationName}</span>
+                      <span>{option.employeeName} · {option.locationName}</span>{option.positionLabel?<span>{option.positionLabel} · {option.leadLabel}</span>:null}
                     </span>
                     {option.id === value ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg> : null}
                   </div>

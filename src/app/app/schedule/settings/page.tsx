@@ -1,3 +1,6 @@
+import {ShiftChangePolicyFields} from '@/components/shift-change-policy-fields';
+import {readShiftChangePolicy} from '@/lib/data/shift-change-policy';
+import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
 import {ConfigurationForm} from "@/components/configuration-form";
 import {PositionQuotaFields} from "@/components/position-quota-fields";
 import {listPositions} from "@/lib/data/positions";
@@ -28,7 +31,8 @@ export default async function ScheduleSettingsPage({
     windowDeleted?: string;
   }>;
 }) {
-  await requireRoles(MANAGER_ROLES);
+  const session=await requireRoles(MANAGER_ROLES);
+  let policy=null,policyUnavailable=false;try{policy=await readShiftChangePolicy(neonNotificationExecutor());}catch{policyUnavailable=true;}
   const params = await searchParams;
 
   const [staffing, employees, locations, coverageWindows, positions] = await Promise.all([
@@ -89,6 +93,7 @@ export default async function ScheduleSettingsPage({
         <p className="form-success">Coverage window removed.</p>
       ) : null}
 
+      {policyUnavailable?<p className="form-error" role="alert">Shift change policy is unavailable. Reconnect and reload before editing.</p>:<ShiftChangePolicyFields policy={policy} canEdit={session.role==='OWNER'}/>}
       <div className="schedule-settings-form">
         <ConfigurationForm
           action={saveScheduleHealthSettingsFormAction}

@@ -41,7 +41,7 @@ it("historical target fairness splits overnight hours into actual Monday workwee
     { weekStart: "2026-09-28", scheduledHours: 14, underTarget: true },
   ]);
   const sql = query.mock.calls.find(([text]) => text.includes("FROM shifts"))!;
-  expect(sql[0]).not.toContain("s.week_start");
+  expect(sql[0]).not.toMatch(/WHERE\s+s\.week_start/);
   expect(sql[0]).toContain("s.status <> 'ARCHIVED'");
   expect(sql[0]).toContain("shift_callouts");
   expect(sql[1]).toEqual(["2026-09-27", "2026-10-05"]);

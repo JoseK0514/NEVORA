@@ -16,7 +16,7 @@ vi.mock("@/components/configuration-form",()=>import("../../../../components/con
 vi.mock("@/components/position-quota-fields",()=>import("../../../../components/position-quota-fields"));
 vi.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
-  requireRoles: vi.fn(),
+  requireRoles: vi.fn(async()=>({id:"reviewer",role:"MANAGER"})),
 }));
 vi.mock(
   "@/components/page-header",
@@ -214,3 +214,9 @@ it("preserves configured customer location names without Fuel-specific normaliza
   expect(html).toContain("Northside West");
   expect(html).not.toContain("FUEL – 2");
 });
+
+vi.mock('@/lib/data/shift-change-policy',()=>({readShiftChangePolicy:async()=>null}));
+vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
+vi.mock('@/components/shift-change-policy-fields',()=>import('../../../../components/shift-change-policy-fields'));
+vi.mock('./actions',()=>({saveShiftChangePolicyAction:async()=>({status:'conflict'})}));
+vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));

@@ -1,12 +1,17 @@
-import { randomUUID } from "node:crypto";
+import {projectShiftChangeState} from '../shift-changes/maintenance';
+import {resolveShiftChangePolicy} from '../shift-changes/policy';
+import type {ShiftTerms} from '../shift-changes/types';
+import { executeShiftChangeAdapter, type ShiftChangeAdapterInput } from './shift-change-adapters';
+import { currentShiftTermsSql,currentCalloutReleaseSql } from './shift-change-release';
+
 import { getDb, queryRows } from "@/lib/db";
-import { commitPublishedWeekChange, neonNotificationExecutor, type GuardedShift } from './notification-transactions';
-import { guardedRequestMutation, isRequestTransitionConflict, requestNotificationStatements, requestSnapshot, requestStateGuard } from './request-notifications';
-import type { SqlExecutor, SqlStatement } from '../notifications/types';
+import { neonNotificationExecutor, type GuardedShift } from './notification-transactions';
+import type { SqlExecutor } from '../notifications/types';
 import type { ExchangeKind, UserRole } from "@/lib/domain";
 
 export type ExchangeShift = {
   positionId?: string;
+  positionName?:string;
   id: string;
   scheduleId: string;
   employeeId: string;
@@ -21,6 +26,10 @@ export type ExchangeShift = {
 };
 
 export type ExchangeRecord = {
+  requestRevision?:number;
+  actionable?:boolean;
+  effectiveCompletionDeadline?:string|null;
+  attention?:string|null;
   id: string;
   kind: ExchangeKind;
   status:
@@ -63,6 +72,7 @@ function mapShift(row: Record<string, unknown>, prefix: string): ExchangeShift {
     startTime: timeValue(row[`${prefix}_start_time`]),
     endTime: timeValue(row[`${prefix}_end_time`]),
     positionId: row[`${prefix}_position_id`] ? String(row[`${prefix}_position_id`]) : undefined,
+    positionName: row[`${prefix}_position_name`] ? String(row[`${prefix}_position_name`]) : undefined,
     isDesignatedLead: Boolean(row[`${prefix}_is_designated_lead`]),
   };
 }
@@ -70,6 +80,13 @@ function mapShift(row: Record<string, unknown>, prefix: string): ExchangeShift {
 const EXCHANGE_SELECT = `
   SELECT
     x.id,
+    x.request_revision,
+    x.legacy_manual,x.completion_deadline,x.source_terms,x.target_terms,x.escalated_at,
+    (SELECT shift_change_policy FROM workspaces WHERE singleton) AS shift_change_policy,
+    clock_timestamp()::text AS observed_at,
+    ${currentShiftTermsSql('source','source_schedule')} AS live_source_terms,
+    (CASE WHEN x.target_shift_id IS NOT NULL THEN ${currentShiftTermsSql('target_shift','target_schedule')} ELSE NULL END) AS live_target_terms,
+    (source_schedule.status='PUBLISHED' AND x.source_terms=${currentShiftTermsSql('source','source_schedule')} AND (x.target_shift_id IS NULL OR (target_schedule.status='PUBLISHED' AND x.target_terms=${currentShiftTermsSql('target_shift','target_schedule')}))) AS terms_current,
     x.kind,
     x.status,
     x.requested_by_employee_id,
@@ -90,6 +107,7 @@ const EXCHANGE_SELECT = `
     source.start_time AS source_start_time,
     source.end_time AS source_end_time,
     source.position_id AS source_position_id,
+    (SELECT name FROM positions WHERE id=source.position_id) AS source_position_name,
     source.is_designated_lead AS source_is_designated_lead,
 
     target_shift.id AS target_shift_id,
@@ -103,6 +121,7 @@ const EXCHANGE_SELECT = `
     target_shift.start_time AS target_start_time,
     target_shift.end_time AS target_end_time,
     target_shift.position_id AS target_position_id,
+    (SELECT name FROM positions WHERE id=target_shift.position_id) AS target_position_name,
     target_shift.is_designated_lead AS target_is_designated_lead
 
   FROM shift_exchanges x
@@ -133,8 +152,9 @@ const EXCHANGE_SELECT = `
 function mapExchange(row: unknown): ExchangeRecord {
   const item = row as Record<string, unknown>;
 
-  return {
+  const record:ExchangeRecord = {
     id: String(item.id),
+    requestRevision:Number(item.request_revision),
     kind: item.kind as ExchangeKind,
     status: item.status as ExchangeRecord["status"],
     requestedByEmployeeId: String(item.requested_by_employee_id),
@@ -159,6 +179,7 @@ function mapExchange(row: unknown): ExchangeRecord {
       startTime: timeValue(item.target_start_time),
       endTime: timeValue(item.target_end_time),
       positionId: item.target_position_id ? String(item.target_position_id) : undefined,
+      positionName: item.target_position_name ? String(item.target_position_name) : undefined,
       isDesignatedLead: Boolean(item.target_is_designated_lead),
     } : undefined,
     createdAt:
@@ -166,6 +187,18 @@ function mapExchange(row: unknown): ExchangeRecord {
         ? item.created_at.toISOString()
         : String(item.created_at),
   };
+  // Request copy uses consent-bound originals, never replacement owners/live times.
+  const original=(terms:unknown,live:ExchangeShift,name:string):ExchangeShift=>{
+    if(!terms||typeof terms!=='object')return live;const t=terms as ShiftTerms;
+    return {...live,id:t.shiftId,scheduleId:t.scheduleId,employeeId:t.employeeId,employeeName:name,locationId:t.locationId,locationName:t.locationId===live.locationId?live.locationName:`Location ${t.locationId}`,weekStart:t.weekStart,date:t.date,startTime:t.startTime,endTime:t.endTime,positionId:t.positionId??undefined,positionName:t.positionId===live.positionId?live.positionName:undefined,isDesignatedLead:t.isDesignatedLead};
+  };
+  record.sourceShift=original(item.source_terms,record.sourceShift,record.requestedByName);
+  if(record.targetShift)record.targetShift=original(item.target_terms,record.targetShift,record.targetEmployeeName??record.targetShift.employeeName);
+  if(item.observed_at){
+    const state=projectShiftChangeState({id:record.id,kind:'EXCHANGE',workflow:record.kind,status:record.status,revision:record.requestRevision??1,legacyManual:item.legacy_manual===true,source:(item.source_terms??item.live_source_terms) as ShiftTerms|null,target:(item.target_terms??item.live_target_terms) as ShiftTerms|null,completionDeadline:item.completion_deadline?new Date(String(item.completion_deadline)).toISOString():null,policy:resolveShiftChangePolicy(item.shift_change_policy),escalatedAt:item.escalated_at?String(item.escalated_at):null,termsCurrent:item.terms_current===true},new Date(String(item.observed_at)));
+    record.status=state.status as ExchangeRecord['status'];record.actionable=state.actionable;record.effectiveCompletionDeadline=state.completionDeadline;record.attention=state.attention;
+  }
+  return record;
 }
 
 export async function getPublishedShift(shiftId: string): Promise<ExchangeShift | null> {
@@ -184,6 +217,7 @@ export async function getPublishedShift(shiftId: string): Promise<ExchangeShift 
        sh.start_time AS source_start_time,
        sh.end_time AS source_end_time,
        sh.position_id AS source_position_id,
+       (SELECT name FROM positions WHERE id=sh.position_id) AS source_position_name,
        sh.is_designated_lead AS source_is_designated_lead
      FROM shifts sh
      JOIN schedules s ON s.id = sh.schedule_id
@@ -203,8 +237,10 @@ export async function getPublishedShift(shiftId: string): Promise<ExchangeShift 
 export async function listEmployeePublishedShifts(
   employeeId: string,
   fromDate: string,
+  executor?: SqlExecutor,
+  includeParticipating = false,
 ): Promise<ExchangeShift[]> {
-  const sql = getDb();
+  const sql = executor ? { query: (text:string,values:readonly unknown[]) => executor.query({text,values}) } : getDb();
   const rows = queryRows(
     await sql.query(
     `SELECT
@@ -219,6 +255,7 @@ export async function listEmployeePublishedShifts(
        sh.start_time AS source_start_time,
        sh.end_time AS source_end_time,
        sh.position_id AS source_position_id,
+       (SELECT name FROM positions WHERE id=sh.position_id) AS source_position_name,
        sh.is_designated_lead AS source_is_designated_lead
      FROM shifts sh
      JOIN schedules s ON s.id = sh.schedule_id
@@ -227,18 +264,18 @@ export async function listEmployeePublishedShifts(
      WHERE sh.employee_id = $1
        AND sh.date >= $2
        AND s.status = 'PUBLISHED'
-       AND NOT EXISTS (
+       ${includeParticipating ? '' : `AND NOT EXISTS (
          SELECT 1
          FROM shift_exchanges x
          WHERE (x.source_shift_id = sh.id OR x.target_shift_id = sh.id)
            AND x.status IN ('OPEN', 'EMPLOYEE_PENDING', 'MANAGER_PENDING')
-       )
+       )`}
        AND NOT EXISTS (
          SELECT 1
          FROM shift_callouts c
          WHERE c.shift_id = sh.id
            AND c.employee_id = sh.employee_id
-           AND c.status IN ('PENDING', 'APPROVED')
+           AND (c.status='PENDING' OR (${currentCalloutReleaseSql()}))
        )
      ORDER BY sh.date, sh.start_time`,
     [employeeId, fromDate],
@@ -267,6 +304,7 @@ export async function listSwapTargets(
        sh.start_time AS source_start_time,
        sh.end_time AS source_end_time,
        sh.position_id AS source_position_id,
+       (SELECT name FROM positions WHERE id=sh.position_id) AS source_position_name,
        sh.is_designated_lead AS source_is_designated_lead
      FROM shifts sh
      JOIN schedules s ON s.id = sh.schedule_id
@@ -308,7 +346,7 @@ export async function listOpenCoverage(
     ),
   );
 
-  return rows.map(mapExchange);
+  return rows.map(mapExchange).filter(row=>row.status==='OPEN');
 }
 
 export async function listIncomingSwaps(employeeId: string): Promise<ExchangeRecord[]> {
@@ -324,7 +362,7 @@ export async function listIncomingSwaps(employeeId: string): Promise<ExchangeRec
     ),
   );
 
-  return rows.map(mapExchange);
+  return rows.map(mapExchange).filter(row=>row.status==='EMPLOYEE_PENDING');
 }
 
 export async function listEmployeeExchangeActivity(
@@ -355,7 +393,7 @@ export async function listManagerPendingExchanges(): Promise<ExchangeRecord[]> {
     ),
   );
 
-  return rows.map(mapExchange);
+  return rows.map(mapExchange).filter(row=>row.status==='MANAGER_PENDING');
 }
 
 export async function getExchange(exchangeId: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<ExchangeRecord | null> {
@@ -363,148 +401,48 @@ export async function getExchange(exchangeId: string, executor: SqlExecutor = ne
   return rows[0] ? mapExchange(rows[0]) : null;
 }
 
-export async function createCoverageOffer(input: {
-  sourceShiftId: string;
-  requestedByEmployeeId: string;
-}, executor: SqlExecutor = neonNotificationExecutor()) {
-  return createExchange({ ...input, kind: 'COVERAGE' }, executor);
+/** Compatibility name; complete reviewed command and server proof are mandatory. */
+export async function createCoverageOffer(input:{sourceShiftId:string; requestedByEmployeeId:string} & ShiftChangeAdapterInput, executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'OFFER_COVERAGE',executor);
+ if(!['pending','completed','closed'].includes(result.status))throw new Error('Current reviewed command and session are required.'); return 'requestId' in result?result.requestId:'';
 }
-
-export async function createSwapProposal(input: {
-  sourceShiftId: string;
-  targetShiftId: string;
-  requestedByEmployeeId: string;
-  targetEmployeeId: string;
-}, executor: SqlExecutor = neonNotificationExecutor()) {
-  return createExchange({ ...input, kind: 'SWAP' }, executor);
+/** Compatibility name; complete reviewed command and server proof are mandatory. */
+export async function createSwapProposal(input:{sourceShiftId:string;targetShiftId:string;requestedByEmployeeId:string;targetEmployeeId:string} & ShiftChangeAdapterInput, executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'PROPOSE_SWAP',executor);
+ if(!['pending','completed','closed'].includes(result.status))throw new Error('Current reviewed command and session are required.'); return 'requestId' in result?result.requestId:'';
 }
-
-async function createExchange(input: {
-  sourceShiftId: string; requestedByEmployeeId: string; kind: ExchangeKind;
-  targetShiftId?: string; targetEmployeeId?: string;
-}, executor: SqlExecutor) {
-  const ids = [input.sourceShiftId, input.targetShiftId].filter((id): id is string => Boolean(id));
-  const weeks = await executor.query<{ week_start: string }>({ text: `SELECT DISTINCT s.week_start::text AS week_start FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id=ANY($1::text[])`, values: [ids] });
-  const id = randomUUID();
-  const result = await commitPublishedWeekChange({
-    weekStarts: weeks.map(w => w.week_start), actorEmployeeId: input.requestedByEmployeeId, sourceType: 'EXCHANGE', sourceId: id,
-    build(state, config) {
-      const source = state.shifts.find(s => s.sourceShiftId === input.sourceShiftId);
-      const target = state.shifts.find(s => s.sourceShiftId === input.targetShiftId);
-      const empty = { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
-      if (!source || source.employeeId !== input.requestedByEmployeeId || !state.schedules.some(s => s.id === source.scheduleId && s.status === 'PUBLISHED')) return empty;
-      if (input.kind === 'SWAP' && (!target || target.employeeId !== input.targetEmployeeId || !state.schedules.some(s => s.id === target.scheduleId && s.status === 'PUBLISHED'))) return empty;
-      const record: ExchangeRecord = {
-        id, kind: input.kind, status: input.kind === 'SWAP' ? 'EMPLOYEE_PENDING' : 'OPEN',
-        requestedByEmployeeId: input.requestedByEmployeeId, requestedByName: '',
-        requestedByRole: state.recipients.find(r => r.employeeId === input.requestedByEmployeeId)?.role ?? 'EMPLOYEE',
-        targetEmployeeId: input.targetEmployeeId, sourceShift: exchangeShiftFromGuarded(source), targetShift: target ? exchangeShiftFromGuarded(target) : undefined,
-        createdAt: new Date().toISOString(),
-      };
-      return {
-        recipientEmployeeIds: state.recipients.map(r => r.employeeId),
-        afterSchedules: state.schedules, afterShifts: state.shifts.map(s => ids.includes(s.sourceShiftId) ? { ...s, hasExchangeHistory: true } : s),
-        statements: [guardedRequestMutation({
-          text: `INSERT INTO shift_exchanges (id,kind,source_shift_id,requested_by_employee_id,target_employee_id,target_shift_id,status,created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
-          values: [id,input.kind,input.sourceShiftId,input.requestedByEmployeeId,input.targetEmployeeId ?? null,input.targetShiftId ?? null,record.status,record.createdAt],
-        }), ...requestNotificationStatements({ after: requestSnapshot('EXCHANGE', record), actorEmployeeId: input.requestedByEmployeeId, recipients: state.recipients, config })],
-      };
-    },
-  }, executor);
-  if (!result.committed) throw new Error('Exchange changed. Please try again.');
-  return id;
+/** Compatibility name; complete reviewed command and server proof are mandatory. */
+export async function claimCoverage(input:{exchangeId:string;employeeId:string} & ShiftChangeAdapterInput, executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'ACCEPT',executor);
+ return ['pending','completed','closed'].includes(result.status);
 }
-
-export async function claimCoverage(input: { exchangeId: string; employeeId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
-  const before = await getExchange(input.exchangeId, executor);
-  if (!before || before.kind !== 'COVERAGE' || before.status !== 'OPEN' || before.requestedByEmployeeId === input.employeeId) return false;
-  return transitionExchange(before, { ...before, status: 'MANAGER_PENDING', targetEmployeeId: input.employeeId }, input.employeeId, executor);
+/** Compatibility name; complete reviewed command and server proof are mandatory. */
+export async function respondToSwap(input:{exchangeId:string;employeeId:string;accept:boolean} & ShiftChangeAdapterInput, executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,input.accept?'ACCEPT':'DECLINE',executor);
+ return ['pending','completed','closed'].includes(result.status);
 }
-
-export async function respondToSwap(input: { exchangeId: string; employeeId: string; accept: boolean }, executor: SqlExecutor = neonNotificationExecutor()) {
-  const before = await getExchange(input.exchangeId, executor);
-  if (!before || before.kind !== 'SWAP' || before.status !== 'EMPLOYEE_PENDING' || before.targetEmployeeId !== input.employeeId) return false;
-  return transitionExchange(before, { ...before, status: input.accept ? 'MANAGER_PENDING' : 'DENIED' }, input.employeeId, executor);
+/** Compatibility name; complete reviewed command and server proof are mandatory. */
+export async function denyExchange(input:{exchangeId:string;managerId:string} & ShiftChangeAdapterInput, executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'MANAGER_DECLINE',executor);
+ return ['pending','completed','closed'].includes(result.status);
 }
-
-export async function denyExchange(input: { exchangeId: string; managerId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
-  const before = await getExchange(input.exchangeId, executor);
-  if (!before || before.status !== 'MANAGER_PENDING') return false;
-  return transitionExchange(before, { ...before, status: 'DENIED' }, input.managerId, executor);
+/** Compatibility name; complete reviewed command and server proof are mandatory. */
+export async function approveCoverageExchange(input:{exchangeId:string;managerId:string} & ShiftChangeAdapterInput, executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'MANAGER_APPROVE',executor);
+ return ['pending','completed','closed'].includes(result.status);
 }
-
-export async function approveCoverageExchange(input: { exchangeId: string; managerId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
-  const before = await getExchange(input.exchangeId, executor);
-  if (!before || before.kind !== 'COVERAGE' || before.status !== 'MANAGER_PENDING' || !before.targetEmployeeId) return false;
-  return transitionExchange(before, { ...before, status: 'APPROVED' }, input.managerId, executor);
+/** Compatibility name; complete reviewed command and server proof are mandatory. */
+export async function approveSwapExchange(input:{exchangeId:string;managerId:string} & ShiftChangeAdapterInput, executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'MANAGER_APPROVE',executor);
+ return ['pending','completed','closed'].includes(result.status);
 }
-
-export async function approveSwapExchange(input: { exchangeId: string; managerId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
-  const before = await getExchange(input.exchangeId, executor);
-  if (!before || before.kind !== 'SWAP' || before.status !== 'MANAGER_PENDING' || !before.targetEmployeeId || !before.targetShift) return false;
-  return transitionExchange(before, { ...before, status: 'APPROVED' }, input.managerId, executor);
+/** Compatibility name; complete reviewed command and server proof are mandatory. */
+export async function cancelExchange(input:{exchangeId:string;employeeId:string} & ShiftChangeAdapterInput, executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'CANCEL',executor);
+ return ['pending','completed','closed'].includes(result.status);
 }
-
-export async function cancelExchange(input: { exchangeId: string; employeeId: string }, executor: SqlExecutor = neonNotificationExecutor()) {
-  const before = await getExchange(input.exchangeId, executor);
-  if (!before || before.requestedByEmployeeId !== input.employeeId || !['OPEN','EMPLOYEE_PENDING'].includes(before.status)) return false;
-  return transitionExchange(before, { ...before, status: 'CANCELLED' }, input.employeeId, executor);
-}
-
 export function exchangeShiftFromGuarded(shift: GuardedShift): ExchangeShift {
   return { id: shift.sourceShiftId, scheduleId: shift.scheduleId, employeeId: shift.employeeId, employeeName: '', locationId: shift.locationId, locationName: '', weekStart: shift.weekStart, date: shift.date, startTime: shift.startTime, endTime: shift.endTime, positionId:shift.positionId || undefined, isDesignatedLead: shift.isDesignatedLead };
-}
-
-async function transitionExchange(before: ExchangeRecord, after: ExchangeRecord, actorEmployeeId: string, executor: SqlExecutor): Promise<boolean> {
-  try {
-    const result = await commitPublishedWeekChange({
-      weekStarts: [before.sourceShift.weekStart, ...(before.targetShift ? [before.targetShift.weekStart] : [])], actorEmployeeId, sourceType: 'EXCHANGE', sourceId: before.id,
-      build(state, config) {
-        const source = state.shifts.find(s => s.sourceShiftId === before.sourceShift.id);
-        const target = state.shifts.find(s => s.sourceShiftId === before.targetShift?.id);
-        if (!source || (before.targetShift && !target)) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
-        // Recipient access and expiry use this guarded snapshot, not the earlier
-        // request lookup (a shift may have moved in the interval).
-        const currentBefore = { ...before, sourceShift: exchangeShiftFromGuarded(source), targetShift: target ? exchangeShiftFromGuarded(target) : undefined };
-        const afterShifts = state.shifts.map(s => ({ ...s }));
-        const statements: SqlStatement[] = [requestStateGuard('shift_exchanges', before.id, {
-          status: before.status, kind: before.kind, source_shift_id: before.sourceShift.id,
-          requested_by_employee_id: before.requestedByEmployeeId, target_employee_id: before.targetEmployeeId ?? null, target_shift_id: before.targetShift?.id ?? null,
-        })];
-        if (after.status === 'APPROVED') {
-          const assignments = [{ shift: before.sourceShift, from: before.requestedByEmployeeId, to: before.targetEmployeeId! }, ...(before.kind === 'SWAP' && before.targetShift ? [{ shift: before.targetShift, from: before.targetEmployeeId!, to: before.requestedByEmployeeId }] : [])];
-          for (const assignment of assignments) {
-            const shift = afterShifts.find(s => s.sourceShiftId === assignment.shift.id);
-            const recipient = state.recipients.find(r => r.employeeId === assignment.to);
-            if (!shift || shift.employeeId !== assignment.from || !recipient?.active || !recipient.allowedLocationIds.includes(shift.locationId) || !state.schedules.some(s => s.id === shift.scheduleId && s.status === 'PUBLISHED') || shift.date !== assignment.shift.date || shift.startTime !== assignment.shift.startTime || shift.endTime !== assignment.shift.endTime || shift.locationId !== assignment.shift.locationId) return { statements: [], afterSchedules: state.schedules, afterShifts: state.shifts };
-            shift.employeeId = assignment.to;
-            shift.assignmentOrigin = 'MANAGER';
-            shift.generatedClaims = null;
-            shift.isDesignatedLead = Boolean(shift.isDesignatedLead && ['OWNER','MANAGER','LEAD'].includes(recipient.role));
-            shift.isCalloutApproved = shift.approvedCalloutEmployeeId === assignment.to;
-            statements.push(guardedRequestMutation({
-              text: `UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL,employee_id=$2,is_designated_lead=$3,updated_at=now() WHERE id=$1 AND employee_id=$4 RETURNING id`,
-              values: [shift.sourceShiftId,shift.employeeId,shift.isDesignatedLead,assignment.from],
-            }));
-          }
-        }
-        statements.push(guardedRequestMutation({
-          text: `UPDATE shift_exchanges SET status=$3,target_employee_id=$4,
-            resolved_by=CASE WHEN $3::text IN ('APPROVED','DENIED','CANCELLED') THEN $2 ELSE resolved_by END,
-            resolved_at=CASE WHEN $3::text IN ('APPROVED','DENIED','CANCELLED') THEN now() ELSE resolved_at END
-            WHERE id=$1 AND status=$5 RETURNING id`,
-          values: [before.id,actorEmployeeId,after.status,after.targetEmployeeId ?? null,before.status],
-        }));
-        const currentAfter = { ...after, sourceShift: exchangeShiftFromGuarded(afterShifts.find(s => s.sourceShiftId === source.sourceShiftId)!), targetShift: target ? exchangeShiftFromGuarded(afterShifts.find(s => s.sourceShiftId === target.sourceShiftId)!) : undefined };
-        statements.push(...requestNotificationStatements({ before: requestSnapshot('EXCHANGE', currentBefore), after: requestSnapshot('EXCHANGE', currentAfter), actorEmployeeId, recipients: state.recipients, config }));
-        return { statements, recipientEmployeeIds: state.recipients.map(r => r.employeeId), afterSchedules: state.schedules, afterShifts };
-      },
-    }, executor);
-    return result.committed;
-  } catch (error) {
-    if (isRequestTransitionConflict(error)) return false;
-    throw error;
-  }
 }
 
 export async function listManagementCoverage(fromDate: string): Promise<ExchangeRecord[]> {

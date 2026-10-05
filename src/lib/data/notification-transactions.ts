@@ -1,3 +1,4 @@
+import { currentCalloutReleaseSql } from './shift-change-release';
 import type { AssignmentOrigin } from '../domain';
 import type { GenerationClaims } from '../scheduling/generation-claims';
 import { workspaceReadGuard } from './workspaces';
@@ -101,15 +102,15 @@ const currentShiftsSql = `SELECT sh.id AS "sourceShiftId", sh.schedule_id AS "sc
   EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id=sh.id) AS "hasCalloutHistory",
   EXISTS (SELECT 1 FROM schedule_publication_revision_shifts r WHERE r.source_shift_id=sh.id) AS "hasPublicationHistory",
   sh.position_id AS "positionId", NULLIF(sh.notes,'') AS notes, sh.is_designated_lead AS "isDesignatedLead",
-  EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id=sh.id AND c.employee_id=sh.employee_id AND c.status='APPROVED') AS "isCalloutApproved",
-  (SELECT c.employee_id FROM shift_callouts c WHERE c.shift_id=sh.id AND c.status='APPROVED' LIMIT 1) AS "approvedCalloutEmployeeId",
+  EXISTS (SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}) AS "isCalloutApproved",
+  (SELECT c.employee_id FROM shift_callouts c WHERE ${currentCalloutReleaseSql()} LIMIT 1) AS "approvedCalloutEmployeeId",
   EXISTS (SELECT 1 FROM shift_exchanges x WHERE x.source_shift_id=sh.id OR x.target_shift_id=sh.id) AS "hasExchangeHistory"
   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=ANY($1::date[])`;
 const revisionShiftsSql = `SELECT source_shift_id AS "sourceShiftId", schedule_id AS "scheduleId", location_id AS "locationId",
   employee_id AS "employeeId", date::text AS date, left(start_time::text,5) AS "startTime", left(end_time::text,5) AS "endTime",
   position_id AS "positionId", position_name AS "positionName", notes, is_designated_lead AS "isDesignatedLead", is_callout_approved AS "isCalloutApproved"
   FROM schedule_publication_revision_shifts WHERE revision_id=r.id`;
-const stateSql = `jsonb_build_object(
+export const notificationStateSql = `jsonb_build_object(
   'assignmentFacts', jsonb_build_object(
     'workspace',(SELECT jsonb_build_object('id',id,'active',active,'timeZone',time_zone) FROM workspaces WHERE singleton=true),
     'locations',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'workspaceId',workspace_id,'active',active) ORDER BY id) FROM locations),'[]'::jsonb),
@@ -133,13 +134,13 @@ const stateSql = `jsonb_build_object(
     FROM employees e) t),'[]'::jsonb))`;
 /** Shared authoritative read used by reminder/open/worker checks. */
 export async function readNotificationWeekState(weeks: readonly string[], executor: SqlExecutor): Promise<GuardedWeekState> {
-    const [row] = await executor.query<{state: GuardedWeekState}>({text: `SELECT ${stateSql} AS state`, values: [[...weeks]]});
+    const [row] = await executor.query<{state: GuardedWeekState}>({text: `SELECT ${notificationStateSql} AS state`, values: [[...weeks]]});
     if (!row) throw new Error('Schedule snapshot could not be read.');
     return row.state;
 }
 /** Reminder insertion uses the same exact snapshot guard after taking the week lock. */
 export function notificationWeekStateGuard(week: string, state: GuardedWeekState): SqlStatement {
-    return {text:`SELECT (CASE WHEN ${stateSql} = $2::jsonb THEN '1' ELSE 'notification_source_conflict' END)::integer`,values:[[week],JSON.stringify(state)]};
+    return {text:`SELECT (CASE WHEN ${notificationStateSql} = $2::jsonb THEN '1' ELSE 'notification_source_conflict' END)::integer`,values:[[week],JSON.stringify(state)]};
 }
 /** Common week lock used by all schedule writers and explicit acknowledgement. */
 export function scheduleWeekLockStatements(weekStarts: readonly string[]): SqlStatement[] {
@@ -214,7 +215,7 @@ export async function commitPublishedWeekChange(input: {
             state: GuardedWeekState;
             read_at: string;
         }>({
-            text: `SELECT ${stateSql} AS state, clock_timestamp()::text AS read_at`, values: [weeks]
+            text: `SELECT ${notificationStateSql} AS state, clock_timestamp()::text AS read_at`, values: [weeks]
         });
         if (!read)
             throw new Error('Schedule snapshot could not be read.');
@@ -225,6 +226,32 @@ export async function commitPublishedWeekChange(input: {
             return {
                 committed: false, revisions: []
             };
+        const {guards,statements,revisions}=preparePublishedWeekChange({...input,state,batch,config,observedAt:read.read_at});
+        try {
+            await executor.transaction([...guards,...statements]);
+            return {
+                committed: true, revisions
+            };
+        }
+        catch (error) {
+            const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
+            const conflict = code === '22P02' && error instanceof Error && error.message.includes('schedule_week_version_conflict');
+            if (attempt === 2 || !(conflict || code === '40001' || code === '40P01'))
+                throw error;
+        }
+    }
+    throw new Error('Schedule version retries exhausted.');
+}
+
+export type PublishedChangePlanInput = {
+    weekStarts: readonly string[]; actorEmployeeId: string; sourceType: RevisionSourceType; sourceId?: string;
+    suppressPublicationEventEmployeeIds?:readonly string[]; revisionWeekStarts?:readonly string[]; state: GuardedWeekState; batch: WeekMutationBatch; config: NotificationConfig; observedAt: string;
+};
+export type PreparedPublishedChange = { guards: SqlStatement[]; statements: SqlStatement[]; revisions: PublicationRevision[] };
+/** Pure batch assembly. The caller owns execution and retries. */
+export function preparePublishedWeekChange(input: PublishedChangePlanInput): PreparedPublishedChange {
+ const {state,batch,config}=input;
+ const weeks=[...new Set(input.weekStarts)].sort();
         // Only a changed assignment requires current eligibility. Retained historical
         // inactive facts and request-status-only writes must remain readable/writable.
         const assignments = batch.afterShifts.filter(next => {
@@ -248,7 +275,7 @@ export async function commitPublishedWeekChange(input: {
         }
         const locationIds=[...new Set([...assignments.map(s=>s.locationId),...newSchedules.map(s=>s.locationId)])].sort();
         const positionIds=[...new Set(assignments.flatMap(s=>s.positionId?[s.positionId]:[]))].sort();
-        const statements: SqlStatement[] = [
+        const guards: SqlStatement[] = [
             ...workspaceReadGuard(config.workspace!),
             ...scheduleWeekLockStatements(weeks),
             // Compatible SHARE locks allow publications on unrelated weeks concurrently.
@@ -263,8 +290,10 @@ export async function commitPublishedWeekChange(input: {
             {
                 text: 'LOCK TABLE employee_location_eligibility IN SHARE MODE', values: []
             },
+        ];
+        const statements: SqlStatement[] = [
             {
-                text: `SELECT (CASE WHEN ${stateSql} = $2::jsonb THEN '1' ELSE 'schedule_week_version_conflict' END)::integer AS guarded`, values: [weeks, JSON.stringify(state)]
+                text: `SELECT (CASE WHEN ${notificationStateSql} = $2::jsonb THEN '1' ELSE 'schedule_week_version_conflict' END)::integer AS guarded`, values: [weeks, JSON.stringify(state)]
             },
             ...batch.statements,
             // Monotonic even for writers whose transactions began before a lock wait.
@@ -286,6 +315,7 @@ export async function commitPublishedWeekChange(input: {
         });
         const revisions: PublicationRevision[] = [];
         for (const week of weeks) {
+            if(input.revisionWeekStarts && !input.revisionWeekStarts.includes(week))continue;
             const history = state.revisions.filter(r => r.weekStart === week);
             const latest = history.at(-1);
             const previous = latest?.shifts ?? [];
@@ -297,7 +327,7 @@ export async function commitPublishedWeekChange(input: {
             if (!batch.afterSchedules.some(s => s.weekStart === week && s.status === 'PUBLISHED') && !latest)
                 continue;
             const revision: PublicationRevision = {
-                id: randomUUID(), weekStart: week, revisionNumber: (latest?.revisionNumber ?? 0) + 1, sourceType: input.sourceType, sourceId: batch.revisionSourceId ?? input.sourceId, affectedLocationId: batch.affectedLocationId, createdBy: input.actorEmployeeId, createdAt: new Date(read.read_at).toISOString()
+                id: randomUUID(), weekStart: week, revisionNumber: (latest?.revisionNumber ?? 0) + 1, sourceType: input.sourceType, sourceId: batch.revisionSourceId ?? input.sourceId, affectedLocationId: batch.affectedLocationId, createdBy: input.actorEmployeeId, createdAt: new Date(input.observedAt).toISOString()
             };
             revisions.push(revision);
             statements.push({
@@ -306,7 +336,7 @@ export async function commitPublishedWeekChange(input: {
             statements.push({
                 text: `INSERT INTO schedule_publication_revision_shifts (id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,notes,is_designated_lead,is_callout_approved,position_id,position_name)
         SELECT $1 || ':' || sh.id,$1,sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time,sh.notes,sh.is_designated_lead,
-        EXISTS(SELECT 1 FROM shift_callouts c WHERE c.shift_id=sh.id AND c.employee_id=sh.employee_id AND c.status='APPROVED'),sh.position_id,(SELECT p.name FROM positions p WHERE p.id=sh.position_id)
+        EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}),sh.position_id,(SELECT p.name FROM positions p WHERE p.id=sh.position_id)
         FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=$2 AND s.status='PUBLISHED'`, values: [revision.id, week]
             });
             const projections = personalProjections(state, week);
@@ -323,21 +353,8 @@ export async function commitPublishedWeekChange(input: {
             for (const employeeId of new Set(diffPublishedShifts(previous, current).flatMap(change => change.affectedEmployeeIds)))
                 statements.push(...supersedePersonalStatements(week, employeeId, config.environment));
             statements.push(...notificationIntentStatements(buildNotificationIntents({
-                before, after: source, actorEmployeeId: input.actorEmployeeId, recipients: state.recipients, environment: config.environment, policy: config.policy, now: new Date(read.read_at)
-            })));
+                before, after: source, actorEmployeeId: input.actorEmployeeId, recipients: state.recipients, environment: config.environment, policy: config.policy, now: new Date(input.observedAt)
+            }).filter(intent=>intent.purpose!=='EVENT'||!input.suppressPublicationEventEmployeeIds?.includes(intent.employeeId))));
         }
-        try {
-            await executor.transaction(statements);
-            return {
-                committed: true, revisions
-            };
-        }
-        catch (error) {
-            const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
-            const conflict = code === '22P02' && error instanceof Error && error.message.includes('schedule_week_version_conflict');
-            if (attempt === 2 || !(conflict || code === '40001' || code === '40P01'))
-                throw error;
-        }
-    }
-    throw new Error('Schedule version retries exhausted.');
+ return {guards,statements,revisions};
 }

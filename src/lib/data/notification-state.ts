@@ -1,3 +1,5 @@
+import {readShiftChangeMaintenanceSnapshot,maintenanceExchangeSource} from './shift-change-maintenance';
+import {currentShiftTermsSql} from './shift-change-release';
 import { getWorkspace } from './workspaces';
 import type { Workspace } from '../domain';
 import { businessDate } from '../business-time';
@@ -66,21 +68,31 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                       JOIN locations l ON l.id=s.location_id AND l.active=true
                       JOIN employee_location_eligibility elig ON elig.employee_id=x.requested_by_employee_id AND elig.location_id=l.id
                       LEFT JOIN shifts target ON target.id=x.target_shift_id LEFT JOIN schedules ts ON ts.id=target.schedule_id
-                      WHERE x.id=$1 AND s.status='PUBLISHED' AND sh.employee_id=x.requested_by_employee_id
+                      WHERE x.id=$1 AND (x.legacy_manual OR (x.source_terms=${currentShiftTermsSql()} AND (x.target_shift_id IS NULL OR x.target_terms=${currentShiftTermsSql('target','ts')}))) AND s.status='PUBLISHED' AND sh.employee_id=x.requested_by_employee_id
                         AND (x.target_shift_id IS NULL OR (ts.status='PUBLISHED' AND target.employee_id=x.target_employee_id AND EXISTS(SELECT 1 FROM locations tl JOIN employee_location_eligibility te ON te.location_id=tl.id WHERE tl.id=ts.location_id AND tl.active=true AND te.employee_id=x.target_employee_id)))`,values:[source.id]});
                     if (!valid) return null;
                 }
-                return requestSnapshot('EXCHANGE', record);
+                const current=await readShiftChangeMaintenanceSnapshot(source.id,'EXCHANGE',executor);
+                const snapshot=current?.lifecycle.source ? maintenanceExchangeSource(current,record) : requestSnapshot('EXCHANGE',record);
+                if(source.version.startsWith('coverage-need:')) {
+                    if(snapshot.kind!=='EXCHANGE' || snapshot.record.status!=='OPEN' || ![summarySourceRef(snapshot,'normal').version,summarySourceRef(snapshot,'high').version].includes(source.version))return null;
+                    snapshot.source.version=source.version;
+                }
+                // Pre-upgrade status events cannot revive later same-status revisions.
+                if(!source.version.startsWith('r:') && source.version===record.status && (record.requestRevision??1)===1)snapshot.source.version=source.version;
+                return snapshot;
             }
             if (source.kind === 'CALLOUT') {
                 const record = await getCallout(source.id, executor);
                 if (!record) return null;
                 if (record.status === 'PENDING') {
                     if(!Number.isFinite(notificationShiftStart(record,(workspace ?? await getWorkspace(executor)).timeZone))) return null;
-                    const [valid] = await executor.query({text: `SELECT c.id FROM shift_callouts c JOIN shifts sh ON sh.id=c.shift_id JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id AND l.active=true JOIN employee_location_eligibility elig ON elig.employee_id=c.employee_id AND elig.location_id=l.id WHERE c.id=$1 AND s.status='PUBLISHED' AND sh.employee_id=c.employee_id`,values:[source.id]});
+                    const [valid] = await executor.query({text: `SELECT c.id FROM shift_callouts c JOIN shifts sh ON sh.id=c.shift_id JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id AND l.active=true JOIN employee_location_eligibility elig ON elig.employee_id=c.employee_id AND elig.location_id=l.id WHERE c.id=$1 AND (c.legacy_manual OR c.source_terms=${currentShiftTermsSql()}) AND s.status='PUBLISHED' AND sh.employee_id=c.employee_id`,values:[source.id]});
                     if (!valid) return null;
                 }
-                return requestSnapshot('CALLOUT', record);
+                const snapshot=requestSnapshot('CALLOUT',record);
+                if(!source.version.startsWith('r:') && source.version===record.status && (record.requestRevision??1)===1)snapshot.source.version=source.version;
+                return snapshot;
             }
             if (source.kind === 'SCHEDULE') {
                 const state = await readNotificationWeekState([source.id], executor);
@@ -97,7 +109,14 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                     const member = parseSummaryMember(key);
                     if (!member) continue;
                     const current = await repository.readSource(member.source);
-                    if (!current || (current.kind !== 'MANAGER_SUMMARY' && current.source.version !== member.source.version)) continue;
+                    if (!current) continue;
+                    if (current.kind !== 'MANAGER_SUMMARY' && current.source.version !== member.source.version) {
+                        // Compatibility for already queued revision-keyed coverage groups:
+                        // only their own consumed semantic seed can prove the unchanged need.
+                        if(current.kind!=='EXCHANGE' || current.record.status!=='OPEN' || !current.semanticNeedKey)continue;
+                        const seeds=await executor.query<{event_key:string;urgency:NotificationIntent['urgency']}>({text:`SELECT event_key,urgency FROM notifications WHERE environment=$1 AND employee_id=$2 AND source_kind='EXCHANGE' AND source_id=$3 AND source_version=$4 AND purpose='SUMMARY' AND push_state='materialized' AND cancelled_at IS NULL`,values:[intent.environment,intent.employeeId,member.source.id,member.source.version]});
+                        if(!seeds.some(seed=>isCurrentCoverageAttentionSeed({...intent,source:member.source,effectiveVersion:member.source.version,eventKey:seed.event_key,urgency:seed.urgency},current)))continue;
+                    }
                     items.push(...summarySourceItems(current).filter(item=>item.id===member.itemId));
                 }
                 return {kind:'MANAGER_SUMMARY',source:{...source,kind:'MANAGER_SUMMARY'},updatedAt:intent.dueAt,weekStart:'',items,expiresAt:intent.expiresAt};
@@ -107,7 +126,8 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
         },
         async check(intent, recipientId, now, use = 'delivery') {
             if (intent.employeeId !== recipientId) return rejected(intent,'recipient_mismatch');
-            const [recipient, source] = await Promise.all([repository.recipientAccess(recipientId),repository.readSource(intent.source)]);
+            let [recipient, source] = await Promise.all([repository.recipientAccess(recipientId),repository.readSource(intent.source)]);
+            if(source?.kind==='EXCHANGE' && source.record.status==='OPEN'){const current=await readShiftChangeMaintenanceSnapshot(intent.source.id,'EXCHANGE',executor,now);if(current?.lifecycle.source)source=maintenanceExchangeSource(current,source.record);}
             try {
                 const current=await getWorkspace(executor);
                 if (workspace && (current.id!==workspace.id || current.timeZone!==workspace.timeZone || current.updatedAt!==workspace.updatedAt)) return rejected(intent,'workspace_changed');
@@ -157,7 +177,7 @@ function rejected(intent: NotificationIntent, reason: string): SourceCheck {
 /** Opening a terminal outcome preserves the current participant's history access.
  * Delivery still uses all operational restrictions below; payload links grant no access. */
 function checkParticipantHistory(intent: NotificationIntent, recipient: RecipientAccess | null, source: SourceSnapshot | null, now: Date): SourceCheck | null {
-    if (!source || (source.kind!=='EXCHANGE' && source.kind!=='CALLOUT') || !['APPROVED','DENIED'].includes(source.record.status)) return null;
+    if (!source || (source.kind!=='EXCHANGE' && source.kind!=='CALLOUT') || !['APPROVED','DENIED','CANCELLED','EXPIRED'].includes(source.record.status)) return null;
     const participant=source.kind==='CALLOUT' ? source.record.employeeId===recipient?.employeeId
         : source.record.requestedByEmployeeId===recipient?.employeeId || source.record.targetEmployeeId===recipient?.employeeId;
     if (!participant) return null;
@@ -207,11 +227,14 @@ export function evaluateNotificationSource(intent: NotificationIntent, recipient
         if(source.kind==='CALLOUT' && !Number.isFinite(shiftStart(source.record))) return rejected(intent,'invalid_source_boundary');
         if (source.kind==='CALLOUT' && !recipient.allowedLocationIds.includes(source.record.locationId) && !isReviewRole(recipient)) return rejected(intent,'operational_access_lost');
         if (source.kind==='EXCHANGE' && !recipient.allowedLocationIds.includes(source.record.sourceShift.locationId) && !isReviewRole(recipient)) return rejected(intent,'operational_access_lost');
-        if (['CANCELLED','EXPIRED','PENDING','OPEN','MANAGER_PENDING'].includes(record.status)) return rejected(intent,'request_resolved_or_seed');
+        const invitation=source.kind==='EXCHANGE' && record.status==='OPEN' && intent.type==='COVERAGE_INVITATION' && source.eligibleEmployeeIds?.includes(recipient.employeeId) && isSelfServiceRecipient(recipient);
+        if(invitation && /^r:[1-9][0-9]*$/.test(intent.effectiveVersion) && /^r:[1-9][0-9]*$/.test(source.source.version) && Number(intent.effectiveVersion.slice(2))<=Number(source.source.version.slice(2)))effectiveVersion=intent.effectiveVersion;
+        const terminal=source.kind==='EXCHANGE' && ['CANCELLED','EXPIRED'].includes(record.status) && intent.type===`${source.record.kind}_${record.status}` && [source.record.requestedByEmployeeId,source.record.targetEmployeeId].includes(recipient.employeeId);
+        if (['CANCELLED','EXPIRED','PENDING','OPEN','MANAGER_PENDING'].includes(record.status) && !invitation && !terminal) return rejected(intent,'request_resolved_or_seed');
         if (source.kind==='EXCHANGE') {
             if (source.record.status==='EMPLOYEE_PENDING' && source.record.targetEmployeeId!==recipient.employeeId) return rejected(intent,'not_response_target');
             if (!isReviewRole(recipient) && source.record.targetShift && !recipient.allowedLocationIds.includes(source.record.targetShift.locationId)) return rejected(intent,'target_access_lost');
-            expiry = Math.min(expiry,shiftStart(source.record.sourceShift),source.record.targetShift ? shiftStart(source.record.targetShift) : Infinity);
+            if(!terminal)expiry = Math.min(expiry,source.completionDeadline?Date.parse(source.completionDeadline):Infinity,shiftStart(source.record.sourceShift),source.record.targetShift ? shiftStart(source.record.targetShift) : Infinity);
         }
     }
     if (effectiveVersion!==intent.effectiveVersion) return rejected(intent,'source_superseded');
@@ -220,6 +243,20 @@ export function evaluateNotificationSource(intent: NotificationIntent, recipient
     const allowedTime = intent.urgency==='high' ? now : nextRoutineTime(now,policy);
     if (!Number.isFinite(expiry) || expiry<=allowedTime.getTime()) return rejected(intent,'expired');
     return {deliverable:true,reason:'current',effectiveVersion,expiresAt:new Date(expiry).toISOString(),destination};
+}
+
+/** Coverage attention consumes one semantic campaign despite same-state escalation revisions.
+ * This is only for manager collection; employee commands/events retain revision checks. */
+export function summarySourceRef(source: SourceSnapshot, urgency: NotificationIntent['urgency'] = 'normal'): SourceRef {
+    return source.kind==='EXCHANGE' && source.record.status==='OPEN' && source.semanticNeedKey
+        ? {...source.source,version:`coverage-need:${urgency}:${source.semanticNeedKey}`} : source.source;
+}
+export function isCurrentCoverageAttentionSeed(intent: NotificationIntent, source: SourceSnapshot): boolean {
+    return source.kind==='EXCHANGE' && source.record.status==='OPEN' && !!source.semanticNeedKey
+        && intent.source.kind==='EXCHANGE' && intent.source.id===source.source.id && intent.purpose==='SUMMARY'
+        && /^r:[1-9][0-9]*$/.test(intent.effectiveVersion) && /^r:[1-9][0-9]*$/.test(source.source.version)
+        && Number(intent.effectiveVersion.slice(2))<=Number(source.source.version.slice(2))
+        && intent.eventKey===[intent.environment,'COVERAGE_ATTENTION',intent.employeeId,source.semanticNeedKey,intent.urgency==='high'?'URGENT':'ROUTINE'].join(':');
 }
 
 /** Existing item_keys carry source references and item/day consumption; no new ledger. */

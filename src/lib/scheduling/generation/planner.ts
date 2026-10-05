@@ -257,6 +257,7 @@ export function planWeek(source: GenerationInput): GenerationPlan {
       approvedTimeOff: e.approvedTimeOff,
       mode: "AUTOMATIC",
       policy: input.policy,
+      operationalProfile: e.operationalProfile,
     });
     results.set(candidate.id, result);
     return result;

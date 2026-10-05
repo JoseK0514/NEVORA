@@ -4,13 +4,13 @@ import { createHash, randomUUID } from 'node:crypto';
 import { buildNotificationIntents } from './recipients';
 import { nextRoutineTime, notificationBoundary } from './policy';
 import { destinationForSource, isReviewRole } from './destinations';
-import { summaryMemberKey, summarySourceItems, parseSummaryMember, scheduleSourceSnapshot, evaluateNotificationSource } from '../data/notification-state';
+import { summaryMemberKey, summarySourceRef, isCurrentCoverageAttentionSeed, summarySourceItems, parseSummaryMember, scheduleSourceSnapshot, evaluateNotificationSource } from '../data/notification-state';
 import { readNotificationWeekState, notificationWeekStateGuard, scheduleWeekLockStatements } from '../data/notification-transactions';
 import { notificationIntentStatements } from '../data/notifications';
 import type { NotificationIntent, SourceSnapshot, RecipientAccess, PushEnvironment, NotificationPolicy, NotificationStateRepository, NotificationConfig, SqlExecutor, SqlStatement, WorkerReport } from './types';
 /** Task 8 WorkerDeps extends this trigger-agnostic contract with delivery/provider dependencies. */
 export type ReminderDeps = {state:NotificationStateRepository;executor:SqlExecutor;config:NotificationConfig;clock():Date};
-type SummaryInput = {source:SourceSnapshot;expiresAt:string;seedId?:string};
+type SummaryInput = {source:SourceSnapshot;expiresAt:string;seedId?:string;urgency?:NotificationIntent['urgency']};
 export function planSourceReminders(source:SourceSnapshot,recipients:readonly RecipientAccess[],now:Date,environment:PushEnvironment,policy:NotificationPolicy):NotificationIntent[] {
     if (source.kind!=='AVAILABILITY' && source.kind!=='SCHEDULE') return [];
     // The scanner is not a new publication. Preserve the effective personal clock.
@@ -33,7 +33,7 @@ export function buildSummaryGroup(sources:readonly SummaryInput[],recipient:Reci
         const collected = remaining.some(input=>input.seedId || input.source.kind==='AVAILABILITY');
         const collectionTime = collected ? now : new Date(now.getTime()+policy.managerCollectionMinutes*60000);
         due = high ? now : nextRoutineTime(collectionTime,policy);
-        const unique = new Map(remaining.map(input=>[summaryMemberKey({source:input.source.source,itemId:input.item.id,budget:input.source.kind==='AVAILABILITY'?'deadline':businessDate(due,policy.timeZone)}),input]));
+        const unique = new Map(remaining.map(input=>[summaryMemberKey({source:summarySourceRef(input.source,input.urgency),itemId:input.item.id,budget:input.source.kind==='AVAILABILITY'?'deadline':businessDate(due,policy.timeZone)}),input]));
         fresh = [...unique].filter(([key])=>!consumed.has(key));
         remaining = fresh.map(([,input])=>input);
     }
@@ -110,7 +110,7 @@ async function persistGroup(inputs:readonly SummaryInput[],recipient:RecipientAc
                 // A conflict aborts and rebuilds the group with the winner's consumed items.
                 {text:`SELECT (CASE WHEN NOT EXISTS (SELECT 1 FROM notifications WHERE environment=$1 AND employee_id=$2 AND source_kind='MANAGER_SUMMARY' AND purpose='SUMMARY' AND item_keys && $3::text[]) THEN '1' ELSE 'notification_group_conflict' END)::integer`,values:[config.environment,recipient.employeeId,intent.itemKeys]},
                 ...notificationIntentStatements([intent]),
-                {text:`UPDATE notifications SET push_state='materialized' WHERE id=ANY($1::text[]) AND environment=$2 AND employee_id=$3 AND purpose='SUMMARY' AND source_kind<>'MANAGER_SUMMARY' AND push_state='pending'`,values:[inputs.filter(input=>(intent.itemKeys??[]).some(key=>{const member=parseSummaryMember(key);return member?.source.kind===input.source.kind && member.source.id===input.source.source.id && member.source.version===input.source.source.version;})).flatMap(i=>i.seedId?[i.seedId]:[]),config.environment,recipient.employeeId]},
+                {text:`UPDATE notifications SET push_state='materialized' WHERE id=ANY($1::text[]) AND environment=$2 AND employee_id=$3 AND purpose='SUMMARY' AND source_kind<>'MANAGER_SUMMARY' AND push_state='pending'`,values:[inputs.filter(input=>(intent.itemKeys??[]).some(key=>{const member=parseSummaryMember(key);return member?.source.kind===input.source.kind && member.source.id===input.source.source.id && member.source.version===summarySourceRef(input.source,input.urgency).version;})).flatMap(i=>i.seedId?[i.seedId]:[]),config.environment,recipient.employeeId]},
             ]);
             return;
         } catch (error) {
@@ -121,7 +121,7 @@ async function persistGroup(inputs:readonly SummaryInput[],recipient:RecipientAc
 /** Every possible day after consumed urgent work is removed, grouped by logical item. */
 function summaryKeyVariants(inputs:readonly SummaryInput[],now:Date,policy:NotificationPolicy):string[][] {
     const days = [...new Set([businessDate(now,policy.timeZone),businessDate(nextRoutineTime(now,policy),policy.timeZone),businessDate(nextRoutineTime(new Date(now.getTime()+policy.managerCollectionMinutes*60000),policy),policy.timeZone)])];
-    return inputs.filter(input=>Date.parse(input.expiresAt)>now.getTime()).flatMap(input=>summarySourceItems(input.source).filter(item=>item.type!=='COVERAGE_GAP' || notificationBoundary(item.dateTime ?? '',policy.timeZone)>now.getTime()).map(item=>(input.source.kind==='AVAILABILITY'?['deadline']:days).map(budget=>summaryMemberKey({source:input.source.source,itemId:item.id,budget}))));
+    return inputs.filter(input=>Date.parse(input.expiresAt)>now.getTime()).flatMap(input=>summarySourceItems(input.source).filter(item=>item.type!=='COVERAGE_GAP' || notificationBoundary(item.dateTime ?? '',policy.timeZone)>now.getTime()).map(item=>(input.source.kind==='AVAILABILITY'?['deadline']:days).map(budget=>summaryMemberKey({source:summarySourceRef(input.source,input.urgency),itemId:item.id,budget}))));
 }
 function compatibleInputs(inputs:readonly SummaryInput[]):SummaryInput[][] {
     return [inputs.filter(input=>summarySourceItems(input.source).some(item=>item.type==='COVERAGE_GAP')),
@@ -188,10 +188,10 @@ export async function runReminders(deps:ReminderDeps):Promise<WorkerReport> {
             const access = await state.recipientAccess(intent.employeeId);
             if (!withinReconciliationBudget()) break;
             const items = source ? summarySourceItems(source) : [];
-            if (!source || source.source.version!==intent.effectiveVersion || !access?.active || !isReviewRole(access) || !destinationForSource(source,access) || !items.length || Date.parse(intent.expiresAt)<=now.getTime()) {
+            if (!source || (source.source.version!==intent.effectiveVersion && !isCurrentCoverageAttentionSeed(intent,source)) || !access?.active || !isReviewRole(access) || !destinationForSource(source,access) || !items.length || Date.parse(intent.expiresAt)<=now.getTime()) {
                 await executor.transaction([cancelIntentStatement(intent)]);report.cancelled++;continue;
             }
-            groups.set(intent.employeeId,[...(groups.get(intent.employeeId)??[]),{source,expiresAt:intent.expiresAt,seedId:intent.id}]);
+            groups.set(intent.employeeId,[...(groups.get(intent.employeeId)??[]),{source,expiresAt:intent.expiresAt,seedId:intent.id,urgency:intent.urgency}]);
         } else {
             const check = await state.check(intent,intent.employeeId,now);
             if (!withinReconciliationBudget()) break;

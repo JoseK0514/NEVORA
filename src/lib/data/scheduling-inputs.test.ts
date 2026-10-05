@@ -14,7 +14,7 @@ vi.mock("@/lib/db", () => ({
       },
       { query: (text:string, values:unknown[]) => {
         if (text.includes('created_at::text AS "createdAt"') && text.includes('FROM workspaces')) return [{id:'northside',name:'Northside Services',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}];
-        if (text.includes('FROM workspaces') || text.includes('WITH cancelled AS')) return {text,values};
+        if ((text.includes('FROM workspaces') && !text.includes('FROM shifts')) || text.includes('WITH cancelled AS')) return {text,values};
         return mocks.query(text,values);
       }, transaction: mocks.transaction },
     ),
@@ -113,7 +113,9 @@ describe("scheduling context repository", () => {
     expect(shiftQuery?.[0]).not.toContain("s.week_start =");
     expect(shiftQuery?.[0]).toContain("s.status <> 'ARCHIVED'");
     expect(shiftQuery?.[0]).toContain("shift_callouts");
-    expect(shiftQuery?.[1]).toEqual(["E", "2026-10-04", "2026-10-12"]);
+    // Rest rules may reach beyond the old week slice; query all retained employee work.
+    expect(shiftQuery?.[1]).toEqual(["E"]);
+    expect(context?.existingShifts).toContainEqual(expect.objectContaining({id:"previous-night",locationId:"loc-2",date:"2026-10-04"}));
   });
 });
 describe("target and maximum persistence", () => {

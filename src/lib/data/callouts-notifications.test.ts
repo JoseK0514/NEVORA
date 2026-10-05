@@ -1,7 +1,7 @@
 import { beforeEach, afterEach, expect, it, vi } from 'vitest';
 vi.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [{ id: 'legacy' }] }), queryRows: (value: unknown) => value }));
-import { approveCalloutAndOpenCoverage, cancelPendingCallout, createCallout, denyCallout } from './callouts';
-import { fixture, intents } from './request-notification-fixtures.test-support';
+import { approveCalloutAndOpenCoverage, cancelPendingCallout, createCallout, denyCallout } from './shift-change-compat.test-support';
+import { fixture, intents } from './shift-change-compat.test-support';
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2030-10-07T12:00:00Z')); });
 afterEach(() => vi.useRealTimers());
 it('callout submission creates only manager summary seeds without sensitive reason',async()=>{
@@ -23,14 +23,14 @@ it.each([denyCallout,cancelPendingCallout])('decision commits cancellation and o
  expect(r.batches[0].some(s=>s.text.includes('push_deliveries'))).toBe(true);
 });
 it.each([approveCalloutAndOpenCoverage,denyCallout,cancelPendingCallout])('failed/status-raced/repeated callout decisions never return success',async run=>{
- const r=fixture('CALLOUT'); vi.mocked(r.executor.transaction).mockRejectedValueOnce(new Error('outbox failure'));
+ const r=fixture('CALLOUT'); vi.mocked(r.executor.transaction).mockRejectedValueOnce(Object.assign(new Error('outbox failure'),{code:'23514'}));
  await expect(run({calloutId:'request-1',managerId:'M',employeeId:'E'},r.executor)).rejects.toThrow('outbox failure');
- vi.mocked(r.executor.transaction).mockRejectedValueOnce(Object.assign(new Error('request_transition_conflict'),{code:'22P02'}));
+ vi.mocked(r.executor.transaction).mockRejectedValue(Object.assign(new Error('request_transition_conflict'),{code:'22P02'}));
  expect(await run({calloutId:'request-1',managerId:'M',employeeId:'E'},r.executor)).toBe(false);
  r.row.status='APPROVED'; vi.mocked(r.executor.transaction).mockClear(); expect(await run({calloutId:'request-1',managerId:'M',employeeId:'E'},r.executor)).toBe(false); expect(r.executor.transaction).not.toHaveBeenCalled();
 });
 it('callout creation rejects ownership races without writes and propagates atomic persistence failure',async()=>{
- const r=fixture('CALLOUT');const input={shiftId:'s1',employeeId:'E',reasonCode:'ILLNESS' as const};vi.mocked(r.executor.transaction).mockRejectedValueOnce(new Error('outbox failure'));
+ const r=fixture('CALLOUT');const input={shiftId:'s1',employeeId:'E',reasonCode:'ILLNESS' as const};vi.mocked(r.executor.transaction).mockRejectedValueOnce(Object.assign(new Error('outbox failure'),{code:'23514'}));
  await expect(createCallout(input,r.executor)).rejects.toThrow('outbox failure');r.state.shifts[0].employeeId='F';vi.mocked(r.executor.transaction).mockClear();expect(await createCallout(input,r.executor)).toBe(null);expect(r.executor.transaction).not.toHaveBeenCalled();
 });
 it('callout approval cannot bless a reassigned shift',async()=>{

@@ -1,0 +1,26 @@
+import {createElement,type ComponentProps} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {beforeEach,expect,it,vi} from 'vitest';
+import type {ExchangeShift} from '../../../../lib/data/exchanges';
+import SwapPage from './page';
+const state=vi.hoisted(()=>({source:null as ExchangeShift|null,target:null as ExchangeShift|null,sourceChange:{} as Partial<ExchangeShift>,targetChange:{} as Partial<ExchangeShift>,sourceFingerprintChange:false}));
+vi.mock('@/lib/auth/permissions',()=>({requireSelfService:async()=>({id:'self',role:'EMPLOYEE'})}));
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
+vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
+vi.mock('@/lib/business-time',()=>import('../../../../lib/business-time'));
+vi.mock('@/lib/date-utils',()=>import('../../../../lib/date-utils'));
+vi.mock('@/components/nav-icon',()=>({NavIcon:()=>null}));
+vi.mock('@/components/shift-slot',()=>import('../../../../components/shift-slot'));
+vi.mock('@/components/reviewed-swap-form',()=>import('../../../../components/reviewed-swap-form'));
+vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:vi.fn(),reconcileShiftChangeAction:vi.fn()}));
+vi.mock('next/navigation',()=>({redirect:(p:string)=>{throw Error('redirect:'+p);},useRouter:()=>({refresh:vi.fn()})}));
+vi.mock('next/link',()=>({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
+vi.mock('@/lib/data/exchanges',()=>({getPublishedShift:async()=>state.source,listSwapTargets:async()=>state.target?[state.target]:[]}));
+vi.mock('@/lib/data/shift-change-snapshot',()=>({readShiftChangeTerms:async(_proof:unknown,_source:string,target?:string)=>({source:material({...state.source!,...state.sourceChange}),sourceTermsFingerprint:target&&state.sourceFingerprintChange?'v1:source-replaced':'v1:source',target:target?material({...state.target!,...state.targetChange}):null,targetTermsFingerprint:target?'v1:target':null})}));
+function material(s:ExchangeShift){return {shiftId:s.id,scheduleId:s.scheduleId,employeeId:s.employeeId,locationId:s.locationId,weekStart:s.weekStart,date:s.date,startTime:s.startTime,endTime:s.endTime,positionId:s.positionId??null,isDesignatedLead:!!s.isDesignatedLead,assignmentEpisodeId:'episode-'+s.id};}
+beforeEach(()=>{state.source={id:'source',scheduleId:'schedule',employeeId:'self',employeeName:'Fictional Employee',locationId:'loc',locationName:'North',weekStart:'2035-10-01',date:'2035-10-03',startTime:'08:00',endTime:'16:00',positionId:'cashier',positionName:'Cashier',isDesignatedLead:true};state.target={...state.source,id:'target',employeeId:'other',employeeName:'Fictional Partner',date:'2035-10-04',startTime:'10:00',endTime:'18:00'};state.sourceChange={};state.targetChange={};state.sourceFingerprintChange=false;});
+const render=async()=>renderToStaticMarkup(await SwapPage({searchParams:Promise.resolve({sourceShiftId:'source'})}));
+it('unchanged displayed assignments are bound to reviewed source and target without a default consent',async()=>{const result=await render();expect(result).toContain('value="v1:source"');expect(result).toContain('Cashier');expect(result).toContain('Fictional Partner');expect(result).toContain('Send trade request');expect(result).not.toContain('name="targetTermsFingerprint"');});
+it.each([{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('source material change refuses the undisplayed assignment: %j',async sourceChange=>{state.sourceChange=sourceChange;await expect(render()).rejects.toThrow('error=EXCHANGE_CHANGED');});
+it.each([{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('target material change excludes that undisplayed replacement: %j',async targetChange=>{state.targetChange=targetChange;const result=await render();expect(result).not.toContain('<form');expect(result).not.toContain('Fictional Partner');expect(result).toContain('No shifts to trade');});
+it('source fingerprint changing while target is reviewed withholds the mixed-snapshot builder',async()=>{state.sourceFingerprintChange=true;expect(await render()).not.toContain('<form');});

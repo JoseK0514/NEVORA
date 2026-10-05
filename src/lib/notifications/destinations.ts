@@ -70,13 +70,14 @@ export function destinationForSource(source: SourceSnapshot, recipient: Recipien
     case 'EXCHANGE': {
       const participant = source.record.requestedByEmployeeId === recipient.employeeId || source.record.targetEmployeeId === recipient.employeeId;
       const reviewer = isReviewRole(recipient);
-      if (!participant && !reviewer) return null;
+      const invited=source.record.status==='OPEN' && source.record.kind==='COVERAGE' && source.eligibleEmployeeIds?.includes(recipient.employeeId) && isSelfServiceRecipient(recipient);
+      if (!participant && !reviewer && !invited) return null;
       const terminal = ['APPROVED','DENIED','CANCELLED','EXPIRED'].includes(source.record.status);
       if (!terminal && !reviewer && !recipient.allowedLocationIds.includes(source.record.sourceShift.locationId)) return null;
       if (reviewer && source.record.status === 'EMPLOYEE_PENDING') return null;
       const tab = reviewer
         ? terminal ? 'activity' : source.record.status === 'OPEN' ? 'coverage' : 'pending'
-        : terminal ? 'history' : 'requests';
+        : terminal ? 'history' : invited ? 'available' : 'requests';
       return safeReturnTo(`/app/exchange?tab=${tab}&requestId=${encode(source.record.id)}`);
     }
     case 'CALLOUT':

@@ -28,6 +28,7 @@ export type GenerationEmployee = Employee &
     ValidateShiftInput["employee"],
     "maximumWeeklyHours" | "targetWeeklyHours"
   > & {
+    operationalProfile?: ValidateShiftInput["operationalProfile"];
     availability: ValidateShiftInput["availability"];
     weeklyAvailability: NonNullable<ValidateShiftInput["weeklyAvailability"]>;
     availabilityExceptions: NonNullable<

@@ -1,3 +1,4 @@
+import {runShiftChangeMaintenance} from '../data/shift-change-maintenance';
 import { performance } from 'node:perf_hooks';
 import { neonNotificationExecutor } from '../data/notification-transactions';
 import { sqlNotificationStateRepository } from '../data/notification-state';
@@ -165,12 +166,24 @@ export async function runDispatch(input: {
                 await run(() => deps.deliveries.defer(claim, new Date(finalDue)));
                 return;
             }
-            const effectiveExpiry = Math.min(expires, subscription.expirationTime ?? Infinity);
-            const ttl = Math.min(7 * 86400, Math.floor((effectiveExpiry - deps.clock().getTime()) / 1000));
+            let effectiveExpiry = Math.min(expires, subscription.expirationTime ?? Infinity);
+            let ttl = Math.min(7 * 86400, Math.floor((effectiveExpiry - deps.clock().getTime()) / 1000));
             if (ttl < 1) {
                 await complete(claim, { state: 'expired' });
                 return;
             }
+            // Subscription/decryption IO may follow a business cancellation. Check
+            // the current source again immediately before handing off to transport.
+            const finalIntent=await run(()=>deps.state.findIntent(current.id));
+            const finalSource=finalIntent && sameIntent(finalIntent,current) ? await run(()=>deps.state.check(finalIntent,finalIntent.employeeId,deps.clock())) : null;
+            if(!finalSource?.deliverable || finalSource.effectiveVersion!==current.effectiveVersion || Date.parse(finalSource.expiresAt)<=deps.clock().getTime()){
+                await complete(claim,{state:'cancelled'});return;
+            }
+            effectiveExpiry=Math.min(effectiveExpiry,Date.parse(finalSource.expiresAt));
+            ttl=Math.min(7*86400,Math.floor((effectiveExpiry-deps.clock().getTime())/1000));
+            const sendAt=current.urgency==='normal'?nextRoutineTime(deps.clock(),config.policy):deps.clock();
+            if(ttl<1||sendAt.getTime()>=effectiveExpiry){await complete(claim,{state:'expired'});return;}
+            if(sendAt.getTime()>deps.clock().getTime()){await run(()=>deps.deliveries.defer(claim,sendAt));return;}
             const payload = buildPushEnvelope({ ...current, expiresAt: new Date(effectiveExpiry).toISOString() }, claim.generation);
             const controller = new AbortController();
             const stop = () => controller.abort();
@@ -247,17 +260,17 @@ export async function runDispatch(input: {
     }
 }
 /** Shared invocation switch: adapters cannot substitute their own delivery policy. */
-export async function runWorker(command: WorkerCommand, deps: WorkerDeps): Promise<WorkerReport> {
+export async function runWorker(command: WorkerCommand, deps: WorkerDeps, options:{maintenance?:boolean;cursor?:string}={}): Promise<WorkerReport> {
     if (command === 'dispatch')
         return runDispatch({ mode: 'all', deps });
     if (command !== 'reminders')
         throw new Error('Invalid worker command');
-    if (!enabled(deps.config))
-        return { ...emptyReport(), disabled: true };
     const limits = budget(deps);
     const scoped = deps.withSignal?.(limits.signal) ?? deps;
     try {
-        return await limits.call(() => runReminders(scoped));
+        const maintenance=options.maintenance!==false && scoped.config.workspace ? await limits.call(()=>runShiftChangeMaintenance({...scoped,cursor:options.cursor})) : undefined;
+        if(!enabled(scoped.config))return {...emptyReport(),disabled:true,...(maintenance?{maintenance}:{})};
+        return {...await limits.call(() => runReminders(scoped)),...(maintenance?{maintenance}:{})};
     }
     finally {
         limits.close();

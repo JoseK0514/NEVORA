@@ -141,3 +141,9 @@ export function buildAvailabilitySummaryNotification(employeeId: string, weekSta
 export function buildSelfTestNotification(employeeId: string, sourceId: string): NotificationEvent {
   return { employeeId, type: 'SELF_TEST', title: `${NUVORA_BRAND.platformLabel} notification test`, body: `Open ${NUVORA_BRAND.platformLabel} to review your notification settings.`, actionHref: '/app', eventKey: eventKey('self-test',sourceId,employeeId) };
 }
+
+/** Peer invitation uses reviewed shift context only, never an absence reason. */
+export function buildCoverageInvitationNotification(input:{employeeId:string;date:string;startTime:string;endTime:string;locationName:string;positionName?:string;isDesignatedLead?:boolean}):NotificationEvent {
+ const context=[input.date,`${input.startTime}–${input.endTime}`,input.locationName,input.positionName,input.isDesignatedLead?'Designated Lead':undefined].filter(Boolean).join(' · ');
+ return {employeeId:input.employeeId,type:'COVERAGE_INVITATION',title:'Coverage available',body:`${context}. View shift details before volunteering.`,eventKey:''};
+}

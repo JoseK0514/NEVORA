@@ -1,3 +1,5 @@
+import { currentCalloutReleaseSql } from './shift-change-release';
+import { resolveOperationalRuleProfile } from '../shift-changes/policy';
 import type { AssignmentOrigin } from '../domain';
 import type { GenerationClaims } from '../scheduling/generation-claims';
 import { normalizeAssignmentOrigin } from '../scheduling/generation-provenance';
@@ -90,9 +92,7 @@ export async function listWeekShifts({
          EXISTS (
            SELECT 1
            FROM shift_callouts c
-           WHERE c.shift_id = sh.id
-             AND c.employee_id = sh.employee_id
-             AND c.status = 'APPROVED'
+           WHERE ${currentCalloutReleaseSql()}
          ) AS approved_callout,
          s.status AS schedule_status
        FROM shifts sh
@@ -168,19 +168,19 @@ export async function getShiftValidationContext({
   const [employeeRaw, shiftsRaw, leaveRaw, inputs, factsRaw] = await Promise.all([
     sql.query(
       `SELECT e.active, e.role,
-      ARRAY(SELECT ep.position_id FROM employee_positions ep JOIN positions p ON p.id=ep.position_id WHERE ep.employee_id=e.id AND p.active=true) AS position_ids, ss.target_weekly_hours, COALESCE(ss.maximum_weekly_hours, 40) AS maximum_weekly_hours,
+      ARRAY(SELECT ep.position_id FROM employee_positions ep JOIN positions p ON p.id=ep.position_id WHERE ep.employee_id=e.id AND p.active=true) AS position_ids, ss.target_weekly_hours, COALESCE(ss.maximum_weekly_hours, 40) AS maximum_weekly_hours, ss.operational_rule_profile,
       COALESCE(array_agg(elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL), ARRAY[]::text[]) AS eligible_location_ids
       FROM employees e LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id
       LEFT JOIN employee_scheduling_settings ss ON ss.employee_id = e.id WHERE e.id = $1
-      GROUP BY e.id, e.active, e.role, ss.target_weekly_hours, ss.maximum_weekly_hours`,
+      GROUP BY e.id, e.active, e.role, ss.target_weekly_hours, ss.maximum_weekly_hours, ss.operational_rule_profile`,
       [employeeId],
     ),
     sql.query(
       `SELECT sh.id, sh.employee_id, s.location_id, sh.date, sh.start_time, sh.end_time, sh.is_designated_lead, sh.position_id, sh.assignment_origin, sh.generated_claims
       FROM shifts sh JOIN schedules s ON s.id = sh.schedule_id
-      WHERE sh.employee_id = $1 AND sh.date >= $2 AND sh.date < $3 AND s.status <> 'ARCHIVED'
-      AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id = sh.id AND c.employee_id = sh.employee_id AND c.status = 'APPROVED')`,
-      [employeeId, addDays(firstWeek, -1), addDays(lastWeek, 7)],
+      WHERE sh.employee_id = $1 AND s.status <> 'ARCHIVED'
+      AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()})`,
+      [employeeId],
     ),
     sql.query(
       `SELECT start_date, end_date, start_time, end_time, status FROM time_off_requests
@@ -228,6 +228,7 @@ export async function getShiftValidationContext({
           : Number(employee.target_weekly_hours),
       maximumWeeklyHours: Number(employee.maximum_weekly_hours ?? 40),
     },
+    ...(employee.operational_rule_profile != null ? {operationalProfile:resolveOperationalRuleProfile(employee.operational_rule_profile)} : {}),
     existingShifts,
     availability: inputs.normal,
     weeklyAvailability: inputs.weeks,
@@ -329,9 +330,7 @@ export async function getShiftForManagement(
          EXISTS (
            SELECT 1
            FROM shift_callouts c
-           WHERE c.shift_id = sh.id
-             AND c.employee_id = sh.employee_id
-             AND c.status = 'APPROVED'
+           WHERE ${currentCalloutReleaseSql()}
          ) AS approved_callout,
          s.status AS schedule_status
        FROM shifts sh
@@ -378,7 +377,7 @@ export async function updateShift(input: {
     const positionId=input.positionId === undefined ? existing.positionId : input.positionId || undefined;
     return {statements:[{text:`UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL,employee_id=$2,date=$3,start_time=$4,end_time=$5,notes=$6,is_designated_lead=$7,position_id=$8,updated_at=clock_timestamp() WHERE id=$1`,
       values:[input.shiftId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false,positionId || null]}],afterSchedules:state.schedules,
-      afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,assignmentOrigin:'MANAGER',generatedClaims:null,positionId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.approvedCalloutEmployeeId===input.employeeId || (s.employeeId===input.employeeId && s.isCalloutApproved)}:s)};
+      afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,assignmentOrigin:'MANAGER',generatedClaims:null,positionId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.isCalloutApproved && s.employeeId===input.employeeId && s.date===input.date && s.startTime===input.startTime && s.endTime===input.endTime && (s.positionId||null)===(positionId||null) && s.isDesignatedLead===(input.isDesignatedLead??false)}:s)};
   }},executor);
   return result.committed;
 }

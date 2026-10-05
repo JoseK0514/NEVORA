@@ -1,14 +1,24 @@
+import {randomUUID} from 'node:crypto';
+import {ShiftChangeForm} from '@/components/shift-change-form';
+import {ShiftSlot} from '@/components/shift-slot';
+import {ShiftChangeHistory} from '@/components/shift-change-history';
+import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
+import {readShiftChangeTerms} from '@/lib/data/shift-change-snapshot';
+import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
+import {shiftChangeFeedback} from '@/components/shift-change-form-state';
+import type {ShiftChangeCommand} from '@/lib/shift-changes/types';
 import { getWorkspace } from "@/lib/data/workspaces";
-import { businessDate } from "@/lib/business-time";
+import { businessDate, shiftBoundaryInstants } from "@/lib/business-time";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { ManagerShiftRequests } from "@/components/manager-shift-requests";
 import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import { isManagerRole } from "@/lib/auth/permissions";
-import { requireSession } from "@/lib/auth/session";
+import { requireSession,requireSessionMutationProof } from "@/lib/auth/session";
 import {
   formatDayLabel,
+  addDays,
   formatTime,
 } from "@/lib/date-utils";
 import {
@@ -26,13 +36,8 @@ import {
   listIncomingSwaps,
   listOpenCoverage,
 } from "@/lib/data/exchanges";
-import {
-  cancelExchangeAction,
-  claimCoverageAction,
-  offerCoverageAction,
-  respondSwapAction,
-} from "@/app/app/exchange/actions";
-import { cancelCalloutAction } from "@/app/app/exchange/callout/actions";
+import {readShiftChangeOperationView} from '@/lib/data/shift-change-views';
+import {matchesDisplayedShift} from '../../../lib/shift-changes/displayed-terms';
 
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_SHIFT: "That shift is no longer available for exchange.",
@@ -108,11 +113,13 @@ export default async function ExchangePage({
     calloutCancelled?: string;
     tab?: string;
     requestId?: string;
+    operationId?:string;
   }>;
 }) {
   const session = await requireSession();
   const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);
+  const proof = manager?null:await requireSessionMutationProof();
   const today = businessDate(new Date(), workspace.timeZone);
   const params = await searchParams;
 
@@ -124,17 +131,19 @@ export default async function ExchangePage({
     incomingSwaps,
     activity,
     myCallouts,
+    assigned,
   ] = await Promise.all([
     listEmployeePublishedShifts(session.id, today),
     listOpenCoverage(session.id, today),
     listIncomingSwaps(session.id),
     listEmployeeExchangeActivity(session.id),
     listEmployeeCallouts(session.id),
+    listEmployeePublishedShifts(session.id,addDays(today,-1),undefined,true),
   ]);
 
   const activeView = marketplaceView(params.tab);
   const myExchangeActivity = activity.filter(
-    (exchange) => exchange.requestedByEmployeeId === session.id,
+    (exchange) => exchange.requestedByEmployeeId === session.id || exchange.targetEmployeeId === session.id,
   );
   const visibleActivity = myExchangeActivity.slice(0, 8);
   const visibleCallouts = myCallouts.slice(0, 6);
@@ -152,45 +161,28 @@ export default async function ExchangePage({
         && !visibleCallouts.some(row => row.id === selectedCallout.id)) visibleCallouts.push(selectedCallout);
     }
   }
-  const successMessage =
-    params.offered
-      ? "Your shift is now available for another eligible employee to claim."
-      : params.claimed
-        ? "Coverage request sent to management."
-        : params.swapRequested
-          ? "Swap request sent to the other employee."
-          : params.swapAccepted
-            ? "You accepted the swap. It is now waiting for manager approval."
-            : params.swapDeclined
-              ? "The swap request was declined."
-              : params.approved
-                ? "The exchange was approved and the schedule was updated."
-                : params.reviewed
-                  ? "The exchange was reviewed."
-                  : params.cancelled
-                    ? "The exchange request was cancelled."
-                    : params.calloutSubmitted
-                      ? "Call-out submitted for manager review."
-                      : params.calloutApproved
-                        ? "Call-out approved. The shift is now open for coverage."
-                        : params.calloutDenied
-                          ? "The call-out request was declined."
-                          : params.calloutCancelled
-                            ? "The pending call-out was cancelled."
-                            : undefined;
-
+  const operation=params.operationId?await readShiftChangeOperationView(proof!,params.operationId):null;
+  const available=openCoverage.filter(e=>e.actionable===true&&e.status==='OPEN');
+  const incoming=incomingSwaps.filter(e=>e.status==='EMPLOYEE_PENDING'&&e.targetEmployeeId===session.id);
+  const requestFields=(id:string,revision:number|undefined)=>revision&&Number.isSafeInteger(revision)?{requestId:id,expectedRevision:revision}:null;
+  const availability=async (kind:ShiftChangeCommand['kind'],id:string,revision:number|undefined)=>{const fields=requestFields(id,revision);return fields?readShiftChangeAvailability(proof!,{kind,...fields,operationId:randomUUID()} as ShiftChangeCommand).catch(()=>({allowed:false,notice:'Current eligibility is unavailable. Reconnect and reload.'})):{allowed:false,notice:'This request needs a fresh revision before responding.'};};
+  const acceptViews=new Map(await Promise.all([...available,...incoming].map(async e=>[e.id,await availability('ACCEPT',e.id,e.requestRevision)] as const)));
+  const offerViews=new Map(await Promise.all(myShifts.map(async shift=>{const reviewed=await readShiftChangeTerms(proof!,shift.id).catch(()=>null);const displayed=assigned.find(row=>row.id===shift.id);const fields=reviewed&&displayed&&matchesDisplayedShift(displayed,reviewed.source)&&matchesDisplayedShift(shift,reviewed.source)?{sourceShiftId:reviewed.source.shiftId,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint}:null;const allowed=fields?await readShiftChangeAvailability(proof!,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...fields}).catch(()=>({allowed:false,notice:'Current policy is unavailable.'})):{allowed:false,notice:'Stale assignment. Reload before offering.'};return [shift.id,{fields,...allowed}] as const;})));
+  const assignedShifts=assigned.filter(s=>{try{return Date.parse(shiftBoundaryInstants(s,workspace.timeZone).endAt)>new Date().getTime();}catch{return false;}});
+  const selectedHistory=params.requestId?await readShiftChangeHistoryView(proof!,params.requestId).catch(()=>null):[];
+  const histories=new Map(await Promise.all([...visibleActivity,...incoming,...visibleCallouts].map(async row=>[row.id,await readShiftChangeHistoryView(proof!,row.id).catch(()=>null)] as const)));
   const hasTradeRequests =
-    myShifts.length > 0 ||
+    assignedShifts.length > 0 ||
     incomingSwaps.length > 0 ||
     visibleActivity.length > 0 ||
-    visibleCallouts.length > 0;
+    visibleCallouts.length > 0 || (selectedHistory===null||selectedHistory.length>0);
 
   if (!manager) {
     return (
       <div className="employee-view employee-shift-requests-view">
         <header className="employee-view-heading"><div><p className="employee-view-eyebrow">Schedule flexibility</p><h1>Shift Requests</h1></div></header>
         {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The exchange could not be processed."}</p> : null}
-        {successMessage ? <p className="employee-notice success" role="status">{successMessage}</p> : null}
+        {operation ? <p className="employee-notice" role="status">{shiftChangeFeedback(operation)}</p> : null}
 
         <nav className="employee-view-tabs" aria-label="Shift marketplace views">
           <Link className={activeView === "available" ? "selected" : ""} href="/app/exchange?tab=available" aria-current={activeView === "available" ? "page" : undefined}>Available Shifts</Link>
@@ -199,54 +191,42 @@ export default async function ExchangePage({
 
         <div className="employee-view-surface employee-exchange-feed">
           {activeView === "available" ? (
-            openCoverage.length ? openCoverage.map((exchange) => (
+            available.length ? available.map((exchange) => (
               <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                 <div className="employee-shift-entry-copy">
-                  <span className="employee-shift-entry-date">{marketplaceDate(exchange.sourceShift.date)}</span>
-                  <strong>{formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</strong>
-                  <span>{exchange.sourceShift.locationName}</span>
+                  <ShiftSlot shift={exchange.sourceShift}/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}
                   <small>{marketplaceDisplayName(exchange.requestedByName)} · {marketplaceRoleLabel(exchange.requestedByRole)}</small>
                 </div>
-                <form action={claimCoverageAction} className="employee-shift-entry-actions">
-                  <input type="hidden" name="exchangeId" value={exchange.id} />
-                  <button className="employee-action primary" type="submit"><span>Claim Shift</span></button>
-                </form>
+                <div className="employee-shift-entry-actions">{acceptViews.get(exchange.id)?.allowed?<ShiftChangeForm fields={{kind:'ACCEPT',...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action primary" type="submit"><span>Claim Shift</span></button></ShiftChangeForm>:<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>}</div>
               </div>
             )) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
           ) : hasTradeRequests ? (
             <>
-              {myShifts.length ? <section className="employee-exchange-section">
-                <h2>Start a Trade</h2>
-                {myShifts.map((shift) => (
+              {assignedShifts.length ? <section className="employee-exchange-section">
+                <h2>Your assigned shifts</h2>
+                {assignedShifts.map((shift) => (
                   <div className="employee-shift-entry" key={shift.id}>
                     <div className="employee-shift-entry-copy">
-                      <span className="employee-shift-entry-date">{marketplaceDate(shift.date)}</span>
-                      <strong>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</strong>
-                      <span>{shift.locationName}</span>
+                      <ShiftSlot shift={shift}/>
                     </div>
                     <div className="employee-shift-entry-actions">
-                      <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${shift.id}`}><span>Unable to Work</span></Link>
-                      <form action={offerCoverageAction}><input type="hidden" name="sourceShiftId" value={shift.id} /><button className="employee-action" type="submit"><span>Offer Shift</span></button></form>
-                      <Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${shift.id}`}><span>Trade Shift</span></Link>
+                      <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${encodeURIComponent(shift.id)}`}><span>Unable to Work</span></Link>
+                      {offerViews.get(shift.id)?.allowed&&offerViews.get(shift.id)?.fields?<ShiftChangeForm fields={{kind:'OFFER_COVERAGE',...offerViews.get(shift.id)!.fields!}}><button className="employee-action" type="submit"><span>Offer Shift</span></button></ShiftChangeForm>:<span className="shift-change-unavailable">{offerViews.get(shift.id)?.notice??'Trade unavailable; absence reporting remains available.'}</span>}
+                      {offerViews.get(shift.id)?.fields?<Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${encodeURIComponent(shift.id)}`}><span>Trade Shift</span></Link>:null}
                     </div>
                   </div>
                 ))}
               </section> : null}
 
-              {incomingSwaps.length ? <section className="employee-exchange-section">
+              {incoming.length ? <section className="employee-exchange-section">
                 <h2>Waiting for You</h2>
-                {incomingSwaps.map((exchange) => (
+                {incoming.map((exchange) => (
                   <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                     <div className="employee-shift-entry-copy">
                       <strong>{marketplaceDisplayName(exchange.requestedByName)} wants to trade</strong>
-                      <span>{marketplaceDate(exchange.sourceShift.date)} · {formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</span>
-                      <span>{exchange.sourceShift.locationName}</span>
+                      <ShiftSlot shift={exchange.sourceShift}/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}<ShiftChangeHistory events={histories.get(exchange.id)??null}/>
                     </div>
-                    <form action={respondSwapAction} className="employee-shift-entry-actions">
-                      <input type="hidden" name="exchangeId" value={exchange.id} />
-                      <button className="employee-action" name="decision" value="DENIED" type="submit"><span>Decline</span></button>
-                      <button className="employee-action primary" name="decision" value="ACCEPTED" type="submit"><span>Accept</span></button>
-                    </form>
+                    <div className="employee-shift-entry-actions">{requestFields(exchange.id,exchange.requestRevision)?<ShiftChangeForm fields={requestFields(exchange.id,exchange.requestRevision)!}><button className="employee-action" name="kind" value="DECLINE" type="submit">Decline</button>{acceptViews.get(exchange.id)?.allowed?<button className="employee-action primary" name="kind" value="ACCEPT" type="submit">Accept</button>:<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>}</ShiftChangeForm>:<span className="shift-change-unavailable">Reload the current request revision.</span>}</div>
                   </div>
                 ))}
               </section> : null}
@@ -256,13 +236,14 @@ export default async function ExchangePage({
                 {visibleActivity.map((exchange) => (
                   <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                     <div className="employee-shift-entry-copy">
-                      <strong>{exchange.kind === "COVERAGE" ? "Coverage" : "Trade"} · {marketplaceDate(exchange.sourceShift.date)}</strong>
-                      <span>{formatTime(exchange.sourceShift.startTime)} – {formatTime(exchange.sourceShift.endTime)}</span>
-                      <span>{exchange.sourceShift.locationName}</span>
+                      <strong>{exchange.kind === "COVERAGE" ? "Coverage" : "Trade"}</strong>
+                      <ShiftSlot shift={exchange.sourceShift}/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}<ShiftChangeHistory events={histories.get(exchange.id)??null}/>
                     </div>
                     <div className="employee-shift-entry-actions" data-status={exchange.status}>
-                      <StatusPill tone={statusTone(exchange.status)}>{statusLabel(exchange.status)}</StatusPill>
-                      {exchange.requestedByEmployeeId === session.id && ["OPEN", "EMPLOYEE_PENDING"].includes(exchange.status) ? <form action={cancelExchangeAction}><input type="hidden" name="exchangeId" value={exchange.id} /><button className="employee-action danger" type="submit"><span>Cancel</span></button></form> : null}
+                      {exchange.actionable===false&&['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(exchange.status)?<span className="shift-change-unavailable">Stale or unverified. Reload the current assignment or ask management to review.</span>:null}
+                      <StatusPill tone={statusTone(exchange.status)}>{exchange.status==='OPEN'?'Offered':exchange.status==='EMPLOYEE_PENDING'?'Awaiting employee':exchange.status==='MANAGER_PENDING'?'Manual review':exchange.status==='APPROVED'?'Completed':statusLabel(exchange.status)}</StatusPill>
+                      {exchange.actionable===true && exchange.requestedByEmployeeId === session.id && requestFields(exchange.id,exchange.requestRevision) && ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status) ? <ShiftChangeForm fields={{kind:"CANCEL",...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action danger" type="submit"><span>Cancel</span></button></ShiftChangeForm> : null}
+                      {exchange.actionable===true&&exchange.status==='MANAGER_PENDING'&&exchange.targetEmployeeId===session.id&&requestFields(exchange.id,exchange.requestRevision)?<ShiftChangeForm fields={{kind:"WITHDRAW",...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action danger" type="submit">Withdraw</button></ShiftChangeForm>:null}
                     </div>
                   </div>
                 ))}
@@ -274,15 +255,16 @@ export default async function ExchangePage({
                   <div className="employee-shift-entry" id={`request-${callout.id}`} tabIndex={-1} key={callout.id}>
                     <div className="employee-shift-entry-copy">
                       <strong>{marketplaceDate(callout.date)} · {formatTime(callout.startTime)} – {formatTime(callout.endTime)}</strong>
-                      <span>{calloutReason(callout.reasonCode)}</span>
+                      <span>{calloutReason(callout.reasonCode)}</span><span>{callout.locationName}</span><ShiftChangeHistory events={histories.get(callout.id)??null}/>
                     </div>
                     <div className="employee-shift-entry-actions" data-status={callout.status}>
-                      <StatusPill tone={statusTone(callout.status)}>{statusLabel(callout.status)}</StatusPill>
-                      {callout.status === "PENDING" ? <form action={cancelCalloutAction}><input type="hidden" name="calloutId" value={callout.id} /><button className="employee-action danger" type="submit"><span>Cancel</span></button></form> : null}
+                      <StatusPill tone={statusTone(callout.status)}>{callout.status==='PENDING'?'Reported inability':callout.status==='APPROVED'?'Released — check coverage':statusLabel(callout.status)}</StatusPill>
+                      {callout.status === "PENDING" && requestFields(callout.id,callout.requestRevision) ? <ShiftChangeForm fields={{kind:"CANCEL_CALLOUT",...requestFields(callout.id,callout.requestRevision)!}}><button className="employee-action danger" type="submit"><span>Cancel</span></button></ShiftChangeForm> : null}
                     </div>
                   </div>
                 ))}
               </section> : null}
+              {(selectedHistory===null||selectedHistory.length>0)&&!visibleActivity.some(e=>e.id===params.requestId)&&!visibleCallouts.some(e=>e.id===params.requestId)?<section className="employee-exchange-section"><h2>Original request history</h2><ShiftChangeHistory events={selectedHistory}/></section>:null}
             </>
           ) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>No trade requests yet</strong><p>Your offers, swaps, and coverage requests will appear here.</p></div>}
         </div>

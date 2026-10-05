@@ -46,11 +46,11 @@ it('draft mutations verify the actual resulting shift set before reporting succe
   const verifyIndex=r.batches[0].findIndex(s=>s.text.includes('guarded_after'));
   expect(verifyIndex).toBeGreaterThan(deleteIndex);
 });
-it('reassigning back to the employee with the approved callout preserves the actual approved status',async()=>{
+it('reassigning back to the original employee does not revive a prior assignment episode release',async()=>{
   const r=fixture(true);Object.assign(r.state.shifts[0],{employeeId:'F',isCalloutApproved:false,approvedCalloutEmployeeId:'E'});
   await updateShift({shiftId:'s1',employeeId:'E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M'},r.executor);
   const guard=r.batches[0].find(s=>s.text.includes('guarded_after'))!;
-  expect(JSON.parse(String(guard.values[1]))[0].isCalloutApproved).toBe(true);
+  expect(JSON.parse(String(guard.values[1]))[0].isCalloutApproved).toBe(false);
 });
 it('create carries position into the write and resulting canonical assignment',async()=>{
  const r=fixture();await insertShift({...{scheduleId:'a',employeeId:'E',date:'2030-10-12',startTime:'09:00',endTime:'17:00',actorEmployeeId:'M'},positionId:'barista'},r.executor);

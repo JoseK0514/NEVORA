@@ -1,3 +1,4 @@
+import { configureFictionalShiftChanges } from './shift-change-api';
 import { notificationPolicyFor as fixturePolicyFor } from '../../lib/notifications/policy';
 const fixtureNotificationPolicy=fixturePolicyFor('America/Puerto_Rico');
 import { beforeAll, afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -12,8 +13,8 @@ import { sqlDeliveryRepository } from '../../lib/data/push-deliveries';
 import { sqlNotificationStateRepository } from '../../lib/data/notification-state';
 import { acknowledgeScheduleWeek } from '../../lib/data/acknowledgements';
 import { createTimeOffRequest, reviewTimeOffRequest } from '../../lib/data/requests';
-import { createSwapProposal, respondToSwap, approveSwapExchange, createCoverageOffer, claimCoverage, approveCoverageExchange, denyExchange, cancelExchange } from '../../lib/data/exchanges';
-import { createCallout, approveCalloutAndOpenCoverage, denyCallout, cancelPendingCallout } from '../../lib/data/callouts';
+import { createSwapProposal, respondToSwap, approveSwapExchange, createCoverageOffer, claimCoverage, approveCoverageExchange, denyExchange, cancelExchange } from './shift-change-api';
+import { createCallout, approveCalloutAndOpenCoverage, denyCallout, cancelPendingCallout } from './shift-change-api';
 import { terminatePortalSession, reconcilePendingInstallation, type LogoutDeps } from '../../lib/notifications/logout';
 import { CLEANUP_COOKIE, INSTALLATION_COOKIE, openCleanupReceipt, sealCleanupReceipt, sealInstallationProof, encryptSubscriptionMaterial } from '../../lib/notifications/installation';
 import { readNotificationConfig as readRuntimeConfig } from '../../lib/notifications/config';
@@ -139,6 +140,7 @@ describe('actual ordered publication and request SQL', () => {
     expect(await count('time_off_requests')).toBe(0); expect(await count('notifications')).toBe(0);
   });
   it.each(['approve', 'deny', 'decline', 'cancel'])('swap_%s_executes_real_transition_SQL', async outcome => {
+    await configureFictionalShiftChanges(db);
     await publish(); await publish('loc-2');
     const id = await createSwapProposal({ sourceShiftId: 'QA-sh1', targetShiftId: 'QA-sh2', requestedByEmployeeId: 'QA-E', targetEmployeeId: 'QA-F' }, db);
     if (outcome === 'cancel') expect(await cancelExchange({ exchangeId: id, employeeId: 'QA-E' }, db)).toBe(true);
@@ -151,12 +153,14 @@ describe('actual ordered publication and request SQL', () => {
     if (outcome === 'approve') expect((await sql(`SELECT employee_id FROM shifts WHERE id='QA-sh1'`))[0].employee_id).toBe('QA-F');
   });
   it('coverage_claim_and_approval_commit_assignment_and_outbox', async () => {
+    await configureFictionalShiftChanges(db);
     await publish(); const id = await createCoverageOffer({ sourceShiftId: 'QA-sh1', requestedByEmployeeId: 'QA-E' }, db);
     expect(await claimCoverage({ exchangeId: id, employeeId: 'QA-F' }, db)).toBe(true);
     expect(await approveCoverageExchange({ exchangeId: id, managerId: 'QA-M' }, db)).toBe(true);
     expect((await sql(`SELECT employee_id FROM shifts WHERE id='QA-sh1'`))[0].employee_id).toBe('QA-F');
   });
   it.each(['approve', 'deny', 'cancel'])('callout_%s_executes_real_transition_SQL', async outcome => {
+    await configureFictionalShiftChanges(db);
     await publish(); const id = await createCallout({ shiftId: 'QA-sh1', employeeId: 'QA-E', reasonCode: 'ILLNESS' }, db); expect(id).toBeTruthy();
     if (outcome === 'approve') {
       expect(await approveCalloutAndOpenCoverage({ calloutId: id!, managerId: 'QA-M' }, db)).toBeTruthy();

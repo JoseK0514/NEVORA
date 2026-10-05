@@ -37,3 +37,9 @@ it('workspace outage never delays cookie deletion or independent session and ins
  state.transaction.mockRejectedValue(new Error('cleanup unavailable'));state.workspace.mockClear();
  try{await destroySession();expect(state.values.has('fuel_session')).toBe(false);expect(state.workspace).not.toHaveBeenCalled();expect(state.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM employee_sessions'),expect.any(Array),expect.any(Object));expect(state.transaction).toHaveBeenCalled();}finally{vi.unstubAllEnvs();}
 });
+it('mutation proof binds actual HttpOnly cookie hash and rejects a missing/revoked session',async()=>{
+ const {requireSessionMutationProof}=await import('./session');const {createHash}=await import('node:crypto');
+ state.query.mockResolvedValue([{id:'E',first_name:'Test',last_name:'Employee',role:'EMPLOYEE',primary_location_id:'L'}]);
+ expect(await requireSessionMutationProof()).toEqual({employee:{id:'E',firstName:'Test',lastName:'Employee',role:'EMPLOYEE',primaryLocationId:'L'},sessionTokenHash:createHash('sha256').update('fictional').digest('hex')});
+ expect(state.query.mock.calls[0][1]).toEqual([createHash('sha256').update('fictional').digest('hex')]);state.query.mockResolvedValue([]);await expect(requireSessionMutationProof()).rejects.toThrow('redirect:/login');state.values.clear();state.query.mockClear();await expect(requireSessionMutationProof()).rejects.toThrow('redirect:/login');expect(state.query).not.toHaveBeenCalled();
+});

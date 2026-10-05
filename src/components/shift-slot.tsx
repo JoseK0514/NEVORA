@@ -1,0 +1,3 @@
+import type {ExchangeShift} from '../lib/data/exchanges';
+import {formatDayLabel,formatTime} from '../lib/date-utils';
+export function ShiftSlot({shift,label,contextOnly=false}:{shift:ExchangeShift;label?:string;contextOnly?:boolean}){const date=formatDayLabel(shift.date);return <div className="shift-slot">{label?<strong>{label}</strong>:null}<>{!contextOnly?<><span>{date.weekday}, {date.day}</span><strong>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</strong></>:null}</><span>{shift.locationName}</span><span>{shift.positionName??(shift.positionId?`Position ${shift.positionId}`:'No assigned position')} · {shift.isDesignatedLead?'Designated Lead':'No designated Lead'}</span></div>;}

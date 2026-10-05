@@ -1,3 +1,6 @@
+import {OperationalRuleFields} from '@/components/operational-rule-fields';
+import {readOperationalRuleProfileView} from '@/lib/data/shift-change-views';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import {listPositions} from "@/lib/data/positions";
 import {EmployeeSchedulingFields} from "@/components/employee-scheduling-fields";
 import {ConfigurationForm} from "@/components/configuration-form";
@@ -15,7 +18,7 @@ export default async function EmployeeProfilePage({
 }: {
   params: Promise<{ employeeId: string }>;
 }) {
-  await requireRoles(MANAGER_ROLES);
+  const actor=await requireRoles(MANAGER_ROLES);
   const { employeeId } = await params;
 
   const [employees, locations, positions] = await Promise.all([
@@ -26,6 +29,8 @@ export default async function EmployeeProfilePage({
   const employee = employees.find((item) => item.id === employeeId);
 
   if (!employee) notFound();
+  const proof=await requireSessionMutationProof();
+  let operational=null,profileUnavailable=false;try{operational=await readOperationalRuleProfileView(proof,employee.id);}catch{profileUnavailable=true;}
 
   const primaryLocation = locations.find(
     (location) => location.id === employee.primaryLocationId,
@@ -76,7 +81,7 @@ export default async function EmployeeProfilePage({
           </div>
         </div>
       </section>
-      <section className="panel form-panel"><h2>Scheduling profile</h2><ConfigurationForm action={saveEmployeeSchedulingProfileAction} className="employee-form scheduling-profile-form"><input type="hidden" name="employeeId" value={employee.id}/><EmployeeSchedulingFields employee={employee} locations={locations} positions={positions}/><button className="button primary" type="submit">Save Scheduling Profile</button></ConfigurationForm></section>
+      <section className="panel form-panel"><h2>Scheduling profile</h2><ConfigurationForm action={saveEmployeeSchedulingProfileAction} className="employee-form scheduling-profile-form"><input type="hidden" name="employeeId" value={employee.id}/><EmployeeSchedulingFields employee={employee} locations={locations} positions={positions}/><button className="button primary" type="submit">Save Scheduling Profile</button></ConfigurationForm>{profileUnavailable?<p role="alert" className="form-error">Operational review is unavailable. Reconnect and reload.</p>:operational?<OperationalRuleFields employeeId={employee.id} profile={operational} canEdit={actor.role==='OWNER'}/>:<p>Operational review is unavailable until scheduling hour settings have been explicitly established. No maximum is created by this review.</p>}</section>
     </div>
   );
 }

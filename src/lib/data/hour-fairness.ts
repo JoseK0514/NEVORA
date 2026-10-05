@@ -1,3 +1,4 @@
+import { currentCalloutReleaseSql } from './shift-change-release';
 import { getDb, queryRows } from "@/lib/db";
 import { addDays } from "../date-utils";
 import { minutesInWorkweek, shiftPeriod } from "../scheduling/periods";
@@ -43,7 +44,7 @@ export async function listHourFairness(
       `SELECT sh.employee_id, sh.date, sh.start_time, sh.end_time
        FROM shifts sh JOIN schedules s ON s.id = sh.schedule_id
        WHERE sh.date >= $1 AND sh.date < $2 AND s.status <> 'ARCHIVED'
-         AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE c.shift_id = sh.id AND c.employee_id = sh.employee_id AND c.status = 'APPROVED')`,
+         AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()})`,
       [addDays(earliest, -1), currentWeekStart],
     ),
   ]);

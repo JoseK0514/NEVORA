@@ -1,0 +1,1250 @@
+[
+  {
+    "id": "A001",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "Both employees accept a valid same-week trade",
+    "expected": "Exactly both owners change in one transaction; one terminal result; dates, locations, positions and Lead duties stay attached to their slots.",
+    "requirements": [
+      "R01",
+      "R05",
+      "R10",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A002",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "Target declines before acceptance",
+    "expected": "Neither assignment changes; terminal decline recorded; pending reminders cancelled.",
+    "requirements": [
+      "R01",
+      "R09"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A003",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "Requester cancels while target accepts",
+    "expected": "One serialized outcome wins; never half a swap or success after a committed cancellation.",
+    "requirements": [
+      "R01",
+      "R07"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A004",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "Target employee is wrong, caller forges requester or tries self-swap",
+    "expected": "Server rejects without changing either assignment or disclosing private request data.",
+    "requirements": [
+      "R01",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A005",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "Source equals target or the owning weeks differ",
+    "expected": "Current same-shift/same-week restrictions are enforced server-side; no new cross-week feature.",
+    "requirements": [
+      "R01",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A006",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "Manager changes a consent-bound date/time/location/position/Lead/owner",
+    "expected": "Old consent is rejected; a fresh request is required rather than silently applying changed terms.",
+    "requirements": [
+      "R01",
+      "R07",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A007",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "Only the employee display name changes",
+    "expected": "No fabricated consent failure for unchanged terms; current presentation and historical identity remain accurate.",
+    "requirements": [
+      "R01",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A008",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "The applicable swap/coverage approval mode is disabled, missing or legacy/manual",
+    "expected": "Valid consent follows the established manual path; no assignment changes or retroactive auto-completion. Missing mandatory notice/rule data is reported rather than assumed.",
+    "requirements": [
+      "R05",
+      "R06",
+      "R14",
+      "R15"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A009",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "Two outgoing shifts would otherwise appear as conflicts",
+    "expected": "Validate each employee against the correct final ledger with only their outgoing assignment removed.",
+    "requirements": [
+      "R01",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A010",
+    "group": "Consent and swaps",
+    "tasks": "T02/T03",
+    "scenario": "One side of a proposed trade violates a rule",
+    "expected": "Neither side is applied; safe explanation identifies the failure without leaking peer private facts.",
+    "requirements": [
+      "R01",
+      "R07",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A011",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Ordinary owner offers future published shift",
+    "expected": "One OPEN offer; original assignment stays until replacement; no implied absence approval.",
+    "requirements": [
+      "R04",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A012",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Two eligible employees claim the same offer concurrently",
+    "expected": "One valid transaction commits; loser sees unavailable; exactly one replacement and one completion event.",
+    "requirements": [
+      "R04",
+      "R05",
+      "R07"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A013",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Invalid candidate claims then valid candidate claims",
+    "expected": "Invalid attempt does not reserve/close the shift; valid candidate can still complete.",
+    "requirements": [
+      "R03",
+      "R04",
+      "R07"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A014",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Original owner attempts to claim own offer",
+    "expected": "Rejected without assignment or status mutation.",
+    "requirements": [
+      "R04",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A015",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Manager-policy claim is later withdrawn",
+    "expected": "No completed assignment is undone; current version is checked; closure/reoffer follows P09.",
+    "requirements": [
+      "R04",
+      "R06",
+      "R07"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A016",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "A pending inability-to-work report is submitted",
+    "expected": "Existing assignment is retained with an explicit operational risk; private reason only available to authorized parties.",
+    "requirements": [
+      "R02",
+      "R06",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A017",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Manager approves callout with no replacement yet",
+    "expected": "Original employee is released in existing ledger semantics; one linked OPEN coverage need remains visibly unfilled.",
+    "requirements": [
+      "R02",
+      "R04",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A018",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Replacement accepts coverage for approved callout",
+    "expected": "Replacement owns shift and counts once; original absence history remains; release flag does not transfer to replacement.",
+    "requirements": [
+      "R02",
+      "R04",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A019",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Replacement later submits their own callout on the same shift",
+    "expected": "Historic original callout is retained but does not permanently block new owner; active release matches assignment episode.",
+    "requirements": [
+      "R02",
+      "R07",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A020",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Callout approval/cancellation races with accepted coverage or a trade",
+    "expected": "No replacement is removed, no new duplicate need appears, and no absent owner is silently restored.",
+    "requirements": [
+      "R02",
+      "R07",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A021",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Callout plus existing coverage/trade participates in the same source slot",
+    "expected": "Record the genuine inability report; resolve incompatible participation atomically, preserve history and committed replacements, and keep only one linked coverage need.",
+    "requirements": [
+      "R02",
+      "R07"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A022",
+    "group": "Coverage and inability to work",
+    "tasks": "T03",
+    "scenario": "Urgent inability is reported after shift start",
+    "expected": "Manager reporting remains available with clear limitations; no past/full-shift automatic transfer or punch mutation.",
+    "requirements": [
+      "R02",
+      "R06",
+      "R08"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A023",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Current employee, account, location or workspace becomes inactive",
+    "expected": "No new automatic assignment; safe cancellations/history remain possible within authorization.",
+    "requirements": [
+      "R03",
+      "R10",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A024",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Candidate lacks location eligibility or a required active position",
+    "expected": "Discovery and final completion reject candidate using shared validation.",
+    "requirements": [
+      "R03",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A025",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Multi-qualified candidate covers a single-position slot",
+    "expected": "Exactly one operational position counts; no double staffing/position credit.",
+    "requirements": [
+      "R03",
+      "R10",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A026",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Required designated Lead would be lost",
+    "expected": "Block; do not clear Lead flag or reinterpret an access role as a job position.",
+    "requirements": [
+      "R03",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A027",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Normal availability plus submitted weekly snapshot/exceptions",
+    "expected": "Preserve shared precedence, intentionally empty submissions and partial-day unavailable gaps.",
+    "requirements": [
+      "R03",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A028",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Pending versus approved time off",
+    "expected": "Use existing shared status semantics; approved leave blocks; nonblocking states do not become invented blockers.",
+    "requirements": [
+      "R03",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A029",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Cross-location conflict and same-day limit",
+    "expected": "Automatic mode enforces full ledger/daily policy, not the more permissive manual warning path.",
+    "requirements": [
+      "R03",
+      "R05",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A030",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Target 24, configured weekly max 40; projected 32, 40 and 41 scheduled hours",
+    "expected": "32/40 remain eligible under other rules; 41 violates this configured cap. The message identifies a scheduling cap, not a universal legal prohibition or final overtime-pay conclusion.",
+    "requirements": [
+      "R03",
+      "R10",
+      "R17"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A031",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Sunday overnight shift crosses Monday",
+    "expected": "Evaluate availability/leave and maximum hours in both business workweeks; exclude outgoing work correctly.",
+    "requirements": [
+      "R03",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A032",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Owning schedule week differs from touched business date",
+    "expected": "Locks, ledger and publication associations use their proper identities; no omitted carry-in/out.",
+    "requirements": [
+      "R07",
+      "R10",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A033",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Workspace timezone differs from browser/Mac timezone",
+    "expected": "Same valid operational result for same persisted workspace facts.",
+    "requirements": [
+      "R08",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A034",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "DST gap, repeated civil time or malformed legacy boundary",
+    "expected": "Use strict existing boundary policy; no guessed instant or silent 00:00 substitution.",
+    "requirements": [
+      "R08",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A035",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Unrelated location lacks setup",
+    "expected": "It does not block a valid requested slot; a requested inactive/unready location cannot auto-complete.",
+    "requirements": [
+      "R03",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A036",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Existing unrelated staffing gap versus new affected gap",
+    "expected": "Do not require fixing unrelated week defects; never introduce/worsen affected staff/position/Lead gaps.",
+    "requirements": [
+      "R03",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A037",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Ranking uses zero/missing/mixed targets and shuffled input order",
+    "expected": "No fabricated target or division errors; final shared fairness semantics and rotating tie remain deterministic.",
+    "requirements": [
+      "R03",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A038",
+    "group": "Shared rules, ranking and business time",
+    "tasks": "T02/T03",
+    "scenario": "Highly ranked employee does not volunteer",
+    "expected": "No assignment or extra hours without explicit acceptance; rank is not consent.",
+    "requirements": [
+      "R03",
+      "R04"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A039",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Same shift is source in one request and target in another",
+    "expected": "Cross-role exclusivity holds; separate-column indexes are not treated as sufficient proof.",
+    "requirements": [
+      "R07",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A040",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Two opposite or chained swaps race",
+    "expected": "Deterministic lock order and participation guard allow only compatible outcomes; no deadlock loop or double commitment.",
+    "requirements": [
+      "R01",
+      "R07"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A041",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Leave or availability insert occurs during acceptance",
+    "expected": "Absent-row/phantom change is caught under both writer orders; no stale automatic assignment.",
+    "requirements": [
+      "R07",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A042",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "New assignment at another location changes candidate hours during acceptance",
+    "expected": "Complete affected-ledger validation/guard catches overlap or maximum breach.",
+    "requirements": [
+      "R07",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A043",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Position membership, max-hours policy or session role changes during lock wait",
+    "expected": "Fresh final guard rejects lost authority or invalid scheduling facts.",
+    "requirements": [
+      "R07",
+      "R10",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A044",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Manager edits/deletes/unpublishes while acceptance waits",
+    "expected": "No overwrite of new manager intent, no phantom assignment and no publication of a draft.",
+    "requirements": [
+      "R07",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A045",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Phase 4 generation/manual input writers race with Phase 5",
+    "expected": "Shared lock ordering and source guards hold; no deadlocks from independent lock conventions.",
+    "requirements": [
+      "R07",
+      "R10",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A046",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Same action is submitted twice with the same operation identity",
+    "expected": "Return same persisted result; one assignment change, revision and visible completion event.",
+    "requirements": [
+      "R07",
+      "R09",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A047",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Same operation identity is reused with different terms or another account",
+    "expected": "Reject key misuse; no replay across actor/workspace boundaries.",
+    "requirements": [
+      "R07",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A048",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Transport fails after successful commit",
+    "expected": "Reconcile recorded command outcome before retry; no second swap or falsely definite failure.",
+    "requirements": [
+      "R07",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A049",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Recognized source conflict/deadlock/serialization failure",
+    "expected": "One bounded retry owner rereads and reevaluates; permission/deadline/unknown errors are not blindly retried.",
+    "requirements": [
+      "R07",
+      "R10"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A050",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Failure is injected between each mutation stage",
+    "expected": "All assignments, request state, participation, history, revisions and intents roll back together.",
+    "requirements": [
+      "R07",
+      "R09",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A051",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "A source row is later deleted or reassigned",
+    "expected": "Request history retains original parties/terms/outcome; cascades or live joins do not erase/misattribute it.",
+    "requirements": [
+      "R11",
+      "R14"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A052",
+    "group": "Database races, idempotency and history",
+    "tasks": "T01/T03/T06",
+    "scenario": "Generated-origin assignment is changed by a completed exchange",
+    "expected": "Protected human-controlled provenance is retained; genuine actor/mode recorded; no tombstone auto-clear.",
+    "requirements": [
+      "R10",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A053",
+    "group": "Deadlines, escalation and worker recovery",
+    "tasks": "T04/T06",
+    "scenario": "Claim just before, exactly at, and after the effective completion cutoff",
+    "expected": "Only before-cutoff final authorization can complete; apply the recorded/tighter current policy and shift-start upper bound using authoritative instants, not just dates.",
+    "requirements": [
+      "R07",
+      "R08",
+      "R15"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A054",
+    "group": "Deadlines, escalation and worker recovery",
+    "tasks": "T04/T06",
+    "scenario": "Request begins before its effective cutoff but obtains locks afterward",
+    "expected": "Post-wait policy/version/deadline guard rejects stale acceptance; no transfer, revision or completion notification is committed.",
+    "requirements": [
+      "R07",
+      "R08",
+      "R15"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A055",
+    "group": "Deadlines, escalation and worker recovery",
+    "tasks": "T04/T06",
+    "scenario": "Worker does not run or runs after configured deadlines",
+    "expected": "Expired actions remain invalid under effective policy; reads show truthful state; an accepted request is not confused with a closed creation window; unattended escalation is not claimed active.",
+    "requirements": [
+      "R08",
+      "R14",
+      "R15"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A056",
+    "group": "Deadlines, escalation and worker recovery",
+    "tasks": "T04/T06",
+    "scenario": "Two worker ticks expire/escalate same request",
+    "expected": "One durable event per lifecycle/stage; no duplicate reminders or assignments.",
+    "requirements": [
+      "R07",
+      "R08",
+      "R09"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A057",
+    "group": "Deadlines, escalation and worker recovery",
+    "tasks": "T04/T06",
+    "scenario": "Acceptance and expiry worker race",
+    "expected": "Single serialized outcome; expired request never acquires a replacement afterward.",
+    "requirements": [
+      "R07",
+      "R08"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A058",
+    "group": "Deadlines, escalation and worker recovery",
+    "tasks": "T04/T06",
+    "scenario": "Request created within urgent window",
+    "expected": "One immediate applicable manager escalation; no waiting for an already-passed threshold.",
+    "requirements": [
+      "R06",
+      "R08",
+      "R09"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A059",
+    "group": "Deadlines, escalation and worker recovery",
+    "tasks": "T04/T06",
+    "scenario": "No candidate exists or all invitees decline/dismiss",
+    "expected": "Truthful unresolved need; bounded manager escalation; no involuntary assignment or repeated invite spam.",
+    "requirements": [
+      "R03",
+      "R04",
+      "R06",
+      "R08"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A060",
+    "group": "Deadlines, escalation and worker recovery",
+    "tasks": "T04/T06",
+    "scenario": "Worker crashes between preparation and commit or restarts mid-batch",
+    "expected": "Stable cursor/idempotency recovers without losing or duplicating due work; no provider call inside business transaction.",
+    "requirements": [
+      "R07",
+      "R08",
+      "R09"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A061",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Coverage opens with mixed eligible/ineligible employees",
+    "expected": "Only current authorized eligible audience can receive actionable invitation; no personal callout details.",
+    "requirements": [
+      "R03",
+      "R09",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A062",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Valid trade/coverage updates both request and published revision",
+    "expected": "Coalesced visible completion per recipient/transaction; required internal records remain complete.",
+    "requirements": [
+      "R09",
+      "R11"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A063",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Request cancelled after delivery lease claimed but before send",
+    "expected": "Worker revalidates source and cancels stale action; already delivered pushes open a safe current state.",
+    "requirements": [
+      "R07",
+      "R09"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A064",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Same-state revision, new linked offer or legacy status-version event",
+    "expected": "Version identity/cancellation remain correct; no stale event reuse, lost new event or notification-budget reset from repeated reoffers.",
+    "requirements": [
+      "R09",
+      "R11",
+      "R14"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A065",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Caller tampers with employee/workspace/role/eligible/max-hours/Lead fields",
+    "expected": "Strict server-derived authority; reject business-field injection and duplicate scalar parameters.",
+    "requirements": [
+      "R10",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A066",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Real framework-generated Server Action form envelope",
+    "expected": "Legitimate submission works; framework metadata handling cannot authorize forged business fields.",
+    "requirements": [
+      "R12",
+      "R13"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A067",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Unrelated employee, wrong request recipient or Lead accesses manager action directly",
+    "expected": "Rejected server-side regardless of hidden buttons or client route.",
+    "requirements": [
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A068",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Actor logs out/switches account while opening a request notification",
+    "expected": "No cross-account private data or unauthorized mutation; safe return/deep-link behavior.",
+    "requirements": [
+      "R09",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A069",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Employee eligibility revoked after invitation creation",
+    "expected": "Dispatch/open/accept reevaluate applicable access and eligibility; invitation never guarantees acceptance.",
+    "requirements": [
+      "R03",
+      "R09",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A070",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Quiet hours, notification preferences, expired token or provider outage",
+    "expected": "Honor approved policy; preserve business result; report delivery separately from assignment success.",
+    "requirements": [
+      "R09",
+      "R14"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A071",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Push delivery flags off and fake provider enabled for tests",
+    "expected": "No real notification transport; durable local intent behavior tested and labeled accurately.",
+    "requirements": [
+      "R09",
+      "R14"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A072",
+    "group": "Notifications, access and privacy",
+    "tasks": "T04/T05/T06",
+    "scenario": "Sensitive reason note appears in candidate list, general history, URL, cache or push",
+    "expected": "Test fails; reason is visible only to requester and authorized management.",
+    "requirements": [
+      "R02",
+      "R09",
+      "R12"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A073",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Automatic completion through actual authenticated app and disposable DB",
+    "expected": "Both real schedules and request/count/acknowledgement views refresh; not just a mocked button result.",
+    "requirements": [
+      "R05",
+      "R11",
+      "R13"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A074",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Open, manual pending, released-unfilled, completed, expired and already-taken states",
+    "expected": "Labels and available actions match persisted state; no stale manager approval or success banners.",
+    "requirements": [
+      "R02",
+      "R06",
+      "R08",
+      "R13"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A075",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Offline, loading, pending, error, no candidates and uncertain commit",
+    "expected": "Useful truthful UI; no cached private data or deferred automatic acceptance; safe input preserved.",
+    "requirements": [
+      "R09",
+      "R12",
+      "R13"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A076",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Long names/positions/locations at all seven widths and both engines",
+    "expected": "Full text fits before horizontal scrolling; stable >=44px controls and explicit position/Lead context.",
+    "requirements": [
+      "R13"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A077",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Keyboard and screen-reader interaction",
+    "expected": "Correct focus/order/names/live feedback; dialogs restore focus; status not communicated by color alone.",
+    "requirements": [
+      "R12",
+      "R13"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A078",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Bottom-nav safe area and final action on mobile",
+    "expected": "Action remains visible and reachable above fixed navigation; pending geometry does not jump.",
+    "requirements": [
+      "R13"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A079",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Protected Manager/Employee/Lead/Login/Activate/PWA/Clocker surfaces",
+    "expected": "No unintended changes; focused source-aware comparisons; no actual punches or provider activation.",
+    "requirements": [
+      "R11",
+      "R13",
+      "R14"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A080",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Legacy request upgrade and missing schema",
+    "expected": "History/policy preserved; no automatic conversion of MANAGER_PENDING; missing schema is an error, not an empty list.",
+    "requirements": [
+      "R11",
+      "R14"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A081",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Duplicate/inconsistent legacy participation and repeated callout episodes",
+    "expected": "Migration rehearsal reports/resolves explicitly without deleting history or reassigning real employees.",
+    "requirements": [
+      "R02",
+      "R07",
+      "R14"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A082",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Separate approval modes or applicable rules change while requests remain active",
+    "expected": "Disabling/tightening applies at final guard; enabling/loosening neither bulk-completes existing manual requests nor extends prior consent/deadlines; changed rule facts are revalidated.",
+    "requirements": [
+      "R05",
+      "R07",
+      "R14",
+      "R15"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A083",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Migration compatibility rollback and restart",
+    "expected": "Documented tested application/schema compatibility; no destructive drop/rewrite to fake reversibility.",
+    "requirements": [
+      "R14"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A084",
+    "group": "UI integration and safe release",
+    "tasks": "T05/T06",
+    "scenario": "Final branch review and handoff",
+    "expected": "Approved base, exact commit, clean worktree, evidence, owned teardown and explicit no-push/no-deploy stop are recorded.",
+    "requirements": [
+      "R14"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A085",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T01/T03/T05",
+    "scenario": "Independent swap and coverage approval modes",
+    "expected": "Exercise automatic swaps/manual coverage and manual swaps/automatic coverage. Persist each independently; unauthorized toggles fail; the unrelated workflow and existing pending requests do not change.",
+    "requirements": [
+      "R05",
+      "R12",
+      "R15"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A086",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T01/T03/T06",
+    "scenario": "Missing or partially migrated policy configuration",
+    "expected": "Old/manual behavior remains recognizable; auto-completion is withheld where required settings are unknown. No implicit enabled flag, zero notice or not-applicable classification is invented.",
+    "requirements": [
+      "R05",
+      "R14",
+      "R15",
+      "R16"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A087",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T01/T03/T04",
+    "scenario": "Separate request and completion deadlines",
+    "expected": "With fictional 24-hour submission/2-hour completion cutoffs, test both boundaries. A request created in time stays actionable until its completion cutoff; new requests after their own cutoff are refused. Values are fixtures, not customer defaults.",
+    "requirements": [
+      "R07",
+      "R08",
+      "R15"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A088",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T01/T03/T05",
+    "scenario": "Explicit zero notice versus NULL and urgent inability reporting",
+    "expected": "Only an explicitly configured zero cutoff permits action up to but not at shift start. Missing values are not zero. Genuine urgent callouts still reach management after trading closes, without backdated transfers.",
+    "requirements": [
+      "R02",
+      "R08",
+      "R13",
+      "R15"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A089",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T03/T04/T06",
+    "scenario": "Notice policy tightens or loosens during a lock wait",
+    "expected": "A tighter effective deadline wins after the wait. Loosening never silently extends recorded consent/expiry or reopens a closed request. Worker, command and read projections agree.",
+    "requirements": [
+      "R07",
+      "R08",
+      "R09",
+      "R15"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A090",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T02/T03",
+    "scenario": "Minimum rest against prior and next cross-location commitments",
+    "expected": "Using fictional rest limits, reject a nonoverlapping but insufficient-rest assignment on either side. Remove outgoing shifts correctly; include adjacent days/workweeks and follow the defined time basis.",
+    "requirements": [
+      "R03",
+      "R07",
+      "R10",
+      "R16"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A091",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T02/T03",
+    "scenario": "Per-shift and daily-hour maximums differ from weekly maximum",
+    "expected": "A candidate below the weekly cap can still fail a daily/per-shift cap. Test the configured calendar or rolling window explicitly and reject unsupported/ambiguous semantics rather than guessing.",
+    "requirements": [
+      "R03",
+      "R10",
+      "R16",
+      "R17"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A092",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T02/T03/T05",
+    "scenario": "Replacement has different required break conditions",
+    "expected": "Recheck authoritative incoming-employee break conditions, retaining shift and consent-bound terms. Missing or incompatible required facts withhold auto-completion; never remove a break, deduct pay or fabricate a waiver/punch to make the trade pass.",
+    "requirements": [
+      "R01",
+      "R03",
+      "R10",
+      "R11",
+      "R16"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A093",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T01/T02/T03",
+    "scenario": "Required rule is unknown versus explicitly reviewed not applicable",
+    "expected": "Unknown required facts cannot become an eligible result or a generic manager override. Authorized correction plus revalidation is required. An explicit reviewed not-applicable classification behaves differently from missing data.",
+    "requirements": [
+      "R06",
+      "R12",
+      "R16"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A094",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T02/T03/T05",
+    "scenario": "Projected overtime threshold differs from target and hard cap",
+    "expected": "In a fictional profile with target 24, threshold 40 and cap 44, projected 42 is a threshold crossing, not a cap breach; route according to configured review policy. Projected 45 still violates the cap. Do not seed these values or calculate final payroll.",
+    "requirements": [
+      "R03",
+      "R06",
+      "R10",
+      "R13",
+      "R17"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A095",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T02/T03",
+    "scenario": "Known hard failure versus an explicitly permitted soft exception",
+    "expected": "Employee consent and manager review cannot bypass a known hard cap, required safety rule, forged consent or unresolved mandatory fact. Only already-permitted soft exceptions can be manually resolved; preserve reasons/history.",
+    "requirements": [
+      "R01",
+      "R06",
+      "R10",
+      "R16",
+      "R17"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A096",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T02/T06",
+    "scenario": "Shared policy parity across discovery, acceptance and affected consumers",
+    "expected": "Verify one source of rule meaning across suggestions, final writes and touched manual/generation consumers, allowing only documented mode-specific exceptions. No copied rest/hour/break engine and no changes to the approved Phase 4 worktree.",
+    "requirements": [
+      "R10",
+      "R11",
+      "R14",
+      "R16",
+      "R17"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A097",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T01/T03/T05/T06",
+    "scenario": "Actual app, policy changes, privacy and legacy upgrade",
+    "expected": "Use authenticated disposable-data flows to prove rule/mode/deadline updates, version guards, safe reasons and truthful pending states. No peer disclosure of private rule classification, universal compliance badge or migration-triggered activation.",
+    "requirements": [
+      "R07",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16",
+      "R17"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  },
+  {
+    "id": "A098",
+    "group": "Approved market-alignment refinements",
+    "tasks": "T02/T05/T06",
+    "scenario": "Time-basis and actual-time evidence are not interchangeable",
+    "expected": "Exercise daylight-saving elapsed rest versus nominal scheduled hours and absent actual-work data. Follow defined semantics or withhold unverifiable automation. Never infer final overtime owed, actual break completion or legal compliance from the scheduled ledger.",
+    "requirements": [
+      "R03",
+      "R10",
+      "R13",
+      "R16",
+      "R17"
+    ],
+    "status": "PLANNED_NOT_RUN"
+  }
+]

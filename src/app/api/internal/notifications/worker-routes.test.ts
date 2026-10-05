@@ -23,3 +23,13 @@ it('authorized workspace outage fails closed before delivery dependencies',async
  state.workspace.mockImplementation(()=>{throw new Error('private workspace failure');});
  const response=await dispatch.GET(request());expect(response.status).toBe(503);expect(state.factory).not.toHaveBeenCalled();expect(await response.json()).toEqual({error:'worker_unavailable'});
 });
+it('GET never performs business maintenance and authenticated POST validates bounded continuation',async()=>{
+ const {reminders,cli}=await routes();vi.stubEnv('NOTIFICATION_WORKER_SECRET','s'.repeat(32));const {deps}=fixture();state.deps=deps;
+ deps.config.workspace={id:'workspace',name:'Fictional',timeZone:'America/Puerto_Rico',active:true,createdAt:'2026-01-01T00:00:00Z',updatedAt:'2026-01-01T00:00:00Z'};
+ deps.config.deliveryEnabled=false;
+ expect((await reminders.GET(request())).status).toBe(200);
+ expect(deps.executor.query).not.toHaveBeenCalled();
+ const invalid=new Request('https://example.test/api/internal/notifications/reminders?cursor=not-valid',{headers:{Authorization:'Bearer '+'s'.repeat(32)}});
+ expect((await reminders.POST(invalid)).status).toBe(400);
+ await expect(cli.runCli(['reminders','not-valid'],deps)).rejects.toThrow('Usage');
+});

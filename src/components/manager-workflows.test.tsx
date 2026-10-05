@@ -12,7 +12,7 @@ import { listAvailabilitySubmissionStatuses } from "@/lib/data/availability-subm
 import { listManagementCoverage, listManagerPendingExchanges, listTeamExchangeActivity } from "@/lib/data/exchanges";
 import { listPendingCallouts } from "@/lib/data/callouts";
 
-vi.mock("@/lib/auth/session", () => ({ requireSession: vi.fn() }));
+vi.mock("@/lib/auth/session", () => ({ requireSession: vi.fn(),requireSessionMutationProof:async()=>({employee:{id:"reviewer",role:"MANAGER"},sessionTokenHash:"a".repeat(64)}) }));
 vi.mock("@/lib/auth/permissions", () => import("../lib/auth/permissions"));
 vi.mock("@/lib/scheduling/periods", () => import("../lib/scheduling/periods"));
 vi.mock("@/lib/date-utils", () => import("../lib/date-utils"));
@@ -38,9 +38,9 @@ vi.mock("@/lib/data/week-settings", () => ({ getUpcomingAvailabilityWeek: async 
 vi.mock("@/lib/data/exchanges", () => ({ listManagerPendingExchanges: vi.fn(async () => []), listManagementCoverage: vi.fn(async () => []), listTeamExchangeActivity: vi.fn(async () => []) }));
 vi.mock("@/lib/data/callouts", () => ({ listPendingCallouts: vi.fn(async () => []), listTeamCalloutHistory: vi.fn(async () => []) }));
 vi.mock("@/app/app/requests/actions", () => ({ reviewTimeOffAction: vi.fn() }));
-vi.mock("@/app/app/exchange/actions", () => ({ reviewExchangeAction: vi.fn() }));
+vi.mock("@/app/app/exchange/actions", () => ({ reviewExchangeAction: vi.fn(),shiftChangeAction:vi.fn(),reconcileShiftChangeAction:async()=>null }));
 vi.mock("@/app/app/exchange/callout/actions", () => ({ reviewCalloutAction: vi.fn() }));
-vi.mock("next/navigation", () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
+vi.mock("next/navigation", () => ({ useRouter:()=>({refresh:()=>{}}), redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 vi.mock("next/link", () => ({ default: ({href,children,...props}: ComponentProps<"a">) => createElement("a",{href,...props},children) }));
 
 beforeEach(() => { vi.clearAllMocks(); vi.mocked(requireSession).mockResolvedValue({id:"reviewer",firstName:"Alex",lastName:"Rivera",role:"MANAGER",primaryLocationId:"loc"}); });
@@ -86,3 +86,15 @@ it("a Lead-gap suggestion URL rejects otherwise eligible Employees using the sha
 });
 
 vi.mock("@/lib/business-time",()=>import("../lib/business-time"));
+it('unknown mandatory rules never expose a generic management Approve',async()=>{
+ vi.mocked(listManagerPendingExchanges).mockResolvedValue([{id:'unknown',requestRevision:2,actionable:true,kind:'COVERAGE',status:'MANAGER_PENDING',requestedByEmployeeId:'e1',requestedByName:'Fictional Requester',requestedByRole:'EMPLOYEE',targetEmployeeId:'e2',createdAt:'2026-10-03T00:00:00Z',sourceShift:{id:'s',scheduleId:'sched',employeeId:'e1',employeeName:'Fictional',locationId:'loc',locationName:'North',weekStart:'2026-10-05',date:'2026-10-05',startTime:'08:00',endTime:'12:00'}}]);
+ const html=renderToStaticMarkup(await ManagerShiftRequests({timeZone:'America/Puerto_Rico'}));expect(html).not.toContain('>Approve<');expect(html).toContain('Needs Owner rule review');
+});
+
+vi.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:async()=>({allowed:false,notice:'Needs Owner rule review'})}));
+vi.mock('@/lib/data/shift-change-views',()=>({readShiftChangeHistoryView:async()=>[]}));
+
+it('missing current revision never fabricates a mutation identity',async()=>{
+ vi.mocked(listPendingCallouts).mockResolvedValue([{id:'missing-revision',shiftId:'s',employeeId:'e1',employeeName:'Fictional',locationId:'loc',locationName:'North',weekStart:'2026-10-05',date:'2026-10-05',startTime:'08:00',endTime:'12:00',reasonCode:'OTHER',status:'PENDING',createdAt:'2026-10-03T00:00:00Z'}]);
+ const result=renderToStaticMarkup(await ManagerShiftRequests({timeZone:'America/Puerto_Rico'}));expect(result).not.toContain('name="expectedRevision" value="0"');expect(result).not.toContain('value="DECLINE_CALLOUT"');expect(result).toContain('Reload the current request revision');
+});

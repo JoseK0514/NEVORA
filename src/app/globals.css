@@ -12851,3 +12851,41 @@ body {
 .manager-schedule-page .schedule-generation-setup-links { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); width: fit-content; max-width: 100%; gap: 8px; }
 .manager-schedule-page .schedule-generation-setup-links a { max-width: 100%; text-align: center; white-space: normal; }
 .manager-schedule-page .schedule-generation-setup summary:focus-visible { outline: 2px solid var(--nevora-blue); outline-offset: 3px; border-radius: 4px; }
+
+/* Phase 5 extends existing workflow geometry and compact configuration disclosures. */
+.shift-change-fields { display: contents; min-width: 0; border: 0; margin: 0; padding: 0; }
+.shift-change-form { min-width: 0; }
+.shift-change-form > [role], .shift-change-form > .button { grid-column: 1 / -1; }
+.employee-shift-entry-actions > .shift-change-form { display: contents; }
+.shift-slot { display: grid; gap: 4px; min-width: 0; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.shift-change-unavailable { grid-column: auto; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }
+.shift-policy-disclosure { min-width: 0; margin: 20px 0; border-top: 1px solid var(--border); padding-top: 12px; }
+.shift-policy-disclosure > summary, .shift-change-history > summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; overflow-wrap: anywhere; }
+.shift-policy-disclosure > summary::before, .shift-change-history > summary::before { content: '+'; margin-right: 8px; }
+.shift-policy-disclosure[open] > summary::before, .shift-change-history[open] > summary::before { content: '−'; }
+.shift-policy-disclosure p { font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.shift-policy-scope, .operational-rule-row { padding: 12px 0; min-width: 0; border-top: 1px solid var(--border); }
+.shift-policy-scope h3, .operational-rule-row h3 { margin: 0 0 12px; font-size: 14px; }
+.policy-save-form, .policy-save-form .configuration-fields { display: grid; gap: 12px; min-width: 0; }
+.policy-save-form label { display: grid; gap: 8px; min-width: 0; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.policy-save-form input:not([type=hidden]), .policy-save-form select { width: 100%; min-width: 0; min-height: 44px; box-sizing: border-box; font-size: 16px; }
+.policy-save-form .button { min-height: 44px; justify-self: start; white-space: normal; }
+.operational-rule-values { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-top: 12px; }
+.shift-policy-disclosure dl { display: grid; gap: 8px; overflow-wrap: anywhere; }
+.shift-policy-disclosure dd { margin: 4px 0 12px; }
+.shift-change-history { min-width: 0; font-size: 12px; }
+.shift-change-history ol { margin: 0; padding-left: 20px; }
+.shift-change-history li { display: grid; gap: 4px; margin-bottom: 12px; overflow-wrap: anywhere; }
+.reviewed-swap-terms { display: grid; gap: 16px; padding: 12px 0; }
+.employee-exchange-detail-view .shift-change-fields > label { display: grid; gap: 8px; min-width: 0; }
+@media (max-width: 600px) {
+ .operational-rule-values { grid-template-columns: minmax(0,1fr); }
+ .policy-save-form .button { width: 100%; justify-self: stretch; }
+ .shift-policy-disclosure { margin-bottom: 32px; }
+}
+.shift-slot > strong { font-size: 14px; font-weight: 600; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.employee-exchange-detail-view .employee-shift-picker-value > small { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+/* Override the legacy settings page's 40px important minimum only for new review controls. */
+.schedule-settings-page .shift-policy-disclosure .policy-save-form input:not([type="hidden"]),
+.schedule-settings-page .shift-policy-disclosure .policy-save-form select { min-height: 44px !important; }
+.policy-save-form select { height: 44px; }

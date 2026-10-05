@@ -5,7 +5,7 @@ import { addDays } from '../date-utils';
 import { diffPublishedShifts } from '../assistance/publication-diff';
 import { buildAcknowledgementState } from '../assistance/acknowledgement-state';
 import {
-  buildSchedulePublicationNotification, buildTimeOffOutcomeNotification, buildCalloutOutcomeNotification,
+  buildCoverageInvitationNotification,buildSchedulePublicationNotification, buildTimeOffOutcomeNotification, buildCalloutOutcomeNotification,
   buildSwapResponseRequestedNotification, buildExchangeOutcomeNotification, buildManagerReviewNotification,
   buildAvailabilityReminderNotification, buildAvailabilitySummaryNotification, buildSelfTestNotification,
   type NotificationEvent,
@@ -49,7 +49,10 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
       dueAt:high ? now.getTime() : now.getTime()+policy.managerCollectionMinutes*60000,
       purpose:'SUMMARY',urgency:high ? 'high' : 'normal',
     });
-    if (intent) intents.push(intent);
+    if (intent) {
+      if(after.kind==='EXCHANGE' && after.semanticNeedKey)intent.eventKey=[environment,'COVERAGE_ATTENTION',recipient.employeeId,after.semanticNeedKey,high?'URGENT':'ROUTINE'].join(':');
+      intents.push(intent);
+    }
   }
   if (after.kind === 'SCHEDULE') {
     const old: ScheduleSourceSnapshot | undefined = before?.kind === 'SCHEDULE' ? before : undefined;
@@ -149,7 +152,7 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
     return intents;
   }
   // Same status/version means no successful business transition occurred.
-  if (before && before.kind === after.kind && 'record' in before && before.record.status === after.record.status) return [];
+  if (before && before.kind === after.kind && 'record' in before && before.source.version === after.source.version) return [];
   for (const recipient of recipients) {
     let event: NotificationEvent | undefined;
     if (after.kind === 'TIME_OFF') {
@@ -160,12 +163,16 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
       if (recipient.employeeId === after.record.employeeId && (after.record.status==='APPROVED'||after.record.status==='DENIED')) event = buildCalloutOutcomeNotification({employeeId:recipient.employeeId,calloutId:after.record.id,status:after.record.status});
     } else if (after.kind === 'EXCHANGE') {
       if (after.record.status === 'MANAGER_PENDING') { review(recipient); continue; }
-      if (after.record.status === 'OPEN') { review(recipient,shiftStart(after.record.sourceShift)); continue; }
+      if (after.record.status === 'OPEN') {
+        if (isReviewRole(recipient)) { review(recipient,shiftStart(after.record.sourceShift)); continue; }
+        if (isSelfServiceRecipient(recipient) && after.eligibleEmployeeIds?.includes(recipient.employeeId)) event=buildCoverageInvitationNotification({...after.record.sourceShift,employeeId:recipient.employeeId});
+      }
+      if (['CANCELLED','EXPIRED'].includes(after.record.status) && (recipient.employeeId===after.record.requestedByEmployeeId || recipient.employeeId===after.record.targetEmployeeId)) event={employeeId:recipient.employeeId,type:`${after.record.kind}_${after.record.status}`,title:after.record.status==='EXPIRED'?'Request expired':'Request cancelled',body:'Review the current request status.',eventKey:''};
       if (after.record.status==='EMPLOYEE_PENDING' && recipient.employeeId===after.record.targetEmployeeId) event = buildSwapResponseRequestedNotification({employeeId:recipient.employeeId,exchangeId:after.record.id,requesterName:after.record.requestedByName});
       if ((after.record.status==='APPROVED'||after.record.status==='DENIED') && (recipient.employeeId===after.record.requestedByEmployeeId || recipient.employeeId===after.record.targetEmployeeId)) event = buildExchangeOutcomeNotification({employeeId:recipient.employeeId,exchangeId:after.record.id,status:after.record.status,kind:after.record.kind});
     }
     if (!event) continue;
-    const expiry = after.kind === 'EXCHANGE' ? Math.min(now.getTime()+72*HOUR_MS,shiftStart(after.record.sourceShift),after.record.targetShift ? shiftStart(after.record.targetShift):Infinity) : now.getTime()+72*HOUR_MS;
+    const expiry = after.kind === 'EXCHANGE' && !['CANCELLED','EXPIRED'].includes(after.record.status) ? Math.min(now.getTime()+72*HOUR_MS,after.completionDeadline?Date.parse(after.completionDeadline):Infinity,shiftStart(after.record.sourceShift),after.record.targetShift ? shiftStart(after.record.targetShift):Infinity) : now.getTime()+72*HOUR_MS;
     const intent = make(event,recipient,{expiresAt:expiry});
     if (intent) intents.push(intent);
   }

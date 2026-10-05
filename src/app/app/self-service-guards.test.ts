@@ -97,3 +97,14 @@ it("does not report an already changed Time Off request as a successful review",
 
 vi.mock("@/lib/business-time",()=>import("../../lib/business-time"));
 vi.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));
+
+vi.mock('@/lib/shift-changes/command-parser',()=>import('../../lib/shift-changes/command-parser'));
+vi.mock('@/lib/data/shift-changes',()=>({executeShiftChange:vi.fn(),findShiftChangeOperation:vi.fn()}));
+
+vi.mock('@/components/reviewed-swap-form',()=>import('../../components/reviewed-swap-form'));
+vi.mock('@/components/shift-change-form',()=>import('../../components/shift-change-form'));
+vi.mock('@/components/shift-slot',()=>import('../../components/shift-slot'));
+vi.mock('@/lib/data/shift-change-snapshot',()=>({readShiftChangeTerms:vi.fn()}));
+vi.mock('@/lib/shift-changes/policy-form',()=>import('../../lib/shift-changes/policy-form'));
+vi.mock('@/lib/data/shift-change-policy',()=>({saveShiftChangePolicy:vi.fn()}));
+vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));

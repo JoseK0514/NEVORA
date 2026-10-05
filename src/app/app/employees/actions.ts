@@ -1,5 +1,9 @@
 "use server";
 
+import {requireSessionMutationProof} from '@/lib/auth/session';
+import {parseOperationalProfileForm} from '@/lib/shift-changes/policy-form';
+import {saveOperationalRuleProfile} from '@/lib/data/shift-change-policy';
+import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -106,4 +110,10 @@ export async function createEmployeeFormAction(data: FormData) {
           : "Employee could not be saved. Your entries are preserved.",
     };
   }
+}
+
+export async function saveOperationalRulesAction(data:FormData):Promise<import('@/lib/shift-changes/types').PolicyWriteResult>{
+ const input=parseOperationalProfileForm(data);if(!input)return {status:'invalid',fieldErrors:[{field:'profile',message:'Choose every rule status explicitly and complete configured values, time basis and routing.'}]};
+ const proof=await requireSessionMutationProof();if(proof.employee.role!=='OWNER')return {status:'invalid',fieldErrors:[{field:'authorization',message:'Only an active Owner can review operational rules.'}]};
+ const result=await saveOperationalRuleProfile({...input,proof},neonNotificationExecutor());if(result.status==='saved'){revalidatePath('/app/employees');revalidatePath(`/app/employees/${encodeURIComponent(input.employeeId)}`);revalidatePath('/app/exchange');revalidatePath('/app/schedule');revalidatePath('/app');}return result;
 }

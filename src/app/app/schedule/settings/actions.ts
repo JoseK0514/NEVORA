@@ -1,5 +1,9 @@
 "use server";
 
+import {requireSessionMutationProof} from '@/lib/auth/session';
+import {parseWorkflowPolicyForm} from '@/lib/shift-changes/policy-form';
+import {saveShiftChangePolicy} from '@/lib/data/shift-change-policy';
+import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { timeMinutes } from "@/lib/scheduling/periods";
@@ -186,4 +190,11 @@ export async function replaceCoverageWindowPositionRequirementsAction(data:FormD
  const actor=await requireRoles(MANAGER_ROLES);
  try {await replaceCoverageWindowPositionRequirements({windowId:String(data.get('windowId')??''),requirements:readRequirements(data),actorEmployeeId:actor.id});revalidatePath('/app/schedule/settings');revalidatePath('/app/settings/locations');return {success:'Position quantities updated.'};}
  catch{return {error:'Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.'};}
+}
+
+export async function saveShiftChangePolicyAction(data:FormData):Promise<import('@/lib/shift-changes/types').PolicyWriteResult>{
+ const input=parseWorkflowPolicyForm(data);if(!input)return {status:'invalid',fieldErrors:[{field:'mode',message:'Review approval mode and whole-number deadlines. Blank is unknown; completion advance must not exceed submission advance.'}]};
+ const proof=await requireSessionMutationProof();if(proof.employee.role!=='OWNER')return {status:'invalid',fieldErrors:[{field:'authorization',message:'Only an active Owner can save this policy.'}]};
+ const result=await saveShiftChangePolicy({...input,proof},neonNotificationExecutor());
+ if(result.status==='saved'){revalidatePath('/app/schedule/settings');revalidatePath('/app/exchange');revalidatePath('/app');}return result;
 }

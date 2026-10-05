@@ -1,3 +1,4 @@
+import { bindFixtureCallout } from './shift-change-api';
 import { afterAll, beforeAll, beforeEach, expect, it, vi, afterEach } from 'vitest';
 import { Client } from 'pg';
 import { selectGenerationScope } from '../../lib/scheduling/generation/scope';
@@ -57,6 +58,8 @@ it('creates an empty-week DRAFT and committed generated assignment without publi
     end_time: '12:00:00',
     assignment_origin: 'GENERATED'
   }]);
+  const [createdEpisode]=await q('SELECT assignment_episode_id,terms_revision FROM shifts');
+  expect(createdEpisode.assignment_episode_id).toMatch(/^[a-f0-9-]{36}$/);expect(createdEpisode.terms_revision).toBe(1);
   expect(result).toMatchObject({
     status: 'COMPLETE',
     changed: true,
@@ -267,18 +270,23 @@ it('verified no-op still rejects actor revocation or publication racing its fina
   expect(await rows()).toEqual(before);
   await q("UPDATE employees SET active=true WHERE id='manager'");
   first = true;
+  let publisherState: Awaited<ReturnType<typeof rows>> = [];
   const published: SqlExecutor = {
     query: database.executor.query,
     transaction: async s => {
       if (first) {
         first = false;
         await q("UPDATE schedules SET status='PUBLISHED'");
+        publisherState = await rows();
       }
       return database.executor.transaction(s);
     }
   };
   await expect(run(request, published)).rejects.toThrow('DRAFT');
-  expect(await rows()).toEqual(before);
+  // The independent publisher invalidates reviewed material terms; the rejected
+  // generator must preserve every assignment, episode and provenance property.
+  expect(publisherState).toEqual(before.map(({row}) => ({row:{...(row as Record<string,unknown>),terms_revision:Number((row as Record<string,unknown>).terms_revision)+1}})));
+  expect(await rows()).toEqual(publisherState);
 });
 it('concurrent Build/Fill and duplicate requests converge without duplicate assignments', async () => {
   const result = await Promise.all([run(), run(), generateWeekDraft({
@@ -665,6 +673,7 @@ it('snapshot maps real position/Lead, weekly submission, maximum and approved ca
   }]);
   const id = String((await source()).shifts[0].id);
   await q("INSERT INTO shift_callouts(id,shift_id,employee_id,reason_code,status) VALUES('approved',$1,'worker','OTHER','APPROVED')", [id]);
+  await bindFixtureCallout(database.executor,'approved');
   let reads = 0;
   const counted: SqlExecutor = {
     query: async <T,>(s: SqlStatement) => {
@@ -695,6 +704,7 @@ it('allocates deterministic fresh IDs when protected callout history retains the
   const original = (await rows())[0],
     id = String((await source()).shifts[0].id);
   await q("INSERT INTO shift_callouts(id,shift_id,employee_id,reason_code,status) VALUES('approved',$1,'worker','OTHER','APPROVED')", [id]);
+  await bindFixtureCallout(database.executor,'approved');
   expect(await generateWeekDraft({
     ...request,
     mode: 'FILL_GAPS_ONLY'

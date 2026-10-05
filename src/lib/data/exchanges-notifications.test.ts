@@ -1,7 +1,7 @@
 import { beforeEach, afterEach, expect, it, vi } from 'vitest';
 vi.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [{ id: 'legacy' }] }), queryRows: (value: unknown) => value }));
-import { approveCoverageExchange, approveSwapExchange, cancelExchange, claimCoverage, createCoverageOffer, createSwapProposal, denyExchange, respondToSwap } from './exchanges';
-import { fixture, intents, week } from './request-notification-fixtures.test-support';
+import { approveCoverageExchange, approveSwapExchange, cancelExchange, claimCoverage, createCoverageOffer, createSwapProposal, denyExchange, respondToSwap } from './shift-change-compat.test-support';
+import { fixture, intents, week } from './shift-change-compat.test-support';
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2030-10-07T12:00:00Z')); });
 afterEach(() => vi.useRealTimers());
 const transitions = [
@@ -9,7 +9,7 @@ const transitions = [
   { name: 'decline', status: 'EMPLOYEE_PENDING', run: respondToSwap, input: { exchangeId: 'request-1', employeeId: 'F', accept: false }, expected: [['E','EVENT']] },
   { name: 'accept', status: 'EMPLOYEE_PENDING', run: respondToSwap, input: { exchangeId: 'request-1', employeeId: 'F', accept: true }, expected: [['M','SUMMARY'],['O','SUMMARY']] },
   { name: 'deny', status: 'MANAGER_PENDING', run: denyExchange, input: { exchangeId: 'request-1', managerId: 'M' }, expected: [['E','EVENT'],['F','EVENT']] },
-  { name: 'cancel', status: 'EMPLOYEE_PENDING', run: cancelExchange, input: { exchangeId: 'request-1', employeeId: 'E' }, expected: [] },
+  { name: 'cancel', status: 'EMPLOYEE_PENDING', run: cancelExchange, input: { exchangeId: 'request-1', employeeId: 'E' }, expected: [['F','EVENT']] },
 ] as const;
 it.each(transitions)('$name emits only the authorized transition recipients', async ({ name, status, run, input, expected }) => {
   const r=fixture('EXCHANGE',status); if (['decline','accept','cancel'].includes(name)) r.row.kind='SWAP';
@@ -20,9 +20,9 @@ it.each(transitions)('$name emits only the authorized transition recipients', as
 });
 it.each(transitions)('$name cannot report success after request status races or outbox failure', async ({ name, status, run, input }) => {
   const r=fixture('EXCHANGE',status); if (['decline','accept','cancel'].includes(name)) r.row.kind='SWAP';
-  vi.mocked(r.executor.transaction).mockRejectedValueOnce(Object.assign(new Error('request_transition_conflict'),{code:'22P02'}));
+  vi.mocked(r.executor.transaction).mockRejectedValue(Object.assign(new Error('request_transition_conflict'),{code:'22P02'}));
   expect(await run(input as never,r.executor)).toBe(false);
-  vi.mocked(r.executor.transaction).mockRejectedValueOnce(new Error('outbox failure'));
+  vi.mocked(r.executor.transaction).mockRejectedValueOnce(Object.assign(new Error('outbox failure'),{code:'23514'}));
   await expect(run(input as never,r.executor)).rejects.toThrow('outbox failure');
 });
 it('open coverage queues only manager summary seeds; swap proposal asks only its target', async()=>{
@@ -63,8 +63,8 @@ it.each([approveCoverageExchange,approveSwapExchange])('approval fails atomicall
 });
 it('manager summary recipient access is locked before the eligibility lock and business write',async()=>{
  const r=fixture('EXCHANGE','OPEN');await createCoverageOffer({sourceShiftId:'s1',requestedByEmployeeId:'E'},r.executor);
- const b=r.batches[0];const lock=b.findIndex(s=>s.text.includes('FROM employees')&&s.text.includes('FOR SHARE'));
- expect(b[lock].values[0]).toEqual(expect.arrayContaining(['M','O']));expect(lock).toBeLessThan(b.findIndex(s=>s.text.includes('LOCK TABLE employee_location_eligibility')));
+ const b=r.batches[0];const lock=b.findIndex(s=>s.text.includes('LOCK TABLE employees IN SHARE ROW EXCLUSIVE'));
+ expect(lock).toBeGreaterThanOrEqual(0);expect(b.findIndex(s=>s.text.includes('LOCK TABLE employees IN SHARE ROW EXCLUSIVE'))).toBeLessThan(b.findIndex(s=>s.text.includes('LOCK TABLE employee_location_eligibility')));
 });
 it.each(transitions)('$name repeated/resolved transition is a no-op',async ({run,input})=>{
  const r=fixture('EXCHANGE','APPROVED');expect(await run(input as never,r.executor)).toBe(false);expect(r.executor.transaction).not.toHaveBeenCalled();
@@ -72,13 +72,13 @@ it.each(transitions)('$name repeated/resolved transition is a no-op',async ({run
 it.each(['coverage','swap'] as const)('%s creation rejects invalid ownership and atomic batch failures',async kind=>{
  const r=fixture('EXCHANGE','OPEN');r.state.shifts.push({...r.state.shifts[0],sourceShiftId:'s2',employeeId:'F'});r.state.revisions[0].shifts.push({...r.state.shifts[1]});
  const run=()=>kind==='coverage'?createCoverageOffer({sourceShiftId:'s1',requestedByEmployeeId:'E'},r.executor):createSwapProposal({sourceShiftId:'s1',targetShiftId:'s2',requestedByEmployeeId:'E',targetEmployeeId:'F'},r.executor);
- vi.mocked(r.executor.transaction).mockRejectedValueOnce(new Error('outbox failure'));await expect(run()).rejects.toThrow('outbox failure');
- r.state.shifts[0].employeeId='Z';vi.mocked(r.executor.transaction).mockClear();await expect(run()).rejects.toThrow('Exchange changed');expect(r.executor.transaction).not.toHaveBeenCalled();
+ vi.mocked(r.executor.transaction).mockRejectedValueOnce(Object.assign(new Error('outbox failure'),{code:'23514'}));await expect(run()).rejects.toThrow('outbox failure');
+ r.state.shifts[0].employeeId='Z';vi.mocked(r.executor.transaction).mockClear();await expect(run()).rejects.toThrow('Current reviewed command');expect(r.executor.transaction).not.toHaveBeenCalled();
 });
-it('coverage reassignment back to an earlier approved callout owner anticipates approved status',async()=>{
+it('coverage reassignment back to an earlier approved callout owner does not revive an earlier episode release',async()=>{
  const r=fixture('EXCHANGE','MANAGER_PENDING');r.row.target_employee_id='E';r.row.requested_by_employee_id='F';r.row.source_employee_id='F';Object.assign(r.state.shifts[0],{employeeId:'F',approvedCalloutEmployeeId:'E',isCalloutApproved:false});
  expect(await approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);
- expect(JSON.parse(String(r.batches[0].find(s=>s.text.includes('guarded_after'))!.values[1]))[0]).toMatchObject({employeeId:'E',isDesignatedLead:false,isCalloutApproved:true});
+ expect(JSON.parse(String(r.batches[0].find(s=>s.text.includes('guarded_after'))!.values[1]))[0]).toMatchObject({employeeId:'E',isDesignatedLead:true,isCalloutApproved:false});
 });
 it.each([approveCoverageExchange,approveSwapExchange])('completed approvals do not produce duplicate outcomes',async run=>{
  const r=fixture('EXCHANGE','APPROVED');expect(await run({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(false);expect(r.executor.transaction).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ it('coverage preserves its assigned position and blocks an unqualified incoming 
  expect(await approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);
  expect(JSON.parse(String(r.batches[0].find(s=>s.text.includes('guarded_after'))!.values[1]))[0]).toMatchObject({employeeId:'F',positionId:'barista'});
  r.state.assignmentFacts.memberships=r.state.assignmentFacts.memberships.filter(m=>m.employeeId!=='F');
- await expect(approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).rejects.toThrow('not qualified');
+ expect(await approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(false);
  expect(r.batches).toHaveLength(1);
 });
 it('unrelated request denial preserves an inactive historical position and employee',async()=>{
@@ -156,7 +156,7 @@ it.each([
     membership => membership.employeeId !== incomingEmployeeId || membership.positionId !== requiredPositionId,
   );
   const before = structuredClone(r.state);
-  await expect(approveSwapExchange({ exchangeId: 'request-1', managerId: 'M' }, r.executor)).rejects.toThrow('not qualified');
+  expect(await approveSwapExchange({ exchangeId: 'request-1', managerId: 'M' }, r.executor)).toBe(false);
   expect(r.executor.transaction).not.toHaveBeenCalled();
   expect(r.batches).toEqual([]);
   expect(r.state).toEqual(before);

@@ -1,15 +1,16 @@
 import { getWorkspace } from "@/lib/data/workspaces";
-import { businessDate } from "@/lib/business-time";
+import { shiftBoundaryInstants } from "@/lib/business-time";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { EmployeeSubmitButton } from "@/components/employee-submit-button";
+import {ShiftChangeForm} from "@/components/shift-change-form";
+import {ShiftSlot} from "@/components/shift-slot";
 import { requireSelfService } from "@/lib/auth/permissions";
 import {
   formatDayLabel,
   formatTime,
 } from "@/lib/date-utils";
 import { getPublishedShift } from "@/lib/data/exchanges";
-import { submitCalloutAction } from "@/app/app/exchange/callout/actions";
+
 
 const REASONS = [
   ["ILLNESS", "Illness / sick"],
@@ -38,7 +39,7 @@ export default async function CalloutPage({
   if (
     !shift ||
     shift.employeeId !== session.id ||
-    shift.date < businessDate(new Date(), workspace.timeZone)
+    Date.parse(shiftBoundaryInstants(shift,workspace.timeZone).endAt) <= new Date().getTime()
   ) {
     redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
   }
@@ -64,7 +65,7 @@ export default async function CalloutPage({
           <p className="large-detail">
             {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
           </p>
-          <p className="muted">{shift.locationName}</p>
+          <ShiftSlot shift={shift} contextOnly/>
 
           <div className="callout-warning">
             <strong>You are still responsible for this shift right now.</strong>
@@ -83,8 +84,8 @@ export default async function CalloutPage({
             </div>
           </div>
 
-          <form action={submitCalloutAction} className="employee-form">
-            <input type="hidden" name="shiftId" value={shift.id} />
+          <ShiftChangeForm fields={{kind:"SUBMIT_CALLOUT",sourceShiftId:shift.id}} className="employee-form shift-change-form">
+
 
             <label>
               Reason
@@ -112,9 +113,9 @@ export default async function CalloutPage({
               <Link className="button secondary" href="/app/exchange?tab=my">
                 Cancel
               </Link>
-              <EmployeeSubmitButton className="employee-action primary" pendingText="Submitting…">Submit Call-out</EmployeeSubmitButton>
+              <button className="employee-action primary" type="submit">Submit Call-out</button>
             </div>
-          </form>
+          </ShiftChangeForm>
         </article>
       </section>
     </div>

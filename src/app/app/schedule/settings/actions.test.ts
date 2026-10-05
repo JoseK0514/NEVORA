@@ -214,3 +214,8 @@ it("configured checkbox explicitly supports false through its form-presence mark
     },
   ]);
 });
+
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:vi.fn()}));
+vi.mock('@/lib/shift-changes/policy-form',()=>import('../../../../lib/shift-changes/policy-form'));
+vi.mock('@/lib/data/shift-change-policy',()=>({saveShiftChangePolicy:vi.fn()}));
+vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));

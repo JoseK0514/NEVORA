@@ -160,7 +160,7 @@ export function cancelNotificationStatements(source: SourceRef, recipientId?: st
   return [{
     text: `WITH cancelled AS (
       UPDATE notifications SET push_state = 'cancelled', cancelled_at = now()
-      WHERE source_kind = $1 AND source_id = $2 AND source_version = $3
+      WHERE source_kind = $1 AND source_id = $2 AND (source_version = $3 OR ($1 IN ('EXCHANGE','CALLOUT') AND $3 ~ '^r:[1-9][0-9]*$' AND (source_version IN ('OPEN','EMPLOYEE_PENDING','MANAGER_PENDING','PENDING','APPROVED','DENIED','CANCELLED','EXPIRED') OR CASE WHEN source_version ~ '^r:[1-9][0-9]*$' THEN substring(source_version from 3)::numeric <= substring($3 from 3)::numeric ELSE false END)))
         AND ($4::text IS NULL OR employee_id = $4)
         AND push_state IN ('pending','materialized','no_active_subscription') RETURNING id
     ) UPDATE push_deliveries SET status = 'cancelled', lease_token = NULL,

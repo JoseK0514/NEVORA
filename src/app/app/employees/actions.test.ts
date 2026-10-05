@@ -68,3 +68,8 @@ it("invalid required inputs returns local feedback with no write", async () => {
   });
   expect(m.insert).not.toHaveBeenCalled();
 });
+
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:vi.fn()}));
+vi.mock('@/lib/shift-changes/policy-form',()=>import('../../../lib/shift-changes/policy-form'));
+vi.mock('@/lib/data/shift-change-policy',()=>({saveOperationalRuleProfile:vi.fn()}));
+vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));

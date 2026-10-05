@@ -47,6 +47,8 @@ export type Schedule = {
 };
 
 export type Shift = {
+  /** Legacy read projections may omit this; final Phase 5 writes require it. */
+  assignmentEpisodeId?: string;
   assignmentOrigin?: AssignmentOrigin;
   generatedClaims?: GenerationClaims | null;
   id: string;

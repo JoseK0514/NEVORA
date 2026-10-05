@@ -69,13 +69,13 @@ describe("coverage preference ranking uses the shared eligibility engine", () =>
         candidate("B", "Luis", 18, 40),
       ])[0],
     ).toMatchObject({ employeeId: "B", hoursNeeded: 22 }));
-  it("uses repeated under-target history as a tie breaker", () =>
+  it("uses approved target-completion ratio before historical under-target counts", () =>
     expect(
       rankCoverageCandidates([
         candidate("A", "Ana", 24, 32, 1),
         candidate("B", "Luis", 32, 40, 3),
       ]).map((item) => item.employeeId),
-    ).toEqual(["B", "A"]));
+    ).toEqual(["A", "B"]));
   it("retains employees without a target behind eligible employees needing hours", () =>
     expect(
       rankCoverageCandidates([

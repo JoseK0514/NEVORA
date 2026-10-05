@@ -1,3 +1,5 @@
+import { evaluateOperationalRules } from './operational-rules';
+import type { OperationalRuleProfile, OperationalRuleResult, ScheduledBreakFacts, OperationalIssueCode } from '../shift-changes/types';
 import { shiftBoundaryInstants } from "../business-time";
 import { assignmentCapabilityIssues } from "./capabilities";
 import type { Workspace, Location, Position, UserRole } from "../domain";
@@ -20,7 +22,7 @@ import {
 } from "./periods";
 
 export type ValidationSeverity = "error" | "warning";
-export type ValidationIssueCode =
+export type ValidationIssueCode = OperationalIssueCode
   | "INVALID_TIME_RANGE"
   | "INVALID_SCHEDULING_INPUT"
   | "EMPLOYEE_INACTIVE"
@@ -60,6 +62,8 @@ export type ShiftCandidate = {
 };
 export type ValidateShiftInput = {
   candidate: ShiftCandidate;
+  operationalProfile?: OperationalRuleProfile;
+  scheduledBreaks?: ScheduledBreakFacts;
   workspace: Pick<Workspace, "id" | "active" | "timeZone">;
   location: Pick<Location, "id" | "workspaceId" | "active">;
   position?: Position;
@@ -106,6 +110,12 @@ export type ProjectedScheduledHours = {
   source: "SCHEDULED";
 };
 const messages: Record<ValidationIssueCode, string> = {
+ MIN_REST: "Insufficient rest under the configured rule.",
+ MAX_SHIFT_HOURS: "Exceeds configured per-shift maximum.",
+ MAX_DAILY_HOURS: "Exceeds configured daily maximum.",
+ BREAK_REQUIREMENT: "Required scheduled break is not satisfied.",
+ RULE_UNVERIFIABLE: "Required scheduling rule cannot be verified.",
+ PROJECTED_OVERTIME_REVIEW: "Projected scheduled overtime needs manager review.",
   INVALID_TIME_RANGE: "Enter a valid shift date and time period.",
   INVALID_SCHEDULING_INPUT:
     "Scheduling inputs need correction before this assignment can be evaluated.",
@@ -161,11 +171,13 @@ export function validateShift(input: ValidateShiftInput) {
       message: messages[code],
       ...(details ? { details } : {}),
     });
+  let operational: OperationalRuleResult = { blockers: [], unverifiable: [], warnings: [] };
   const result = () => {
     const blockers = issues.filter((issue) => issue.severity === "error"),
       warnings = issues.filter((issue) => issue.severity === "warning");
     return {
-      eligible: blockers.length === 0,
+      eligible: blockers.length === 0 && operational.warnings.length === 0,
+      operational,
       canSave: blockers.length === 0,
       issues,
       blockers,
@@ -351,6 +363,11 @@ export function validateShift(input: ValidateShiftInput) {
     }
   } catch {
     add("INVALID_SCHEDULING_INPUT");
+  }
+  if (input.operationalProfile) {
+    operational = evaluateOperationalRules({candidate,existingShifts: ledger,profile:input.operationalProfile,timeZone:input.workspace.timeZone,scheduledBreaks:input.scheduledBreaks ?? {status:'UNKNOWN'}});
+    for (const issue of [...operational.blockers,...operational.unverifiable]) issues.push({...issue,code:issue.code as ValidationIssueCode,severity:'error'});
+    for (const issue of operational.warnings) issues.push({...issue,code:issue.code as ValidationIssueCode,severity:'warning'});
   }
   return result();
 }

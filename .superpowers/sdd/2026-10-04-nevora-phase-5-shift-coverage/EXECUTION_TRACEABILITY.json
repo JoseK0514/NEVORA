@@ -1,0 +1,2754 @@
+{
+  "accepted_base": "6c0f2b77b6186c4cd86db7e97f869ea831ee32b0",
+  "implementation_plan_approved": true,
+  "scenarios": [
+    {
+      "id": "A001",
+      "requirements": [
+        "R01",
+        "R05",
+        "R10",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A002",
+      "requirements": [
+        "R01",
+        "R09"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A003",
+      "requirements": [
+        "R01",
+        "R07"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A004",
+      "requirements": [
+        "R01",
+        "R12"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A005",
+      "requirements": [
+        "R01",
+        "R10"
+      ],
+      "primary_task": "T01",
+      "planned_test_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/lifecycle.test.ts",
+        "src/test/integration/shift-change-schema.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        }
+      ]
+    },
+    {
+      "id": "A006",
+      "requirements": [
+        "R01",
+        "R07",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A007",
+      "requirements": [
+        "R01",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A008",
+      "requirements": [
+        "R05",
+        "R06",
+        "R14",
+        "R15"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        }
+      ]
+    },
+    {
+      "id": "A009",
+      "requirements": [
+        "R01",
+        "R10"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A010",
+      "requirements": [
+        "R01",
+        "R07",
+        "R12"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A011",
+      "requirements": [
+        "R04",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A012",
+      "requirements": [
+        "R04",
+        "R05",
+        "R07"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A013",
+      "requirements": [
+        "R03",
+        "R04",
+        "R07"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A014",
+      "requirements": [
+        "R04",
+        "R12"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A015",
+      "requirements": [
+        "R04",
+        "R06",
+        "R07"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A016",
+      "requirements": [
+        "R02",
+        "R06",
+        "R12"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A017",
+      "requirements": [
+        "R02",
+        "R04",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A018",
+      "requirements": [
+        "R02",
+        "R04",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A019",
+      "requirements": [
+        "R02",
+        "R07",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A020",
+      "requirements": [
+        "R02",
+        "R07",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A021",
+      "requirements": [
+        "R02",
+        "R07"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A022",
+      "requirements": [
+        "R02",
+        "R06",
+        "R08"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A023",
+      "requirements": [
+        "R03",
+        "R10",
+        "R12"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A024",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A025",
+      "requirements": [
+        "R03",
+        "R10",
+        "R11"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A026",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A027",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A028",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A029",
+      "requirements": [
+        "R03",
+        "R05",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A030",
+      "requirements": [
+        "R03",
+        "R10",
+        "R17"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A031",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A032",
+      "requirements": [
+        "R07",
+        "R10",
+        "R11"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A033",
+      "requirements": [
+        "R08",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A034",
+      "requirements": [
+        "R08",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A035",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A036",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A037",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A038",
+      "requirements": [
+        "R03",
+        "R04"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A039",
+      "requirements": [
+        "R07",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A040",
+      "requirements": [
+        "R01",
+        "R07"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A041",
+      "requirements": [
+        "R07",
+        "R10"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A042",
+      "requirements": [
+        "R07",
+        "R10"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A043",
+      "requirements": [
+        "R07",
+        "R10",
+        "R12"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A044",
+      "requirements": [
+        "R07",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A045",
+      "requirements": [
+        "R07",
+        "R10",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A046",
+      "requirements": [
+        "R07",
+        "R09",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A047",
+      "requirements": [
+        "R07",
+        "R12"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A048",
+      "requirements": [
+        "R07",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A049",
+      "requirements": [
+        "R07",
+        "R10"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A050",
+      "requirements": [
+        "R07",
+        "R09",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        },
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A051",
+      "requirements": [
+        "R11",
+        "R14"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A052",
+      "requirements": [
+        "R10",
+        "R11"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A053",
+      "requirements": [
+        "R07",
+        "R08",
+        "R15"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A054",
+      "requirements": [
+        "R07",
+        "R08",
+        "R15"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        },
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A055",
+      "requirements": [
+        "R08",
+        "R14",
+        "R15"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A056",
+      "requirements": [
+        "R07",
+        "R08",
+        "R09"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A057",
+      "requirements": [
+        "R07",
+        "R08"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        },
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A058",
+      "requirements": [
+        "R06",
+        "R08",
+        "R09"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A059",
+      "requirements": [
+        "R03",
+        "R04",
+        "R06",
+        "R08"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A060",
+      "requirements": [
+        "R07",
+        "R08",
+        "R09"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A061",
+      "requirements": [
+        "R03",
+        "R09",
+        "R12"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A062",
+      "requirements": [
+        "R09",
+        "R11"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        },
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A063",
+      "requirements": [
+        "R07",
+        "R09"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A064",
+      "requirements": [
+        "R09",
+        "R11",
+        "R14"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A065",
+      "requirements": [
+        "R10",
+        "R12"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A066",
+      "requirements": [
+        "R12",
+        "R13"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A067",
+      "requirements": [
+        "R12"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A068",
+      "requirements": [
+        "R09",
+        "R12"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A069",
+      "requirements": [
+        "R03",
+        "R09",
+        "R12"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A070",
+      "requirements": [
+        "R09",
+        "R14"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A071",
+      "requirements": [
+        "R09",
+        "R14"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A072",
+      "requirements": [
+        "R02",
+        "R09",
+        "R12"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A073",
+      "requirements": [
+        "R05",
+        "R11",
+        "R13"
+      ],
+      "primary_task": "T06",
+      "planned_test_paths": [
+        "src/test/integration/shift-changes.e2e.ts",
+        "scripts/verify-nevora-phase-5-ui.mts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A074",
+      "requirements": [
+        "R02",
+        "R06",
+        "R08",
+        "R13"
+      ],
+      "primary_task": "T05",
+      "planned_test_paths": [
+        "src/app/app/exchange/page.test.tsx",
+        "src/app/app/schedule/settings/page.test.tsx",
+        "scripts/verify-nevora-phase-5-ui.mts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A075",
+      "requirements": [
+        "R09",
+        "R12",
+        "R13"
+      ],
+      "primary_task": "T05",
+      "planned_test_paths": [
+        "src/app/app/exchange/page.test.tsx",
+        "src/app/app/schedule/settings/page.test.tsx",
+        "scripts/verify-nevora-phase-5-ui.mts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A076",
+      "requirements": [
+        "R13"
+      ],
+      "primary_task": "T05",
+      "planned_test_paths": [
+        "src/app/app/exchange/page.test.tsx",
+        "src/app/app/schedule/settings/page.test.tsx",
+        "scripts/verify-nevora-phase-5-ui.mts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A077",
+      "requirements": [
+        "R12",
+        "R13"
+      ],
+      "primary_task": "T05",
+      "planned_test_paths": [
+        "src/app/app/exchange/page.test.tsx",
+        "src/app/app/schedule/settings/page.test.tsx",
+        "scripts/verify-nevora-phase-5-ui.mts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A078",
+      "requirements": [
+        "R13"
+      ],
+      "primary_task": "T05",
+      "planned_test_paths": [
+        "src/app/app/exchange/page.test.tsx",
+        "src/app/app/schedule/settings/page.test.tsx",
+        "scripts/verify-nevora-phase-5-ui.mts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A079",
+      "requirements": [
+        "R11",
+        "R13",
+        "R14"
+      ],
+      "primary_task": "T05",
+      "planned_test_paths": [
+        "src/app/app/exchange/page.test.tsx",
+        "src/app/app/schedule/settings/page.test.tsx",
+        "scripts/verify-nevora-phase-5-ui.mts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A080",
+      "requirements": [
+        "R11",
+        "R14"
+      ],
+      "primary_task": "T01",
+      "planned_test_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/lifecycle.test.ts",
+        "src/test/integration/shift-change-schema.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        }
+      ]
+    },
+    {
+      "id": "A081",
+      "requirements": [
+        "R02",
+        "R07",
+        "R14"
+      ],
+      "primary_task": "T01",
+      "planned_test_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/lifecycle.test.ts",
+        "src/test/integration/shift-change-schema.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A082",
+      "requirements": [
+        "R05",
+        "R07",
+        "R14",
+        "R15"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A083",
+      "requirements": [
+        "R14"
+      ],
+      "primary_task": "T01",
+      "planned_test_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/lifecycle.test.ts",
+        "src/test/integration/shift-change-schema.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        }
+      ]
+    },
+    {
+      "id": "A084",
+      "requirements": [
+        "R14"
+      ],
+      "primary_task": "T06",
+      "planned_test_paths": [
+        "src/test/integration/shift-changes.e2e.ts",
+        "scripts/verify-nevora-phase-5-ui.mts"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "A085",
+      "requirements": [
+        "R05",
+        "R12",
+        "R15"
+      ],
+      "primary_task": "T01",
+      "planned_test_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/lifecycle.test.ts",
+        "src/test/integration/shift-change-schema.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        }
+      ]
+    },
+    {
+      "id": "A086",
+      "requirements": [
+        "R05",
+        "R14",
+        "R15",
+        "R16"
+      ],
+      "primary_task": "T01",
+      "planned_test_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/lifecycle.test.ts",
+        "src/test/integration/shift-change-schema.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        }
+      ]
+    },
+    {
+      "id": "A087",
+      "requirements": [
+        "R07",
+        "R08",
+        "R15"
+      ],
+      "primary_task": "T03",
+      "planned_test_paths": [
+        "src/lib/data/shift-changes.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A088",
+      "requirements": [
+        "R02",
+        "R08",
+        "R13",
+        "R15"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A089",
+      "requirements": [
+        "R07",
+        "R08",
+        "R09",
+        "R15"
+      ],
+      "primary_task": "T04",
+      "planned_test_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        },
+        {
+          "task": "T04",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-4-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task4-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4/task-4-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task4",
+          "limitation": "Actual pure/domain/ownedSQL/fake-provider evidence only; T06 must audit complete case assertions against immutable acceptance table and final source. Authenticated app/UI and activation boundaries remain explicit. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A090",
+      "requirements": [
+        "R03",
+        "R07",
+        "R10",
+        "R16"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A091",
+      "requirements": [
+        "R03",
+        "R10",
+        "R16",
+        "R17"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A092",
+      "requirements": [
+        "R01",
+        "R03",
+        "R10",
+        "R11",
+        "R16"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A093",
+      "requirements": [
+        "R06",
+        "R12",
+        "R16"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A094",
+      "requirements": [
+        "R03",
+        "R06",
+        "R10",
+        "R13",
+        "R17"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A095",
+      "requirements": [
+        "R01",
+        "R06",
+        "R10",
+        "R16",
+        "R17"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T01",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task1-fix1/manifest.json",
+          "scope": "T01 lifecycle/schema/policy only; final transaction/UI/worker gates remain",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-1-rereview.md"
+        },
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A096",
+      "requirements": [
+        "R10",
+        "R11",
+        "R14",
+        "R16",
+        "R17"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    },
+    {
+      "id": "A097",
+      "requirements": [
+        "R07",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "primary_task": "T06",
+      "planned_test_paths": [
+        "src/test/integration/shift-changes.e2e.ts",
+        "scripts/verify-nevora-phase-5-ui.mts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        },
+        {
+          "task": "T03",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-3-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task3-fix1/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-review.md",
+          "fix_review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3/task-3-rereview.md",
+          "final_task_logs": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task3",
+          "limitation": "Actual domain/ownedSQL evidence only; complete scenario assertions and authenticated app/UI/maintenance gates remain T04\u2013T06. No blanket scenario PASS."
+        }
+      ]
+    },
+    {
+      "id": "A098",
+      "requirements": [
+        "R03",
+        "R10",
+        "R13",
+        "R16",
+        "R17"
+      ],
+      "primary_task": "T02",
+      "planned_test_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/data/scheduling-source-facts.test.ts"
+      ],
+      "status": "PARTIAL_IMPLEMENTATION_EVIDENCE",
+      "actual_command": null,
+      "actual_exit": null,
+      "source_commit": null,
+      "evidence": [
+        {
+          "task": "T02",
+          "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-report.md",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-candidate/manifest.json",
+          "scope": "T02 engine/mapping unit and disposable-reader evidence; review correction pending; whole transaction/app/UI acceptance not certified"
+        },
+        {
+          "task": "T02",
+          "source_manifest": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/checkpoints/task2-fix2/manifest.json",
+          "review": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase5/task-2-rereview2.md",
+          "scope": "Reviewed engine corrections; whole acceptance remains bounded by T03\u2013T06"
+        }
+      ]
+    }
+  ],
+  "approval_authority": "Explicit current user instruction and packet v4 final review"
+}

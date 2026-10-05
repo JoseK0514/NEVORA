@@ -35,7 +35,7 @@ export type ScheduleSourceSnapshot = SnapshotBase<'SCHEDULE'> & {
 export type SourceSnapshot =
   | ScheduleSourceSnapshot
   | (SnapshotBase<'TIME_OFF'> & { kind: 'TIME_OFF'; record: TimeOffListItem })
-  | (SnapshotBase<'EXCHANGE'> & { kind: 'EXCHANGE'; record: ExchangeRecord })
+  | (SnapshotBase<'EXCHANGE'> & { kind: 'EXCHANGE'; record: ExchangeRecord; eligibleEmployeeIds?:readonly string[]; completionDeadline?:string|null; semanticNeedKey?:string; attentionReason?:string })
   | (SnapshotBase<'CALLOUT'> & { kind: 'CALLOUT'; record: CalloutRecord })
   | (SnapshotBase<'AVAILABILITY'> & { kind: 'AVAILABILITY'; settings: WeekSettings; submissions: readonly AvailabilitySubmissionListItem[] })
   | (SnapshotBase<'MANAGER_SUMMARY'> & { kind: 'MANAGER_SUMMARY'; weekStart: string; items: readonly ManagerActionItem[]; expiresAt: string })
@@ -45,7 +45,7 @@ export type SqlStatement = { text: string; values: readonly unknown[] };
 export type SqlExecutor = { query<T>(statement: SqlStatement, signal?: AbortSignal): Promise<T[]>; transaction(statements: readonly SqlStatement[], signal?: AbortSignal): Promise<unknown[][]> };
 export type SourceCheck = { deliverable: boolean; reason: string; effectiveVersion: string; expiresAt: string; destination?: string };
 export type ProviderResult = { kind: 'accepted' } | { kind: 'retry'; errorClass: string; retryAfterSeconds?: number } | { kind: 'invalid_subscription' } | { kind: 'failed'; errorClass: string };
-export type WorkerReport = { claimed: number; accepted: number; retried: number; failed: number; expired: number; cancelled: number; noSubscription: number; disabled: boolean };
+export type WorkerReport = { maintenance?:import('../data/shift-change-maintenance').MaintenanceReport; claimed: number; accepted: number; retried: number; failed: number; expired: number; cancelled: number; noSubscription: number; disabled: boolean };
 export type NotificationPolicy = {
   timeZone: string; quietStartHour: 21; quietEndHour: 7;
   availabilityLeadHours: 24; acknowledgementDelayHours: 24; managerCollectionMinutes: 5; urgentLeadHours: 12;

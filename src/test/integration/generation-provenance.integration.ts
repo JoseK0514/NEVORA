@@ -254,11 +254,14 @@ it('bounded workspace lock wait returns a typed conflict and leaves all state in
  }finally{await blocker.query('ROLLBACK');await blocker.end();}
  expect(await count('shifts')).toBe(1);expect(await count('schedule_generation_exclusions')).toBe(0);
 });
-import { approveCoverageExchange } from '../../lib/data/exchanges';
+import { configureFictionalShiftChanges,createCoverageOffer,claimCoverage,approveCoverageExchange } from './shift-change-api';
 it('approved exchange assignment takes Manager control and drops generated claims',async()=>{
- await generated();await q("UPDATE schedules SET status='PUBLISHED'; INSERT INTO employee_location_eligibility VALUES('employee','loc-1'),('manager','loc-1'); INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,target_employee_id,status) VALUES('exchange-approved','COVERAGE','legacy','employee','manager','MANAGER_PENDING')");
- expect(await approveCoverageExchange({exchangeId:'exchange-approved',managerId:'manager'},database.executor)).toBe(true);
- expect(await q("SELECT employee_id,assignment_origin,generated_claims FROM shifts WHERE id='legacy'")).toEqual([{employee_id:'manager',assignment_origin:'MANAGER',generated_claims:null}]);
+ await generated();await q("UPDATE schedules SET status='PUBLISHED'; UPDATE employees SET role='LEAD' WHERE id='employee'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('replacement','Fictional','Replacement','NONE','LEAD','loc-1'); INSERT INTO employee_location_eligibility VALUES('employee','loc-1'),('replacement','loc-1')");
+ await configureFictionalShiftChanges(database.executor);
+ const exchangeId=await createCoverageOffer({sourceShiftId:'legacy',requestedByEmployeeId:'employee'},database.executor);
+ expect(await claimCoverage({exchangeId,employeeId:'replacement'},database.executor)).toBe(true);
+ expect(await approveCoverageExchange({exchangeId,managerId:'manager'},database.executor)).toBe(true);
+ expect(await q("SELECT employee_id,assignment_origin,generated_claims FROM shifts WHERE id='legacy'")).toEqual([{employee_id:'replacement',assignment_origin:'MANAGER',generated_claims:null}]);
  expect(await count('schedule_generation_exclusions')).toBe(0);
 });
 it('clear then same-ID regeneration can be deleted again with a fresh active event',async()=>{

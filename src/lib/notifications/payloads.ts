@@ -1,7 +1,7 @@
 import { NUVORA_BRAND } from "../brand";
 import { createHash } from 'node:crypto';
 import type { NotificationIntent, PushEnvelope } from './types';
-const REQUEST_TYPES = new Set(['TIME_OFF_APPROVED','TIME_OFF_DENIED','CALLOUT_APPROVED','CALLOUT_DENIED','SWAP_RESPONSE_REQUIRED','SWAP_APPROVED','SWAP_DENIED','COVERAGE_APPROVED','COVERAGE_DENIED','AVAILABILITY_REMINDER','AVAILABILITY_SUMMARY','MANAGER_REVIEW','SELF_TEST']);
+const REQUEST_TYPES = new Set(['TIME_OFF_APPROVED','TIME_OFF_DENIED','CALLOUT_APPROVED','CALLOUT_DENIED','SWAP_RESPONSE_REQUIRED','SWAP_APPROVED','SWAP_DENIED','COVERAGE_APPROVED','COVERAGE_DENIED','COVERAGE_INVITATION','COVERAGE_CANCELLED','COVERAGE_EXPIRED','SWAP_CANCELLED','SWAP_EXPIRED','AVAILABILITY_REMINDER','AVAILABILITY_SUMMARY','MANAGER_REVIEW','SELF_TEST']);
 export function buildPushEnvelope(intent: NotificationIntent, ownershipGeneration: string): PushEnvelope {
   if (!/^[A-Za-z0-9_-]{1,128}$/.test(ownershipGeneration) || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(intent.id) || !Number.isFinite(Date.parse(intent.expiresAt))) throw new Error('Invalid push envelope metadata');
   let title: string;

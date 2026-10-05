@@ -5,7 +5,7 @@ import type { GenerationPlan } from '../scheduling/generation/types';
 import { validateGenerationClaims } from '../scheduling/generation-claims';
 import { isProtectedAssignment } from '../scheduling/generation-provenance';
 import { affectedWorkweeks, shiftPeriod } from '../scheduling/periods';
-import { generationMutationGuards, generationSourceGuard, GenerationScopeError, withGenerationRetry, type GenerationSourceRow } from './generation-guards';
+import { generationMutationGuards, generationInsertedSourceGuard, GenerationScopeError, withGenerationRetry, type GenerationSourceRow } from './generation-guards';
 import { neonNotificationExecutor } from './notification-transactions';
 import { readGenerationSnapshot, type GenerationRequest } from './schedule-generation-snapshot';
 export { readGenerationSnapshot } from './schedule-generation-snapshot';
@@ -138,6 +138,7 @@ export async function generateWeekDraft(request: GenerationRequest, executor: Sq
         is_designated_lead: Boolean(a.isDesignatedLead),
         position_id: a.positionId ?? null,
         assignment_origin: 'GENERATED',
+        terms_revision:1,
         generated_claims: claims
       };
       const same = [...removals.values()].find(existing => semantics(existing) === semantics(row));
@@ -183,7 +184,7 @@ export async function generateWeekDraft(request: GenerationRequest, executor: Sq
       if (parent) weeks.add(parent.weekStart);
     }
     for (const a of plan.additions) for (const week of affectedWorkweeks(a)) weeks.add(week);
-    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...writes, generationSourceGuard(after)]);
+    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...writes, generationInsertedSourceGuard(after,additions.map(row=>String(row.id)),source.shifts.map(row=>String(row.assignment_episode_id)))]);
     const scopedParentIds = new Set([...parentByLocation].filter(([locationId]) => plan.demand.locationIds.includes(locationId)).map(([, parent]) => parent.id));
     return {
       status: plan.status,

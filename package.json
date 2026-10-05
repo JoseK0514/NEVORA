@@ -15,6 +15,7 @@
     "test:notifications:integration": "vitest run --config vitest.notifications-integration.config.mts",
     "test:foundation:integration": "vitest run --config vitest.foundation-integration.config.mts",
     "test:foundation:qa": "node --test scripts/verify-nevora-foundation-config.check.mjs",
+    "test:exchanges:integration": "vitest run --config vitest.exchanges-integration.config.mts",
     "test:generation:integration": "vitest run --config vitest.generation-integration.config.mts"
   },
   "dependencies": {
