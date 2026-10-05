@@ -4,10 +4,10 @@ Workforce operations platform owned by VELANI LLC. Fuel Coffee Drive is the curr
 
 ## Branch workflow
 
-- `main`: stable / production-ready code
+- `main`: production branch; a commit is not production-authorized until the frozen SHA has passed required CI, hosted verification, independent QA/UI review, and owner authorization
 - `development`: active development and testing
 
-All feature work lands in `development` first and moves to `main` only after validation.
+Feature work lands in `development` or an approved phase branch. Promotion to `main` is performed through the release-control path for a frozen candidate; branch location alone is never evidence of production readiness.
 
 ## Current foundation
 
@@ -18,7 +18,7 @@ All feature work lands in `development` first and moves to `main` only after val
 - Database-backed employee list and employee creation
 - Responsive desktop/mobile scheduling interface
 - Scheduling validation engine with unit tests
-- GitHub Actions validation for tests, type checking, linting, and production builds
+- GitHub Actions is configured to run locked dependency installation, unit tests, type checking, linting, production builds, production dependency audit, and persisted Clocker PostgreSQL verification on governed branches
 
 ## Employee record
 
