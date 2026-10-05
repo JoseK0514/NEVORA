@@ -44,6 +44,10 @@ Permanent expiry regression files (included in `npm run test:foundation:integrat
 Additional self-review evidence, including `profile-authority-probes.mjs`:
 `/Users/josek0514/.codex/visualizations/2026/10/05/nevora-phase-b-final-self-review-2e94143/`
 
+### C6 schedule-context coverage — included in FR-AUTH-001
+
+The [C6 local checkpoint](phase-c-c6-checkpoint.md) does not close this gate. On the final integrated SHA, Codex must also verify the shared publication-week lock order before employee/device locks, source snapshot revalidation, identity expiry during a publication wait, exact immutable capture/ledger rollback, old-receipt replay without rematching, and no transaction-local context leakage on connection reuse. Rerun the 29 C6 SQL cases and 27 candidate cases, plus the three final-review probes (or durable equivalents), and prove the real Neon transaction transport on isolated Preview. Preserve privacy: detailed schedule context is not shared-tablet success metadata. No match/ambiguity must be turned into attendance or payroll policy.
+
 ### Closure record — not completed
 
 Final release SHA: PENDING

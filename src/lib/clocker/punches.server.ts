@@ -7,11 +7,12 @@ import { clockerIdentityWriteGuards, type ClockerIdentityProof } from './pin-ide
 import { pinKeyIdentity } from './pin-crypto.server';
 import { ClockerPunchError, parseCommandId, parsePunchCommand, type PunchErrorCode } from './punch-command';
 import type { PunchView, PunchReceipt, PunchSnapshot, PunchAction } from './punch-types';
+import { prepareScheduleTransaction } from './schedule-source.server';
 
 function normalize(error:unknown):never{
  if(error instanceof ClockerPunchError)throw error;
  const message=error instanceof Error?error.message:'';
- const business: PunchErrorCode[]=['AUTH_REQUIRED','STALE_STATE','COMMAND_REUSED','INVALID_TRANSITION','OTHER_LOCATION','INTEGRITY','CLOCK_INVALID','BREAK_TYPE_CHANGED'];
+ const business: PunchErrorCode[]=['AUTH_REQUIRED','STALE_STATE','COMMAND_REUSED','INVALID_TRANSITION','OTHER_LOCATION','INTEGRITY','CLOCK_INVALID','BREAK_TYPE_CHANGED','SCHEDULE_CHANGED'];
  for(const code of business)if(message.includes('clocker_punch_'+code))throw new ClockerPunchError(code);
  if(message.includes('clocker_pin_IDENTITY_INVALID')||message.includes('clocker_device_denied'))throw new ClockerPunchError('AUTH_REQUIRED');
  // SQL, token hashes, employee metadata and driver errors never cross this boundary.
@@ -33,21 +34,22 @@ export class ClockerPunchService {
    proof.device.workspaceId,proof.device.deviceId,proof.device.credentialVersion,
    proof.employeeId,proof.tokenHash,proof.pinVersion,proof.employeeUpdatedAt])).digest('hex');
  }
- private async guarded<T>(proof:ClockerIdentityProof,body:SqlStatement):Promise<T>{
+ private async guarded<T>(proof:ClockerIdentityProof,body:SqlStatement,captureCommandId?:string):Promise<T>{
   this.context(proof);
   try{
    const workspace=await getWorkspace(this.executor);
-   const guards=[...workspaceReadGuard(workspace),
+   const capture=captureCommandId?await prepareScheduleTransaction(proof,captureCommandId,workspace,this.executor):null;
+   const guards=[...workspaceReadGuard(workspace),...(capture?.locks??[]),
     // Serialize this employee BEFORE taking device/session locks, preventing lock-order inversions.
     statement('SELECT id FROM employees WHERE id=$1 FOR UPDATE',[proof.employeeId]),
     ...clockerIdentityWriteGuards(proof),
    ];
    const results=await this.executor.transaction([
-    ...guards,body,
+    ...guards,...(capture?.before??[]),body,...(capture?.after??[]),
     // An operation may wait on a deeper time-entry lock. Expiry must roll back all writes.
-    ...clockerIdentityWriteGuards(proof),
+    ...clockerIdentityWriteGuards(proof),...(capture?.cleanup??[]),
    ]);
-   const row=results[guards.length]?.[0] as {value:T}|undefined;
+   const row=results[guards.length+(capture?.before.length??0)]?.[0] as {value:T}|undefined;
    if(!row||!Object.hasOwn(row,'value'))throw new ClockerPunchError('UNAVAILABLE');
    return row.value;
   }catch(error){return normalize(error);}
@@ -70,7 +72,8 @@ export class ClockerPunchService {
   return this.guarded<PunchReceipt>(proof,statement(
    'SELECT clocker_apply_punch($1,$2,$3,$4,$5::uuid,$6,$7::jsonb,$8) AS value',
    [proof.employeeId,proof.device.deviceId,proof.device.locationId,proof.device.credentialVersion,
-    command.commandId,command.action,JSON.stringify({...command.expected,...(command.breakType?{breakType:command.breakType}:{})}),requestHash]));
+    command.commandId,command.action,JSON.stringify({...command.expected,...(command.breakType?{breakType:command.breakType}:{})}),requestHash]),
+   command.action==='CLOCK_IN'?command.commandId:undefined);
  }
  /** Recovery after fresh PIN verification is read-only and still employee/device scoped.
   * null means no committed receipt was observed, NOT proof that an in-flight request was cancelled. */

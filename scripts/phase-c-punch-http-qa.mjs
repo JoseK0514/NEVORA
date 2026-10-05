@@ -30,7 +30,7 @@ async function done(page){await page.getByRole('button',{name:'Done',exact:true}
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
  const q=(text,values=[])=>app.database.executor.query({text,values});
- for(const file of ['clocker-devices.sql','clocker-pins.sql','clocker-punches.sql','clocker-breaks.sql'])await q(await readFile('db/phase-c/'+file,'utf8'));
+ for(const file of ['clocker-devices.sql','clocker-pins.sql','clocker-punches.sql','clocker-breaks.sql','clocker-schedule-context.sql'])await q(await readFile('db/phase-c/'+file,'utf8'));
  await seedOwnedApp(app.database.executor);
  for(const engine of ['chromium','webkit']){
   const browser=await playwright[engine].launch();browsers.push(browser);
@@ -50,10 +50,21 @@ try{
   const code=await p.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
   const tablet=await context(browser),t=await tablet.newPage();t.setDefaultTimeout(15000);t.on('pageerror',e=>runtimeErrors.push(e.message));
   await goto(t,'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect Tablet',exact:true}).click();await verify(t,pinA);
+  const [clockDate]=await q("SELECT (clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS day,date_trunc('week',clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");
+  const revision='c6-http-'+engine,position='c6-http-position-'+engine;
+  await q("INSERT INTO positions(id,workspace_id,name) VALUES($1,'workspace-fuel',$2)",[position,'Published HTTP '+engine]);
+  await q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES($1,$2,COALESCE((SELECT max(revision_number) FROM schedule_publication_revisions WHERE week_start=$2),0)+1,'PUBLISH','QAOWNER')",[revision,clockDate.week]);
+  await q("INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,position_id,position_name) VALUES($1,$2,$3,'http-schedule','loc-1',$4,$5,'00:00','24:00',$6,$7)",[revision+':shift',revision,'http-shift-'+engine,idA,clockDate.day,position,'Published HTTP '+engine]);
   const c=await command(t,'CLOCK_IN');checked(engine+': current PIN/device proof obtains authoritative punch context');
   const duplicate=await Promise.all([api(t,{operation:'execute',command:c}),api(t,{operation:'execute',command:c})]);
   assert.equal(duplicate[0].status,200);assert.equal(duplicate[1].status,200);assert.deepEqual(duplicate[0].body,duplicate[1].body);
   assert.equal((await q('SELECT count(*)::int AS n FROM time_entries WHERE employee_id=$1',[idA]))[0].n,1);checked(engine+': duplicate HTTP submissions commit one Clock In');
+  const [captured]=await q('SELECT schedule_context FROM time_entries WHERE employee_id=$1',[idA]);
+  assert.equal(captured.schedule_context.status,'MATCHED');assert.equal(captured.schedule_context.match.revisionId,revision);
+  assert.equal(captured.schedule_context.match.positionName,'Published HTTP '+engine);
+  assert.equal(captured.schedule_context.capturedAt,duplicate[0].body.receipt.performedAt);
+  assert(!JSON.stringify(duplicate[0].body).includes(revision),'Detailed schedule metadata stays server-side');
+  checked(engine+': native Clock In captures published context atomically without shared-tablet metadata exposure');
   assert.match(duplicate[0].cache,/no-store/);
   let next=await command(t,'START_BREAK');assert.equal((await api(t,{operation:'execute',command:next})).status,200);
   assert.equal((await api(t,{operation:'execute',command:{...next,expected:{...next.expected,revision:999}}})).status,409);checked(engine+': changed payload reuse is rejected');

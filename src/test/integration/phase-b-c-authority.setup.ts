@@ -13,7 +13,7 @@ vi.mock('./local-postgres', async load => {
       const db = await actual.createDisposableFoundationDatabase(options);
       try {
         if (options.mode !== 'current-runtime') throw Error('Integrated authority replay requires the current numbered schema.');
-        for (const file of ['clocker-devices.sql', 'clocker-pins.sql', 'clocker-punches.sql', 'clocker-breaks.sql']) {
+        for (const file of ['clocker-devices.sql', 'clocker-pins.sql', 'clocker-punches.sql', 'clocker-breaks.sql', 'clocker-schedule-context.sql']) {
           await db.executor.query({text: await readFile(`db/phase-c/${file}`, 'utf8'), values: []});
         }
         const [schema] = await db.executor.query<{ready: boolean}>({

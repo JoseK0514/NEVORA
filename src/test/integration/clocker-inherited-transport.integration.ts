@@ -27,7 +27,7 @@ function command(view:PunchView,action='CLOCK_IN'){
 }
 beforeEach(async()=>{
  db=await createDisposableFoundationDatabase({mode:'current-runtime'});
- for(const name of ['clocker-devices','clocker-pins','clocker-punches','clocker-breaks'])await q(await readFile(`db/phase-c/${name}.sql`,'utf8'));
+ for(const name of ['clocker-devices','clocker-pins','clocker-punches','clocker-breaks','clocker-schedule-context'])await q(await readFile(`db/phase-c/${name}.sql`,'utf8'));
  await q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES
  ('transport-owner','Test','Owner','555','OWNER','loc-1'),('transport-a','Avery','Test','556','EMPLOYEE','loc-1'),('transport-b','Blair','Test','557','EMPLOYEE','loc-1');
  INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'transport-owner',now()+interval '1 day');

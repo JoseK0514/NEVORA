@@ -36,6 +36,7 @@ export async function createPunchFixture(options:{breaks?:boolean}={}){
   }
   let breakType=null;
   if(options.breaks){await q(await readFile('db/phase-c/clocker-breaks.sql','utf8'));breakType=await saveBreakType(owner,{name:'Fixture rest',category:'REST',targetMinutes:15,active:true,expectedVersion:0},db.executor);}
+  await q(await readFile('db/phase-c/clocker-schedule-context.sql','utf8'));
   return {db,q,key,owner,devices,identity,breakType};
  }catch(error){await db.dispose();throw error;}
 }

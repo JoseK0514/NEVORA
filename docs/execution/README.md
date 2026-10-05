@@ -1,3 +1,7 @@
+# Current Phase C checkpoint
+
+See [C6 published schedule context](phase-c-c6-checkpoint.md) for the verified C6 candidate, preserved-source reconciliation, evidence and remaining release gates. The older checkpoint sections below remain historical records.
+
 # Current Phase B / Phase C integration
 
 Start with [the controlled reconciliation record](phase-b-c-reconciliation.md) for the integrated development candidate, test evidence and canonical-branch guard. [FR-AUTH-001](final-release-checklist.md) remains OPEN and mandatory for independent Codex verification at final release before production. Earlier checkpoint sections below are historical and must not be read as current integration status.
