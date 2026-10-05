@@ -13155,3 +13155,40 @@ body {
 .schedule-settings-page .shift-policy-disclosure .policy-save-form input:not([type="hidden"]),
 .schedule-settings-page .shift-policy-disclosure .policy-save-form select { min-height: 44px !important; }
 .policy-save-form select { height: 44px; }
+
+/* C7: actual Manager clock activity, within the established two-card overview. */
+.manager-live-card .manager-live-summary {
+  display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 12px var(--space-md);
+  color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--color-border-subtle);
+}
+.manager-live-card .manager-live-summary strong { color: var(--color-brand-primary); font-variant-numeric: tabular-nums; }
+.manager-live-card .manager-floor-row { align-items: flex-start; }
+.manager-live-card .manager-floor-person { flex: 1; align-items: flex-start; }
+.manager-live-card .manager-floor-copy { overflow-wrap: anywhere; }
+.manager-live-card .manager-floor-status { white-space: nowrap; }
+.manager-live-card .manager-floor-status.on-break { color: var(--color-state-warning); background: var(--color-state-warning-bg); }
+.manager-live-card .manager-live-duration { font-variant-numeric: tabular-nums; }
+.manager-live-card .manager-live-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px var(--space-md); border-top: 1px solid var(--color-border-subtle);
+}
+.manager-live-card .manager-live-footer small { min-width: 0; color: var(--muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.manager-live-card .manager-live-footer small > span { display: block; }
+.manager-live-card .manager-live-refresh {
+  min-height: 44px; min-width: 88px; border: 1px solid var(--color-border-subtle); border-radius: 22px;
+  padding: 6px 16px; background: var(--color-bg-surface); color: var(--color-brand-primary);
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  font: 600 12px/1.3 var(--font-family-apple); text-decoration: none; cursor: pointer;
+}
+.manager-live-card .manager-live-refresh:hover:not(:disabled) { background: var(--color-bg-main); }
+.manager-live-card .manager-live-refresh:focus-visible { outline: 2px solid var(--nevora-blue); outline-offset: 3px; }
+.manager-live-card .manager-live-refresh:disabled { color: var(--muted); background: var(--color-bg-main); cursor: default; }
+@media (max-width: 640px) {
+  .manager-live-card .manager-live-summary, .manager-live-card .manager-live-footer { padding-left: 16px; padding-right: 16px; }
+}
+@media (max-width: 374px) {
+  .manager-live-card .manager-floor-row { flex-wrap: wrap; gap: 8px; }
+  .manager-live-card .manager-floor-person { flex-basis: 100%; }
+  .manager-live-card .manager-floor-status { margin-left: 50px; }
+  .manager-live-card .manager-live-footer { flex-wrap: wrap; }
+}

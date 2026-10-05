@@ -1,3 +1,4 @@
+import { ManagerClockMonitor } from "./manager-clock-monitor";
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
 import { employeeRoleLabel } from "../lib/employee-display";
@@ -46,14 +47,6 @@ export type DashboardRevisionItem = {
   createdAt: string;
 } | null;
 
-export type DashboardOnFloorItem = {
-  employeeId: string;
-  employeeName: string;
-  startTime: string;
-  endTime: string;
-  isDesignatedLead: boolean;
-};
-
 export type DashboardScheduleShiftItem = {
   id: string;
   date: string;
@@ -88,7 +81,6 @@ type Props = {
   pendingRequestCount: number;
   managerActions: ManagerActionItem[];
   scheduleRoster: DashboardScheduleEmployeeItem[];
-  onFloor: DashboardOnFloorItem[];
   locations: DashboardLocationItem[];
   days: DashboardDayItem[];
   hours: DashboardHourItem[];
@@ -413,15 +405,6 @@ function ActivityTab(props: Props) {
   );
 }
 
-function employeeInitials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
-
 function PendingApprovals({ items, counts, weekStart }: { items: ManagerActionItem[]; counts: Props["requestCounts"]; weekStart: string }) {
   const allApprovals = items.filter(item => ["TIME_OFF", "EXCHANGE", "CALLOUT"].includes(item.type));
   const missingAvailability = items.filter(item => item.type === "AVAILABILITY_MISSING").length;
@@ -458,44 +441,6 @@ function PendingApprovals({ items, counts, weekStart }: { items: ManagerActionIt
           <span aria-hidden="true">✓</span>
           <strong>All caught up</strong>
           <small>No approvals are waiting for review.</small>
-        </div>
-      )}
-    </section>
-  );
-}
-
-function OnFloorNow({ people }: { people: DashboardOnFloorItem[] }) {
-  return (
-    <section className="manager-home-card manager-floor-card">
-      <div className="manager-home-card-header">
-        <h2>Who&apos;s on the Floor Right Now</h2>
-        <span className="manager-home-count">{people.length}</span>
-      </div>
-
-      {people.length ? (
-        <div className="manager-home-list">
-          {people.map((person) => (
-            <div className="manager-floor-row" key={person.employeeId}>
-              <div className="manager-floor-person">
-                <span className="manager-floor-avatar" aria-hidden="true">
-                  {employeeInitials(person.employeeName)}
-                </span>
-                <span className="manager-floor-copy">
-                  <strong>{person.employeeName}</strong>
-                  <small>
-                    {person.isDesignatedLead ? "Shift lead · " : ""}
-                    {formatTime(person.startTime)} – {formatTime(person.endTime)}
-                  </small>
-                </span>
-              </div>
-              <span className="manager-floor-status">On shift</span>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="manager-home-empty">
-          <strong>No one is scheduled right now</strong>
-          <small>The published schedule has no active shift at this time.</small>
         </div>
       )}
     </section>
@@ -561,7 +506,7 @@ export function ManagerDashboard(props: Props) {
       {props.view === "overview" ? (
         <div className="manager-home-grid">
           <PendingApprovals items={props.managerActions} counts={props.requestCounts} weekStart={props.weekStart} />
-          <OnFloorNow people={props.onFloor} />
+          <ManagerClockMonitor />
         </div>
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />

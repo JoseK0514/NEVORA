@@ -48,6 +48,10 @@ Additional self-review evidence, including `profile-authority-probes.mjs`:
 
 The [C6 local checkpoint](phase-c-c6-checkpoint.md) does not close this gate. On the final integrated SHA, Codex must also verify the shared publication-week lock order before employee/device locks, source snapshot revalidation, identity expiry during a publication wait, exact immutable capture/ledger rollback, old-receipt replay without rematching, and no transaction-local context leakage on connection reuse. Rerun the 29 C6 SQL cases and 27 candidate cases, plus the three final-review probes (or durable equivalents), and prove the real Neon transaction transport on isolated Preview. Preserve privacy: detailed schedule context is not shared-tablet success metadata. No match/ambiguity must be turned into attendance or payroll policy.
 
+### C7 Manager live operations — included in FR-AUTH-001
+
+The [C7 checkpoint](phase-c-c7-checkpoint.md) does not close this gate. Codex must independently verify current Owner/Manager-only access at both route and SQL boundaries, session expiry during the actual blocked monitor SELECT, private/no-store responses, honest empty versus unavailable states, position snapshot privacy and preservation of actual overnight history. Retest queued requests after unmount/pause, obsolete-response ordering, 30-second visible-page polling, bounded snapshot/session lifetime, stalled-response recovery, offline/restored-page clearing and mobile navigation clearance. Run `clocker-monitor.integration.ts`, the C7 unit suites and `scripts/phase-c-monitor-ui-qa.mjs`, plus the supplemental layout/recovery script in the checkpoint evidence (or durable equivalent). The final hosted Neon/Preview transport and physical-device checks remain separate mandatory release validation. No automatic production activation is implied.
+
 ### Closure record — not completed
 
 Final release SHA: PENDING

@@ -1,3 +1,7 @@
+# Current checkpoint — C7 Manager live operations
+
+[The C7 checkpoint](phase-c-c7-checkpoint.md) records the actual-punch Manager card, current-session read protections, polling/privacy behavior and fresh verification. C8 Employee My Time is next. FR-AUTH-001 remains open for Codex final-release verification before production. Earlier checkpoints below are retained history.
+
 # Current Phase C checkpoint
 
 See [C6 published schedule context](phase-c-c6-checkpoint.md) for the verified C6 candidate, preserved-source reconciliation, evidence and remaining release gates. The older checkpoint sections below remain historical records.

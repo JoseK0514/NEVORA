@@ -130,7 +130,6 @@ export default async function DashboardPage({
 
   const [
     shifts,
-    currentPublishedShifts,
     scheduleStatuses,
     staffingSettings,
     employeeTargets,
@@ -148,9 +147,6 @@ export default async function DashboardPage({
     healthShifts,
   ] = await Promise.all([
     listWeekShifts({ weekStart }),
-    weekStart === currentWeek
-      ? Promise.resolve(null)
-      : listWeekShifts({ weekStart: currentWeek, publishedOnly: true }),
     listScheduleStatuses(weekStart),
     listLocationStaffingSettings(),
     listEmployeeHourTargets(),
@@ -169,33 +165,6 @@ export default async function DashboardPage({
   ]);
 
   const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
-  const currentShiftSource =
-    weekStart === currentWeek
-      ? effectiveShifts
-      : (currentPublishedShifts ?? []).filter((shift) => !shift.isCalloutApproved);
-  const onFloor = currentShiftSource
-    .filter(
-      (shift) =>
-        shift.scheduleStatus === "PUBLISHED" &&
-        shift.date === currentDate &&
-        shift.startTime <= currentTime &&
-        shift.endTime > currentTime,
-    )
-    .sort((a, b) => {
-      if (a.isDesignatedLead !== b.isDesignatedLead) {
-        return a.isDesignatedLead ? -1 : 1;
-      }
-      return a.employeeName.localeCompare(b.employeeName);
-    })
-    .map((shift) => ({
-      employeeId: shift.employeeId,
-      employeeName: shift.employeeName,
-      startTime: shift.startTime,
-      endTime: shift.endTime,
-      positionId: shift.positionId,
-      isDesignatedLead: shift.isDesignatedLead,
-    }));
-
   const shiftsByEmployee = new Map<string, typeof effectiveShifts>();
   for (const shift of effectiveShifts) {
     const employeeShifts = shiftsByEmployee.get(shift.employeeId) ?? [];
@@ -429,7 +398,6 @@ export default async function DashboardPage({
       pendingRequestCount={dashboard.pendingRequestCount}
       managerActions={managerActions}
       scheduleRoster={scheduleRoster}
-      onFloor={onFloor}
       locations={dashboard.locationReadiness}
       days={daySummaries}
       hours={hourRows}
