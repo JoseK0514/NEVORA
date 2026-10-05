@@ -8,7 +8,7 @@ Implementation/verification branch: `phase-c/c6-transaction-continuation`.
 
 **Locally verified for continued Phase C development; not approved for production.**
 
-C6 uses one canonical punch engine, one `schedule-source.server.ts` capture adapter, and one additive draft schema. An earlier overlapping C6 attempt is preserved separately rather than silently overwritten. The final local reconciliation must retain the verified tree and the accepted Phase B safeguards; no main/development merge, push, hosted migration or activation is authorized here.
+C6 uses one canonical punch engine, one `schedule-source.server.ts` capture adapter, and one additive draft schema. The earlier overlapping C6 attempt was preserved on `archive/c6-original-attempt-20261005` at `3ee4f0ea88b27a5abd7971f592d92f4d25786124` before switching back to the clean canonical branch. The canonical `phase-c/real-time-clock-live-operations` branch was then fast-forwarded to verified implementation `6a626c7a324cc005f741c9cd8eda9b60e78e965f`. Its complete source tree matched the verified continuation exactly. The 29 C6 SQL cases, complete 1,596-unit suite, TypeScript and lint passed again from the canonical worktree. Local C6 reconciliation is complete; no main/development merge, push, hosted migration or activation occurred.
 
 At actual Clock In, the backend captures a unique containing published assignment when determinable, including the publication revision, published shift/schedule identifiers, published position, configured timezone and exact recorded timestamp. Otherwise it records UNMATCHED or AMBIGUOUS without inventing a shift or rejecting valid work merely because no schedule matches. Released callout assignments are excluded. The latest empty revision cannot resurrect an older assignment.
 
@@ -58,4 +58,4 @@ The source was frozen during final verification. Only the inspected build-genera
 
 **FR-AUTH-001 remains OPEN and mandatory before production.** Codex must independently review the final integrated release SHA, including C6 publication-lock ordering, source change/retry behavior, complete rollback, transaction-local context isolation and the actual Neon transport in an approved isolated Preview environment. No hosted database was touched.
 
-Next functional work after controlled local C6 integration: C7 live operations dashboards, then C8 employee My Time. Phase C and the final release remain in progress.
+Next functional work: C7 live operations dashboards, then C8 employee My Time. Phase C and the final release remain in progress.
