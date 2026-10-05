@@ -64,16 +64,21 @@ Meanwhile the application already uses higher-quality popover interactions for e
 
 Phase B will define one NEVORA choice-control language with the appropriate primitive per use case:
 
-- **Select** — bounded single choice;
+- **Native Select** — when the operating system's picker is more usable or accessible, especially on touch/mobile;
+- **NEVORA Select Popover** — bounded desktop single choice where the custom interaction materially improves clarity;
 - **Combobox** — large/searchable single choice;
 - **MultiSelect** — multiple values only where needed;
 - **ActionMenu** — actions/commands, not data entry.
 
-The design language is shared: consistent trigger geometry, typography, spacing, radius, shadow, focus, selected state, scrolling, long-label handling and mobile behavior. The implementation must not force a dropdown where radios, checkboxes or segmented controls are more usable.
+The goal is not to replace every native `<select>`. The goal is one coherent NEVORA interaction language while preserving the best device-native behavior when that produces the better Apple-like experience.
+
+Shared controls must use consistent trigger geometry, typography, spacing, radius, shadow, focus, selected state, scrolling, long-label handling and viewport-safe positioning. The implementation must not force a dropdown where radios, checkboxes, segmented controls or the native platform picker are more usable.
 
 ### CSS/component duplication
 
 The stylesheet contains legacy base rules plus later surface-specific overrides for newer premium UI. Phase B will consolidate common interactive primitives without performing an unrelated full CSS rewrite.
+
+The current global stylesheet is large enough that continued page-specific overrides are a maintainability risk. Phase B will extract only repeated, proven primitives into focused component/style boundaries as they are touched. It will not perform a big-bang stylesheet rewrite. Legacy rules may remain when removing them would add risk without improving the audited surfaces.
 
 ### Customer self-management gaps
 
@@ -98,6 +103,49 @@ Phase B will also define, in UI copy and behavior, when an entity is deleted ver
 - historical schedules, requests, time records and audit-relevant records remain intact.
 
 Phase B does not invent destructive hard-delete APIs solely to satisfy a generic “delete” button.
+
+## Interaction performance standard
+
+Phase B treats perceived performance as part of UI quality.
+
+Common interactions must feel immediate on supported hardware:
+- no visible multi-frame delay for local menu/popover opening;
+- no avoidable layout jump when controls open, save, or report success;
+- no unnecessary client-side rerender loops;
+- no scroll-position loss after ordinary inline saves;
+- no blocking spinner when a local state transition can be immediate while the server action is pending;
+- no optimistic success for server-authoritative mutations;
+- no animation that delays task completion.
+
+Browser QA will record obvious long-task, layout-shift or interaction-jank defects on changed surfaces. Phase B does not establish synthetic production-SLA numbers from local hardware; it establishes a no-obvious-jank release floor and records material performance defects for correction.
+
+## Customer data lifecycle matrix
+
+Phase B will maintain an explicit lifecycle contract for every ordinary customer-managed entity. Each entity is classified across:
+- Create
+- Edit
+- Deactivate/Archive
+- Reactivate/Restore
+- Delete-if-safe
+- Historical retention behavior
+- Required role/capability
+- Concurrency/stale-write protection
+- User-facing recovery behavior
+
+Initial lifecycle:
+
+| Entity | Create | Edit | Deactivate/Archive | Reactivate/Restore | Delete-if-safe | Historical behavior | Authority |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Workspace profile | Existing singleton | Yes | No ordinary delete | N/A | No | Preserve operational identity/history | Owner |
+| Location | Yes | Yes | Yes | Yes | Only if a separately proven unused/no-history path exists; Phase B does not invent hard delete | Historical schedules/configuration retain location identity | Owner |
+| Position | Yes | Yes | Yes | Yes | Only if separately proven unused/no-history; no new hard-delete API in Phase B | Existing memberships/shifts remain attributable | Owner |
+| Employee | Yes | Yes | Yes | Yes | No ordinary destructive delete in Phase B | Historical schedules/requests remain attributable; employee ID stable | Manager/Owner subject to role rules; Owner required for Owner-authority changes |
+| Shift | Yes | Yes | Draft delete through existing rules | N/A | Draft-only where existing rules allow | Published changes remain revision/history aware | Existing scheduling authority |
+| Coverage window | Yes | Yes through replacement/update workflow where supported | Remove | Recreate | Existing guarded delete | Historical published schedule truth is not rewritten | Existing settings authority |
+| Schedule template | Yes | Edit only where current model supports it | Archive | Recreate/restore only if explicitly supported later | No destructive historical purge | Archived template history remains attributable | Existing template authority |
+| Operational/coverage policies | Existing guarded write | Yes | Mark unknown/not-applicable where model supports it | Yes | No destructive history purge | Existing requests retain the policy terms/revision that governed them | Owner where currently required |
+
+Any new delete/reactivate capability not already represented safely in the data model requires explicit design review before schema or destructive behavior changes.
 
 ## UX architecture
 
@@ -335,6 +383,22 @@ After self-review:
 - rerun affected + final gates;
 - CEO acceptance.
 
+## Common-workflow usability acceptance
+
+A common workflow is not considered finished if a normal authorized user needs external instructions to complete it.
+
+At minimum, the following must be self-evident from the interface:
+- add/edit/deactivate/reactivate an employee;
+- add/edit/deactivate/reactivate a location;
+- add/edit/deactivate/reactivate a position;
+- navigate to scheduling rules;
+- create/edit a shift;
+- understand a validation error and recover;
+- understand when history prevents destructive deletion;
+- use the primary choice/menu interactions with keyboard and touch.
+
+The interface must communicate the next action through hierarchy, labels and feedback rather than relying on training documentation.
+
 ## Acceptance criteria
 
 Phase B is ready for independent review only when:
@@ -348,7 +412,10 @@ Phase B is ready for independent review only when:
 7. important empty/loading/error/success states are deliberate;
 8. no Phase 4/5 protected behavior is knowingly weakened;
 9. no Fuel-specific product assumption is introduced;
-10. the application looks and behaves like one coherent NEVORA product rather than a sequence of independently built phases.
+10. the application looks and behaves like one coherent NEVORA product rather than a sequence of independently built phases;
+11. audited common interactions show no obvious lag, layout jump or avoidable rerender/jank defects;
+12. customer-managed entities have an explicit lifecycle/permission contract and the implemented UI does not over-promise unsafe deletion;
+13. normal authorized users can complete common management workflows without external instructions.
 
 ## Explicit exclusions
 
