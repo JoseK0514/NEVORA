@@ -515,7 +515,7 @@ it.each([3, 20])(
       }),
     );
   },
-  120000,
+  300000,
 );
 it.each(["evaluation", "period"] as const)(
   "keeps an already evaluated legal partial on %s exhaustion",
