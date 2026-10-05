@@ -47,7 +47,8 @@ export async function assertExternalEvidencePath(source:string,evidenceDirectory
  * SQL. Only the scratch copy of src/lib/db.ts is replaced. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string } = {}) {
+  if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   const source = resolve(process.cwd());
   const evidence = resolve(evidenceDirectory);
   await assertExternalEvidencePath(source,evidenceDirectory);
@@ -99,6 +100,7 @@ export async function createOwnedNextApp(evidenceDirectory: string) {
     const port = await availablePort(), url = `http://127.0.0.1:${port}`;
     const env: NodeJS.ProcessEnv = {
       PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: 'development', CI: '1',
+      NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       NEXT_TELEMETRY_DISABLED: '1', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,

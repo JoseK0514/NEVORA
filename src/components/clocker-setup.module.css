@@ -74,3 +74,7 @@
   .tabletCard h1 { font-size: 30px; }
 }
 @media (prefers-reduced-motion: reduce) { .manager *, .tabletPage * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+
+.pinCard { padding: 28px 40px; }
+.pinCard .footnote { margin-top: 16px !important; text-align: center; }
+@media(max-width:480px){ .pinCard { padding: 24px; } }

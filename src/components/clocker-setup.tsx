@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import styles from './clocker-setup.module.css';
+import { ClockerPinGate } from './clocker-pin-gate';
 
 type SetupState = { state: 'prepared' | 'unregistered' } | { state: 'connected'; deviceName: string };
 class SetupFailure extends Error {
@@ -20,7 +21,7 @@ async function send(locationKey: string, body: object, signal?: AbortSignal): Pr
   throw new SetupFailure('Tablet setup could not be confirmed. Choose Check Setup before trying again.', true);
 }
 
-export function ClockerSetup({ locationKey, locationLabel }: { locationKey: string; locationLabel: string; timeZone: string }) {
+export function ClockerSetup({ locationKey, locationLabel, pinEnabled = false }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean }) {
   const [state, setState] = useState<SetupState>({ state: 'unregistered' });
   const [pending, setPending] = useState(true);
   const [feedback, setFeedback] = useState<{ message: string; uncertain: boolean } | null>(null);
@@ -69,12 +70,12 @@ export function ClockerSetup({ locationKey, locationLabel }: { locationKey: stri
   }
 
   return <main className={styles.tabletPage}>
-    <section className={styles.tabletCard} aria-busy={pending}>
+    <section className={`${styles.tabletCard} ${pinEnabled && state.state === 'connected' ? styles.pinCard : ''}`} aria-busy={pending}>
       <p className={styles.eyebrow}>NEVORA Workforce · Clocker</p>
       <div className={styles.tabletLocation}>{locationLabel}</div>
       {feedback?.uncertain ? <>
         <h1>Check Tablet Setup</h1>
-      </> : state.state === 'connected' ? <>
+      </> : state.state === 'connected' && pinEnabled ? <ClockerPinGate locationKey={locationKey} /> : state.state === 'connected' ? <>
         <div className={styles.connectedMark} aria-hidden="true">✓</div>
         <h1>Tablet Connected</h1>
         <p>{state.deviceName} is registered for this location.</p>

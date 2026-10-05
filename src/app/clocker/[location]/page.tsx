@@ -1,3 +1,4 @@
+import { readPinKey } from '@/lib/clocker/pin-crypto.server';
 import { notFound } from "next/navigation";
 import { ClockerSetup } from "@/components/clocker-setup";
 import { findActiveLocationByClockerKey } from "@/lib/data/locations";
@@ -17,5 +18,7 @@ export default async function ClockerPage({
   if (!location) notFound();
   const workspace = await getWorkspace();
 
-  return <ClockerSetup locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
+  let pinEnabled = false;
+  try { readPinKey(); pinEnabled = true; } catch { /* PIN setup stays unavailable until configured. */ }
+  return <ClockerSetup pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
 }

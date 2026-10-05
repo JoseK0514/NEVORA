@@ -123,6 +123,12 @@ export default async function EmployeeProfilePage({
         )}
       </section>
 
+      {canManageCore && employee.active ? <section className="panel">
+        <h2>Clocker PIN</h2>
+        <p>Manage this employee’s shared-tablet PIN separately from portal access.</p>
+        <Link className="button secondary" href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`}>Manage Clocker PIN</Link>
+      </section> : null}
+
       <section className="panel form-panel employee-scheduling-management">
         <div className="employee-profile-section-heading">
           <div>

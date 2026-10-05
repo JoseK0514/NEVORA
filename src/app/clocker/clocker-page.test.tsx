@@ -4,6 +4,7 @@ import ClockerPage from './[location]/page';
 import type { Location } from '../../lib/domain';
 
 const state = vi.hoisted(() => ({ failed: false, locations: [] as Location[] }));
+vi.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { throw Error('PIN not configured'); } }));
 vi.mock('@/lib/data/locations', () => ({
   findActiveLocationByClockerKey: async (key: string) => {
     if (state.failed) throw Error('Location configuration is unavailable.');
