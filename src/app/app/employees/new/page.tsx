@@ -41,17 +41,17 @@ export default async function NewEmployeePage({
         <ConfigurationForm action={createEmployeeFormAction} className="employee-form">
           <label>
             Employee ID
-            <input name="id" placeholder="FC-0021" required />
+            <input name="id" placeholder="FC-0021" required maxLength={128} />
           </label>
 
           <div className="form-columns">
             <label>
               First Name
-              <input name="firstName" required />
+              <input name="firstName" required maxLength={160} />
             </label>
             <label>
               Last Name
-              <input name="lastName" required />
+              <input name="lastName" required maxLength={160} />
             </label>
           </div>
 
@@ -62,7 +62,7 @@ export default async function NewEmployeePage({
             </label>
             <label>
               Email <span>Optional</span>
-              <input name="email" type="email" />
+              <input name="email" type="email" maxLength={254} />
             </label>
           </div>
 

@@ -16,6 +16,15 @@ import type { UserRole } from "@/lib/domain";
 import { normalizePhoneNumber } from "@/lib/phone";
 
 const ROLES: UserRole[] = ["OWNER", "MANAGER", "LEAD", "EMPLOYEE"];
+const CONTROL_CHARACTERS = /[\p{Cc}\p{Cf}]/u;
+const readable = (value: string, max: number) =>
+  !!value && [...value].length <= max && !CONTROL_CHARACTERS.test(value);
+const validEmployeeEmail = (value: string) =>
+  !value ||
+  ([...value].length <= 254 &&
+    !CONTROL_CHARACTERS.test(value) &&
+    !/\s/.test(value) &&
+    /^[^@]+@[^@]+$/.test(value));
 
 async function createEmployee(formData: FormData, inline=false) {
   const session = await requireRoles(MANAGER_ROLES);
@@ -42,6 +51,11 @@ async function createEmployee(formData: FormData, inline=false) {
   ) {
     employeeFailure('invalid',inline);
   }
+  if (!readable(id, 128)) employeeFailure("id", inline);
+  if (!readable(firstName, 160) || !readable(lastName, 160)) {
+    employeeFailure("name", inline);
+  }
+  if (!validEmployeeEmail(emailValue)) employeeFailure("email", inline);
 
   if (role === "OWNER" && session.role !== "OWNER") {
     employeeFailure('permission',inline);
@@ -118,6 +132,17 @@ export async function saveEmployeeCoreProfileAction(formData: FormData) {
   ) {
     return { error: "Complete all required employee details." };
   }
+  if (!readable(employeeId, 128)) {
+    return { error: "Employee ID must contain 1–128 readable characters." };
+  }
+  if (!readable(firstName, 160) || !readable(lastName, 160)) {
+    return {
+      error: "Employee names must contain 1–160 readable characters.",
+    };
+  }
+  if (!validEmployeeEmail(email)) {
+    return { error: "Enter a valid employee email address." };
+  }
 
   try {
     await updateEmployeeProfile({
@@ -169,6 +194,9 @@ export async function saveEmployeeCoreProfileAction(formData: FormData) {
 
 const employeeErrors: Record<string, string> = {
   invalid: "Complete all required employee fields.",
+  id: "Employee ID must contain 1–128 readable characters.",
+  name: "Employee names must contain 1–160 readable characters.",
+  email: "Enter a valid employee email address.",
   permission: "Only an Owner can create another Owner.",
   save: "Employee could not be saved. Check unique ID/email and active locations/positions.",
 };

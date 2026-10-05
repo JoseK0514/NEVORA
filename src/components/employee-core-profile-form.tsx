@@ -50,11 +50,11 @@ export function EmployeeCoreProfileForm({
       <div className="form-columns">
         <label>
           First name
-          <input name="firstName" defaultValue={employee.firstName} required />
+          <input name="firstName" defaultValue={employee.firstName} required maxLength={160} />
         </label>
         <label>
           Last name
-          <input name="lastName" defaultValue={employee.lastName} required />
+          <input name="lastName" defaultValue={employee.lastName} required maxLength={160} />
         </label>
       </div>
 
@@ -75,6 +75,7 @@ export function EmployeeCoreProfileForm({
             type="email"
             defaultValue={employee.email ?? ""}
             autoComplete="email"
+            maxLength={254}
           />
         </label>
       </div>

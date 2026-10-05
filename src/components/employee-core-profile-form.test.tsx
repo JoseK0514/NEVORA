@@ -51,6 +51,8 @@ it("keeps employee identity immutable and explains deactivate/reactivate behavio
   expect(html).not.toContain('name="id"');
   expect(html).toContain("Employee ID");
   expect(html).toContain("worker");
+  expect(html.match(/maxLength="160"/g)).toHaveLength(2);
+  expect(html).toMatch(/type="email"[^>]*maxLength="254"|maxLength="254"[^>]*type="email"/);
   expect(html).toContain("Deactivation signs this employee out");
   expect(html).toContain("Reactivation requires a fresh sign-in");
   expect(html).toContain("History is preserved");

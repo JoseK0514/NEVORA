@@ -113,6 +113,47 @@ it("employee core profile rejects incomplete input before writing", async () => 
   expect(m.coreProfile).not.toHaveBeenCalled();
 });
 
+it("rejects forged malformed employee email before core-profile write", async () => {
+  const result = await saveEmployeeCoreProfileAction(
+    coreProfileForm({ email: "not an email" }),
+  );
+  expect(result).toEqual({ error: "Enter a valid employee email address." });
+  expect(m.coreProfile).not.toHaveBeenCalled();
+});
+
+it("rejects oversized or control-character employee core text before write", async () => {
+  const tooLong = await saveEmployeeCoreProfileAction(
+    coreProfileForm({ firstName: "A".repeat(161) }),
+  );
+  expect(tooLong).toEqual({
+    error: "Employee names must contain 1–160 readable characters.",
+  });
+  const control = await saveEmployeeCoreProfileAction(
+    coreProfileForm({ lastName: "Rivera\u0000Admin" }),
+  );
+  expect(control).toEqual({
+    error: "Employee names must contain 1–160 readable characters.",
+  });
+  expect(m.coreProfile).not.toHaveBeenCalled();
+});
+
+it("rejects malformed or oversized employee creation fields before insert", async () => {
+  const data = new FormData();
+  for (const [key, value] of Object.entries({
+    id: "X".repeat(129),
+    firstName: "Sam",
+    lastName: "Rivera",
+    phone: "7875550101",
+    email: "bad email@example.com",
+    role: "EMPLOYEE",
+    primaryLocationId: "west",
+  })) data.set(key, value);
+  expect(await createEmployeeFormAction(data)).toEqual({
+    error: "Employee ID must contain 1–128 readable characters.",
+  });
+  expect(m.insert).not.toHaveBeenCalled();
+});
+
 it.each([
   ["employee_profile_stale", "changed since you opened"],
   ["employee_profile_permission_denied", "permission"],

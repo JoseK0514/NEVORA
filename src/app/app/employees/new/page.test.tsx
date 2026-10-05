@@ -44,6 +44,9 @@ it("uses canonical native-authoritative selects while preserving Owner-only Owne
   );
   expect(manager.match(/class="nevora-select"/g)).toHaveLength(2);
   expect(manager).not.toContain('value="OWNER"');
+  expect(manager).toMatch(/name="id"[^>]*maxLength="128"|maxLength="128"[^>]*name="id"/);
+  expect(manager.match(/maxLength="160"/g)).toHaveLength(2);
+  expect(manager).toMatch(/type="email"[^>]*maxLength="254"|maxLength="254"[^>]*type="email"/);
   expect(manager).toContain("contact, access and scheduling");
   expect(manager).not.toContain("Only scheduling information is collected");
 
