@@ -113,7 +113,7 @@ it("progressively discloses large location catalogs but leaves small catalogs di
   );
   expect(large).toContain('class="employee-choice-disclosure"');
   expect(large).toContain("20 available");
-  expect(large).toContain("1 selected");
+  expect(large).not.toMatch(/\d+ selected/);
 
   const small = renderToStaticMarkup(
     <EmployeeSchedulingFields employee={employee} locations={many.slice(0, 3)} positions={[]} />,

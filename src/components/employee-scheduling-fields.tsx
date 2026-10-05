@@ -21,15 +21,6 @@ export function EmployeeSchedulingFields({
       employee?.eligibleLocationIds.includes(location.id) ||
       employee?.primaryLocationId === location.id,
   );
-  const selectedPositionCount = availablePositions.filter((position) =>
-    employee?.positionIds?.includes(position.id),
-  ).length;
-  const selectedLocationCount = availableLocations.filter(
-    (location) =>
-      employee?.eligibleLocationIds.includes(location.id) ||
-      employee?.primaryLocationId === location.id,
-  ).length;
-
   const positionRows = availablePositions.map((position) => (
     <label className="checkbox-row" key={position.id}>
       <input
@@ -73,9 +64,7 @@ export function EmployeeSchedulingFields({
           <details className="employee-choice-disclosure">
             <summary>
               <span>Position qualifications</span>
-              <small>
-                {selectedPositionCount} selected · {availablePositions.length} available
-              </small>
+              <small>{availablePositions.length} available</small>
             </summary>
             <div className="employee-choice-disclosure-body">
               <p>
@@ -108,9 +97,7 @@ export function EmployeeSchedulingFields({
           <details className="employee-choice-disclosure">
             <summary>
               <span>Eligible locations</span>
-              <small>
-                {selectedLocationCount} selected · {availableLocations.length} available
-              </small>
+              <small>{availableLocations.length} available</small>
             </summary>
             <div className="employee-choice-disclosure-body">
               <p>The primary location is always included.</p>

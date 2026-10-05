@@ -4,6 +4,45 @@ import { useState } from "react";
 import { SelectField } from "./select-field";
 import type { Employee, Position } from "../lib/domain";
 
+export function positionAfterEmployeeChange({
+  positionId,
+  nextEmployeeId,
+  employees,
+  positions,
+}: {
+  positionId: string;
+  nextEmployeeId: string;
+  employees: Employee[];
+  positions: Position[];
+}) {
+  if (!positionId) return "";
+  const nextEmployee = employees.find((item) => item.id === nextEmployeeId);
+  const remainsValid = positions.some(
+    (position) =>
+      position.id === positionId &&
+      position.active &&
+      nextEmployee?.positionIds?.includes(position.id),
+  );
+  return remainsValid ? positionId : "";
+}
+
+export function designatedLeadAfterEmployeeChange({
+  checked,
+  nextEmployeeId,
+  employees,
+}: {
+  checked: boolean;
+  nextEmployeeId: string;
+  employees: Employee[];
+}) {
+  if (!checked) return false;
+  const nextEmployee = employees.find((item) => item.id === nextEmployeeId);
+  return (
+    nextEmployee?.active === true &&
+    ["OWNER", "MANAGER", "LEAD"].includes(nextEmployee.role)
+  );
+}
+
 export function ShiftAssignmentFields({
   employees,
   positions,
@@ -35,7 +74,27 @@ export function ShiftAssignmentFields({
         label="Employee"
         value={selectedEmployee}
         required
-        onChange={(event) => setEmployee(event.target.value)}
+        onChange={(event) => {
+          const nextEmployeeId = event.target.value;
+          setEmployee(nextEmployeeId);
+          setPosition((current) =>
+            positionAfterEmployeeChange({
+              positionId: current,
+              nextEmployeeId,
+              employees,
+              positions,
+            }),
+          );
+          const leadField =
+            event.currentTarget.form?.elements.namedItem("isDesignatedLead");
+          if (leadField instanceof HTMLInputElement) {
+            leadField.checked = designatedLeadAfterEmployeeChange({
+              checked: leadField.checked,
+              nextEmployeeId,
+              employees,
+            });
+          }
+        }}
         options={[
           { value: "", label: "Select employee", disabled: true },
           ...employees
