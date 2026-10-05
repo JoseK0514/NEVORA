@@ -31,8 +31,8 @@ This is a development checkpoint, not a release candidate or physical-tablet cer
 | --- | --- |
 | Baseline unit suite | 138 files / 1,415 passed |
 | Final full unit suite | 139 files / 1,427 passed |
-| Combined C1+C2 Clocker integration/security/crypto suite | 6 files / 117 passed |
-| C2 portion of that suite | PIN lifecycle 34; crypto 11; transport 13 |
+| Combined C1+C2 Clocker integration/security/crypto suite | 6 files / 119 passed |
+| C2 portion of that suite | PIN lifecycle 36; crypto 11; transport 13 |
 | Existing foundation PostgreSQL regression | 2 files / 75 passed |
 | C2 Chromium + WebKit browser checks | 46 passed; 0 errors; 12 screenshots |
 | Existing C1 Chromium + WebKit browser regression | 62 passed; 0 errors; 16 screenshots |
@@ -49,7 +49,9 @@ Widths: 320, 375, 390, 430, 768, 1024, 1440. Tablet layouts: 1024×768, 768×102
 2. A lost committed verification response allowed immediate PIN resubmission. Unknown results now require an explicit successful privacy reset before entry resumes.
 3. A restored-page lifecycle event retained the previous employee greeting. Pagehide clears local identity; persisted pageshow requires server reset.
 4. Long unbroken employee names overflowed narrow tablet layouts. The greeting wraps without truncation or reduced text size.
-5. Initial privacy reset synchronization was refactored to asynchronous effect completion and serialized clearing, satisfying React lint without suppressions.
+5. A previous identity cookie could fail to cancel a new, pending verification after its old database identity had been removed. The device-locked reset now cancels when no completed identity exists, while preserving a different newer completed identity.
+6. Management session expiry during a later PIN-row lock wait is rechecked before commit; failure rolls back the PIN change, audit insertion and identity invalidation together.
+7. Initial privacy reset synchronization was refactored to asynchronous effect completion and serialized clearing, satisfying React lint without suppressions.
 
 The browser harness waits for privacy-reset completion before asserting zero database sessions; merely hiding the employee greeting is not sufficient proof of completed server cleanup.
 
@@ -65,8 +67,9 @@ The browser harness waits for privacy-reset completion before asserting zero dat
 
 ## Evidence
 Local command logs: .superpowers/sdd/2026-10-05-nevora-phase-c-live-operations/
-C2 browser evidence: /Users/josek0514/.codex/visualizations/2026/10/05/nevora-c2-ui-final
+C2 browser evidence: /Users/josek0514/.codex/visualizations/2026/10/05/nevora-c2-ui-hardened
 C1 regression evidence: /Users/josek0514/.codex/visualizations/2026/10/05/nevora-c2-c1-regression
+Final source stability: 439 source files matched a SHA-256 manifest across the hardened verification run.
 Review performed: implementation self-review and targeted guardrails. Independent Codex Phase C review remains pending.
 
 ## Next

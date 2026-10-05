@@ -62,8 +62,13 @@ export async function readClockerIdentity(device:ClockerDeviceWriteProof,token:s
 export async function clearClockerIdentity(device:ClockerDeviceWriteProof,token:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<void>{
  const hash=pinSessionHash(token);
  await pinBatch(executor,[...clockerDeviceWriteGuards(device),
+  // A new attempt removes the prior identity before hashing. An old browser
+  // cookie must still cancel that pending attempt when no identity is present.
+  // Do not cancel or delete an already-committed newer employee identity.
   s(`UPDATE clocker_pin_limits SET latest_attempt=NULL WHERE scope='DEVICE' AND scope_id=$1
-    AND ($2::text IS NULL OR EXISTS(SELECT 1 FROM clocker_pin_sessions WHERE device_id=$1 AND token_hash=$2))`,[device.deviceId,hash]),
+    AND ($2::text IS NULL
+      OR NOT EXISTS(SELECT 1 FROM clocker_pin_sessions WHERE device_id=$1)
+      OR EXISTS(SELECT 1 FROM clocker_pin_sessions WHERE device_id=$1 AND token_hash=$2))`,[device.deviceId,hash]),
   s('DELETE FROM clocker_pin_sessions WHERE device_id=$1 AND ($2::text IS NULL OR token_hash=$2)',[device.deviceId,hash]),
  ]);
 }
