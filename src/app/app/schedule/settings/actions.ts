@@ -6,6 +6,7 @@ import {saveShiftChangePolicy} from '@/lib/data/shift-change-policy';
 import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isManagementAuthorizationError } from "@/lib/data/management-session";
 import { timeMinutes } from "@/lib/scheduling/periods";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
@@ -14,12 +15,12 @@ import {
   deleteCoverageWindow,
   listEmployeeHourTargets,
   listLocationStaffingSettings,
-  saveEmployeeHourTargets,
-  saveLocationStaffingSettings,
+  saveScheduleHealthSettings,
 } from "@/lib/data/schedule-health";
 
 async function saveSettings(formData: FormData, inline = false) {
-  await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
+  if (!MANAGER_ROLES.includes(proof.employee.role)) redirect("/app");
 
   const [locations, employees] = await Promise.all([
     listLocationStaffingSettings(),
@@ -100,10 +101,7 @@ async function saveSettings(formData: FormData, inline = false) {
     };
   });
 
-  await Promise.all([
-    saveLocationStaffingSettings(staffingSettings),
-    saveEmployeeHourTargets(hourTargets),
-  ]);
+  await saveScheduleHealthSettings({ staffingSettings, hourTargets, proof });
 
   revalidatePath("/app/schedule");
   revalidatePath("/app/schedule/settings");
@@ -111,7 +109,9 @@ async function saveSettings(formData: FormData, inline = false) {
   redirect("/app/schedule/settings?saved=1");
 }
 async function addWindow(formData: FormData, inline=false) {
-  const actor = await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
+  if (!MANAGER_ROLES.includes(proof.employee.role)) redirect("/app");
+  const actor = proof.employee;
 
   const locationId = String(formData.get("locationId") ?? "");
   const dayOfWeek = Number(formData.get("dayOfWeek"));
@@ -148,6 +148,7 @@ async function addWindow(formData: FormData, inline=false) {
       endTime,
       minimumStaff,
       actorEmployeeId:actor.id,
+      proof,
       positionRequirements:readRequirements(formData),
     });
   } catch {
@@ -161,14 +162,23 @@ async function addWindow(formData: FormData, inline=false) {
 }
 
 export async function deleteCoverageWindowAction(formData: FormData) {
-  await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
+  if (!MANAGER_ROLES.includes(proof.employee.role)) redirect("/app");
   const windowId = String(formData.get("windowId") ?? "");
 
   if (!windowId) {
     redirect("/app/schedule/settings?error=invalid_window");
   }
 
-  await deleteCoverageWindow(windowId);
+  try {
+    await deleteCoverageWindow(windowId, proof);
+  } catch (error) {
+    if (!isManagementAuthorizationError(error)) throw error;
+    // Re-read current cookie authority after the transaction has rolled back.
+    // Missing/expired/inactive sessions go to login; role loss uses /app.
+    await requireRoles(MANAGER_ROLES);
+    redirect("/login");
+  }
   revalidatePath("/app/schedule");
   revalidatePath("/app/schedule/settings");
   redirect("/app/schedule/settings?windowDeleted=1");
@@ -187,8 +197,10 @@ export async function addCoverageWindowAction(data:FormData):Promise<void>{await
 export async function saveScheduleHealthSettingsFormAction(data:FormData){try{return (await saveSettings(data,true))!;}catch(error){return {error:error instanceof Error&&Object.values(inputErrors).includes(error.message)?error.message:'Settings could not be saved. Your entries are preserved.'};}}
 export async function addCoverageWindowFormAction(data:FormData){try{return (await addWindow(data,true))!;}catch(error){return {error:error instanceof Error&&Object.values(inputErrors).includes(error.message)?error.message:'Coverage window could not be saved. Your entries are preserved.'};}}
 export async function replaceCoverageWindowPositionRequirementsAction(data:FormData){
- const actor=await requireRoles(MANAGER_ROLES);
- try {await replaceCoverageWindowPositionRequirements({windowId:String(data.get('windowId')??''),requirements:readRequirements(data),actorEmployeeId:actor.id});revalidatePath('/app/schedule/settings');revalidatePath('/app/settings/locations');return {success:'Position quantities updated.'};}
+ const proof=await requireSessionMutationProof();
+ if(!MANAGER_ROLES.includes(proof.employee.role))redirect("/app");
+ const actor=proof.employee;
+ try {await replaceCoverageWindowPositionRequirements({windowId:String(data.get('windowId')??''),requirements:readRequirements(data),actorEmployeeId:actor.id,proof});revalidatePath('/app/schedule/settings');revalidatePath('/app/settings/locations');return {success:'Position quantities updated.'};}
  catch{return {error:'Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.'};}
 }
 

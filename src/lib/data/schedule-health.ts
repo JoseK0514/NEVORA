@@ -1,4 +1,6 @@
 import { getWorkspace, workspaceReadGuard } from "./workspaces";
+import { assertManagementProof, managementSessionStatements } from "./management-session";
+import type { SessionMutationProof } from "../shift-changes/types";
 import { neonNotificationExecutor } from "./notification-transactions";
 import { timeMinutes } from "../scheduling/periods";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
@@ -108,74 +110,72 @@ export async function listEmployeeHourTargets(): Promise<EmployeeHourTarget[]> {
   });
 }
 
-export async function saveLocationStaffingSettings(
-  settings: Array<{
-    locationId: string;
-    minimumStaffPerShift: number;
-    requiresDesignatedLead: boolean;
-  }>,
-) {
-  const sql = getDb();
+type StaffingInput = { locationId: string; minimumStaffPerShift: number; requiresDesignatedLead: boolean };
+type HourTargetInput = { employeeId: string; targetWeeklyHours?: number; maximumWeeklyHours: number };
 
-  const queries = settings.map(
-    (setting) =>
-      sql`INSERT INTO location_staffing_settings (
-        location_id,
-        minimum_staff_per_shift,
-        requires_designated_lead,
-        updated_at
-      ) VALUES (
-        ${setting.locationId},
-        ${setting.minimumStaffPerShift},
-        ${setting.requiresDesignatedLead},
-        now()
-      )
-      ON CONFLICT (location_id)
-      DO UPDATE SET
-        minimum_staff_per_shift = EXCLUDED.minimum_staff_per_shift,
-        requires_designated_lead = EXCLUDED.requires_designated_lead,
-        updated_at = now()`,
-  );
-
-  if (queries.length) {
-    await sql.transaction(queries);
-  }
+function staffingWriteStatements(settings: readonly StaffingInput[]): SqlStatement[] {
+  return [...settings].sort((a, b) => a.locationId.localeCompare(b.locationId)).map(setting => ({
+    text: `INSERT INTO location_staffing_settings(location_id,minimum_staff_per_shift,requires_designated_lead,updated_at)
+      VALUES($1,$2,$3,now()) ON CONFLICT(location_id) DO UPDATE SET
+      minimum_staff_per_shift=EXCLUDED.minimum_staff_per_shift,requires_designated_lead=EXCLUDED.requires_designated_lead,updated_at=now()`,
+    values: [setting.locationId, setting.minimumStaffPerShift, setting.requiresDesignatedLead],
+  }));
+}
+function hourTargetWriteStatements(targets: readonly HourTargetInput[]): SqlStatement[] {
+  return [...targets].sort((a, b) => a.employeeId.localeCompare(b.employeeId)).map(target => ({
+    text: `INSERT INTO employee_scheduling_settings(employee_id,target_weekly_hours,maximum_weekly_hours,updated_at)
+      VALUES($1,$2,$3,now()) ON CONFLICT(employee_id) DO UPDATE SET
+      target_weekly_hours=EXCLUDED.target_weekly_hours,maximum_weekly_hours=EXCLUDED.maximum_weekly_hours,updated_at=now()`,
+    values: [target.employeeId, target.targetWeeklyHours ?? null, target.maximumWeeklyHours],
+  }));
 }
 
-export async function saveEmployeeHourTargets(
-  targets: Array<{
-    employeeId: string;
-    targetWeeklyHours?: number;
-    maximumWeeklyHours: number;
-  }>,
-) {
-  const sql = getDb();
-
-  const queries = targets.map(
-    (target) =>
-      sql`INSERT INTO employee_scheduling_settings (
-        employee_id,
-        target_weekly_hours,
-        maximum_weekly_hours,
-        updated_at
-      ) VALUES (
-        ${target.employeeId},
-        ${target.targetWeeklyHours ?? null},
-        ${target.maximumWeeklyHours},
-        now()
-      )
-      ON CONFLICT (employee_id)
-      DO UPDATE SET
-        target_weekly_hours = EXCLUDED.target_weekly_hours,
-        maximum_weekly_hours = EXCLUDED.maximum_weekly_hours,
-        updated_at = now()`,
-  );
-
-  if (queries.length) {
-    await sql.transaction(queries);
-  }
+/** One native Save, one transaction. Parent UPDATE locks serialize absent
+ * UPSERT keys as well as existing configuration. Workspace comes first, so the
+ * generation global guard cannot hold input tables while waiting on this writer.
+ * The final shared proof check covers any later DML/uniqueness wait too. */
+export async function saveScheduleHealthSettings(input: {
+  staffingSettings: readonly StaffingInput[];
+  hourTargets: readonly HourTargetInput[];
+  proof: SessionMutationProof;
+}, executor: SqlExecutor = neonNotificationExecutor()): Promise<void> {
+  const actorId = input.proof?.employee?.id ?? '';
+  assertManagementProof(input.proof, actorId);
+  const { staffingSettings, hourTargets } = input;
+  if (new Set(staffingSettings.map(s => s.locationId)).size !== staffingSettings.length || staffingSettings.some(s =>
+    !s.locationId || !Number.isInteger(s.minimumStaffPerShift) || s.minimumStaffPerShift < 1 || s.minimumStaffPerShift > 100 || typeof s.requiresDesignatedLead !== 'boolean')) throw new Error('invalid_staffing');
+  if (new Set(hourTargets.map(t => t.employeeId)).size !== hourTargets.length || hourTargets.some(t =>
+    !t.employeeId || !Number.isFinite(t.maximumWeeklyHours) || t.maximumWeeklyHours < 0 || t.maximumWeeklyHours > 168 ||
+    (t.targetWeeklyHours !== undefined && (!Number.isFinite(t.targetWeeklyHours) || t.targetWeeklyHours < 0 || t.targetWeeklyHours > 168)))) throw new Error('invalid_hours');
+  const workspace = await getWorkspace(executor);
+  const employeeIds = [...new Set([actorId, ...hourTargets.map(t => t.employeeId)])].sort();
+  const locationIds = staffingSettings.map(s => s.locationId).sort();
+  const targetIds = hourTargets.map(t => t.employeeId).sort();
+  await executor.transaction([
+    ...workspaceReadGuard(workspace),
+    { text: 'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE', values: [employeeIds] },
+    { text: 'SELECT id FROM locations WHERE id=ANY($1::text[]) OR id IN (SELECT primary_location_id FROM employees WHERE id=ANY($2::text[])) ORDER BY id FOR UPDATE', values: [locationIds, employeeIds] },
+    { text: `SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM unnest($1::text[]) requested(id)
+      LEFT JOIN locations l ON l.id=requested.id WHERE l.id IS NULL OR l.workspace_id<>$2 OR NOT l.active)
+      THEN '1' ELSE 'settings_location_invalid' END)::integer`, values: [locationIds, workspace.id] },
+    { text: `SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM unnest($1::text[]) requested(id)
+      LEFT JOIN employees e ON e.id=requested.id LEFT JOIN locations l ON l.id=e.primary_location_id
+      WHERE e.id IS NULL OR NOT e.active OR l.id IS NULL OR l.workspace_id<>$2)
+      THEN '1' ELSE 'settings_employee_invalid' END)::integer`, values: [targetIds, workspace.id] },
+    { text: 'SELECT employee_id FROM employee_scheduling_settings WHERE employee_id=ANY($1::text[]) ORDER BY employee_id FOR UPDATE', values: [targetIds] },
+    { text: 'SELECT location_id FROM location_staffing_settings WHERE location_id=ANY($1::text[]) ORDER BY location_id FOR UPDATE', values: [locationIds] },
+    ...managementSessionStatements(input.proof, actorId),
+    ...staffingWriteStatements(staffingSettings),
+    ...hourTargetWriteStatements(hourTargets),
+    ...managementSessionStatements(input.proof, actorId),
+  ]);
 }
-
+export async function saveLocationStaffingSettings(settings: readonly StaffingInput[], proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<void> {
+  await saveScheduleHealthSettings({ staffingSettings: settings, hourTargets: [], proof }, executor);
+}
+export async function saveEmployeeHourTargets(targets: readonly HourTargetInput[], proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<void> {
+  await saveScheduleHealthSettings({ staffingSettings: [], hourTargets: targets, proof }, executor);
+}
 
 export async function listCoverageWindows(): Promise<CoverageWindow[]> {
   const sql = getDb();
@@ -229,19 +229,7 @@ function validateRequirements(requirements: readonly PositionRequirement[]) {
       "Position quantities must be whole numbers between 1 and 100 with one quantity per position.",
     );
 }
-function coverageActorGuard(actorEmployeeId: string): SqlStatement[] {
-  return [
-    {
-      text: "SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE",
-      values: [actorEmployeeId],
-    },
-    {
-      text: "SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees WHERE id=$1 AND active=true AND role IN ('OWNER','MANAGER')) THEN '1' ELSE 'coverage_permission_denied' END)::integer",
-      values: [actorEmployeeId],
-    },
-  ];
-}
-function requirementStatements(
+function requirementGuards(
   windowId: string,
   requirements: readonly PositionRequirement[],
   workspaceId: string,
@@ -275,12 +263,13 @@ function requirementStatements(
         retainUnchangedInactive,
       ],
     },
-    {
-      text: "DELETE FROM coverage_window_position_requirements WHERE coverage_window_id=$1",
-      values: [windowId],
-    },
-    ...sorted.map((r) => ({
-      text: "INSERT INTO coverage_window_position_requirements(coverage_window_id,position_id,quantity) VALUES($1,$2,$3)",
+  ];
+}
+function requirementWrites(windowId: string, requirements: readonly PositionRequirement[]): SqlStatement[] {
+  return [
+    { text: 'DELETE FROM coverage_window_position_requirements WHERE coverage_window_id=$1', values: [windowId] },
+    ...[...requirements].sort((a, b) => a.positionId.localeCompare(b.positionId)).map(r => ({
+      text: 'INSERT INTO coverage_window_position_requirements(coverage_window_id,position_id,quantity) VALUES($1,$2,$3)',
       values: [windowId, r.positionId, r.quantity],
     })),
   ];
@@ -294,9 +283,11 @@ export async function createCoverageWindow(
     minimumStaff?: number;
     positionRequirements: PositionRequirement[];
     actorEmployeeId: string;
+    proof: SessionMutationProof;
   },
   executor?: SqlExecutor,
 ) {
+  assertManagementProof(input.proof, input.actorEmployeeId);
   validateRequirements(input.positionRequirements);
   if (
     !Number.isInteger(input.dayOfWeek) ||
@@ -314,41 +305,45 @@ export async function createCoverageWindow(
     id = randomUUID();
   await sql.transaction([
     ...workspaceReadGuard(workspace),
-    ...coverageActorGuard(input.actorEmployeeId),
+    { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
     {
-      text: "SELECT id FROM locations WHERE id=$1 ORDER BY id FOR SHARE",
+      text: "SELECT id FROM locations WHERE id=$1 ORDER BY id FOR UPDATE",
       values: [input.locationId],
     },
     {
       text: "SELECT (CASE WHEN EXISTS(SELECT 1 FROM locations WHERE id=$1 AND workspace_id=$2 AND active=true) THEN '1' ELSE 'coverage_location_invalid' END)::integer",
       values: [input.locationId, workspace.id],
     },
+    ...requirementGuards(id, input.positionRequirements, workspace.id),
+    ...managementSessionStatements(input.proof, input.actorEmployeeId),
     {
-      text: "INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time,minimum_staff) VALUES($1,$2,$3,$4,$5,$6)",
-      values: [
-        id,
-        input.locationId,
-        input.dayOfWeek,
-        input.startTime,
-        input.endTime,
-        input.minimumStaff ?? null,
-      ],
+      text: 'INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time,minimum_staff) VALUES($1,$2,$3,$4,$5,$6)',
+      values: [id, input.locationId, input.dayOfWeek, input.startTime, input.endTime, input.minimumStaff ?? null],
     },
-    ...requirementStatements(id, input.positionRequirements, workspace.id),
+    ...requirementWrites(id, input.positionRequirements),
+    ...managementSessionStatements(input.proof, input.actorEmployeeId),
   ]);
   return id;
 }
-export async function deleteCoverageWindow(windowId: string) {
-  const sql = getDb();
-  const rows = queryRows<{ id: string }>(
-    await sql.query(
-      `DELETE FROM location_coverage_windows
-       WHERE id = $1
-       RETURNING id`,
-      [windowId],
-    ),
-  );
-  return Boolean(rows[0]);
+export async function deleteCoverageWindow(windowId: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<boolean> {
+  const actorId = proof?.employee?.id ?? '';
+  assertManagementProof(proof, actorId);
+  const workspace = await getWorkspace(executor);
+  const statements: SqlStatement[] = [
+    ...workspaceReadGuard(workspace),
+    { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [actorId] },
+    { text: 'SELECT l.id FROM locations l JOIN location_coverage_windows w ON w.location_id=l.id WHERE w.id=$1 ORDER BY l.id FOR UPDATE OF l', values: [windowId] },
+    { text: 'SELECT id FROM location_coverage_windows WHERE id=$1 FOR UPDATE', values: [windowId] },
+    { text: `SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM location_coverage_windows w JOIN locations l ON l.id=w.location_id WHERE w.id=$1 AND l.workspace_id<>$2)
+      THEN '1' ELSE 'coverage_window_invalid' END)::integer`, values: [windowId, workspace.id] },
+    { text: 'SELECT position_id FROM coverage_window_position_requirements WHERE coverage_window_id=$1 ORDER BY position_id FOR UPDATE', values: [windowId] },
+    ...managementSessionStatements(proof, actorId),
+    { text: 'DELETE FROM location_coverage_windows WHERE id=$1 RETURNING id', values: [windowId] },
+    ...managementSessionStatements(proof, actorId),
+  ];
+  const index = statements.findIndex(s => s.text.startsWith('DELETE FROM location_coverage_windows'));
+  const result = await executor.transaction(statements);
+  return Boolean(result[index]?.[0]);
 }
 
 export async function replaceCoverageWindowPositionRequirements(
@@ -356,17 +351,19 @@ export async function replaceCoverageWindowPositionRequirements(
     windowId: string;
     requirements: readonly PositionRequirement[];
     actorEmployeeId: string;
+    proof: SessionMutationProof;
   },
   executor?: SqlExecutor,
 ): Promise<void> {
+  assertManagementProof(input.proof, input.actorEmployeeId);
   validateRequirements(input.requirements);
   const sql = executor ?? neonNotificationExecutor(),
     workspace = await getWorkspace(sql);
   await sql.transaction([
     ...workspaceReadGuard(workspace),
-    ...coverageActorGuard(input.actorEmployeeId),
+    { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
     {
-      text: "SELECT l.id FROM locations l JOIN location_coverage_windows w ON w.location_id=l.id WHERE w.id=$1 ORDER BY l.id FOR SHARE OF l",
+      text: "SELECT l.id FROM locations l JOIN location_coverage_windows w ON w.location_id=l.id WHERE w.id=$1 ORDER BY l.id FOR UPDATE OF l",
       values: [input.windowId],
     },
     {
@@ -377,11 +374,14 @@ export async function replaceCoverageWindowPositionRequirements(
       text: "SELECT (CASE WHEN EXISTS(SELECT 1 FROM location_coverage_windows w JOIN locations l ON l.id=w.location_id WHERE w.id=$1 AND l.workspace_id=$2 AND l.active=true) THEN '1' ELSE 'coverage_window_invalid' END)::integer",
       values: [input.windowId, workspace.id],
     },
-    ...requirementStatements(
+    ...requirementGuards(
       input.windowId,
       input.requirements,
       workspace.id,
       true,
     ),
+    ...managementSessionStatements(input.proof, input.actorEmployeeId),
+    ...requirementWrites(input.windowId, input.requirements),
+    ...managementSessionStatements(input.proof, input.actorEmployeeId),
   ]);
 }

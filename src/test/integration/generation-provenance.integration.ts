@@ -1,3 +1,4 @@
+import { updateShift, deleteShift, insertShift, saveEmployeeSchedulingProfile } from './management-api';
 import { beforeAll, afterAll, beforeEach, expect, it } from 'vitest';
 import { createDisposableGenerationDatabase } from './local-postgres';
 let database: Awaited<ReturnType<typeof createDisposableGenerationDatabase>>;
@@ -15,7 +16,7 @@ it('existing legacy rows default to MANAGER with no generated claims',async()=>{
 });
 
 import { generationNeedKey } from '../../lib/scheduling/generation-claims';
-import { updateShift, deleteShift, insertShift, listWeekShifts } from '../../lib/data/schedules';
+import { listWeekShifts } from '../../lib/data/schedules';
 import { readFile } from 'node:fs/promises';
 import type { SqlExecutor } from '../../lib/notifications/types';
 const scope={workspaceId:'workspace-fuel',timeZone:'America/Puerto_Rico',weekStart:'2030-10-07',locationId:'loc-1'};
@@ -24,9 +25,9 @@ const need={kind:'LEAD' as const,needStart:'2030-10-07T08:00',needEnd:'2030-10-0
 const claims={version:1,claims:[{...need,needKey:generationNeedKey(scope,need),coveredStart:need.needStart,coveredEnd:need.needEnd,quantity:1}]};
 async function generated(){await q("UPDATE shifts SET assignment_origin='GENERATED',generated_claims=$1::jsonb,is_designated_lead=true WHERE id='legacy'",[JSON.stringify(claims)]);}
 async function api(){
- const implementation=await import('../../lib/data/generation-exclusions').catch(()=>({}));
+ const implementation=await import('./management-api').catch(()=>({}));
  expect(implementation).toHaveProperty('deleteGeneratedDraftShift');
- return implementation as typeof import('../../lib/data/generation-exclusions');
+ return implementation as typeof import('./management-api');
 }
 const count=async(table:string)=>Number((await q(`SELECT count(*) AS n FROM ${table}`))[0].n);
 it('rejects invalid stored origins, missing claims and malformed claim envelopes',async()=>{
@@ -67,6 +68,7 @@ it.each(['callout','exchange','publication'])('a generated shift with %s history
  expect(await count('shifts')).toBe(1); expect(await count('schedule_generation_exclusions')).toBe(0);
 });
 it('manual edit takes Manager control, removes claims and emits no provenance-only publication',async()=>{
+ await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'employee-normal-'||d,'employee',d,'00:00','24:00' FROM generate_series(0,6) d");
  await generated();
  await q("INSERT INTO employee_location_eligibility VALUES('employee','loc-1')");
  expect(await updateShift({shiftId:'legacy',employeeId:'employee',date:'2030-10-07',startTime:'08:00',endTime:'12:00',actorEmployeeId:'manager'},database.executor)).toBe(true);
@@ -138,6 +140,7 @@ it('provenance-only promotion of an already published assignment creates no revi
  expect((await q('SELECT assignment_origin,generated_claims FROM shifts'))[0]).toEqual({assignment_origin:'MANAGER',generated_claims:null});
 });
 it('manual insert and database copies default to MANAGER and read models retain generated metadata',async()=>{
+ await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'employee-normal-'||d,'employee',d,'00:00','24:00' FROM generate_series(0,6) d");
  await generated();await q("INSERT INTO employee_location_eligibility VALUES('employee','loc-1')");
  const id=await insertShift({scheduleId:'draft',employeeId:'employee',date:'2030-10-08',startTime:'08:00',endTime:'12:00',actorEmployeeId:'manager'},database.executor);
  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT 'copy',schedule_id,employee_id,date,start_time,end_time FROM shifts WHERE id='legacy'");
@@ -147,7 +150,7 @@ it('manual insert and database copies default to MANAGER and read models retain 
 });
 
 import { Client } from 'pg';
-import { saveEmployeeSchedulingProfile } from '../../lib/data/employees';
+
 import { withOwnedTestResources } from './owned-test-resources';
 import { readGenerationSource, GenerationConflictError } from '../../lib/data/generation-guards';
 import type { SqlStatement } from '../../lib/notifications/types';

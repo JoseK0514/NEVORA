@@ -33,13 +33,8 @@ export function EmployeeCoreProfileForm({
     }));
 
   return (
-    <ConfigurationForm action={action} className="employee-form employee-core-profile-form">
+    <ConfigurationForm action={action} reviewedUpdatedAt={employee.updatedAt} className="employee-form employee-core-profile-form">
       <input type="hidden" name="employeeId" value={employee.id} />
-      <input
-        type="hidden"
-        name="expectedUpdatedAt"
-        value={employee.updatedAt}
-      />
 
       <div className="employee-core-id">
         <span>Employee ID</span>

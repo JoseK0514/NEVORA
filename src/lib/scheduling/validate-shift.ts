@@ -12,8 +12,6 @@ import {
 import {
   affectedWorkweeks,
   businessDateStart,
-  canFillRole,
-  isLeadCapable,
   minutesInWorkweek,
   periodsOverlap,
   shiftPeriod,
@@ -212,13 +210,6 @@ export function validateShift(input: ValidateShiftInput) {
   }
   for (const code of assignmentCapabilityIssues(input))
     add(code, code === 'LOCATION_NOT_ELIGIBLE' ? {locationId:candidate.locationId} : undefined);
-  if (
-    (candidate.isDesignatedLead || candidate.requiredRole === "LEAD") &&
-    !isLeadCapable(employee.role)
-  )
-    add("LEAD_REQUIREMENT");
-  else if (!canFillRole(employee.role, candidate.requiredRole ?? "EMPLOYEE"))
-    add("ROLE_INELIGIBLE");
   const excluded = new Set(input.excludedShiftIds),
     seen = new Set<string>();
   const ledger = input.existingShifts.filter((shift) => {

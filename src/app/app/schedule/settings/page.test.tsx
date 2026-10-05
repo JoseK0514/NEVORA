@@ -38,6 +38,7 @@ vi.mock("@/app/app/schedule/settings/actions", () => ({
   replaceCoverageWindowPositionRequirementsAction: vi.fn(),
   addCoverageWindowAction: vi.fn(),
   deleteCoverageWindowAction: vi.fn(),
+  saveShiftChangePolicyAction:async()=>({status:'conflict'}),
 }));
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) =>
@@ -218,5 +219,4 @@ it("preserves configured customer location names without Fuel-specific normaliza
 vi.mock('@/lib/data/shift-change-policy',()=>({readShiftChangePolicy:async()=>null}));
 vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
 vi.mock('@/components/shift-change-policy-fields',()=>import('../../../../components/shift-change-policy-fields'));
-vi.mock('./actions',()=>({saveShiftChangePolicyAction:async()=>({status:'conflict'})}));
 vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));

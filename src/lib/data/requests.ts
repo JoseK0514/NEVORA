@@ -5,6 +5,8 @@ import { commitRequestTransition, requestSnapshot } from "./request-notification
 import type { SqlExecutor } from "../notifications/types";
 import type { RequestStatus } from "@/lib/domain";
 
+import type { SessionMutationProof } from "../shift-changes/types";
+
 export type TimeOffListItem = {
   id: string;
   employeeId: string;
@@ -143,6 +145,7 @@ export async function createTimeOffRequest(input: {
 export async function reviewTimeOffRequest(input: {
   requestId: string;
   managerId: string;
+  proof: SessionMutationProof;
   status: "APPROVED" | "DENIED";
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   const [row] = await executor.query({ text: 'SELECT * FROM time_off_requests WHERE id=$1', values: [input.requestId] });
@@ -153,6 +156,7 @@ export async function reviewTimeOffRequest(input: {
     before: requestSnapshot('TIME_OFF', before),
     after: requestSnapshot('TIME_OFF', { ...before, status: input.status }),
     actorEmployeeId: input.managerId,
+    managementProof: input.proof,
     mutation: {
       text: `UPDATE time_off_requests SET status=$3, reviewed_by=$2, reviewed_at=now()
         WHERE id=$1 AND status='PENDING' AND employee_id=$4 RETURNING id`,

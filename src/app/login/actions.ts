@@ -36,7 +36,11 @@ export async function login(formData: FormData) {
   }
 
   await prepareInstallationForLogin(employee.id);
-  await createSession(employee.id);
+  try { await createSession(employee.id, employee); }
+  catch (error) {
+    if (error instanceof Error && error.message.includes('session_login_changed')) redirect(`/login?error=invalid${returnQuery}`);
+    throw error;
+  }
   redirect(returnTo ?? "/app");
 }
 

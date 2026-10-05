@@ -1,5 +1,6 @@
 import {listPositions} from "@/lib/data/positions";
 import {ShiftAssignmentFields} from "@/components/shift-assignment-fields";
+import { ConfigurationForm } from "@/components/configuration-form";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -67,7 +68,10 @@ export default async function EditShiftPage({
       ) : null}
 
       <section className="panel form-panel">
-        <form action={updateShiftAction} className="employee-form">
+        <form id="delete-shift-form" action={deleteShiftAction}>
+          <input type="hidden" name="shiftId" value={shift.id} />
+        </form>
+        <ConfigurationForm action={updateShiftAction}>
           <input type="hidden" name="shiftId" value={shift.id} />
 
           <div className="form-columns">
@@ -117,7 +121,7 @@ export default async function EditShiftPage({
             <button
               className="button danger-button"
               type="submit"
-              formAction={deleteShiftAction}
+              form="delete-shift-form"
             >
               Delete Shift
             </button>
@@ -128,7 +132,7 @@ export default async function EditShiftPage({
               <button className="button primary" type="submit">Save changes</button>
             </div>
           </div>
-        </form>
+        </ConfigurationForm>
       </section>
     </>
   );

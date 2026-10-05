@@ -1,4 +1,6 @@
-import { bindFixtureCallout } from './shift-change-api';
+import { deleteGeneratedDraftShift, saveEmployeeSchedulingProfile } from './management-api';
+import { bindFixtureCallout, fixtureProof } from './shift-change-api';
+import { managementProof } from '../fixtures/management';
 import { afterAll, beforeAll, beforeEach, expect, it, vi, afterEach } from 'vitest';
 import { Client } from 'pg';
 import { selectGenerationScope } from '../../lib/scheduling/generation/scope';
@@ -8,8 +10,8 @@ afterEach(() => vi.restoreAllMocks());
 import { createDisposableGenerationDatabase } from './local-postgres';
 import { generateWeekDraft, readGenerationSnapshot } from '../../lib/data/schedule-generation';
 import { GenerationConflictError, readGenerationSource } from '../../lib/data/generation-guards';
-import { clearGenerationExclusion, deleteGeneratedDraftShift } from '../../lib/data/generation-exclusions';
-import { saveEmployeeSchedulingProfile } from '../../lib/data/employees';
+import { clearGenerationExclusion } from '../../lib/data/generation-exclusions';
+
 import { withOwnedTestResources } from './owned-test-resources';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 let database: Awaited<ReturnType<typeof createDisposableGenerationDatabase>>;
@@ -24,6 +26,7 @@ const q = (text: string, values: readonly unknown[] = []) => database.executor.q
   values
 });
 const request = {
+  proof: managementProof('manager'),
   workspaceId: 'workspace-fuel',
   actorEmployeeId: 'manager',
   weekStart: '2030-10-07',
@@ -41,6 +44,8 @@ beforeEach(async () => {
   await q('TRUNCATE employees,schedules,positions,location_coverage_windows,schedule_week_settings RESTART IDENTITY CASCADE');
   await q("UPDATE workspaces SET active=true,time_zone='America/Puerto_Rico'; UPDATE locations SET active=true; UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false");
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('manager','Private','Manager','NONE','MANAGER','loc-1'),('worker','Fictional','Worker','NONE','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('worker','loc-1'),('worker','loc-2'); INSERT INTO availability_windows VALUES('normal','worker',1,'08:00','12:00'); INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('window','loc-1',1,'08:00','12:00')");
+  await fixtureProof(database.executor, 'manager');
+  await fixtureProof(database.executor, 'worker');
 });
 async function manual(id = 'manual', location = 'loc-1', week = '2030-10-07', date = '2030-10-07', start = '08:00', end = '10:00') {
   await q("INSERT INTO schedules(id,location_id,week_start,created_by) VALUES($1,$2,$3,'manager') ON CONFLICT(location_id,week_start) DO NOTHING", [`schedule-${location}-${week}`, location, week]);
@@ -149,6 +154,7 @@ it.each(['missing', 'worker', 'inactive'])('rejects forged/nonmanager/inactive a
   if (actor === 'inactive') await q("UPDATE employees SET active=false WHERE id='manager'");
   await expect(run({
     ...request,
+    proof: managementProof(actor === 'inactive' ? 'manager' : actor),
     actorEmployeeId: actor === 'inactive' ? 'manager' : actor
   })).rejects.toThrow('active Owner or Manager');
   expect(await rows()).toEqual([]);
@@ -615,7 +621,11 @@ it('after-state proof detects persisted provenance corruption and rolls back', a
     transaction: s => {
       attempts++;
       const all = [...s];
-      all.splice(-1, 0, {
+      // Target the after-state proof, not the last statement: authorization
+      // now also runs after that proof before COMMIT.
+      const proofIndex = all.findLastIndex(statement => statement.text.includes('generation_source_conflict'));
+      expect(proofIndex).toBeGreaterThan(0);
+      all.splice(proofIndex, 0, {
         text: "UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL",
         values: []
       });
@@ -821,7 +831,7 @@ it('renaming and splitting windows cannot bypass a reservation but a real manual
   await deleteGeneratedDraftShift({...request,locationId:'loc-1',shiftId:id}, database.executor);
   await q("UPDATE locations SET name='Renamed location' WHERE id='loc-1'; UPDATE location_coverage_windows SET end_time='10:00'; INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('split','loc-1',1,'10:00','12:00'); INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('different','Other','Worker','NONE','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('different','loc-1'); INSERT INTO availability_windows VALUES('different','different',1,'08:00','12:00')");
   expect(await run()).toMatchObject({status:'PARTIAL',summary:{added:0}});
-  const { insertShift } = await import('../../lib/data/schedules');
+  const { insertShift } = await import('./management-api');
   const parent = String((await source()).schedules[0].id);
   await insertShift({scheduleId:parent,employeeId:'different',date:request.weekStart,startTime:'08:00',endTime:'12:00',actorEmployeeId:'manager'}, database.executor);
   expect(await run()).toMatchObject({status:'COMPLETE',summary:{added:0,preserved:1}});

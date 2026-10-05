@@ -7,8 +7,8 @@ import { expect, it, vi } from "vitest";
 const cssPath = fileURLToPath(new URL("../app/globals.css", import.meta.url));
 
 vi.mock("@/components/configuration-form", () => ({
-  ConfigurationForm: ({ children }: { children: React.ReactNode }) =>
-    createElement("form", null, children),
+  ConfigurationForm: ({ children, reviewedUpdatedAt }: { children: React.ReactNode; reviewedUpdatedAt: string }) =>
+    createElement("form", null, createElement("input", {type:"hidden",name:"expectedUpdatedAt",value:reviewedUpdatedAt}), children),
 }));
 vi.mock("@/components/phone-input", () => ({
   PhoneInput: (props: Record<string, unknown>) => createElement("input", props),

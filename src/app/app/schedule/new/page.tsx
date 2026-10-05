@@ -1,5 +1,6 @@
 import {listPositions} from "@/lib/data/positions";
 import {ShiftAssignmentFields} from "@/components/shift-assignment-fields";
+import { ConfigurationForm } from "@/components/configuration-form";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
@@ -45,7 +46,7 @@ export default async function NewShiftPage({
 
   return (
     <main className="new-shift-page">
-      <form action={createShiftAction} className="new-shift-card">
+      <ConfigurationForm action={createShiftAction} className="new-shift-card">
         <input type="hidden" name="weekStart" value={weekStart} />
         <input type="hidden" name="locationId" value={locationId} />
 
@@ -113,7 +114,7 @@ export default async function NewShiftPage({
             Save Shift
           </button>
         </footer>
-      </form>
+      </ConfigurationForm>
     </main>
   );
 }

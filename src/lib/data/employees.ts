@@ -4,6 +4,8 @@ import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import { neonNotificationExecutor } from "./notification-transactions";
 import { getWorkspace, workspaceReadGuard } from "./workspaces";
 import { employeePositionMembershipStatements } from "./positions";
+import type { SessionMutationProof } from '../shift-changes/types';
+import { assertManagementProof, managementSessionStatements } from './management-session';
 
 type EmployeeRow = {
   id: string;
@@ -86,6 +88,8 @@ export async function findEmployeeCredential(employeeId: string) {
     active: boolean;
     password_hash: string;
     must_change_password: boolean;
+    updated_at: string;
+    password_updated_at: string;
   }>(
     await sql.query(
       `SELECT
@@ -96,7 +100,9 @@ export async function findEmployeeCredential(employeeId: string) {
          e.primary_location_id,
          e.active,
          c.password_hash,
-         c.must_change_password
+         c.must_change_password,
+         e.updated_at::text AS updated_at,
+         c.password_updated_at::text AS password_updated_at
        FROM employees e
        JOIN employee_credentials c ON c.employee_id = e.id
        WHERE upper(e.id) = upper($1)
@@ -120,7 +126,9 @@ export async function insertEmployee(input: {
   passwordHash?: string;
   positionIds?: readonly string[];
   actorEmployeeId: string;
+  proof: SessionMutationProof;
 }, executor?: SqlExecutor) {
+  assertManagementProof(input.proof, input.actorEmployeeId);
   const sql = executor ?? neonNotificationExecutor();
   const workspace = await getWorkspace(sql);
   const eligible = [...new Set([input.primaryLocationId, ...input.eligibleLocationIds])].sort();
@@ -134,12 +142,13 @@ export async function insertEmployee(input: {
     { text: `SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM unnest($1::text[]) requested(id) LEFT JOIN locations l ON l.id=requested.id WHERE l.id IS NULL OR NOT l.active OR l.workspace_id<>$2) THEN '1' ELSE 'employee_location_invalid' END)::integer`, values: [eligible, workspace.id] },
     { text: 'SELECT id FROM positions WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE', values: [positions] },
     { text: `SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM unnest($1::text[]) requested(id) LEFT JOIN positions p ON p.id=requested.id WHERE p.id IS NULL OR NOT p.active OR p.workspace_id<>$2) THEN '1' ELSE 'employee_position_invalid' END)::integer`, values: [positions, workspace.id] },
+    ...managementSessionStatements(input.proof, input.actorEmployeeId),
     { text: 'INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,$2,$3,$4,$5,$6,$7)', values: [input.id, input.firstName, input.lastName, input.phone, input.email ?? null, input.role, input.primaryLocationId] },
     ...eligible.map(locationId => ({ text: 'INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES($1,$2)', values: [input.id, locationId] })),
     ...employeePositionMembershipStatements({ employeeId: input.id, positionIds: positions }),
   ];
   if (input.passwordHash) statements.push({ text: 'INSERT INTO employee_credentials(employee_id,password_hash) VALUES($1,$2)', values: [input.id, input.passwordHash] });
-  await sql.transaction(statements);
+  await sql.transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId)]);
 }
 
 export async function activateEmployeeCredential(input: {
@@ -147,12 +156,13 @@ export async function activateEmployeeCredential(input: {
   phone: string;
   passwordHash: string;
 }) {
-  const sql = getDb();
+  const sql = neonNotificationExecutor();
   const phoneDigits = input.phone.replace(/\D/g, "");
 
-  const rows = queryRows<{ employee_id: string }>(
-    await sql.query(
-      `INSERT INTO employee_credentials (
+  const results = await sql.transaction([
+    { text: 'SELECT id FROM employees WHERE upper(id)=upper($1) ORDER BY id FOR UPDATE', values: [input.employeeId] },
+    // Fresh post-lock statement; duplicate activation is serialized on employee.
+    { text: `INSERT INTO employee_credentials (
          employee_id,
          password_hash,
          must_change_password
@@ -168,12 +178,9 @@ export async function activateEmployeeCredential(input: {
          AND regexp_replace(e.phone, '[^0-9]', '', 'g') = $2
          AND e.active = true
          AND c.employee_id IS NULL
-       RETURNING employee_id`,
-      [input.employeeId, phoneDigits, input.passwordHash],
-    ),
-  );
-
-  return rows[0]?.employee_id ?? null;
+       RETURNING employee_id`, values: [input.employeeId, phoneDigits, input.passwordHash] },
+  ]);
+  return (results.at(-1)?.[0] as { employee_id: string } | undefined)?.employee_id ?? null;
 }
 
 
@@ -264,9 +271,11 @@ export async function updateEmployeeProfile(
     primaryLocationId: string;
     active: boolean;
     actorEmployeeId: string;
+    proof: SessionMutationProof;
   },
   executor?: SqlExecutor,
-): Promise<void> {
+): Promise<{ updatedAt: string }> {
+  assertManagementProof(input.proof, input.actorEmployeeId);
   if (!["OWNER", "MANAGER", "LEAD", "EMPLOYEE"].includes(input.role)) {
     throw new Error("employee_profile_invalid_role");
   }
@@ -290,7 +299,7 @@ export async function updateEmployeeProfile(
   const workspace = await getWorkspace(sql);
   const lockIds = [...new Set([input.actorEmployeeId, input.employeeId])].sort();
 
-  await sql.transaction([
+  const statements: SqlStatement[] = [
     ...workspaceReadGuard(workspace),
     {
       text: `SELECT e.id
@@ -373,29 +382,15 @@ export async function updateEmployeeProfile(
         input.active,
       ],
     },
-    {
-      text: `UPDATE employees
-        SET first_name=$1,
-            last_name=$2,
-            phone=$3,
-            email=$4,
-            role=$5,
-            primary_location_id=$6,
-            active=$7,
-            updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond')
-        WHERE id=$8
-        RETURNING id`,
-      values: [
-        firstName,
-        lastName,
-        phone,
-        email,
-        input.role,
-        input.primaryLocationId,
-        input.active,
-        input.employeeId,
-      ],
-    },
+    ...managementSessionStatements(input.proof, input.actorEmployeeId),
+    // Lifecycle locks and the session SHARE lock pin this authority. Capture its
+    // DB expiry before an intentional self-demotion/deactivation changes the
+    // actor or deletes the session. A final wall-clock check must still roll back
+    // a later blocked write; rechecking the post-edit role would reject valid edits.
+    { text: `SELECT set_config('nevora.profile_authority', jsonb_build_object(
+        'actor',$2::text,'token',$1::text,'expires',expires_at)::text,true)
+        FROM employee_sessions WHERE token_hash=$1 AND employee_id=$2`,
+      values: [input.proof.sessionTokenHash, input.actorEmployeeId] },
     {
       text: `INSERT INTO employee_location_eligibility(employee_id,location_id)
         VALUES($1,$2)
@@ -407,7 +402,40 @@ export async function updateEmployeeProfile(
         WHERE employee_id=$1 AND NOT $2::boolean`,
       values: [input.employeeId, input.active],
     },
-  ]);
+    {
+      text: `UPDATE employees
+        SET first_name=$1,
+            last_name=$2,
+            phone=$3,
+            email=$4,
+            role=$5,
+            primary_location_id=$6,
+            active=$7,
+            updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond')
+        WHERE id=$8
+        RETURNING updated_at::text AS "updatedAt"`,
+      values: [
+        firstName,
+        lastName,
+        phone,
+        email,
+        input.role,
+        input.primaryLocationId,
+        input.active,
+        input.employeeId,
+      ],
+    },
+  ];
+  const result = await sql.transaction([...statements, {
+    text: `SELECT (CASE WHEN authority->>'actor'=$1 AND authority->>'token'=$2
+        AND (authority->>'expires')::timestamptz>clock_timestamp()
+        THEN '1' ELSE 'management_authorization' END)::integer
+      FROM (SELECT NULLIF(current_setting('nevora.profile_authority',true),'')::jsonb AS authority) captured`,
+    values: [input.actorEmployeeId, input.proof.sessionTokenHash],
+  }]);
+  const written = result[statements.length - 1]?.[0] as { updatedAt: string } | undefined;
+  if (!written) throw new Error('employee_profile_stale');
+  return written;
 }
 
 export async function saveEmployeeSchedulingProfile(
@@ -416,9 +444,13 @@ export async function saveEmployeeSchedulingProfile(
     positionIds: readonly string[];
     eligibleLocationIds: readonly string[];
     actorEmployeeId: string;
+    proof: SessionMutationProof;
+    expectedUpdatedAt: string;
   },
   executor?: SqlExecutor,
-): Promise<void> {
+): Promise<{ updatedAt: string }> {
+  assertManagementProof(input.proof, input.actorEmployeeId);
+  if (!input.expectedUpdatedAt) throw new Error('profile_stale');
   const sql = executor ?? neonNotificationExecutor(),
     workspace = await getWorkspace(sql);
   const positions = [...new Set(input.positionIds)].sort();
@@ -427,7 +459,7 @@ export async function saveEmployeeSchedulingProfile(
     ...new Set([input.actorEmployeeId, input.employeeId]),
   ].sort();
   try {
-    await sql.transaction([
+    const statements: SqlStatement[] = [
       ...workspaceReadGuard(workspace),
       {
         text: "SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE",
@@ -437,6 +469,7 @@ export async function saveEmployeeSchedulingProfile(
         text: "SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees WHERE id=$1 AND active=true AND role IN ('OWNER','MANAGER')) AND EXISTS(SELECT 1 FROM employees WHERE id=$2) THEN '1' ELSE 'profile_permission_denied' END)::integer",
         values: [input.actorEmployeeId, input.employeeId],
       },
+      { text: "SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees WHERE id=$1 AND updated_at::text=$2) THEN '1' ELSE 'profile_stale' END)::integer", values: [input.employeeId, input.expectedUpdatedAt] },
       {
         text: "SELECT id FROM locations WHERE id=ANY($1::text[]) OR id=(SELECT primary_location_id FROM employees WHERE id=$2) ORDER BY id FOR SHARE",
         values: [locations, input.employeeId],
@@ -457,6 +490,7 @@ export async function saveEmployeeSchedulingProfile(
         text: `SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM unnest($1::text[]) requested(id) LEFT JOIN positions p ON p.id=requested.id WHERE p.id IS NULL OR p.workspace_id<>$2 OR (NOT p.active AND NOT EXISTS(SELECT 1 FROM employee_positions ep WHERE ep.employee_id=$3 AND ep.position_id=p.id))) THEN '1' ELSE 'profile_position_invalid' END)::integer`,
         values: [positions, workspace.id, input.employeeId],
       },
+      ...managementSessionStatements(input.proof, input.actorEmployeeId),
       ...employeePositionMembershipStatements({
         employeeId: input.employeeId,
         positionIds: positions,
@@ -469,7 +503,12 @@ export async function saveEmployeeSchedulingProfile(
         text: "INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT $1,id FROM (SELECT unnest($2::text[]) id UNION SELECT primary_location_id FROM employees WHERE id=$1) requested ON CONFLICT DO NOTHING",
         values: [input.employeeId, locations],
       },
-    ]);
+      { text: "UPDATE employees SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=$1 RETURNING updated_at::text AS \"updatedAt\"", values: [input.employeeId] },
+    ];
+    const result = await sql.transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId)]);
+    const written = result[statements.length - 1]?.[0] as { updatedAt: string } | undefined;
+    if (!written) throw new Error('profile_stale');
+    return written;
   } catch (error) {
     if (
       error instanceof Error &&

@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 const writes = vi.hoisted(() => ({ insert: vi.fn(async () => 'new'), update: vi.fn(async () => true), ensure: vi.fn(async () => 'schedule') }));
 vi.mock('next/cache', () => ({ revalidatePath: () => {} }));
 vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
-vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'MANAGER', role: 'MANAGER' }) }));
+vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'MANAGER', role: 'MANAGER' }),requireSessionMutationProof:async()=>({employee:{id:'MANAGER',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)}) }));
 vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ id: 'w', active: true, timeZone: 'America/New_York' }) }));
 vi.mock('@/lib/data/schedules', () => ({
   insertShift: writes.insert, updateShift: writes.update, ensureSchedule: writes.ensure,
@@ -41,7 +41,7 @@ it.each([createShiftAction, updateShiftAction])('qualified reassignment submits 
   expect(action === createShiftAction ? writes.insert : writes.update).toHaveBeenCalledWith(expect.objectContaining({ employeeId: 'LEE', positionId: 'cashier' }));
 });
 it.each([createShiftAction, updateShiftAction])('unqualified reassignment with retained native position is rejected before any write', async action => {
-  await expect(action(form('owner','cashier'))).rejects.toMatchObject({ destination: expect.stringContaining('error=POSITION_INELIGIBLE') });
+  await expect(action(form('owner','cashier'))).resolves.toMatchObject({ issueCode: 'POSITION_INELIGIBLE', error: 'Employee is not qualified for the assigned position.' });
   expect(writes.ensure).not.toHaveBeenCalled(); expect(writes.insert).not.toHaveBeenCalled(); expect(writes.update).not.toHaveBeenCalled();
 });
 it.each([createShiftAction, updateShiftAction])('an explicit No position selection permits a positionless assignment', async action => {

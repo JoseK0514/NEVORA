@@ -7,6 +7,9 @@ import { readAvailabilityInputs } from "./availability-inputs";
 import { resolveAvailabilityWeek, type AvailabilityHours } from "../scheduling/availability";
 import { buildWeeklyAvailabilityUpdate } from "../scheduling/weekly-availability";
 
+import type { SessionMutationProof } from "../shift-changes/types";
+import { assertManagementProof, managementSessionStatements } from "./management-session";
+
 export type WeekSettings = {
   weekStart: string;
   availabilityDeadline?: string;
@@ -48,13 +51,17 @@ export async function setAvailabilityDeadline(input: {
   /** Server-owned snapshot used to convert civil input. UTC callers omit it. */
   conversionWorkspace?: Workspace;
   updatedBy: string;
+  proof: SessionMutationProof;
 }) {
+  assertManagementProof(input.proof,input.updatedBy);
   const sql = getDb();
 
   const workspace = input.conversionWorkspace ?? await getWorkspace();
   const seedQueries = [
     ...workspaceReadGuard(workspace).map(statement => sql.query(statement.text, [...statement.values])),
     sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + input.weekStart}, 0))`,
+    sql.query("SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE", [input.updatedBy]),
+    ...managementSessionStatements(input.proof,input.updatedBy).map(statement => sql.query(statement.text,[...statement.values])),
     sql`INSERT INTO schedule_week_settings (
       week_start,
       availability_deadline,
@@ -138,6 +145,7 @@ export async function setAvailabilityDeadline(input: {
 
   const cancellation = availabilityCancellation(input.weekStart, null, input.deadlineIso ? new Date(input.deadlineIso).toISOString() : null);
   seedQueries.push(sql.query(cancellation.text, cancellation.values));
+  seedQueries.push(...managementSessionStatements(input.proof,input.updatedBy).map(statement => sql.query(statement.text,[...statement.values])));
   try {
     await sql.transaction(seedQueries);
   } catch (error) {

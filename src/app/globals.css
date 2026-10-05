@@ -714,6 +714,12 @@ button { cursor: pointer; }
 .checkbox-grid { display: grid; gap: 8px; }
 .checkbox-row { display: flex !important; align-items: center; gap: 9px !important; font-weight: 650 !important; }
 .checkbox-row input { width: 18px; min-height: 18px; margin: 0; }
+.position-status-choice { min-height: 44px; }
+.employee-scheduling-choice input[type="checkbox"]:focus-visible,
+.position-status-choice input[type="checkbox"]:focus-visible { outline: 2px solid var(--nevora-blue); outline-offset: 3px; }
+.employee-scheduling-choice { min-height: 44px; min-width: 0; }
+.employee-scheduling-choice input { flex: 0 0 18px; }
+.employee-scheduling-choice > span { min-width: 0; overflow-wrap: anywhere; }
 .form-footer { display: flex; justify-content: flex-end; gap: 9px; padding-top: 4px; }
 .form-error {
   margin: 0 0 18px;
@@ -12737,9 +12743,11 @@ body {
 }
 .app-shell .portal-role-trigger { min-height: 44px; margin-block: -1px; border: 0; background: transparent; padding: 0 8px; cursor: pointer; }
 .employee-shell .employee-more-profile .portal-more-profile-trigger {
-  display: grid; gap: 2px; min-width: 0; flex: 1; min-height: 44px; padding: 0; border: 0;
-  background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; min-width: 0; flex: 1; min-height: 44px; padding: 0; border: 0;
+  background: transparent; color: inherit; text-align: left; font: inherit; white-space: normal; cursor: pointer;
 }
+.employee-shell .portal-more-profile-trigger > strong,
+.employee-shell .portal-more-profile-trigger > small { min-width: 0; overflow-wrap: anywhere; }
 .portal-device-settings {
   inset: auto auto max(24px, env(safe-area-inset-bottom)) 24px;
   width: min(360px, calc(100vw - 32px)); max-height: calc(100dvh - 48px - env(safe-area-inset-bottom));

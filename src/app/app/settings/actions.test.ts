@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   location: vi.fn(),
   position: vi.fn(),
 }));
+vi.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({employee:{id:"trusted-owner",role:mocks.role},sessionTokenHash:"a".repeat(64)}) }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/auth/permissions", () => ({
   requireRoles: async (roles: string[]) => {
@@ -65,6 +66,7 @@ it("disabled timezone permits name-only save with authoritative zone and actor",
     name: "Northside Renamed",
     timeZone: "America/New_York",
     actorEmployeeId: "trusted-owner",
+    proof: { employee: {id:"trusted-owner",role:"OWNER"},sessionTokenHash:"a".repeat(64) },
   });
 });
 it("forged enabled timezone still reaches authoritative repository lock", async () => {
@@ -111,5 +113,6 @@ it("location update never accepts a replacement Clocker key", async () => {
     shortName: "West",
     active: true,
     actorEmployeeId: "trusted-owner",
+    proof: { employee: {id:"trusted-owner",role:"OWNER"},sessionTokenHash:"a".repeat(64) },
   });
 });

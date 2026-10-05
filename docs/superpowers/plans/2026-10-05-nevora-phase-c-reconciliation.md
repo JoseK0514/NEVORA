@@ -1,3 +1,11 @@
+# Reconciliation continuation status — 2026-10-05
+
+Jose approved integrating accepted Phase B head `3361974` with canonical C5 `f85d381` and the prior tablet child. Existing C reconciliation was preserved and saved as `0c19c8f`; accepted B merged cleanly. Combined verification is green, including the additional C1 late-expiry protection. See `docs/execution/phase-b-c-reconciliation.md` for the exact results and the guarded final parent advancement. No immediate Codex handoff: final integrated release review remains mandatory under FR-AUTH-001. C6 opens only after the local canonical fast-forward succeeds.
+
+The original plan below is retained as the implementation record; its initial branch/work-in-progress observations are historical.
+
+---
+
 # Phase C — canonical punch and C5 reconciliation
 
 Approved objective: integrate the verified child tablet experience into the newer parent Phase C lineage without losing C5 or retaining two competing punch engines.

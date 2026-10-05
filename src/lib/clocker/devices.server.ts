@@ -138,8 +138,10 @@ export async function registerClockerDevice(
       VALUES($1,$2,$3,$4,clock_timestamp()+interval '10 minutes',$5,$6)`,
       values: [deviceId,input.locationId,name,tokenHash(enrollmentToken,'enrollment'),proof.employeeId,proof.sessionTokenHash] },
     event(deviceId,proof.employeeId,'REGISTERED'), readDevice(deviceId),
+    // Audit/read statements can wait after entry authorization. Roll back the whole batch on expiry.
+    ownerAssertion(proof),
   ]);
-  return { device: one(results), enrollmentToken };
+  return { device: one(results.slice(0,-1)), enrollmentToken };
 }
 
 export async function listClockerDevices(proof: ClockerOwnerProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<ClockerDeviceRecord[]> {
@@ -165,8 +167,8 @@ async function mutate(
   if (kind === 'ROTATION_REQUESTED') statements.push(assertion(`EXISTS(SELECT 1 FROM clocker_devices d
     JOIN locations l ON l.id=d.location_id WHERE d.id=$1 AND l.active AND l.workspace_id=$2)`,
     [input.deviceId,workspace.id], 'clocker_location_invalid'));
-  const results = await transaction(executor, [...statements,update,event(input.deviceId,proof.employeeId,kind),readDevice(input.deviceId)]);
-  return one(results);
+  const results = await transaction(executor, [...statements,update,event(input.deviceId,proof.employeeId,kind),readDevice(input.deviceId),ownerAssertion(proof)]);
+  return one(results.slice(0,-1));
 }
 export async function renameClockerDevice(proof: ClockerOwnerProof, input: DeviceMutation & { name: string }, executor: SqlExecutor = neonNotificationExecutor()) {
   const name = deviceName(input?.name);
@@ -199,9 +201,9 @@ export async function redeemClockerEnrollment(
   const hash = tokenHash(input?.enrollmentToken,'enrollment');
   if (!hash || !validLocationKey(input?.locationKey) || (input.preparedCredential !== undefined && !tokenHash(input.preparedCredential,'device'))) throw new ClockerDeviceError('ENROLLMENT_INVALID',errors.clocker_enrollment_invalid[1]);
   const workspace = await getWorkspace(executor);
-  const [pending] = await executor.query<{ id: string; employeeId: string; sessionTokenHash: string }>({
-    text: `SELECT id,enrollment_owner_id AS "employeeId",enrollment_session_hash AS "sessionTokenHash"
-      FROM clocker_devices WHERE enrollment_hash=$1`, values: [hash],
+  const [pending] = await executor.query<{ id: string; employeeId: string; sessionTokenHash: string; enrollmentExpiresAt: string }>({
+    text: `SELECT id,enrollment_owner_id AS "employeeId",enrollment_session_hash AS "sessionTokenHash",
+      enrollment_expires_at::text AS "enrollmentExpiresAt" FROM clocker_devices WHERE enrollment_hash=$1`, values: [hash],
   });
   if (!pending) throw new ClockerDeviceError('ENROLLMENT_INVALID',errors.clocker_enrollment_invalid[1]);
   // Supplied only by trusted transport from its previously established HttpOnly cookie.
@@ -211,8 +213,8 @@ export async function redeemClockerEnrollment(
     assertion(`EXISTS(SELECT 1 FROM clocker_devices d JOIN locations l ON l.id=d.location_id
       WHERE d.id=$1 AND d.active AND d.revoked_at IS NULL AND d.enrollment_hash=$2
       AND d.enrollment_expires_at>clock_timestamp() AND d.enrollment_owner_id=$3 AND d.enrollment_session_hash=$4
-      AND l.active AND l.workspace_id=$5 AND l.clocker_key=$6)`,
-    [pending.id,hash,pending.employeeId,pending.sessionTokenHash,workspace.id,input.locationKey],'clocker_enrollment_invalid'),
+      AND l.active AND l.workspace_id=$5 AND l.clocker_key=$6 AND d.enrollment_expires_at::text=$7)`,
+    [pending.id,hash,pending.employeeId,pending.sessionTokenHash,workspace.id,input.locationKey,pending.enrollmentExpiresAt],'clocker_enrollment_invalid'),
     assertion('NOT EXISTS(SELECT 1 FROM clocker_device_credentials WHERE credential_hash=$1)',
       [tokenHash(credential,'device')],'clocker_enrollment_invalid'),
     { text: `INSERT INTO clocker_device_credentials(credential_hash,device_id,credential_version)
@@ -221,8 +223,11 @@ export async function redeemClockerEnrollment(
       enrollment_hash=NULL,enrollment_expires_at=NULL,enrollment_owner_id=NULL,enrollment_session_hash=NULL,
       enrolled_at=clock_timestamp(),version=version+1,updated_at=clock_timestamp() WHERE id=$1`, values: [pending.id,tokenHash(credential,'device')] },
     event(pending.id,pending.employeeId,'ENROLLED'),readDevice(pending.id),
+    ownerAssertion(pending),
+    // Consumption clears the token row: recheck its exact, DB-derived lifetime pinned by the earlier locked guard.
+    assertion('$1::timestamptz>clock_timestamp()',[pending.enrollmentExpiresAt],'clocker_enrollment_invalid'),
   ]);
-  return { device: one(results),credential };
+  return { device: one(results.slice(0,-2)),credential };
 }
 
 /** Reuse INSIDE every future punch transaction, after its workspace/employee locks.

@@ -1,3 +1,4 @@
+import { managementProof } from '../../test/fixtures/management';
 import { it, expect, vi } from "vitest";
 vi.mock("@/lib/db", () => ({
   getDb: () => {
@@ -10,9 +11,13 @@ import {
   createCoverageWindow,
   replaceCoverageWindowPositionRequirements,
 } from "./schedule-health";
-import type { SqlExecutor } from "../notifications/types";
+import type { SqlExecutor, SqlStatement } from "../notifications/types";
 function executor() {
-  const transaction = vi.fn(async () => [[{ id: "window" }]]);
+  // A SQL batch returns one result array per statement; final guards are not
+  // the business UPDATE's RETURNING row.
+  const transaction = vi.fn(async (statements: readonly SqlStatement[]) => statements.map(statement =>
+    statement.text.includes('RETURNING updated_at::text AS "updatedAt"')
+      ? [{ updatedAt: "written-unit-version" }] : []));
   return {
     query: vi.fn(async () => [
       {
@@ -28,8 +33,8 @@ function executor() {
 }
 it("scheduling profile composes qualification and primary-inclusive eligibility in one guarded batch", async () => {
   const sql = executor();
-  await saveEmployeeSchedulingProfile(
-    {
+  const result = await saveEmployeeSchedulingProfile(
+    {expectedUpdatedAt:'reviewed-unit-version',proof:managementProof("owner"),
       employeeId: "sam",
       actorEmployeeId: "owner",
       positionIds: ["cashier"],
@@ -37,6 +42,7 @@ it("scheduling profile composes qualification and primary-inclusive eligibility 
     },
     sql,
   );
+  expect(result).toEqual({ updatedAt: "written-unit-version" });
   expect(sql.transaction).toHaveBeenCalledTimes(1);
   const batch = vi.mocked(sql.transaction).mock.calls[0][0];
   expect(batch[0].text).toContain("workspaces");
@@ -55,6 +61,7 @@ it("coverage window and quotas commit together", async () => {
       startTime: "08:00",
       endTime: "12:00",
       actorEmployeeId: "owner",
+      proof: managementProof("owner"),
       positionRequirements: [{ positionId: "cashier", quantity: 2 }],
     },
     sql,
@@ -76,6 +83,7 @@ it.each([0, -1, 1.5, 101])(
         {
           windowId: "w",
           actorEmployeeId: "owner",
+      proof: managementProof("owner"),
           requirements: [{ positionId: "p", quantity }],
         },
         sql,

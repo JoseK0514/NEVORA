@@ -1,3 +1,4 @@
+import { managementProof } from "../../../test/fixtures/management";
 import { readFileSync } from 'node:fs';
 import { beforeEach, expect, it, vi } from 'vitest';
 const m=vi.hoisted(()=>({
@@ -5,6 +6,7 @@ const m=vi.hoisted(()=>({
   clear:vi.fn(), send:vi.fn(()=>new Promise<never>(()=>{})), provider:vi.fn(), role:'MANAGER', existingWeek:'2030-10-07', templateStart:'09:00',
   shifts:[{id:'s',employeeId:'E',locationId:'loc-1',date:'2030-09-30',startTime:'09:00',endTime:'17:00',isDesignatedLead:false}],
 }));
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>managementProof('M',m.role as 'MANAGER')}));
 vi.mock('@/lib/notifications/provider',()=>({createPushSender:m.provider.mockImplementation(()=>({send:m.send}))}));
 vi.mock('next/cache',()=>({revalidatePath:vi.fn()}));
 vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw {destination};}}));
@@ -35,7 +37,7 @@ it('create update delete and copy use only server actor identity',async()=>{
   const data=form();data.set('actorEmployeeId','FORGED');
   for(const action of [createShiftAction,updateShiftAction,deleteShiftAction,copyPreviousWeekAction]){try{await action(data);}catch{}}
   expect(m.insert.mock.calls.every(call=>(call[0] as unknown as {actorEmployeeId:string}).actorEmployeeId==='M')).toBe(true);
-  expect(m.update).toHaveBeenCalledWith(expect.objectContaining({actorEmployeeId:'M'}));expect(m.remove).toHaveBeenCalledWith('s','M');
+  expect(m.update).toHaveBeenCalledWith(expect.objectContaining({actorEmployeeId:'M'}));expect(m.remove).toHaveBeenCalledWith('s',managementProof('M'));
 });
 it('copy retains per-shift eligibility and partial success counts',async()=>{
   const original=m.shifts;m.shifts=[...original,{...original[0],id:'blocked',employeeId:'BLOCKED'}];

@@ -51,7 +51,7 @@ it('A019 approved callout release keeps private provenance and supports voluntar
 });
 it('A019/A020/A051 callout release reads reject material edits, timezone changes, wrong fingerprints and a returning owner',async()=>{
  const {readNotificationWeekState}=await import('../../lib/data/notification-transactions');
- const {updateShift}=await import('../../lib/data/schedules');
+ const {updateShift}=await import('./management-api');
  await shift('release','e1','2035-10-06');
  const created=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,'release'),reasonCode:'ILLNESS'},db.executor);expect(created.status).toBe('pending');if(created.status!=='pending')return;
  await executeShiftChange(proof('owner'),{kind:'APPROVE_CALLOUT',operationId:randomUUID(),requestId:created.requestId,expectedRevision:1},db.executor);
@@ -129,7 +129,7 @@ it('A043 review view returns only current authorized terms and refuses stale dis
  expect(await executeShiftChange(proof('e1'),{kind:'OFFER_COVERAGE',operationId:randomUUID(),...t},db.executor)).toMatchObject({status:'blocked'});
 });
 it('A054/A057 affected publication preserves uninvolved acknowledgement and creates no unrelated revision',async()=>{
- const {publishScheduleWithRevision}=await import('../../lib/data/publication-revisions');
+ const {publishScheduleWithRevision}=await import('./management-api');
  const {acknowledgeScheduleWeek}=await import('../../lib/data/acknowledgements');
  const {readNotificationWeekState,personalProjections}=await import('../../lib/data/notification-transactions');
  const t=await shift('ack-change','e1','2035-11-02');

@@ -1,3 +1,5 @@
+import { fixtureProof } from './shift-change-api';
+import { setAvailabilityDeadline, saveWorkspaceProfile } from './management-api';
 import { Client } from 'pg';
 import { expect, it, vi } from 'vitest';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
@@ -18,12 +20,12 @@ vi.mock('../../lib/db', () => {
   });
   return { getDb: () => tagged, queryRows: (result: unknown) => Array.isArray(result) ? result : [] };
 });
-vi.mock('../../lib/auth/session', () => ({ requireSession: async () => ({ id: 'manager', role: 'MANAGER' }) }));
+vi.mock('../../lib/auth/session', () => ({ requireSession: async () => ({ id: 'manager', role: 'MANAGER' }), requireSessionMutationProof: async () => fixtureProof(transport.executor!, 'manager') }));
 vi.mock('next/cache', () => ({ revalidatePath: () => {} }));
 vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 import { setAvailabilityDeadlineAction } from '../../app/app/schedule/actions';
-import { setAvailabilityDeadline } from '../../lib/data/week-settings';
-import { getWorkspace, saveWorkspaceProfile, WorkspaceTimezoneLockedError } from '../../lib/data/workspaces';
+
+import { getWorkspace, WorkspaceTimezoneLockedError } from '../../lib/data/workspaces';
 
 const week = '2030-10-07';
 function form(local = '2030-10-06T09:00') {

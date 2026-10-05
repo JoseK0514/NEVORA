@@ -22,6 +22,7 @@ export type PublicationRevision = {
 
 import { commitPublishedWeekChange } from "./notification-transactions";
 import type { SqlExecutor } from "../notifications/types";
+import type { SessionMutationProof } from "../shift-changes/types";
 
 function dateValue(value: unknown) {
   if (value instanceof Date) return value.toISOString().slice(0, 10);
@@ -129,19 +130,19 @@ export async function listRevisionShifts(
 /** Compatibility entry for callers recording a current published week. New
  * business writers compose their changes directly with commitPublishedWeekChange. */
 export async function recordPublishedWeekRevision(input: {
-  weekStart: string; sourceType: RevisionSourceType; sourceId?: string;
+  weekStart: string; sourceType: 'PUBLISH' | 'MANAGER_MUTATION'; proof: SessionMutationProof; sourceId?: string;
   affectedLocationId?: string; createdBy: string;
 }): Promise<PublicationRevision> {
-  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.createdBy,sourceType:input.sourceType,sourceId:input.sourceId,
+  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.createdBy,proof:input.proof,sourceType:input.sourceType,sourceId:input.sourceId,
     build: state => ({statements:[{text:'SELECT 1',values:[]}],afterSchedules:state.schedules,afterShifts:state.shifts,publishWeekStarts:[input.weekStart],affectedLocationId:input.affectedLocationId})});
   if (!result.revisions[0]) throw new Error("Publication revision could not be recorded.");
   return result.revisions[0];
 }
 
 export async function publishScheduleWithRevision(input: {
-  locationId: string; weekStart: string; managerId: string;
+  locationId: string; weekStart: string; managerId: string; proof: SessionMutationProof;
 }, executor?: SqlExecutor): Promise<{ published: boolean; revision?: PublicationRevision }> {
-  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.managerId,sourceType:'PUBLISH',
+  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.managerId,proof:input.proof,sourceType:'PUBLISH',
     build: state => {
       const schedule=state.schedules.find(s=>s.locationId===input.locationId && s.weekStart===input.weekStart);
       if (!schedule) return {statements:[],afterSchedules:state.schedules,afterShifts:state.shifts};

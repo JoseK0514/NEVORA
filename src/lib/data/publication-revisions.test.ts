@@ -1,3 +1,4 @@
+import { managementProof, schedulingSourceFixture } from '../../test/fixtures/management';
 import {assignmentFacts} from './assignment-facts.test-support';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { publishScheduleWithRevision } from './publication-revisions';
@@ -12,7 +13,7 @@ function recorder(initial = state()) {
   const batches: SqlStatement[][] = [];
   const db = {state:initial};
   const executor: SqlExecutor = {
-    query:vi.fn(async statement => statement.text.startsWith('SELECT id, name, time_zone') ? [{id:'test-workspace',name:'Test',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}] : [{state:structuredClone(db.state),read_at:'2030-10-07 12:00:00.654321+00'}]) as SqlExecutor['query'],
+    query:vi.fn(async statement => statement.text.startsWith('SELECT id, name, time_zone') ? [{id:'test-workspace',name:'Test',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}] : [{state:structuredClone(db.state),source:schedulingSourceFixture(db.state),read_at:'2030-10-07 12:00:00.654321+00'}]) as SqlExecutor['query'],
     transaction:vi.fn(async statements => { batches.push([...statements]); return statements.map(() => []); }),
   };
   return {executor,batches,db};
@@ -27,7 +28,7 @@ function published() {
 beforeEach(()=>{vi.stubEnv('PUSH_ENVIRONMENT','test');});
 it('first publication commits update, actual immutable snapshot and durable intent in ordered batch', async()=>{
   const r=recorder();
-  const result=await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
+  const result=await publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
   expect(result.published).toBe(true);
   const texts=r.batches[0].map(s=>s.text);
   expect(texts.findIndex(s=>s.includes('UPDATE schedules'))).toBeLessThan(texts.findIndex(s=>s.includes('INSERT INTO schedule_publication_revisions')));
@@ -39,30 +40,31 @@ it.each(['notes','unchanged','other-location'])('%s preserves acknowledgement an
   const s=published(); s.acknowledgements=[];
   if(mode==='notes') s.shifts[0].notes='new note';
   if(mode==='other-location') {s.schedules.push({id:'b',locationId:'loc-2',weekStart:week,status:'DRAFT',updatedAt:'2030-10-07 12:00:00.123456+00'});s.shifts.push({...shift,sourceShiftId:'s2',scheduleId:'b',locationId:'loc-2',employeeId:'F'});}
-  const r=recorder(s); await publishScheduleWithRevision({locationId:mode==='other-location'?'loc-2':'loc-1',weekStart:week,managerId:'M'},r.executor);
+  const r=recorder(s); await publishScheduleWithRevision({proof:managementProof('M'),locationId:mode==='other-location'?'loc-2':'loc-1',weekStart:week,managerId:'M'},r.executor);
   expect(notificationValues(r.batches[0]).filter(v=>v[1]==='E')).toEqual([]);
   expect(notificationValues(r.batches[0],'REMINDER').find(v=>v[1]==='E')?.[11]).toBe('r1');
   expect(r.batches[0].some(s=>s.text.includes('DELETE FROM schedule_acknowledgements'))).toBe(false);
   if(mode==='other-location') expect(notificationValues(r.batches[0]).map(v=>[v[1],v[2]])).toEqual([['F','SCHEDULE_PUBLISHED']]);
 });
 it.each(['remove','reassign','lead','location','callout'])('%s notifies only meaningful former/new recipients and supersedes their pending work', async mode=>{
-  const r=recorder(published());
-  await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:'M',sourceType:'MANAGER_MUTATION',build:s=>({statements:[{text:'BUSINESS',values:[]}],afterSchedules:s.schedules,afterShifts:mode==='remove'?[]:s.shifts.map(sh=>({...sh,...(mode==='reassign'?{employeeId:'F'}:mode==='lead'?{isDesignatedLead:true}:mode==='location'?{locationId:'loc-2'}:{isCalloutApproved:true})}))})},r.executor);
+  const current=published(); if(mode==='lead') current.recipients[0].role='LEAD';
+  const r=recorder(current);
+  await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:'M',proof:managementProof('M'),sourceType:'MANAGER_MUTATION',build:s=>({statements:[{text:'BUSINESS',values:[]}],afterSchedules:s.schedules,afterShifts:mode==='remove'?[]:s.shifts.map(sh=>({...sh,...(mode==='reassign'?{employeeId:'F'}:mode==='lead'?{isDesignatedLead:true}:mode==='location'?{locationId:'loc-2'}:{isCalloutApproved:true})}))})},r.executor);
   expect(notificationValues(r.batches[0]).map(v=>v[1])).toEqual(mode==='reassign'?['E','F']:['E']);
   expect(r.batches[0].filter(s=>s.text.includes('cancelled_at')).map(s=>s.values[2])).toContain('E');
 });
 it('snapshot conflict recomputes from fresh microsecond versions and changed recipient access, at most three attempts',async()=>{
   const r=recorder(); let attempts=0;
   vi.mocked(r.executor.transaction).mockImplementation(async statements=>{r.batches.push([...statements]);if(++attempts<3){r.db.state.schedules[0].updatedAt='2030-10-07 12:00:00.123457+00';r.db.state.recipients[0].active=false;throw Object.assign(new Error('schedule_week_version_conflict'),{code:'22P02'});}return statements.map(()=>[]);});
-  await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
+  await publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
   expect(attempts).toBe(3); expect(notificationValues(r.batches[2])).toEqual([]);
   expect(JSON.stringify(r.batches[0])).toContain('123456');expect(JSON.stringify(r.batches[2])).toContain('123457');
 });
 it('persistent guard failure stops after three full attempts; outbox failure is not retried or reported successful',async()=>{
   const r=recorder();vi.mocked(r.executor.transaction).mockRejectedValue(Object.assign(new Error('schedule_week_version_conflict'),{code:'22P02'}));
-  await expect(publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow('schedule_week_version_conflict');expect(r.executor.transaction).toHaveBeenCalledTimes(3);
+  await expect(publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow('schedule_week_version_conflict');expect(r.executor.transaction).toHaveBeenCalledTimes(3);
   vi.mocked(r.executor.transaction).mockReset().mockRejectedValue(new Error('outbox failed'));
-  await expect(publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow('outbox failed');expect(r.executor.transaction).toHaveBeenCalledTimes(1);
+  await expect(publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow('outbox failed');expect(r.executor.transaction).toHaveBeenCalledTimes(1);
 });
 it('multi-week changes acquire every unique week lock in sorted order before mutation',async()=>{
   const r=recorder(published());
@@ -84,7 +86,7 @@ it('two publishing managers rebuild the loser and emit only the first personal p
       return statements.map(()=>[]);
     } finally { release(); }
   });
-  const results=await Promise.all(['M','N'].map(managerId=>publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId},r.executor)));
+  const results=await Promise.all(['M','N'].map(managerId=>publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId,proof:managementProof(managerId)},r.executor)));
   expect(results.every(r=>r.published)).toBe(true);expect(r.batches).toHaveLength(3);
   expect(notificationValues(r.batches.at(-1)!)).toEqual([]);expect(r.db.state.revisions.map(r=>r.revisionNumber)).toEqual([1,2]);
 });
@@ -106,11 +108,11 @@ it('outbox insert failure leaves the staged business publication and immutable r
     }
     committed=staged;return statements.map(()=>[]);
   });
-  await expect(publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow('outbox storage failure');
+  await expect(publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor)).rejects.toThrow('outbox storage failure');
   expect(committed.schedules[0].status).toBe('DRAFT');expect(committed.revisions).toEqual([]);expect(r.executor.transaction).toHaveBeenCalledTimes(1);
 });
 it('publication retains the schedule source and affected-location metadata',async()=>{
-  const r=recorder();const result=await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
+  const r=recorder();const result=await publishScheduleWithRevision({proof:managementProof('M'),locationId:'loc-1',weekStart:week,managerId:'M'},r.executor);
   expect(result.revision).toMatchObject({sourceId:'a',affectedLocationId:'loc-1'});
 });
 

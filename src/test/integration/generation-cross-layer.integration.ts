@@ -1,16 +1,19 @@
+import { deleteGeneratedDraftShift, publishScheduleWithRevision, insertShift, updateShift, setAvailabilityDeadline, reviewTimeOffRequest } from './management-api';
 import { createHash } from 'node:crypto';
+import { fixtureProof } from './shift-change-api';
+import { managementProof } from '../fixtures/management';
 import { generateWeekAction, clearGenerationExclusionAction } from '../../app/app/schedule/generation-actions';
-import { deleteGeneratedDraftShift } from '../../lib/data/generation-exclusions';
+
 import { getScheduleGenerationReview } from '../../lib/data/schedule-generation-review';
 import { afterAll, beforeAll, beforeEach, expect, it, vi } from 'vitest';
 import { createDisposableGenerationDatabase } from './local-postgres';
 import { generateWeekDraft, readGenerationSnapshot } from '../../lib/data/schedule-generation';
-import { listCapturedShiftPositions, publishScheduleWithRevision } from '../../lib/data/publication-revisions';
+import { listCapturedShiftPositions } from '../../lib/data/publication-revisions';
 import { acknowledgeScheduleWeek } from '../../lib/data/acknowledgements';
 import { personalProjections, readNotificationWeekState } from '../../lib/data/notification-transactions';
-import { insertShift, updateShift } from '../../lib/data/schedules';
-import { replaceWeeklyAvailability, setAvailabilityDeadline } from '../../lib/data/week-settings';
-import { reviewTimeOffRequest } from '../../lib/data/requests';
+
+import { replaceWeeklyAvailability } from '../../lib/data/week-settings';
+
 import { sqlNotificationStateRepository } from '../../lib/data/notification-state';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
@@ -29,12 +32,13 @@ vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw new Error(
 vi.mock('next/cache',()=>({revalidatePath:()=>{}}));
 let database: Awaited<ReturnType<typeof createDisposableGenerationDatabase>>;
 const q = (text:string,values:readonly unknown[] = []) => database.executor.query<Record<string,unknown>>({text,values});
-const request = {workspaceId:'atelier',actorEmployeeId:'owner',weekStart:'2030-10-07',mode:'BUILD_WEEK' as const,locationScope:{kind:'ALL' as const}};
+const request = {proof:managementProof('owner','OWNER'),workspaceId:'atelier',actorEmployeeId:'owner',weekStart:'2030-10-07',mode:'BUILD_WEEK' as const,locationScope:{kind:'ALL' as const}};
 beforeAll(async()=>{database=await createDisposableGenerationDatabase();transport.executor=database.executor;});
 afterAll(async()=>{await database?.dispose();});
 beforeEach(async()=>{
   await q('TRUNCATE employees,schedules,positions,location_coverage_windows,schedule_week_settings RESTART IDENTITY CASCADE');
   await q("DELETE FROM location_staffing_settings; DELETE FROM locations; DELETE FROM workspaces; INSERT INTO workspaces(id,name,time_zone) VALUES('atelier','Fictional Northern Atelier','America/New_York'); INSERT INTO locations(id,workspace_id,clocker_key,name,short_name) VALUES('quay','atelier','north-quay','Quai Étoile','Quai'); INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','NONE','OWNER','quay')");
+  await fixtureProof(database.executor,'owner');
 });
 async function ready() {
   await q("INSERT INTO location_staffing_settings(location_id,minimum_staff_per_shift,requires_designated_lead) VALUES('quay',1,false); INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('window','quay',1,'08:00','12:00'); INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('worker','Fictional','Worker','NONE','EMPLOYEE','quay'); INSERT INTO employee_location_eligibility VALUES('worker','quay'); INSERT INTO availability_windows VALUES('normal','worker',1,'08:00','12:00')");

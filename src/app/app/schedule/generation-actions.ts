@@ -3,6 +3,7 @@
 import { projectGenerationSetup, type GenerationSetupException } from '../../../lib/scheduling/generation/setup';
 import { revalidatePath } from 'next/cache';
 import { MANAGER_ROLES, requireRoles } from '@/lib/auth/permissions';
+import { requireSessionMutationProof } from '@/lib/auth/session';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { listLocations } from '@/lib/data/employees';
 import { listPositions } from '@/lib/data/positions';
@@ -47,13 +48,14 @@ function projection(result:GenerationResult,locations:{id:string;shortName:strin
 export async function generateWeekAction(_previous:GenerationActionState,form:FormData):Promise<GenerationActionState> {
   // Redirecting authentication remains outside error handling.
   const session=await requireRoles(MANAGER_ROLES);
+  const proof=await requireSessionMutationProof();
   try {
     fields(form,['weekStart','mode','scope','locationId']);
     const weekStart=value(form,'weekStart'),mode=value(form,'mode'),scope=value(form,'scope'),locationId=value(form,'locationId');
     if(!validMonday(weekStart) || !['BUILD_WEEK','FILL_GAPS_ONLY'].includes(mode) || !['ALL','SELECTED'].includes(scope) || (scope==='ALL'?form.has('locationId'):!locationId.trim())) throw new GenerationScopeError();
     const [workspace,locations,positions]=await Promise.all([getWorkspace(),listLocations({includeInactive:true}),listPositions({includeInactive:true})]);
     if(scope==='SELECTED'&&!locations.some(l=>l.id===locationId)) throw new GenerationScopeError();
-    const result=await generateWeekDraft({workspaceId:workspace.id,actorEmployeeId:session.id,weekStart,mode:mode as 'BUILD_WEEK'|'FILL_GAPS_ONLY',locationScope:scope==='ALL'?{kind:'ALL'}:{kind:'SELECTED',locationIds:[locationId]}});
+    const result=await generateWeekDraft({proof,workspaceId:workspace.id,actorEmployeeId:session.id,weekStart,mode:mode as 'BUILD_WEEK'|'FILL_GAPS_ONLY',locationScope:scope==='ALL'?{kind:'ALL'}:{kind:'SELECTED',locationIds:[locationId]}});
     if(result.changed) revalidatePath('/app/schedule');
     const message=result.status==='INVALID'?'Needs setup. No automatic assignments were made.':result.status==='BUDGET_EXHAUSTED'?'Search limit reached. Review the partial draft and remaining gaps.':result.status==='PARTIAL'?result.summary.added===0?'No legal additions were found. Review the remaining gaps.':'Partial draft saved. Review the remaining gaps.':result.changed?'Draft complete for configured coverage. Review before publishing.':'No changes needed. Configured coverage is complete.';
     return {status:'success',message,result:projection(result,locations,positions)};
@@ -61,12 +63,13 @@ export async function generateWeekAction(_previous:GenerationActionState,form:Fo
 }
 export async function clearGenerationExclusionAction(_previous:GenerationActionState,form:FormData):Promise<GenerationActionState> {
   const session=await requireRoles(MANAGER_ROLES);
+  const proof=await requireSessionMutationProof();
   try {
     fields(form,['weekStart','locationId','exclusionId']);
     const weekStart=value(form,'weekStart'),locationId=value(form,'locationId'),exclusionId=value(form,'exclusionId');
     if(!validMonday(weekStart)||!locationId.trim()||!exclusionId.trim()) throw new GenerationScopeError();
     const workspace=await getWorkspace();
-    await clearGenerationExclusion({workspaceId:workspace.id,actorEmployeeId:session.id,weekStart,locationId,exclusionId});
+    await clearGenerationExclusion({proof,workspaceId:workspace.id,actorEmployeeId:session.id,weekStart,locationId,exclusionId});
     revalidatePath('/app/schedule');
     return {status:'success',message:'Automatic fill allowed for this need. Run Build Week or Fill Gaps Only when ready.'};
   } catch(error) {return failure(error);}
