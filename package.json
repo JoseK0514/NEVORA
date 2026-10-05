@@ -18,7 +18,9 @@
     "test:exchanges:integration": "vitest run --config vitest.exchanges-integration.config.mts",
     "test:generation:integration": "vitest run --config vitest.generation-integration.config.mts",
     "test:phase-a:app": "node --import tsx scripts/phase-a-app-qa.mjs",
-    "test:phase-b:ui": "node --import tsx scripts/phase-b-ui-qa.mjs"
+    "test:phase-b:ui": "node --import tsx scripts/phase-b-ui-qa.mjs",
+    "test:clocker:integration": "vitest run --config vitest.clocker-integration.config.mts",
+    "test:clocker:owned": "node scripts/phase-c-clocker-postgres.mjs"
   },
   "dependencies": {
     "@js-temporal/polyfill": "0.5.1",
