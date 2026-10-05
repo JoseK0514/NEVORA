@@ -6,6 +6,10 @@ Branch: fix/phase-b-final-authorization
 Frozen Phase B ancestor: 20a1026a2fa88c5923b015a3384b980ff7d676cc
 Owner: ChatGPT, executing Jose's approved technical remediation. Independent Codex acceptance remains pending.
 
+## Current review timing — Jose decision, 2026-10-05
+
+The original remediation evidence below is retained. Jose subsequently approved ChatGPT final self-review and fresh testing now, with independent Codex verification deferred to the final release before production. The completed local review is recorded in [phase-b-authorization-final-self-review.md](phase-b-authorization-final-self-review.md). **FR-AUTH-001 remains OPEN and mandatory** in [final-release-checklist.md](final-release-checklist.md). This supersedes the original immediate Codex handoff in this record, without waiving final independent verification or production approval.
+
 ## Result and release boundary
 
 The reproduced late-write session-expiry defect and the analogous management paths tested here are corrected and locally verified. This is a correction checkpoint for independent review, not production authorization or full Phase C completion.
@@ -77,6 +81,6 @@ Migrations 0001–0010, components, CSS, public assets, dependencies and the pro
 
 ## Next gate
 
-Independent review of this exact correction, then explicit acceptance and controlled reconciliation into Phase C with combined regression. Do not continue from a stale partial correction or blindly merge the unresolved Phase C work.
+Following Jose’s updated decision and the completed ChatGPT self-review, the next engineering gate is controlled reconciliation into Phase C with combined regression. Independent Codex verification of the final integrated release is mandatory before production under FR-AUTH-001. Do not continue from a stale partial correction or blindly merge unresolved Phase C work.
 
 Hosted Neon HTTP-transport verification, hosted Preview, physical devices, screen readers, production capacity and live-provider delivery are not certified by these local results. Production sign-off remains withheld until the remaining release gates are satisfied.

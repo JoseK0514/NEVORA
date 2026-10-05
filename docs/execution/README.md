@@ -1,3 +1,11 @@
+# Current review and final-release gates
+
+For the Phase B authorization correction, start with [the final self-review](phase-b-authorization-final-self-review.md) and [FR-AUTH-001 in the final-release checklist](final-release-checklist.md). Jose approved ChatGPT review/testing now; Codex verification is required on the final integrated release before production, not as another immediate handoff.
+
+The Phase A entry below is preserved historical checkpoint information, not the current status of the later phases.
+
+---
+
 # Phase A review entry
 
 Start with `phase-a-report.md` (implementation, results, limits), then `phase-a-acceptance.md` (98-case mapping). `phase-a-acceptance.json` links exact assertion reports and source hashes without duplicating unrelated suite results. `phase-a-test-harness.md` documents safe local reproduction. `phase-a-progress.md` preserves the execution history.
