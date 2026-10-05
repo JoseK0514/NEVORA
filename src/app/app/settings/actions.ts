@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { requireSessionMutationProof } from "@/lib/auth/session";
 import { requireRoles } from "@/lib/auth/permissions";
 import { getWorkspace, saveWorkspaceProfile } from "@/lib/data/workspaces";
 import { createLocation, updateLocation } from "@/lib/data/locations";
@@ -21,6 +22,7 @@ export async function saveWorkspaceProfileAction(
   data: FormData,
 ): Promise<ConfigurationResult> {
   const actor = await requireRoles(["OWNER"]);
+  const proof = await requireSessionMutationProof();
   try {
     const workspace = await getWorkspace();
     await saveWorkspaceProfile({
@@ -29,6 +31,7 @@ export async function saveWorkspaceProfileAction(
         ? value(data, "timeZone")
         : workspace.timeZone,
       actorEmployeeId: actor.id,
+      proof,
     });
     revalidatePath("/app", "layout");
     return { success: "Workspace updated." };
@@ -40,12 +43,14 @@ export async function createLocationAction(
   data: FormData,
 ): Promise<ConfigurationResult> {
   const actor = await requireRoles(["OWNER"]);
+  const proof = await requireSessionMutationProof();
   try {
     await createLocation({
       name: value(data, "name"),
       shortName: value(data, "shortName"),
       clockerKey: value(data, "clockerKey") || undefined,
       actorEmployeeId: actor.id,
+      proof,
     });
     revalidatePath("/app/settings/locations");
     return {
@@ -60,6 +65,7 @@ export async function updateLocationAction(
   data: FormData,
 ): Promise<ConfigurationResult> {
   const actor = await requireRoles(["OWNER"]);
+  const proof = await requireSessionMutationProof();
   try {
     await updateLocation({
       id: value(data, "id"),
@@ -67,6 +73,7 @@ export async function updateLocationAction(
       shortName: value(data, "shortName"),
       active: data.get("active") === "on",
       actorEmployeeId: actor.id,
+      proof,
     });
     revalidatePath("/app", "layout");
     return { success: "Location updated. Its Clocker link is unchanged." };
@@ -78,10 +85,12 @@ export async function createPositionAction(
   data: FormData,
 ): Promise<ConfigurationResult> {
   const actor = await requireRoles(["OWNER"]);
+  const proof = await requireSessionMutationProof();
   try {
     await createPosition({
       name: value(data, "name"),
       actorEmployeeId: actor.id,
+      proof,
     });
     revalidatePath("/app/settings/positions");
     return { success: "Position added." };
@@ -93,12 +102,14 @@ export async function updatePositionAction(
   data: FormData,
 ): Promise<ConfigurationResult> {
   const actor = await requireRoles(["OWNER"]);
+  const proof = await requireSessionMutationProof();
   try {
     await updatePosition({
       id: value(data, "id"),
       name: value(data, "name"),
       active: data.get("active") === "on",
       actorEmployeeId: actor.id,
+      proof,
     });
     revalidatePath("/app", "layout");
     return {

@@ -1,10 +1,11 @@
+import { updateShift } from './management-api';
 import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, expect, it } from 'vitest';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { fixtureShift, proof, seedShiftChanges } from './shift-change-fixture';
 import { executeShiftChange } from '../../lib/data/shift-changes';
-import { updateShift } from '../../lib/data/schedules';
+
 import { readShiftChangeHistory } from '../../lib/data/shift-change-history';
 
 let db: Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;

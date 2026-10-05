@@ -22,7 +22,7 @@ export function EmployeeSchedulingFields({
       employee?.primaryLocationId === location.id,
   );
   const positionRows = availablePositions.map((position) => (
-    <label className="checkbox-row" key={position.id}>
+    <label className="checkbox-row employee-scheduling-choice" key={position.id}>
       <input
         type="checkbox"
         name="positionIds"
@@ -37,7 +37,7 @@ export function EmployeeSchedulingFields({
   ));
 
   const locationRows = availableLocations.map((location) => (
-    <label className="checkbox-row" key={location.id}>
+    <label className="checkbox-row employee-scheduling-choice" key={location.id}>
       <input
         type="checkbox"
         name="eligibleLocationIds"

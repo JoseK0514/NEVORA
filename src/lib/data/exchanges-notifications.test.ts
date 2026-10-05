@@ -1,3 +1,4 @@
+import {managementProof} from '../../test/fixtures/management';
 import { beforeEach, afterEach, expect, it, vi } from 'vitest';
 vi.mock('@/lib/db', () => ({ getDb: () => ({ query: async () => [{ id: 'legacy' }] }), queryRows: (value: unknown) => value }));
 import { approveCoverageExchange, approveSwapExchange, cancelExchange, claimCoverage, createCoverageOffer, createSwapProposal, denyExchange, respondToSwap } from './shift-change-compat.test-support';
@@ -83,7 +84,7 @@ it.each([approveCoverageExchange,approveSwapExchange])('completed approvals do n
 });
 it('missing optional request-recipient lock IDs retains the Task 5 assignment lock scope',async()=>{
  const { commitPublishedWeekChange }=await import('./notification-transactions');const r=fixture('EXCHANGE','OPEN');
- await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:'M',sourceType:'MANAGER_MUTATION',build:state=>({statements:[{text:'SELECT 1',values:[]}],afterSchedules:state.schedules,afterShifts:state.shifts})},r.executor);
+ await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:'M',proof:managementProof('M'),sourceType:'MANAGER_MUTATION',build:state=>({statements:[{text:'SELECT 1',values:[]}],afterSchedules:state.schedules,afterShifts:state.shifts})},r.executor);
  expect(r.batches[0].find(s=>s.text.includes('FROM employees')&&s.text.includes('FOR SHARE'))!.values[0]).toEqual(['E','M']);
 });
 it('published outcome returns with a stalled provider and without any provider request',async()=>{

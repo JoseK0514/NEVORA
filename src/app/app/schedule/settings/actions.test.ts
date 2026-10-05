@@ -1,17 +1,21 @@
+import { managementProof } from '../../../../test/fixtures/management';
 import { beforeEach, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   role: "MANAGER",
   unconfigured: false,
-  saveHours: vi.fn(),
-  saveStaff: vi.fn(),
+  recoveryRole: "MANAGER",
+  signedOut: false,
+  deleteWindow: vi.fn(),
+  saveSettings: vi.fn(),
   createWindow: vi.fn(),
   replaceQuotas: vi.fn(),
 }));
 vi.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
   requireRoles: async (roles: string[]) => {
-    if (!roles.includes(mocks.role)) throw new Error("redirect:/app");
-    return {id:"trusted-manager",role:mocks.role};
+    if (mocks.signedOut) throw new Error("redirect:/login");
+    if (!roles.includes(mocks.recoveryRole)) throw new Error("redirect:/app");
+    return {id:"trusted-manager",role:mocks.recoveryRole};
   },
 }));
 vi.mock(
@@ -35,13 +39,12 @@ vi.mock("@/lib/data/schedule-health", () => ({
   listEmployeeHourTargets: async () => [
     { employeeId: "E", targetWeeklyHours: 24, maximumWeeklyHours: 40 },
   ],
-  saveEmployeeHourTargets: mocks.saveHours,
-  saveLocationStaffingSettings: mocks.saveStaff,
+  saveScheduleHealthSettings: mocks.saveSettings,
   createCoverageWindow: mocks.createWindow,
   replaceCoverageWindowPositionRequirements: mocks.replaceQuotas,
-  deleteCoverageWindow: vi.fn(),
+  deleteCoverageWindow: mocks.deleteWindow,
 }));
-import { saveScheduleHealthSettingsAction } from "./actions";
+import { deleteCoverageWindowAction, saveScheduleHealthSettingsAction } from "./actions";
 function form(target = "24", maximum = "40") {
   const data = new FormData();
   data.set("staffing-loc-1", "2");
@@ -55,6 +58,9 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.role = "MANAGER";
   mocks.unconfigured = false;
+  mocks.recoveryRole = "MANAGER";
+  mocks.signedOut = false;
+  mocks.deleteWindow.mockReset();
 });
 it.each(["OWNER", "MANAGER"])(
   "%s can save distinct target and maximum without treating target as a ceiling",
@@ -63,18 +69,18 @@ it.each(["OWNER", "MANAGER"])(
     await expect(
       saveScheduleHealthSettingsAction(form("24", "40")),
     ).rejects.toThrow("saved=1");
-    expect(mocks.saveHours).toHaveBeenCalledWith([
+    expect(mocks.saveSettings).toHaveBeenCalledWith(expect.objectContaining({ hourTargets: [
       { employeeId: "E", targetWeeklyHours: 24, maximumWeeklyHours: 40 },
-    ]);
+    ], proof: managementProof("trusted-manager", mocks.role as "OWNER" | "MANAGER") }));
   },
 );
 it("a blank target retains the independently configured maximum", async () => {
   await expect(
     saveScheduleHealthSettingsAction(form("", "32")),
   ).rejects.toThrow("saved=1");
-  expect(mocks.saveHours).toHaveBeenCalledWith([
+  expect(mocks.saveSettings).toHaveBeenCalledWith(expect.objectContaining({ hourTargets: [
     { employeeId: "E", targetWeeklyHours: undefined, maximumWeeklyHours: 32 },
-  ]);
+  ], proof: managementProof("trusted-manager", mocks.role as "OWNER" | "MANAGER") }));
 });
 it.each(["", "NaN", "-1", "169"])(
   "invalid maximum %s prevents all settings writes",
@@ -82,8 +88,8 @@ it.each(["", "NaN", "-1", "169"])(
     await expect(
       saveScheduleHealthSettingsAction(form("24", maximum)),
     ).rejects.toThrow("invalid_hours");
-    expect(mocks.saveHours).not.toHaveBeenCalled();
-    expect(mocks.saveStaff).not.toHaveBeenCalled();
+    expect(mocks.saveSettings).not.toHaveBeenCalled();
+    expect(mocks.saveSettings).not.toHaveBeenCalled();
   },
 );
 it.each(["EMPLOYEE", "LEAD"])(
@@ -93,13 +99,13 @@ it.each(["EMPLOYEE", "LEAD"])(
     await expect(saveScheduleHealthSettingsAction(form())).rejects.toThrow(
       "redirect:/app",
     );
-    expect(mocks.saveHours).not.toHaveBeenCalled();
-    expect(mocks.saveStaff).not.toHaveBeenCalled();
+    expect(mocks.saveSettings).not.toHaveBeenCalled();
+    expect(mocks.saveSettings).not.toHaveBeenCalled();
   },
 );
 
-it('blank Lead choice for unconfigured staffing prevents writes',async()=>{mocks.unconfigured=true;const data=form();data.delete('lead-loc-1');data.delete('lead-configured-loc-1');await expect(saveScheduleHealthSettingsAction(data)).rejects.toThrow('invalid_staffing');expect(mocks.saveStaff).not.toHaveBeenCalled();});
-it.each(['true','false'])('explicit %s Lead choice for unconfigured staffing is saved',async choice=>{mocks.unconfigured=true;const data=form();data.delete('lead-loc-1');data.delete('lead-configured-loc-1');data.set('lead-choice-loc-1',choice);await expect(saveScheduleHealthSettingsAction(data)).rejects.toThrow('saved=1');expect(mocks.saveStaff).toHaveBeenCalledWith([{locationId:'loc-1',minimumStaffPerShift:2,requiresDesignatedLead:choice==='true'}]);});
+it('blank Lead choice for unconfigured staffing prevents writes',async()=>{mocks.unconfigured=true;const data=form();data.delete('lead-loc-1');data.delete('lead-configured-loc-1');await expect(saveScheduleHealthSettingsAction(data)).rejects.toThrow('invalid_staffing');expect(mocks.saveSettings).not.toHaveBeenCalled();});
+it.each(['true','false'])('explicit %s Lead choice for unconfigured staffing is saved',async choice=>{mocks.unconfigured=true;const data=form();data.delete('lead-loc-1');data.delete('lead-configured-loc-1');data.set('lead-choice-loc-1',choice);await expect(saveScheduleHealthSettingsAction(data)).rejects.toThrow('saved=1');expect(mocks.saveSettings).toHaveBeenCalledWith(expect.objectContaining({ staffingSettings: [{locationId:'loc-1',minimumStaffPerShift:2,requiresDesignatedLead:choice==='true'}], proof: managementProof("trusted-manager", mocks.role as "OWNER" | "MANAGER") }));});
 
 import {
   addCoverageWindowFormAction,
@@ -130,6 +136,7 @@ it("window add sends explicit quotas and trusted actor in the same repository ca
     minimumStaff: undefined,
     positionRequirements: [{ positionId: "cashier", quantity: 2 }],
     actorEmployeeId: "trusted-manager",
+    proof: managementProof("trusted-manager", mocks.role as "OWNER" | "MANAGER"),
   });
 });
 it("clearing one quota retains the other entered quota", async () => {
@@ -146,6 +153,7 @@ it("clearing one quota retains the other entered quota", async () => {
     windowId: "window",
     requirements: [{ positionId: "barista", quantity: 3 }],
     actorEmployeeId: "trusted-manager",
+    proof: managementProof("trusted-manager", mocks.role as "OWNER" | "MANAGER"),
   });
 });
 it("missing Lead choice returns specific local feedback without writes", async () => {
@@ -158,13 +166,16 @@ it("missing Lead choice returns specific local feedback without writes", async (
       "Choose whether a designated Lead is required",
     ),
   });
-  expect(mocks.saveStaff).not.toHaveBeenCalled();
+  expect(mocks.saveSettings).not.toHaveBeenCalled();
 });
 
 it.each(["true", "false"])(
   "preserves stale initial explicit Lead choice %s after another manager configures the location",
   async (choice) => {
     mocks.unconfigured = false;
+  mocks.recoveryRole = "MANAGER";
+  mocks.signedOut = false;
+  mocks.deleteWindow.mockReset();
     const data = form();
     data.delete("lead-loc-1");
     data.delete("lead-configured-loc-1");
@@ -172,13 +183,13 @@ it.each(["true", "false"])(
     expect(await saveScheduleHealthSettingsFormAction(data)).toHaveProperty(
       "success",
     );
-    expect(mocks.saveStaff).toHaveBeenCalledWith([
+    expect(mocks.saveSettings).toHaveBeenCalledWith(expect.objectContaining({ staffingSettings: [
       {
         locationId: "loc-1",
         minimumStaffPerShift: 2,
         requiresDesignatedLead: choice === "true",
       },
-    ]);
+    ], proof: managementProof("trusted-manager", mocks.role as "OWNER" | "MANAGER") }));
   },
 );
 it("rejects a missing Lead form contract even when current configuration is non-null", async () => {
@@ -188,7 +199,7 @@ it("rejects a missing Lead form contract even when current configuration is non-
   expect(await saveScheduleHealthSettingsFormAction(data)).toHaveProperty(
     "error",
   );
-  expect(mocks.saveStaff).not.toHaveBeenCalled();
+  expect(mocks.saveSettings).not.toHaveBeenCalled();
 });
 it("rejects conflicting Lead input shapes instead of choosing one", async () => {
   const data = form();
@@ -196,7 +207,7 @@ it("rejects conflicting Lead input shapes instead of choosing one", async () => 
   expect(await saveScheduleHealthSettingsFormAction(data)).toHaveProperty(
     "error",
   );
-  expect(mocks.saveStaff).not.toHaveBeenCalled();
+  expect(mocks.saveSettings).not.toHaveBeenCalled();
 });
 it("configured checkbox explicitly supports false through its form-presence marker", async () => {
   const data = form();
@@ -206,16 +217,33 @@ it("configured checkbox explicitly supports false through its form-presence mark
   expect(await saveScheduleHealthSettingsFormAction(data)).toHaveProperty(
     "success",
   );
-  expect(mocks.saveStaff).toHaveBeenCalledWith([
+  expect(mocks.saveSettings).toHaveBeenCalledWith(expect.objectContaining({ staffingSettings: [
     {
       locationId: "loc-1",
       minimumStaffPerShift: 2,
       requiresDesignatedLead: false,
     },
-  ]);
+  ], proof: managementProof("trusted-manager", mocks.role as "OWNER" | "MANAGER") }));
 });
 
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:vi.fn()}));
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>managementProof('trusted-manager', mocks.role as 'OWNER'|'MANAGER'|'EMPLOYEE'|'LEAD')}));
 vi.mock('@/lib/shift-changes/policy-form',()=>import('../../../../lib/shift-changes/policy-form'));
 vi.mock('@/lib/data/shift-change-policy',()=>({saveShiftChangePolicy:vi.fn()}));
 vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
+
+function deleteForm() { const data = new FormData(); data.set('windowId','window'); return data; }
+const managementDenied = () => Object.assign(new Error('invalid input syntax for type integer: "management_authorization"'), {code:'22P02'});
+it.each(['revoked','demoted','same-manager'])('native Remove recovers expected %s authority denial without reporting success', async kind => {
+  mocks.deleteWindow.mockRejectedValue(managementDenied());
+  mocks.signedOut = kind==='revoked'; mocks.recoveryRole=kind==='demoted'?'EMPLOYEE':'MANAGER';
+  await expect(deleteCoverageWindowAction(deleteForm())).rejects.toThrow(kind==='demoted'?'redirect:/app':'redirect:/login');
+});
+it.each([
+  Object.assign(new Error('database connection unavailable'),{code:'08006'}),
+  Object.assign(new Error('invalid input syntax for type integer: "different_guard"'),{code:'22P02'}),
+  Object.assign(new Error('invalid input syntax for type integer: "management_authorization"'),{code:'23505'}),
+  new Error('invalid input syntax for type integer: "management_authorization"'),
+])('native Remove propagates unexpected database/infrastructure failure %# unchanged', async error => {
+  mocks.deleteWindow.mockRejectedValue(error);
+  await expect(deleteCoverageWindowAction(deleteForm())).rejects.toBe(error);
+});

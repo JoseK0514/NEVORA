@@ -48,7 +48,7 @@ export default async function PositionsPage() {
                     maxLength={80}
                   />
                 </label>
-                <label className="checkbox-row">
+                <label className="checkbox-row position-status-choice">
                   <input
                     type="checkbox"
                     name="active"

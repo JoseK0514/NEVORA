@@ -1,3 +1,4 @@
+import { managementProof } from '../../test/fixtures/management';
 import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   query: vi.fn(),
@@ -20,7 +21,6 @@ vi.mock("@/lib/db", () => ({
     ),
   queryRows: (rows: unknown) => rows,
 }));
-vi.mock("../db", () => import("@/lib/db"));
 import { getShiftValidationContext, listWeekShifts } from "./schedules";
 import {
   listEmployeeHourTargets,
@@ -136,12 +136,17 @@ describe("target and maximum persistence", () => {
     });
   });
   it("saves target and maximum into the existing settings record", async () => {
+    const sql = {
+      query: async () => [{ id: 'northside', name: 'Northside Services', timeZone: 'America/New_York', active: true, updatedAt: 'version' }],
+      transaction: vi.fn(async () => []),
+    } as unknown as import('../notifications/types').SqlExecutor;
     await saveEmployeeHourTargets([
       { employeeId: "E", targetWeeklyHours: 24, maximumWeeklyHours: 40 },
-    ]);
-    expect(mocks.statements[0].text).toContain("maximum_weekly_hours");
-    expect(mocks.statements[0].values).toContain(24);
-    expect(mocks.statements[0].values).toContain(40);
+    ], managementProof('M'), sql);
+    const batch = vi.mocked(sql.transaction).mock.calls[0][0];
+    const write = batch.find(s => s.text.includes('INSERT INTO employee_scheduling_settings'))!;
+    expect(write.text).toContain('maximum_weekly_hours');
+    expect(write.values).toEqual(['E', 24, 40]);
   });
 });
 describe("normal-based weekly submissions", () => {
@@ -362,7 +367,7 @@ it("repeated concurrent availability changes stop after bounded retries", async 
 describe('notification cancellation joins availability transactions', () => {
  it.each([undefined,'2026-10-06T12:00:00Z'])('deadline change/removal cancels superseded work atomically: %s', async deadlineIso => {
    mocks.query.mockImplementation((text:string,values:unknown[]) => text.includes('WITH cancelled AS') ? {text,values} : []);
-   await setAvailabilityDeadline({weekStart:'2026-10-05',deadlineIso,updatedBy:'M'});
+   await setAvailabilityDeadline({proof:managementProof('M'),weekStart:'2026-10-05',deadlineIso,updatedBy:'M'});
    const batch = mocks.transaction.mock.calls[0][0];
    expect(batch).toEqual(expect.arrayContaining([expect.objectContaining({text:expect.stringContaining('UPDATE push_deliveries')})]));
    const cancellation = batch.find((s:{text?:string})=>s.text?.includes('WITH cancelled AS'));

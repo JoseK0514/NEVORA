@@ -4,6 +4,9 @@ import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { neonNotificationExecutor } from './notification-transactions';
 import { getWorkspace, workspaceReadGuard } from './workspaces';
 
+import type { SessionMutationProof } from "../shift-changes/types";
+import { assertManagementProof, managementSessionStatements } from "./management-session";
+
 const fields = 'id, workspace_id AS "workspaceId", name, active, created_at::text AS "createdAt", updated_at::text AS "updatedAt"';
 export class PositionPermissionError extends Error {
   constructor() { super('An active Owner is required for catalog edits; an active Manager or Owner is required for employee positions.'); }
@@ -31,17 +34,20 @@ export async function listPositions(options: { includeInactive?: boolean } = {},
     return await executor.query<Position>({ text: `SELECT ${fields} FROM positions WHERE workspace_id=$1 ${options.includeInactive ? '' : 'AND active=true'} ORDER BY id`, values: [workspace.id] });
   } catch { throw new Error('Position configuration is unavailable.'); }
 }
-export async function createPosition(input: { name: string; actorEmployeeId: string }, executor?: SqlExecutor): Promise<Position> {
+export async function createPosition(input: { name: string; actorEmployeeId: string; proof: SessionMutationProof }, executor?: SqlExecutor): Promise<Position> {
+  assertManagementProof(input.proof,input.actorEmployeeId);
   const name = positionName(input.name), sql = executor ?? neonNotificationExecutor(), workspace = await getWorkspace(sql);
   const result = await transaction([
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
     permission(input.actorEmployeeId, true),
+    ...managementSessionStatements(input.proof,input.actorEmployeeId,['OWNER']),
     { text: `INSERT INTO positions(id,workspace_id,name,active) VALUES($1,$2,$3,true) RETURNING ${fields}`, values: [randomUUID(), workspace.id, name] },
   ], sql);
   return result.at(-1)![0] as Position;
 }
-export async function updatePosition(input: { id: string; name: string; active: boolean; actorEmployeeId: string }, executor?: SqlExecutor): Promise<Position> {
+export async function updatePosition(input: { id: string; name: string; active: boolean; actorEmployeeId: string; proof: SessionMutationProof }, executor?: SqlExecutor): Promise<Position> {
+  assertManagementProof(input.proof,input.actorEmployeeId);
   const name = positionName(input.name);
   if (typeof input.active !== 'boolean') throw new Error('Choose an active state.');
   const sql = executor ?? neonNotificationExecutor(), workspace = await getWorkspace(sql);
@@ -50,6 +56,7 @@ export async function updatePosition(input: { id: string; name: string; active: 
     { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
     permission(input.actorEmployeeId, true),
     { text: 'SELECT id FROM positions WHERE id=$1 AND workspace_id=$2 ORDER BY id FOR UPDATE', values: [input.id, workspace.id] },
+    ...managementSessionStatements(input.proof,input.actorEmployeeId,['OWNER']),
     { text: `UPDATE positions SET name=$1,active=$2,updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=$3 AND workspace_id=$4 RETURNING ${fields}`, values: [name, input.active, input.id, workspace.id] },
   ], sql);
   const position = result.at(-1)?.[0] as Position | undefined;

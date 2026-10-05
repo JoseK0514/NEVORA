@@ -1,3 +1,5 @@
+import { fixtureProof } from './shift-change-api';
+import { publishScheduleWithRevision, reviewTimeOffRequest, setAvailabilityDeadline } from './management-api';
 import { configureFictionalShiftChanges } from './shift-change-api';
 import { notificationPolicyFor as fixturePolicyFor } from '../../lib/notifications/policy';
 const fixtureNotificationPolicy=fixturePolicyFor('America/Puerto_Rico');
@@ -5,20 +7,20 @@ import { beforeAll, afterAll, beforeEach, describe, expect, it, vi } from 'vites
 import { createECDH, createHash, randomUUID } from 'node:crypto';
 import { Client } from 'pg';
 import { createDisposableNotificationDatabase } from './local-postgres';
-import { publishScheduleWithRevision } from '../../lib/data/publication-revisions';
+
 import { commitPublishedWeekChange, personalProjections, readNotificationWeekState } from '../../lib/data/notification-transactions';
 import { notificationIntentStatements, cancelNotificationStatements } from '../../lib/data/notifications';
 import { sqlSubscriptionRepository } from '../../lib/data/push-subscriptions';
 import { sqlDeliveryRepository } from '../../lib/data/push-deliveries';
 import { sqlNotificationStateRepository } from '../../lib/data/notification-state';
 import { acknowledgeScheduleWeek } from '../../lib/data/acknowledgements';
-import { createTimeOffRequest, reviewTimeOffRequest } from '../../lib/data/requests';
+import { createTimeOffRequest } from '../../lib/data/requests';
 import { createSwapProposal, respondToSwap, approveSwapExchange, createCoverageOffer, claimCoverage, approveCoverageExchange, denyExchange, cancelExchange } from './shift-change-api';
 import { createCallout, approveCalloutAndOpenCoverage, denyCallout, cancelPendingCallout } from './shift-change-api';
 import { terminatePortalSession, reconcilePendingInstallation, type LogoutDeps } from '../../lib/notifications/logout';
 import { CLEANUP_COOKIE, INSTALLATION_COOKIE, openCleanupReceipt, sealCleanupReceipt, sealInstallationProof, encryptSubscriptionMaterial } from '../../lib/notifications/installation';
 import { readNotificationConfig as readRuntimeConfig } from '../../lib/notifications/config';
-import { setAvailabilityDeadline, replaceWeeklyAvailability } from '../../lib/data/week-settings';
+import { replaceWeeklyAvailability } from '../../lib/data/week-settings';
 import { runDispatch, type WorkerDeps } from '../../lib/notifications/worker';
 import { runReminders } from '../../lib/notifications/reminders';
 import type { NotificationIntent, SqlExecutor, InstallationProof } from '../../lib/notifications/types';
@@ -93,8 +95,9 @@ describe('actual ordered publication and request SQL', () => {
     expect(await count('notifications')).toBe(0);
   });
   it('draft_publication_race_recomputes_snapshot', async () => {
+    await sql("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'fixture-normal-'||e.id||'-'||d,e.id,d,'00:00','24:00' FROM employees e CROSS JOIN generate_series(0,6) d");
     const racing = onceBeforeTransaction(async () => {
-      await commitPublishedWeekChange({ weekStarts: [week], actorEmployeeId: 'QA-M', sourceType: 'MANAGER_MUTATION', build: s => ({ statements: [{ text: `UPDATE shifts SET start_time='10:00' WHERE id='QA-sh1'`, values: [] }], afterSchedules: s.schedules, afterShifts: s.shifts.map(sh => sh.sourceShiftId === 'QA-sh1' ? { ...sh, startTime: '10:00' } : sh) }) }, db);
+      await commitPublishedWeekChange({ weekStarts: [week], actorEmployeeId: 'QA-M',proof:await fixtureProof(db,'QA-M'), sourceType: 'MANAGER_MUTATION', build: s => ({ statements: [{ text: `UPDATE shifts SET start_time='10:00' WHERE id='QA-sh1'`, values: [] }], afterSchedules: s.schedules, afterShifts: s.shifts.map(sh => sh.sourceShiftId === 'QA-sh1' ? { ...sh, startTime: '10:00' } : sh) }) }, db);
       await publish('loc-2');
     });
     expect((await publish('loc-1', racing)).published).toBe(true);
@@ -105,13 +108,14 @@ describe('actual ordered publication and request SQL', () => {
     expect(state.revisions[0].shifts).toHaveLength(1);
   });
   it('guards_exact_microseconds_and_rejects_post_write_noop', async () => {
+    await sql("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'fixture-normal-'||e.id||'-'||d,e.id,d,'00:00','24:00' FROM employees e CROSS JOIN generate_series(0,6) d");
     const before = await readNotificationWeekState([week], db);
     expect(before.schedules[0].updatedAt).toContain('123456');
     let builds = 0;
     const racing = onceBeforeTransaction(() => sql(`UPDATE schedules SET updated_at=updated_at+interval '1 microsecond' WHERE id='QA-s1'`));
-    await commitPublishedWeekChange({ weekStarts: [week], actorEmployeeId: 'QA-M', sourceType: 'MANAGER_MUTATION', build: s => { builds++; return { statements: [{ text: 'SELECT 1', values: [] }], afterSchedules: s.schedules, afterShifts: s.shifts }; } }, racing);
+    await commitPublishedWeekChange({ weekStarts: [week], actorEmployeeId: 'QA-M',proof:await fixtureProof(db,'QA-M'), sourceType: 'MANAGER_MUTATION', build: s => { builds++; return { statements: [{ text: 'SELECT 1', values: [] }], afterSchedules: s.schedules, afterShifts: s.shifts }; } }, racing);
     expect(builds).toBe(2);
-    await expect(commitPublishedWeekChange({ weekStarts: [week], actorEmployeeId: 'QA-M', sourceType: 'MANAGER_MUTATION', build: s => ({ statements: [{ text: 'SELECT 1', values: [] }], afterSchedules: s.schedules, afterShifts: s.shifts.map(sh => ({ ...sh, startTime: '11:00' })) }) }, db)).rejects.toThrow(/schedule_week_version_conflict/);
+    await expect(commitPublishedWeekChange({ weekStarts: [week], actorEmployeeId: 'QA-M',proof:await fixtureProof(db,'QA-M'), sourceType: 'MANAGER_MUTATION', build: s => ({ statements: [{ text: 'SELECT 1', values: [] }], afterSchedules: s.schedules, afterShifts: s.shifts.map(sh => ({ ...sh, startTime: '11:00' })) }) }, db)).rejects.toThrow(/schedule_week_version_conflict/);
   });
   it('equivalent_revision_preserves_acknowledgement_and_personal_budget', async () => {
     await publish(); expect(await acknowledgeScheduleWeek({ weekStart: week, employeeId: 'QA-E' }, db)).toBe(true);

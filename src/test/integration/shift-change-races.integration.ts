@@ -3,6 +3,7 @@ import {Client} from 'pg';
 import {beforeAll,afterAll,it,expect} from 'vitest';
 import {createDisposableExchangeDatabase} from './local-postgres';
 import {proof,seedShiftChanges,fixtureShift} from './shift-change-fixture';
+import {fixtureProof} from './shift-change-api';
 import {executeShiftChange} from '../../lib/data/shift-changes';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {readNotificationWeekState} from '../../lib/data/notification-transactions';
@@ -90,7 +91,7 @@ it.each(['leave','availability','profile','policy','material','unpublish','delet
  await q("UPDATE schedules SET status='PUBLISHED' WHERE id='schedule'");const {fictionalProfile}=await import('../fixtures/shift-changes');await q("UPDATE employee_scheduling_settings SET operational_rule_profile=$1 WHERE employee_id='e2'",[JSON.stringify(fictionalProfile())]);await q("UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"AUTOMATIC_WHEN_VALID\"')");
 });
 it.each(['acceptance-first','manual-first'] as const)('A051 actual manual material writer and acceptance share compatible lock order: %s',async order=>{
- const {updateShift}=await import('../../lib/data/schedules');const f=await offered();
+ const {updateShift}=await import('./management-api');const f=await offered();
  const [before]=await q('SELECT date::text FROM shifts WHERE id=$1',[f.id]);
  const edit=(executor:SqlExecutor)=>updateShift({shiftId:f.id,employeeId:'e1',date:String(before.date),startTime:'09:00',endTime:'16:00',actorEmployeeId:'owner'},executor);
  const held=await controlled();
@@ -101,9 +102,9 @@ it.each(['acceptance-first','manual-first'] as const)('A051 actual manual materi
  }else{
   // Pause the actual publication writer after its initial workspace row lock.
   const client=held.client;let signal!:()=>void,release!:()=>void;const reached=new Promise<void>(r=>signal=r),done=new Promise<void>(r=>release=r);let once=true;
-  const executor:SqlExecutor={query:db.executor.query,transaction:async s=>{await client.query('BEGIN');try{const results=[];for(const x of s){results.push((await client.query(x.text,[...x.values])).rows);if(once&&x.text.includes('FROM workspaces')&&x.text.includes('FOR SHARE')){once=false;signal();await done;}}await client.query('COMMIT');return results;}catch(e){await client.query('ROLLBACK');throw e;}}};
+  const executor:SqlExecutor={query:db.executor.query,transaction:async s=>{await client.query('BEGIN');try{const results=[];for(const x of s){results.push((await client.query(x.text,[...x.values])).rows);if(once&&x.text.includes('FROM workspaces')&&x.text.includes('FOR NO KEY UPDATE')){once=false;signal();await done;}}await client.query('COMMIT');return results;}catch(e){await client.query('ROLLBACK');throw e;}}};
   const editing=edit(executor);let accepting:ReturnType<typeof executeShiftChange>|undefined;
-  try{await reached;accepting=executeShiftChange(proof('e2'),f.command,db.executor);await waitBlocked(client,'FROM workspaces');release();expect(await editing).toBe(true);expect((await accepting).status).toBe('blocked');}finally{release();await editing;await accepting;await held.close();}
+  try{await Promise.race([reached,editing.then(()=>{throw Error('Manual writer completed before workspace lock barrier');})]);accepting=executeShiftChange(proof('e2'),f.command,db.executor);await waitBlocked(client,'FROM workspaces');release();expect(await editing).toBe(true);expect((await accepting).status).toBe('blocked');}finally{release();await editing;await accepting;await held.close();}
  }
 });
 it('A057 bounded conflicts retry three times; provenance corruption rolls back',async()=>{
@@ -113,10 +114,10 @@ it('A057 bounded conflicts retry three times; provenance corruption rolls back',
  expect(await q('SELECT * FROM shift_change_operations WHERE operation_id=$1',[f.command.operationId])).toHaveLength(0);
 });
 it.each(['generation','exclusion'].flatMap(writer=>['command-first','writer-first'].map(order=>({writer,order}))))('A054/A081 $writer and command in $order use compatible actual writer locks',async({writer,order})=>{
- const {generateWeekDraft}=await import('../../lib/data/schedule-generation');const {deleteGeneratedDraftShift}=await import('../../lib/data/generation-exclusions');
+ const {generateWeekDraft}=await import('../../lib/data/schedule-generation');const {deleteGeneratedDraftShift}=await import('./management-api');
  const f=await offered();const week=new Date(Date.UTC(2035,11,3+7*index)).toISOString().slice(0,10);
  await q("INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('generation-window','loc-2',1,'08:00','12:00') ON CONFLICT(id) DO NOTHING");
- const request={workspaceId:'workspace-fuel',actorEmployeeId:'owner',weekStart:week,mode:'BUILD_WEEK' as const,locationScope:{kind:'SELECTED' as const,locationIds:['loc-2']}};
+ const request={proof:await fixtureProof(db.executor,'owner'),workspaceId:'workspace-fuel',actorEmployeeId:'owner',weekStart:week,mode:'BUILD_WEEK' as const,locationScope:{kind:'SELECTED' as const,locationIds:['loc-2']}};
  let generatedId:string|undefined;
  if(writer==='exclusion') {expect((await generateWeekDraft(request,db.executor)).summary.added).toBe(1);generatedId=String((await q('SELECT sh.id FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=$1 AND s.location_id=\'loc-2\'',[week]))[0].id);}
  const runWriter=(executor:SqlExecutor)=>writer==='generation'?generateWeekDraft(request,executor):deleteGeneratedDraftShift({workspaceId:'workspace-fuel',actorEmployeeId:'owner',weekStart:week,locationId:'loc-2',shiftId:generatedId!},executor);

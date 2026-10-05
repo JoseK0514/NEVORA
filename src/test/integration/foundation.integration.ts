@@ -1,3 +1,4 @@
+import { saveWorkspaceProfile, createLocation, updateLocation, insertEmployee, createPosition, updatePosition, updateEmployeeProfile } from './management-api';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
@@ -160,7 +161,7 @@ it('closes a connected worker when backend PID lookup fails', async () => {
   } finally { spy.mockRestore(); await db.dispose(); await observer.end(); }
 });
 
-import { getWorkspace, saveWorkspaceProfile, workspaceReadGuard, WorkspaceTimezoneLockedError } from '../../lib/data/workspaces';
+import { getWorkspace, workspaceReadGuard, WorkspaceTimezoneLockedError } from '../../lib/data/workspaces';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 async function workspaceFixture() {
  const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
@@ -233,7 +234,7 @@ it('stale workspace aborts real Time Off mutation and notification intents atomi
  }finally{await db.dispose();}
 });
 
-import { createLocation, updateLocation, listLocations, findActiveLocationByClockerKey } from '../../lib/data/locations';
+import { listLocations, findActiveLocationByClockerKey } from '../../lib/data/locations';
 it('location identity enforces Owner writes and preserves keys, memberships and history',async()=>{
  const db=await workspaceFixture();const q=(text:string,values:unknown[]=[])=>db.executor.query({text,values});
  try {
@@ -282,8 +283,8 @@ it.each([1,3,5,20])('location identity supports %i arbitrary generic locations',
  }finally{await db.dispose();}
 });
 
-import { listEmployees, insertEmployee } from '../../lib/data/employees';
-import { createPosition, updatePosition, listPositions, replaceEmployeePositions, employeePositionMembershipStatements } from '../../lib/data/positions';
+import { listEmployees } from '../../lib/data/employees';
+import { listPositions, replaceEmployeePositions, employeePositionMembershipStatements } from '../../lib/data/positions';
 it('position membership validates permissions and complete qualified sets',async()=>{
  const db=await workspaceFixture();const q=(text:string,values:unknown[]=[])=>db.executor.query({text,values});
  try {
@@ -377,7 +378,7 @@ it.each(['assignment-first','deactivate-first'])('position membership catalog ra
 });
 
 it('Task 6 SQL context preserves active qualifications, target location facts and cross-location position ledger', async () => {
-  const { getShiftValidationContext } = await import('../../lib/data/schedules');
+  const { getShiftValidationContext } = await import('./management-api');
   const { validateShift } = await import('../../lib/scheduling/validate-shift');
   const db = await createDisposableFoundationDatabase({mode:'current-runtime'});
   try {
@@ -401,11 +402,12 @@ it('Task 6 SQL context preserves active qualifications, target location facts an
 });
 
 it('position publication atomicity preserves create edit clear history and rejects stale capabilities',async()=>{
- const {insertShift,updateShift}=await import('../../lib/data/schedules');
- const {publishScheduleWithRevision}=await import('../../lib/data/publication-revisions');
+ const {insertShift,updateShift}=await import('./management-api');
+ const {publishScheduleWithRevision}=await import('./management-api');
  const {readNotificationWeekState,personalProjections}=await import('../../lib/data/notification-transactions');
  const db=await workspaceFixture();const q=(text:string)=>db.executor.query<Record<string,unknown>>({text,values:[]});
  try {
+ await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'manager-normal-'||day,'manager',day,'00:00','24:00' FROM generate_series(0,6) day");
  await q(`INSERT INTO employee_location_eligibility VALUES('manager','loc-1'); INSERT INTO positions(id,workspace_id,name) VALUES('barista','workspace-fuel','Barista'),('cashier','workspace-fuel','Cashier'); INSERT INTO employee_positions VALUES('manager','barista'),('manager','cashier'); INSERT INTO schedules(id,location_id,week_start,created_by) VALUES('task7','loc-1','2030-10-07','owner');`);
  const base={employeeId:'manager',date:'2030-10-11',startTime:'09:00',endTime:'17:00',actorEmployeeId:'owner'};
  const id=await insertShift({...base,scheduleId:'task7',positionId:'barista'},db.executor);
@@ -439,10 +441,11 @@ it('position publication atomicity preserves create edit clear history and rejec
  }finally{await db.dispose();}
 });
 it('position SQL read and template save preserve qualified and legacy positionless assignments',async()=>{
- const {insertShift,listWeekShifts,getShiftForManagement}=await import('../../lib/data/schedules');
+ const {insertShift,listWeekShifts,getShiftForManagement}=await import('./management-api');
  const {createTemplateFromWeek,listTemplateShifts}=await import('../../lib/data/schedule-templates');
  const db=await workspaceFixture();const q=(text:string)=>db.executor.query({text,values:[]});
  try{
+ await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'manager-normal-'||day,'manager',day,'00:00','24:00' FROM generate_series(0,6) day");
  await q(`INSERT INTO employee_location_eligibility VALUES('manager','loc-1'); INSERT INTO positions(id,workspace_id,name) VALUES('barista','workspace-fuel','Barista'); INSERT INTO employee_positions VALUES('manager','barista'); INSERT INTO schedules(id,location_id,week_start,created_by) VALUES('task7','loc-1','2030-10-07','owner');`);
  const base={scheduleId:'task7',employeeId:'manager',date:'2030-10-11',startTime:'09:00',endTime:'17:00',actorEmployeeId:'owner'};
  const id=await insertShift({...base,positionId:'barista'},db.executor);
@@ -455,7 +458,7 @@ it('position SQL read and template save preserve qualified and legacy positionle
 });
 
 it.each(['location','position','qualification','eligibility'].flatMap(fact=>['removal-first','assignment-first'].map(order=>({fact,order}))))('position assignment lock race $fact $order',async({fact,order})=>{
- const {insertShift}=await import('../../lib/data/schedules');
+ const {insertShift}=await import('./management-api');
  const {Client}=await import('pg');const db=await workspaceFixture();
  const writer=new Client({connectionString:db.connectionString,statement_timeout:5000});const remover=new Client({connectionString:db.connectionString,statement_timeout:5000});
  await writer.connect();await remover.connect();
@@ -464,12 +467,13 @@ it.each(['location','position','qualification','eligibility'].flatMap(fact=>['re
  let writerLocked!:()=>void;const locked=new Promise<void>(resolve=>{writerLocked=resolve;});
  let held=false;
  const executor:SqlExecutor={query:async<T>(s:SqlStatement)=>(await writer.query(s.text,[...s.values])).rows as T[],transaction:async statements=>{
-  await writer.query('BEGIN');try{const result=[];for(const s of statements){result.push((await writer.query(s.text,[...s.values])).rows);if(order==='assignment-first'&&!held&&s.text.includes(' AS guarded')){held=true;writerLocked();await release;}}await writer.query('COMMIT');return result;}catch(e){await writer.query('ROLLBACK');throw e;}
+  await writer.query('BEGIN');try{const result=[];for(const s of statements){result.push((await writer.query(s.text,[...s.values])).rows);if(order==='assignment-first'&&!held&&s.text.includes('generation_source_conflict')){held=true;writerLocked();await release;}}await writer.query('COMMIT');return result;}catch(e){await writer.query('ROLLBACK');throw e;}
  }};
  const waitBlocked=async(pid:number)=>{for(let tries=0;tries<150;tries++){const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]});if(row.blocked)return;await new Promise(resolve=>setTimeout(resolve,10));}throw Error('Expected real PostgreSQL assignment lock barrier');};
  const lockRemoval=async()=>{await remover.query('BEGIN');await remover.query('SELECT id FROM workspaces ORDER BY id FOR SHARE');await remover.query(fact==='location'||fact==='position'?"SELECT id FROM employees WHERE id='owner' FOR SHARE":"SELECT id FROM employees WHERE id IN ('manager','owner') ORDER BY id FOR UPDATE");if(fact==='location')await remover.query("SELECT id FROM locations WHERE id='loc-1' FOR UPDATE");if(fact==='position')await remover.query("SELECT id FROM positions WHERE id='barista' FOR UPDATE");};
  const remove=()=>remover.query(fact==='location'?"UPDATE locations SET active=false WHERE id='loc-1'":fact==='position'?"UPDATE positions SET active=false WHERE id='barista'":fact==='qualification'?"DELETE FROM employee_positions WHERE employee_id='manager'":"DELETE FROM employee_location_eligibility WHERE employee_id='manager'");
  try{
+ await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'manager-normal-'||day,'manager',day,'00:00','24:00' FROM generate_series(0,6) day");
  await q(`INSERT INTO employee_location_eligibility VALUES('manager','loc-1'); INSERT INTO positions(id,workspace_id,name) VALUES('barista','workspace-fuel','Barista'); INSERT INTO employee_positions VALUES('manager','barista'); INSERT INTO schedules(id,location_id,week_start,created_by,status) VALUES('task7','loc-1','2030-10-07','owner','PUBLISHED');`);
  const writerPid=(await writer.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
  const removerPid=(await remover.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
@@ -478,7 +482,7 @@ it.each(['location','position','qualification','eligibility'].flatMap(fact=>['re
  if(order==='removal-first'){
   await waitBlocked(writerPid);await remove();await remover.query('COMMIT');
  }else{
-  await locked;
+  await Promise.race([locked,writing.then(()=>{throw Error('Assignment completed before its SQL lock barrier');})]);
   const removing=(async()=>{await lockRemoval();await remove();await remover.query('COMMIT');})();
   await waitBlocked(removerPid);releaseWriter();await removing;
  }
@@ -572,10 +576,10 @@ describe('notification workspace policy',()=>{
 
 it("Task 9 atomic profile and coverage quotas persist, retain history, reject grants and roll back", async () => {
   const { saveEmployeeSchedulingProfile } = await import(
-    "../../lib/data/employees"
+    "./management-api"
   );
   const { createCoverageWindow, replaceCoverageWindowPositionRequirements } =
-    await import("../../lib/data/schedule-health");
+    await import("./management-api");
   const db = await createDisposableFoundationDatabase({ mode: "current-runtime" });
   const q = (text: string, values: unknown[] = []) =>
     db.executor.query<Record<string, unknown>>({ text, values });
@@ -700,7 +704,7 @@ it("Task 9 atomic profile and coverage quotas persist, retain history, reject gr
         },
         db.executor,
       ),
-    ).rejects.toThrow("coverage_permission_denied");
+    ).rejects.toThrow("management_authorization");
   } finally {
     await db.dispose();
   }
@@ -708,7 +712,7 @@ it("Task 9 atomic profile and coverage quotas persist, retain history, reject gr
 
 it("Task 9 selective inactive quota retention keeps unchanged warnings and rejects regrant or edits", async () => {
   const { createCoverageWindow, replaceCoverageWindowPositionRequirements } =
-    await import("../../lib/data/schedule-health");
+    await import("./management-api");
   const db = await createDisposableFoundationDatabase({ mode: "current-runtime" });
   const q = (text: string, values: unknown[] = []) =>
     db.executor.query<Record<string, unknown>>({ text, values });
@@ -968,12 +972,12 @@ it.each([1,3,5,20])('Task 11 separate generic SQL workspace supports exactly %i 
   const db=await createGenericWorkspaceDatabase();
   const q=(text:string,values:unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
   const {evaluateLocationReadiness}=await import('../../lib/scheduling/location-readiness');
-  const {createCoverageWindow}=await import('../../lib/data/schedule-health');
-  const {getShiftValidationContext,ensureSchedule,insertShift,listWeekShifts,updateShift}=await import('../../lib/data/schedules');
+  const {createCoverageWindow}=await import('./management-api');
+  const {getShiftValidationContext,ensureSchedule,insertShift,listWeekShifts,updateShift}=await import('./management-api');
   const {validateShift}=await import('../../lib/scheduling/validate-shift');
   const {calculateScheduleHealth}=await import('../../lib/scheduling/schedule-health');
   const {createTemplateFromWeek,listTemplateShifts}=await import('../../lib/data/schedule-templates');
-  const {publishScheduleWithRevision}=await import('../../lib/data/publication-revisions');
+  const {publishScheduleWithRevision}=await import('./management-api');
   const {readNotificationWeekState}=await import('../../lib/data/notification-transactions');
   const {readAvailabilityInputs}=await import('../../lib/data/availability-inputs');
   const {loadWorkspaceNotificationConfig}=await import('../../lib/notifications/config');
@@ -1083,7 +1087,7 @@ it('Task 11 generic fixture replacement preserves the upgraded schema catalog', 
 });
 
 
-import { getEmployeeManagementProfile, updateEmployeeProfile } from '../../lib/data/employees';
+import { getEmployeeManagementProfile } from '../../lib/data/employees';
 
 describe('employee profile lifecycle', () => {
   it('deactivates and reactivates without deleting history and revokes existing sessions', async () => {

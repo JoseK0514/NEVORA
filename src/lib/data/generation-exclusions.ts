@@ -7,6 +7,9 @@ import type { SqlExecutor } from '../notifications/types';
 import { neonNotificationExecutor } from './notification-transactions';
 import { GenerationPermissionError, GenerationScopeError, generationMutationGuards, generationSourceGuard, readGenerationSource, withGenerationRetry, type GenerationSource } from './generation-guards';
 
+import type { SessionMutationProof } from "../shift-changes/types";
+import { assertManagementProof, managementSessionStatements } from "./management-session";
+
 export type GenerationExclusion = {
   id:string; workspaceId:string; weekStart:string; locationId:string;
   assignmentStart:string; assignmentEnd:string; positionId:string|null; claims:GenerationClaims;
@@ -27,14 +30,15 @@ function authorize(source:GenerationSource,input:ScopeInput) {
   if(!location || !schedule || schedule.status!=='DRAFT') throw new GenerationScopeError();
   return {workspace,schedule};
 }
-export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:string},executor:SqlExecutor=neonNotificationExecutor()):Promise<{status:'deleted'|'absent'|'protected';exclusionId?:string}> {
+export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:string;proof:SessionMutationProof},executor:SqlExecutor=neonNotificationExecutor()):Promise<{status:'deleted'|'absent'|'protected';exclusionId?:string}> {
+  assertManagementProof(input.proof,input.actorEmployeeId);
   validateInput(input);
   if(!input.shiftId?.trim()) throw new GenerationScopeError();
   return withGenerationRetry(async()=>{
     const {source,changedAt}=await readGenerationSource(executor);
     const {workspace,schedule}=authorize(source,input);
     const shift=source.shifts.find(s=>s.id===input.shiftId);
-    const guards=generationMutationGuards(source,[input.weekStart]);
+    const guards=[...generationMutationGuards(source,[input.weekStart]),...managementSessionStatements(input.proof,input.actorEmployeeId)];
     if(!shift) {await executor.transaction(guards);return {status:'absent'};}
     if(shift.schedule_id!==schedule.id) throw new GenerationScopeError();
     const protectedAssignment=isProtectedAssignment({assignmentOrigin:normalizeAssignmentOrigin(shift.assignment_origin),
@@ -55,6 +59,7 @@ export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:stri
     after.schedule_generation_exclusions.sort((a,b)=>String(a.id)<String(b.id)?-1:1);
     await executor.transaction([
       ...generationMutationGuards(source,[input.weekStart,...affectedWorkweeks(period)]),
+      ...managementSessionStatements(input.proof,input.actorEmployeeId),
       {text:`INSERT INTO schedule_generation_exclusions(id,workspace_id,week_start,location_id,assignment_start,assignment_end,position_id,claims,deleted_source_shift_id,created_by,created_at)
         VALUES($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11)`,values:[id,input.workspaceId,input.weekStart,input.locationId,assignmentStart,assignmentEnd,shift.position_id ?? null,JSON.stringify(shift.generated_claims),shift.id,input.actorEmployeeId,changedAt]},
       {text:'DELETE FROM shifts WHERE id=$1',values:[shift.id]},
@@ -63,7 +68,8 @@ export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:stri
     return {status:'deleted',exclusionId:id};
   });
 }
-export async function clearGenerationExclusion(input:ScopeInput & {exclusionId:string},executor:SqlExecutor=neonNotificationExecutor()):Promise<{status:'cleared'|'already-cleared'}> {
+export async function clearGenerationExclusion(input:ScopeInput & {exclusionId:string;proof:SessionMutationProof},executor:SqlExecutor=neonNotificationExecutor()):Promise<{status:'cleared'|'already-cleared'}> {
+  assertManagementProof(input.proof,input.actorEmployeeId);
   validateInput(input);
   if(!input.exclusionId?.trim()) throw new GenerationScopeError();
   return withGenerationRetry(async()=>{
@@ -77,7 +83,7 @@ export async function clearGenerationExclusion(input:ScopeInput & {exclusionId:s
     // true. Clearing needs no deleted-row lookup or extra headcount/capability rule.
     const originalWasDesignatedLead=(event.claims as GenerationClaims).claims.some(claim=>claim.kind==='LEAD');
     validateGenerationClaims(event.claims,{...input,timeZone:String(source.workspaces[0].time_zone)},{positionId:event.position_id as string|null,isDesignatedLead:originalWasDesignatedLead,date:start.slice(0,10),startTime:start.slice(11),endDate:end.slice(0,10),endTime:end.slice(11)});
-    const guards=generationMutationGuards(source,[input.weekStart]);
+    const guards=[...generationMutationGuards(source,[input.weekStart]),...managementSessionStatements(input.proof,input.actorEmployeeId)];
     if(event.cleared_at!==null){await executor.transaction(guards);return {status:'already-cleared'};}
     const after=structuredClone(source);
     Object.assign(after.schedule_generation_exclusions.find(e=>e.id===event.id)!,{cleared_by:input.actorEmployeeId,cleared_at:changedAt});

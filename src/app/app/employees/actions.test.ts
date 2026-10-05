@@ -32,6 +32,8 @@ import {
 beforeEach(() => {
   vi.clearAllMocks();
   m.role = "MANAGER";
+  m.coreProfile.mockResolvedValue({updatedAt:"2026-10-05 12:00:00.123456+00"});
+  m.profile.mockResolvedValue({updatedAt:"2026-10-05 12:00:00.123456+00"});
 });
 it("employee creation sends qualifications in the single employee commit with trusted actor", async () => {
   const data = new FormData();
@@ -93,6 +95,7 @@ function coreProfileForm(overrides: Record<string, string> = {}) {
 it("employee core profile uses the authenticated actor and immutable employee id", async () => {
   expect(await saveEmployeeCoreProfileAction(coreProfileForm())).toEqual({
     success: "Employee details updated.",
+    updatedAt: "2026-10-05 12:00:00.123456+00",
   });
   expect(m.coreProfile).toHaveBeenCalledTimes(1);
   expect(m.coreProfile.mock.calls[0][0]).toMatchObject({
@@ -165,7 +168,7 @@ it.each([
   expect(result.error).toContain(expected);
 });
 
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:vi.fn()}));
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:m.role},sessionTokenHash:'a'.repeat(64)})}));
 vi.mock('@/lib/shift-changes/policy-form',()=>import('../../../lib/shift-changes/policy-form'));
 vi.mock('@/lib/data/shift-change-policy',()=>({saveOperationalRuleProfile:vi.fn()}));
 vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));

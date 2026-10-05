@@ -1,6 +1,9 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
+
+const fixture = vi.hoisted(() => ({ inactiveLocation: false }));
+beforeEach(() => { fixture.inactiveLocation = false; });
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
@@ -22,7 +25,7 @@ vi.mock("@/lib/data/employees", () => ({
     { id:"active",firstName:"Active",lastName:"Person",phone:"7875550101",role:"EMPLOYEE",primaryLocationId:"loc",eligibleLocationIds:["loc"],positionIds:[],active:true },
     { id:"inactive",firstName:"Inactive",lastName:"Person",phone:"7875550102",role:"LEAD",primaryLocationId:"loc",eligibleLocationIds:["loc"],positionIds:[],active:false },
   ],
-  listLocations: async () => [{ id:"loc",workspaceId:"w",clockerKey:"loc",name:"Main",shortName:"Main",active:true }],
+  listLocations: async (options?: { includeInactive?: boolean }) => fixture.inactiveLocation && !options?.includeInactive ? [] : [{ id:"loc",workspaceId:"w",clockerKey:"loc",name:"Main",shortName:"Main",active:!fixture.inactiveLocation }],
 }));
 
 import EmployeesPage from "./page";
@@ -32,4 +35,13 @@ it("keeps inactive employees discoverable with an explicit status", async () => 
   expect(html).toContain('class="status-pill success">Active</span>');
   expect(html).toContain('class="status-pill neutral">Inactive</span>');
   expect(html).toContain('href="/app/employees/inactive"');
+});
+
+it("renders the retained inactive primary location truthfully in the employee directory", async () => {
+  fixture.inactiveLocation = true;
+  const html = renderToStaticMarkup(await EmployeesPage());
+  expect(html).toMatch(/Main[^<]*Inactive/);
+  expect(html).not.toContain("Location not assigned");
+  expect(html).toContain('href="/app/employees/inactive"');
+  expect(html).toContain('class="status-pill neutral">Inactive</span>');
 });

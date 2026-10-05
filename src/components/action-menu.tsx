@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
+import { actionMenuGeometry } from "./action-menu-geometry";
 
 type ActionMenuProps = {
   id: string;
@@ -9,10 +10,6 @@ type ActionMenuProps = {
   children: ReactNode;
   align?: "start" | "end";
 };
-
-const VIEWPORT_MARGIN = 12;
-const MENU_GAP = 8;
-const PREFERRED_WIDTH = 318;
 
 export function ActionMenu({
   id,
@@ -30,68 +27,42 @@ export function ActionMenu({
     const menu = menuRef.current;
     if (!trigger || !menu) return;
 
+    const visibleViewport = () => ({
+      width: window.visualViewport?.width ?? document.documentElement.clientWidth,
+      height: window.visualViewport?.height ?? window.innerHeight,
+      offsetLeft: window.visualViewport?.offsetLeft ?? 0,
+      offsetTop: window.visualViewport?.offsetTop ?? 0,
+    });
     const position = () => {
       if (!menu.matches(":popover-open")) return;
       const triggerBox = trigger.getBoundingClientRect();
-      const viewportWidth = document.documentElement.clientWidth;
-      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-      const width = Math.max(
-        0,
-        Math.min(PREFERRED_WIDTH, viewportWidth - VIEWPORT_MARGIN * 2),
-      );
-      const naturalHeight = menu.scrollHeight;
-      const spaceBelow =
-        viewportHeight - triggerBox.bottom - VIEWPORT_MARGIN - MENU_GAP;
-      const spaceAbove =
-        triggerBox.top - VIEWPORT_MARGIN - MENU_GAP;
-      const openAbove =
-        naturalHeight > spaceBelow && spaceAbove > spaceBelow;
-      const available = Math.max(
-        120,
-        openAbove ? spaceAbove : spaceBelow,
-      );
-      const desiredLeft =
-        align === "end" ? triggerBox.right - width : triggerBox.left;
-      const left = Math.min(
-        Math.max(VIEWPORT_MARGIN, desiredLeft),
-        Math.max(VIEWPORT_MARGIN, viewportWidth - width - VIEWPORT_MARGIN),
-      );
-
-      menu.style.width = `${width}px`;
-      menu.style.left = `${Math.round(left)}px`;
-      menu.style.maxHeight = `${Math.max(120, Math.floor(available))}px`;
-
-      if (openAbove) {
-        menu.style.top = "auto";
-        menu.style.bottom = `${Math.max(
-          VIEWPORT_MARGIN,
-          Math.round(viewportHeight - triggerBox.top + MENU_GAP),
-        )}px`;
-      } else {
-        menu.style.bottom = "auto";
-        menu.style.top = `${Math.max(
-          VIEWPORT_MARGIN,
-          Math.round(triggerBox.bottom + MENU_GAP),
-        )}px`;
-      }
+      const viewport = visibleViewport();
+      // Wrapping changes the natural height after a viewport resize.
+      menu.style.width = `${actionMenuGeometry({ trigger: triggerBox, viewport, naturalHeight: 0, align }).width}px`;
+      const geometry = actionMenuGeometry({
+        trigger: triggerBox,
+        viewport,
+        naturalHeight: menu.scrollHeight + menu.offsetHeight - menu.clientHeight,
+        align,
+      });
+      menu.style.width = `${geometry.width}px`;
+      menu.style.left = `${geometry.left}px`;
+      menu.style.maxHeight = `${geometry.maxHeight}px`;
+      menu.style.bottom = "auto";
+      menu.style.top = `${geometry.top}px`;
     };
 
     const onBeforeToggle = (event: Event) => {
       if ((event as Event & { newState?: string }).newState !== "open") return;
       // Set a safe horizontal size before the popover reaches the top layer.
-      const viewportWidth = document.documentElement.clientWidth;
-      const width = Math.max(
-        0,
-        Math.min(PREFERRED_WIDTH, viewportWidth - VIEWPORT_MARGIN * 2),
-      );
-      const box = trigger.getBoundingClientRect();
-      const desiredLeft = align === "end" ? box.right - width : box.left;
-      const left = Math.min(
-        Math.max(VIEWPORT_MARGIN, desiredLeft),
-        Math.max(VIEWPORT_MARGIN, viewportWidth - width - VIEWPORT_MARGIN),
-      );
-      menu.style.width = `${width}px`;
-      menu.style.left = `${Math.round(left)}px`;
+      const geometry = actionMenuGeometry({
+        trigger: trigger.getBoundingClientRect(),
+        viewport: visibleViewport(),
+        naturalHeight: 0,
+        align,
+      });
+      menu.style.width = `${geometry.width}px`;
+      menu.style.left = `${geometry.left}px`;
     };
     const onToggle = () => {
       position();

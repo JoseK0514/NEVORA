@@ -1,4 +1,5 @@
 "use server";
+import { requireSessionMutationProof } from "@/lib/auth/session";
 
 import { getWorkspace } from "@/lib/data/workspaces";
 import { shiftBoundaryInstants } from "@/lib/business-time";
@@ -17,6 +18,7 @@ import {
   insertShift,
 } from "@/lib/data/schedules";
 import { validateShift } from "@/lib/scheduling/validate-shift";
+import { ManualAssignmentConflictError } from "@/lib/data/manual-assignment-validation";
 
 function templateUrl(weekStart: string, suffix = "") {
   return `/app/schedule/templates?week=${encodeURIComponent(weekStart)}${suffix}`;
@@ -51,6 +53,7 @@ export async function saveTemplateAction(formData: FormData) {
 
 export async function applyTemplateAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
   const templateId = String(formData.get("templateId") ?? "");
 
@@ -107,23 +110,29 @@ export async function applyTemplateAction(formData: FormData) {
       continue;
     }
 
-    const scheduleId = await ensureSchedule({
-      locationId: templateShift.locationId,
-      weekStart,
-      createdBy: session.id,
-    });
-
-    await insertShift({
-      actorEmployeeId: session.id,
-      scheduleId,
-      employeeId: templateShift.employeeId,
-      date,
-      startTime: templateShift.startTime,
-      endTime: templateShift.endTime,
-      notes: templateShift.notes,
-      positionId: templateShift.positionId,
-      isDesignatedLead: templateShift.isDesignatedLead,
-    });
+    try {
+      const scheduleId = await ensureSchedule({
+        locationId: templateShift.locationId,
+        weekStart,
+        createdBy: session.id,
+        proof,
+      });
+      await insertShift({
+        actorEmployeeId: session.id,
+        proof,
+        scheduleId,
+        employeeId: templateShift.employeeId,
+        date,
+        startTime: templateShift.startTime,
+        endTime: templateShift.endTime,
+        notes: templateShift.notes,
+        positionId: templateShift.positionId,
+        isDesignatedLead: templateShift.isDesignatedLead,
+      });
+    } catch (error) {
+      if (error instanceof ManualAssignmentConflictError) { skipped += 1; continue; }
+      throw error;
+    }
 
     applied += 1;
 

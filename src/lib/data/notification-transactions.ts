@@ -11,7 +11,7 @@ import { schedulingIssueMessage } from '../scheduling/validate-shift';
 import { shiftBoundaryInstants } from '../business-time';
 import type { Position, Workspace, Location } from '../domain';
 import type { ScheduleStatus } from '../domain';
-import type { PublicationRevision, RevisionSourceType } from './publication-revisions';
+import type { PublicationRevision } from './publication-revisions';
 import type { PublishedShiftSnapshot } from '../assistance/publication-diff';
 import { diffPublishedShifts } from '../assistance/publication-diff';
 import { buildAcknowledgementState } from '../assistance/acknowledgement-state';
@@ -19,6 +19,10 @@ import { canAccessPublishedAssignment } from '../notifications/destinations';
 import { buildNotificationIntents } from '../notifications/recipients';
 import { loadWorkspaceNotificationConfig } from '../notifications/config';
 import { notificationIntentStatements } from './notifications';
+import type { SessionMutationProof } from '../shift-changes/types';
+import { assertManagementProof, managementSessionStatements } from './management-session';
+import { generationSourceSql, generationMutationGuards, type GenerationSource } from './generation-guards';
+import { ManualAssignmentConflictError, validateManualAssignments } from './manual-assignment-validation';
 import type { EmployeePublicationProjection, RecipientAccess, ScheduleSourceSnapshot } from '../notifications/types';
 /** Neon HTTP transactions are ordered, non-interactive batches. Never await
  * individual query promises before passing the batch to sql.transaction. */
@@ -197,13 +201,14 @@ function supersedePersonalStatements(week: string, employeeId: string, environme
 }
 /** The only publication/write protocol. A stale pre-read aborts the WHOLE Neon
  * batch and is rebuilt, never patched or reused, at most three times. */
-export async function commitPublishedWeekChange(input: {
+type ManagementWeekAuthority = { sourceType: 'MANAGER_MUTATION' | 'PUBLISH'; proof: SessionMutationProof } | { sourceType: 'EXCHANGE' | 'CALLOUT'; proof?: never };
+export async function commitPublishedWeekChange(input: ManagementWeekAuthority & {
     weekStarts: readonly string[];
     actorEmployeeId: string;
-    sourceType: RevisionSourceType;
     sourceId?: string;
     build: (snapshot: GuardedWeekState, config: NotificationConfig) => WeekMutationBatch;
 }, executor: SqlExecutor = neonNotificationExecutor()): Promise<WeekMutationResult> {
+    if (input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') assertManagementProof(input.proof, input.actorEmployeeId);
     const weeks = [...new Set(input.weekStarts)].sort();
     if (!weeks.length)
         return {
@@ -213,9 +218,10 @@ export async function commitPublishedWeekChange(input: {
         const config = await loadWorkspaceNotificationConfig(process.env,executor);
         const [read] = await executor.query<{
             state: GuardedWeekState;
+            source?: GenerationSource;
             read_at: string;
         }>({
-            text: `SELECT ${notificationStateSql} AS state, clock_timestamp()::text AS read_at`, values: [weeks]
+            text: `SELECT ${notificationStateSql} AS state, clock_timestamp()::text AS read_at${input.sourceType === 'MANAGER_MUTATION' ? `, ${generationSourceSql} AS source` : ''}`, values: [weeks]
         });
         if (!read)
             throw new Error('Schedule snapshot could not be read.');
@@ -226,7 +232,7 @@ export async function commitPublishedWeekChange(input: {
             return {
                 committed: false, revisions: []
             };
-        const {guards,statements,revisions}=preparePublishedWeekChange({...input,state,batch,config,observedAt:read.read_at});
+        const {guards,statements,revisions}=preparePublishedWeekChange({...input,state,batch,config,schedulingSource:read.source,observedAt:read.read_at});
         try {
             await executor.transaction([...guards,...statements]);
             return {
@@ -235,7 +241,7 @@ export async function commitPublishedWeekChange(input: {
         }
         catch (error) {
             const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
-            const conflict = code === '22P02' && error instanceof Error && error.message.includes('schedule_week_version_conflict');
+            const conflict = code === '22P02' && error instanceof Error && /schedule_week_version_conflict|generation_source_conflict/.test(error.message);
             if (attempt === 2 || !(conflict || code === '40001' || code === '40P01'))
                 throw error;
         }
@@ -243,9 +249,10 @@ export async function commitPublishedWeekChange(input: {
     throw new Error('Schedule version retries exhausted.');
 }
 
-export type PublishedChangePlanInput = {
-    weekStarts: readonly string[]; actorEmployeeId: string; sourceType: RevisionSourceType; sourceId?: string;
+export type PublishedChangePlanInput = ManagementWeekAuthority & {
+    weekStarts: readonly string[]; actorEmployeeId: string; sourceId?: string;
     suppressPublicationEventEmployeeIds?:readonly string[]; revisionWeekStarts?:readonly string[]; state: GuardedWeekState; batch: WeekMutationBatch; config: NotificationConfig; observedAt: string;
+    schedulingSource?: GenerationSource;
 };
 export type PreparedPublishedChange = { guards: SqlStatement[]; statements: SqlStatement[]; revisions: PublicationRevision[] };
 /** Pure batch assembly. The caller owns execution and retries. */
@@ -262,20 +269,34 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
             const facts=state.assignmentFacts;
             const employee=state.recipients.find(r=>r.employeeId===shift.employeeId);
             if (!facts?.workspace) throw new Error('Workspace configuration is unavailable.');
-            const issues=assignmentCapabilityIssues({candidate:shift,workspace:facts.workspace,location:facts.locations.find(l=>l.id===shift.locationId),position:facts.positions.find(p=>p.id===shift.positionId),employee:{active:employee?.active ?? false,eligibleLocationIds:employee?.allowedLocationIds ?? [],positionIds:facts.memberships.filter(m=>m.employeeId===shift.employeeId).map(m=>m.positionId)}});
-            if(issues.length) throw new Error(schedulingIssueMessage(issues[0]));
+            const issues=assignmentCapabilityIssues({candidate:shift,workspace:facts.workspace,location:facts.locations.find(l=>l.id===shift.locationId),position:facts.positions.find(p=>p.id===shift.positionId),employee:{active:employee?.active ?? false,role:employee?.role ?? 'EMPLOYEE',eligibleLocationIds:employee?.allowedLocationIds ?? [],positionIds:facts.memberships.filter(m=>m.employeeId===shift.employeeId).map(m=>m.positionId)}});
+            if(issues.length) {
+                const message = schedulingIssueMessage(issues[0]);
+                if (input.sourceType === 'MANAGER_MUTATION') throw new ManualAssignmentConflictError(issues[0], message);
+                throw new Error(message);
+            }
             shiftBoundaryInstants(shift,facts.workspace.timeZone);
         }
+        const validateManual = input.sourceType === 'MANAGER_MUTATION' && assignments.length > 0;
+        if (validateManual) validateManualAssignments(input.schedulingSource, assignments);
         const relevantIds = [...new Set([input.actorEmployeeId, ...state.shifts.map(s => s.employeeId), ...batch.afterShifts.map(s => s.employeeId), ...(batch.recipientEmployeeIds ?? [])])].sort();
         const newSchedules=batch.afterSchedules.filter(s=>!state.schedules.some(before=>before.id===s.id));
         for (const schedule of newSchedules) {
             const facts=state.assignmentFacts;
-            if (!facts?.workspace || !workspaceLocationAvailable(facts.workspace,facts.locations.find(l=>l.id===schedule.locationId),schedule.locationId))
-                throw new Error(schedulingIssueMessage('LOCATION_INACTIVE'));
+            if (!facts?.workspace || !workspaceLocationAvailable(facts.workspace,facts.locations.find(l=>l.id===schedule.locationId),schedule.locationId)) {
+                if (input.sourceType === 'MANAGER_MUTATION') throw new ManualAssignmentConflictError('LOCATION_INACTIVE', schedulingIssueMessage('LOCATION_INACTIVE'));
+                else throw new Error(schedulingIssueMessage('LOCATION_INACTIVE'));
+            }
         }
         const locationIds=[...new Set([...assignments.map(s=>s.locationId),...newSchedules.map(s=>s.locationId)])].sort();
         const positionIds=[...new Set(assignments.flatMap(s=>s.positionId?[s.positionId]:[]))].sort();
-        const guards: SqlStatement[] = [
+        const guards: SqlStatement[] = validateManual ? [
+            // Established global protocol FIRST: never upgrade workspace SHARE
+            // after taking week/employee locks. It pins the complete dated ledger,
+            // leave, availability and configured rules across all locations/weeks.
+            ...generationMutationGuards(input.schedulingSource!, weeks),
+            ...managementSessionStatements(input.proof!, input.actorEmployeeId),
+        ] : [
             ...workspaceReadGuard(config.workspace!),
             ...scheduleWeekLockStatements(weeks),
             // Compatible SHARE locks allow publications on unrelated weeks concurrently.
@@ -290,6 +311,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
             {
                 text: 'LOCK TABLE employee_location_eligibility IN SHARE MODE', values: []
             },
+            ...((input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') ? managementSessionStatements(input.proof, input.actorEmployeeId) : []),
         ];
         const statements: SqlStatement[] = [
             {

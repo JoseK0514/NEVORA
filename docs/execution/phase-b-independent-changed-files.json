@@ -1,0 +1,351 @@
+{
+  "candidate": "20a1026a2fa88c5923b015a3384b980ff7d676cc",
+  "branch": "codex/nevora-phase-b-hardening-review",
+  "changedFileCount": 86,
+  "files": [
+    {
+      "path": "docs/execution/phase-b-independent-audit.md",
+      "status": "added"
+    },
+    {
+      "path": "docs/execution/phase-b-independent-changed-files.json",
+      "status": "added"
+    },
+    {
+      "path": "scripts/phase-a-app-qa.mjs",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/employees/[employeeId]/page.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/employees/actions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/employees/actions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/employees/page.test.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/employees/page.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/requests/actions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/requests/actions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/actions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/actions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/assignment-actions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/edit/page.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/generation-actions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/generation-actions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/manual-conflict-actions.test.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/app/app/schedule/new/page.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/settings/actions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/settings/actions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/settings/page.test.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/schedule/templates/actions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/self-service-guards.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/settings/actions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/settings/actions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/app/settings/positions/page.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/globals.css",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/login/actions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/login/actions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/action-menu-geometry.test.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/components/action-menu-geometry.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/components/action-menu.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/configuration-form.test.tsx",
+      "status": "added"
+    },
+    {
+      "path": "src/components/configuration-form.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/employee-core-profile-form.test.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/employee-core-profile-form.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/employee-scheduling-fields.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/portal-device-setup-focus.test.tsx",
+      "status": "added"
+    },
+    {
+      "path": "src/components/portal-device-setup.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/auth/session.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/employees.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/exchanges-notifications.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/generation-exclusions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/generation-exclusions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/locations.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/locations.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/management-session.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/lib/data/manual-assignment-validation.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/lib/data/notification-transactions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/operational-profile.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/positions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/positions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/publication-revisions.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/publication-revisions.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/request-notifications.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/requests-notifications.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/requests.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/schedule-generation.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/schedule-generation.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/schedule-health.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/schedules-notifications.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/schedules.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/scheduling-inputs.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/week-settings.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/data/workspaces.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/scheduling/capabilities.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/scheduling/validate-shift.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/fixtures/management.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/test/integration/deadline-handoff.integration.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/integration/foundation.integration.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/integration/generation-cross-layer.integration.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/integration/generation-provenance.integration.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/integration/generation-session.integration.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/test/integration/management-api.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/test/integration/notifications.integration.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/integration/owned-app-fixture.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/integration/phase-b-integrity.integration.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/test/integration/phase-b-management-session.integration.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/test/integration/schedule-generation.integration.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/integration/schedule-settings-session.integration.ts",
+      "status": "added"
+    },
+    {
+      "path": "src/test/integration/shift-change-pending-callout.integration.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/integration/shift-change-races.integration.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/test/integration/shift-changes.integration.ts",
+      "status": "modified"
+    },
+    {
+      "path": "vitest.config.mts",
+      "status": "added"
+    },
+    {
+      "path": "vitest.foundation-integration.config.mts",
+      "status": "modified"
+    },
+    {
+      "path": "vitest.generation-integration.config.mts",
+      "status": "modified"
+    }
+  ]
+}

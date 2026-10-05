@@ -3,6 +3,9 @@ import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { neonNotificationExecutor } from './notification-transactions';
 import { validateWorkspaceProfile } from '../workspace/validation';
 
+import type { SessionMutationProof } from "../shift-changes/types";
+import { assertManagementProof, managementSessionStatements } from "./management-session";
+
 export class WorkspaceUnavailableError extends Error {
   constructor() { super('Workspace configuration is unavailable.'); }
 }
@@ -45,7 +48,8 @@ const operationalRecords = `EXISTS (SELECT 1 FROM schedules)
  OR EXISTS (SELECT 1 FROM schedule_week_settings WHERE availability_deadline IS NOT NULL)
  OR EXISTS (SELECT 1 FROM time_off_requests)
  OR EXISTS (SELECT 1 FROM time_entries)`;
-export async function saveWorkspaceProfile(input: { name: string; timeZone: string; actorEmployeeId: string }, executor: SqlExecutor = neonNotificationExecutor()): Promise<Workspace> {
+export async function saveWorkspaceProfile(input: { name: string; timeZone: string; actorEmployeeId: string; proof: SessionMutationProof }, executor: SqlExecutor = neonNotificationExecutor()): Promise<Workspace> {
+  assertManagementProof(input.proof,input.actorEmployeeId);
   const profile = validateWorkspaceProfile(input);
   try {
     const result = await executor.transaction([
@@ -53,6 +57,7 @@ export async function saveWorkspaceProfile(input: { name: string; timeZone: stri
       { text: `SELECT (CASE WHEN EXISTS (SELECT 1 FROM workspaces WHERE singleton=true AND active=true) THEN '1' ELSE 'workspace_unavailable' END)::integer`, values: [] },
       { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
       { text: `SELECT (CASE WHEN EXISTS (SELECT 1 FROM employees WHERE id=$1 AND active=true AND role='OWNER') THEN '1' ELSE 'workspace_permission_denied' END)::integer`, values: [input.actorEmployeeId] },
+      ...managementSessionStatements(input.proof,input.actorEmployeeId,['OWNER']),
       { text: `SELECT (CASE WHEN EXISTS (SELECT 1 FROM workspaces WHERE singleton=true AND time_zone IS DISTINCT FROM $1) AND (${operationalRecords}) THEN 'workspace_timezone_locked' ELSE '1' END)::integer`, values: [profile.timeZone] },
       { text: `UPDATE workspaces SET name=$1,time_zone=$2,updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE singleton=true AND active=true RETURNING ${fields}`, values: [profile.name, profile.timeZone] },
     ]);

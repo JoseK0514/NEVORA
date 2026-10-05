@@ -1,8 +1,9 @@
+import { publishScheduleWithRevision } from './management-api';
 import { hashPassword } from '../../lib/auth/password';
 import { businessDate } from '../../lib/business-time';
 import { addDays, weekStartFor } from '../../lib/date-utils';
 import { fictionalProfile } from '../fixtures/shift-changes';
-import { publishScheduleWithRevision } from '../../lib/data/publication-revisions';
+
 import type { SqlExecutor } from '../../lib/notifications/types';
 
 // Explicit fictional credentials used only in ownership-marked disposable data.

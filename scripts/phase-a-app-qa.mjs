@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createOwnedNextApp } from '../src/test/integration/owned-next-app.ts';
 import { seedOwnedApp, seedOwnedScenario, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture.ts';
-import { updateShift } from '../src/lib/data/schedules.ts';
+import { updateShift } from '../src/test/integration/management-api.ts';
 
 const evidence = process.env.PHASE_A_EVIDENCE_DIR;
 const runtimeRoot = process.env.PLAYWRIGHT_RUNTIME_ROOT;
@@ -70,12 +70,25 @@ async function screenshot(page, name) {
   await page.screenshot({ path, fullPage: true }); report.screenshots.push(path);
 }
 function offerForm(page, shiftId) { return page.locator(`form:has(input[name="sourceShiftId"][value="${shiftId}"]):has(input[name="kind"][value="OFFER_COVERAGE"])`); }
-async function submitAndSettle(page, button) {
+async function submitAndSettle(page, button, { refresh = false } = {}) {
   const response = page.waitForResponse(response => response.request().method() === 'POST' && !!response.request().headers()['next-action']);
+  const route = new URL(page.url());
+  // Only successful offer/claim callers promise router.refresh(). Policy
+  // validation/stale errors legitimately have no refresh and must not hang.
+  const refreshed = refresh ? page.waitForResponse(response => {
+    const url = new URL(response.url());
+    return response.request().method() === 'GET' && url.origin === route.origin && url.pathname === route.pathname
+      && url.searchParams.get('tab') === route.searchParams.get('tab') && url.searchParams.has('_rsc');
+  }) : undefined;
   await button.click();
   const completed = await response;
-  await completed.finished();
+  assert.equal(await completed.finished(), null, 'Server Action stream must finish without cancellation');
   assert(completed.status() < 400, `Server Action response ${completed.status()}`);
+  if (refreshed) {
+    const completedRefresh = await refreshed;
+    assert.equal(await completedRefresh.finished(), null, 'Refresh stream must finish without cancellation');
+    assert(completedRefresh.status() < 400, `Refresh response ${completedRefresh.status()}`);
+  }
   await page.waitForFunction(() => !document.querySelector('form[aria-busy="true"]'));
   // Database COMMIT precedes the streamed action response and client refresh.
   // Await both before navigating, especially in WebKit; DB polling alone is insufficient.
@@ -83,12 +96,12 @@ async function submitAndSettle(page, button) {
 }
 async function offer(page, shiftId) {
   await goto(page, '/app/exchange?tab=requests');
-  await submitAndSettle(page, offerForm(page, shiftId).getByRole('button', { name: 'Offer Shift', exact: true }));
+  await submitAndSettle(page, offerForm(page, shiftId).getByRole('button', { name: 'Offer Shift', exact: true }), { refresh: true });
   return waitFor(async () => (await q("SELECT * FROM shift_exchanges WHERE source_shift_id=$1 AND kind='COVERAGE' AND status='OPEN' ORDER BY created_at DESC LIMIT 1", [shiftId]))[0], 'Actual offer did not commit');
 }
 async function claim(page, requestId) {
   await goto(page, '/app/exchange?tab=available');
-  await submitAndSettle(page, page.locator(`[id="request-${requestId}"]`).getByRole('button', { name: 'Claim Shift', exact: true }));
+  await submitAndSettle(page, page.locator(`[id="request-${requestId}"]`).getByRole('button', { name: 'Claim Shift', exact: true }), { refresh: true });
   return waitFor(async () => { const row = (await q('SELECT * FROM shift_exchanges WHERE id=$1', [requestId]))[0]; return row && ['APPROVED', 'MANAGER_PENDING'].includes(row.status) ? row : null; }, 'Actual claim did not commit');
 }
 async function gate(id, task, mutation) {

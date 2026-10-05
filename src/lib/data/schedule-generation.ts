@@ -8,6 +8,8 @@ import { affectedWorkweeks, shiftPeriod } from '../scheduling/periods';
 import { generationMutationGuards, generationInsertedSourceGuard, GenerationScopeError, withGenerationRetry, type GenerationSourceRow } from './generation-guards';
 import { neonNotificationExecutor } from './notification-transactions';
 import { readGenerationSnapshot, type GenerationRequest } from './schedule-generation-snapshot';
+import type { SessionMutationProof } from '../shift-changes/types';
+import { assertManagementProof, managementSessionStatements } from './management-session';
 export { readGenerationSnapshot } from './schedule-generation-snapshot';
 export type { GenerationRequest, GenerationSnapshot } from './schedule-generation-snapshot';
 export type GenerationResult = {
@@ -72,7 +74,8 @@ const semantics = (s: GenerationSourceRow) => canonical([s.schedule_id, s.employ
 
 /** Only retry owner: each retry reads, authorizes, maps and solves a new complete source.
  * No solver work or external provider calls run inside the ordered SQL batch. */
-export async function generateWeekDraft(request: GenerationRequest, executor: SqlExecutor = neonNotificationExecutor()): Promise<GenerationResult> {
+export async function generateWeekDraft(request: GenerationRequest & { proof: SessionMutationProof }, executor: SqlExecutor = neonNotificationExecutor()): Promise<GenerationResult> {
+  assertManagementProof(request.proof, request.actorEmployeeId);
   return withGenerationRetry(async () => {
     const {
       source,
@@ -184,7 +187,7 @@ export async function generateWeekDraft(request: GenerationRequest, executor: Sq
       if (parent) weeks.add(parent.weekStart);
     }
     for (const a of plan.additions) for (const week of affectedWorkweeks(a)) weeks.add(week);
-    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...writes, generationInsertedSourceGuard(after,additions.map(row=>String(row.id)),source.shifts.map(row=>String(row.assignment_episode_id)))]);
+    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...managementSessionStatements(request.proof, request.actorEmployeeId), ...writes, generationInsertedSourceGuard(after,additions.map(row=>String(row.id)),source.shifts.map(row=>String(row.assignment_episode_id)))]);
     const scopedParentIds = new Set([...parentByLocation].filter(([locationId]) => plan.demand.locationIds.includes(locationId)).map(([, parent]) => parent.id));
     return {
       status: plan.status,

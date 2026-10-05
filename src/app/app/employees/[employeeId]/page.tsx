@@ -136,6 +136,7 @@ export default async function EmployeeProfilePage({
         <ConfigurationForm
           action={saveEmployeeSchedulingProfileAction}
           className="employee-form scheduling-profile-form"
+          reviewedUpdatedAt={employee.updatedAt}
         >
           <input type="hidden" name="employeeId" value={employee.id} />
           <EmployeeSchedulingFields

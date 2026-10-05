@@ -14,7 +14,7 @@ export default async function EmployeesPage() {
 
   const [employees, locations] = await Promise.all([
     listEmployees(),
-    listLocations(),
+    listLocations({ includeInactive: true }),
   ]);
 
   return (
@@ -53,7 +53,7 @@ export default async function EmployeesPage() {
                         {formatPhoneNumber(employee.phone)}
                       </span>
                       <span className="employee-profile-meta">
-                        {primaryLocation?.shortName ?? "Location not assigned"}
+                        {primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? '' : ' (Inactive)'}` : "Location not assigned"}
                       </span>
                     </div>
                   </div>

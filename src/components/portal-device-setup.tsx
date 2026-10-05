@@ -89,6 +89,14 @@ export function PortalDeviceSetup({ role }: { role: UserRole }) {
       popoverOpener.current = null;
       if (!opener) return;
       requestAnimationFrame(() => {
+        const active = document.activeElement;
+        // Light dismissal can focus a different control before this frame.
+        // Recover only stranded focus; preserve a visible outside destination.
+        if (
+          active instanceof HTMLElement &&
+          active !== document.body && active !== document.documentElement &&
+          !surface?.contains(active) && active.isConnected && active.getClientRects().length
+        ) return;
         if (opener.isConnected && opener.getClientRects().length) {
           opener.focus({ preventScroll: true });
           return;

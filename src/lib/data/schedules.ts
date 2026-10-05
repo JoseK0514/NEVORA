@@ -13,6 +13,9 @@ import { minutesInWorkweek, shiftPeriod } from "../scheduling/periods";
 import { readAvailabilityInputs } from "./availability-inputs";
 import type { ScheduleStatus, UserRole, Position } from "@/lib/domain";
 
+import type { SessionMutationProof } from '../shift-changes/types';
+import { assertManagementProof } from './management-session';
+
 export type ScheduleShiftRow = {
   assignmentOrigin?: AssignmentOrigin;
   generatedClaims?: GenerationClaims | null;
@@ -253,10 +256,10 @@ export async function getShiftValidationContext({
 export type ShiftValidationContext = NonNullable<Awaited<ReturnType<typeof getShiftValidationContext>>>;
 
 export async function ensureSchedule(input: {
-  locationId: string; weekStart: string; createdBy: string;
+  locationId: string; weekStart: string; createdBy: string; proof: SessionMutationProof;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   let scheduleId: string = randomUUID();
-  await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.createdBy,sourceType:'MANAGER_MUTATION',build: state => {
+  await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.createdBy,proof:input.proof,sourceType:'MANAGER_MUTATION',build: state => {
     const existing=state.schedules.find(s=>s.locationId===input.locationId && s.weekStart===input.weekStart);
     if(existing) {
       scheduleId=existing.id;
@@ -280,12 +283,12 @@ function unchanged(state: GuardedWeekState) {
 
 export async function insertShift(input: {
   scheduleId: string; employeeId: string; date: string; startTime: string;
-  endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string;
+  endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string; proof: SessionMutationProof;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   const id=randomUUID();
   const week=await mutationWeek(input.scheduleId,'schedule',executor);
   if(!week) throw new Error('Schedule no longer exists.');
-  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,sourceType:'MANAGER_MUTATION',sourceId:id,build: state => {
+  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:id,build: state => {
     const schedule=state.schedules.find(s=>s.id===input.scheduleId);
     if(!schedule) return unchanged(state);
     return {statements:[{text:`INSERT INTO shifts (id,schedule_id,employee_id,date,start_time,end_time,notes,is_designated_lead,position_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
@@ -367,11 +370,11 @@ export async function getShiftForManagement(
 
 export async function updateShift(input: {
   shiftId: string; employeeId: string; date: string; startTime: string;
-  endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string;
+  endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string; proof: SessionMutationProof;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   const week=await mutationWeek(input.shiftId,'shift',executor);
   if(!week) return false;
-  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,sourceType:'MANAGER_MUTATION',sourceId:input.shiftId,build: state => {
+  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:input.shiftId,build: state => {
     const existing=state.shifts.find(s=>s.sourceShiftId===input.shiftId);
     if(!existing) return unchanged(state);
     const positionId=input.positionId === undefined ? existing.positionId : input.positionId || undefined;
@@ -382,15 +385,17 @@ export async function updateShift(input: {
   return result.committed;
 }
 
-export async function deleteShift(shiftId: string, actorEmployeeId: string, executor: SqlExecutor = neonNotificationExecutor()) {
+export async function deleteShift(shiftId: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
+  const actorEmployeeId = proof?.employee?.id;
+  assertManagementProof(proof, actorEmployeeId);
   const [target]=await executor.query<{week_start:string;assignment_origin?:AssignmentOrigin;status?:ScheduleStatus;workspace_id:string;location_id:string}>({
     text:`SELECT s.week_start::text,sh.assignment_origin,s.status,l.workspace_id,s.location_id FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id WHERE sh.id=$1`,values:[shiftId]});
   if(target?.assignment_origin==='GENERATED' && target.status==='DRAFT') {
-    return (await deleteGeneratedDraftShift({shiftId,actorEmployeeId,workspaceId:target.workspace_id,locationId:target.location_id,weekStart:target.week_start},executor)).status==='deleted';
+    return (await deleteGeneratedDraftShift({shiftId,actorEmployeeId,proof,workspaceId:target.workspace_id,locationId:target.location_id,weekStart:target.week_start},executor)).status==='deleted';
   }
   const week=target?.week_start;
   if(!week) return false;
-  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId,sourceType:'MANAGER_MUTATION',sourceId:shiftId,build: state => {
+  const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId,proof,sourceType:'MANAGER_MUTATION',sourceId:shiftId,build: state => {
     const shift=state.shifts.find(s=>s.sourceShiftId===shiftId);
     if(!shift || shift.hasExchangeHistory) return unchanged(state);
     if(shift.assignmentOrigin==='GENERATED' && state.schedules.some(s=>s.id===shift.scheduleId && s.status==='DRAFT')) throw new Error('Generated assignment changed; reload and try again.');

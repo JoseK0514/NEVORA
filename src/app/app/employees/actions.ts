@@ -28,6 +28,7 @@ const validEmployeeEmail = (value: string) =>
 
 async function createEmployee(formData: FormData, inline=false) {
   const session = await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
 
   const id = String(formData.get("id") ?? "").trim().toUpperCase();
   const firstName = String(formData.get("firstName") ?? "").trim();
@@ -73,6 +74,7 @@ async function createEmployee(formData: FormData, inline=false) {
       eligibleLocationIds,
       positionIds: formData.getAll("positionIds").map(String),
       actorEmployeeId: session.id,
+      proof,
     });
   } catch {
     employeeFailure('save',inline);
@@ -85,18 +87,22 @@ async function createEmployee(formData: FormData, inline=false) {
 
 export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
   const actor = await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
   try {
     const employeeId = String(formData.get("employeeId") ?? "");
-    await saveEmployeeSchedulingProfile({
+    const written = await saveEmployeeSchedulingProfile({
       employeeId,
       positionIds: formData.getAll("positionIds").map(String),
       eligibleLocationIds: formData.getAll("eligibleLocationIds").map(String),
       actorEmployeeId: actor.id,
+      proof,
+      expectedUpdatedAt: String(formData.get('expectedUpdatedAt') ?? ''),
     });
     revalidatePath("/app/employees");
     revalidatePath(`/app/employees/${encodeURIComponent(employeeId)}`);
-    return { success: "Scheduling profile updated." };
-  } catch {
+    return { success: "Scheduling profile updated.", updatedAt: written.updatedAt };
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('profile_stale')) return { error: 'This employee changed since you opened the profile. Reload and review the latest scheduling details.' };
     return {
       error:
         "Profile could not be saved. Choose active positions and locations; existing inactive references may be retained.",
@@ -106,6 +112,7 @@ export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
 
 export async function saveEmployeeCoreProfileAction(formData: FormData) {
   const actor = await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
   const employeeId = String(formData.get("employeeId") ?? "").trim();
   const expectedUpdatedAt = String(
     formData.get("expectedUpdatedAt") ?? "",
@@ -144,8 +151,9 @@ export async function saveEmployeeCoreProfileAction(formData: FormData) {
     return { error: "Enter a valid employee email address." };
   }
 
+  let updatedAt: string;
   try {
-    await updateEmployeeProfile({
+    const written = await updateEmployeeProfile({
       employeeId,
       expectedUpdatedAt,
       firstName,
@@ -156,7 +164,9 @@ export async function saveEmployeeCoreProfileAction(formData: FormData) {
       primaryLocationId,
       active: activeValue === "true",
       actorEmployeeId: actor.id,
+      proof,
     });
+    updatedAt = written.updatedAt;
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
     if (message.includes("employee_profile_stale")) {
@@ -165,7 +175,7 @@ export async function saveEmployeeCoreProfileAction(formData: FormData) {
           "This employee changed since you opened the profile. Reload and review the latest details.",
       };
     }
-    if (message.includes("employee_profile_permission_denied")) {
+    if (message.includes("employee_profile_permission_denied") || message.includes('management_authorization')) {
       return {
         error: "You do not have permission to make this employee change.",
       };
@@ -189,7 +199,7 @@ export async function saveEmployeeCoreProfileAction(formData: FormData) {
 
   revalidatePath("/app/employees");
   revalidatePath(`/app/employees/${encodeURIComponent(employeeId)}`);
-  return { success: "Employee details updated." };
+  return { success: "Employee details updated.", updatedAt };
 }
 
 const employeeErrors: Record<string, string> = {
