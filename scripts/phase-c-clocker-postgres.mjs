@@ -7,6 +7,7 @@ import { randomBytes } from 'node:crypto';
 
 // This runner never connects to an existing application or test server.
 if (process.env.DATABASE_URL) throw new Error('Unset DATABASE_URL before running owned Clocker tests.');
+const ui = process.argv[2] === '--ui';
 const bin = process.env.NEVORA_TEST_PG_BIN;
 if (!bin || !existsSync(join(bin, 'initdb')) || !existsSync(join(bin, 'pg_ctl'))) {
   throw new Error('NEVORA_TEST_PG_BIN must identify an existing local PostgreSQL bin directory.');
@@ -37,12 +38,13 @@ try {
   started = true;
   console.log('[C1 PostgreSQL] New owned loopback cluster started; no existing databases used.');
   const env = { ...process.env,
-    FUEL_TEST_DATABASE_URL: `postgresql://nevora_test@127.0.0.1:${port}/nevora_foundation_test_c1_${marker.slice(0, 12)}`,
+    FUEL_TEST_DATABASE_URL: `postgresql://nevora_test@127.0.0.1:${port}/${ui ? 'nevora_exchange_test_' : 'nevora_foundation_test_'}c1_${marker.slice(0, 12)}`,
     FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes',
   };
   delete env.DATABASE_URL;
   const config = process.argv[2] ?? 'vitest.clocker-integration.config.mts';
-  const result = spawnSync(process.execPath, ['node_modules/vitest/vitest.mjs', 'run', '--config', config], { env, stdio: 'inherit' });
+  const args = ui ? ['--import','tsx','scripts/phase-c-devices-ui-qa.mjs'] : ['node_modules/vitest/vitest.mjs', 'run', '--config', config];
+  const result = spawnSync(process.execPath, args, { env, stdio: 'inherit' });
   exitCode = result.status ?? 1;
 } finally {
   // pg_ctl may report failure after postmaster has already created its PID file.

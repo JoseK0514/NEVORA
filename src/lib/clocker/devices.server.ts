@@ -194,17 +194,18 @@ export async function rotateClockerDevice(proof: ClockerOwnerProof, input: Devic
 
 /** Trusted server transport must put credential in an HttpOnly cookie, NOT JSON. */
 export async function redeemClockerEnrollment(
-  input: { enrollmentToken: string; locationKey: string }, executor: SqlExecutor = neonNotificationExecutor(),
+  input: { enrollmentToken: string; locationKey: string; preparedCredential?: string }, executor: SqlExecutor = neonNotificationExecutor(),
 ): Promise<{ device: ClockerDeviceRecord; credential: string }> {
   const hash = tokenHash(input?.enrollmentToken,'enrollment');
-  if (!hash || !validLocationKey(input?.locationKey)) throw new ClockerDeviceError('ENROLLMENT_INVALID',errors.clocker_enrollment_invalid[1]);
+  if (!hash || !validLocationKey(input?.locationKey) || (input.preparedCredential !== undefined && !tokenHash(input.preparedCredential,'device'))) throw new ClockerDeviceError('ENROLLMENT_INVALID',errors.clocker_enrollment_invalid[1]);
   const workspace = await getWorkspace(executor);
   const [pending] = await executor.query<{ id: string; employeeId: string; sessionTokenHash: string }>({
     text: `SELECT id,enrollment_owner_id AS "employeeId",enrollment_session_hash AS "sessionTokenHash"
       FROM clocker_devices WHERE enrollment_hash=$1`, values: [hash],
   });
   if (!pending) throw new ClockerDeviceError('ENROLLMENT_INVALID',errors.clocker_enrollment_invalid[1]);
-  const credential = token('device');
+  // Supplied only by trusted transport from its previously established HttpOnly cookie.
+  const credential = input.preparedCredential ?? token('device');
   const results = await transaction(executor,[
     ...workspaceReadGuard(workspace),...ownerLocks(pending),...deviceLocks(pending.id),ownerAssertion(pending),
     assertion(`EXISTS(SELECT 1 FROM clocker_devices d JOIN locations l ON l.id=d.location_id
@@ -212,6 +213,10 @@ export async function redeemClockerEnrollment(
       AND d.enrollment_expires_at>clock_timestamp() AND d.enrollment_owner_id=$3 AND d.enrollment_session_hash=$4
       AND l.active AND l.workspace_id=$5 AND l.clocker_key=$6)`,
     [pending.id,hash,pending.employeeId,pending.sessionTokenHash,workspace.id,input.locationKey],'clocker_enrollment_invalid'),
+    assertion('NOT EXISTS(SELECT 1 FROM clocker_device_credentials WHERE credential_hash=$1)',
+      [tokenHash(credential,'device')],'clocker_enrollment_invalid'),
+    { text: `INSERT INTO clocker_device_credentials(credential_hash,device_id,credential_version)
+        SELECT $2,id,credential_version+1 FROM clocker_devices WHERE id=$1`, values: [pending.id,tokenHash(credential,'device')] },
     { text: `UPDATE clocker_devices SET credential_hash=$2,credential_version=credential_version+1,
       enrollment_hash=NULL,enrollment_expires_at=NULL,enrollment_owner_id=NULL,enrollment_session_hash=NULL,
       enrolled_at=clock_timestamp(),version=version+1,updated_at=clock_timestamp() WHERE id=$1`, values: [pending.id,tokenHash(credential,'device')] },
@@ -255,4 +260,12 @@ export async function authenticateClockerDevice(
     if (error instanceof ClockerDeviceError && error.code==='DEVICE_INVALID') return null;
     throw error;
   }
+}
+
+/** Never recycle a previously issued cookie when preparing a replacement. */
+export async function clockerCredentialWasIssued(credential: string, executor: SqlExecutor): Promise<boolean> {
+  const hash = tokenHash(credential, 'device');
+  if (!hash) return false;
+  const rows = await executor.query({ text: 'SELECT 1 FROM clocker_device_credentials WHERE credential_hash=$1', values: [hash] });
+  return rows.length > 0;
 }

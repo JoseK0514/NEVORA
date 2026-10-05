@@ -8,3 +8,7 @@ it('Owner settings exposes working workspace, location and position destinations
  for(const path of ['workspace','locations','positions'])expect(html).toContain(`href="/app/settings/${path}"`);
  expect(html).not.toContain('two Fuel');
 });
+
+it('makes registered Clocker device setup discoverable from Settings',async()=>{
+ expect(renderToStaticMarkup(await SettingsPage())).toContain('href="/app/settings/clocker"');
+});

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ClockerKiosk } from "@/components/clocker-kiosk";
+import { ClockerSetup } from "@/components/clocker-setup";
 import { findActiveLocationByClockerKey } from "@/lib/data/locations";
 import { getWorkspace } from "@/lib/data/workspaces";
 
@@ -17,5 +17,5 @@ export default async function ClockerPage({
   if (!location) notFound();
   const workspace = await getWorkspace();
 
-  return <ClockerKiosk locationLabel={location.name} timeZone={workspace.timeZone} />;
+  return <ClockerSetup locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
 }

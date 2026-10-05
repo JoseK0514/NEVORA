@@ -71,5 +71,18 @@ CREATE TRIGGER clocker_device_event_append_only
   BEFORE UPDATE OR DELETE ON clocker_device_events
   FOR EACH ROW EXECUTE FUNCTION clocker_device_event_append_only();
 
+-- Retired credentials stay retired, even if a setup transport later presents one.
+-- Only hashes are retained; this table cannot authenticate a device by itself.
+CREATE TABLE clocker_device_credentials (
+  credential_hash text PRIMARY KEY CHECK (credential_hash ~ '^[a-f0-9]{64}$'),
+  device_id text NOT NULL REFERENCES clocker_devices(id),
+  credential_version integer NOT NULL CHECK (credential_version > 0),
+  issued_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+  UNIQUE(device_id,credential_version)
+);
+CREATE TRIGGER clocker_device_credentials_append_only
+  BEFORE UPDATE OR DELETE ON clocker_device_credentials
+  FOR EACH ROW EXECUTE FUNCTION clocker_device_event_append_only();
+
 -- No credentials, real devices, or punches are seeded by this migration.
 COMMIT;

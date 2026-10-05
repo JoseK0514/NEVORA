@@ -251,3 +251,24 @@ it('requires fresh enrollment when replacing a revoked device', async () => {
   expect(replacement.device.id).toBe(active.device.id);
   expect(replacement.device.credentialVersion).toBe(2);
 });
+
+it('binds the pre-established HttpOnly setup credential for lost-response recovery', async () => {
+  const pending = await register();
+  const preparedCredential = 'nev_dev_' + 'e'.repeat(64);
+  const result = await redeemClockerEnrollment({ enrollmentToken: pending.enrollmentToken, locationKey: '2', preparedCredential }, db.executor);
+  expect(result.credential).toBe(preparedCredential);
+  expect((await authenticateClockerDevice({ credential: preparedCredential, locationKey: '2' }, db.executor))?.device.id).toBe(pending.device.id);
+});
+it('rejects malformed prepared credentials without consuming the setup code', async () => {
+  const pending = await register();
+  await expect(redeemClockerEnrollment({ enrollmentToken: pending.enrollmentToken, locationKey: '2', preparedCredential: 'forged' }, db.executor)).rejects.toMatchObject({ code: 'ENROLLMENT_INVALID' });
+  expect((await listClockerDevices(owner, db.executor))[0].state).toBe('PENDING');
+});
+
+it('never reissues a retired device credential during replacement enrollment',async()=>{
+ const {active}=await enrolled();
+ const pending=await rotateClockerDevice(owner,{deviceId:active.device.id,expectedVersion:2},db.executor);
+ await expect(redeemClockerEnrollment({enrollmentToken:pending.enrollmentToken,locationKey:'2',preparedCredential:active.credential},db.executor)).rejects.toMatchObject({code:'ENROLLMENT_INVALID'});
+ expect(await authenticateClockerDevice({credential:active.credential,locationKey:'2'},db.executor)).toBeNull();
+ expect((await listClockerDevices(owner,db.executor))[0].state).toBe('PENDING');
+});

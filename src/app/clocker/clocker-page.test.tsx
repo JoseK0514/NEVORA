@@ -11,7 +11,7 @@ vi.mock('@/lib/data/locations', () => ({
   },
 }));
 vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({id:'north',name:'Northside Services',timeZone:'Asia/Tokyo',active:true,createdAt:'2030-10-07T00:00:00Z',updatedAt:'2030-10-07T00:00:00Z'}) }));
-vi.mock('@/components/clocker-kiosk', () => import('../../components/clocker-kiosk'));
+vi.mock('@/components/clocker-setup', () => import('../../components/clocker-setup'));
 vi.mock('@/lib/clocker-kiosk', () => import('../../lib/clocker-kiosk'));
 vi.mock('next/navigation', () => ({ notFound: () => { throw Error('NOT_FOUND'); } }));
 beforeEach(() => {
@@ -26,7 +26,9 @@ it('resolves configured active Clocker keys and passes required business timezon
   expect(page.props).toMatchObject({locationLabel:'Main Office',timeZone:'Asia/Tokyo'});
   const html = renderToStaticMarkup(page);
   expect(html).toContain('Main Office');
-  expect(html).toContain('Clear PIN');
+  expect(html).toContain('Setup code');
+  expect(html).not.toContain('Number 1');
+  expect(html).not.toContain('Ready to clock in');
   expect(html).not.toMatch(/manifest|portal-device-settings|install|notification/i);
 });
 it('uses current configured identity on subsequent requests without changing the key', async () => {

@@ -23,6 +23,11 @@ export default async function SettingsPage() {
             "/app/settings/locations",
           ],
           [
+            "Clocker Devices",
+            "Register shared tablets and manage their access.",
+            "/app/settings/clocker",
+          ],
+          [
             "Positions",
             "Job qualifications, separate from access roles.",
             "/app/settings/positions",
