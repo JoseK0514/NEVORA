@@ -10303,11 +10303,77 @@ body {
 }
 /* Employee Profile — quiet detail card */
 .employee-profile-card {
-  width: min(680px, 100%);
+  width: min(820px, 100%);
   padding: var(--space-lg);
   background: var(--color-bg-surface);
   border-radius: var(--radius-premium);
   box-shadow: var(--shadow-premium);
+}
+
+.employee-core-management,
+.employee-scheduling-management {
+  width: min(820px, 100%);
+}
+
+.employee-profile-section-heading {
+  margin-bottom: 20px;
+}
+
+.employee-profile-section-heading h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -.02em;
+}
+
+.employee-profile-section-heading p {
+  max-width: 620px;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.employee-core-id {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 3px 8px;
+}
+
+.employee-core-id > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+}
+
+.employee-core-id > strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+}
+
+.employee-core-id > small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.employee-core-profile-form .form-footer {
+  display: block;
+}
+
+.employee-core-profile-form .form-footer .button {
+  width: 100%;
+}
+
+.employee-management-notice {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .employee-profile-card-heading {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { StatusPill } from "@/components/status-pill";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
@@ -53,12 +54,14 @@ export default async function EmployeesPage() {
                       </span>
                       <span className="employee-profile-meta">
                         {primaryLocation?.shortName ?? "Location not assigned"}
-                        {!employee.active ? " · Inactive" : ""}
                       </span>
                     </div>
                   </div>
 
                   <div className="employee-profile-actions">
+                    <StatusPill tone={employee.active ? "success" : "neutral"}>
+                      {employee.active ? "Active" : "Inactive"}
+                    </StatusPill>
                     <span className="employee-role-badge">
                       {employeeRoleLabel(employee.role)}
                     </span>
