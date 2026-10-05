@@ -11,6 +11,7 @@ vi.mock('@/lib/data/employees', () => ({listEmployees:async()=>[],listLocations:
 vi.mock('@/lib/employee-display', () => import('../lib/employee-display'));
 vi.mock('@/lib/phone', () => import('../lib/phone'));
 vi.mock('@/components/page-header', () => import('../components/page-header'));
+vi.mock('@/components/status-pill', () => import('../components/status-pill'));
 vi.mock('@/components/nav-icon', () => import('../components/nav-icon'));
 vi.mock('@/lib/date-utils', () => import('../lib/date-utils'));
 vi.mock('next/link', () => ({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
