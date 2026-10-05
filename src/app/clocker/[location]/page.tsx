@@ -20,5 +20,5 @@ export default async function ClockerPage({
 
   let pinEnabled = false;
   try { readPinKey(); pinEnabled = true; } catch { /* PIN setup stays unavailable until configured. */ }
-  return <ClockerSetup pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
+  return <ClockerSetup punchEnabled={process.env.NEVORA_CLOCKER_PUNCH_ENABLED === 'true'} pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
 }

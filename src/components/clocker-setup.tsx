@@ -21,7 +21,7 @@ async function send(locationKey: string, body: object, signal?: AbortSignal): Pr
   throw new SetupFailure('Tablet setup could not be confirmed. Choose Check Setup before trying again.', true);
 }
 
-export function ClockerSetup({ locationKey, locationLabel, pinEnabled = false }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean }) {
+export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled = false, punchEnabled = false }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean; punchEnabled?: boolean }) {
   const [state, setState] = useState<SetupState>({ state: 'unregistered' });
   const [pending, setPending] = useState(true);
   const [feedback, setFeedback] = useState<{ message: string; uncertain: boolean } | null>(null);
@@ -75,7 +75,7 @@ export function ClockerSetup({ locationKey, locationLabel, pinEnabled = false }:
       <div className={styles.tabletLocation}>{locationLabel}</div>
       {feedback?.uncertain ? <>
         <h1>Check Tablet Setup</h1>
-      </> : state.state === 'connected' && pinEnabled ? <ClockerPinGate locationKey={locationKey} /> : state.state === 'connected' ? <>
+      </> : state.state === 'connected' && pinEnabled ? <ClockerPinGate locationKey={locationKey} timeZone={timeZone} punchEnabled={punchEnabled} /> : state.state === 'connected' ? <>
         <div className={styles.connectedMark} aria-hidden="true">✓</div>
         <h1>Tablet Connected</h1>
         <p>{state.deviceName} is registered for this location.</p>

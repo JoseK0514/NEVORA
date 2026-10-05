@@ -8,7 +8,8 @@ import { randomBytes } from 'node:crypto';
 // This runner never connects to an existing application or test server.
 if (process.env.DATABASE_URL) throw new Error('Unset DATABASE_URL before running owned Clocker tests.');
 const pinUi = process.argv[2] === '--pins-ui';
-const ui = process.argv[2] === '--ui' || pinUi;
+const punchUi = process.argv[2] === '--punch-ui';
+const ui = process.argv[2] === '--ui' || pinUi || punchUi;
 const bin = process.env.NEVORA_TEST_PG_BIN;
 if (!bin || !existsSync(join(bin, 'initdb')) || !existsSync(join(bin, 'pg_ctl'))) {
   throw new Error('NEVORA_TEST_PG_BIN must identify an existing local PostgreSQL bin directory.');
@@ -44,7 +45,7 @@ try {
   };
   delete env.DATABASE_URL;
   const config = process.argv[2] ?? 'vitest.clocker-integration.config.mts';
-  const args = ui ? ['--import','tsx',pinUi ? 'scripts/phase-c-pins-ui-qa.mjs' : 'scripts/phase-c-devices-ui-qa.mjs'] : ['node_modules/vitest/vitest.mjs', 'run', '--config', config];
+  const args = ui ? ['--import','tsx',punchUi ? 'scripts/phase-c-punch-ui-qa.mjs' : pinUi ? 'scripts/phase-c-pins-ui-qa.mjs' : 'scripts/phase-c-devices-ui-qa.mjs'] : ['node_modules/vitest/vitest.mjs', 'run', '--config', config];
   const result = spawnSync(process.execPath, args, { env, stdio: 'inherit' });
   exitCode = result.status ?? 1;
 } finally {

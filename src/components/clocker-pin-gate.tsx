@@ -1,12 +1,15 @@
 'use client';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import styles from './clocker-pin.module.css';
+import { ClockerPunchPanel } from './clocker-punch-panel';
 type Verified={state:'verified';firstName:string;expiresAt:string};
 type Reply=Verified|{state:'idle'};
 class PinRequestError extends Error { constructor(message:string,readonly recover:boolean){super(message);} }
 async function requestPin(locationKey:string,body:object):Promise<Reply>{
  const response=await fetch(`/api/clocker/${encodeURIComponent(locationKey)}/pin`,{
   method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json','X-Nevora-Clocker':'1'},
+  // Privacy clearing may be initiated by pagehide during reload/navigation.
+  keepalive:'action' in body && body.action==='clear',
   body:JSON.stringify(body),signal:AbortSignal.timeout(12000),
  });
  const data=await response.json();
@@ -15,7 +18,7 @@ async function requestPin(locationKey:string,body:object):Promise<Reply>{
  if(data.state==='verified'&&typeof data.firstName==='string'&&typeof data.expiresAt==='string')return {state:'verified',firstName:data.firstName,expiresAt:data.expiresAt};
  throw new PinRequestError('PIN verification could not be confirmed.',true);
 }
-export function ClockerPinGate({locationKey}:{locationKey:string}){
+export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{locationKey:string;timeZone?:string;punchEnabled?:boolean}){
  const input=useRef<HTMLInputElement>(null),busy=useRef(false),epoch=useRef(0);
  const [count,setCount]=useState(0),[pending,setPending]=useState(true);
  const [identity,setIdentity]=useState<Verified|null>(null);
@@ -75,7 +78,7 @@ export function ClockerPinGate({locationKey}:{locationKey:string}){
   finally{if(generation===epoch.current){busy.current=false;setPending(false);}}
  }
  return <div className={styles.terminal} aria-busy={pending}>
-  {identity?<>
+  {identity&&punchEnabled?<ClockerPunchPanel locationKey={locationKey} timeZone={timeZone} onDone={reset}/>:identity?<>
    <h1>Hi, {identity.firstName}.</h1><p>Your PIN is verified for this tablet.</p>
    <div className={styles.previewNotice}><strong>Time punches are not enabled yet.</strong><span>No worked time has been recorded.</span></div>
    <button className="button primary" type="button" onClick={()=>void reset()}>Done</button>
