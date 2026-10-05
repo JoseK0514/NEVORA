@@ -23,6 +23,7 @@ export function SelectField({
   disabled,
   hint,
   onChange,
+  className,
 }: {
   id?: string;
   name: string;
@@ -34,13 +35,17 @@ export function SelectField({
   disabled?: boolean;
   hint?: ReactNode;
   onChange?: ChangeEventHandler<HTMLSelectElement>;
+  className?: string;
 }) {
   const generatedId = useId().replaceAll(":", "");
   const selectId = id ?? `nevora-select-${generatedId}`;
   const hintId = hint ? `${selectId}-hint` : undefined;
 
   return (
-    <label className="nevora-field" htmlFor={selectId}>
+    <label
+      className={className ? `nevora-field ${className}` : "nevora-field"}
+      htmlFor={selectId}
+    >
       <span className="nevora-field-label">{label}</span>
       <span className="nevora-select-shell">
         <select

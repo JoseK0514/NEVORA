@@ -1,0 +1,10 @@
+# SDD ledger — plan: docs/superpowers/plans/2026-10-04-nevora-phase-b-ui-foundation.md
+
+Task 1: complete — rebased commit ad0b8c7cc8b8fcf347474440749fb674fd9ebeef — authenticated UI baseline + defect ledger.
+Task 2: complete — rebased commit 4fb6375c7291586e10caafa7a83e582af799f9de — canonical ActionMenu, SelectField and 44px geometry; 28/28 Schedule browser checks clean.
+Ruling: Phase B was rebased early onto accepted Phase A hardening SHA 833defab3c1be4445cff3636ff6bde7d179030f8 after Task 2 — Phase A hardened Exchange/Callout files Task 5 will touch; reconciling before further implementation reduces conflict risk while preserving the approved Phase B scope.
+Task 3: complete — commit 9235193 — safe employee core-profile lifecycle; action tests green, 75/75 foundation PostgreSQL tests green, typecheck green.
+Task 4: in progress — behavior tests 7/7 green; employee browser matrix 56/56 clean. Visual inspection found Employee ID helper-copy spacing and peer Save-button alignment defects. Long many-location checklist deferred to Task 5/6 because it belongs to multi-select/configuration harmonization.
+Pre-flight: Task 2 produces ActionMenu/SelectField consumed by Tasks 4-6; Task 3 produces EmployeeManagementProfile/update action consumed by Task 4; Task 1 defect ledger consumed by Task 6; Task 7 consumes all prior commits and final Phase A SHA. Interfaces currently match.
+Task 4: complete — commit 1cbbbf5 — 8/8 focused UI tests green; final Employees/Profile Chromium+WebKit matrix 56/56 clean.
+Task 5: implementation + focused verification complete pending commit — 23/23 focused tests, typecheck, lint; final Settings matrix 112/112 clean and final Employees matrix 84/84 clean. Visual review confirms progressive disclosure and Manage menu. Task 6 ledger items: Add Employee description still says only scheduling information is collected; core-profile Save visual width does not match scheduling Save on mobile; Locations index with 20 long records is extremely tall and needs Task 6 usability treatment.

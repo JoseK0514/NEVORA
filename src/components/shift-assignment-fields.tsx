@@ -1,6 +1,9 @@
 "use client";
+
 import { useState } from "react";
-import type { Employee, Position } from "@/lib/domain";
+import { SelectField } from "./select-field";
+import type { Employee, Position } from "../lib/domain";
+
 export function ShiftAssignmentFields({
   employees,
   positions,
@@ -14,65 +17,63 @@ export function ShiftAssignmentFields({
   positionId?: string;
   newShift?: boolean;
 }) {
-  const [selectedEmployee, setEmployee] = useState(employeeId),
-    [selectedPosition, setPosition] = useState(positionId);
-  const employee = employees.find((e) => e.id === selectedEmployee);
+  const [selectedEmployee, setEmployee] = useState(employeeId);
+  const [selectedPosition, setPosition] = useState(positionId);
+  const employee = employees.find((item) => item.id === selectedEmployee);
   const choices = positions.filter(
-    (p) => p.active && employee?.positionIds?.includes(p.id),
+    (position) => position.active && employee?.positionIds?.includes(position.id),
   );
   const retained =
-    selectedPosition && !choices.some((p) => p.id === selectedPosition);
+    !!selectedPosition &&
+    !choices.some((position) => position.id === selectedPosition);
+
   return (
     <>
-      <label className={newShift ? "new-shift-field" : undefined}>
-        <span>Employee</span>
-        <select
-          name="employeeId"
-          value={selectedEmployee}
-          required
-          onChange={(event) => {
-            setEmployee(event.target.value);
-          }}
-        >
-          <option value="" disabled>
-            Select employee
-          </option>
-          {employees
-            .filter((e) => e.active)
-            .map((e) => (
-              <option value={e.id} key={e.id}>
-                {e.firstName} {e.lastName}
-              </option>
-            ))}
-        </select>
-      </label>
-      <label className={newShift ? "new-shift-field" : undefined}>
-        <span>
-          Position <small>Optional</small>
-        </span>
-        <select
-          name="positionId"
-          value={selectedPosition}
-          onChange={(event) => setPosition(event.target.value)}
-        >
-          <option value="">No position</option>
-          {choices.map((p) => (
-            <option value={p.id} key={p.id}>
-              {p.name}
-            </option>
-          ))}
-          {retained ? (
-            <option value={selectedPosition} disabled>
-              {positions.find((p) => p.id === selectedPosition)?.name ??
-                "Existing position"}{" "}
-              (unavailable)
-            </option>
-          ) : null}
-        </select>
-        {/* A disabled selected option is omitted by native FormData. Preserve the
-            explicit choice for server validation until the user changes it. */}
-        {retained ? <input type="hidden" name="positionId" value={selectedPosition} /> : null}
-      </label>
+      <SelectField
+        className={newShift ? "new-shift-field" : undefined}
+        name="employeeId"
+        label="Employee"
+        value={selectedEmployee}
+        required
+        onChange={(event) => setEmployee(event.target.value)}
+        options={[
+          { value: "", label: "Select employee", disabled: true },
+          ...employees
+            .filter((item) => item.active)
+            .map((item) => ({
+              value: item.id,
+              label: `${item.firstName} ${item.lastName}`,
+            })),
+        ]}
+      />
+      <SelectField
+        className={newShift ? "new-shift-field" : undefined}
+        name="positionId"
+        label={
+          <>
+            Position <small>Optional</small>
+          </>
+        }
+        value={selectedPosition}
+        onChange={(event) => setPosition(event.target.value)}
+        options={[
+          { value: "", label: "No position" },
+          ...choices.map((position) => ({
+            value: position.id,
+            label: position.name,
+          })),
+          ...(retained
+            ? [{
+                value: selectedPosition,
+                label: `${positions.find((position) => position.id === selectedPosition)?.name ?? "Existing position"} (unavailable)`,
+                disabled: true,
+              }]
+            : []),
+        ]}
+      />
+      {retained ? (
+        <input type="hidden" name="positionId" value={selectedPosition} />
+      ) : null}
     </>
   );
 }

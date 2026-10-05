@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { ConfigurationForm } from "@/components/configuration-form";
+import { StatusPill } from "@/components/status-pill";
 import { requireRoles } from "@/lib/auth/permissions";
 import { listPositions } from "@/lib/data/positions";
 import { createPositionAction, updatePositionAction } from "../actions";
@@ -55,10 +56,15 @@ export default async function PositionsPage() {
                   />
                   Active position
                 </label>
-                <p>
-                  {position.active ? "Active" : "Inactive"} · Existing
-                  memberships and history are retained.
-                </p>
+                <div className="configuration-status-row">
+                  <StatusPill tone={position.active ? "success" : "neutral"}>
+                    {position.active ? "Active" : "Inactive"}
+                  </StatusPill>
+                  <span>
+                    Deactivation prevents new assignment while existing
+                    memberships and history remain intact.
+                  </span>
+                </div>
                 <button className="button secondary" type="submit">
                   Save Position
                 </button>

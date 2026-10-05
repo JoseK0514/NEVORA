@@ -132,7 +132,7 @@ export default async function ScheduleSettingsPage({
                     <small>employees</small>
                   </strong>
                   {location.requiresDesignatedLead === null ? <span className="staffing-lead-toggle">
-                    <select name={`lead-choice-${location.locationId}`} defaultValue="" required aria-label="Designated Lead rule">
+                    <select className="nevora-select nevora-select-native" name={`lead-choice-${location.locationId}`} defaultValue="" required aria-label="Designated Lead rule">
                       <option value="" disabled>Choose a Lead rule</option>
                       <option value="true">Designated Lead required</option>
                       <option value="false">Designated Lead not required</option>
@@ -224,6 +224,7 @@ export default async function ScheduleSettingsPage({
             <label>
               Location
               <select
+                className="nevora-select nevora-select-native"
                 name="locationId"
                 required
                 defaultValue={locations[0]?.id}
@@ -237,7 +238,7 @@ export default async function ScheduleSettingsPage({
             </label>
             <label>
               Day
-              <select name="dayOfWeek" defaultValue="1" required>
+              <select className="nevora-select nevora-select-native" name="dayOfWeek" defaultValue="1" required>
                 <option value="1">Monday</option>
                 <option value="2">Tuesday</option>
                 <option value="3">Wednesday</option>

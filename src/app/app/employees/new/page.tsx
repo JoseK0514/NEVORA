@@ -1,4 +1,5 @@
 import {ConfigurationForm} from "@/components/configuration-form";
+import { SelectField } from "@/components/select-field";
 import { listPositions } from "@/lib/data/positions";
 import { EmployeeSchedulingFields } from "@/components/employee-scheduling-fields";
 import Link from "next/link";
@@ -66,27 +67,36 @@ export default async function NewEmployeePage({
           </div>
 
           <div className="form-columns">
-            <label>
-              Access role
-              <select name="role" defaultValue="EMPLOYEE">
-                {session.role === "OWNER" ? <option value="OWNER">Owner</option> : null}
-                <option value="MANAGER">Manager</option>
-                <option value="LEAD">Lead</option>
-                <option value="EMPLOYEE">Employee</option>
-              </select>
-            </label>
-
-            <label>
-              Primary Location
-              <select name="primaryLocationId" required defaultValue="">
-                <option value="" disabled>Choose a primary location</option>
-                {locations.map((location) => (
-                  <option key={location.id} value={location.id}>
-                    {location.shortName}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SelectField
+              name="role"
+              label="Access role"
+              defaultValue="EMPLOYEE"
+              options={[
+                ...(session.role === "OWNER"
+                  ? [{ value: "OWNER", label: "Owner" }]
+                  : []),
+                { value: "MANAGER", label: "Manager" },
+                { value: "LEAD", label: "Lead" },
+                { value: "EMPLOYEE", label: "Employee" },
+              ]}
+            />
+            <SelectField
+              name="primaryLocationId"
+              label="Primary location"
+              required
+              defaultValue=""
+              options={[
+                {
+                  value: "",
+                  label: "Choose a primary location",
+                  disabled: true,
+                },
+                ...locations.map((location) => ({
+                  value: location.id,
+                  label: location.shortName,
+                })),
+              ]}
+            />
           </div>
 
           <EmployeeSchedulingFields locations={locations} positions={positions}/>

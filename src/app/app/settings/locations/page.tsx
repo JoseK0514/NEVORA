@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { ActionMenu } from "@/components/action-menu";
 import { StatusPill } from "@/components/status-pill";
 import { requireRoles } from "@/lib/auth/permissions";
 import { listLocations, listEmployees } from "@/lib/data/employees";
@@ -95,21 +96,33 @@ export default async function LocationsPage() {
                   {!location.active ? " (unavailable while inactive)" : ""}
                 </p>
                 <div className="configuration-actions">
-                  <Link
-                    className="button secondary"
-                    href={`/app/settings/locations/${encodeURIComponent(location.id)}`}
+                  <ActionMenu
+                    id={`location-actions-${location.id}`}
+                    label="Manage"
+                    ariaLabel={`Manage ${location.name}`}
                   >
-                    Edit Location
-                  </Link>
-                  <Link
-                    className="button secondary"
-                    href="/app/schedule/settings"
-                  >
-                    Scheduling Rules
-                  </Link>
-                  <Link className="button secondary" href="/app/employees">
-                    Employee Eligibility
-                  </Link>
+                    <Link
+                      className="nevora-action-menu-item"
+                      href={`/app/settings/locations/${encodeURIComponent(location.id)}`}
+                    >
+                      <strong>Edit Location</strong>
+                      <span>Name, short name and active status.</span>
+                    </Link>
+                    <Link
+                      className="nevora-action-menu-item"
+                      href="/app/schedule/settings"
+                    >
+                      <strong>Scheduling Rules</strong>
+                      <span>Coverage and staffing requirements.</span>
+                    </Link>
+                    <Link
+                      className="nevora-action-menu-item"
+                      href="/app/employees"
+                    >
+                      <strong>Employee Eligibility</strong>
+                      <span>Choose who can work at this location.</span>
+                    </Link>
+                  </ActionMenu>
                 </div>
               </div>
             );

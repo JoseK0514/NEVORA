@@ -343,6 +343,11 @@ button { cursor: pointer; }
   opacity: .55;
 }
 
+.nevora-select-native {
+  appearance: auto;
+  padding-right: 13px;
+}
+
 .nevora-select-chevron {
   position: absolute;
   top: 50%;
@@ -683,6 +688,29 @@ button { cursor: pointer; }
 .employee-form fieldset { margin: 0; padding: 16px; border: 1px solid var(--line); border-radius: 14px; }
 .employee-form legend { padding: 0 6px; font-size: 12px; font-weight: 850; }
 .employee-form fieldset p { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+.employee-choice-disclosure {
+  min-width: 0;
+}
+.employee-choice-disclosure > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  color: var(--color-brand-primary);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+}
+.employee-choice-disclosure > summary small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+.employee-choice-disclosure-body {
+  padding-top: 10px;
+}
 .checkbox-grid { display: grid; gap: 8px; }
 .checkbox-row { display: flex !important; align-items: center; gap: 9px !important; font-weight: 650 !important; }
 .checkbox-row input { width: 18px; min-height: 18px; margin: 0; }
@@ -702,6 +730,14 @@ button { cursor: pointer; }
 @media (max-width: 760px) {
   .form-columns { grid-template-columns: 1fr; }
   .form-footer { display: grid; grid-template-columns: 1fr 1fr; }
+  .employee-choice-disclosure > summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .employee-choice-disclosure > summary small {
+    white-space: normal;
+  }
 }
 
 
@@ -10816,7 +10852,7 @@ body {
   background: var(--color-bg-main) !important;
   border: 0 !important;
   border-radius: 8px !important;
-  min-height: 40px !important;
+  min-height: 44px !important;
   padding: 0 12px !important;
   font-size: 13px;
   color: var(--color-brand-primary) !important;
@@ -12873,6 +12909,23 @@ body {
 .configuration-page .configuration-list h2 { margin-bottom: 8px; }
 .configuration-page .configuration-list ul { padding-left: 20px; }
 .configuration-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.configuration-actions > .nevora-action-menu {
+  width: min(100%, 220px);
+}
+.configuration-actions > .nevora-action-menu .nevora-action-menu-trigger {
+  width: 100%;
+}
+.configuration-status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.configuration-status-row > span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
 .configuration-page .button, .scheduling-profile-form .button, .position-quota-form .button {
  min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
  padding: 6px 16px; border-radius: 22px; text-align: center; font-size: 12px; font-weight: 600; line-height: 15px;
@@ -12894,7 +12947,7 @@ body {
  .configuration-page .configuration-actions > .button { flex: 1 1 140px; }
  .configuration-page .form-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 }
-.configuration-page .configuration-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(100%, 468px); }
+.configuration-page .configuration-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); width: min(100%, 468px); }
 .configuration-page .page-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .configuration-page .page-actions:has(> a:only-child) { grid-template-columns: 1fr; }
 .schedule-settings-page .position-quota-fields { grid-column: 1 / -1; }

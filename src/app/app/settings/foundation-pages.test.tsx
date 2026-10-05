@@ -6,6 +6,7 @@ import type {Position} from '../../../lib/domain';
 vi.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>({id:'owner',role:'OWNER'})}));
 vi.mock('@/components/page-header',()=>import('../../../components/page-header'));
 vi.mock('@/components/status-pill',()=>import('../../../components/status-pill'));
+vi.mock('@/components/action-menu',()=>import('../../../components/action-menu'));
 vi.mock('@/components/configuration-form',()=>import('../../../components/configuration-form'));
 vi.mock('@/components/location-configuration-fields',()=>import('../../../components/location-configuration-fields'));
 vi.mock('@/lib/scheduling/location-readiness',()=>import('../../../lib/scheduling/location-readiness'));
@@ -17,7 +18,7 @@ vi.mock('./actions',()=>({saveWorkspaceProfileAction:vi.fn(),createLocationActio
 import WorkspacePage from './workspace/page';
 import LocationsPage from './locations/page';
 import PositionsPage from './positions/page';
-it('new location displays setup and preserved link with clear next actions; inactive history remains',async()=>{const html=renderToStaticMarkup(await LocationsPage());expect(html).toContain('Needs setup');expect(html).toContain('Scheduling Rules');expect(html).toContain('href="/clocker/east-office"');expect(html).toContain('Configure minimum staffing and choose a designated Lead rule.');expect(html).toContain('Assign at least one active employee');expect(html).toContain('Old Office');expect(html).toContain('Inactive');});
+it('new location displays setup and preserved link with clear next actions; inactive history remains',async()=>{const html=renderToStaticMarkup(await LocationsPage());expect(html).toContain('Needs setup');expect(html).toContain('Scheduling Rules');expect(html).toContain('href="/clocker/east-office"');expect(html).toContain('Configure minimum staffing and choose a designated Lead rule.');expect(html).toContain('Assign at least one active employee');expect(html).toContain('Old Office');expect(html).toContain('Inactive');expect(html).toContain('class="nevora-action-menu"');expect(html).toContain('Edit Location');expect(html).toContain('Employee Eligibility');});
 it('locked workspace uses exact explanation, disabled timezone and editable name',async()=>{const html=renderToStaticMarkup(await WorkspacePage());expect(html).toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);expect(html).toContain('Changing the business timezone requires a separately reviewed conversion because operational records already exist.');expect(html).toContain('value="Northside"');expect(html).toContain('Save Workspace');});
 it('empty catalog explicitly allows positionless shifts',async()=>{expect(renderToStaticMarkup(await PositionsPage())).toContain('Positionless shifts remain available.');});
 it('all inactive unheld qualifications shows accurate optional empty state',()=>{const html=renderToStaticMarkup(createElement(EmployeeSchedulingFields,{locations:[],positions:[{id:'old',name:'Retired',active:false} as Position]}));expect(html).toContain('No active positions available. Positions are optional');expect(html).not.toContain('Retired');});
