@@ -80,13 +80,25 @@ export default async function LocationsPage() {
                       : "Needs setup"}
                 </StatusPill>
                 {readiness.issues.length ? (
-                  <ul>
-                    {readiness.issues.map((issue) => (
-                      <li key={issue.code + JSON.stringify(issue.details)}>
-                        {issue.message}
-                      </li>
-                    ))}
-                  </ul>
+                  <details className="configuration-readiness-disclosure">
+                    <summary>
+                      {readiness.issues.length}{" "}
+                      {readiness.state === "INACTIVE"
+                        ? readiness.issues.length === 1
+                          ? "status item"
+                          : "status items"
+                        : readiness.issues.length === 1
+                          ? "setup item"
+                          : "setup items"}
+                    </summary>
+                    <ul>
+                      {readiness.issues.map((issue) => (
+                        <li key={issue.code + JSON.stringify(issue.details)}>
+                          {issue.message}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
                 ) : null}
                 <p>
                   Clocker:{" "}

@@ -3,7 +3,13 @@
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 
 /** Keep the original compact layout only when the rendered labels fit it. */
-export function ScheduleLocationControl({ children }: { children: ReactNode }) {
+export function ScheduleLocationControl({
+  children,
+  dense = false,
+}: {
+  children: ReactNode;
+  dense?: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -87,6 +93,7 @@ export function ScheduleLocationControl({ children }: { children: ReactNode }) {
       className="schedule-location-control"
       aria-label="Schedule location"
       data-expanded-locations="true"
+      data-dense-locations={String(dense)}
     >
       {children}
     </div>

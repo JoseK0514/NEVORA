@@ -18,7 +18,10 @@ vi.mock("@/lib/data/employees", () => ({
   ],
 }));
 vi.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
-vi.mock("@/components/page-header", () => ({ PageHeader: () => null }));
+vi.mock("@/components/page-header", () => ({
+  PageHeader: ({ description }: { description?: string }) =>
+    createElement("p", null, description),
+}));
 vi.mock("@/components/configuration-form", () => ({
   ConfigurationForm: ({ children }: { children: React.ReactNode }) =>
     createElement("form", null, children),
@@ -41,6 +44,8 @@ it("uses canonical native-authoritative selects while preserving Owner-only Owne
   );
   expect(manager.match(/class="nevora-select"/g)).toHaveLength(2);
   expect(manager).not.toContain('value="OWNER"');
+  expect(manager).toContain("contact, access and scheduling");
+  expect(manager).not.toContain("Only scheduling information is collected");
 
   m.role = "OWNER";
   const owner = renderToStaticMarkup(

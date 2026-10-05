@@ -59,6 +59,9 @@ it('renders every location through the measured selector with a safe expanded fa
     f.locations = names.map((shortName, i) => ({ id: String(i), shortName }));
     const output = await html();
     expect(output).toContain('data-expanded-locations="true"');
+    expect(output).toContain(
+      `data-dense-locations="${names.length > 8 ? "true" : "false"}"`,
+    );
     for (const name of names) expect(output).toContain(name);
   }
 });

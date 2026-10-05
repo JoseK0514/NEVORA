@@ -23,7 +23,7 @@ export default async function NewEmployeePage({
       <PageHeader
         eyebrow="Team"
         title="Add Employee"
-        description="Only scheduling information is collected. Email remains optional."
+        description="Add contact, access and scheduling details. Email remains optional."
         actions={<Link className="button secondary" href="/app/employees">Cancel</Link>}
       />
 

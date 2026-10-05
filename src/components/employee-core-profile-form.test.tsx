@@ -89,4 +89,12 @@ it("uses aligned Apple-mode profile surfaces and a readable full-width commit ac
   expect(css).toMatch(/\.employee-profile-card\s*\{[\s\S]*?width:\s*min\(820px,\s*100%\)/);
   expect(css).toMatch(/\.employee-core-id\s*\{[\s\S]*?display:\s*grid/);
   expect(css).toMatch(/\.employee-core-profile-form\s+\.form-footer\s+\.button\s*\{[\s\S]*?width:\s*100%/);
+  expect(css).toMatch(/\.app-shell\s+\.employee-core-profile-form\s+\.form-footer\s*\{[\s\S]*?grid-template-columns:\s*1fr/);
+  const genericMobileFooter = css.lastIndexOf(
+    ".app-shell .employee-form .form-footer:not(.shift-edit-footer)",
+  );
+  const coreMobileFooter = css.lastIndexOf(
+    ".app-shell .employee-core-profile-form .form-footer:not(.shift-edit-footer)",
+  );
+  expect(coreMobileFooter).toBeGreaterThan(genericMobileFooter);
 });

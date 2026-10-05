@@ -274,7 +274,7 @@ export default async function SchedulePage({
 
       <section className="schedule-operations-shell">
         <div className="schedule-operations-toolbar">
-          <ScheduleLocationControl>
+          <ScheduleLocationControl dense={locations.length > 8}>
             <div className="segmented">
               <Link
                 className={selectedLocation === "all" ? "selected" : ""}

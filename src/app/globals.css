@@ -12516,6 +12516,11 @@ body {
 .app-shell .employee-form .form-footer:not(.shift-edit-footer) {
   grid-template-columns: repeat(2, minmax(0, 160px));
 }
+
+.app-shell .employee-core-profile-form .form-footer {
+  width: 100%;
+  grid-template-columns: 1fr;
+}
 .app-shell :is(.button, .employee-action) > svg { flex-shrink: 0; display: block; }
 .app-shell :is(.manager-subtab-link, .manager-subtab-section-heading > a, .manager-activity-row > a) {
   min-height: 44px;
@@ -12526,6 +12531,9 @@ body {
 }
 @media (max-width: 760px) {
   .app-shell .employee-form .form-footer:not(.shift-edit-footer) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-shell .employee-core-profile-form .form-footer:not(.shift-edit-footer) {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Approval pairs fill the footer without shortening its divider. */
@@ -12926,6 +12934,31 @@ body {
   font-size: 12px;
   line-height: 1.45;
 }
+
+.configuration-readiness-disclosure {
+  margin-top: 10px;
+}
+
+.configuration-readiness-disclosure > summary {
+  min-height: 44px;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-brand-accent);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+
+.configuration-readiness-disclosure > ul {
+  margin: 4px 0 0;
+  padding: 10px 12px 10px 28px;
+  border-radius: 10px;
+  background: var(--color-bg-main);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
 .configuration-page .button, .scheduling-profile-form .button, .position-quota-form .button {
  min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
  padding: 6px 16px; border-radius: 22px; text-align: center; font-size: 12px; font-weight: 600; line-height: 15px;
@@ -13001,6 +13034,30 @@ body {
 @media (max-width: 760px) {
   .schedule-location-control[data-expanded-locations="true"] .segmented {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .schedule-location-control[data-dense-locations="true"] .segmented {
+    display: flex !important;
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+    scrollbar-width: none;
+  }
+
+  .schedule-location-control[data-dense-locations="true"] .segmented::-webkit-scrollbar {
+    display: none;
+  }
+
+  .schedule-location-control[data-dense-locations="true"] .segmented a {
+    flex: 0 0 auto;
+    min-width: max-content;
+    max-width: 190px;
+    white-space: nowrap;
+    scroll-snap-align: start;
   }
 }
 
