@@ -16,6 +16,7 @@ import type { ExchangeRecord, ExchangeShift } from './exchanges';
 import type { CalloutRecord } from './callouts';
 import { requestNotificationStatements,requestSnapshot,guardedRequestMutation } from './request-notifications';
 import { shiftChangeEvent } from './shift-change-history';
+import { cancelNotificationStatements } from './notifications';
 const conflict:ShiftChangeResult={status:'conflict'};
 const unavailable:ShiftChangeResult={status:'unavailable'};
 const blocked=(code:'STALE_TERMS'|'POLICY_UNKNOWN'|'CONSENT_REQUIRED',message:string):ShiftChangeResult=>({status:'blocked',issues:[{code,message}]});
@@ -76,6 +77,28 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
   // Reporting inability atomically retires incompatible voluntary participation,
   // including a target-side trade. Completed assignments and current approved
   // absence remain intact; stale linked coverage can be explicitly re-reported.
+  // A pending report belongs to the assignment the employee actually reported.
+  // A proven owner/material change must not reserve a later assignment forever.
+  // Unknown legacy terms are not proof of staleness: leave those for management.
+  for (const prior of s.source.shift_callouts.filter(row =>
+    row.shift_id === source.shiftId && row.status === 'PENDING' &&
+    (row.employee_id !== source.employeeId ||
+      (row.legacy_manual === false && row.source_terms && !current(row.source_terms, source))))) {
+   statements.push(guardedRequestMutation({
+    text: "UPDATE shift_callouts SET status='CANCELLED',outcome_reason='STALE_TERMS' WHERE id=$1 AND request_revision=$2 AND status='PENDING' RETURNING id",
+    values: [prior.id, prior.request_revision],
+   }));
+   statements.push(
+    ...cancelNotificationStatements({kind:'CALLOUT',id:String(prior.id),version:`r:${prior.request_revision}`}),
+    ...cancelNotificationStatements({kind:'CALLOUT',id:String(prior.id),version:'PENDING'}),
+    shiftChangeEvent({
+     workspaceId:w.id,requestId:String(prior.id),revision:Number(prior.request_revision)+1,
+     kind:'CALLOUT',event:'STALE',actorId:null,mode:'SYSTEM',outcomeReason:'STALE_TERMS',
+     source:storedTerms(prior,'source'),participants:{employeeId:String(prior.employee_id)},
+     reasonCode:String(prior.reason_code),reasonNote:prior.reason_note?String(prior.reason_note):undefined,
+    }),
+   );
+  }
   for(const stale of s.source.shift_exchanges.filter(x=>['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(String(x.status))&&((!x.linked_callout_id&&(x.source_shift_id===source.shiftId||x.target_shift_id===source.shiftId))||(x.source_shift_id===source.shiftId&&x.linked_callout_id&&!current(x.source_terms,source))))) {
    statements.push(guardedRequestMutation({text:"UPDATE shift_exchanges SET status='CANCELLED',outcome_reason=$3,resolved_at=clock_timestamp() WHERE id=$1 AND request_revision=$2 RETURNING id",values:[stale.id,stale.request_revision,stale.linked_callout_id?'STALE_TERMS':'PARTICIPANT_UNAVAILABLE']}));
    notify(requestSnapshot('EXCHANGE',exchangeRecord(String(stale.id),stale.status as ExchangeRecord['status'],stale.target_employee_id?String(stale.target_employee_id):undefined,stale)),requestSnapshot('EXCHANGE',exchangeRecord(String(stale.id),'CANCELLED',stale.target_employee_id?String(stale.target_employee_id):undefined,stale)));

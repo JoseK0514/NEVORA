@@ -79,7 +79,7 @@ it.each(['unknown coverage policy','elapsed coverage submission cutoff'])('trade
 it('builder navigation itself does not declare swap eligibility when only coverage is valid',async()=>{
  assignedReview();f.coverageAllowed=true;const result=await html();expect(result).toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('Eligible to trade');
 });
-it.each([{startTime:'10:00',endTime:'18:00'},{locationId:'replacement-site'},{positionId:'replacement-position'},{employeeId:'new-owner'}])('inter-read material source change %j refuses undisplayed creation consent',async change=>{
+it.each<Record<string, string | boolean>>([{startTime:'10:00',endTime:'18:00'},{locationId:'replacement-site'},{positionId:'replacement-position'},{employeeId:'new-owner'},{date:'2035-10-06'},{scheduleId:'replacement-schedule'},{weekStart:'2035-10-08'},{isDesignatedLead:false}])('inter-read material source change %j refuses undisplayed creation consent',async change=>{
  assignedReview();f.coverageAllowed=true;f.reviewed!.source={...f.reviewed!.source,...change};const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('value="v1:current"');expect(result).not.toContain('>Trade Shift<');expect(result).toContain('Stale assignment');
 });
 it.each(['pending','completed'] as const)('URL result render performs read-only %s lookup rather than cache-invalidating action',async status=>{

@@ -31,11 +31,12 @@ it.each(['revocation','expiry'] as const)('A043/A047/A068 final specific session
  expect(await q('SELECT * FROM shift_change_operations WHERE operation_id=$1',[f.command.operationId])).toHaveLength(0);
  await q('DELETE FROM employee_sessions WHERE token_hash=$1',[proof('e2').sessionTokenHash]);await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'e2',clock_timestamp()+interval '1 day')",[proof('e2').sessionTokenHash]);
 });
-it.each(['leave','availability','unpublish','delete','profile','policy','material'] as const)('A040/A044/A049/A050/A052/A082/A089 input-first %s invalidates a pre-read after real lock wait',async kind=>{
- const f=await offered();const lock=new Client({connectionString:db.connectionString});await lock.connect();await lock.query('BEGIN');await lock.query('SELECT id FROM workspaces FOR NO KEY UPDATE');
+it.each(['leave','availability','unpublish','delete','profile','policy','material','assignment'] as const)('A040/A044/A049/A050/A052/A082/A089 input-first %s invalidates a pre-read after real lock wait',async kind=>{
+ const f=await offered();await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('race-secondary','loc-2','2035-10-01','PUBLISHED','owner') ON CONFLICT(id) DO NOTHING");const lock=new Client({connectionString:db.connectionString});await lock.connect();await lock.query('BEGIN');await lock.query('SELECT id FROM workspaces FOR NO KEY UPDATE');
  const pending=executeShiftChange(proof('e2'),f.command,db.executor);
  try{
   await waitBlocked(lock,'FROM workspaces');
+  if(kind==='assignment')await lock.query("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT $1,'race-secondary','e2',date,'08:00','16:00' FROM shifts WHERE id=$2",[randomUUID(),f.id]);
   if(kind==='leave')await lock.query("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) SELECT $1,'e2',date,date,'APPROVED' FROM shifts WHERE id=$2",[randomUUID(),f.id]);
   if(kind==='availability')await lock.query("INSERT INTO availability_exceptions(id,employee_id,date,kind) SELECT $1,'e2',date,'UNAVAILABLE' FROM shifts WHERE id=$2",[randomUUID(),f.id]);
   if(kind==='unpublish')await lock.query("UPDATE schedules SET status='DRAFT' WHERE id='schedule'");
@@ -75,12 +76,12 @@ async function controlled(){
  const executor:SqlExecutor={query:db.executor.query,transaction:async statements=>{await client.query('BEGIN');try{const rows=[];for(const s of statements){rows.push((await client.query(s.text,[...s.values])).rows);if(!held&&s.text.includes('generation_source_conflict')){held=true;signal();await released;}}await client.query('COMMIT');return rows;}catch(e){await client.query('ROLLBACK');throw e;}}};
  return {client,executor,reached,release,close:async()=>{release();await client.end();}};
 }
-it.each(['leave','availability','profile','policy','material','unpublish','delete'] as const)('A040/A044/A049/A050/A052/A082/A089 acceptance-first %s writer waits until completed assignment',async kind=>{
- const f=await offered(),held=await controlled();const accepting=executeShiftChange(proof('e2'),f.command,held.executor);
+it.each(['leave','availability','profile','policy','material','unpublish','delete','assignment'] as const)('A040/A044/A049/A050/A052/A082/A089 acceptance-first %s writer waits until completed assignment',async kind=>{
+ const f=await offered();await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('race-secondary','loc-2','2035-10-01','PUBLISHED','owner') ON CONFLICT(id) DO NOTHING");const held=await controlled();const accepting=executeShiftChange(proof('e2'),f.command,held.executor);
  let writing:Promise<unknown>|undefined;
  try{
   await held.reached;
-  const queries={leave:{text:"INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) SELECT $1,'e2',date,date,'APPROVED' FROM shifts WHERE id=$2",values:[randomUUID(),f.id]},availability:{text:"INSERT INTO availability_exceptions(id,employee_id,date,kind) SELECT $1,'e2',date,'UNAVAILABLE' FROM shifts WHERE id=$2",values:[randomUUID(),f.id]},profile:{text:"UPDATE employee_scheduling_settings SET operational_rule_profile=NULL WHERE employee_id='e2'",values:[]},policy:{text:"UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"MANAGER_REVIEW\"')",values:[]},material:{text:"UPDATE shifts SET start_time='09:00' WHERE id=$1",values:[f.id]},unpublish:{text:"UPDATE schedules SET status='DRAFT' WHERE id='schedule'",values:[]},delete:{text:'DELETE FROM shifts WHERE id=$1',values:[f.id]}}[kind];
+  const queries={assignment:{text:"INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT $1,'race-secondary','e2',date,'08:00','16:00' FROM shifts WHERE id=$2",values:[randomUUID(),f.id]},leave:{text:"INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) SELECT $1,'e2',date,date,'APPROVED' FROM shifts WHERE id=$2",values:[randomUUID(),f.id]},availability:{text:"INSERT INTO availability_exceptions(id,employee_id,date,kind) SELECT $1,'e2',date,'UNAVAILABLE' FROM shifts WHERE id=$2",values:[randomUUID(),f.id]},profile:{text:"UPDATE employee_scheduling_settings SET operational_rule_profile=NULL WHERE employee_id='e2'",values:[]},policy:{text:"UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"MANAGER_REVIEW\"')",values:[]},material:{text:"UPDATE shifts SET start_time='09:00' WHERE id=$1",values:[f.id]},unpublish:{text:"UPDATE schedules SET status='DRAFT' WHERE id='schedule'",values:[]},delete:{text:'DELETE FROM shifts WHERE id=$1',values:[f.id]}}[kind];
   writing=db.executor.query(queries);await waitBlocked(held.client,queries.text.slice(0,20));held.release();
   expect(await accepting).toMatchObject({status:'completed'});await writing;
   expect(await q('SELECT * FROM shift_change_operations WHERE operation_id=$1',[f.command.operationId])).toHaveLength(1);

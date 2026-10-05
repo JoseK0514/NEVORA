@@ -1,0 +1,3113 @@
+{
+  "checkpoint": "50407eb38e4f60ebb9c50f7bf5b62a13c323244b",
+  "phase": "A",
+  "meaning": "98 approved scenarios are mapped to observed local evidence; this is not 98 independent tests or an automatic all-scenarios PASS. Titles with historical Axxx annotations were not used to infer mappings. Review the assertion lists, source hashes, limitations and final independent review.",
+  "requirements": {
+    "R01": [
+      "A001",
+      "A002",
+      "A003",
+      "A004",
+      "A005",
+      "A006",
+      "A007",
+      "A009",
+      "A010",
+      "A040",
+      "A092",
+      "A095"
+    ],
+    "R02": [
+      "A016",
+      "A017",
+      "A018",
+      "A019",
+      "A020",
+      "A021",
+      "A022",
+      "A072",
+      "A074",
+      "A081",
+      "A088"
+    ],
+    "R03": [
+      "A013",
+      "A023",
+      "A024",
+      "A025",
+      "A026",
+      "A027",
+      "A028",
+      "A029",
+      "A030",
+      "A031",
+      "A035",
+      "A036",
+      "A037",
+      "A038",
+      "A059",
+      "A061",
+      "A069",
+      "A090",
+      "A091",
+      "A092",
+      "A094",
+      "A098"
+    ],
+    "R04": [
+      "A011",
+      "A012",
+      "A013",
+      "A014",
+      "A015",
+      "A017",
+      "A018",
+      "A038",
+      "A059"
+    ],
+    "R05": [
+      "A001",
+      "A008",
+      "A012",
+      "A029",
+      "A073",
+      "A082",
+      "A085",
+      "A086"
+    ],
+    "R06": [
+      "A008",
+      "A015",
+      "A016",
+      "A022",
+      "A058",
+      "A059",
+      "A074",
+      "A093",
+      "A094",
+      "A095"
+    ],
+    "R07": [
+      "A003",
+      "A006",
+      "A010",
+      "A012",
+      "A013",
+      "A015",
+      "A019",
+      "A020",
+      "A021",
+      "A032",
+      "A039",
+      "A040",
+      "A041",
+      "A042",
+      "A043",
+      "A044",
+      "A045",
+      "A046",
+      "A047",
+      "A048",
+      "A049",
+      "A050",
+      "A053",
+      "A054",
+      "A056",
+      "A057",
+      "A060",
+      "A063",
+      "A081",
+      "A082",
+      "A087",
+      "A089",
+      "A090",
+      "A097"
+    ],
+    "R08": [
+      "A022",
+      "A033",
+      "A034",
+      "A053",
+      "A054",
+      "A055",
+      "A056",
+      "A057",
+      "A058",
+      "A059",
+      "A060",
+      "A074",
+      "A087",
+      "A088",
+      "A089"
+    ],
+    "R09": [
+      "A002",
+      "A046",
+      "A050",
+      "A056",
+      "A058",
+      "A060",
+      "A061",
+      "A062",
+      "A063",
+      "A064",
+      "A068",
+      "A069",
+      "A070",
+      "A071",
+      "A072",
+      "A075",
+      "A089"
+    ],
+    "R10": [
+      "A001",
+      "A005",
+      "A009",
+      "A023",
+      "A024",
+      "A025",
+      "A026",
+      "A027",
+      "A028",
+      "A029",
+      "A030",
+      "A031",
+      "A032",
+      "A033",
+      "A034",
+      "A035",
+      "A036",
+      "A037",
+      "A041",
+      "A042",
+      "A043",
+      "A045",
+      "A049",
+      "A052",
+      "A065",
+      "A090",
+      "A091",
+      "A092",
+      "A094",
+      "A095",
+      "A096",
+      "A098"
+    ],
+    "R11": [
+      "A001",
+      "A006",
+      "A007",
+      "A011",
+      "A017",
+      "A018",
+      "A019",
+      "A020",
+      "A025",
+      "A032",
+      "A039",
+      "A044",
+      "A045",
+      "A046",
+      "A048",
+      "A050",
+      "A051",
+      "A052",
+      "A062",
+      "A064",
+      "A073",
+      "A079",
+      "A080",
+      "A092",
+      "A096"
+    ],
+    "R12": [
+      "A004",
+      "A010",
+      "A014",
+      "A016",
+      "A023",
+      "A043",
+      "A047",
+      "A061",
+      "A065",
+      "A066",
+      "A067",
+      "A068",
+      "A069",
+      "A072",
+      "A075",
+      "A077",
+      "A085",
+      "A093",
+      "A097"
+    ],
+    "R13": [
+      "A066",
+      "A073",
+      "A074",
+      "A075",
+      "A076",
+      "A077",
+      "A078",
+      "A079",
+      "A088",
+      "A094",
+      "A097",
+      "A098"
+    ],
+    "R14": [
+      "A008",
+      "A051",
+      "A055",
+      "A064",
+      "A070",
+      "A071",
+      "A079",
+      "A080",
+      "A081",
+      "A082",
+      "A083",
+      "A084",
+      "A086",
+      "A096",
+      "A097"
+    ],
+    "R15": [
+      "A008",
+      "A053",
+      "A054",
+      "A055",
+      "A082",
+      "A085",
+      "A086",
+      "A087",
+      "A088",
+      "A089",
+      "A097"
+    ],
+    "R16": [
+      "A086",
+      "A090",
+      "A091",
+      "A092",
+      "A093",
+      "A095",
+      "A096",
+      "A097",
+      "A098"
+    ],
+    "R17": [
+      "A030",
+      "A091",
+      "A094",
+      "A095",
+      "A096",
+      "A097",
+      "A098"
+    ]
+  },
+  "evidence_catalog": {
+    "src/components/shift-change-form-state.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "90a3bec0d9ea1b7307fc4e95df2719312544a43cd2a64c40fb11b190dac25ccf",
+      "passed_assertions": [
+        "reconciles a lost committed response without resubmitting or changing identity",
+        "null reconciliation retains exact note, terms, revision and operation on retry",
+        "double submit is suppressed while the first operation waits",
+        "failed reconciliation is still uncertain and does not retry mutation"
+      ]
+    },
+    "src/components/shift-change-policy-fields.test.tsx": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "27566de8138365003624cd46cd8cdb6417db5f3dc73b9defc3c7f4e08e5eb256",
+      "passed_assertions": [
+        "Owner sees independent scope revisions and blank unknown deadlines",
+        "Manager reads unknown policy and profiles without Owner write controls",
+        "configured zero survives alongside unknown and reviewed not applicable settings"
+      ]
+    },
+    "src/lib/business-time.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "d56aa83611b0abce6e7ea918719a47cba122f4a6c6945272ae7acc3f1e9b8239",
+      "passed_assertions": [
+        "workspace business time uses the explicit zone at date and Monday boundaries",
+        "workspace business time converts and round trips an explicitly zoned deadline",
+        "workspace business time rejects invalid or ambiguous deadline 2026-03-08T02:30",
+        "workspace business time rejects invalid or ambiguous deadline 2026-11-01T01:30",
+        "workspace business time rejects invalid or ambiguous deadline 2026-02-30T09:00",
+        "workspace business time rejects invalid or ambiguous deadline 2026-10-03T24:00",
+        "workspace business time rejects invalid or ambiguous deadline 2026-10-03T09:00Z",
+        "workspace business time rejects invalid or ambiguous deadline ",
+        "workspace business time rejects invalid or ambiguous deadline 2026-10-03T09:00:00",
+        "workspace business time rejects an invalid zone",
+        "workspace business time normalizes overnight and end of day boundaries",
+        "workspace business time keeps nominal planned hours across DST",
+        "workspace business time rejects unresolvable assignment boundaries",
+        "workspace business time rejects unresolvable assignment boundaries",
+        "workspace business time rejects unresolvable assignment boundaries",
+        "workspace business time rejects unresolvable assignment boundaries",
+        "formats the live clock with seconds in the configured zone",
+        "formats publication timestamps in the configured zone"
+      ]
+    },
+    "src/lib/notifications/logout.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "36cc62c35ad86f39b138ff420439ba82d4886ec84d660fce144054f77a0c78cd",
+      "passed_assertions": [
+        "successful_cleanup_affects_only_this_installation",
+        "cleanup_rejection_does_not_block_signout",
+        "cleanup_timeout_does_not_block_signout",
+        "session_revocation_survives_push_transaction_failure",
+        "session_delete_rejection_and_complete_storage_outage_remain_pending",
+        "signing_misconfiguration_retains_existing_opaque_proof",
+        "outage_receipt_cannot_transfer_ownership",
+        "verified_recovery_retries_session_revocation_and_detach_idempotently",
+        "invalid_forged_receipt_cannot_detach",
+        "invalid_expired_receipt_cannot_detach",
+        "invalid_new_generation_receipt_cannot_detach",
+        "invalid_wrong_environment_receipt_cannot_detach",
+        "unsubscribe_recovery_preserves_session_and_logout_recovery_revokes_only_old_session",
+        "opaque_fallback_verifies_active_record_before_deriving_old_session",
+        "opaque_fallback_other_installation_fails_closed",
+        "opaque_fallback_new_generation_fails_closed",
+        "opaque_fallback_other_environment_fails_closed",
+        "opaque_fallback_detached_fails_closed",
+        "opaque_fallback_invalid_fails_closed",
+        "opaque_fallback_absent_fails_closed",
+        "account_switch_rotates_only_after_detach_and_keeps_other_devices",
+        "account_switch_storage_outage_keeps_pending_and_old_proof",
+        "same_account_session_renewal_keeps_explicit_consent_and_generation",
+        "opaque_partial_recovery_repeats_old_session_revocation_after_detach_advances_generation",
+        "pending_unsubscribe_then_failed_logout_preserves_session_revocation_obligation",
+        "pending_former_logout_then_newer_failed_logout_recovers_every_distinct_session",
+        "renewal_then_detach_failure_excludes_old_generation_without_browser_recovery",
+        "receipt_merge_preserves_original_lifetimes_and_partial_recovery_is_idempotent",
+        "bounded_receipt_capacity_retains_all_prior_obligations_and_fails_closed",
+        "successful_later_session_delete_does_not_spend_pending_receipt_capacity",
+        "multiple_session_recovery_keeps_shared_one_second_abort_budget",
+        "confirmed_auth_success_retires_prior_obligation_during_push_only_outage",
+        "partial_reconciliation_retires_only_confirmed_auth_operations_before_deadline",
+        "workspace outage does not prevent cookie termination or account-switch fencing"
+      ]
+    },
+    "src/lib/notifications/policy.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "b3792231ef8d835224ba1b3cf491c9111623f0d67f63012443962a81d2f098c1",
+      "passed_assertions": [
+        "notification timing Puerto Rico quiet/week boundary 2026-10-05T00:59:00Z",
+        "notification timing Puerto Rico quiet/week boundary 2026-10-05T01:00:00Z",
+        "notification timing Puerto Rico quiet/week boundary 2026-10-05T10:59:00Z",
+        "notification timing Puerto Rico quiet/week boundary 2026-10-05T11:00:00Z",
+        "notification timing Puerto Rico quiet/week boundary 2026-10-05T03:59:00Z",
+        "notification timing Puerto Rico quiet/week boundary 2026-10-05T04:00:00Z",
+        "notification timing plans one availability reminder exactly deadline minus 24h and never catches up after closure",
+        "notification timing expires a quiet-hours deferral past the deadline",
+        "notification timing does not move an acknowledgement follow-up before 24h for a near shift",
+        "notification timing bounded retry delay for attempt 1",
+        "notification timing bounded retry delay for attempt 2",
+        "notification timing bounded retry delay for attempt 3",
+        "notification timing bounded retry delay for attempt 4",
+        "notification timing bounds attempt count, Retry-After and expiry",
+        "persisted policy decisions preserves an existing acknowledgement reminder identity across a later materialization day",
+        "persisted policy decisions assigns a distinct durable id when deriving a reminder from an event",
+        "persisted policy decisions honors finite Retry-After with bounded deterministic jitter",
+        "quiet hours cross a DST boundary in workspace time: America/Puerto_Rico 2026-10-04T01:00Z",
+        "quiet hours cross a DST boundary in workspace time: America/New_York 2026-03-08T03:00Z",
+        "quiet hours cross a DST boundary in workspace time: America/New_York 2026-11-01T02:00Z",
+        "quiet hours cross a DST boundary in workspace time: Asia/Tokyo 2026-10-03T14:00Z",
+        "reminder budget identity uses the configured local day"
+      ]
+    },
+    "src/lib/notifications/provider.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "29ff314aa55994c1d98733cc824445672eea7f44f8c480cb65a577f9077cf2a6",
+      "passed_assertions": [
+        "provider_acceptance_is_not_acknowledgement",
+        "hung_transport_aborts_at_deadline",
+        "classifies status 408 safely",
+        "classifies status 429 safely",
+        "classifies status 500 safely",
+        "classifies status 503 safely",
+        "classifies status 404 safely",
+        "classifies status 410 safely",
+        "classifies status 400 safely",
+        "classifies status 401 safely",
+        "classifies status 403 safely",
+        "classifies status 302 safely",
+        "bounds Retry-After and rejects endpoints/config before transport",
+        "network_errors_are_sanitized_and_preaborted_calls_do_not_send",
+        "https_transport_caps_total_streamed_response_and_never_follows_redirects",
+        "https_transport_deadline_includes_hung_dns_and_slow_drip_body",
+        "https_transport_rejects_oversized_content_length_and_revalidates_endpoint",
+        "Retry_After_dates_are_bounded_and_per_call_VAPID_does_not_bleed"
+      ]
+    },
+    "src/lib/notifications/recipients.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "fa3ed5cd8248a663a0e6594b636ea9d59a37642ba152aecfb497a7c89e44b93a",
+      "passed_assertions": [
+        "notification recipient rules publication_selects_only_affected_authorized_accounts: first both-location publication",
+        "notification recipient rules publication_selects_only_affected_authorized_accounts: location two first personal publication",
+        "notification recipient rules publication_selects_only_affected_authorized_accounts: reassignment",
+        "notification recipient rules publication_selects_only_affected_authorized_accounts: removal",
+        "notification recipient rules publication_selects_only_affected_authorized_accounts: unchanged",
+        "notification recipient rules publication_selects_only_affected_authorized_accounts: note only",
+        "notification recipient rules preserves first publication semantics per account",
+        "notification recipient rules equivalent_personal_revision_preserves_reminder_budget",
+        "notification recipient rules actor_success_is_not_redundantly_notified",
+        "notification recipient rules selects Employee/Lead missing markers and Manager/Owner grouped closure review",
+        "notification recipient rules only actual changed shifts within twelve hours are urgent",
+        "notification recipient rules caps acknowledgement follow-up at next shift, seven days and Puerto Rico week end",
+        "notification recipient rules keys isolate environments, source versions and recipients",
+        "manager grouping and current access deduplicates the same unresolved manager item per account/Puerto Rico day across source versions",
+        "manager grouping and current access does not turn configuration/hour preference items or elapsed coverage into a campaign",
+        "manager grouping and current access uses actual upcoming coverage start for urgency and role-wide manager access",
+        "review regressions: assignment-scoped access does not authorize an inaccessible time change through another permitted assignment",
+        "review regressions: assignment-scoped access does not authorize an inaccessible removal through another permitted assignment",
+        "review regressions: assignment-scoped access does not authorize an inaccessible reassignment through another permitted assignment",
+        "review regressions: assignment-scoped access retains the original authorized reminder budget when only inaccessible shifts change",
+        "review regressions: assignment-scoped access bounds reminders only by upcoming authorized shifts",
+        "review regressions: assignment-scoped access retains role-wide assignment access for MANAGER",
+        "review regressions: assignment-scoped access retains role-wide assignment access for OWNER",
+        "review regressions: assignment-scoped access notifies a former authorized assignee when their permitted shift is reassigned",
+        "review regressions: assignment-scoped access makes Monday midnight Puerto Rico the decisive reminder expiry cap"
+      ]
+    },
+    "src/lib/notifications/service-worker.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "da63dec60915106ecab44d623e69e2ad3514ab419f1565446731f9645c34d627",
+      "passed_assertions": [
+        "portal service worker source private_responses_never_enter_cache",
+        "portal service worker source clocker_is_not_intercepted: /application",
+        "portal service worker source clocker_is_not_intercepted: /app-other",
+        "portal service worker source clocker_is_not_intercepted: /clocker/2",
+        "portal service worker source clocker_is_not_intercepted: /clocker/110",
+        "portal service worker source clocker_is_not_intercepted: /login",
+        "portal service worker source clocker_is_not_intercepted: /activate",
+        "portal service worker source clocker_is_not_intercepted: /api/internal/notifications/dispatch",
+        "portal service worker source clocker_is_not_intercepted: /app/api/push/status",
+        "portal service worker source clocker_is_not_intercepted: https://other.example/app",
+        "portal service worker source only connection failure receives public fallback: /app",
+        "portal service worker source only connection failure receives public fallback: /app/schedule",
+        "portal service worker source preserves HTTP 401 and redirects",
+        "portal service worker source preserves HTTP 403 and redirects",
+        "portal service worker source preserves HTTP 404 and redirects",
+        "portal service worker source preserves HTTP 500 and redirects",
+        "portal service worker source preserves HTTP 503 and redirects",
+        "portal service worker source preserves HTTP 302 and redirects",
+        "portal service worker source POST approvals/punches, RSC, auth and API never get fallback",
+        "portal service worker source never caches failed or redirected public asset responses",
+        "portal service worker source valid owner displays only the generic envelope with fixed icon and tag",
+        "portal service worker source accepts actual Task1 payload projection for SCHEDULE_PUBLISHED",
+        "portal service worker source accepts actual Task1 payload projection for SCHEDULE_ACKNOWLEDGEMENT_REMINDER",
+        "portal service worker source accepts actual Task1 payload projection for SCHEDULE_CHANGED",
+        "portal service worker source accepts actual Task1 payload projection for COVERAGE_ATTENTION",
+        "portal service worker source accepts actual Task1 payload projection for TIME_OFF_APPROVED",
+        "portal service worker source accepts actual Task1 payload projection for TIME_OFF_DENIED",
+        "portal service worker source accepts actual Task1 payload projection for CALLOUT_APPROVED",
+        "portal service worker source accepts actual Task1 payload projection for CALLOUT_DENIED",
+        "portal service worker source accepts actual Task1 payload projection for SWAP_RESPONSE_REQUIRED",
+        "portal service worker source accepts actual Task1 payload projection for SWAP_APPROVED",
+        "portal service worker source accepts actual Task1 payload projection for SWAP_DENIED",
+        "portal service worker source accepts actual Task1 payload projection for COVERAGE_APPROVED",
+        "portal service worker source accepts actual Task1 payload projection for COVERAGE_DENIED",
+        "portal service worker source accepts actual Task1 payload projection for AVAILABILITY_REMINDER",
+        "portal service worker source accepts actual Task1 payload projection for AVAILABILITY_SUMMARY",
+        "portal service worker source accepts actual Task1 payload projection for MANAGER_REVIEW",
+        "portal service worker source accepts actual Task1 payload projection for SELF_TEST",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 0",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 1",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 2",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 3",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 4",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 5",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 6",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 7",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 8",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 9",
+        "portal service worker source suppresses malformed, expired, private or wrong-generation push 10",
+        "portal service worker source no owner, JSON failure and storage outage fail closed",
+        "portal service worker source rejects owner messages from /clocker/2",
+        "portal service worker source rejects owner messages from /clocker/110",
+        "portal service worker source rejects owner messages from /application",
+        "portal service worker source rejects owner messages from https://other.example/app",
+        "portal service worker source rejects unknown clients, versions, extra secrets and invalid generation",
+        "portal service worker source detach closes matching notifications and cannot be undone by delayed SET across restart",
+        "portal service worker source delayed old suppression and SET cannot clear or replace fresh generation",
+        "portal service worker source acknowledges durable active/suppressed ownership over the supplied MessageChannel only",
+        "portal service worker source unavailable storage acknowledges failure rather than successful local enrollment",
+        "portal service worker source saturated storage acknowledges unavailable and keeps oldest tombstone",
+        "portal service worker source storage failure during detach keeps this worker suppressed after storage recovers",
+        "portal service worker source accepted generation survives a worker restart without storing private details",
+        "portal service worker source client moving from portal to Clocker during click lookup is not navigated",
+        "portal service worker source suppression arriving before initial SET still fences that generation",
+        "portal service worker source generation tombstone saturation fails closed without evicting old suppression",
+        "portal service worker source click uses a fixed portal URL and never reuses Clocker or lookalike windows",
+        "portal service worker source click reuses only a current same-origin portal client",
+        "portal service worker source suppressed, expired and forged click data cannot navigate",
+        "portal service worker source updates retain the normal waiting lifecycle and clean only owned cache versions",
+        "portal service worker source retirement variant only removes owned caches and own registration"
+      ]
+    },
+    "src/lib/notifications/worker.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "7361ad23805b2fa31b5321a00d1cbb37f42d5842b417b360b38889cfe38a3bcf",
+      "passed_assertions": [
+        "provider_acceptance_is_not_acknowledgement",
+        "invalid_subscription_is_cleaned",
+        "one_failed_device_does_not_block_another",
+        "revalidates resolved after claim",
+        "revalidates access after claim",
+        "revalidates owner after claim",
+        "revalidates generation after claim",
+        "revalidates environment after claim",
+        "revalidates expiry after claim",
+        "revalidates seed after claim",
+        "revalidates session after claim",
+        "quiet_hours_persist_deferral_without_spending_attempt_or_refreshing_lifetime",
+        "stale_completion_token_cannot_report_acceptance",
+        "disabled_flags_and_test_allowlist_fail_closed",
+        "budget_releases_unattempted_claims_and_bounds_concurrency",
+        "hung_state_fails_closed_within_invocation_budget",
+        "retry_jitter_is_deterministic_at_most_ten_percent_and_lifetime_is_hard",
+        "quiet_hours_are_rechecked_after_slow_subscription_read",
+        "source_check_expiry_is_persisted_as_expired",
+        "no_subscription_state_is_reported_from_persistence",
+        "self_test_is_only_sent_to_its_current_generation_installation",
+        "supersession_and_test_allowlist_are_checked_for_every_retry",
+        "storage_outage_releases_unattempted_claims_but_ambiguous_acceptance_retains_lease",
+        "ambiguous_delivery_retries_with_the_same_tag_and_revalidates_resolution",
+        "two_invocations_only_attempt_the_disjoint_claims_returned_by_repository",
+        "worker_hung_sender_is_bounded_even_when_injected_transport_ignores_signal",
+        "factory_scopes_real_repository_queries_and_transactions_to_invocation_abort",
+        "hung_preflight_cancels_scoped_IO_and_releases_unattempted_lease",
+        "high_urgency_can_send_at_night_but_never_past_source_lifetime",
+        "retry_after_cannot_extend_persisted_lifetime_and_attempt_five_is_terminal",
+        "in_flight_attempt_is_aborted_at_source_expiry_before_eight_seconds",
+        "removed-session cleanup obeys the work deadline and does not begin delivery after it"
+      ]
+    },
+    "src/lib/scheduling/coverage-ranking.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "9ed1ff3272bef616a19c26aa602a09f2955c0b400cd266ad6064cd0dce040b0e",
+      "passed_assertions": [
+        "coverage preference ranking uses the shared eligibility engine filters actual overlapping assignments instead of trusting independent boolean flags",
+        "coverage preference ranking uses the shared eligibility engine prioritizes employees who need more target hours",
+        "coverage preference ranking uses the shared eligibility engine uses approved target-completion ratio before historical under-target counts",
+        "coverage preference ranking uses the shared eligibility engine retains employees without a target behind eligible employees needing hours",
+        "coverage preference ranking uses the shared eligibility engine rejects inactive, unavailable, ineligible-location, over-maximum and unqualified Lead candidates"
+      ]
+    },
+    "src/lib/scheduling/operational-rules.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "dd633dfcec2f33ab9c6f7f43074a276a8f8147eb9ad2b15d0891f1cdb548d02b",
+      "passed_assertions": [
+        "A090 rejects insufficient prior cross-location rest",
+        "A090 rejects insufficient next cross-location rest",
+        "A090 removes outgoing shifts before rest",
+        "A091 enforces per-shift cap independently",
+        "A091 checks BUSINESS_CALENDAR_DAY daily cap",
+        "A091 checks ROLLING_24_HOURS daily cap",
+        "A091 distinguishes rolling from calendar days",
+        "A092 distinguishes missing break evidence, unmet break and valid scheduled break without deducting hours",
+        "A093 unknown rule differs from reviewed not applicable",
+        "A094 routes scheduled overtime threshold separately",
+        "A098 elapsed DST rest differs from nominal and scheduled duration remains explicit",
+        "A091 unsupported daily semantics become unverifiable rather than a guessed calendar day",
+        "A098 fall-back elapsed daily/per-shift duration exceeds nominal scheduled duration",
+        "A092 wrong paid treatment, late timing and short duration each fail known breaks",
+        "I1 reviewed non-applicability requires no historical elapsed evidence",
+        "I1 WALL_CLOCK per-shift limit only requires candidate facts",
+        "I1 ELAPSED per-shift limit only requires candidate facts",
+        "I1 elapsed rest ignores ambiguity outside its relevant boundaries/window",
+        "I1 elapsed calendar ignores ambiguity outside its relevant boundaries/window",
+        "I1 elapsed rolling ignores ambiguity outside its relevant boundaries/window",
+        "I1 elapsed weekly ignores ambiguity outside its relevant boundaries/window",
+        "I1 elapsed break ignores ambiguity outside its relevant boundaries/window",
+        "I1 relevant ambiguous elapsed priorRest facts remain unverifiable",
+        "I1 relevant ambiguous elapsed nextRest facts remain unverifiable",
+        "I1 relevant ambiguous elapsed calendar facts remain unverifiable",
+        "I1 relevant ambiguous elapsed rolling facts remain unverifiable",
+        "I1 relevant ambiguous elapsed weekly facts remain unverifiable",
+        "I1 elapsed rest only requires the adjacent end, not its unrelated ambiguous start",
+        "I1 calendar clips an ambiguous start wholly outside the contributing elapsed window",
+        "I1 weekly clips an ambiguous start wholly outside the contributing elapsed window",
+        "I1 rolling clips an ambiguous start wholly outside the contributing elapsed window",
+        "I1 an ambiguous endpoint straddling the elapsed window is not discarded using one offset",
+        "I1 a contributing skipped endpoint stays unverifiable rather than normalized",
+        "I2 every overtime week must be verified even when an earlier week exceeds threshold 60",
+        "I2 every overtime week must be verified even when an earlier week exceeds threshold 240"
+      ]
+    },
+    "src/lib/scheduling/scheduling-rules.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "030f13f79c4b58ee3711bc9c9832e54975eb4f9f1cf0558fa82bdb384ea33cbe",
+      "passed_assertions": [
+        "shared assignment rules accepts an active available employee at an eligible location with structured hours",
+        "shared assignment rules blocks inactive employees",
+        "shared assignment rules blocks unauthorized locations",
+        "shared assignment rules blocks outside normal availability in every workflow",
+        "shared assignment rules does not treat missing normal hours as unrestricted availability",
+        "shared assignment rules joins adjacent availability windows for a complete period",
+        "shared assignment rules does not bridge an unavailable gap between windows",
+        "shared assignment rules a dated full-day unavailable exception overrides normal hours",
+        "shared assignment rules partial-day unavailability removes only the affected period",
+        "shared assignment rules available exceptions replace only their date and leave other normal days intact",
+        "shared assignment rules a legacy submitted zero-window week is intentionally unavailable",
+        "shared assignment rules legacy weekly snapshots preserve explicitly missing days",
+        "shared assignment rules ignores seeded weekly hours as a submission and uses current normal hours",
+        "shared assignment rules new normal-based weekly confirmations inherit unchanged normal days",
+        "shared assignment rules only APPROVED leave blocks (APPROVED)",
+        "shared assignment rules only APPROVED leave blocks (PENDING)",
+        "shared assignment rules only APPROVED leave blocks (DENIED)",
+        "shared assignment rules only APPROVED leave blocks (CANCELLED)",
+        "shared assignment rules respects partial approved leave boundaries",
+        "shared assignment rules blocks an overlapping shift at loc-1",
+        "shared assignment rules blocks an overlapping shift at loc-2",
+        "shared assignment rules automatically blocks a second same-day shift even without overlapping times",
+        "shared assignment rules makes the daily automation policy changeable without changing rule logic",
+        "shared assignment rules surfaces same-day human scheduling as an exception rather than changing its automation policy",
+        "shared assignment rules above target and below maximum is a preference warning rather than a conflict",
+        "shared assignment rules exactly 40 scheduled hours remains valid across both locations",
+        "shared assignment rules 41 projected scheduled hours is blocked",
+        "shared assignment rules uses an employee's configured maximum instead of the target",
+        "shared assignment rules honors an explicit business maximum alongside an employee maximum",
+        "shared assignment rules does not count a different employee's hours or shifts from an adjacent week",
+        "shared assignment rules does not double-count duplicate records of one shift",
+        "shared assignment rules excludes an outgoing assignment consistently from conflicts and hours",
+        "shared assignment rules rejects a non-Lead in a designated Lead position",
+        "shared assignment rules reuses LEAD Lead capability without granting new permissions",
+        "shared assignment rules reuses MANAGER Lead capability without granting new permissions",
+        "shared assignment rules reuses OWNER Lead capability without granting new permissions",
+        "shared assignment rules rejects an unsupported required role capability",
+        "shared assignment rules rejects malformed/zero-duration shift input {\"date\":\"2026-02-30\"}",
+        "shared assignment rules rejects malformed/zero-duration shift input {\"startTime\":\"25:00\"}",
+        "shared assignment rules rejects malformed/zero-duration shift input {\"endTime\":\"08:00\"}",
+        "shared assignment rules fails closed on invalid hour settings instead of comparing against NaN",
+        "overnight and real workweeks calculates scheduled overnight duration without fake worked hours",
+        "overnight and real workweeks splits Sunday-to-Monday scheduled hours at Puerto Rico's Monday midnight boundary",
+        "overnight and real workweeks checks the cap in every affected workweek",
+        "overnight and real workweeks detects a previous-date overnight overlap across locations",
+        "overnight and real workweeks checks availability and approved leave on the second calendar day",
+        "overnight and real workweeks supports explicit long periods and excludes a midnight endpoint from the following day",
+        "shared staffing and qualified Lead coverage uses stored/supplied 2/6 requirements and isolates each location",
+        "shared staffing and qualified Lead coverage identifies missing Lead separately from employee shortage",
+        "shared staffing and qualified Lead coverage an Employee marked designated Lead cannot satisfy required Lead capability",
+        "shared staffing and qualified Lead coverage does not count duplicate assignments or inactive employees as additional staff",
+        "shared staffing and qualified Lead coverage counts overnight staff during the next day's applicable period",
+        "workweek and staffing edge regressions ignores the developer machine timezone (UTC)",
+        "workweek and staffing edge regressions ignores the developer machine timezone (America/Los_Angeles)",
+        "workweek and staffing edge regressions ignores the developer machine timezone (Asia/Tokyo)",
+        "workweek and staffing edge regressions approved released call-outs do not cause conflicts or consume scheduled hours",
+        "workweek and staffing edge regressions staffing excludes unknown profiles and approved released shifts",
+        "workweek and staffing edge regressions health hour targets use Monday workweeks even if the displayed dates start Wednesday",
+        "an unknown runtime employee role cannot satisfy even a regular assignment"
+      ]
+    },
+    "src/lib/scheduling/shift-change-evaluation.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "4da1e30efc17827efa3062d11b004b4a6df6ba481c9d819e70a337bb78fcc5da",
+      "passed_assertions": [
+        "A009 coverage evaluates final ledger without outgoing owner",
+        "A009 swaps remove both outgoing shifts even when they overlap",
+        "A023\u2013A029 blocks active",
+        "A023\u2013A029 blocks location",
+        "A023\u2013A029 blocks position",
+        "A023\u2013A029 blocks lead",
+        "A023\u2013A029 blocks leave",
+        "A023\u2013A029 blocks overlap",
+        "A023\u2013A029 blocks sameDay",
+        "A035/A036 ignores unrelated setup and preexisting staffing gaps",
+        "A094 projected 42 separates threshold from cap",
+        "A094 projected 45 separates threshold from cap",
+        "A093/A095 manager mode cannot override unknown rest",
+        "A009 evaluates actual EMPLOYEE_PENDING swap lifecycle",
+        "A097 stale episode never authorizes a final ledger",
+        "A097 stale time never authorizes a final ledger",
+        "A097 stale publication never authorizes a final ledger",
+        "A027 empty submitted weekly snapshot and partial-day exceptions block",
+        "A028 pending leave does not block",
+        "A030 scheduled 32 respects target 24 and cap 40",
+        "A030 scheduled 40 respects target 24 and cap 40",
+        "A030 scheduled 41 respects target 24 and cap 40",
+        "A031 Sunday carryover evaluates both business weeks independent of owning week",
+        "A034 rejects nonexistent/repeated civil boundary 02:30",
+        "A034 rejects nonexistent/repeated civil boundary 01:30",
+        "A092 checks incoming profile with missing break facts",
+        "A037/A038 suggestions preserve comparator preferences and never expose profiles or mutate assignments",
+        "A025 single assigned position cannot supply an unrelated second position quota",
+        "A031/A037 confirmed preference requires every touched business week",
+        "A094 valid review-routed candidates remain discoverable while unknown rules stay hidden",
+        "A033/A098 host timezone cannot change workspace facts or nominal scheduled projections",
+        "A093/A095 explicit manager approval still cannot override missing mandatory facts",
+        "coverage discovery never invents a reciprocal shift for a swap",
+        "I1 final coverage remains eligible with reviewed non-applicability and unrelated ambiguous history",
+        "I2 second-week elapsed uncertainty takes precedence over first-week overtime review"
+      ]
+    },
+    "src/lib/scheduling/validate-shift.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "9e37aa8afff908fbac326b298deeec18612508878c92b28e84b32a99db5d59a2",
+      "passed_assertions": [
+        "validateShift blocks overlapping shifts across locations",
+        "validateShift blocks employees who are not eligible for the location",
+        "validateShift blocks approved time off that overlaps the candidate shift",
+        "validateShift blocks manager assignments outside normal availability",
+        "validateShift blocks shift exchange claims outside normal availability",
+        "validateShift blocks when the dated scheduled ledger pushes weekly hours over 40",
+        "validateShift returns no issues for a valid shift"
+      ]
+    },
+    "src/lib/scheduling/weekly-availability.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "5e2ba9b7400f3fadb3367ae78cbaca7a1f3add5b2089fa588ca8a5638ff0b3ad",
+      "passed_assertions": [
+        "weekly input precedence keeps multiple normal periods when another day changes",
+        "weekly input precedence confirmation creates no overrides and continues to inherit changed normal hours",
+        "weekly input precedence preserves a legacy snapshot's missing days when converting to normal plus exceptions",
+        "weekly input precedence clears an edited override when the employee restores normal hours",
+        "weekly input precedence full-week unavailability remains unavailable even if normal hours change later"
+      ]
+    },
+    "src/lib/data/notification-state.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "6eaa768e8f1d381aa3278ae09edda0990dc9d8888306597eaecfa786d8bd2c18",
+      "passed_assertions": [
+        "persisted_intent_maps_existing_outbox_and_uses_bound_id",
+        "invalid_persisted_intent_fails_closed",
+        "invalid_persisted_intent_fails_closed",
+        "invalid_persisted_intent_fails_closed",
+        "invalid_persisted_intent_fails_closed",
+        "recipient_access_reads_current_role_activation_and_location_eligibility",
+        "zero_hour_submission_is_not_missing",
+        "edited_or_removed_deadline_cancels_old_reminder 2026-10-07T12:00:00.000Z",
+        "edited_or_removed_deadline_cancels_old_reminder undefined",
+        "quiet_deferral_past_deadline_expires",
+        "current_active_self_service_role_required",
+        "current_active_self_service_role_required",
+        "request_status_version_and_persisted_outcome_expiry_are_authoritative",
+        "individual_summary_seeds_are_never_deliverable",
+        "availability_reader_resolves_normal_hours_and_dated_overrides_but_uses_submission_markers",
+        "read_source_reconstructs_current_persisted_uppercase_request_status",
+        "unchanged_personal_revision_keeps_followup_budget_and_acknowledgement_equivalence",
+        "exchange latest source stops delivery: filled",
+        "exchange latest source stops delivery: cancelled",
+        "exchange latest source stops delivery: expired",
+        "exchange latest source stops delivery: target_access_lost",
+        "configured_coverage_uses_health_lead_rules_and_never_invents_location_windows",
+        "bounded_candidates_use_only_actual_configured_records",
+        "manager_group_revalidates_each_member_and_keeps_only_unresolved_work",
+        "archived_assignments_do_not_fill_configured_coverage",
+        "former_authorized_assignee_can_open_genuine_change_after_assignment_is_removed",
+        "former_authorized_assignee_can_open_genuine_change_after_assignment_is_reassigned",
+        "candidate_hydration_checks_budget_before_starting_each_source",
+        "position-only configured coverage reaches the manager summary with position copy",
+        "invalid legacy DST boundaries suppress even publication events: 2026-03-08 02:30\u201304:00",
+        "invalid legacy DST boundaries suppress even publication events: 2026-11-01 01:30\u201303:00",
+        "invalid legacy DST boundaries suppress even publication events: 2026-11-01 00:30\u201301:30"
+      ]
+    },
+    "src/lib/data/scheduling-operational-parity.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "54262be8ed1a0ed381913be8262e1a918e08395ef27e76662d3019bd8c3adbde",
+      "passed_assertions": [
+        "A096 manual context loads configured rule and complete dated rest ledger"
+      ]
+    },
+    "src/lib/shift-changes/command-parser.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "3d91b055725d1c8fd1748f6269f3e837d41c8f5597e4a09ef81f5e651cebeee4",
+      "passed_assertions": [
+        "A003 accepts finite business input and framework metadata",
+        "A004 rejects duplicate business fields, forged authority and unsafe revisions",
+        "A065 bounds absence notes and rejects unknown reasons"
+      ]
+    },
+    "src/lib/shift-changes/lifecycle.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "01afdaf23d64f2e1c771307e6e37dfe2f9ea952248c1845f7fb3d983b85dc3f7",
+      "passed_assertions": [
+        "records explicit acceptance and completes valid automatic coverage",
+        "keeps manual requests pending when current policy is loosened",
+        "never promotes legacy requests automatically",
+        "cannot reopen terminal requests",
+        "manager cannot bypass BLOCKED",
+        "manager cannot bypass UNVERIFIED",
+        "rejects self-claim and stale revisions",
+        "refuses expired completion even after consent",
+        "does not allow a manager to fabricate missing target consent"
+      ]
+    },
+    "src/lib/shift-changes/maintenance.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "f3d40e91851d3c1c111408a9a812eceabc690bb9937b201bb0689ab92eed9c5f",
+      "passed_assertions": [
+        "A053/A055/A087 creation cutoff does not expire an existing request; completion boundary does without a worker",
+        "A089 tighter current policy wins; loosening cannot extend recorded expiry or change another workflow",
+        "A058/A059/A088 unknown policy and legacy never invite; callout remains reportable after start",
+        "A056/A058 expiry precedes invitations/escalation and escalated stage never repeats",
+        "ordinary voluntary offers do not become uncovered merely because urgent",
+        "an initial configuration escalation still permits one later urgent lifecycle stage",
+        "a malformed current boundary cannot revive an already recorded expired deadline"
+      ]
+    },
+    "src/lib/shift-changes/policy-form.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "f716253ee973a97beed4a800d6a35b40a93870965af291cdbaca4f4f2b781d54",
+      "passed_assertions": [
+        "rules remain unknown without numerics; not applicable is an explicit review",
+        "configured zero requires explicit units, basis and break payment",
+        "rejects duplicate scalars and browser-supplied reviewer metadata"
+      ]
+    },
+    "src/lib/shift-changes/policy.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "5b61aba76801379b9e7e8d1cb6cba90a3d449019485c11febd1970858dc233f0",
+      "passed_assertions": [
+        "policy configuration preserves independent modes and explicit zero versus unknown",
+        "policy configuration fails closed for malformed policy instead of supplying defaults",
+        "policy configuration distinguishes reviewed not applicable from unknown or fabricated review",
+        "deadlines separates closed submission from still-open completion",
+        "deadlines requires known cutoffs and rejects reversed submission/completion policy",
+        "deadlines allows explicit zero before but never at shift start",
+        "deadlines uses tighter current deadline without extending recorded consent on loosening"
+      ]
+    },
+    "src/lib/shift-changes/terms.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "41b47806fb6689282d7e19df6fcddb01f122d2aa2c4648f395782c24c9f05328",
+      "passed_assertions": [
+        "material fingerprint excludes labels and changes on episode/owner/time/position/Lead/break terms",
+        "A090 released callout matches current episode and all material terms; legacy or returning owner is retained",
+        "T03 reviewed period binds the workspace timezone independently of unchanged civil times"
+      ]
+    },
+    "src/app/app/exchange/actions.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "2ffddea709560484afc392acb62a48e19149f8d92a520d5be0718cbc4490c845",
+      "passed_assertions": [
+        "prevents an unavailable OWNER personal response before loading a mutation proof",
+        "prevents an unavailable MANAGER personal response before loading a mutation proof",
+        "does not report a concurrent decline as a successful exchange review",
+        "coverage approval derives specific session authority and rejects forged body authority",
+        "A062 preserves uncertain outcome identity and actor-scoped reconciliation",
+        "A003/A004 duplicate scalars fail closed while framework form metadata survives",
+        "reconciled committed operations refresh the same schedule, dashboard and request projections as the initial success"
+      ]
+    },
+    "src/app/app/exchange/page.test.tsx": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "32d40e83f5298a255409fcbae1529625c65e4cabae449db3008f7d89946a0299",
+      "passed_assertions": [
+        "default retains first eight; an authorized selected later row is included and focusable",
+        "selected authorized partner outcome uses existing section without requester actions",
+        "forged foreign account and access-lost selected rows are excluded",
+        "selected partner pending row never acquires requester cancel authority",
+        "selected own callout beyond ordinary six is included without expanding default",
+        "forged URL flags cannot claim a persisted success",
+        "trade displays both reviewed slots with position and Lead context",
+        "effective expired lifecycle never offers cancellation",
+        "trade builder navigation remains independent of unknown coverage policy",
+        "trade builder navigation remains independent of elapsed coverage submission cutoff",
+        "builder navigation itself does not declare swap eligibility when only coverage is valid",
+        "inter-read material source change {\"startTime\":\"10:00\",\"endTime\":\"18:00\"} refuses undisplayed creation consent",
+        "inter-read material source change {\"locationId\":\"replacement-site\"} refuses undisplayed creation consent",
+        "inter-read material source change {\"positionId\":\"replacement-position\"} refuses undisplayed creation consent",
+        "inter-read material source change {\"employeeId\":\"new-owner\"} refuses undisplayed creation consent",
+        "inter-read material source change {\"date\":\"2035-10-06\"} refuses undisplayed creation consent",
+        "inter-read material source change {\"scheduleId\":\"replacement-schedule\"} refuses undisplayed creation consent",
+        "inter-read material source change {\"weekStart\":\"2035-10-08\"} refuses undisplayed creation consent",
+        "inter-read material source change {\"isDesignatedLead\":false} refuses undisplayed creation consent",
+        "URL result render performs read-only pending lookup rather than cache-invalidating action",
+        "URL result render performs read-only completed lookup rather than cache-invalidating action"
+      ]
+    },
+    "src/lib/scheduling/generation/fairness.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "7a803885e95977ec59db6ada828c48b0460afc38ec1c89bf18343f8795df6761",
+      "passed_assertions": [
+        "prefers confirmed availability before target balance",
+        "orders below target, completion ratio, remaining target, then scheduled hours",
+        "rotates exact ties by business week without names or array order",
+        "keeps mixed configured and absent target comparisons transitive after targets are met",
+        "prefers unscheduled target undefined over a worker already at their configured target",
+        "prefers unscheduled target 0 over a worker already at their configured target"
+      ]
+    },
+    "src/lib/scheduling/generation/operational-parity.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "e1efeaec9bb92d4f59a2132f85d65aad114ccac70acc82c634cbc4acf9a746f0",
+      "passed_assertions": [
+        "A096 generation applies configured operational rule without activating unknown profiles globally",
+        "A090 generator respects rest against distant retained commitments"
+      ]
+    },
+    "src/app/app/exchange/callout/actions.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "19c09fd3199f8e83a641fdb651f0122cadc4f6f2917d63dd695c8521ec029127",
+      "passed_assertions": [
+        "approval uses specific session actor and only revalidates after atomic commit",
+        "status race never shows callout approval success",
+        "callout submission rejects body employee identity",
+        "callout unavailable assignment never shows submission success"
+      ]
+    },
+    "src/app/app/exchange/swap/page.test.tsx": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "6353d7454544ea7fff250ba46d8a73ed973f1e02aef637228ab9b0373bb99548",
+      "passed_assertions": [
+        "unchanged displayed assignments are bound to reviewed source and target without a default consent",
+        "source material change refuses the undisplayed assignment: {\"startTime\":\"12:00\",\"endTime\":\"20:00\"}",
+        "source material change refuses the undisplayed assignment: {\"locationId\":\"replacement-location\"}",
+        "source material change refuses the undisplayed assignment: {\"positionId\":\"replacement-position\"}",
+        "source material change refuses the undisplayed assignment: {\"employeeId\":\"replacement-owner\"}",
+        "target material change excludes that undisplayed replacement: {\"startTime\":\"12:00\",\"endTime\":\"20:00\"}",
+        "target material change excludes that undisplayed replacement: {\"locationId\":\"replacement-location\"}",
+        "target material change excludes that undisplayed replacement: {\"positionId\":\"replacement-position\"}",
+        "target material change excludes that undisplayed replacement: {\"employeeId\":\"replacement-owner\"}",
+        "source fingerprint changing while target is reviewed withholds the mixed-snapshot builder"
+      ]
+    },
+    "src/app/app/notifications/open/route.test.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/candidate-unit-tests.json",
+      "sha256": "b479970079c4d3edf8074912bcee2d5a873f28c1ddc4efa1de6acb0bebee34b4",
+      "passed_assertions": [
+        "signed_out_tap_preserves_only_safe_notification_guard_return",
+        "current_owner_source_access_returns_existing_destination_without_mutations",
+        "tap_wrong_user_is_generically_unavailable",
+        "tap_deleted_request_is_generically_unavailable",
+        "tap_superseded_revision_is_generically_unavailable",
+        "tap_changed_role_is_generically_unavailable",
+        "tap_changed_location_is_generically_unavailable",
+        "tap_denied_source_is_generically_unavailable",
+        "tap_expired_is_generically_unavailable",
+        "tap_wrong_environment_is_generically_unavailable",
+        "tap_unsafe_destination_is_generically_unavailable",
+        "malformed_extra_query_does_not_reach_any_business_reads",
+        "malformed_duplicate_id_does_not_reach_any_business_reads",
+        "malformed_unsafe_id_does_not_reach_any_business_reads",
+        "source_storage_failure_is_generic_and_does_not_expose_details",
+        "production_route_adapter_keeps_signed_out_return_without_app_layout_redirect"
+      ]
+    },
+    "src/test/integration/shift-change-acceptance-boundaries.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "04703a41858968905db480d67cf154fbbbd7c3d82e85d45d7274a9273b99e784",
+      "passed_assertions": [
+        "A053/A054 actual acceptance deadline expires before-first-authority and rolls back any prepared mutation",
+        "A053/A054 actual acceptance deadline expires after-initial-authority and rolls back any prepared mutation",
+        "A014 a volunteer withdrawal clears manual-pending consent without silently reopening the request",
+        "A010 self trade cannot reserve or mutate assignments",
+        "A010 same-shift trade cannot reserve or mutate assignments",
+        "A010 missing-target trade cannot reserve or mutate assignments",
+        "A022 genuine post-start inability remains reportable without backdated assignment transfer"
+      ]
+    },
+    "src/test/integration/shift-change-completion-races.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "ffb0981bc256293830ca183621cd401963ba1787806e6a5f08bb6d15b83f4500",
+      "passed_assertions": [
+        "A003 actual two-sided trade cancel-first has one terminal outcome and no half-swap",
+        "A003 actual two-sided trade accept-first has one terminal outcome and no half-swap",
+        "A013 rejected candidate leaves the offer available for a different eligible volunteer"
+      ]
+    },
+    "src/test/integration/shift-change-evaluation.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "328dc33bbc3ac44add4f2e44122b07671ecf783dbd6df2f102b6038e6e33086c",
+      "passed_assertions": [
+        "A090/A096 real SQL manual and generation readers retain distant rest and configured profile"
+      ]
+    },
+    "src/test/integration/shift-change-notifications.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "affb2c348de604f54a0eb1d7c788adf3e5b8134ed46cc8891c6d8362c4bd6b12",
+      "passed_assertions": [
+        "A056/A060 duplicate ticks commit one system expiry, release participation, and never transfer the assignment",
+        "A058/A061/A069 invitations reach only eligible peers, revalidate at open, and escalation has truthful provenance",
+        "A062 completion commits one visible outcome per recipient and retains publication records",
+        "A055/A089 read projects recorded expiry without a worker or scheduling writes",
+        "A070/A071 authenticated worker business maintenance runs with delivery disabled and never calls its provider",
+        "A055 read projection refuses stale owner without scheduling writes",
+        "A055 read projection refuses stale material without scheduling writes",
+        "A055 read projection refuses stale publication without scheduling writes",
+        "A059/A086 unknown required rule distinguishes configuration from no eligible candidates",
+        "A064 queued invitation stays valid through same-state escalation without consuming a new campaign",
+        "A060 maintenance rollback after status/event/outbox is atomic and the same cursor can resume",
+        "A064 cancellation and explicit reoffer preserve invitation budget for the same assignment episode",
+        "A064 legacy status versions read only original revision; same-status revision cannot revive legacy event",
+        "A057 expiry first gives one serialized assignment/lifecycle outcome",
+        "A057 acceptance first gives one serialized assignment/lifecycle outcome",
+        "A054/A089 policy tightens while maintenance waits; expiry wins over prepared invitation",
+        "A053/A054 natural cutoff during a lock wait expires rather than emitting a prepared invitation",
+        "A063/A070 fake-provider delivery after-claim uses current committed SQL state",
+        "A063/A070 fake-provider delivery after-source-check uses current committed SQL state",
+        "A063/A070 fake-provider delivery accepted uses current committed SQL state",
+        "R02 report resolves incompatible coverage atomically with original history and private reason",
+        "R02 report resolves incompatible source-trade atomically with original history and private reason",
+        "R02 report resolves incompatible target-trade atomically with original history and private reason",
+        "R02 report first serializes inability reporting against acceptance without undoing a completed winner",
+        "R02 acceptance first serializes inability reporting against acceptance without undoing a completed winner",
+        "A056 bounded continuation resumes after last committed request and duplicate ticks report no new invitations",
+        "R02 target-side cross-location report retains old trade location access filtering",
+        "A058/A072 pending callout escalation retains a current private manager seed",
+        "A019/A058/A061/A072 approved release invites eligible peers and urgent uncovered event never exposes private reason",
+        "I1 semantic manager campaign survives collect-after-escalation without repetition",
+        "I1 semantic manager campaign survives queued-before-escalation without repetition",
+        "I1 semantic manager campaign survives queued-legacy-before-escalation without repetition"
+      ]
+    },
+    "src/test/integration/shift-change-pending-callout.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "42cb86f7818d88a6b9cff49dbb9a3408615ae16fb1217d4b8bdebd6c44ed7164",
+      "passed_assertions": [
+        "A019/A021/A051 stale PENDING callout after an actual manager owner edit cannot block a fresh report",
+        "A019/A021/A051 stale PENDING callout after an actual manager terms edit cannot block a fresh report",
+        "stale retirement and a fresh report roll back together on an injected event failure",
+        "does not retire an unchanged current pending report to permit duplicates",
+        "does not retire an unchanged legacy pending report to permit duplicates"
+      ]
+    },
+    "src/test/integration/shift-change-policy.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "c8f6891b9a2c91307516829d171093311fd0f4f578a2ec13d985f26fe36427bc",
+      "passed_assertions": [
+        "fresh install has no customer policy; independent scope saves retain zero and null",
+        "profile review is server stamped and preserves existing targets/caps",
+        "rejects a revoked session after waiting for the workspace lock",
+        "rejects session expiry during a later employee-settings row lock without changing the profile",
+        "database role and specific active session remain authoritative"
+      ]
+    },
+    "src/test/integration/shift-change-races.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "de030959513c4375b9dbef91acfb145f283a0c592bc7118f041faa68ac811271",
+      "passed_assertions": [
+        "A039 one coverage winner under two transaction connections",
+        "A043/A047/A068 final specific session revocation while acceptance waits for a late lock",
+        "A043/A047/A068 final specific session expiry while acceptance waits for a late lock",
+        "A040/A044/A049/A050/A052/A082/A089 input-first leave invalidates a pre-read after real lock wait",
+        "A040/A044/A049/A050/A052/A082/A089 input-first availability invalidates a pre-read after real lock wait",
+        "A040/A044/A049/A050/A052/A082/A089 input-first unpublish invalidates a pre-read after real lock wait",
+        "A040/A044/A049/A050/A052/A082/A089 input-first delete invalidates a pre-read after real lock wait",
+        "A040/A044/A049/A050/A052/A082/A089 input-first profile invalidates a pre-read after real lock wait",
+        "A040/A044/A049/A050/A052/A082/A089 input-first policy invalidates a pre-read after real lock wait",
+        "A040/A044/A049/A050/A052/A082/A089 input-first material invalidates a pre-read after real lock wait",
+        "A040/A044/A049/A050/A052/A082/A089 input-first assignment invalidates a pre-read after real lock wait",
+        "A054 rollback at request stage keeps all business state unchanged",
+        "A054 rollback at assignment stage keeps all business state unchanged",
+        "A054 rollback at publication stage keeps all business state unchanged",
+        "A054 rollback at outbox stage keeps all business state unchanged",
+        "A054 rollback at operation stage keeps all business state unchanged",
+        "A048/A062 lost response reconciles the exact committed operation without duplicate notification",
+        "A040/A044/A049/A050/A052/A082/A089 acceptance-first leave writer waits until completed assignment",
+        "A040/A044/A049/A050/A052/A082/A089 acceptance-first availability writer waits until completed assignment",
+        "A040/A044/A049/A050/A052/A082/A089 acceptance-first profile writer waits until completed assignment",
+        "A040/A044/A049/A050/A052/A082/A089 acceptance-first policy writer waits until completed assignment",
+        "A040/A044/A049/A050/A052/A082/A089 acceptance-first material writer waits until completed assignment",
+        "A040/A044/A049/A050/A052/A082/A089 acceptance-first unpublish writer waits until completed assignment",
+        "A040/A044/A049/A050/A052/A082/A089 acceptance-first delete writer waits until completed assignment",
+        "A040/A044/A049/A050/A052/A082/A089 acceptance-first assignment writer waits until completed assignment",
+        "A051 actual manual material writer and acceptance share compatible lock order: acceptance-first",
+        "A051 actual manual material writer and acceptance share compatible lock order: manual-first",
+        "A057 bounded conflicts retry three times; provenance corruption rolls back",
+        "A054/A081 generation and command in command-first use compatible actual writer locks",
+        "A054/A081 generation and command in writer-first use compatible actual writer locks",
+        "A054/A081 exclusion and command in command-first use compatible actual writer locks",
+        "A054/A081 exclusion and command in writer-first use compatible actual writer locks",
+        "A039/A081 crossed source/target proposals have a single participation winner on real concurrent connections",
+        "A043 acceptance-first specific session revocation waits for the completed transaction",
+        "A043 acceptance-first specific session expiry waits for the completed transaction",
+        "A043 natural session expiry after the first authority guard rolls back all subsequent business work"
+      ]
+    },
+    "src/test/integration/shift-change-schema.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "4314464d282df0a872df1f0032bb2f225376acab04442923af9ae01d7a9269b1",
+      "passed_assertions": [
+        "upgrade preserves legacy consent as unknown and leaves policy unselected",
+        "server episodes change for return-to-original owner and deletion/recreation but not notes",
+        "cross-source/target and callout reservations conflict and terminal outcomes release them",
+        "immutable event history survives source deletion",
+        "retains private original callout reason after source deletion"
+      ]
+    },
+    "src/test/integration/shift-change-upgrade.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "94d04826c07f2b02c9f46892e099b6be39d0c236efe3698b8c80bd2f35515f22",
+      "passed_assertions": [
+        "aborts contradictory legacy cross-column participation without deleting history or partially migrating",
+        "retains both legacy swap location/week terms after live schedules are deleted"
+      ]
+    },
+    "src/test/integration/shift-change-views.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "e5a5221b20cb5c3555fa540e8fa052369793aeb23962d61a8588034f2bbfda1a",
+      "passed_assertions": [
+        "callout-capable reader preserves current assigned SOURCE and TARGET trades while ordinary trade reader excludes them",
+        "manager attention reader excludes effectively expired pending records before maintenance runs",
+        "preview refuses unknown mandatory rules using the same guarded command plan and exposes no peer profile",
+        "history presentation retains original terms after live shift deletion and excludes a foreign peer"
+      ]
+    },
+    "src/test/integration/shift-changes.integration.ts": {
+      "report": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/seal-exchange-sql-tests.json",
+      "sha256": "05c55e939c80acf41d7c477a189f9d1934c8997d597dd42b30f8d34d06c790da",
+      "passed_assertions": [
+        "A039/A048 atomic coverage creates a protected assignment once and reconciles original result",
+        "A041 atomic swap preserves both slots and replaces both episodes",
+        "A019 approved callout release keeps private provenance and supports voluntary replacement",
+        "A019/A020/A051 callout release reads reject material edits, timezone changes, wrong fingerprints and a returning owner",
+        "A005/A085/A089 manual mode persists through later policy loosening and approver is real",
+        "A003/A015/A022 DECLINE closes only the authorized current lifecycle",
+        "A003/A015/A022 CANCEL closes only the authorized current lifecycle",
+        "A003/A015/A022 WITHDRAW closes only the authorized current lifecycle",
+        "A003/A015/A022 MANAGER_DECLINE closes only the authorized current lifecycle",
+        "A003/A015/A022 MANAGER_CLOSE closes only the authorized current lifecycle",
+        "A004/A043/A068 direct wrong owner, wrong target, forged role and revoked proof cannot mutate",
+        "A019 legacy approval cannot release today\u2019s assignment and expired trade does not prohibit reporting inability",
+        "A051 same-owner material edit requires new explicit review even after editing back; a fresh report remains possible",
+        "A043 review view returns only current authorized terms and refuses stale displayed timezone consent",
+        "A054/A057 affected publication preserves uninvolved acknowledgement and creates no unrelated revision",
+        "A051 material revision is server-owned, changes for edits and parents, and ignores labels",
+        "R1/R2 CANCEL_CALLOUT after reassignment preserves original absence ownership, terms and atomic closure",
+        "R1/R2 DECLINE_CALLOUT after reassignment preserves original absence ownership, terms and atomic closure",
+        "R1 COVERAGE stale closure retains original participants and both reviewed terms",
+        "R1 SWAP stale closure retains original participants and both reviewed terms",
+        "R1 stale linked coverage closure keeps the prior released employee separate from the new callout owner"
+      ]
+    },
+    "scripts/phase-a-app-qa.mjs": {
+      "reports": [
+        "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/final-matrix-chromium/app-qa-results.json",
+        "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/final-matrix-webkit/app-qa-results.json",
+        "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/policy-supplement-chromium/app-qa-results.json",
+        "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-a/policy-supplement-webkit/app-qa-results.json"
+      ],
+      "sha256": "22d52c534d8f59d98d7db77d82dcf5c425ac8b7ad6108641404e32351ad6dd62",
+      "scope": "Full-core runs and a later route-corrected workflow-policy supplement; each preserves its own scratch source manifest and runner source attribution."
+    }
+  },
+  "cases": [
+    {
+      "id": "A001",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "Both employees accept a valid same-week trade",
+      "expected": "Exactly both owners change in one transaction; one terminal result; dates, locations, positions and Lead duties stay attached to their slots.",
+      "requirements": [
+        "R01",
+        "R05",
+        "R10",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Real two-sided proposal/acceptance and exact two-owner database assertions; both browser engines.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A002",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "Target declines before acceptance",
+      "expected": "Neither assignment changes; terminal decline recorded; pending reminders cancelled.",
+      "requirements": [
+        "R01",
+        "R09"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Authorized decline is terminal and releases reservations without reassigning work.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/lib/shift-changes/lifecycle.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A003",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "Requester cancels while target accepts",
+      "expected": "One serialized outcome wins; never half a swap or success after a committed cancellation.",
+      "requirements": [
+        "R01",
+        "R07"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Two real transaction connections force cancel-first and accept-first for an actual two-sided trade; one terminal result, no half-swap.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-completion-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A004",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "Target employee is wrong, caller forges requester or tries self-swap",
+      "expected": "Server rejects without changing either assignment or disclosing private request data.",
+      "requirements": [
+        "R01",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Wrong actor/target, forged role, self-trade and malformed authority are denied server-side.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/lib/shift-changes/command-parser.test.ts",
+        "src/app/app/exchange/actions.test.ts",
+        "src/app/app/exchange/callout/actions.test.ts",
+        "src/test/integration/shift-change-acceptance-boundaries.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A005",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "Source equals target or the owning weeks differ",
+      "expected": "Current same-shift/same-week restrictions are enforced server-side; no new cross-week feature.",
+      "requirements": [
+        "R01",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Self/same-source and owning-week checks; source identity is distinct from actual dated workweek.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/test/integration/shift-change-acceptance-boundaries.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A006",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "Manager changes a consent-bound date/time/location/position/Lead/owner",
+      "expected": "Old consent is rejected; a fresh request is required rather than silently applying changed terms.",
+      "requirements": [
+        "R01",
+        "R07",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Fourteen actual inter-read source/target date/start/end/location/position/owner/Lead mutations plus displayed-term regressions.",
+      "evidence_paths": [
+        "src/lib/shift-changes/terms.test.ts",
+        "src/app/app/exchange/page.test.tsx",
+        "src/app/app/exchange/swap/page.test.tsx",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A007",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "Only the employee display name changes",
+      "expected": "No fabricated consent failure for unchanged terms; current presentation and historical identity remain accurate.",
+      "requirements": [
+        "R01",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Display-only labels do not change material consent identity; parent/material revisions do.",
+      "evidence_paths": [
+        "src/lib/shift-changes/terms.test.ts",
+        "src/test/integration/shift-changes.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A008",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "The applicable swap/coverage approval mode is disabled, missing or legacy/manual",
+      "expected": "Valid consent follows the established manual path; no assignment changes or retroactive auto-completion. Missing mandatory notice/rule data is reported rather than assumed.",
+      "requirements": [
+        "R05",
+        "R06",
+        "R14",
+        "R15"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Independent known modes, unknown settings and legacy/manual requests do not acquire silent automatic approval.",
+      "evidence_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts",
+        "src/lib/shift-changes/lifecycle.test.ts",
+        "src/test/integration/shift-changes.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A009",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "Two outgoing shifts would otherwise appear as conflicts",
+      "expected": "Validate each employee against the correct final ledger with only their outgoing assignment removed.",
+      "requirements": [
+        "R01",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Proposed final ledger removes both outgoing assignments before testing incoming work.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A010",
+      "group": "Consent and swaps",
+      "tasks": "T02/T03",
+      "scenario": "One side of a proposed trade violates a rule",
+      "expected": "Neither side is applied; safe explanation identifies the failure without leaking peer private facts.",
+      "requirements": [
+        "R01",
+        "R07",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Both incoming sides must satisfy eligibility/coverage; no one-sided proposal from a failing evaluation.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/scheduling/operational-rules.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A011",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Ordinary owner offers future published shift",
+      "expected": "One OPEN offer; original assignment stays until replacement; no implied absence approval.",
+      "requirements": [
+        "R04",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "An ordinary offer is persisted while current ownership remains unchanged until a successful claim.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A012",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Two eligible employees claim the same offer concurrently",
+      "expected": "One valid transaction commits; loser sees unavailable; exactly one replacement and one completion event.",
+      "requirements": [
+        "R04",
+        "R05",
+        "R07"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Two eligible volunteers synchronize pre-reads and transactions; exactly one completed winner.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A013",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Invalid candidate claims then valid candidate claims",
+      "expected": "Invalid attempt does not reserve/close the shift; valid candidate can still complete.",
+      "requirements": [
+        "R03",
+        "R04",
+        "R07"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "An approved-leave candidate is rejected without consuming the offer; a different eligible employee then accepts.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-completion-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A014",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Original owner attempts to claim own offer",
+      "expected": "Rejected without assignment or status mutation.",
+      "requirements": [
+        "R04",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Self-claim is rejected by the state machine and final command authorization.",
+      "evidence_paths": [
+        "src/lib/shift-changes/lifecycle.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A015",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Manager-policy claim is later withdrawn",
+      "expected": "No completed assignment is undone; current version is checked; closure/reoffer follows P09.",
+      "requirements": [
+        "R04",
+        "R06",
+        "R07"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual volunteer withdrawal from manual-pending clears consent/reservation and does not reopen or later approve it.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-acceptance-boundaries.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A016",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "A pending inability-to-work report is submitted",
+      "expected": "Existing assignment is retained with an explicit operational risk; private reason only available to authorized parties.",
+      "requirements": [
+        "R02",
+        "R06",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual pending callout keeps assignment and private reason; it is not a release or attendance correction.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A017",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Manager approves callout with no replacement yet",
+      "expected": "Original employee is released in existing ledger semantics; one linked OPEN coverage need remains visibly unfilled.",
+      "requirements": [
+        "R02",
+        "R04",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Manager-approved release creates one linked unfilled coverage need with preserved original history.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A018",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Replacement accepts coverage for approved callout",
+      "expected": "Replacement owns shift and counts once; original absence history remains; release flag does not transfer to replacement.",
+      "requirements": [
+        "R02",
+        "R04",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Replacement counts once and old approved release does not transfer to the replacement episode.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A019",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Replacement later submits their own callout on the same shift",
+      "expected": "Historic original callout is retained but does not permanently block new owner; active release matches assignment episode.",
+      "requirements": [
+        "R02",
+        "R07",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Repeated owner episodes, returning owner and material edits cannot revive obsolete release/participation.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-pending-callout.integration.ts",
+        "src/test/integration/shift-change-schema.integration.ts",
+        "src/test/integration/shift-change-upgrade.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A020",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Callout approval/cancellation races with accepted coverage or a trade",
+      "expected": "No replacement is removed, no new duplicate need appears, and no absent owner is silently restored.",
+      "requirements": [
+        "R02",
+        "R07",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Real report-versus-acceptance races in both orders and cancellation after reassignment protect committed replacements; no silent old-owner restoration.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A021",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Callout plus existing coverage/trade participates in the same source slot",
+      "expected": "Record the genuine inability report; resolve incompatible participation atomically, preserve history and committed replacements, and keep only one linked coverage need.",
+      "requirements": [
+        "R02",
+        "R07"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual source-trade/target-trade/coverage participation is reconciled when a genuine report arrives; stale pending reports are retired atomically.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "src/test/integration/shift-change-pending-callout.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A022",
+      "group": "Coverage and inability to work",
+      "tasks": "T03",
+      "scenario": "Urgent inability is reported after shift start",
+      "expected": "Manager reporting remains available with clear limitations; no past/full-shift automatic transfer or punch mutation.",
+      "requirements": [
+        "R02",
+        "R06",
+        "R08"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual post-start report remains possible, without backdated shift transfer or time-entry mutation.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-acceptance-boundaries.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A023",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Current employee, account, location or workspace becomes inactive",
+      "expected": "No new automatic assignment; safe cancellations/history remain possible within authorization.",
+      "requirements": [
+        "R03",
+        "R10",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Current actor, employee/location/workspace status participates in authority and eligibility; history remains scoped.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A024",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Candidate lacks location eligibility or a required active position",
+      "expected": "Discovery and final completion reject candidate using shared validation.",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Location and position eligibility are rechecked against authoritative active membership.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A025",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Multi-qualified candidate covers a single-position slot",
+      "expected": "Exactly one operational position counts; no double staffing/position credit.",
+      "requirements": [
+        "R03",
+        "R10",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "A multi-qualified employee supplies one assigned position and one overall unit, not duplicate capacity.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A026",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Required designated Lead would be lost",
+      "expected": "Block; do not clear Lead flag or reinterpret an access role as a job position.",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Required Lead/position coverage is not cleared to make a trade fit.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A027",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Normal availability plus submitted weekly snapshot/exceptions",
+      "expected": "Preserve shared precedence, intentionally empty submissions and partial-day unavailable gaps.",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Shared normal/submitted/exception availability precedence and intentional empty submissions remain authoritative.",
+      "evidence_paths": [
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A028",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Pending versus approved time off",
+      "expected": "Use existing shared status semantics; approved leave blocks; nonblocking states do not become invented blockers.",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Approved leave blocks; pending/nonblocking statuses are not automatically converted into blockers; actual inserts race acceptance.",
+      "evidence_paths": [
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A029",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Cross-location conflict and same-day limit",
+      "expected": "Automatic mode enforces full ledger/daily policy, not the more permissive manual warning path.",
+      "requirements": [
+        "R03",
+        "R05",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Complete cross-location ledger and automatic daily limit are used, not a permissive manual-mode shortcut.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A030",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Target 24, configured weekly max 40; projected 32, 40 and 41 scheduled hours",
+      "expected": "32/40 remain eligible under other rules; 41 violates this configured cap. The message identifies a scheduling cap, not a universal legal prohibition or final overtime-pay conclusion.",
+      "requirements": [
+        "R03",
+        "R10",
+        "R17"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Targets are preferences, configured maximums are caps; fixtures do not become labor-law defaults.",
+      "evidence_paths": [
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts",
+        "src/lib/scheduling/operational-rules.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A031",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Sunday overnight shift crosses Monday",
+      "expected": "Evaluate availability/leave and maximum hours in both business workweeks; exclude outgoing work correctly.",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Overnight work is split into all touched days/weeks; outgoing work is excluded correctly.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts",
+        "src/lib/business-time.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A032",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Owning schedule week differs from touched business date",
+      "expected": "Locks, ledger and publication associations use their proper identities; no omitted carry-in/out.",
+      "requirements": [
+        "R07",
+        "R10",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Owning publication week, dated ledger and affected lock weeks retain separate meanings.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A033",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Workspace timezone differs from browser/Mac timezone",
+      "expected": "Same valid operational result for same persisted workspace facts.",
+      "requirements": [
+        "R08",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Workspace-zone boundary resolution is explicit; browser display does not supply scheduling authority.",
+      "evidence_paths": [
+        "src/lib/business-time.test.ts",
+        "src/test/integration/shift-changes.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A034",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "DST gap, repeated civil time or malformed legacy boundary",
+      "expected": "Use strict existing boundary policy; no guessed instant or silent 00:00 substitution.",
+      "requirements": [
+        "R08",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Skipped/repeated civil boundaries and malformed times are rejected, not guessed.",
+      "evidence_paths": [
+        "src/lib/business-time.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A035",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Unrelated location lacks setup",
+      "expected": "It does not block a valid requested slot; a requested inactive/unready location cannot auto-complete.",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Requested inactive/unready context fails; unrelated setup must not become a whole-workspace scheduling prerequisite.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts",
+        "src/lib/scheduling/scheduling-rules.test.ts",
+        "src/lib/scheduling/validate-shift.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A036",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Existing unrelated staffing gap versus new affected gap",
+      "expected": "Do not require fixing unrelated week defects; never introduce/worsen affected staff/position/Lead gaps.",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Health comparison concerns affected periods and must not add/worsen relevant coverage gaps.",
+      "evidence_paths": [
+        "src/lib/scheduling/shift-change-evaluation.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A037",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Ranking uses zero/missing/mixed targets and shuffled input order",
+      "expected": "No fabricated target or division errors; final shared fairness semantics and rotating tie remain deterministic.",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Positive/zero/missing targets and deterministic rotating ties retain accepted ordering independent of input array order.",
+      "evidence_paths": [
+        "src/lib/scheduling/generation/fairness.test.ts",
+        "src/lib/scheduling/coverage-ranking.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A038",
+      "group": "Shared rules, ranking and business time",
+      "tasks": "T02/T03",
+      "scenario": "Highly ranked employee does not volunteer",
+      "expected": "No assignment or extra hours without explicit acceptance; rank is not consent.",
+      "requirements": [
+        "R03",
+        "R04"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Candidate ranking creates no assignment; an authorized current consent/claim is required.",
+      "evidence_paths": [
+        "src/lib/shift-changes/lifecycle.test.ts",
+        "src/test/integration/shift-changes.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A039",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Same shift is source in one request and target in another",
+      "expected": "Cross-role exclusivity holds; separate-column indexes are not treated as sufficient proof.",
+      "requirements": [
+        "R07",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Cross-role source/target and callout participation uniqueness; real opposite proposals have one reservation winner.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-schema.integration.ts",
+        "src/test/integration/shift-change-upgrade.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A040",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Two opposite or chained swaps race",
+      "expected": "Deterministic lock order and participation guard allow only compatible outcomes; no deadlock loop or double commitment.",
+      "requirements": [
+        "R01",
+        "R07"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual opposite proposals and terminal trade races serialize consistently; bounded retries do not fabricate acceptance.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts",
+        "src/test/integration/shift-change-completion-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A041",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Leave or availability insert occurs during acceptance",
+      "expected": "Absent-row/phantom change is caught under both writer orders; no stale automatic assignment.",
+      "requirements": [
+        "R07",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Leave and availability inserts exercise both writer orders, including absent-row input changes.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A042",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "New assignment at another location changes candidate hours during acceptance",
+      "expected": "Complete affected-ledger validation/guard catches overlap or maximum breach.",
+      "requirements": [
+        "R07",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "New overlapping assignment at another location is inserted under both actual writer orders; stale pre-read cannot approve it.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A043",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Position membership, max-hours policy or session role changes during lock wait",
+      "expected": "Fresh final guard rejects lost authority or invalid scheduling facts.",
+      "requirements": [
+        "R07",
+        "R10",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual session revocation/expiry and profile/policy races recheck authority after waits; natural expiry after initial guard rolls back.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts",
+        "src/test/integration/shift-change-policy.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A044",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Manager edits/deletes/unpublishes while acceptance waits",
+      "expected": "No overwrite of new manager intent, no phantom assignment and no publication of a draft.",
+      "requirements": [
+        "R07",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual material writer and raw delete/unpublish mutations cannot be overwritten by stale acceptance.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts",
+        "src/test/integration/shift-changes.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A045",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Phase 4 generation/manual input writers race with Phase 5",
+      "expected": "Shared lock ordering and source guards hold; no deadlocks from independent lock conventions.",
+      "requirements": [
+        "R07",
+        "R10",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Real generator, exclusion writer and manual writer use compatible locks with Phase 5 in both orders.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A046",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Same action is submitted twice with the same operation identity",
+      "expected": "Return same persisted result; one assignment change, revision and visible completion event.",
+      "requirements": [
+        "R07",
+        "R09",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Recorded operation identity returns the same outcome without another assignment/revision/notification.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A047",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Same operation identity is reused with different terms or another account",
+      "expected": "Reject key misuse; no replay across actor/workspace boundaries.",
+      "requirements": [
+        "R07",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actor/workspace/payload/session boundaries reject replay or forged reconciliation.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/lib/shift-changes/command-parser.test.ts",
+        "src/app/app/exchange/actions.test.ts",
+        "src/app/app/exchange/callout/actions.test.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A048",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Transport fails after successful commit",
+      "expected": "Reconcile recorded command outcome before retry; no second swap or falsely definite failure.",
+      "requirements": [
+        "R07",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual commit followed by lost browser response reconciles the original operation; no second offer or duplicate completion.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A049",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Recognized source conflict/deadlock/serialization failure",
+      "expected": "One bounded retry owner rereads and reevaluates; permission/deadline/unknown errors are not blindly retried.",
+      "requirements": [
+        "R07",
+        "R10"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Named source/serialization/deadlock conflicts have one bounded retry owner; unrelated errors are not blindly retried.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A050",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Failure is injected between each mutation stage",
+      "expected": "All assignments, request state, participation, history, revisions and intents roll back together.",
+      "requirements": [
+        "R07",
+        "R09",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Failure at request/assignment/publication/outbox/operation and stale-retirement stages proves atomic rollback.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts",
+        "src/test/integration/shift-change-pending-callout.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A051",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "A source row is later deleted or reassigned",
+      "expected": "Request history retains original parties/terms/outcome; cascades or live joins do not erase/misattribute it.",
+      "requirements": [
+        "R11",
+        "R14"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Immutable original terms/participants/reasons survive deletion, reassignment and stale closure without peer disclosure.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-schema.integration.ts",
+        "src/test/integration/shift-change-upgrade.integration.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-pending-callout.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A052",
+      "group": "Database races, idempotency and history",
+      "tasks": "T01/T03/T06",
+      "scenario": "Generated-origin assignment is changed by a completed exchange",
+      "expected": "Protected human-controlled provenance is retained; genuine actor/mode recorded; no tombstone auto-clear.",
+      "requirements": [
+        "R10",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Completed human exchange keeps protected provenance and does not clear generator exclusion events.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A053",
+      "group": "Deadlines, escalation and worker recovery",
+      "tasks": "T04/T06",
+      "scenario": "Claim just before, exactly at, and after the effective completion cutoff",
+      "expected": "Only before-cutoff final authorization can complete; apply the recorded/tighter current policy and shift-start upper bound using authoritative instants, not just dates.",
+      "requirements": [
+        "R07",
+        "R08",
+        "R15"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Pure exact-cutoff boundary plus real natural deadline expiration before/after initial authority; no post-cutoff transfer commits.",
+      "evidence_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts",
+        "src/test/integration/shift-change-acceptance-boundaries.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A054",
+      "group": "Deadlines, escalation and worker recovery",
+      "tasks": "T04/T06",
+      "scenario": "Request begins before its effective cutoff but obtains locks afterward",
+      "expected": "Post-wait policy/version/deadline guard rejects stale acceptance; no transfer, revision or completion notification is committed.",
+      "requirements": [
+        "R07",
+        "R08",
+        "R15"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Post-wait authorization/deadline failure rolls back prepared changes rather than trusting transaction-start time.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-acceptance-boundaries.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A055",
+      "group": "Deadlines, escalation and worker recovery",
+      "tasks": "T04/T06",
+      "scenario": "Worker does not run or runs after configured deadlines",
+      "expected": "Expired actions remain invalid under effective policy; reads show truthful state; an accepted request is not confused with a closed creation window; unattended escalation is not claimed active.",
+      "requirements": [
+        "R08",
+        "R14",
+        "R15"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Read projections show effective expiry/staleness without pretending a background worker has run.",
+      "evidence_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "src/test/integration/shift-change-views.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A056",
+      "group": "Deadlines, escalation and worker recovery",
+      "tasks": "T04/T06",
+      "scenario": "Two worker ticks expire/escalate same request",
+      "expected": "One durable event per lifecycle/stage; no duplicate reminders or assignments.",
+      "requirements": [
+        "R07",
+        "R08",
+        "R09"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Duplicate ticks and bounded continuation create one lifecycle/campaign action per committed stage.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A057",
+      "group": "Deadlines, escalation and worker recovery",
+      "tasks": "T04/T06",
+      "scenario": "Acceptance and expiry worker race",
+      "expected": "Single serialized outcome; expired request never acquires a replacement afterward.",
+      "requirements": [
+        "R07",
+        "R08"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Expiry-first and acceptance-first real database races yield one serialized outcome.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A058",
+      "group": "Deadlines, escalation and worker recovery",
+      "tasks": "T04/T06",
+      "scenario": "Request created within urgent window",
+      "expected": "One immediate applicable manager escalation; no waiting for an already-passed threshold.",
+      "requirements": [
+        "R06",
+        "R08",
+        "R09"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Newly urgent/released needs escalate appropriately without waiting for an already-passed threshold.",
+      "evidence_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A059",
+      "group": "Deadlines, escalation and worker recovery",
+      "tasks": "T04/T06",
+      "scenario": "No candidate exists or all invitees decline/dismiss",
+      "expected": "Truthful unresolved need; bounded manager escalation; no involuntary assignment or repeated invite spam.",
+      "requirements": [
+        "R03",
+        "R04",
+        "R06",
+        "R08"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "No eligible candidates versus incomplete configuration is explicit; repeated campaigns are bounded; no involuntary assignment.",
+      "evidence_paths": [
+        "src/lib/shift-changes/maintenance.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "src/test/integration/shift-change-views.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A060",
+      "group": "Deadlines, escalation and worker recovery",
+      "tasks": "T04/T06",
+      "scenario": "Worker crashes between preparation and commit or restarts mid-batch",
+      "expected": "Stable cursor/idempotency recovers without losing or duplicating due work; no provider call inside business transaction.",
+      "requirements": [
+        "R07",
+        "R08",
+        "R09"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Injected failure, rollback and cursor continuation recover without losing or duplicating committed work.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A061",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Coverage opens with mixed eligible/ineligible employees",
+      "expected": "Only current authorized eligible audience can receive actionable invitation; no personal callout details.",
+      "requirements": [
+        "R03",
+        "R09",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Only current eligible/authorized peers get actionable invitations; reasons are not included.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "src/lib/notifications/worker.test.ts",
+        "src/lib/notifications/policy.test.ts",
+        "src/lib/notifications/provider.test.ts",
+        "src/lib/notifications/recipients.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A062",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Valid trade/coverage updates both request and published revision",
+      "expected": "Coalesced visible completion per recipient/transaction; required internal records remain complete.",
+      "requirements": [
+        "R09",
+        "R11"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Request/publication changes coalesce visible outcomes while retaining required revisions and acknowledgements.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A063",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Request cancelled after delivery lease claimed but before send",
+      "expected": "Worker revalidates source and cancels stale action; already delivered pushes open a safe current state.",
+      "requirements": [
+        "R07",
+        "R09"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Fake-provider lease/source rechecks cancel stale requests; actual source state, not copied payload, is authoritative.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "src/lib/notifications/worker.test.ts",
+        "src/lib/notifications/policy.test.ts",
+        "src/lib/notifications/provider.test.ts",
+        "src/lib/notifications/recipients.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A064",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Same-state revision, new linked offer or legacy status-version event",
+      "expected": "Version identity/cancellation remain correct; no stale event reuse, lost new event or notification-budget reset from repeated reoffers.",
+      "requirements": [
+        "R09",
+        "R11",
+        "R14"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Revision identities, historical status aliases and reoffer campaign budgets remain separate and stable.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "src/components/shift-change-form-state.test.ts",
+        "src/lib/data/notification-state.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A065",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Caller tampers with employee/workspace/role/eligible/max-hours/Lead fields",
+      "expected": "Strict server-derived authority; reject business-field injection and duplicate scalar parameters.",
+      "requirements": [
+        "R10",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Finite scalar allowlists reject duplicates, forged authority and unexpected business fields.",
+      "evidence_paths": [
+        "src/lib/shift-changes/command-parser.test.ts",
+        "src/app/app/exchange/actions.test.ts",
+        "src/app/app/exchange/callout/actions.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A066",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Real framework-generated Server Action form envelope",
+      "expected": "Legitimate submission works; framework metadata handling cannot authorize forged business fields.",
+      "requirements": [
+        "R12",
+        "R13"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Real Next form envelopes, login, Server Actions and refresh were exercised; framework metadata is not business authority.",
+      "evidence_paths": [
+        "scripts/phase-a-app-qa.mjs",
+        "src/lib/shift-changes/command-parser.test.ts",
+        "src/app/app/exchange/actions.test.ts",
+        "src/app/app/exchange/callout/actions.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A067",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Unrelated employee, wrong request recipient or Lead accesses manager action directly",
+      "expected": "Rejected server-side regardless of hidden buttons or client route.",
+      "requirements": [
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Wrong recipient/role and direct protected routes reject access, regardless of visible controls.",
+      "evidence_paths": [
+        "src/test/integration/shift-changes.integration.ts",
+        "src/lib/shift-changes/command-parser.test.ts",
+        "src/app/app/exchange/actions.test.ts",
+        "src/app/app/exchange/callout/actions.test.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A068",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Actor logs out/switches account while opening a request notification",
+      "expected": "No cross-account private data or unauthorized mutation; safe return/deep-link behavior.",
+      "requirements": [
+        "R09",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual logout/private operation isolation plus notification account-switch tests; stale sessions cannot authorize writes.",
+      "evidence_paths": [
+        "src/lib/notifications/logout.test.ts",
+        "src/lib/notifications/service-worker.test.ts",
+        "src/app/app/notifications/open/route.test.ts",
+        "scripts/phase-a-app-qa.mjs",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A069",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Employee eligibility revoked after invitation creation",
+      "expected": "Dispatch/open/accept reevaluate applicable access and eligibility; invitation never guarantees acceptance.",
+      "requirements": [
+        "R03",
+        "R09",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Invitation creation does not guarantee later eligibility; dispatch/open/accept recheck current access.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "src/lib/notifications/worker.test.ts",
+        "src/lib/notifications/policy.test.ts",
+        "src/lib/notifications/provider.test.ts",
+        "src/lib/notifications/recipients.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A070",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Quiet hours, notification preferences, expired token or provider outage",
+      "expected": "Honor approved policy; preserve business result; report delivery separately from assignment success.",
+      "requirements": [
+        "R09",
+        "R14"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Quiet hours/provider errors/expired subscriptions are separate from business outcomes; daytime fake-provider fixture is explicit.",
+      "evidence_paths": [
+        "src/lib/notifications/worker.test.ts",
+        "src/lib/notifications/policy.test.ts",
+        "src/lib/notifications/provider.test.ts",
+        "src/lib/notifications/recipients.test.ts",
+        "src/test/integration/shift-change-notifications.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A071",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Push delivery flags off and fake provider enabled for tests",
+      "expected": "No real notification transport; durable local intent behavior tested and labeled accurately.",
+      "requirements": [
+        "R09",
+        "R14"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Real transports remain disabled; only fake-provider tests and owned local intents were used.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A072",
+      "group": "Notifications, access and privacy",
+      "tasks": "T04/T05/T06",
+      "scenario": "Sensitive reason note appears in candidate list, general history, URL, cache or push",
+      "expected": "Test fails; reason is visible only to requester and authorized management.",
+      "requirements": [
+        "R02",
+        "R09",
+        "R12"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Private reasons are retained for entitled parties, not peers, general candidate surfaces, URLs or push envelopes.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-schema.integration.ts",
+        "src/test/integration/shift-change-upgrade.integration.ts",
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "src/lib/notifications/logout.test.ts",
+        "src/lib/notifications/service-worker.test.ts",
+        "src/app/app/notifications/open/route.test.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A073",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Automatic completion through actual authenticated app and disposable DB",
+      "expected": "Both real schedules and request/count/acknowledgement views refresh; not just a mocked button result.",
+      "requirements": [
+        "R05",
+        "R11",
+        "R13"
+      ],
+      "status": "LOCAL_EVIDENCE_WITH_LIMITATION",
+      "verified_scope": "Actual login/action/commit/read-only operation lookup and refreshed request UI; SQL verifies assignments and unaffected acknowledgement preservation.",
+      "evidence_paths": [
+        "scripts/phase-a-app-qa.mjs",
+        "src/test/integration/shift-changes.integration.ts"
+      ],
+      "remaining_boundary": "Actual request/action/result UI and assignment SQL are verified. Whole-product live dashboard/acknowledgement UX still receives independent integration review."
+    },
+    {
+      "id": "A074",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Open, manual pending, released-unfilled, completed, expired and already-taken states",
+      "expected": "Labels and available actions match persisted state; no stale manager approval or success banners.",
+      "requirements": [
+        "R02",
+        "R06",
+        "R08",
+        "R13"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Persisted/derived open, pending, released, closed and unavailable states have appropriate controls; historical fixture states remain separately attributed.",
+      "evidence_paths": [
+        "src/app/app/exchange/page.test.tsx",
+        "src/app/app/exchange/swap/page.test.tsx",
+        "src/test/integration/shift-change-views.integration.ts",
+        "src/components/shift-change-form-state.test.ts",
+        "src/lib/data/notification-state.test.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A075",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Offline, loading, pending, error, no candidates and uncertain commit",
+      "expected": "Useful truthful UI; no cached private data or deferred automatic acceptance; safe input preserved.",
+      "requirements": [
+        "R09",
+        "R12",
+        "R13"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "A lost response shows uncertainty and safe same-operation reconciliation; offline private-data caching is not introduced.",
+      "evidence_paths": [
+        "src/components/shift-change-form-state.test.ts",
+        "src/lib/data/notification-state.test.ts",
+        "scripts/phase-a-app-qa.mjs",
+        "src/lib/notifications/logout.test.ts",
+        "src/lib/notifications/service-worker.test.ts",
+        "src/app/app/notifications/open/route.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A076",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Long names/positions/locations at all seven widths and both engines",
+      "expected": "Full text fits before horizontal scrolling; stable >=44px controls and explicit position/Lead context.",
+      "requirements": [
+        "R13"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Fresh seven widths in Chromium/WebKit, long identities and exact text/action geometry; actual workflow-policy supplement corrects initial route attribution.",
+      "evidence_paths": [
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A077",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Keyboard and screen-reader interaction",
+      "expected": "Correct focus/order/names/live feedback; dialogs restore focus; status not communicated by color alone.",
+      "requirements": [
+        "R12",
+        "R13"
+      ],
+      "status": "LOCAL_EVIDENCE_WITH_LIMITATION",
+      "verified_scope": "Keyboard/focus/ARIA and selected-state checks are automated; no physical screen-reader session was performed.",
+      "evidence_paths": [
+        "scripts/phase-a-app-qa.mjs",
+        "src/components/shift-change-policy-fields.test.tsx"
+      ],
+      "remaining_boundary": "PARTIAL: keyboard/focus/ARIA tests are not a physical screen-reader audit."
+    },
+    {
+      "id": "A078",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Bottom-nav safe area and final action on mobile",
+      "expected": "Action remains visible and reachable above fixed navigation; pending geometry does not jump.",
+      "requirements": [
+        "R13"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Final actions are scrolled and measured above fixed navigation; full-page screenshot stitching is not substituted for live geometry.",
+      "evidence_paths": [
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A079",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Protected Manager/Employee/Lead/Login/Activate/PWA/Clocker surfaces",
+      "expected": "No unintended changes; focused source-aware comparisons; no actual punches or provider activation.",
+      "requirements": [
+        "R11",
+        "R13",
+        "R14"
+      ],
+      "status": "LOCAL_EVIDENCE_WITH_LIMITATION",
+      "verified_scope": "Current source is retained and fresh affected screens checked; original protected 179/182 exact pairs and 12-pixel differences are historical evidence with separate 30-pixel repeats.",
+      "evidence_paths": [
+        "src/lib/notifications/logout.test.ts",
+        "src/lib/notifications/service-worker.test.ts",
+        "src/app/app/notifications/open/route.test.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "QUALIFIED REUSE: original protected evidence is preserved, not a claim that 182 fresh candidate comparisons were all exact."
+    },
+    {
+      "id": "A080",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Legacy request upgrade and missing schema",
+      "expected": "History/policy preserved; no automatic conversion of MANAGER_PENDING; missing schema is an error, not an empty list.",
+      "requirements": [
+        "R11",
+        "R14"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Legacy/manual consent stays unknown; missing/malformed configuration is not reported as a valid empty success.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-schema.integration.ts",
+        "src/test/integration/shift-change-upgrade.integration.ts",
+        "src/test/integration/shift-change-views.integration.ts",
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A081",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Duplicate/inconsistent legacy participation and repeated callout episodes",
+      "expected": "Migration rehearsal reports/resolves explicitly without deleting history or reassigning real employees.",
+      "requirements": [
+        "R02",
+        "R07",
+        "R14"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Contradictory legacy participation aborts migration without deleting history; repeated episodes and pending ownership changes are explicit.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-schema.integration.ts",
+        "src/test/integration/shift-change-upgrade.integration.ts",
+        "src/test/integration/shift-change-pending-callout.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A082",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Separate approval modes or applicable rules change while requests remain active",
+      "expected": "Disabling/tightening applies at final guard; enabling/loosening neither bulk-completes existing manual requests nor extends prior consent/deadlines; changed rule facts are revalidated.",
+      "requirements": [
+        "R05",
+        "R07",
+        "R14",
+        "R15"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Tightening applies at final guard; loosening does not bulk-approve manual requests or extend old consent/deadlines.",
+      "evidence_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts",
+        "src/test/integration/shift-changes.integration.ts",
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A083",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Migration compatibility rollback and restart",
+      "expected": "Documented tested application/schema compatibility; no destructive drop/rewrite to fake reversibility.",
+      "requirements": [
+        "R14"
+      ],
+      "status": "LOCAL_EVIDENCE_WITH_LIMITATION",
+      "verified_scope": "Canonical upgrade/transaction rollback is tested; a production old-application rollback/restore rehearsal is not claimed and remains an activation gate.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-schema.integration.ts",
+        "src/test/integration/shift-change-upgrade.integration.ts"
+      ],
+      "remaining_boundary": "RELEASE GATE: no existing customer database, production Neon rollback/restore or old-application activation was exercised."
+    },
+    {
+      "id": "A084",
+      "group": "UI integration and safe release",
+      "tasks": "T05/T06",
+      "scenario": "Final branch review and handoff",
+      "expected": "Approved base, exact commit, clean worktree, evidence, owned teardown and explicit no-push/no-deploy stop are recorded.",
+      "requirements": [
+        "R14"
+      ],
+      "status": "LOCAL_EVIDENCE_WITH_LIMITATION",
+      "verified_scope": "Candidate source, checks and owned teardown are recorded; independent Codex audit and Jose acceptance remain pending.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-races.integration.ts"
+      ],
+      "remaining_boundary": "PENDING: this is the implementer self-review candidate; Codex independent review and CEO acceptance are not performed."
+    },
+    {
+      "id": "A085",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T01/T03/T05",
+      "scenario": "Independent swap and coverage approval modes",
+      "expected": "Exercise automatic swaps/manual coverage and manual swaps/automatic coverage. Persist each independently; unauthorized toggles fail; the unrelated workflow and existing pending requests do not change.",
+      "requirements": [
+        "R05",
+        "R12",
+        "R15"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Real Owner form saves independently preserve the other workflow, with server authority and current revision.",
+      "evidence_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts",
+        "src/test/integration/shift-change-policy.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A086",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T01/T03/T06",
+      "scenario": "Missing or partially migrated policy configuration",
+      "expected": "Old/manual behavior remains recognizable; auto-completion is withheld where required settings are unknown. No implicit enabled flag, zero notice or not-applicable classification is invented.",
+      "requirements": [
+        "R05",
+        "R14",
+        "R15",
+        "R16"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Unknown/partially configured settings withhold automatic completion; missing is neither zero nor reviewed not-applicable.",
+      "evidence_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts",
+        "src/lib/shift-changes/lifecycle.test.ts",
+        "src/test/integration/shift-change-views.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A087",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T01/T03/T04",
+      "scenario": "Separate request and completion deadlines",
+      "expected": "With fictional 24-hour submission/2-hour completion cutoffs, test both boundaries. A request created in time stays actionable until its completion cutoff; new requests after their own cutoff are refused. Values are fixtures, not customer defaults.",
+      "requirements": [
+        "R07",
+        "R08",
+        "R15"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Submission and completion cutoffs are separate; completion may remain open after new submissions close.",
+      "evidence_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts",
+        "src/lib/shift-changes/maintenance.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A088",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T01/T03/T05",
+      "scenario": "Explicit zero notice versus NULL and urgent inability reporting",
+      "expected": "Only an explicitly configured zero cutoff permits action up to but not at shift start. Missing values are not zero. Genuine urgent callouts still reach management after trading closes, without backdated transfers.",
+      "requirements": [
+        "R02",
+        "R08",
+        "R13",
+        "R15"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Explicit zero differs from NULL; urgent inability remains reportable after ordinary trading closes.",
+      "evidence_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts",
+        "src/test/integration/shift-change-acceptance-boundaries.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A089",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T03/T04/T06",
+      "scenario": "Notice policy tightens or loosens during a lock wait",
+      "expected": "A tighter effective deadline wins after the wait. Loosening never silently extends recorded consent/expiry or reopens a closed request. Worker, command and read projections agree.",
+      "requirements": [
+        "R07",
+        "R08",
+        "R09",
+        "R15"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Tighter effective deadlines after waits, immutable recorded expiry and actual stale Owner form conflicts.",
+      "evidence_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts",
+        "src/test/integration/shift-change-races.integration.ts",
+        "src/test/integration/shift-change-notifications.integration.ts",
+        "scripts/phase-a-app-qa.mjs"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A090",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T02/T03",
+      "scenario": "Minimum rest against prior and next cross-location commitments",
+      "expected": "Using fictional rest limits, reject a nonoverlapping but insufficient-rest assignment on either side. Remove outgoing shifts correctly; include adjacent days/workweeks and follow the defined time basis.",
+      "requirements": [
+        "R03",
+        "R07",
+        "R10",
+        "R16"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Preceding/following rest beyond the older limited horizon is retained through shared SQL mapping and validation.",
+      "evidence_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/test/integration/shift-change-evaluation.integration.ts",
+        "src/lib/data/scheduling-operational-parity.test.ts",
+        "src/lib/scheduling/generation/operational-parity.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A091",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T02/T03",
+      "scenario": "Per-shift and daily-hour maximums differ from weekly maximum",
+      "expected": "A candidate below the weekly cap can still fail a daily/per-shift cap. Test the configured calendar or rolling window explicitly and reject unsupported/ambiguous semantics rather than guessing.",
+      "requirements": [
+        "R03",
+        "R10",
+        "R16",
+        "R17"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Daily/per-shift caps and calendar/rolling windows differ from weekly maximum; unknown semantics fail closed.",
+      "evidence_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A092",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T02/T03/T05",
+      "scenario": "Replacement has different required break conditions",
+      "expected": "Recheck authoritative incoming-employee break conditions, retaining shift and consent-bound terms. Missing or incompatible required facts withhold auto-completion; never remove a break, deduct pay or fabricate a waiver/punch to make the trade pass.",
+      "requirements": [
+        "R01",
+        "R03",
+        "R10",
+        "R11",
+        "R16"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Incoming-employee break requirements use authoritative scheduled facts; missing/incompatible facts are not fabricated or overridden.",
+      "evidence_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A093",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T01/T02/T03",
+      "scenario": "Required rule is unknown versus explicitly reviewed not applicable",
+      "expected": "Unknown required facts cannot become an eligible result or a generic manager override. Authorized correction plus revalidation is required. An explicit reviewed not-applicable classification behaves differently from missing data.",
+      "requirements": [
+        "R06",
+        "R12",
+        "R16"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Unknown and explicitly reviewed not-applicable are distinct; generic management approval cannot bypass a mandatory unknown.",
+      "evidence_paths": [
+        "src/lib/shift-changes/policy.test.ts",
+        "src/lib/shift-changes/policy-form.test.ts",
+        "src/lib/scheduling/operational-rules.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A094",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T02/T03/T05",
+      "scenario": "Projected overtime threshold differs from target and hard cap",
+      "expected": "In a fictional profile with target 24, threshold 40 and cap 44, projected 42 is a threshold crossing, not a cap breach; route according to configured review policy. Projected 45 still violates the cap. Do not seed these values or calculate final payroll.",
+      "requirements": [
+        "R03",
+        "R06",
+        "R10",
+        "R13",
+        "R17"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Fictional target/threshold/cap distinctions route soft overtime risk without treating every threshold crossing as a hard cap breach.",
+      "evidence_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/scheduling/shift-change-evaluation.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A095",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T02/T03",
+      "scenario": "Known hard failure versus an explicitly permitted soft exception",
+      "expected": "Employee consent and manager review cannot bypass a known hard cap, required safety rule, forged consent or unresolved mandatory fact. Only already-permitted soft exceptions can be manually resolved; preserve reasons/history.",
+      "requirements": [
+        "R01",
+        "R06",
+        "R10",
+        "R16",
+        "R17"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Only approved soft-policy review is possible; hard failures, unknown mandatory facts and missing consent remain blocked.",
+      "evidence_paths": [
+        "src/lib/scheduling/operational-rules.test.ts",
+        "src/lib/shift-changes/lifecycle.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A096",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T02/T06",
+      "scenario": "Shared policy parity across discovery, acceptance and affected consumers",
+      "expected": "Verify one source of rule meaning across suggestions, final writes and touched manual/generation consumers, allowing only documented mode-specific exceptions. No copied rest/hour/break engine and no changes to the approved Phase 4 worktree.",
+      "requirements": [
+        "R10",
+        "R11",
+        "R14",
+        "R16",
+        "R17"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Single shared operational evaluator and complete ledger used by affected manual/generator/shift-change consumers; original checkpoint unchanged.",
+      "evidence_paths": [
+        "src/test/integration/shift-change-evaluation.integration.ts",
+        "src/lib/data/scheduling-operational-parity.test.ts",
+        "src/lib/scheduling/generation/operational-parity.test.ts",
+        "src/lib/scheduling/operational-rules.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A097",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T01/T03/T05/T06",
+      "scenario": "Actual app, policy changes, privacy and legacy upgrade",
+      "expected": "Use authenticated disposable-data flows to prove rule/mode/deadline updates, version guards, safe reasons and truthful pending states. No peer disclosure of private rule classification, universal compliance badge or migration-triggered activation.",
+      "requirements": [
+        "R07",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Actual Owner save/invalid/stale forms, current session and private operation reads, plus separate canonical legacy upgrades.",
+      "evidence_paths": [
+        "scripts/phase-a-app-qa.mjs",
+        "src/test/integration/shift-change-policy.integration.ts",
+        "src/test/integration/shift-change-schema.integration.ts",
+        "src/test/integration/shift-change-upgrade.integration.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    },
+    {
+      "id": "A098",
+      "group": "Approved market-alignment refinements",
+      "tasks": "T02/T05/T06",
+      "scenario": "Time-basis and actual-time evidence are not interchangeable",
+      "expected": "Exercise daylight-saving elapsed rest versus nominal scheduled hours and absent actual-work data. Follow defined semantics or withhold unverifiable automation. Never infer final overtime owed, actual break completion or legal compliance from the scheduled ledger.",
+      "requirements": [
+        "R03",
+        "R10",
+        "R13",
+        "R16",
+        "R17"
+      ],
+      "status": "LOCAL_EVIDENCE_MAPPED",
+      "verified_scope": "Elapsed rest, nominal scheduled totals and absent actual work are distinguished; no final payroll or legal compliance claim.",
+      "evidence_paths": [
+        "src/lib/business-time.test.ts",
+        "src/lib/scheduling/operational-rules.test.ts"
+      ],
+      "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
+    }
+  ]
+}

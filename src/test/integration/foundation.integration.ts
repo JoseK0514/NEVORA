@@ -543,8 +543,13 @@ describe('notification workspace policy',()=>{
    const {notificationIntentStatements}=await import('../../lib/data/notifications');
    await db.executor.query({text:kind==='CALLOUT' ? "UPDATE shift_callouts SET status=$1 WHERE id='notify-callout'" : "INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,status) VALUES('notify-exchange','COVERAGE','notify-shift','notify-test',$1)",values:[status]});
    const config=await loadWorkspaceNotificationConfig({},db.executor),state=sqlNotificationStateRepository(db.executor,config.workspace);
-   const source={kind,id:kind==='CALLOUT'?'notify-callout':'notify-exchange',version:status};
-   const event:import('../../lib/notifications/types').NotificationIntent={id:'notify-event',employeeId:'notify-test',type:'CALLOUT_DECIDED',title:'Test',body:'Open portal',environment:'test',eventKey:'decision',source,effectiveVersion:status,purpose:'EVENT',urgency:'normal',dueAt:'2030-10-08T12:00Z',expiresAt:'2030-10-11T12:00Z'};
+   // Current schema increments a callout revision when APPROVED changes to DENIED.
+   // A historical status string is not the identity of that newer decision.
+   const revision=kind==='CALLOUT'&&status==='DENIED'?2:1;
+   const version=`r:${revision}`;
+   const source={kind,id:kind==='CALLOUT'?'notify-callout':'notify-exchange',version};
+   expect((await state.readSource(source))?.source.version).toBe(version);
+   const event:import('../../lib/notifications/types').NotificationIntent={id:'notify-event',employeeId:'notify-test',type:'CALLOUT_DECIDED',title:'Test',body:'Open portal',environment:'test',eventKey:'decision',source,effectiveVersion:version,purpose:'EVENT',urgency:'normal',dueAt:'2030-10-08T12:00Z',expiresAt:'2030-10-11T12:00Z'};
    const now=new Date('2030-10-08T12:00Z');
    await db.executor.transaction(notificationIntentStatements([event]));
    const open=createNotificationOpenHandler({state,environment:'test',clock:()=>now,session:async()=>({id:'notify-test',firstName:'Test',lastName:'Worker',role:'EMPLOYEE',primaryLocationId:'loc-1'})});
@@ -558,7 +563,7 @@ describe('notification workspace policy',()=>{
    expect(destinationForSource(history!,access!)).toContain(`requestId=${source.id}`);
    await db.executor.query({text:"UPDATE notifications SET effective_version='stale' WHERE id='notify-event'",values:[]});
    expect((await opening()).status).toBe(404);
-   await db.executor.query({text:"UPDATE notifications SET effective_version=$1 WHERE id='notify-event';",values:[status]});
+   await db.executor.query({text:"UPDATE notifications SET effective_version=$1 WHERE id='notify-event';",values:[version]});
    await db.executor.query({text:"UPDATE employees SET active=false WHERE id='notify-test'",values:[]});
    expect((await opening()).status).toBe(404);
   }finally{await db.dispose();}
@@ -1060,6 +1065,7 @@ it('Task 11 generic fixture replacement preserves the upgraded schema catalog', 
   defer(() => upgrade.dispose());
     await upgrade.executor.query({text:await readFile('db/migrations/0008_workspace_positions.sql','utf8'),values:[]});
     await upgrade.executor.query({text:await readFile('db/migrations/0009_schedule_generation.sql','utf8'),values:[]});
+    await upgrade.executor.query({text:await readFile('db/migrations/0010_shift_coverage_automation.sql','utf8'),values:[]});
     const generic=await createGenericWorkspaceDatabase();
     defer(() => generic.dispose());
     const catalog=async(executor:SqlExecutor)=>({
@@ -1069,6 +1075,7 @@ it('Task 11 generic fixture replacement preserves the upgraded schema catalog', 
     });
     const upgradedCatalog=await catalog(upgrade.executor);
     expect(upgradedCatalog.columns.length).toBeGreaterThan(100);
+    expect(upgradedCatalog.columns).toContainEqual(expect.objectContaining({table_name:'shifts',column_name:'assignment_episode_id'}));
     expect(await catalog(generic.executor)).toEqual(upgradedCatalog);
     expect((await getWorkspace(upgrade.executor)).id).toBe('workspace-fuel');
     expect((await getWorkspace(generic.executor)).id).toBe('cooperative-cedar');

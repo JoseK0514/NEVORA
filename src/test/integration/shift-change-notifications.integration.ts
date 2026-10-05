@@ -268,8 +268,18 @@ it.each(['after-claim', 'after-source-check', 'accepted'] as const)('A063/A070 f
     await tick(new Date().toISOString());
     const [notification] = await q("SELECT id FROM notifications WHERE source_id=$1 AND employee_id='e2' AND type='COVERAGE_INVITATION'", [r.requestId]);
     expect(notification).toBeDefined();
-    // Test-only due delivery fixture. Actual source and provider are still rechecked.
-    await q("UPDATE notifications SET due_at=clock_timestamp()-interval '1 second' WHERE id=$1", [notification.id]);
+    // Explicit daytime worker clock: this acceptance case must not depend on
+    // the Mac running before quiet hours. SQL leases keep real database time;
+    // the injected clock is the most recent local noon, never in their future.
+    // Quiet-hour behavior has its own worker/policy tests; no production policy changes.
+    const { businessDate, localDateTimeToInstant } = await import('../../lib/business-time');
+    const { addDays } = await import('../../lib/date-utils');
+    const observed = new Date();
+    const zone = (await loadWorkspaceNotificationConfig({ PUSH_ENVIRONMENT: 'test' }, db.executor)).policy.timeZone;
+    const day = businessDate(observed, zone);
+    let deliveryNow = new Date(localDateTimeToInstant(`${day}T12:00`, zone));
+    if (deliveryNow > observed) deliveryNow = new Date(localDateTimeToInstant(`${addDays(day, -1)}T12:00`, zone));
+    await q("UPDATE notifications SET due_at=$2::timestamptz-interval '1 second' WHERE id=$1", [notification.id, deliveryNow.toISOString()]);
     await deliveries.materialize([String(notification.id)]);
     await q("UPDATE push_deliveries SET status='retry_pending' WHERE notification_id=$1", [notification.id]);
     let sent = 0, changed = false;
@@ -282,7 +292,7 @@ it.each(['after-claim', 'after-source-check', 'accepted'] as const)('A063/A070 f
     };
     const state = sqlNotificationStateRepository(db.executor);
     const config = { ...await loadWorkspaceNotificationConfig({ PUSH_ENVIRONMENT: 'test' }, db.executor), featureEnabled: true, deliveryEnabled: true, testDeliveryEnabled: true, testAccountIds: ['e2'], subscriptionEncryptionKey: key.toString('base64url') };
-    const report = await runDispatch({ mode: 'retry', deps: { executor: db.executor, config, clock: () => new Date(), subscriptions, deliveries: { ...deliveries, claim: async (input) => {
+    const report = await runDispatch({ mode: 'retry', deps: { executor: db.executor, config, clock: () => new Date(deliveryNow), subscriptions, deliveries: { ...deliveries, claim: async (input) => {
                     const claims = await deliveries.claim(input);
                     if (phase === 'after-claim')
                         await cancel();
