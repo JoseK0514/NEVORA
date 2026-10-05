@@ -10,6 +10,9 @@ import type { SqlExecutor } from '../notifications/types';
 import type { ExchangeKind, UserRole } from "@/lib/domain";
 
 export type ExchangeShift = {
+  timeZone?:string;
+  assignmentEpisodeId?:string;
+  termsRevision?:number;
   positionId?: string;
   positionName?:string;
   id: string;
@@ -61,6 +64,9 @@ function timeValue(value: unknown) {
 
 function mapShift(row: Record<string, unknown>, prefix: string): ExchangeShift {
   return {
+    timeZone: row[`${prefix}_time_zone`] == null ? undefined : String(row[`${prefix}_time_zone`]),
+    assignmentEpisodeId: row[`${prefix}_assignment_episode_id`] == null ? undefined : String(row[`${prefix}_assignment_episode_id`]),
+    termsRevision: row[`${prefix}_terms_revision`] == null ? undefined : Number(row[`${prefix}_terms_revision`]),
     id: String(row[`${prefix}_shift_id`]),
     scheduleId: String(row[`${prefix}_schedule_id`]),
     employeeId: String(row[`${prefix}_employee_id`]),
@@ -190,7 +196,7 @@ function mapExchange(row: unknown): ExchangeRecord {
   // Request copy uses consent-bound originals, never replacement owners/live times.
   const original=(terms:unknown,live:ExchangeShift,name:string):ExchangeShift=>{
     if(!terms||typeof terms!=='object')return live;const t=terms as ShiftTerms;
-    return {...live,id:t.shiftId,scheduleId:t.scheduleId,employeeId:t.employeeId,employeeName:name,locationId:t.locationId,locationName:t.locationId===live.locationId?live.locationName:`Location ${t.locationId}`,weekStart:t.weekStart,date:t.date,startTime:t.startTime,endTime:t.endTime,positionId:t.positionId??undefined,positionName:t.positionId===live.positionId?live.positionName:undefined,isDesignatedLead:t.isDesignatedLead};
+    return {...live,timeZone:t.timeZone,assignmentEpisodeId:t.assignmentEpisodeId,termsRevision:t.termsRevision,id:t.shiftId,scheduleId:t.scheduleId,employeeId:t.employeeId,employeeName:name,locationId:t.locationId,locationName:t.locationId===live.locationId?live.locationName:`Location ${t.locationId}`,weekStart:t.weekStart,date:t.date,startTime:t.startTime,endTime:t.endTime,positionId:t.positionId??undefined,positionName:t.positionId===live.positionId?live.positionName:undefined,isDesignatedLead:t.isDesignatedLead};
   };
   record.sourceShift=original(item.source_terms,record.sourceShift,record.requestedByName);
   if(record.targetShift)record.targetShift=original(item.target_terms,record.targetShift,record.targetEmployeeName??record.targetShift.employeeName);
@@ -207,6 +213,9 @@ export async function getPublishedShift(shiftId: string): Promise<ExchangeShift 
     await sql.query(
     `SELECT
        sh.id AS source_shift_id,
+       (SELECT time_zone FROM workspaces WHERE singleton) AS source_time_zone,
+       sh.assignment_episode_id AS source_assignment_episode_id,
+       sh.terms_revision AS source_terms_revision,
        sh.schedule_id AS source_schedule_id,
        sh.employee_id AS source_employee_id,
        e.first_name || ' ' || e.last_name AS source_employee_name,
@@ -245,6 +254,9 @@ export async function listEmployeePublishedShifts(
     await sql.query(
     `SELECT
        sh.id AS source_shift_id,
+       (SELECT time_zone FROM workspaces WHERE singleton) AS source_time_zone,
+       sh.assignment_episode_id AS source_assignment_episode_id,
+       sh.terms_revision AS source_terms_revision,
        sh.schedule_id AS source_schedule_id,
        sh.employee_id AS source_employee_id,
        e.first_name || ' ' || e.last_name AS source_employee_name,
@@ -294,6 +306,9 @@ export async function listSwapTargets(
     await sql.query(
     `SELECT
        sh.id AS source_shift_id,
+       (SELECT time_zone FROM workspaces WHERE singleton) AS source_time_zone,
+       sh.assignment_episode_id AS source_assignment_episode_id,
+       sh.terms_revision AS source_terms_revision,
        sh.schedule_id AS source_schedule_id,
        sh.employee_id AS source_employee_id,
        e.first_name || ' ' || e.last_name AS source_employee_name,
@@ -311,7 +326,9 @@ export async function listSwapTargets(
      JOIN employees e ON e.id = sh.employee_id
      JOIN locations l ON l.id = s.location_id
      WHERE sh.employee_id <> $1
-       AND e.role IN ('EMPLOYEE', 'LEAD')
+       AND e.active AND e.role IN ('EMPLOYEE', 'LEAD')
+       AND l.active
+       AND EXISTS (SELECT 1 FROM employees viewer JOIN employee_location_eligibility access ON access.employee_id=viewer.id JOIN workspaces w ON w.id=l.workspace_id AND w.active WHERE viewer.id=$1 AND viewer.active AND viewer.role IN ('EMPLOYEE','LEAD') AND access.location_id=l.id)
        AND s.week_start = $2
        AND s.status = 'PUBLISHED'
        AND NOT EXISTS (
@@ -341,6 +358,8 @@ export async function listOpenCoverage(
        AND x.requested_by_employee_id <> $1
        AND source.date >= $2
        AND source_schedule.status = 'PUBLISHED'
+       AND source_location.active AND requester.active
+       AND EXISTS (SELECT 1 FROM employees viewer JOIN employee_location_eligibility access ON access.employee_id=viewer.id JOIN workspaces w ON w.id=source_location.workspace_id AND w.active WHERE viewer.id=$1 AND viewer.active AND viewer.role IN ('EMPLOYEE','LEAD') AND access.location_id=source_location.id)
      ORDER BY source.date, source.start_time`,
     [employeeId, fromDate],
     ),

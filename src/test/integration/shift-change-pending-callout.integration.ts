@@ -1,3 +1,4 @@
+import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, expect, it } from 'vitest';
 import { createDisposableExchangeDatabase } from './local-postgres';
@@ -21,7 +22,7 @@ it.each(['owner', 'terms'] as const)(
     const shiftId = `pending-${change}`;
     await fixtureShift(db.executor, shiftId, 'e1', '2036-06-02');
     const first = await executeShiftChange(proof('e1'), {
-      kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), sourceShiftId: shiftId,
+      kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), ...await reviewedFixtureSource(db.executor,shiftId),
       reasonCode: 'ILLNESS', reasonNote: 'Original employee private reason',
     }, db.executor);
     expect(first.status).toBe('pending');
@@ -33,7 +34,7 @@ it.each(['owner', 'terms'] as const)(
       endTime: '16:00', actorEmployeeId: 'owner',
     }, db.executor)).toBe(true);
     const second = await executeShiftChange(proof(employeeId), {
-      kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), sourceShiftId: shiftId,
+      kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), ...await reviewedFixtureSource(db.executor,shiftId),
       reasonCode: 'OTHER', reasonNote: 'Fresh current-assignment report',
     }, db.executor);
     expect(second, 'An obsolete pending reservation must not reject a genuine new report').toMatchObject({ status: 'pending' });
@@ -57,7 +58,7 @@ it.each(['owner', 'terms'] as const)(
 it('stale retirement and a fresh report roll back together on an injected event failure', async () => {
   await fixtureShift(db.executor, 'pending-rollback', 'e1', '2036-06-03');
   const first = await executeShiftChange(proof('e1'), {
-    kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), sourceShiftId: 'pending-rollback', reasonCode: 'ILLNESS',
+    kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), ...await reviewedFixtureSource(db.executor,'pending-rollback'), reasonCode: 'ILLNESS',
   }, db.executor);
   if (first.status !== 'pending') throw new Error('Initial report failed');
   await updateShift({ shiftId: 'pending-rollback', employeeId: 'e2', date: '2036-06-03', startTime: '09:00', endTime: '16:00', actorEmployeeId: 'owner' }, db.executor);
@@ -73,7 +74,7 @@ it('stale retirement and a fresh report roll back together on an injected event 
       return db.executor.transaction([...statements.slice(0, index + 1), { text: 'SELECT 1/0', values: [] }, ...statements.slice(index + 1)]);
     },
   };
-  await expect(executeShiftChange(proof('e2'), { kind: 'SUBMIT_CALLOUT', operationId, sourceShiftId: 'pending-rollback', reasonCode: 'OTHER' }, injected)).rejects.toMatchObject({ code: '22012' });
+  await expect(executeShiftChange(proof('e2'), { kind: 'SUBMIT_CALLOUT', operationId, ...await reviewedFixtureSource(db.executor,'pending-rollback'), reasonCode: 'OTHER', reasonNote: 'Fictional approved-contract details' }, injected)).rejects.toMatchObject({ code: '22012' });
   expect(await query('SELECT * FROM shift_callouts ORDER BY id')).toEqual(before);
   expect(await query('SELECT * FROM shift_change_participation ORDER BY shift_id')).toEqual(reservations);
   expect(await query('SELECT * FROM notifications ORDER BY id')).toEqual(notifications);
@@ -84,8 +85,8 @@ it.each(['current', 'legacy'] as const)('does not retire an unchanged %s pending
   const id = `retained-${kind}`;
   await fixtureShift(db.executor, id, 'e1', '2036-06-04');
   if (kind === 'legacy') await query("INSERT INTO shift_callouts(id,shift_id,employee_id,status,reason_code) VALUES($1,$1,'e1','PENDING','OTHER')", [id]);
-  else expect((await executeShiftChange(proof('e1'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), sourceShiftId: id, reasonCode: 'OTHER' }, db.executor)).status).toBe('pending');
+  else expect((await executeShiftChange(proof('e1'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), ...await reviewedFixtureSource(db.executor,id), reasonCode: 'OTHER', reasonNote: 'Fictional approved-contract details' }, db.executor)).status).toBe('pending');
   const before = await query('SELECT * FROM shift_callouts WHERE shift_id=$1', [id]);
-  expect(await executeShiftChange(proof('e1'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), sourceShiftId: id, reasonCode: 'OTHER' }, db.executor)).toEqual({ status: 'conflict' });
+  expect(await executeShiftChange(proof('e1'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), ...await reviewedFixtureSource(db.executor,id), reasonCode: 'OTHER', reasonNote: 'Fictional approved-contract details' }, db.executor)).toEqual({ status: 'conflict' });
   expect(await query('SELECT * FROM shift_callouts WHERE shift_id=$1', [id])).toEqual(before);
 });

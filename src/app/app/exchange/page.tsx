@@ -168,7 +168,7 @@ export default async function ExchangePage({
   const availability=async (kind:ShiftChangeCommand['kind'],id:string,revision:number|undefined)=>{const fields=requestFields(id,revision);return fields?readShiftChangeAvailability(proof!,{kind,...fields,operationId:randomUUID()} as ShiftChangeCommand).catch(()=>({allowed:false,notice:'Current eligibility is unavailable. Reconnect and reload.'})):{allowed:false,notice:'This request needs a fresh revision before responding.'};};
   const acceptViews=new Map(await Promise.all([...available,...incoming].map(async e=>[e.id,await availability('ACCEPT',e.id,e.requestRevision)] as const)));
   const offerViews=new Map(await Promise.all(myShifts.map(async shift=>{const reviewed=await readShiftChangeTerms(proof!,shift.id).catch(()=>null);const displayed=assigned.find(row=>row.id===shift.id);const fields=reviewed&&displayed&&matchesDisplayedShift(displayed,reviewed.source)&&matchesDisplayedShift(shift,reviewed.source)?{sourceShiftId:reviewed.source.shiftId,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint}:null;const allowed=fields?await readShiftChangeAvailability(proof!,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...fields}).catch(()=>({allowed:false,notice:'Current policy is unavailable.'})):{allowed:false,notice:'Stale assignment. Reload before offering.'};return [shift.id,{fields,...allowed}] as const;})));
-  const assignedShifts=assigned.filter(s=>{try{return Date.parse(shiftBoundaryInstants(s,workspace.timeZone).endAt)>new Date().getTime();}catch{return false;}});
+  const assignedShifts=assigned.filter(s=>{try{return Date.parse(shiftBoundaryInstants(s,workspace.timeZone).endAt)>new Date().getTime();}catch{return true;}});
   const selectedHistory=params.requestId?await readShiftChangeHistoryView(proof!,params.requestId).catch(()=>null):[];
   const histories=new Map(await Promise.all([...visibleActivity,...incoming,...visibleCallouts].map(async row=>[row.id,await readShiftChangeHistoryView(proof!,row.id).catch(()=>null)] as const)));
   const hasTradeRequests =
@@ -196,8 +196,9 @@ export default async function ExchangePage({
                 <div className="employee-shift-entry-copy">
                   <ShiftSlot shift={exchange.sourceShift}/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}
                   <small>{marketplaceDisplayName(exchange.requestedByName)} · {marketplaceRoleLabel(exchange.requestedByRole)}</small>
+                  {!acceptViews.get(exchange.id)?.allowed?<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>:null}
                 </div>
-                <div className="employee-shift-entry-actions">{acceptViews.get(exchange.id)?.allowed?<ShiftChangeForm fields={{kind:'ACCEPT',...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action primary" type="submit"><span>Claim Shift</span></button></ShiftChangeForm>:<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>}</div>
+                <div className="employee-shift-entry-actions">{acceptViews.get(exchange.id)?.allowed?<ShiftChangeForm fields={{kind:'ACCEPT',...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action primary" type="submit"><span>Claim Shift</span></button></ShiftChangeForm>:null}</div>
               </div>
             )) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
           ) : hasTradeRequests ? (
@@ -208,10 +209,11 @@ export default async function ExchangePage({
                   <div className="employee-shift-entry" key={shift.id}>
                     <div className="employee-shift-entry-copy">
                       <ShiftSlot shift={shift}/>
+                      {!offerViews.get(shift.id)?.allowed||!offerViews.get(shift.id)?.fields?<span className="shift-change-unavailable">{offerViews.get(shift.id)?.notice??'Trade unavailable; absence reporting remains available.'}</span>:null}
                     </div>
                     <div className="employee-shift-entry-actions">
                       <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${encodeURIComponent(shift.id)}`}><span>Unable to Work</span></Link>
-                      {offerViews.get(shift.id)?.allowed&&offerViews.get(shift.id)?.fields?<ShiftChangeForm fields={{kind:'OFFER_COVERAGE',...offerViews.get(shift.id)!.fields!}}><button className="employee-action" type="submit"><span>Offer Shift</span></button></ShiftChangeForm>:<span className="shift-change-unavailable">{offerViews.get(shift.id)?.notice??'Trade unavailable; absence reporting remains available.'}</span>}
+                      {offerViews.get(shift.id)?.allowed&&offerViews.get(shift.id)?.fields?<ShiftChangeForm fields={{kind:'OFFER_COVERAGE',...offerViews.get(shift.id)!.fields!}}><button className="employee-action" type="submit"><span>Offer Shift</span></button></ShiftChangeForm>:null}
                       {offerViews.get(shift.id)?.fields?<Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${encodeURIComponent(shift.id)}`}><span>Trade Shift</span></Link>:null}
                     </div>
                   </div>
@@ -224,9 +226,10 @@ export default async function ExchangePage({
                   <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                     <div className="employee-shift-entry-copy">
                       <strong>{marketplaceDisplayName(exchange.requestedByName)} wants to trade</strong>
+                      {!requestFields(exchange.id,exchange.requestRevision)?<span className="shift-change-unavailable">Reload the current request revision.</span>:!acceptViews.get(exchange.id)?.allowed?<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>:null}
                       <ShiftSlot shift={exchange.sourceShift}/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}<ShiftChangeHistory events={histories.get(exchange.id)??null}/>
                     </div>
-                    <div className="employee-shift-entry-actions">{requestFields(exchange.id,exchange.requestRevision)?<ShiftChangeForm fields={requestFields(exchange.id,exchange.requestRevision)!}><button className="employee-action" name="kind" value="DECLINE" type="submit">Decline</button>{acceptViews.get(exchange.id)?.allowed?<button className="employee-action primary" name="kind" value="ACCEPT" type="submit">Accept</button>:<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>}</ShiftChangeForm>:<span className="shift-change-unavailable">Reload the current request revision.</span>}</div>
+                    <div className="employee-shift-entry-actions">{requestFields(exchange.id,exchange.requestRevision)?<ShiftChangeForm fields={requestFields(exchange.id,exchange.requestRevision)!}><button className="employee-action" name="kind" value="DECLINE" type="submit">Decline</button>{acceptViews.get(exchange.id)?.allowed?<button className="employee-action primary" name="kind" value="ACCEPT" type="submit">Accept</button>:null}</ShiftChangeForm>:null}</div>
                   </div>
                 ))}
               </section> : null}
@@ -238,12 +241,12 @@ export default async function ExchangePage({
                     <div className="employee-shift-entry-copy">
                       <strong>{exchange.kind === "COVERAGE" ? "Coverage" : "Trade"}</strong>
                       <ShiftSlot shift={exchange.sourceShift}/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}<ShiftChangeHistory events={histories.get(exchange.id)??null}/>
+                      {exchange.actionable===false&&['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(exchange.status)?<span className="shift-change-unavailable">Stale or unverified. Reload the current assignment or ask management to review.</span>:null}
                     </div>
                     <div className="employee-shift-entry-actions" data-status={exchange.status}>
-                      {exchange.actionable===false&&['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(exchange.status)?<span className="shift-change-unavailable">Stale or unverified. Reload the current assignment or ask management to review.</span>:null}
                       <StatusPill tone={statusTone(exchange.status)}>{exchange.status==='OPEN'?'Offered':exchange.status==='EMPLOYEE_PENDING'?'Awaiting employee':exchange.status==='MANAGER_PENDING'?'Manual review':exchange.status==='APPROVED'?'Completed':statusLabel(exchange.status)}</StatusPill>
-                      {exchange.actionable===true && exchange.requestedByEmployeeId === session.id && requestFields(exchange.id,exchange.requestRevision) && ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status) ? <ShiftChangeForm fields={{kind:"CANCEL",...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action danger" type="submit"><span>Cancel</span></button></ShiftChangeForm> : null}
-                      {exchange.actionable===true&&exchange.status==='MANAGER_PENDING'&&exchange.targetEmployeeId===session.id&&requestFields(exchange.id,exchange.requestRevision)?<ShiftChangeForm fields={{kind:"WITHDRAW",...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action danger" type="submit">Withdraw</button></ShiftChangeForm>:null}
+                      {exchange.requestedByEmployeeId === session.id && requestFields(exchange.id,exchange.requestRevision) && ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status) ? <ShiftChangeForm fields={{kind:"CANCEL",...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action danger" type="submit"><span>Cancel</span></button></ShiftChangeForm> : null}
+                      {exchange.status==='MANAGER_PENDING'&&exchange.targetEmployeeId===session.id&&requestFields(exchange.id,exchange.requestRevision)?<ShiftChangeForm fields={{kind:"WITHDRAW",...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action danger" type="submit">Withdraw</button></ShiftChangeForm>:null}
                     </div>
                   </div>
                 ))}
@@ -256,9 +259,11 @@ export default async function ExchangePage({
                     <div className="employee-shift-entry-copy">
                       <strong>{marketplaceDate(callout.date)} · {formatTime(callout.startTime)} – {formatTime(callout.endTime)}</strong>
                       <span>{calloutReason(callout.reasonCode)}</span><span>{callout.locationName}</span><ShiftChangeHistory events={histories.get(callout.id)??null}/>
+                      {callout.status==='APPROVED'&&!callout.releaseApplies?<StatusPill tone="neutral">Previously approved — review current assignment</StatusPill>:null}
+                      {callout.status==='APPROVED'&&!callout.releaseApplies?<span className="shift-change-unavailable">Historical approval does not release the current assignment. Ask management to review.</span>:null}
                     </div>
                     <div className="employee-shift-entry-actions" data-status={callout.status}>
-                      <StatusPill tone={statusTone(callout.status)}>{callout.status==='PENDING'?'Reported inability':callout.status==='APPROVED'?'Released — check coverage':statusLabel(callout.status)}</StatusPill>
+                      {callout.status!=='APPROVED'||callout.releaseApplies?<StatusPill tone={statusTone(callout.status)}>{callout.status==='PENDING'?'Reported inability':callout.status==='APPROVED'?'Released — check coverage':statusLabel(callout.status)}</StatusPill>:null}
                       {callout.status === "PENDING" && requestFields(callout.id,callout.requestRevision) ? <ShiftChangeForm fields={{kind:"CANCEL_CALLOUT",...requestFields(callout.id,callout.requestRevision)!}}><button className="employee-action danger" type="submit"><span>Cancel</span></button></ShiftChangeForm> : null}
                     </div>
                   </div>

@@ -32,6 +32,7 @@ export async function readShiftChangeTerms(proof:SessionMutationProof,sourceShif
   const source=s.ledger.find(t=>t.shiftId===sourceShiftId),target=targetShiftId?s.ledger.find(t=>t.shiftId===targetShiftId):null;
   const published=(scheduleId:string)=>s.publication.some(p=>p.scheduleId===scheduleId&&p.status==='PUBLISHED');
   if(!['EMPLOYEE','LEAD'].includes(proof.employee.role)||!source||source.employeeId!==proof.employee.id||!published(source.scheduleId)||(targetShiftId&&(!target||!published(target.scheduleId))))return null;
-  return {source:materialShiftTerms(source),sourceTermsFingerprint:shiftTermsFingerprint(source),target:target?materialShiftTerms(target):null,targetTermsFingerprint:target?shiftTermsFingerprint(target):null};
+  if(target&&(!s.facts.locations.some(l=>l.id===target.locationId&&l.active)||!s.facts.employees.some(e=>e.id===proof.employee.id&&e.active&&e.eligibleLocationIds.includes(target.locationId))||!s.facts.employees.some(e=>e.id===target.employeeId&&e.active&&['EMPLOYEE','LEAD'].includes(e.role))))return null;
+  return {observedAt:s.observedAt,source:materialShiftTerms(source),sourceTermsFingerprint:shiftTermsFingerprint(source),target:target?materialShiftTerms(target):null,targetTermsFingerprint:target?shiftTermsFingerprint(target):null};
  } catch(error) {if(error instanceof ShiftChangeAuthorizationError)return null;throw error;}
 }

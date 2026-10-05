@@ -31,6 +31,8 @@ function affectedHealth(snapshot: ShiftChangeCandidateSnapshot, terms: ShiftTerm
 }
 /** Eligibility of a proposed final ledger, independent of who volunteers first. No writes. */
 function evaluateAssignments(snapshot: ShiftChangeCandidateSnapshot, source: ShiftTerms, target: ShiftTerms | null, incomingId: string): ShiftChangeEvaluation {
+    if (target && source.weekStart !== target.weekStart)
+        return empty('BLOCKED', 'CONSENT_REQUIRED', 'Trades require the same owning workweek.');
     const f = snapshot.facts;
     const terms = target ? [source, target] : [source];
     const proposedAssignments = [{ shiftId: source.shiftId, employeeId: incomingId }, ...(target ? [{ shiftId: target.shiftId, employeeId: source.employeeId }] : [])];

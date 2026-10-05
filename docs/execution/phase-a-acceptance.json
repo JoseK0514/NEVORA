@@ -1276,10 +1276,11 @@
         "R10"
       ],
       "status": "LOCAL_EVIDENCE_MAPPED",
-      "verified_scope": "Self/same-source and owning-week checks; source identity is distinct from actual dated workweek.",
+      "verified_scope": "Self/same-source rejection is covered by the prior acceptance boundaries. Independent H01 regressions now reject different owning weeks at proposal, ACCEPT and MANAGER_APPROVE with no mutation; valid same-owning-week cross-location Sunday carryover remains allowed. Earlier mapping did not prove owning-week enforcement.",
       "evidence_paths": [
-        "src/lib/scheduling/shift-change-evaluation.test.ts",
-        "src/test/integration/shift-change-acceptance-boundaries.integration.ts"
+        "src/test/integration/shift-change-hardening.integration.ts",
+        "src/test/integration/shift-change-acceptance-boundaries.integration.ts",
+        "docs/execution/phase-a-hardening-handoff.md"
       ],
       "remaining_boundary": "Independent phase review remains required; no production/provider/legal certification."
     },

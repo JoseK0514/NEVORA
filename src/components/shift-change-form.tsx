@@ -23,6 +23,7 @@ export function ShiftChangeForm({fields,children,className='shift-change-form'}:
   {view.pending?<p role="status">Processing…</p>:null}
   {view.result?<p className={resolved?'form-success':'form-error'} role={resolved?'status':'alert'}>{shiftChangeFeedback(view.result)}{view.offline?' Offline. Reconnect before continuing.':''}</p>:null}
   {view.uncertain?<button className="button secondary" type="button" disabled={view.pending} onClick={retry}>Check &amp; retry same request</button>:null}
+  {view.result?.status==='blocked'&&view.result.issues.some(i=>i.code==='STALE_TERMS')?<button className="button secondary" type="button" onClick={()=>router.refresh()}>Refresh and review assignment</button>:null}
   {view.result?.status==='conflict'?<button className="button secondary" type="button" onClick={()=>router.refresh()}>Reload current request</button>:null}
  </form>;
 }

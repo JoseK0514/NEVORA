@@ -108,3 +108,6 @@ vi.mock('@/lib/data/shift-change-snapshot',()=>({readShiftChangeTerms:vi.fn()}))
 vi.mock('@/lib/shift-changes/policy-form',()=>import('../../lib/shift-changes/policy-form'));
 vi.mock('@/lib/data/shift-change-policy',()=>({saveShiftChangePolicy:vi.fn()}));
 vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
+
+vi.mock('@/components/reviewed-callout-form',()=>import('../../components/reviewed-callout-form'));
+vi.mock('@/lib/shift-changes/displayed-terms',()=>import('../../lib/shift-changes/displayed-terms'));

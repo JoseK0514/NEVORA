@@ -16,6 +16,10 @@ export async function reviewedFixtureTerms(executor:SqlExecutor,id:string):Promi
  const [r]=await executor.query<{shift:Record<string,unknown>;schedule:{id:string;locationId:string;weekStart:string;status:'PUBLISHED'};workspaceId:string;timeZone:string}>({text:`SELECT to_jsonb(sh) AS shift,jsonb_build_object('id',s.id,'locationId',s.location_id,'weekStart',s.week_start::text,'status',s.status) AS schedule,l.workspace_id AS "workspaceId",w.time_zone AS "timeZone" FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id JOIN workspaces w ON w.id=l.workspace_id WHERE sh.id=$1`,values:[id]});
  return sourceShiftTerms(r.shift,r.schedule,r.workspaceId,r.timeZone);
 }
+export async function reviewedFixtureSource(executor:SqlExecutor,id:string){
+ const terms=await reviewedFixtureTerms(executor,id);
+ return {sourceShiftId:id,sourceEpisodeId:terms.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(terms)};
+}
 export async function fixtureProof(executor:SqlExecutor,id:string):Promise<SessionMutationProof>{
  const [employee]=await executor.query<SessionMutationProof['employee']>({text:'SELECT id,first_name AS "firstName",last_name AS "lastName",role,primary_location_id AS "primaryLocationId" FROM employees WHERE id=$1',values:[id]});
  const sessionTokenHash=createHash('sha256').update('owned-integration-proof:'+id).digest('hex');
@@ -32,7 +36,7 @@ async function run(name:keyof typeof exchanges|keyof typeof callouts,input:Recor
  if(kind==='OFFER_COVERAGE'||kind==='PROPOSE_SWAP'){
   const a=await reviewedFixtureTerms(executor,String(input.sourceShiftId)),b=kind==='PROPOSE_SWAP'?await reviewedFixtureTerms(executor,String(input.targetShiftId)):null;
   command={kind,operationId:randomUUID(),sourceShiftId:a.shiftId,sourceEpisodeId:a.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(a),...(b?{targetShiftId:b.shiftId,targetEpisodeId:b.assignmentEpisodeId,targetTermsFingerprint:shiftTermsFingerprint(b)}:{})} as ShiftChangeCommand;
- }else if(kind==='SUBMIT_CALLOUT')command={kind,operationId:randomUUID(),sourceShiftId:String(input.shiftId),reasonCode:input.reasonCode as 'ILLNESS',reasonNote:input.reasonNote as string|undefined};
+ }else if(kind==='SUBMIT_CALLOUT')command={kind,operationId:randomUUID(),...await reviewedFixtureSource(executor,String(input.shiftId)),reasonCode:input.reasonCode as 'ILLNESS',reasonNote:input.reasonNote as string|undefined};
  else {const id=String(input.exchangeId??input.calloutId);const [r]=await executor.query<{request_revision:number}>({text:`SELECT request_revision FROM ${kind.endsWith('CALLOUT')?'shift_callouts':'shift_exchanges'} WHERE id=$1`,values:[id]});command={kind,operationId:randomUUID(),requestId:id,expectedRevision:r.request_revision};}
  const fn=(name in exchanges?exchanges[name as keyof typeof exchanges]:callouts[name as keyof typeof callouts]) as (input:unknown,executor:SqlExecutor)=>Promise<unknown>;
  return fn({...input,proof,command},executor);

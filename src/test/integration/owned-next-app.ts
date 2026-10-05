@@ -1,9 +1,9 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
 import { createWriteStream } from 'node:fs';
-import { access, copyFile, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { access, copyFile, mkdir, mkdtemp, readFile, realpath, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
-import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import type { OwnedDatabaseIdentity } from './owned-pg-transport';
 
@@ -30,6 +30,18 @@ async function stopOwnedProcess(child: ChildProcess): Promise<void> {
   if (child.exitCode === null && child.signalCode === null) { signal('SIGKILL'); await wait; }
 }
 
+/** Resolve the nearest existing parent, including symlinked ancestors. */
+async function canonicalDestination(path:string):Promise<string>{
+ try {return await realpath(path);}
+ catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;return join(await canonicalDestination(dirname(path)),basename(path));}
+}
+export async function assertExternalEvidencePath(source:string,evidenceDirectory:string) {
+ const outside=(base:string,path:string)=>{const distance=relative(base,path);return distance==='..'||distance.startsWith('..'+sep)||isAbsolute(distance);};
+ if (!isAbsolute(evidenceDirectory) || !outside(resolve(source),resolve(evidenceDirectory)) || !outside(await realpath(source),await canonicalDestination(resolve(evidenceDirectory)))) {
+  throw new Error('Application evidence must be an explicit directory outside the repository.');
+ }
+}
+
 /**
  * Real Next development runtime, real login/session/actions and canonical local
  * SQL. Only the scratch copy of src/lib/db.ts is replaced. Production source,
@@ -38,9 +50,7 @@ async function stopOwnedProcess(child: ChildProcess): Promise<void> {
 export async function createOwnedNextApp(evidenceDirectory: string) {
   const source = resolve(process.cwd());
   const evidence = resolve(evidenceDirectory);
-  if (!isAbsolute(evidenceDirectory) || !relative(source, evidence).startsWith('..')) {
-    throw new Error('Application evidence must be an explicit directory outside the repository.');
-  }
+  await assertExternalEvidencePath(source,evidenceDirectory);
   await mkdir(evidence, { recursive: true });
   const root = await mkdtemp(join(evidence, 'owned-next-'));
   const mirror = join(root, 'app');

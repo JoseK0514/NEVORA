@@ -14,7 +14,14 @@ export type ShiftHistoryView={revision:number;event:string;at:string;source:stri
 /** Explicit immutable presentation only; private peer absence/rules/participants never cross the UI boundary. */
 export async function readShiftChangeHistoryView(proof:SessionMutationProof,requestId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftHistoryView[]>{
  const rows=await readShiftChangeHistory(proof,requestId,executor);
- function slot(raw:unknown){if(!raw||typeof raw!=='object')return null;const t=raw as Record<string,unknown>;return `${String(t.date)} · ${String(t.startTime)} – ${String(t.endTime)} · Location ${String(t.locationId)} · ${t.positionId?`Position ${String(t.positionId)}`:'No assigned position'} · ${t.isDesignatedLead?'Designated Lead':'No designated Lead'}`;}
+ function slot(raw:unknown){
+  if(!raw||typeof raw!=='object')return null;
+  const t=raw as Record<string,unknown>;
+  const fact=(current:string,legacy:string)=>Object.hasOwn(t,current)?t[current]:t[legacy];
+  const time=(value:unknown)=>typeof value==='string'?value.slice(0,5):'Unknown time';
+  const position=fact('positionId','position_id'),lead=fact('isDesignatedLead','is_designated_lead');
+  return `${typeof t.date==='string'?t.date.slice(0,10):'Unknown date'} · ${time(fact('startTime','start_time'))} – ${time(fact('endTime','end_time'))} · Location ${String(fact('locationId','location_id')??'unknown')} · ${position===undefined?'Position unknown':position===null?'No assigned position':`Position ${String(position)}`} · ${lead===true?'Designated Lead':lead===false?'No designated Lead':'Lead designation unknown'}`;
+ }
  return rows.map(raw=>{const row=raw as Record<string,unknown>;return ({revision:Number(row.request_revision),event:String(row.event_kind).toLowerCase().replaceAll('_',' '),at:new Date(String(row.created_at)).toISOString(),source:slot(row.source_terms),target:slot(row.target_terms),mode:row.outcome_mode?String(row.outcome_mode):null});});
 }
 

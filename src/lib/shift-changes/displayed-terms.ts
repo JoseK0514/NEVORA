@@ -8,7 +8,10 @@ import type {ShiftTerms} from './types';
  * A mismatch requires a fresh page rather than silently replacing that consent.
  */
 export function matchesDisplayedShift(shift: ExchangeShift, terms: ShiftTerms): boolean {
-  return shift.id === terms.shiftId
+  return shift.timeZone === terms.timeZone
+    && shift.assignmentEpisodeId === terms.assignmentEpisodeId
+    && shift.termsRevision === terms.termsRevision
+    && shift.id === terms.shiftId
     && shift.scheduleId === terms.scheduleId
     && shift.employeeId === terms.employeeId
     && shift.locationId === terms.locationId

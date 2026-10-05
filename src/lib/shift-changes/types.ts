@@ -52,7 +52,7 @@ export type ShiftChangeCommand =
   | (CommandIdentity & ReviewedSource & { kind: 'OFFER_COVERAGE' })
   | (CommandIdentity & ReviewedSource & ReviewedTarget & { kind: 'PROPOSE_SWAP' })
   | (ExistingRequestCommand & { kind: 'ACCEPT' | 'DECLINE' | 'CANCEL' | 'WITHDRAW' | 'MANAGER_APPROVE' | 'MANAGER_DECLINE' | 'MANAGER_CLOSE' })
-  | (CommandIdentity & { kind: 'SUBMIT_CALLOUT'; sourceShiftId: string; reasonCode: CalloutReasonCode; reasonNote?: string })
+  | (CommandIdentity & ReviewedSource & { kind: 'SUBMIT_CALLOUT'; reasonCode: CalloutReasonCode; reasonNote?: string })
   | (ExistingRequestCommand & { kind: 'APPROVE_CALLOUT' | 'DECLINE_CALLOUT' | 'CANCEL_CALLOUT' });
 export type TransitionInput = { request: ShiftChangeRequest; command: Extract<ShiftChangeCommand, ExistingRequestCommand>; actor: SessionEmployee; evaluation: ShiftChangeEvaluation; deadline: DeadlineResult };
 export type TransitionEffect = 'RECORD_TARGET_CONSENT' | 'CLEAR_TARGET_CONSENT' | 'APPLY_ASSIGNMENTS' | 'RELEASE_PARTICIPATION' | 'APPEND_EVENT';

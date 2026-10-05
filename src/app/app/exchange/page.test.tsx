@@ -4,7 +4,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import ExchangePage from './page';
 import type { ExchangeRecord } from '../../../lib/data/exchanges';
 import type { CalloutRecord } from '../../../lib/data/callouts';
-const f=vi.hoisted(()=>({activity:[] as ExchangeRecord[],callouts:[] as CalloutRecord[],selected:null as ExchangeRecord|null,selectedCallout:null as CalloutRecord|null,allowed:['2'],assigned:[] as ReturnType<typeof exchange>['sourceShift'][],reviewed:null as {source:Record<string,string|boolean>;sourceTermsFingerprint:string;target:null;targetTermsFingerprint:null}|null,coverageAllowed:false,coverageNotice:'Coverage unavailable',operation:null as {status:'pending'|'completed';operationId:string;requestId:string;revision:number}|null}));
+const f=vi.hoisted(()=>({activity:[] as ExchangeRecord[],callouts:[] as CalloutRecord[],selected:null as ExchangeRecord|null,selectedCallout:null as CalloutRecord|null,allowed:['2'],assigned:[] as ReturnType<typeof exchange>['sourceShift'][],reviewed:null as {source:Record<string,string|boolean|number>;sourceTermsFingerprint:string;target:null;targetTermsFingerprint:null}|null,coverageAllowed:false,coverageNotice:'Coverage unavailable',operation:null as {status:'pending'|'completed';operationId:string;requestId:string;revision:number}|null}));
 vi.mock('next/link',()=>({default:({children,...props}:React.ComponentProps<'a'>)=>createElement('a',props,children)}));
 vi.mock('@/lib/scheduling/validate-shift',()=>({schedulingIssueMessage:()=>''}));
 vi.mock('@/components/manager-shift-requests',()=>({ManagerShiftRequests:()=>null}));
@@ -70,8 +70,8 @@ vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
 import {reconcileShiftChangeAction} from '@/app/app/exchange/actions';
 import {readShiftChangeOperationView} from '@/lib/data/shift-change-views';
 function assignedReview(){
- const shift={...exchange('source').sourceShift,date:'2035-10-05',positionId:'cashier',positionName:'Cashier',isDesignatedLead:true};f.assigned=[shift];
- f.reviewed={source:{shiftId:shift.id,scheduleId:shift.scheduleId,employeeId:shift.employeeId,locationId:shift.locationId,weekStart:shift.weekStart,date:shift.date,startTime:shift.startTime,endTime:shift.endTime,positionId:shift.positionId,isDesignatedLead:shift.isDesignatedLead,assignmentEpisodeId:'episode-current'},sourceTermsFingerprint:'v1:current',target:null,targetTermsFingerprint:null};
+ const shift={...exchange('source').sourceShift,date:'2035-10-05',timeZone:'America/Puerto_Rico',assignmentEpisodeId:'episode-current',termsRevision:1,positionId:'cashier',positionName:'Cashier',isDesignatedLead:true};f.assigned=[shift];
+ f.reviewed={source:{timeZone:shift.timeZone,termsRevision:shift.termsRevision,shiftId:shift.id,scheduleId:shift.scheduleId,employeeId:shift.employeeId,locationId:shift.locationId,weekStart:shift.weekStart,date:shift.date,startTime:shift.startTime,endTime:shift.endTime,positionId:shift.positionId,isDesignatedLead:shift.isDesignatedLead,assignmentEpisodeId:'episode-current'},sourceTermsFingerprint:'v1:current',target:null,targetTermsFingerprint:null};
 }
 it.each(['unknown coverage policy','elapsed coverage submission cutoff'])('trade builder navigation remains independent of %s',async refusal=>{
  assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('>Trade Shift<');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('>Unable to Work<');
@@ -79,9 +79,22 @@ it.each(['unknown coverage policy','elapsed coverage submission cutoff'])('trade
 it('builder navigation itself does not declare swap eligibility when only coverage is valid',async()=>{
  assignedReview();f.coverageAllowed=true;const result=await html();expect(result).toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('Eligible to trade');
 });
-it.each<Record<string, string | boolean>>([{startTime:'10:00',endTime:'18:00'},{locationId:'replacement-site'},{positionId:'replacement-position'},{employeeId:'new-owner'},{date:'2035-10-06'},{scheduleId:'replacement-schedule'},{weekStart:'2035-10-08'},{isDesignatedLead:false}])('inter-read material source change %j refuses undisplayed creation consent',async change=>{
+it.each<Record<string, string | boolean | number>>([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'10:00',endTime:'18:00'},{locationId:'replacement-site'},{positionId:'replacement-position'},{employeeId:'new-owner'},{date:'2035-10-06'},{scheduleId:'replacement-schedule'},{weekStart:'2035-10-08'},{isDesignatedLead:false}])('inter-read material source change %j refuses undisplayed creation consent',async change=>{
  assignedReview();f.coverageAllowed=true;f.reviewed!.source={...f.reviewed!.source,...change};const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('value="v1:current"');expect(result).not.toContain('>Trade Shift<');expect(result).toContain('Stale assignment');
 });
 it.each(['pending','completed'] as const)('URL result render performs read-only %s lookup rather than cache-invalidating action',async status=>{
  const operationId='11111111-1111-4111-8111-111111111111';f.operation={status,operationId,requestId:'r1',revision:2};const result=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({operationId})}));expect(result).toContain(status==='pending'?'Request recorded':'Completed.');expect(reconcileShiftChangeAction).not.toHaveBeenCalled();expect(readShiftChangeOperationView).toHaveBeenCalledWith(expect.objectContaining({sessionTokenHash:'a'.repeat(64)}),operationId);
+});
+
+it('H04 requester can cancel stale active offers independently of completion eligibility',async()=>{f.activity=[{...exchange('stale'),status:'OPEN',actionable:false,requestRevision:1}];expect(await html()).toContain('value="CANCEL"');});
+it('H09 approved historical callouts never imply current release',async()=>{f.callouts=[{id:'old',shiftId:'shift',employeeId:'self',employeeName:'Fictional',locationId:'2',locationName:'Drive',weekStart:'2035-10-01',date:'2035-10-05',startTime:'08:00',endTime:'12:00',reasonCode:'OTHER',status:'APPROVED',releaseApplies:false,createdAt:'2026-10-03T12:00:00Z'}];const result=await html();expect(result).toContain('Previously approved — review current assignment');expect(result).not.toContain('Released — check coverage');});
+
+it('H10 explanatory notices stay outside employee action grids while recovery controls remain',async()=>{
+ assignedReview();f.coverageAllowed=false;
+ f.activity=[{...exchange('stale'),status:'OPEN',actionable:false,requestRevision:1}];
+ f.callouts=[{id:'legacy',shiftId:'shift',employeeId:'self',employeeName:'Fictional',locationId:'2',locationName:'Drive',weekStart:'2035-10-01',date:'2035-10-05',startTime:'08:00',endTime:'12:00',reasonCode:'OTHER',status:'APPROVED',releaseApplies:false,createdAt:'2026-10-03T12:00:00Z'}];
+ const result=await html();const actions=[...result.matchAll(/<div class="employee-shift-entry-actions"[^>]*>([\s\S]*?)<\/div>/g)].map(match=>match[1]);
+ expect(actions.length).toBeGreaterThanOrEqual(3);
+ for(const group of actions){expect(group).not.toContain('shift-change-unavailable');expect(group).not.toContain('review current assignment');}
+ expect(result).toContain('value="CANCEL"');expect(result).toContain('Unable to Work');expect(result).toContain('Historical approval does not release the current assignment');
 });

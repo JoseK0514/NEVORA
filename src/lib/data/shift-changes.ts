@@ -15,7 +15,7 @@ import { decideShiftChangeTransition } from '../shift-changes/lifecycle';
 import type { ExchangeRecord, ExchangeShift } from './exchanges';
 import type { CalloutRecord } from './callouts';
 import { requestNotificationStatements,requestSnapshot,guardedRequestMutation } from './request-notifications';
-import { shiftChangeEvent } from './shift-change-history';
+import { shiftChangeEvent,decisionVersionReferences } from './shift-change-history';
 import { cancelNotificationStatements } from './notifications';
 const conflict:ShiftChangeResult={status:'conflict'};
 const unavailable:ShiftChangeResult={status:'unavailable'};
@@ -39,8 +39,16 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
  const current=(stored:unknown,t:ShiftTerms)=>{try{return !!stored&&sameShiftTerms(stored as ShiftTerms,t);}catch{return false;}};
  const fresh=()=>published(source)&&(!target||published(target))&&current(r?.source_terms,source)&&(!target||current(r?.target_terms,target));
  const scope=s.policy?.[(c.kind==='PROPOSE_SWAP'||r?.kind==='SWAP')?'swap':'coverage'];
- const earliest=Math.min(...[source,...(target?[target]:[])].map(t=>new Date(shiftBoundaryInstants(t,w.timeZone).startAt).getTime()));
- const deadline=evaluateRequestDeadlines({stage:'requestId' in c?'COMPLETE':'SUBMIT',now:s.observedAt,earliestShiftStart:new Date(earliest).toISOString(),currentSubmissionAdvanceMinutes:scope?.submissionAdvanceMinutes??null,currentCompletionAdvanceMinutes:scope?.completionAdvanceMinutes??null,recordedCompletionDeadline:r?.completion_deadline?String(r.completion_deadline):null});
+ // Only transfer/approval paths require an absolute trading boundary. An inability
+ // report preserves the exact reviewed civil terms even when configuration needs
+ // repair; closing a request likewise does not interpret an uncertain instant.
+ let deadline:ReturnType<typeof evaluateRequestDeadlines>={status:'UNVERIFIED',allowed:false};
+ if(['PROPOSE_SWAP','OFFER_COVERAGE','ACCEPT','MANAGER_APPROVE','APPROVE_CALLOUT'].includes(c.kind)) {
+  let earliest:number;
+  try {earliest=Math.min(...[source,...(target?[target]:[])].map(t=>Date.parse(shiftBoundaryInstants(t,w.timeZone).startAt)));}
+  catch {return {status:'blocked',issues:[{code:'INVALID_TIME_RANGE',message:'Assignment time is ambiguous or invalid. Management must review the time zone and shift boundaries.'}]};}
+  deadline=evaluateRequestDeadlines({stage:'requestId' in c?'COMPLETE':'SUBMIT',now:s.observedAt,earliestShiftStart:new Date(earliest).toISOString(),currentSubmissionAdvanceMinutes:scope?.submissionAdvanceMinutes??null,currentCompletionAdvanceMinutes:scope?.completionAdvanceMinutes??null,recordedCompletionDeadline:r?.completion_deadline?String(r.completion_deadline):null});
+ }
  const config=bindWorkspaceNotificationConfig(readNotificationConfig(process.env),s.facts.workspace);
  const notify=(before:ReturnType<typeof requestSnapshot>|undefined,after:ReturnType<typeof requestSnapshot>)=>{
   const shiftId=after.kind==='EXCHANGE'?after.record.sourceShift.id:after.kind==='CALLOUT'?after.record.shiftId:null;
@@ -70,9 +78,11 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
  };
  const newId=randomUUID();let id='requestId' in c?c.requestId:newId,revision=Number(r?.request_revision??0)+1,status='';let mode:string|undefined,guardDeadline:string|undefined;
  const consent=(employeeId:string):ConsentSnapshot=>({employeeId,consentedAt:s.observedAt,source:materialShiftTerms(source),target:target?materialShiftTerms(target):null});
- const event=(eventKind:string,kind:'EXCHANGE'|'CALLOUT'=callout?'CALLOUT':'EXCHANGE',eventId=id,eventRevision=revision)=>shiftChangeEvent({workspaceId:w.id,requestId:eventId,revision:eventRevision,kind,event:eventKind,actorId:actor.id,source:requestSource,target:requestTarget,participants:callout?{employeeId:String(r?.employee_id??source.employeeId)}:{requesterEmployeeId:String(r?.requested_by_employee_id??source.employeeId),targetEmployeeId:r?(c.kind==='ACCEPT'?actor.id:r.target_employee_id??null):target?.employeeId??null},mode,reasonCode:callout?String(c.kind==='SUBMIT_CALLOUT'?c.reasonCode:r?.reason_code):undefined,reasonNote:callout?(c.kind==='SUBMIT_CALLOUT'?c.reasonNote:r?.reason_note?String(r.reason_note):undefined):undefined});
+ let decisionVersions:ReturnType<typeof decisionVersionReferences>|undefined;
+ const event=(eventKind:string,kind:'EXCHANGE'|'CALLOUT'=callout?'CALLOUT':'EXCHANGE',eventId=id,eventRevision=revision)=>shiftChangeEvent({workspaceId:w.id,requestId:eventId,revision:eventRevision,kind,event:eventKind,actorId:actor.id,source:requestSource,target:requestTarget,participants:callout?{employeeId:String(r?.employee_id??source.employeeId)}:{requesterEmployeeId:String(r?.requested_by_employee_id??source.employeeId),targetEmployeeId:r?(c.kind==='ACCEPT'?actor.id:r.target_employee_id??null):target?.employeeId??null,...(decisionVersions?{decisionVersions}:{})},mode,reasonCode:callout?String(c.kind==='SUBMIT_CALLOUT'?c.reasonCode:r?.reason_code):undefined,reasonNote:callout?(c.kind==='SUBMIT_CALLOUT'?c.reasonNote:r?.reason_note?String(r.reason_note):undefined):undefined});
  if(c.kind==='SUBMIT_CALLOUT') {
   if(source.employeeId!==actor.id || !published(source)) return unavailable;
+  if(source.assignmentEpisodeId!==c.sourceEpisodeId||shiftTermsFingerprint(source)!==c.sourceTermsFingerprint)return blocked('STALE_TERMS','The assignment changed. Your reason is preserved. Refresh and review the current assignment before submitting your inability report.');
   // Absence reporting remains available after trade cutoff and shift start.
   // Reporting inability atomically retires incompatible voluntary participation,
   // including a target-side trade. Completed assignments and current approved
@@ -128,7 +138,7 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
   if(!scope?.mode||deadline.status!=='READY')return blocked('POLICY_UNKNOWN','Workflow policy needs review.');
   if(!deadline.allowed)return blocked('STALE_TERMS','The submission deadline has passed.');
   if(c.kind==='PROPOSE_SWAP'&&!['EMPLOYEE','LEAD'].includes(s.facts.employees.find(e=>e.id===target?.employeeId)?.role??''))return unavailable;
-  if(c.kind==='PROPOSE_SWAP') {const e=evaluateShiftChange(s,c);if(['BLOCKED','UNVERIFIED'].includes(e.decision))return {status:'blocked',issues:e.issues};}
+  if(c.kind==='PROPOSE_SWAP') {const e=evaluateShiftChange(s,c);if(['BLOCKED','UNVERIFIED'].includes(e.decision))return {status:'blocked',issues:e.issues};decisionVersions=decisionVersionReferences(s,e,'swap');}
   guardDeadline=deadline.submissionDeadline;
   const priorRequest=s.source.shift_exchanges.filter(x=>x.source_shift_id===source.shiftId&&x.requested_by_employee_id===actor.id&&x.kind===(target?'SWAP':'COVERAGE')&&['CANCELLED','DENIED','EXPIRED'].includes(String(x.status))&&(x.source_terms as ShiftTerms|null)?.assignmentEpisodeId===source.assignmentEpisodeId).sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))||String(a.id).localeCompare(String(b.id))).at(-1);
   statements.push(guardedRequestMutation({text:`INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,target_employee_id,target_shift_id,status,legacy_manual,requester_consent,source_terms,target_terms,recorded_approval_mode,policy_revision,submission_deadline,completion_deadline,prior_request_id) VALUES($1,$2,$3,$4,$5,$6,$7,false,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`,values:[id,c.kind==='PROPOSE_SWAP'?'SWAP':'COVERAGE',source.shiftId,actor.id,target?.employeeId??null,target?.shiftId??null,target?'EMPLOYEE_PENDING':'OPEN',JSON.stringify(consent(actor.id)),JSON.stringify(materialShiftTerms(source)),target?JSON.stringify(materialShiftTerms(target)):null,scope.mode,scope.revision,deadline.submissionDeadline,deadline.completionDeadline,priorRequest?.id??null]}));
@@ -145,6 +155,7 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
   const completing=c.kind==='ACCEPT'||c.kind==='MANAGER_APPROVE';
   if(completing&&!fresh())return blocked('STALE_TERMS','The reviewed assignment changed.');
   const evaluation:ShiftChangeEvaluation=completing?evaluateShiftChange(s,c):{decision:'ELIGIBLE',issues:[],affectedWeeks:[],proposedAssignments:[],scheduledProjections:[]};
+  if(completing)decisionVersions=decisionVersionReferences(s,evaluation,s.request.kind==='SWAP'?'swap':'coverage');
   const transition=decideShiftChangeTransition({request:s.request,command:c,actor,evaluation,deadline});
   if(transition.status==='REFUSED')return transition.code==='CONFLICT'?conflict:transition.code==='FORBIDDEN'?unavailable:{status:'blocked',issues:evaluation.issues.length?evaluation.issues:[{code:'CONSENT_REQUIRED',message:'This request cannot proceed with its current consent, policy or deadline.'}]};
   if(transition.status!=='NEXT')return conflict;
@@ -167,6 +178,7 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
 export async function executeShiftChange(proof:SessionMutationProof,command:ShiftChangeCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftChangeResult> {
  if(!proof?.employee?.id||!/^[a-f0-9]{64}$/.test(proof.sessionTokenHash)||!isShiftChangeCommand(command))return unavailable;
  for(let attempt=0;attempt<3;attempt++) {
+  let transactionStarted=false;
   try {
    const s=await readShiftChangeSnapshot(proof,command,executor);
    const op=s.source.shift_change_operations.find(o=>o.actor_employee_id===proof.employee.id&&o.operation_id===command.operationId&&o.workspace_id===s.facts.workspace.id);
@@ -181,6 +193,7 @@ export async function executeShiftChange(proof:SessionMutationProof,command:Shif
    const prepared=preparePublishedWeekChange({suppressPublicationEventEmployeeIds:plan.statements.filter(statement=>statement.text.startsWith('INSERT INTO notifications')&&statement.values[12]==='EVENT').map(statement=>String(statement.values[1])),weekStarts:weeks,actorEmployeeId:proof.employee.id,sourceType:plan.sourceType,sourceId:plan.requestId,revisionWeekStarts,state:weekState,batch:{statements:plan.statements,afterSchedules:weekState.schedules,afterShifts},config:bindWorkspaceNotificationConfig(readNotificationConfig(process.env),s.facts.workspace),observedAt:s.observedAt});
    const guardWeeks=[...new Set([...weeks,...s.ledger.flatMap(t=>affectedWorkweeks(shiftPeriod(t)))])];
    const guards=generationMutationGuards(s.source,guardWeeks);
+   transactionStarted=true;
    await executor.transaction([...guards.slice(0,-1),{text:'SELECT token_hash FROM employee_sessions WHERE token_hash=$1 FOR SHARE',values:[proof.sessionTokenHash]},shiftChangeSessionGuard(proof,plan.deadline),guards.at(-1)!,...prepared.statements,shiftChangeAfterGuard(s,plan.afterShifts),
     {text:'INSERT INTO shift_change_operations(workspace_id,actor_employee_id,operation_id,command_fingerprint,request_id,result) VALUES($1,$2,$3,$4,$5,$6)',values:[s.facts.workspace.id,proof.employee.id,command.operationId,fingerprint(command),plan.requestId,JSON.stringify(plan.result)]},shiftChangeSessionGuard(proof,plan.deadline)]);
    return plan.result;
@@ -195,7 +208,7 @@ export async function executeShiftChange(proof:SessionMutationProof,command:Shif
    if(code==='55P03')return conflict;
    // A lost HTTP response can follow COMMIT. Only the actor-scoped stored result
    // determines success; callers retry exactly the same operation and inputs.
-   if(!code||code==='57014'||/^(ECONN|ETIMEDOUT|UND_ERR|FETCH)/.test(code))return {status:'outcome-unknown',operationId:command.operationId};
+   if(!code||code==='57014'||/^(ECONN|ETIMEDOUT|UND_ERR|FETCH)/.test(code))return transactionStarted?{status:'outcome-unknown',operationId:command.operationId}:unavailable;
    throw error;
   }
  }
@@ -209,7 +222,17 @@ export async function readShiftChangeAvailability(proof:SessionMutationProof,com
  try {
   const snapshot=await readShiftChangeSnapshot(proof,command,executor);
   const plan=planCommand(snapshot,command),result='result' in plan?plan.result:plan;
-  if(['completed','pending','closed'].includes(result.status))return {allowed:true,notice:null};
+  if(['completed','pending','closed'].includes(result.status)){
+   const reasons:string[]=[];
+   if(command.kind==='MANAGER_APPROVE'&&['OWNER','MANAGER'].includes(snapshot.actor.employee.role)) {
+    const evaluation=evaluateShiftChange(snapshot,command);
+    if(evaluation.issues.some(issue=>issue.code==='PROJECTED_OVERTIME_REVIEW'))reasons.push('Projected scheduled overtime needs manager review.');
+    const current=snapshot.policy?.[snapshot.request?.kind==='SWAP'?'swap':'coverage'];
+    if(current?.mode==='MANAGER_REVIEW')reasons.push('Current workflow policy requires manager review.');
+    else if(snapshot.request?.recordedApprovalMode==='MANAGER_REVIEW')reasons.push('This request was submitted under manager review.');
+   }
+   return {allowed:true,notice:reasons.length?reasons.join(' '):null};
+  }
   const scope=snapshot.policy?.[snapshot.request?.kind==='SWAP'||command.kind==='PROPOSE_SWAP'?'swap':'coverage'];
   const unknown=!scope?.mode||scope.submissionAdvanceMinutes===null||scope.completionAdvanceMinutes===null||result.status==='blocked'&&result.issues.some(i=>['RULE_UNVERIFIABLE','POLICY_UNKNOWN'].includes(i.code));
   const stale=result.status==='conflict'||result.status==='blocked'&&result.issues.some(i=>i.code==='STALE_TERMS');

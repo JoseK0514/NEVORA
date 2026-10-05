@@ -22,6 +22,7 @@ export type MaintenanceDeps = {
 export type MaintenanceReport = {
     scanned: number;
     expired: number;
+    retired: number;
     escalated: number;
     invited: number;
     conflicts: number;
@@ -69,6 +70,10 @@ export async function readShiftChangeMaintenanceSnapshot(requestId: string, kind
         }
     };
     const lifecycle: MaintenanceSnapshot = { id: requestId, kind, workflow: row.kind === 'SWAP' ? 'SWAP' : 'COVERAGE', status: String(row.status), revision: Number(row.request_revision), legacyManual: row.legacy_manual === true, completionDeadline: row.completion_deadline ? String(row.completion_deadline) : null, source: original ?? live ?? null, target, policy, escalatedAt: row.escalated_at ? String(row.escalated_at) : null, termsCurrent: current(original) && (!target || current(target)) };
+    // Unknown imported snapshots cannot prove staleness. Current new-style
+    // snapshots can be retired only when their complete bound terms differ.
+    try {lifecycle.provenStale = kind === 'EXCHANGE' && row.legacy_manual === false && !!original && sameShiftTerms(original,original) && (row.kind !== 'SWAP' || !!target && sameShiftTerms(target,target)) && !lifecycle.termsCurrent;}
+    catch {lifecycle.provenStale=false;}
     const effective = projectShiftChangeState(lifecycle, new Date(observedAt));
     const candidates = kind === 'EXCHANGE' && row.kind === 'COVERAGE' && row.status === 'OPEN' && effective.actionable && (request?.requesterConsent || request?.releaseAuthorization) ? evaluateCoverageCandidates(scheduling) : [];
     const eligibleEmployeeIds = candidates.filter(c => ['ELIGIBLE', 'MANAGER_REVIEW'].includes(c.evaluation.decision)).map(c => c.employeeId);
@@ -92,7 +97,7 @@ export function maintenanceExchangeSource(snapshot: SystemSnapshot, record?: Exc
 }
 /** Trusted server entry. Bounded retries rebuild source and never call a provider. */
 export async function runShiftChangeMaintenance(deps: MaintenanceDeps): Promise<MaintenanceReport> {
-    const report: MaintenanceReport = { scanned: 0, expired: 0, escalated: 0, invited: 0, conflicts: 0, nextCursor: deps.cursor ?? '' };
+    const report: MaintenanceReport = { scanned: 0, expired: 0, retired: 0, escalated: 0, invited: 0, conflicts: 0, nextCursor: deps.cursor ?? '' };
     if (!deps.config.workspace?.active)
         throw Error('Maintenance requires an explicit active workspace');
     const limit = Math.max(1, Math.min(50, Math.floor(deps.limit ?? 10))), started = performance.now();
@@ -123,11 +128,11 @@ export async function runShiftChangeMaintenance(deps: MaintenanceDeps): Promise<
             const statements: SqlStatement[] = [], l = s.lifecycle, mutation = plans.find(p => p.kind !== 'INVITE');
             if (mutation) {
                 const table = row.kind === 'EXCHANGE' ? 'shift_exchanges' : 'shift_callouts';
-                statements.push(guardedRequestMutation({ text: `UPDATE ${table} SET ${mutation.kind === 'EXPIRE' ? "status='EXPIRED',resolved_at=clock_timestamp(),outcome_reason='COMPLETION_DEADLINE'" : "escalated_at=clock_timestamp()"} WHERE id=$1 AND request_revision=$2 RETURNING id`, values: [row.id, l.revision] }));
-                statements.push(shiftChangeEvent({ workspaceId: deps.config.workspace.id, kind: row.kind, requestId: row.id, revision: l.revision + 1, event: mutation.kind === 'EXPIRE' ? 'EXPIRED' : 'ESCALATED', actorId: null, source: l.source, target: l.target, participants: row.kind === 'CALLOUT' ? { employeeId: s.row.employee_id, maintenanceStage: mutation.stage } : { requesterEmployeeId: s.row.requested_by_employee_id, targetEmployeeId: s.row.target_employee_id, maintenanceStage: mutation.stage }, mode: 'SYSTEM', outcomeReason: mutation.reason }));
-                if (mutation.kind === 'EXPIRE') {
+                statements.push(guardedRequestMutation({ text: `UPDATE ${table} SET ${mutation.kind === 'EXPIRE' ? "status='EXPIRED',resolved_at=clock_timestamp(),outcome_reason='COMPLETION_DEADLINE'" : mutation.kind === 'RETIRE_STALE' ? "status='CANCELLED',resolved_at=clock_timestamp(),outcome_reason='STALE_TERMS'" : "escalated_at=clock_timestamp()"} WHERE id=$1 AND request_revision=$2 RETURNING id`, values: [row.id, l.revision] }));
+                statements.push(shiftChangeEvent({ workspaceId: deps.config.workspace.id, kind: row.kind, requestId: row.id, revision: l.revision + 1, event: mutation.kind === 'EXPIRE' ? 'EXPIRED' : mutation.kind === 'RETIRE_STALE' ? 'STALE' : 'ESCALATED', actorId: null, source: l.source, target: l.target, participants: row.kind === 'CALLOUT' ? { employeeId: s.row.employee_id, maintenanceStage: mutation.stage } : { requesterEmployeeId: s.row.requested_by_employee_id, targetEmployeeId: s.row.target_employee_id, maintenanceStage: mutation.stage }, mode: 'SYSTEM', outcomeReason: mutation.reason }));
+                if (mutation.kind === 'EXPIRE' || mutation.kind === 'RETIRE_STALE') {
                     statements.push(...cancelNotificationStatements({ kind: row.kind, id: row.id, version: `r:${l.revision}` }), ...cancelNotificationStatements({ kind: row.kind, id: row.id, version: l.status }));
-                    l.status = 'EXPIRED';
+                    l.status = mutation.kind === 'EXPIRE' ? 'EXPIRED' : 'CANCELLED';
                 }
                 l.revision++;
             }
@@ -152,9 +157,10 @@ export async function runShiftChangeMaintenance(deps: MaintenanceDeps): Promise<
             }
             const weeks = [...new Set(s.scheduling.ledger.flatMap(t => [t.weekStart, ...affectedWorkweeks(shiftPeriod(t))]))];
             try {
-                const timeGuard: SqlStatement = { text: `SELECT (CASE WHEN $1::timestamptz IS NULL OR $2::boolean OR clock_timestamp()-$3::timestamptz+$4::timestamptz<$1::timestamptz THEN '1' ELSE 'maintenance_deadline_changed' END)::integer`, values: [effective.completionDeadline, mutation?.kind === 'EXPIRE', s.databaseObservedAt, now.toISOString()] };
+                const timeGuard: SqlStatement = { text: `SELECT (CASE WHEN $1::timestamptz IS NULL OR $2::boolean OR clock_timestamp()-$3::timestamptz+$4::timestamptz<$1::timestamptz THEN '1' ELSE 'maintenance_deadline_changed' END)::integer`, values: [effective.completionDeadline, mutation?.kind === 'EXPIRE' || mutation?.kind === 'RETIRE_STALE', s.databaseObservedAt, now.toISOString()] };
                 const results = await deps.executor.transaction([...generationMutationGuards(s.scheduling.source, weeks), timeGuard, ...statements, timeGuard]);
                 report.expired += mutation?.kind === 'EXPIRE' ? 1 : 0;
+                report.retired += mutation?.kind === 'RETIRE_STALE' ? 1 : 0;
                 report.escalated += mutation?.kind === 'ESCALATE' ? 1 : 0;
                 report.invited += results.flat().filter(row => row && typeof row === 'object' && 'id' in row && invitationIds.has(String(row.id))).length;
                 finished = true;

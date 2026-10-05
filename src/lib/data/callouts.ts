@@ -1,6 +1,7 @@
 import { executeShiftChangeAdapter, type ShiftChangeAdapterInput } from './shift-change-adapters';
 import { neonNotificationExecutor } from './notification-transactions';
 import type { SqlExecutor } from '../notifications/types';
+import {currentCalloutReleaseSql} from './shift-change-release';
 import { getDb, queryRows } from "@/lib/db";
 
 export type CalloutReasonCode =
@@ -15,6 +16,7 @@ export type CalloutStatus = "PENDING" | "APPROVED" | "DENIED" | "CANCELLED";
 
 export type CalloutRecord = {
   requestRevision?:number;
+  releaseApplies?:boolean;
   id: string;
   shiftId: string;
   employeeId: string;
@@ -43,6 +45,7 @@ function timeValue(value: unknown) {
 function mapCallout(row: unknown): CalloutRecord {
   const item = row as Record<string, unknown>;
   return {
+    releaseApplies:item.release_applies===true,
     id: String(item.id),
     requestRevision:Number(item.request_revision),
     shiftId: String(item.shift_id),
@@ -67,6 +70,7 @@ function mapCallout(row: unknown): CalloutRecord {
 const CALLOUT_SELECT = `
   SELECT
     c.id,
+    (${currentCalloutReleaseSql()}) AS release_applies,
     c.request_revision,
     c.shift_id,
     c.employee_id,

@@ -34,3 +34,21 @@ it('retains both legacy swap location/week terms after live schedules are delete
   }]);
  } finally {await db.dispose();}
 });
+
+it('H06 historical-9 upgrade preserves immutable source/target times, position and Lead in presentation',async()=>{
+ const db=await createDisposableExchangeDatabase({mode:'historical-9'});
+ const q=(text:string)=>db.executor.query<Record<string,unknown>>({text,values:[]});
+ try {
+  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES ('a','Test','A','0','OWNER','loc-1'),('b','Test','B','1','EMPLOYEE','loc-1')");
+  await q("INSERT INTO positions(id,workspace_id,name) VALUES ('legacy-position','workspace-fuel','Legacy'); INSERT INTO schedules(id,location_id,week_start,created_by) VALUES ('s','loc-1','2035-10-01','a')");
+  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES ('one','s','a','2035-10-02','10:00','18:00','legacy-position',true),('two','s','b','2035-10-03','11:00','19:00',NULL,false)");
+  await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,target_shift_id,requested_by_employee_id,target_employee_id,status) VALUES ('legacy','SWAP','one','two','a','b','APPROVED'); INSERT INTO shift_callouts(id,shift_id,employee_id,reason_code,status) VALUES ('legacy-callout','one','a','OTHER','APPROVED')");
+  await q(await readFile('db/migrations/0010_shift_coverage_automation.sql','utf8'));
+  const {fixtureProof}=await import('./shift-change-api');const proof=await fixtureProof(db.executor,'a');
+  const {readShiftChangeHistoryView}=await import('../../lib/data/shift-change-views');
+  await q("DELETE FROM schedules WHERE id='s'");
+  const exchange=await readShiftChangeHistoryView(proof,'legacy',db.executor);
+  expect(exchange[0].source).toContain('10:00 – 18:00');expect(exchange[0].source).toContain('Position legacy-position · Designated Lead');expect(exchange[0].target).toContain('11:00 – 19:00');expect(exchange[0].target).toContain('No assigned position · No designated Lead');
+  expect((await readShiftChangeHistoryView(proof,'legacy-callout',db.executor))[0].source).toBe(exchange[0].source);
+ } finally {await db.dispose();}
+});

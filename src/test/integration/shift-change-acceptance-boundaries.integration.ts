@@ -1,3 +1,4 @@
+import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, expect, it } from 'vitest';
 import { Client } from 'pg';
@@ -92,7 +93,7 @@ it.each(['self', 'same-shift', 'missing-target'] as const)('A010 %s trade cannot
 it('A022 genuine post-start inability remains reportable without backdated assignment transfer', async () => {
   const past = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const source = await fixtureShift(db.executor, 'late-report-boundary', 'e1', past);
-  const report = await executeShiftChange(proof('e1'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), sourceShiftId: source.sourceShiftId, reasonCode: 'OTHER' }, db.executor);
+  const report = await executeShiftChange(proof('e1'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), ...await reviewedFixtureSource(db.executor,source.sourceShiftId), reasonCode: 'OTHER', reasonNote: 'Fictional approved-contract details' }, db.executor);
   expect(report.status).toBe('pending');
   expect(await q('SELECT employee_id FROM shifts WHERE id=$1', [source.sourceShiftId])).toEqual([{ employee_id: 'e1' }]);
   expect(await q('SELECT * FROM time_entries')).toEqual([]);

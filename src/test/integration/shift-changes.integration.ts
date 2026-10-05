@@ -1,3 +1,4 @@
+import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
 import { beforeAll, afterAll, expect, it } from 'vitest';
 import { createDisposableExchangeDatabase } from './local-postgres';
@@ -39,7 +40,7 @@ it('A041 atomic swap preserves both slots and replaces both episodes',async()=>{
 });
 it('A019 approved callout release keeps private provenance and supports voluntary replacement',async()=>{
  await shift('callout','e1','2035-10-05');
- const submitted=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:'callout',reasonCode:'ILLNESS',reasonNote:'Private detail'},db.executor);
+ const submitted=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,'callout'),reasonCode:'ILLNESS',reasonNote:'Private detail'},db.executor);
  expect(submitted).toMatchObject({status:'pending'});if(submitted.status!=='pending')return;
  expect(await executeShiftChange(proof('owner'),{kind:'APPROVE_CALLOUT',operationId:randomUUID(),requestId:submitted.requestId,expectedRevision:1},db.executor)).toMatchObject({status:'completed'});
  const [offer]=await q('SELECT id,requester_consent,linked_callout_id FROM shift_exchanges WHERE linked_callout_id=$1',[submitted.requestId]);
@@ -52,7 +53,7 @@ it('A019/A020/A051 callout release reads reject material edits, timezone changes
  const {readNotificationWeekState}=await import('../../lib/data/notification-transactions');
  const {updateShift}=await import('../../lib/data/schedules');
  await shift('release','e1','2035-10-06');
- const created=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:'release',reasonCode:'ILLNESS'},db.executor);expect(created.status).toBe('pending');if(created.status!=='pending')return;
+ const created=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,'release'),reasonCode:'ILLNESS'},db.executor);expect(created.status).toBe('pending');if(created.status!=='pending')return;
  await executeShiftChange(proof('owner'),{kind:'APPROVE_CALLOUT',operationId:randomUUID(),requestId:created.requestId,expectedRevision:1},db.executor);
  const released=async()=> (await readNotificationWeekState(['2035-10-01'],db.executor)).shifts.find(s=>s.sourceShiftId==='release')!.isCalloutApproved;
  expect(await released()).toBe(true);
@@ -99,19 +100,19 @@ it('A004/A043/A068 direct wrong owner, wrong target, forged role and revoked pro
 it('A019 legacy approval cannot release today’s assignment and expired trade does not prohibit reporting inability',async()=>{
  await shift('legacy-release','e1','2035-10-24');await q("INSERT INTO shift_callouts(id,shift_id,employee_id,reason_code,status) VALUES('legacy-approved','legacy-release','e1','ILLNESS','APPROVED')");
  const {readNotificationWeekState}=await import('../../lib/data/notification-transactions');expect((await readNotificationWeekState(['2035-10-01'],db.executor)).shifts.find(s=>s.sourceShiftId==='legacy-release')!.isCalloutApproved).toBe(false);
- await shift('late-report','e1','2026-01-01');expect(await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:'late-report',reasonCode:'ILLNESS'},db.executor)).toMatchObject({status:'pending'});
+ await shift('late-report','e1','2026-01-01');expect(await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,'late-report'),reasonCode:'ILLNESS'},db.executor)).toMatchObject({status:'pending'});
 });
 it('A051 same-owner material edit requires new explicit review even after editing back; a fresh report remains possible',async()=>{
  const {readNotificationWeekState}=await import('../../lib/data/notification-transactions');
- await shift('rereview','e1','2035-10-25');const first=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:'rereview',reasonCode:'ILLNESS'},db.executor);expect(first.status).toBe('pending');if(first.status!=='pending')return;
+ await shift('rereview','e1','2035-10-25');const first=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,'rereview'),reasonCode:'ILLNESS'},db.executor);expect(first.status).toBe('pending');if(first.status!=='pending')return;
  expect(await executeShiftChange(proof('owner'),{kind:'APPROVE_CALLOUT',operationId:randomUUID(),requestId:first.requestId,expectedRevision:1},db.executor)).toMatchObject({status:'completed'});
  await q("UPDATE shifts SET start_time='09:00' WHERE id='rereview'; UPDATE shifts SET start_time='08:00' WHERE id='rereview'");
  expect((await readNotificationWeekState(['2035-10-01'],db.executor)).shifts.find(s=>s.sourceShiftId==='rereview')!.isCalloutApproved).toBe(false);
- const second=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:'rereview',reasonCode:'ILLNESS'},db.executor);expect(second.status).toBe('pending');if(second.status!=='pending')return;
+ const second=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,'rereview'),reasonCode:'ILLNESS'},db.executor);expect(second.status).toBe('pending');if(second.status!=='pending')return;
  expect(await executeShiftChange(proof('owner'),{kind:'APPROVE_CALLOUT',operationId:randomUUID(),requestId:second.requestId,expectedRevision:1},db.executor)).toMatchObject({status:'completed'});
  expect((await q('SELECT status FROM shift_callouts WHERE id=$1',[first.requestId]))[0].status).toBe('APPROVED');
  expect((await readNotificationWeekState(['2035-10-01'],db.executor)).shifts.find(s=>s.sourceShiftId==='rereview')!.isCalloutApproved).toBe(true);
- expect(await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:'rereview',reasonCode:'ILLNESS'},db.executor)).toEqual({status:'conflict'});
+ expect(await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,'rereview'),reasonCode:'ILLNESS'},db.executor)).toEqual({status:'conflict'});
 });
 
 it('A043 review view returns only current authorized terms and refuses stale displayed timezone consent',async()=>{
@@ -119,7 +120,8 @@ it('A043 review view returns only current authorized terms and refuses stale dis
  const t=await shift('review-view','e1','2035-11-01');
  const view=await readShiftChangeTerms(proof('e1'),t.sourceShiftId,undefined,db.executor);
  expect(view).toMatchObject({source:{shiftId:t.sourceShiftId,employeeId:'e1',timeZone:'America/Puerto_Rico'},sourceTermsFingerprint:t.sourceTermsFingerprint});
- expect(Object.keys(view!).sort()).toEqual(['source','sourceTermsFingerprint','target','targetTermsFingerprint']);
+ expect(Object.keys(view!).sort()).toEqual(['observedAt','source','sourceTermsFingerprint','target','targetTermsFingerprint']);
+ expect(Number.isFinite(Date.parse(view!.observedAt))).toBe(true);
  expect(await readShiftChangeTerms(proof('e2'),t.sourceShiftId,undefined,db.executor)).toBeNull();
  await q("UPDATE workspaces SET time_zone='America/New_York'");
  expect(await executeShiftChange(proof('e1'),{kind:'OFFER_COVERAGE',operationId:randomUUID(),...t},db.executor)).toMatchObject({status:'blocked'});
@@ -161,7 +163,7 @@ it('A051 material revision is server-owned, changes for edits and parents, and i
 it.each(['CANCEL_CALLOUT','DECLINE_CALLOUT'] as const)('R1/R2 %s after reassignment preserves original absence ownership, terms and atomic closure',async kind=>{
  const {readShiftChangeHistory}=await import('../../lib/data/shift-change-history');const {readGenerationSource}=await import('../../lib/data/generation-guards');const {readNotificationWeekState}=await import('../../lib/data/notification-transactions');
  const id='private-'+kind;await shift(id,'e1','2036-02-03');
- const created=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:id,reasonCode:'ILLNESS',reasonNote:'Original E1 private reason'},db.executor);expect(created.status).toBe('pending');if(created.status!=='pending')return;
+ const created=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,id),reasonCode:'ILLNESS',reasonNote:'Original E1 private reason'},db.executor);expect(created.status).toBe('pending');if(created.status!=='pending')return;
  const [original]=await q('SELECT source_terms FROM shift_callouts WHERE id=$1',[created.requestId]);
  await q("UPDATE shifts SET employee_id='e2',start_time='09:00' WHERE id=$1",[id]);
  const before=await readGenerationSource(db.executor),weekBefore=await readNotificationWeekState(['2035-10-01'],db.executor);
@@ -193,11 +195,11 @@ it.each(['COVERAGE','SWAP'] as const)('R1 %s stale closure retains original part
 });
 it('R1 stale linked coverage closure keeps the prior released employee separate from the new callout owner',async()=>{
  const {readShiftChangeHistory}=await import('../../lib/data/shift-change-history');const id='stale-linked-owner';await shift(id,'e1','2036-04-01');
- const created=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:id,reasonCode:'ILLNESS',reasonNote:'Prior owner secret'},db.executor);expect(created.status).toBe('pending');if(created.status!=='pending')return;
+ const created=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,id),reasonCode:'ILLNESS',reasonNote:'Prior owner secret'},db.executor);expect(created.status).toBe('pending');if(created.status!=='pending')return;
  await executeShiftChange(proof('owner'),{kind:'APPROVE_CALLOUT',requestId:created.requestId,expectedRevision:1,operationId:randomUUID()},db.executor);
  const [linked]=await q('SELECT id,source_terms FROM shift_exchanges WHERE linked_callout_id=$1',[created.requestId]);
  await q("UPDATE shifts SET employee_id='e2',start_time='09:00' WHERE id=$1",[id]);
- expect(await executeShiftChange(proof('e2'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:id,reasonCode:'OTHER',reasonNote:'New owner reason'},db.executor)).toMatchObject({status:'pending'});
+ expect(await executeShiftChange(proof('e2'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,id),reasonCode:'OTHER',reasonNote:'New owner reason'},db.executor)).toMatchObject({status:'pending'});
  expect((await q('SELECT status FROM shift_callouts WHERE id=$1',[created.requestId]))[0].status).toBe('APPROVED');
  const [stale]=await q("SELECT source_terms,participants FROM shift_change_events WHERE request_id=$1 AND event_kind='STALE'",[linked.id]);expect(stale).toEqual({source_terms:linked.source_terms,participants:{requesterEmployeeId:'e1',targetEmployeeId:null}});
  expect(await readShiftChangeHistory(proof('e2'),created.requestId,db.executor)).toEqual([]);expect(await readShiftChangeHistory(proof('e2'),String(linked.id),db.executor)).toEqual([]);

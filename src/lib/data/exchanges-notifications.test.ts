@@ -45,15 +45,13 @@ it('coverage approval uses the common actual snapshot, preserves unaffected ackn
   expect(intents(b).filter(n=>n.kind==='EXCHANGE').map(n=>n.employee)).toEqual(['E','F']);
   expect(b.filter(s=>s.text.includes("source_kind='SCHEDULE'")).map(s=>s.values[2])).toEqual(['E','F']);
 });
-it('cross-week swap locks all weeks sorted and snapshots both resulting weeks',async()=>{
+it('H01 cross-owning-week swap is rejected before any transaction',async()=>{
   const r=fixture('EXCHANGE','MANAGER_PENDING'); r.row.kind='SWAP';
   Object.assign(r.row,{target_shift_id:'s2',target_schedule_id:'b',target_shift_employee_id:'F',target_location_id:'L',target_week_start:'2030-10-14',target_date:'2030-10-18',target_start_time:'09:00',target_end_time:'17:00'});
   r.state.schedules.push({...r.state.schedules[0],id:'b',weekStart:'2030-10-14'});
   r.state.shifts.push({...r.state.shifts[0],sourceShiftId:'s2',scheduleId:'b',employeeId:'F',weekStart:'2030-10-14',date:'2030-10-18',isDesignatedLead:false});
-  expect(await approveSwapExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);
-  expect(r.batches[0].filter(s=>s.text.includes('pg_advisory_xact_lock')).map(s=>s.values[0])).toEqual([week,'2030-10-14']);
-  expect(r.batches[0].filter(s=>s.text.includes('INSERT INTO schedule_publication_revisions'))).toHaveLength(2);
-  expect(JSON.parse(String(r.batches[0].find(s=>s.text.includes('guarded_after'))!.values[1])).map((s:{employeeId:string})=>s.employeeId)).toEqual(['F','E']);
+  expect(await approveSwapExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(false);
+  expect(r.batches).toEqual([]);
 });
 it.each([approveCoverageExchange,approveSwapExchange])('approval fails atomically for a conditional no-op', async run=>{
   const r=fixture('EXCHANGE','MANAGER_PENDING');
@@ -116,18 +114,18 @@ function positionedSwapFixture() {
   Object.assign(r.row, {
     kind: 'SWAP', source_position_id: 'barista', target_position_id: 'cashier',
     target_shift_id: 's2', target_schedule_id: 'b', target_shift_employee_id: 'F',
-    target_location_id: 'L', target_week_start: '2030-10-14', target_date: '2030-10-18',
+    target_location_id: 'L', target_week_start: week, target_date: '2030-10-12',
     target_start_time: '09:00', target_end_time: '17:00',
   });
   r.state.shifts[0].positionId = 'barista';
   r.state.revisions[0].shifts[0].positionId = 'barista';
-  r.state.schedules.push({ ...r.state.schedules[0], id: 'b', weekStart: '2030-10-14' });
+  r.state.schedules.push({ ...r.state.schedules[0], id: 'b', weekStart: week });
   r.state.shifts.push({
     ...r.state.shifts[0], sourceShiftId: 's2', scheduleId: 'b', employeeId: 'F',
-    weekStart: '2030-10-14', date: '2030-10-18', isDesignatedLead: false, positionId: 'cashier',
+    weekStart: week, date: '2030-10-12', isDesignatedLead: false, positionId: 'cashier',
   });
   r.state.revisions.push({
-    ...r.state.revisions[0], id: 'r2', weekStart: '2030-10-14', shifts: [{ ...r.state.shifts[1] }],
+    ...r.state.revisions[0], id: 'r2', weekStart: week, shifts: [{ ...r.state.shifts[1] }],
   });
   return r;
 }
@@ -143,7 +141,8 @@ it('two-leg swap retains each source position while reassigning both employees a
     expect.objectContaining({ sourceShiftId: 's2', employeeId: 'E', positionId: 'cashier' }),
   ]);
   expect(batch.filter(s => s.text.includes('UPDATE shifts')).map(s => s.values.slice(0, 2))).toEqual([['s1', 'F'], ['s2', 'E']]);
-  expect(batch.filter(s => s.text.includes('INSERT INTO schedule_publication_revisions'))).toHaveLength(2);
+  // Publication revisions are per owning week, shared by both valid swap legs.
+  expect(batch.filter(s => s.text.includes('INSERT INTO schedule_publication_revisions'))).toHaveLength(1);
   expect(intents(batch).filter(intent => intent.kind === 'EXCHANGE').map(intent => intent.employee)).toEqual(['E', 'F']);
 });
 

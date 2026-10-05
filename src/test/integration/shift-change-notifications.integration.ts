@@ -1,3 +1,4 @@
+import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
 import { beforeAll, afterAll, it, expect } from 'vitest';
 import { createDisposableExchangeDatabase } from './local-postgres';
@@ -333,7 +334,7 @@ it.each(['coverage', 'source-trade', 'target-trade'] as const)('R02 report resol
     expect(exchange.status).toBe('pending');
     if (exchange.status !== 'pending')
         throw Error('offer failed');
-    const command = { kind: 'SUBMIT_CALLOUT' as const, operationId: randomUUID(), sourceShiftId: reportingShift, reasonCode: 'ILLNESS' as const, reasonNote: 'PRIVATE-CALLOUT-DETAIL' };
+    const command = { kind: 'SUBMIT_CALLOUT' as const, operationId: randomUUID(), ...await reviewedFixtureSource(db.executor,reportingShift), reasonCode: 'ILLNESS' as const, reasonNote: 'PRIVATE-CALLOUT-DETAIL' };
     const before = await q('SELECT to_jsonb(x) AS row FROM shift_exchanges x WHERE id=$1', [exchange.requestId]);
     const { readGenerationSource } = await import('../../lib/data/generation-guards');
     const sourceBefore = (await readGenerationSource(db.executor)).source;
@@ -359,7 +360,7 @@ it.each(['coverage', 'source-trade', 'target-trade'] as const)('R02 report resol
 it.each(['report', 'acceptance'] as const)('R02 %s first serializes inability reporting against acceptance without undoing a completed winner', async (first) => {
     const r = await offer('report-race-' + first, first === 'report' ? '2035-11-06' : '2035-11-07');
     const held = await holdAfterGuard(r.requestId);
-    const reporting = (executor: import('../../lib/notifications/types').SqlExecutor) => executeShiftChange(proof('e1'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), sourceShiftId: 'report-race-' + first, reasonCode: 'ILLNESS', reasonNote: 'PRIVATE-RACE' }, executor);
+    const reporting = async (executor: import('../../lib/notifications/types').SqlExecutor) => executeShiftChange(proof('e1'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), ...await reviewedFixtureSource(db.executor,'report-race-' + first), reasonCode: 'ILLNESS', reasonNote: 'PRIVATE-RACE' }, executor);
     const acceptance = (executor: import('../../lib/notifications/types').SqlExecutor) => executeShiftChange(proof('e2'), { kind: 'ACCEPT', operationId: randomUUID(), requestId: r.requestId, expectedRevision: 1 }, executor);
     const initial = first === 'report' ? reporting(held.executor) : acceptance(held.executor);
     await held.entered;
@@ -396,7 +397,7 @@ it('A056 bounded continuation resumes after last committed request and duplicate
     expect(repeated.invited).toBe(0);
 });
 it('R02 target-side cross-location report retains old trade location access filtering', async () => {
-    await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('cross-report','loc-2','2035-11-08','PUBLISHED','owner')");
+    await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('cross-report','loc-2','2035-10-01','PUBLISHED','owner')");
     const a = await fixtureShift(db.executor, 'cross-source', 'e1', '2035-11-09');
     await fixtureShift(db.executor, 'cross-target', 'e3', '2035-11-10');
     await q("UPDATE shifts SET schedule_id='cross-report' WHERE id='cross-target'");
@@ -409,7 +410,7 @@ it('R02 target-side cross-location report retains old trade location access filt
     if (trade.status !== 'pending')
         return;
     await q("DELETE FROM employee_location_eligibility WHERE employee_id='e1' AND location_id='loc-2'");
-    const callout = await executeShiftChange(proof('e3'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), sourceShiftId: 'cross-target', reasonCode: 'ILLNESS', reasonNote: 'CROSS-PRIVATE' }, db.executor);
+    const callout = await executeShiftChange(proof('e3'), { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), ...await reviewedFixtureSource(db.executor,'cross-target'), reasonCode: 'ILLNESS', reasonNote: 'CROSS-PRIVATE' }, db.executor);
     expect(callout.status).toBe('pending');
     expect(await q("SELECT id FROM notifications WHERE source_id=$1 AND employee_id='e1' AND type='SWAP_CANCELLED'", [trade.requestId])).toHaveLength(0);
     expect((await q("SELECT source_terms->>'shiftId' AS source,target_terms->>'shiftId' AS target FROM shift_change_events WHERE request_id=$1 AND event_kind='CANCELLED'", [trade.requestId]))[0]).toEqual({ source: 'cross-source', target: 'cross-target' });
@@ -425,7 +426,7 @@ it('A058/A072 pending callout escalation retains a current private manager seed'
 });
 it('A019/A058/A061/A072 approved release invites eligible peers and urgent uncovered event never exposes private reason',async()=>{
  await fixtureShift(db.executor,'released-invitation','e1','2035-12-01');
- const reported=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),sourceShiftId:'released-invitation',reasonCode:'ILLNESS',reasonNote:'RELEASE-PRIVATE'},db.executor);expect(reported.status).toBe('pending');if(reported.status!=='pending')throw Error('report failed');
+ const reported=await executeShiftChange(proof('e1'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,'released-invitation'),reasonCode:'ILLNESS',reasonNote:'RELEASE-PRIVATE'},db.executor);expect(reported.status).toBe('pending');if(reported.status!=='pending')throw Error('report failed');
  expect((await executeShiftChange(proof('owner'),{kind:'APPROVE_CALLOUT',operationId:randomUUID(),requestId:reported.requestId,expectedRevision:1},db.executor)).status).toBe('completed');
  const [linked]=await q('SELECT id FROM shift_exchanges WHERE linked_callout_id=$1',[reported.requestId]);
  await tick('2035-12-01T04:00:00Z');

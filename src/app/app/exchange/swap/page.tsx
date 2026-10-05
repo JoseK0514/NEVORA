@@ -1,3 +1,5 @@
+import {randomUUID} from 'node:crypto';
+import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
 import {matchesDisplayedShift} from '../../../../lib/shift-changes/displayed-terms';
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
@@ -44,7 +46,7 @@ export default async function SwapPage({
   const proof=await requireSessionMutationProof();
   const reviewed=await readShiftChangeTerms(proof,source.id);if(!reviewed||!matchesDisplayedShift(source,reviewed.source))redirect('/app/exchange?error=EXCHANGE_CHANGED');
   const reviewedSource=source;
-  const reviewedTargets=(await Promise.all(targets.map(async shift=>{const terms=await readShiftChangeTerms(proof,source.id,shift.id);if(!terms?.target||!terms.targetTermsFingerprint||terms.sourceTermsFingerprint!==reviewed.sourceTermsFingerprint||!matchesDisplayedShift(source,terms.source)||!matchesDisplayedShift(shift,terms.target))return null;return {shift,fields:{targetShiftId:terms.target.shiftId,targetEpisodeId:terms.target.assignmentEpisodeId,targetTermsFingerprint:terms.targetTermsFingerprint}};}))).filter(t=>t!==null);
+  const reviewedTargets=(await Promise.all(targets.map(async shift=>{const terms=await readShiftChangeTerms(proof,source.id,shift.id);if(!terms?.target||!terms.targetTermsFingerprint||terms.sourceTermsFingerprint!==reviewed.sourceTermsFingerprint||!matchesDisplayedShift(source,terms.source)||!matchesDisplayedShift(shift,terms.target))return null;const allowed=await readShiftChangeAvailability(proof,{kind:'PROPOSE_SWAP',operationId:randomUUID(),sourceShiftId:terms.source.shiftId,sourceEpisodeId:terms.source.assignmentEpisodeId,sourceTermsFingerprint:terms.sourceTermsFingerprint,targetShiftId:terms.target.shiftId,targetEpisodeId:terms.target.assignmentEpisodeId,targetTermsFingerprint:terms.targetTermsFingerprint});if(!allowed.allowed)return null;return {shift,fields:{targetShiftId:terms.target.shiftId,targetEpisodeId:terms.target.assignmentEpisodeId,targetTermsFingerprint:terms.targetTermsFingerprint}};}))).filter(t=>t!==null);
   const date = formatDayLabel(reviewedSource.date);
 
   return (

@@ -59,7 +59,7 @@ async function run(name:keyof typeof exchanges|keyof typeof callouts,input:Recor
  if(kind==='OFFER_COVERAGE'||kind==='PROPOSE_SWAP') {
   const source=build(r,'EXCHANGE');const term=(id:unknown)=>{const sh=source.shifts.find(s=>s.id===id)!;return sourceShiftTerms(sh,r.state.schedules.find(s=>s.id===sh.schedule_id)!,'northside','America/New_York');};const a=term(input.sourceShiftId),b=kind==='PROPOSE_SWAP'?term(input.targetShiftId):null;
   command={kind,operationId:randomUUID(),sourceShiftId:a.shiftId,sourceEpisodeId:a.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(a),...(b?{targetShiftId:b.shiftId,targetEpisodeId:b.assignmentEpisodeId,targetTermsFingerprint:shiftTermsFingerprint(b)}:{})} as ShiftChangeCommand;
- }else if(kind==='SUBMIT_CALLOUT') command={kind,operationId:randomUUID(),sourceShiftId:String(input.shiftId),reasonCode:input.reasonCode as 'ILLNESS',reasonNote:input.reasonNote as string|undefined};
+ }else if(kind==='SUBMIT_CALLOUT') {const source=build(r,'CALLOUT'),sh=source.shifts.find(s=>s.id===input.shiftId)!;const terms=sourceShiftTerms(sh,r.state.schedules.find(s=>s.id===sh.schedule_id)!,'northside','America/New_York');command={kind,operationId:randomUUID(),sourceShiftId:terms.shiftId,sourceEpisodeId:terms.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(terms),reasonCode:input.reasonCode as 'ILLNESS',reasonNote:input.reasonNote as string|undefined};}
  else command={kind,operationId:randomUUID(),requestId:String(input.exchangeId??input.calloutId),expectedRevision:1};
  const fn=(name in exchanges?exchanges[name as keyof typeof exchanges]:callouts[name as keyof typeof callouts]) as (input:unknown,executor:SqlExecutor)=>Promise<unknown>;
  return fn({...input,proof,command},executor);

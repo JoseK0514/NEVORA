@@ -19,6 +19,7 @@ export type MaintenanceSnapshot = {
     eligibilityUnverified?: boolean;
     unfilled?: boolean;
     termsCurrent: boolean;
+    provenStale?: boolean;
 };
 export type EffectiveRequestState = {
     status: string;
@@ -27,7 +28,7 @@ export type EffectiveRequestState = {
     attention: 'URGENT_UNCOVERED' | 'NO_ELIGIBLE_CANDIDATES' | 'CONFIGURATION_REQUIRED' | 'NO_VOLUNTEER' | 'MANAGER_REVIEW' | null;
 };
 export type MaintenanceIntent = {
-    kind: 'EXPIRE' | 'ESCALATE' | 'INVITE';
+    kind: 'EXPIRE' | 'RETIRE_STALE' | 'ESCALATE' | 'INVITE';
     requestId: string;
     revision: number;
     reason: string;
@@ -66,6 +67,8 @@ export function planShiftChangeMaintenance(snapshot: MaintenanceSnapshot, now: D
         return [];
     const state = projectShiftChangeState(snapshot, now);
     const intent = (kind: MaintenanceIntent['kind'], reason: string): MaintenanceIntent => ({ kind, requestId: snapshot.id, revision: snapshot.revision, reason });
+    if (snapshot.kind === 'EXCHANGE' && snapshot.provenStale)
+        return [intent('RETIRE_STALE', 'STALE_TERMS')];
     if (state.status === 'EXPIRED')
         return [intent('EXPIRE', 'COMPLETION_DEADLINE')];
     let urgent = false;
