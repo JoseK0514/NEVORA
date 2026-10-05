@@ -48,6 +48,7 @@ export function DeviceSetupContent(props: ContentProps) {
 export function PortalDeviceSetup({ role }: { role: UserRole }) {
   const controller = useRef<DeviceController | null>(null);
   const popover = useRef<HTMLDivElement>(null);
+  const popoverOpener = useRef<HTMLElement | null>(null);
   const installEvent = useRef<InstallEvent | null>(null);
   const offered = useRef(false);
   const [snapshot, setSnapshot] = useState<DeviceSnapshot | null>(null);
@@ -64,10 +65,49 @@ export function PortalDeviceSetup({ role }: { role: UserRole }) {
       if (event.data?.version === 1 && event.data?.type === 'UPDATE_WAITING') setInstallMessage('An update is ready. Close NEVORA tabs and reopen when your work is saved.');
     };
     const visibility = () => { if (document.visibilityState === 'visible') void client.reconcile(); };
+    const surface = popover.current;
+    const toggle = (event: Event) => {
+      const state = (event as ToggleEvent).newState;
+      if (state === 'open') {
+        client.reopen();
+        const active = document.activeElement;
+        if (
+          active instanceof HTMLElement &&
+          active.getAttribute('popovertarget') === 'portal-device-settings'
+        ) {
+          popoverOpener.current = active;
+          requestAnimationFrame(() => {
+            if (!surface?.matches(':popover-open')) return;
+            surface.querySelector<HTMLElement>('.portal-device-close')?.focus({ preventScroll: true });
+          });
+        } else {
+          popoverOpener.current = null;
+        }
+        return;
+      }
+      const opener = popoverOpener.current;
+      popoverOpener.current = null;
+      if (!opener) return;
+      requestAnimationFrame(() => {
+        if (opener.isConnected && opener.getClientRects().length) {
+          opener.focus({ preventScroll: true });
+          return;
+        }
+        document.querySelector<HTMLElement>('.employee-more-trigger')?.focus({ preventScroll: true });
+      });
+    };
+    surface?.addEventListener('toggle', toggle);
     document.addEventListener('visibilitychange', visibility);
     window.addEventListener('beforeinstallprompt', beforeInstall);
     navigator.serviceWorker?.addEventListener('message', update);
-    return () => { dispose(); controller.current = null; document.removeEventListener('visibilitychange', visibility); window.removeEventListener('beforeinstallprompt', beforeInstall); navigator.serviceWorker?.removeEventListener('message', update); };
+    return () => {
+      dispose();
+      controller.current = null;
+      surface?.removeEventListener('toggle', toggle);
+      document.removeEventListener('visibilitychange', visibility);
+      window.removeEventListener('beforeinstallprompt', beforeInstall);
+      navigator.serviceWorker?.removeEventListener('message', update);
+    };
   }, []);
   useEffect(() => {
     if (offered.current || !snapshot || !['ready', 'install'].includes(snapshot.state)) return;
@@ -89,8 +129,7 @@ export function PortalDeviceSetup({ role }: { role: UserRole }) {
       setInstallMessage(choice.outcome === 'accepted' ? 'Browser install request accepted. Open NEVORA from its icon to confirm standalone use.' : 'Install postponed. You can use the browser menu later.');
     } catch { setInstallMessage('The browser install prompt is unavailable. Use the install instructions.'); setInstructions(true); }
   }
-  return <div ref={popover} id="portal-device-settings" className="portal-device-settings" popover="auto" aria-labelledby="portal-device-title" data-role={role}
-    onToggle={event => { if (event.newState === 'open') controller.current?.reopen(); }}>
+  return <div ref={popover} id="portal-device-settings" className="portal-device-settings" popover="auto" aria-labelledby="portal-device-title" data-role={role}>
     <div className="portal-device-heading"><strong>Device settings</strong><button type="button" className="portal-device-close" popoverTarget="portal-device-settings" popoverTargetAction="hide" aria-label="Close device settings">×</button></div>
     {snapshot ? <DeviceSetupContent state={snapshot.state} standalone={snapshot.standalone} ios={snapshot.capabilities.requiresStandalone} installPrompt={canInstall} testAllowed={snapshot.server.testAllowed} instructions={instructions} message={snapshot.message ?? installMessage}
       onEnable={() => { void controller.current?.enable(); }} onDismiss={dismiss} onInstructions={() => setInstructions(true)} onInstall={() => { void install(); }} onTurnOff={() => { void controller.current?.turnOff(); }} onTest={() => { void controller.current?.test(); }} onRetry={() => { void controller.current?.start(); }}/>

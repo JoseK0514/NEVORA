@@ -23,6 +23,7 @@ export function ActionMenu({
 }: ActionMenuProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const keyboardOpenRef = useRef(false);
 
   useEffect(() => {
     const trigger = triggerRef.current;
@@ -92,7 +93,22 @@ export function ActionMenu({
       menu.style.width = `${width}px`;
       menu.style.left = `${Math.round(left)}px`;
     };
-    const onToggle = () => position();
+    const onToggle = () => {
+      position();
+      if (!menu.matches(":popover-open")) {
+        keyboardOpenRef.current = false;
+        return;
+      }
+      if (!keyboardOpenRef.current) return;
+      requestAnimationFrame(() => {
+        if (!menu.matches(":popover-open")) return;
+        const first = menu.querySelector<HTMLElement>(
+          'a[href],button:not([disabled]),input:not([type="hidden"]):not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',
+        );
+        first?.focus({ preventScroll: true });
+        keyboardOpenRef.current = false;
+      });
+    };
 
     menu.addEventListener("beforetoggle", onBeforeToggle);
     menu.addEventListener("toggle", onToggle);
@@ -119,6 +135,14 @@ export function ActionMenu({
         className="button ghost nevora-action-menu-trigger"
         popoverTarget={id}
         aria-label={ariaLabel}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            keyboardOpenRef.current = true;
+          }
+        }}
+        onPointerDown={() => {
+          keyboardOpenRef.current = false;
+        }}
       >
         <span>{label}</span>
         <svg

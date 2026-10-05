@@ -282,8 +282,26 @@ async function inspectMenus(page) {
     await popover.waitFor({ state: "visible" });
     const elapsed = Math.round(performance.now() - start);
     const box = await popover.boundingBox();
-    results.push({ selector: `#${targetId}`, elapsed, box });
     await page.keyboard.press("Escape");
+
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await popover.waitFor({ state: "visible" });
+    await page.waitForTimeout(20);
+    const keyboardFocusInside = await popover.evaluate(
+      menu => menu.contains(document.activeElement),
+    );
+    await page.keyboard.press("Escape");
+    const returnFocusOnTrigger = await trigger.evaluate(
+      element => document.activeElement === element,
+    );
+    results.push({
+      selector: `#${targetId}`,
+      elapsed,
+      box,
+      keyboardFocusInside,
+      keyboardFocusReturned: returnFocusOnTrigger,
+    });
   }
   const details = page.locator("details.schedule-more-menu:visible");
   if (await details.count()) {
@@ -336,6 +354,12 @@ async function auditSurface({ browserName, context, surface, viewport }) {
       }
       if (menu.elapsed > 250) {
         finding({ engine: browserName, surface, width: viewport.width, category: "Performance", severity: "P2", selector: menu.selector, evidence: `local menu required ${menu.elapsed}ms to become visible in owned runtime` });
+      }
+      if (menu.keyboardFocusInside === false) {
+        finding({ engine: browserName, surface, width: viewport.width, category: "Accessibility", severity: "P1", selector: menu.selector, evidence: "keyboard-opened action menu did not place focus inside the popover" });
+      }
+      if (menu.keyboardFocusReturned === false) {
+        finding({ engine: browserName, surface, width: viewport.width, category: "Accessibility", severity: "P1", selector: menu.selector, evidence: "Escape did not return focus to the action-menu trigger" });
       }
     }
     const clearance = await inspectBottomClearance(page);

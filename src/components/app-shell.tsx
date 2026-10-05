@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandLockup } from "./brand-lockup";
 import { NavIcon } from "@/components/nav-icon";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import type { UserRole } from "@/lib/domain";
@@ -39,6 +39,7 @@ export function AppShell({
   };
 }) {
   const pathname = usePathname();
+  const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
   const navigation = navigationForRole(user.role);
   if (employee) {
@@ -126,12 +127,41 @@ export function AppShell({
                   <span>{item.href === "/app/schedule" ? "Schedule" : item.label}</span>
                 </Link>
               ))}
-              <button type="button" popoverTarget="employee-more-navigation"
+              <button
+                type="button"
+                popoverTarget="employee-more-navigation"
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    employeeMoreKeyboardOpen.current = true;
+                  }
+                }}
+                onPointerDown={() => {
+                  employeeMoreKeyboardOpen.current = false;
+                }}
                 className={mobileMore.some((item) => item.href === activeHref) ? "mobile-nav-link employee-more-trigger active" : "mobile-nav-link employee-more-trigger"}>
                 <NavIcon name="more" employee size={22} />
                 <span>More</span>
               </button>
-              <div id="employee-more-navigation" className="employee-more-navigation" popover="auto">
+              <div
+                id="employee-more-navigation"
+                className="employee-more-navigation"
+                popover="auto"
+                onToggle={(event) => {
+                  const surface = event.currentTarget;
+                  if (event.newState !== "open") {
+                    employeeMoreKeyboardOpen.current = false;
+                    return;
+                  }
+                  if (!employeeMoreKeyboardOpen.current) return;
+                  requestAnimationFrame(() => {
+                    const first = surface.querySelector<HTMLElement>(
+                      ".employee-more-link,button:not([disabled])",
+                    );
+                    first?.focus({ preventScroll: true });
+                    employeeMoreKeyboardOpen.current = false;
+                  });
+                }}
+              >
                 <p className="employee-more-label">More</p>
                 {mobileMore.map((item) => (
                   <Link key={item.href} href={item.href}
