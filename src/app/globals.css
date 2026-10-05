@@ -70,7 +70,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-button, input { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration: none; }
 button { cursor: pointer; }
@@ -183,7 +183,7 @@ button { cursor: pointer; }
 .page-actions { display: flex; flex-wrap: wrap; gap: 9px; }
 
 .button {
-  min-height: 42px;
+  min-height: 44px;
   border-radius: 12px;
   border: 1px solid transparent;
   padding: 0 16px;
@@ -199,6 +199,169 @@ button { cursor: pointer; }
 .button.secondary { background: var(--surface); border-color: var(--line); color: var(--ink); }
 .button.ghost { background: transparent; border-color: var(--line); }
 .button.full { width: 100%; }
+.button:focus-visible,
+.nevora-action-menu-trigger:focus-visible,
+.nevora-select:focus-visible {
+  outline: 2px solid var(--nevora-blue);
+  outline-offset: 3px;
+}
+
+.nevora-action-menu {
+  position: relative;
+  min-width: 0;
+  display: inline-flex;
+}
+
+.nevora-action-menu-trigger {
+  min-height: 44px;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.nevora-action-menu-chevron,
+.nevora-select-chevron {
+  flex: 0 0 auto;
+  display: block;
+  pointer-events: none;
+}
+
+.nevora-action-menu-chevron {
+  transition: transform 160ms ease;
+}
+
+.nevora-action-menu:has(.nevora-action-menu-popover:popover-open) .nevora-action-menu-chevron {
+  transform: rotate(180deg);
+}
+
+.nevora-action-menu-popover {
+  position: fixed;
+  inset: auto;
+  z-index: 100;
+  margin: 0;
+  width: min(318px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  padding: 8px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 13px;
+  background: var(--color-bg-surface);
+  color: var(--color-brand-primary);
+  box-shadow: 0 18px 48px rgba(24, 25, 31, .12);
+}
+
+.nevora-action-menu-popover:popover-open {
+  display: grid;
+  gap: 2px;
+}
+
+.nevora-action-menu-popover::backdrop {
+  background: transparent;
+}
+
+.nevora-action-menu-popover form {
+  margin: 0;
+}
+
+.nevora-action-menu-item {
+  width: 100%;
+  min-height: 54px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 9px;
+  display: grid;
+  gap: 2px;
+  align-content: center;
+  background: transparent;
+  color: var(--color-brand-primary);
+  text-align: left;
+  font: inherit;
+}
+
+.nevora-action-menu-item:is(:hover, :focus-visible) {
+  background: var(--color-bg-main);
+}
+
+.nevora-action-menu-item:focus-visible {
+  outline: 2px solid var(--nevora-blue);
+  outline-offset: -2px;
+}
+
+.nevora-action-menu-item strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nevora-action-menu-item span {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.nevora-action-menu-divider {
+  height: 1px;
+  margin: 6px 2px 8px;
+  background: var(--color-border-subtle);
+}
+
+.nevora-field {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.nevora-field-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nevora-select-shell {
+  position: relative;
+  min-width: 0;
+  display: block;
+}
+
+.nevora-select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 38px 0 13px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 12px;
+  appearance: none;
+  background: var(--color-bg-surface);
+  color: var(--color-brand-primary);
+  font: inherit;
+  font-size: 16px;
+}
+
+.nevora-select:disabled {
+  cursor: default;
+  opacity: .55;
+}
+
+.nevora-select-chevron {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  color: var(--muted);
+  transform: translateY(-50%);
+}
+
+.nevora-field-hint {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nevora-action-menu-chevron {
+    transition: none;
+  }
+}
 
 .metric-grid {
   display: grid;
@@ -1714,7 +1877,7 @@ button { cursor: pointer; }
 }
 
 .compact-button {
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 12px;
   font-size: 11px;
 }
@@ -5006,85 +5169,12 @@ small,
 }
 
 .schedule-command-actions .button {
-  min-height: 38px;
+  min-height: 44px;
   padding-inline: 13px;
 }
 
 .schedule-add-shift {
   min-width: 100px;
-}
-
-.schedule-more-menu {
-  position: relative;
-}
-
-.schedule-more-menu > summary {
-  list-style: none;
-  cursor: pointer;
-}
-
-.schedule-more-menu > summary::-webkit-details-marker {
-  display: none;
-}
-
-.schedule-more-menu > summary::after {
-  content: "⌄";
-  margin-left: 7px;
-  font-size: 12px;
-}
-
-.schedule-more-menu[open] > summary {
-  background: #f5efe7;
-}
-
-.schedule-more-popover {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 40;
-  width: 318px;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  background: var(--surface);
-  box-shadow: 0 18px 48px rgba(59, 42, 29, .14);
-}
-
-.schedule-more-popover form {
-  margin: 0;
-}
-
-.schedule-menu-action {
-  width: 100%;
-  min-height: 54px;
-  padding: 9px 10px;
-  border: 0;
-  border-radius: 9px;
-  background: transparent;
-  text-align: left;
-  display: grid;
-  gap: 2px;
-}
-
-.schedule-menu-action:hover {
-  background: #f8f3ec;
-}
-
-.schedule-menu-action strong {
-  font-size: 12px;
-  font-weight: var(--weight-semibold);
-}
-
-.schedule-menu-action span {
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.35;
-}
-
-.schedule-menu-divider {
-  height: 1px;
-  margin: 6px 2px 8px;
-  background: var(--line);
 }
 
 .schedule-menu-deadline {
@@ -5105,7 +5195,7 @@ small,
 
 .schedule-menu-deadline input {
   width: 100%;
-  min-height: 38px;
+  min-height: 44px;
   border: 1px solid var(--line);
   border-radius: 9px;
   padding: 0 10px;
@@ -5324,20 +5414,13 @@ small,
   }
 
   .schedule-command-actions > .button,
-  .schedule-command-actions > .schedule-more-menu {
+  .schedule-command-actions > .nevora-action-menu {
     flex: 1 1 0;
   }
 
   .schedule-command-actions .button,
-  .schedule-more-menu > summary {
+  .schedule-command-actions .nevora-action-menu-trigger {
     width: 100%;
-  }
-
-  /* Anchor to the mobile More control without extending beyond the viewport. */
-  .manager-schedule-page .schedule-more-popover {
-    left: auto;
-    right: 0;
-    width: min(330px, calc(100vw - 34px));
   }
 
   .schedule-status-strip {
@@ -12287,7 +12370,6 @@ body {
 }
 .app-shell .schedule-period-control { grid-template-columns: 44px minmax(0, 1fr) 44px; }
 .app-shell .schedule-shift-pill { min-height: 44px; }
-.app-shell .schedule-more-menu > summary::after { margin-left: 0; line-height: 1; }
 
 /* Authentication retains its existing 12px family and full-width action. */
 .auth-card .button {

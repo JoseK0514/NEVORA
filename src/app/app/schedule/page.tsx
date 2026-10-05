@@ -1,3 +1,4 @@
+import { ActionMenu } from "@/components/action-menu";
 import { ScheduleLocationControl } from "@/components/schedule-location-control";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
@@ -322,43 +323,47 @@ export default async function SchedulePage({
               Templates
             </Link>
 
-            <details className="schedule-more-menu">
-              <summary className="button ghost compact-button">More</summary>
-              <div className="schedule-more-popover">
-                <form action={copyPreviousWeekAction}>
-                  <input type="hidden" name="weekStart" value={weekStart} />
-                  <button className="schedule-menu-action" type="submit">
-                    <strong>Copy previous week</strong>
-                    <span>Bring last week’s shifts into this week.</span>
-                  </button>
-                </form>
+            <ActionMenu
+              id="schedule-more-actions"
+              label="More"
+              ariaLabel="More schedule actions"
+            >
+              <form action={copyPreviousWeekAction}>
+                <input type="hidden" name="weekStart" value={weekStart} />
+                <button className="nevora-action-menu-item" type="submit">
+                  <strong>Copy previous week</strong>
+                  <span>Bring last week’s shifts into this week.</span>
+                </button>
+              </form>
 
-                <Link className="schedule-menu-action" href="/app/schedule/settings">
-                  <strong>Scheduling rules</strong>
-                  <span>Coverage requirements and employee hour targets.</span>
-                </Link>
+              <Link
+                className="nevora-action-menu-item"
+                href="/app/schedule/settings"
+              >
+                <strong>Scheduling rules</strong>
+                <span>Coverage requirements and employee hour targets.</span>
+              </Link>
 
-                <div className="schedule-menu-divider" />
+              <div className="nevora-action-menu-divider" />
 
-                <form
-                  action={setAvailabilityDeadlineAction}
-                  className="schedule-menu-deadline"
-                >
-                  <input type="hidden" name="weekStart" value={weekStart} />
-                  <label>
-                    <span>Availability deadline</span>
-                    <input
-                      type="datetime-local"
-                      name="availabilityDeadline"
-                      defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)}
-                    />
-                  </label>
-                  <button className="button secondary compact-button" type="submit">
-                    {weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}
-                  </button>
-                </form>
-              </div>
-            </details>
+              <form
+                action={setAvailabilityDeadlineAction}
+                className="schedule-menu-deadline"
+              >
+                <input type="hidden" name="weekStart" value={weekStart} />
+                <label>
+                  <span>Availability deadline</span>
+                  <input
+                    type="datetime-local"
+                    name="availabilityDeadline"
+                    defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)}
+                  />
+                </label>
+                <button className="button secondary compact-button" type="submit">
+                  {weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}
+                </button>
+              </form>
+            </ActionMenu>
 
             <Link
               className="button primary compact-button schedule-add-shift"

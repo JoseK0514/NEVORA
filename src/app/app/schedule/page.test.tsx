@@ -6,6 +6,7 @@ const f=vi.hoisted(()=>({positions:[] as {id:string,name:string}[], shifts:[] as
 vi.mock('next/link',()=>({default:({children,...props}:React.ComponentProps<'a'>)=>createElement('a',props,children)}));
 vi.mock('@/lib/scheduling/validate-shift',()=>({schedulingIssueMessage:()=>''}));
 vi.mock('@/components/schedule-location-control', () => import('../../../components/schedule-location-control'));
+vi.mock('@/components/action-menu', () => import('../../../components/action-menu'));
 vi.mock('@/components/page-header',()=>({PageHeader:()=>null}));
 vi.mock('@/components/status-pill',()=>({StatusPill:()=>null}));
 vi.mock('@/components/employee-submit-button',()=>({EmployeeSubmitButton:()=>null}));
@@ -66,6 +67,7 @@ vi.mock('@/lib/data/positions',()=>({listPositions:async()=>{f.managerReads('pos
 vi.mock('@/lib/data/schedule-generation-review',()=>({getScheduleGenerationReview:async()=>{f.managerReads('review');return {editable:true,exclusions:[],coverage:null,attempted:0,needsSetup:0};}}));
 vi.mock('@/components/schedule-generation-controls',()=>import('../../../components/schedule-generation-controls'));
 vi.mock('@/app/app/schedule/generation-actions',()=>({generateWeekAction:vi.fn(),clearGenerationExclusionAction:vi.fn()}));
+it('Manager Schedule uses the shared viewport-safe action menu instead of a page-local details dropdown',async()=>{f.role='MANAGER';const output=await html();expect(output).toContain('class="nevora-action-menu"');expect(output).toContain('popover="auto"');expect(output).not.toContain('<details class="schedule-more-menu"');});
 it('Manager renders actual assigned positions and captured published names without invented labels',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'draft',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'},{id:'published',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-06',startTime:'08:00',endTime:'12:00',scheduleStatus:'PUBLISHED'},{id:'legacy',employeeId:'worker',locationId:'north',date:'2026-10-07',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'}];f.captured=[{sourceShiftId:'published',positionName:'Captured Cashier'}];const output=await html();expect(output).toContain('Renamed Cashier');expect(output).toContain('Captured Cashier');expect(output.match(/schedule-assigned-position/g)).toHaveLength(2);expect(output).toContain('Build Week');});
 it('Employee/Lead do not load Manager review or position catalogs',async()=>{for(const role of ['EMPLOYEE','LEAD']){f.role=role;expect(await html()).not.toContain('Build Week');}expect(f.managerReads).not.toHaveBeenCalled();});
 it('protected generated deletion reports scheduling history truthfully',async()=>{f.role='MANAGER';const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',error:'SHIFT_HAS_EXCHANGE_HISTORY'})}));expect(output).toContain('scheduling history');});
