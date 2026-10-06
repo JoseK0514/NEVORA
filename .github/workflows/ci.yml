@@ -124,6 +124,7 @@ jobs:
           NODE
       - name: Upload D1.3 browser evidence
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: d13-attendance-browser-${{ github.event.pull_request.head.sha || github.sha }}
