@@ -42,7 +42,9 @@ function validObservedAt(value: unknown): value is string {
 }
 
 function validTimeZone(value: unknown, observedAt: string): value is string {
-  if (!safeText(value, 100)) return false;
+  // The current workspace contract requires a named IANA zone. This does not
+  // alter the separate resolver for historically captured timezone values.
+  if (!safeText(value, 100) || /^[+-]/.test(value)) return false;
   try {
     Temporal.Instant.from(observedAt).toZonedDateTimeISO(value);
     return true;

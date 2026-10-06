@@ -202,6 +202,12 @@ function markCrossEntryConflicts(histories: EntryHistory[]): void {
   }
 
   for (const employeeHistories of byEmployee.values()) {
+    // Multiple open records are contradictory even when an interval is zero
+    // length at this observation, or one timestamp cannot be interpreted.
+    const openHistories = employeeHistories.filter((history) => history.open);
+    if (openHistories.length > 1) {
+      for (const history of openHistories) history.inconsistent = true;
+    }
     for (let leftIndex = 0; leftIndex < employeeHistories.length; leftIndex += 1) {
       const left = employeeHistories[leftIndex];
       if (!left.start || !left.end) continue;
@@ -230,6 +236,12 @@ function inObservationScope(
   observedAt: Temporal.Instant,
 ): boolean {
   if (!history.start || !history.end) return true;
+  // Impossible future history cannot establish a trustworthy view boundary.
+  // It is surfaced only as an integrity observation, never derived timing.
+  if (
+    Temporal.Instant.compare(history.start, observedAt) > 0 ||
+    Temporal.Instant.compare(history.end, observedAt) > 0
+  ) return true;
   if (history.open) return true;
   return (
     Temporal.Instant.compare(history.end, dayStart) > 0 &&
@@ -425,6 +437,13 @@ function breakObservations(
     }
 
     const start = Temporal.Instant.from(recordedBreak.startAt);
+    const targetNanoseconds =
+      BigInt(target.targetMinutes) * BigInt(60_000_000_000);
+    // Compare before constructing an instant beyond the supported range. A
+    // real exceedance guarantees that expected is no later than observedAt.
+    if (observedAt.epochNanoseconds - start.epochNanoseconds <= targetNanoseconds) {
+      continue;
+    }
     const expected = start.add({ minutes: target.targetMinutes });
     const difference = positiveDifference(observedAt, expected);
     if (!difference) continue;
@@ -467,6 +486,14 @@ export function projectAttendance(sourceValue: unknown): AttendanceProjection {
     if (!inObservationScope(history, dayStart, observedAt)) continue;
     const entry = history.entry;
     const observations: Observation[] = [];
+
+    if (!source.coverage.publicationsComplete) {
+      addLimitation(limitations, {
+        entryId: entry.id,
+        breakId: null,
+        reason: "publication_source_incomplete",
+      });
+    }
 
     if (history.inconsistent) {
       observations.push(
@@ -546,7 +573,10 @@ export function projectAttendance(sourceValue: unknown): AttendanceProjection {
       groups.map((group) => group.employeeId),
     ).size,
     coverage: {
-      state: orderedLimitations.length > 0 ? "limited" : "complete",
+      state:
+        !source.coverage.publicationsComplete || orderedLimitations.length > 0
+          ? "limited"
+          : "complete",
       limitations: orderedLimitations,
       deferredCapabilities: [...DEFERRED_CAPABILITIES],
     },

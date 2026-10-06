@@ -872,3 +872,97 @@ it("keeps all D1.1 runtime modules inside the approved pure dependency and effec
 
   expect(forbidden).toEqual([]);
 });
+
+
+describe("D1.1 final author-review regressions", () => {
+  it("keeps incomplete publication coverage explicit for an empty snapshot", () => {
+    const result = ready(makeAttendanceSource({
+      coverage: { entriesComplete: true, breaksComplete: true, publicationsComplete: false },
+    }));
+    expect(result.groups).toEqual([]);
+    expect(result.coverage.state).toBe("limited");
+  });
+
+  it("preserves known schedule facts without declaring incomplete publications complete", () => {
+    const source = sourceWithMatchedEntry({ clockInAt: "2030-10-07T12:07:00Z" }, {
+      coverage: { entriesComplete: true, breaksComplete: true, publicationsComplete: false },
+    });
+    const result = ready(source);
+    const complete = ready({ ...source, coverage: { ...source.coverage, publicationsComplete: true } });
+    expect(result.groups).toEqual(complete.groups);
+    expect(result.coverage.state).toBe("limited");
+    expect(result.coverage.limitations).toContainEqual({
+      entryId: "entry-1", breakId: null, reason: "publication_source_incomplete",
+    });
+  });
+
+  it.each([
+    ["2030-10-07T16:00:00Z", "2030-10-07T16:00:00Z"],
+    ["2030-10-07T12:00:00Z", "2030-10-07T16:00:00Z"],
+    ["invalid-instant", "2030-10-07T16:00:00Z"],
+  ])("detects competing open entries even at zero duration or invalid times: %s / %s", (first, second) => {
+    const result = ready(makeAttendanceSource({ entries: [
+      makeRecordedEntry({ id: "qa-open-a", clockInAt: first }),
+      makeRecordedEntry({ id: "qa-open-b", locationId: "location-2", clockInAt: second }),
+    ] }));
+    expect(result.groups.map(group => [group.entryId, group.observations.map(item => item.kind)])).toEqual([
+      ["qa-open-a", ["TIME_HISTORY_INCONSISTENT"]],
+      ["qa-open-b", ["TIME_HISTORY_INCONSISTENT"]],
+    ]);
+    expect(result.affectedEmployeeCount).toBe(1);
+    for (const group of result.groups) {
+      expect(group.observations[0].evidence).toEqual({ reason: "time_history_inconsistent" });
+    }
+  });
+
+  it.each([
+    ["2030-10-07T17:00:00Z", "2030-10-07T18:00:00Z"],
+    ["2030-10-08T12:00:00Z", "2030-10-08T20:00:00Z"],
+  ])("does not hide an impossible future closed record behind the view filter: %s", (start, end) => {
+    const result = ready(makeAttendanceSource({ entries: [makeRecordedEntry({
+      clockInAt: start, clockOutAt: end, status: "CLOCKED_OUT",
+    })] }));
+    expect(result.groups.map(group => group.observations.map(item => item.kind))).toEqual([
+      ["TIME_HISTORY_INCONSISTENT"],
+    ]);
+    expect(result.groups[0].observations[0].evidence).toEqual({ reason: "time_history_inconsistent" });
+    expect(result.coverage.state).toBe("limited");
+  });
+
+  it("does not mistake a touching closed entry and current open entry for duplicate open history", () => {
+    const result = ready(makeAttendanceSource({ entries: [
+      makeRecordedEntry({ id: "qa-closed", clockInAt: "2030-10-07T12:00:00Z", clockOutAt: "2030-10-07T16:00:00Z", status: "CLOCKED_OUT" }),
+      makeRecordedEntry({ id: "qa-open", clockInAt: "2030-10-07T16:00:00Z" }),
+    ] }));
+    expect(result.groups).toEqual([]);
+  });
+
+  it.each(["+00:00", "-04:00"])("requires a named workspace timezone rather than a fixed offset: %s", timeZone => {
+    expect(projectAttendance(makeAttendanceSource({ timeZone }))).toEqual({
+      state: "unavailable", reason: "invalid_source",
+    });
+  });
+
+  it("preserves valid captured fixed-offset history instead of applying the current workspace-zone restriction to it", () => {
+    const entry = makeRecordedEntry();
+    entry.scheduleContext = matchedContext(entry, { timeZone: "-04:00" });
+    const result = ready(makeAttendanceSource({ entries: [entry], publications: [makeHistoricalShift()] }));
+    expect(result.groups).toEqual([]);
+    expect(result.coverage.state).toBe("complete");
+  });
+
+  it("does not overflow the supported instant range for an ordinary break still within its target", () => {
+    const source = makeAttendanceSource({
+      timeZone: "UTC", observedAt: "+275760-09-13T00:00:00Z",
+      entries: [makeRecordedEntry({
+        clockInAt: "+275760-09-12T23:00:00Z", status: "ON_BREAK",
+        breaks: [makeRecordedBreak({
+          startAt: "+275760-09-13T00:00:00Z", breakTypeId: "qa-break",
+          breakTypeSnapshot: { id: "qa-break", version: 1, name: "Fictional break", category: "REST", targetMinutes: 15 },
+        })],
+      })],
+    });
+    expect(() => projectAttendance(source)).not.toThrow();
+    expect(ready(source).groups).toEqual([]);
+  });
+});

@@ -87,3 +87,29 @@ No shared push, pull request, Preview deployment, `development` merge, `main` ch
 Independent QA/UI remain independently owned. FR-AUTH-001 and all other controlling production obligations remain open unless their authorized reviewers separately close them.
 
 Any source change after a frozen candidate requires affected verification again. A future approved integration into `development` requires fresh destination-SHA verification.
+
+## Author-review remediation before handoff
+
+The author reviewed the pure source and reproduced five bounded findings against
+`a2352405827c308d1e498357342630013694728f`, even though its existing automated gates
+passed: publication incompleteness could look complete; duplicate open entries
+with zero/invalid intervals could escape detection; future closed history could
+be hidden by the view filter; the current workspace accepted fixed offsets
+instead of the specified named IANA zone; and a within-target break at the
+supported instant limit could overflow before the comparison.
+
+Twelve additional regression cases were written first. Ten failed on the unchanged
+runtime and two compatibility controls passed. The bounded corrections then
+passed all 77 attendance tests; the full 1,850-test suite, typecheck and lint also
+passed before this remediation commit. Original assertions were not weakened.
+
+Corrections change only D1.1 validation/projection logic and its tests. Captured
+historical fixed offsets remain supported; only the current workspace envelope
+follows the named-zone contract. Impossible future records yield integrity-only
+review information rather than silently disappearing. No attendance threshold,
+pay rule, database reader, UI, permission or shared Phase C helper changed.
+
+The new commit supersedes the earlier local review candidate. It requires fresh
+full final-SHA verification. These are author findings/remediations, not an
+independent audit closure. RED/GREEN evidence and the full finding ledger remain
+in `final-a235240/completion-20261006T171615Z/` under the external evidence root.
