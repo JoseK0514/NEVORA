@@ -21,7 +21,7 @@
   /* Soft Functional Accents */
   --color-state-success: #1D6F42;
   --color-state-success-bg: #EAF5EA;
-  --color-state-warning: #A05200;
+  --color-state-warning: #C2410C;
   --color-state-warning-bg: #FFF4E5;
   --color-state-danger: #B42318;
   --color-state-danger-bg: #FDECEC;
@@ -3107,9 +3107,9 @@ button { cursor: pointer; }
   min-height: 68px;
   margin: 0 0 12px;
   padding: 12px 14px;
-  border: 1px solid var(--color-state-warning);
+  border: 1px solid var(--color-border-subtle);
   border-radius: 15px;
-  background: var(--soft-amber);
+  background: var(--color-bg-surface);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4995,7 +4995,7 @@ small,
 }
 
 .availability-submission-status.pending {
-  background: color-mix(in srgb, var(--soft-amber) 48%, var(--surface));
+  background: color-mix(in srgb, var(--nevora-soft) 58%, var(--surface));
 }
 
 @media (max-width: 600px) {
@@ -5084,7 +5084,7 @@ small,
 }
 
 .availability-team-row.selected {
-  background: color-mix(in srgb, var(--soft-amber) 35%, var(--surface));
+  background: color-mix(in srgb, var(--nevora-soft) 72%, var(--surface));
 }
 
 .availability-team-row > div {
@@ -11912,9 +11912,11 @@ body {
 /* Availability highlights the capsule and deadline, preserving neutral rows. */
 .employee-shell .employee-availability-form .availability-state-pill input:checked + span { background: var(--color-state-success-bg); color: var(--color-state-success); }
 .employee-shell .employee-availability-form .availability-state-pill input:focus-visible + span { outline: 2px solid var(--color-brand-accent); outline-offset: 3px; box-shadow: none; }
-.employee-shell .employee-availability-view .availability-deadline-banner:not(.locked) :is(.eyebrow, strong, span) { color: var(--color-state-warning); }
+.employee-shell .employee-availability-view .availability-deadline-banner:not(.locked) .eyebrow { color: var(--muted); }
+.employee-shell .employee-availability-view .availability-deadline-banner:not(.locked) strong { color: var(--color-brand-primary); }
+.employee-shell .employee-availability-view .availability-deadline-banner:not(.locked) span { color: var(--muted); }
 .employee-shell .employee-availability-view .availability-deadline-banner .button { background: var(--nevora-blue); color: var(--color-bg-surface); }
-.employee-shell .employee-availability-view .availability-submission-status.pending strong { color: var(--color-state-warning); }
+.employee-shell .employee-availability-view .availability-submission-status.pending strong { color: var(--color-brand-primary); }
 .employee-shell .employee-availability-view .availability-submission-status.submitted strong { color: var(--color-state-success); }
 
 /* Selected tabs and picker share one quiet product tint. */
