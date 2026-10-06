@@ -106,7 +106,12 @@ function addLimitation(
 }
 
 function compareCodePoint(left: string, right: string): number {
-  return left < right ? -1 : left > right ? 1 : 0;
+  const leftPoints = Array.from(left, character => character.codePointAt(0)!);
+  const rightPoints = Array.from(right, character => character.codePointAt(0)!);
+  for (let index = 0; index < Math.min(leftPoints.length, rightPoints.length); index += 1) {
+    if (leftPoints[index] !== rightPoints[index]) return leftPoints[index] - rightPoints[index];
+  }
+  return leftPoints.length - rightPoints.length;
 }
 
 function analyzeEntry(
@@ -236,6 +241,8 @@ function inObservationScope(
   observedAt: Temporal.Instant,
 ): boolean {
   if (!history.start || !history.end) return true;
+  // Reversed history cannot establish a trustworthy lower view boundary.
+  if (Temporal.Instant.compare(history.end, history.start) < 0) return true;
   // Impossible future history cannot establish a trustworthy view boundary.
   // It is surfaced only as an integrity observation, never derived timing.
   if (
@@ -280,7 +287,8 @@ function breakTarget(
     snapshot.id !== recordedBreak.breakTypeId ||
     !positiveInteger(snapshot.version) ||
     !text(snapshot.name, 80) ||
-    !["REST", "MEAL", "OTHER"].includes(String(snapshot.category))
+    typeof snapshot.category !== "string" ||
+    !["REST", "MEAL", "OTHER"].includes(snapshot.category)
   ) {
     return { state: "invalid" };
   }

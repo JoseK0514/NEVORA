@@ -1,7 +1,7 @@
 "use server";
 
 import { requireSessionMutationProof } from "@/lib/auth/session";
-import { listPositions } from "@/lib/data/positions";
+import { getSchedulePublishReadiness } from "@/lib/data/schedule-publication-review";
 
 import { getWorkspace, WorkspaceConcurrencyError } from "@/lib/data/workspaces";
 import { localDateTimeToInstant, shiftBoundaryInstants } from "@/lib/business-time";
@@ -12,14 +12,6 @@ import { addDays, isDateInWeek, isValidWeekStart } from "@/lib/date-utils";
 import { setAvailabilityDeadline } from "@/lib/data/week-settings";
 import { publishScheduleWithRevision } from "@/lib/data/publication-revisions";
 import { listEmployees } from "@/lib/data/employees";
-import {
-  listCoverageWindows,
-  listEmployeeHourTargets,
-  listLocationStaffingSettings,
-} from "@/lib/data/schedule-health";
-import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
-import { buildPublishReadiness } from "@/lib/scheduling/publish-readiness";
-import { weekDates } from "@/lib/date-utils";
 import {
   deleteShift,
   ensureSchedule,
@@ -124,7 +116,7 @@ export async function createShiftAction(formData: FormData) {
   redirect(
     scheduleUrl(
       weekStart,
-      warning ? `&warning=${encodeURIComponent(warning.code)}` : "",
+      `&location=${encodeURIComponent(locationId)}${warning ? `&warning=${encodeURIComponent(warning.code)}` : ""}`,
     ),
   );
 }
@@ -141,66 +133,12 @@ export async function publishScheduleAction(formData: FormData) {
   }
 
   if (!confirmWarnings) {
-    const [shifts, employees, staffing, targets, coverageWindows] =
-      await Promise.all([
-        listWeekShifts({ weekStart, byBusinessWorkweek: true }),
-        listEmployees(),
-        listLocationStaffingSettings(),
-        listEmployeeHourTargets(),
-        listCoverageWindows(),
-      ]);
-
-    const targetMap = new Map(
-      targets.map((target) => [target.employeeId, target.targetWeeklyHours]),
-    );
-    const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
-    const health = calculateScheduleHealth({
-      positions: await listPositions({includeInactive:true}),
-      shifts: effectiveShifts.map((shift) => ({
-        id: shift.id,
-        employeeId: shift.employeeId,
-        employeeName: shift.employeeName,
-        locationId: shift.locationId,
-        date: shift.date,
-        startTime: shift.startTime,
-        endTime: shift.endTime,
-        positionId: shift.positionId,
-        isDesignatedLead: shift.isDesignatedLead,
-      })),
-      locations: staffing.map((setting) => ({
-        id: setting.locationId,
-        name: setting.locationName,
-        minimumStaffPerShift: setting.minimumStaffPerShift,
-        requiresDesignatedLead: setting.requiresDesignatedLead,
-      })),
-      employees: employees
-        .filter((employee) => employee.active)
-        .map((employee) => ({
-          id: employee.id,
-          name: `${employee.firstName} ${employee.lastName}`,
-          eligibleLocationIds: employee.eligibleLocationIds,
-          positionIds: employee.positionIds,
-          role: employee.role,
-          active: employee.active,
-          targetWeeklyHours: targetMap.get(employee.id),
-        })),
-      coverageWindows,
-      weekDates: weekDates(weekStart),
-    });
-
-    const readiness = buildPublishReadiness({
-      locationId,
-      locationCoverage: health.locationCoverage,
-      underTargetCount: health.underTargetCount,
-      overTargetCount: health.overTargetCount,
-      unconfiguredTargetCount: health.unconfiguredTargetCount,
-    });
-
+    const readiness = await getSchedulePublishReadiness(weekStart, locationId);
     if (readiness.hasWarnings) {
       redirect(
         scheduleUrl(
           weekStart,
-          `&publishCheck=${encodeURIComponent(locationId)}`,
+          `&location=${encodeURIComponent(locationId)}&publishCheck=${encodeURIComponent(locationId)}`,
         ),
       );
     }
@@ -217,9 +155,9 @@ export async function publishScheduleAction(formData: FormData) {
   redirect(
     scheduleUrl(
       weekStart,
-      published
+      `&location=${encodeURIComponent(locationId)}${published
         ? `&published=${encodeURIComponent(locationId)}`
-        : "&error=NO_SCHEDULE",
+        : "&error=NO_SCHEDULE"}`,
     ),
   );
 }

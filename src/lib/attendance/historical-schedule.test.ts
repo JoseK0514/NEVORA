@@ -50,6 +50,12 @@ function matchedContext(
 }
 
 describe("D1.1 saved historical schedule resolution", () => {
+  it('requires multiple candidates for saved OVERLAPPING_SHIFTS ambiguity',()=>{
+    const entry=makeRecordedEntry();
+    entry.scheduleContext={version:1,status:'AMBIGUOUS',timeZone:'America/Puerto_Rico',capturedAt:entry.clockInAt,candidateCount:1,reviewedRevisionIds:['revision-1'],reason:'OVERLAPPING_SHIFTS',match:null};
+    const source=validated([entry]);
+    expect(resolveHistoricalSchedule(source,source.entries[0])).toEqual({state:'not_evaluated',reason:'schedule_context_invalid'});
+  });
   it("resolves only the exact saved immutable publication and ignores a newer revision", () => {
     const entry = makeRecordedEntry({
       clockInAt: "2030-10-07T13:07:00Z",

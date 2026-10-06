@@ -236,7 +236,7 @@ export function resolveHistoricalSchedule(
     context.status === "AMBIGUOUS" &&
     context.candidateCount > 0 &&
     context.match === null &&
-    (context.reason === "OVERLAPPING_SHIFTS" ||
+    ((context.reason === "OVERLAPPING_SHIFTS" && context.candidateCount > 1) ||
       context.reason === "UNRESOLVED_LOCAL_TIME")
   ) {
     return { state: "ambiguous", reason: context.reason };

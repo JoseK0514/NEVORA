@@ -11,6 +11,8 @@ import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { ScheduleGenerationControls } from "@/components/schedule-generation-controls";
+import { SchedulePublicationControls } from "@/components/schedule-publication-controls";
+import { getSchedulePublishReadiness } from "@/lib/data/schedule-publication-review";
 import { listPositions } from "@/lib/data/positions";
 import { getScheduleGenerationReview, type ScheduleGenerationReview } from "@/lib/data/schedule-generation-review";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
@@ -222,6 +224,11 @@ export default async function SchedulePage({
   const capturedByShift = new Map(capturedPositions.map(shift => [shift.sourceShiftId, shift]));
   const positionNames = new Map(positions.map(position => [position.id, position.name]));
   const activeEmployees = employees.filter((employee) => employee.active);
+  const reviewLocation = locations.find(location => location.id === params.publishCheck);
+  const publicationReview = reviewLocation ? {
+    locationId:reviewLocation.id,
+    readiness:await getSchedulePublishReadiness(weekStart,reviewLocation.id),
+  } : undefined;
 
   return (
     <div className="manager-schedule-page">
@@ -242,7 +249,7 @@ export default async function SchedulePage({
         </p>
       ) : null}
       {params.published ? (
-        <p className="form-success">
+        <p className="form-success" role="status">
           {locations.find((location) => location.id === params.published)
             ?.shortName ?? "Schedule"}{" "}
           published.
@@ -365,7 +372,7 @@ export default async function SchedulePage({
 
             <Link
               className="button primary compact-button schedule-add-shift"
-              href={`/app/schedule/new?week=${weekStart}`}
+              href={`/app/schedule/new?week=${weekStart}${selectedLocation === "all" ? "" : `&locationId=${encodeURIComponent(selectedLocation)}`}`}
             >
               + Add shift
             </Link>
@@ -373,6 +380,7 @@ export default async function SchedulePage({
         </div>
 
         <ScheduleGenerationControls key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} selectedLocation={selectedLocation} review={generationReview} />
+        <SchedulePublicationControls weekStart={weekStart} locations={selectedLocation === "all" ? locations : locations.filter(location => location.id === selectedLocation)} review={publicationReview}/>
       </section>
 
       <section className="schedule-builder-roster">

@@ -12857,3 +12857,12 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
   .app-shell .page-frame :is(.availability-savebar, .employee-create-savebar, .schedule-health-savebar) { position: static; bottom: auto; }
   .app-shell :is(input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='hidden']),select,textarea) { font-size: 16px; }
 }
+
+/* Publication shares the existing scheduling surface and control tokens. */
+.schedule-publication-controls { display: grid; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.schedule-publication-location { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-width: 0; }
+.schedule-publication-location > strong { flex: 1 1 160px; overflow-wrap: anywhere; }
+.schedule-publication-location form { margin: 0; }
+.schedule-publication-review { flex-basis: 100%; color: var(--muted); font-size: 14px; }
+.schedule-publication-review p { margin: 0 0 8px; }
+.schedule-publication-review ul { margin: 0 0 8px; padding-left: 20px; }

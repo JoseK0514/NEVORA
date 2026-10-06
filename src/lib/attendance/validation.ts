@@ -46,7 +46,7 @@ function validTimeZone(value: unknown, observedAt: string): value is string {
   // alter the separate resolver for historically captured timezone values.
   if (!safeText(value, 100) || /^[+-]/.test(value)) return false;
   try {
-    Temporal.Instant.from(observedAt).toZonedDateTimeISO(value);
+    Temporal.Instant.from(observedAt).toZonedDateTimeISO(value).startOfDay();
     return true;
   } catch {
     return false;
@@ -107,8 +107,9 @@ function copyEntry(
     !positiveInteger(value.sourceVersion) ||
     !safeText(value.clockInAt, 100) ||
     !(value.clockOutAt === null || safeText(value.clockOutAt, 100)) ||
+    typeof value.status !== "string" ||
     !["CLOCKED_IN", "ON_BREAK", "CLOCKED_OUT"].includes(
-      String(value.status),
+      value.status,
     )
   ) {
     return null;

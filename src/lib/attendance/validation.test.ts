@@ -8,6 +8,10 @@ import {
 import { validateAttendanceSource } from "./validation";
 
 describe("D1.1 attendance source validation", () => {
+  it.each([['CLOCKED_IN'], {toString:null}])('rejects non-string entry status without coercion or a thrown error: %j', status => {
+    expect(validateAttendanceSource(makeAttendanceSource({entries:[{...makeRecordedEntry(),status} as unknown as ReturnType<typeof makeRecordedEntry>]})))
+      .toEqual({state:'unavailable',reason:'invalid_source'});
+  });
   it("accepts a complete empty synthetic source without turning empty into missing coverage", () => {
     expect(validateAttendanceSource(makeAttendanceSource())).toEqual(
       makeAttendanceSource(),

@@ -64,6 +64,22 @@ function kinds(value: unknown) {
 }
 
 describe("D1.1 factual recorded-time projection", () => {
+  it('keeps a reversed closed record whose clock-in is today and clock-out is yesterday',()=>{
+    const source=makeAttendanceSource({entries:[makeRecordedEntry({clockInAt:'2030-10-07T12:00:00Z',clockOutAt:'2030-10-06T20:00:00Z',status:'CLOCKED_OUT'})]});
+    const result=ready(source);
+    expect(result.groups[0]?.observations.map(item=>item.kind)).toEqual(['TIME_HISTORY_INCONSISTENT']);
+    expect(result.coverage.state).toBe('limited');
+  });
+  it('returns a bounded unavailable result when the local day start exceeds Temporal limits',()=>{
+    expect(projectAttendance(makeAttendanceSource({observedAt:'-271821-04-20T00:00:00Z',timeZone:'Asia/Tokyo'})))
+      .toEqual({state:'unavailable',reason:'invalid_source'});
+  });
+  it.each([['REST'],{toString:null}])('withholds break targets for non-string categories without throwing: %j', category=>{
+    const recordedBreak=makeRecordedBreak({breakTypeId:'rest',breakTypeSnapshot:{id:'rest',version:1,name:'Rest',category,targetMinutes:15}});
+    const result=ready(makeAttendanceSource({entries:[makeRecordedEntry({status:'ON_BREAK',breaks:[recordedBreak]})]}));
+    expect(result.groups.flatMap(group=>group.observations.map(item=>item.kind))).not.toContain('BREAK_TARGET_EXCEEDED');
+    expect(result.coverage.limitations).toContainEqual({entryId:'entry-1',breakId:'break-1',reason:'break_target_invalid'});
+  });
   it("emits factual schedule observations without policy or disciplinary language", () => {
     const late = makeRecordedEntry({
       id: "entry-late",
@@ -965,4 +981,10 @@ describe("D1.1 final author-review regressions", () => {
     expect(() => projectAttendance(source)).not.toThrow();
     expect(ready(source).groups).toEqual([]);
   });
+});
+
+
+it('orders valid non-BMP identifiers by Unicode code point rather than UTF-16 units',()=>{
+ const records=['\ue000','😀'].map(id=>makeRecordedEntry({id,employeeId:id,scheduleContext:{version:1,status:'UNMATCHED',timeZone:'America/Puerto_Rico',capturedAt:'2030-10-07T12:00:00Z',candidateCount:0,reviewedRevisionIds:[],reason:'NO_MATCH',match:null}}));
+ expect(ready(makeAttendanceSource({entries:records})).groups.map(group=>group.entryId)).toEqual(['\ue000','😀']);
 });

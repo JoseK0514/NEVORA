@@ -28,7 +28,7 @@ it('keeps recorded timekeeping guidance independent of customer identity', async
   expect(time).not.toContain('connected yet');
 });
 it('keeps the employee dashboard kiosk guidance independent of customer identity', () => {
-  const html=renderToStaticMarkup(<EmployeeDashboard firstName="Sam" weekStart="2030-10-07" weekLabel="Oct 7 – 13" currentDate="2030-10-07" currentTime="09:00" publishedShifts={[]} scheduledHours={0} estimatedEarnings={0} />);
+  const html=renderToStaticMarkup(<EmployeeDashboard firstName="Sam" weekStart="2030-10-07" weekLabel="Oct 7 – 13" currentDate="2030-10-07" currentTime="09:00" publishedShifts={[]} scheduledHours={0} />);
   expect(html).not.toContain('Fuel kiosk');
   expect(html).toContain('Clocker');
 });

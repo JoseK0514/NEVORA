@@ -1,6 +1,7 @@
 import {listPositions} from "@/lib/data/positions";
 import {ShiftAssignmentFields} from "@/components/shift-assignment-fields";
 import { ConfigurationForm } from "@/components/configuration-form";
+import { SelectField } from "@/components/select-field";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
@@ -42,13 +43,12 @@ export default async function NewShiftPage({
     listLocations(),
     listPositions(),
   ]);
-  const locationId = params.locationId ?? locations[0]?.id ?? "";
+  const locationId = locations.some(location => location.id === params.locationId) ? params.locationId! : "";
 
   return (
     <main className="new-shift-page">
       <ConfigurationForm action={createShiftAction} className="new-shift-card">
         <input type="hidden" name="weekStart" value={weekStart} />
-        <input type="hidden" name="locationId" value={locationId} />
 
         <header className="new-shift-card-header">
           <span>Schedule</span>
@@ -56,6 +56,8 @@ export default async function NewShiftPage({
         </header>
 
         <div className="new-shift-form">
+          <SelectField className="new-shift-field" name="locationId" label="Location" defaultValue={locationId} required
+            options={[{value:"",label:"Select location",disabled:true},...locations.map(location=>({value:location.id,label:location.shortName}))]} />
           <section className="new-shift-group">
             <p className="new-shift-section-label">ASSIGN EMPLOYEE</p>
             <ShiftAssignmentFields employees={employees} positions={positions} employeeId={params.employeeId} newShift/>
@@ -106,7 +108,7 @@ export default async function NewShiftPage({
         <footer className="new-shift-actions">
           <Link
             className="new-shift-action secondary"
-            href={`/app/schedule?week=${weekStart}`}
+            href={`/app/schedule?week=${weekStart}${locationId ? `&location=${encodeURIComponent(locationId)}` : ""}`}
           >
             Cancel
           </Link>

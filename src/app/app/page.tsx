@@ -39,7 +39,6 @@ import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
 import { buildManagerDashboardStatus } from "@/lib/dashboard-status";
 import { buildManagerActionItems } from "@/lib/assistance/manager-actions";
 import {
-  calculateEstimatedEarnings,
   calculateScheduledHours,
 } from "@/lib/employee-compensation";
 
@@ -99,10 +98,6 @@ export default async function DashboardPage({
       }));
 
     const scheduledHours = calculateScheduledHours(publishedShifts);
-    const estimatedEarnings = calculateEstimatedEarnings(
-      publishedShifts,
-      session.role,
-    );
 
     return (
       <EmployeeDashboard
@@ -113,7 +108,6 @@ export default async function DashboardPage({
         currentTime={currentTime}
         publishedShifts={publishedShifts}
         scheduledHours={scheduledHours}
-        estimatedEarnings={estimatedEarnings}
       />
     );
   }

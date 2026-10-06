@@ -153,7 +153,7 @@ export function AppShell({
           </Link>
           <div className="mobile-header-actions">
           {notificationsEnabled && !employee ? <button type="button" className="role-chip portal-role-trigger" popoverTarget="portal-device-settings" aria-label="Profile and device settings">{user.role[0]}{user.role.slice(1).toLowerCase()}</button> : <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>}
-          {!employee && navigation.length > 5 ? (
+          {!employee ? (
             <ActionMenu id="manager-more-navigation" label="Menu" ariaLabel="More navigation">
               {navigation.slice(5).map(item => (
                 <Link key={item.href} href={item.href} className="nevora-action-menu-item"
@@ -162,6 +162,8 @@ export function AppShell({
                   {item.label}
                 </Link>
               ))}
+              <div className="nevora-action-menu-divider" />
+              <PortalSignout><button className="nevora-action-menu-item" type="submit">Sign out</button></PortalSignout>
             </ActionMenu>
           ) : null}
           </div>

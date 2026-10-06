@@ -29,7 +29,7 @@ import { applyTemplateAction } from './templates/actions';
 import { createShiftAction,updateShiftAction,deleteShiftAction,publishScheduleAction,copyPreviousWeekAction,setAvailabilityDeadlineAction } from './actions';
 function form(){const data=new FormData();Object.entries({shiftId:'s',employeeId:'E',locationId:'loc-1',weekStart:'2030-10-07',date:'2030-10-07',startTime:'09:00',endTime:'17:00',confirmWarnings:'yes'}).forEach(([k,v])=>data.set(k,v));return data;}
 beforeEach(()=>{vi.clearAllMocks();m.role='MANAGER';m.existingWeek='2030-10-07';m.templateStart='09:00';});
-it.each([['publish',publishScheduleAction,'&published=loc-1'],['create',createShiftAction,''],['update',updateShiftAction,'&updated=1'],['delete',deleteShiftAction,'&deleted=1']] as const)('%s returns without provider contact or blanket acknowledgement invalidation',async(_,action,suffix)=>{
+it.each([['publish',publishScheduleAction,'&location=loc-1&published=loc-1'],['create',createShiftAction,'&location=loc-1'],['update',updateShiftAction,'&updated=1'],['delete',deleteShiftAction,'&deleted=1']] as const)('%s returns without provider contact or blanket acknowledgement invalidation',async(_,action,suffix)=>{
   await expect(action(form())).rejects.toMatchObject({destination:`/app/schedule?week=2030-10-07${suffix}`});
   expect(m.provider).not.toHaveBeenCalled();expect(m.send).not.toHaveBeenCalled();expect(m.clear).not.toHaveBeenCalled();
 });
@@ -84,7 +84,7 @@ it('publication warning health retains the assigned position and qualification f
  m.shifts=[{...original[0],positionId:'barista'} as typeof m.shifts[number]];
  const data=form();data.delete('confirmWarnings');
  try {
-  await expect(publishScheduleAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&publishCheck=loc-1'});
+  await expect(publishScheduleAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&location=loc-1&publishCheck=loc-1'});
   expect(vi.mocked(calculateScheduleHealth).mock.calls[0][0].shifts[0]).toMatchObject({positionId:'barista'});
  } finally {m.shifts=original;}
 });
@@ -105,4 +105,11 @@ it('copy and template application carry the source position to each new assignme
  expect(m.insert).toHaveBeenLastCalledWith(expect.objectContaining({positionId:'cashier'}));
  const data=form();data.set('templateId','t');try{await applyTemplateAction(data);}catch{}
  expect(m.insert).toHaveBeenLastCalledWith(expect.objectContaining({positionId:'barista'}));
+});
+
+
+it('a newly saved second-location shift returns to that location rather than all locations',async()=>{
+ const data=form();data.set('locationId','loc-2');
+ await expect(createShiftAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&location=loc-2'});
+ expect(m.insert).toHaveBeenCalledWith(expect.objectContaining({scheduleId:'a',employeeId:'E'}));
 });
