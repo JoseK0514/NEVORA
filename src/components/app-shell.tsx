@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { ActionMenu } from "./action-menu";
+import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname } from "next/navigation";
 import { BrandLockup } from "./brand-lockup";
 import { NavIcon } from "@/components/nav-icon";
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import type { UserRole } from "@/lib/domain";
@@ -55,6 +57,44 @@ export function AppShell({
         : pathname === item.href || pathname.startsWith(`${item.href}/`),
     )
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
+
+  useEffect(() => {
+    for (const id of ['employee-more-navigation', 'manager-more-navigation']) {
+      const menu = document.getElementById(id);
+      if (menu?.matches(':popover-open')) menu.hidePopover();
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    let frame = 0;
+    function update() {
+      const field = document.activeElement;
+      const hasFocusedField = field instanceof HTMLElement && field.matches("input:not([type='hidden']):not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='range']), select, textarea, [contenteditable='true']");
+      const nav = document.querySelector('.mobile-nav');
+      document.documentElement.classList.toggle('mobile-keyboard-open', isMobileKeyboardVisible({
+        hasFocusedField,
+        hasMobileNavigation: !!nav && getComputedStyle(nav).display !== 'none',
+        layoutHeight: document.documentElement.clientHeight,
+        visualHeight: viewport!.height,
+      }));
+    }
+    function afterFocus() { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); }
+    viewport.addEventListener('resize', update);
+    window.addEventListener('resize', update);
+    document.addEventListener('focusin', afterFocus);
+    document.addEventListener('focusout', afterFocus);
+    update();
+    return () => {
+      cancelAnimationFrame(frame);
+      viewport.removeEventListener('resize', update);
+      window.removeEventListener('resize', update);
+      document.removeEventListener('focusin', afterFocus);
+      document.removeEventListener('focusout', afterFocus);
+      document.documentElement.classList.remove('mobile-keyboard-open');
+    };
+  }, []);
 
   const Profile = notificationsEnabled ? "button" : "div";
   return (
@@ -111,7 +151,20 @@ export function AppShell({
           <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
             <BrandLockup variant="compact" />
           </Link>
+          <div className="mobile-header-actions">
           {notificationsEnabled && !employee ? <button type="button" className="role-chip portal-role-trigger" popoverTarget="portal-device-settings" aria-label="Profile and device settings">{user.role[0]}{user.role.slice(1).toLowerCase()}</button> : <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>}
+          {!employee && navigation.length > 5 ? (
+            <ActionMenu id="manager-more-navigation" label="Menu" ariaLabel="More navigation">
+              {navigation.slice(5).map(item => (
+                <Link key={item.href} href={item.href} className="nevora-action-menu-item"
+                  aria-current={item.href === activeHref ? 'page' : undefined}
+                  onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
+                  {item.label}
+                </Link>
+              ))}
+            </ActionMenu>
+          ) : null}
+          </div>
         </header>
 
         <div className="page-frame">{children}</div>

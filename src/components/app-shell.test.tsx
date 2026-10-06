@@ -70,3 +70,13 @@ it("preserves configured Fuel customer identity in the sidebar", () => {
   const html = renderToStaticMarkup(<AppShell workspaceName="Fuel Coffee Drive" user={{firstName:"Sam",lastName:"Cruz",role:"EMPLOYEE"}}>Content</AppShell>);
   expect(html).toContain("Fuel Coffee Drive");
 });
+
+it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reachable from the mobile header', role=>{
+ const {html}=render(role);
+ const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
+ expect(header).toContain('popoverTarget="manager-more-navigation"');
+ const menu=header.split('id="manager-more-navigation"')[1]?.split('</div>')[0] ?? '';
+ expect([...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual([
+  '/app/employees','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),
+ ]);
+});

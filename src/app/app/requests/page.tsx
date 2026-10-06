@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { ManagerTimeOff } from "@/components/manager-time-off";
 import { NavIcon } from "@/components/nav-icon";
@@ -87,7 +88,7 @@ export default async function RequestsPage({
                 <h2>Request time off</h2>
               </div>
             </div>
-            <TimeOffForm employeeView />
+            <TimeOffForm employeeView requestId={randomUUID()} />
           </article>
         ) : null}
 

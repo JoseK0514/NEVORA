@@ -24,7 +24,7 @@ import {
   formatTime,
   formatWeekRange,
   weekDates,
-  weekStartFor,
+  isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 import {
   copyPreviousWeekAction,
@@ -62,9 +62,7 @@ const WARNING_MESSAGES: Record<string, string> = {
 
 function validWeek(value?: string) {
   return (
-    value &&
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    weekStartFor(value) === value
+    value && isValidWeekStart(value)
   );
 }
 

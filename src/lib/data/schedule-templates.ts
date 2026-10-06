@@ -3,7 +3,7 @@ import { getDb, queryRows } from "@/lib/db";
 import { listWeekShifts } from "@/lib/data/schedules";
 import { neonNotificationExecutor } from "./notification-transactions";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
-import { weekStartFor } from "@/lib/date-utils";
+import { isValidWeekStart } from "@/lib/date-utils";
 
 export type ScheduleTemplate = {
   id: string;
@@ -64,29 +64,23 @@ export async function listScheduleTemplates(): Promise<ScheduleTemplate[]> {
 export async function listTemplateShifts(
   templateId: string,
   executor?: SqlExecutor,
-): Promise<TemplateShift[]> {
+): Promise<TemplateShift[] | null> {
   const sql = executor ? {query:(text:string,values:unknown[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
-      `SELECT
-         id,
-         template_id,
-         location_id,
-         day_offset,
-         start_time,
-         end_time,
-         position_id,
-         employee_id,
-         is_designated_lead,
-         notes
-       FROM schedule_template_shifts
-       WHERE template_id = $1
-       ORDER BY day_offset, start_time, location_id`,
+      `SELECT ts.id, ts.template_id, ts.location_id, ts.day_offset,
+         ts.start_time, ts.end_time, ts.position_id, ts.employee_id,
+         ts.is_designated_lead, ts.notes
+       FROM schedule_templates t
+       LEFT JOIN schedule_template_shifts ts ON ts.template_id = t.id
+       WHERE t.id = $1 AND t.active = true
+       ORDER BY ts.day_offset, ts.start_time, ts.location_id`,
       [templateId],
     ),
   );
 
-  return rows.map((row) => {
+  if (rows.length === 0) return null;
+  return rows.filter(row => (row as Record<string, unknown>).id !== null).map((row) => {
     const item = row as Record<string, unknown>;
     return {
       id: String(item.id),
@@ -108,7 +102,7 @@ export async function createTemplateFromWeek(input: {
   weekStart: string;
   createdBy: string;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
-  if (weekStartFor(input.weekStart) !== input.weekStart) {
+  if (!isValidWeekStart(input.weekStart)) {
     throw new Error("Invalid week start.");
   }
 

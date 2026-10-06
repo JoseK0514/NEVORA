@@ -6,7 +6,7 @@ import { shiftBoundaryInstants } from "@/lib/business-time";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { addDays, weekStartFor } from "@/lib/date-utils";
+import { addDays, isValidWeekStart } from "@/lib/date-utils";
 import {
   archiveScheduleTemplate,
   createTemplateFromWeek,
@@ -30,7 +30,7 @@ export async function saveTemplateAction(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
 
   if (
-    weekStartFor(weekStart) !== weekStart ||
+    !isValidWeekStart(weekStart) ||
     name.length < 3 ||
     name.length > 50
   ) {
@@ -57,12 +57,13 @@ export async function applyTemplateAction(formData: FormData) {
   const weekStart = String(formData.get("weekStart") ?? "");
   const templateId = String(formData.get("templateId") ?? "");
 
-  if (weekStartFor(weekStart) !== weekStart || !templateId) {
+  if (!isValidWeekStart(weekStart) || !templateId) {
     redirect(templateUrl(weekStart, "&error=invalid"));
   }
 
   const workspace = await getWorkspace();
   const templateShifts = await listTemplateShifts(templateId);
+  if (templateShifts === null) redirect(templateUrl(weekStart, "&error=unavailable"));
 
   let applied = 0;
   let skipped = 0;

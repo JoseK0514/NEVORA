@@ -11,7 +11,7 @@ import {
   replaceWeeklyAvailability,
 } from "@/lib/data/week-settings";
 import { businessDateStart, timeMinutes } from "@/lib/scheduling/periods";
-import { weekStartFor } from "@/lib/date-utils";
+import { isValidWeekStart } from "@/lib/date-utils";
 
 export async function saveAvailabilityAction(formData: FormData) {
   const session = await requireSelfService("/app/availability");
@@ -45,8 +45,7 @@ export async function saveWeeklyAvailabilityAction(formData: FormData) {
 
   try { businessDateStart(weekStart); } catch { redirect("/app/availability?error=invalid_week"); }
   if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(weekStart) ||
-    weekStartFor(weekStart) !== weekStart
+    !isValidWeekStart(weekStart)
   ) {
     redirect("/app/availability?error=invalid_week");
   }

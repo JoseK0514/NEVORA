@@ -10,7 +10,7 @@ import {
   formatDayLabel,
   formatTime,
   isDateInWeek,
-  weekStartFor,
+  isValidWeekStart,
 } from "@/lib/date-utils";
 import { rankCoverageCandidates } from "@/lib/scheduling/coverage-ranking";
 import { businessDateStart, shiftPeriod } from "@/lib/scheduling/periods";
@@ -37,7 +37,7 @@ export default async function CoverageSuggestionsPage({
 
   try { businessDateStart(weekStart); shiftPeriod({ date, startTime, endTime }); } catch { redirect("/app/schedule?error=INVALID_SHIFT"); }
   if (
-    weekStartFor(weekStart) !== weekStart ||
+    !isValidWeekStart(weekStart) ||
     !isDateInWeek(date, weekStart) ||
     !locationId ||
     !/^\d{2}:\d{2}$/.test(startTime) ||

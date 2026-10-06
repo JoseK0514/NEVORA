@@ -453,7 +453,10 @@ it('position SQL read and template save preserve qualified and legacy positionle
  expect((await listWeekShifts({weekStart:'2030-10-07'},db.executor)).map(s=>s.positionId)).toEqual(['barista',undefined]);
  expect((await getShiftForManagement(id,db.executor))?.positionId).toBe('barista');
  const templateId=await createTemplateFromWeek({name:'Saved',weekStart:'2030-10-07',createdBy:'owner'},db.executor);
- expect((await listTemplateShifts(templateId,db.executor)).map(s=>s.positionId)).toEqual(['barista',undefined]);
+ const templateShifts=await listTemplateShifts(templateId,db.executor);
+ expect(templateShifts).not.toBeNull();
+ if(templateShifts===null)throw new Error('Newly created template must be active');
+ expect(templateShifts.map(s=>s.positionId)).toEqual(['barista',undefined]);
  }finally{await db.dispose();}
 });
 

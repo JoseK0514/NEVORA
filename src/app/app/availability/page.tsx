@@ -15,7 +15,7 @@ import {
 } from "@/lib/data/week-settings";
 import {
   formatWeekRange,
-  weekStartFor,
+  isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 import type { AvailabilityState } from "@/lib/availability-presets";
 
@@ -23,9 +23,7 @@ const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
 
 function validWeek(value?: string) {
   return (
-    value &&
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    weekStartFor(value) === value
+    value && isValidWeekStart(value)
   );
 }
 

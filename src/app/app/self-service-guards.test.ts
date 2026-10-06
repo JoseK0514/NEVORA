@@ -79,6 +79,7 @@ it("keeps Lead in self-service and restricts Time Off review to Owner/Manager", 
 it.each(["EMPLOYEE", "LEAD"] as const)("%s can submit valid personal Time Off", async role => {
   vi.mocked(requireSession).mockResolvedValue({ id: "viewer", firstName: "Sam", lastName: "Cruz", role, primaryLocationId: "loc-1" });
   const data = new FormData();
+  data.set("requestId", "af375c1d-1210-4fe0-aa0a-4dbe9cb86901");
   data.set("startDate", "2030-10-07"); data.set("endDate", "2030-10-08");
   await expect(requestTimeOffAction(data)).rejects.toThrow("redirect:/app/requests?tab=my&submitted=1");
   expect(createTimeOffRequest).toHaveBeenCalledWith(expect.objectContaining({ employeeId: "viewer", startDate: "2030-10-07" }));

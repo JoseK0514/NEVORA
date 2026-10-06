@@ -554,7 +554,7 @@ button { cursor: pointer; }
   .employee-row > span:nth-of-type(2) { display: none; }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   .app-shell { display: block; }
   .sidebar { display: none; }
   .mobile-header {
@@ -12836,4 +12836,22 @@ body {
 @media (max-width: 374px) {
   .employee-time-metrics { gap: 12px; }
   .employee-time-metrics > div + div { padding-left: 12px; }
+}
+
+/* Keep focused forms clear when the visual viewport shrinks for a keyboard. */
+html.mobile-keyboard-open .mobile-nav,
+html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .schedule-health-savebar) {
+  visibility: hidden;
+  pointer-events: none;
+}
+.mobile-header-actions { display: flex; align-items: center; gap: 8px; }
+.mobile-header-actions .nevora-action-menu-trigger { padding-inline: 10px; }
+@media (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  .app-shell { display: block; }
+  .app-shell .sidebar { display: none; }
+  .mobile-header { display: flex; }
+  .employee-shell .mobile-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .page-frame { padding: 12px 12px calc(100px + env(safe-area-inset-bottom, 0px)); }
+  .app-shell .page-frame :is(.availability-savebar, .employee-create-savebar, .schedule-health-savebar) { position: static; bottom: auto; }
+  .app-shell :is(input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='hidden']),select,textarea) { font-size: 16px; }
 }

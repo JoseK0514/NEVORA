@@ -121,6 +121,7 @@ export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "
 }
 
 export async function createTimeOffRequest(input: {
+  requestId?: string;
   employeeId: string;
   startDate: string;
   endDate: string;
@@ -128,18 +129,30 @@ export async function createTimeOffRequest(input: {
   endTime?: string;
   reason?: string;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
-  const id = randomUUID();
+  const id = input.requestId ?? randomUUID();
   const createdAt = new Date().toISOString();
   const committed = await commitRequestTransition({
     actorEmployeeId: input.employeeId,
     after: requestSnapshot('TIME_OFF', { ...input, id, employeeName: '', status: 'PENDING', createdAt }),
     mutation: {
       text: `INSERT INTO time_off_requests (id, employee_id, start_date, end_date, start_time, end_time, reason, created_at)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (id) DO NOTHING RETURNING id`,
       values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null,createdAt],
     },
   }, executor);
-  if (!committed) throw new Error('Time off request changed. Please try again.');
+  if (!committed) {
+    // A retry may acknowledge only the same actor's exact original payload.
+    // The conflicting insert rolled back its entire outbox batch.
+    const [receipt] = await executor.query({
+      text: `SELECT id FROM time_off_requests WHERE id=$1 AND employee_id=$2
+        AND start_date=$3::date AND end_date=$4::date
+        AND start_time IS NOT DISTINCT FROM $5::time
+        AND end_time IS NOT DISTINCT FROM $6::time
+        AND reason IS NOT DISTINCT FROM $7::text`,
+      values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null],
+    });
+    if (!receipt) throw new Error('Time off request changed. Please try again.');
+  }
 }
 
 export async function reviewTimeOffRequest(input: {

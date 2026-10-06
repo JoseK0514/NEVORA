@@ -10,7 +10,7 @@ import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
   addDays,
   isDateInWeek,
-  weekStartFor,
+  isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 
 export default async function NewShiftPage({
@@ -30,7 +30,7 @@ export default async function NewShiftPage({
   const workspace = await getWorkspace();
   const params = await searchParams;
   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
-  const weekStart = params.week || currentWeek;
+  const weekStart = params.week && isValidWeekStart(params.week) ? params.week : currentWeek;
   const date =
     params.date && isDateInWeek(params.date, weekStart)
       ? params.date

@@ -13,7 +13,7 @@ import {
   durationMinutes,
   formatWeekRange,
   weekDates,
-  weekStartFor,
+  isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 import { listPendingTimeOffRequests } from "@/lib/data/requests";
 import { listManagerPendingExchanges } from "@/lib/data/exchanges";
@@ -59,9 +59,7 @@ function validDashboardView(value?: string): ManagerDashboardView {
 
 function validWeek(value?: string) {
   return (
-    value &&
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    weekStartFor(value) === value
+    value && isValidWeekStart(value)
   );
 }
 

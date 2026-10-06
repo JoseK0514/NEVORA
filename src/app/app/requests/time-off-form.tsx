@@ -5,11 +5,12 @@ import { useState } from "react";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requestTimeOffAction } from "@/app/app/requests/actions";
 
-export function TimeOffForm({ employeeView = false }: { employeeView?: boolean }) {
+export function TimeOffForm({ requestId, employeeView = false }: { requestId: string; employeeView?: boolean }) {
   const [partialDay, setPartialDay] = useState(false);
 
   return (
     <form action={requestTimeOffAction} className={employeeView ? "timeoff-settings-form employee-timeoff-form" : "timeoff-settings-form"}>
+      <input type="hidden" name="requestId" value={requestId} />
       <section className="timeoff-setting-row">
         <div className="timeoff-setting-copy">
           <strong>Dates</strong>
