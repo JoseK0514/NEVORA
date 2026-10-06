@@ -15,7 +15,11 @@ Status: integrated candidate; full destination acceptance pending. NEV-AUD-002, 
 
 ## Required safety evidence
 
-New Foundation legacy-safety integration covers archived versus active-empty templates, positions, four concurrent/lost-response request replays, foreign-actor/payload conflicts, outbox rollback/retry, and replay after a real manager decision. Six cases passed on owned PostgreSQL after five RED failures. Strict-date, request action and navigation unit regressions also demonstrated RED→GREEN; focused Chromium menu/ID/keyboard checks changed from 0/3 to 3/3 with no runtime errors. Post-main-resolution targeted 31 tests and type/lint passed. Full integrated gates are still pending.
+New Foundation legacy-safety integration covers archived versus active-empty templates, positions, four concurrent/lost-response request replays, foreign-actor/payload conflicts, outbox rollback/retry, and replay after a real manager decision. Six cases passed on owned PostgreSQL after five RED failures. Strict-date, request action and navigation unit regressions also demonstrated RED→GREEN; focused Chromium menu/ID/keyboard checks changed from 0/3 to 3/3 with no runtime errors. Post-main-resolution targeted 31 tests and type/lint passed. At integrated checkpoint `cdaf18682133c9b988e2a4f8d88b0f5df3d56987`, all three jobs of both push CI 37409342820 and PR CI 37409346444 passed: 1759 unit, 365 Clocker, 275 Foundation, 46 authority, 176 generation, 163 exchange and 77 notification cases; type/lint/build and zero production dependency vulnerabilities. Five development-only dependency advisories remain. These checkpoint results do not certify later changes.
+
+The 480-case Chromium/WebKit UI baseline exposed 21 keyboard-focus findings: the manager/employee More menus deferred keyboard focus to an animation frame. Focus now moves in the native popover toggle event. The new `test:navigation:ui` regression holds animation frames and verifies menu focus plus Escape restoration for both roles in both engines: RED 0/4 to GREEN 4/4 with zero runtime errors. Full browser replay on the committed correction remains the acceptance gate.
+
+An initial Phase A WebKit run passed 22/23 with two fetch errors during navigation; the preserved instrumented diagnostic passed all 23 original assertions and recorded cancelled private snapshot requests. No assertion was removed and no runtime error was filtered. This intermittent browser result is retained as evidence and must be reassessed in the final exact-source replay.
 
 ## Brand and compatibility
 
@@ -23,7 +27,7 @@ Remaining legacy warm CSS values map explicitly to approved NEVORA brand, neutra
 
 ## Hosting and remaining gates
 
-Read-only Vercel Production environment inspection on 2026-10-06 confirmed branch tracking `main`. No hosting setting changed or deployment manually triggered. Automatic Phase C Preview was BLOCKED with account-configuration diagnostic and unassociated machine-local commit email. Future commits in this isolated clone use the authenticated GitHub account noreply email; frozen history is untouched. Preview build/transport success is not yet established. Hosted environment ownership/security and independent executive/QA/UI acceptance remain separate release gates.
+Read-only Vercel Production environment inspection on 2026-10-06 confirmed branch tracking `main`. No hosting setting changed or deployment manually triggered. Automatic Phase C Preview was BLOCKED with account-configuration diagnostic and unassociated machine-local commit email. Future commits in this isolated clone use the authenticated GitHub account noreply email; frozen history is untouched. The integrated checkpoint Preview build is READY; this does not certify hosted functionality or database custody. Hosted environment ownership/security and independent executive/QA/UI acceptance remain separate release gates.
 
 ## Every historical source commit
 

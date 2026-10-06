@@ -206,13 +206,11 @@ export function AppShell({
                     return;
                   }
                   if (!employeeMoreKeyboardOpen.current) return;
-                  requestAnimationFrame(() => {
-                    const first = surface.querySelector<HTMLElement>(
-                      ".employee-more-link,button:not([disabled])",
-                    );
-                    first?.focus({ preventScroll: true });
-                    employeeMoreKeyboardOpen.current = false;
-                  });
+                  const first = surface.querySelector<HTMLElement>(
+                    ".employee-more-link,button:not([disabled])",
+                  );
+                  first?.focus({ preventScroll: true });
+                  employeeMoreKeyboardOpen.current = false;
                 }}
               >
                 <p className="employee-more-label">More</p>

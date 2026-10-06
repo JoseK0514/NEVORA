@@ -71,14 +71,13 @@ export function ActionMenu({
         return;
       }
       if (!keyboardOpenRef.current) return;
-      requestAnimationFrame(() => {
-        if (!menu.matches(":popover-open")) return;
-        const first = menu.querySelector<HTMLElement>(
-          'a[href],button:not([disabled]),input:not([type="hidden"]):not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',
-        );
-        first?.focus({ preventScroll: true });
-        keyboardOpenRef.current = false;
-      });
+      // The toggle event runs after the popover opens. Keyboard focus must
+      // not wait for a paint that a busy/background document can defer.
+      const first = menu.querySelector<HTMLElement>(
+        'a[href],button:not([disabled]),input:not([type="hidden"]):not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',
+      );
+      first?.focus({ preventScroll: true });
+      keyboardOpenRef.current = false;
     };
 
     menu.addEventListener("beforetoggle", onBeforeToggle);
