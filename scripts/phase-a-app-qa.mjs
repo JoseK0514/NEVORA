@@ -62,6 +62,15 @@ async function login(id, width = 390) {
   await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
   await Promise.all([page.waitForURL(url => url.pathname === '/app'), page.getByRole('button', { name: 'Sign In', exact: true }).click()]);
   await page.waitForLoadState('networkidle');
+  // A quiet network can precede client hydration. These nominal workflow
+  // scenarios must enter through a completed, real private snapshot.
+  const readySelector = id === 'QAOWNER'
+    ? '.manager-live-card time[datetime]'
+    : '.employee-clock-compact time[datetime]';
+  await page.locator(readySelector).waitFor({ state: 'visible' });
+  await waitFor(() => page.getByRole('button', {
+    name: id === 'QAOWNER' ? 'Refresh live activity' : 'Refresh recorded time', exact: true,
+  }).isEnabled(), 'Initial private snapshot has not settled');
   assert((await context.cookies()).some(cookie => cookie.name === 'fuel_session'), 'No actual authenticated session cookie');
   return page;
 }
