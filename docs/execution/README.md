@@ -1,3 +1,7 @@
+# Current checkpoint — Phase C executive release remediation
+
+[The Phase C release remediation](phase-c-release-remediation.md) records the numbered 0011–0015 schema chain, deterministic My Time browser QA, expanded release SQL CI, governance/source-of-truth correction, legacy Clocker cleanup and dependency hardening based on implementation 10f5fbf. Local verification is green, but exact hosted CI/Preview/Neon and independent Codex FR-AUTH-001 review remain mandatory before production. No push or deployment is included.
+
 # Current checkpoint — C9/C10 Phase C local candidate
 
 [The C9/C10 checkpoint](phase-c-c9-c10-checkpoint.md) records final Clocker UI acceptance, Phase C-wide local hardening and the remaining production gates. The integrated runtime at `c4f12ea` passed fresh local regression; this does not replace exact candidate CI, hosted Preview/Neon verification or independent Codex final-release review. No push or deployment occurred.

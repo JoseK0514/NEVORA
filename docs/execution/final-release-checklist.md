@@ -73,6 +73,19 @@ The [C9/C10 local checkpoint](phase-c-c9-c10-checkpoint.md) completes author-sid
 - [ ] Record exact GitHub CI success, exact hosted Preview/Neon deployment-to-SHA mapping, isolated schema verification, Vercel project/team identity, observability and rollback readiness before production.
 - [ ] Preserve all previously disclosed limitations: local browser evidence is not physical-iPad/screen-reader certification, and the earlier tiny unexplained Clocker paint differences are not silently reclassified as resolved.
 
+### Executive Phase C release remediation
+
+The [Phase C release remediation checkpoint](phase-c-release-remediation.md) addresses the local blocker set discovered after C9/C10 without closing this independent gate.
+
+Local remediation now provides canonical numbered migrations 0011–0015, deterministic Employee My Time browser QA, a release PostgreSQL CI job covering Foundation/authorization/generation/exchanges/notifications, corrected architecture/release-control records, removal of the unreachable local-state Clocker demo and a production dependency audit with zero runtime vulnerabilities.
+
+- [ ] The exact final candidate must prove migrations 0011–0015 on a fresh hosted-isolated database and as an upgrade from the exact hosted 0010 state. Local disposable-PostgreSQL proof is necessary but not sufficient.
+- [ ] GitHub CI must pass on the exact published candidate SHA, including validate, Clocker PostgreSQL and release-postgres. Earlier remote SHA 82f53d3 does not certify the remediation.
+- [ ] Hosted Preview and real Neon HTTP transport must map to that same exact SHA before independent authorization review.
+- [ ] Codex must independently rerun/review FR-AUTH-001 and the C1–C10 release coverage against the final SHA; local author remediation is not independent closure.
+- [ ] GitHub branch-protection/ruleset enforcement remains unavailable to verify on the current private-repository plan. Procedural frozen-SHA/PR/CI/approval controls remain mandatory.
+- [ ] Development-only Next/ESLint audit advisories remain a disclosed tooling follow-up; production dependencies must continue to report zero high/critical runtime vulnerabilities.
+
 ### Closure record — not completed
 
 Final release SHA: PENDING
