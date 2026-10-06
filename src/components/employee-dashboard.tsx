@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EmployeeTimePanel } from "./employee-time-panel";
 import { NavIcon } from "./nav-icon";
 import { formatDayLabel, formatTime } from "../lib/date-utils";
 
@@ -55,9 +56,6 @@ export function EmployeeDashboard({
   publishedShifts,
   scheduledHours,
   estimatedEarnings,
-  todayShiftLabel,
-  todayClockStatus,
-  todayLocationName,
 }: {
   firstName: string;
   weekStart: string;
@@ -67,9 +65,6 @@ export function EmployeeDashboard({
   publishedShifts: EmployeeUpcomingShift[];
   scheduledHours: number;
   estimatedEarnings: number;
-  todayShiftLabel: string;
-  todayClockStatus: string;
-  todayLocationName?: string;
 }) {
   const upcomingShifts = publishedShifts.filter((shift) =>
     isUpcomingEmployeeShift(
@@ -79,6 +74,9 @@ export function EmployeeDashboard({
       currentTime,
     ),
   );
+
+  const todayShifts = publishedShifts.filter(shift => shift.date === currentDate)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
 
   const todayLabel = new Intl.DateTimeFormat("en-US", {
     weekday: "long", month: "long", day: "numeric", timeZone: "UTC",
@@ -96,12 +94,13 @@ export function EmployeeDashboard({
         <section className="employee-home-surface employee-home-today" aria-labelledby="employee-today-heading">
           <p className="employee-home-eyebrow">Today</p>
           <h2 id="employee-today-heading">{todayLabel}</h2>
-          <p className="employee-home-shift-time">{todayShiftLabel}</p>
-          {todayLocationName ? <p className="employee-home-location">{todayLocationName}</p> : null}
-          <div className="employee-home-status">
-            <span>{todayClockStatus}</span>
-            <p>Use your location’s Clocker to clock in.</p>
-          </div>
+          {todayShifts.length ? <div className="employee-home-published-today">
+            {todayShifts.map(shift => <div key={shift.id}>
+              <p className="employee-home-shift-time">{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</p>
+              {shift.locationName ? <p className="employee-home-location">{shift.locationName}</p> : null}
+            </div>)}
+          </div> : <p className="employee-home-no-shift">No published shift today</p>}
+          <EmployeeTimePanel compact />
         </section>
 
         <div className="employee-home-surface employee-home-agenda">

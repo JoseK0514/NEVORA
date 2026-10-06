@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { NavIcon } from "@/components/nav-icon";
+import { EmployeeTimePanel } from "@/components/employee-time-panel";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { requireSession } from "@/lib/auth/session";
 
@@ -19,18 +19,7 @@ export default async function MyTimePage() {
         </div>
       </header>
 
-      <section className="employee-view-surface employee-time-readiness" aria-labelledby="time-readiness-title">
-        <span className="employee-time-readiness-icon" aria-hidden="true">
-          <NavIcon name="clock" size={20} />
-        </span>
-        <div>
-          <h2 id="time-readiness-title">Timekeeping isn&apos;t connected yet</h2>
-          <p>
-            When timekeeping is connected, your Clocker clock-ins, clock-outs,
-            breaks, worked hours, and approved corrections will appear here.
-          </p>
-        </div>
-      </section>
+      <EmployeeTimePanel />
     </div>
   );
 }

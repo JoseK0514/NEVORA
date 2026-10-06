@@ -116,9 +116,6 @@ export default async function DashboardPage({
         publishedShifts={publishedShifts}
         scheduledHours={scheduledHours}
         estimatedEarnings={estimatedEarnings}
-        todayShiftLabel="8:00 AM – 4:00 PM"
-        todayClockStatus="Off the Clock"
-        todayLocationName={publishedShifts.find((shift) => shift.date === currentDate)?.locationName}
       />
     );
   }

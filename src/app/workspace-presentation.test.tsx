@@ -20,14 +20,15 @@ it('uses generic customer copy in the directory and unconnected timekeeping page
   const directory=renderToStaticMarkup(await EmployeesPage());
   expect(directory).not.toContain('across Fuel');
 });
-it('keeps unconnected timekeeping guidance independent of customer identity', async () => {
+it('keeps recorded timekeeping guidance independent of customer identity', async () => {
   const time=renderToStaticMarkup(await MyTimePage());
   expect(time).not.toContain('Fuel kiosk');
   expect(time).toContain('Clocker');
-  expect(time).toContain('connected yet');
+  expect(time).toContain('Loading recorded time');
+  expect(time).not.toContain('connected yet');
 });
 it('keeps the employee dashboard kiosk guidance independent of customer identity', () => {
-  const html=renderToStaticMarkup(<EmployeeDashboard firstName="Sam" weekStart="2030-10-07" weekLabel="Oct 7 – 13" currentDate="2030-10-07" currentTime="09:00" publishedShifts={[]} scheduledHours={0} estimatedEarnings={0} todayShiftLabel="8:00 AM – 4:00 PM" todayClockStatus="Off the Clock" />);
+  const html=renderToStaticMarkup(<EmployeeDashboard firstName="Sam" weekStart="2030-10-07" weekLabel="Oct 7 – 13" currentDate="2030-10-07" currentTime="09:00" publishedShifts={[]} scheduledHours={0} estimatedEarnings={0} />);
   expect(html).not.toContain('Fuel kiosk');
   expect(html).toContain('Clocker');
 });

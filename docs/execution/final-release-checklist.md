@@ -56,6 +56,12 @@ The [C7 checkpoint](phase-c-c7-checkpoint.md) does not close this gate. Codex mu
 
 [The local merge record](phase-c-c7-release-reconciliation.md) binds C7 `01357cd` and remote release controls `82f53d3` to fresh combined verification. No audit gate is closed by this local merge. CI and hosted/independent release evidence must identify the eventual integrated SHA; an earlier remote CI result does not certify C7 or later C8 changes.
 
+### C8 Employee Home and My Time — included in FR-AUTH-001
+
+The [C8 checkpoint](phase-c-c8-checkpoint.md) does not close this gate. On the final integrated SHA, Codex must independently verify Employee/Lead self-service scope derived only from the real portal cookie, rejected employee selectors, current authority after blocked reads, honest unavailable/empty states and private/no-store response handling. Retest exact recorded-time and break calculations across overnight/DST boundaries, explicitly bounded earlier history, preserved stored break names and the absence of payroll deductions or time-entry writes.
+
+Replay `clocker-employee-time.integration.ts`, the employee-time projection/controller/route/component suites and `scripts/phase-c-employee-time-ui-qa.mjs`. Include C7 regression after shared private-controller extraction, short-session expiry, malformed/stalled responses, queued/obsolete requests, offline/restored-page cleanup, keyboard disclosures and mobile navigation clearance. The supplemental `layout-review.mjs` in the C8 evidence directory (or a durable equivalent) retains the additional 14 checks; use actual keyboard navigation and correctly convert CSS color formats without weakening contrast thresholds. Real hosted Neon/Preview, physical-device and final independent evidence must identify the final release SHA. No production activation is authorized by local C8 completion.
+
 ### Closure record — not completed
 
 Final release SHA: PENDING

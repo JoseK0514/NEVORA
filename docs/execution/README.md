@@ -1,3 +1,7 @@
+# Current checkpoint — C8 Employee Home and My Time
+
+[The C8 checkpoint](phase-c-c8-checkpoint.md) records the connected self-service time view, private current-session reads, actual recorded-time calculations, Apple-style UI and fresh verification. C8 is locally complete; Phase C remains in progress. No push, deployment or hosted activation occurred. [FR-AUTH-001](final-release-checklist.md) remains OPEN for independent Codex final-release review. Earlier sections below are retained history.
+
 # Current checkpoint — C7 and release controls reconciled locally
 
 [The C7 release-control reconciliation](phase-c-c7-release-reconciliation.md) preserves the Manager live-operations implementation together with the two remote NEV-AUD-001/CI updates. Fresh combined local verification passed. This checkpoint is not yet pushed and does not close independent release gates. C8 Employee My Time is the next implementation package.
