@@ -32,10 +32,14 @@ try{
     await page.evaluate(()=>{window.__navigationFrame=requestAnimationFrame;window.requestAnimationFrame=()=>0;});
     const trigger=page.getByRole('button',{name:label,exact:true}),menu=page.locator('#'+target);
     await trigger.focus();await page.keyboard.press('Enter');await menu.waitFor({state:'visible'});
-    await page.waitForFunction(id=>document.getElementById(id)?.contains(document.activeElement),target,{timeout:500});
+    // The observer must not use the animation frames held by this regression.
+    await page.waitForFunction(id=>document.getElementById(id)?.contains(document.activeElement),target,{timeout:500,polling:10});
     await page.keyboard.press('Escape');await menu.waitFor({state:'hidden'});assert(await trigger.evaluate(e=>e===document.activeElement));
     report.checks.push({name,status:'PASS'});console.log('PASS',name);
-   }catch(e){report.checks.push({name,status:'FAIL',error:String(e)});console.log('FAIL',name,String(e));}
+   }catch(e){
+    const focus=await page.evaluate(id=>({activeTag:document.activeElement?.tagName,activeClass:document.activeElement?.className,focusInside:document.getElementById(id)?.contains(document.activeElement),open:document.getElementById(id)?.matches(':popover-open')}),target).catch(()=>null);
+    report.checks.push({name,status:'FAIL',error:String(e),focus});console.log('FAIL',name,String(e));
+   }
    finally{await page.evaluate(()=>{if(window.__navigationFrame)window.requestAnimationFrame=window.__navigationFrame;}).catch(()=>{});await context.close();}
   }
   await browser.close();
