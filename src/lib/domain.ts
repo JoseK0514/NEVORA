@@ -1,3 +1,9 @@
+import type { GenerationClaims } from './scheduling/generation-claims';
+export type AssignmentOrigin = 'MANAGER' | 'GENERATED';
+
+export type Workspace = { id: string; name: string; timeZone: string; active: boolean; createdAt: string; updatedAt: string };
+export type Position = { id: string; workspaceId: string; name: string; active: boolean; createdAt: string; updatedAt: string };
+
 export type UserRole = "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE";
 
 export type Employee = {
@@ -9,11 +15,14 @@ export type Employee = {
   role: UserRole;
   primaryLocationId: string;
   eligibleLocationIds: string[];
+  positionIds: string[];
   active: boolean;
 };
 
 export type Location = {
   id: string;
+  workspaceId: string;
+  clockerKey: string;
   name: string;
   shortName: string;
   active: boolean;
@@ -38,6 +47,10 @@ export type Schedule = {
 };
 
 export type Shift = {
+  /** Legacy read projections may omit this; final Phase 5 writes require it. */
+  assignmentEpisodeId?: string;
+  assignmentOrigin?: AssignmentOrigin;
+  generatedClaims?: GenerationClaims | null;
   id: string;
   scheduleId: string;
   employeeId: string;
@@ -46,6 +59,7 @@ export type Shift = {
   startTime: string;
   endTime: string;
   isDesignatedLead?: boolean;
+  positionId?: string;
 };
 
 export type RequestStatus = "PENDING" | "APPROVED" | "DENIED" | "CANCELLED";

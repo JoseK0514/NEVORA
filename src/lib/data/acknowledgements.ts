@@ -1,4 +1,6 @@
 import { getDb, queryRows } from "../db";
+import { neonNotificationExecutor, scheduleWeekLockStatements } from "./notification-transactions";
+import type { SqlExecutor } from "../notifications/types";
 import {
   buildAcknowledgementState,
   type EmployeeAcknowledgementState,
@@ -16,10 +18,10 @@ export type AcknowledgementSummary = {
 export async function acknowledgeScheduleWeek(input: {
   weekStart: string;
   employeeId: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows<{ employee_id: string; publication_revision_id: string }>(
-    await sql.query(
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  const results = await executor.transaction([
+    ...scheduleWeekLockStatements([input.weekStart]),
+    {text:
       `WITH latest_revision AS (
          SELECT id
          FROM schedule_publication_revisions
@@ -50,11 +52,18 @@ export async function acknowledgeScheduleWeek(input: {
          publication_revision_id = EXCLUDED.publication_revision_id,
          acknowledged_at = now()
        RETURNING employee_id, publication_revision_id`,
-      [input.weekStart, input.employeeId],
-    ),
-  );
-
-  return Boolean(rows[0]);
+      values: [input.weekStart, input.employeeId]},
+    {text: `WITH cancelled AS (
+      UPDATE notifications SET push_state = 'cancelled', cancelled_at = now()
+      WHERE source_kind = 'SCHEDULE' AND source_id = $1::text AND employee_id = $2
+        AND purpose = 'REMINDER' AND push_state IN ('pending','materialized','no_active_subscription')
+        AND EXISTS (SELECT 1 FROM schedule_acknowledgements a WHERE a.week_start=$1::date AND a.employee_id=$2
+          AND a.publication_revision_id=(SELECT id FROM schedule_publication_revisions WHERE week_start=$1::date ORDER BY revision_number DESC LIMIT 1))
+      RETURNING id
+    ) UPDATE push_deliveries SET status='cancelled', lease_token=NULL, lease_expires_at=NULL, updated_at=now()
+      WHERE notification_id IN (SELECT id FROM cancelled) AND status IN ('queued','retry_pending','processing')`,values:[input.weekStart,input.employeeId]},
+  ]);
+  return Boolean(results[1]?.[0]);
 }
 
 export async function getEmployeeAcknowledgementState(

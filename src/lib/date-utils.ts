@@ -1,33 +1,13 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-export function currentDateInPuertoRico() {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Puerto_Rico",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date());
-
-  const values = Object.fromEntries(
-    parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]),
-  );
-
-  return `${values.year}-${values.month}-${values.day}`;
+export function isValidIsoDate(date: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  const value = new Date(`${date}T12:00:00Z`);
+  return !Number.isNaN(value.getTime()) && value.toISOString().slice(0, 10) === date;
 }
 
-export function currentTimeInPuertoRico() {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Puerto_Rico",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(new Date());
-
-  const values = Object.fromEntries(
-    parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]),
-  );
-
-  return `${values.hour}:${values.minute}`;
+export function isValidWeekStart(date: string) {
+  return isValidIsoDate(date) && new Date(`${date}T12:00:00Z`).getUTCDay() === 1;
 }
 
 export function addDays(date: string, amount: number) {
@@ -44,7 +24,7 @@ export function weekStartFor(date: string) {
 }
 
 export function isDateInWeek(date: string, weekStart: string) {
-  return date >= weekStart && date <= addDays(weekStart, 6);
+  return isValidIsoDate(date) && isValidWeekStart(weekStart) && date >= weekStart && date <= addDays(weekStart, 6);
 }
 
 export function weekDates(weekStart: string) {
@@ -88,7 +68,7 @@ export function formatDayLabel(date: string) {
 
 export function formatTime(time: string) {
   const [hourString, minute] = time.slice(0, 5).split(":");
-  const hour = Number(hourString);
+  const hour = Number(hourString) % 24;
   const suffix = hour >= 12 ? "PM" : "AM";
   const displayHour = hour % 12 || 12;
   return `${displayHour}:${minute} ${suffix}`;
@@ -100,38 +80,6 @@ export function durationMinutes(startTime: string, endTime: string) {
     return hours * 60 + minutes;
   };
 
-  return Math.max(0, toMinutes(endTime) - toMinutes(startTime));
-}
-
-
-export function formatPuertoRicoDateTimeInput(iso?: string) {
-  if (!iso) return "";
-
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Puerto_Rico",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(new Date(iso));
-
-  const values = Object.fromEntries(
-    parts
-      .filter((part) => part.type !== "literal")
-      .map((part) => [part.type, part.value]),
-  );
-
-  return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}`;
-}
-
-export function formatPuertoRicoDateTime(iso: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Puerto_Rico",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(iso));
+  const duration = toMinutes(endTime) - toMinutes(startTime);
+  return duration < 0 ? duration + 1440 : duration;
 }

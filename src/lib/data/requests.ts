@@ -1,6 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
+import { neonNotificationExecutor } from "./notification-transactions";
+import { commitRequestTransition, requestSnapshot } from "./request-notifications";
+import type { SqlExecutor } from "../notifications/types";
 import type { RequestStatus } from "@/lib/domain";
+
+import type { SessionMutationProof } from "../shift-changes/types";
 
 export type TimeOffListItem = {
   id: string;
@@ -41,6 +46,11 @@ function mapRequest(row: unknown): TimeOffListItem {
         ? item.created_at.toISOString()
         : String(item.created_at),
   };
+}
+
+export async function getTimeOffRequest(id: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<TimeOffListItem | null> {
+  const [row] = await executor.query({text: `SELECT r.*, e.first_name || ' ' || e.last_name AS employee_name FROM time_off_requests r JOIN employees e ON e.id=r.employee_id WHERE r.id=$1`, values:[id]});
+  return row ? mapRequest(row) : null;
 }
 
 export async function listEmployeeTimeOffRequests(employeeId: string) {
@@ -111,55 +121,59 @@ export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "
 }
 
 export async function createTimeOffRequest(input: {
+  requestId?: string;
   employeeId: string;
   startDate: string;
   endDate: string;
   startTime?: string;
   endTime?: string;
   reason?: string;
-}) {
-  const sql = getDb();
-
-  await sql.query(
-    `INSERT INTO time_off_requests (
-      id,
-      employee_id,
-      start_date,
-      end_date,
-      start_time,
-      end_time,
-      reason
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-    [
-      randomUUID(),
-      input.employeeId,
-      input.startDate,
-      input.endDate,
-      input.startTime ?? null,
-      input.endTime ?? null,
-      input.reason ?? null,
-    ],
-  );
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  const id = input.requestId ?? randomUUID();
+  const createdAt = new Date().toISOString();
+  const committed = await commitRequestTransition({
+    actorEmployeeId: input.employeeId,
+    after: requestSnapshot('TIME_OFF', { ...input, id, employeeName: '', status: 'PENDING', createdAt }),
+    mutation: {
+      text: `INSERT INTO time_off_requests (id, employee_id, start_date, end_date, start_time, end_time, reason, created_at)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (id) DO NOTHING RETURNING id`,
+      values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null,createdAt],
+    },
+  }, executor);
+  if (!committed) {
+    // A retry may acknowledge only the same actor's exact original payload.
+    // The conflicting insert rolled back its entire outbox batch.
+    const [receipt] = await executor.query({
+      text: `SELECT id FROM time_off_requests WHERE id=$1 AND employee_id=$2
+        AND start_date=$3::date AND end_date=$4::date
+        AND start_time IS NOT DISTINCT FROM $5::time
+        AND end_time IS NOT DISTINCT FROM $6::time
+        AND reason IS NOT DISTINCT FROM $7::text`,
+      values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null],
+    });
+    if (!receipt) throw new Error('Time off request changed. Please try again.');
+  }
 }
 
 export async function reviewTimeOffRequest(input: {
   requestId: string;
   managerId: string;
+  proof: SessionMutationProof;
   status: "APPROVED" | "DENIED";
-}) {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-    `UPDATE time_off_requests
-     SET status = $3,
-         reviewed_by = $2,
-         reviewed_at = now()
-     WHERE id = $1
-       AND status = 'PENDING'
-     RETURNING id`,
-    [input.requestId, input.managerId, input.status],
-    ),
-  );
-
-  return Boolean(rows[0]);
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  const [row] = await executor.query({ text: 'SELECT * FROM time_off_requests WHERE id=$1', values: [input.requestId] });
+  if (!row) return false;
+  const before = mapRequest(row);
+  if (before.status !== 'PENDING') return false;
+  return commitRequestTransition({
+    before: requestSnapshot('TIME_OFF', before),
+    after: requestSnapshot('TIME_OFF', { ...before, status: input.status }),
+    actorEmployeeId: input.managerId,
+    managementProof: input.proof,
+    mutation: {
+      text: `UPDATE time_off_requests SET status=$3, reviewed_by=$2, reviewed_at=now()
+        WHERE id=$1 AND status='PENDING' AND employee_id=$4 RETURNING id`,
+      values: [input.requestId,input.managerId,input.status,before.employeeId],
+    },
+  }, executor);
 }

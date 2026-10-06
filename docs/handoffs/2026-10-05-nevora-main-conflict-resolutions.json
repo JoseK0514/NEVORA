@@ -1,0 +1,296 @@
+[
+  {
+    "path": "src/app/activate/actions.ts",
+    "resolution": "Retain accepted NEVORA identity and safe-return authentication flow; old copy/prefill presentation is superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/activate/page.tsx",
+    "resolution": "Retain accepted NEVORA identity and safe-return authentication flow; old copy/prefill presentation is superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/availability/actions.ts",
+    "resolution": "Retain guarded current weekly availability, timezone semantics and modern controls; strict week rejection restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/availability/page.tsx",
+    "resolution": "Retain guarded current weekly availability, timezone semantics and modern controls; strict week rejection restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/employees/actions.ts",
+    "resolution": "Retain Phase B safe profile lifecycle, positions, industry-neutral bounded IDs, current-session transaction checks and canonical forms; old generated FC IDs/directory design superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/employees/new/page.tsx",
+    "resolution": "Retain Phase B safe profile lifecycle, positions, industry-neutral bounded IDs, current-session transaction checks and canonical forms; old generated FC IDs/directory design superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/employees/page.tsx",
+    "resolution": "Retain Phase B safe profile lifecycle, positions, industry-neutral bounded IDs, current-session transaction checks and canonical forms; old generated FC IDs/directory design superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/exchange/page.tsx",
+    "resolution": "Retain command receipts, exact displayed terms, current authority/expiry/eligibility, current tabs and NEVORA labels; old direct-write exchange UI superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/page.tsx",
+    "resolution": "Retain accepted manager dashboard, C7 persisted monitor and C8 Employee Home/My Time, configured business clock and strict week fallback; old premium dashboard superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/requests/actions.ts",
+    "resolution": "Retain modern Owner/Manager review and Employee/Lead self-service; adapt main stable request ID into atomic guarded outbox with actor/payload-bound replay.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/requests/page.tsx",
+    "resolution": "Retain modern Owner/Manager review and Employee/Lead self-service; adapt main stable request ID into atomic guarded outbox with actor/payload-bound replay.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/requests/time-off-form.tsx",
+    "resolution": "Retain modern Owner/Manager review and Employee/Lead self-service; adapt main stable request ID into atomic guarded outbox with actor/payload-bound replay.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/schedule/acknowledge-actions.ts",
+    "resolution": "Retain accepted position/timezone/overnight-aware schedule and configuration UI plus final transactional authority; required older strict-date behavior restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/schedule/new/page.tsx",
+    "resolution": "Retain accepted position/timezone/overnight-aware schedule and configuration UI plus final transactional authority; required older strict-date behavior restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/schedule/page.tsx",
+    "resolution": "Retain accepted position/timezone/overnight-aware schedule and configuration UI plus final transactional authority; required older strict-date behavior restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/schedule/settings/page.tsx",
+    "resolution": "Retain accepted position/timezone/overnight-aware schedule and configuration UI plus final transactional authority; required older strict-date behavior restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/schedule/templates/actions.ts",
+    "resolution": "Retain position-aware validated assignments and current-session proof; main active/missing/empty distinction and strict week guard restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/schedule/templates/page.tsx",
+    "resolution": "Retain position-aware validated assignments and current-session proof; main active/missing/empty distinction and strict week guard restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/app/settings/page.tsx",
+    "resolution": "Retain accepted position/timezone/overnight-aware schedule and configuration UI plus final transactional authority; required older strict-date behavior restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/globals.css",
+    "resolution": "Retain approved modern geometry/tokens; old Fuel style blocks superseded. Keyboard/short-landscape safety restored before merge; remaining raw warm palette cleanup follows.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/login/page.tsx",
+    "resolution": "Retain accepted NEVORA identity and safe-return authentication flow; old copy/prefill presentation is superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/components/app-shell.tsx",
+    "resolution": "Retain NEVORA branding, My Time/device/profile/role navigation; restore manager overflow using canonical ActionMenu and old keyboard/route-close intent.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/components/availability-editor.tsx",
+    "resolution": "Retain guarded current weekly availability, timezone semantics and modern controls; strict week rejection restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/components/manager-dashboard.tsx",
+    "resolution": "Retain accepted manager dashboard, C7 persisted monitor and C8 Employee Home/My Time, configured business clock and strict week fallback; old premium dashboard superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/components/nav-icon.tsx",
+    "resolution": "Retain accepted modern employee/manager icons and clock icon; obsolete Fuel image icon design superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/lib/data/employees.ts",
+    "resolution": "Retain Phase B safe profile lifecycle, positions, industry-neutral bounded IDs, current-session transaction checks and canonical forms; old generated FC IDs/directory design superseded.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/lib/data/requests.ts",
+    "resolution": "Retain modern Owner/Manager review and Employee/Lead self-service; adapt main stable request ID into atomic guarded outbox with actor/payload-bound replay.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/lib/data/schedule-templates.ts",
+    "resolution": "Retain position-aware validated assignments and current-session proof; main active/missing/empty distinction and strict week guard restored.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/lib/date-utils.test.ts",
+    "resolution": "Combine all strict-date assertions from main with new impossible-date/leap/boundary regressions.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/lib/date-utils.ts",
+    "resolution": "Strict real-date and Monday validation restored; retain configured business-time callers rather than old fixed Puerto Rico helpers.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/lib/navigation.ts",
+    "resolution": "Retain My Time and current role labels; Owner-only settings preserved and tested, all manager destinations reachable again.",
+    "candidateSource": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "historicalMain": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  {
+    "path": "src/app/layout.tsx",
+    "resolution": "Retain clean main viewport declaration: device-width, initialScale1, viewportFit cover; current NEVORA metadata remains intact."
+  },
+  {
+    "path": "src/components/manager-action-list.tsx",
+    "resolution": "Retain approved action-table geometry and accessible priority labels; old premium layout/text wrapper superseded."
+  },
+  {
+    "path": "public/images/availability-hero-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/employee-create-hero-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/employees-brand-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/employees-hero-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/exchange-hero-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/exchange-team-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/schedule-health-hero-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/settings-brand-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/settings-hero-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/timeoff-hero-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "public/images/timeoff-recharge-art.svg",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/app/app/availability/availability-premium.css",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/app/app/employees/employees-premium.css",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/app/app/employees/new/employee-create-premium.css",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/app/app/exchange/exchange-premium.css",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/app/app/requests/timeoff-premium.css",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/app/app/schedule/settings/schedule-settings-premium.css",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/app/app/schedule/templates/templates-premium.css",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/app/app/settings/settings-premium.css",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/components/archive-template-control.tsx",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/components/employee-create-form.tsx",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/components/employees-directory.tsx",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/components/exchange-tab-scroller.tsx",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/lib/employee-filters.test.ts",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  },
+  {
+    "path": "src/lib/employee-filters.ts",
+    "resolution": "Do not import obsolete Fuel artwork/premium CSS or unused predecessor component/filter. Accepted modern routes provide the operational workflow; original commit/history preserved."
+  }
+]

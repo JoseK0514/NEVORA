@@ -1,3 +1,7 @@
+import {listPositions} from "@/lib/data/positions";
+import {ShiftAssignmentFields} from "@/components/shift-assignment-fields";
+import { ConfigurationForm } from "@/components/configuration-form";
+import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
@@ -14,7 +18,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   SHIFT_OVERLAP: "That employee already has an overlapping shift.",
   APPROVED_TIME_OFF: "That employee has approved time off during this shift.",
   EMPLOYEE_INACTIVE: "Inactive employees cannot be scheduled.",
-  INVALID_TIME_RANGE: "Shift end time must be after the start time.",
+  INVALID_TIME_RANGE: "Enter a valid shift date and time period.",
   INVALID_SHIFT_LEAD:
     "Only an Owner, Manager, or Lead can be the designated shift lead.",
 };
@@ -31,10 +35,11 @@ export default async function EditShiftPage({
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
 
-  const [shift, employees, locations] = await Promise.all([
+  const [shift, employees, locations, positions] = await Promise.all([
     getShiftForManagement(params.shiftId),
     listEmployees(),
-    listLocations(),
+    listLocations({includeInactive:true}),
+    listPositions({includeInactive:true}),
   ]);
 
   if (!shift) {
@@ -48,7 +53,7 @@ export default async function EditShiftPage({
       <PageHeader
         eyebrow="Schedule"
         title="Edit shift"
-        description="Changes are revalidated against both locations, availability, approved time off, and weekly hours."
+        description="Changes are revalidated across locations, availability, approved time off, and weekly hours."
         actions={
           <Link className="button secondary" href={`/app/schedule?week=${shift.weekStart}`}>
             Cancel
@@ -58,25 +63,19 @@ export default async function EditShiftPage({
 
       {params.error ? (
         <p className="form-error">
-          {ERROR_MESSAGES[params.error] ?? "The shift could not be updated."}
+          {ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The shift could not be updated."}
         </p>
       ) : null}
 
       <section className="panel form-panel">
-        <form action={updateShiftAction} className="employee-form">
+        <form id="delete-shift-form" action={deleteShiftAction}>
+          <input type="hidden" name="shiftId" value={shift.id} />
+        </form>
+        <ConfigurationForm action={updateShiftAction}>
           <input type="hidden" name="shiftId" value={shift.id} />
 
           <div className="form-columns">
-            <label>
-              Employee
-              <select name="employeeId" defaultValue={shift.employeeId} required>
-                {employees.filter((employee) => employee.active).map((employee) => (
-                  <option key={employee.id} value={employee.id}>
-                    {employee.firstName} {employee.lastName} · {employee.id}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <ShiftAssignmentFields employees={employees} positions={positions} employeeId={shift.employeeId} positionId={shift.positionId}/>
 
             <label>
               Location
@@ -122,7 +121,7 @@ export default async function EditShiftPage({
             <button
               className="button danger-button"
               type="submit"
-              formAction={deleteShiftAction}
+              form="delete-shift-form"
             >
               Delete Shift
             </button>
@@ -133,7 +132,7 @@ export default async function EditShiftPage({
               <button className="button primary" type="submit">Save changes</button>
             </div>
           </div>
-        </form>
+        </ConfigurationForm>
       </section>
     </>
   );

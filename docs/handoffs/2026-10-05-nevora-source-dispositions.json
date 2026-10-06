@@ -1,0 +1,848 @@
+[
+  {
+    "line": "historical-main",
+    "commit": "0ee5cabdb4245b937a2719686cc3270bd9dd958b",
+    "subject": "refine dashboard attention priority presentation",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/components/manager-action-list.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "e546515a7ba0bcf37ecd10f7082a99f1b805bd61",
+    "subject": "refine dashboard week and location states",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/components/manager-dashboard.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "e4139da0ebeaeaa88f0fdaa45a0449e39c98b953",
+    "subject": "polish approved dashboard spacing and attention hierarchy",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/globals.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "c373957835a69e57c8b730c073e8cbbe7c07f9c3",
+    "subject": "chore: trigger short dashboard preview alias",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/globals.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "8b5a1432ebb92f2373c4644fa1e2284f72d544fb",
+    "subject": "refine weekly schedule to approved premium layout",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/schedule/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "97fbdc6eab1a44f6f06702592dd9674822980ad2",
+    "subject": "style approved premium weekly schedule workspace",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/globals.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "aa38a61d69eb3b5d380d1c946c9e1db07b99b029",
+    "subject": "refine time off workspace to approved premium layout",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/requests/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "62ef4e79ba3c3642ce426e7ffefb0b4f05058aeb",
+    "subject": "polish approved time off request form",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/requests/time-off-form.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "62a5ae32bcb064566f4bc61f9738709598c2e67f",
+    "subject": "assets: add time off hero artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/timeoff-hero-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "c147300de2e5e2a9a4474ff9ff3c255ea751dcec",
+    "subject": "assets: add time off recharge artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/timeoff-recharge-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "0ba160d9632840a19106dcb8890fe7d0e0cb936a",
+    "subject": "style approved premium time off workspace",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/globals.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "239bfe5a783f04141bd8b85284655addb6fc1346",
+    "subject": "fix: load time off premium styles with requests route",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/requests/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "01e450ca6ce1fd7be2de607593956fcaed9d208d",
+    "subject": "fix: isolate premium time off styles",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/requests/timeoff-premium.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "fdc33235483070374a80b07097e6e93d23cb95c9",
+    "subject": "refine availability page header to approved premium layout",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/availability/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "1a42907b939d98e3a62422bf668f5a4c8bbd98f6",
+    "subject": "refine availability editor to approved premium layout",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/components/availability-editor.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "5bb28bc0c26b5242662a811e4c2e3e0216dec140",
+    "subject": "assets: add availability hero artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/availability-hero-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "407f613d86165dc37857a7cab9b3f3eaf97a1abd",
+    "subject": "style approved premium availability workspace",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/availability/availability-premium.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "63fbc23191511cd6c8e335a10178353f79609dee",
+    "subject": "refine shift exchange to approved clean layout",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/exchange/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "8af6b42791c59e3226cab875f61a48d7b8f92321",
+    "subject": "assets: add shift exchange hero artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/exchange-hero-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "0c9e3451b1c1e6b3b66c7e5cf1f757004d2295ff",
+    "subject": "assets: add shift exchange team artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/exchange-team-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "3a03f6d4a329bad5bff8848be28bc8aae1ea96e1",
+    "subject": "style approved clean shift exchange workspace",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/exchange/exchange-premium.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "93dc22833f17f7dac0597ee2c5b0d73a9a5ced85",
+    "subject": "refine shift exchange naming",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/lib/navigation.ts"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "d46e9c046a9ed8620ec6800462df5e0437ae3792",
+    "subject": "keep compact mobile label for shift exchange",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/components/app-shell.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "86d89e18cda5f3ebe3448b8ead953066fbf033ae",
+    "subject": "refine employees page to approved premium layout",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/employees/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "1cd40722dba2889bcdcd2b535c69fab83a9d6e98",
+    "subject": "assets: add employees hero artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/employees-hero-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "de61d37f2d4d1b62316531448c4516ebe75bb3a6",
+    "subject": "assets: add employees brand artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/employees-brand-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "4eb01898be2ffd4b0548879fa09831fe7aef427e",
+    "subject": "style approved premium employees workspace",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/employees/employees-premium.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "6d44b8c83100cc16ed16fb75acfe4d5c442e4f7b",
+    "subject": "ui: add search icon to premium icon system",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/components/nav-icon.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "d0d45c197c62e318a1775c03598ef89b75d4ecdc",
+    "subject": "polish employee search control",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/employees/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "611ac92583e256affaff74056cdb0eadbf6d5a4d",
+    "subject": "refine scheduling rules to approved schedule health layout",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/schedule/settings/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "205b0d146642ee6bcedd71339f45a78ae626fa8a",
+    "subject": "assets: add scheduling rules hero artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/schedule-health-hero-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "46e3bc2a8432b5cc03236a238b310146c4152fae",
+    "subject": "style approved premium scheduling rules workspace",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/schedule/settings/schedule-settings-premium.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "186cb508112988fb5c3ccd4d4097e7f5fc133452",
+    "subject": "refine owner settings to approved control center layout",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/settings/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "33f34a6ef8ea4c0a241a7a5e0e103cbe82b28e97",
+    "subject": "assets: add settings hero artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/settings-hero-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "2cb0ad4562ab230c09daa6b8224766e6cfb891a6",
+    "subject": "assets: add settings brand artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/settings-brand-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "a802434ab8d36a7a577c731f60c257969203f0b3",
+    "subject": "style approved premium settings control center",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/settings/settings-premium.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "b14e93bbf5f001f875ef2af7359c443862496078",
+    "subject": "ui: add guided employee creation form",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/components/employee-create-form.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "0cdc47aec88ea6e5e2b962693c16e6ac5fcdc2e3",
+    "subject": "refine add employee page to approved onboarding layout",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/employees/new/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "031012ce4073a0bdaa88f4ad8eccdfdd6a975fa1",
+    "subject": "assets: add employee creation hero artwork",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "public/images/employee-create-hero-art.svg"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "a07ba94d81fe497fa64f2a816531a2b987c398da",
+    "subject": "style approved premium employee onboarding",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/employees/new/employee-create-premium.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "02cae740c18afa2afc75c4e5d80fefeae8aa7381",
+    "subject": "docs: add final UI UX stabilization master specification",
+    "disposition": "RETAINED",
+    "replacement": "97a399aa29caf00bd4db9564b53556dae1a3f2ff",
+    "reason": "Original Fuel UI specification retained as historical reference; current acceptance is NEVORA brand/product specifications.",
+    "originalChangedPaths": [
+      "docs/FUEL_UI_UX_FINAL_STABILIZATION_SPEC.md"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "bb3eb719429e02f551455b217ab81c164061d0df",
+    "subject": "chore: stabilize shared responsive UI foundations",
+    "disposition": "RETAINED/REPLACED",
+    "replacement": "97a399aa29caf00bd4db9564b53556dae1a3f2ff",
+    "reason": "Root device-width/scale/safe-area viewport retained. Modern shell supplies responsive geometry; supplemental landscape safety in 6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "originalChangedPaths": [
+      "src/app/app/availability/availability-premium.css",
+      "src/app/app/employees/new/employee-create-premium.css",
+      "src/app/app/schedule/settings/schedule-settings-premium.css",
+      "src/app/globals.css",
+      "src/app/layout.tsx",
+      "src/components/app-shell.tsx",
+      "src/lib/navigation.ts"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "90306e29f055448c9481a326184334355947ec57",
+    "subject": "fix: make employee directory and IDs functional",
+    "disposition": "REPLACED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Current Phase B profile lifecycle, industry-neutral bounded IDs and server validation replace the predecessor FC ID generator/directory. No old layout imported.",
+    "originalChangedPaths": [
+      "src/app/app/employees/actions.ts",
+      "src/app/app/employees/employees-premium.css",
+      "src/app/app/employees/new/page.tsx",
+      "src/app/app/employees/page.tsx",
+      "src/components/employee-create-form.tsx",
+      "src/components/employees-directory.tsx",
+      "src/lib/data/employees.ts",
+      "src/lib/employee-filters.test.ts",
+      "src/lib/employee-filters.ts"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "96b0aae3dd7edb8e968f0b1f4de66251ca013e15",
+    "subject": "ui: finish settings actions and template workflow",
+    "disposition": "REPLACED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Current guarded settings and position-aware template workflows replace old actions/forms; archived-template safety adapted in 6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "originalChangedPaths": [
+      "src/app/app/schedule/templates/page.tsx",
+      "src/app/app/schedule/templates/templates-premium.css",
+      "src/app/app/settings/page.tsx",
+      "src/app/app/settings/settings-premium.css",
+      "src/components/archive-template-control.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "1252a08cf9f657b3f8c0f1e08a785c39bf218c34",
+    "subject": "ui: polish authentication copy and mobile navigation",
+    "disposition": "REPLACED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Current NEVORA authentication/safe returns and role navigation retained; manager overflow restored in 6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "originalChangedPaths": [
+      "src/app/activate/actions.ts",
+      "src/app/activate/page.tsx",
+      "src/app/app/availability/page.tsx",
+      "src/app/app/exchange/page.tsx",
+      "src/app/app/page.tsx",
+      "src/app/app/requests/page.tsx",
+      "src/app/app/schedule/page.tsx",
+      "src/app/app/schedule/settings/page.tsx",
+      "src/app/globals.css",
+      "src/app/login/page.tsx",
+      "src/components/app-shell.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "55984ac703dc124f8bb467337ef5f66dcb840f52",
+    "subject": "test: record role navigation and Phase 2 QA handoff",
+    "disposition": "RETAINED/REPLACED",
+    "replacement": "97a399aa29caf00bd4db9564b53556dae1a3f2ff",
+    "reason": "Phase 2 historical evidence and Owner-only navigation assertions retained; current My Time/role navigation kept.",
+    "originalChangedPaths": [
+      "docs/PHASE2_STABILIZATION_HANDOFF.md",
+      "src/lib/navigation.test.ts"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "8ab35c4edfc99e8e3163a180d260010145e84c97",
+    "subject": "ui: keep employee hero copy clear at narrow widths",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted NEVORA brand, canonical interaction controls and current operational route replace predecessor Fuel artwork/premium layout. Original source/history retained.",
+    "originalChangedPaths": [
+      "src/app/app/employees/employees-premium.css"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "d0e78d2be5feca4648d74483904faf521a1e9dbc",
+    "subject": "fix: stabilize mobile heroes and sticky actions",
+    "disposition": "REPLACED/ADAPTED",
+    "replacement": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "reason": "Accepted modern headers/sticky geometry replace old hero layout; keyboard and short-landscape controls restored.",
+    "originalChangedPaths": [
+      "src/app/app/availability/availability-premium.css",
+      "src/app/app/employees/employees-premium.css",
+      "src/app/app/employees/new/employee-create-premium.css",
+      "src/app/app/schedule/settings/page.tsx",
+      "src/app/app/schedule/settings/schedule-settings-premium.css",
+      "src/app/globals.css",
+      "src/components/availability-editor.tsx",
+      "src/components/employee-create-form.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "40a48168a927c78d74d9561915fe92688f75c9eb",
+    "subject": "fix: keep navigation and tabs usable across widths",
+    "disposition": "ADAPTED",
+    "replacement": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "reason": "Remaining manager destinations reachable through canonical ActionMenu; native focus/Escape and route closing restored without old premium navigation.",
+    "originalChangedPaths": [
+      "src/app/app/exchange/exchange-premium.css",
+      "src/app/app/exchange/page.tsx",
+      "src/app/app/requests/timeoff-premium.css",
+      "src/components/app-shell.tsx",
+      "src/components/exchange-tab-scroller.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "d670f7f57da1d0fbee4198dac3d85400510da3ee",
+    "subject": "ui: refine settings templates and visible copy",
+    "disposition": "REPLACED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Current canonical template/settings workflow and copy replace predecessor premium controls.",
+    "originalChangedPaths": [
+      "src/app/app/availability/page.tsx",
+      "src/app/app/employees/new/page.tsx",
+      "src/app/app/page.tsx",
+      "src/app/app/requests/page.tsx",
+      "src/app/app/requests/time-off-form.tsx",
+      "src/app/app/schedule/templates/templates-premium.css",
+      "src/app/app/settings/page.tsx",
+      "src/app/app/settings/settings-premium.css",
+      "src/components/manager-action-list.tsx",
+      "src/components/manager-dashboard.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "d8adaf9b2b6972887eafacc09c05873093db3e46",
+    "subject": "fix: expose full schedule employee names",
+    "disposition": "REPLACED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Current responsive schedule cells/labels replace old premium full-name presentation; current browser schedule coverage retained.",
+    "originalChangedPaths": [
+      "src/app/app/schedule/page.tsx"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "c6b4d2c9bd2773ee21c57226a34aafd7b7c7d1d2",
+    "subject": "fix: stabilize mobile keyboard and landscape controls",
+    "disposition": "ADAPTED",
+    "replacement": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "reason": "Keyboard helper, cleanup and short-landscape controls adapted to current shell. Physical device keyboard certification remains pending.",
+    "originalChangedPaths": [
+      "docs/PHASE5_MOBILE_QA_HANDOFF.md",
+      "src/app/app/requests/timeoff-premium.css",
+      "src/app/globals.css",
+      "src/components/app-shell.tsx",
+      "src/lib/mobile-keyboard.test.ts",
+      "src/lib/mobile-keyboard.ts"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "17f7d5bdde63080bbb8ea356daca56db47634143",
+    "subject": "fix: prevent duplicate workflow submissions",
+    "disposition": "ADAPTED",
+    "replacement": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "reason": "Stable UUID bound to exact actor/payload; duplicate retries and manager-decision replay retain one request/outbox transition. No old nontransactional implementation imported.",
+    "originalChangedPaths": [
+      "src/app/app/requests/actions.ts",
+      "src/app/app/requests/page.tsx",
+      "src/app/app/requests/time-off-form.tsx",
+      "src/components/employee-create-form.tsx",
+      "src/lib/data/requests.test.ts",
+      "src/lib/data/requests.ts"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "4428e1c8ccb1d71452333c98734f0c39b6322177",
+    "subject": "fix: reject archived schedule templates",
+    "disposition": "ADAPTED",
+    "replacement": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "reason": "Missing/archived template returns null; active empty template returns []. Existing position/session checks retained.",
+    "originalChangedPaths": [
+      "src/app/app/schedule/templates/actions.ts",
+      "src/app/app/schedule/templates/page.tsx",
+      "src/lib/data/schedule-templates.test.ts",
+      "src/lib/data/schedule-templates.ts"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "a1e6a3154e775bc6dff58e69d559ebb68898c931",
+    "subject": "fix: validate untrusted schedule dates",
+    "disposition": "ADAPTED",
+    "replacement": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "reason": "Strict real ISO date and Monday input guards restored throughout schedule/availability/templates; current configured business time preserved.",
+    "originalChangedPaths": [
+      "src/app/app/availability/actions.ts",
+      "src/app/app/availability/page.tsx",
+      "src/app/app/page.tsx",
+      "src/app/app/schedule/acknowledge-actions.ts",
+      "src/app/app/schedule/actions.ts",
+      "src/app/app/schedule/coverage/page.tsx",
+      "src/app/app/schedule/new/page.tsx",
+      "src/app/app/schedule/page.tsx",
+      "src/lib/date-utils.test.ts",
+      "src/lib/date-utils.ts"
+    ]
+  },
+  {
+    "line": "historical-main",
+    "commit": "7ffd013e39a9763a0655aa092b159dea4cbbfb50",
+    "subject": "docs: record Phase 6 QA evidence and limits",
+    "disposition": "RETAINED",
+    "replacement": "97a399aa29caf00bd4db9564b53556dae1a3f2ff",
+    "reason": "Phase 6 historical handoff retained with original limits; historical main now an ancestor without replacing accepted runtime.",
+    "originalChangedPaths": [
+      "docs/PHASE6_QA_HANDOFF.md"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "534dfa22c8ca752487f2aef58834842394e95f8a",
+    "subject": "docs: define employee experience specification",
+    "disposition": "ARCHIVED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Original employee specification remains on preserved source branch/history; current Employee Home/C8 specification supersedes it.",
+    "originalChangedPaths": [
+      "docs/EMPLOYEE_EXPERIENCE_SPEC.md"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "ea2210002166f0dec3ed118e51e564afd367482b",
+    "subject": "feat: add premium employee dashboard",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted Employee Home/C8 and weekly schedule replace predecessor premium layout; current real data, role/session and configured-time controls retained.",
+    "originalChangedPaths": [
+      "src/components/employee-dashboard.tsx"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "9646112e2e841b63843daa3c12febf215a5fd232",
+    "subject": "ui: style approved employee home experience",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted Employee Home/C8 and weekly schedule replace predecessor premium layout; current real data, role/session and configured-time controls retained.",
+    "originalChangedPaths": [
+      "src/app/app/employee-home.css"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "dcf6b6b9bab870351ce324539db96589b5ad0a49",
+    "subject": "feat: add employee upcoming shift query",
+    "disposition": "REPLACED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Current configured business-week/date query includes published today and future shifts; old upcoming query is not imported.",
+    "originalChangedPaths": [
+      "src/lib/data/schedules.ts"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "2f4bb099b3b69528432029ca60d2ecdd074743ee",
+    "subject": "feat: connect employee home to real schedule and self-service data",
+    "disposition": "REPLACED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted C8 Employee Home connects published schedule, self service, and recorded punches; no predecessor parallel data model.",
+    "originalChangedPaths": [
+      "src/app/app/page.tsx"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "951da446e97fa37f253c623825c8802f5ec86685",
+    "subject": "ui: style employee weekly schedule",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted Employee Home/C8 and weekly schedule replace predecessor premium layout; current real data, role/session and configured-time controls retained.",
+    "originalChangedPaths": [
+      "src/app/app/schedule/employee-schedule.css"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "3cb313b66fc83f12b4d74cb420224dc4a5370048",
+    "subject": "ui: refine employee schedule experience",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted Employee Home/C8 and weekly schedule replace predecessor premium layout; current real data, role/session and configured-time controls retained.",
+    "originalChangedPaths": [
+      "src/app/app/schedule/page.tsx"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "ad2061a4dabd06c2e35fb061b79fdf734ac48626",
+    "subject": "fix: correct employee summaries and tablet exchange layout",
+    "disposition": "REPLACED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Current business-time schedule duration/earnings and responsive exchange controls retain summary intent; old fixed-clock presentation superseded.",
+    "originalChangedPaths": [
+      "docs/EMPLOYEE_EXPERIENCE_PHASE4_REVIEW.md",
+      "src/app/app/employee-home.css",
+      "src/app/app/exchange/exchange-premium.css",
+      "src/app/app/page.tsx",
+      "src/app/app/schedule/employee-schedule.css",
+      "src/components/app-shell.tsx",
+      "src/components/employee-dashboard.test.tsx",
+      "src/components/employee-dashboard.tsx",
+      "src/lib/data/exchanges.test.ts",
+      "src/lib/data/exchanges.ts",
+      "src/lib/data/requests.test.ts",
+      "src/lib/data/requests.ts",
+      "src/lib/data/schedules.test.ts",
+      "src/lib/data/schedules.ts",
+      "src/lib/date-utils.test.ts",
+      "src/lib/date-utils.ts"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "19379cd1b1895ff43760145298aa7fdd57fad0b7",
+    "subject": "fix: align coverage availability with location eligibility",
+    "disposition": "REPLACED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Current active workspace/location/viewer plus explicit eligibility is stricter than old OR primary-location fallback. H05 actual SQL covers never-eligible and authorized cross-location discovery.",
+    "originalChangedPaths": [
+      "src/lib/data/exchanges.ts"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "6e9ec44b5535c0ab9a7be7494f7ad7da8e79db5b",
+    "subject": "ui: compact employee off days on mobile",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted Employee Home/C8 and weekly schedule replace predecessor premium layout; current real data, role/session and configured-time controls retained.",
+    "originalChangedPaths": [
+      "src/app/app/schedule/page.tsx"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "21f488e0c0a1e00bab10d547770ba0f816115947",
+    "subject": "ui: improve employee schedule glanceability",
+    "disposition": "SUPERSEDED",
+    "replacement": "81ca418b2f46a1a2b2025ebc2793f195b31743b5",
+    "reason": "Accepted Employee Home/C8 and weekly schedule replace predecessor premium layout; current real data, role/session and configured-time controls retained.",
+    "originalChangedPaths": [
+      "src/app/app/schedule/employee-schedule.css"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "c8239029d797407b51b485288d304ca1eaca6e4c",
+    "subject": "fix: preserve readable touch-tablet form sizing",
+    "disposition": "RETAINED/ADAPTED",
+    "replacement": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "reason": "Modern controls already enforce 16px coarse-pointer form sizing and 44px targets; short-landscape adaptation preserves keyboard clearance.",
+    "originalChangedPaths": [
+      "src/app/globals.css"
+    ]
+  },
+  {
+    "line": "employee-experience",
+    "commit": "d59f084e3fe492cb2fbef1346b40a1313106ba39",
+    "subject": "fix: stabilize employee home on phone and tablet",
+    "disposition": "REPLACED/ADAPTED",
+    "replacement": "6b1b4874917e90d08360e1b9502135cbeb4c2462",
+    "reason": "Accepted Employee Home/C8 responsive geometry retained, with modern shell keyboard/landscape safety restored.",
+    "originalChangedPaths": [
+      "docs/EMPLOYEE_EXPERIENCE_PHASE5_QA.md",
+      "src/app/app/employee-home.css"
+    ]
+  }
+]

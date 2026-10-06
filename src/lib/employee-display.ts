@@ -7,6 +7,6 @@ export function employeeInitials(firstName: string, lastName: string) {
 export function employeeRoleLabel(role: UserRole) {
   if (role === "OWNER") return "Owner";
   if (role === "MANAGER") return "Manager";
-  if (role === "LEAD") return "Lead Barista";
-  return "Barista";
+  if (role === "LEAD") return "Lead";
+  return "Employee";
 }

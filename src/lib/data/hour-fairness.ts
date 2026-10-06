@@ -1,5 +1,7 @@
+import { currentCalloutReleaseSql } from './shift-change-release';
 import { getDb, queryRows } from "@/lib/db";
-import { addDays } from "@/lib/date-utils";
+import { addDays } from "../date-utils";
+import { minutesInWorkweek, shiftPeriod } from "../scheduling/periods";
 
 export type HourFairnessRecord = {
   employeeId: string;
@@ -39,26 +41,11 @@ export async function listHourFairness(
        ORDER BY e.first_name, e.last_name`,
     ),
     sql.query(
-      `SELECT
-         sh.employee_id,
-         s.week_start,
-         COALESCE(
-           SUM(EXTRACT(EPOCH FROM (sh.end_time - sh.start_time)) / 3600),
-           0
-         ) AS scheduled_hours
-       FROM shifts sh
-       JOIN schedules s ON s.id = sh.schedule_id
-       WHERE s.week_start >= $1
-         AND s.week_start < $2
-         AND NOT EXISTS (
-           SELECT 1
-           FROM shift_callouts c
-           WHERE c.shift_id = sh.id
-             AND c.employee_id = sh.employee_id
-             AND c.status = 'APPROVED'
-         )
-       GROUP BY sh.employee_id, s.week_start`,
-      [earliest, currentWeekStart],
+      `SELECT sh.employee_id, sh.date, sh.start_time, sh.end_time
+       FROM shifts sh JOIN schedules s ON s.id = sh.schedule_id
+       WHERE sh.date >= $1 AND sh.date < $2 AND s.status <> 'ARCHIVED'
+         AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()})`,
+      [addDays(earliest, -1), currentWeekStart],
     ),
   ]);
 
@@ -75,17 +62,12 @@ export async function listHourFairness(
     const targetHours = Number(item.target_weekly_hours);
 
     const recentWeeks = weekStarts.map((weekStart) => {
-      const match = hours.find((hourRow) => {
+      const minutes = hours.reduce((sum, hourRow) => {
         const hour = hourRow as Record<string, unknown>;
-        return (
-          String(hour.employee_id) === employeeId &&
-          dateValue(hour.week_start) === weekStart
-        );
-      }) as Record<string, unknown> | undefined;
-
-      const scheduledHours = Math.round(
-        Number(match?.scheduled_hours ?? 0) * 100,
-      ) / 100;
+        if (String(hour.employee_id) !== employeeId) return sum;
+        return sum + minutesInWorkweek(shiftPeriod({ date: dateValue(hour.date), startTime: String(hour.start_time).slice(0, 5), endTime: String(hour.end_time).slice(0, 5) }), weekStart);
+      }, 0);
+      const scheduledHours = Math.round(minutes / 60 * 100) / 100;
 
       return {
         weekStart,

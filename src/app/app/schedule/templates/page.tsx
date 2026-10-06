@@ -1,7 +1,9 @@
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { currentDateInPuertoRico, formatWeekRange, weekStartFor } from "@/lib/date-utils";
+import {  formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
 import { listScheduleTemplates } from "@/lib/data/schedule-templates";
 import {
   applyTemplateAction,
@@ -11,9 +13,7 @@ import {
 
 function validWeek(value?: string) {
   return (
-    value &&
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    weekStartFor(value) === value
+    value && isValidWeekStart(value)
   );
 }
 
@@ -31,8 +31,9 @@ export default async function ScheduleTemplatesPage({
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
+  const workspace = await getWorkspace();
   const params = await searchParams;
-  const currentWeek = weekStartFor(currentDateInPuertoRico());
+  const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const templates = await listScheduleTemplates();
 
@@ -53,7 +54,9 @@ export default async function ScheduleTemplatesPage({
         <p className="form-error">
           {params.error === "save"
             ? "That template could not be saved. The name may already be in use."
-            : "Enter a valid template name and schedule week."}
+            : params.error === "unavailable"
+              ? "That template is no longer available. Choose an active template."
+              : "Enter a valid template name and schedule week."}
         </p>
       ) : null}
       {params.saved ? <p className="form-success">Template saved.</p> : null}

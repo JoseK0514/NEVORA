@@ -8,7 +8,7 @@ describe("TimeClockWidget formatting", () => {
   it("formats the live Puerto Rico clock with seconds", () => {
     const value = new Date("2026-10-01T16:14:05.000Z");
 
-    expect(formatTimeClockDisplay(value)).toBe("12:14:05 PM");
+    expect(formatTimeClockDisplay(value, "America/Puerto_Rico")).toBe("12:14:05 PM");
   });
 
   it("formats a new active shift as zero hours and minutes", () => {
@@ -22,3 +22,5 @@ describe("TimeClockWidget formatting", () => {
     expect(formatActiveShiftDuration(startedAt, now)).toBe("01h 05m");
   });
 });
+
+it('uses the supplied Tokyo clock zone',()=>expect(formatTimeClockDisplay(new Date('2026-10-01T16:14:05Z'),'Asia/Tokyo')).toBe('01:14:05 AM'));

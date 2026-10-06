@@ -1,20 +1,30 @@
+import { ActionMenu } from "@/components/action-menu";
+import { ScheduleLocationControl } from "@/components/schedule-location-control";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
+import { SchedulePublicationChange } from "@/components/schedule-publication-change";
+import { listCapturedShiftPositions, listRevisionShifts } from "@/lib/data/publication-revisions";
+import { sqlNotificationStateRepository } from "@/lib/data/notification-state";
+import { readNotificationConfig } from "@/lib/notifications/config";
+import { ownPublicationChanges } from "@/lib/notifications/device-state";
+import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { StatusPill } from "@/components/status-pill";
+import { ScheduleGenerationControls } from "@/components/schedule-generation-controls";
+import { listPositions } from "@/lib/data/positions";
+import { getScheduleGenerationReview, type ScheduleGenerationReview } from "@/lib/data/schedule-generation-review";
+import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import { listWeekShifts } from "@/lib/data/schedules";
 import {
   addDays,
-  currentDateInPuertoRico,
-  formatPuertoRicoDateTime,
-  formatPuertoRicoDateTimeInput,
   formatDayLabel,
   formatTime,
   formatWeekRange,
   weekDates,
-  weekStartFor,
+  isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 import {
   copyPreviousWeekAction,
@@ -26,19 +36,21 @@ import { acknowledgeScheduleAction } from "@/app/app/schedule/acknowledge-action
 import { employeeRoleLabel } from "@/lib/employee-display";
 
 const ERROR_MESSAGES: Record<string, string> = {
+  DEADLINE_WORKSPACE_CHANGED: "Workspace settings changed while saving. Your deadline was not saved. Review the business timezone and submit again.",
+  INVALID_DEADLINE: "Enter a valid business-local deadline. Daylight saving times that are skipped or occur twice cannot be used.",
   INVALID_SHIFT: "The shift information is incomplete or outside this week.",
   EMPLOYEE_NOT_FOUND: "The selected employee could not be found.",
   LOCATION_NOT_ELIGIBLE: "That employee is not eligible to work at the selected location.",
   SHIFT_OVERLAP: "That employee already has an overlapping shift.",
   APPROVED_TIME_OFF: "That employee has approved time off during the selected shift.",
   EMPLOYEE_INACTIVE: "Inactive employees cannot be scheduled.",
-  INVALID_TIME_RANGE: "Shift end time must be after the start time.",
+  INVALID_TIME_RANGE: "Enter a valid shift date and time period.",
   INVALID_SHIFT_LEAD:
     "Only an Owner, Manager, or Lead can be the designated shift lead.",
   INVALID_PUBLISH: "The schedule could not be published.",
   NO_SCHEDULE: "There is no schedule to publish for that location yet.",
   SHIFT_HAS_EXCHANGE_HISTORY:
-    "This shift has exchange history and cannot be deleted. Edit it instead.",
+    "This shift has scheduling history and cannot be deleted. Edit it instead.",
 };
 
 const WARNING_MESSAGES: Record<string, string> = {
@@ -50,9 +62,7 @@ const WARNING_MESSAGES: Record<string, string> = {
 
 function validWeek(value?: string) {
   return (
-    value &&
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    weekStartFor(value) === value
+    value && isValidWeekStart(value)
   );
 }
 
@@ -63,6 +73,7 @@ export default async function SchedulePage({
     week?: string;
     location?: string;
     error?: string;
+    availabilityDeadline?: string;
     warning?: string;
     published?: string;
     updated?: string;
@@ -77,9 +88,10 @@ export default async function SchedulePage({
   }>;
 }) {
   const session = await requireSession();
+  const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);
   const params = await searchParams;
-  const today = currentDateInPuertoRico();
+  const today = businessDate(new Date(), workspace.timeZone);
   const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const dates = weekDates(weekStart);
@@ -121,114 +133,94 @@ export default async function SchedulePage({
 
   if (!manager) {
     const hasPublishedShifts = allShifts.length > 0;
+    let publicationChanges: ReturnType<typeof ownPublicationChanges> = [];
+    if (readNotificationConfig(process.env).featureEnabled && employeeAcknowledgement.latestRevisionId && employeeAcknowledgement.needsAcknowledgement) {
+      const access = await sqlNotificationStateRepository().recipientAccess(session.id);
+      if (access?.active && access.employeeId === session.id && access.role === session.role) {
+        const [before, after] = await Promise.all([
+          employeeAcknowledgement.acknowledgedRevisionId ? listRevisionShifts(employeeAcknowledgement.acknowledgedRevisionId) : Promise.resolve([]),
+          listRevisionShifts(employeeAcknowledgement.latestRevisionId),
+        ]);
+        publicationChanges = ownPublicationChanges(
+          before.filter(shift => access.allowedLocationIds.includes(shift.locationId)),
+          after.filter(shift => access.allowedLocationIds.includes(shift.locationId)), session.id,
+        );
+      }
+    }
 
     return (
-      <>
-        <PageHeader
-          eyebrow={formatWeekRange(weekStart)}
-          title="My schedule"
-          description="Only published shifts appear here."
-          actions={
-            <div className="week-nav">
-              <Link
-                className="button secondary"
-                href={`/app/schedule?week=${previousWeek}`}
-              >
-                Previous
-              </Link>
-              <Link
-                className="button secondary"
-                href={`/app/schedule?week=${nextWeek}`}
-              >
-                Next
-              </Link>
-            </div>
-          }
-        />
+      <div className="employee-view employee-schedule-view">
+        <header className="employee-view-heading">
+          <div><p className="employee-view-eyebrow">Your week</p><h1>My Schedule</h1></div>
+          <nav className="employee-week-control" aria-label="Schedule week">
+            <Link href={`/app/schedule?week=${previousWeek}`} aria-label="Previous week">‹</Link>
+            <strong>{formatWeekRange(weekStart)}</strong>
+            <Link href={`/app/schedule?week=${nextWeek}`} aria-label="Next week">›</Link>
+          </nav>
+        </header>
 
-        {params.acknowledged ? (
-          <p className="form-success">Schedule acknowledged.</p>
-        ) : null}
+        {params.error ? <p className="employee-notice error" role="alert">The schedule could not be acknowledged. Please try again.</p> : null}
+        {params.acknowledged && !employeeAcknowledgement.acknowledged ? <p className="employee-notice success" role="status">Schedule acknowledged.</p> : null}
 
         {hasPublishedShifts && employeeAcknowledgement.latestRevisionId ? (
-          <section
-            className={
-              employeeAcknowledgement.acknowledged
-                ? "schedule-ack-bar acknowledged"
-                : "schedule-ack-bar"
-            }
-          >
-            <div>
-              <strong>
-                {employeeAcknowledgement.acknowledged
-                  ? "Schedule acknowledged"
-                  : "Please acknowledge this schedule"}
-              </strong>
-              <span>
-                {employeeAcknowledgement.acknowledged
-                  ? "Management can see that you reviewed your current published shifts."
-                  : "Your published schedule changed or has not been acknowledged yet."}
-              </span>
-            </div>
+          <div className={`employee-schedule-ack${employeeAcknowledgement.acknowledged ? " acknowledged" : employeeAcknowledgement.needsAcknowledgement ? " needs-ack" : ""}`}>
+            <p>{employeeAcknowledgement.acknowledged ? "Schedule acknowledged" : "Review and acknowledge this week’s schedule."}</p>
             {employeeAcknowledgement.needsAcknowledgement ? (
               <form action={acknowledgeScheduleAction}>
                 <input type="hidden" name="weekStart" value={weekStart} />
-                <button className="button primary" type="submit">
-                  Acknowledge schedule
-                </button>
+                <EmployeeSubmitButton className="employee-action primary" pendingText="Acknowledging…">Acknowledge</EmployeeSubmitButton>
               </form>
-            ) : (
-              <StatusPill tone="success">Acknowledged</StatusPill>
-            )}
-          </section>
+            ) : <span className="employee-quiet-status success">Acknowledged</span>}
+          </div>
         ) : null}
 
-        <section className="schedule-mobile employee-week">
+        <SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} />
+
+        <section className="employee-view-surface employee-schedule-agenda" aria-label="Published weekly schedule">
           {dates.map((date) => {
             const label = formatDayLabel(date);
             const shifts = visibleShifts.filter((shift) => shift.date === date);
-
             return (
-              <article className="day-card" key={date}>
-                <div className="day-heading">
-                  <div>
-                    <span>{label.weekday}</span>
-                    <strong>{label.day}</strong>
-                  </div>
-                  <StatusPill tone={shifts.length ? "success" : "neutral"}>
-                    {shifts.length ? "Scheduled" : "Off"}
-                  </StatusPill>
-                </div>
-                {shifts.length ? (
-                  shifts.map((shift) => (
-                    <div className="mobile-shift" key={shift.id}>
-                      <div>
-                        <strong>
-                          {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
-                        </strong>
-                        <span>
-                          {
-                            locations.find(
-                              (location) => location.id === shift.locationId,
-                            )?.shortName
-                          }
-                          {shift.isDesignatedLead ? " · Lead" : ""}
-                          {shift.isCalloutApproved ? " · Call-out approved" : ""}
-                        </span>
-                      </div>
+              <article className={`employee-schedule-day${date === today ? " today" : ""}${date === params.day ? " selected" : ""}`} id={`schedule-${date}`} key={date}>
+                <time className="employee-agenda-date" dateTime={date} aria-label={label.day}>
+                  <span>{label.weekday}</span><strong>{date.slice(8)}</strong>
+                </time>
+                <div className="employee-schedule-day-copy">
+                  {shifts.length ? shifts.map((shift) => (
+                    <div className="employee-schedule-shift" key={shift.id}>
+                      <strong>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</strong>
+                      <span>{locations.find((location) => location.id === shift.locationId)?.shortName}</span>
+                      {shift.isDesignatedLead || shift.isCalloutApproved ? (
+                        <div className="employee-schedule-tags">
+                          {shift.isDesignatedLead ? <small className="employee-designated-lead">Designated Lead</small> : null}
+                          {shift.isCalloutApproved ? <small className="employee-approved-callout">Call-out approved</small> : null}
+                        </div>
+                      ) : null}
                     </div>
-                  ))
-                ) : (
-                  <p className="muted">No published shift.</p>
-                )}
+                  )) : <p className="employee-schedule-off">Off</p>}
+                </div>
+                {date === today ? <span className="employee-schedule-today-label">Today</span> : null}
               </article>
             );
           })}
         </section>
-      </>
+      </div>
     );
   }
 
+  const [positions, capturedPositions, generationReview] = await Promise.all([
+    listPositions({ includeInactive: true }),
+    listCapturedShiftPositions({
+      weekStart,
+      shiftIds: visibleShifts.filter(shift => shift.scheduleStatus !== "DRAFT").map(shift => shift.id),
+    }),
+    getScheduleGenerationReview({
+      workspaceId: workspace.id, actorEmployeeId: session.id, weekStart,
+      locationScope: selectedLocation === "all" ? { kind: "ALL" } : { kind: "SELECTED", locationIds: [selectedLocation] },
+    }).catch((): ScheduleGenerationReview => ({ editable: false, unavailable: true, attempted: 0, needsSetup: 0, coverage: null, exclusions: [] })),
+  ]);
+  const capturedByShift = new Map(capturedPositions.map(shift => [shift.sourceShiftId, shift]));
+  const positionNames = new Map(positions.map(position => [position.id, position.name]));
   const activeEmployees = employees.filter((employee) => employee.active);
 
   return (
@@ -240,12 +232,12 @@ export default async function SchedulePage({
 
       {params.error ? (
         <p className="form-error">
-          {ERROR_MESSAGES[params.error] ?? "The schedule could not be updated."}
+          {ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The schedule could not be updated."}
         </p>
       ) : null}
       {params.warning ? (
         <p className="form-warning">
-          {WARNING_MESSAGES[params.warning] ??
+          {WARNING_MESSAGES[params.warning] ?? schedulingIssueMessage(params.warning) ??
             "Shift saved with a scheduling warning."}
         </p>
       ) : null}
@@ -280,7 +272,7 @@ export default async function SchedulePage({
 
       <section className="schedule-operations-shell">
         <div className="schedule-operations-toolbar">
-          <div className="schedule-location-control" aria-label="Schedule location">
+          <ScheduleLocationControl dense={locations.length > 8}>
             <div className="segmented">
               <Link
                 className={selectedLocation === "all" ? "selected" : ""}
@@ -298,7 +290,7 @@ export default async function SchedulePage({
                 </Link>
               ))}
             </div>
-          </div>
+          </ScheduleLocationControl>
 
           <div className="schedule-period-control" aria-label="Schedule week">
             <Link
@@ -329,45 +321,47 @@ export default async function SchedulePage({
               Templates
             </Link>
 
-            <details className="schedule-more-menu">
-              <summary className="button ghost compact-button">More</summary>
-              <div className="schedule-more-popover">
-                <form action={copyPreviousWeekAction}>
-                  <input type="hidden" name="weekStart" value={weekStart} />
-                  <button className="schedule-menu-action" type="submit">
-                    <strong>Copy previous week</strong>
-                    <span>Bring last week’s shifts into this week.</span>
-                  </button>
-                </form>
+            <ActionMenu
+              id="schedule-more-actions"
+              label="More"
+              ariaLabel="More schedule actions"
+            >
+              <form action={copyPreviousWeekAction}>
+                <input type="hidden" name="weekStart" value={weekStart} />
+                <button className="nevora-action-menu-item" type="submit">
+                  <strong>Copy previous week</strong>
+                  <span>Bring last week’s shifts into this week.</span>
+                </button>
+              </form>
 
-                <Link className="schedule-menu-action" href="/app/schedule/settings">
-                  <strong>Scheduling rules</strong>
-                  <span>Coverage requirements and employee hour targets.</span>
-                </Link>
+              <Link
+                className="nevora-action-menu-item"
+                href="/app/schedule/settings"
+              >
+                <strong>Scheduling rules</strong>
+                <span>Coverage requirements and employee hour targets.</span>
+              </Link>
 
-                <div className="schedule-menu-divider" />
+              <div className="nevora-action-menu-divider" />
 
-                <form
-                  action={setAvailabilityDeadlineAction}
-                  className="schedule-menu-deadline"
-                >
-                  <input type="hidden" name="weekStart" value={weekStart} />
-                  <label>
-                    <span>Availability deadline</span>
-                    <input
-                      type="datetime-local"
-                      name="availabilityDeadline"
-                      defaultValue={formatPuertoRicoDateTimeInput(
-                        weekSettings?.availabilityDeadline,
-                      )}
-                    />
-                  </label>
-                  <button className="button secondary compact-button" type="submit">
-                    {weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}
-                  </button>
-                </form>
-              </div>
-            </details>
+              <form
+                action={setAvailabilityDeadlineAction}
+                className="schedule-menu-deadline"
+              >
+                <input type="hidden" name="weekStart" value={weekStart} />
+                <label>
+                  <span>Availability deadline</span>
+                  <input
+                    type="datetime-local"
+                    name="availabilityDeadline"
+                    defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)}
+                  />
+                </label>
+                <button className="button secondary compact-button" type="submit">
+                  {weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}
+                </button>
+              </form>
+            </ActionMenu>
 
             <Link
               className="button primary compact-button schedule-add-shift"
@@ -378,7 +372,7 @@ export default async function SchedulePage({
           </div>
         </div>
 
-
+        <ScheduleGenerationControls key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} selectedLocation={selectedLocation} review={generationReview} />
       </section>
 
       <section className="schedule-builder-roster">
@@ -407,6 +401,9 @@ export default async function SchedulePage({
                       (item) => item.id === shift.locationId,
                     );
 
+                    const captured = shift.scheduleStatus !== "DRAFT" ? capturedByShift.get(shift.id) : undefined;
+                    const positionName = captured ? captured.positionName : shift.positionId ? positionNames.get(shift.positionId) : undefined;
+
                     return (
                       <Link
                         className={
@@ -428,6 +425,7 @@ export default async function SchedulePage({
                           {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
                         </strong>
                         <small>{location?.shortName ?? ""}</small>
+                        {positionName ? <small className="schedule-assigned-position">{positionName}</small> : null}
                       </Link>
                     );
                   })}

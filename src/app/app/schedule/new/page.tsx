@@ -1,12 +1,16 @@
+import {listPositions} from "@/lib/data/positions";
+import {ShiftAssignmentFields} from "@/components/shift-assignment-fields";
+import { ConfigurationForm } from "@/components/configuration-form";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
 import { createShiftAction } from "@/app/app/schedule/actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
   addDays,
-  currentDateInPuertoRico,
   isDateInWeek,
-  weekStartFor,
+  isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 
 export default async function NewShiftPage({
@@ -19,27 +23,30 @@ export default async function NewShiftPage({
     locationId?: string;
     start?: string;
     end?: string;
+    lead?: string;
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
+  const workspace = await getWorkspace();
   const params = await searchParams;
-  const currentWeek = weekStartFor(currentDateInPuertoRico());
-  const weekStart = params.week || currentWeek;
+  const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
+  const weekStart = params.week && isValidWeekStart(params.week) ? params.week : currentWeek;
   const date =
     params.date && isDateInWeek(params.date, weekStart)
       ? params.date
       : weekStart;
   const weekEnd = addDays(weekStart, 6);
 
-  const [employees, locations] = await Promise.all([
+  const [employees, locations, positions] = await Promise.all([
     listEmployees(),
     listLocations(),
+    listPositions(),
   ]);
   const locationId = params.locationId ?? locations[0]?.id ?? "";
 
   return (
     <main className="new-shift-page">
-      <form action={createShiftAction} className="new-shift-card">
+      <ConfigurationForm action={createShiftAction} className="new-shift-card">
         <input type="hidden" name="weekStart" value={weekStart} />
         <input type="hidden" name="locationId" value={locationId} />
 
@@ -51,23 +58,7 @@ export default async function NewShiftPage({
         <div className="new-shift-form">
           <section className="new-shift-group">
             <p className="new-shift-section-label">ASSIGN EMPLOYEE</p>
-            <label className="new-shift-field">
-              <span>Employee</span>
-              <select
-                name="employeeId"
-                defaultValue={params.employeeId ?? ""}
-                required
-              >
-                <option value="" disabled>Select employee</option>
-                {employees
-                  .filter((employee) => employee.active)
-                  .map((employee) => (
-                    <option key={employee.id} value={employee.id}>
-                      {employee.firstName} {employee.lastName}
-                    </option>
-                  ))}
-              </select>
-            </label>
+            <ShiftAssignmentFields employees={employees} positions={positions} employeeId={params.employeeId} newShift/>
           </section>
 
           <section className="new-shift-group">
@@ -99,7 +90,7 @@ export default async function NewShiftPage({
                 <input
                   type="time"
                   name="endTime"
-                  defaultValue={params.end ?? ""}
+                  defaultValue={params.end === "24:00" ? "00:00" : params.end ?? ""}
                   required
                 />
               </label>
@@ -107,7 +98,7 @@ export default async function NewShiftPage({
           </section>
 
           <label className="new-shift-lead-toggle">
-            <input type="checkbox" name="isDesignatedLead" />
+            <input type="checkbox" name="isDesignatedLead" defaultChecked={params.lead === "1"} />
             <span>Designated Shift Lead</span>
           </label>
         </div>
@@ -123,7 +114,7 @@ export default async function NewShiftPage({
             Save Shift
           </button>
         </footer>
-      </form>
+      </ConfigurationForm>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import type { AvailabilityState } from "@/lib/availability-presets";
 import {
   saveAvailabilityAction,
@@ -21,10 +22,12 @@ export function AvailabilityEditor({
   initialAvailability,
   weekStart,
   locked = false,
+  employeeView = false,
 }: {
   initialAvailability: AvailabilityState;
   weekStart?: string;
   locked?: boolean;
+  employeeView?: boolean;
 }) {
   const [availability, setAvailability] = useState(initialAvailability);
 
@@ -52,12 +55,15 @@ export function AvailabilityEditor({
     : saveAvailabilityAction;
 
   return (
-    <form action={formAction} className="availability-preferences-card">
+    <form action={formAction} className={employeeView ? "availability-preferences-card employee-availability-form" : "availability-preferences-card"}>
       {weekStart ? (
-        <input type="hidden" name="weekStart" value={weekStart} />
+        <>
+          <input type="hidden" name="weekStart" value={weekStart} />
+          <input type="hidden" name="changedDays" value={DAYS.filter(day => JSON.stringify(availability[day.dayOfWeek]) !== JSON.stringify(initialAvailability[day.dayOfWeek])).map(day => day.dayOfWeek).join(",")} />
+        </>
       ) : null}
 
-      <header className="availability-preferences-header">
+      {!employeeView ? <header className="availability-preferences-header">
         <div>
           <span>Schedule Preferences</span>
           <h2>Weekly Availability</h2>
@@ -65,7 +71,7 @@ export function AvailabilityEditor({
         {locked ? (
           <span className="availability-locked-chip">Locked</span>
         ) : null}
-      </header>
+      </header> : null}
 
       <div className="availability-preferences-list">
         {DAYS.map((day) => {
@@ -75,7 +81,7 @@ export function AvailabilityEditor({
             <div className="availability-preference-row" key={day.dayOfWeek}>
               <div className="availability-preference-day">
                 <strong>{day.label}</strong>
-                <span>Preferred shift window</span>
+                {!employeeView ? <span>Preferred shift window</span> : null}
               </div>
 
               <div className="availability-preference-controls">
@@ -83,6 +89,7 @@ export function AvailabilityEditor({
                   <input
                     type="checkbox"
                     name={`available-${day.dayOfWeek}`}
+                    aria-label={employeeView ? `${day.label} availability` : undefined}
                     checked={value.available}
                     disabled={locked}
                     onChange={(event) =>
@@ -99,10 +106,11 @@ export function AvailabilityEditor({
                 {value.available ? (
                   <div className="availability-inline-times">
                     <label>
-                      <span>Start</span>
+                      <span className={employeeView ? "sr-only" : undefined}>Start</span>
                       <input
                         type="time"
                         name={`start-${day.dayOfWeek}`}
+                        aria-label={employeeView ? `${day.label} start time` : undefined}
                         value={value.startTime}
                         disabled={locked}
                         onChange={(event) =>
@@ -118,10 +126,11 @@ export function AvailabilityEditor({
                     </span>
 
                     <label>
-                      <span>End</span>
+                      <span className={employeeView ? "sr-only" : undefined}>End</span>
                       <input
                         type="time"
                         name={`end-${day.dayOfWeek}`}
+                        aria-label={employeeView ? `${day.label} end time` : undefined}
                         value={value.endTime}
                         disabled={locked}
                         onChange={(event) =>
@@ -149,13 +158,17 @@ export function AvailabilityEditor({
           Reset Changes
         </button>
 
+        {employeeView ? (
+          <EmployeeSubmitButton className="availability-preferences-button primary" pendingText="Saving…" disabled={locked || !weekStart && !dirty}>Save Preferences</EmployeeSubmitButton>
+        ) : (
         <button
           className="availability-preferences-button primary"
           type="submit"
-          disabled={locked || !dirty}
+          disabled={locked || !weekStart && !dirty}
         >
           Save Preferences
         </button>
+        )}
       </footer>
     </form>
   );

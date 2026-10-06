@@ -1,7 +1,9 @@
 "use server";
 
+import { isValidIsoDate } from "@/lib/date-utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireSessionMutationProof } from "@/lib/auth/session";
 import { TIME_OFF_REVIEW_ROLES, requireRoles, requireSelfService } from "@/lib/auth/permissions";
 import {
   createTimeOffRequest,
@@ -10,6 +12,7 @@ import {
 
 export async function requestTimeOffAction(formData: FormData) {
   const session = await requireSelfService("/app/requests");
+  const requestId = String(formData.get("requestId") ?? "");
   const startDate = String(formData.get("startDate") ?? "");
   const endDate = String(formData.get("endDate") ?? "");
   const partialDay = formData.get("partialDay") === "on";
@@ -18,8 +21,9 @@ export async function requestTimeOffAction(formData: FormData) {
   const reason = String(formData.get("reason") ?? "").trim();
 
   if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(startDate) ||
-    !/^\d{4}-\d{2}-\d{2}$/.test(endDate) ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId) ||
+    !isValidIsoDate(startDate) ||
+    !isValidIsoDate(endDate) ||
     startDate > endDate ||
     (partialDay && startDate !== endDate) ||
     (partialDay &&
@@ -33,6 +37,7 @@ export async function requestTimeOffAction(formData: FormData) {
   }
 
   await createTimeOffRequest({
+    requestId,
     employeeId: session.id,
     startDate,
     endDate,
@@ -47,6 +52,7 @@ export async function requestTimeOffAction(formData: FormData) {
 
 export async function reviewTimeOffAction(formData: FormData) {
   const session = await requireRoles(TIME_OFF_REVIEW_ROLES);
+  const proof = await requireSessionMutationProof();
   const requestId = String(formData.get("requestId") ?? "");
   const decision = String(formData.get("decision") ?? "");
 
@@ -57,6 +63,7 @@ export async function reviewTimeOffAction(formData: FormData) {
   const reviewed = await reviewTimeOffRequest({
     requestId,
     managerId: session.id,
+    proof,
     status: decision,
   });
 

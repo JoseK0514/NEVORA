@@ -1,17 +1,10 @@
 "use client";
 
+import { formatBusinessClock } from "../lib/business-time";
 import { useEffect, useState } from "react";
 
-const PUERTO_RICO_TIME_ZONE = "America/Puerto_Rico";
-
-export function formatTimeClockDisplay(value: Date) {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: PUERTO_RICO_TIME_ZONE,
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  }).format(value);
+export function formatTimeClockDisplay(value: Date, timeZone: string) {
+  return formatBusinessClock(value, timeZone);
 }
 
 export function formatActiveShiftDuration(startedAt: number, now: number) {
@@ -25,7 +18,7 @@ export function formatActiveShiftDuration(startedAt: number, now: number) {
   return `${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m`;
 }
 
-export function TimeClockWidget() {
+export function TimeClockWidget({ timeZone }: { timeZone: string }) {
   const [now, setNow] = useState<Date | null>(null);
   const [shiftStartedAt, setShiftStartedAt] = useState<number | null>(null);
 
@@ -58,7 +51,7 @@ export function TimeClockWidget() {
 
       <div className="time-clock-body">
         <time className="time-clock-display" aria-live="off">
-          {now ? formatTimeClockDisplay(now) : "--:--:-- --"}
+          {now ? formatTimeClockDisplay(now, timeZone) : "--:--:-- --"}
         </time>
 
         <div className="time-clock-actions">

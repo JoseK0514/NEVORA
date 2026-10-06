@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { EmployeeTimePanel } from "./employee-time-panel";
+import { NavIcon } from "./nav-icon";
 import { formatDayLabel, formatTime } from "../lib/date-utils";
 
 export type EmployeeUpcomingShift = {
@@ -7,6 +9,7 @@ export type EmployeeUpcomingShift = {
   startTime: string;
   endTime: string;
   isDesignatedLead: boolean;
+  locationName?: string;
 };
 
 export function isUpcomingEmployeeShift(
@@ -36,6 +39,14 @@ export function formatEmployeeMetric(
   }).format(value);
 }
 
+function ScheduleArrow({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 12h16m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
 export function EmployeeDashboard({
   firstName,
   weekStart,
@@ -45,8 +56,6 @@ export function EmployeeDashboard({
   publishedShifts,
   scheduledHours,
   estimatedEarnings,
-  todayShiftLabel,
-  todayClockStatus,
 }: {
   firstName: string;
   weekStart: string;
@@ -56,8 +65,6 @@ export function EmployeeDashboard({
   publishedShifts: EmployeeUpcomingShift[];
   scheduledHours: number;
   estimatedEarnings: number;
-  todayShiftLabel: string;
-  todayClockStatus: string;
 }) {
   const upcomingShifts = publishedShifts.filter((shift) =>
     isUpcomingEmployeeShift(
@@ -68,100 +75,85 @@ export function EmployeeDashboard({
     ),
   );
 
+  const todayShifts = publishedShifts.filter(shift => shift.date === currentDate)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
+
+  const todayLabel = new Intl.DateTimeFormat("en-US", {
+    weekday: "long", month: "long", day: "numeric", timeZone: "UTC",
+  }).format(new Date(`${currentDate}T12:00:00Z`));
+
   return (
-    <div className="employee-dashboard">
-      <header className="employee-dashboard-heading">
-        <span>Employee Home</span>
+    <div className="employee-dashboard employee-home">
+      <header className="employee-home-heading">
+        <p className="employee-home-eyebrow">Employee Home</p>
         <h1>Welcome, {firstName}.</h1>
-        <p>{weekLabel}</p>
+        <p className="employee-home-week">{weekLabel}</p>
       </header>
 
-      <div className="employee-dashboard-grid">
-        <div className="employee-dashboard-primary">
-          <section className="employee-home-card employee-today-status">
-            <div className="employee-today-status-header">
-              <span>TODAY&apos;S SHIFT</span>
-            </div>
+      <div className="employee-home-layout">
+        <section className="employee-home-surface employee-home-today" aria-labelledby="employee-today-heading">
+          <p className="employee-home-eyebrow">Today</p>
+          <h2 id="employee-today-heading">{todayLabel}</h2>
+          {todayShifts.length ? <div className="employee-home-published-today">
+            {todayShifts.map(shift => <div key={shift.id}>
+              <p className="employee-home-shift-time">{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</p>
+              {shift.locationName ? <p className="employee-home-location">{shift.locationName}</p> : null}
+            </div>)}
+          </div> : <p className="employee-home-no-shift">No published shift today</p>}
+          <EmployeeTimePanel compact />
+        </section>
 
-            <div className="employee-today-status-body">
-              <p>
-                Scheduled: <strong>{todayShiftLabel}</strong>
-              </p>
-              <p>
-                Status: <strong>{todayClockStatus}</strong>
-              </p>
-            </div>
-
-            <small>
-              Clock in and out from your assigned Fuel kiosk.
-            </small>
+        <div className="employee-home-surface employee-home-agenda">
+          <section className="employee-home-upcoming" aria-labelledby="employee-upcoming-heading">
+            <header className="employee-home-section-heading">
+              <h2 id="employee-upcoming-heading">Upcoming Shifts</h2>
+              <Link href={`/app/schedule?week=${encodeURIComponent(weekStart)}`}>
+                My Schedule <ScheduleArrow />
+              </Link>
+            </header>
+            {upcomingShifts.length ? (
+              <div className="employee-home-agenda-list">
+                {upcomingShifts.map((shift) => {
+                  const day = formatDayLabel(shift.date);
+                  return (
+                    <Link className="employee-home-agenda-row" href={employeeScheduleHref(weekStart, shift.date)} key={shift.id}>
+                      <time className="employee-home-date" dateTime={shift.date} aria-label={day.day}>
+                        <span>{day.weekday}</span><strong>{shift.date.slice(8)}</strong>
+                      </time>
+                      <span className="employee-home-shift-copy">
+                        <strong>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</strong>
+                        {shift.locationName ? <small>{shift.locationName}</small> : null}
+                        {shift.isDesignatedLead ? <small className="employee-home-lead">Designated Lead</small> : null}
+                      </span>
+                      <ScheduleArrow className="employee-home-row-arrow" />
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="employee-home-empty-state">
+                <span className="employee-empty-icon"><NavIcon name="schedule" employee size={16} /></span>
+                <strong>You&apos;re all caught up</strong>
+                <p>No more published shifts are scheduled this week.</p>
+              </div>
+            )}
           </section>
 
-          <section className="employee-home-card employee-week-overview">
-            <div className="employee-home-card-header">
-              <h2>This Week&apos;s Overview</h2>
-            </div>
-
-            <div className="employee-week-metrics">
+          <section className="employee-home-summary" aria-labelledby="employee-week-heading">
+            <h2 id="employee-week-heading">This Week</h2>
+            <dl className="employee-home-metrics">
               <div>
-                <span>Scheduled Hours</span>
-                <strong>{formatEmployeeMetric(scheduledHours, "hours")}</strong>
+                <dt>Scheduled Hours</dt>
+                <dd>
+                  <span>{formatEmployeeMetric(scheduledHours, "hours").replace(" hrs", "")}</span>
+                  {" "}<small className="employee-home-metric-unit">hrs</small>
+                </dd>
               </div>
-              <div>
-                <span>Est. Earnings</span>
-                <strong className="earnings">
-                  {formatEmployeeMetric(estimatedEarnings, "earnings")}
-                </strong>
-              </div>
-            </div>
-
-            <small className="employee-earnings-note">
-              *Calculated from published scheduled shifts; excludes tips.
-            </small>
+              <div><dt>Est. Earnings</dt><dd>{formatEmployeeMetric(estimatedEarnings, "earnings")}</dd></div>
+            </dl>
+            <p className="employee-home-disclaimer">*Calculated from published scheduled shifts; excludes tips.</p>
           </section>
         </div>
-
-        <section className="employee-home-card employee-upcoming-card">
-          <div className="employee-home-card-header">
-            <h2>Upcoming Shifts</h2>
-          </div>
-
-          {upcomingShifts.length ? (
-            <div className="employee-upcoming-list">
-              {upcomingShifts.map((shift) => {
-                const day = formatDayLabel(shift.date);
-
-                return (
-                  <Link
-                    className="employee-upcoming-pill"
-                    href={employeeScheduleHref(weekStart, shift.date)}
-                    key={shift.id}
-                  >
-                    <span className="employee-upcoming-day">
-                      <strong>{day.weekday}</strong>
-                      <small>{day.day}</small>
-                    </span>
-                    <span className="employee-upcoming-time">
-                      {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
-                    </span>
-                    {shift.isDesignatedLead ? (
-                      <span className="employee-upcoming-lead">
-                        <i aria-hidden="true" />
-                        Designated Lead
-                      </span>
-                    ) : null}
-                  </Link>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="employee-home-empty">
-              <span aria-hidden="true">✓</span>
-              <strong>You&apos;re all caught up</strong>
-              <small>No more published shifts are scheduled this week.</small>
-            </div>
-          )}
-        </section>
       </div>
     </div>
   );

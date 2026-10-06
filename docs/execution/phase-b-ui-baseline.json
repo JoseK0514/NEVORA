@@ -1,0 +1,269 @@
+{
+  "phase": "B",
+  "task": 1,
+  "kind": "authenticated-ui-baseline",
+  "generatedAt": "2026-10-05T03:29:07.458501+00:00",
+  "sourceHead": "f45e72e76dc52186c6a59b8eed04e03345c631d9",
+  "status": "baseline-recorded",
+  "fullMatrix": {
+    "checks": 424,
+    "findings": 0,
+    "runnerErrors": 0,
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "widths": [
+      320,
+      375,
+      390,
+      430,
+      768,
+      1024,
+      1440
+    ],
+    "clockerViewports": [
+      {
+        "width": 1024,
+        "height": 768,
+        "key": "1024x768"
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "key": "768x1024"
+      }
+    ],
+    "evidence": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-b/full-baseline-2/baseline",
+    "note": "Corrected maximum-scroll bottom-navigation measurement; anchored-menu interaction coverage is supplied by the focused Schedule supplement."
+  },
+  "scheduleMenuSupplement": {
+    "checks": 28,
+    "findings": 16,
+    "runnerErrors": 0,
+    "evidence": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-b/schedule-supplement/baseline"
+  },
+  "verifiedFindings": [
+    {
+      "engine": "chromium",
+      "surface": "owner-schedule",
+      "route": "/app/schedule",
+      "role": "OWNER",
+      "width": 320,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":13,\"y\":656.6875,\"width\":286,\"height\":264.015625} exceed viewport 320x844"
+    },
+    {
+      "engine": "chromium",
+      "surface": "manager-schedule",
+      "route": "/app/schedule",
+      "role": "MANAGER",
+      "width": 320,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":13,\"y\":656.6875,\"width\":286,\"height\":264.015625} exceed viewport 320x844"
+    },
+    {
+      "engine": "chromium",
+      "surface": "owner-schedule",
+      "route": "/app/schedule",
+      "role": "OWNER",
+      "width": 375,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":24,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 375x844"
+    },
+    {
+      "engine": "chromium",
+      "surface": "manager-schedule",
+      "route": "/app/schedule",
+      "role": "MANAGER",
+      "width": 375,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":24,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 375x844"
+    },
+    {
+      "engine": "chromium",
+      "surface": "owner-schedule",
+      "route": "/app/schedule",
+      "role": "OWNER",
+      "width": 390,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":39,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 390x844"
+    },
+    {
+      "engine": "chromium",
+      "surface": "manager-schedule",
+      "route": "/app/schedule",
+      "role": "MANAGER",
+      "width": 390,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":39,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 390x844"
+    },
+    {
+      "engine": "chromium",
+      "surface": "owner-schedule",
+      "route": "/app/schedule",
+      "role": "OWNER",
+      "width": 430,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":79,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 430x844"
+    },
+    {
+      "engine": "chromium",
+      "surface": "manager-schedule",
+      "route": "/app/schedule",
+      "role": "MANAGER",
+      "width": 430,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":79,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 430x844"
+    },
+    {
+      "engine": "webkit",
+      "surface": "owner-schedule",
+      "route": "/app/schedule",
+      "role": "OWNER",
+      "width": 320,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":13,\"y\":656.6875,\"width\":286,\"height\":264.015625} exceed viewport 320x844"
+    },
+    {
+      "engine": "webkit",
+      "surface": "manager-schedule",
+      "route": "/app/schedule",
+      "role": "MANAGER",
+      "width": 320,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":13,\"y\":656.6875,\"width\":286,\"height\":264.015625} exceed viewport 320x844"
+    },
+    {
+      "engine": "webkit",
+      "surface": "owner-schedule",
+      "route": "/app/schedule",
+      "role": "OWNER",
+      "width": 375,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":24,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 375x844"
+    },
+    {
+      "engine": "webkit",
+      "surface": "manager-schedule",
+      "route": "/app/schedule",
+      "role": "MANAGER",
+      "width": 375,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":24,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 375x844"
+    },
+    {
+      "engine": "webkit",
+      "surface": "owner-schedule",
+      "route": "/app/schedule",
+      "role": "OWNER",
+      "width": 390,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":39,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 390x844"
+    },
+    {
+      "engine": "webkit",
+      "surface": "manager-schedule",
+      "route": "/app/schedule",
+      "role": "MANAGER",
+      "width": 390,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":39,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 390x844"
+    },
+    {
+      "engine": "webkit",
+      "surface": "owner-schedule",
+      "route": "/app/schedule",
+      "role": "OWNER",
+      "width": 430,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":79,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 430x844"
+    },
+    {
+      "engine": "webkit",
+      "surface": "manager-schedule",
+      "route": "/app/schedule",
+      "role": "MANAGER",
+      "width": 430,
+      "category": "Responsive",
+      "severity": "P1",
+      "selector": ".schedule-more-popover",
+      "evidence": "open menu bounds {\"x\":79,\"y\":654.6875,\"width\":330,\"height\":250.9375} exceed viewport 430x844"
+    }
+  ],
+  "rejectedHarnessFindings": [
+    {
+      "count": 64,
+      "selector": ".mobile-nav",
+      "category": "Responsive",
+      "reason": "Initial harness used scrollIntoView block=end, deliberately aligning the last control behind a fixed bottom navigation rather than testing maximum-scroll clearance.",
+      "proof": {
+        "focusedCorrectedChecks": 14,
+        "focusedCorrectedFindings": 0,
+        "focusedEvidence": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-b/clearance-smoke/baseline",
+        "correctedFullMatrixFindings": 0,
+        "correctedFullMatrixEvidence": "/Users/josek0514/.codex/visualizations/2026/10/04/nevora-phase-b/full-baseline-2/baseline"
+      }
+    }
+  ],
+  "sourceAuditObservations": [
+    {
+      "severity": "P2",
+      "category": "Implementation Integrity",
+      "location": "src/app/globals.css .button",
+      "evidence": "Base button uses min-height 42px while 51 scoped min-height 44px declarations exist. Browser matrix did not reproduce a sub-44 visible action, but the source contract is fragmented.",
+      "plannedOwner": "Task 2"
+    },
+    {
+      "severity": "P2",
+      "category": "Implementation Integrity",
+      "location": "cross-product choice controls",
+      "evidence": "15 raw select controls exist across 7 TSX files with page/component-specific presentation. Native selects remain allowed; Phase B standardizes the shared field/geometry language.",
+      "plannedOwner": "Tasks 2 and 5"
+    },
+    {
+      "severity": "P2",
+      "category": "Implementation Integrity",
+      "location": "src/app/globals.css",
+      "evidence": "globals.css contains 12,891 lines, 237 hex-color occurrences and 165 important declarations. Counts are not defects by themselves; they confirm override density and support controlled extraction rather than a big-bang rewrite.",
+      "plannedOwner": "Tasks 2, 5 and 6"
+    }
+  ],
+  "limitations": [
+    "Uses an owned disposable PostgreSQL database and scratch Next runtime, not production Neon.",
+    "Uses local Chromium/WebKit runtimes, not physical iPhone/iPad/Safari hardware.",
+    "Geometry/focus automation does not replace a real screen-reader audit.",
+    "Task 1 is a technical baseline, not physical-device or real assistive-technology certification.",
+    "Source observations are maintainability/design-system risks and are separate from reproduced browser defects."
+  ]
+}

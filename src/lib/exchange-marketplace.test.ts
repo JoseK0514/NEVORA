@@ -19,8 +19,8 @@ describe("shift marketplace helpers", () => {
   });
 
   it("formats employee roles for the marketplace", () => {
-    expect(marketplaceRoleLabel("EMPLOYEE")).toBe("Barista");
-    expect(marketplaceRoleLabel("LEAD")).toBe("Lead Barista");
+    expect(marketplaceRoleLabel("EMPLOYEE")).toBe("Employee");
+    expect(marketplaceRoleLabel("LEAD")).toBe("Lead");
     expect(marketplaceRoleLabel("MANAGER")).toBe("Manager");
   });
 

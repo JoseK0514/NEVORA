@@ -1,0 +1,15 @@
+import {beforeEach,expect,it,vi} from 'vitest';
+import {getSession} from '@/lib/auth/session';
+import {getClockMonitor} from '@/lib/data/time-clock';
+import {GET} from './route';
+vi.mock('@/lib/auth/session',()=>({getSession:vi.fn()}));
+vi.mock('@/lib/data/time-clock',()=>({getClockMonitor:vi.fn()}));
+const request=()=>new Request('http://localhost/api/manager/clock-monitor',{headers:{'X-Nevora-Monitor':'1'}});
+beforeEach(()=>{vi.clearAllMocks();vi.mocked(getSession).mockResolvedValue({id:'owner',firstName:'A',lastName:'B',role:'OWNER',primaryLocationId:'loc'});vi.mocked(getClockMonitor).mockResolvedValue({state:'ready',observedAt:'2030-10-07T12:00:00Z',timeZone:'America/Puerto_Rico',validForMs:45000,employees:[]});});
+it('requires an actual session before fetching sensitive clock activity',async()=>{vi.mocked(getSession).mockResolvedValue(null);expect((await GET(request())).status).toBe(401);expect(getClockMonitor).not.toHaveBeenCalled();});
+it.each(['EMPLOYEE','LEAD'] as const)('denies %s without fetching monitor data',async role=>{vi.mocked(getSession).mockResolvedValue({id:'worker',firstName:'A',lastName:'B',role,primaryLocationId:'loc'});expect((await GET(request())).status).toBe(403);expect(getClockMonitor).not.toHaveBeenCalled();});
+it.each(['MANAGER','OWNER'] as const)('returns a private uncached snapshot for %s',async role=>{vi.mocked(getSession).mockResolvedValue({id:'owner',firstName:'A',lastName:'B',role,primaryLocationId:'loc'});const r=await GET(request());expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toMatch(/no-store.*private/);expect(r.headers.get('vary')).toContain('Cookie');expect(await r.json()).toMatchObject({state:'ready',employees:[]});});
+it('current authority loss after the first check returns no data',async()=>{vi.mocked(getClockMonitor).mockResolvedValue({state:'unavailable',reason:'access_denied'});const r=await GET(request());expect(r.status).toBe(403);expect(await r.json()).toEqual({state:'unavailable',reason:'access_denied'});});
+it('database failure stays unavailable and never exposes SQL or a zero count',async()=>{vi.mocked(getClockMonitor).mockRejectedValue(Error('postgres://secret token'));const r=await GET(request());expect(r.status).toBe(503);expect(await r.json()).toEqual({state:'unavailable',reason:'read_failed'});});
+it('missing schema is not a successful empty read',async()=>{vi.mocked(getClockMonitor).mockResolvedValue({state:'unavailable',reason:'schema_missing'});expect((await GET(request())).status).toBe(503);});
+it('cross-site and unmarked requests cannot fetch employee activity',async()=>{const r=await GET(new Request('http://localhost/api/manager/clock-monitor',{headers:{'Sec-Fetch-Site':'cross-site','X-Nevora-Monitor':'1'}}));expect(r.status).toBe(403);expect(getSession).not.toHaveBeenCalled();expect((await GET(new Request('http://localhost/api/manager/clock-monitor'))).status).toBe(403);});

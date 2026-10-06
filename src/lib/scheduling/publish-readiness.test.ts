@@ -76,3 +76,9 @@ describe("buildPublishReadiness", () => {
     });
   });
 });
+
+it('keeps invalid position setup actionable even with no evaluated dates', () => {
+  const result = buildPublishReadiness({locationId:'l',locationCoverage:[{locationId:'l',locationName:'Shop',totalBlocks:0,coveredBlocks:0,uncoveredBlocks:0,missingLeadBlocks:0,fullyCovered:false,positionRequirementsConfigured:false}],underTargetCount:0,overTargetCount:0,unconfiguredTargetCount:0});
+  expect(result.hasWarnings).toBe(true);
+  expect(result.positionNeedsSetup).toBe(true);
+});

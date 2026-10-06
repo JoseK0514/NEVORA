@@ -1,23 +1,18 @@
-import Link from "next/link";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { shiftBoundaryInstants } from "@/lib/business-time";
 import { redirect } from "next/navigation";
-import { PageHeader } from "@/components/page-header";
+import {ReviewedCalloutForm} from "@/components/reviewed-callout-form";
+import {requireSessionMutationProof} from "@/lib/auth/session";
+import {readShiftChangeTerms} from "@/lib/data/shift-change-snapshot";
+import {matchesDisplayedShift} from "@/lib/shift-changes/displayed-terms";
+import {ShiftSlot} from "@/components/shift-slot";
 import { requireSelfService } from "@/lib/auth/permissions";
 import {
-  currentDateInPuertoRico,
   formatDayLabel,
   formatTime,
 } from "@/lib/date-utils";
 import { getPublishedShift } from "@/lib/data/exchanges";
-import { submitCalloutAction } from "@/app/app/exchange/callout/actions";
 
-const REASONS = [
-  ["ILLNESS", "Illness / sick"],
-  ["FAMILY_EMERGENCY", "Family emergency"],
-  ["TRANSPORTATION", "Transportation issue"],
-  ["SCHOOL", "School conflict"],
-  ["PERSONAL_EMERGENCY", "Personal emergency"],
-  ["OTHER", "Other"],
-] as const;
 
 export default async function CalloutPage({
   searchParams,
@@ -25,6 +20,7 @@ export default async function CalloutPage({
   searchParams: Promise<{ shiftId?: string; error?: string }>;
 }) {
   const session = await requireSelfService("/app/exchange?tab=requests");
+  const workspace = await getWorkspace();
   const params = await searchParams;
 
   if (!params.shiftId) {
@@ -33,28 +29,24 @@ export default async function CalloutPage({
 
   const shift = await getPublishedShift(params.shiftId);
 
-  if (
-    !shift ||
-    shift.employeeId !== session.id ||
-    shift.date < currentDateInPuertoRico()
-  ) {
+  if (!shift || shift.employeeId !== session.id) {
     redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
   }
+  const proof=await requireSessionMutationProof();
+  const reviewed=await readShiftChangeTerms(proof,shift.id);
+  let ended=false;
+  // The coherent authenticated read supplies the server observation; rendering
+  // does not sample a second clock or reinterpret the workspace time zone.
+  try {ended=!!reviewed&&Date.parse(shiftBoundaryInstants(shift,shift.timeZone??workspace.timeZone).endAt)<=Date.parse(reviewed.observedAt);}
+  catch { /* Keep inability reporting available; never guess an invalid instant. */ }
+  if(ended)redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
 
+  const fields=reviewed&&matchesDisplayedShift(shift,reviewed.source)?{kind:"SUBMIT_CALLOUT",sourceShiftId:shift.id,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint}:null;
   const date = formatDayLabel(shift.date);
 
   return (
-    <>
-      <PageHeader
-        eyebrow="Shift call-out"
-        title="Unable to work this shift"
-        description="Submit the reason management needs to review. Your shift does not change until the request is approved."
-        actions={
-          <Link className="button secondary" href="/app/exchange?tab=my">
-            Cancel
-          </Link>
-        }
-      />
+    <div className="employee-view employee-exchange-detail-view">
+      <header className="employee-view-heading"><div><p className="employee-view-eyebrow">Shift request</p><h1>Unable to Work</h1><p className="employee-view-description">Your shift stays assigned until management approves the request.</p></div></header>
 
       {params.error ? (
         <p className="form-error">
@@ -71,7 +63,7 @@ export default async function CalloutPage({
           <p className="large-detail">
             {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
           </p>
-          <p className="muted">{shift.locationName}</p>
+          <ShiftSlot shift={shift} contextOnly/>
 
           <div className="callout-warning">
             <strong>You are still responsible for this shift right now.</strong>
@@ -90,42 +82,9 @@ export default async function CalloutPage({
             </div>
           </div>
 
-          <form action={submitCalloutAction} className="employee-form">
-            <input type="hidden" name="shiftId" value={shift.id} />
-
-            <label>
-              Reason
-              <select name="reasonCode" defaultValue="" required>
-                <option value="" disabled>Select a reason</option>
-                {REASONS.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              Additional details <span>Required when selecting Other</span>
-              <textarea
-                name="reasonNote"
-                maxLength={300}
-                rows={4}
-                placeholder="Add any details management should know..."
-              />
-            </label>
-
-            <div className="form-footer">
-              <Link className="button secondary" href="/app/exchange?tab=my">
-                Cancel
-              </Link>
-              <button className="button primary" type="submit">
-                Submit Call-out
-              </button>
-            </div>
-          </form>
+          <ReviewedCalloutForm fields={fields}/>
         </article>
       </section>
-    </>
+    </div>
   );
 }

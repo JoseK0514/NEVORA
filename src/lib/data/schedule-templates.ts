@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 import { listWeekShifts } from "@/lib/data/schedules";
-import { weekStartFor } from "@/lib/date-utils";
+import { neonNotificationExecutor } from "./notification-transactions";
+import type { SqlExecutor, SqlStatement } from "../notifications/types";
+import { isValidWeekStart } from "@/lib/date-utils";
 
 export type ScheduleTemplate = {
   id: string;
@@ -11,6 +13,7 @@ export type ScheduleTemplate = {
 };
 
 export type TemplateShift = {
+  positionId?: string;
   id: string;
   templateId: string;
   locationId: string;
@@ -60,28 +63,24 @@ export async function listScheduleTemplates(): Promise<ScheduleTemplate[]> {
 
 export async function listTemplateShifts(
   templateId: string,
-): Promise<TemplateShift[]> {
-  const sql = getDb();
+  executor?: SqlExecutor,
+): Promise<TemplateShift[] | null> {
+  const sql = executor ? {query:(text:string,values:unknown[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
-      `SELECT
-         id,
-         template_id,
-         location_id,
-         day_offset,
-         start_time,
-         end_time,
-         employee_id,
-         is_designated_lead,
-         notes
-       FROM schedule_template_shifts
-       WHERE template_id = $1
-       ORDER BY day_offset, start_time, location_id`,
+      `SELECT ts.id, ts.template_id, ts.location_id, ts.day_offset,
+         ts.start_time, ts.end_time, ts.position_id, ts.employee_id,
+         ts.is_designated_lead, ts.notes
+       FROM schedule_templates t
+       LEFT JOIN schedule_template_shifts ts ON ts.template_id = t.id
+       WHERE t.id = $1 AND t.active = true
+       ORDER BY ts.day_offset, ts.start_time, ts.location_id`,
       [templateId],
     ),
   );
 
-  return rows.map((row) => {
+  if (rows.length === 0) return null;
+  return rows.filter(row => (row as Record<string, unknown>).id !== null).map((row) => {
     const item = row as Record<string, unknown>;
     return {
       id: String(item.id),
@@ -90,6 +89,7 @@ export async function listTemplateShifts(
       dayOffset: Number(item.day_offset),
       startTime: timeValue(item.start_time),
       endTime: timeValue(item.end_time),
+      positionId: item.position_id ? String(item.position_id) : undefined,
       employeeId: item.employee_id ? String(item.employee_id) : undefined,
       isDesignatedLead: Boolean(item.is_designated_lead),
       notes: item.notes ? String(item.notes) : undefined,
@@ -101,57 +101,25 @@ export async function createTemplateFromWeek(input: {
   name: string;
   weekStart: string;
   createdBy: string;
-}) {
-  if (weekStartFor(input.weekStart) !== input.weekStart) {
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  if (!isValidWeekStart(input.weekStart)) {
     throw new Error("Invalid week start.");
   }
 
-  const shifts = await listWeekShifts({ weekStart: input.weekStart });
+  const shifts = await listWeekShifts({ weekStart: input.weekStart }, executor);
   const templateId = randomUUID();
-  const sql = getDb();
   const weekStartTime = new Date(`${input.weekStart}T12:00:00Z`).getTime();
 
-  const queries = [
-    sql`INSERT INTO schedule_templates (
-      id,
-      name,
-      created_by
-    ) VALUES (
-      ${templateId},
-      ${input.name},
-      ${input.createdBy}
-    )`,
-    ...shifts.map((shift) => {
+  const statements:SqlStatement[] = [
+    {text:'INSERT INTO schedule_templates(id,name,created_by) VALUES($1,$2,$3)',values:[templateId,input.name,input.createdBy]},
+    ...shifts.map(shift => {
       const shiftTime = new Date(`${shift.date}T12:00:00Z`).getTime();
-      const dayOffset = Math.round(
-        (shiftTime - weekStartTime) / (24 * 60 * 60 * 1000),
-      );
-
-      return sql`INSERT INTO schedule_template_shifts (
-        id,
-        template_id,
-        location_id,
-        day_offset,
-        start_time,
-        end_time,
-        employee_id,
-        is_designated_lead,
-        notes
-      ) VALUES (
-        ${randomUUID()},
-        ${templateId},
-        ${shift.locationId},
-        ${dayOffset},
-        ${shift.startTime},
-        ${shift.endTime},
-        ${shift.employeeId},
-        ${shift.isDesignatedLead},
-        ${shift.notes ?? null}
-      )`;
+      const dayOffset = Math.round((shiftTime-weekStartTime)/(24*60*60*1000));
+      return {text:`INSERT INTO schedule_template_shifts(id,template_id,location_id,day_offset,start_time,end_time,employee_id,is_designated_lead,notes,position_id)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,values:[randomUUID(),templateId,shift.locationId,dayOffset,shift.startTime,shift.endTime,shift.employeeId,shift.isDesignatedLead,shift.notes ?? null,shift.positionId || null]};
     }),
   ];
-
-  await sql.transaction(queries);
+  await executor.transaction(statements);
   return templateId;
 }
 

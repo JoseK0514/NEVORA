@@ -1,5 +1,7 @@
 # Time clock persistence foundation
 
+> Historical foundation checkpoint. The current Phase C3/C4 implementation and its still-disabled release boundary are documented in [Clocker persisted punches](clocker-punch-service.md). Statements below about unimplemented writers or unavailable local tooling describe this earlier checkpoint, not the current Phase C branch.
+
 ## Repository and contracts
 
 Future Manager/Owner monitoring can read **actual open time entries** through `getClockMonitor` in `src/lib/data/time-clock.ts`. The repository checks the authenticated role before any database access. It joins employee/location names and open breaks, reads across calendar boundaries, and never infers clock presence from a schedule. Open entries are retained in the result until clocked out even when an employee/device/location is later inactive. Timestamps are normalized to ISO UTC; a future UI can format them for Puerto Rico.

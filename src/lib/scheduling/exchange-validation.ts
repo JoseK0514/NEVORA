@@ -9,11 +9,8 @@ type ShiftForExchange = {
   endTime: string;
 };
 
-export function prepareExchangeContext(
-  context: {
-    existingShifts: ShiftForExchange[];
-    existingWeeklyMinutes: number;
-  },
+export function prepareExchangeContext<T extends { existingShifts: ShiftForExchange[]; existingWeeklyMinutes: number }>(
+  context: T,
   outgoingShift: {
     id: string;
     startTime: string;

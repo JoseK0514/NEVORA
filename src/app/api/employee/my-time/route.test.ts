@@ -1,0 +1,15 @@
+import {beforeEach,expect,it,vi} from 'vitest';
+const mocks=vi.hoisted(()=>({session:vi.fn(),time:vi.fn()}));
+vi.mock('@/lib/auth/session',()=>({getSession:mocks.session}));
+vi.mock('@/lib/data/employee-time',()=>({getEmployeeTime:mocks.time}));
+import {GET} from './route';
+const req=(query='',headers:Record<string,string>={'X-Nevora-My-Time':'1'})=>new Request('https://nevora.invalid/api/employee/my-time'+query,{headers});
+beforeEach(()=>{vi.resetAllMocks();mocks.session.mockResolvedValue({id:'self',role:'EMPLOYEE'});mocks.time.mockResolvedValue({state:'ready',current:null});});
+it('requires an authenticated portal session',async()=>{mocks.session.mockResolvedValue(null);expect((await GET(req())).status).toBe(401);expect(mocks.time).not.toHaveBeenCalled();});
+it.each(['EMPLOYEE','LEAD'])('permits %s self-service without passing a client identity to the repository',async role=>{mocks.session.mockResolvedValue({id:'self',role});const r=await GET(req());expect(r.status).toBe(200);expect(mocks.time).toHaveBeenCalledWith();});
+it.each(['OWNER','MANAGER'])('denies %s on this employee-only route',async role=>{mocks.session.mockResolvedValue({id:'other',role});expect((await GET(req())).status).toBe(403);expect(mocks.time).not.toHaveBeenCalled();});
+it('rejects supplied employee selectors instead of honoring them',async()=>{expect((await GET(req('?employeeId=other'))).status).toBe(400);expect(mocks.time).not.toHaveBeenCalled();});
+it('rejects cross-site reads and missing application headers',async()=>{expect((await GET(req('',{}))).status).toBe(403);expect((await GET(req('',{'X-Nevora-My-Time':'1','Sec-Fetch-Site':'cross-site'}))).status).toBe(403);});
+it('marks successful and unsuccessful data private and never cacheable',async()=>{for(const result of [{state:'ready',current:null},{state:'unavailable',reason:'schema_missing'}]){mocks.time.mockResolvedValue(result);const r=await GET(req());expect(r.headers.get('cache-control')).toBe('no-store, private');expect(r.headers.get('vary')).toBe('Cookie');expect(r.headers.get('referrer-policy')).toBe('no-referrer');}});
+it('denied current authority is not a successful empty history',async()=>{mocks.time.mockResolvedValue({state:'unavailable',reason:'access_denied'});const r=await GET(req());expect(r.status).toBe(403);expect(await r.json()).toEqual({state:'unavailable',reason:'access_denied'});});
+it('unexpected errors disclose no raw diagnostic',async()=>{mocks.time.mockRejectedValue(Error('private SQL password'));const r=await GET(req());expect(r.status).toBe(503);expect(await r.json()).toEqual({state:'unavailable',reason:'read_failed'});});

@@ -1,4 +1,5 @@
 import type { UserRole } from "./domain";
+import { employeeRoleLabel } from "./employee-display";
 
 export type MarketplaceView = "available" | "requests";
 
@@ -11,10 +12,7 @@ export function marketplaceView(value?: string): MarketplaceView {
 }
 
 export function marketplaceRoleLabel(role: UserRole) {
-  if (role === "OWNER") return "Owner";
-  if (role === "MANAGER") return "Manager";
-  if (role === "LEAD") return "Lead Barista";
-  return "Barista";
+  return employeeRoleLabel(role);
 }
 
 export function marketplaceDisplayName(name: string) {

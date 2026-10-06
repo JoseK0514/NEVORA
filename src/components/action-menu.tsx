@@ -1,0 +1,146 @@
+"use client";
+
+import { useEffect, useRef, type ReactNode } from "react";
+import { actionMenuGeometry } from "./action-menu-geometry";
+
+type ActionMenuProps = {
+  id: string;
+  label: string;
+  ariaLabel?: string;
+  children: ReactNode;
+  align?: "start" | "end";
+};
+
+export function ActionMenu({
+  id,
+  label,
+  ariaLabel,
+  children,
+  align = "end",
+}: ActionMenuProps) {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const keyboardOpenRef = useRef(false);
+
+  useEffect(() => {
+    const trigger = triggerRef.current;
+    const menu = menuRef.current;
+    if (!trigger || !menu) return;
+
+    const visibleViewport = () => ({
+      width: window.visualViewport?.width ?? document.documentElement.clientWidth,
+      height: window.visualViewport?.height ?? window.innerHeight,
+      offsetLeft: window.visualViewport?.offsetLeft ?? 0,
+      offsetTop: window.visualViewport?.offsetTop ?? 0,
+    });
+    const position = () => {
+      if (!menu.matches(":popover-open")) return;
+      const triggerBox = trigger.getBoundingClientRect();
+      const viewport = visibleViewport();
+      // Wrapping changes the natural height after a viewport resize.
+      menu.style.width = `${actionMenuGeometry({ trigger: triggerBox, viewport, naturalHeight: 0, align }).width}px`;
+      const geometry = actionMenuGeometry({
+        trigger: triggerBox,
+        viewport,
+        naturalHeight: menu.scrollHeight + menu.offsetHeight - menu.clientHeight,
+        align,
+      });
+      menu.style.width = `${geometry.width}px`;
+      menu.style.left = `${geometry.left}px`;
+      menu.style.maxHeight = `${geometry.maxHeight}px`;
+      menu.style.bottom = "auto";
+      menu.style.top = `${geometry.top}px`;
+    };
+
+    const onBeforeToggle = (event: Event) => {
+      if ((event as Event & { newState?: string }).newState !== "open") return;
+      // Set a safe horizontal size before the popover reaches the top layer.
+      const geometry = actionMenuGeometry({
+        trigger: trigger.getBoundingClientRect(),
+        viewport: visibleViewport(),
+        naturalHeight: 0,
+        align,
+      });
+      menu.style.width = `${geometry.width}px`;
+      menu.style.left = `${geometry.left}px`;
+    };
+    const onToggle = () => {
+      position();
+      if (!menu.matches(":popover-open")) {
+        keyboardOpenRef.current = false;
+        return;
+      }
+      if (!keyboardOpenRef.current) return;
+      // The toggle event runs after the popover opens. Keyboard focus must
+      // not wait for a paint that a busy/background document can defer.
+      const first = menu.querySelector<HTMLElement>(
+        'a[href],button:not([disabled]),input:not([type="hidden"]):not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',
+      );
+      first?.focus({ preventScroll: true });
+      keyboardOpenRef.current = false;
+    };
+
+    menu.addEventListener("beforetoggle", onBeforeToggle);
+    menu.addEventListener("toggle", onToggle);
+    window.addEventListener("resize", position);
+    window.addEventListener("scroll", position, true);
+    window.visualViewport?.addEventListener("resize", position);
+    window.visualViewport?.addEventListener("scroll", position);
+
+    return () => {
+      menu.removeEventListener("beforetoggle", onBeforeToggle);
+      menu.removeEventListener("toggle", onToggle);
+      window.removeEventListener("resize", position);
+      window.removeEventListener("scroll", position, true);
+      window.visualViewport?.removeEventListener("resize", position);
+      window.visualViewport?.removeEventListener("scroll", position);
+    };
+  }, [align]);
+
+  return (
+    <div className="nevora-action-menu">
+      <button
+        ref={triggerRef}
+        type="button"
+        className="button ghost nevora-action-menu-trigger"
+        popoverTarget={id}
+        aria-label={ariaLabel}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            keyboardOpenRef.current = true;
+          }
+        }}
+        onPointerDown={() => {
+          keyboardOpenRef.current = false;
+        }}
+      >
+        <span>{label}</span>
+        <svg
+          className="nevora-action-menu-chevron"
+          aria-hidden="true"
+          viewBox="0 0 16 16"
+          width="14"
+          height="14"
+        >
+          <path
+            d="m4 6 4 4 4-4"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.6"
+          />
+        </svg>
+      </button>
+      <div
+        ref={menuRef}
+        id={id}
+        className={`nevora-action-menu-popover align-${align}`}
+        popover="auto"
+        aria-label={ariaLabel ?? `${label} actions`}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}

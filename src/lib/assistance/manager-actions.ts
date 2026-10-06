@@ -32,7 +32,9 @@ export type ManagerCoverageGapInput = {
   date: string;
   startTime: string;
   endTime: string;
-  gap: number;
+  gap: number | null;
+  requiresLead?: boolean | null;
+  positionCoverage?: {positionId: string; positionName: string; missing: number}[];
 };
 
 export type ManagerHourIssueInput = {
@@ -80,6 +82,20 @@ function coverageAction(
   weekStart: string,
   gap: ManagerCoverageGapInput,
 ): ManagerActionItem {
+  if (gap.gap === null || gap.requiresLead === null) return {
+    id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'REVIEW',
+    title: `Staffing setup needed at ${gap.locationName}`,
+    detail: 'Configure minimum staffing and choose a designated Lead rule.',
+    href: '/app/schedule/settings', locationId: gap.locationId,
+  };
+  const missingPositions = (gap.positionCoverage ?? []).filter(position => position.missing > 0);
+  if (missingPositions.length) return {
+    id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'URGENT',
+    title: `Position coverage missing at ${gap.locationName}`,
+    detail: `${gap.date} · ${gap.startTime}–${gap.endTime} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} missing`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
+    href: `/app/schedule?week=${encode(weekStart)}&locationId=${encode(gap.locationId)}&date=${encode(gap.date)}`,
+    dateTime: `${gap.date}T${gap.startTime}`, locationId: gap.locationId,
+  };
   const leadOnly = gap.gap === 0;
   const people = gap.gap === 1 ? "1 employee" : `${gap.gap} employees`;
 
@@ -98,7 +114,8 @@ function coverageAction(
       `&date=${encode(gap.date)}` +
       `&locationId=${encode(gap.locationId)}` +
       `&start=${encode(gap.startTime)}` +
-      `&end=${encode(gap.endTime)}`,
+      `&end=${encode(gap.endTime)}` +
+      (leadOnly || gap.requiresLead ? "&lead=1" : ""),
     dateTime: `${gap.date}T${gap.startTime}`,
     locationId: gap.locationId,
   };
@@ -112,7 +129,7 @@ function requestAction(
       id: `TIME_OFF:${request.id}`,
       type: "TIME_OFF",
       priority: "REVIEW",
-      title: "Time-off request",
+      title: "Time Off Request",
       detail: `${request.employeeName} is waiting for review.`,
       href: `/app/requests?tab=team&requestId=${encode(request.id)}`,
       dateTime: request.createdAt,
@@ -124,7 +141,7 @@ function requestAction(
       id: `CALLOUT:${request.id}`,
       type: "CALLOUT",
       priority: "REVIEW",
-      title: "Unable-to-work request",
+      title: "Unable to Work Request",
       detail: `${request.employeeName} is waiting for review.`,
       href: `/app/exchange?tab=requests&requestId=${encode(request.id)}`,
       dateTime: request.createdAt,
@@ -135,7 +152,7 @@ function requestAction(
     id: `EXCHANGE:${request.id}`,
     type: "EXCHANGE",
     priority: "REVIEW",
-    title: "Shift request",
+    title: "Shift Request",
     detail: `${request.employeeName} is waiting for review.`,
     href: `/app/exchange?tab=requests&requestId=${encode(request.id)}`,
     dateTime: request.createdAt,
