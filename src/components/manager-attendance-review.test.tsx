@@ -8,9 +8,6 @@ vi.mock('next/link', () => ({
     createElement('a', { href, ...props }, children),
 }));
 
-const people = [{ id: 'employee-1', name: 'Alex Morgan' }];
-const locations = [{ id: 'location-1', name: 'Northside' }];
-
 function readyState() {
   return {
     review: {
@@ -45,6 +42,10 @@ function readyState() {
       recordCount: 1,
       signalCount: 1,
       affectedEmployeeCount: 1,
+      labels: {
+        employees: [{ id: 'employee-1', name: 'Alex Morgan' }],
+        locations: [{ id: 'location-1', name: 'Northside' }],
+      },
       coverage: {
         state: 'complete' as const,
         limitations: [],
@@ -66,8 +67,6 @@ function readyState() {
 it('renders verified attendance signals with manager-readable names and factual wording', () => {
   const html = renderToStaticMarkup(
     <AttendanceReviewSurface
-      people={people}
-      locations={locations}
       state={readyState()}
       onRefresh={() => {}}
     />,
@@ -90,8 +89,6 @@ it('distinguishes a healthy empty snapshot from unavailable data', () => {
   empty.review.affectedEmployeeCount = 0;
   const emptyHtml = renderToStaticMarkup(
     <AttendanceReviewSurface
-      people={people}
-      locations={locations}
       state={empty}
       onRefresh={() => {}}
     />,
@@ -100,8 +97,6 @@ it('distinguishes a healthy empty snapshot from unavailable data', () => {
 
   const unavailableHtml = renderToStaticMarkup(
     <AttendanceReviewSurface
-      people={people}
-      locations={locations}
       state={{
         review: { state: 'unavailable', reason: 'read_failed' },
         refreshing: false,
@@ -117,8 +112,6 @@ it('distinguishes a healthy empty snapshot from unavailable data', () => {
 it('shows access denial as a sign-in state and never retains people', () => {
   const html = renderToStaticMarkup(
     <AttendanceReviewSurface
-      people={people}
-      locations={locations}
       state={{
         review: { state: 'unavailable', reason: 'access_denied' },
         refreshing: false,

@@ -1,5 +1,5 @@
 import { ManagerClockMonitor } from "./manager-clock-monitor";
-import { ManagerAttendanceReview, type AttendanceLocation, type AttendancePerson } from "./manager-attendance-review";
+import { ManagerAttendanceReview } from "./manager-attendance-review";
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
 import { employeeRoleLabel } from "../lib/employee-display";
@@ -82,8 +82,6 @@ type Props = {
   coverageConfigured: boolean;
   pendingRequestCount: number;
   managerActions: ManagerActionItem[];
-  attendancePeople: AttendancePerson[];
-  attendanceLocations: AttendanceLocation[];
   scheduleRoster: DashboardScheduleEmployeeItem[];
   locations: DashboardLocationItem[];
   days: DashboardDayItem[];
@@ -520,10 +518,7 @@ export function ManagerDashboard(props: Props) {
           <ManagerClockMonitor />
         </div>
       ) : props.view === "attendance" ? (
-        <ManagerAttendanceReview
-          people={props.attendancePeople}
-          locations={props.attendanceLocations}
-        />
+        <ManagerAttendanceReview />
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />
       ) : props.view === "team" ? (

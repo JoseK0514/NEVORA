@@ -22,7 +22,8 @@
     "test:navigation:ui": "node --import tsx scripts/nevora-navigation-ui-qa.mjs",
     "test:clocker:integration": "vitest run --config vitest.clocker-integration.config.mts",
     "test:clocker:owned": "node scripts/phase-c-clocker-postgres.mjs",
-    "test:release:postgres": "node scripts/phase-c-release-postgres.mjs"
+    "test:release:postgres": "node scripts/phase-c-release-postgres.mjs",
+    "test:phase-d:attendance-ui": "node scripts/phase-d-attendance-postgres.mjs"
   },
   "dependencies": {
     "@js-temporal/polyfill": "0.5.1",

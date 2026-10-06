@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [development, main, "phase-c/**", "fix/**", "release/**"]
+    branches: [development, main, "phase-c/**", "phase-d/**", "fix/**", "release/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**"]
 
@@ -62,6 +62,67 @@ jobs:
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
       - name: Persisted Clocker PostgreSQL tests
         run: npm run test:clocker:owned
+
+  phase-d-attendance-ui:
+    name: phase-d-attendance-ui
+    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/phase-d/') || startsWith(github.head_ref, 'phase-d/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install pinned Playwright runtime
+        run: npm install --no-save --package-lock=false playwright@1.62.1
+      - name: Install Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql
+          PG_INITDB="$(find /usr/lib/postgresql -type f -name initdb -print -quit)"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Exact-SHA D1.3 attendance browser gate
+        env:
+          PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
+          PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run test:phase-d:attendance-ui
+      - name: Verify SHA-bound report
+        env:
+          PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
+          PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const report = JSON.parse(fs.readFileSync(path.join(process.env.PHASE_D_ATTENDANCE_EVIDENCE_DIR, 'report.json'), 'utf8'));
+          if (report.checkpoint !== process.env.PHASE_D_ATTENDANCE_EXPECTED_SHA) throw new Error('Attendance evidence SHA mismatch');
+          if (report.sourceClean !== true) throw new Error('Attendance evidence did not run from a clean tracked worktree');
+          if (report.errors.length !== 0) throw new Error('Attendance browser report contains errors');
+          console.log(JSON.stringify({ checkpoint: report.checkpoint, tree: report.tree, checks: report.checks.length, errors: report.errors }, null, 2));
+          NODE
+      - name: Upload D1.3 browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: d13-attendance-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/nevora-d13-browser-evidence
+          if-no-files-found: error
+          retention-days: 14
 
   release-postgres:
     name: release-postgres

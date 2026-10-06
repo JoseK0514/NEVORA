@@ -44,6 +44,10 @@ function ready() {
     recordCount: 1,
     signalCount: 1,
     affectedEmployeeCount: 1,
+    labels: {
+      employees: [{ id: 'employee-1', name: 'Alex Morgan' }],
+      locations: [{ id: 'location-1', name: 'Northside' }],
+    },
     coverage: {
       state: 'complete',
       limitations: [],
@@ -76,6 +80,23 @@ describe('D1.3 attendance private response parser', () => {
       .toThrow('Invalid attendance review');
   });
 
+  it('fails closed when server-resolved labels are missing, extra, or mismatched', () => {
+    const value = ready();
+    expect(() => parseAttendanceReview({ ...value, labels: undefined }))
+      .toThrow('Invalid attendance review');
+    expect(() => parseAttendanceReview({
+      ...value,
+      labels: { ...value.labels, locations: [] },
+    })).toThrow('Invalid attendance review');
+    expect(() => parseAttendanceReview({
+      ...value,
+      labels: {
+        ...value.labels,
+        employees: [...value.labels.employees, { id: 'other', name: 'Other Person' }],
+      },
+    })).toThrow('Invalid attendance review');
+  });
+
   it('fails closed for unrecognized unavailable reasons', () => {
     expect(() => parseAttendanceReview({ state: 'unavailable', reason: 'client_filter' }))
       .toThrow('Invalid attendance review');
@@ -102,6 +123,94 @@ describe('D1.3 attendance private response parser', () => {
       await vi.advanceTimersByTimeAsync(101);
       expect(states.at(-1)).toMatchObject({
         review: { state: 'unavailable', reason: 'read_failed' },
+      });
+    } finally {
+      controller.stop();
+      vi.useRealTimers();
+    }
+  });
+
+  it('starts in loading and lets only the latest refresh publish protected attendance', async () => {
+    vi.useFakeTimers();
+    const states: AttendancePanelState[] = [];
+    let resolveFirst!: (value: unknown) => void;
+    let resolveSecond!: (value: unknown) => void;
+    const first = new Promise<unknown>((resolve) => { resolveFirst = resolve; });
+    const second = new Promise<unknown>((resolve) => { resolveSecond = resolve; });
+    const signals: AbortSignal[] = [];
+    const request = vi.fn()
+      .mockImplementationOnce((signal: AbortSignal) => {
+        signals.push(signal);
+        return first;
+      })
+      .mockImplementationOnce((signal: AbortSignal) => {
+        signals.push(signal);
+        return second;
+      });
+    const controller = createAttendanceReviewController(
+      (state) => states.push(state),
+      request,
+    );
+    try {
+      controller.start();
+      expect(states.at(-1)).toMatchObject({ review: null, refreshing: true, paused: false });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(request).toHaveBeenCalledTimes(1);
+
+      controller.refresh();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(request).toHaveBeenCalledTimes(2);
+      expect(signals[0]?.aborted).toBe(true);
+
+      resolveSecond({ ...ready(), observedAt: '2030-10-07T16:01:00Z' });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(states.at(-1)).toMatchObject({
+        review: { state: 'ready', observedAt: '2030-10-07T16:01:00Z' },
+        refreshing: false,
+      });
+
+      resolveFirst({ ...ready(), observedAt: '2030-10-07T16:00:00Z' });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(states.at(-1)).toMatchObject({
+        review: { state: 'ready', observedAt: '2030-10-07T16:01:00Z' },
+      });
+    } finally {
+      controller.stop();
+      vi.useRealTimers();
+    }
+  });
+
+  it('pause clears identities immediately and resume requires a new authorized snapshot', async () => {
+    vi.useFakeTimers();
+    const states: AttendancePanelState[] = [];
+    let resolveFresh!: (value: unknown) => void;
+    const fresh = new Promise<unknown>((resolve) => { resolveFresh = resolve; });
+    const request = vi.fn()
+      .mockResolvedValueOnce(ready())
+      .mockReturnValueOnce(fresh);
+    const controller = createAttendanceReviewController(
+      (state) => states.push(state),
+      request,
+    );
+    try {
+      controller.start();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(JSON.stringify(states.at(-1))).toContain('employee-1');
+
+      controller.pause();
+      expect(states.at(-1)).toEqual({ review: null, refreshing: false, paused: true });
+      expect(JSON.stringify(states.at(-1))).not.toContain('employee-1');
+
+      controller.start();
+      expect(states.at(-1)).toEqual({ review: null, refreshing: true, paused: false });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(request).toHaveBeenCalledTimes(2);
+      expect(JSON.stringify(states.at(-1))).not.toContain('employee-1');
+
+      resolveFresh({ ...ready(), observedAt: '2030-10-07T16:02:00Z' });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(states.at(-1)).toMatchObject({
+        review: { state: 'ready', observedAt: '2030-10-07T16:02:00Z' },
       });
     } finally {
       controller.stop();

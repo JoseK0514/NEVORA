@@ -1,6 +1,10 @@
 import { Temporal } from '@js-temporal/polyfill';
 import { createPrivateSnapshotController } from '../private-snapshot-client';
-import type { AttendanceReadUnavailableReason, AttendanceReview } from './read-model';
+import type {
+  AttendanceDisplayLabel,
+  AttendanceDisplayReview,
+  AttendanceReadUnavailableReason,
+} from './read-model';
 import type {
   ComparisonLimitation,
   DeferredCapability,
@@ -10,7 +14,7 @@ import type {
 } from './types';
 
 export type AttendancePanelState = {
-  review: AttendanceReview | null;
+  review: AttendanceDisplayReview | null;
   refreshing: boolean;
   paused: boolean;
 };
@@ -130,6 +134,27 @@ function observation(value: unknown): Observation {
   };
 }
 
+function displayLabels(
+  value: unknown,
+  expectedIds: ReadonlySet<string>,
+): AttendanceDisplayLabel[] {
+  if (!Array.isArray(value)) return fail();
+  const seen = new Set<string>();
+  const result = value.map((candidate) => {
+    if (
+      !object(candidate) ||
+      !text(candidate.id, 200) ||
+      !text(candidate.name, 300) ||
+      seen.has(candidate.id) ||
+      !expectedIds.has(candidate.id)
+    ) return fail();
+    seen.add(candidate.id);
+    return { id: candidate.id, name: candidate.name.trim() };
+  });
+  if (seen.size !== expectedIds.size) return fail();
+  return result;
+}
+
 function limitation(value: unknown): ComparisonLimitation {
   if (
     !object(value) ||
@@ -148,7 +173,7 @@ function limitation(value: unknown): ComparisonLimitation {
  * Validate the private network response before exposing attendance identities or counts.
  * The browser may display only the authorized D1.2 projection; it cannot select scope.
  */
-export function parseAttendanceReview(value: unknown): AttendanceReview {
+export function parseAttendanceReview(value: unknown): AttendanceDisplayReview {
   if (!object(value)) return fail();
 
   if (value.state === 'unavailable') {
@@ -170,6 +195,7 @@ export function parseAttendanceReview(value: unknown): AttendanceReview {
     !text(value.scope.localDate, 20) ||
     !object(value.coverage) ||
     !['complete', 'limited'].includes(String(value.coverage.state)) ||
+    !object(value.labels) ||
     !Array.isArray(value.groups) ||
     !Array.isArray(value.coverage.limitations) ||
     !Array.isArray(value.coverage.deferredCapabilities)
@@ -203,6 +229,11 @@ export function parseAttendanceReview(value: unknown): AttendanceReview {
     };
   });
 
+  const employeeIds = new Set(groups.map((group) => group.employeeId));
+  const locationIds = new Set(groups.map((group) => group.locationId));
+  const employeeLabels = displayLabels(value.labels.employees, employeeIds);
+  const locationLabels = displayLabels(value.labels.locations, locationIds);
+
   const limitations = value.coverage.limitations.map(limitation);
   const deferred = value.coverage.deferredCapabilities.map((capability) => {
     if (!deferredCapabilities.has(capability as DeferredCapability)) return fail();
@@ -234,6 +265,10 @@ export function parseAttendanceReview(value: unknown): AttendanceReview {
     recordCount: value.recordCount,
     signalCount: value.signalCount,
     affectedEmployeeCount: value.affectedEmployeeCount,
+    labels: {
+      employees: employeeLabels,
+      locations: locationLabels,
+    },
     coverage: {
       state: value.coverage.state as 'complete' | 'limited',
       limitations,
@@ -244,7 +279,7 @@ export function parseAttendanceReview(value: unknown): AttendanceReview {
 
 export async function fetchAttendanceReview(
   signal: AbortSignal,
-): Promise<AttendanceReview> {
+): Promise<AttendanceDisplayReview> {
   const response = await fetch('/api/manager/attendance', {
     method: 'GET',
     credentials: 'same-origin',
@@ -273,7 +308,7 @@ export function createAttendanceReviewController(
   changed: (state: AttendancePanelState) => void,
   request: (signal: AbortSignal) => Promise<unknown> = fetchAttendanceReview,
 ) {
-  return createPrivateSnapshotController<AttendanceReview>(
+  return createPrivateSnapshotController<AttendanceDisplayReview>(
     ({ snapshot, refreshing, paused }) =>
       changed({ review: snapshot, refreshing, paused }),
     request,

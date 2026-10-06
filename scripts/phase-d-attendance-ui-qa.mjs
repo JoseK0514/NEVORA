@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -15,12 +16,38 @@ const evidence = resolve(
 );
 await mkdir(evidence, { recursive: true });
 
-const runtime = createRequire(
-  join(homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'),
-);
-const playwright = runtime('playwright');
+const projectRequire = createRequire(import.meta.url);
+let playwright;
+try {
+  playwright = projectRequire('playwright');
+} catch {
+  const runtime = createRequire(
+    join(homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'),
+  );
+  playwright = runtime('playwright');
+}
+const checkpoint = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+const tree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim();
+const trackedStatus = execFileSync(
+  'git',
+  ['status', '--porcelain=v1', '--untracked-files=no'],
+  { encoding: 'utf8' },
+).trim();
+const sourceClean = trackedStatus.length === 0;
+const expectedSha = process.env.PHASE_D_ATTENDANCE_EXPECTED_SHA?.trim();
+const allowDirty = process.env.PHASE_D_ATTENDANCE_ALLOW_DIRTY === 'yes';
+if (expectedSha) {
+  assert.equal(checkpoint, expectedSha, 'D1.3 browser evidence must run on the requested exact SHA');
+}
+if (!allowDirty) {
+  assert.equal(sourceClean, true, 'D1.3 browser evidence requires a clean tracked worktree');
+}
 const report = {
   generatedAt: new Date().toISOString(),
+  checkpoint,
+  tree,
+  sourceClean,
+  expectedSha: expectedSha ?? null,
   checks: [],
   errors: [],
   screenshots: [],
@@ -39,7 +66,8 @@ const checked = (name) => {
 const q = (text, values = []) => app.database.executor.query({ text, values });
 const endpoint = '/api/manager/attendance';
 
-function fixtureReady() {
+function fixtureReady(locationId = 'loc-1') {
+  const locationName = locationId === 'd13-retired' ? 'Retired Historical Location' : 'Main Office';
   return {
     state: 'ready',
     engineVersion: 1,
@@ -56,7 +84,7 @@ function fixtureReady() {
       {
         entryId: 'd13-entry',
         employeeId: 'D13-A',
-        locationId: 'loc-1',
+        locationId,
         sourceVersion: 1,
         observations: [
           {
@@ -72,6 +100,10 @@ function fixtureReady() {
     recordCount: 1,
     signalCount: 1,
     affectedEmployeeCount: 1,
+    labels: {
+      employees: [{ id: 'D13-A', name: 'Alexandria Attendance Review Employee With A Long Name' }],
+      locations: [{ id: locationId, name: locationName }],
+    },
     coverage: {
       state: 'limited',
       limitations: [
@@ -180,6 +212,9 @@ try {
   app = await createOwnedNextApp(evidence);
   await seedOwnedApp(app.database.executor);
   const passwordHash = await hashPassword(TEST_PASSWORD);
+  await q(
+    "INSERT INTO locations(id,workspace_id,clocker_key,name,short_name,active) VALUES('d13-retired','workspace-fuel','d13-retired','Retired Historical Location','Retired Historical Location',false)",
+  );
 
   for (const [id, first, last, role] of [
     ['D13-M', 'Morgan', 'Manager', 'MANAGER'],
@@ -226,6 +261,7 @@ try {
     await owner.route('**/api/manager/attendance', async (route) => {
       const headers = route.request().headers();
       assert.equal(headers['x-nevora-attendance'], '1');
+      if (fixture.delayMs) await new Promise((resolve) => setTimeout(resolve, fixture.delayMs));
       await route.fulfill({
         status: fixture.status,
         contentType: 'application/json',
@@ -246,6 +282,68 @@ try {
     assert.doesNotMatch(body, /D13-A/);
     assert.doesNotMatch(body, /\bLate\b/);
     checked(engine + ': populated factual attendance exception state');
+    await page.getByText('Some comparisons are limited', { exact: true }).waitFor();
+    checked(engine + ': limited source state is explicitly disclosed');
+
+    fixture = {
+      status: 403,
+      payload: { state: 'unavailable', reason: 'access_denied' },
+      delayMs: 350,
+    };
+    await page.evaluate(() => window.dispatchEvent(new StorageEvent('storage', { key: 'nevora-session-check' })));
+    await page.getByText('Loading attendance review', { exact: true }).waitFor();
+    assert.equal(
+      await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(),
+      0,
+      'protected attendance data must clear before lifecycle reauthorization completes',
+    );
+    await page.getByText('Sign in again', { exact: true }).waitFor();
+    checked(engine + ': lifecycle reauthorization clears protected snapshot before the response');
+    fixture = { payload: fixtureReady(), status: 200 };
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+
+    fixture = { payload: fixtureReady(), status: 200, delayMs: 200 };
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await page.getByText('Loading attendance review', { exact: true }).waitFor();
+    assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+    checked(engine + ': visibility revalidation clears protected snapshot before refresh');
+
+    await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+    await page.getByText('Attendance updates paused', { exact: true }).waitFor();
+    assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+    fixture = { payload: fixtureReady(), status: 200, delayMs: 200 };
+    await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
+    await page.getByText('Loading attendance review', { exact: true }).waitFor();
+    assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+    checked(engine + ': pagehide/pageshow requires a fresh protected snapshot');
+
+    fixture = { payload: fixtureReady('d13-retired'), status: 200 };
+    await page.getByRole('button', { name: 'Refresh attendance review' }).click();
+    await page.getByText('Retired Historical Location', { exact: true }).waitFor();
+    assert.equal(await page.getByText('Recorded location', { exact: true }).count(), 0);
+    checked(engine + ': historical inactive location keeps its recorded label');
+
+    fixture = {
+      payload: {
+        ...fixtureReady(),
+        labels: {
+          employees: [{ id: 'D13-A', name: 'Alexandria Attendance Review Employee With A Long Name' }],
+          locations: [{ id: 'loc-1', name: 'Renamed Main Office' }],
+        },
+      },
+      status: 200,
+    };
+    await page.getByRole('button', { name: 'Refresh attendance review' }).click();
+    await page.getByText('Renamed Main Office', { exact: true }).waitFor();
+    assert.equal(await page.getByText('Main Office', { exact: true }).count(), 0);
+    checked(engine + ': refreshed server labels replace stale page-load labels');
+
+    fixture = { payload: fixtureReady(), status: 200 };
+    await page.getByRole('button', { name: 'Refresh attendance review' }).click();
+    await page.getByText('Main Office', { exact: true }).waitFor();
 
     for (const width of WIDTHS) {
       await page.setViewportSize({ width, height: width <= 430 ? 844 : 1000 });
@@ -262,7 +360,7 @@ try {
 
     fixture = {
       status: 200,
-      payload: { ...fixtureReady(), groups: [], recordCount: 0, signalCount: 0, affectedEmployeeCount: 0, coverage: { ...fixtureReady().coverage, state: 'complete', limitations: [] } },
+      payload: { ...fixtureReady(), groups: [], recordCount: 0, signalCount: 0, affectedEmployeeCount: 0, labels: { employees: [], locations: [] }, coverage: { ...fixtureReady().coverage, state: 'complete', limitations: [] } },
     };
     await refresh.click();
     await page.getByText('No recorded-time exceptions', { exact: true }).waitFor();

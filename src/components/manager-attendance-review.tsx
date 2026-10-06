@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   createAttendanceReviewController,
   fetchAttendanceReview,
@@ -12,21 +12,6 @@ import type {
   Observation,
   ObservationKind,
 } from '@/lib/attendance/types';
-
-export type AttendancePerson = {
-  id: string;
-  name: string;
-};
-
-export type AttendanceLocation = {
-  id: string;
-  name: string;
-};
-
-type Props = {
-  people: readonly AttendancePerson[];
-  locations: readonly AttendanceLocation[];
-};
 
 const KIND_LABELS: Record<ObservationKind, string> = {
   TIME_HISTORY_INCONSISTENT: 'Time record needs review',
@@ -93,35 +78,29 @@ function initials(name: string) {
 
 function groupRows(
   groups: readonly AttendanceGroup[],
-  people: Map<string, string>,
-  locations: Map<string, string>,
+  labels: {
+    employees: readonly { id: string; name: string }[];
+    locations: readonly { id: string; name: string }[];
+  },
 ) {
+  const people = new Map(labels.employees.map((label) => [label.id, label.name]));
+  const locations = new Map(labels.locations.map((label) => [label.id, label.name]));
   return groups.map((group) => ({
     ...group,
-    employeeName: people.get(group.employeeId) ?? 'Recorded employee',
-    locationName: locations.get(group.locationId) ?? 'Recorded location',
+    employeeName: people.get(group.employeeId)!,
+    locationName: locations.get(group.locationId)!,
   }));
 }
 
 export function AttendanceReviewSurface({
   state,
-  people,
-  locations,
   onRefresh,
-}: Props & { state: AttendancePanelState; onRefresh: () => void }) {
+}: { state: AttendancePanelState; onRefresh: () => void }) {
   const { review, refreshing, paused } = state;
-  const personNames = useMemo(
-    () => new Map(people.map((person) => [person.id, person.name])),
-    [people],
-  );
-  const locationNames = useMemo(
-    () => new Map(locations.map((location) => [location.id, location.name])),
-    [locations],
-  );
   const ready = !paused && review?.state === 'ready' ? review : null;
   const denied = review?.state === 'unavailable' && review.reason === 'access_denied';
   const unavailable = review?.state === 'unavailable' && !denied;
-  const rows = ready ? groupRows(ready.groups, personNames, locationNames) : [];
+  const rows = ready ? groupRows(ready.groups, ready.labels) : [];
 
   return (
     <section className="attendance-review" aria-labelledby="attendance-review-title">
@@ -240,7 +219,7 @@ export function AttendanceReviewSurface({
   );
 }
 
-export function ManagerAttendanceReview(props: Props) {
+export function ManagerAttendanceReview() {
   const [state, setState] = useState<AttendancePanelState>({
     review: null,
     refreshing: true,
@@ -253,8 +232,8 @@ export function ManagerAttendanceReview(props: Props) {
     controller.current = current;
     let mounted = true;
     const sync = () => {
-      if (document.visibilityState === 'hidden' || !navigator.onLine) current.pause();
-      else current.start();
+      current.pause();
+      if (document.visibilityState !== 'hidden' && navigator.onLine) current.start();
     };
     const pause = () => current.pause();
 
@@ -285,7 +264,6 @@ export function ManagerAttendanceReview(props: Props) {
 
   return (
     <AttendanceReviewSurface
-      {...props}
       state={state}
       onRefresh={() => controller.current?.refresh()}
     />

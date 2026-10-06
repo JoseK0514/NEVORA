@@ -10,7 +10,6 @@ it("shows full pending totals beyond the six-row preview and links missing avail
   const props: ComponentProps<typeof ManagerDashboard> = {
     workspaceName: "Northside Services", timeZone: "America/Puerto_Rico", firstName:"Alex",weekStart:"2026-09-28",weekLabel:"Sep 28 – Oct 4",previousWeek:"2026-09-21",nextWeek:"2026-10-05",view:"overview",readyLocationCount:0,totalLocations:2,availabilitySubmitted:2,activeEmployees:3,unavailableAllWeek:0,coverageIssueCount:0,coverageConfigured:true,pendingRequestCount:7,
     managerActions:[...Array.from({length:7},(_,i)=>({id:`request-${i}`,type:"TIME_OFF" as const,priority:"REVIEW" as const,title:"Time Off Request",detail:"Sam Cruz is waiting for review.",href:"/app/requests?tab=team"})),{id:"missing",type:"AVAILABILITY_MISSING",priority:"MISSING_INPUT",title:"Availability not submitted",detail:"Jamie has not submitted.",href:"/app/availability?week=2026-09-28"}],
-    attendancePeople:[{id:"sam",name:"Sam Cruz"}],attendanceLocations:[{id:"loc-1",name:"Northside"}],
     scheduleRoster:[{employeeId:"sam",employeeName:"Sam Cruz",role:"EMPLOYEE",shifts:[]}],locations:[],days:[],hours:[],requestCounts:{timeOff:7,exchange:0,callout:0},latestRevision:null,
   };
   const html = renderToStaticMarkup(<ManagerDashboard {...props}/>);
