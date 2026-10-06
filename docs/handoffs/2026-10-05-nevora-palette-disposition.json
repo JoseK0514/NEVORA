@@ -1,0 +1,666 @@
+{
+  "hex": {
+    "fffaf2": {
+      "replacement": "var(--nuvora-surface)",
+      "occurrences": 2
+    },
+    "fffdf9": {
+      "replacement": "var(--nuvora-surface)",
+      "occurrences": 6
+    },
+    "fdfaf5": {
+      "replacement": "var(--nuvora-surface)",
+      "occurrences": 2
+    },
+    "fbf9f5": {
+      "replacement": "var(--nuvora-surface)",
+      "occurrences": 1
+    },
+    "fffaf3": {
+      "replacement": "var(--nuvora-surface)",
+      "occurrences": 1
+    },
+    "eee8e2": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "eae2d8": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "fbf8f3": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 23
+    },
+    "ece4da": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "ded6cc": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "eee7de": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "ede6dd": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f8f4ed": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "f7f1ea": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "f1e8dd": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f4ece3": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f1ebe4": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f0efed": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f5eee6": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "eeebe7": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "ebe8e4": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "d9d6d2": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f4ede5": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "eae1d6": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "faf7f2": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f0e9df": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "fbf7f1": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 2
+    },
+    "faf6ef": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f5ecdf": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "faf6f0": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 3
+    },
+    "e9e1d8": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f7eadb": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f0ece6": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "f4eee8": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "ece7e1": {
+      "replacement": "var(--nuvora-bg)",
+      "occurrences": 1
+    },
+    "d7c5b9": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "d9ccc4": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 2
+    },
+    "c9b9af": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "655951": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "aaa099": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 4
+    },
+    "cebeb4": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "6d625b": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 2
+    },
+    "887b72": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "514943": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "68635f": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "98918b": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "9b7658": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "9b8d84": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "aa9d95": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "705347": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "766960": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "5e5955": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "8d6a58": {
+      "replacement": "var(--nuvora-muted)",
+      "occurrences": 1
+    },
+    "20140f": {
+      "replacement": "var(--nuvora-text)",
+      "occurrences": 1
+    },
+    "4b3a31": {
+      "replacement": "var(--nuvora-text)",
+      "occurrences": 1
+    },
+    "d8d0c8": {
+      "replacement": "var(--color-border-subtle)",
+      "occurrences": 1
+    },
+    "eadfc9": {
+      "replacement": "var(--color-border-subtle)",
+      "occurrences": 2
+    },
+    "ded2c6": {
+      "replacement": "var(--color-border-subtle)",
+      "occurrences": 1
+    },
+    "fbf3e9": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 2
+    },
+    "f4e8da": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 1
+    },
+    "f6eadc": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 1
+    },
+    "fff7ec": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 2
+    },
+    "fff3e4": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 1
+    },
+    "f0e5d9": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 1
+    },
+    "fff8ed": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 1
+    },
+    "fff4ec": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 1
+    },
+    "f6ead8": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 1
+    },
+    "fbf0df": {
+      "replacement": "var(--nevora-soft)",
+      "occurrences": 1
+    },
+    "d8c8b8": {
+      "replacement": "var(--nevora-blue)",
+      "occurrences": 3
+    },
+    "d9c7b4": {
+      "replacement": "var(--nevora-blue)",
+      "occurrences": 1
+    },
+    "dfc4a8": {
+      "replacement": "var(--nevora-blue)",
+      "occurrences": 1
+    },
+    "a95f24": {
+      "replacement": "var(--nevora-blue)",
+      "occurrences": 1
+    },
+    "573a2c": {
+      "replacement": "var(--nevora-blue)",
+      "occurrences": 4
+    },
+    "654a3d": {
+      "replacement": "var(--nevora-blue)",
+      "occurrences": 1
+    },
+    "5c3426": {
+      "replacement": "var(--nevora-blue)",
+      "occurrences": 1
+    },
+    "6c402b": {
+      "replacement": "var(--nevora-blue)",
+      "occurrences": 1
+    },
+    "5d3828": {
+      "replacement": "var(--nevora-blue)",
+      "occurrences": 1
+    },
+    "3a2419": {
+      "replacement": "var(--nevora-blue-hover)",
+      "occurrences": 1
+    },
+    "2d1c14": {
+      "replacement": "var(--nevora-blue-hover)",
+      "occurrences": 1
+    },
+    "f5b367": {
+      "replacement": "var(--nevora-cyan)",
+      "occurrences": 1
+    },
+    "8c3d2c": {
+      "replacement": "var(--color-state-danger)",
+      "occurrences": 1
+    },
+    "9b4938": {
+      "replacement": "var(--color-state-danger)",
+      "occurrences": 5
+    },
+    "dfb8ad": {
+      "replacement": "var(--color-state-danger)",
+      "occurrences": 1
+    },
+    "c9342e": {
+      "replacement": "var(--color-state-danger)",
+      "occurrences": 3
+    },
+    "ca3730": {
+      "replacement": "var(--color-state-danger)",
+      "occurrences": 1
+    },
+    "ad6556": {
+      "replacement": "var(--color-state-danger)",
+      "occurrences": 1
+    },
+    "c93631": {
+      "replacement": "var(--color-state-danger)",
+      "occurrences": 1
+    },
+    "f8e6e0": {
+      "replacement": "var(--color-state-danger-bg)",
+      "occurrences": 2
+    },
+    "f4e5df": {
+      "replacement": "var(--color-state-danger-bg)",
+      "occurrences": 1
+    },
+    "ead4ad": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 3
+    },
+    "d88917": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 2
+    },
+    "df9618": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 1
+    },
+    "d68f19": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 2
+    },
+    "ebcda4": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 1
+    },
+    "a76412": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 1
+    },
+    "90500d": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 1
+    },
+    "a46010": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 2
+    },
+    "b5552f": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 1
+    },
+    "d48b25": {
+      "replacement": "var(--color-state-warning)",
+      "occurrences": 1
+    },
+    "fff9ef": {
+      "replacement": "var(--color-state-warning-bg)",
+      "occurrences": 1
+    },
+    "fdf0dc": {
+      "replacement": "var(--color-state-warning-bg)",
+      "occurrences": 1
+    },
+    "f8e7cf": {
+      "replacement": "var(--color-state-warning-bg)",
+      "occurrences": 1
+    },
+    "fae8dc": {
+      "replacement": "var(--color-state-warning-bg)",
+      "occurrences": 1
+    }
+  },
+  "rgb": {
+    "(197, 139, 85)": {
+      "replacement": [
+        7,
+        86,
+        217
+      ],
+      "occurrences": 15
+    },
+    "(235, 151, 61)": {
+      "replacement": [
+        67,
+        204,
+        251
+      ],
+      "occurrences": 1
+    },
+    "(232, 136, 52)": {
+      "replacement": [
+        7,
+        86,
+        217
+      ],
+      "occurrences": 1
+    },
+    "(199, 124, 60)": {
+      "replacement": [
+        7,
+        86,
+        217
+      ],
+      "occurrences": 2
+    },
+    "(92, 52, 38)": {
+      "replacement": [
+        7,
+        86,
+        217
+      ],
+      "occurrences": 1
+    },
+    "(246, 241, 232)": {
+      "replacement": [
+        246,
+        246,
+        248
+      ],
+      "occurrences": 1
+    },
+    "(251, 243, 233)": {
+      "replacement": [
+        240,
+        251,
+        255
+      ],
+      "occurrences": 1
+    },
+    "(244, 238, 230)": {
+      "replacement": [
+        246,
+        246,
+        248
+      ],
+      "occurrences": 1
+    },
+    "(251, 248, 243)": {
+      "replacement": [
+        246,
+        246,
+        248
+      ],
+      "occurrences": 1
+    },
+    "(246, 234, 220)": {
+      "replacement": [
+        240,
+        251,
+        255
+      ],
+      "occurrences": 1
+    },
+    "(255, 245, 228)": {
+      "replacement": [
+        255,
+        255,
+        255
+      ],
+      "occurrences": 1
+    },
+    "(255, 250, 242)": {
+      "replacement": [
+        255,
+        255,
+        255
+      ],
+      "occurrences": 2
+    },
+    "(52, 37, 27)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 5
+    },
+    "(63, 39, 29)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(37, 24, 18)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(59, 42, 29)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 19
+    },
+    "(45, 31, 22)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(90, 56, 40)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 8
+    },
+    "(45, 24, 15)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(27, 16, 11)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(28, 16, 11)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 2
+    },
+    "(25, 13, 9)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(24, 13, 8)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(36, 20, 14)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 3
+    },
+    "(87, 58, 44)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 6
+    },
+    "(72, 43, 27)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(46, 28, 19)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(56, 33, 22)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    },
+    "(69, 42, 28)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 2
+    },
+    "(67, 42, 28)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 2
+    },
+    "(43, 26, 18)": {
+      "replacement": [
+        24,
+        25,
+        31
+      ],
+      "occurrences": 1
+    }
+  }
+}
