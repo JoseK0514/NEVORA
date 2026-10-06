@@ -847,3 +847,59 @@ it("keeps D1.1 runtime imports inside the pure attendance boundary", () => {
   entryFiles.forEach(inspect);
   expect(violations).toEqual([]);
 });
+
+
+it("is stable when related breaks and publication facts arrive in a different order", () => {
+  const closedBreak = makeRecordedBreak({
+    id: "break-a",
+    startAt: "2030-10-07T13:00:00Z",
+    endAt: "2030-10-07T13:10:00Z",
+    breakTypeId: "rest",
+    breakTypeSnapshot: {
+      id: "rest",
+      version: 1,
+      name: "Rest",
+      category: "REST",
+      targetMinutes: 15,
+    },
+  });
+  const openBreak = makeRecordedBreak({
+    id: "break-b",
+    startAt: "2030-10-07T15:40:00Z",
+    breakTypeId: "rest",
+    breakTypeSnapshot: {
+      id: "rest",
+      version: 1,
+      name: "Rest",
+      category: "REST",
+      targetMinutes: 15,
+    },
+  });
+  const entry = makeRecordedEntry({
+    status: "ON_BREAK",
+    breaks: [closedBreak, openBreak],
+  });
+  entry.scheduleContext = matchedContext(entry);
+
+  const matched = makeHistoricalShift();
+  const unrelated = makeHistoricalShift({
+    employeeId: "other-employee",
+    publishedShiftId: "other-published",
+    sourceShiftId: "other-source",
+  });
+
+  const first = projectAttendance(
+    makeAttendanceSource({
+      entries: [entry],
+      publications: [matched, unrelated],
+    }),
+  );
+  const second = projectAttendance(
+    makeAttendanceSource({
+      entries: [{ ...entry, breaks: [openBreak, closedBreak] }],
+      publications: [unrelated, matched],
+    }),
+  );
+
+  expect(second).toEqual(first);
+});
