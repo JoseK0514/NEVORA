@@ -3,6 +3,7 @@ import { bindFixtureCallout, fixtureProof } from './shift-change-api';
 import { managementProof } from '../fixtures/management';
 import { afterAll, beforeAll, beforeEach, expect, it, vi, afterEach } from 'vitest';
 import { Client } from 'pg';
+import { Temporal } from '@js-temporal/polyfill';
 import { selectGenerationScope } from '../../lib/scheduling/generation/scope';
 import { readGenerationReviewSnapshot } from '../../lib/data/schedule-generation-snapshot';
 import * as planner from '../../lib/scheduling/generation/planner';
@@ -387,7 +388,10 @@ it('authoritative snapshot preserves availability fallback, prior-Sunday and nex
     submitted: false
   }));
   expect(snapshot.input.ledger.map(s => s.id)).toEqual(['next', 'prior']);
-  expect(snapshot.source.employees.find(e => e.id === 'worker')?.updated_at).toBe('2029-12-31T20:00:00.123456-04:00');
+  const timestamp = snapshot.source.employees.find(e => e.id === 'worker')?.updated_at;
+  // PostgreSQL may serialize the instant in UTC or the cluster's local zone.
+  // Temporal retains the microseconds that Date would truncate.
+  expect(Temporal.Instant.from(String(timestamp)).toString({fractionalSecondDigits: 6})).toBe('2030-01-01T00:00:00.123456Z');
   expect(snapshot.source.schedule_generation_exclusions).toEqual([]);
 });
 async function heldExecutor(defer: (cleanup: () => void | Promise<unknown>) => void, hold: (s: SqlStatement) => boolean) {

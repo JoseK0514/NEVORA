@@ -82,7 +82,9 @@ it.each([1,3,5,20])('uses explicit New York database configuration with %i arbit
   expect(snapshot.input.employees.filter(e=>e.id!=='owner').every(e=>e.maximumWeeklyHours===40)).toBe(true);
   expect(await q('SELECT count(*)::integer n FROM notifications')).toEqual([{n:0}]);
   expect(await generate()).toMatchObject({changed:false});
-});
+// This case runs the complete planner twice for up to 20 locations. Its runtime
+// varies with runner CPU; planner work limits and every result assertion remain.
+}, 30_000);
 
 it.each(['manual-create','manual-edit','availability-submit','approved-leave','deadline-insert','actor-role'])('re-solves after actual %s business writer during solve-to-commit',async kind=>{
   await ready();
