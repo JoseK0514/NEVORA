@@ -63,6 +63,9 @@ it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and r
 it("distinguishes missing, intentionally unavailable and submitted windows without treating seeded hours as a submission", async () => {
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"}));
   expect(html).toContain("1 missing"); expect(html).toContain("Unavailable all week"); expect(html).toContain("Not submitted"); expect(html).toContain("FUEL – 2"); expect(html).toContain("6:00 AM – 2:00 PM"); expect(html).not.toContain("7:00 AM"); expect(html).not.toContain("<form"); expect(html).not.toContain("checkbox");
+  expect(html).toContain('class="status-pill neutral">Not submitted');
+  expect(html).toContain('class="status-pill warning">1 missing');
+  expect(html).toContain('class="status-pill success">Submitted');
 });
 it("keeps management pending, coverage and outcome data separate", async () => {
   const pending = renderToStaticMarkup(await ManagerShiftRequests({ timeZone:"America/Puerto_Rico",tab:"requests"}));

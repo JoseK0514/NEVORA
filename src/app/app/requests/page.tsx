@@ -20,7 +20,6 @@ function dateLabel(date: string) {
 
 function statusTone(status: string) {
   if (status === "APPROVED") return "success" as const;
-  if (status === "PENDING") return "warning" as const;
   return "neutral" as const;
 }
 

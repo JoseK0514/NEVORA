@@ -9,7 +9,7 @@ vi.mock('next/link',()=>({default:({children,...props}:React.ComponentProps<'a'>
 vi.mock('@/lib/scheduling/validate-shift',()=>({schedulingIssueMessage:()=>''}));
 vi.mock('@/components/manager-shift-requests',()=>({ManagerShiftRequests:()=>null}));
 vi.mock('@/components/nav-icon',()=>({NavIcon:()=>null}));
-vi.mock('@/components/status-pill',()=>({StatusPill:({children}:{children:React.ReactNode})=>createElement('span',{},children)}));
+vi.mock('@/components/status-pill',()=>import('../../../components/status-pill'));
 vi.mock('@/lib/auth/permissions',()=>({isManagerRole:()=>false}));
 vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'self',role:'EMPLOYEE'}),requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
 vi.mock('@/lib/date-utils',()=>import('../../../lib/date-utils'));
@@ -23,6 +23,10 @@ vi.mock('@/app/app/exchange/callout/actions',()=>({cancelCalloutAction:vi.fn()})
 function exchange(id:string,owner='self'):ExchangeRecord{return {id,kind:'SWAP',status:'APPROVED',requestedByEmployeeId:owner,targetEmployeeId:'self',requestedByName:'Fictional',requestedByRole:'EMPLOYEE',sourceShift:{id:'shift',scheduleId:'week',employeeId:owner,employeeName:'Fictional',locationId:'2',locationName:'Drive',weekStart:'2026-10-05',date:'2026-10-05',startTime:'08:00',endTime:'12:00'},createdAt:'2026-10-03T12:00:00Z'};}
 beforeEach(()=>{f.activity=Array.from({length:10},(_,i)=>exchange(`row-${i}`));f.callouts=[];f.selected=null;f.selectedCallout=null;f.allowed=['2'];f.assigned=[];f.reviewed=null;f.coverageAllowed=false;f.operation=null;vi.clearAllMocks();});
 async function html(requestId?:string){return renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({tab:'requests',requestId})}));}
+it.each(['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'] as const)('ordinary employee %s request status stays neutral',async status=>{
+ f.activity=[{...exchange('pending'),status}];
+ expect(await html()).toMatch(/class="status-pill neutral">(?:Offered|Awaiting employee|Manual review)</);
+});
 it('default retains first eight; an authorized selected later row is included and focusable',async()=>{
  expect(await html()).not.toContain('id="request-row-9"');expect(await html('row-9')).toContain('id="request-row-9" tabindex="-1"');
 });

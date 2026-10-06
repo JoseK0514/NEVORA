@@ -3107,9 +3107,9 @@ button { cursor: pointer; }
   min-height: 68px;
   margin: 0 0 12px;
   padding: 12px 14px;
-  border: 1px solid var(--color-state-warning);
+  border: 1px solid var(--color-border-subtle);
   border-radius: 15px;
-  background: var(--soft-amber);
+  background: var(--color-bg-surface);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4995,7 +4995,7 @@ small,
 }
 
 .availability-submission-status.pending {
-  background: color-mix(in srgb, var(--soft-amber) 48%, var(--surface));
+  background: color-mix(in srgb, var(--nevora-soft) 58%, var(--surface));
 }
 
 @media (max-width: 600px) {
@@ -5084,7 +5084,7 @@ small,
 }
 
 .availability-team-row.selected {
-  background: color-mix(in srgb, var(--soft-amber) 35%, var(--surface));
+  background: color-mix(in srgb, var(--nevora-soft) 72%, var(--surface));
 }
 
 .availability-team-row > div {
@@ -7488,7 +7488,7 @@ small,
   left: clamp(34px, 7vw, 110px);
   bottom: clamp(54px, 9vh, 110px);
   display: grid;
-  color: #fff4e5;
+  color: var(--color-bg-surface);
   text-shadow:
     0 4px 24px rgba(24, 25, 31, .58),
     0 0 18px rgba(7, 86, 217, .24);
@@ -11874,7 +11874,7 @@ body {
 .employee-shell .status-pill.neutral { background: var(--color-bg-main); color: var(--muted); }
 .employee-shell :is(.employee-quiet-status, .status-pill).success { background: var(--color-state-success-bg); color: var(--color-state-success); }
 .employee-shell .status-pill.warning { background: var(--color-state-warning-bg); color: var(--color-state-warning); }
-.employee-shell [data-status="PENDING"] .status-pill { background: var(--color-state-warning-bg); color: var(--color-state-warning); }
+.employee-shell [data-status="PENDING"] .status-pill { background: var(--color-bg-main); color: var(--muted); }
 .employee-shell :is([data-status="DENIED"], [data-status="DECLINED"], [data-employee-status="DENIED"]) .status-pill { background: var(--color-state-danger-bg); color: var(--color-state-danger); }
 .employee-shell .employee-action.danger { background: var(--color-state-danger-bg); color: var(--color-state-danger); }
 .employee-shell .employee-action:hover:not(:disabled) { opacity: 1; background: color-mix(in srgb, var(--color-bg-main) 92%, var(--fuel-coffee)); }
@@ -11912,9 +11912,11 @@ body {
 /* Availability highlights the capsule and deadline, preserving neutral rows. */
 .employee-shell .employee-availability-form .availability-state-pill input:checked + span { background: var(--color-state-success-bg); color: var(--color-state-success); }
 .employee-shell .employee-availability-form .availability-state-pill input:focus-visible + span { outline: 2px solid var(--color-brand-accent); outline-offset: 3px; box-shadow: none; }
-.employee-shell .employee-availability-view .availability-deadline-banner:not(.locked) :is(.eyebrow, strong, span) { color: var(--color-state-warning); }
+.employee-shell .employee-availability-view .availability-deadline-banner:not(.locked) .eyebrow { color: var(--muted); }
+.employee-shell .employee-availability-view .availability-deadline-banner:not(.locked) strong { color: var(--color-brand-primary); }
+.employee-shell .employee-availability-view .availability-deadline-banner:not(.locked) span { color: var(--muted); }
 .employee-shell .employee-availability-view .availability-deadline-banner .button { background: var(--nevora-blue); color: var(--color-bg-surface); }
-.employee-shell .employee-availability-view .availability-submission-status.pending strong { color: var(--color-state-warning); }
+.employee-shell .employee-availability-view .availability-submission-status.pending strong { color: var(--color-brand-primary); }
 .employee-shell .employee-availability-view .availability-submission-status.submitted strong { color: var(--color-state-success); }
 
 /* Selected tabs and picker share one quiet product tint. */
@@ -12749,7 +12751,7 @@ body {
 .manager-live-card .manager-floor-person { flex: 1; align-items: flex-start; }
 .manager-live-card .manager-floor-copy { overflow-wrap: anywhere; }
 .manager-live-card .manager-floor-status { white-space: nowrap; }
-.manager-live-card .manager-floor-status.on-break { color: var(--color-state-warning); background: var(--color-state-warning-bg); }
+.manager-live-card .manager-floor-status.on-break { color: var(--muted); background: var(--color-bg-main); }
 .manager-live-card .manager-live-duration { font-variant-numeric: tabular-nums; }
 .manager-live-card .manager-live-footer {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -12785,7 +12787,7 @@ body {
 .employee-clock-compact .employee-time-current-heading h2 { font-size: 14px; }
 .employee-time-section-heading > time { font-size: 12px; color: var(--muted); }
 .employee-time-badge { display: inline-flex; max-width: 100%; padding: 5px 10px; border-radius: 20px; background: var(--color-bg-main); color: var(--muted); font-size: 12px; line-height: 1.4; font-weight: 500; }
-.employee-time-badge.on-break { background: var(--color-state-warning-bg); color: var(--color-state-warning); }
+.employee-time-badge.on-break { background: var(--color-bg-main); color: var(--muted); }
 .employee-time-current-copy { margin-top: 16px; min-width: 0; }
 .employee-time-current-copy > strong { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
 .employee-time-current-copy p { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
