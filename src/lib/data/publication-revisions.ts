@@ -1,7 +1,5 @@
-import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "../db";
 import {
-  shouldRetryRevisionConflict,
   type PublishedShiftSnapshot,
 } from "../assistance/publication-diff";
 
@@ -22,7 +20,9 @@ export type PublicationRevision = {
   createdAt: string;
 };
 
-const MAX_REVISION_ATTEMPTS = 3;
+import { commitPublishedWeekChange } from "./notification-transactions";
+import type { SqlExecutor } from "../notifications/types";
+import type { SessionMutationProof } from "../shift-changes/types";
 
 function dateValue(value: unknown) {
   if (value instanceof Date) return value.toISOString().slice(0, 10);
@@ -52,28 +52,6 @@ function mapRevision(row: Record<string, unknown>): PublicationRevision {
     createdBy: String(row.created_by),
     createdAt: isoValue(row.created_at),
   };
-}
-
-function errorCode(error: unknown) {
-  if (!error || typeof error !== "object" || !("code" in error)) return "";
-  return String((error as { code?: unknown }).code ?? "");
-}
-
-async function withRevisionRetry<T>(operation: () => Promise<T>): Promise<T> {
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt < MAX_REVISION_ATTEMPTS; attempt += 1) {
-    try {
-      return await operation();
-    } catch (error) {
-      lastError = error;
-      if (!shouldRetryRevisionConflict(errorCode(error))) {
-        throw error;
-      }
-    }
-  }
-
-  throw lastError;
 }
 
 export async function getLatestPublicationRevision(
@@ -116,6 +94,8 @@ export async function listRevisionShifts(
          date,
          start_time,
          end_time,
+         position_id,
+         position_name,
          notes,
          is_designated_lead,
          is_callout_approved
@@ -138,6 +118,8 @@ export async function listRevisionShifts(
       date: dateValue(item.date),
       startTime: timeValue(item.start_time),
       endTime: timeValue(item.end_time),
+      positionId: item.position_id ? String(item.position_id) : undefined,
+      positionName: item.position_name ? String(item.position_name) : undefined,
       notes: item.notes ? String(item.notes) : undefined,
       isDesignatedLead: Boolean(item.is_designated_lead),
       isCalloutApproved: Boolean(item.is_callout_approved),
@@ -145,245 +127,61 @@ export async function listRevisionShifts(
   });
 }
 
+/** Compatibility entry for callers recording a current published week. New
+ * business writers compose their changes directly with commitPublishedWeekChange. */
 export async function recordPublishedWeekRevision(input: {
-  weekStart: string;
-  sourceType: RevisionSourceType;
-  sourceId?: string;
-  affectedLocationId?: string;
-  createdBy: string;
+  weekStart: string; sourceType: 'PUBLISH' | 'MANAGER_MUTATION'; proof: SessionMutationProof; sourceId?: string;
+  affectedLocationId?: string; createdBy: string;
 }): Promise<PublicationRevision> {
-  return withRevisionRetry(async () => {
-    const sql = getDb();
-    const revisionId = randomUUID();
-    const rows = queryRows(
-      await sql.query(
-        `WITH next_revision AS (
-           SELECT COALESCE(MAX(revision_number), 0) + 1 AS revision_number
-           FROM schedule_publication_revisions
-           WHERE week_start = $2
-         ),
-         inserted_revision AS (
-           INSERT INTO schedule_publication_revisions (
-             id,
-             week_start,
-             revision_number,
-             source_type,
-             source_id,
-             affected_location_id,
-             created_by
-           )
-           SELECT
-             $1,
-             $2,
-             next_revision.revision_number,
-             $3,
-             $4,
-             $5,
-             $6
-           FROM next_revision
-           RETURNING
-             id,
-             week_start,
-             revision_number,
-             source_type,
-             source_id,
-             affected_location_id,
-             created_by,
-             created_at
-         ),
-         snapshot AS (
-           INSERT INTO schedule_publication_revision_shifts (
-             id,
-             revision_id,
-             source_shift_id,
-             schedule_id,
-             location_id,
-             employee_id,
-             date,
-             start_time,
-             end_time,
-             notes,
-             is_designated_lead,
-             is_callout_approved
-           )
-           SELECT
-             r.id || ':' || sh.id,
-             r.id,
-             sh.id,
-             sh.schedule_id,
-             s.location_id,
-             sh.employee_id,
-             sh.date,
-             sh.start_time,
-             sh.end_time,
-             sh.notes,
-             sh.is_designated_lead,
-             EXISTS (
-               SELECT 1
-               FROM shift_callouts c
-               WHERE c.shift_id = sh.id
-                 AND c.employee_id = sh.employee_id
-                 AND c.status = 'APPROVED'
-             )
-           FROM inserted_revision r
-           JOIN schedules s
-             ON s.week_start = $2
-            AND s.status = 'PUBLISHED'
-           JOIN shifts sh ON sh.schedule_id = s.id
-           RETURNING id
-         )
-         SELECT
-           id,
-           week_start,
-           revision_number,
-           source_type,
-           source_id,
-           affected_location_id,
-           created_by,
-           created_at
-         FROM inserted_revision`,
-        [
-          revisionId,
-          input.weekStart,
-          input.sourceType,
-          input.sourceId ?? null,
-          input.affectedLocationId ?? null,
-          input.createdBy,
-        ],
-      ),
-    );
-
-    const row = rows[0] as Record<string, unknown> | undefined;
-    if (!row) {
-      throw new Error("Publication revision could not be recorded.");
-    }
-    return mapRevision(row);
-  });
+  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.createdBy,proof:input.proof,sourceType:input.sourceType,sourceId:input.sourceId,
+    build: state => ({statements:[{text:'SELECT 1',values:[]}],afterSchedules:state.schedules,afterShifts:state.shifts,publishWeekStarts:[input.weekStart],affectedLocationId:input.affectedLocationId})});
+  if (!result.revisions[0]) throw new Error("Publication revision could not be recorded.");
+  return result.revisions[0];
 }
 
 export async function publishScheduleWithRevision(input: {
-  locationId: string;
-  weekStart: string;
-  managerId: string;
-}): Promise<{ published: boolean; revision?: PublicationRevision }> {
-  return withRevisionRetry(async () => {
-    const sql = getDb();
-    const revisionId = randomUUID();
-    const rows = queryRows(
-      await sql.query(
-        `WITH published_schedule AS (
-           UPDATE schedules
-           SET status = 'PUBLISHED',
-               published_by = $3,
-               published_at = now(),
-               updated_at = now()
-           WHERE location_id = $1
-             AND week_start = $2
-           RETURNING id
-         ),
-         next_revision AS (
-           SELECT COALESCE(MAX(revision_number), 0) + 1 AS revision_number
-           FROM schedule_publication_revisions
-           WHERE week_start = $2
-         ),
-         inserted_revision AS (
-           INSERT INTO schedule_publication_revisions (
-             id,
-             week_start,
-             revision_number,
-             source_type,
-             source_id,
-             affected_location_id,
-             created_by
-           )
-           SELECT
-             $4,
-             $2,
-             n.revision_number,
-             'PUBLISH',
-             p.id,
-             $1,
-             $3
-           FROM next_revision n
-           CROSS JOIN published_schedule p
-           RETURNING
-             id,
-             week_start,
-             revision_number,
-             source_type,
-             source_id,
-             affected_location_id,
-             created_by,
-             created_at
-         ),
-         snapshot AS (
-           INSERT INTO schedule_publication_revision_shifts (
-             id,
-             revision_id,
-             source_shift_id,
-             schedule_id,
-             location_id,
-             employee_id,
-             date,
-             start_time,
-             end_time,
-             notes,
-             is_designated_lead,
-             is_callout_approved
-           )
-           SELECT
-             r.id || ':' || sh.id,
-             r.id,
-             sh.id,
-             sh.schedule_id,
-             s.location_id,
-             sh.employee_id,
-             sh.date,
-             sh.start_time,
-             sh.end_time,
-             sh.notes,
-             sh.is_designated_lead,
-             EXISTS (
-               SELECT 1
-               FROM shift_callouts c
-               WHERE c.shift_id = sh.id
-                 AND c.employee_id = sh.employee_id
-                 AND c.status = 'APPROVED'
-             )
-           FROM inserted_revision r
-           JOIN schedules s
-             ON s.week_start = $2
-            AND (
-              s.status = 'PUBLISHED'
-              OR EXISTS (
-                SELECT 1
-                FROM published_schedule p
-                WHERE p.id = s.id
-              )
-            )
-           JOIN shifts sh ON sh.schedule_id = s.id
-           RETURNING id
-         )
-         SELECT
-           id,
-           week_start,
-           revision_number,
-           source_type,
-           source_id,
-           affected_location_id,
-           created_by,
-           created_at
-         FROM inserted_revision`,
-        [input.locationId, input.weekStart, input.managerId, revisionId],
-      ),
-    );
+  locationId: string; weekStart: string; managerId: string; proof: SessionMutationProof;
+}, executor?: SqlExecutor): Promise<{ published: boolean; revision?: PublicationRevision }> {
+  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.managerId,proof:input.proof,sourceType:'PUBLISH',
+    build: state => {
+      const schedule=state.schedules.find(s=>s.locationId===input.locationId && s.weekStart===input.weekStart);
+      if (!schedule) return {statements:[],afterSchedules:state.schedules,afterShifts:state.shifts};
+      return {statements:[{text:`UPDATE schedules SET status='PUBLISHED',published_by=$2,published_at=now() WHERE id=$1`,values:[schedule.id,input.managerId]}],
+        afterSchedules:state.schedules.map(s=>s.id===schedule.id?{...s,status:'PUBLISHED'}:s),afterShifts:state.shifts,publishWeekStarts:[input.weekStart],revisionSourceId:schedule.id,affectedLocationId:input.locationId};
+    }},executor);
+  return {published:result.committed,...(result.revisions[0]?{revision:result.revisions[0]}:{})};
+}
 
-    const row = rows[0] as Record<string, unknown> | undefined;
-    if (!row) return { published: false };
+export type CapturedShiftPosition = {
+  sourceShiftId: string;
+  positionId?: string;
+  positionName?: string;
+};
 
-    return {
-      published: true,
-      revision: mapRevision(row),
-    };
-  });
+/** Latest actual capture per requested shift, including rows omitted by newer
+ * snapshots after archival. This read neither changes publication nor exposes
+ * notes or employee details to the Manager position-label projection. */
+export async function listCapturedShiftPositions(
+  input: { weekStart: string; shiftIds: readonly string[] },
+  executor?: SqlExecutor,
+): Promise<CapturedShiftPosition[]> {
+  const shiftIds = [...new Set(input.shiftIds)].sort();
+  if (!shiftIds.length) return [];
+  const statement = {
+    text: `SELECT DISTINCT ON (sh.source_shift_id)
+      sh.source_shift_id, sh.position_id, sh.position_name
+    FROM schedule_publication_revision_shifts sh
+    JOIN schedule_publication_revisions r ON r.id = sh.revision_id
+    WHERE r.week_start = $1 AND sh.source_shift_id = ANY($2::text[])
+    ORDER BY sh.source_shift_id, r.revision_number DESC, r.id DESC, sh.id DESC`,
+    values: [input.weekStart, shiftIds],
+  };
+  const rows = executor
+    ? await executor.query<Record<string, unknown>>(statement)
+    : queryRows(await getDb().query(statement.text, statement.values));
+  return rows.map(row => ({
+    sourceShiftId: String(row.source_shift_id),
+    positionId: row.position_id ? String(row.position_id) : undefined,
+    positionName: row.position_name ? String(row.position_name) : undefined,
+  }));
 }

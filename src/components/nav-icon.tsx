@@ -19,14 +19,17 @@ export type NavIconName =
   | "employee"
   | "lead"
   | "clock"
-  | "logout";
+  | "logout"
+  | "more";
 
 export function NavIcon({
   name,
   size = 18,
+  employee = false,
 }: {
   name: NavIconName;
   size?: number;
+  employee?: boolean;
 }) {
   const common = {
     width: size,
@@ -39,6 +42,21 @@ export function NavIcon({
     strokeLinejoin: "round" as const,
     "aria-hidden": true,
   };
+
+  // Employee navigation shares one optical grid without changing Manager icons.
+  if (employee) {
+    const icon = {
+      dashboard: <><path d="m3 10 9-7 9 7" /><path d="M5 8.5V19a2 2 0 0 0 2 2h3v-7h4v7h3a2 2 0 0 0 2-2V8.5" /></>,
+      schedule: <><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M8 3v4m8-4v4M3 11h18" /></>,
+      clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
+      availability: <><circle cx="9" cy="7" r="3" /><path d="M3 20v-1a6 6 0 0 1 10-4.5m2 2.5 2 2 4-4" /></>,
+      timeOff: <><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M8 3v4m8-4v4M3 11h18m-12 5h6" /></>,
+      exchange: <><path d="M3 7h18m-4-4 4 4-4 4M21 17H3m4-4-4 4 4 4" /></>,
+      more: <><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></>,
+      logout: <><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4m5-13 5 5-5 5m-7-5h12" /></>,
+    };
+    if (name in icon) return <svg {...common} strokeWidth={1.75}>{icon[name as keyof typeof icon]}</svg>;
+  }
 
   if (name === "dashboard") {
     return (

@@ -3,9 +3,12 @@
 import { redirect } from "next/navigation";
 import { hashPassword } from "@/lib/auth/password";
 import { activateEmployeeCredential } from "@/lib/data/employees";
+import { safeReturnTo } from "@/lib/notifications/destinations";
 import { normalizePhoneNumber } from "@/lib/phone";
 
 export async function activateAccountAction(formData: FormData) {
+  const returnTo = safeReturnTo(String(formData.get("returnTo") ?? ""));
+  const returnQuery = returnTo ? `&returnTo=${encodeURIComponent(returnTo)}` : "";
   const employeeId = String(formData.get("employeeId") ?? "")
     .trim()
     .toUpperCase();
@@ -19,7 +22,7 @@ export async function activateAccountAction(formData: FormData) {
     password.length < 8 ||
     password !== confirmPassword
   ) {
-    redirect("/activate?error=invalid");
+    redirect(`/activate?error=invalid${returnQuery}`);
   }
 
   const passwordHash = await hashPassword(password);
@@ -30,8 +33,8 @@ export async function activateAccountAction(formData: FormData) {
   });
 
   if (!activated) {
-    redirect("/activate?error=not_found");
+    redirect(`/activate?error=not_found${returnQuery}`);
   }
 
-  redirect("/login?activated=1");
+  redirect(`/login?activated=1${returnQuery}`);
 }

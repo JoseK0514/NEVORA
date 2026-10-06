@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { StatusPill } from "@/components/status-pill";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
@@ -13,7 +14,7 @@ export default async function EmployeesPage() {
 
   const [employees, locations] = await Promise.all([
     listEmployees(),
-    listLocations(),
+    listLocations({ includeInactive: true }),
   ]);
 
   return (
@@ -21,7 +22,7 @@ export default async function EmployeesPage() {
       <PageHeader
         eyebrow="Team"
         title="Employees"
-        description="A clean directory of the people scheduled across Fuel."
+        description="A clean directory of the people scheduled across your workspace."
         actions={
           <Link className="button primary" href="/app/employees/new">
             Add Employee
@@ -52,13 +53,15 @@ export default async function EmployeesPage() {
                         {formatPhoneNumber(employee.phone)}
                       </span>
                       <span className="employee-profile-meta">
-                        {primaryLocation?.shortName ?? "Location not assigned"}
-                        {!employee.active ? " · Inactive" : ""}
+                        {primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? '' : ' (Inactive)'}` : "Location not assigned"}
                       </span>
                     </div>
                   </div>
 
                   <div className="employee-profile-actions">
+                    <StatusPill tone={employee.active ? "success" : "neutral"}>
+                      {employee.active ? "Active" : "Inactive"}
+                    </StatusPill>
                     <span className="employee-role-badge">
                       {employeeRoleLabel(employee.role)}
                     </span>

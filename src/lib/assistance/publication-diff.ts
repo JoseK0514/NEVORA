@@ -7,6 +7,8 @@ export type PublishedShiftSnapshot = {
   startTime: string;
   endTime: string;
   notes?: string;
+  positionId?: string | null;
+  positionName?: string | null;
   isDesignatedLead: boolean;
   isCalloutApproved: boolean;
 };
@@ -17,6 +19,7 @@ export type PublicationChangeType =
   | "TIME_CHANGED"
   | "EMPLOYEE_REASSIGNED"
   | "LOCATION_CHANGED"
+  | "POSITION_CHANGED"
   | "LEAD_CHANGED"
   | "CALLOUT_CHANGED";
 
@@ -80,6 +83,8 @@ function matchedChanges(
   ) {
     add("TIME_CHANGED");
   }
+
+  if ((before.positionId || null) !== (after.positionId || null)) add("POSITION_CHANGED");
 
   if (before.isDesignatedLead !== after.isDesignatedLead) {
     add("LEAD_CHANGED");

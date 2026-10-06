@@ -10,8 +10,8 @@ describe("employee display helpers", () => {
   });
 
   it("formats employee roles for the directory", () => {
-    expect(employeeRoleLabel("EMPLOYEE")).toBe("Barista");
-    expect(employeeRoleLabel("LEAD")).toBe("Lead Barista");
+    expect(employeeRoleLabel("EMPLOYEE")).toBe("Employee");
+    expect(employeeRoleLabel("LEAD")).toBe("Lead");
     expect(employeeRoleLabel("MANAGER")).toBe("Manager");
     expect(employeeRoleLabel("OWNER")).toBe("Owner");
   });

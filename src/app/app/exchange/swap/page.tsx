@@ -1,24 +1,23 @@
+import {randomUUID} from 'node:crypto';
+import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
+import {matchesDisplayedShift} from '../../../../lib/shift-changes/displayed-terms';
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
+import { NavIcon } from "@/components/nav-icon";
 import { redirect } from "next/navigation";
-import { PageHeader } from "@/components/page-header";
+import {ReviewedSwapForm} from "@/components/reviewed-swap-form";
+import {ShiftSlot} from "@/components/shift-slot";
+import {requireSessionMutationProof} from "@/lib/auth/session";
+import {readShiftChangeTerms} from "@/lib/data/shift-change-snapshot";
+
 import { requireSelfService } from "@/lib/auth/permissions";
-import { currentDateInPuertoRico, formatDayLabel, formatTime } from "@/lib/date-utils";
+import {  formatDayLabel, formatTime } from "@/lib/date-utils";
 import {
   getPublishedShift,
   listSwapTargets,
 } from "@/lib/data/exchanges";
-import { proposeSwapAction } from "@/app/app/exchange/actions";
 
-function shiftLabel(shift: {
-  date: string;
-  startTime: string;
-  endTime: string;
-  employeeName: string;
-  locationName: string;
-}) {
-  const date = formatDayLabel(shift.date);
-  return `${date.weekday} ${date.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)} · ${shift.employeeName} · ${shift.locationName}`;
-}
 
 export default async function SwapPage({
   searchParams,
@@ -26,6 +25,7 @@ export default async function SwapPage({
   searchParams: Promise<{ sourceShiftId?: string }>;
 }) {
   const session = await requireSelfService("/app/exchange?tab=requests");
+  const workspace = await getWorkspace();
   const params = await searchParams;
 
   if (!params.sourceShiftId) {
@@ -37,22 +37,21 @@ export default async function SwapPage({
   if (
     !source ||
     source.employeeId !== session.id ||
-    source.date < currentDateInPuertoRico()
+    source.date < businessDate(new Date(), workspace.timeZone)
   ) {
     redirect("/app/exchange?error=INVALID_SHIFT");
   }
 
   const targets = await listSwapTargets(source, session.id);
-  const date = formatDayLabel(source.date);
+  const proof=await requireSessionMutationProof();
+  const reviewed=await readShiftChangeTerms(proof,source.id);if(!reviewed||!matchesDisplayedShift(source,reviewed.source))redirect('/app/exchange?error=EXCHANGE_CHANGED');
+  const reviewedSource=source;
+  const reviewedTargets=(await Promise.all(targets.map(async shift=>{const terms=await readShiftChangeTerms(proof,source.id,shift.id);if(!terms?.target||!terms.targetTermsFingerprint||terms.sourceTermsFingerprint!==reviewed.sourceTermsFingerprint||!matchesDisplayedShift(source,terms.source)||!matchesDisplayedShift(shift,terms.target))return null;const allowed=await readShiftChangeAvailability(proof,{kind:'PROPOSE_SWAP',operationId:randomUUID(),sourceShiftId:terms.source.shiftId,sourceEpisodeId:terms.source.assignmentEpisodeId,sourceTermsFingerprint:terms.sourceTermsFingerprint,targetShiftId:terms.target.shiftId,targetEpisodeId:terms.target.assignmentEpisodeId,targetTermsFingerprint:terms.targetTermsFingerprint});if(!allowed.allowed)return null;return {shift,fields:{targetShiftId:terms.target.shiftId,targetEpisodeId:terms.target.assignmentEpisodeId,targetTermsFingerprint:terms.targetTermsFingerprint}};}))).filter(t=>t!==null);
+  const date = formatDayLabel(reviewedSource.date);
 
   return (
-    <>
-      <PageHeader
-        eyebrow="Direct swap"
-        title="Choose a shift"
-        description="The other employee must accept first. Management must approve before either schedule changes."
-        actions={<Link className="button secondary" href="/app/exchange">Cancel</Link>}
-      />
+    <div className="employee-view employee-exchange-detail-view">
+      <header className="employee-view-heading"><div><p className="employee-view-eyebrow">Shift trade</p><h1>Choose a shift</h1><p className="employee-view-description">Both employees must consent. Valid trades complete automatically when policy permits; exceptions wait for management.</p></div></header>
 
       <section className="content-grid two swap-builder">
         <article className="panel">
@@ -61,7 +60,7 @@ export default async function SwapPage({
           <p className="large-detail">
             {formatTime(source.startTime)} – {formatTime(source.endTime)}
           </p>
-          <p className="muted">{source.locationName}</p>
+          <ShiftSlot shift={reviewedSource} contextOnly/>
         </article>
 
         <article className="panel">
@@ -72,39 +71,17 @@ export default async function SwapPage({
             </div>
           </div>
 
-          {targets.length ? (
-            <form action={proposeSwapAction} className="employee-form">
-              <input type="hidden" name="sourceShiftId" value={source.id} />
-              <label>
-                Requested shift
-                <select name="targetShiftId" defaultValue="" required>
-                  <option value="" disabled>Select a shift</option>
-                  {targets.map((target) => (
-                    <option key={target.id} value={target.id}>
-                      {shiftLabel(target)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <p className="form-help">
-                Both employees are rechecked for location eligibility, availability,
-                approved time off, overlaps, and weekly hours before the request moves forward.
-              </p>
-
-              <div className="form-footer">
-                <Link className="button secondary" href="/app/exchange">Cancel</Link>
-                <button className="button primary" type="submit">Send swap request</button>
-              </div>
-            </form>
+          {reviewedTargets.length ? (
+            <ReviewedSwapForm source={reviewedSource} sourceFields={{sourceShiftId:reviewed.source.shiftId,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint}} targets={reviewedTargets}/>
           ) : (
             <div className="empty-state">
-              <strong>No other published shifts are available for a swap this week.</strong>
-              <span>You can still offer your shift for coverage.</span>
+              <span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span>
+              <strong>No shifts to trade</strong>
+              <span>No other published shifts are available this week; you can still offer your shift for coverage.</span>
             </div>
           )}
         </article>
       </section>
-    </>
+    </div>
   );
 }

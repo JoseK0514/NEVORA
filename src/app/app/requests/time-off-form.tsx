@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requestTimeOffAction } from "@/app/app/requests/actions";
 
-export function TimeOffForm() {
+export function TimeOffForm({ employeeView = false }: { employeeView?: boolean }) {
   const [partialDay, setPartialDay] = useState(false);
 
   return (
-    <form action={requestTimeOffAction} className="timeoff-settings-form">
+    <form action={requestTimeOffAction} className={employeeView ? "timeoff-settings-form employee-timeoff-form" : "timeoff-settings-form"}>
       <section className="timeoff-setting-row">
         <div className="timeoff-setting-copy">
           <strong>Dates</strong>
-          <span>Select the days you need away.</span>
+          {!employeeView ? <span>Select the days you need away.</span> : null}
         </div>
 
         <div className="timeoff-setting-control">
@@ -32,7 +33,7 @@ export function TimeOffForm() {
       <section className="timeoff-setting-row">
         <div className="timeoff-setting-copy">
           <strong>Request Type</strong>
-          <span>Choose a full or partial day.</span>
+          {!employeeView ? <span>Choose a full or partial day.</span> : null}
         </div>
 
         <div className="timeoff-setting-control">
@@ -77,7 +78,7 @@ export function TimeOffForm() {
       <section className="timeoff-setting-row timeoff-note-row">
         <div className="timeoff-setting-copy">
           <strong>Optional Note</strong>
-          <span>Add context only if management needs it.</span>
+          {!employeeView ? <span>Add context only if management needs it.</span> : null}
         </div>
 
         <div className="timeoff-setting-control">
@@ -97,9 +98,11 @@ export function TimeOffForm() {
         <Link className="timeoff-settings-cancel" href="/app/requests?tab=my">
           Cancel
         </Link>
+        {employeeView ? <EmployeeSubmitButton className="timeoff-settings-submit" pendingText="Submitting…">Submit Request</EmployeeSubmitButton> : (
         <button className="timeoff-settings-submit" type="submit">
           Submit Request
         </button>
+        )}
       </footer>
     </form>
   );

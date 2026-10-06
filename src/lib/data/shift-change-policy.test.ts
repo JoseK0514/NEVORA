@@ -1,0 +1,10 @@
+import { expect,it } from 'vitest';
+import { saveShiftChangePolicy, saveOperationalRuleProfile } from './shift-change-policy';
+import type { SqlExecutor } from '../notifications/types';
+import type { PolicyWrite } from '../shift-changes/types';
+const executor:SqlExecutor={query:async()=>{throw new Error('Invalid input must not reach storage');},transaction:async()=>{throw new Error('Invalid input must not reach storage');}};
+const input: PolicyWrite={proof:{employee:{id:'owner',firstName:'Test',lastName:'Owner',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)},expectedRevision:0,scope:'swap',replacement:{mode:'MANAGER_REVIEW',submissionAdvanceMinutes:0,completionAdvanceMinutes:0}};
+it('rejects negative revisions before persistence',async()=>expect(await saveShiftChangePolicy({...input,expectedRevision:-1},executor)).toMatchObject({status:'invalid'}));
+it('rejects inverted deadlines before persistence',async()=>expect(await saveShiftChangePolicy({...input,replacement:{...input.replacement,completionAdvanceMinutes:60}},executor)).toMatchObject({status:'invalid'}));
+it('rejects an employee policy writer before persistence',async()=>expect(await saveShiftChangePolicy({...input,proof:{...input.proof,employee:{...input.proof.employee,role:'EMPLOYEE'}}},executor)).toMatchObject({status:'invalid'}));
+it('rejects invalid profile fields instead of converting them to unknown',async()=>expect(await saveOperationalRuleProfile({proof:input.proof,employeeId:'a',expectedRevision:0,replacement:{minimumRest:{status:'CONFIGURED',revision:1,value:{minutes:-1,timeBasis:'ELAPSED'}},maximumShift:{status:'UNKNOWN'},maximumDaily:{status:'UNKNOWN'},breaks:{status:'UNKNOWN'},projectedOvertime:{status:'UNKNOWN'}}},executor)).toMatchObject({status:'invalid'}));

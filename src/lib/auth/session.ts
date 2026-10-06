@@ -3,6 +3,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getDb, queryRows } from "@/lib/db";
 import type { UserRole } from "@/lib/domain";
+import { createLogoutDeps, terminatePortalSession } from "@/lib/notifications/logout";
+import { readNotificationConfig, decodePushKey } from "@/lib/notifications/config";
+import { readInstallationProof } from "@/lib/notifications/installation";
+import { neonNotificationExecutor } from '@/lib/data/notification-transactions';
 
 const SESSION_COOKIE = "fuel_session";
 const SESSION_DAYS = 14;
@@ -19,17 +23,25 @@ function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
-export async function createSession(employeeId: string) {
+export type ReviewedLoginCredential = { updated_at: string; password_hash: string; password_updated_at: string };
+
+export async function createSession(employeeId: string, reviewed: ReviewedLoginCredential) {
+  if (!employeeId || !reviewed?.updated_at || !reviewed.password_hash || !reviewed.password_updated_at) throw new Error('session_login_changed');
   const token = randomBytes(32).toString("base64url");
   const tokenHash = hashToken(token);
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-  const sql = getDb();
-
-  await sql.query(
-    `INSERT INTO employee_sessions (token_hash, employee_id, expires_at)
-     VALUES ($1, $2, $3)`,
-    [tokenHash, employeeId, expiresAt.toISOString()],
-  );
+  // Employee lifecycle precedes credentials/session locks. Separate statements
+  // are essential: an INSERT SELECT predicate can retain its pre-lock snapshot.
+  await neonNotificationExecutor().transaction([
+    { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [employeeId] },
+    { text: 'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR SHARE', values: [employeeId] },
+    { text: `SELECT (CASE WHEN EXISTS (
+      SELECT 1 FROM employees e JOIN employee_credentials c ON c.employee_id=e.id
+      WHERE e.id=$1 AND e.active AND e.updated_at::text=$2
+        AND c.password_hash=$3 AND c.password_updated_at::text=$4
+    ) THEN '1' ELSE 'session_login_changed' END)::integer`, values: [employeeId, reviewed.updated_at, reviewed.password_hash, reviewed.password_updated_at] },
+    { text: 'INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,$3)', values: [tokenHash, employeeId, expiresAt.toISOString()] },
+  ]);
 
   const store = await cookies();
   store.set(SESSION_COOKIE, token, {
@@ -43,17 +55,14 @@ export async function createSession(employeeId: string) {
 
 export async function destroySession() {
   const store = await cookies();
-  const token = store.get(SESSION_COOKIE)?.value;
-
-  if (token) {
-    const sql = getDb();
-    await sql.query(
-      "DELETE FROM employee_sessions WHERE token_hash = $1",
-      [hashToken(token)],
-    );
+  try {
+    const config = readNotificationConfig(process.env);
+    const key = decodePushKey(config.subscriptionEncryptionKey, 32);
+    const installation = key ? readInstallationProof(store, key, config.environment) ?? undefined : undefined;
+    await terminatePortalSession({ sessionToken: store.get(SESSION_COOKIE)?.value, installation, cookies: store, deps: createLogoutDeps(config) });
+  } finally {
+    store.delete(SESSION_COOKIE);
   }
-
-  store.delete(SESSION_COOKIE);
 }
 
 export async function getSession(): Promise<SessionEmployee | null> {
@@ -103,4 +112,16 @@ export async function requireSession() {
   const session = await getSession();
   if (!session) redirect("/login");
   return session;
+}
+
+/** Server-only capability: derive the hash from the actual HttpOnly cookie. Never serialize this proof. */
+export async function requireSessionMutationProof(): Promise<import('../shift-changes/types').SessionMutationProof> {
+  const store = await cookies();
+  const token = store.get(SESSION_COOKIE)?.value;
+  if (!token) redirect('/login');
+  const sessionTokenHash=hashToken(token);
+  const rows=queryRows<{id:string;first_name:string;last_name:string;role:UserRole;primary_location_id:string}>(await getDb().query(`SELECT e.id,e.first_name,e.last_name,e.role,e.primary_location_id FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND s.expires_at>clock_timestamp() AND e.active LIMIT 1`,[sessionTokenHash]));
+  const row=rows[0];
+  if(!row) redirect('/login');
+  return {sessionTokenHash,employee:{id:row.id,firstName:row.first_name,lastName:row.last_name,role:row.role,primaryLocationId:row.primary_location_id}};
 }

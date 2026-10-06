@@ -1,5 +1,14 @@
+import { getWorkspace, workspaceReadGuard, WorkspaceConcurrencyError } from './workspaces';
+import type { Workspace } from '../domain';
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
+
+import { readAvailabilityInputs } from "./availability-inputs";
+import { resolveAvailabilityWeek, type AvailabilityHours } from "../scheduling/availability";
+import { buildWeeklyAvailabilityUpdate } from "../scheduling/weekly-availability";
+
+import type { SessionMutationProof } from "../shift-changes/types";
+import { assertManagementProof, managementSessionStatements } from "./management-session";
 
 export type WeekSettings = {
   weekStart: string;
@@ -39,11 +48,20 @@ export async function getWeekSettings(
 export async function setAvailabilityDeadline(input: {
   weekStart: string;
   deadlineIso?: string;
+  /** Server-owned snapshot used to convert civil input. UTC callers omit it. */
+  conversionWorkspace?: Workspace;
   updatedBy: string;
+  proof: SessionMutationProof;
 }) {
+  assertManagementProof(input.proof,input.updatedBy);
   const sql = getDb();
 
+  const workspace = input.conversionWorkspace ?? await getWorkspace();
   const seedQueries = [
+    ...workspaceReadGuard(workspace).map(statement => sql.query(statement.text, [...statement.values])),
+    sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + input.weekStart}, 0))`,
+    sql.query("SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE", [input.updatedBy]),
+    ...managementSessionStatements(input.proof,input.updatedBy).map(statement => sql.query(statement.text,[...statement.values])),
     sql`INSERT INTO schedule_week_settings (
       week_start,
       availability_deadline,
@@ -79,6 +97,7 @@ export async function setAvailabilityDeadline(input: {
            FROM weekly_availability_windows
            WHERE week_start = $1
              AND employee_id = $2
+           UNION ALL SELECT 1 FROM weekly_availability_submissions WHERE week_start = $1 AND employee_id = $2
            LIMIT 1`,
           [input.weekStart, employee.id],
         ),
@@ -124,88 +143,91 @@ export async function setAvailabilityDeadline(input: {
     }
   }
 
-  await sql.transaction(seedQueries);
+  const cancellation = availabilityCancellation(input.weekStart, null, input.deadlineIso ? new Date(input.deadlineIso).toISOString() : null);
+  seedQueries.push(sql.query(cancellation.text, cancellation.values));
+  seedQueries.push(...managementSessionStatements(input.proof,input.updatedBy).map(statement => sql.query(statement.text,[...statement.values])));
+  try {
+    await sql.transaction(seedQueries);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('workspace_version_conflict')) {
+      throw new WorkspaceConcurrencyError();
+    }
+    throw error;
+  }
 }
 
 export async function listWeeklyAvailability(
   employeeId: string,
   weekStart: string,
 ) {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-      `SELECT id, day_of_week, start_time, end_time
-       FROM weekly_availability_windows
-       WHERE employee_id = $1
-         AND week_start = $2
-       ORDER BY day_of_week, start_time`,
-      [employeeId, weekStart],
-    ),
+  const inputs = await readAvailabilityInputs(employeeId, weekStart);
+  return resolveAvailabilityWeek({ weekStart, ...inputs }).map(
+    (window, index) => ({
+      id: `${employeeId}:${weekStart}:${index}`,
+      ...window,
+    }),
   );
-
-  return rows.map((row) => {
-    const item = row as Record<string, unknown>;
-    return {
-      id: String(item.id),
-      dayOfWeek: Number(item.day_of_week),
-      startTime: String(item.start_time).slice(0, 5),
-      endTime: String(item.end_time).slice(0, 5),
-    };
-  });
 }
+
+export class AvailabilityDeadlineError extends Error {}
+export class AvailabilityConcurrencyError extends Error {}
 
 export async function replaceWeeklyAvailability(
   employeeId: string,
   weekStart: string,
-  windows: Array<{
-    dayOfWeek: number;
-    startTime: string;
-    endTime: string;
-  }>,
+  windows: AvailabilityHours[],
+  changedDays?: number[],
 ) {
   const sql = getDb();
-
-  const queries = [
-    sql`DELETE FROM weekly_availability_windows
-        WHERE employee_id = ${employeeId}
-          AND week_start = ${weekStart}`,
-    ...windows.map(
-      (window) =>
-        sql`INSERT INTO weekly_availability_windows (
-          id,
-          week_start,
-          employee_id,
-          day_of_week,
-          start_time,
-          end_time,
-          updated_at
-        ) VALUES (
-          ${randomUUID()},
-          ${weekStart},
-          ${employeeId},
-          ${window.dayOfWeek},
-          ${window.startTime},
-          ${window.endTime},
-          now()
-        )`,
-    ),
-    sql`INSERT INTO weekly_availability_submissions (
-      week_start,
-      employee_id,
-      submitted_at,
-      updated_at
-    ) VALUES (
-      ${weekStart},
-      ${employeeId},
-      now(),
-      now()
-    )
-    ON CONFLICT (week_start, employee_id)
-    DO UPDATE SET
-      updated_at = now()`,
-  ];
-
-  await sql.transaction(queries);
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const workspace = await getWorkspace();
+    const inputs = await readAvailabilityInputs(employeeId, weekStart);
+    const version =
+      inputs.weeks.find((week) => week.weekStart === weekStart)
+        ?.submissionVersion ?? null;
+    const update = buildWeeklyAvailabilityUpdate({
+      weekStart,
+      ...inputs,
+      windows,
+      changedDays,
+    });
+    const queries = [
+      ...workspaceReadGuard(workspace).map(statement => sql.query(statement.text, [...statement.values])),
+      sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + weekStart}, 0))`,
+      // Abort the whole transaction if the deadline passed after the action's check.
+      // The deadline writer shares this lock; recheck wall time after waiting.
+      sql`SELECT 1 / CASE WHEN EXISTS (SELECT 1 FROM schedule_week_settings WHERE week_start = ${weekStart} AND availability_deadline < clock_timestamp()) THEN 0 ELSE 1 END AS deadline_guard`,
+      // Check the exact read version under the lock before converting legacy days.
+      sql`SELECT (CASE WHEN (SELECT updated_at::text FROM weekly_availability_submissions WHERE employee_id = ${employeeId} AND week_start = ${weekStart}) IS NOT DISTINCT FROM ${version} THEN '1' ELSE 'availability_version_conflict' END)::integer AS version_guard`,
+      sql`DELETE FROM weekly_availability_windows WHERE employee_id = ${employeeId} AND week_start = ${weekStart}`,
+      ...update.windows.map(
+        (window) =>
+          sql`INSERT INTO weekly_availability_windows (id, week_start, employee_id, day_of_week, start_time, end_time, updated_at) VALUES (${randomUUID()}, ${weekStart}, ${employeeId}, ${window.dayOfWeek}, ${window.startTime}, ${window.endTime}, now())`,
+      ),
+      ...update.overrides.flatMap((day) => [
+        sql`DELETE FROM availability_exceptions WHERE employee_id = ${employeeId} AND date = ${day.date}`,
+        ...day.exceptions.map(
+          (exception) =>
+            sql`INSERT INTO availability_exceptions (id, employee_id, date, kind, start_time, end_time) VALUES (${randomUUID()}, ${employeeId}, ${day.date}, ${exception.kind}, ${exception.startTime ?? null}, ${exception.endTime ?? null})`,
+        ),
+      ]),
+      sql`INSERT INTO weekly_availability_submissions (week_start, employee_id, submitted_at, updated_at, uses_normal_availability) VALUES (${weekStart}, ${employeeId}, now(), now(), true) ON CONFLICT (week_start, employee_id) DO UPDATE SET updated_at = now(), uses_normal_availability = true`,
+    ];
+    const cancellation = availabilityCancellation(weekStart, employeeId, null);
+    queries.push(sql.query(cancellation.text, cancellation.values));
+    try {
+      await sql.transaction(queries);
+      return;
+    } catch (error) {
+      if ((error as { code?: string }).code === "22P02") continue;
+      if ((error as { code?: string }).code === "22012")
+        throw new AvailabilityDeadlineError("Weekly availability is locked");
+      throw error;
+    }
+  }
+  throw new AvailabilityConcurrencyError(
+    "Availability changed while saving; review the week and try again.",
+  );
 }
 
 export async function getUpcomingAvailabilityWeek(
@@ -233,4 +255,28 @@ export async function getUpcomingAvailabilityWeek(
       ? new Date(String(item.availability_deadline)).toISOString()
       : undefined,
   };
+}
+
+/** Called after the business write under its existing availability/week lock.
+ * Mixed summaries retain their other work; their members are re-read at dispatch. */
+function availabilityCancellation(week: string, employeeId: string | null, deadline: string | null) {
+  return {text: `WITH cancelled AS (
+    UPDATE notifications n SET push_state='cancelled',cancelled_at=now()
+    WHERE n.push_state IN ('pending','materialized','no_active_subscription') AND (
+      (n.source_kind='AVAILABILITY' AND n.source_id=$1::text
+        AND (($2::text IS NOT NULL AND n.employee_id=$2 AND n.purpose='REMINDER')
+          OR ($2::text IS NULL AND n.source_version IS DISTINCT FROM $3::text)))
+      OR (n.source_kind='MANAGER_SUMMARY' AND cardinality(n.item_keys)=1 AND EXISTS (
+        SELECT 1 FROM unnest(n.item_keys) k
+        WHERE (CASE WHEN left(k,1)='[' THEN k::jsonb ELSE NULL END)->>0='AVAILABILITY'
+          AND (CASE WHEN left(k,1)='[' THEN k::jsonb ELSE NULL END)->>1=$1::text
+          AND (($2::text IS NULL AND ((CASE WHEN left(k,1)='[' THEN k::jsonb ELSE NULL END)->>2) IS DISTINCT FROM $3::text)
+            OR ($2::text IS NOT NULL AND NOT EXISTS (
+              SELECT 1 FROM employees e WHERE e.active=true AND e.role IN ('EMPLOYEE','LEAD')
+                AND NOT EXISTS (SELECT 1 FROM weekly_availability_submissions s WHERE s.week_start=$1::date AND s.employee_id=e.id AND s.submitted_at IS NOT NULL)
+            )))
+      ))
+    ) RETURNING id
+  ) UPDATE push_deliveries SET status='cancelled',lease_token=NULL,lease_expires_at=NULL,updated_at=now()
+    WHERE notification_id IN (SELECT id FROM cancelled) AND status IN ('queued','retry_pending','processing')`,values:[week,employeeId,deadline]};
 }

@@ -1,7 +1,9 @@
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { currentDateInPuertoRico, formatWeekRange, weekStartFor } from "@/lib/date-utils";
+import {  formatWeekRange, weekStartFor } from "@/lib/date-utils";
 import { listScheduleTemplates } from "@/lib/data/schedule-templates";
 import {
   applyTemplateAction,
@@ -31,8 +33,9 @@ export default async function ScheduleTemplatesPage({
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
+  const workspace = await getWorkspace();
   const params = await searchParams;
-  const currentWeek = weekStartFor(currentDateInPuertoRico());
+  const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const templates = await listScheduleTemplates();
 

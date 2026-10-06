@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireSessionMutationProof } from "@/lib/auth/session";
 import { TIME_OFF_REVIEW_ROLES, requireRoles, requireSelfService } from "@/lib/auth/permissions";
 import {
   createTimeOffRequest,
@@ -47,6 +48,7 @@ export async function requestTimeOffAction(formData: FormData) {
 
 export async function reviewTimeOffAction(formData: FormData) {
   const session = await requireRoles(TIME_OFF_REVIEW_ROLES);
+  const proof = await requireSessionMutationProof();
   const requestId = String(formData.get("requestId") ?? "");
   const decision = String(formData.get("decision") ?? "");
 
@@ -57,6 +59,7 @@ export async function reviewTimeOffAction(formData: FormData) {
   const reviewed = await reviewTimeOffRequest({
     requestId,
     managerId: session.id,
+    proof,
     status: decision,
   });
 

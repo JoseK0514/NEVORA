@@ -1,8 +1,13 @@
 import type { Employee, Location, Shift } from "@/lib/domain";
 
+export const demoWorkspace = {
+  id: "workspace-fuel", name: "Fuel Coffee Drive", timeZone: "America/Puerto_Rico", active: true,
+  createdAt: "2026-10-01T00:00:00Z", updatedAt: "2026-10-01T00:00:00Z",
+};
+
 export const locations: Location[] = [
-  { id: "loc-1", name: "FUEL - 2", shortName: "FUEL - 2", active: true },
-  { id: "loc-2", name: "FUEL - 110", shortName: "FUEL - 110", active: true },
+  { id: "loc-1", workspaceId: "workspace-fuel", clockerKey: "2", name: "FUEL - 2", shortName: "FUEL - 2", active: true },
+  { id: "loc-2", workspaceId: "workspace-fuel", clockerKey: "110", name: "FUEL - 110", shortName: "FUEL - 110", active: true },
 ];
 
 export const employees: Employee[] = [
@@ -14,6 +19,7 @@ export const employees: Employee[] = [
     email: "maria@example.com",
     role: "EMPLOYEE",
     primaryLocationId: "loc-1",
+    positionIds: [],
     eligibleLocationIds: ["loc-1", "loc-2"],
     active: true,
   },
@@ -24,6 +30,7 @@ export const employees: Employee[] = [
     phone: "787-555-0164",
     role: "LEAD",
     primaryLocationId: "loc-1",
+    positionIds: [],
     eligibleLocationIds: ["loc-1", "loc-2"],
     active: true,
   },
@@ -34,6 +41,7 @@ export const employees: Employee[] = [
     phone: "787-555-0188",
     role: "EMPLOYEE",
     primaryLocationId: "loc-2",
+    positionIds: [],
     eligibleLocationIds: ["loc-2"],
     active: true,
   },

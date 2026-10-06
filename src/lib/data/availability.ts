@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 
+import { readTeamAvailabilityInputs } from "./availability-inputs";
+import { resolveAvailabilityWeek } from "../scheduling/availability";
+
 export type AvailabilityRecord = {
   id: string;
   dayOfWeek: number;
@@ -61,12 +64,14 @@ export async function replaceAvailability(
 }
 
 export async function listTeamAvailabilityWindows(weekStart?: string): Promise<Array<AvailabilityRecord & { employeeId: string }>> {
+  if (weekStart) {
+    const team = await readTeamAvailabilityInputs(weekStart);
+    return [...team].flatMap(([employeeId, inputs]) => resolveAvailabilityWeek({ weekStart, ...inputs }).map((window, index) => ({ id: `${employeeId}:${weekStart}:${index}`, employeeId, ...window })));
+  }
   const sql = getDb();
   const rows = queryRows<Record<string, unknown>>(await sql.query(
-    weekStart
-      ? `SELECT id, employee_id, day_of_week, start_time, end_time FROM weekly_availability_windows WHERE week_start = $1 ORDER BY employee_id, day_of_week, start_time`
-      : `SELECT id, employee_id, day_of_week, start_time, end_time FROM availability_windows ORDER BY employee_id, day_of_week, start_time`,
-    weekStart ? [weekStart] : [],
+    `SELECT id, employee_id, day_of_week, start_time, end_time FROM availability_windows ORDER BY employee_id, day_of_week, start_time`,
+    [],
   ));
   return rows.map(row => ({ id: String(row.id), employeeId: String(row.employee_id), dayOfWeek: Number(row.day_of_week), startTime: timeValue(row.start_time), endTime: timeValue(row.end_time) }));
 }

@@ -1,3 +1,6 @@
+import { listPositions } from "@/lib/data/positions";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate, businessTime } from "@/lib/business-time";
 import { EmployeeDashboard } from "@/components/employee-dashboard";
 import {
   ManagerDashboard,
@@ -7,8 +10,6 @@ import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import {
   addDays,
-  currentDateInPuertoRico,
-  currentTimeInPuertoRico,
   durationMinutes,
   formatWeekRange,
   weekDates,
@@ -70,27 +71,33 @@ export default async function DashboardPage({
   searchParams: Promise<{ view?: string; week?: string }>;
 }) {
   const session = await requireSession();
+  const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);
   const params = await searchParams;
-  const currentDate = currentDateInPuertoRico();
-  const currentTime = currentTimeInPuertoRico();
+  const currentDate = businessDate(new Date(), workspace.timeZone);
+  const currentTime = businessTime(new Date(), workspace.timeZone);
   const currentWeek = weekStartFor(currentDate);
 
   if (!manager) {
-    const publishedShifts = (
-      await listWeekShifts({
+    const [employeeShifts, employeeLocations] = await Promise.all([
+      listWeekShifts({
         weekStart: currentWeek,
         employeeId: session.id,
         publishedOnly: true,
-      })
-    )
+      }),
+      listLocations(),
+    ]);
+    const locationNames = new Map(employeeLocations.map((location) => [location.id, location.shortName]));
+    const publishedShifts = employeeShifts
       .filter((shift) => !shift.isCalloutApproved)
       .map((shift) => ({
         id: shift.id,
         date: shift.date,
         startTime: shift.startTime,
         endTime: shift.endTime,
-        isDesignatedLead: shift.isDesignatedLead,
+        positionId: shift.positionId,
+      isDesignatedLead: shift.isDesignatedLead,
+        locationName: locationNames.get(shift.locationId),
       }));
 
     const scheduledHours = calculateScheduledHours(publishedShifts);
@@ -109,8 +116,6 @@ export default async function DashboardPage({
         publishedShifts={publishedShifts}
         scheduledHours={scheduledHours}
         estimatedEarnings={estimatedEarnings}
-        todayShiftLabel="8:00 AM – 4:00 PM"
-        todayClockStatus="Off the Clock"
       />
     );
   }
@@ -122,7 +127,6 @@ export default async function DashboardPage({
 
   const [
     shifts,
-    currentPublishedShifts,
     scheduleStatuses,
     staffingSettings,
     employeeTargets,
@@ -137,11 +141,9 @@ export default async function DashboardPage({
     employees,
     locations,
     latestRevision,
+    healthShifts,
   ] = await Promise.all([
     listWeekShifts({ weekStart }),
-    weekStart === currentWeek
-      ? Promise.resolve(null)
-      : listWeekShifts({ weekStart: currentWeek, publishedOnly: true }),
     listScheduleStatuses(weekStart),
     listLocationStaffingSettings(),
     listEmployeeHourTargets(),
@@ -156,35 +158,10 @@ export default async function DashboardPage({
     listEmployees(),
     listLocations(),
     getLatestPublicationRevision(weekStart),
+    listWeekShifts({ weekStart, byBusinessWorkweek: true }),
   ]);
 
   const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
-  const currentShiftSource =
-    weekStart === currentWeek
-      ? effectiveShifts
-      : (currentPublishedShifts ?? []).filter((shift) => !shift.isCalloutApproved);
-  const onFloor = currentShiftSource
-    .filter(
-      (shift) =>
-        shift.scheduleStatus === "PUBLISHED" &&
-        shift.date === currentDate &&
-        shift.startTime <= currentTime &&
-        shift.endTime > currentTime,
-    )
-    .sort((a, b) => {
-      if (a.isDesignatedLead !== b.isDesignatedLead) {
-        return a.isDesignatedLead ? -1 : 1;
-      }
-      return a.employeeName.localeCompare(b.employeeName);
-    })
-    .map((shift) => ({
-      employeeId: shift.employeeId,
-      employeeName: shift.employeeName,
-      startTime: shift.startTime,
-      endTime: shift.endTime,
-      isDesignatedLead: shift.isDesignatedLead,
-    }));
-
   const shiftsByEmployee = new Map<string, typeof effectiveShifts>();
   for (const shift of effectiveShifts) {
     const employeeShifts = shiftsByEmployee.get(shift.employeeId) ?? [];
@@ -197,13 +174,16 @@ export default async function DashboardPage({
     .map((employee) => ({
       employeeId: employee.id,
       employeeName: `${employee.firstName} ${employee.lastName}`,
+      eligibleLocationIds: employee.eligibleLocationIds,
+      positionIds: employee.positionIds,
       role: employee.role,
       shifts: (shiftsByEmployee.get(employee.id) ?? []).map((shift) => ({
         id: shift.id,
         date: shift.date,
         startTime: shift.startTime,
         endTime: shift.endTime,
-        isDesignatedLead: shift.isDesignatedLead,
+        positionId: shift.positionId,
+      isDesignatedLead: shift.isDesignatedLead,
       })),
     }));
 
@@ -215,7 +195,8 @@ export default async function DashboardPage({
   );
 
   const health = calculateScheduleHealth({
-    shifts: effectiveShifts.map((shift) => ({
+      positions: await listPositions({includeInactive:true}),
+    shifts: healthShifts.filter(shift => !shift.isCalloutApproved).map((shift) => ({
       id: shift.id,
       employeeId: shift.employeeId,
       employeeName: shift.employeeName,
@@ -223,6 +204,7 @@ export default async function DashboardPage({
       date: shift.date,
       startTime: shift.startTime,
       endTime: shift.endTime,
+      positionId: shift.positionId,
       isDesignatedLead: shift.isDesignatedLead,
     })),
     locations: staffingSettings.map((location) => ({
@@ -234,6 +216,10 @@ export default async function DashboardPage({
     employees: employeeTargets.map((employee) => ({
       id: employee.employeeId,
       name: employee.employeeName,
+      eligibleLocationIds: employee.eligibleLocationIds,
+      positionIds: employee.positionIds,
+      role: employee.role,
+      active: true,
       targetWeeklyHours: targetMap.get(employee.employeeId),
     })),
     coverageWindows,
@@ -243,7 +229,7 @@ export default async function DashboardPage({
   const coverageRulesConfigured =
     staffingSettings.length > 0 &&
     staffingSettings.every((location) =>
-      coverageWindows.some(
+      location.minimumStaffPerShift !== null && location.requiresDesignatedLead !== null && coverageWindows.some(
         (window) => window.locationId === location.locationId,
       ),
     );
@@ -270,6 +256,8 @@ export default async function DashboardPage({
         startTime: block.startTime,
         endTime: block.endTime,
         gap: block.gap,
+        positionCoverage: block.positionCoverage,
+        requiresLead: block.requiresLead && !block.leadCovered,
       })),
     hourIssues: [
       ...health.hourBalances.flatMap((balance) =>
@@ -389,6 +377,8 @@ export default async function DashboardPage({
 
   return (
     <ManagerDashboard
+      workspaceName={workspace.name}
+      timeZone={workspace.timeZone}
       firstName={session.firstName}
       weekStart={weekStart}
       weekLabel={formatWeekRange(weekStart)}
@@ -405,7 +395,6 @@ export default async function DashboardPage({
       pendingRequestCount={dashboard.pendingRequestCount}
       managerActions={managerActions}
       scheduleRoster={scheduleRoster}
-      onFloor={onFloor}
       locations={dashboard.locationReadiness}
       days={daySummaries}
       hours={hourRows}

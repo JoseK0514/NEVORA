@@ -2,13 +2,18 @@ name: CI
 
 on:
   push:
-    branches: [development, main]
+    branches: [development, main, "phase-c/**", "fix/**", "release/**"]
   pull_request:
-    branches: [development, main]
+    branches: [development, main, "phase-c/**", "release/**"]
+
+permissions:
+  contents: read
 
 jobs:
   validate:
+    name: validate
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,13 +21,75 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install dependencies
-        run: npm install
-      - name: Test
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Unit tests
         run: npm test
       - name: Type check
         run: npm run typecheck
       - name: Lint
         run: npm run lint
-      - name: Build
+      - name: Production build
         run: npm run build
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
+  clocker-postgres:
+    name: clocker-postgres
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql
+          PG_INITDB="$(find /usr/lib/postgresql -type f -name initdb -print -quit)"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Persisted Clocker PostgreSQL tests
+        run: npm run test:clocker:owned
+
+  release-postgres:
+    name: release-postgres
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || github.base_ref == 'main' || github.base_ref == 'development' || startsWith(github.ref, 'refs/heads/phase-c/') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.head_ref, 'phase-c/') || startsWith(github.head_ref, 'release/') || startsWith(github.base_ref, 'phase-c/') || startsWith(github.base_ref, 'release/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql
+          PG_INITDB="$(find /usr/lib/postgresql -type f -name initdb -print -quit)"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Release PostgreSQL integration gates
+        run: npm run test:release:postgres
