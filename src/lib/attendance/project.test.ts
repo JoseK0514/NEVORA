@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import ts from "typescript";
 import { describe, expect, it } from "vitest";
 import {
   makeAttendanceSource,
@@ -752,4 +755,120 @@ describe("D1.1 factual recorded-time projection", () => {
       reason: "publication_source_incomplete",
     });
   });
+});
+
+
+it("serializes precise attendance differences as decimal strings without bigint payloads", () => {
+  const entry = makeRecordedEntry({
+    clockInAt: "2030-10-07T12:00:00.000000001Z",
+  });
+  entry.scheduleContext = matchedContext(entry);
+  const result = projectAttendance(
+    makeAttendanceSource({
+      entries: [entry],
+      publications: [makeHistoricalShift()],
+    }),
+  );
+  expect(() => JSON.stringify(result)).not.toThrow();
+  const json = JSON.stringify(result);
+  expect(json).toContain('"differenceNanoseconds":"1"');
+  expect(json).not.toMatch(/differenceNanoseconds[^}]*n["}]/);
+});
+
+it("keeps all D1.1 runtime modules inside the approved pure dependency and effect boundary", () => {
+  const files = [
+    "types.ts",
+    "validation.ts",
+    "historical-schedule.ts",
+    "project.ts",
+    "format.ts",
+  ];
+  const allowedRuntimeImports = new Set([
+    "@js-temporal/polyfill",
+    "./types",
+    "./validation",
+    "./historical-schedule",
+    "./project",
+    "./format",
+  ]);
+  const forbidden: string[] = [];
+
+  const visit = (file: string, node: ts.Node): void => {
+    if (ts.isImportDeclaration(node)) {
+      const moduleName = ts.isStringLiteral(node.moduleSpecifier)
+        ? node.moduleSpecifier.text
+        : "";
+      const clause = node.importClause;
+      const named = clause?.namedBindings;
+      const onlyTypeSpecifiers =
+        Boolean(named) &&
+        ts.isNamedImports(named!) &&
+        named!.elements.length > 0 &&
+        named!.elements.every((element) => element.isTypeOnly);
+      const runtimeImport =
+        !clause ||
+        (!clause.isTypeOnly &&
+          Boolean(clause.name || !onlyTypeSpecifiers));
+      if (runtimeImport && !allowedRuntimeImports.has(moduleName)) {
+        forbidden.push(`${file}:runtime-import:${moduleName}`);
+      }
+    }
+
+    if (ts.isCallExpression(node)) {
+      if (node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+        forbidden.push(`${file}:dynamic-import`);
+      }
+      if (
+        ts.isIdentifier(node.expression) &&
+        ["require", "fetch", "setTimeout", "setInterval"].includes(
+          node.expression.text,
+        )
+      ) {
+        forbidden.push(`${file}:call:${node.expression.text}`);
+      }
+      if (
+        ts.isPropertyAccessExpression(node.expression) &&
+        ((node.expression.expression.getText() === "Date" &&
+          node.expression.name.text === "now") ||
+          (node.expression.expression.getText() === "Math" &&
+            node.expression.name.text === "random") ||
+          (node.expression.expression.getText() === "Temporal" &&
+            node.expression.name.text === "Now"))
+      ) {
+        forbidden.push(`${file}:clock-or-random:${node.expression.getText()}`);
+      }
+    }
+
+    if (
+      ts.isIdentifier(node) &&
+      [
+        "window",
+        "document",
+        "localStorage",
+        "sessionStorage",
+        "navigator",
+      ].includes(node.text)
+    ) {
+      forbidden.push(`${file}:browser-global:${node.text}`);
+    }
+
+    ts.forEachChild(node, (child) => visit(file, child));
+  };
+
+  for (const file of files) {
+    const sourceText = readFileSync(
+      join(process.cwd(), "src/lib/attendance", file),
+      "utf8",
+    );
+    const source = ts.createSourceFile(
+      file,
+      sourceText,
+      ts.ScriptTarget.ES2017,
+      true,
+      ts.ScriptKind.TS,
+    );
+    visit(file, source);
+  }
+
+  expect(forbidden).toEqual([]);
 });
