@@ -18,13 +18,18 @@ await mkdir(evidence, { recursive: true });
 
 const projectRequire = createRequire(import.meta.url);
 let playwright;
-try {
-  playwright = projectRequire('playwright');
-} catch {
-  const runtime = createRequire(
-    join(homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'),
-  );
-  playwright = runtime('playwright');
+const explicitRuntimePackage = process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE?.trim();
+if (explicitRuntimePackage) {
+  playwright = createRequire(explicitRuntimePackage)('playwright');
+} else {
+  try {
+    playwright = projectRequire('playwright');
+  } catch {
+    const runtime = createRequire(
+      join(homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'),
+    );
+    playwright = runtime('playwright');
+  }
 }
 const checkpoint = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const tree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim();

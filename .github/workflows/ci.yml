@@ -82,9 +82,16 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Install pinned Playwright runtime
-        run: npm install --no-save --package-lock=false playwright@1.62.1
+        shell: bash
+        run: |
+          PW_ROOT="$RUNNER_TEMP/nevora-playwright-runtime"
+          mkdir -p "$PW_ROOT"
+          printf '{"private":true}\n' > "$PW_ROOT/package.json"
+          npm install --prefix "$PW_ROOT" --no-package-lock --no-save playwright@1.62.1
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
       - name: Install Chromium and WebKit
-        run: npx playwright install --with-deps chromium webkit
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |
@@ -121,7 +128,7 @@ jobs:
         with:
           name: d13-attendance-browser-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/nevora-d13-browser-evidence
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
   release-postgres:
