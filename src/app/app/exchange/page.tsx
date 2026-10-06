@@ -71,9 +71,6 @@ function statusLabel(status: string) {
 
 function statusTone(status: string) {
   if (status === "APPROVED") return "success" as const;
-  if (["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(status)) {
-    return "warning" as const;
-  }
   return "neutral" as const;
 }
 
