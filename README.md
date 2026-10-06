@@ -47,6 +47,12 @@ Fresh-customer schema distribution/provisioning and generic owner bootstrap are 
 
 Owner/Manager Build Week and Fill Gaps Only prepare scoped Draft schedules using configured coverage and shared scheduling rules. Review gaps and publish through the existing workflow. See the [automatic scheduler architecture](docs/architecture/nevora-auto-scheduler.md) and [Phase 4 QA record](docs/ui/2026-10-04-nevora-phase-4-review.md). Migration `0009_schedule_generation.sql` is prepared after exact 0001–0008; no customer/Neon activation occurred.
 
+## Executive operating model
+
+NEVORA implementation follows the [Executive Operating Model](docs/governance/nevora-executive-operating-model.md), including the Deputy COO coordination layer, operating directors, Governance & Risk Advisory Group, and independent QA/UI oversight.
+
+Repository agents must follow [AGENTS.md](AGENTS.md). Material work loads the executive routing skill, applicable director skills, and governance controls; independent QA/UI skills are reserved for independent certification or explicit audit work.
+
 ## Local development
 
 ```bash
