@@ -14,10 +14,10 @@ describe("NEVORA visible branding regression", () => {
     const css = readFileSync("src/app/globals.css", "utf8");
 
     expect(css).not.toMatch(
-      /\.employee-shell \.employee-availability-view \.availability-deadline-banner:not\(\.locked\)[^{]*\{[^}]*color:\s*var\(--color-state-warning\)/s,
+      /\.employee-shell \.employee-availability-view \.availability-deadline-banner:not\(\.locked\)[^{]*\{[^}]*color:\s*var\(--color-state-warning\)/,
     );
     expect(css).not.toMatch(
-      /\.employee-shell \.employee-availability-view \.availability-submission-status\.pending strong\s*\{[^}]*color:\s*var\(--color-state-warning\)/s,
+      /\.employee-shell \.employee-availability-view \.availability-submission-status\.pending strong\s*\{[^}]*color:\s*var\(--color-state-warning\)/,
     );
   });
 
