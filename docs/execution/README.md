@@ -1,3 +1,7 @@
+# Current checkpoint — C9/C10 Phase C local candidate
+
+[The C9/C10 checkpoint](phase-c-c9-c10-checkpoint.md) records final Clocker UI acceptance, Phase C-wide local hardening and the remaining production gates. The integrated runtime at `c4f12ea` passed fresh local regression; this does not replace exact candidate CI, hosted Preview/Neon verification or independent Codex final-release review. No push or deployment occurred.
+
 # Current checkpoint — C8 Employee Home and My Time
 
 [The C8 checkpoint](phase-c-c8-checkpoint.md) records the connected self-service time view, private current-session reads, actual recorded-time calculations, Apple-style UI and fresh verification. C8 is locally complete; Phase C remains in progress. No push, deployment or hosted activation occurred. [FR-AUTH-001](final-release-checklist.md) remains OPEN for independent Codex final-release review. Earlier sections below are retained history.

@@ -62,6 +62,17 @@ The [C8 checkpoint](phase-c-c8-checkpoint.md) does not close this gate. On the f
 
 Replay `clocker-employee-time.integration.ts`, the employee-time projection/controller/route/component suites and `scripts/phase-c-employee-time-ui-qa.mjs`. Include C7 regression after shared private-controller extraction, short-session expiry, malformed/stalled responses, queued/obsolete requests, offline/restored-page cleanup, keyboard disclosures and mobile navigation clearance. The supplemental `layout-review.mjs` in the C8 evidence directory (or a durable equivalent) retains the additional 14 checks; use actual keyboard navigation and correctly convert CSS color formats without weakening contrast thresholds. Real hosted Neon/Preview, physical-device and final independent evidence must identify the final release SHA. No production activation is authorized by local C8 completion.
 
+### C9/C10 Phase C frozen-candidate coverage
+
+The [C9/C10 local checkpoint](phase-c-c9-c10-checkpoint.md) completes author-side Clocker UI acceptance and integrated local hardening; it does **not** close this release gate. Final independent review must use the exact published integrated SHA, not the local runtime predecessor or an earlier CI run.
+
+- [ ] Rerun the complete Clocker persisted lifecycle and security suites, including device setup/rotation/revocation, PIN rate limiting/privacy reset, idempotent punch recovery, simultaneous tablets, explicit break types, schedule capture, Manager monitor and Employee My Time.
+- [ ] Rerun the C9 browser acceptance in Chromium and WebKit at the required phone/tablet/desktop sizes, including 1024×768 and 768×1024, keyboard/focus, long content, loading/success/error/conflict/retry/recovery, double-action prevention and no runtime/hydration errors.
+- [ ] Verify the active /clocker/[location] route has no dependency on the unreachable legacy ClockerKiosk demo/local-state path and that production punch activation remains an explicit environment decision.
+- [ ] Run complete unit, Clocker, Foundation, authorization-replay, generation, shift-change, notification, configuration, typecheck, lint, build and production-dependency-audit gates on the exact release candidate.
+- [ ] Record exact GitHub CI success, exact hosted Preview/Neon deployment-to-SHA mapping, isolated schema verification, Vercel project/team identity, observability and rollback readiness before production.
+- [ ] Preserve all previously disclosed limitations: local browser evidence is not physical-iPad/screen-reader certification, and the earlier tiny unexplained Clocker paint differences are not silently reclassified as resolved.
+
 ### Closure record — not completed
 
 Final release SHA: PENDING
