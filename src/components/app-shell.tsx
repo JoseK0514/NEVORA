@@ -113,7 +113,7 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 className={active ? "nav-link active" : "nav-link"}
-                aria-current={employee && active ? "page" : undefined}
+                aria-current={active ? "page" : undefined}
               >
                 <span className="nav-icon">
                   <NavIcon name={item.icon} employee={employee} size={employee ? 20 : 18} />
@@ -238,6 +238,7 @@ export function AppShell({
                     key={item.href}
                     href={item.href}
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
+                    aria-current={active ? "page" : undefined}
                   >
                     {item.label === "Dashboard"
                       ? "Home"

@@ -431,7 +431,7 @@ Tertiary/text action
 
 Do not make every button visually primary.
 
-Primary orange buttons should be reserved for important actions.
+Primary NEVORA blue buttons should be reserved for important actions.
 
 Buttons should:
 

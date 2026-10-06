@@ -3,7 +3,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
 import { AppShell } from "./app-shell";
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/app/my-time" }));
+const navigationMock = vi.hoisted(() => ({ pathname: "/app/my-time" }));
+vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname }));
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children),
 }));
@@ -13,7 +14,8 @@ vi.mock("@/lib/navigation", () => import("../lib/navigation"));
 vi.mock("@/app/login/actions", () => ({ logout: vi.fn() }));
 vi.mock("next/image", () => ({ default: () => null }));
 
-function render(role: "EMPLOYEE" | "LEAD" | "MANAGER" | "OWNER") {
+function render(role: "EMPLOYEE" | "LEAD" | "MANAGER" | "OWNER", pathname = "/app/my-time") {
+  navigationMock.pathname = pathname;
   const html = renderToStaticMarkup(
     <AppShell workspaceName="Northside Services" user={{ firstName: "Sam", lastName: "Cruz", role }}><h1>My Time</h1></AppShell>,
   );
@@ -44,6 +46,13 @@ it.each(["MANAGER", "OWNER"] as const)("preserves the existing %s shell and mobi
   expect(html).not.toContain("employee-shell");
   expect(html).not.toContain("employee-more-navigation");
   expect(html).not.toContain("sidebar-mantra");
+});
+
+it.each(["MANAGER", "OWNER"] as const)("marks the current %s destination for assistive technology", (role) => {
+  const { html, mobile } = render(role, "/app/schedule");
+  const sidebar = html.split('aria-label="Primary navigation"')[1].split("</nav>")[0];
+  expect(sidebar).toContain('href="/app/schedule" class="nav-link active" aria-current="page"');
+  expect(mobile).toContain('href="/app/schedule" class="mobile-nav-link active" aria-current="page"');
 });
 
 it.each(["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const)("renders the NEVORA platform identity for %s", (role) => {
