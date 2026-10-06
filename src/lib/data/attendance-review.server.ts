@@ -160,14 +160,47 @@ type SourceRow = {
   source: unknown | null;
 };
 
-function validForMs(observedAt: string, expiresAt: string | null): number | null {
-  if (!expiresAt) return null;
+// Take this observation after the protected batch and projection, immediately
+// before returning. Recheck current authority as well as the database clock;
+// the transaction's SHARE locks have been released by this point.
+const finalObservationSql = `WITH final_observed AS MATERIALIZED (
+  SELECT clock_timestamp() AS at
+)
+SELECT o.at::text AS "validatedAt", s.expires_at::text AS "expiresAt"
+FROM final_observed o
+JOIN employee_sessions s ON s.token_hash=$1
+JOIN employees e ON e.id=s.employee_id
+WHERE e.id=$2 AND e.active AND e.role=ANY($3::text[])
+  AND s.expires_at>o.at`;
+
+type FinalObservation = { validatedAt: string; expiresAt: string };
+
+function validForMs(
+  observedAt: string,
+  capturedExpiresAt: string | null,
+  final: FinalObservation | undefined,
+  queryStartedAt: number,
+): number | null {
+  if (!capturedExpiresAt || !final) return null;
   try {
-    const observed = Temporal.Instant.from(observedAt);
-    const expires = Temporal.Instant.from(expiresAt);
-    const remaining = expires.epochNanoseconds - observed.epochNanoseconds;
+    const observed = Temporal.Instant.from(observedAt).epochNanoseconds;
+    const capturedExpiry = Temporal.Instant.from(capturedExpiresAt).epochNanoseconds;
+    const currentExpiry = Temporal.Instant.from(final.expiresAt).epochNanoseconds;
+    const validated = Temporal.Instant.from(final.validatedAt).epochNanoseconds;
+    if (validated < observed) return null;
+    // A fresh authority observation must never renew the original snapshot or
+    // extend its captured session deadline, even if the session was extended.
+    const sourceDeadline = observed + BigInt(ATTENDANCE_MAX_VALID_MS) * BigInt(1_000_000);
+    const deadline = [sourceDeadline, capturedExpiry, currentExpiry].reduce(
+      (earliest, value) => value < earliest ? value : earliest,
+    );
+    const remaining = deadline - validated;
     if (remaining <= BigInt(0)) return null;
-    const milliseconds = Number(remaining / BigInt(1_000_000));
+    // The database supplies every absolute time. Monotonic elapsed time only
+    // subtracts a conservative query/return budget; it cannot grant authority.
+    const elapsedMs = Math.ceil(performance.now() - queryStartedAt);
+    if (!Number.isSafeInteger(elapsedMs) || elapsedMs < 0) return null;
+    const milliseconds = Number(remaining / BigInt(1_000_000)) - elapsedMs;
     if (!Number.isSafeInteger(milliseconds) || milliseconds <= 0) return null;
     return Math.min(ATTENDANCE_MAX_VALID_MS, milliseconds);
   } catch {
@@ -229,7 +262,12 @@ export async function readAttendanceReview(
     const projection = projectAttendance(row.source);
     if (projection.state !== 'ready') return projection;
 
-    const lifetime = validForMs(row.observedAt, row.expiresAt);
+    const queryStartedAt = performance.now();
+    const [final] = await executor.query<FinalObservation>({
+      text: finalObservationSql,
+      values: [proof.sessionTokenHash, proof.employee.id, ['OWNER', 'MANAGER']],
+    });
+    const lifetime = validForMs(row.observedAt, row.expiresAt, final, queryStartedAt);
     if (lifetime === null) {
       return { state: 'unavailable', reason: 'access_denied' };
     }

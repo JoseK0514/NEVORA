@@ -1,9 +1,10 @@
 import {Client} from 'pg';
+import {Temporal} from '@js-temporal/polyfill';
 import {afterEach,beforeEach,describe,expect,it} from 'vitest';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readAttendanceReview} from '../../lib/data/attendance-review.server';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
-import type {SqlExecutor} from '../../lib/notifications/types';
+import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 let owner:SessionMutationProof;
@@ -27,6 +28,53 @@ afterEach(async()=>{
 });
 
 const read=()=>readAttendanceReview(owner,f.db.executor);
+
+/** Execute the reader's statements unchanged; the delay belongs only to this
+ * owned PostgreSQL harness, after the source SELECT and before final guards. */
+async function delayedRead(seconds:number){
+  const worker=new Client({connectionString:f.db.connectionString,statement_timeout:60000});
+  await worker.connect();
+  let observedAt='';
+  let expiresAt='';
+  let sourceReads=0;
+  const executor:SqlExecutor={
+    query:f.db.executor.query,
+    transaction:async statements=>{
+      await worker.query('BEGIN');
+      try{
+        const rows:unknown[][]=[];
+        for(const statement of statements){
+          const result=await worker.query(statement.text,[...statement.values]);
+          rows.push(result.rows);
+          if(statement.text.startsWith('WITH observed AS MATERIALIZED')){
+            sourceReads++;
+            observedAt=result.rows[0].observedAt;
+            expiresAt=result.rows[0].expiresAt;
+            await worker.query('SELECT pg_sleep($1)',[seconds]);
+          }
+        }
+        await worker.query('COMMIT');
+        return rows;
+      }catch(error){
+        await worker.query('ROLLBACK');
+        throw error;
+      }
+    },
+  };
+  try{
+    const result=await readAttendanceReview(owner,executor);
+    expect(sourceReads).toBe(1);
+    // Reuse the idle harness connection for an independent immediate clock
+    // check, without adding connection setup time after the reader returned.
+    const {rows:[fresh]}=await worker.query<{at:string;expiresAt:string}>(`
+      SELECT clock_timestamp()::text AS at,expires_at::text AS "expiresAt"
+      FROM employee_sessions WHERE token_hash=$1
+    `,[owner.sessionTokenHash]);
+    return {result,observedAt,expiresAt,fresh};
+  }finally{
+    await worker.end();
+  }
+}
 
 async function localClockIn(offsetMicroseconds=123457){
   const [row]=await f.q<{
@@ -116,13 +164,16 @@ describe('D1.2 authorized recorded-time reader',()=>{
       engineVersion:1,
       workspaceId:'workspace-fuel',
       timeZone:'America/Puerto_Rico',
-      validForMs:45000,
       groups:[],
       recordCount:0,
       signalCount:0,
       affectedEmployeeCount:0,
       coverage:{state:'complete'},
     });
+    if(result.state==='ready'){
+      expect(result.validForMs).toBeGreaterThan(0);
+      expect(result.validForMs).toBeLessThanOrEqual(45000);
+    }
   });
 
   it('reads only the saved historical reference and preserves scheduled microseconds',async()=>{
@@ -196,6 +247,85 @@ describe('D1.2 authorized recorded-time reader',()=>{
     expect(result.validForMs).toBeGreaterThan(0);
     expect(result.validForMs).toBeLessThanOrEqual(20000);
     expect(result.validForMs).toBeLessThan(45000);
+  });
+
+  it('CDR-D12-001: never advertises more session time after a two-second database delay',async()=>{
+    await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '4 seconds' WHERE token_hash=$1",[owner.sessionTokenHash]);
+    const {result,observedAt,expiresAt,fresh}=await delayedRead(2);
+    expect(result.state).toBe('ready');
+    if(result.state!=='ready') return;
+    const remainingMs=Number((Temporal.Instant.from(fresh.expiresAt).epochNanoseconds-Temporal.Instant.from(fresh.at).epochNanoseconds)/BigInt(1_000_000));
+    const sourceAgeMs=Number((Temporal.Instant.from(fresh.at).epochNanoseconds-Temporal.Instant.from(observedAt).epochNanoseconds)/BigInt(1_000_000));
+    console.info('CDR-D12-001 session delay evidence',JSON.stringify({observedAt,capturedExpiresAt:expiresAt,freshAt:fresh.at,currentExpiresAt:fresh.expiresAt,sourceAgeMs,returnedValidForMs:result.validForMs,remainingMs}));
+    expect(sourceAgeMs).toBeGreaterThanOrEqual(2000);
+    expect(remainingMs).toBeGreaterThan(0);
+    expect(result.validForMs).toBeGreaterThan(0);
+    expect(result.validForMs).toBeLessThanOrEqual(remainingMs);
+  });
+
+  it('deducts delayed source age from the fixed 45-second freshness deadline',async()=>{
+    const {result,observedAt,fresh}=await delayedRead(2);
+    expect(result.state).toBe('ready');
+    if(result.state!=='ready') return;
+    const remainingMs=Number((Temporal.Instant.from(observedAt).epochNanoseconds+BigInt(45_000_000_000)-Temporal.Instant.from(fresh.at).epochNanoseconds)/BigInt(1_000_000));
+    expect(result.validForMs).toBeGreaterThan(0);
+    expect(result.validForMs).toBeLessThanOrEqual(remainingMs);
+    expect(result.validForMs).toBeLessThanOrEqual(43000);
+  });
+
+  it('fails closed when the source freshness deadline expires while authority remains active',async()=>{
+    const {result,fresh}=await delayedRead(45.05);
+    expect(Temporal.Instant.compare(fresh.expiresAt,fresh.at)).toBe(1);
+    expect(result).toEqual({state:'unavailable',reason:'access_denied'});
+  },60000);
+
+  it.each(['expired','revoked','inactive','role','wrong-actor','shortened-expiry','extended-expiry'] as const)(
+    'observes current %s authority after the protected transaction',async kind=>{
+      if(kind==='extended-expiry') await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '2 seconds' WHERE token_hash=$1",[owner.sessionTokenHash]);
+      const executor:SqlExecutor={
+        query:f.db.executor.query,
+        transaction:async statements=>{
+          const results=await f.db.executor.transaction(statements);
+          // The protected batch has committed; change only this fictional
+          // authority before the final observation, without fabricating rows.
+          if(kind==='expired') await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE token_hash=$1",[owner.sessionTokenHash]);
+          if(kind==='revoked') await f.q('DELETE FROM employee_sessions WHERE token_hash=$1',[owner.sessionTokenHash]);
+          if(kind==='inactive') await f.q('UPDATE employees SET active=false WHERE id=$1',[owner.employee.id]);
+          if(kind==='role') await f.q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[owner.employee.id]);
+          if(kind==='wrong-actor') await f.q("UPDATE employee_sessions SET employee_id='c34-a' WHERE token_hash=$1",[owner.sessionTokenHash]);
+          if(kind==='shortened-expiry') await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '1.5 seconds' WHERE token_hash=$1",[owner.sessionTokenHash]);
+          if(kind==='extended-expiry') await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '1 day' WHERE token_hash=$1",[owner.sessionTokenHash]);
+          return results;
+        },
+      };
+      const result=await readAttendanceReview(owner,executor);
+      if(kind==='shortened-expiry'||kind==='extended-expiry'){
+        expect(result.state).toBe('ready');
+        if(result.state!=='ready') return;
+        expect(result.validForMs).toBeGreaterThan(0);
+        expect(result.validForMs).toBeLessThanOrEqual(kind==='shortened-expiry'?1500:2000);
+      }else{
+        expect(result).toEqual({state:'unavailable',reason:'access_denied'});
+      }
+    },
+  );
+
+  it('fails closed if the final observation response itself outlives the session',async()=>{
+    await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '1.5 seconds' WHERE token_hash=$1",[owner.sessionTokenHash]);
+    let finalReads=0;
+    const executor:SqlExecutor={
+      transaction:f.db.executor.transaction,
+      query:async<T>(statement:SqlStatement,signal?:AbortSignal)=>{
+        const rows=await f.db.executor.query<T>(statement,signal);
+        if(statement.text.startsWith('WITH final_observed AS MATERIALIZED')){
+          finalReads++;
+          await f.q('SELECT pg_sleep(2)');
+        }
+        return rows;
+      },
+    };
+    expect(await readAttendanceReview(owner,executor)).toEqual({state:'unavailable',reason:'access_denied'});
+    expect(finalReads).toBe(1);
   });
 
   it('returns source_limit rather than truncating a 501-entry in-scope source',async()=>{
