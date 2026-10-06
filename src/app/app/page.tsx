@@ -44,6 +44,7 @@ import {
 
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
   "overview",
+  "attendance",
   "schedule",
   "team",
   "requests",
@@ -386,6 +387,14 @@ export default async function DashboardPage({
       coverageConfigured={coverageRulesConfigured}
       pendingRequestCount={dashboard.pendingRequestCount}
       managerActions={managerActions}
+      attendancePeople={employees.map((employee) => ({
+        id: employee.id,
+        name: `${employee.firstName} ${employee.lastName}`,
+      }))}
+      attendanceLocations={locations.map((location) => ({
+        id: location.id,
+        name: location.shortName,
+      }))}
       scheduleRoster={scheduleRoster}
       locations={dashboard.locationReadiness}
       days={daySummaries}

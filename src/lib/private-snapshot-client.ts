@@ -2,7 +2,7 @@ export type PrivateSnapshot={state:'ready';observedAt:string;validForMs:number}|
 export type PrivatePanelState<T>={snapshot:T|null;refreshing:boolean;paused:boolean};
 
 /** One in-flight read. No local/session storage, optimistic people, or automatic punches. */
-export function createPrivateSnapshotController<T extends PrivateSnapshot>(changed:(state:PrivatePanelState<T>)=>void,request:(signal:AbortSignal)=>Promise<unknown>,parse:(value:unknown)=>T,failure:(reason:'read_failed'|'access_denied')=>T){
+export function createPrivateSnapshotController<T extends PrivateSnapshot>(changed:(state:PrivatePanelState<T>)=>void,request:(signal:AbortSignal)=>Promise<unknown>,parse:(value:unknown)=>T,failure:(reason:'read_failed'|'access_denied')=>T,expiryFailure:(validForMs:number)=>'read_failed'|'access_denied'=(validForMs)=>validForMs<45000?'access_denied':'read_failed'){
  let stopped=false,paused=true,sequence=0,current:T|null=null,active:AbortController|undefined;
  let poll:ReturnType<typeof setTimeout>|undefined,timeout:ReturnType<typeof setTimeout>|undefined,expiry:ReturnType<typeof setTimeout>|undefined;
  const publish=(refreshing=false)=>{if(!stopped)changed({snapshot:current,refreshing,paused});};
@@ -30,7 +30,7 @@ export function createPrivateSnapshotController<T extends PrivateSnapshot>(chang
    const remaining=result.validForMs-Math.max(0,performance.now()-started);
    if(remaining<=0){unavailable('read_failed');return;}
    current=result;publish();schedule();
-   expiry=setTimeout(()=>{if(stopped||paused)return;sequence++;cancelRequest();unavailable(result.validForMs<45000?'access_denied':'read_failed');},remaining);
+   expiry=setTimeout(()=>{if(stopped||paused)return;sequence++;cancelRequest();unavailable(expiryFailure(result.validForMs));},remaining);
   }).catch(()=>{if(stopped||paused||generation!==sequence)return;cancelRequest();unavailable('read_failed');});
  }
  return {

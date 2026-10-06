@@ -1,4 +1,5 @@
 import { ManagerClockMonitor } from "./manager-clock-monitor";
+import { ManagerAttendanceReview, type AttendanceLocation, type AttendancePerson } from "./manager-attendance-review";
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
 import { employeeRoleLabel } from "../lib/employee-display";
@@ -10,6 +11,7 @@ import type { UserRole } from "@/lib/domain";
 
 export type ManagerDashboardView =
   | "overview"
+  | "attendance"
   | "schedule"
   | "team"
   | "requests"
@@ -80,6 +82,8 @@ type Props = {
   coverageConfigured: boolean;
   pendingRequestCount: number;
   managerActions: ManagerActionItem[];
+  attendancePeople: AttendancePerson[];
+  attendanceLocations: AttendanceLocation[];
   scheduleRoster: DashboardScheduleEmployeeItem[];
   locations: DashboardLocationItem[];
   days: DashboardDayItem[];
@@ -94,6 +98,7 @@ type Props = {
 
 const tabs: Array<{ id: ManagerDashboardView; label: string }> = [
   { id: "overview", label: "Overview" },
+  { id: "attendance", label: "Attendance" },
   { id: "schedule", label: "Schedule" },
   { id: "team", label: "Team" },
   { id: "requests", label: "Requests" },
@@ -453,17 +458,23 @@ export function ManagerDashboard(props: Props) {
       className={
         props.view === "overview"
           ? "manager-dashboard-v3 dashboard-overview-active"
-          : "manager-dashboard-v3"
+          : props.view === "attendance"
+            ? "manager-dashboard-v3 dashboard-attendance-active"
+            : "manager-dashboard-v3"
       }
     >
       <section className="dashboard-hero">
         <div className="dashboard-hero-copy">
-          <p>Manager dashboard</p>
-          <h1>Welcome back, {props.firstName}.</h1>
-          <span>Here’s what’s happening this week at {props.workspaceName}.</span>
+          <p>{props.view === "attendance" ? "Attendance intelligence" : "Manager dashboard"}</p>
+          <h1>{props.view === "attendance" ? "Recorded-time review" : `Welcome back, ${props.firstName}.`}</h1>
+          <span>
+            {props.view === "attendance"
+              ? `Today’s verified attendance signals at ${props.workspaceName}.`
+              : `Here’s what’s happening this week at ${props.workspaceName}.`}
+          </span>
         </div>
 
-        {props.view !== "schedule" ? (
+        {props.view !== "schedule" && props.view !== "attendance" ? (
           <div className="dashboard-hero-actions">
             <div className="dashboard-week-nav">
               <Link
@@ -508,6 +519,11 @@ export function ManagerDashboard(props: Props) {
           <PendingApprovals items={props.managerActions} counts={props.requestCounts} weekStart={props.weekStart} />
           <ManagerClockMonitor />
         </div>
+      ) : props.view === "attendance" ? (
+        <ManagerAttendanceReview
+          people={props.attendancePeople}
+          locations={props.attendanceLocations}
+        />
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />
       ) : props.view === "team" ? (
