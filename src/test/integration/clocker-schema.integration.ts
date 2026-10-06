@@ -3,9 +3,9 @@ import { readFile } from 'node:fs/promises';
 import { expect, it } from 'vitest';
 import { createDisposableFoundationDatabase } from './local-postgres';
 
-export const draftPath = 'db/phase-c/clocker-devices.sql';
+export const migrationPath = 'db/migrations/0011_clocker_devices.sql';
 it('adds device credentials without changing legacy devices or punch history', async () => {
-  const db = await createDisposableFoundationDatabase({ mode: 'current-runtime' });
+  const db = await createDisposableFoundationDatabase({ mode: 'phase-c-base' });
   const q = (text: string, values: unknown[] = []) => db.executor.query<Record<string, unknown>>({ text, values });
   try {
     await q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id)
@@ -18,8 +18,8 @@ it('adds device credentials without changing legacy devices or punch history', a
     const entries = await q('SELECT * FROM time_entries');
     const breaks = await q('SELECT * FROM break_entries');
     const legacy = await q('SELECT id,location_id,name,active,last_seen_at FROM clocker_devices');
-    expect(existsSync(draftPath), 'Phase C device schema draft must exist').toBe(true);
-    await q(await readFile(draftPath, 'utf8'));
+    expect(existsSync(migrationPath), '0011 device migration must exist').toBe(true);
+    await q(await readFile(migrationPath, 'utf8'));
     expect(await q('SELECT * FROM time_entries')).toEqual(entries);
     expect(await q('SELECT * FROM break_entries')).toEqual(breaks);
     expect(await q('SELECT id,location_id,name,active,last_seen_at FROM clocker_devices')).toEqual(legacy);

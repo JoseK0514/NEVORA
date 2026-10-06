@@ -4,11 +4,11 @@ import { expect, it } from 'vitest';
 import { createDisposableFoundationDatabase } from './local-postgres';
 
 it('extends punch persistence without rewriting historical entries or breaks',async()=>{
- const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
+ const db=await createDisposableFoundationDatabase({mode:'phase-c-base'});
  const q=(text:string,values:unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
  try{
-  await q(await readFile('db/phase-c/clocker-devices.sql','utf8'));
-  await q(await readFile('db/phase-c/clocker-pins.sql','utf8'));
+  await q(await readFile('db/migrations/0011_clocker_devices.sql','utf8'));
+  await q(await readFile('db/migrations/0012_clocker_pins.sql','utf8'));
   await q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('c34-legacy','Legacy','QA','555','EMPLOYEE','loc-1');
    INSERT INTO clocker_devices(id,location_id,name) VALUES('c34-old-tablet','loc-1','Historical tablet');
    INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status)
@@ -16,8 +16,8 @@ it('extends punch persistence without rewriting historical entries or breaks',as
    INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at)
     VALUES('c34-old-break','c34-old-entry','2020-01-02T01:00Z','2020-01-02T01:15Z');`);
   const entries=await q('SELECT * FROM time_entries'),breaks=await q('SELECT * FROM break_entries');
-  expect(existsSync('db/phase-c/clocker-punches.sql'),'C3/C4 additive schema must exist').toBe(true);
-  await q(await readFile('db/phase-c/clocker-punches.sql','utf8'));
+  expect(existsSync('db/migrations/0013_clocker_punches.sql'),'0013 punch migration must exist').toBe(true);
+  await q(await readFile('db/migrations/0013_clocker_punches.sql','utf8'));
   expect((await q('SELECT * FROM time_entries')).map(({version:_,...row})=>row)).toEqual(entries);
   expect((await q('SELECT * FROM break_entries')).map(({version:_,...row})=>row)).toEqual(breaks);
   expect(await q('SELECT version FROM time_entries')).toEqual([{version:1}]);

@@ -1,6 +1,5 @@
--- DRAFT: owned Phase C databases only, after clocker-devices.sql.
--- Do not allocate a numbered migration before Phase B reconciliation.
 BEGIN;
+-- Phase C release: Employee Clocker PIN security and rate limits.
 CREATE TABLE clocker_pin_configuration (
  workspace_id text PRIMARY KEY REFERENCES workspaces(id),
  key_identity text NOT NULL CHECK (key_identity ~ '^[a-f0-9]{64}$')

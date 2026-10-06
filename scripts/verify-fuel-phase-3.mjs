@@ -77,7 +77,7 @@ async function settled(page, url) {
 }
 async function geometry(page) {
   return page.evaluate(() => {
-    const root = document.querySelector('.app-shell,.clocker-terminal-page,.auth-card') ?? document.body;
+    const root = document.querySelector('.app-shell,main,.auth-card') ?? document.body;
     const elements = [...root.querySelectorAll('*')].filter(e => { const r = e.getBoundingClientRect(); return r.width && r.height; });
     const label = root.querySelector('.mobile-brand-copy small'); const labelRect = label?.getBoundingClientRect();
     return { labelIndex: elements.indexOf(label), labelRect: labelRect ? {x:labelRect.x,y:labelRect.y,width:labelRect.width,height:labelRect.height} : null, overflow: document.documentElement.scrollWidth > innerWidth, width: innerWidth, rows: elements.map(e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return [e.tagName, e.className.baseVal ?? e.className, ...[r.x, r.y, r.width, r.height].map(n => Math.round(n * 100) / 100), s.color, s.backgroundColor, s.fontSize, s.lineHeight, s.fontWeight, s.borderRadius, s.display]; }) };

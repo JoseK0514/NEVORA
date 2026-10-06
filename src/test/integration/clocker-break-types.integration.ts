@@ -7,8 +7,6 @@ let f: Awaited<ReturnType<typeof createPunchFixture>>;
 const input={name:'Rest break',category:'REST' as const,targetMinutes:15,active:true};
 beforeEach(async()=>{
  f=await createPunchFixture();
- expect(existsSync('db/phase-c/clocker-breaks.sql'),'C5 additive schema exists').toBe(true);
- await f.q(await readFile('db/phase-c/clocker-breaks.sql','utf8'));
 });
 afterEach(async()=>{if(f)await f.db.dispose();});
 const create=()=>saveBreakType(f.owner,{...input,expectedVersion:0},f.db.executor);

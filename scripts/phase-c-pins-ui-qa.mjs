@@ -27,7 +27,7 @@ async function verify(page,pin){await page.getByLabel('Employee PIN',{exact:true
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex')});
  const q=(text,values=[])=>app.database.executor.query({text,values});
- await q(await readFile('db/phase-c/clocker-devices.sql','utf8'));await q(await readFile('db/phase-c/clocker-pins.sql','utf8'));await seedOwnedApp(app.database.executor);
+ await seedOwnedApp(app.database.executor);
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('C2-EMPLOYEE','Avery','QA','555','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('C2-EMPLOYEE','loc-1')");
  for(const engine of ['chromium','webkit']){
   const browser=await playwright[engine].launch();browsers.push(browser);const owner=await context(browser);await login(owner);

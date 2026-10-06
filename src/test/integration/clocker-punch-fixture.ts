@@ -5,12 +5,17 @@ import { saveBreakType } from '../../lib/clocker/break-types.server';
 import { setEmployeeClockerPin, verifyEmployeeClockerPin, readClockerIdentity } from '../../lib/clocker/pins.server';
 
 /** Fictional employees and owned loopback PostgreSQL only. */
-export async function createPunchFixture(options:{breaks?:boolean}={}){
- const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
+export async function createPunchFixture(options:{breaks?:boolean;migrationStage?:'current'|'pre-break'}={}){
+ const preBreak=options.migrationStage==='pre-break';
+ const db=await createDisposableFoundationDatabase({mode:preBreak?'phase-c-base':'current-runtime'});
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>db.executor.query<T>({text,values});
  const key=Buffer.alloc(32,61),owner={employeeId:'c34-owner',sessionTokenHash:'a'.repeat(64)};
  try{
-  for(const file of ['clocker-devices.sql','clocker-pins.sql','clocker-punches.sql'])await q(await readFile('db/phase-c/'+file,'utf8'));
+  if(preBreak){
+   for(const file of ['0011_clocker_devices.sql','0012_clocker_pins.sql','0013_clocker_punches.sql']){
+    await q(await readFile('db/migrations/'+file,'utf8'));
+   }
+  }
   await q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES
    ('c34-owner','Owner','QA','555','OWNER','loc-1'),('c34-a','Avery','QA','556','EMPLOYEE','loc-1'),('c34-b','Blair','QA','557','EMPLOYEE','loc-1');
    INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'c34-owner',now()+interval '1 day');
@@ -35,8 +40,7 @@ export async function createPunchFixture(options:{breaks?:boolean}={}){
    return {...identity,token:verified.token};
   }
   let breakType=null;
-  if(options.breaks){await q(await readFile('db/phase-c/clocker-breaks.sql','utf8'));breakType=await saveBreakType(owner,{name:'Fixture rest',category:'REST',targetMinutes:15,active:true,expectedVersion:0},db.executor);}
-  await q(await readFile('db/phase-c/clocker-schedule-context.sql','utf8'));
+  if(options.breaks){breakType=await saveBreakType(owner,{name:'Fixture rest',category:'REST',targetMinutes:15,active:true,expectedVersion:0},db.executor);}
   return {db,q,key,owner,devices,identity,breakType};
  }catch(error){await db.dispose();throw error;}
 }

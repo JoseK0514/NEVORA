@@ -1,8 +1,5 @@
--- DRAFT: Phase C C6 only, additive to the existing Clocker schema.
--- Match status never authorizes, restricts, rounds or replaces actual time.
--- Failed transactional capture rolls back; existing historical rows remain NULL.
 BEGIN;
-
+-- Phase C release: Immutable published schedule context captured at Clock In.
 ALTER TABLE time_entries ADD COLUMN schedule_context jsonb;
 ALTER TABLE time_entries ADD CONSTRAINT clocker_schedule_context_shape CHECK (
   schedule_context IS NULL OR COALESCE((

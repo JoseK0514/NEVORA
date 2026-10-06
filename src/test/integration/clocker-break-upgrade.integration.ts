@@ -4,12 +4,12 @@ import { createPunchFixture } from './clocker-punch-fixture';
 import { ClockerPunchService } from '../../lib/clocker/punches.server';
 import { randomUUID } from 'node:crypto';
 it('upgrades legacy open and closed breaks without inventing classifications or changing recorded timestamps',async()=>{
- const f=await createPunchFixture();
+ const f=await createPunchFixture({migrationStage:'pre-break'});
  try{
   await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('legacy-entry','c34-a','loc-1',$1,'2020-01-01T10:00Z','ON_BREAK')",[f.devices[0].device.id]);
   await f.q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('legacy-closed','legacy-entry','2020-01-01T11:00Z','2020-01-01T11:15Z'),('legacy-open','legacy-entry','2020-01-01T12:00Z',NULL)");
   const original=await f.q('SELECT * FROM break_entries ORDER BY id');
-  await f.q(await readFile('db/phase-c/clocker-breaks.sql','utf8'));
+  await f.q(await readFile('db/migrations/0014_clocker_breaks.sql','utf8'));
   const upgraded=await f.q('SELECT * FROM break_entries ORDER BY id');
   expect(upgraded.map(({break_type_id:_id,break_type_snapshot:_snapshot,...row})=>row)).toEqual(original);
   expect(upgraded.every(row=>row.break_type_id===null&&row.break_type_snapshot===null)).toBe(true);

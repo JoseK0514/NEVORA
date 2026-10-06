@@ -65,3 +65,13 @@ See [the Phase 0 plan and verification record](../superpowers/plans/2026-10-02-f
 The historical inventory above remains a phase record. The [current workspace foundation](nevora-workspace-foundation.md) now supplies configured workspace/timezone, arbitrary active locations, derived readiness, separate operational positions and employee qualification, per-window quotas and shared maximum-hour evaluation. Phase 4 must use the existing engine with active READY locations, eligibility, positions/quotas and configured workspace zone. It must not add static Fuel IDs or a second rule implementation.
 
 This foundation does not implement Build Week, Fill Gaps Only, automatic assignment/selection/publishing, scheduler provisioning or production onboarding. Skills, certifications, expirations, documents, training and qualification reminders remain deferred. Production baseline/distribution/provisioning tooling belongs to separately reviewed Productization. Prepared 0008 and local fixtures are not live activation; Phase 3 provider/device/plan restrictions remain in force. Stop for foundation approval before Phase 4.
+
+## Current Phase C status (2026-10-05)
+
+The inventory near the top of this charter is retained as historical Phase 0 evidence and must not be read as the current timekeeping implementation state. Phase C now implements registered Clocker devices, private employee PIN verification, persisted Clock In / Start Break / End Break / Clock Out transitions, idempotent command recovery, operational break-type snapshots, immutable published-schedule context, Manager live operations, and Employee self-service time history.
+
+The release schema is promoted into the numbered migration chain beginning with `0011_clocker_devices.sql`, followed by `0012_clocker_pins.sql`, `0013_clocker_punches.sql`, `0014_clocker_breaks.sql`, and `0015_clocker_schedule_context.sql`. Tests, Preview and production must consume the numbered chain rather than test-only schema files.
+
+Employee Home and My Time read persisted actual punches; they do not manufacture recorded time from a published schedule. Manager live operations likewise reads open persisted time entries instead of treating scheduled employees as clocked in.
+
+This current-state amendment does not authorize production. Exact-candidate CI, isolated hosted Preview/Neon validation, independent final review and Jose's production approval remain mandatory release gates.

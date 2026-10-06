@@ -5,5 +5,5 @@ export default defineConfig({
     '@': fileURLToPath(new URL('./src', import.meta.url)),
     'server-only': fileURLToPath(new URL('./node_modules/next/dist/compiled/server-only/empty.js', import.meta.url)),
   } },
-  test: { include: ['src/test/integration/clocker-*.integration.ts'], fileParallelism: false, testTimeout: 15000, hookTimeout: 30000 },
+  test: { include: ['src/test/integration/clocker-*.integration.ts', 'src/test/integration/phase-c-release-migrations.integration.ts'], fileParallelism: false, testTimeout: 15000, hookTimeout: 30000 },
 });

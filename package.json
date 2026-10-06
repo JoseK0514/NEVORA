@@ -20,7 +20,8 @@
     "test:phase-a:app": "node --import tsx scripts/phase-a-app-qa.mjs",
     "test:phase-b:ui": "node --import tsx scripts/phase-b-ui-qa.mjs",
     "test:clocker:integration": "vitest run --config vitest.clocker-integration.config.mts",
-    "test:clocker:owned": "node scripts/phase-c-clocker-postgres.mjs"
+    "test:clocker:owned": "node scripts/phase-c-clocker-postgres.mjs",
+    "test:release:postgres": "node scripts/phase-c-release-postgres.mjs"
   },
   "dependencies": {
     "@js-temporal/polyfill": "0.5.1",

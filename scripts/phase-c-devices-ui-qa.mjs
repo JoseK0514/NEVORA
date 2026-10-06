@@ -66,7 +66,7 @@ async function geometry(page,label){
 try{
  app=await createOwnedNextApp(evidence);
  const q=(text,values=[])=>app.database.executor.query({text,values});
- await q(await readFile('db/phase-c/clocker-devices.sql','utf8'));await seedOwnedApp(app.database.executor);
+ await seedOwnedApp(app.database.executor);
  const passwordHash=await hashPassword(TEST_PASSWORD);
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('C1-MANAGER','Test','Manager','555','MANAGER','loc-1'); INSERT INTO employee_location_eligibility VALUES('C1-MANAGER','loc-1')");
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',['C1-MANAGER',passwordHash]);

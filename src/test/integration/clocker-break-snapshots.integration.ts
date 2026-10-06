@@ -9,7 +9,7 @@ import type { ClockerIdentityProof } from '../../lib/clocker/pin-identity.server
 import type { PunchAction } from '../../lib/clocker/punch-types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>, service:ClockerPunchService, proof:ClockerIdentityProof, type:BreakType;
 beforeEach(async()=>{
- f=await createPunchFixture();await f.q(await readFile('db/phase-c/clocker-breaks.sql','utf8'));
+ f=await createPunchFixture();
  type=await saveBreakType(f.owner,{name:'Rest period',category:'REST',targetMinutes:15,active:true,expectedVersion:0},f.db.executor);
  service=new ClockerPunchService(f.key,f.db.executor);proof=(await f.identity()).proof;
 });

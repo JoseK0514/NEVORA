@@ -19,12 +19,9 @@ beforeEach(async () => {
  INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'c2-owner',now()+interval '1 day'),(repeat('b',64),'c2-manager',now()+interval '1 day');
  INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT id,'loc-1' FROM employees;
  INSERT INTO employee_credentials(employee_id,password_hash) VALUES('c2-a','portal-password-untouched');`);
- await q(await readFile('db/phase-c/clocker-devices.sql','utf8'));
  const pending=await registerClockerDevice(owner,{name:'C2 tablet',locationId:'loc-1'},db.executor);
  const enrolled=await redeemClockerEnrollment({enrollmentToken:pending.enrollmentToken,locationKey:'2'},db.executor);
  device=await authenticateClockerDevice({credential:enrolled.credential,locationKey:'2'},db.executor);
- expect(existsSync('db/phase-c/clocker-pins.sql'),'C2 additive draft schema exists').toBe(true);
- await q(await readFile('db/phase-c/clocker-pins.sql','utf8'));
 });
 afterEach(async () => { if(db) await db.dispose(); });
 const set = (employeeId='c2-a', pin='0123', expectedVersion=0, proof=owner) => setEmployeeClockerPin(proof,{employeeId,pin,expectedVersion},key,db.executor);

@@ -30,7 +30,6 @@ async function done(page){await page.getByRole('button',{name:'Done',exact:true}
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
  const q=(text,values=[])=>app.database.executor.query({text,values});
- for(const file of ['clocker-devices.sql','clocker-pins.sql','clocker-punches.sql','clocker-breaks.sql','clocker-schedule-context.sql'])await q(await readFile('db/phase-c/'+file,'utf8'));
  await seedOwnedApp(app.database.executor);
  for(const engine of ['chromium','webkit']){
   const browser=await playwright[engine].launch();browsers.push(browser);

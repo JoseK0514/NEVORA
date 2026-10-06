@@ -40,7 +40,7 @@ async function settled(page, url) {
 }
 async function audit(page) {
   const data = await page.evaluate(() => {
-    const root = document.querySelector('.page-frame,.clocker-terminal-page,.auth-card') ?? document.body;
+    const root = document.querySelector('.page-frame,main,.auth-card') ?? document.body;
     const visible = e => { const r=e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; };
     const controls = [...root.querySelectorAll('button,input:not([type=hidden]),select,textarea,a')].filter(visible).map(e => {
       const r=e.getBoundingClientRect(), s=getComputedStyle(e), range=document.createRange(); range.selectNodeContents(e); const t=range.getBoundingClientRect();

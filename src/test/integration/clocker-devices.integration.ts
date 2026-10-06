@@ -17,7 +17,6 @@ beforeEach(async () => {
     VALUES('c1-owner','Test','Owner','555','OWNER','loc-1'),('c1-manager','Test','Manager','556','MANAGER','loc-1');
     INSERT INTO employee_sessions(token_hash,employee_id,expires_at)
     VALUES(repeat('a',64),'c1-owner',now()+interval '1 day'),(repeat('b',64),'c1-manager',now()+interval '1 day');`);
-  await q(await readFile('db/phase-c/clocker-devices.sql', 'utf8'));
 });
 afterEach(async () => { if (db) await db.dispose(); });
 const register = () => registerClockerDevice(owner, { name: ' Front tablet ', locationId: 'loc-1' }, db.executor);

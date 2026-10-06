@@ -23,7 +23,6 @@ async function action(page,name,operation){await row(page,name).getByRole('butto
 async function geometry(page,label){const r=await page.evaluate(()=>{const visible=e=>{const b=e.getBoundingClientRect();return b.width>0&&b.height>0&&getComputedStyle(e).visibility!=='hidden';};const controls=[...document.querySelectorAll('button,a.button,input:not([type=hidden]),select')].filter(visible);return {overflow:document.documentElement.scrollWidth>innerWidth+2,small:controls.filter(e=>e.getBoundingClientRect().height<43.5).map(e=>e.outerHTML.slice(0,90)),clipped:controls.filter(e=>{const b=e.getBoundingClientRect();return b.left< -2||b.right>innerWidth+2;}).map(e=>e.outerHTML.slice(0,90))};});assert.equal(r.overflow,false,label+' overflow');assert.deepEqual(r.small,[],label+' touch targets');assert.deepEqual(r.clipped,[],label+' clipping');checked(label);}
 try{
  app=await createOwnedNextApp(evidence);const q=(text,values=[])=>app.database.executor.query({text,values});
- for(const file of ['clocker-devices.sql','clocker-pins.sql','clocker-punches.sql','clocker-breaks.sql','clocker-schedule-context.sql'])await q(await readFile('db/phase-c/'+file,'utf8'));
  await seedOwnedApp(app.database.executor);
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('C5-MANAGER','Morgan','QA','555','MANAGER','loc-1')");
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',['C5-MANAGER',await hashPassword(TEST_PASSWORD)]);

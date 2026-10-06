@@ -15,7 +15,6 @@ const q = <T = Record<string,unknown>>(text:string, values:unknown[]=[]) => db.e
 beforeEach(async () => {
   db = await createDisposableFoundationDatabase({mode:'current-runtime'});
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('setup-owner','Test','Owner','555','OWNER','loc-1'); INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'setup-owner',now()+interval '1 day')");
-  await q(await readFile('db/phase-c/clocker-devices.sql','utf8'));
   jar=new Map(); writes=[]; closedSessions=0;
   cookies={get:name=>jar.has(name)?{value:jar.get(name)!}:undefined,set:(name,value,options)=>{
     writes.push({name,value,options}); if(options.maxAge===0)jar.delete(name);else jar.set(name,value);

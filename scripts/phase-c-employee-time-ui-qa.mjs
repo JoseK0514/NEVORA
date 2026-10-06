@@ -34,7 +34,6 @@ async function geometry(p,label){const r=await panel(p).evaluate(root=>{
  });assert.equal(r.overflow,false,label);assert.deepEqual(r.clipped,[],label);assert.deepEqual(r.small,[],label);checked(label);}
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
- for(const file of ['clocker-devices','clocker-pins','clocker-punches','clocker-breaks','clocker-schedule-context'])await q(await readFile('db/phase-c/'+file+'.sql','utf8'));
  await seedOwnedApp(app.database.executor);const password=await hashPassword(TEST_PASSWORD);
  await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) VALUES('c8-rest','workspace-fuel','Recorded rest','REST',15,'QAOWNER','QAOWNER')");
  await q("INSERT INTO clocker_devices(id,location_id,name,active) VALUES('c8-history-device','loc-1','Fictional historical tablet',false)");
@@ -44,7 +43,7 @@ try{
   const anon=await context(browser);assert.equal((await api(anon)).status(),401);await anon.close();checked(engine+': missing session denied');
   const owner=await context(browser),o=await login(owner,'QAOWNER');assert.equal((await api(owner)).status(),403);
   const managerContext=await context(browser);await login(managerContext,manager);assert.equal((await api(managerContext)).status(),403);await managerContext.close();checked(engine+': Owner/Manager cannot select employee self-service data');
-  const leadContext=await context(browser),l=await login(leadContext,lead);await l.goto(app.url+'/app/my-time');await state(l,'Off Clock');assert.equal((await api(leadContext)).status(),200);await leadContext.close();checked(engine+': current Lead self-service supported');
+  const leadContext=await context(browser),l=await login(leadContext,lead);await state(l,'Off Clock');await l.goto(app.url+'/app/my-time');await state(l,'Off Clock');assert.equal((await api(leadContext)).status(),200);await leadContext.close();checked(engine+': current Lead self-service supported');
   const employee=await context(browser),p=await login(employee,id);await state(p,'Off Clock');assert.match(await p.locator('.employee-home-today').innerText(),/No published shift today/);assert(!((await p.locator('.employee-home-today').innerText()).includes('8:00 AM')));checked(engine+': Home uses actual Off Clock with no invented schedule');
   await panel(p).locator('.employee-time-link').click();await p.getByRole('heading',{name:'My Time',exact:true}).waitFor();await state(p,'Off Clock');await panel(p).getByText('No recorded punches today.',{exact:true}).waitFor();
   const empty=await api(employee);assert.equal(empty.status(),200);assert.match(empty.headers()['cache-control'],/no-store/);assert.match(empty.headers().vary,/Cookie/);assert.deepEqual((await empty.json()).today.entries,[]);checked(engine+': My Time is connected, private/no-store and truthfully empty');

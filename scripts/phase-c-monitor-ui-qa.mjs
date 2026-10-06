@@ -47,7 +47,6 @@ async function geometry(p,label){
 }
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
- for(const name of ['clocker-devices','clocker-pins','clocker-punches','clocker-breaks','clocker-schedule-context'])await q(await readFile('db/phase-c/'+name+'.sql','utf8'));
  await seedOwnedApp(app.database.executor);
  const password=await hashPassword(TEST_PASSWORD);
  for(const [id,first,role] of [['C7-A','Avery','EMPLOYEE'],['C7-B','Blair','LEAD'],['C7-M','Morgan','MANAGER']]){

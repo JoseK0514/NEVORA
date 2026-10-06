@@ -1,6 +1,4 @@
 import { randomUUID } from 'node:crypto';
-import { existsSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
 import { Client } from 'pg';
 import { afterEach, beforeEach, expect, it } from 'vitest';
 import { createPunchFixture } from './clocker-punch-fixture';
@@ -9,10 +7,8 @@ import type { ClockerIdentityProof } from '../../lib/clocker/pin-identity.server
 import type { PunchAction, PunchCommand } from '../../lib/clocker/punch-types';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>,service:ClockerPunchService,proof:ClockerIdentityProof,date:string,week:string;
-const schema='db/phase-c/clocker-schedule-context.sql';
 beforeEach(async()=>{
  f=await createPunchFixture({breaks:true});
- if(existsSync(schema)&&!(await f.q("SELECT 1 FROM information_schema.columns WHERE table_name='time_entries' AND column_name='schedule_context'")).length)await f.q(await readFile(schema,'utf8'));
  service=new ClockerPunchService(f.key,f.db.executor);proof=(await f.identity()).proof;
  [{date,week}]=await f.q<{date:string;week:string}>("SELECT (clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS date,date_trunc('week',clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");
  await f.q("INSERT INTO positions(id,workspace_id,name) VALUES('schedule-pos','workspace-fuel','Published role')");

@@ -17,7 +17,6 @@ beforeEach(async()=>{
  await q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('pin-owner','Private','Person','555','OWNER','loc-1');
  INSERT INTO employee_location_eligibility VALUES('pin-owner','loc-1');
  INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'pin-owner',now()+interval '1 day');`);
- await q(await readFile('db/phase-c/clocker-devices.sql','utf8'));await q(await readFile('db/phase-c/clocker-pins.sql','utf8'));
  const p=await registerClockerDevice(proof,{name:'PIN test tablet',locationId:'loc-1'},db.executor);
  const d=await redeemClockerEnrollment({enrollmentToken:p.enrollmentToken,locationKey:'2'},db.executor);
  await setEmployeeClockerPin(proof,{employeeId:'pin-owner',pin:'0246',expectedVersion:0},key,db.executor);

@@ -54,7 +54,6 @@ async function geometry(p,label){const v=await p.evaluate(()=>{
 async function shot(p,name){const file=join(evidence,name+'.png');await p.screenshot({path:file,fullPage:true});report.screenshots.push(file);}
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
- for(const name of ['clocker-devices','clocker-pins','clocker-punches','clocker-breaks','clocker-schedule-context'])await q(await readFile(`db/phase-c/${name}.sql`,'utf8'));
  await seedOwnedApp(app.database.executor);
  await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) SELECT 'ui-rest',l.workspace_id,'Fixture rest','REST',15,e.id,e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.role='OWNER' ORDER BY e.id LIMIT 1");
  for(const [id,name] of [['PUNCH-A','Avery'],['PUNCH-B','Blair']]){await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'QA','555','EMPLOYEE','loc-1')",[id,name]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);}

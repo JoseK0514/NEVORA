@@ -13,7 +13,6 @@ vi.mock('@/lib/data/locations', () => ({
 }));
 vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({id:'north',name:'Northside Services',timeZone:'Asia/Tokyo',active:true,createdAt:'2030-10-07T00:00:00Z',updatedAt:'2030-10-07T00:00:00Z'}) }));
 vi.mock('@/components/clocker-setup', () => import('../../components/clocker-setup'));
-vi.mock('@/lib/clocker-kiosk', () => import('../../lib/clocker-kiosk'));
 vi.mock('next/navigation', () => ({ notFound: () => { throw Error('NOT_FOUND'); } }));
 beforeEach(() => {
   state.failed = false;

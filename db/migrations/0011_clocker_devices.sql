@@ -1,7 +1,5 @@
--- DRAFT: Phase C disposable databases only. Assign a production migration number
--- after accepted Phase B hardening has been reconciled. Never edit 0005 in place.
 BEGIN;
-
+-- Phase C release: Registered Clocker device credentials and lifecycle.
 ALTER TABLE clocker_devices
   ADD COLUMN credential_hash text,
   ADD COLUMN credential_version integer NOT NULL DEFAULT 0 CHECK (credential_version >= 0),
