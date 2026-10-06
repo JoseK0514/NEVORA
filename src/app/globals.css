@@ -5539,7 +5539,7 @@ small,
   }
 }
 
-/* Fuel Scheduler — approved light application shell */
+/* NEVORA — approved light application shell */
 .app-shell {
   grid-template-columns: 224px minmax(0, 1fr);
 }
@@ -12586,7 +12586,7 @@ body {
 .position-quota-form .button { width: min(100%, 240px); }
 .configuration-page .page-actions > * { grid-column: auto; }
 
-/* Large catalogs or long labels use a full selector row; keep compact Fuel geometry. */
+/* Large catalogs or long labels use a full selector row; keep the approved compact geometry. */
 @media (min-width: 761px) {
   .schedule-operations-toolbar:has(.schedule-location-control[data-expanded-locations="true"]) {
     grid-template-columns: minmax(0, 1fr) auto;

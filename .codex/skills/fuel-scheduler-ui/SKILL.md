@@ -219,7 +219,7 @@ Important values:
 - visually dominant when appropriate
 
 ALL CAPS may be used for small navigation labels and section labels where it
-matches the existing Fuel Scheduler language.
+matches the existing NEVORA language.
 
 Do not use ALL CAPS for long text.
 
@@ -510,7 +510,7 @@ Users should not have to guess whether something worked.
 
 # Operational Density
 
-Fuel Scheduler contains real operational data.
+NEVORA contains real operational data.
 
 Do not remove useful information merely to create empty space.
 
@@ -638,7 +638,7 @@ Could spacing solve this before adding another visual element?
 
 # Final Standard
 
-Fuel Scheduler should feel like a mature commercial workforce product.
+NEVORA should feel like a mature commercial workforce product.
 
 It should NOT feel like:
 
