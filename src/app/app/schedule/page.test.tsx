@@ -9,14 +9,15 @@ vi.mock('@/components/schedule-location-control', () => import('../../../compone
 vi.mock('@/components/action-menu', () => import('../../../components/action-menu'));
 vi.mock('@/components/page-header',()=>({PageHeader:()=>null}));
 vi.mock('@/components/status-pill',()=>({StatusPill:()=>null}));
-vi.mock('@/components/employee-submit-button',()=>({EmployeeSubmitButton:()=>null}));
+vi.mock('@/components/employee-submit-button',()=>import('../../../components/employee-submit-button'));
 vi.mock('@/components/schedule-publication-change',()=>import('../../../components/schedule-publication-change'));
 vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'self',role:f.role})}));
 vi.mock('@/lib/auth/permissions',()=>({isManagerRole:(role:string)=>['MANAGER','OWNER'].includes(role)}));
 vi.mock('@/lib/data/employees',()=>({listEmployees:async()=>f.employees,listLocations:async()=>f.locations}));
 vi.mock('@/lib/data/schedules',()=>({listWeekShifts:async()=>f.shifts}));
 vi.mock('@/lib/date-utils',()=>import('../../../lib/date-utils'));
-vi.mock('@/app/app/schedule/actions',()=>({copyPreviousWeekAction:vi.fn(),setAvailabilityDeadlineAction:vi.fn()}));
+vi.mock('@/app/app/schedule/actions',()=>({copyPreviousWeekAction:vi.fn(),setAvailabilityDeadlineAction:vi.fn(),publishScheduleAction:vi.fn()}));
+vi.mock('@/lib/data/schedule-publication-review',()=>({getSchedulePublishReadiness:async()=>({locationName:'West Office',coverageGaps:3,missingLeadBlocks:1,positionNeedsSetup:false,staffingNeedsSetup:false,coverageNeedsSetup:false,underTargetCount:2,overTargetCount:1,unconfiguredTargetCount:1,hasWarnings:true})}));
 vi.mock('@/lib/data/week-settings',()=>({getWeekSettings:async()=>null}));
 vi.mock('@/lib/data/acknowledgements',()=>({getEmployeeAcknowledgementState:async()=>({latestRevisionId:'latest',acknowledgedRevisionId:'before',needsAcknowledgement:true,acknowledged:false})}));
 vi.mock('@/app/app/schedule/acknowledge-actions',()=>({acknowledgeScheduleAction:vi.fn()}));
@@ -78,3 +79,20 @@ it('archived historical assignments retain their captured position identity',asy
 
 it('archived row omitted from newer publication resolves its older capture in a single batch',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'archived',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'ARCHIVED'}];f.captured=[];f.history=[{sourceShiftId:'archived',positionId:'cashier',positionName:'Original Cashier'}];const output=await html();expect(output).toContain('Original Cashier');expect(output).not.toContain('Renamed Cashier');expect(f.managerReads.mock.calls.filter(([arg])=>typeof arg==='object')).toEqual([[{weekStart:'2026-10-05',shiftIds:['archived']}]]);});
 it('uncaptured legacy non-Draft assignments keep actual catalog fallback while positionless rows stay unlabeled',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Actual Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'legacy',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'ARCHIVED'},{id:'positionless',employeeId:'worker',locationId:'north',date:'2026-10-06',startTime:'08:00',endTime:'12:00',scheduleStatus:'ARCHIVED'}];const output=await html();expect(output).toContain('Actual Cashier');expect(output.match(/schedule-assigned-position/g)).toHaveLength(1);});
+
+it.each(['OWNER','MANAGER'])('%s can reach publication for each displayed location',async role=>{
+ f.role=role;f.locations=[{id:'loc-1',shortName:'Main Office'},{id:'loc-2',shortName:'West Office'}];
+ const output=await html();expect(output).toContain('Publish Main Office');expect(output).toContain('Publish West Office');
+});
+it('publication review exposes measured warnings before an explicit location-bound confirmation',async()=>{
+ f.role='MANAGER';f.locations=[{id:'loc-2',shortName:'West Office'}];
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc-2',publishCheck:'loc-2'})}));
+ expect(output).toContain('3 uncovered coverage blocks');expect(output).toContain('1 blocks missing a designated lead');
+ expect(output).toContain('2 employees below');expect(output).toContain('1 employees above');expect(output).toContain('1 employees without');
+ expect(output).toContain('name="confirmWarnings" value="yes"');expect(output).toContain('Publish West Office anyway');
+});
+it('Add shift preserves the selected second-location destination',async()=>{
+ f.role='MANAGER';f.locations=[{id:'loc-1',shortName:'Main Office'},{id:'loc-2',shortName:'West Office'}];
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc-2'})}));
+ expect(output).toContain('href="/app/schedule/new?week=2026-10-05&amp;locationId=loc-2"');
+});

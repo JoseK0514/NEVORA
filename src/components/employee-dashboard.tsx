@@ -55,7 +55,6 @@ export function EmployeeDashboard({
   currentTime,
   publishedShifts,
   scheduledHours,
-  estimatedEarnings,
 }: {
   firstName: string;
   weekStart: string;
@@ -64,7 +63,6 @@ export function EmployeeDashboard({
   currentTime: string;
   publishedShifts: EmployeeUpcomingShift[];
   scheduledHours: number;
-  estimatedEarnings: number;
 }) {
   const upcomingShifts = publishedShifts.filter((shift) =>
     isUpcomingEmployeeShift(
@@ -149,9 +147,9 @@ export function EmployeeDashboard({
                   {" "}<small className="employee-home-metric-unit">hrs</small>
                 </dd>
               </div>
-              <div><dt>Est. Earnings</dt><dd>{formatEmployeeMetric(estimatedEarnings, "earnings")}</dd></div>
+              <div><dt>Est. Earnings</dt><dd>Unavailable</dd></div>
             </dl>
-            <p className="employee-home-disclaimer">*Calculated from published scheduled shifts; excludes tips.</p>
+            <p className="employee-home-disclaimer">Pay rates are not configured. Scheduled hours do not establish your pay.</p>
           </section>
         </div>
       </div>
