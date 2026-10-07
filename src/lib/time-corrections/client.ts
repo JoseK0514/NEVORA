@@ -10,7 +10,7 @@ export type CorrectionActionResponse =
   | {state:'pending';operationId:string;requestId:string;revision:number}
   | {state:'approved';operationId:string;requestId:string;revision:number;adjustmentId:string}
   | {state:'rejected';operationId:string;requestId:string;revision:number}
-  | {state:'blocked';reason:'self_review'|'stale_source'|'overlap'|'live_state'|'invalid_interval'}
+  | {state:'blocked';reason:'self_review'|'stale_source'|'overlap'|'live_state'|'invalid_interval'|'finalized_period'}
   | {state:'conflict'}
   | {state:'outcome_unknown';operationId:string}
   | {state:'invalid'}
@@ -23,7 +23,7 @@ const revision=(value:unknown):value is number=>typeof value==='number'&&Number.
 function action(value:unknown):CorrectionActionResponse{
   if(!object(value)||typeof value.state!=='string')throw new Error('Invalid correction response');
   if(value.state==='conflict'||value.state==='invalid'||value.state==='unavailable')return {state:value.state};
-  if(value.state==='blocked'&&['self_review','stale_source','overlap','live_state','invalid_interval'].includes(String(value.reason))){
+  if(value.state==='blocked'&&['self_review','stale_source','overlap','live_state','invalid_interval','finalized_period'].includes(String(value.reason))){
     return {state:'blocked',reason:value.reason as Extract<CorrectionActionResponse,{state:'blocked'}>['reason']};
   }
   if(value.state==='outcome_unknown'&&uuid(value.operationId))return {state:'outcome_unknown',operationId:value.operationId};

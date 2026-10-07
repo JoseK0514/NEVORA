@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from 'next/link';
 import { EmployeeTimePanel } from "@/components/employee-time-panel";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { requireSession } from "@/lib/auth/session";
@@ -20,6 +21,7 @@ export default async function MyTimePage() {
       </header>
 
       <EmployeeTimePanel key={session.id} />
+      <Link className="button secondary" href="/app/timecards">View period timecards</Link>
     </div>
   );
 }

@@ -27,6 +27,7 @@ function noticeFor(result:CorrectionActionResponse){
   if(result.state==='conflict')return 'This request changed while you were reviewing it. Refresh and review the latest state.';
   if(result.state==='outcome_unknown')return unknownNotice;
   if(result.state==='blocked'){
+    if(result.reason==='finalized_period')return 'Reopen the finalized timecard period before reviewing this correction.';
     if(result.reason==='self_review')return 'Another manager or owner must review your request.';
     if(result.reason==='stale_source')return 'The recorded source changed. Refresh before deciding.';
     if(result.reason==='overlap')return 'The proposed correction overlaps another effective entry.';

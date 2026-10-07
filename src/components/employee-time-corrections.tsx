@@ -48,6 +48,7 @@ function actionMessage(result:CorrectionActionResponse|null){
   if(result.state==='unavailable')return 'The correction service is unavailable right now.';
   if(result.state==='invalid')return 'Check the proposed times and reason.';
   if(result.state==='blocked'){
+    if(result.reason==='finalized_period')return 'Ask a manager to reopen the finalized timecard period before requesting a correction.';
     if(result.reason==='live_state')return 'Close the live entry in Clocker before requesting a correction.';
     if(result.reason==='overlap')return 'The proposed time overlaps another recorded entry.';
     if(result.reason==='stale_source')return 'The recorded source changed. Refresh before trying again.';

@@ -38,10 +38,10 @@ function allowedOrigin(request: Request): string | null {
   catch{return null;}
 }
 
-export function correctionBoundary(request: Request, write: boolean): 400 | 403 | 503 | null {
+export function correctionBoundary(request: Request, write: boolean, header='x-nevora-time-correction'): 400 | 403 | 503 | null {
   const fetchSite=request.headers.get('sec-fetch-site');
   if((fetchSite&&fetchSite!=='same-origin')||
-      request.headers.get('x-nevora-time-correction')!=='1') return 403;
+      request.headers.get(header)!=='1') return 403;
   if(new URL(request.url).search) return 400;
   if(!write) return null;
 

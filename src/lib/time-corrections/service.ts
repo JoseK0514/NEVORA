@@ -16,6 +16,7 @@ export type CorrectionBlockedReason =
   | 'stale_source'
   | 'overlap'
   | 'live_state'
+  | 'finalized_period'
   | 'invalid_interval';
 
 export type CorrectionMutationResult =
@@ -77,6 +78,7 @@ function knownFailure(error: unknown): CorrectionMutationResult | null {
     [/nevora_correction_STALE_SOURCE/, 'stale_source'],
     [/nevora_correction_OVERLAP/, 'overlap'],
     [/nevora_correction_LIVE_STATE/, 'live_state'],
+    [/nevora_correction_FINALIZED_PERIOD/, 'finalized_period'],
     [/nevora_correction_INVALID_INTERVAL/, 'invalid_interval'],
   ];
   for (const [pattern, reason] of reasons) {
