@@ -1073,7 +1073,7 @@ it('Task 11 generic fixture replacement preserves the upgraded schema catalog', 
     await upgrade.executor.query({text:await readFile('db/migrations/0008_workspace_positions.sql','utf8'),values:[]});
     await upgrade.executor.query({text:await readFile('db/migrations/0009_schedule_generation.sql','utf8'),values:[]});
     await upgrade.executor.query({text:await readFile('db/migrations/0010_shift_coverage_automation.sql','utf8'),values:[]});
-    for (const file of ['0011_clocker_devices.sql','0012_clocker_pins.sql','0013_clocker_punches.sql','0014_clocker_breaks.sql','0015_clocker_schedule_context.sql']) {
+    for (const file of ['0011_clocker_devices.sql','0012_clocker_pins.sql','0013_clocker_punches.sql','0014_clocker_breaks.sql','0015_clocker_schedule_context.sql','0016_time_corrections.sql']) {
       await upgrade.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
     }
     const generic=await createGenericWorkspaceDatabase();
