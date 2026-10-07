@@ -15,46 +15,55 @@
   "sections": [
     {
       "id": "D3",
-      "status": "EMBEDDED_PASS",
-      "checkpoint_sha": "74518207f25a6856f2770ae78837c7c8a0eb8ade"
+      "status": "COMPLETE",
+      "checkpoint_sha": "74518207f25a6856f2770ae78837c7c8a0eb8ade",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
     },
     {
       "id": "D4",
-      "status": "EMBEDDED_PASS",
-      "checkpoint_sha": "ad620009f1a8886aa5dc88e00dcf7f3bb4ce1b59"
+      "status": "COMPLETE",
+      "checkpoint_sha": "ad620009f1a8886aa5dc88e00dcf7f3bb4ce1b59",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
     },
     {
       "id": "D5",
-      "status": "EMBEDDED_PASS",
-      "checkpoint_sha": "cfa8df54fa06b583ae72a071548371588bf37050"
+      "status": "COMPLETE",
+      "checkpoint_sha": "cfa8df54fa06b583ae72a071548371588bf37050",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
     },
     {
       "id": "D6",
-      "status": "EMBEDDED_PASS",
-      "checkpoint_sha": "76bcfc0a7b4a37bc17fd107a4695a37ff3da2f96"
+      "status": "COMPLETE",
+      "checkpoint_sha": "76bcfc0a7b4a37bc17fd107a4695a37ff3da2f96",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
     },
     {
       "id": "D7",
-      "status": "EMBEDDED_PASS",
-      "checkpoint_sha": "Resolve D7 integration commit in execution branch history"
+      "status": "COMPLETE",
+      "checkpoint_sha": "c3312a6ec368775fbd292a370791951ecb155736",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
     }
   ],
   "mandatory_D8_UX": [
     {
       "id": "UX-01",
-      "status": "IMPLEMENTED_EMBEDDED_PASS_FINAL_D8_REQUIRED"
+      "status": "IMPLEMENTED_INTERNAL_D8_PASS",
+      "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff"
     },
     {
       "id": "UX-03",
-      "status": "IMPLEMENTED_EMBEDDED_PASS_FINAL_D8_REQUIRED"
+      "status": "IMPLEMENTED_INTERNAL_D8_PASS",
+      "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff"
     },
     {
       "id": "UX-04",
-      "status": "IMPLEMENTED_EMBEDDED_PASS_FINAL_D8_REQUIRED"
+      "status": "IMPLEMENTED_INTERNAL_D8_PASS",
+      "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff"
     },
     {
       "id": "UX-05",
-      "status": "IMPLEMENTED_EMBEDDED_PASS_FINAL_D8_REQUIRED"
+      "status": "IMPLEMENTED_INTERNAL_D8_PASS",
+      "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff"
     }
   ],
   "UX-02": {
@@ -62,10 +71,17 @@
     "implementation_authorized": false
   },
   "D8": {
-    "status": "IN_PROGRESS",
+    "status": "COMPLETE_INTERNAL_PASS",
     "review_mode": "INTERNAL_IMPLEMENTATION_AND_QA",
     "exact_candidate_evidence_required": true,
-    "independent_release_review_initiated": false
+    "independent_release_review_initiated": false,
+    "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff",
+    "validated_runtime_tree": "22570aa60172e93a0f8b58f424ce8569f0915f5e",
+    "exact_head_ci": "https://github.com/JoseK0514/Fuel-Scheduler-/actions/runs/37686732707",
+    "local_browser_overlapping_checks": 591,
+    "ci_browser_overlapping_checks": 591,
+    "completion_record": "phase-d-completion.md",
+    "final_publication_identity_record": "/Users/josek0514/.codex/visualizations/nevora-phase-d-final-20261007/COMPLETION.md"
   },
   "development_integration": {
     "status": "NOT_PERFORMED",

@@ -34,7 +34,7 @@ Requirements source: original Lettered Executive Program pasted document, Phase 
 | D5 | COMPLETE | PASS | Embedded checkpoint below |
 | D6 | COMPLETE | PASS | Embedded checkpoint below |
 | D7 | COMPLETE | EMBEDDED PASS | Current-authorized Action Center integration |
-| D8 | IN PROGRESS | PREFLIGHT PASS; EXACT CANDIDATE PENDING | Final integrated candidate |
+| D8 | COMPLETE | INTERNAL PASS; EXACT RUNTIME HEAD CI PASS | Final runtime checkpoint below |
 
 ## Rulings and limitations
 
@@ -190,3 +190,24 @@ D8 is still in progress. Final disposition requires the clean exact candidate, w
 - The `db178f5e6f9636e0daeef699aab220e802a13dee` Linux mapping retest still failed despite caption wrapping. Its overflowing widths match native select option content (Mapping profile/File layout/Hour precision). The native select now has a bounded clipping frame with its own visible focus-within outline; captions remain readable and all native field/keyboard semantics remain. The overflow assertion is unchanged, and diagnostics now include label/child overflow geometry. `D8-EXEC-005` remains OPEN until the Linux retest passes; the earlier caption-only attribution is superseded.
 - `bb7015bbe3aa38a6ba10d5b072c7212fd4cf5897` Linux Chromium/WebKit passed the complete mapping geometry, reports/PDF and D7/UX-03/UX-04 checks, closing `D8-EXEC-005`. It reached **177 whole-phase checks** before a manager Clocker receipt-inspection timeout; this is failed-run coverage, not a passing D8 result.
 - P2 `D8-EXEC-006`: manager receipt inspection reused unguarded WINDOW focus refresh. An actual local regression on `616b1b82cd8e15a0ca1867938a2da6abe0cfc78f` reproduced an extra protected read after duplicate active focus (**83 checks before failure; one unexpected read instead of zero**). The same guarded active-focus/real-blur behavior already used by timecards/corrections/Action Center now applies to receipt inspection. True blur, offline and hidden transitions still clear private receipts, and returning requires a new current protected read. The harness foregrounds the manager tab before input and explicitly tests duplicate-focus stability plus blur/return privacy. Final local/Linux retest remains required.
+
+
+### D8 internal completion checkpoint
+
+Validated runtime: `252223a5ccc6708190b96ad66cbdd16965c751ff`; tree `22570aa60172e93a0f8b58f424ce8569f0915f5e`. [Exact-head CI](https://github.com/JoseK0514/Fuel-Scheduler-/actions/runs/37686732707): all four jobs and all required validation/browser/SHA steps PASS. The first browser attempt was interrupted by engineering after a 32-minute dependency installation; installation had just completed before cancellation. Its partial coverage is not a PASS. The same-SHA browser retry completed; earlier failed and interrupted evidence remains retained.
+
+- Default unit suite: **201 files / 2,115 tests PASS**. Typecheck, lint, production build and production dependency audit **PASS**; production audit **0 advisories**.
+- Owned Clocker/Phase D PostgreSQL: **33 files / 502 tests PASS**.
+- Owned release PostgreSQL: **31 executed files / 737 tests PASS** across foundation 9/275, authority 3/46, generation 4/176, exchange/request 14/163 and notification 1/77 suites. Execution totals overlap; no aggregate unique-test total is claimed.
+- Local and Linux CI browser runs each pass **193 whole-phase + 282 correction + 46 attendance + 70 Clocker checks** in Chromium/WebKit (**591 overlapping check executions** per environment). Exact SHA, clean source, current roles, migrations/races, keyboard/focus, responsive seven-width geometry, privacy/offline/error/retry and authenticated mutations are checked. Local actual PDF extraction verifies **3 pages / all 12 sections / definitions / source observation**.
+- **UX-01, UX-03, UX-04, UX-05: IMPLEMENTED / INTERNAL D8 PASS** in both engines. Recovery includes expiring/single-use/unknown/expired/reused/assisted/session-invalidation/data-preservation scenarios. Schedule publication states, correction uncertainty states and identity-bound shared-Clocker recovery retain their canonical systems and invariants.
+- **UX-02: OPEN / DEFERRED / NOT IMPLEMENTED**, as instructed.
+- P1 execution findings `D3-EXEC-001`, `D8-EXEC-001`: **CLOSED by embedded regression**. Four user-designated P1 UX requirements: **SATISFIED by implementation and whole-phase internal evidence**. No new authorized-scope P1 remains open.
+- P2 execution findings `D3-EXEC-002`, `D4-EXEC-001`, `D6-EXEC-001`, `D7-EXEC-001`, `D7-EXEC-002`, `D8-EXEC-002` through `D8-EXEC-006`: **10 tracked findings CLOSED by embedded regression**. This final local/Linux pass closes the correction-feedback, PDF-content and manager-receipt-focus acceptance regressions. No new authorized-scope P2 remains open. Prior incomplete candidate runs above are historical observations, not final passing gates.
+- P3 `D8-DEV-TOOLING`: **OPEN / DEFERRED** for the existing unpatched development-only braces lint dependency; no incompatible downgrade or check removal. P4: **0 new open/deferred execution findings**.
+- Source custody: D2 is an ancestor; clean runtime has **135 changed files / 18 commits**, with exact path/blob hashes in the external source manifest. The next publication commit changes completion records only; its own final SHA/tree and exact-head CI must be recorded in the external final package before final delivery.
+- GitHub artifact uploads still fail quota. A restricted local bundle passes every-member checksum readback; **remote upload/retrieval is not passed**. Existing source-custody Git/log evidence remains reliable. Branch enforcement, hosted authorization/rollback/recovery, physical-device/screen-reader and independent findings retain their documented release states.
+- Embedded Product, Engineering/Technical Assurance, Security, Product Experience, Governance and Delivery positions support bounded development completion with explicit limitations. These are session assessments, not independent certification. No executive stop condition required escalation.
+- Production remains **NO-GO**; **FR-AUTH-001 OPEN**. No production data/migration, real message, payroll import, purchase, merge or production authorization was performed. Owner: execution engineering branch. Next gate: remaining development program and later consolidated independent release review. No routine Jose approval required.
+
+Consolidated workstream, acceptance, verification and hold details: `phase-d-completion.md`. Final publication identity/custody: `/Users/josek0514/.codex/visualizations/nevora-phase-d-final-20261007/COMPLETION.md`.
