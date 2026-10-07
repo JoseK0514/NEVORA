@@ -12,11 +12,13 @@ This records approval of the execution model. It does not claim that newly propo
 - Existing development baseline: `0516b7dcbb07a10d926cc5c53f3b650343cad9bd`.
 - Continuation branch: `phase-d/d2-d7-controlled-execution-20261006`.
 - D1.3 PR #8 remains a draft historical checkpoint, not an authorization to merge that slice separately.
-- D2: scope and guardrail definition started; feature implementation and acceptance are NOT complete.
-- D3–D7: waiting for predecessor exit gates.
-- D8: NOT READY. Development integration: NO-GO. Production: NO-GO.
+- D2 runtime candidate: aa68e607830c77ec57262a267b18a187efaed3fb (tree a9ff2f68fc9c0fee052c1bea97fdcb50b1ab0471).
+- D2 implementation, internal guardrails and all required management-function exit votes: **GO**.
+- D2 is **READY FOR INDEPENDENT CODEX REVIEW**. This internal GO is not an independent approval.
+- D3 remains locked pending the requested independent D2 review and Jose's continuation authorization. D4–D7 remain waiting for predecessors.
+- D8 whole-phase review: NOT READY. Development integration: NO-GO. Production: NO-GO.
 
-This package changes documentation and the tracking register only. It changes no application code, CI configuration, database schema, hosted data, access policy or production setting. It does not start persistent agents or create reviewer accounts.
+The runtime candidate includes the D2 correction implementation and its reproducible local verification harnesses. The review-package documentation records evidence and management decisions only; it does not activate hosted migrations, modify Neon/Vercel data, merge a PR, start D3, or authorize production.
 
 ## One controlling sequence
 
@@ -63,11 +65,11 @@ The JSON register is a tracking record, not a GitHub branch-protection mechanism
 
 The Lettered Executive Program requires employee correction requests, manager review, preservation of raw punch history and no silent rewriting of original events. D3 must later consume approved corrections without losing provenance. Existing Clocker architecture requires future correction writers to respect its employee/version and transaction protocol.
 
-### Recommended design, not a completed implementation
+### Implemented D2 design
 
 Use an append-only correction request/decision history with an explicit effective-time projection. Keep recorded punches, breaks, device attribution, schedule context and command receipts intact. Reject direct historical overwrites; a complete replacement of the Clocker subsystem is unnecessary.
 
-Proposed workflow:
+Implemented workflow:
 
 - An authenticated employee sees their own recorded entry and requests a correction with a reason and the proposed change. Fully missing records must be distinguished from adjustments to an existing record; neither may be presented as an actual device-captured punch.
 - A current authorized Owner/Manager sees the original and proposed values, affected employee/location/date, supporting context and prior correction history, then approves or rejects with an auditable decision.
@@ -91,16 +93,46 @@ Proposed workflow:
 | Integration | Actual pending correction state feeds the D1/D7 dependency through an authorized adapter, with no fake pending counts or automatic payroll/discipline. |
 | Activation safety | Additive migration is tested on owned disposable PostgreSQL only; build/start do not apply migrations and hosted activation remains separate. |
 
-### Decisions that must be resolved explicitly
+### D2 policy decisions — resolved for this bounded implementation
 
-The retrieved roadmap does not settle the following detailed policies. These are not retrospectively approved by the general execution authorization:
+- **Review authority:** Employee/Lead self-service may request corrections. Current Owner/Manager authority may approve or reject. D2 provides no direct manager overwrite path and prohibits self-approval, including Owner self-review.
+- **Live state:** A correction request against an open/live Clocker entry fails closed. D2 never performs a kiosk Clock Out and never rewrites live raw punch state.
+- **Break scope:** D2 may request historical break-boundary changes only. Captured break classification remains immutable history. Paid/unpaid treatment, automatic deductions, grace periods and overtime policy are outside D2.
+- **Missing/finalized time:** Fully missing completed time is represented as an auditable adjustment, never a fabricated device punch. D3 owns period finalization/reopening semantics; D2 preserves provenance/version hooks and does not silently modify finalized-period policy.
 
-- Whether managers may initiate corrections on another employee's behalf and who reviews a manager/owner's own time. Recommended safe default: request/review workflow, no unreviewed direct edit and no self-approval.
-- How a missing clock-out correction interacts with a still-open live Clocker state without rewriting original events or stranding the next punch. Specify and test this before the correction writer is enabled; do not hide it as an unsupported happy-path exception.
-- Scope of break-boundary correction and treatment of captured break classification. Preserve historical classifications; paid/unpaid status, automatic deductions, grace periods and overtime entitlement are outside D2.
-- Review of fully missing entries and changes to already-finalized periods. D2 must expose provenance/version hooks; D3 owns finalization/reopening rules. No fabricated recorded punch or silent edit of finalized data.
+### D2 internal exit evidence — October 7, 2026
 
-Proceed with requirements reconciliation and design. Do not enable ambiguous behavior as a default merely to unblock delivery. Approval of newly written design and the exact implementation plan is tracked separately from the execution-model approval.
+Runtime candidate: aa68e607830c77ec57262a267b18a187efaed3fb
+Runtime tree: a9ff2f68fc9c0fee052c1bea97fdcb50b1ab0471
+
+- TypeScript: PASS.
+- ESLint: PASS.
+- Application/unit/integration suite: **184 files / 1,933 tests PASS**.
+- Production Next.js build: PASS; employee and manager correction routes are included.
+- Owned disposable PostgreSQL regression with migration 0016 in the current runtime chain: **24 files / 407 tests PASS**.
+- Dedicated D2 PostgreSQL adversarial protocol: **12/12 PASS**, covering raw-history preservation, idempotency/reuse conflicts, live-entry refusal, self-review denial, break-classification preservation, missing-entry provenance, approve/reject race, stale source, overlap, superseding adjustments, append-only history, protected employee/manager reads and real D1 pending-count integration.
+- Exact-SHA owned browser verification: **44/44 PASS** across Chromium and WebKit at 320, 375, 390, 430, 768, 1024 and 1440 px. Verified employee submission, Owner review/approval, terminal employee history, role boundaries, keyboard focus, touch-target geometry and no horizontal/clipped-content failure.
+- Security/privacy: server-derived actor identity, current session/role/workspace checks, no self-review, same-origin/custom-header/JSON/body-size controls, bounded error responses and no raw SQL/credential disclosure verified. Production dependency audit reported **0 vulnerabilities**.
+- Raw-history static guard confirmed D2 migration contains no UPDATE/DELETE path for time_entries or break_entries.
+- Browser evidence is retained outside the repository under ~/.codex/visualizations/nevora-d2-corrections-ui. It uses a local owned Next runtime and fictional disposable PostgreSQL, not hosted Neon/Vercel data.
+- Known limitation carried to independent review/release acceptance: local Chromium/WebKit automation does not replace physical-device or screen-reader acceptance.
+
+### D2 management-function exit decisions
+
+These votes are management perspectives executed within this ChatGPT engineering thread. They are **not separate people and not independent review**.
+
+| Function | Verdict | Basis |
+| --- | --- | --- |
+| COO / operations | GO | Employee request → manager review is operationally bounded; pending state feeds D1; no live Clocker mutation. |
+| CPO / Product | GO | Required correction workflow is complete without inventing payroll, overtime, paid-break or finalized-period policy. |
+| CTO / CIO engineering | GO | Append-only schema/projection, idempotency, locking, concurrency, migration, full tests and build are green. |
+| CISO / Security & Privacy | GO | Session/role/workspace authority, anti-forgery boundaries, input limits, confidentiality and fail-closed paths verified. |
+| Program Manager | GO | Scope, exact candidate, requirements, evidence and finding disposition reconcile; D3 remains locked. |
+| Senior Technical Authority | GO | Browser-harness failures were separated from product defects; real WebKit touch-target defect was fixed and reverified; race/stale/overlap/live-state controls pass. |
+| Product Experience & Strategy | GO | Responsive Apple-style correction flows, labeled controls, focus behavior, 44px targets and clear original/proposed/provenance states verified in Chromium/WebKit. |
+| Governance & Risk | GO TO INDEPENDENT REVIEW | Owned data only, evidence custody recorded, no hosted activation/merge/production authorization, inherited release blockers retained. |
+
+**D2 internal exit gate: GO. D2 independent Codex handoff: READY.** No independent verdict is claimed here. D3 remains locked until the requested independent D2 review is received and Jose authorizes continuation.
 
 ## Remaining sections and section-specific guardrails
 
