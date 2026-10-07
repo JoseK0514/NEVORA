@@ -1,6 +1,6 @@
 # NEVORA Phase D D3–D8 internal completion record
 
-The runtime candidate below passed the full internal D8 gate. Production remains NO-GO. This repository record is published in a documentation-only commit; the final publication SHA/tree, exact-head CI, Preview metadata and hash/readback evidence are recorded in the [final publication package](/Users/josek0514/.codex/visualizations/nevora-phase-d-final-20261007/COMPLETION.md).
+This document preserves the passing runtime checkpoint below. Later remediation and the final exact-head disposition are controlled by the [final publication package](/Users/josek0514/.codex/visualizations/nevora-phase-d-final-20261007/COMPLETION.md) and [PR #10](https://github.com/JoseK0514/Fuel-Scheduler-/pull/10), which records the final SHA/tree, actual CI and evidence readback. Do not infer current-branch acceptance from this historical checkpoint alone. Production remains NO-GO.
 
 ## Identity and delivery
 
@@ -57,7 +57,7 @@ Actual PDF extraction verifies three pages, all 12 report sections, definitions 
 
 Product: bounded D3–D8 and amended requirements, without guessed payroll/policy rules. Engineering/Technical Assurance: canonical adapters, current-authority checks, immutable/idempotent commands, migration preservation and regression evidence. Security: recovery proof/session controls, account enumeration resistance, private current snapshots and identity-bound receipt handling. Product Experience: explicit uncertainty, recoverable shared-device use and real contextual action counts. Governance/Delivery: controlled source lineage, retained production holds and evidence limitations. These are embedded assessments in this execution, not independent reviewers or certifications.
 
-Git verifies the frozen D2 SHA as an ancestor. Its actual parent is `9caafedf1b37d794f359ca47309bffa31ecddd21`; the pasted parent transcription discrepancy did not alter the SHA/tree. Frozen D2 and shared development worktrees were preserved. The runtime candidate contains 135 changed files across 18 commits; the source-custody manifest enumerates every path, status, blob SHA-256 and commit/tree. The final documentation-only publication commit has its own SHA/tree and exact-head CI recorded separately in the final publication package; no runtime-source identity is rewritten in historical reports.
+Git verifies the frozen D2 SHA as an ancestor. Its actual parent is `9caafedf1b37d794f359ca47309bffa31ecddd21`; the pasted parent transcription discrepancy did not alter the SHA/tree. Frozen D2 and shared development worktrees were preserved. The runtime candidate contains 135 changed files across 18 commits; the source-custody manifest enumerates every path, status, blob SHA-256 and commit/tree. The later candidate includes receipt-form startup remediation and a deterministic delayed-script regression. Its final SHA/tree, exact-head CI and source differences are recorded in the referenced final package; historical report identities are preserved.
 
 No executive stop condition required escalation. The production NO-GO and FR-AUTH-001 OPEN remain in force. Owner: engineering execution branch; future independent release authorities retain their findings. Next gate: remaining development program and its later consolidated independent production review. No routine Jose decision is requested for this bounded work.
 
@@ -65,3 +65,8 @@ No executive stop condition required escalation. The production NO-GO and FR-AUT
 ## Tracked severity totals
 
 Execution findings: **P1 2 closed / 0 new in-scope open; P2 10 closed / 0 new in-scope open; P3 1 open/deferred; P4 0 new open/deferred**. The four mandatory P1 UX requirements are separately satisfied; UX-02 and inherited production/independent holds remain open as specified. IDs and reproductions are retained in `phase-d-d3-d8-ledger.md`. This is internal development evidence, not independent production certification.
+
+
+## Later receipt startup remediation
+
+The documentation publication at `a8a5ff3f814a389fd148d8c3261a9003e3ca4489` passed all three backend jobs but its Linux WebKit receipt lookup timed out after 178 checks. That run is not a complete D8 PASS. A controlled delayed-script regression reproduced an enabled receipt form before its client controller existed (82 checks before assertion failure). P2 `D8-EXEC-007` keeps reference input/submission disabled through startup and active protected reads; the manager can then submit the preserved reference through the same immutable reader. Local Chromium/WebKit rerun passes **195 integrated checks**, including this new readiness case and the existing active-focus/real-blur privacy checks. The old CI timeout lacked request/state diagnostics, so the controlled startup defect is established without claiming that every intermittent timeout had the same cause. New diagnostics record receipt request/response state on failure. Final Linux and whole-phase publication-head evidence is required in the final package before development-complete disposition; no independent or production approval is implied.

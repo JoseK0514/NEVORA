@@ -34,7 +34,7 @@ Requirements source: original Lettered Executive Program pasted document, Phase 
 | D5 | COMPLETE | PASS | Embedded checkpoint below |
 | D6 | COMPLETE | PASS | Embedded checkpoint below |
 | D7 | COMPLETE | EMBEDDED PASS | Current-authorized Action Center integration |
-| D8 | COMPLETE | INTERNAL PASS; EXACT RUNTIME HEAD CI PASS | Final runtime checkpoint below |
+| D8 | IMPLEMENTED | RECORDED RUNTIME PASS; FINAL DISPOSITION BY REFERENCE | Runtime checkpoint and later remediation below |
 
 ## Rulings and limitations
 
@@ -211,3 +211,12 @@ Validated runtime: `252223a5ccc6708190b96ad66cbdd16965c751ff`; tree `22570aa6017
 - Production remains **NO-GO**; **FR-AUTH-001 OPEN**. No production data/migration, real message, payroll import, purchase, merge or production authorization was performed. Owner: execution engineering branch. Next gate: remaining development program and later consolidated independent release review. No routine Jose approval required.
 
 Consolidated workstream, acceptance, verification and hold details: `phase-d-completion.md`. Final publication identity/custody: `/Users/josek0514/.codex/visualizations/nevora-phase-d-final-20261007/COMPLETION.md`.
+
+
+### D8 later receipt startup remediation and publication gate
+
+- Publication `a8a5ff3f814a389fd148d8c3261a9003e3ca4489`: all three backend jobs PASS (201/2,115 unit; 33/502 Clocker/Phase D PostgreSQL; 31/737 release executions; typecheck/lint/build/production audit). Linux WebKit whole-phase receipt lookup timed out after **178 checks**; correction/Clocker steps were not run. This is not a passing final D8 gate.
+- P2 `D8-EXEC-007`: receipt reference and submit controls were enabled in server HTML before client/controller initialization. Deterministic owned-browser regression with script delivery held fails after **82 checks**; the first instrumentation attempt had a route-release error and is not used as product evidence. Initial loading and a disabled native fieldset now retain safe startup; submission uses the same current-authorized immutable receipt reader. Both controls stay disabled during active reads.
+- Local Chromium/WebKit remediation rerun: **195 integrated checks PASS**, including delayed-script safety, actual receipt lookup, idempotent duplicate active focus, true-blur clearing/fresh return, and all four mandatory UX journeys. No server authorization, punch/receipt history, idempotency, device/location binding or provider mapping rule changed. The original timeout did not capture response/UI state; expanded failure diagnostics now retain that evidence instead of assuming a universal cause.
+- The previous runtime checkpoint remains historical. **The final publication disposition and exact-head CI are authoritative in the referenced final package and PR #10.** The publication record resolves after all required gates actually pass; no completion is inferred from a previous SHA. This avoids embedding a commit’s own unknowable SHA/CI result in its source. No historical report SHA is rewritten.
+- Production NO-GO, FR-AUTH-001 OPEN, UX-02 OPEN/DEFERRED and all inherited independent/release holds remain in force. No routine Jose decision or executive stop condition is triggered by this bounded remediation.

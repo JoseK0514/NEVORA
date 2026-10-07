@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import type {RecoveryReview} from '../lib/clocker/recovery-review.server';
 export function ClockerRecoveryReview({actorId}:{actorId:string}){
- const [reference,setReference]=useState(''),[state,setState]=useState<RecoveryReview|null>(null),[loading,setLoading]=useState(false);
+ const [reference,setReference]=useState(''),[state,setState]=useState<RecoveryReview|null>(null),[loading,setLoading]=useState(true);
  const selected=useRef(''),controller=useRef<ReturnType<typeof createPrivateSnapshotController<RecoveryReview>>|null>(null);
  useEffect(()=>{
   const c=createPrivateSnapshotController<RecoveryReview>(value=>{setState(value.refreshing?null:value.snapshot);setLoading(value.refreshing);},async signal=>{
@@ -24,7 +24,7 @@ export function ClockerRecoveryReview({actorId}:{actorId:string}){
   return()=>{c.stop();for(const name of ['focus','pageshow','online','storage'])window.removeEventListener(name,active);for(const name of ['blur','pagehide','offline'])window.removeEventListener(name,pause);document.removeEventListener('visibilitychange',active);controller.current=null;};
  },[actorId]);
  return <section className="panel"><h2>Check a saved action</h2><p>Use the reference shown on the registered tablet. Review the saved receipt with the employee before resolving their recovery screen.</p>
-  <form onSubmit={e=>{e.preventDefault();selected.current=reference.trim();controller.current?.refresh();}}><label className="field">Saved action reference<input required value={reference} onChange={e=>{setReference(e.target.value);setState(null);}} pattern="[0-9a-fA-F-]{36}" maxLength={36}/></label><button className="button primary" disabled={loading}>Check receipt</button></form>
+  <form onSubmit={e=>{e.preventDefault();selected.current=reference.trim();controller.current?.refresh();}}><fieldset disabled={loading} style={{border:0,margin:0,padding:0,minWidth:0}}><label className="field">Saved action reference<input required value={reference} onChange={e=>{setReference(e.target.value);setState(null);}} pattern="[0-9a-fA-F-]{36}" maxLength={36}/></label><button className="button primary" disabled={loading}>Check receipt</button></fieldset></form>
   {loading?<p role="status">Checking the immutable ledger…</p>:state?.state==='ready'?<>
    <p>Reference: <code style={{overflowWrap:'anywhere'}}>{state.commandId}</code></p>
    {state.receipts.length?state.receipts.map((r,i)=><article key={i}><h3>Recorded action</h3><p>{r.employeeName} · {r.action} · {r.performedAt}</p><p>{r.deviceName} · {r.locationName}</p><p>Ask this employee to enter their PIN on the same tablet and check their action status. That screen verifies the receipt before clearing only their resolved intent.</p></article>):<p role="status">No committed receipt was observed. The action remains unconfirmed. Keep the recovery record. Ask the employee to verify their PIN and check the action on the same registered tablet; an absent receipt alone does not cancel an in-flight request.</p>}

@@ -154,7 +154,25 @@ try{
     await cp.getByRole('button',{name:'Clock In',exact:true}).evaluate(button=>{button.click();button.click();});await cp.getByRole('heading',{name:'Clock In Recorded',exact:true}).waitFor();
     assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id=$1",['UX5-B-'+engine]))[0].n,1);assert.equal(await cp.evaluate(key=>sessionStorage.getItem(key),engine==='chromium'?'nevora.clocker.pending.v1:2':saved.key),saved.text);checked(engine+': UX-05 next employee records exactly once without discarding prior receipt');
     await cp.getByRole('button',{name:'Done',exact:true}).click();await pin(pinA);await cp.getByRole('button',{name:'Check Action Status',exact:true}).click();await cp.getByRole('heading',{name:'Clock In Recorded',exact:true}).waitFor();assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id=$1",['UX5-A-'+engine]))[0].n,1);assert.equal(await cp.evaluate(key=>sessionStorage.getItem(key),engine==='chromium'?'nevora.clocker.pending.v1:2':saved.key),null);checked(engine+': UX-05 refresh and re-PIN recover original receipt without replay');
-    await op.bringToFront();await op.goto(app.url+'/app/clocker-recovery');await op.getByLabel('Saved action reference',{exact:true}).fill(reference);await op.getByRole('button',{name:'Check receipt',exact:true}).click();await op.getByRole('heading',{name:'Recorded action',exact:true}).waitFor();assert.match(await op.locator('main').innerText(),/Fictional Avery Recovery QA/);checked(engine+': UX-05 actual manager-assisted immutable receipt review');
+    await op.bringToFront();currentPage=op;
+    const heldScripts=[],scriptPattern='**/_next/static/**/*.js';let releaseScripts;
+    const scriptsReady=new Promise(resolve=>{releaseScripts=resolve;});
+    const holdScript=route=>{if(new URL(route.request().url()).origin!==app.url)return route.abort();const pending=scriptsReady.then(()=>route.continue());heldScripts.push(pending);return pending;};
+    await op.route(scriptPattern,holdScript);
+    try{
+      await op.goto(app.url+'/app/clocker-recovery',{waitUntil:'commit'});await op.getByLabel('Saved action reference',{exact:true}).waitFor();
+      assert(await op.getByLabel('Saved action reference',{exact:true}).isDisabled(),'Receipt reference must stay disabled until the client controller is ready');
+      assert(await op.getByRole('button',{name:'Check receipt',exact:true}).isDisabled(),'Receipt submission must stay disabled before initialization');
+    }finally{releaseScripts();await Promise.all(heldScripts);}
+    checked(engine+': UX-05 delayed scripts preserve safe receipt initialization');
+    const receiptRequests=[],receiptReplies=[];
+    const requestReceipt=request=>{if(request.url().endsWith('/api/manager/clocker-recovery'))receiptRequests.push({commandId:request.postDataJSON()?.commandId});};
+    const responseReceipt=async response=>{if(!response.url().endsWith('/api/manager/clocker-recovery'))return;try{const data=await response.json();receiptReplies.push({status:response.status(),state:data.state,reason:data.reason,commandId:data.commandId,observedAt:data.observedAt,validForMs:data.validForMs,receiptCount:data.receipts?.length});}catch{receiptReplies.push({status:response.status(),body:'unavailable'});}};
+    op.on('request',requestReceipt);op.on('response',responseReceipt);
+    try{await op.getByLabel('Saved action reference',{exact:true}).fill(reference);await op.getByRole('button',{name:'Check receipt',exact:true}).click();await op.getByRole('heading',{name:'Recorded action',exact:true}).waitFor();assert.match(await op.locator('main').innerText(),/Fictional Avery Recovery QA/);}
+    catch(error){console.log(JSON.stringify({engine,receiptReview:{requests:receiptRequests,replies:receiptReplies,ui:await op.locator('main').innerText(),input:await op.getByLabel('Saved action reference',{exact:true}).inputValue(),browser:await op.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),readyState:document.readyState}))}}));throw error;}
+    finally{op.off('request',requestReceipt);op.off('response',responseReceipt);}
+    checked(engine+': UX-05 actual manager-assisted immutable receipt review');
     let focusReads=0;const recoveryRead=route=>{focusReads++;return route.continue();};await op.route('**/api/manager/clocker-recovery',recoveryRead);
     await op.evaluate(()=>{window.dispatchEvent(new Event('focus'));return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});assert.equal(focusReads,0,'Duplicate active WINDOW focus must not remove the current recovery receipt');assert.equal(await op.getByRole('heading',{name:'Recorded action',exact:true}).count(),1);
     await op.evaluate(()=>window.dispatchEvent(new Event('blur')));assert.equal(await op.getByRole('heading',{name:'Recorded action',exact:true}).count(),0);await op.evaluate(()=>window.dispatchEvent(new Event('focus')));await op.getByRole('heading',{name:'Recorded action',exact:true}).waitFor();assert(focusReads>0);await op.unroute('**/api/manager/clocker-recovery',recoveryRead);checked(engine+': UX-05 active focus is idempotent; real blur clears and rechecks receipt');
