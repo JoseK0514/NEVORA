@@ -26,10 +26,11 @@ export function ReportsView({report,state}:{report:PeriodReports|null;state:Stat
 }
 export function Reports({initialPeriod}:{initialPeriod:Period}){
  const [draft,setDraft]=useState(initialPeriod),[period,setPeriod]=useState(initialPeriod),[report,setReport]=useState<PeriodReports|null>(null),[state,setState]=useState<State>('loading'),[notice,setNotice]=useState('');
- const reloadRef=useRef<()=>void>(()=>{});
+ const reloadRef=useRef<()=>void>(()=>{}),exportRef=useRef<()=>Promise<void>>(async()=>{});
+ const [exporting,setExporting]=useState(false);
  useEffect(()=>{
-  let active=true,generation=0,controller:AbortController|null=null,timer:ReturnType<typeof setTimeout>|null=null;
-  const clear=(next:State)=>{generation++;controller?.abort();if(timer)clearTimeout(timer);timer=null;if(active){setReport(null);setState(next);}};
+  let active=true,generation=0,controller:AbortController|null=null,exportController:AbortController|null=null,timer:ReturnType<typeof setTimeout>|null=null;
+  const clear=(next:State)=>{generation++;controller?.abort();exportController?.abort();if(timer)clearTimeout(timer);timer=null;if(active){setReport(null);setState(next);setExporting(false);}};
   const load=async(reconnecting=false)=>{
    if(!active||document.visibilityState==='hidden')return;
    clear(navigator.onLine?(reconnecting?'reconnecting':'loading'):'offline');if(!navigator.onLine)return;
@@ -45,9 +46,21 @@ export function Reports({initialPeriod}:{initialPeriod:Period}){
    }catch{if(active&&current===generation)clear(navigator.onLine?'unavailable':'offline');}
   };
   reloadRef.current=()=>{void load();};
+  exportRef.current=async()=>{
+   const current=generation;exportController?.abort();exportController=new AbortController();setExporting(true);setNotice('');
+   try{
+    const response=await fetch('/api/reports/export',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-reports':'1'},body:JSON.stringify(period),signal:exportController.signal});
+    if(!active||generation!==current)return;
+    if(response.status===401||response.status===403){clear('access_lost');return;}
+    if(!response.ok||!response.headers.get('content-type')?.startsWith('text/csv'))throw new Error('Unavailable export');
+    const blob=await response.blob();if(!active||generation!==current)return;
+    const url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=`nevora-reports-${period.startDate}-${period.endDate}.csv`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+   }catch{if(active&&generation===current)setNotice('The export could not be confirmed. Refresh reports and try again.');}
+   finally{if(active&&generation===current)setExporting(false);}
+  };
   const refresh=()=>{void load();},reconnect=()=>{void load(true);},offline=()=>clear('offline'),hide=()=>clear('unavailable'),visibility=()=>{if(document.visibilityState==='hidden')hide();else refresh();};
   void load();window.addEventListener('focus',refresh);window.addEventListener('pageshow',refresh);window.addEventListener('storage',refresh);window.addEventListener('online',reconnect);window.addEventListener('offline',offline);window.addEventListener('pagehide',hide);document.addEventListener('visibilitychange',visibility);
   return()=>{active=false;clear('unavailable');window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',refresh);window.removeEventListener('online',reconnect);window.removeEventListener('offline',offline);window.removeEventListener('pagehide',hide);document.removeEventListener('visibilitychange',visibility);};
  },[period]);
- return <div className={styles.root}><form className={styles.toolbar} onSubmit={e=>{e.preventDefault();try{setPeriod(parsePeriod(draft.startDate,draft.endDate));setNotice('');}catch{setNotice('Choose a valid period of 1 to 31 days.');}}}><label>First day<input type="date" value={draft.startDate} required onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label><label>Last day<input type="date" value={draft.endDate} required onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label><button className="button primary" type="submit">View period</button><button className="button secondary" type="button" onClick={()=>reloadRef.current()}>Refresh</button></form>{notice&&<p role="alert">{notice}</p>}<ReportsView report={report} state={state}/></div>;
+ return <div className={styles.root}><form className={styles.toolbar} onSubmit={e=>{e.preventDefault();try{setPeriod(parsePeriod(draft.startDate,draft.endDate));setNotice('');}catch{setNotice('Choose a valid period of 1 to 31 days.');}}}><label>First day<input type="date" value={draft.startDate} required onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label><label>Last day<input type="date" value={draft.endDate} required onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label><button className="button primary" type="submit">View period</button><button className="button secondary" type="button" onClick={()=>reloadRef.current()}>Refresh</button></form><div className={styles.exports}><button className="button secondary" type="button" disabled={!report||exporting} onClick={()=>void exportRef.current()}>{exporting?'Preparing CSV…':'Download CSV'}</button><button className="button secondary" type="button" disabled={!report} onClick={()=>window.print()}>Print / Save PDF</button><p className={styles.note}>PDF: choose Save as PDF in your browser’s print dialog. The report includes this period, definitions and source observation.</p></div>{notice&&<p role="alert">{notice}</p>}<ReportsView report={report} state={state}/></div>;
 }

@@ -31,8 +31,8 @@ Requirements source: original Lettered Executive Program pasted document, Phase 
 | --- | --- | --- | --- |
 | D3 | COMPLETE | PASS | Embedded checkpoint below |
 | D4 | COMPLETE | PASS | Embedded checkpoint below |
-| D5 | IN PROGRESS | NOT RUN | D4 dependency satisfied |
-| D6 | WAITING | NOT RUN | D5 dependency |
+| D5 | COMPLETE | PASS | Embedded checkpoint below |
+| D6 | IN PROGRESS | NOT RUN | Configurable mapping direction |
 | D7 | WAITING | NOT RUN | D6 dependency |
 | D8 | WAITING | NOT RUN | Final integrated candidate |
 
@@ -88,3 +88,13 @@ Implemented the bounded period reporting projection, one-statement canonical sou
 - Typecheck, ESLint and production build: **PASS**. Report button styling was corrected to the existing primary/secondary classes after screenshot inspection; subsequent browser checkpoints will exercise it.
 - P2 `D4-EXEC-001`: unpublished planning could be interpreted as zero scheduled time. Explicit publication coverage added and pure projection regression passes. **CLOSED by embedded regression**.
 - No executive stop condition triggered. D5 starts automatically. Final exact-candidate D8 runs remain required.
+
+### D5 embedded checkpoint
+
+Added a server-authorized CSV export using a fresh D4 source read, safe UTF-8/quoted fields and spreadsheet formula protection. One versioned rectangular dataset carries scope, exact durations, source hashes, effective entries/breaks, operational summaries, limitations and definitions; absence/correction private reasons are excluded. Added browser-native Print / Save PDF with report-specific print layout, all report sections/definitions and hidden application navigation. No rendering vendor or new paid service is used.
+
+- Affected CSV/projection/read/export API suite: **4 files / 42 tests PASS**.
+- Owned Chromium/WebKit browser run: **69 checks PASS**, overlapping D3/D4 checks plus protected downloads and print layout. Chromium generated `period-report.pdf`; local PDF text inspection confirmed all 12 required sections and recorded/break definitions. WebKit print styles verified; browser-native save remains the actual PDF workflow.
+- Typecheck and ESLint: **PASS**. D4 database source validation remains unchanged and its 6 owned tests passed.
+- No new blocking finding. CSV formula cells remain text; exact source values remain represented. PDF generation is performed through the user's browser print dialog, with no server-side file retention.
+- Final exact-candidate D8 regression remains required. D6 continues automatically under Jose's configurable mapping direction.

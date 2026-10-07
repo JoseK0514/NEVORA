@@ -13695,3 +13695,10 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
     align-items: flex-start;
   }
 }
+
+@media print {
+  @page { size: A4; margin: 15mm; }
+  body:has(.employee-view h1) .sidebar, body:has(.employee-view h1) .mobile-header, body:has(.employee-view h1) .mobile-nav { display: none !important; }
+  body:has(.employee-view h1) .app-shell { display: block; min-height: 0; }
+  body:has(.employee-view h1) .main-content { margin: 0; padding: 0; max-width: none; width: 100%; }
+}
