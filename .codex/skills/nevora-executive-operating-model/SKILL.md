@@ -32,8 +32,7 @@ receive their published findings, but must not direct, suppress, or self-close t
 
 ## Approved independent review cadence (2026-10-07)
 Read `docs/governance/nevora-independent-review-protocol.md` when planning phase acceptance, independent audits, or final release.
-- Phase D retains the previously approved **three-reviewer whole-phase gate after D8**.
-- From Phase E forward, require **one independent whole-phase reviewer** per completed phase, with documented exact-SHA evidence and risk-based specialist escalation.
+- From **Phase D onward**, require **one independent whole-phase reviewer** per completed phase, with exact-SHA evidence and risk-based specialist escalation. For Phase D, perform this review **after D8**; the prior Phase-D-specific three-reviewer signoff is superseded, but all other mandatory gates remain.
 - The **final consolidated all-phase audit** requires three separate reviewers and unanimous **3/3 GO**.
 - Keep standing QA/UI independence, specialist department gates, FR-AUTH-001, production NO-GO and Jose's final authority intact.
 
