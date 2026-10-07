@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "program": "NEVORA Phase D",
+  "execution_model_approved_by": "Jose",
+  "execution_model_approval_date": "2026-10-06 America/Puerto_Rico",
+  "baseline_sha": "f54eefbb314851cfa3697490faf32bb71d647913",
+  "baseline_tree": "d0715caa192e57cb3d51c27216551c2a3b0c092e",
+  "development_baseline_sha": "0516b7dcbb07a10d926cc5c53f3b650343cad9bd",
+  "branch": "phase-d/d2-d7-controlled-execution-20261006",
+  "implementation_owner": "ChatGPT engineering in this execution thread",
+  "coordination_owner": "COO / Program Manager functions",
+  "required_executive_roles": ["COO", "CPO", "CTO_CIO", "CISO", "PROGRAM_MANAGER", "SENIOR_TECHNICAL_AUTHORITY", "PRODUCT_EXPERIENCE", "GOVERNANCE_RISK"],
+  "gate_semantics": {
+    "required_vote": "GO",
+    "missing_vote_blocks": true,
+    "unresolved_required_conditions_block": true,
+    "unresolved_p0_p1_block": true,
+    "candidate_change_invalidates_affected_votes": true,
+    "management_review_is_not_independent": true,
+    "register_is_not_branch_protection": true
+  },
+  "vote_required_fields": ["role", "section", "candidate_sha", "reviewer_process", "review_mode", "reviewed_at", "verdict", "evidence", "findings", "conditions"],
+  "sections": [
+    {"id": "D2", "scope": "Correction workflows", "predecessor": "D1.3 implementation checkpoint", "status": "SCOPE_AND_GUARDRAIL_DEFINITION", "design_status": "DRAFT", "implementation_status": "NOT_STARTED", "candidate_sha": null, "evidence": [], "executive_votes": [], "exit_gate": "NO_GO"},
+    {"id": "D3", "scope": "Timecards", "predecessor": "D2", "status": "WAITING_FOR_PREDECESSOR", "design_status": "NOT_STARTED", "implementation_status": "NOT_STARTED", "candidate_sha": null, "evidence": [], "executive_votes": [], "exit_gate": "NO_GO"},
+    {"id": "D4", "scope": "Reports", "predecessor": "D3", "status": "WAITING_FOR_PREDECESSOR", "design_status": "NOT_STARTED", "implementation_status": "NOT_STARTED", "candidate_sha": null, "evidence": [], "executive_votes": [], "exit_gate": "NO_GO"},
+    {"id": "D5", "scope": "CSV and useful PDF exports", "predecessor": "D4", "status": "WAITING_FOR_PREDECESSOR", "design_status": "NOT_STARTED", "implementation_status": "NOT_STARTED", "candidate_sha": null, "evidence": [], "executive_votes": [], "exit_gate": "NO_GO"},
+    {"id": "D6", "scope": "Payroll-ready export only", "predecessor": "D5", "status": "WAITING_FOR_PREDECESSOR", "design_status": "NOT_STARTED", "implementation_status": "NOT_STARTED", "candidate_sha": null, "evidence": [], "executive_votes": [], "exit_gate": "NO_GO"},
+    {"id": "D7", "scope": "Manager Action Center foundation", "predecessor": "D6", "status": "WAITING_FOR_PREDECESSOR", "design_status": "NOT_STARTED", "implementation_status": "NOT_STARTED", "candidate_sha": null, "evidence": [], "executive_votes": [], "exit_gate": "NO_GO"}
+  ],
+  "D8": {"status": "NOT_READY", "reviewer": "Independent Codex process that did not implement the candidate", "candidate_sha": null, "verdict": null, "evidence": []},
+  "development_integration": {"status": "NO_GO", "requires": ["D2-D7 exit gates", "whole-phase regression evidence", "D8 Codex GO on exact candidate", "applicable independent QA/UI gates", "Jose integration authorization"]},
+  "production": {"status": "NO_GO", "authorization": null},
+  "carried_open_items": [
+    {"id": "QA-D13-001", "status": "REMEDIATION_REPORTED_NOT_INDEPENDENTLY_CLOSED", "owner": "Independent QA at applicable gate / D8", "description": "Verify lifecycle coverage, exact-SHA CI and actual enforcement; workflow presence alone is not branch protection."},
+    {"id": "D13-TECH-LABELS", "status": "REMEDIATION_REPORTED_NOT_INDEPENDENTLY_CLOSED", "owner": "Independent Codex at D8", "description": "Reverify fresh labels, archived locations and refreshed/new-entity context."},
+    {"id": "D13-A11Y-REFRESH", "status": "OPEN", "owner": "Engineering; independent UI verifies", "description": "Manual refresh needs assistive-technology progress/completion feedback; retain physical-device/screen-reader acceptance."},
+    {"id": "D13-EVIDENCE-CUSTODY", "status": "OPEN", "owner": "CTO/CIO and Governance", "description": "Prior artifact upload hit quota. Retain a small safe evidence bundle and prove retrieval; no paid upgrade or blanket deletion authorized."},
+    {"id": "D1-CORRECTIONS-ADAPTER", "status": "WAITING_FOR_D2", "owner": "Engineering", "description": "Connect real correction review state; no placeholder counts."},
+    {"id": "D1-POLICY-DEPENDENCIES", "status": "OPEN", "owner": "CPO and Governance", "description": "Trace missing-clock-in association, policy lateness/early departure, unusually-long-entry and overtime basis; do not invent payroll rules."},
+    {"id": "BRANCH-ENFORCEMENT", "status": "OPEN", "owner": "Governance and CTO/CIO", "description": "Remote listing reports development/main unprotected; procedural hold is not server-side enforcement."},
+    {"id": "FR-AUTH-001", "status": "OPEN", "owner": "Existing independent release authority", "description": "Inherited production gate is not closed by this package."}
+  ],
+  "D2_design_decisions": [
+    {"id": "D2-REVIEW-AUTHORITY", "status": "UNRESOLVED", "description": "Manager-initiated and own-time review authority; proposed default is no direct edit and no self-approval."},
+    {"id": "D2-LIVE-STATE", "status": "UNRESOLVED", "description": "Missing-clock-out correction versus still-open Clocker state; preserve raw history and employee/version synchronization."},
+    {"id": "D2-BREAK-SCOPE", "status": "UNRESOLVED", "description": "Boundary corrections and captured break classification; no automatic paid/unpaid or deduction policy."},
+    {"id": "D2-MISSING-FINALIZED", "status": "UNRESOLVED", "description": "Missing-entry provenance and D3 finalized-period revision hooks; no fabricated actual punch."}
+  ]
+}
