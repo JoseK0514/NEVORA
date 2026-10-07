@@ -23,6 +23,7 @@ const CURRENT_MIGRATIONS = [
   '0016_time_corrections.sql',
   '0017_missing_time_supersession.sql',
   '0018_timecards.sql',
+  '0019_payroll_export_mappings.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

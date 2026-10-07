@@ -38,7 +38,7 @@ function allowedOrigin(request: Request): string | null {
   catch{return null;}
 }
 
-export function correctionBoundary(request: Request, write: boolean, header='x-nevora-time-correction'): 400 | 403 | 503 | null {
+export function correctionBoundary(request: Request, write: boolean, header='x-nevora-time-correction',maxBytes=8192): 400 | 403 | 503 | null {
   const fetchSite=request.headers.get('sec-fetch-site');
   if((fetchSite&&fetchSite!=='same-origin')||
       request.headers.get(header)!=='1') return 403;
@@ -53,11 +53,11 @@ export function correctionBoundary(request: Request, write: boolean, header='x-n
   if(request.headers.get('origin')!==expected) return 403;
 
   const length=request.headers.get('content-length');
-  if(length!==null&&(!/^\d+$/.test(length)||Number(length)>8192)) return 400;
+  if(length!==null&&(!/^\d+$/.test(length)||Number(length)>maxBytes)) return 400;
   return null;
 }
 
-export async function readCorrectionJson(request: Request): Promise<unknown> {
+export async function readCorrectionJson(request: Request,maxBytes=8192): Promise<unknown> {
   const reader=request.body?.getReader();
   if(!reader) throw new Error('invalid_body');
   const decoder=new TextDecoder('utf-8',{fatal:true});
@@ -67,7 +67,7 @@ export async function readCorrectionJson(request: Request): Promise<unknown> {
       const chunk=await reader.read();
       if(chunk.done)break;
       size+=chunk.value.byteLength;
-      if(size>8192){await reader.cancel();throw new Error('invalid_body');}
+      if(size>maxBytes){await reader.cancel();throw new Error('invalid_body');}
       body+=decoder.decode(chunk.value,{stream:true});
     }
     body+=decoder.decode();

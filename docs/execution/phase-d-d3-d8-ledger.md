@@ -32,8 +32,8 @@ Requirements source: original Lettered Executive Program pasted document, Phase 
 | D3 | COMPLETE | PASS | Embedded checkpoint below |
 | D4 | COMPLETE | PASS | Embedded checkpoint below |
 | D5 | COMPLETE | PASS | Embedded checkpoint below |
-| D6 | IN PROGRESS | NOT RUN | Configurable mapping direction |
-| D7 | WAITING | NOT RUN | D6 dependency |
+| D6 | COMPLETE | PASS | Embedded checkpoint below |
+| D7 | IN PROGRESS | NOT RUN | Current-authorized Action Center integration |
 | D8 | WAITING | NOT RUN | Final integrated candidate |
 
 ## Rulings and limitations
@@ -98,3 +98,15 @@ Added a server-authorized CSV export using a fresh D4 source read, safe UTF-8/qu
 - Typecheck and ESLint: **PASS**. D4 database source validation remains unchanged and its 6 owned tests passed.
 - No new blocking finding. CSV formula cells remain text; exact source values remain represented. PDF generation is performed through the user's browser print dialog, with no server-side file retention.
 - Final exact-candidate D8 regression remains required. D6 continues automatically under Jose's configurable mapping direction.
+
+### D6 embedded checkpoint
+
+Implemented additive migration `0019_payroll_export_mappings.sql`, one canonical NEVORA export model, configurable versioned mapping profiles, exact durations and separate breaks, immutable source/provenance references, finalized-only reviewed employee selection, idempotent immutable export receipts, deterministic canonical/CSV SHA-256 verification, private mapping/export APIs and manager configuration/download UI. The neutral CSV is available; the documented ADP RUN generic v1 preset requires current account-template verification and explicit identifiers/codes. QuickBooks preset columns remain unavailable pending authoritative template verification. Details and official sources: `phase-d-export-mappings.md`.
+
+- Affected model/client/API/navigation/correction-client/timecard-API regression: **6 files / 62 tests PASS**.
+- Owned PostgreSQL export protocol: **1 file / 8 tests PASS**, including concurrent duplicate generation, immutable receipts/profile history, original receipt replay after reopen, reopen between projection and receipt generation, stale-source refusal, current-role loss and mapping scope rejection.
+- Chromium/WebKit browser: **89 checks PASS**, overlapping D3/D4/D5 plus finalized generation, verified canonical/mapped downloads, actual manager profile save and 7-width mapping layout per engine.
+- Typecheck, ESLint and production build: **PASS**. Configurable commands use an explicit bounded 64 KiB body; existing correction bodies retain their 8 KiB default limit.
+- P2 `D6-EXEC-001`: WebKit native select content overflowed at 320 px. Diagnosed with DOM geometry/screenshot; corrected select clipping and bounded grid tracks; **CLOSED by Chromium/WebKit rerun**.
+- No default compensation policy, earnings code, provider credentials, provider import, payment, paid service or production change was introduced. External import acceptance/account activation is not claimed.
+- No executive stop condition triggered. D7 and the four mandatory amended UX acceptance items continue automatically. Final exact-candidate D8 regression remains required.
