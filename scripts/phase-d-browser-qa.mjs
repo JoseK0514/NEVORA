@@ -63,7 +63,9 @@ try{
     assert.match(await card.innerText(),/Historical revisions \(3\)/);checked(engine+': actual Manager approve-finalize-reopen with history');
     for(const width of [320,375,390,430,768,1024,1440]){
       await mp.setViewportSize({width,height:1000});
-      assert(await mp.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),`${engine} ${width} manager overflow`);checked(`${engine}: manager geometry ${width}`);
+      const geometry=await mp.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('*')].filter(e=>getComputedStyle(e).display!=='none'&&(e.getBoundingClientRect().right+window.scrollX>document.documentElement.clientWidth+2||e.scrollWidth>e.clientWidth+2)).map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right,scroll:e.scrollWidth,client:e.clientWidth,minWidth:getComputedStyle(e).minWidth,whiteSpace:getComputedStyle(e).whiteSpace})).slice(-25)}));
+      if(geometry.scroll>geometry.width+2)console.log(JSON.stringify({engine,viewport:width,managerGeometry:geometry}));
+      assert(geometry.scroll<=geometry.width+2,`${engine} ${width} manager overflow`);checked(`${engine}: manager geometry ${width}`);
     }
     const screen=join(evidence,`${engine}-timecards-390.png`);await mp.setViewportSize({width:390,height:1000});await mp.screenshot({path:screen,fullPage:true});report.screenshots.push(screen);
     await employee.setOffline(true);await ep.evaluate(()=>window.dispatchEvent(new Event('offline')));assert.equal(await ep.getByRole('article').count(),0);checked(engine+': offline clears private period data');

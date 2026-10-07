@@ -15,6 +15,10 @@ import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 const changedEvent='nevora:time-correction-changed';
 const unknownNotice='The server outcome could not be confirmed. Retry the same decision safely.';
+const approvedNotice='Correction approved. The original recorded punch remains unchanged.';
+const rejectedNotice='Correction declined. The original recorded punch remains unchanged.';
+/** Only fixed, non-identifying receipt feedback survives a private pause. */
+export function pausedCorrectionNotice(notice:string|null){return [unknownNotice,approvedNotice,rejectedNotice].includes(notice??'')?notice:null;}
 
 function requestLabel(item:ManagerCorrectionItem){
   if(item.kind==='MISSING_ENTRY')return 'Missing time';
@@ -22,8 +26,8 @@ function requestLabel(item:ManagerCorrectionItem){
   return 'Clock in / Clock out';
 }
 function noticeFor(result:CorrectionActionResponse){
-  if(result.state==='approved')return 'Correction approved. The original recorded punch remains unchanged.';
-  if(result.state==='rejected')return 'Correction declined. The original recorded punch remains unchanged.';
+  if(result.state==='approved')return approvedNotice;
+  if(result.state==='rejected')return rejectedNotice;
   if(result.state==='conflict')return 'This request changed while you were reviewing it. Refresh and review the latest state.';
   if(result.state==='outcome_unknown')return unknownNotice;
   if(result.state==='blocked'){
@@ -112,7 +116,7 @@ export function ManagerTimeCorrections({actorId}:{actorId?:string}={}){
       if(denied){setRetry(null);setNotice(null);setConnection('access_lost');}
       else {setConnection(next.paused?resumeMode:next.refreshing?resumeMode:next.snapshot?.state==='ready'?'ready':'unavailable');if(next.snapshot?.state==='ready'&&!next.refreshing)resumeMode='loading';}
     },signal=>fetchManagerTimeCorrections(signal,actorId),parseManagerTimeCorrections,reason=>({state:'unavailable',reason}),()=> 'read_failed');
-    const clear=(mode:CorrectionQueueConnection)=>{active=false;resumeMode=mode;controller.pause();setNotice(current=>current===unknownNotice?current:null);};
+    const clear=(mode:CorrectionQueueConnection)=>{active=false;resumeMode=mode;controller.pause();setNotice(pausedCorrectionNotice);};
     const refresh=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='loading';controller.start();}};
     const reconnect=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='reconnecting';controller.start();}};
     const offline=()=>clear('offline'),hide=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;clear('paused');},visibility=()=>document.visibilityState==='hidden'?hide():refresh();

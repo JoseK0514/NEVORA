@@ -475,13 +475,13 @@ export function ManagerDashboard(props: Props) {
 
       {props.view === "overview" ? (
         <div className="manager-home-grid">
-          <ManagerActionCenter weekStart={props.weekStart} actorId={props.actorId??''}/>
+          <ManagerActionCenter key={`${props.actorId}:${props.weekStart}`} weekStart={props.weekStart} actorId={props.actorId??''}/>
           <ManagerClockMonitor />
         </div>
       ) : props.view === "attendance" ? (
         <div className="manager-attendance-stack">
           <ManagerAttendanceReview />
-          <ManagerTimeCorrections actorId={props.actorId}/>
+          <ManagerTimeCorrections key={props.actorId} actorId={props.actorId}/>
           <Link className="button secondary" href="/app/clocker-recovery">Clocker Recovery</Link>
         </div>
       ) : props.view === "schedule" ? (

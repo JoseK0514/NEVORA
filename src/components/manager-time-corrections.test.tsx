@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import { ManagerTimeCorrectionsSurface } from './manager-time-corrections';
+import { ManagerTimeCorrectionsSurface,pausedCorrectionNotice } from './manager-time-corrections';
 import type { ManagerTimeCorrections } from '@/lib/time-corrections/read-model';
 
 const ready: Extract<ManagerTimeCorrections,{state:'ready'}> = {
@@ -112,3 +112,10 @@ it.each([
 ] as const)('UX-04 %s clears an old ready queue without an empty claim',(connection,label)=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} connection={connection} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);expect(html).toContain(label);expect(html).not.toContain('No correction requests');expect(html).not.toContain('Avery QA');expect(html).not.toContain('manager-corrections-count');});
 
 it('UX-04 refuses an empty claim even when ready is supplied with a missing snapshot',()=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} connection="ready" busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);expect(html).toContain('Correction requests unavailable');expect(html).not.toContain('No correction requests');});
+
+it('D8 private pause retains only non-identifying operation receipt feedback while clearing names/counts',()=>{
+ const confirmed='Correction approved. The original recorded punch remains unchanged.';
+ expect(pausedCorrectionNotice(confirmed)).toBe(confirmed);expect(pausedCorrectionNotice('Avery private outcome')).toBeNull();
+ const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} connection="paused" busyId={null} notice={pausedCorrectionNotice(confirmed)} onDecision={()=>{}} onRetry={()=>{}} retry={null}/>);
+ expect(html).toContain(confirmed);expect(html).toContain('Updates paused');expect(html).not.toContain('Avery QA');expect(html).not.toContain('No correction requests');expect(html).not.toContain('manager-corrections-count');
+});
