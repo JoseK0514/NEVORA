@@ -10,8 +10,22 @@ function HoursTable({title,rows}:{title:string;rows:ReportHours[]}){
  return <section className={styles.card}><h2>{title}</h2>{rows.length?<div className={styles.scroll}><table><thead><tr><th scope="col">Name</th><th scope="col">Recorded time</th><th scope="col">Breaks recorded</th></tr></thead><tbody>{rows.map(r=><tr key={r.id}><th scope="row">{r.name}</th><td>{hours(r.recordedNanoseconds)}</td><td>{hours(r.breakNanoseconds)}</td></tr>)}</tbody></table></div>:<p>No recorded time in this verified period.</p>}</section>;
 }
 export function ReportsView({report,state}:{report:PeriodReports|null;state:State}){
+ const content=useRef<HTMLDivElement>(null);
+ useEffect(()=>{
+  const media=window.matchMedia('print');
+  let original:Map<HTMLDetailsElement,boolean>|null=null;
+  const expand=()=>{
+   const details=[...content.current?.querySelectorAll('details')??[]];
+   if(!original)original=new Map(details.map(detail=>[detail,detail.open]));
+   for(const detail of details)detail.open=true;
+  };
+  const restore=()=>{original?.forEach((open,detail)=>{detail.open=open;});original=null;};
+  const change=()=>media.matches?expand():restore();
+  media.addEventListener('change',change);window.addEventListener('beforeprint',expand);window.addEventListener('afterprint',restore);change();
+  return()=>{media.removeEventListener('change',change);window.removeEventListener('beforeprint',expand);window.removeEventListener('afterprint',restore);restore();};
+ },[report]);
  if(!report)return <div className={styles.card} role="status"><h2>{({loading:'Loading reports',offline:'Reports unavailable offline',reconnecting:'Reconnecting to reports',unavailable:'Reports unavailable',access_lost:'Reports access ended',ready:'Reports unavailable'})[state]}</h2><p>{state==='access_lost'?'Sign in with a currently authorized management account.':'A current protected report must be confirmed before totals can be shown.'}</p></div>;
- return <div className={styles.content}>
+ return <div className={styles.content} ref={content}>
   <section className={styles.card}><h2>Period summary</h2><p>{report.period.startDate} through {report.period.endDate} · {report.timeZone}</p><dl className={styles.totals}><div><dt>Recorded time</dt><dd>{hours(report.summary.recordedNanoseconds)}</dd></div><div><dt>Breaks recorded</dt><dd>{hours(report.summary.breakNanoseconds)}</dd></div><div><dt>Timecards</dt><dd>{report.summary.employeeCount}</dd></div></dl><p className={styles.note}>Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.</p></section>
   <section className={styles.card}><h2>Schedule vs actual</h2>{report.planCoverage.state==='unpublished'&&<p role="status">The published plan is incomplete for this period. Scheduled totals and differences are unavailable.</p>}<p className={styles.note}>The latest published plan is compared with effective recorded time. Captured attendance evidence is shown separately below.</p>{report.scheduleVsActual.length?<div className={styles.scroll}><table><thead><tr><th scope="col">Employee</th><th scope="col">Published plan</th><th scope="col">Recorded time</th><th scope="col">Difference</th></tr></thead><tbody>{report.scheduleVsActual.map(r=><tr key={r.employeeId}><th scope="row">{r.employeeName}</th><td>{hours(r.scheduledNanoseconds)}</td><td>{hours(r.recordedNanoseconds)}</td><td>{hours(r.differenceNanoseconds)}</td></tr>)}</tbody></table></div>:<p>No published assignments or recorded entries in this verified period.</p>}</section>
   <HoursTable title="Hours by employee" rows={report.hoursByEmployee}/><HoursTable title="Hours by location" rows={report.hoursByLocation}/><HoursTable title="Hours by captured position" rows={report.hoursByPosition}/>

@@ -127,7 +127,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
 
   // Cleared states use real lifecycle events and preserve the authoritative count.
-  phase='offline';await owner.setOffline(true);await mp.getByText('Updates paused',{exact:true}).waitFor();await safePause('offline');await shots(mp,'.manager-corrections','offline');
+  phase='offline';await owner.setOffline(true);await mp.getByText('Correction requests unavailable offline',{exact:true}).waitFor();await safePause('offline');await shots(mp,'.manager-corrections','offline');
   await owner.setOffline(false);await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();phase='normal';checked(`${engine}: offline → online protected refresh`);
   await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByText('Updates paused',{exact:true}).waitFor();await safePause('pagehide');
   await mp.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
