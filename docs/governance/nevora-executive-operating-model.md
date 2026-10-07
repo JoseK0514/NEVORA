@@ -56,8 +56,7 @@ they may not direct, suppress, rewrite, or self-close independent findings.
 ### Independent phase-review cadence (Jose-approved 2026-10-07)
 
 The controlling policy is [Independent Phase Review and Final System Audit Protocol](nevora-independent-review-protocol.md).
-- **Phase D exception:** preserve the previously approved three-reviewer independent whole-phase gate after D8; production remains NO-GO.
-- **Phase E and later normal development phases:** one appointed independent senior reviewer provides whole-phase GO/NO-GO against the exact frozen candidate after embedded team testing, with risk-based escalation.
+- **Phase D onward:** one appointed independent senior reviewer provides whole-phase GO/NO-GO against the exact frozen candidate after embedded testing. For Phase D this happens only **after D8** and supersedes the prior Phase-D-specific three-reviewer signoff count. Risk-based specialist escalation remains required; production remains NO-GO.
 - **Final consolidated all-phase audit:** three separate independent reviews (QA/Reliability; UI/UX/Accessibility; Security/Architecture/Data Integrity) requiring **unanimous 3/3 GO**.
 - Standing independent QA/UI oversight, separately approved specialist audit gates, FR-AUTH-001 and Jose's release decision are not reduced or waived.
 
