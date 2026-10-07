@@ -2,6 +2,8 @@
 
 This register records explicit release requirements. It supplements, rather than replaces, the Lettered Executive Program and each phase's acceptance evidence. An unchecked item is not certified by an earlier branch's passing tests.
 
+**Independent-review cadence:** [Jose-approved independent phase review and final system audit protocol](../governance/nevora-independent-review-protocol.md) governs reviewer count: preserve Phase D's three-reviewer gate, use one per phase from Phase E onward, and require unanimous three-reviewer GO for the final integrated all-phase audit. This cadence does **not** change or close any independent final-release evidence item below, including FR-AUTH-001, hosted transport, migration/rollback, specialist audit departments or production approval.
+
 ## FR-AUTH-001 — Independent verification of final transactional authorization
 
 **Status: OPEN — REQUIRED BEFORE PRODUCTION.**
