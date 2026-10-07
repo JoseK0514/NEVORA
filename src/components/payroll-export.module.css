@@ -3,3 +3,6 @@
 .root select {overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .root label>span {min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+
+.selectFrame {display:block;overflow:hidden;min-width:0;max-width:100%;border-radius:9px}
+.selectFrame:focus-within {outline:3px solid #2478cd;outline-offset:3px}
