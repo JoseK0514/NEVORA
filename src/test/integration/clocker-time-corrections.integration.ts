@@ -119,7 +119,238 @@ afterEach(async () => {
   if (f) await f.db.dispose();
 });
 
+async function rawCustody() {
+  return {
+    entries: await f.q('SELECT to_jsonb(t) AS row FROM time_entries t ORDER BY id'),
+    breaks: await f.q('SELECT to_jsonb(b) AS row FROM break_entries b ORDER BY id'),
+    receipts: await f.q('SELECT to_jsonb(c) AS row FROM clocker_command_ledger c ORDER BY device_id,command_id'),
+  };
+}
+
+async function submitBreak(entry: {id:string;breakId:string|null},start:number,end:number) {
+  return submitTimeCorrection(employeeProof, {
+    operationId:randomUUID(),kind:'BREAK_BOUNDARY',timeEntryId:entry.id,breakEntryId:entry.breakId!,
+    proposedStartAt:isoAgo(start),proposedEndAt:isoAgo(end),reason:'Review the completed break boundaries.',
+  },f.db.executor);
+}
+
+describe('D2-CODEX-002/003/007 bounded regression controls',()=>{
+  it.each([
+    ['APPROVE','REJECT'],['REJECT','APPROVE'],['REJECT','REJECT'],['APPROVE','APPROVE'],
+  ] as const)('keeps %s terminal when a fresh operation attempts %s at revision 2',async(initial,next)=>{
+    const entry=await seedClosedEntry();
+    const pending=await submitEntry(entry.id);
+    const command={operationId:randomUUID(),requestId:pending.requestId,expectedRevision:1,decision:initial};
+    const decided=await reviewTimeCorrection(ownerProof,command,f.db.executor);
+    expect(decided.status).toBe(initial==='APPROVE'?'approved':'rejected');
+    const raw=await rawCustody();
+    const events=await f.q('SELECT to_jsonb(e) AS row FROM time_correction_events e ORDER BY revision');
+    const effective=await f.q('SELECT to_jsonb(e) AS row FROM nevora_effective_time_entries e');
+    const second=await reviewTimeCorrection(ownerProof,{...command,operationId:randomUUID(),expectedRevision:2,decision:next},f.db.executor);
+    expect(['approved','rejected','pending']).not.toContain(second.status);
+    expect(await f.q('SELECT to_jsonb(e) AS row FROM time_correction_events e ORDER BY revision')).toEqual(events);
+    expect(await f.q('SELECT to_jsonb(e) AS row FROM nevora_effective_time_entries e')).toEqual(effective);
+    expect(await f.q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections')).toEqual([{count:0}]);
+    expect(await reviewTimeCorrection(ownerProof,command,f.db.executor)).toEqual(decided);
+    expect(await reviewTimeCorrection(ownerProof,{...command,operationId:randomUUID()},f.db.executor)).toEqual({status:'conflict'});
+    expect(await rawCustody()).toEqual(raw);
+  });
+
+  it.each([[180,125],[235,180],[180,178]])('rejects parent shrink %i/%i excluding an effective break',async(start,end)=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const pending=await submitEntry(entry.id,{proposedStartAt:isoAgo(start),proposedEndAt:isoAgo(end)});
+    const raw=await rawCustody();
+    expect(await approve(pending.requestId)).toEqual({status:'blocked',reason:'invalid_interval'});
+    expect(await f.q('SELECT count(*)::int AS count FROM time_correction_adjustments')).toEqual([{count:0}]);
+    expect(await f.q('SELECT event_kind FROM time_correction_events ORDER BY revision')).toEqual([{event_kind:'REQUESTED'}]);
+    expect(await rawCustody()).toEqual(raw);
+  });
+
+  it('checks adjusted child boundaries, not just captured break boundaries',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const child=mustBePending(await submitBreak(entry,205,195));
+    expect((await approve(child.requestId)).status).toBe('approved');
+    const parent=await submitEntry(entry.id,{proposedStartAt:isoAgo(200),proposedEndAt:isoAgo(125)});
+    const raw=await rawCustody();
+    expect(await approve(parent.requestId)).toEqual({status:'blocked',reason:'invalid_interval'});
+    expect(await rawCustody()).toEqual(raw);
+  });
+
+  it('requires containment of every completed child break',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    await f.q('INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at,version) VALUES($1,$2,$3::timestamptz,$4::timestamptz,1)',['later-child',entry.id,isoAgo(140),isoAgo(135)]);
+    const parent=await submitEntry(entry.id,{proposedStartAt:isoAgo(235),proposedEndAt:isoAgo(145)});
+    const raw=await rawCustody();
+    expect(await approve(parent.requestId)).toEqual({status:'blocked',reason:'invalid_interval'});
+    expect(await rawCustody()).toEqual(raw);
+  });
+
+  it('reconciles a committed review whose transaction response was lost',async()=>{
+    const entry=await seedClosedEntry();
+    const pending=await submitEntry(entry.id);
+    const command={operationId:randomUUID(),requestId:pending.requestId,expectedRevision:1,decision:'APPROVE' as const};
+    let loseResponse=true;
+    const executor:typeof f.db.executor={query:f.db.executor.query,transaction:async statements=>{
+      const result=await f.db.executor.transaction(statements);
+      if(loseResponse){loseResponse=false;throw new Error('Committed response delivery lost');}
+      return result;
+    }};
+    expect(await reviewTimeCorrection(ownerProof,command,executor)).toEqual({status:'outcome-unknown',operationId:command.operationId});
+    expect((await reviewTimeCorrection(ownerProof,command,executor)).status).toBe('approved');
+    expect(await f.q("SELECT count(*)::int AS count FROM time_correction_events WHERE request_id=$1 AND event_kind IN ('APPROVED','REJECTED')",[pending.requestId])).toEqual([{count:1}]);
+    expect(await f.q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE request_id=$1',[pending.requestId])).toEqual([{count:1}]);
+  });
+
+  it('allows a parent containing the adjusted child even when the raw child is outside',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const child=mustBePending(await submitBreak(entry,175,160));
+    expect((await approve(child.requestId)).status).toBe('approved');
+    const raw=await rawCustody();
+    const parent=await submitEntry(entry.id,{proposedStartAt:isoAgo(180),proposedEndAt:isoAgo(125)});
+    expect((await approve(parent.requestId)).status).toBe('approved');
+    expect(await rawCustody()).toEqual(raw);
+  });
+
+  it('permits exact effective parent/break equality',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const [child]=await f.q<{start_at:string;end_at:string}>('SELECT start_at::text,end_at::text FROM nevora_effective_break_entries WHERE break_entry_id=$1',[entry.breakId]);
+    const parent=await submitEntry(entry.id,{proposedStartAt:child.start_at,proposedEndAt:child.end_at});
+    expect((await approve(parent.requestId)).status).toBe('approved');
+  });
+
+  it('fails closed for an unbounded child without manufacturing completion',async()=>{
+    const entry=await seedClosedEntry();
+    await f.q('INSERT INTO break_entries(id,time_entry_id,break_start_at,version) VALUES($1,$2,$3::timestamptz,1)',['open-child',entry.id,isoAgo(190)]);
+    const parent=await submitEntry(entry.id);
+    const raw=await rawCustody();
+    expect(await approve(parent.requestId)).toEqual({status:'blocked',reason:'invalid_interval'});
+    expect(await rawCustody()).toEqual(raw);
+  });
+
+  it('serializes concurrent parent and break review into a contained effective state',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const parent=await submitEntry(entry.id,{proposedStartAt:isoAgo(180),proposedEndAt:isoAgo(125)});
+    const child=mustBePending(await submitBreak(entry,175,160));
+    const raw=await rawCustody();
+    const [parentResult,childResult]=await Promise.all([approve(parent.requestId),approve(child.requestId)]);
+    expect(['approved','blocked']).toContain(parentResult.status);
+    expect(childResult.status).toBe('approved');
+    expect(await f.q('SELECT b.start_at>=t.start_at AND b.end_at<=t.end_at AS contained FROM nevora_effective_break_entries b JOIN nevora_effective_time_entries t ON t.time_entry_id=b.time_entry_id WHERE b.break_entry_id=$1',[entry.breakId])).toEqual([{contained:true}]);
+    expect(await rawCustody()).toEqual(raw);
+  });
+
+  it('uses expanded effective parent boundaries for completed break requests',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const parent=await submitEntry(entry.id,{proposedStartAt:isoAgo(300),proposedEndAt:isoAgo(60)});
+    expect((await approve(parent.requestId)).status).toBe('approved');
+    const raw=await rawCustody();
+    const child=mustBePending(await submitBreak(entry,290,270));
+    expect((await approve(child.requestId)).status).toBe('approved');
+    expect(await rawCustody()).toEqual(raw);
+  });
+
+  it('rejects a break inside raw bounds but outside a shrunken effective parent',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const parent=await submitEntry(entry.id,{proposedStartAt:isoAgo(210),proposedEndAt:isoAgo(150)});
+    expect((await approve(parent.requestId)).status).toBe('approved');
+    const raw=await rawCustody();
+    expect(await submitBreak(entry,230,220)).toEqual({status:'blocked',reason:'invalid_interval'});
+    expect(await rawCustody()).toEqual(raw);
+  });
+
+  it('revalidates parent changes while a break request is pending',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const child=mustBePending(await submitBreak(entry,225,215));
+    const parent=await submitEntry(entry.id,{proposedStartAt:isoAgo(210),proposedEndAt:isoAgo(150)});
+    expect((await approve(parent.requestId)).status).toBe('approved');
+    const raw=await rawCustody();
+    expect(await approve(child.requestId)).toEqual({status:'blocked',reason:'invalid_interval'});
+    expect(await rawCustody()).toEqual(raw);
+  });
+});
+
 describe('D2 append-only time correction protocol', () => {
+  it('D2-CODEX-006 reads canonical entry supersessions and scoped immutable decisions in both portals',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const raw=await f.q('SELECT clock_in_at,clock_out_at,device_id,schedule_context,version FROM time_entries WHERE id=$1',[entry.id]);
+    const first=await submitEntry(entry.id,{proposedStartAt:isoAgo(235),proposedEndAt:isoAgo(125),reason:'First approved boundaries.'});
+    expect((await approve(first.requestId)).status).toBe('approved');
+    const rejected=await submitEntry(entry.id,{proposedStartAt:isoAgo(234),proposedEndAt:isoAgo(126)});
+    expect((await reviewTimeCorrection(ownerProof,{operationId:randomUUID(),requestId:rejected.requestId,expectedRevision:1,decision:'REJECT',note:'Declined; prior approval stands.'},f.db.executor)).status).toBe('rejected');
+    const second=await submitEntry(entry.id,{proposedStartAt:isoAgo(230),proposedEndAt:isoAgo(130),reason:'Second approved boundaries.'});
+    expect((await approve(second.requestId)).status).toBe('approved');
+    const pending=await submitEntry(entry.id,{proposedStartAt:isoAgo(229),proposedEndAt:isoAgo(131)});
+    const [canonical]=await f.q<{start:string;end:string}>('SELECT start_at::text AS start,end_at::text AS end FROM nevora_effective_time_entries WHERE time_entry_id=$1',[entry.id]);
+    const employee=await readEmployeeTimeCorrections(employeeProof,f.db.executor);
+    const manager=await readManagerTimeCorrections(ownerProof,f.db.executor);
+    expect(employee.state).toBe('ready');expect(manager.state).toBe('ready');
+    if(employee.state!=='ready'||manager.state!=='ready')throw Error('Protected context unavailable');
+    for(const item of [employee.requests.find(r=>r.id===pending.requestId)!,manager.requests[0]]){
+      expect(item.context).toMatchObject({state:'confirmed',sourceKind:'ADJUSTMENT',startAt:canonical.start,endAt:canonical.end,totalDecisions:3});
+      expect(item.baseChanged).toBe(false);
+      expect(new Date(item.originalStartAt!).toISOString()).toBe(entry.startAt);
+      expect(item.context.state==='confirmed'&&item.context.decisions.map(d=>d.status)).toEqual(['APPROVED','REJECTED','APPROVED']);
+    }
+    expect(employee.targets.find(t=>t.timeEntryId===entry.id&&t.kind==='ENTRY_BOUNDARY')?.context).toMatchObject({startAt:canonical.start,endAt:canonical.end});
+    expect(await f.q('SELECT clock_in_at,clock_out_at,device_id,schedule_context,version FROM time_entries WHERE id=$1',[entry.id])).toEqual(raw);
+  });
+
+  it('D2-CODEX-006 reads canonical break supersessions without changing classification or raw time',async()=>{
+    const entry=await seedClosedEntry({withBreak:true});
+    const raw=await f.q('SELECT * FROM break_entries WHERE id=$1',[entry.breakId]);
+    for(const [start,end] of [[189,176],[188,177]]){
+      const request=mustBePending(await submitTimeCorrection(employeeProof,{operationId:randomUUID(),kind:'BREAK_BOUNDARY',timeEntryId:entry.id,breakEntryId:entry.breakId!,proposedStartAt:isoAgo(start),proposedEndAt:isoAgo(end),reason:'Fictional break supersession.'},f.db.executor));
+      expect((await approve(request.requestId)).status).toBe('approved');
+    }
+    const pending=mustBePending(await submitTimeCorrection(employeeProof,{operationId:randomUUID(),kind:'BREAK_BOUNDARY',timeEntryId:entry.id,breakEntryId:entry.breakId!,proposedStartAt:isoAgo(187),proposedEndAt:isoAgo(178),reason:'Pending break proposal is not effective.'},f.db.executor));
+    const [canonical]=await f.q<{start:string;end:string}>('SELECT start_at::text AS start,end_at::text AS end FROM nevora_effective_break_entries WHERE break_entry_id=$1',[entry.breakId]);
+    const manager=await readManagerTimeCorrections(ownerProof,f.db.executor),employee=await readEmployeeTimeCorrections(employeeProof,f.db.executor);
+    expect(manager.state).toBe('ready');expect(employee.state).toBe('ready');
+    if(manager.state!=='ready'||employee.state!=='ready')throw Error('Protected context unavailable');
+    expect(manager.requests[0]).toMatchObject({id:pending.requestId,context:{state:'confirmed',startAt:canonical.start,endAt:canonical.end,totalDecisions:2}});
+    expect(employee.targets.find(t=>t.breakEntryId===entry.breakId)?.context).toMatchObject({startAt:canonical.start,endAt:canonical.end,totalDecisions:2});
+    expect(await f.q('SELECT * FROM break_entries WHERE id=$1',[entry.breakId])).toEqual(raw);
+  });
+
+  it('D2-CODEX-006 confirms unadjusted equality and discloses five-of-six decision history',async()=>{
+    const entry=await seedClosedEntry();
+    let employee=await readEmployeeTimeCorrections(employeeProof,f.db.executor);
+    expect(employee.state).toBe('ready');
+    if(employee.state!=='ready')throw Error('Protected context unavailable');
+    expect(employee.targets[0].context).toMatchObject({state:'confirmed',sourceKind:'RECORDED',totalDecisions:0,decisions:[]});
+    for(let i=0;i<6;i++){
+      const request=await submitEntry(entry.id);
+      expect((await reviewTimeCorrection(ownerProof,{operationId:randomUUID(),requestId:request.requestId,expectedRevision:1,decision:'REJECT'},f.db.executor)).status).toBe('rejected');
+    }
+    employee=await readEmployeeTimeCorrections(employeeProof,f.db.executor);
+    if(employee.state!=='ready')throw Error('Protected context unavailable');
+    expect(employee.targets[0].context).toMatchObject({state:'confirmed',sourceKind:'RECORDED',totalDecisions:6});
+    expect(employee.targets[0].context.state==='confirmed'&&employee.targets[0].context.decisions).toHaveLength(5);
+  });
+
+  it('D2-CODEX-006 fails closed on missing schema, stale raw sources and current authority loss',async()=>{
+    const entry=await seedClosedEntry();await submitEntry(entry.id);
+    await f.q('UPDATE time_entries SET version=version+1 WHERE id=$1',[entry.id]);
+    expect(await readManagerTimeCorrections(ownerProof,f.db.executor)).toMatchObject({state:'ready',requests:[{baseChanged:true}]});
+    await f.q("UPDATE employees SET role='LEAD' WHERE id='c34-a'");
+    const lead={...employeeProof,employee:{...employeeProof.employee,role:'LEAD' as const}};
+    expect(await readEmployeeTimeCorrections(lead,f.db.executor)).toMatchObject({state:'ready'});
+    expect(await readManagerTimeCorrections(lead,f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+    await f.q("UPDATE employees SET active=false WHERE id='c34-a'");
+    expect(await readEmployeeTimeCorrections(lead,f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+    await f.q('ALTER VIEW nevora_effective_time_entries RENAME COLUMN start_at TO missing_start');
+    expect(await readManagerTimeCorrections(ownerProof,f.db.executor)).toEqual({state:'unavailable',reason:'schema_missing'});
+  });
+
+  it('D2-CODEX-006 never exposes another employee targets or decisions',async()=>{
+    const entry=await seedClosedEntry({id:'OTHER-PRIVATE-TIME',employeeId:'c34-b'});
+    const other={...employeeProof,sessionTokenHash:'b'.repeat(64),employee:{...employeeProof.employee,id:'c34-b',firstName:'Blair'}};
+    await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'c34-b',clock_timestamp()+interval '1 day')");
+    const requested=mustBePending(await submitTimeCorrection(other,{operationId:randomUUID(),kind:'ENTRY_BOUNDARY',timeEntryId:entry.id,proposedStartAt:isoAgo(235),proposedEndAt:isoAgo(125),reason:'OTHER-PRIVATE-REASON'},f.db.executor));
+    expect((await approve(requested.requestId)).status).toBe('approved');
+    expect(await readEmployeeTimeCorrections(employeeProof,f.db.executor)).toMatchObject({state:'ready',requests:[],targets:[]});
+    expect(JSON.stringify(await readEmployeeTimeCorrections(employeeProof,f.db.executor))).not.toMatch(/OTHER-PRIVATE|Blair/);
+  });
   it('approves a recorded-entry correction without changing the raw Clocker row', async () => {
     const entry = await seedClosedEntry();
     const rawBefore = await f.q(

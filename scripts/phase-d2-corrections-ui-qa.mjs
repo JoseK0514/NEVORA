@@ -8,6 +8,9 @@ import { Temporal } from '@js-temporal/polyfill';
 import { createOwnedNextApp } from '../src/test/integration/owned-next-app.ts';
 import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture.ts';
 import { hashPassword } from '../src/lib/auth/password.ts';
+import { verifyCorrectionRecovery } from './phase-d2-corrections-recovery-qa.mjs';
+import {verifyD2UiRemediation} from './phase-d2-ui-remediation-qa.mjs';
+import { missingTimeBrowserScenarios } from './phase-d2-missing-time-browser-scenarios.mjs';
 
 const WIDTHS=[320,375,390,430,768,1024,1440];
 const ENGINES=['chromium','webkit'];
@@ -104,6 +107,8 @@ try{
   RETURNING clock_in_at::text AS "startAt",clock_out_at::text AS "endAt"`);
  const proposedStart=localValue(entry.startAt);
  const proposedEnd=localValue(Temporal.Instant.from(entry.endAt).subtract({minutes:5}).toString());
+ await q(`INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at,version)
+   VALUES('d2-browser-break','d2-browser-entry',clock_timestamp()-interval '190 minutes',clock_timestamp()-interval '175 minutes',1)`);
 
  for(const engine of ENGINES){
   const browser=await playwright[engine].launch({headless:true});
@@ -189,7 +194,10 @@ try{
   await hp.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
   await hp.getByText('Approved',{exact:true}).first().waitFor();
   checked(engine+': employee correction history reflects approved terminal state');
+  await missingTimeBrowserScenarios({app,browser,engine,employee:employeeAfter,page:hp,context,login,geometry,checked,localValue,evidence,report});
   await employeeAfter.close();
+  await verifyCorrectionRecovery({browser,engine,app,q,context,login,checked,report,evidence,geometry});
+  await verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths:WIDTHS});
  }
  assert.deepEqual(report.errors,[]);
 }catch(error){

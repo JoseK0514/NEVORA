@@ -19,7 +19,7 @@ export default async function MyTimePage() {
         </div>
       </header>
 
-      <EmployeeTimePanel />
+      <EmployeeTimePanel key={session.id} />
     </div>
   );
 }

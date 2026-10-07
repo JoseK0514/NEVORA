@@ -2,6 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { parseCorrectionRequestCommand, parseCorrectionReviewCommand } from './validation';
 
 describe('D2 correction command validation', () => {
+  it('accepts explicit missing-time base identity and rejects incomplete or injected identity', () => {
+    const command = {
+      operationId: '11111111-1111-4111-8111-111111111111', kind: 'MISSING_ENTRY', locationId: 'loc-1',
+      proposedStartAt: '2026-01-05T08:05:00Z', proposedEndAt: '2026-01-05T09:00:00Z', reason: 'Fictional replacement.',
+      targetAdjustmentId: '22222222-2222-4222-8222-222222222222', expectedBaseRevision: 2,
+    };
+    expect(parseCorrectionRequestCommand(command)).toEqual(command);
+    for (const malformed of [
+      { ...command, expectedBaseRevision: undefined }, { ...command, targetAdjustmentId: null },
+      { ...command, expectedBaseRevision: 0 }, { ...command, expectedBaseRevision: 1.5 },
+      { ...command, employeeId: 'someone-else' }, { ...command, kind: 'ENTRY_BOUNDARY', timeEntryId: 'raw' },
+    ]) expect(() => parseCorrectionRequestCommand(malformed)).toThrow();
+  });
   it('accepts a bounded completed-entry correction without caller-supplied employee identity', () => {
     expect(parseCorrectionRequestCommand({
       operationId: '11111111-1111-4111-8111-111111111111',

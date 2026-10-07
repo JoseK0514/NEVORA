@@ -24,6 +24,8 @@ export type CorrectionRequestCommand =
       operationId: string;
       kind: 'MISSING_ENTRY';
       locationId: string;
+      targetAdjustmentId?: string;
+      expectedBaseRevision?: number;
       proposedStartAt: string;
       proposedEndAt: string;
       reason: string;
@@ -109,12 +111,18 @@ export function parseCorrectionRequestCommand(value: unknown): CorrectionRequest
     };
   }
   if (kind === 'MISSING_ENTRY') {
-    const keys = ['operationId', 'kind', 'locationId', 'proposedStartAt', 'proposedEndAt', 'reason'] as const;
+    const targeted = Object.hasOwn(value, 'targetAdjustmentId') || Object.hasOwn(value, 'expectedBaseRevision');
+    const keys = ['operationId', 'kind', 'locationId', 'proposedStartAt', 'proposedEndAt', 'reason',
+      ...(targeted ? ['targetAdjustmentId', 'expectedBaseRevision'] : [])];
     if (!exactKeys(value, keys)) throw new Error('Invalid correction request');
+    if (targeted && (!uuid(value.targetAdjustmentId) || !Number.isSafeInteger(value.expectedBaseRevision) || Number(value.expectedBaseRevision) < 1)) {
+      throw new Error('Invalid correction base');
+    }
     return {
       operationId: value.operationId,
       kind,
       locationId: id(value.locationId),
+      ...(targeted ? { targetAdjustmentId: value.targetAdjustmentId as string, expectedBaseRevision: Number(value.expectedBaseRevision) } : {}),
       ...interval(value.proposedStartAt, value.proposedEndAt),
       reason: reason(value.reason),
     };

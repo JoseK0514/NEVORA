@@ -142,8 +142,11 @@ export async function submitTimeCorrection(
   const timeEntryId = command.kind === 'MISSING_ENTRY' ? null : command.timeEntryId;
   const breakEntryId = command.kind === 'BREAK_BOUNDARY' ? command.breakEntryId : null;
   const locationId = command.kind === 'MISSING_ENTRY' ? command.locationId : null;
+  const supersession = command.kind === 'MISSING_ENTRY' && command.targetAdjustmentId !== undefined;
   const call: SqlStatement = {
-    text: 'SELECT nevora_submit_time_correction($1::uuid,$2,$3,$4,$5,$6,$7,$8,$9::timestamptz,$10::timestamptz,$11,$12) AS result',
+    text: supersession
+      ? 'SELECT nevora_submit_time_correction($1::uuid,$2,$3,$4,$5,$6,$7,$8,$9::timestamptz,$10::timestamptz,$11,$12,$13::uuid,$14::integer) AS result'
+      : 'SELECT nevora_submit_time_correction($1::uuid,$2,$3,$4,$5,$6,$7,$8,$9::timestamptz,$10::timestamptz,$11,$12) AS result',
     values: [
       command.operationId,
       workspace.id,
@@ -157,6 +160,7 @@ export async function submitTimeCorrection(
       command.proposedEndAt,
       command.reason,
       requestHash,
+      ...(supersession ? [command.targetAdjustmentId, command.expectedBaseRevision] : []),
     ],
   };
   const statements: SqlStatement[] = [

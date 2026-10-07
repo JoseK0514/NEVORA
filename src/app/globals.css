@@ -13280,6 +13280,11 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 .employee-time-correction-form :is(input,select) {
   height: 44px;
 }
+/* WebKit native date controls can receive Tab focus without :focus-visible. */
+.employee-time-correction-form input[type="datetime-local"]:focus {
+  outline: 2px solid var(--nevora-blue);
+  outline-offset: 3px;
+}
 .employee-time-correction-form textarea {
   min-height: 88px;
   resize: vertical;
@@ -13352,7 +13357,7 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
   justify-content: space-between;
   gap: 12px;
 }
-.employee-correction-history-row > span:first-child {
+.employee-correction-history-row > div:first-child {
   min-width: 0;
   display: grid;
   gap: 4px;
@@ -13498,6 +13503,48 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
   align-items: center;
   gap: 12px;
 }
+.correction-comparison {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(min(100%,180px),1fr));
+  gap: 12px;
+}
+.correction-comparison > div {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--nuvora-bg);
+}
+.correction-comparison strong {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.correction-comparison small,
+.correction-context-zone,
+.correction-prior-decisions {
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.correction-context-zone,
+.correction-prior-decisions p {
+  margin: 0;
+}
+.correction-prior-decisions ol {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+.correction-prior-decisions li + li { margin-top: 8px; }
+.correction-prior-decisions li > strong,
+.correction-prior-decisions li > span { display: block; }
 .manager-correction-times > div {
   min-width: 0;
   padding: 12px 14px;

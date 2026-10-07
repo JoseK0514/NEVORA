@@ -47,12 +47,20 @@ async function get(path:string,signal:AbortSignal){
 }
 
 async function post(path:string,body:CorrectionRequestCommand|CorrectionReviewCommand):Promise<CorrectionActionResponse>{
-  const response=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',headers:{
-    Accept:'application/json','Content-Type':'application/json','X-Nevora-Time-Correction':'1',
-  },body:JSON.stringify(body)});
-  if(response.status===401||response.status===403)return {state:'unavailable'};
-  const payload=await response.json().catch(()=>({state:'unavailable'}));
-  try{return action(payload);}catch{return {state:'unavailable'};}
+  const serialized=JSON.stringify(body);
+  const unknown={state:'outcome_unknown' as const,operationId:body.operationId};
+  try{
+    const response=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',headers:{
+      Accept:'application/json','Content-Type':'application/json','X-Nevora-Time-Correction':'1',
+    },body:serialized});
+    if(response.status===401||response.status===403)return {state:'unavailable'};
+    const result=action(await response.json());
+    if('operationId' in result&&result.operationId!==body.operationId)return unknown;
+    return result;
+  }catch{
+    // Delivery failure cannot prove whether the command committed. Reconcile the same operation.
+    return unknown;
+  }
 }
 
 export async function fetchEmployeeTimeCorrections(signal:AbortSignal):Promise<EmployeeTimeCorrections>{

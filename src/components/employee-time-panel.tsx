@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import {useEffect,useRef,useState} from 'react';
+import {useCallback,useEffect,useRef,useState} from 'react';
 import {createEmployeeTimeController,fetchEmployeeTime,type EmployeeTimePanelState} from '../lib/employee-time-client';
 import {formatRecordedDuration,type EmployeeTimeEntry} from '../lib/employee-time';
-import {EmployeeCorrectionCenter,EmployeeEntryCorrection} from './employee-time-corrections';
+import {EmployeeCorrectionCenter,EmployeeCorrectionRecoveryContext,EmployeeEntryCorrection} from './employee-time-corrections';
+import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off Clock':entry.state==='ON_BREAK'?'On Break':'Clocked In';
 function stamp(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date(at));}
@@ -60,9 +61,23 @@ export function EmployeeTimeView({state,compact=false,onRefresh}:{state:Employee
 
 export function EmployeeTimePanel({compact=false}:{compact?:boolean}){
  const [state,setState]=useState<EmployeeTimePanelState>({time:null,refreshing:true,paused:false});
+ const [commands,setCommands]=useState<Record<string,CorrectionRequestCommand>>({});
+ const authorityLost=useRef(false);
+ const update=useCallback((key:string,command:CorrectionRequestCommand|null)=>{
+  if(command&&authorityLost.current)return;
+  setCommands(current=>{
+  const next={...current};if(command)next[key]=command;else delete next[key];return next;
+  });
+ },[]);
  const controller=useRef<ReturnType<typeof createEmployeeTimeController>|null>(null);
  useEffect(()=>{
-  const time=createEmployeeTimeController(setState,fetchEmployeeTime);controller.current=time;let mounted=true;
+  const time=createEmployeeTimeController(next=>{
+   setState(next);
+   if(next.time){
+    authorityLost.current=next.time.state==='unavailable'&&next.time.reason==='access_denied';
+    if(authorityLost.current)setCommands({});
+   }
+  },fetchEmployeeTime);controller.current=time;let mounted=true;
   // Clear first on re-entry/account-change signals; no earlier self data is reused.
   const sync=()=>{time.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)time.start();};
   const pause=()=>time.pause();
@@ -71,5 +86,5 @@ export function EmployeeTimePanel({compact=false}:{compact?:boolean}){
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;time.stop();controller.current=null;document.removeEventListener('visibilitychange',sync);window.removeEventListener('online',sync);window.removeEventListener('offline',pause);window.removeEventListener('pagehide',pause);window.removeEventListener('pageshow',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',sync);};
  },[]);
- return <EmployeeTimeView state={state} compact={compact} onRefresh={()=>controller.current?.refresh()}/>;
+ return <EmployeeCorrectionRecoveryContext.Provider value={{commands,update}}><EmployeeTimeView state={state} compact={compact} onRefresh={()=>controller.current?.refresh()}/></EmployeeCorrectionRecoveryContext.Provider>;
 }

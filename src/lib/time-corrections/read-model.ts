@@ -3,6 +3,25 @@ import type { CorrectionKind } from './validation';
 
 export type CorrectionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
+export type CorrectionDecision = {
+  status:'APPROVED'|'REJECTED';
+  decidedAt:string;
+  startAt:string;
+  endAt:string;
+  note:string|null;
+};
+export type CorrectionContext =
+  | {state:'confirmed';sourceKind:'RECORDED'|'ADJUSTMENT';startAt:string;endAt:string;totalDecisions:number;decisions:CorrectionDecision[]}
+  | {state:'none'|'unavailable'};
+export type CorrectionTarget = {
+  kind:'ENTRY_BOUNDARY'|'BREAK_BOUNDARY';
+  timeEntryId:string;
+  breakEntryId:string|null;
+  recordedStartAt:string;
+  recordedEndAt:string;
+  context:CorrectionContext;
+};
+
 export type CorrectionLocation = {
   id: string;
   name: string;
@@ -13,6 +32,7 @@ export type PublicCorrectionItem = {
   kind: CorrectionKind;
   status: CorrectionStatus;
   revision: number;
+  currentAdjustmentId?: string | null;
   createdAt: string;
   locationId: string;
   locationName: string;
@@ -22,6 +42,8 @@ export type PublicCorrectionItem = {
   proposedEndAt: string;
   breakName: string | null;
   reason: string;
+  baseChanged:boolean;
+  context:CorrectionContext;
 };
 
 export type ManagerCorrectionItem = PublicCorrectionItem & {
@@ -37,6 +59,7 @@ export type EmployeeTimeCorrections =
       totalRequests: number;
       locations: CorrectionLocation[];
       requests: PublicCorrectionItem[];
+      targets:CorrectionTarget[];
     }
   | { state: 'unavailable'; reason: 'access_denied' | 'read_failed' | 'schema_missing' | 'source_limit' };
 
@@ -66,6 +89,31 @@ const instant = (value: unknown): value is string => {
   if (!text(value, 100)) return false;
   try { Temporal.Instant.from(value); return true; } catch { return false; }
 };
+const zone=(value:unknown):value is string=>{
+  if(!text(value,100))return false;
+  try{Temporal.Instant.from('2000-01-01T00:00:00Z').toZonedDateTimeISO(value);return true;}catch{return false;}
+};
+const interval=(start:unknown,end:unknown)=>instant(start)&&instant(end)&&Temporal.Instant.compare(start,end)<0;
+
+function context(value:unknown):CorrectionContext{
+  if(!object(value))throw new Error('Invalid correction context');
+  if(value.state==='none'||value.state==='unavailable'){
+    if(Object.keys(value).length!==1)throw new Error('Invalid correction context');
+    return {state:value.state};
+  }
+  if(value.state!=='confirmed'||!['RECORDED','ADJUSTMENT'].includes(String(value.sourceKind))||
+    !interval(value.startAt,value.endAt)||!integer(value.totalDecisions)||value.totalDecisions>10_000||
+    !Array.isArray(value.decisions)||value.decisions.length!==Math.min(value.totalDecisions,5))throw new Error('Invalid correction context');
+  let last: string|undefined;
+  const decisions=value.decisions.map((entry):CorrectionDecision=>{
+    if(!object(entry)||!['APPROVED','REJECTED'].includes(String(entry.status))||!instant(entry.decidedAt)||
+      !interval(entry.startAt,entry.endAt)||!(entry.note===null||text(entry.note,500))||
+      (last&&Temporal.Instant.compare(last,entry.decidedAt)<0))throw new Error('Invalid correction context');
+    last=entry.decidedAt;
+    return {status:entry.status as CorrectionDecision['status'],decidedAt:entry.decidedAt,startAt:entry.startAt as string,endAt:entry.endAt as string,note:entry.note};
+  });
+  return {state:'confirmed',sourceKind:value.sourceKind as 'RECORDED'|'ADJUSTMENT',startAt:value.startAt as string,endAt:value.endAt as string,totalDecisions:value.totalDecisions,decisions};
+}
 
 function unavailable(value: Record<string, unknown>) {
   return value.state === 'unavailable' &&
@@ -81,15 +129,22 @@ function item(value: unknown): PublicCorrectionItem {
       !integer(value.revision, 1) || !instant(value.createdAt) ||
       !text(value.locationId, 200) || !text(value.locationName, 300) ||
       !instant(value.proposedStartAt) || !instant(value.proposedEndAt) ||
-      !text(value.reason, 500) ||
+      !text(value.reason, 500) || typeof value.baseChanged!=='boolean' ||
       !(value.breakName === null || text(value.breakName, 80)) ||
       !(value.originalStartAt === null || instant(value.originalStartAt)) ||
       !(value.originalEndAt === null || instant(value.originalEndAt))) {
     throw new Error('Invalid correction response');
   }
+  if (value.currentAdjustmentId !== undefined && value.currentAdjustmentId !== null &&
+      (!uuid(value.currentAdjustmentId) || value.kind !== 'MISSING_ENTRY' || value.status !== 'APPROVED')) {
+    throw new Error('Invalid correction response');
+  }
   if ((value.originalStartAt === null) !== (value.originalEndAt === null)) {
     throw new Error('Invalid correction response');
   }
+  const effective=context(value.context);
+  if((value.kind!=='MISSING_ENTRY'&&value.originalStartAt===null)||
+    (value.kind!=='MISSING_ENTRY'&&effective.state==='none'))throw new Error('Invalid correction response');
   if (Temporal.Instant.compare(Temporal.Instant.from(value.proposedStartAt), Temporal.Instant.from(value.proposedEndAt)) >= 0) {
     throw new Error('Invalid correction response');
   }
@@ -98,6 +153,7 @@ function item(value: unknown): PublicCorrectionItem {
     kind:value.kind as CorrectionKind,
     status:value.status as CorrectionStatus,
     revision:value.revision,
+    ...(value.currentAdjustmentId !== undefined ? {currentAdjustmentId:value.currentAdjustmentId as string|null} : {}),
     createdAt:value.createdAt,
     locationId:value.locationId,
     locationName:value.locationName,
@@ -107,6 +163,8 @@ function item(value: unknown): PublicCorrectionItem {
     proposedEndAt:value.proposedEndAt,
     breakName:value.breakName,
     reason:value.reason,
+    baseChanged:value.baseChanged,
+    context:effective,
   };
 }
 
@@ -114,9 +172,10 @@ export function parseEmployeeTimeCorrections(value: unknown): EmployeeTimeCorrec
   if (!object(value)) throw new Error('Invalid correction response');
   const failed = unavailable(value);
   if (failed) return failed;
-  if (value.state !== 'ready' || !instant(value.observedAt) || !text(value.timeZone,100) ||
+  if (value.state !== 'ready' || !instant(value.observedAt) || !zone(value.timeZone) ||
       !integer(value.totalRequests) || !Array.isArray(value.locations) || value.locations.length > 100 ||
-      !Array.isArray(value.requests) || value.requests.length > 50 || value.totalRequests < value.requests.length) {
+      !Array.isArray(value.requests) || value.requests.length > 50 || value.totalRequests>10_000 || value.totalRequests < value.requests.length ||
+      !Array.isArray(value.targets)||value.targets.length>100) {
     throw new Error('Invalid correction response');
   }
   const locations = value.locations.map((entry) => {
@@ -124,6 +183,17 @@ export function parseEmployeeTimeCorrections(value: unknown): EmployeeTimeCorrec
     return {id:entry.id,name:entry.name};
   });
   if (new Set(locations.map((entry) => entry.id)).size !== locations.length) throw new Error('Invalid correction response');
+  const keys=new Set<string>();
+  const targets=value.targets.map((entry):CorrectionTarget=>{
+    if(!object(entry)||!['ENTRY_BOUNDARY','BREAK_BOUNDARY'].includes(String(entry.kind))||!text(entry.timeEntryId,200)||
+      !(entry.breakEntryId===null||text(entry.breakEntryId,200))||
+      (entry.kind==='ENTRY_BOUNDARY')!==(entry.breakEntryId===null)||!interval(entry.recordedStartAt,entry.recordedEndAt))throw new Error('Invalid correction target');
+    const key=JSON.stringify([entry.timeEntryId,entry.breakEntryId]);
+    if(keys.has(key))throw new Error('Invalid correction target');keys.add(key);
+    const effective=context(entry.context);
+    if(effective.state==='none')throw new Error('Invalid correction target');
+    return {kind:entry.kind as CorrectionTarget['kind'],timeEntryId:entry.timeEntryId,breakEntryId:entry.breakEntryId,recordedStartAt:entry.recordedStartAt as string,recordedEndAt:entry.recordedEndAt as string,context:effective};
+  });
   return {
     state:'ready',
     observedAt:value.observedAt,
@@ -131,6 +201,7 @@ export function parseEmployeeTimeCorrections(value: unknown): EmployeeTimeCorrec
     totalRequests:value.totalRequests,
     locations,
     requests:value.requests.map(item),
+    targets,
   };
 }
 
@@ -138,7 +209,7 @@ export function parseManagerTimeCorrections(value: unknown): ManagerTimeCorrecti
   if (!object(value)) throw new Error('Invalid correction response');
   const failed = unavailable(value);
   if (failed) return failed;
-  if (value.state !== 'ready' || !instant(value.observedAt) || !text(value.timeZone,100) ||
+  if (value.state !== 'ready' || !instant(value.observedAt) || !zone(value.timeZone) ||
       !Array.isArray(value.requests) || value.requests.length > 100) {
     throw new Error('Invalid correction response');
   }

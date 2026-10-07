@@ -19,27 +19,86 @@ import { getWorkspace, workspaceReadGuard } from './workspaces';
 const selfRoles = ['EMPLOYEE','LEAD'] as const;
 const managerRoles = ['OWNER','MANAGER'] as const;
 
+// Existing canonical views supply effective time. History is scoped to this
+// employee/workspace/recorded target; limits are disclosed, never completeness.
+const contextJoins=(workspace:string,employee:string,kind:string,entry:string,brk:string,request:string)=>`
+LEFT JOIN LATERAL (
+  SELECT v.start_at,v.end_at,v.adjustment_id,v.recorded_version,
+    CASE WHEN v.adjustment_id IS NULL THEN 'RECORDED' ELSE 'ADJUSTMENT' END AS source_kind
+  FROM nevora_effective_time_entries v JOIN locations scope ON scope.id=v.location_id
+  WHERE ${kind}='ENTRY_BOUNDARY' AND v.time_entry_id=${entry}
+    AND v.employee_id=${employee} AND scope.workspace_id=${workspace}
+  UNION ALL
+  SELECT v.start_at,v.end_at,v.adjustment_id,v.recorded_version,
+    CASE WHEN v.adjustment_id IS NULL THEN 'RECORDED' ELSE 'ADJUSTMENT' END
+  FROM nevora_effective_break_entries v
+  JOIN time_entries raw_parent ON raw_parent.id=v.time_entry_id JOIN locations scope ON scope.id=raw_parent.location_id
+  WHERE ${kind}='BREAK_BOUNDARY' AND v.break_entry_id=${brk} AND v.time_entry_id=${entry}
+    AND v.employee_id=${employee} AND scope.workspace_id=${workspace}
+  UNION ALL
+  SELECT v.start_at,v.end_at,v.adjustment_id,v.recorded_version,v.source_kind
+  FROM nevora_effective_time_entries v
+  JOIN time_correction_adjustments a ON a.id=v.adjustment_id
+  WHERE ${kind}='MISSING_ENTRY' AND (a.request_id=${request} OR a.id=(SELECT base_adjustment_id FROM time_correction_requests WHERE id=${request}))
+    AND a.workspace_id=${workspace} AND a.employee_id=${employee} AND v.employee_id=${employee}
+) effective ON true
+LEFT JOIN LATERAL (
+  SELECT count(*)::integer AS total,
+    COALESCE(jsonb_agg(value ORDER BY occurred_at DESC,id DESC) FILTER(WHERE rank<=5),'[]'::jsonb) AS decisions
+  FROM (
+    SELECT e.occurred_at,e.id,row_number() OVER(ORDER BY e.occurred_at DESC,e.id DESC) AS rank,
+      jsonb_build_object('status',e.event_kind,'decidedAt',e.occurred_at::text,
+        'startAt',h.proposal->>'startAt','endAt',h.proposal->>'endAt','note',e.decision_note) AS value
+    FROM time_correction_requests h JOIN time_correction_events e ON e.request_id=h.id
+    WHERE h.workspace_id=${workspace} AND h.employee_id=${employee} AND h.kind=${kind}
+      AND h.time_entry_id IS NOT DISTINCT FROM ${entry}
+      AND h.break_entry_id IS NOT DISTINCT FROM ${brk}
+      AND ${kind}<>'MISSING_ENTRY'
+      AND (${request} IS NULL OR h.id<>${request})
+      AND e.event_kind IN ('APPROVED','REJECTED')
+  ) history
+) prior ON true`;
+
+const contextJson=(kind:string)=>`CASE
+  WHEN effective.start_at IS NOT NULL AND effective.end_at IS NOT NULL THEN jsonb_build_object(
+    'state','confirmed','sourceKind',effective.source_kind,
+    'startAt',effective.start_at::text,'endAt',effective.end_at::text,
+    'totalDecisions',prior.total,'decisions',prior.decisions)
+  WHEN ${kind}='MISSING_ENTRY' THEN jsonb_build_object('state','none')
+  ELSE jsonb_build_object('state','unavailable') END`;
+
 const publicRequestJson = (alias: string) => `jsonb_build_object(
   'id',${alias}.id::text,
   'kind',${alias}.kind,
   'status',CASE latest.event_kind WHEN 'APPROVED' THEN 'APPROVED' WHEN 'REJECTED' THEN 'REJECTED' ELSE 'PENDING' END,
   'revision',latest.revision,
+  'currentAdjustmentId',CASE WHEN ${alias}.kind='MISSING_ENTRY' AND latest.event_kind='APPROVED'
+    AND EXISTS (SELECT 1 FROM nevora_time_correction_leaf_adjustments leaf
+      WHERE leaf.id=latest.adjustment_id AND leaf.request_id=${alias}.id
+        AND leaf.employee_id=${alias}.employee_id AND leaf.workspace_id=${alias}.workspace_id)
+    THEN latest.adjustment_id::text ELSE NULL END,
   'createdAt',${alias}.created_at::text,
   'locationId',${alias}.location_id,
   'locationName',COALESCE(NULLIF(trim(loc.short_name),''),trim(loc.name)),
   'originalStartAt',CASE
     WHEN ${alias}.kind='ENTRY_BOUNDARY' THEN ${alias}.source_snapshot->>'clockInAt'
     WHEN ${alias}.kind='BREAK_BOUNDARY' THEN ${alias}.source_snapshot->>'startAt'
+    WHEN ${alias}.kind='MISSING_ENTRY' THEN ${alias}.source_snapshot->>'startAt'
     ELSE NULL END,
   'originalEndAt',CASE
     WHEN ${alias}.kind='ENTRY_BOUNDARY' THEN ${alias}.source_snapshot->>'clockOutAt'
     WHEN ${alias}.kind='BREAK_BOUNDARY' THEN ${alias}.source_snapshot->>'endAt'
+    WHEN ${alias}.kind='MISSING_ENTRY' THEN ${alias}.source_snapshot->>'endAt'
     ELSE NULL END,
   'proposedStartAt',${alias}.proposal->>'startAt',
   'proposedEndAt',${alias}.proposal->>'endAt',
   'breakName',CASE WHEN ${alias}.kind='BREAK_BOUNDARY'
     THEN ${alias}.source_snapshot #>> '{breakTypeSnapshot,name}' ELSE NULL END,
-  'reason',${alias}.reason
+  'reason',${alias}.reason,
+  'baseChanged',${alias}.kind<>'MISSING_ENTRY' AND (
+    effective.adjustment_id IS DISTINCT FROM ${alias}.base_adjustment_id
+    OR effective.recorded_version::text IS DISTINCT FROM ${alias}.source_snapshot->>'sourceVersion'),
+  'context',${contextJson(`${alias}.kind`)}
 )`;
 
 const employeeSql = `WITH observed AS MATERIALIZED (
@@ -50,7 +109,7 @@ const employeeSql = `WITH observed AS MATERIALIZED (
   FROM time_correction_requests r
   JOIN locations loc ON loc.id=r.location_id
   JOIN LATERAL (
-    SELECT e.revision,e.event_kind
+    SELECT e.revision,e.event_kind,e.adjustment_id
     FROM time_correction_events e
     WHERE e.request_id=r.id
     ORDER BY e.revision DESC
@@ -64,12 +123,34 @@ const employeeSql = `WITH observed AS MATERIALIZED (
   FROM own_requests r
   JOIN locations loc ON loc.id=r.location_id
   JOIN LATERAL (
-    SELECT e.revision,e.event_kind
+    SELECT e.revision,e.event_kind,e.adjustment_id
     FROM time_correction_events e
     WHERE e.request_id=r.id
     ORDER BY e.revision DESC
     LIMIT 1
   ) latest ON true
+  ${contextJoins('r.workspace_id','r.employee_id','r.kind','r.time_entry_id','r.break_entry_id','r.id')}
+), selected_entries AS MATERIALIZED (
+  SELECT t.* FROM time_entries t JOIN locations l ON l.id=t.location_id
+  WHERE t.employee_id=$1 AND l.workspace_id=$2 AND t.clock_out_at IS NOT NULL
+    AND (t.clock_out_at>((SELECT at FROM observed) AT TIME ZONE $3)::date::timestamp AT TIME ZONE $3
+      OR t.id IN(SELECT old.id FROM time_entries old JOIN locations ol ON ol.id=old.location_id
+        WHERE old.employee_id=$1 AND ol.workspace_id=$2 AND old.clock_out_at<=
+          ((SELECT at FROM observed) AT TIME ZONE $3)::date::timestamp AT TIME ZONE $3
+        ORDER BY old.clock_in_at DESC,old.id DESC LIMIT 20))
+), targets AS MATERIALIZED (
+  SELECT 'ENTRY_BOUNDARY'::text AS kind,t.id AS time_entry_id,NULL::text AS break_entry_id,
+    t.clock_in_at AS recorded_start_at,t.clock_out_at AS recorded_end_at
+  FROM selected_entries t
+  UNION ALL
+  SELECT 'BREAK_BOUNDARY',t.id,b.id,b.break_start_at,b.break_end_at
+  FROM selected_entries t JOIN break_entries b ON b.time_entry_id=t.id WHERE b.break_end_at IS NOT NULL
+), target_rows AS MATERIALIZED (
+  SELECT jsonb_build_object('kind',t.kind,'timeEntryId',t.time_entry_id,'breakEntryId',t.break_entry_id,
+    'recordedStartAt',t.recorded_start_at::text,'recordedEndAt',t.recorded_end_at::text,
+    'context',${contextJson('t.kind')}) AS value,t.time_entry_id,t.break_entry_id
+  FROM (SELECT * FROM targets ORDER BY time_entry_id,break_entry_id NULLS FIRST LIMIT 100) t
+  ${contextJoins('$2','$1','t.kind','t.time_entry_id','t.break_entry_id','NULL::uuid')}
 ), eligible_locations AS MATERIALIZED (
   SELECT l.id,COALESCE(NULLIF(trim(l.short_name),''),trim(l.name)) AS name
   FROM employee_location_eligibility elig
@@ -81,6 +162,7 @@ SELECT
   (SELECT count(*)::integer FROM time_correction_requests r
     WHERE r.employee_id=$1 AND r.workspace_id=$2) AS "totalRequests",
   (SELECT count(*)::integer FROM eligible_locations) AS "locationCount",
+  (SELECT count(*)::integer FROM targets) AS "targetCount",
   jsonb_build_object(
     'state','ready',
     'observedAt',o.at::text,
@@ -89,6 +171,8 @@ SELECT
       WHERE r.employee_id=$1 AND r.workspace_id=$2),
     'locations',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'name',name) ORDER BY id)
       FROM eligible_locations),'[]'::jsonb),
+    'targets',COALESCE((SELECT jsonb_agg(value ORDER BY time_entry_id,break_entry_id NULLS FIRST)
+      FROM target_rows),'[]'::jsonb),
     'requests',COALESCE((SELECT jsonb_agg(value ORDER BY created_at DESC,id DESC)
       FROM request_rows),'[]'::jsonb)
   ) AS snapshot
@@ -104,7 +188,7 @@ const managerSql = `WITH observed AS MATERIALIZED (
   JOIN employees emp ON emp.id=r.employee_id
   JOIN locations loc ON loc.id=r.location_id
   JOIN LATERAL (
-    SELECT e.revision,e.event_kind
+    SELECT e.revision,e.event_kind,e.adjustment_id
     FROM time_correction_events e
     WHERE e.request_id=r.id
     ORDER BY e.revision DESC
@@ -119,12 +203,13 @@ const managerSql = `WITH observed AS MATERIALIZED (
   FROM pending r
   JOIN locations loc ON loc.id=r.location_id
   JOIN LATERAL (
-    SELECT e.revision,e.event_kind
+    SELECT e.revision,e.event_kind,e.adjustment_id
     FROM time_correction_events e
     WHERE e.request_id=r.id
     ORDER BY e.revision DESC
     LIMIT 1
   ) latest ON true
+  ${contextJoins('r.workspace_id','r.employee_id','r.kind','r.time_entry_id','r.break_entry_id','r.id')}
   ORDER BY r.created_at,r.id
   LIMIT 100
 )
@@ -166,10 +251,10 @@ export async function readEmployeeTimeCorrections(
       {text:employeeSql,values:[proof.employee.id,workspace.id,workspace.timeZone]},
       ...managementSessionStatements(proof,proof.employee.id,selfRoles),
     ]);
-    const row=result[guards.length]?.[0] as {totalRequests?:number;locationCount?:number;snapshot?:unknown}|undefined;
+    const row=result[guards.length]?.[0] as {totalRequests?:number;locationCount?:number;targetCount?:number;snapshot?:unknown}|undefined;
     if (!row || !Number.isSafeInteger(row.totalRequests) || !Number.isSafeInteger(row.locationCount) ||
-        (row.totalRequests ?? 0)>10_000 || (row.locationCount ?? 0)>100 || !row.snapshot) {
-      return {state:'unavailable',reason:(row?.totalRequests ?? 0)>10_000 || (row?.locationCount ?? 0)>100 ? 'source_limit':'read_failed'};
+        !Number.isSafeInteger(row.targetCount) || (row.totalRequests ?? 0)>10_000 || (row.locationCount ?? 0)>100 || (row.targetCount ?? 0)>100 || !row.snapshot) {
+      return {state:'unavailable',reason:(row?.totalRequests ?? 0)>10_000 || (row?.locationCount ?? 0)>100 || (row?.targetCount ?? 0)>100 ? 'source_limit':'read_failed'};
     }
     return parseEmployeeTimeCorrections(row.snapshot);
   } catch (error) {
