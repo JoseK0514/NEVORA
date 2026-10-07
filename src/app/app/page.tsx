@@ -6,7 +6,8 @@ import {
   ManagerDashboard,
   type ManagerDashboardView,
 } from "@/components/manager-dashboard";
-import { requireSession } from "@/lib/auth/session";
+import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
+import {readEmployeeSchedule} from '@/lib/data/employee-schedule';
 import { isManagerRole } from "@/lib/auth/permissions";
 import {
   addDays,
@@ -77,14 +78,8 @@ export default async function DashboardPage({
   const currentWeek = weekStartFor(currentDate);
 
   if (!manager) {
-    const [employeeShifts, employeeLocations] = await Promise.all([
-      listWeekShifts({
-        weekStart: currentWeek,
-        employeeId: session.id,
-        publishedOnly: true,
-      }),
-      listLocations(),
-    ]);
+    const employeeSchedule=await readEmployeeSchedule(await requireSessionMutationProof(),currentWeek);
+    const {shifts:employeeShifts,locations:employeeLocations}=employeeSchedule;
     const locationNames = new Map(employeeLocations.map((location) => [location.id, location.shortName]));
     const publishedShifts = employeeShifts
       .filter((shift) => !shift.isCalloutApproved)
@@ -109,6 +104,7 @@ export default async function DashboardPage({
         currentTime={currentTime}
         publishedShifts={publishedShifts}
         scheduledHours={scheduledHours}
+        scheduleState={employeeSchedule.state}
       />
     );
   }

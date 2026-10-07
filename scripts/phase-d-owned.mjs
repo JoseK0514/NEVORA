@@ -7,6 +7,7 @@ import {randomBytes} from 'node:crypto';
 if(process.env.DATABASE_URL)throw new Error('Unset DATABASE_URL before owned Phase D verification.');
 const mode=process.argv[2]??'timecards';
 const modes={timecards:['node_modules/vitest/vitest.mjs','run','--config','vitest.timecards-integration.config.mts'],
+  schedule:['node_modules/vitest/vitest.mjs','run','--config','vitest.employee-schedule-integration.config.mts'],
   corrections:['node_modules/vitest/vitest.mjs','run','--config','vitest.corrections-integration.config.mts'],
   payroll:['node_modules/vitest/vitest.mjs','run','--config','vitest.payroll-export-integration.config.mts'],
   reports:['node_modules/vitest/vitest.mjs','run','--config','vitest.reports-integration.config.mts'],

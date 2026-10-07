@@ -16,7 +16,8 @@ import { getSchedulePublishReadiness } from "@/lib/data/schedule-publication-rev
 import { listPositions } from "@/lib/data/positions";
 import { getScheduleGenerationReview, type ScheduleGenerationReview } from "@/lib/data/schedule-generation-review";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
-import { requireSession } from "@/lib/auth/session";
+import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
+import {readEmployeeSchedule,emptyScheduleLabel} from '@/lib/data/employee-schedule';
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import { listWeekShifts } from "@/lib/data/schedules";
@@ -97,14 +98,15 @@ export default async function SchedulePage({
   const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const dates = weekDates(weekStart);
+  const employeeSchedule=manager?null:await readEmployeeSchedule(await requireSessionMutationProof(),weekStart);
   const [locations, allShifts, employees, weekSettings, employeeAcknowledgement] =
     await Promise.all([
-      listLocations(),
-      listWeekShifts({
+      manager?listLocations():Promise.resolve(employeeSchedule!.locations),
+      manager?listWeekShifts({
         weekStart,
         employeeId: manager ? undefined : session.id,
         publishedOnly: !manager,
-      }),
+      }):Promise.resolve(employeeSchedule!.shifts),
       manager ? listEmployees() : Promise.resolve([]),
       manager ? getWeekSettings(weekStart) : Promise.resolve(null),
       !manager
@@ -136,7 +138,7 @@ export default async function SchedulePage({
   if (!manager) {
     const hasPublishedShifts = allShifts.length > 0;
     let publicationChanges: ReturnType<typeof ownPublicationChanges> = [];
-    if (readNotificationConfig(process.env).featureEnabled && employeeAcknowledgement.latestRevisionId && employeeAcknowledgement.needsAcknowledgement) {
+    if (employeeSchedule!.state!=='unavailable' && readNotificationConfig(process.env).featureEnabled && employeeAcknowledgement.latestRevisionId && employeeAcknowledgement.needsAcknowledgement) {
       const access = await sqlNotificationStateRepository().recipientAccess(session.id);
       if (access?.active && access.employeeId === session.id && access.role === session.role) {
         const [before, after] = await Promise.all([
@@ -163,6 +165,7 @@ export default async function SchedulePage({
 
         {params.error ? <p className="employee-notice error" role="alert">The schedule could not be acknowledged. Please try again.</p> : null}
         {params.acknowledged && !employeeAcknowledgement.acknowledged ? <p className="employee-notice success" role="status">Schedule acknowledged.</p> : null}
+        {employeeSchedule!.state!=='published'?<p className="employee-notice" role="status">{emptyScheduleLabel(employeeSchedule!.state)}{employeeSchedule!.shifts.length?' — showing your confirmed assignments only.':''}</p>:null}
 
         {hasPublishedShifts && employeeAcknowledgement.latestRevisionId ? (
           <div className={`employee-schedule-ack${employeeAcknowledgement.acknowledged ? " acknowledged" : employeeAcknowledgement.needsAcknowledgement ? " needs-ack" : ""}`}>
@@ -199,7 +202,7 @@ export default async function SchedulePage({
                         </div>
                       ) : null}
                     </div>
-                  )) : <p className="employee-schedule-off">Off</p>}
+                  )) : <p className="employee-schedule-off">{emptyScheduleLabel(employeeSchedule!.state)}</p>}
                 </div>
                 {date === today ? <span className="employee-schedule-today-label">Today</span> : null}
               </article>

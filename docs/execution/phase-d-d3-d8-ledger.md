@@ -71,7 +71,7 @@ Jose selected provider-neutral/configurable mappings on October 7. Preserve one 
 Execution continues on the current D3–D8 lineage without restarting D2 or adding approval gates. Four user-designated **P1 requirements** are mandatory implementation and D8 acceptance items:
 
 - **UX-01 OPEN:** complete customer Forgot access/password recovery; secure expiring/single-use proof, enumeration resistance, expired/reused proof handling, assisted recovery when the registered channel is inaccessible, tested session invalidation, unrelated account/operational data preserved. Reuse existing credentials/session architecture and approved services; fictional delivery only during tests.
-- **UX-03 OPEN:** distinguish unpublished, published no-assignment/off and unavailable/error employee schedule states; never disclose drafts or present an unpublished schedule as confirmed time off.
+- **UX-03 IMPLEMENTED / EMBEDDED PASS:** distinguish unpublished, published no-assignment/off and unavailable/error employee schedule states; never disclose drafts or present an unpublished schedule as confirmed time off.
 - **UX-04 IMPLEMENTED / EMBEDDED PASS:** correction queue distinguishes loading, verified-empty, pending, offline/unavailable, reconnecting and authority loss. Unknown data cannot say no correction requests; privacy clearing/current authority remain required. Final D8 regression remains required.
 - **UX-05 OPEN:** shared Clocker permits the next employee to record their own work while preserving a prior unresolved intent/receipt; never cross-identity replay/discard uncertainty; manager-assisted resolution where needed. Verify network loss/retry/refresh/duplicates/identity switches/concurrency with immutable history, idempotency and device/location binding.
 - **UX-02 OPEN / DEFERRED:** stronger first-activation identity proof is explicitly **not authorized** by this amendment.
@@ -120,3 +120,13 @@ The existing correction queue now uses explicit connection states and the shared
 - Chromium/WebKit browser run: **101 checks PASS**, overlapping D3–D6 plus actual empty/pending queues, held loading/reconnecting reads, offline privacy clearing and access loss.
 - Typecheck and ESLint: **PASS**. Source logs: `/tmp/nevora-ux04-{unit,pg,browser,typecheck,lint}.log`.
 - UX-04 has implementation and embedded evidence; it remains a mandatory final D8 acceptance item. Other amended items and D7/D8 remain incomplete. No executive stop condition triggered.
+
+### UX-03 embedded checkpoint
+
+Employee Home and My Schedule use a protected read of the existing published schedule source. The own assignments and eligible-location publication coverage share one SQL observation, guarded by current Employee/Lead authority. Only complete published coverage confirms an empty day as “Off — no assignment.” Partial/missing publication shows “Schedule not published yet”; a failed read clears rows and shows unavailable. Published partial hours are labeled as such. Draft rows/notes and coworker assignments are excluded at the query boundary.
+
+- Affected Home/helper/Schedule page suite: **3 files / 26 tests PASS**.
+- Owned PostgreSQL: **1 file / 6 tests PASS**, covering draft privacy, partial publication, verified published emptiness, revoked location/current role, infrastructure failure and logout after observation. Initial fixture failed the existing required schedule creator constraint; corrected fixture rerun passes without control changes.
+- Chromium/WebKit: **115 checks PASS**, overlapping prior work plus real unpublished/published-empty schedule and Home states and responsive schedule widths.
+- Typecheck and ESLint: **PASS**. Logs `/tmp/nevora-ux03-{unit,pg,browser,typecheck,lint}.log`.
+- Mandatory final D8 regression remains required. UX-01, UX-05 and D7/D8 remain in progress; UX-02 remains deferred.

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { EmployeeTimePanel } from "./employee-time-panel";
 import { NavIcon } from "./nav-icon";
 import { formatDayLabel, formatTime } from "../lib/date-utils";
+import type {EmployeeScheduleState} from '../lib/data/employee-schedule';
 
 export type EmployeeUpcomingShift = {
   id: string;
@@ -55,6 +56,7 @@ export function EmployeeDashboard({
   currentTime,
   publishedShifts,
   scheduledHours,
+  scheduleState='unavailable',
 }: {
   firstName: string;
   weekStart: string;
@@ -63,8 +65,11 @@ export function EmployeeDashboard({
   currentTime: string;
   publishedShifts: EmployeeUpcomingShift[];
   scheduledHours: number;
+  scheduleState?: EmployeeScheduleState;
 }) {
-  const upcomingShifts = publishedShifts.filter((shift) =>
+  const confirmedShifts=scheduleState==='unavailable'?[]:publishedShifts;
+  const emptyLabel=scheduleState==='published'?'Off — no assignment':scheduleState==='unpublished'?'Schedule not published yet':'Schedule unavailable — try again';
+  const upcomingShifts = confirmedShifts.filter((shift) =>
     isUpcomingEmployeeShift(
       shift.date,
       shift.startTime,
@@ -73,7 +78,7 @@ export function EmployeeDashboard({
     ),
   );
 
-  const todayShifts = publishedShifts.filter(shift => shift.date === currentDate)
+  const todayShifts = confirmedShifts.filter(shift => shift.date === currentDate)
     .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
 
   const todayLabel = new Intl.DateTimeFormat("en-US", {
@@ -97,7 +102,8 @@ export function EmployeeDashboard({
               <p className="employee-home-shift-time">{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</p>
               {shift.locationName ? <p className="employee-home-location">{shift.locationName}</p> : null}
             </div>)}
-          </div> : <p className="employee-home-no-shift">No published shift today</p>}
+          </div> : <p className="employee-home-no-shift">{emptyLabel}</p>}
+          {scheduleState==='unpublished'&&todayShifts.length>0?<p>Other eligible locations have not published yet.</p>:null}
           <EmployeeTimePanel compact />
         </section>
 
@@ -131,8 +137,8 @@ export function EmployeeDashboard({
             ) : (
               <div className="employee-home-empty-state">
                 <span className="employee-empty-icon"><NavIcon name="schedule" employee size={16} /></span>
-                <strong>You&apos;re all caught up</strong>
-                <p>No more published shifts are scheduled this week.</p>
+                <strong>{scheduleState==='published'?"You’re all caught up":emptyLabel}</strong>
+                <p>{scheduleState==='published'?'No more published shifts are scheduled this week.':scheduleState==='unpublished'?'Check back when your manager publishes the schedule.':'Refresh to check your schedule.'}</p>
               </div>
             )}
           </section>
@@ -141,10 +147,10 @@ export function EmployeeDashboard({
             <h2 id="employee-week-heading">This Week</h2>
             <dl className="employee-home-metrics">
               <div>
-                <dt>Scheduled Hours</dt>
+                <dt>{scheduleState==='unpublished'?'Published hours so far':'Scheduled Hours'}</dt>
                 <dd>
-                  <span>{formatEmployeeMetric(scheduledHours, "hours").replace(" hrs", "")}</span>
-                  {" "}<small className="employee-home-metric-unit">hrs</small>
+                  <span>{scheduleState==='unavailable'?'Unavailable':formatEmployeeMetric(scheduledHours, "hours").replace(" hrs", "")}</span>
+                  {scheduleState!=='unavailable'?<small className="employee-home-metric-unit"> hrs</small>:null}
                 </dd>
               </div>
               <div><dt>Est. Earnings</dt><dd>Unavailable</dd></div>
