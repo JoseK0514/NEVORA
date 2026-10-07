@@ -105,6 +105,7 @@ function fixtureReady(locationId = 'loc-1') {
     recordCount: 1,
     signalCount: 1,
     affectedEmployeeCount: 1,
+    pendingCorrectionCount: 0,
     labels: {
       employees: [{ id: 'D13-A', name: 'Alexandria Attendance Review Employee With A Long Name' }],
       locations: [{ id: locationId, name: locationName }],
@@ -119,7 +120,6 @@ function fixtureReady(locationId = 'loc-1') {
         'policy_lateness',
         'policy_early_departure',
         'unusually_long_entry',
-        'correction_review',
         'overtime_risk',
       ],
     },
