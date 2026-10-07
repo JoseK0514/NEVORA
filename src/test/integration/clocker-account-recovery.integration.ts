@@ -1,0 +1,54 @@
+import {beforeEach,afterEach,it,expect,vi} from 'vitest';
+import {createHash} from 'node:crypto';
+import {createPunchFixture} from './clocker-punch-fixture';
+import {issueAssistedRecovery,requestPasswordRecovery,resetPasswordWithProof} from '../../lib/auth/recovery.server';
+import {hashPassword,verifyPassword} from '../../lib/auth/password';
+import type {SessionMutationProof} from '../../lib/shift-changes/types';
+vi.mock('next/headers',()=>({cookies:async()=>({set:vi.fn()})}));
+vi.mock('../../lib/data/notification-transactions',async importOriginal=>({...await importOriginal<typeof import('../../lib/data/notification-transactions')>(),neonNotificationExecutor:()=>f.db.executor}));
+import {createSession} from '../../lib/auth/session';
+let f:Awaited<ReturnType<typeof createPunchFixture>>;
+const owner:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstName:'Owner',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
+beforeEach(async()=>{f=await createPunchFixture();const old=await hashPassword('Fictional previous password');await f.q('INSERT INTO employee_credentials(employee_id,password_hash) SELECT id,$1 FROM employees',[old]);await f.q("UPDATE employees SET email='avery@example.invalid' WHERE id='c34-a'; INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'c34-a',now()+interval '1 day'),(repeat('c',64),'c34-a',now()+interval '1 day'); INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('UX1-S','loc-1','2030-10-07','DRAFT','c34-owner'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('UX1-D','UX1-S','c34-a','2030-10-07','08:00','12:00');");});
+afterEach(async()=>{await f?.db.dispose();});
+async function issued(){const r=await issueAssistedRecovery(owner,'c34-a','Verified in person using established workplace process.',f.db.executor);if(r.state!=='issued')throw Error('Fixture proof not issued');return r;}
+it('UX-01 stores only a hashed expiring proof and validates the registered channel without enumeration',async()=>{
+ const send=vi.fn();await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledOnce();const token=send.mock.calls[0][1];expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
+ const rows=await f.q('SELECT token_hash,expires_at-created_at AS lifetime,used_at FROM password_recovery_proofs');expect(rows).toHaveLength(1);expect(rows[0].token_hash).toBe(createHash('sha256').update(token).digest('hex'));expect(JSON.stringify(rows)).not.toContain(token);expect(rows[0].used_at).toBeNull();
+ await requestPasswordRecovery('unknown','avery@example.invalid',{send},f.db.executor);await requestPasswordRecovery('c34-a','wrong@example.invalid',{send},f.db.executor);await requestPasswordRecovery('c34-a','avery@example.invalid',null,f.db.executor);expect(send).toHaveBeenCalledOnce();
+});
+it('UX-01 per-account and global limits apply without changing credentials or locking accounts',async()=>{
+ const send=vi.fn();for(let i=0;i<5;i++)await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledTimes(3);
+ await f.q("UPDATE password_recovery_limits SET attempts=300 WHERE scope='global'");await requestPasswordRecovery('c34-b','blair@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledTimes(3);expect((await f.q('SELECT count(*)::int AS n FROM employee_sessions'))[0].n).toBe(3);
+});
+it('UX-01 resets credentials once, invalidates every portal session and preserves unrelated account/work data and Clocker PINs',async()=>{
+ const snapshot=()=>f.q("SELECT (SELECT jsonb_agg(to_jsonb(e) ORDER BY id) FROM employees e) AS employees,(SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM shifts s) AS shifts,(SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM schedules s) AS schedules,(SELECT jsonb_agg(to_jsonb(s) ORDER BY employee_id,location_id) FROM employee_location_eligibility s) AS eligibility,(SELECT jsonb_agg(to_jsonb(s) ORDER BY employee_id) FROM employee_clocker_pins s) AS pins");
+ const before=await snapshot(),proof=await issued();expect(await resetPasswordWithProof(proof.proof,'Fictional NEW password',f.db.executor)).toEqual({state:'reset'});expect(await snapshot()).toEqual(before);
+ expect(await f.q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id='c34-a'")).toEqual([{n:0}]);expect(await f.q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id='c34-owner'")).toEqual([{n:1}]);
+ const credential=(await f.q<{password_hash:string}>("SELECT password_hash FROM employee_credentials WHERE employee_id='c34-a'"))[0];expect(await verifyPassword('Fictional NEW password',credential.password_hash)).toBe(true);expect(await verifyPassword('Fictional previous password',credential.password_hash)).toBe(false);
+ expect(await resetPasswordWithProof(proof.proof,'Another NEW password',f.db.executor)).toEqual({state:'invalid'});
+});
+it('UX-01 concurrent use has one winner and no second credential replacement',async()=>{const p=await issued();const outcomes=await Promise.all([resetPasswordWithProof(p.proof,'Fictional password ONE',f.db.executor),resetPasswordWithProof(p.proof,'Fictional password TWO',f.db.executor)]);expect(outcomes.filter(x=>x.state==='reset')).toHaveLength(1);expect(outcomes.filter(x=>x.state==='invalid')).toHaveLength(1);});
+it('UX-01 expired, retired, inactive or credential/profile-changed proof cannot reset',async()=>{
+ let p=await issued();await f.q("UPDATE password_recovery_proofs SET created_at=clock_timestamp()-interval '16 minutes',expires_at=clock_timestamp()-interval '1 minute' WHERE token_hash=$1",[createHash('sha256').update(p.proof).digest('hex')]);expect((await resetPasswordWithProof(p.proof,'Fictional new password',f.db.executor)).state).toBe('invalid');
+ p=await issued();const newer=await issued();expect((await resetPasswordWithProof(p.proof,'Fictional new password',f.db.executor)).state).toBe('invalid');await f.q("UPDATE employees SET active=false WHERE id='c34-a'");expect((await resetPasswordWithProof(newer.proof,'Fictional new password',f.db.executor)).state).toBe('invalid');
+});
+it('UX-01 a channel/profile change invalidates previously issued proof without replacing account data',async()=>{const p=await issued();await f.q("UPDATE employees SET email='changed@example.invalid',updated_at=clock_timestamp() WHERE id='c34-a'");expect((await resetPasswordWithProof(p.proof,'Fictional new password',f.db.executor)).state).toBe('invalid');});
+it('UX-01 assisted recovery requires current authority, independent verification record and existing Owner hierarchy',async()=>{
+ expect(await issueAssistedRecovery(owner,'c34-owner','Verified established process',f.db.executor)).toEqual({state:'unavailable'});expect(await issueAssistedRecovery(owner,'c34-a','short',f.db.executor)).toEqual({state:'unavailable'});
+ await f.q("UPDATE employees SET role='MANAGER' WHERE id='c34-owner'; UPDATE employees SET role='OWNER' WHERE id='c34-b'");expect(await issueAssistedRecovery({...owner,employee:{...owner.employee,role:'MANAGER'}},'c34-b','Verified established process',f.db.executor)).toEqual({state:'unavailable'});
+ await f.q("DELETE FROM employee_sessions WHERE employee_id='c34-owner'");expect(await issueAssistedRecovery(owner,'c34-a','Verified established process',f.db.executor)).toEqual({state:'unavailable'});
+});
+it('UX-01 invalid/oversized inputs and missing schema do not expose account data',async()=>{expect((await resetPasswordWithProof('invalid','password',f.db.executor)).state).toBe('invalid');const p=await issued();expect((await resetPasswordWithProof(p.proof,'x'.repeat(1025),f.db.executor)).state).toBe('invalid');await f.q('DROP TABLE password_recovery_proofs');expect((await resetPasswordWithProof(p.proof,'Fictional new password',f.db.executor)).state).toBe('unavailable');});
+it('UX-01 a previously reviewed login cannot create a new session after reset',async()=>{
+ const [old]=await f.q<{updated_at:string;password_hash:string;password_updated_at:string}>("SELECT e.updated_at::text,c.password_hash,c.password_updated_at::text FROM employees e JOIN employee_credentials c ON c.employee_id=e.id WHERE e.id='c34-a'");const p=await issued();expect((await resetPasswordWithProof(p.proof,'Fictional new password',f.db.executor)).state).toBe('reset');
+ await expect(createSession('c34-a',old)).rejects.toThrow('session_login_changed');expect(await f.q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id='c34-a'")).toEqual([{n:0}]);
+ const [current]=await f.q<typeof old>("SELECT e.updated_at::text,c.password_hash,c.password_updated_at::text FROM employees e JOIN employee_credentials c ON c.employee_id=e.id WHERE e.id='c34-a'");await createSession('c34-a',current);expect(await f.q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id='c34-a'")).toEqual([{n:1}]);
+});
+it('UX-01 reset detaches push material and cancels pending deliveries while preserving the installation tombstone',async()=>{
+ await f.q("INSERT INTO push_subscriptions(id,employee_id,installation_hash,environment,endpoint_fingerprint,encrypted_material,generation,session_hash,status) VALUES('UX1-P','c34-a','fictional-installation','test','fictional-endpoint','fictional-ciphertext','old-generation',repeat('b',64),'active')");
+ await f.q("INSERT INTO notifications(id,employee_id,type,title,body) VALUES('UX1-N','c34-a','TEST','Fictional','Fictional')");
+ await f.q("INSERT INTO push_deliveries(id,notification_id,subscription_id,generation,status,next_attempt_at,expires_at) VALUES('UX1-D','UX1-N','UX1-P','old-generation','queued',clock_timestamp(),clock_timestamp()+interval '1 hour')");
+ const p=await issued();expect((await resetPasswordWithProof(p.proof,'Fictional new password',f.db.executor)).state).toBe('reset');
+ expect(await f.q("SELECT status,encrypted_material,generation<>'old-generation' AS rotated,installation_hash FROM push_subscriptions WHERE id='UX1-P'")).toEqual([{status:'detached',encrypted_material:null,rotated:true,installation_hash:'fictional-installation'}]);expect(await f.q("SELECT status FROM push_deliveries WHERE id='UX1-D'")).toEqual([{status:'cancelled'}]);
+});

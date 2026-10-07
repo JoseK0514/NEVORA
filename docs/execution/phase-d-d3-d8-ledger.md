@@ -70,7 +70,7 @@ Jose selected provider-neutral/configurable mappings on October 7. Preserve one 
 
 Execution continues on the current D3–D8 lineage without restarting D2 or adding approval gates. Four user-designated **P1 requirements** are mandatory implementation and D8 acceptance items:
 
-- **UX-01 OPEN:** complete customer Forgot access/password recovery; secure expiring/single-use proof, enumeration resistance, expired/reused proof handling, assisted recovery when the registered channel is inaccessible, tested session invalidation, unrelated account/operational data preserved. Reuse existing credentials/session architecture and approved services; fictional delivery only during tests.
+- **UX-01 IMPLEMENTED / EMBEDDED PASS:** complete customer Forgot access/password recovery; secure expiring/single-use proof, enumeration resistance, expired/reused proof handling, assisted recovery when the registered channel is inaccessible, tested session invalidation, unrelated account/operational data preserved. Existing credentials/session architecture reused; fictional delivery only during tests. Final D8 regression remains required.
 - **UX-03 IMPLEMENTED / EMBEDDED PASS:** distinguish unpublished, published no-assignment/off and unavailable/error employee schedule states; never disclose drafts or present an unpublished schedule as confirmed time off.
 - **UX-04 IMPLEMENTED / EMBEDDED PASS:** correction queue distinguishes loading, verified-empty, pending, offline/unavailable, reconnecting and authority loss. Unknown data cannot say no correction requests; privacy clearing/current authority remain required. Final D8 regression remains required.
 - **UX-05 IMPLEMENTED / EMBEDDED PASS:** shared Clocker permits the next employee to record their own work while preserving a prior unresolved intent/receipt; never cross-identity replay/discard uncertainty; manager-assisted resolution where needed. Verify network loss/retry/refresh/duplicates/identity switches/concurrency with immutable history, idempotency and device/location binding.
@@ -143,3 +143,15 @@ A current Owner/Manager can inspect a saved reference through Clocker Recovery. 
 - Typecheck and ESLint: **PASS** at implementation checkpoint. Logs `/tmp/nevora-ux05-{unit,pg,browser,typecheck,lint}.log`.
 - Browser fixture corrections preserve workspace-wide PIN uniqueness and wait for an actual held request rather than assuming the loading label means dispatch has already occurred. The earlier failed harness runs are not passing evidence.
 - Final D8 will rerun the complete immutable Clocker lifecycle, races and these recovery journeys. UX-01 and D7/D8 remain incomplete; UX-02 remains deferred.
+
+### UX-01 embedded checkpoint
+
+Implemented additive `0020_account_recovery.sql`, customer Forgot access and Reset access, uniform post-response registered-channel delivery, configurable SMTP, secure hashed expiring/single-use proof, assisted current-authorized identity-verification/proof transfer, atomic password replacement/session and push invalidation, honest invalid/unknown outcomes and preserved unrelated records. Details, deployment configuration and Owner assistance boundary are in `phase-d-account-recovery.md`.
+
+- Recovery transport/delivery/existing login suite: **3 files / 25 tests PASS**.
+- Owned PostgreSQL: **1 file / 10 tests PASS**, covering registered-channel matching, hashes/limits, reuse/expiry/retirement, concurrent redemption, current authority/hierarchy, profile changes, unrelated data/PIN preservation, stale reviewed login and push detachment/tombstones.
+- Chromium/WebKit: **147 checks PASS**, overlapping prior work plus fictional loopback SMTP delivery, identical unknown/known responses, fragment handling, normal reset/session revocation, reused proof, actual manager-assisted reset, new-password login and responsive recovery layouts.
+- Typecheck and ESLint: **PASS**. Production build passed during implementation; final exact-candidate build remains D8 work. Production dependency audit: **zero advisories**. Newly added runtime SMTP and type packages are pinned; installation scripts were disabled.
+- A fixture used an incorrect PIN table name; corrected rerun passes. The navigation timing failure filled the old Sign-In field before Forgot access loaded; harness now waits for the target heading. Same-page fragment reopening initially retained the completed form; hash-change recovery was corrected and both browsers pass reuse handling.
+- Production SMTP is neither configured nor externally verified. Assisted recovery is available without SMTP. No real message or production change occurred. UX-02 remains OPEN / DEFERRED.
+- All four amended P1 items now have implementation and embedded evidence. D7 and mandatory whole-phase D8 remain incomplete; no development-complete claim is made here.

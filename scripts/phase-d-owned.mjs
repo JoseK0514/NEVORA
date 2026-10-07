@@ -9,6 +9,7 @@ const mode=process.argv[2]??'timecards';
 const modes={timecards:['node_modules/vitest/vitest.mjs','run','--config','vitest.timecards-integration.config.mts'],
   schedule:['node_modules/vitest/vitest.mjs','run','--config','vitest.employee-schedule-integration.config.mts'],
   recovery:['node_modules/vitest/vitest.mjs','run','--config','vitest.clocker-recovery-integration.config.mts'],
+  account:['node_modules/vitest/vitest.mjs','run','--config','vitest.account-recovery-integration.config.mts'],
   corrections:['node_modules/vitest/vitest.mjs','run','--config','vitest.corrections-integration.config.mts'],
   payroll:['node_modules/vitest/vitest.mjs','run','--config','vitest.payroll-export-integration.config.mts'],
   reports:['node_modules/vitest/vitest.mjs','run','--config','vitest.reports-integration.config.mts'],

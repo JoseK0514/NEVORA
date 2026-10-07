@@ -66,6 +66,7 @@ export default async function LoginPage({
           </form>
 
           <div className="auth-secondary employee-login-secondary">
+            <Link href="/forgot-access">Forgot access?</Link>
             <span>New employee?</span>
             <Link href={`/activate${returnQuery}`}>Activate your account</Link>
           </div>

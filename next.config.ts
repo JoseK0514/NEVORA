@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
         ...(source.endsWith(".js") ? [{ key: "Content-Type", value: "application/javascript; charset=utf-8" }] : []),
       ],
     }));
-    const clocker = ["/clocker/:path*", "/app/settings/clocker/:path*", "/api/clocker/:path*"].map(source => ({
+    const clocker = ["/clocker/:path*", "/app/settings/clocker/:path*", "/api/clocker/:path*", "/forgot-access", "/reset-access", "/app/account-recovery", "/app/clocker-recovery"].map(source => ({
       source,
       headers: [
         { key: "Cache-Control", value: "no-store, private" },

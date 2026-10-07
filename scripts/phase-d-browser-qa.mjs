@@ -7,6 +7,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {hashPassword} from '../src/lib/auth/password.ts';
+import {createOwnedSmtp} from '../src/test/integration/owned-smtp.ts';
 const evidence=resolve(process.env.PHASE_D_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/nevora-phase-d-d3-d8'));
 await mkdir(evidence,{recursive:true});
 const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
@@ -17,10 +18,10 @@ if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D
 const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],screenshots:[],limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
 async function waitUntil(test){const deadline=Date.now()+15000;while(!test()){if(Date.now()>deadline)throw Error('Expected browser request did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 const checked=name=>{report.checks.push(name);console.log('[Phase D browser] PASS '+name);};
-let app;const browsers=[];
+let app,smtp,currentPage;const browsers=[];
 const url='/app/timecards?start=2026-09-21&end=2026-09-27';
 try{
-  app=await createOwnedNextApp(evidence,{clockerPinKey:"3d".repeat(32),clockerPunchEnabled:true});const q=(text,values=[])=>app.database.executor.query({text,values});
+  smtp=await createOwnedSmtp();app=await createOwnedNextApp(evidence,{clockerPinKey:"3d".repeat(32),clockerPunchEnabled:true,recoverySmtpPort:smtp.port});const q=(text,values=[])=>app.database.executor.query({text,values});
   await seedOwnedApp(app.database.executor);const password=await hashPassword(TEST_PASSWORD);
   for(const [id,first,role] of [['D3-E','Avery','EMPLOYEE'],['D3-M','Morgan','MANAGER'],['D3-L','Taylor','LEAD']]){
     await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'Period QA','555-0300',$3,'loc-1')",[id,first,role]);
@@ -128,13 +129,30 @@ try{
     await op.goto(app.url+'/app/clocker-recovery');await op.getByLabel('Saved action reference',{exact:true}).fill(reference);await op.getByRole('button',{name:'Check receipt',exact:true}).click();await op.getByRole('heading',{name:'Recorded action',exact:true}).waitFor();assert.match(await op.locator('main').innerText(),/Fictional Avery Recovery QA/);checked(engine+': UX-05 actual manager-assisted immutable receipt review');
     await op.getByLabel('Saved action reference',{exact:true}).fill(crypto.randomUUID());await op.getByRole('button',{name:'Check receipt',exact:true}).click();await op.getByText(/No committed receipt was observed/).waitFor();assert.match(await op.locator('main').innerText(),/absent receipt alone does not cancel/);checked(engine+': UX-05 manager missing receipt remains unconfirmed');
     await ownerContext.setOffline(true);await op.evaluate(()=>window.dispatchEvent(new Event('offline')));assert.equal(await op.getByRole('heading',{name:'Recorded action',exact:true}).count(),0);checked(engine+': UX-05 manager review offline privacy clearing');
+    const recoveryId='UX1-'+engine,recoveryEmail='ux1-'+engine+'@example.invalid';
+    await q("INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,'Fictional Recovery','Employee','555-0101',$2,'EMPLOYEE','loc-1')",[recoveryId,recoveryEmail]);await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)",[recoveryId,password]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[recoveryId]);
+    const {context:recoveree,page:rp}=await context(browser,recoveryId),publicContext=await browser.newContext({viewport:{width:390,height:1000},serviceWorkers:'block'});await publicContext.route('**/*',route=>new URL(route.request().url()).origin===app.url?route.continue():route.abort());const fp=await publicContext.newPage();currentPage=fp;fp.setDefaultTimeout(15000);fp.on('pageerror',error=>report.errors.push('Recovery runtime: '+error.message));
+    const boundaryHeaders={origin:app.url,'x-nevora-recovery':'1'},unknownReply=await fp.request.post(app.url+'/api/auth/recovery',{headers:boundaryHeaders,data:{employeeId:'UNKNOWN-'+engine,email:'unknown@example.invalid'}});assert.equal(unknownReply.status(),202);const unknownBody=await unknownReply.json();
+    await fp.goto(app.url+'/login');await fp.getByRole('link',{name:'Forgot access?',exact:true}).click();await fp.getByRole('heading',{name:'Forgot access',exact:true}).waitFor();await fp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await fp.getByLabel('Registered recovery email',{exact:true}).fill(recoveryEmail);
+    for(const width of [320,390,768,1440]){await fp.setViewportSize({width,height:1000});assert(await fp.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2));checked(engine+': UX-01 recovery geometry '+width);}
+    assert(await fp.locator('form').evaluate(form=>form.checkValidity()),'Recovery form validity');assert.equal(await fp.getByLabel('Registered recovery email',{exact:true}).inputValue(),recoveryEmail);
+    const sent=fp.waitForResponse(response=>response.url().endsWith('/api/auth/recovery')); await fp.getByRole('button',{name:'Request recovery',exact:true}).click();const knownReply=await sent;assert.equal(knownReply.status(),202);assert.deepEqual(await knownReply.json(),unknownBody);await waitUntil(()=>smtp.messages.some(m=>m.recipient.includes(recoveryEmail)));checked(engine+': UX-01 known/unknown identical response and fictional registered-channel delivery');
+    const mail=smtp.messages.find(m=>m.recipient.includes(recoveryEmail)).body.replace(/=\r\n/g,'').replace(/=3D/g,'='),emailProof=mail.match(/reset-access#proof=([A-Za-z0-9_-]{43})/)?.[1];assert(emailProof);
+    await fp.goto(app.url+'/reset-access#proof='+emailProof);await fp.getByLabel('Recovery proof',{exact:true}).waitFor();await fp.waitForFunction(()=>window.location.hash==='');assert.equal(await fp.getByLabel('Recovery proof',{exact:true}).inputValue(),emailProof);checked(engine+': UX-01 fragment proof consumed into form without URL/query exposure');
+    await fp.getByLabel('New password',{exact:true}).fill('Fictional Reset Password '+engine);await fp.getByLabel('Confirm new password',{exact:true}).fill('Fictional Reset Password '+engine);await fp.getByRole('button',{name:'Reset password',exact:true}).click();await fp.getByText(/Password reset. All portal sessions/).waitFor();
+    const staleSession=await rp.request.post(app.url+'/api/timecards',{headers:{origin:app.url,'x-nevora-timecards':'1'},data:{startDate:'2026-09-21',endDate:'2026-09-27'}});assert([401,403].includes(staleSession.status()));assert.equal((await q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id=$1",[recoveryId]))[0].n,0);checked(engine+': UX-01 reset invalidates current portal authority');
+    await fp.goto(app.url+'/reset-access#proof='+emailProof);await fp.getByLabel('New password',{exact:true}).fill('Fictional Attempt Reuse');await fp.getByLabel('Confirm new password',{exact:true}).fill('Fictional Attempt Reuse');await fp.getByRole('button',{name:'Reset password',exact:true}).click();await fp.getByText(/expired, was already used/).waitFor();checked(engine+': UX-01 reused proof rejected with recovery path');
+    await mp.goto(app.url+'/app/account-recovery');await mp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await mp.getByLabel('Identity verification record',{exact:true}).fill('Fictional in-person identity confirmed through established workplace process.');await mp.getByRole('checkbox').check();await mp.getByRole('button',{name:'Issue recovery proof',exact:true}).click();await mp.getByLabel('Issued recovery proof',{exact:true}).waitFor();const assisted=await mp.getByLabel('Issued recovery proof',{exact:true}).inputValue();
+    await fp.goto(app.url+'/reset-access');await fp.getByLabel('Recovery proof',{exact:true}).fill(assisted);await fp.getByLabel('New password',{exact:true}).fill(TEST_PASSWORD);await fp.getByLabel('Confirm new password',{exact:true}).fill(TEST_PASSWORD);await fp.getByRole('button',{name:'Reset password',exact:true}).click();await fp.getByText(/Password reset. All portal sessions/).waitFor();checked(engine+': UX-01 inaccessible-channel assisted proof resets through the same protocol');
+    await fp.getByRole('link',{name:'Back to sign in',exact:true}).click();await fp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await fp.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([fp.waitForURL(u=>u.pathname==='/app'),fp.getByRole('button',{name:'Sign In',exact:true}).click()]);checked(engine+': UX-01 normal new-password sign-in after reset');
+    await recoveree.close();await publicContext.close();
     await clockContext.close();await ownerContext.close();
     await lead.close();await employee.close();await management.close();
     await q('TRUNCATE timecard_revisions');
   }
-}catch(error){report.errors.push(error instanceof Error?error.stack:String(error));process.exitCode=1;console.error(error);}
+}catch(error){if(currentPage)await currentPage.screenshot({path:join(evidence,'recovery-failure.png'),fullPage:true}).catch(()=>{});report.errors.push(error instanceof Error?error.stack:String(error));process.exitCode=1;console.error(error);}
 finally{
-  for(const browser of browsers)await browser.close();if(app)await app.close();
+  for(const browser of browsers)await browser.close();if(app)await app.close();if(smtp)await smtp.close();
   await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));
   console.log(JSON.stringify({checkpoint,sourceClean:report.sourceClean,checks:report.checks.length,errors:report.errors.length,evidence}));
 }

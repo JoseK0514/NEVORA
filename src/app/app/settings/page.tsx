@@ -12,6 +12,7 @@ export default async function SettingsPage() {
       />
       <section className="panel settings-list">
         {[
+          ["Account Recovery", "Verify identity and assist with lost portal access.", "/app/account-recovery"],
           ["Clocker Recovery", "Review an employee’s saved action reference.", "/app/clocker-recovery"],
           [
             "Workspace",
