@@ -118,6 +118,10 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     assert.equal((await ready.json()).requests.some(item=>item.id===pending.requestId),loss==='before');
     if(loss!=='before')await page.getByRole('button',{name:'Approve correction for Avery Correction QA',exact:true}).waitFor({state:'detached'});
     const retry=page.getByRole('button',{name:'Retry same decision',exact:true});await retry.waitFor();
+    // UX-04 keeps retry disabled until this tab has a current authorized snapshot.
+    // The separate API inspection above does not establish the browser's authority.
+    await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='Retry same decision'&&!button.disabled));
+    assert.equal(await retry.isEnabled(),true);
     if(decision==='APPROVE'&&loss==='after')for(const width of [320,375,390,430,768,1024,1440]){
      await page.setViewportSize({width,height:width<=430?844:1000});await geometry(page,'.manager-corrections','manager uncertain decision',engine,width);
      const shot=join(evidence,`${engine}-manager-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
@@ -144,7 +148,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    await page.getByRole('button',{name:'Retry same decision',exact:true}).waitFor();
    await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-   await page.getByText('Correction requests unavailable',{exact:true}).waitFor();
+   await page.getByText('Correction access ended',{exact:true}).waitFor();
    assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
    checked(`${engine}: current Manager authority loss clears uncertain recovery`);
   }finally{

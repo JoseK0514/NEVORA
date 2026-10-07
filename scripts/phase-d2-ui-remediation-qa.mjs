@@ -174,7 +174,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal((await q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE employee_id=$1',[employeeId]))[0].count,4);
   const unrelated=await owner.request.get(app.url+'/api/employee/time-corrections',{headers});assert.equal(unrelated.status(),403);
   phase='authority-denied';await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
-  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();assert.equal(await mp.locator('.manager-correction-row').count(),0);
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction access ended',{exact:true}).waitFor();assert.equal(await mp.locator('.manager-correction-row').count(),0);
   assert.equal((await owner.request.get(app.url+'/api/manager/time-corrections',{headers})).status(),403);
   await q("UPDATE employees SET role='OWNER' WHERE id='QAOWNER'");
   // Record all native errors. Only explicitly injected transport failures may be classified.
