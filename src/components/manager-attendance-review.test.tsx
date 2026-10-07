@@ -42,6 +42,7 @@ function readyState() {
       recordCount: 1,
       signalCount: 1,
       affectedEmployeeCount: 1,
+      pendingCorrectionCount: 0,
       labels: {
         employees: [{ id: 'employee-1', name: 'Alex Morgan' }],
         locations: [{ id: 'location-1', name: 'Northside' }],

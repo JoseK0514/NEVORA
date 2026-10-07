@@ -1,5 +1,6 @@
 import { ManagerClockMonitor } from "./manager-clock-monitor";
 import { ManagerAttendanceReview } from "./manager-attendance-review";
+import { ManagerTimeCorrections } from "./manager-time-corrections";
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
 import { employeeRoleLabel } from "../lib/employee-display";
@@ -518,7 +519,10 @@ export function ManagerDashboard(props: Props) {
           <ManagerClockMonitor />
         </div>
       ) : props.view === "attendance" ? (
-        <ManagerAttendanceReview />
+        <div className="manager-attendance-stack">
+          <ManagerAttendanceReview />
+          <ManagerTimeCorrections />
+        </div>
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />
       ) : props.view === "team" ? (

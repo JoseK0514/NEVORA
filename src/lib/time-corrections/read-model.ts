@@ -1,0 +1,152 @@
+import { Temporal } from '@js-temporal/polyfill';
+import type { CorrectionKind } from './validation';
+
+export type CorrectionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export type CorrectionLocation = {
+  id: string;
+  name: string;
+};
+
+export type PublicCorrectionItem = {
+  id: string;
+  kind: CorrectionKind;
+  status: CorrectionStatus;
+  revision: number;
+  createdAt: string;
+  locationId: string;
+  locationName: string;
+  originalStartAt: string | null;
+  originalEndAt: string | null;
+  proposedStartAt: string;
+  proposedEndAt: string;
+  breakName: string | null;
+  reason: string;
+};
+
+export type ManagerCorrectionItem = PublicCorrectionItem & {
+  employeeName: string;
+  isSelf: boolean;
+};
+
+export type EmployeeTimeCorrections =
+  | {
+      state: 'ready';
+      observedAt: string;
+      timeZone: string;
+      totalRequests: number;
+      locations: CorrectionLocation[];
+      requests: PublicCorrectionItem[];
+    }
+  | { state: 'unavailable'; reason: 'access_denied' | 'read_failed' | 'schema_missing' | 'source_limit' };
+
+export type ManagerTimeCorrections =
+  | {
+      state: 'ready';
+      observedAt: string;
+      timeZone: string;
+      requests: ManagerCorrectionItem[];
+    }
+  | { state: 'unavailable'; reason: 'access_denied' | 'read_failed' | 'schema_missing' | 'source_limit' };
+
+const object = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+const text = (value: unknown, max = 300): value is string =>
+  typeof value === 'string' &&
+  value === value.trim() &&
+  value.length > 0 &&
+  value.length <= max &&
+  !/[\u0000-\u001f\u007f]/.test(value);
+const integer = (value: unknown, min = 0): value is number =>
+  typeof value === 'number' && Number.isSafeInteger(value) && value >= min;
+const uuid = (value: unknown): value is string =>
+  typeof value === 'string' &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+const instant = (value: unknown): value is string => {
+  if (!text(value, 100)) return false;
+  try { Temporal.Instant.from(value); return true; } catch { return false; }
+};
+
+function unavailable(value: Record<string, unknown>) {
+  return value.state === 'unavailable' &&
+    ['access_denied','read_failed','schema_missing','source_limit'].includes(String(value.reason))
+    ? { state: 'unavailable' as const, reason: value.reason as Extract<EmployeeTimeCorrections,{state:'unavailable'}>['reason'] }
+    : null;
+}
+
+function item(value: unknown): PublicCorrectionItem {
+  if (!object(value) || !uuid(value.id) ||
+      !['ENTRY_BOUNDARY','BREAK_BOUNDARY','MISSING_ENTRY'].includes(String(value.kind)) ||
+      !['PENDING','APPROVED','REJECTED'].includes(String(value.status)) ||
+      !integer(value.revision, 1) || !instant(value.createdAt) ||
+      !text(value.locationId, 200) || !text(value.locationName, 300) ||
+      !instant(value.proposedStartAt) || !instant(value.proposedEndAt) ||
+      !text(value.reason, 500) ||
+      !(value.breakName === null || text(value.breakName, 80)) ||
+      !(value.originalStartAt === null || instant(value.originalStartAt)) ||
+      !(value.originalEndAt === null || instant(value.originalEndAt))) {
+    throw new Error('Invalid correction response');
+  }
+  if ((value.originalStartAt === null) !== (value.originalEndAt === null)) {
+    throw new Error('Invalid correction response');
+  }
+  if (Temporal.Instant.compare(Temporal.Instant.from(value.proposedStartAt), Temporal.Instant.from(value.proposedEndAt)) >= 0) {
+    throw new Error('Invalid correction response');
+  }
+  return {
+    id:value.id,
+    kind:value.kind as CorrectionKind,
+    status:value.status as CorrectionStatus,
+    revision:value.revision,
+    createdAt:value.createdAt,
+    locationId:value.locationId,
+    locationName:value.locationName,
+    originalStartAt:value.originalStartAt,
+    originalEndAt:value.originalEndAt,
+    proposedStartAt:value.proposedStartAt,
+    proposedEndAt:value.proposedEndAt,
+    breakName:value.breakName,
+    reason:value.reason,
+  };
+}
+
+export function parseEmployeeTimeCorrections(value: unknown): EmployeeTimeCorrections {
+  if (!object(value)) throw new Error('Invalid correction response');
+  const failed = unavailable(value);
+  if (failed) return failed;
+  if (value.state !== 'ready' || !instant(value.observedAt) || !text(value.timeZone,100) ||
+      !integer(value.totalRequests) || !Array.isArray(value.locations) || value.locations.length > 100 ||
+      !Array.isArray(value.requests) || value.requests.length > 50 || value.totalRequests < value.requests.length) {
+    throw new Error('Invalid correction response');
+  }
+  const locations = value.locations.map((entry) => {
+    if (!object(entry) || !text(entry.id,200) || !text(entry.name,300)) throw new Error('Invalid correction response');
+    return {id:entry.id,name:entry.name};
+  });
+  if (new Set(locations.map((entry) => entry.id)).size !== locations.length) throw new Error('Invalid correction response');
+  return {
+    state:'ready',
+    observedAt:value.observedAt,
+    timeZone:value.timeZone,
+    totalRequests:value.totalRequests,
+    locations,
+    requests:value.requests.map(item),
+  };
+}
+
+export function parseManagerTimeCorrections(value: unknown): ManagerTimeCorrections {
+  if (!object(value)) throw new Error('Invalid correction response');
+  const failed = unavailable(value);
+  if (failed) return failed;
+  if (value.state !== 'ready' || !instant(value.observedAt) || !text(value.timeZone,100) ||
+      !Array.isArray(value.requests) || value.requests.length > 100) {
+    throw new Error('Invalid correction response');
+  }
+  const requests = value.requests.map((entry) => {
+    if (!object(entry) || !text(entry.employeeName,300) || typeof entry.isSelf !== 'boolean') {
+      throw new Error('Invalid correction response');
+    }
+    return {...item(entry),employeeName:entry.employeeName,isSelf:entry.isSelf};
+  });
+  return {state:'ready',observedAt:value.observedAt,timeZone:value.timeZone,requests};
+}

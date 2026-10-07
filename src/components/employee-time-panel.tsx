@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
 import {createEmployeeTimeController,fetchEmployeeTime,type EmployeeTimePanelState} from '../lib/employee-time-client';
 import {formatRecordedDuration,type EmployeeTimeEntry} from '../lib/employee-time';
+import {EmployeeCorrectionCenter,EmployeeEntryCorrection} from './employee-time-corrections';
 
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off Clock':entry.state==='ON_BREAK'?'On Break':'Clocked In';
 function stamp(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date(at));}
@@ -15,6 +16,7 @@ function EntryDetails({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
    {entry.breaks.map(b=><div className="employee-time-break" key={b.id}><dt>{b.name??'Break'}</dt><dd><time dateTime={b.startAt}>{stamp(b.startAt,zone)}</time><span> → {b.endAt?<time dateTime={b.endAt}>{stamp(b.endAt,zone)}</time>:'In progress'}</span><small>{formatRecordedDuration(b.elapsedSeconds)} recorded break</small></dd></div>)}
    <div><dt>Clock Out</dt><dd>{entry.clockOutAt?<time dateTime={entry.clockOutAt}>{stamp(entry.clockOutAt,zone)}</time>:'Not recorded yet'}</dd></div></dl>
    <p>Entry elapsed time: {formatRecordedDuration(entry.elapsedSeconds)} · Breaks: {formatRecordedDuration(entry.breakSeconds)}</p>
+   <EmployeeEntryCorrection entry={entry} zone={zone}/>
   </div>
  </details>;
 }
@@ -51,6 +53,7 @@ export function EmployeeTimeView({state,compact=false,onRefresh}:{state:Employee
     <header className="employee-time-section-heading"><h2 id="employee-time-recent-title">Recent Entries</h2></header>
     {ready.recent.entries.length?<><p className="employee-time-note">Showing {ready.recent.entries.length} of {ready.recent.total} earlier entries · most recent first.</p><div className="employee-time-entries">{ready.recent.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div></>:<p className="employee-time-empty">No earlier entries.</p>}
    </section>
+   <EmployeeCorrectionCenter zone={ready.timeZone}/>
   </>:null}
  </div>;
 }

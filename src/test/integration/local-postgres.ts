@@ -20,6 +20,7 @@ const CURRENT_MIGRATIONS = [
   '0013_clocker_punches.sql',
   '0014_clocker_breaks.sql',
   '0015_clocker_schedule_context.sql',
+  '0016_time_corrections.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

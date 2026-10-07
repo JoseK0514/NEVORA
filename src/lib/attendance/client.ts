@@ -189,6 +189,7 @@ export function parseAttendanceReview(value: unknown): AttendanceDisplayReview {
     value.engineVersion !== 1 ||
     !text(value.workspaceId, 200) ||
     !integer(value.validForMs, 1) ||
+    !integer(value.pendingCorrectionCount) ||
     value.validForMs > 45_000 ||
     !object(value.scope) ||
     value.scope.kind !== 'TODAY_AND_OPEN' ||
@@ -265,6 +266,7 @@ export function parseAttendanceReview(value: unknown): AttendanceDisplayReview {
     recordCount: value.recordCount,
     signalCount: value.signalCount,
     affectedEmployeeCount: value.affectedEmployeeCount,
+    pendingCorrectionCount: value.pendingCorrectionCount,
     labels: {
       employees: employeeLabels,
       locations: locationLabels,

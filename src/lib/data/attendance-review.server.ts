@@ -149,6 +149,9 @@ SELECT
   c.entry_count AS "entryCount",
   c.break_count AS "breakCount",
   c.publication_count AS "publicationCount",
+  (SELECT LEAST(count(*),10001)::integer
+   FROM nevora_pending_time_corrections pending
+   WHERE pending.workspace_id=$1) AS "pendingCorrectionCount",
   COALESCE((
     SELECT jsonb_agg(jsonb_build_object('id',id,'name',name) ORDER BY id)
     FROM employee_label_rows
@@ -181,6 +184,7 @@ type SourceRow = {
   entryCount: number;
   breakCount: number;
   publicationCount: number;
+  pendingCorrectionCount: number;
   employeeLabels: unknown;
   locationLabels: unknown;
   source: unknown | null;
@@ -310,7 +314,10 @@ export async function readAttendanceReview(
     if (
       row.entryCount > 500 ||
       row.breakCount > 5_000 ||
-      row.publicationCount > 500
+      row.publicationCount > 500 ||
+      !Number.isSafeInteger(row.pendingCorrectionCount) ||
+      row.pendingCorrectionCount < 0 ||
+      row.pendingCorrectionCount > 10_000
     ) {
       return { state: 'unavailable', reason: 'source_limit' };
     }
@@ -345,6 +352,13 @@ export async function readAttendanceReview(
     return {
       ...projection,
       validForMs: lifetime,
+      pendingCorrectionCount: row.pendingCorrectionCount,
+      coverage: {
+        ...projection.coverage,
+        deferredCapabilities: projection.coverage.deferredCapabilities.filter(
+          (capability) => capability !== 'correction_review',
+        ),
+      },
       labels: {
         employees: employeeLabels,
         locations: locationLabels,

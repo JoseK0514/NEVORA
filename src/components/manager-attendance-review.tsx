@@ -120,6 +120,10 @@ export function AttendanceReviewSurface({
               <strong>{ready.affectedEmployeeCount}</strong>
               {ready.affectedEmployeeCount === 1 ? ' person' : ' people'}
             </span>
+            <span>
+              <strong>{ready.pendingCorrectionCount}</strong>
+              {ready.pendingCorrectionCount === 1 ? ' correction' : ' corrections'}
+            </span>
           </div>
         ) : null}
       </header>
@@ -198,7 +202,7 @@ export function AttendanceReviewSurface({
               <span>Updates every 30s while this page is active.</span>
             </small>
           ) : (
-            <small>Recorded-time signals only. Policy lateness, overtime, and correction workflows are not evaluated here.</small>
+            <small>Recorded-time signals only. Policy lateness and overtime are not evaluated here.</small>
           )}
         </div>
         {denied ? (
@@ -244,6 +248,7 @@ export function ManagerAttendanceReview() {
     window.addEventListener('pageshow', sync);
     window.addEventListener('focus', sync);
     window.addEventListener('storage', sync);
+    window.addEventListener('nevora:time-correction-changed', sync);
     void Promise.resolve().then(() => {
       if (mounted) sync();
     });
@@ -259,6 +264,7 @@ export function ManagerAttendanceReview() {
       window.removeEventListener('pageshow', sync);
       window.removeEventListener('focus', sync);
       window.removeEventListener('storage', sync);
+      window.removeEventListener('nevora:time-correction-changed', sync);
     };
   }, []);
 

@@ -21,6 +21,7 @@ export type AttendanceDisplayLabel = {
 export type AttendanceDisplayReview =
   | (ReadyProjection & {
       validForMs: number;
+      pendingCorrectionCount: number;
       labels: {
         employees: readonly AttendanceDisplayLabel[];
         locations: readonly AttendanceDisplayLabel[];

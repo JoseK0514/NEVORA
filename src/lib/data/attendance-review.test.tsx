@@ -49,6 +49,7 @@ beforeEach(()=>{
     recordCount:0,
     signalCount:0,
     affectedEmployeeCount:0,
+      pendingCorrectionCount: 0,
     labels:{employees:[],locations:[]},
     coverage:{
       state:'complete',

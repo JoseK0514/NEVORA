@@ -13,7 +13,8 @@ const releaseMigrations = [
 describe('Phase C release migration chain', () => {
   it('promotes every Phase C schema slice into the numbered production chain', async () => {
     const files = (await readdir('db/migrations')).filter(name => /^\d{4}_.*\.sql$/.test(name)).sort();
-    expect(files.slice(-5)).toEqual(releaseMigrations);
+    const start = files.indexOf(releaseMigrations[0]);
+    expect(files.slice(start, start + releaseMigrations.length)).toEqual(releaseMigrations);
     for (const file of releaseMigrations) expect(existsSync(`db/migrations/${file}`)).toBe(true);
   });
 

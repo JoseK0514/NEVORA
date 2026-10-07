@@ -44,6 +44,7 @@ function ready() {
     recordCount: 1,
     signalCount: 1,
     affectedEmployeeCount: 1,
+    pendingCorrectionCount: 2,
     labels: {
       employees: [{ id: 'employee-1', name: 'Alex Morgan' }],
       locations: [{ id: 'location-1', name: 'Northside' }],
@@ -71,6 +72,7 @@ describe('D1.3 attendance private response parser', () => {
       recordCount: 1,
       signalCount: 1,
       affectedEmployeeCount: 1,
+      pendingCorrectionCount: 2,
       scope: { kind: 'TODAY_AND_OPEN', localDate: '2030-10-07' },
     });
   });

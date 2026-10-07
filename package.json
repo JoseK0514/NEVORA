@@ -23,7 +23,8 @@
     "test:clocker:integration": "vitest run --config vitest.clocker-integration.config.mts",
     "test:clocker:owned": "node scripts/phase-c-clocker-postgres.mjs",
     "test:release:postgres": "node scripts/phase-c-release-postgres.mjs",
-    "test:phase-d:attendance-ui": "node scripts/phase-d-attendance-postgres.mjs"
+    "test:phase-d:attendance-ui": "node scripts/phase-d-attendance-postgres.mjs",
+    "test:phase-d2:corrections-ui": "node scripts/phase-d2-corrections-postgres.mjs"
   },
   "dependencies": {
     "@js-temporal/polyfill": "0.5.1",
