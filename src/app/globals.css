@@ -564,6 +564,9 @@ button { cursor: pointer; }
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    column-gap: 8px;
+    row-gap: 6px;
     min-height: 64px;
     padding: 10px 16px;
     background: rgba(246, 246, 248,.94);
@@ -12849,7 +12852,7 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
   visibility: hidden;
   pointer-events: none;
 }
-.mobile-header-actions { display: flex; align-items: center; gap: 8px; }
+.mobile-header-actions { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; margin-left: auto; }
 .mobile-header-actions .nevora-action-menu-trigger { padding-inline: 10px; }
 @media (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   .app-shell { display: block; }
