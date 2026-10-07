@@ -56,7 +56,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      // Clear the real private reader while the first POST is still unresolved.
      await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));
      await page.getByText('Updates paused',{exact:true}).waitFor();
-     await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+     await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
      await page.locator('.employee-time-entry').first().waitFor();
      if(kind!=='MISSING_ENTRY')await page.locator('.employee-time-entry').first().locator('summary').click();
      await page.getByRole('button',{name:'Retry same request',exact:true}).waitFor();
@@ -70,7 +70,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     // The inherited private reader really clears/unmounts its children on pause.
     await c.setOffline(true);await page.getByText('Updates paused',{exact:true}).waitFor();
     assert.equal(await page.getByRole('button',{name:'Retry same request',exact:true}).count(),0);
-    await c.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+    await c.setOffline(false);await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
     await page.locator('.employee-time-entry').first().waitFor();
     if(kind!=='MISSING_ENTRY')await page.locator('.employee-time-entry').first().locator('summary').click();
     const retry=page.getByRole('button',{name:'Retry same request',exact:true});await retry.waitFor();
@@ -113,7 +113,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     await page.getByText('The server outcome could not be confirmed. Retry the same decision safely.',{exact:true}).waitFor();
     await c.setOffline(true);
     await page.getByRole('button',{name:'Retry same decision',exact:true}).waitFor();
-    await c.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+    await c.setOffline(false);await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
     const ready=await c.request.get(app.url+'/api/manager/time-corrections',{headers});
     assert.equal((await ready.json()).requests.some(item=>item.id===pending.requestId),loss==='before');
     if(loss!=='before')await page.getByRole('button',{name:'Approve correction for Avery Correction QA',exact:true}).waitFor({state:'detached'});
@@ -143,7 +143,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    await page.getByRole('button',{name:'Approve correction for Avery Correction QA',exact:true}).click();
    await page.getByRole('button',{name:'Retry same decision',exact:true}).waitFor();
    await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
-   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+   await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
    await page.getByText('Correction requests unavailable',{exact:true}).waitFor();
    assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
    checked(`${engine}: current Manager authority loss clears uncertain recovery`);
@@ -184,11 +184,11 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    await details.getByRole('button',{name:'Send request',exact:true}).click();
    await page.getByRole('button',{name:'Retry same request',exact:true}).waitFor();
    await q("UPDATE employees SET active=false WHERE id='D2-E'");
-   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+   await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
    await page.getByText('Sign in again',{exact:true}).waitFor();
    assert.equal(await page.getByRole('button',{name:'Retry same request',exact:true}).count(),0);
    await q("UPDATE employees SET active=true WHERE id='D2-E'");
-   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+   await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
    await page.locator('.employee-time-entry').first().waitFor();
    await page.locator('.employee-time-entry').first().locator('summary').click();
    assert.equal(await page.getByRole('button',{name:'Retry same request',exact:true}).count(),0);

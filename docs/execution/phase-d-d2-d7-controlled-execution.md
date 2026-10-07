@@ -1,6 +1,8 @@
-# Phase D — controlled D2–D7 execution and D8 handoff
+# Historical Phase D — October 6 controlled execution model
 
-## Authorization and present status
+> Superseded October 7 by Jose’s D3–D8 master authorization and subsequent scope amendment. This document preserves the historical D2 package; its per-section gates and independent D8 model do not govern current execution. See [current execution ledger](phase-d-d3-d8-ledger.md) and `phase-d-gates.json`. Frozen D2 review branches remain preserved.
+
+## Historical authorization and status
 
 Jose approved the following sequence in the Phase D COO conversation on October 6, 2026 (America/Puerto_Rico): execute D2 through D7 sequentially, with scope definition, guardrails, verification and all required executive GO decisions for each section. After the complete phase is ready, independent Codex performs D8 before development integration.
 

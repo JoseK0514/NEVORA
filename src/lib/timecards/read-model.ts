@@ -4,14 +4,15 @@ export type TimecardHistory = { operationId: string; revision: number; action:'A
   occurredAt:string; actorName:string; note:string|null; sourceHash:string; snapshot:TimecardSource };
 export type TimecardItem = { source:TimecardSource; card:Timecard; sourceHash:string; revision:number;
   state:'DRAFT'|'APPROVED'|'FINALIZED'|'REOPENED'|'NEEDS_REVIEW'; history:TimecardHistory[] };
-export type TimecardsResult = {state:'ready';observedAt:string;period:Period;cards:TimecardItem[]}|{
+export type TimecardProjection = {state:'ready';observedAt:string;period:Period;cards:TimecardItem[]};
+export type TimecardsResult = (TimecardProjection & {validForMs:number})|{
   state:'unavailable';reason:'access_denied'|'source_limit'|'read_failed'|'schema_missing'};
 const object = (v:unknown):v is Record<string,unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const uuid = (v:unknown):v is string => typeof v==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
 const sourceHash = (v:unknown):v is string => typeof v==='string' && /^[a-f0-9]{32}$/.test(v);
 const safeText=(v:unknown,max=300):v is string=>typeof v==='string'&&v===v.trim()&&v.length>0&&v.length<=max&&!/[\u0000-\u001f\u007f]/.test(v);
 
-export function parseTimecardsResponse(v:unknown,period:Period):Extract<TimecardsResult,{state:'ready'}> {
+export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjection {
   if(!object(v)||!safeText(v.observedAt,100)||!Array.isArray(v.cards)||v.cards.length>300)throw new Error('Invalid timecards');
   let entries=0,corrections=0;
   const cards=v.cards.map((raw):TimecardItem=>{

@@ -33,8 +33,8 @@ Requirements source: original Lettered Executive Program pasted document, Phase 
 | D4 | COMPLETE | PASS | Embedded checkpoint below |
 | D5 | COMPLETE | PASS | Embedded checkpoint below |
 | D6 | COMPLETE | PASS | Embedded checkpoint below |
-| D7 | IN PROGRESS | NOT RUN | Current-authorized Action Center integration |
-| D8 | WAITING | NOT RUN | Final integrated candidate |
+| D7 | COMPLETE | EMBEDDED PASS | Current-authorized Action Center integration |
+| D8 | IN PROGRESS | PREFLIGHT PASS; EXACT CANDIDATE PENDING | Final integrated candidate |
 
 ## Rulings and limitations
 
@@ -155,3 +155,22 @@ Implemented additive `0020_account_recovery.sql`, customer Forgot access and Res
 - A fixture used an incorrect PIN table name; corrected rerun passes. The navigation timing failure filled the old Sign-In field before Forgot access loaded; harness now waits for the target heading. Same-page fragment reopening initially retained the completed form; hash-change recovery was corrected and both browsers pass reuse handling.
 - Production SMTP is neither configured nor externally verified. Assisted recovery is available without SMTP. No real message or production change occurred. UX-02 remains OPEN / DEFERRED.
 - All four amended P1 items now have implementation and embedded evidence. D7 and mandatory whole-phase D8 remain incomplete; no development-complete claim is made here.
+
+### D7 embedded checkpoint and D8 preparation
+
+Integrated scheduling/request actions from the existing manager builder with D1 attendance observations, D2 correction requests and D3 timecard review/finalization tasks. All sources must succeed under current authority; counts are deduplicated review tasks with no invented policy severity. Contextual links preserve request/employee/period and focus a protected row after its asynchronous read. Private names/counts clear on loading, pause, offline, reconnect and access loss. The full list is accessible beyond the preview.
+
+- Combined D7/affected timecard transport/client suite: **7 files / 53 tests PASS**; D7-only initial suite **4 files / 33 tests PASS**. These overlap, not additional unique totals.
+- Owned D7 PostgreSQL: **5 tests PASS**, also included in the whole Clocker/Phase D preflight (**32 files / 501 tests PASS**).
+- Chromium/WebKit integrated browser: **187 checks PASS**, overlapping all D3–D6 and UX acceptance journeys; a focused WebKit pointer replay also passed **93 checks**. Responsive widths 320/375/390/430/768/1024/1440, keyboard context links, held loading/reconnect, actual source counts, offline and authorization loss.
+- P2 `D7-EXEC-001`: background refresh collapsed the expanded action list. Expanded state now survives a current-scope refresh; role/week scope remount remains separate. Embedded browser rerun passes.
+- P2 `D7-EXEC-002`: WebKit delivered a duplicate WINDOW focus between pointer-down on Review and pointer-up. Refresh removed the link during that gesture. Active focus handling is idempotent; actual blur still clears private data before returning, and storage/visibility/offline/explicit refresh still require new protected reads. Native pointer and keyboard contextual navigation now pass. Inherited focus-return harnesses simulate actual blur followed by focus.
+- D8 P1 `D8-EXEC-001`: a historical reassignment could bypass the finalization interlock by targeting an unfinalized employee/parent. Reproduced (**11 passed / 1 failed**), fixed by additive `0021_timecard_reassignment_interlock.sql` with ordered locks and both old/new subjects. **12/12 affected PostgreSQL tests PASS**; later full preflight also passes.
+- D8 hardening: timecard read lifetimes bounded by current session deadline, actor-bound reads/writes, exact command/action/revision receipt validation, and final current-authority checks. Password reset preservation now includes an actual four-transition punch/break ledger and approved correction history.
+- Frozen-D2-schema upgrade preservation test: **1/1 PASS** with actual punches, break snapshots, receipts, PINs, credentials, sessions and approved corrections unchanged; new review/export/proof tables remain empty. The general upgrade-parity fixture initially omitted 0018–0021; its ordered migration list now includes them while retaining exact catalog equality. Full release PostgreSQL rerun remains required.
+- Full unit preflight: **200 files / 2,109 tests PASS** before the final 5 manager-write transport regressions. Exact-candidate unit run remains required. Typecheck/lint/build are rerun on the frozen candidate.
+- Production audit: **0 advisories**. Full audit retains one unpatched braces advisory reported across five development-only lint packages. See [GitHub advisory GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm). This is the inherited lint-tooling follow-up; public application input does not reach lint glob patterns. No lint control is removed, no breaking downgrade is forced, and no runtime-clean claim is extended to developer tooling. P3 `D8-DEV-TOOLING` remains OPEN pending an upstream compatible patch.
+- Exact-SHA CI now checks the real head for all jobs and runs the whole Phase D browser journey plus inherited D1/D2/Clocker regressions. Evidence upload selects reports/manifests/screenshots only, excluding scratch source/dependency copies. Artifact upload remains observable and quota failure remains a custody limitation, not a hidden success.
+- Existing development/main are still unprotected; no administrative or production policy changed. Production NO-GO, FR-AUTH-001 OPEN, hosted/rollback/physical/screen-reader holds and UX-02 OPEN/DEFERRED remain carried.
+
+D8 is still in progress. Final disposition requires the clean exact candidate, whole-phase regression and actual exact-head CI evidence. No independent reviewer is dispatched and no production readiness is claimed.

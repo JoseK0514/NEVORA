@@ -139,22 +139,22 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   let release;const delayed=new Promise(resolve=>{release=resolve;});
   const delayRoute=async route=>{if(route.request().method()==='GET')await delayed;await route.continue();};
   await mp.route('**/api/manager/time-corrections',delayRoute);
-  await mp.evaluate(()=>window.dispatchEvent(new Event('focus')));
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByText('Loading correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','loading');release();
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();await mp.unroute('**/api/manager/time-corrections',delayRoute);
   const unavailable=route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',reason:'read_failed'})});
   phase='injected-503';await mp.route('**/api/manager/time-corrections',unavailable);observations.injectedFailures.push('503 protected correction read');
-  await mp.evaluate(()=>window.dispatchEvent(new Event('focus')));await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('read failure');await shots(mp,'.manager-corrections','unavailable');
-  await mp.unroute('**/api/manager/time-corrections',unavailable);await mp.evaluate(()=>window.dispatchEvent(new Event('focus')));
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('read failure');await shots(mp,'.manager-corrections','unavailable');
+  await mp.unroute('**/api/manager/time-corrections',unavailable);await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   phase='normal';
   const malformed=route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...snapshot,requests:snapshot.requests.map(r=>({...r,context:{state:'confirmed',sourceKind:'ADJUSTMENT',startAt:'invalid'}}))})});
   await mp.route('**/api/manager/time-corrections',malformed);observations.injectedFailures.push('Malformed protected effective context');
-  await mp.evaluate(()=>window.dispatchEvent(new Event('focus')));await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('malformed context');
-  await mp.unroute('**/api/manager/time-corrections',malformed);await mp.evaluate(()=>window.dispatchEvent(new Event('focus')));
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('malformed context');
+  await mp.unroute('**/api/manager/time-corrections',malformed);await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   await q('UPDATE time_entries SET version=version+1 WHERE id=$1',[entryId]);
-  await mp.evaluate(()=>window.dispatchEvent(new Event('focus')));
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByText('The source or approved baseline changed since this request. The proposed time is not the current effective time.',{exact:true}).first().waitFor();
   await shots(mp,'.manager-corrections','stale');
   // Declines do not consume stale-source approval authority; keyboard Enter is real.
@@ -174,7 +174,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal((await q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE employee_id=$1',[employeeId]))[0].count,4);
   const unrelated=await owner.request.get(app.url+'/api/employee/time-corrections',{headers});assert.equal(unrelated.status(),403);
   phase='authority-denied';await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
-  await mp.evaluate(()=>window.dispatchEvent(new Event('focus')));await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();assert.equal(await mp.locator('.manager-correction-row').count(),0);
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();assert.equal(await mp.locator('.manager-correction-row').count(),0);
   assert.equal((await owner.request.get(app.url+'/api/manager/time-corrections',{headers})).status(),403);
   await q("UPDATE employees SET role='OWNER' WHERE id='QAOWNER'");
   // Record all native errors. Only explicitly injected transport failures may be classified.

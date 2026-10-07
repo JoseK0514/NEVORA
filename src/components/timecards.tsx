@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import {usePrivateFragmentFocus} from './private-fragment-focus';
 import {useCallback,useEffect,useRef,useState,type FormEvent} from 'react';
 import {formatRecordedHours,parsePeriod,type Period,type Timecard} from '@/lib/timecards/project';
-import {parseTimecardsResponse,type TimecardItem,type TimecardsResult} from '@/lib/timecards/read-model';
+import {type TimecardItem,type TimecardsResult} from '@/lib/timecards/read-model';
 import type {TimecardCommand,TimecardMutation} from '@/lib/timecards/service';
+import {parseCurrentTimecards,parseTimecardReceipt} from '@/lib/timecards/client';
 import styles from './timecards.module.css';
 
 const stamp=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at));
@@ -39,30 +41,35 @@ export function Timecards({initialPeriod,manager,actorId}:{initialPeriod:Period;
   const [data,setData]=useState<TimecardsResult|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState('Loading timecards…');
   const [notes,setNotes]=useState<Record<string,string>>({}),[pending,setPending]=useState<TimecardCommand|null>(null);
   const request=useRef<AbortController|null>(null),generation=useRef(0),commandRef=useRef<TimecardCommand|null>(null);
-  const invalidate=useCallback(()=>{generation.current++;request.current?.abort();},[]);
+  const expires=useRef<ReturnType<typeof setTimeout>|null>(null);
+  const invalidate=useCallback(()=>{generation.current++;request.current?.abort();if(expires.current)clearTimeout(expires.current);expires.current=null;},[]);
   const refresh=useCallback(async(selected:Period)=>{
-    request.current?.abort();const own=++generation.current;const abort=new AbortController();request.current=abort;
+    invalidate();const own=generation.current,started=performance.now();const abort=new AbortController();request.current=abort;
     setData(null);setBusy(true);setMessage('Checking period timecards…');
     try{
       const response=await fetch('/api/timecards',{method:'POST',cache:'no-store',credentials:'same-origin',signal:abort.signal,
-        headers:{'content-type':'application/json','x-nevora-timecards':'1'},body:JSON.stringify(selected)});
+        headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(selected)});
       if(own!==generation.current)return;
       if(response.status===401||response.status===403){commandRef.current=null;setPending(null);setNotes({});setMessage('Sign in again to view your timecards.');return;}
       if(!response.ok)throw new Error('Unavailable');
-      const next=parseTimecardsResponse(await response.json(),selected);
+      const next=parseCurrentTimecards(await response.json(),selected),remaining=next.validForMs-(performance.now()-started);
+      if(remaining<1)throw Error('Expired snapshot');
       if(own!==generation.current)return;
+      expires.current=setTimeout(()=>{invalidate();setData(null);setBusy(false);setMessage('Timecards expired. Refresh a current protected snapshot.');},remaining);
       setData(next);setMessage(`Period checked. ${next.cards.length} ${next.cards.length===1?'timecard':'timecards'}.`);
     }catch{if(own===generation.current&&!abort.signal.aborted)setMessage(navigator.onLine?'Timecards unavailable. Try refreshing.':'You are offline. Reconnect to check timecards.');}
     finally{if(own===generation.current)setBusy(false);}
-  },[]);
+  },[actorId,invalidate]);
   useEffect(()=>{
-    const clear=()=>{invalidate();setData(null);setNotes({});setBusy(false);};
-    const sync=()=>{clear();if(document.visibilityState!=='hidden'&&navigator.onLine)void refresh(period);};
+    let active=false;
+    const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;invalidate();setData(null);setNotes({});setBusy(false);};
+    const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;clear();active=document.visibilityState!=='hidden'&&navigator.onLine;if(active)void refresh(period);};
     const account=()=>{commandRef.current=null;setPending(null);sync();};
     document.addEventListener('visibilitychange',sync);window.addEventListener('pagehide',clear);window.addEventListener('pageshow',sync);
-    window.addEventListener('offline',clear);window.addEventListener('online',sync);window.addEventListener('focus',sync);window.addEventListener('storage',account);
-    void Promise.resolve().then(sync);
-    return ()=>{invalidate();document.removeEventListener('visibilitychange',sync);window.removeEventListener('pagehide',clear);
+    window.addEventListener('blur',clear);window.addEventListener('offline',clear);window.addEventListener('online',sync);window.addEventListener('focus',sync);window.addEventListener('storage',account);
+    const poll=setInterval(()=>{if(!commandRef.current&&document.visibilityState==='visible'&&navigator.onLine)sync();},30000);
+    void Promise.resolve().then(()=>sync());
+    return ()=>{clearInterval(poll);window.removeEventListener('blur',clear);invalidate();document.removeEventListener('visibilitychange',sync);window.removeEventListener('pagehide',clear);
       window.removeEventListener('pageshow',sync);window.removeEventListener('offline',clear);window.removeEventListener('online',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',account);};
   },[period,refresh,invalidate]);
   function choose(event:FormEvent){event.preventDefault();try{const next=parsePeriod(draft.startDate,draft.endDate);setPeriod(next);if(next.startDate===period.startDate&&next.endDate===period.endDate)void refresh(next);}catch(error){setMessage(error instanceof Error?error.message:'Choose a valid period');}}
@@ -72,11 +79,10 @@ export function Timecards({initialPeriod,manager,actorId}:{initialPeriod:Period;
     commandRef.current=command;setPending(command);setBusy(true);const own=generation.current;
     setMessage('Saving timecard action…');
     try{
-      const response=await fetch('/api/manager/timecards',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-timecards':'1'},body:JSON.stringify(command)});
+      const response=await fetch('/api/manager/timecards',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(command)});
       if(own!==generation.current)return;
       if(response.status===401||response.status===403){commandRef.current=null;setPending(null);setData(null);setNotes({});setMessage('Sign in again before reviewing timecards.');return;}
-      const result=await response.json() as TimecardMutation;
-      if(!result||!['approved','finalized','reopened','blocked','conflict','unavailable','outcome-unknown'].includes(result.status))throw new Error('Unknown receipt');
+      const result=parseTimecardReceipt(await response.json(),command,response.status);
       const feedback=commandMessage(result);setMessage(feedback);
       if(result.status!=='outcome-unknown'){
         commandRef.current=null;setPending(null);
@@ -85,6 +91,7 @@ export function Timecards({initialPeriod,manager,actorId}:{initialPeriod:Period;
     }catch{if(own===generation.current)setMessage('The result could not be confirmed. Retry the same action to reconcile it.');}
     finally{if(own===generation.current)setBusy(false);}
   }
+  usePrivateFragmentFocus('timecard-',data?.state==='ready');
   const cards=data?.state==='ready'?[...data.cards].sort((a,b)=>Number(b.card.issues.length>0)-Number(a.card.issues.length>0)||a.card.employeeName.localeCompare(b.card.employeeName)):[];
   return <section className={styles.root} aria-label={manager?'Manager timecards':'Your period timecard'}>
     <form onSubmit={choose} className={styles.toolbar}>
@@ -96,7 +103,7 @@ export function Timecards({initialPeriod,manager,actorId}:{initialPeriod:Period;
     <p role="status" aria-live="polite" className={styles.status}>{message}</p>
     {manager?<p className={styles.note}>Timecards needing attention appear first. Resolve corrections before approval; finalize after the period ends.</p>:<Link href="/app/my-time" className={styles.link}>Request a correction in My Time →</Link>}
     {data?.state==='ready'&&!cards.length?<p>No employees are available for this period.</p>:null}
-    {cards.map(item=><article key={item.card.employeeId} className={styles.card}>
+    {cards.map(item=><article key={item.card.employeeId} className={styles.card} tabIndex={-1} id={`timecard-${item.card.employeeId}`}>
       <header><div><h2>{manager?item.card.employeeName:'Your timecard'}</h2><small>{period.startDate} – {period.endDate} · Revision {item.revision}</small></div><strong>{item.state.replaceAll('_',' ').toLowerCase()}</strong></header>
       <dl className={styles.totals}><div><dt>Recorded time</dt><dd>{formatRecordedHours(item.card.recordedNanoseconds)}</dd></div><div><dt>Break time</dt><dd>{formatRecordedHours(item.card.breakNanoseconds)}</dd></div></dl>
       {item.card.issues.length?<ul className={styles.issues}>{item.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul>:null}

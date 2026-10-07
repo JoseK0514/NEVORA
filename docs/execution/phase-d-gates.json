@@ -1,301 +1,92 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "program": "NEVORA Phase D",
-  "execution_model_approved_by": "Jose",
-  "execution_model_approval_date": "2026-10-06 America/Puerto_Rico",
-  "baseline_sha": "f54eefbb314851cfa3697490faf32bb71d647913",
-  "baseline_tree": "d0715caa192e57cb3d51c27216551c2a3b0c092e",
-  "development_baseline_sha": "0516b7dcbb07a10d926cc5c53f3b650343cad9bd",
-  "branch": "phase-d/d2-d7-controlled-execution-20261006",
-  "implementation_owner": "ChatGPT engineering in this execution thread",
-  "coordination_owner": "COO / Program Manager functions",
-  "required_executive_roles": [
-    "COO",
-    "CPO",
-    "CTO_CIO",
-    "CISO",
-    "PROGRAM_MANAGER",
-    "SENIOR_TECHNICAL_AUTHORITY",
-    "PRODUCT_EXPERIENCE",
-    "GOVERNANCE_RISK"
-  ],
-  "gate_semantics": {
-    "required_vote": "GO",
-    "missing_vote_blocks": true,
-    "unresolved_required_conditions_block": true,
-    "unresolved_p0_p1_block": true,
-    "candidate_change_invalidates_affected_votes": true,
-    "management_review_is_not_independent": true,
-    "register_is_not_branch_protection": true
+  "controlling_authority": "Jose: October 7 D3-D8 master authorization, configurable D6 Option 3, four P1 UX amendment",
+  "execution_model": "Sequential workstreams with embedded QA and internal D8; no independent gate between workstreams",
+  "execution_branch": "codex/phase-d-d3-d8-execution-20261007",
+  "starting_sha": "7485463dedb6b93e8b6ec4ebf3a86172fb9be5b5",
+  "starting_tree": "99c8a5fb923c88bf8a520592e425be66f7902bfd",
+  "historical_register": "phase-d-gates-october6-historical.json",
+  "current_ledger": "phase-d-d3-d8-ledger.md",
+  "D2": {
+    "status": "FROZEN_VERIFIED_BASELINE",
+    "source": "Jose master authorization; D2-CODEX-002 through D2-CODEX-008 independently VERIFIED CLOSED on starting SHA. No restart or repurposing of frozen branches."
   },
-  "vote_required_fields": [
-    "role",
-    "section",
-    "candidate_sha",
-    "reviewer_process",
-    "review_mode",
-    "reviewed_at",
-    "verdict",
-    "evidence",
-    "findings",
-    "conditions"
-  ],
   "sections": [
     {
-      "id": "D2",
-      "scope": "Correction workflows",
-      "predecessor": "D1.3 implementation checkpoint",
-      "status": "READY_FOR_INDEPENDENT_CODEX_REVIEW",
-      "design_status": "RESOLVED_AND_IMPLEMENTED",
-      "implementation_status": "COMPLETE_INTERNAL_VERIFICATION",
-      "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-      "evidence": [
-        {
-          "type": "runtime_identity",
-          "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-          "tree": "a9ff2f68fc9c0fee052c1bea97fdcb50b1ab0471"
-        },
-        {
-          "type": "static_and_build",
-          "result": "PASS",
-          "details": "typecheck PASS; lint PASS; 184 files / 1933 tests PASS; production build PASS"
-        },
-        {
-          "type": "postgres_full",
-          "result": "PASS",
-          "details": "owned disposable PostgreSQL; 24 files / 407 tests PASS with 0016 in current runtime chain"
-        },
-        {
-          "type": "postgres_d2_adversarial",
-          "result": "PASS",
-          "details": "12/12 D2 correction protocol scenarios PASS"
-        },
-        {
-          "type": "browser_exact_sha",
-          "result": "PASS",
-          "details": "44/44 Chromium/WebKit checks PASS at 320,375,390,430,768,1024,1440; local owned Next + fictional PostgreSQL"
-        },
-        {
-          "type": "security",
-          "result": "PASS",
-          "details": "role/session/workspace and request-boundary guards verified; npm production dependency audit 0 vulnerabilities"
-        },
-        {
-          "type": "evidence_location",
-          "result": "RECORDED",
-          "details": "~/.codex/visualizations/nevora-d2-corrections-ui; local evidence only, not hosted acceptance"
-        }
-      ],
-      "executive_votes": [
-        {
-          "role": "COO",
-          "section": "D2",
-          "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-          "reviewer_process": "ChatGPT management-function review in the D2 execution thread",
-          "review_mode": "MANAGEMENT_NON_INDEPENDENT",
-          "reviewed_at": "2026-10-07 America/Puerto_Rico",
-          "verdict": "GO",
-          "evidence": [
-            "Operational request-review flow is bounded; real pending state integrates with D1 and live Clocker state is preserved."
-          ],
-          "findings": [],
-          "conditions": []
-        },
-        {
-          "role": "CPO",
-          "section": "D2",
-          "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-          "reviewer_process": "ChatGPT management-function review in the D2 execution thread",
-          "review_mode": "MANAGEMENT_NON_INDEPENDENT",
-          "reviewed_at": "2026-10-07 America/Puerto_Rico",
-          "verdict": "GO",
-          "evidence": [
-            "D2 required scope is complete without payroll, overtime, break-pay or period-finalization policy invention."
-          ],
-          "findings": [],
-          "conditions": []
-        },
-        {
-          "role": "CTO_CIO",
-          "section": "D2",
-          "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-          "reviewer_process": "ChatGPT management-function review in the D2 execution thread",
-          "review_mode": "MANAGEMENT_NON_INDEPENDENT",
-          "reviewed_at": "2026-10-07 America/Puerto_Rico",
-          "verdict": "GO",
-          "evidence": [
-            "Append-only architecture, migration, projections, locking/idempotency/concurrency, full tests and build verified."
-          ],
-          "findings": [],
-          "conditions": []
-        },
-        {
-          "role": "CISO",
-          "section": "D2",
-          "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-          "reviewer_process": "ChatGPT management-function review in the D2 execution thread",
-          "review_mode": "MANAGEMENT_NON_INDEPENDENT",
-          "reviewed_at": "2026-10-07 America/Puerto_Rico",
-          "verdict": "GO",
-          "evidence": [
-            "Server-derived identity, current authority, anti-forgery/input controls, confidentiality and fail-closed behavior verified."
-          ],
-          "findings": [],
-          "conditions": []
-        },
-        {
-          "role": "PROGRAM_MANAGER",
-          "section": "D2",
-          "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-          "reviewer_process": "ChatGPT management-function review in the D2 execution thread",
-          "review_mode": "MANAGEMENT_NON_INDEPENDENT",
-          "reviewed_at": "2026-10-07 America/Puerto_Rico",
-          "verdict": "GO",
-          "evidence": [
-            "Scope, exact runtime candidate, test evidence and finding disposition reconcile; D3 remains locked."
-          ],
-          "findings": [],
-          "conditions": []
-        },
-        {
-          "role": "SENIOR_TECHNICAL_AUTHORITY",
-          "section": "D2",
-          "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-          "reviewer_process": "ChatGPT management-function review in the D2 execution thread",
-          "review_mode": "MANAGEMENT_NON_INDEPENDENT",
-          "reviewed_at": "2026-10-07 America/Puerto_Rico",
-          "verdict": "GO",
-          "evidence": [
-            "Race/stale/overlap/live-state controls challenged; harness defects separated from product defects; WebKit target defect fixed and reverified."
-          ],
-          "findings": [],
-          "conditions": []
-        },
-        {
-          "role": "PRODUCT_EXPERIENCE",
-          "section": "D2",
-          "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-          "reviewer_process": "ChatGPT management-function review in the D2 execution thread",
-          "review_mode": "MANAGEMENT_NON_INDEPENDENT",
-          "reviewed_at": "2026-10-07 America/Puerto_Rico",
-          "verdict": "GO",
-          "evidence": [
-            "Chromium/WebKit responsive flows, 44px targets, focus and accessible labels verified from 320-1440."
-          ],
-          "findings": [],
-          "conditions": []
-        },
-        {
-          "role": "GOVERNANCE_RISK",
-          "section": "D2",
-          "candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-          "reviewer_process": "ChatGPT management-function review in the D2 execution thread",
-          "review_mode": "MANAGEMENT_NON_INDEPENDENT",
-          "reviewed_at": "2026-10-07 America/Puerto_Rico",
-          "verdict": "GO",
-          "evidence": [
-            "Owned local evidence only; no merge/hosted activation/production authorization; inherited release blockers remain carried."
-          ],
-          "findings": [],
-          "conditions": []
-        }
-      ],
-      "exit_gate": "GO",
-      "candidate_tree": "a9ff2f68fc9c0fee052c1bea97fdcb50b1ab0471"
-    },
-    {
       "id": "D3",
-      "scope": "Timecards",
-      "predecessor": "D2",
-      "status": "WAITING_FOR_D2_INDEPENDENT_REVIEW",
-      "design_status": "NOT_STARTED",
-      "implementation_status": "NOT_STARTED",
-      "candidate_sha": null,
-      "evidence": [],
-      "executive_votes": [],
-      "exit_gate": "NO_GO"
+      "status": "EMBEDDED_PASS",
+      "checkpoint_sha": "74518207f25a6856f2770ae78837c7c8a0eb8ade"
     },
     {
       "id": "D4",
-      "scope": "Reports",
-      "predecessor": "D3",
-      "status": "WAITING_FOR_PREDECESSOR",
-      "design_status": "NOT_STARTED",
-      "implementation_status": "NOT_STARTED",
-      "candidate_sha": null,
-      "evidence": [],
-      "executive_votes": [],
-      "exit_gate": "NO_GO"
+      "status": "EMBEDDED_PASS",
+      "checkpoint_sha": "ad620009f1a8886aa5dc88e00dcf7f3bb4ce1b59"
     },
     {
       "id": "D5",
-      "scope": "CSV and useful PDF exports",
-      "predecessor": "D4",
-      "status": "WAITING_FOR_PREDECESSOR",
-      "design_status": "NOT_STARTED",
-      "implementation_status": "NOT_STARTED",
-      "candidate_sha": null,
-      "evidence": [],
-      "executive_votes": [],
-      "exit_gate": "NO_GO"
+      "status": "EMBEDDED_PASS",
+      "checkpoint_sha": "cfa8df54fa06b583ae72a071548371588bf37050"
     },
     {
       "id": "D6",
-      "scope": "Payroll-ready export only",
-      "predecessor": "D5",
-      "status": "WAITING_FOR_PREDECESSOR",
-      "design_status": "NOT_STARTED",
-      "implementation_status": "NOT_STARTED",
-      "candidate_sha": null,
-      "evidence": [],
-      "executive_votes": [],
-      "exit_gate": "NO_GO"
+      "status": "EMBEDDED_PASS",
+      "checkpoint_sha": "76bcfc0a7b4a37bc17fd107a4695a37ff3da2f96"
     },
     {
       "id": "D7",
-      "scope": "Manager Action Center foundation",
-      "predecessor": "D6",
-      "status": "WAITING_FOR_PREDECESSOR",
-      "design_status": "NOT_STARTED",
-      "implementation_status": "NOT_STARTED",
-      "candidate_sha": null,
-      "evidence": [],
-      "executive_votes": [],
-      "exit_gate": "NO_GO"
+      "status": "EMBEDDED_PASS",
+      "checkpoint_sha": "Resolve D7 integration commit in execution branch history"
     }
   ],
+  "mandatory_D8_UX": [
+    {
+      "id": "UX-01",
+      "status": "IMPLEMENTED_EMBEDDED_PASS_FINAL_D8_REQUIRED"
+    },
+    {
+      "id": "UX-03",
+      "status": "IMPLEMENTED_EMBEDDED_PASS_FINAL_D8_REQUIRED"
+    },
+    {
+      "id": "UX-04",
+      "status": "IMPLEMENTED_EMBEDDED_PASS_FINAL_D8_REQUIRED"
+    },
+    {
+      "id": "UX-05",
+      "status": "IMPLEMENTED_EMBEDDED_PASS_FINAL_D8_REQUIRED"
+    }
+  ],
+  "UX-02": {
+    "status": "OPEN_DEFERRED",
+    "implementation_authorized": false
+  },
   "D8": {
-    "status": "NOT_READY",
-    "reviewer": "Independent Codex process that did not implement the candidate",
-    "candidate_sha": null,
-    "verdict": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "review_mode": "INTERNAL_IMPLEMENTATION_AND_QA",
+    "exact_candidate_evidence_required": true,
+    "independent_release_review_initiated": false
   },
   "development_integration": {
-    "status": "NO_GO",
-    "requires": [
-      "D2-D7 exit gates",
-      "whole-phase regression evidence",
-      "D8 Codex GO on exact candidate",
-      "applicable independent QA/UI gates",
-      "Jose integration authorization"
-    ]
+    "status": "NOT_PERFORMED",
+    "merge_authorized": false
   },
   "production": {
     "status": "NO_GO",
-    "authorization": null
+    "authorization": null,
+    "FR-AUTH-001": "OPEN"
   },
   "carried_open_items": [
     {
       "id": "QA-D13-001",
       "status": "REMEDIATION_REPORTED_NOT_INDEPENDENTLY_CLOSED",
-      "owner": "Independent QA at applicable gate / D8",
+      "owner": "Independent QA at applicable future release gate",
       "description": "Verify lifecycle coverage, exact-SHA CI and actual enforcement; workflow presence alone is not branch protection."
     },
     {
       "id": "D13-TECH-LABELS",
       "status": "REMEDIATION_REPORTED_NOT_INDEPENDENTLY_CLOSED",
-      "owner": "Independent Codex at D8",
+      "owner": "Future independent release review",
       "description": "Reverify fresh labels, archived locations and refreshed/new-entity context."
     },
     {
@@ -334,36 +125,5 @@
       "owner": "Existing independent release authority",
       "description": "Inherited production gate is not closed by this package."
     }
-  ],
-  "D2_design_decisions": [
-    {
-      "id": "D2-REVIEW-AUTHORITY",
-      "status": "RESOLVED",
-      "description": "Employee/Lead request; Owner/Manager review; no direct manager overwrite and no self-approval."
-    },
-    {
-      "id": "D2-LIVE-STATE",
-      "status": "RESOLVED",
-      "description": "Open/live entries fail closed; D2 never clocks out or rewrites live Clocker state."
-    },
-    {
-      "id": "D2-BREAK-SCOPE",
-      "status": "RESOLVED",
-      "description": "Historical boundary corrections only; captured classification preserved; pay/deduction/overtime policy excluded."
-    },
-    {
-      "id": "D2-MISSING-FINALIZED",
-      "status": "RESOLVED_FOR_D2",
-      "description": "Missing completed time is an auditable adjustment, never a fabricated punch; D3 owns period finalization/reopening semantics."
-    }
-  ],
-  "D2_independent_review": {
-    "status": "READY",
-    "reviewer": "Independent Codex process that did not implement D2",
-    "runtime_candidate_sha": "aa68e607830c77ec57262a267b18a187efaed3fb",
-    "verdict": null,
-    "evidence": [
-      "D2 internal evidence package recorded; independent verdict not yet claimed"
-    ]
-  }
+  ]
 }

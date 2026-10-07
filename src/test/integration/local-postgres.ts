@@ -25,6 +25,7 @@ const CURRENT_MIGRATIONS = [
   '0018_timecards.sql',
   '0019_payroll_export_mappings.sql',
   '0020_account_recovery.sql',
+  '0021_timecard_reassignment_interlock.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every
@@ -121,8 +122,8 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
   return { executor, connectionString: target.href, dispose };
 }
 
-export function createDisposableFoundationDatabase({ mode }: { mode: 'upgrade' | 'empty' | 'phase-c-base' | 'current-runtime' }) {
-  return createOwnedDatabase('nevora_foundation_test_', mode === 'current-runtime' ? CURRENT_MIGRATIONS.length : mode === 'phase-c-base' ? 10 : mode === 'upgrade' ? 7 : 0);
+export function createDisposableFoundationDatabase({ mode }: { mode: 'upgrade' | 'empty' | 'phase-c-base' | 'phase-d2-base' | 'current-runtime' }) {
+  return createOwnedDatabase('nevora_foundation_test_', mode === 'current-runtime' ? CURRENT_MIGRATIONS.length : mode === 'phase-c-base' ? 10 : mode === 'phase-d2-base' ? 17 : mode === 'upgrade' ? 7 : 0);
 }
 export function createDisposableNotificationDatabase() {
   return createOwnedDatabase('fuel_phase3_test_', CURRENT_MIGRATIONS.length);

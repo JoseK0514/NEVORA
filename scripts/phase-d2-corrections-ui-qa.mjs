@@ -20,7 +20,7 @@ const projectRequire=createRequire(import.meta.url);
 let playwright;
 try{playwright=projectRequire('playwright');}
 catch{
- const runtime=createRequire(join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
+ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
  playwright=runtime('playwright');
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {usePrivateFragmentFocus} from './private-fragment-focus';
 import { useEffect, useRef, useState } from 'react';
 import {
   createAttendanceReviewController,
@@ -98,6 +99,7 @@ export function AttendanceReviewSurface({
 }: { state: AttendancePanelState; onRefresh: () => void }) {
   const { review, refreshing, paused } = state;
   const ready = !paused && review?.state === 'ready' ? review : null;
+  usePrivateFragmentFocus('attendance-',!!ready);
   const denied = review?.state === 'unavailable' && review.reason === 'access_denied';
   const unavailable = review?.state === 'unavailable' && !denied;
   const rows = ready ? groupRows(ready.groups, ready.labels) : [];
@@ -141,7 +143,7 @@ export function AttendanceReviewSurface({
         rows.length ? (
           <div className="attendance-review-list">
             {rows.map((group) => (
-              <article className="attendance-review-row" key={group.entryId}>
+              <article className="attendance-review-row" key={group.entryId} tabIndex={-1} id={`attendance-${group.entryId}`}>
                 <div className="attendance-review-person">
                   <span className="attendance-review-avatar" aria-hidden="true">
                     {initials(group.employeeName)}
@@ -234,17 +236,19 @@ export function ManagerAttendanceReview() {
   useEffect(() => {
     const current = createAttendanceReviewController(setState, fetchAttendanceReview);
     controller.current = current;
-    let mounted = true;
-    const sync = () => {
+    let mounted = true,active = false;
+    const sync = (event?:Event) => {
+      if(event?.type==='focus'&&(event.target!==window||active))return;
       current.pause();
+      active=document.visibilityState!=='hidden'&&navigator.onLine;
       if (document.visibilityState !== 'hidden' && navigator.onLine) current.start();
     };
-    const pause = () => current.pause();
+    const pause = (event?:Event) => {if(event?.type==='blur'&&event.target!==window)return;active=false;current.pause();};
 
     document.addEventListener('visibilitychange', sync);
     window.addEventListener('online', sync);
     window.addEventListener('offline', pause);
-    window.addEventListener('pagehide', pause);
+    window.addEventListener('pagehide', pause);window.addEventListener('blur', pause);
     window.addEventListener('pageshow', sync);
     window.addEventListener('focus', sync);
     window.addEventListener('storage', sync);
@@ -260,7 +264,7 @@ export function ManagerAttendanceReview() {
       document.removeEventListener('visibilitychange', sync);
       window.removeEventListener('online', sync);
       window.removeEventListener('offline', pause);
-      window.removeEventListener('pagehide', pause);
+      window.removeEventListener('pagehide', pause);window.removeEventListener('blur', pause);
       window.removeEventListener('pageshow', sync);
       window.removeEventListener('focus', sync);
       window.removeEventListener('storage', sync);

@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [development, main, "phase-c/**", "phase-d/**", "fix/**", "release/**"]
+    branches: [development, main, "phase-c/**", "phase-d/**", "codex/phase-d-**", "fix/**", "release/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**"]
 
@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -38,10 +40,12 @@ jobs:
   clocker-postgres:
     name: clocker-postgres
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -65,9 +69,9 @@ jobs:
 
   phase-d-attendance-ui:
     name: phase-d-attendance-ui
-    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/phase-d/') || startsWith(github.head_ref, 'phase-d/')
+    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/phase-d/') || startsWith(github.head_ref, 'phase-d/') || startsWith(github.ref, 'refs/heads/codex/phase-d-') || startsWith(github.head_ref, 'codex/phase-d-')
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@v4
@@ -122,13 +126,70 @@ jobs:
           if (report.errors.length !== 0) throw new Error('Attendance browser report contains errors');
           console.log(JSON.stringify({ checkpoint: report.checkpoint, tree: report.tree, checks: report.checks.length, errors: report.errors }, null, 2));
           NODE
+      - name: Whole Phase D exact-candidate browser regression
+        env:
+          PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/phase-d-owned.mjs browser
+      - name: Existing D2 correction browser regression
+        env:
+          PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d2-browser-evidence
+          PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run test:phase-d2:corrections-ui
+      - name: Existing Clocker lifecycle and recovery browser regression
+        env:
+          PHASE_C_EVIDENCE_DIR: ${{ runner.temp }}/nevora-clocker-browser-evidence
+          PHASE_C_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/phase-c-clocker-postgres.mjs --punch-ui
+      - name: Verify whole-phase SHA and mandatory UX evidence
+        env:
+          PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const report = JSON.parse(fs.readFileSync(path.join(process.env.PHASE_D_EVIDENCE_DIR, 'report.json'), 'utf8'));
+          if (report.checkpoint !== process.env.PHASE_D_EXPECTED_SHA || !report.sourceClean || report.errors.length) throw new Error('Invalid whole-phase candidate evidence');
+          for (const engine of ['chromium','webkit']) for (const item of ['D7','UX-01','UX-03','UX-04','UX-05']) {
+            if (!report.checks.some(check => check.startsWith(engine+':') && check.includes(item))) throw new Error('Missing '+engine+' '+item+' evidence');
+          }
+          console.log(JSON.stringify({checkpoint:report.checkpoint,tree:report.tree,checks:report.checks.length,errors:report.errors}));
+          NODE
+      - name: Upload whole Phase D browser evidence
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-d-whole-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.csv
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.pdf
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-d2-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-d2-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-d2-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-d2-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/**/ownership.json
+          if-no-files-found: warn
+          retention-days: 14
       - name: Upload D1.3 browser evidence
         if: always()
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: d13-attendance-browser-${{ github.event.pull_request.head.sha || github.sha }}
-          path: ${{ runner.temp }}/nevora-d13-browser-evidence
+          path: |
+            ${{ runner.temp }}/nevora-d13-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-d13-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-d13-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-d13-browser-evidence/**/ownership.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -136,11 +197,12 @@ jobs:
     name: release-postgres
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || github.base_ref == 'main' || github.base_ref == 'development' || startsWith(github.ref, 'refs/heads/phase-c/') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.head_ref, 'phase-c/') || startsWith(github.head_ref, 'release/') || startsWith(github.base_ref, 'phase-c/') || startsWith(github.base_ref, 'release/')
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
       - name: Use Node.js
         uses: actions/setup-node@v4

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 import {randomBytes} from 'node:crypto';
 import {homedir} from 'node:os';
@@ -9,9 +10,11 @@ import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/2026/10/05/nevora-punch-integration'));
 await mkdir(evidence,{recursive:true});
-const runtime=createRequire(join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
+const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
 const pw=await import(pathToFileURL(runtime.resolve('playwright')).href),playwright=pw.default??pw;
-const report={checks:[],errors:[],screenshots:[],limits:['Owned loopback PostgreSQL and scratch Next runtime; no hosted or physical-device verification.','Browser plugin not listed; existing Playwright used.']};
+const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),sourceClean=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim()==='';
+if(process.env.PHASE_C_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_C_EXPECTED_SHA);assert(sourceClean,'Clocker regression requires a clean exact candidate');}
+const report={checkpoint,tree,sourceClean,checks:[],errors:[],screenshots:[],limits:['Owned loopback PostgreSQL and scratch Next runtime; no hosted or physical-device verification.','Browser plugin not listed; existing Playwright used.']};
 const browsers=[];let app,currentPage;
 function checked(name){report.checks.push(name);console.log('[C3/C4 browser] PASS '+name);}
 const q=(text,values=[])=>app.database.executor.query({text,values});

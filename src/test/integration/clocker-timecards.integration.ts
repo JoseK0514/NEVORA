@@ -98,6 +98,11 @@ describe('D3 owned timecard protocol', () => {
     expect((await act('APPROVE',{startDate:'2026-09-22',endDate:'2026-09-28'})).status).toBe('blocked');
     await expect(f.q('DELETE FROM timecard_revisions')).rejects.toThrow();
   });
+  it('D8 bounds the authorized snapshot by the current session deadline and refuses logout after projection',async()=>{
+    await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '10 seconds' WHERE employee_id='c34-owner'");const result=await readTimecards(owner,period,f.db.executor);expect(result.state).toBe('ready');if(result.state==='ready'){expect(result.validForMs).toBeGreaterThan(0);expect(result.validForMs).toBeLessThanOrEqual(10000);}
+    const executor={...f.db.executor,transaction:async(statements:Parameters<typeof f.db.executor.transaction>[0])=>{const result=await f.db.executor.transaction(statements);if(statements.some(statement=>statement.text.includes('WITH scope AS')))await f.q("DELETE FROM employee_sessions WHERE employee_id='c34-owner'");return result;}};
+    expect(await readTimecards(owner,period,executor)).toEqual({state:'unavailable',reason:'access_denied'});
+  });
   it('refuses expired or revoked sessions without exposing card data', async () => {
     await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id='c34-owner'");
     expect((await readTimecards(owner,period,f.db.executor)).state).toBe('unavailable');
@@ -112,6 +117,15 @@ describe('D3 owned timecard protocol', () => {
     await act('APPROVE');await act('FINALIZE');
     await expect(f.q("UPDATE time_entries SET clock_out_at='2026-09-22T21:00:00Z',version=2 WHERE id='D3-T'")).rejects.toThrow('FINALIZED_PERIOD');
     await expect(f.q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('D3-B','D3-T','2026-09-22T16:00:00Z','2026-09-22T16:15:00Z')")).rejects.toThrow('FINALIZED_PERIOD');
+  });
+  it('D8 protects the old finalized employee/parent when a historical record is reassigned',async()=>{
+    await f.q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('D8-B','D3-T','2026-09-22T16:00:00Z','2026-09-22T16:15:00Z')");
+    await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) SELECT 'D8-OTHER','c34-b',location_id,device_id,clock_in_at,clock_out_at,status,version FROM time_entries WHERE id='D3-T'");
+    await act('APPROVE');await act('FINALIZE');
+    await expect(f.q("UPDATE time_entries SET employee_id='c34-b' WHERE id='D3-T'")).rejects.toThrow('FINALIZED_PERIOD');
+    await expect(f.q("UPDATE break_entries SET time_entry_id='D8-OTHER' WHERE id='D8-B'")).rejects.toThrow('FINALIZED_PERIOD');
+    expect((await f.q("SELECT employee_id FROM time_entries WHERE id='D3-T'"))[0].employee_id).toBe('c34-a');
+    expect((await f.q("SELECT time_entry_id FROM break_entries WHERE id='D8-B'"))[0].time_entry_id).toBe('D3-T');
   });
   it('refuses self-review, open periods and open entries', async () => {
     expect((await act('APPROVE',{employeeId:'c34-owner'})).status).toBe('blocked');

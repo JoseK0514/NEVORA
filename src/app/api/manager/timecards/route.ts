@@ -9,7 +9,7 @@ export async function POST(request:Request):Promise<Response>{
   try{
     const session=await getSession();
     if(!session)return correctionJson({status:'unavailable'},401);
-    if(!['OWNER','MANAGER'].includes(session.role))return correctionJson({status:'unavailable'},403);
+    if(!['OWNER','MANAGER'].includes(session.role)||request.headers.get('x-nevora-actor')!==session.id)return correctionJson({status:'unavailable'},403);
     let command;
     try{command=parseTimecardCommand(await readCorrectionJson(request));}catch{return correctionJson({status:'invalid'},400);}
     const result=await mutateTimecard(await requireSessionMutationProof(),command);

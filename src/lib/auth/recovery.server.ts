@@ -10,14 +10,14 @@ const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
 const safeId=(v:string)=>v.trim().length>0&&v.trim().length<=200&&!/[\u0000-\u001f\u007f]/.test(v);
 const unavailable={state:'unavailable' as const};
 export type RecoveryDelivery={send:(email:string,proof:string)=>Promise<void>};
-function issueStatement(tokenHash:string,employeeId:string,email:string|null,actor:string|null,note:string|null):SqlStatement{
+function issueStatement(tokenHash:string,employeeId:string,email:string|null,actor:string|null,note:string|null,workspaceId:string):SqlStatement{
  return {text:`INSERT INTO password_recovery_proofs(token_hash,employee_id,credential_updated_at,employee_updated_at,method,actor_employee_id,attestation,expires_at)
   SELECT $1,e.id,c.password_updated_at,e.updated_at,CASE WHEN $4::text IS NULL THEN 'EMAIL' ELSE 'ASSISTED' END,$4,$5,clock_timestamp()+interval '15 minutes'
   FROM employees e JOIN employee_credentials c ON c.employee_id=e.id JOIN locations l ON l.id=e.primary_location_id
-  WHERE upper(e.id)=upper($2) AND e.active AND ($3::text IS NULL OR lower(trim(e.email))=lower($3))
+  WHERE upper(e.id)=upper($2) AND e.active AND l.workspace_id=$7 AND ($3::text IS NULL OR lower(trim(e.email))=lower($3))
    AND ($4::text IS NOT NULL OR (SELECT attempts FROM password_recovery_limits WHERE scope='global' AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900))<=300)
    AND ($4::text IS NOT NULL OR (SELECT attempts FROM password_recovery_limits WHERE scope=$6 AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900))<=3)
-  RETURNING employee_id AS "employeeId",eXpires_at::text AS "expiresAt",(SELECT email FROM employees WHERE id=employee_id) AS email`,values:[tokenHash,employeeId,email,actor,note,hash(employeeId.toUpperCase())]};
+  RETURNING employee_id AS "employeeId",eXpires_at::text AS "expiresAt",(SELECT email FROM employees WHERE id=employee_id) AS email`,values:[tokenHash,employeeId,email,actor,note,hash(employeeId.toUpperCase()),workspaceId]};
 }
 /** Called after the public response. Known/unknown/inactive/unconfigured cases
  * share the response; no existence/channel information crosses that boundary. */
@@ -32,7 +32,7 @@ export async function requestPasswordRecovery(employeeId:string,email:string,del
    {text:"INSERT INTO password_recovery_limits(scope,bucket,attempts) SELECT $1,floor(EXTRACT(epoch FROM clock_timestamp())/900),1 WHERE EXISTS(SELECT 1 FROM password_recovery_limits WHERE scope='global' AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900) AND attempts<=300) ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1",values:[hash(id.toUpperCase())]},
    {text:'SELECT id FROM employees WHERE upper(id)=upper($1) ORDER BY id FOR UPDATE',values:[id]},
    {text:'SELECT employee_id FROM employee_credentials WHERE upper(employee_id)=upper($1) FOR SHARE',values:[id]},
-   ...(delivery?[issueStatement(hash(token),id,email.trim(),null,null)]:[]),
+   ...(delivery?[issueStatement(hash(token),id,email.trim(),null,null,workspace.id)]:[]),
   ];
   const results=await executor.transaction(statements),issued=results.at(-1)?.[0] as {email:string}|undefined;
   if(delivery&&issued?.email)await delivery.send(issued.email,token);
@@ -48,7 +48,7 @@ export async function issueAssistedRecovery(proof:SessionMutationProof,employeeI
    {text:'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR SHARE',values:[employeeId]},
    {text:"SELECT (CASE WHEN EXISTS(SELECT 1 FROM employee_credentials WHERE employee_id=$1) THEN '1' ELSE 'recovery_permission_denied' END)::integer",values:[employeeId]},
    {text:'UPDATE password_recovery_proofs SET retired_at=clock_timestamp() WHERE employee_id=$1 AND used_at IS NULL AND retired_at IS NULL',values:[employeeId]}];
-  const results=await executor.transaction([...guards,issueStatement(hash(token),employeeId,null,proof.employee.id,attestation.trim()),...managementSessionStatements(proof,proof.employee.id)]);
+  const results=await executor.transaction([...guards,issueStatement(hash(token),employeeId,null,proof.employee.id,attestation.trim(),workspace.id),...managementSessionStatements(proof,proof.employee.id)]);
   const row=results[guards.length]?.[0] as {employeeId:string;expiresAt:string}|undefined;if(!row)return unavailable;
   return {state:'issued' as const,proof:token,employeeId:row.employeeId,expiresAt:row.expiresAt};
  }catch{return unavailable;}

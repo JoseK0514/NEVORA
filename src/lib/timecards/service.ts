@@ -55,7 +55,7 @@ export async function readTimecards(proof:SessionMutationProof,requested:Period,
   const period=parsePeriod(requested.startDate,requested.endDate);
   const readRoles=manager(proof)?['OWNER','MANAGER'] as const:['EMPLOYEE','LEAD'] as const;
   try {
-    const workspace=await getWorkspace(executor);
+    const workspace=await getWorkspace(executor),started=performance.now();
     const guards=[...workspaceReadGuard(workspace),
       {text:'SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3) ORDER BY e.id FOR SHARE OF e',values:[workspace.id,manager(proof),proof.employee.id]},
       ...managementSessionStatements(proof,proof.employee.id,readRoles),
@@ -64,7 +64,12 @@ export async function readTimecards(proof:SessionMutationProof,requested:Period,
       ...managementSessionStatements(proof,proof.employee.id,readRoles)]);
     const result=parseTimecardsResponse(results[guards.length]?.[0],period);
     if(!manager(proof)&&result.cards.some(c=>c.card.employeeId!==proof.employee.id))throw new Error('Incorrect scope');
-    return result;
+    const authority=await executor.query<{remaining:number}>({text:`SELECT floor(LEAST(45000,EXTRACT(epoch FROM(s.expires_at-clock_timestamp()))*1000))::integer AS remaining
+      FROM employee_sessions s JOIN employees e ON e.id=s.employee_id JOIN locations l ON l.id=e.primary_location_id
+      WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[]) AND l.workspace_id=$4 AND s.expires_at>clock_timestamp()`,values:[proof.sessionTokenHash,proof.employee.id,readRoles,workspace.id]});
+    if(!authority[0])return {state:'unavailable',reason:'access_denied'};
+    const validForMs=Math.floor(authority[0].remaining-(performance.now()-started));if(validForMs<1)throw Error('Timecards expired');
+    return {...result,validForMs};
   }catch(error){
     if(isManagementAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};
     const message=error instanceof Error?error.message:'';

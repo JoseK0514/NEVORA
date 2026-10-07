@@ -10,7 +10,7 @@ export async function POST(request:Request):Promise<Response>{
   try{
     const session=await getSession();
     if(!session)return correctionJson({state:'unavailable'},401);
-    if(request.headers.get('x-nevora-actor')&&request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);
+    if(request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);
     let period;
     try{
       const body=await readCorrectionJson(request);

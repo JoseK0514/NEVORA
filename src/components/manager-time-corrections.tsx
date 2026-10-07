@@ -1,5 +1,6 @@
 'use client';
 
+import {usePrivateFragmentFocus} from './private-fragment-focus';
 import { useEffect, useRef, useState } from 'react';
 import {
   fetchManagerTimeCorrections,
@@ -58,6 +59,7 @@ export function ManagerTimeCorrectionsSurface({
   const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(snapshot.reason==='access_denied'?'access_lost':'unavailable'):'paused');
   const mode=requestedMode==='ready'&&snapshot?.state!=='ready'?'unavailable':requestedMode;
   const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
+  usePrivateFragmentFocus('correction-',!!ready);
   return <section className="manager-corrections" aria-labelledby="manager-corrections-title">
     <header className="manager-corrections-header">
       <div>
@@ -71,7 +73,7 @@ export function ManagerTimeCorrectionsSurface({
     {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null||mode!=='ready'} onClick={onRetry}>Retry same decision</button>:null}
     {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Sign in with a currently authorized management account.':'The correction queue is unconfirmed. Check a current protected snapshot before reviewing requests.'}</small></div>:
       ready?.requests.length?<div className="manager-corrections-list">
-        {ready.requests.map(item=><article className="manager-correction-row" key={item.id}>
+        {ready.requests.map(item=><article className="manager-correction-row" key={item.id} tabIndex={-1} id={`correction-${item.id}`}>
           <div className="manager-correction-topline">
             <div>
               <strong>{item.employeeName}</strong>
@@ -102,7 +104,7 @@ export function ManagerTimeCorrections({actorId}:{actorId?:string}={}){
   const [retry,setRetry]=useState<CorrectionReviewCommand|null>(null);
   const authorityLost=useRef(false);
   useEffect(()=>{
-    let resumeMode:CorrectionQueueConnection='loading';
+    let resumeMode:CorrectionQueueConnection='loading',active=false;
     const controller=createPrivateSnapshotController<ManagerTimeCorrections>(next=>{
       setSnapshot(next.refreshing?null:next.snapshot);
       const denied=next.snapshot?.state==='unavailable'&&next.snapshot.reason==='access_denied';
@@ -110,13 +112,13 @@ export function ManagerTimeCorrections({actorId}:{actorId?:string}={}){
       if(denied){setRetry(null);setNotice(null);setConnection('access_lost');}
       else {setConnection(next.paused?resumeMode:next.refreshing?resumeMode:next.snapshot?.state==='ready'?'ready':'unavailable');if(next.snapshot?.state==='ready'&&!next.refreshing)resumeMode='loading';}
     },signal=>fetchManagerTimeCorrections(signal,actorId),parseManagerTimeCorrections,reason=>({state:'unavailable',reason}),()=> 'read_failed');
-    const clear=(mode:CorrectionQueueConnection)=>{resumeMode=mode;controller.pause();setNotice(current=>current===unknownNotice?current:null);};
-    const refresh=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine){resumeMode='loading';controller.start();}};
-    const reconnect=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine){resumeMode='reconnecting';controller.start();}};
-    const offline=()=>clear('offline'),hide=()=>clear('paused'),visibility=()=>document.visibilityState==='hidden'?hide():refresh();
-    if(navigator.onLine&&document.visibilityState!=='hidden')controller.start();else clear(navigator.onLine?'paused':'offline');
-    window.addEventListener(changedEvent,refresh);window.addEventListener('focus',refresh);window.addEventListener('pageshow',refresh);window.addEventListener('storage',refresh);window.addEventListener('online',reconnect);window.addEventListener('offline',offline);window.addEventListener('pagehide',hide);document.addEventListener('visibilitychange',visibility);
-    return()=>{controller.stop();window.removeEventListener(changedEvent,refresh);window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',refresh);window.removeEventListener('online',reconnect);window.removeEventListener('offline',offline);window.removeEventListener('pagehide',hide);document.removeEventListener('visibilitychange',visibility);};
+    const clear=(mode:CorrectionQueueConnection)=>{active=false;resumeMode=mode;controller.pause();setNotice(current=>current===unknownNotice?current:null);};
+    const refresh=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='loading';controller.start();}};
+    const reconnect=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='reconnecting';controller.start();}};
+    const offline=()=>clear('offline'),hide=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;clear('paused');},visibility=()=>document.visibilityState==='hidden'?hide():refresh();
+    if(navigator.onLine&&document.visibilityState!=='hidden')refresh();else clear(navigator.onLine?'paused':'offline');
+    window.addEventListener(changedEvent,refresh);window.addEventListener('focus',refresh);window.addEventListener('pageshow',refresh);window.addEventListener('storage',refresh);window.addEventListener('online',reconnect);window.addEventListener('offline',offline);window.addEventListener('pagehide',hide);window.addEventListener('blur',hide);document.addEventListener('visibilitychange',visibility);
+    return()=>{controller.stop();window.removeEventListener(changedEvent,refresh);window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',refresh);window.removeEventListener('online',reconnect);window.removeEventListener('offline',offline);window.removeEventListener('pagehide',hide);window.removeEventListener('blur',hide);document.removeEventListener('visibilitychange',visibility);};
   },[actorId]);
 
   const send=async(command:CorrectionReviewCommand)=>{
