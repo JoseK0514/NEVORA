@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [development, main, "phase-c/**", "release/**"]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: ${{ startsWith(github.head_ref || github.ref_name, 'codex/phase-d-') }}
+
 permissions:
   contents: read
 
@@ -195,7 +199,7 @@ jobs:
 
   release-postgres:
     name: release-postgres
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || github.base_ref == 'main' || github.base_ref == 'development' || startsWith(github.ref, 'refs/heads/phase-c/') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.head_ref, 'phase-c/') || startsWith(github.head_ref, 'release/') || startsWith(github.base_ref, 'phase-c/') || startsWith(github.base_ref, 'release/')
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || github.base_ref == 'main' || github.base_ref == 'development' || startsWith(github.ref, 'refs/heads/phase-c/') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.head_ref, 'phase-c/') || startsWith(github.head_ref, 'release/') || startsWith(github.base_ref, 'phase-c/') || startsWith(github.base_ref, 'release/') || startsWith(github.ref, 'refs/heads/codex/phase-d-') || startsWith(github.head_ref, 'codex/phase-d-')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
