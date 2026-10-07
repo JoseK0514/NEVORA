@@ -17,8 +17,9 @@ export function ClockerRecoveryReview({actorId}:{actorId:string}){
    if(v?.state==='unavailable')return v;
    if(v?.state!=='ready'||v.commandId!==selected.current||!Array.isArray(v.receipts)||v.receipts.length>100||!Number.isFinite(v.validForMs)||v.validForMs<1||v.validForMs>15000||!Number.isFinite(Date.parse(v.observedAt)))throw Error('Invalid receipt review');return v;
   },reason=>({state:'unavailable',reason}),()=> 'read_failed');controller.current=c;
-  const active=()=>{if(document.visibilityState==='visible'&&navigator.onLine)c.start();else c.pause();};
-  const pause=()=>c.pause();for(const name of ['focus','pageshow','online','storage'])window.addEventListener(name,active);
+  let live=false;
+  const active=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||live))return;live=document.visibilityState==='visible'&&navigator.onLine;if(live)c.start();else c.pause();};
+  const pause=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;live=false;c.pause();};for(const name of ['focus','pageshow','online','storage'])window.addEventListener(name,active);
   for(const name of ['blur','pagehide','offline'])window.addEventListener(name,pause);document.addEventListener('visibilitychange',active);active();
   return()=>{c.stop();for(const name of ['focus','pageshow','online','storage'])window.removeEventListener(name,active);for(const name of ['blur','pagehide','offline'])window.removeEventListener(name,pause);document.removeEventListener('visibilitychange',active);controller.current=null;};
  },[actorId]);
