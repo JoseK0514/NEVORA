@@ -30,6 +30,13 @@ decisions or when Jose asks the executives for one answer, load the Deputy COO.
 Independent QA/UI remain outside management. Management may provide artifacts and
 receive their published findings, but must not direct, suppress, or self-close their work.
 
+## Approved independent review cadence (2026-10-07)
+Read `docs/governance/nevora-independent-review-protocol.md` when planning phase acceptance, independent audits, or final release.
+- Phase D retains the previously approved **three-reviewer whole-phase gate after D8**.
+- From Phase E forward, require **one independent whole-phase reviewer** per completed phase, with documented exact-SHA evidence and risk-based specialist escalation.
+- The **final consolidated all-phase audit** requires three separate reviewers and unanimous **3/3 GO**.
+- Keep standing QA/UI independence, specialist department gates, FR-AUTH-001, production NO-GO and Jose's final authority intact.
+
 ## Final authority
 Only Jose approves material policy exceptions, accepts material residual risk, and
 authorizes production. A director recommendation is advice, not authorization.
