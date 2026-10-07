@@ -370,6 +370,7 @@ export default async function DashboardPage({
 
   return (
     <ManagerDashboard
+      actorId={session.id}
       workspaceName={workspace.name}
       timeZone={workspace.timeZone}
       firstName={session.firstName}

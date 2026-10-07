@@ -66,6 +66,7 @@ export type EmployeeTimeCorrections =
 export type ManagerTimeCorrections =
   | {
       state: 'ready';
+      validForMs: number;
       observedAt: string;
       timeZone: string;
       requests: ManagerCorrectionItem[];
@@ -209,7 +210,7 @@ export function parseManagerTimeCorrections(value: unknown): ManagerTimeCorrecti
   if (!object(value)) throw new Error('Invalid correction response');
   const failed = unavailable(value);
   if (failed) return failed;
-  if (value.state !== 'ready' || !instant(value.observedAt) || !zone(value.timeZone) ||
+  if (value.state !== 'ready' || !integer(value.validForMs,1) || value.validForMs>45000 || !instant(value.observedAt) || !zone(value.timeZone) ||
       !Array.isArray(value.requests) || value.requests.length > 100) {
     throw new Error('Invalid correction response');
   }
@@ -219,5 +220,5 @@ export function parseManagerTimeCorrections(value: unknown): ManagerTimeCorrecti
     }
     return {...item(entry),employeeName:entry.employeeName,isSelf:entry.isSelf};
   });
-  return {state:'ready',observedAt:value.observedAt,timeZone:value.timeZone,requests};
+  return {state:'ready',validForMs:value.validForMs,observedAt:value.observedAt,timeZone:value.timeZone,requests};
 }

@@ -289,7 +289,18 @@ export async function readManagerTimeCorrections(
     if (!row || !Number.isSafeInteger(row.pendingCount)) return {state:'unavailable',reason:'read_failed'};
     if ((row.pendingCount ?? 0)>100) return {state:'unavailable',reason:'source_limit'};
     if (!row.snapshot) return {state:'unavailable',reason:'read_failed'};
-    return parseManagerTimeCorrections(row.snapshot);
+    const source=parseManagerTimeCorrections({...row.snapshot as object,validForMs:45000});
+    const started=performance.now();
+    const [final]=await executor.query<{validForMs:number}>({text:`SELECT floor(LEAST(45000,
+      EXTRACT(epoch FROM(s.expires_at-clock_timestamp()))*1000,
+      45000-EXTRACT(epoch FROM(clock_timestamp()-$3::timestamptz))*1000))::integer AS "validForMs"
+      FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
+      WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role IN ('OWNER','MANAGER') AND s.expires_at>clock_timestamp()`,
+      values:[proof.sessionTokenHash,proof.employee.id,source.state==='ready'?source.observedAt:null]});
+    if(!final)return {state:'unavailable',reason:'access_denied'};
+    const remaining=final.validForMs-Math.ceil(performance.now()-started);
+    if(source.state!=='ready'||remaining<1)return {state:'unavailable',reason:'read_failed'};
+    return {...source,validForMs:remaining};
   } catch (error) {
     if (isManagementAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
     if (schemaMissing(error)) return {state:'unavailable',reason:'schema_missing'};

@@ -1,18 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   fetchManagerTimeCorrections,
   reviewManagerTimeCorrection,
   type CorrectionActionResponse,
 } from '@/lib/time-corrections/client';
-import type {
-  ManagerCorrectionItem,
-  ManagerTimeCorrections,
-} from '@/lib/time-corrections/read-model';
+import {parseManagerTimeCorrections,type ManagerCorrectionItem,type ManagerTimeCorrections} from '@/lib/time-corrections/read-model';
 import type { CorrectionReviewCommand } from '@/lib/time-corrections/validation';
 import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-context';
 
+import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
+export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 const changedEvent='nevora:time-correction-changed';
 const unknownNotice='The server outcome could not be confirmed. Retry the same decision safely.';
 
@@ -40,6 +39,7 @@ function noticeFor(result:CorrectionActionResponse){
 export function ManagerTimeCorrectionsSurface({
   snapshot,
   loading,
+  connection,
   busyId,
   notice,
   onDecision,
@@ -48,13 +48,16 @@ export function ManagerTimeCorrectionsSurface({
 }:{
   snapshot:ManagerTimeCorrections|null;
   loading:boolean;
+  connection?:CorrectionQueueConnection;
   busyId:string|null;
   notice:string|null;
   onDecision:(item:ManagerCorrectionItem,decision:'APPROVE'|'REJECT')=>void;
   onRetry:()=>void;
   retry:CorrectionReviewCommand|null;
 }){
-  const ready=snapshot?.state==='ready'?snapshot:null;
+  const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(snapshot.reason==='access_denied'?'access_lost':'unavailable'):'paused');
+  const mode=requestedMode==='ready'&&snapshot?.state!=='ready'?'unavailable':requestedMode;
+  const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
   return <section className="manager-corrections" aria-labelledby="manager-corrections-title">
     <header className="manager-corrections-header">
       <div>
@@ -65,10 +68,8 @@ export function ManagerTimeCorrectionsSurface({
       {ready?<strong className="manager-corrections-count">{ready.requests.length}</strong>:null}
     </header>
     {notice?<div className="manager-corrections-notice" role="status">{notice}</div>:null}
-    {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null} onClick={onRetry}>Retry same decision</button>:null}
-    {loading&&!snapshot?<div className="manager-corrections-empty" role="status"><strong>Loading correction requests</strong><small>Checking the protected correction queue.</small></div>:
-      snapshot?.state==='unavailable'?<div className="manager-corrections-empty" role="status"><strong>Correction requests unavailable</strong><small>The latest protected correction queue could not be confirmed.</small></div>:
-      !ready?<div className="manager-corrections-empty" role="status"><strong>Updates paused</strong><small>The correction queue is unconfirmed. Return online or to this page to check the latest requests.</small></div>:
+    {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null||mode!=='ready'} onClick={onRetry}>Retry same decision</button>:null}
+    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Sign in with a currently authorized management account.':'The correction queue is unconfirmed. Check a current protected snapshot before reviewing requests.'}</small></div>:
       ready?.requests.length?<div className="manager-corrections-list">
         {ready.requests.map(item=><article className="manager-correction-row" key={item.id}>
           <div className="manager-correction-topline">
@@ -93,58 +94,36 @@ export function ManagerTimeCorrectionsSurface({
   </section>;
 }
 
-export function ManagerTimeCorrections(){
+export function ManagerTimeCorrections({actorId}:{actorId?:string}={}){
   const [snapshot,setSnapshot]=useState<ManagerTimeCorrections|null>(null);
-  const [loading,setLoading]=useState(true);
+  const [connection,setConnection]=useState<CorrectionQueueConnection>('loading');
   const [busyId,setBusyId]=useState<string|null>(null);
   const [notice,setNotice]=useState<string|null>(null);
   const [retry,setRetry]=useState<CorrectionReviewCommand|null>(null);
-  const abortRef=useRef<AbortController|null>(null);
   const authorityLost=useRef(false);
-
-  const load=useCallback(async()=>{
-    abortRef.current?.abort();
-    const controller=new AbortController();
-    abortRef.current=controller;
-    setSnapshot(null);
-    setLoading(true);
-    try{
-      const next=await fetchManagerTimeCorrections(controller.signal);
-      if(!controller.signal.aborted){
-        setSnapshot(next);
-        authorityLost.current=next.state==='unavailable'&&next.reason==='access_denied';
-        if(authorityLost.current){setRetry(null);setNotice(null);}
-      }
-    }catch{
-      if(!controller.signal.aborted)setSnapshot({state:'unavailable',reason:'read_failed'});
-    }finally{
-      if(!controller.signal.aborted)setLoading(false);
-    }
-  },[]);
-
   useEffect(()=>{
-    let mounted=true;
-    const refresh=()=>{if(mounted&&document.visibilityState!=='hidden'&&navigator.onLine)void load();};
-    // Keep only uncertain same-session recovery in memory; access denial/unmount clears it.
-    const clear=()=>{abortRef.current?.abort();if(mounted){setSnapshot(null);setLoading(false);setNotice(current=>current===unknownNotice?current:null);}};
-    void Promise.resolve().then(()=>{if(mounted)void load();});
-    window.addEventListener(changedEvent,refresh);
-    window.addEventListener('focus',refresh);
-    window.addEventListener('pageshow',refresh);
-    window.addEventListener('storage',refresh);
-    window.addEventListener('online',refresh);
-    const visibility=()=>{if(document.visibilityState==='hidden')clear();else refresh();};
-    window.addEventListener('offline',clear);
-    window.addEventListener('pagehide',clear);
-    document.addEventListener('visibilitychange',visibility);
-    return()=>{mounted=false;abortRef.current?.abort();window.removeEventListener(changedEvent,refresh);window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',refresh);window.removeEventListener('online',refresh);window.removeEventListener('offline',clear);window.removeEventListener('pagehide',clear);document.removeEventListener('visibilitychange',visibility);};
-  },[load]);
+    let resumeMode:CorrectionQueueConnection='loading';
+    const controller=createPrivateSnapshotController<ManagerTimeCorrections>(next=>{
+      setSnapshot(next.refreshing?null:next.snapshot);
+      const denied=next.snapshot?.state==='unavailable'&&next.snapshot.reason==='access_denied';
+      authorityLost.current=denied;
+      if(denied){setRetry(null);setNotice(null);setConnection('access_lost');}
+      else {setConnection(next.paused?resumeMode:next.refreshing?resumeMode:next.snapshot?.state==='ready'?'ready':'unavailable');if(next.snapshot?.state==='ready'&&!next.refreshing)resumeMode='loading';}
+    },signal=>fetchManagerTimeCorrections(signal,actorId),parseManagerTimeCorrections,reason=>({state:'unavailable',reason}),()=> 'read_failed');
+    const clear=(mode:CorrectionQueueConnection)=>{resumeMode=mode;controller.pause();setNotice(current=>current===unknownNotice?current:null);};
+    const refresh=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine){resumeMode='loading';controller.start();}};
+    const reconnect=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine){resumeMode='reconnecting';controller.start();}};
+    const offline=()=>clear('offline'),hide=()=>clear('paused'),visibility=()=>document.visibilityState==='hidden'?hide():refresh();
+    if(navigator.onLine&&document.visibilityState!=='hidden')controller.start();else clear(navigator.onLine?'paused':'offline');
+    window.addEventListener(changedEvent,refresh);window.addEventListener('focus',refresh);window.addEventListener('pageshow',refresh);window.addEventListener('storage',refresh);window.addEventListener('online',reconnect);window.addEventListener('offline',offline);window.addEventListener('pagehide',hide);document.addEventListener('visibilitychange',visibility);
+    return()=>{controller.stop();window.removeEventListener(changedEvent,refresh);window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',refresh);window.removeEventListener('online',reconnect);window.removeEventListener('offline',offline);window.removeEventListener('pagehide',hide);document.removeEventListener('visibilitychange',visibility);};
+  },[actorId]);
 
   const send=async(command:CorrectionReviewCommand)=>{
     if(authorityLost.current)return;
     setBusyId(command.requestId);setNotice(null);
     try{
-      const result=await reviewManagerTimeCorrection(command);
+      const result=await reviewManagerTimeCorrection(command,actorId);
       if(authorityLost.current)return;
       setNotice(noticeFor(result));
       setRetry(result.state==='outcome_unknown'?command:null);
@@ -158,7 +137,8 @@ export function ManagerTimeCorrections(){
 
   return <ManagerTimeCorrectionsSurface
     snapshot={snapshot}
-    loading={loading}
+    loading={connection==='loading'}
+    connection={connection}
     busyId={busyId}
     notice={notice}
     retry={retry}

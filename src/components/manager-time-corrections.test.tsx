@@ -5,6 +5,7 @@ import type { ManagerTimeCorrections } from '@/lib/time-corrections/read-model';
 
 const ready: Extract<ManagerTimeCorrections,{state:'ready'}> = {
   state:'ready',
+  validForMs:45000,
   observedAt:'2030-10-07T16:10:00Z',
   timeZone:'America/Puerto_Rico',
   requests:[{
@@ -105,3 +106,9 @@ describe('D2 manager correction surface',()=>{
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Decline<\/button>/);
   });
 });
+
+it.each([
+ ['offline','unavailable offline'],['reconnecting','Reconnecting'],['access_lost','access ended'],['unavailable','Correction requests unavailable'],['loading','Loading'],['paused','Updates paused'],
+] as const)('UX-04 %s clears an old ready queue without an empty claim',(connection,label)=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} connection={connection} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);expect(html).toContain(label);expect(html).not.toContain('No correction requests');expect(html).not.toContain('Avery QA');expect(html).not.toContain('manager-corrections-count');});
+
+it('UX-04 refuses an empty claim even when ready is supplied with a missing snapshot',()=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} connection="ready" busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);expect(html).toContain('Correction requests unavailable');expect(html).not.toContain('No correction requests');});

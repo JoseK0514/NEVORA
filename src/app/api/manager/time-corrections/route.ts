@@ -19,6 +19,7 @@ export async function GET(request: Request): Promise<Response> {
   try {
     const session=await getSession();
     if (!session) return correctionJson({state:'unavailable'},401);
+    if(request.headers.get('x-nevora-actor')&&request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);
     if (session.role!=='OWNER' && session.role!=='MANAGER') return correctionJson({state:'unavailable'},403);
     const result=await getManagerTimeCorrections();
     if (result.state==='ready') return correctionJson(result);
@@ -34,6 +35,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const session=await getSession();
     if (!session) return correctionJson({state:'unavailable'},401);
+    if(request.headers.get('x-nevora-actor')&&request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);
     if (session.role!=='OWNER' && session.role!=='MANAGER') return correctionJson({state:'unavailable'},403);
     let command;
     try {

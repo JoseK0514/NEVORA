@@ -37,21 +37,21 @@ function action(value:unknown):CorrectionActionResponse{
   throw new Error('Invalid correction response');
 }
 
-async function get(path:string,signal:AbortSignal){
+async function get(path:string,signal:AbortSignal,actorId?:string){
   const response=await fetch(path,{method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error',signal,headers:{
-    Accept:'application/json','X-Nevora-Time-Correction':'1',
+    Accept:'application/json','X-Nevora-Time-Correction':'1',...(actorId?{'X-Nevora-Actor':actorId}:{}),
   }});
   if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'} as const;
   if(!response.ok)throw new Error('Correction data is unavailable');
   return response.json();
 }
 
-async function post(path:string,body:CorrectionRequestCommand|CorrectionReviewCommand):Promise<CorrectionActionResponse>{
+async function post(path:string,body:CorrectionRequestCommand|CorrectionReviewCommand,actorId?:string):Promise<CorrectionActionResponse>{
   const serialized=JSON.stringify(body);
   const unknown={state:'outcome_unknown' as const,operationId:body.operationId};
   try{
     const response=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',headers:{
-      Accept:'application/json','Content-Type':'application/json','X-Nevora-Time-Correction':'1',
+      Accept:'application/json','Content-Type':'application/json','X-Nevora-Time-Correction':'1',...(actorId?{'X-Nevora-Actor':actorId}:{}),
     },body:serialized});
     if(response.status===401||response.status===403)return {state:'unavailable'};
     const result=action(await response.json());
@@ -69,9 +69,9 @@ export async function fetchEmployeeTimeCorrections(signal:AbortSignal):Promise<E
 export async function submitEmployeeTimeCorrection(command:CorrectionRequestCommand):Promise<CorrectionActionResponse>{
   return post('/api/employee/time-corrections',command);
 }
-export async function fetchManagerTimeCorrections(signal:AbortSignal):Promise<ManagerTimeCorrections>{
-  return parseManagerTimeCorrections(await get('/api/manager/time-corrections',signal));
+export async function fetchManagerTimeCorrections(signal:AbortSignal,actorId?:string):Promise<ManagerTimeCorrections>{
+  return parseManagerTimeCorrections(await get('/api/manager/time-corrections',signal,actorId));
 }
-export async function reviewManagerTimeCorrection(command:CorrectionReviewCommand):Promise<CorrectionActionResponse>{
-  return post('/api/manager/time-corrections',command);
+export async function reviewManagerTimeCorrection(command:CorrectionReviewCommand,actorId?:string):Promise<CorrectionActionResponse>{
+  return post('/api/manager/time-corrections',command,actorId);
 }

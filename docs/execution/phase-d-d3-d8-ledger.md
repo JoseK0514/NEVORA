@@ -72,7 +72,7 @@ Execution continues on the current D3–D8 lineage without restarting D2 or addi
 
 - **UX-01 OPEN:** complete customer Forgot access/password recovery; secure expiring/single-use proof, enumeration resistance, expired/reused proof handling, assisted recovery when the registered channel is inaccessible, tested session invalidation, unrelated account/operational data preserved. Reuse existing credentials/session architecture and approved services; fictional delivery only during tests.
 - **UX-03 OPEN:** distinguish unpublished, published no-assignment/off and unavailable/error employee schedule states; never disclose drafts or present an unpublished schedule as confirmed time off.
-- **UX-04 OPEN:** correction queue must distinguish loading, verified-empty, pending, offline/unavailable, reconnecting and authority loss. Unknown data cannot say no correction requests; privacy clearing/current authority remain required.
+- **UX-04 IMPLEMENTED / EMBEDDED PASS:** correction queue distinguishes loading, verified-empty, pending, offline/unavailable, reconnecting and authority loss. Unknown data cannot say no correction requests; privacy clearing/current authority remain required. Final D8 regression remains required.
 - **UX-05 OPEN:** shared Clocker permits the next employee to record their own work while preserving a prior unresolved intent/receipt; never cross-identity replay/discard uncertainty; manager-assisted resolution where needed. Verify network loss/retry/refresh/duplicates/identity switches/concurrency with immutable history, idempotency and device/location binding.
 - **UX-02 OPEN / DEFERRED:** stronger first-activation identity proof is explicitly **not authorized** by this amendment.
 
@@ -110,3 +110,13 @@ Implemented additive migration `0019_payroll_export_mappings.sql`, one canonical
 - P2 `D6-EXEC-001`: WebKit native select content overflowed at 320 px. Diagnosed with DOM geometry/screenshot; corrected select clipping and bounded grid tracks; **CLOSED by Chromium/WebKit rerun**.
 - No default compensation policy, earnings code, provider credentials, provider import, payment, paid service or production change was introduced. External import acceptance/account activation is not claimed.
 - No executive stop condition triggered. D7 and the four mandatory amended UX acceptance items continue automatically. Final exact-candidate D8 regression remains required.
+
+### UX-04 embedded checkpoint
+
+The existing correction queue now uses explicit connection states and the shared private snapshot controller. Names/counts clear on loading, offline, reconnecting, pause and authority loss. Only a current verified empty snapshot can say “No correction requests.” Reads have a maximum 45-second lifetime bounded by the current session deadline, with a final authority check after projection. Actor-bound requests reject an identity change; uncertain decision retries retain their original operation ID.
+
+- Affected queue/read-model/client/API/shared snapshot tests: **5 files / 61 tests PASS**.
+- Owned PostgreSQL correction regression: **1 file / 36 tests PASS**, including session-deadline lifetime and logout after the protected source batch.
+- Chromium/WebKit browser run: **101 checks PASS**, overlapping D3–D6 plus actual empty/pending queues, held loading/reconnecting reads, offline privacy clearing and access loss.
+- Typecheck and ESLint: **PASS**. Source logs: `/tmp/nevora-ux04-{unit,pg,browser,typecheck,lint}.log`.
+- UX-04 has implementation and embedded evidence; it remains a mandatory final D8 acceptance item. Other amended items and D7/D8 remain incomplete. No executive stop condition triggered.

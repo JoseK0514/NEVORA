@@ -687,3 +687,13 @@ describe('D2 append-only time correction protocol', () => {
   });
 
 });
+
+it('UX-04 bounds a verified correction queue by the current session deadline',async()=>{
+ await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '10 seconds' WHERE employee_id='c34-owner'");
+ const result=await readManagerTimeCorrections(ownerProof,f.db.executor);
+ expect(result.state).toBe('ready');if(result.state==='ready'){expect(result.validForMs).toBeGreaterThan(0);expect(result.validForMs).toBeLessThanOrEqual(10000);}
+});
+it('UX-04 refuses a queue when logout happens after the protected source batch',async()=>{
+ const executor={...f.db.executor,query:async<T>(statement:Parameters<typeof f.db.executor.query>[0])=>{if(statement.text.includes('EXTRACT(epoch FROM(s.expires_at-clock_timestamp()))'))await f.q("DELETE FROM employee_sessions WHERE employee_id='c34-owner'");return f.db.executor.query<T>(statement);}};
+ expect(await readManagerTimeCorrections(ownerProof,executor)).toEqual({state:'unavailable',reason:'access_denied'});
+});
