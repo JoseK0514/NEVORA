@@ -1,11 +1,11 @@
 # NEVORA — Independent Phase Review and Final System Audit Protocol
 
 **Decision:** Approved by Jose on 2026-10-07.
-**Effective scope:** Phase E and subsequent normal development phases. Phase D retains its previously approved exceptional gate.
+**Effective scope:** Phase D (after D8) and every subsequent normal development phase. The earlier Phase D-specific three-reviewer whole-phase requirement is replaced by one independent reviewer; the final integrated 3/3 audit remains mandatory.
 **Authority:** Jose (CEO / Owner).
 **Integration:** Adopt through a reviewed governance-only PR to development. This document does not authorize a product merge or a deployment.
 
-## 1. One independent reviewer at the end of each phase — starting Phase E
+## 1. One independent reviewer at the end of each phase — Phase D onward
 
 The implementation team completes the phase and its embedded executive, QA, security, UI/UX, accessibility, and regression checks. Freeze the exact candidate commit and tree, then assign **one independent senior reviewer** to conduct a whole-phase review. The reviewer:
 - Works in a separate, independent review context and does not author or remediate the code they certify.
@@ -23,9 +23,11 @@ Where the phase contains critical authentication/authorization, sensitive employ
 
 An additional specialist review may be ordered by Jose or required by a pre-existing control. **This reduction in routine phase-review count does not waive** standing independent security/privacy audit departments, their existing unanimous approvals where required, the independent QA/UI reporting line, open audit findings, FR-AUTH-001, hosted Preview/Neon verification, migration/rollback checks, accessibility obligations, or other release gates. The stricter previously approved control applies in case of conflict until Jose explicitly revises that specific control.
 
-## 3. Phase D exception — preserve existing three-reviewer requirement
+## 3. Phase D transition — one independent reviewer after D8
 
-Phase D's D3–D8 implementation and embedded checks continue under the controlling Phase D execution authorization. **After D8 completes**, freeze the whole Phase D candidate and conduct the **already-approved three-reviewer independent whole-phase assessment** before Phase D integration. Do not interpret this policy as a retrospective waiver, a D3–D8 interruption, or permission to merge Phase D PRs or deploy.
+Phase D's D3–D8 implementation and embedded tests continue unchanged under the controlling Phase D execution authorization. **After D8 completes**, freeze the exact whole-Phase-D candidate and require **one qualified independent senior reviewer** to issue evidence-backed GO or NO-GO before controlled Phase D integration. This 2026-10-07 decision **explicitly supersedes only the prior Phase D-specific three-reviewer whole-phase signoff count**. The reviewer must cover the entire Phase D, including D1–D8, inherited Clocker regressions, data/time corrections, password recovery and payroll-ready exports. Escalate critical or unreviewable risks under section 2.
+
+This is **not** an independent GO, permission to skip D8, waive a separately mandatory specialist review or release control, merge the existing draft PRs, deploy, or authorize production. Phase D will be reviewed again alongside all other integrated phases by the three-reviewer final panel under section 4.
 
 ## 4. Final consolidated all-phase audit — three independent reviewers
 
@@ -57,4 +59,4 @@ Each phase and final audit record must contain:
 
 ## 7. Change control
 
-This is an approved **governance** adjustment, beginning with Phase E. It must not rewrite historical findings, present incomplete audits as complete, modify runtime behavior, or bypass any existing Phase D or production hold. Any further change to the number of required reviewers or a standing specialized audit gate requires Jose's explicit authorization.
+This is an approved **governance** adjustment, beginning with Phase D after D8. It must not rewrite historical findings, present incomplete audits as complete, modify runtime behavior, bypass D8 verification, or waive any Phase D security, specialist audit or production hold. Any further change to the number of required reviewers or a standing specialized audit gate requires Jose's explicit authorization.
