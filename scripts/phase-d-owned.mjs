@@ -7,6 +7,7 @@ import {randomBytes} from 'node:crypto';
 if(process.env.DATABASE_URL)throw new Error('Unset DATABASE_URL before owned Phase D verification.');
 const mode=process.argv[2]??'timecards';
 const modes={timecards:['node_modules/vitest/vitest.mjs','run','--config','vitest.timecards-integration.config.mts'],
+  reports:['node_modules/vitest/vitest.mjs','run','--config','vitest.reports-integration.config.mts'],
   browser:['--import','tsx','scripts/phase-d-browser-qa.mjs']};
 if(!Object.hasOwn(modes,mode))throw new Error('Unknown owned Phase D test mode');
 const bin=process.env.NEVORA_TEST_PG_BIN;

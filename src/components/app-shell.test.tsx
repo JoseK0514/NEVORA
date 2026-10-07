@@ -86,6 +86,6 @@ it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reac
  expect(header).toContain('popoverTarget="manager-more-navigation"');
  const menu=header.split('id="manager-more-navigation"')[1]?.split('</div>')[0] ?? '';
  expect([...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual([
-  '/app/employees','/app/timecards','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),
+  '/app/employees','/app/timecards','/app/reports','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),
  ]);
 });

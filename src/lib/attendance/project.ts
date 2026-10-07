@@ -10,6 +10,7 @@ import type {
   ObservationKind,
   RecordedBreak,
   RecordedEntry,
+  ReadyProjection,
   ValidatedAttendanceSource,
 } from "./types";
 import { validateAttendanceSource } from "./validation";
@@ -475,7 +476,7 @@ function breakObservations(
   return observations;
 }
 
-export function projectAttendance(sourceValue: unknown): AttendanceProjection {
+function projectAttendanceWindow(sourceValue: unknown, periodScope?: {start:Temporal.Instant;end:Temporal.Instant}): AttendanceProjection {
   const source = validateAttendanceSource(sourceValue);
   if ("state" in source) return source;
 
@@ -491,7 +492,10 @@ export function projectAttendance(sourceValue: unknown): AttendanceProjection {
   const groups: AttendanceGroup[] = [];
 
   for (const history of histories) {
-    if (!inObservationScope(history, dayStart, observedAt)) continue;
+    if (periodScope) {
+      if(history.start&&history.end&&Temporal.Instant.compare(history.end,history.start)>=0&&
+        (Temporal.Instant.compare(history.start,periodScope.end)>=0||Temporal.Instant.compare(history.end,periodScope.start)<=0))continue;
+    } else if (!inObservationScope(history, dayStart, observedAt)) continue;
     const entry = history.entry;
     const observations: Observation[] = [];
 
@@ -589,4 +593,22 @@ export function projectAttendance(sourceValue: unknown): AttendanceProjection {
       deferredCapabilities: [...DEFERRED_CAPABILITIES],
     },
   };
+}
+
+export function projectAttendance(sourceValue:unknown):AttendanceProjection {
+  return projectAttendanceWindow(sourceValue);
+}
+
+/** Historical report scope reuses the D1 raw-history observers. It does not
+ * rematch later publications, reinterpret approved corrections, or assert policy. */
+export function projectAttendanceForPeriod(sourceValue:unknown,startAt:string,endAt:string):
+  | {state:'ready';groups:ReadyProjection['groups'];coverage:ReadyProjection['coverage']}
+  | Extract<AttendanceProjection,{state:'unavailable'}> {
+  try{
+    const start=Temporal.Instant.from(startAt),end=Temporal.Instant.from(endAt);
+    if(Temporal.Instant.compare(start,end)>=0)return {state:'unavailable',reason:'invalid_source'};
+    const result=projectAttendanceWindow(sourceValue,{start,end});
+    if(result.state!=='ready')return result;
+    return {state:'ready',groups:result.groups,coverage:result.coverage};
+  }catch{return {state:'unavailable',reason:'invalid_source'};}
 }

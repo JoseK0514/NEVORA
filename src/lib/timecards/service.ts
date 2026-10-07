@@ -29,7 +29,7 @@ export function parseTimecardCommand(v:unknown):TimecardCommand {
     expectedSourceHash:v.expectedSourceHash,action:v.action as TimecardCommand['action'],...(v.note?{note:v.note as string}:{})};
 }
 
-const readSql=`WITH scope AS (
+export const timecardReadSql=`WITH scope AS (
   SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id
   WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3)
 ), sources AS (
@@ -60,7 +60,7 @@ export async function readTimecards(proof:SessionMutationProof,requested:Period,
       {text:'SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3) ORDER BY e.id FOR SHARE OF e',values:[workspace.id,manager(proof),proof.employee.id]},
       ...managementSessionStatements(proof,proof.employee.id,readRoles),
     ];
-    const results=await executor.transaction([...guards,{text:readSql,values:[workspace.id,manager(proof),proof.employee.id,period.startDate,period.endDate]},
+    const results=await executor.transaction([...guards,{text:timecardReadSql,values:[workspace.id,manager(proof),proof.employee.id,period.startDate,period.endDate]},
       ...managementSessionStatements(proof,proof.employee.id,readRoles)]);
     const result=parseTimecardsResponse(results[guards.length]?.[0],period);
     if(!manager(proof)&&result.cards.some(c=>c.card.employeeId!==proof.employee.id))throw new Error('Incorrect scope');

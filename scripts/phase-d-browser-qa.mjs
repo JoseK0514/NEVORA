@@ -68,6 +68,15 @@ try{
     await ep.unroute('**/api/timecards');
     const {context:lead,page:lp}=await context(browser,'D3-L');await lp.goto(app.url+url);await lp.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();
     assert.equal(await lp.getByRole('button',{name:'Approve timecard',exact:true}).count(),0);checked(engine+': Lead self-service without management controls');
+    await mp.goto(app.url+'/app/reports?start=2026-09-21&end=2026-09-27');await mp.getByRole('heading',{name:'Period summary',exact:true}).waitFor();
+    assert.match(await mp.locator('main').innerText(),/8h 0m/);assert.match(await mp.locator('main').innerText(),/Scheduled totals and differences are unavailable/);checked(engine+': report canonical totals and unpublished-plan distinction');
+    for(const width of [320,375,390,430,768,1024,1440]){await mp.setViewportSize({width,height:1000});assert(await mp.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2));checked(`${engine}: reports geometry ${width}`);}
+    await mp.getByLabel('First day',{exact:true}).focus();assert(await mp.getByLabel('First day',{exact:true}).evaluate(e=>document.activeElement===e));await mp.keyboard.press('Tab');checked(engine+': report keyboard');
+    const reportScreen=join(evidence,`${engine}-reports-390.png`);await mp.setViewportSize({width:390,height:1000});await mp.screenshot({path:reportScreen,fullPage:true});report.screenshots.push(reportScreen);
+    await management.setOffline(true);await mp.evaluate(()=>window.dispatchEvent(new Event('offline')));await mp.getByRole('heading',{name:'Reports unavailable offline'}).waitFor();assert.equal(await mp.getByRole('heading',{name:'Period summary',exact:true}).count(),0);checked(engine+': report offline privacy clearing');
+    await management.setOffline(false);await mp.evaluate(()=>window.dispatchEvent(new Event('online')));await mp.getByRole('heading',{name:'Period summary',exact:true}).waitFor();
+    await mp.route('**/api/reports',route=>route.fulfill({status:403,contentType:'application/json',body:'{"state":"unavailable"}'}));await mp.getByRole('button',{name:'Refresh',exact:true}).click();await mp.getByRole('heading',{name:'Reports access ended'}).waitFor();assert.equal(await mp.getByRole('heading',{name:'Period summary',exact:true}).count(),0);checked(engine+': report authorization-loss clearing');
+    await lp.goto(app.url+'/app/reports');await lp.waitForURL(u=>u.pathname==='/app');checked(engine+': Lead denied reports');
     await lead.close();await employee.close();await management.close();
     await q('TRUNCATE timecard_revisions');
   }

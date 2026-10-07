@@ -30,8 +30,8 @@ Requirements source: original Lettered Executive Program pasted document, Phase 
 | Workstream | Implementation | Verification | Checkpoint |
 | --- | --- | --- | --- |
 | D3 | COMPLETE | PASS | Embedded checkpoint below |
-| D4 | IN PROGRESS | NOT RUN | Requirements and canonical timecards confirmed |
-| D5 | WAITING | NOT RUN | D4 dependency |
+| D4 | COMPLETE | PASS | Embedded checkpoint below |
+| D5 | IN PROGRESS | NOT RUN | D4 dependency satisfied |
 | D6 | WAITING | NOT RUN | D5 dependency |
 | D7 | WAITING | NOT RUN | D6 dependency |
 | D8 | WAITING | NOT RUN | Final integrated candidate |
@@ -65,3 +65,26 @@ Implemented additive migration `0018_timecards.sql`, canonical effective-source 
 ### D6 mapping direction — Jose
 
 Jose selected provider-neutral/configurable mappings on October 7. Preserve one canonical NEVORA normalized time/export model; provider profiles/adapters layer above it. Do not hard-code one ADP/QuickBooks edition or invent an import format. SMB presets require verified vendor fields/formats before availability. No vendor activation or payroll processing.
+
+### Mandatory Phase D scope amendment — Jose
+
+Execution continues on the current D3–D8 lineage without restarting D2 or adding approval gates. Four user-designated **P1 requirements** are mandatory implementation and D8 acceptance items:
+
+- **UX-01 OPEN:** complete customer Forgot access/password recovery; secure expiring/single-use proof, enumeration resistance, expired/reused proof handling, assisted recovery when the registered channel is inaccessible, tested session invalidation, unrelated account/operational data preserved. Reuse existing credentials/session architecture and approved services; fictional delivery only during tests.
+- **UX-03 OPEN:** distinguish unpublished, published no-assignment/off and unavailable/error employee schedule states; never disclose drafts or present an unpublished schedule as confirmed time off.
+- **UX-04 OPEN:** correction queue must distinguish loading, verified-empty, pending, offline/unavailable, reconnecting and authority loss. Unknown data cannot say no correction requests; privacy clearing/current authority remain required.
+- **UX-05 OPEN:** shared Clocker permits the next employee to record their own work while preserving a prior unresolved intent/receipt; never cross-identity replay/discard uncertainty; manager-assisted resolution where needed. Verify network loss/retry/refresh/duplicates/identity switches/concurrency with immutable history, idempotency and device/location binding.
+- **UX-02 OPEN / DEFERRED:** stronger first-activation identity proof is explicitly **not authorized** by this amendment.
+
+These P1 requirements are added to the D8 matrix. None is claimed implemented or closed at receipt. The final Phase D disposition must remain incomplete until all four have implementation and embedded regression evidence. Product/Engineering/Security/Governance scope is reconciled against current code before each change; routine safe remediation remains authorized.
+
+### D4 embedded checkpoint
+
+Implemented the bounded period reporting projection, one-statement canonical source adapter, current management/session guards before/after the protected batch and a final authority/lifetime observation, private report API and responsive manager report view. Reports cover the required categories, with explicit unavailability for unapproved overtime/scoring policies. Missing publication coverage produces unavailable Schedule vs Actual totals rather than an invented zero-hour plan.
+
+- Affected projection/attendance/API/navigation suite: **4 files / 79 tests PASS**.
+- Owned database report suite: **1 file / 6 tests PASS**, including finalized label/snapshot retention, current role loss, revocation and logout after projection. A fixture initially assumed direct raw inserts could supply schedule context; the existing capture trigger correctly rejected that assumption. The corrected fixture verifies the preserved missing-context limitation without weakening the capture control.
+- Owned Chromium/WebKit: **64 checks PASS**, including the 40 D3 checks and 24 D4 checks; this is an overlapping execution count, not 64 independent unit tests. Responsive widths 320/375/390/430/768/1024/1440, keyboard, offline and authorization-loss clearing, Lead denial.
+- Typecheck, ESLint and production build: **PASS**. Report button styling was corrected to the existing primary/secondary classes after screenshot inspection; subsequent browser checkpoints will exercise it.
+- P2 `D4-EXEC-001`: unpublished planning could be interpreted as zero scheduled time. Explicit publication coverage added and pure projection regression passes. **CLOSED by embedded regression**.
+- No executive stop condition triggered. D5 starts automatically. Final exact-candidate D8 runs remain required.
