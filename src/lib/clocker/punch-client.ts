@@ -4,6 +4,7 @@ import type { BreakSelection, BreakTypeSnapshot } from './break-types';
 export type ClockView=PunchView&{state:'ready';subject:string;firstName:string;expiresAt:string;locationId:string};
 export type PendingPunch={subject:string;command:PunchCommand};
 type Storage=Pick<globalThis.Storage,'getItem'|'setItem'|'removeItem'>;
+type RecoveryStorage=Storage&Pick<globalThis.Storage,'key'|'length'>;
 const recoveryKey=(location:string)=>`nevora.clocker.pending.v1:${location}`;
 const hash=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
@@ -85,6 +86,38 @@ export function savePendingPunch(storage:Storage,location:string,value:PendingPu
 }
 export function forgetPendingPunch(storage:Storage,location:string):void{
  storage.removeItem(recoveryKey(location));if(storage.getItem(recoveryKey(location))!==null)throw Error('Recovery storage could not be cleared.');
+}
+const subjectKey=(location:string,subject:string)=>`nevora.clocker.pending.v2:${location}:${subject}`;
+/** Separate keys avoid a shared read/modify/write index dropping another person's intent. */
+export function readSubjectPendingPunch(storage:Storage,location:string,subject:string):PendingPunch|null{
+ if(!hash(subject))return invalid();
+ const value=storage.getItem(subjectKey(location,subject));
+ let own:PendingPunch|null=null;
+ if(value!==null){if(value.length>2048)return invalid();own=pending(JSON.parse(value));if(own.subject!==subject)return invalid();}
+ // Legacy intent is retained in place. Corrupt legacy data cannot be replayed
+ // or retired, but does not prevent a separately verified employee's new slot.
+ let legacy:PendingPunch|null=null;try{legacy=readPendingPunch(storage,location);}catch{ /* manager-assisted review; preserve bytes */ }
+ if(legacy?.subject===subject){if(own&&JSON.stringify(own)!==JSON.stringify(legacy))throw Error('Conflicting recovery records need manager review.');return legacy;}
+ return own;
+}
+export function saveSubjectPendingPunch(storage:Storage,location:string,value:PendingPunch):void{
+ const safe=pending(value),text=JSON.stringify(safe),previous=readSubjectPendingPunch(storage,location,safe.subject);
+ if(previous&&JSON.stringify(previous)!==text)throw Error('Your previous action still needs verification.');
+ storage.setItem(subjectKey(location,safe.subject),text);
+ if(storage.getItem(subjectKey(location,safe.subject))!==text)throw Error('Recovery storage is unavailable. No action was sent.');
+}
+export function forgetSubjectPendingPunch(storage:Storage,location:string,value:PendingPunch):void{
+ const safe=pending(value),current=readSubjectPendingPunch(storage,location,safe.subject);
+ if(!current||JSON.stringify(current)!==JSON.stringify(safe))throw Error('Recovery intent changed. It was kept.');
+ const key=subjectKey(location,safe.subject);
+ if(storage.getItem(key)!==null){storage.removeItem(key);if(storage.getItem(key)!==null)throw Error('Recovery storage could not be cleared.');}
+ // Delete legacy only after validating the exact same resolved intent.
+ let legacy:PendingPunch|null=null;try{legacy=readPendingPunch(storage,location);}catch{return;}
+ if(legacy&&JSON.stringify(legacy)===JSON.stringify(safe))forgetPendingPunch(storage,location);
+}
+export function pendingPunchReferences(storage:RecoveryStorage,location:string):{commandId:string|null;action:string|null}[]{
+ const keys=Array.from({length:storage.length},(_,i)=>storage.key(i)).filter((k):k is string=>Boolean(k)&&(k===recoveryKey(location)||k!.startsWith(`nevora.clocker.pending.v2:${location}:`)));
+ return keys.map(key=>{try{const raw=storage.getItem(key);if(!raw||raw.length>2048)return {commandId:null,action:null};const value=pending(JSON.parse(raw));return {commandId:value.command.commandId,action:value.command.action};}catch{return {commandId:null,action:null};}}).filter((v,i,all)=>v.commandId===null||all.findIndex(x=>x.commandId===v.commandId)===i);
 }
 /** Use only after current state followed by absent receipt, under the same employee/device subject.
  * A fresh verification invalidates old commands: recovery never rewrites their verification or ID. */

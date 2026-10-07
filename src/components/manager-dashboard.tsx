@@ -523,6 +523,7 @@ export function ManagerDashboard(props: Props) {
         <div className="manager-attendance-stack">
           <ManagerAttendanceReview />
           <ManagerTimeCorrections actorId={props.actorId}/>
+          <Link className="button secondary" href="/app/clocker-recovery">Clocker Recovery</Link>
         </div>
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />

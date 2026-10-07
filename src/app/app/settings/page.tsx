@@ -12,6 +12,7 @@ export default async function SettingsPage() {
       />
       <section className="panel settings-list">
         {[
+          ["Clocker Recovery", "Review an employee’s saved action reference.", "/app/clocker-recovery"],
           [
             "Workspace",
             "Business name and timezone.",

@@ -1,0 +1,13 @@
+import {requireSessionMutationProof} from '@/lib/auth/session';
+import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
+import {readClockerRecoveryReview} from '@/lib/clocker/recovery-review.server';
+export const runtime='nodejs';
+export const dynamic='force-dynamic';
+export async function POST(request:Request){
+ const boundary=correctionBoundary(request,true,'x-nevora-clocker-recovery');if(boundary)return correctionJson({state:'unavailable'},boundary);
+ try{
+  const proof=await requireSessionMutationProof();if(request.headers.get('x-nevora-actor')!==proof.employee.id)return correctionJson({state:'unavailable',reason:'access_denied'},403);
+  const input=await readCorrectionJson(request);if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).length!==1||!('commandId' in input)||typeof input.commandId!=='string')return correctionJson({state:'invalid'},400);
+  const result=await readClockerRecoveryReview(proof,input.commandId);return correctionJson(result,result.state==='ready'?200:result.reason==='access_denied'?403:503);
+ }catch{return correctionJson({state:'unavailable'},503);}
+}

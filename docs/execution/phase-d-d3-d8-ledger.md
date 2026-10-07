@@ -73,7 +73,7 @@ Execution continues on the current D3–D8 lineage without restarting D2 or addi
 - **UX-01 OPEN:** complete customer Forgot access/password recovery; secure expiring/single-use proof, enumeration resistance, expired/reused proof handling, assisted recovery when the registered channel is inaccessible, tested session invalidation, unrelated account/operational data preserved. Reuse existing credentials/session architecture and approved services; fictional delivery only during tests.
 - **UX-03 IMPLEMENTED / EMBEDDED PASS:** distinguish unpublished, published no-assignment/off and unavailable/error employee schedule states; never disclose drafts or present an unpublished schedule as confirmed time off.
 - **UX-04 IMPLEMENTED / EMBEDDED PASS:** correction queue distinguishes loading, verified-empty, pending, offline/unavailable, reconnecting and authority loss. Unknown data cannot say no correction requests; privacy clearing/current authority remain required. Final D8 regression remains required.
-- **UX-05 OPEN:** shared Clocker permits the next employee to record their own work while preserving a prior unresolved intent/receipt; never cross-identity replay/discard uncertainty; manager-assisted resolution where needed. Verify network loss/retry/refresh/duplicates/identity switches/concurrency with immutable history, idempotency and device/location binding.
+- **UX-05 IMPLEMENTED / EMBEDDED PASS:** shared Clocker permits the next employee to record their own work while preserving a prior unresolved intent/receipt; never cross-identity replay/discard uncertainty; manager-assisted resolution where needed. Verify network loss/retry/refresh/duplicates/identity switches/concurrency with immutable history, idempotency and device/location binding.
 - **UX-02 OPEN / DEFERRED:** stronger first-activation identity proof is explicitly **not authorized** by this amendment.
 
 These P1 requirements are added to the D8 matrix. None is claimed implemented or closed at receipt. The final Phase D disposition must remain incomplete until all four have implementation and embedded regression evidence. Product/Engineering/Security/Governance scope is reconciled against current code before each change; routine safe remediation remains authorized.
@@ -130,3 +130,16 @@ Employee Home and My Schedule use a protected read of the existing published sch
 - Chromium/WebKit: **115 checks PASS**, overlapping prior work plus real unpublished/published-empty schedule and Home states and responsive schedule widths.
 - Typecheck and ESLint: **PASS**. Logs `/tmp/nevora-ux03-{unit,pg,browser,typecheck,lint}.log`.
 - Mandatory final D8 regression remains required. UX-01, UX-05 and D7/D8 remain in progress; UX-02 remains deferred.
+
+### UX-05 embedded checkpoint
+
+Shared Clocker recovery uses independent employee/device-generation subject keys. The original pending command/verification stays intact; another verified employee can record their own work. Legacy data is retained in place and cleared only after exact receipt resolution. Corrupt legacy data remains available for assistance; corrupt/conflicting current-subject data fails closed. No shared index can overwrite another intent. Existing server identity, device/location, monotonic state and ledger idempotency controls remain unchanged.
+
+A current Owner/Manager can inspect a saved reference through Clocker Recovery. The read-only view identifies an existing immutable receipt, or explicitly leaves an absent receipt unconfirmed. It directs the employee through fresh PIN/receipt verification and the existing timecard/correction workflow; it never cancels, replays or deletes an uncertain action. Private manager results have bounded lifetimes and clear offline/on authority loss.
+
+- Recovery client suite: **1 file / 22 tests PASS**.
+- Owned PostgreSQL recovery plus canonical punch regression: **2 files / 48 tests PASS**. The first new fixture incorrectly reused revoked PIN authority after an identity switch; corrected sequence verifies fresh authority without weakening that control.
+- Chromium/WebKit: **127 checks PASS**, overlapping prior work plus actual lost committed response, refresh, legacy/current storage, identity switching, next employee double input recording exactly once, original receipt recovery and manager assistance/unconfirmed/offline states.
+- Typecheck and ESLint: **PASS** at implementation checkpoint. Logs `/tmp/nevora-ux05-{unit,pg,browser,typecheck,lint}.log`.
+- Browser fixture corrections preserve workspace-wide PIN uniqueness and wait for an actual held request rather than assuming the loading label means dispatch has already occurred. The earlier failed harness runs are not passing evidence.
+- Final D8 will rerun the complete immutable Clocker lifecycle, races and these recovery journeys. UX-01 and D7/D8 remain incomplete; UX-02 remains deferred.

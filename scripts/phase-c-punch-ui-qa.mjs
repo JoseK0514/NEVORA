@@ -84,11 +84,11 @@ try{
   });
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();assert(dropped);
   assert.equal(await t.getByRole('button',{name:'Clock In',exact:true}).count(),0);
-  const stored=await t.evaluate(()=>sessionStorage.getItem('nevora.clocker.pending.v1:2'));assert(stored);assert(!/Avery|2468|nev_pin_|nev_dev_|tokenHash|firstName|recordedAt/.test(stored));
+  const stored=await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2'));assert(stored);assert(!/Avery|2468|nev_pin_|nev_dev_|tokenHash|firstName|recordedAt/.test(stored));
   await t.unroute('**/api/clocker/2/punch');await t.reload();await idle(t);await verify(t,'3579');
-  await t.getByRole('heading',{name:'Previous Action Needs Review',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Check Action Status',exact:true}).count(),0);
-  checked(engine+': another employee cannot inspect or replace the pending action');
-  await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);
+  await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Check Action Status',exact:true}).count(),0);assert.equal(await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2')),stored);
+  checked(engine+': another employee has their own clock path while the prior intent remains intact');
+  await t.getByRole('button',{name:'Done',exact:true}).click();await verify(t);
   await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await success(t,'Clock In');assert.equal(await count(),before+5);await done(t);
   checked(engine+': lost committed response survives reload and re-PIN without duplicate time');
   // Two real tablets start from the same employee revision. Only one transition can win.
@@ -107,9 +107,9 @@ try{
   await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();let blocked=false;
   await t.route('**/api/clocker/2/punch',async route=>{if(!blocked&&route.request().postDataJSON()?.operation==='execute'){blocked=true;await route.abort('failed');}else await route.continue();});
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();
-  const pending=await t.evaluate(()=>sessionStorage.getItem('nevora.clocker.pending.v1:2'));await t.unroute('**/api/clocker/2/punch');
+  const pending=await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2'));await t.unroute('**/api/clocker/2/punch');
   await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Retry Same Action',exact:true}).waitFor();
-  assert.equal(await t.evaluate(()=>sessionStorage.getItem('nevora.clocker.pending.v1:2')),pending);
+  assert.equal(await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2')),pending);
   await t.getByRole('button',{name:'Retry Same Action',exact:true}).click();await success(t,'Clock In');assert.equal(await count(),before+8);checked(engine+': explicit same-command retry after a failed connection');await done(t);
   // Current verification expiry must block the visible action, not record time.
   await verify(t);await t.getByRole('button',{name:'Start Break',exact:true}).waitFor();
