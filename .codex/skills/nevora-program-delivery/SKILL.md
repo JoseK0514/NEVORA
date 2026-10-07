@@ -25,8 +25,7 @@ separate statuses for implementation, verification, and release acceptance.
 
 ## Independent phase gate
 Use `docs/governance/nevora-independent-review-protocol.md` as the controlling cadence:
-- Phase D: existing three-reviewer whole-phase review after D8 remains mandatory.
-- Phase E onward: one qualified **independent** whole-phase reviewer, GO/NO-GO on a frozen SHA/tree after embedded tests; escalate critical risk or missing expertise without waiving specialized gates.
+- Phase D onward: **one qualified independent whole-phase reviewer** issues GO/NO-GO on a frozen SHA/tree after the phase's embedded tests; **Phase D review follows D8**. The prior Phase-D-only three-reviewer whole-phase gate is replaced by this one-reviewer gate. Escalate critical risk or missing expertise without waiving specialized audit gates.
 - Final integrated system: three separate reviewers (QA, UI/UX, Security/Architecture) and unanimous 3/3 GO before the controlled release sequence.
 - A passing phase or final audit never substitutes for FR-AUTH-001, hosted release checks, the pilot, or Jose's production approval.
 
