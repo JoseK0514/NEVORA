@@ -13,6 +13,7 @@ import {currentCalloutReleaseSql} from './shift-change-release';
 type AssignmentRow={shiftId:string;assignmentEpisodeId:string;termsRevision:number;weekStart:string;date:string;
  startTime:string;endTime:string;locationId:string;locationLabel:string;positionLabel:string|null;designatedLead:boolean;publicationRevisionId:string|null};
 type Observation={observedAt:string;timeZone:string;future:AssignmentRow[];current:AssignmentRow[];coverageComplete:boolean};
+type SourceAuthority={allowedLocationIds:string[]};
 const unavailable:PublishedAssignmentRead={observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'};
 const MAX_WINDOW_ROWS=500;
 
@@ -58,9 +59,23 @@ const nextSql=`WITH clock AS MATERIALIZED (SELECT clock_timestamp() AS at), loca
   AND s.week_start=date_trunc('week',local.day::timestamp)::date AND s.status='PUBLISHED')) AS complete FROM allowed l CROSS JOIN local),
  future AS (${ownSelect('AND (sh.date,sh.start_time)>(local.day,local.wall) ORDER BY sh.date,sh.start_time,sh.id LIMIT 1','CROSS JOIN local')}),
  current AS (${ownSelect('AND sh.date BETWEEN local.day-1 AND local.day AND (sh.date<local.day OR sh.start_time<=local.wall) ORDER BY sh.date,sh.start_time,sh.id LIMIT 501','CROSS JOIN local')})
- SELECT to_jsonb(clock.at) AS "observedAt",(SELECT complete FROM coverage) AS "coverageComplete",
+ SELECT to_jsonb(clock.at) AS "observedAt",ARRAY(SELECT id FROM allowed ORDER BY id) AS "allowedLocationIds",
+ (SELECT complete FROM coverage) AS "coverageComplete",
  COALESCE((SELECT jsonb_agg(to_jsonb(future)) FROM future),'[]'::jsonb) AS future,
  COALESCE((SELECT jsonb_agg(to_jsonb(current)) FROM current),'[]'::jsonb) AS current FROM clock`;
+
+function validAllowedLocationIds(value:unknown):value is string[]{
+ return Array.isArray(value)&&value.length>0&&value.every((id,i)=>typeof id==='string'&&id.length>0&&(i===0||value[i-1]<id));
+}
+/** The final guard's location/eligibility locks precede this fresh comparison.
+ * A remaining authorized location cannot validate a stale observed location. */
+async function finalLocationAuthority(proof:SessionMutationProof,workspace:Awaited<ReturnType<typeof readEmployeeWorkspace>>,
+ allowedLocationIds:string[],executor:SqlExecutor,signal:AbortSignal):Promise<boolean>{
+ const guards=employeeViewGuards(proof,workspace);
+ const results=await executor.transaction([...employeeReadLimits,...guards,{text:`WITH allowed AS (${employeeAllowedLocationsSql()})
+  SELECT ARRAY(SELECT id FROM allowed ORDER BY id)=$3::text[] AS unchanged`,values:[workspace.id,proof.employee.id,allowedLocationIds]}],signal);
+ return (results[employeeReadLimits.length+guards.length]?.[0] as {unchanged?:unknown}|undefined)?.unchanged===true;
+}
 
 /** Protected own-assignment read. Workspace, employee, locations, eligibility,
  * and session are locked/checked before the coherent source observation, then
@@ -71,12 +86,12 @@ export async function readEmployeePublishedAssignments(proof:SessionMutationProo
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal);
   const guards=employeeViewGuards(proof,workspace),limits=employeeReadLimits;
   const results=await executor.transaction([...limits,...guards,{text:nextSql,values:[workspace.id,proof.employee.id,workspace.timeZone]}],signal);
-  const source=results[limits.length+guards.length]?.[0] as Observation|undefined;
-  if(!source||!Array.isArray(source.future)||source.future.length>1||!Array.isArray(source.current)||source.current.length>MAX_WINDOW_ROWS)return unavailable;
+  const source=results[limits.length+guards.length]?.[0] as (Observation&SourceAuthority)|undefined;
+  if(!source||!validAllowedLocationIds(source.allowedLocationIds)||!Array.isArray(source.future)||source.future.length>1||!Array.isArray(source.current)||source.current.length>MAX_WINDOW_ROWS)return unavailable;
   // The zone comes from the guarded workspace, not a caller or source row.
   const projected=projectPublishedAssignmentRows({...source,timeZone:workspace.timeZone});
   if(!projected)return unavailable;
-  await executor.transaction([...limits,...employeeViewGuards(proof,workspace)],signal);
+  if(!await finalLocationAuthority(proof,workspace,source.allowedLocationIds,executor,signal))return unavailable;
   return projected;
  }catch{return unavailable;}
 }
@@ -95,14 +110,15 @@ export async function readEmployeePublishedAssignmentWindow(proof:SessionMutatio
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),guards=employeeViewGuards(proof,workspace);
   const windowSql=`WITH clock AS MATERIALIZED (SELECT clock_timestamp() AS at),allowed AS MATERIALIZED (${employeeAllowedLocationsSql()}),
    own AS (${ownSelect('AND sh.date BETWEEN $3::date-1 AND $4::date ORDER BY sh.date,sh.start_time,sh.id LIMIT 501')})
-   SELECT to_jsonb(clock.at) AS "observedAt",COALESCE((SELECT jsonb_agg(to_jsonb(own)) FROM own),'[]'::jsonb) AS assignments FROM clock`;
+   SELECT to_jsonb(clock.at) AS "observedAt",ARRAY(SELECT id FROM allowed ORDER BY id) AS "allowedLocationIds",
+   COALESCE((SELECT jsonb_agg(to_jsonb(own)) FROM own),'[]'::jsonb) AS assignments FROM clock`;
   const results=await executor.transaction([...employeeReadLimits,...guards,{text:windowSql,values:[workspace.id,proof.employee.id,fromDate,throughDate]}],signal);
-  const source=results[employeeReadLimits.length+guards.length]?.[0] as {observedAt:string;assignments:AssignmentRow[]}|undefined;
-  if(!source||!Number.isFinite(Date.parse(source.observedAt))||!Array.isArray(source.assignments)||source.assignments.length>MAX_WINDOW_ROWS)return unavailableWindow;
+  const source=results[employeeReadLimits.length+guards.length]?.[0] as {observedAt:string;assignments:AssignmentRow[]}&SourceAuthority|undefined;
+  if(!source||!validAllowedLocationIds(source.allowedLocationIds)||!Number.isFinite(Date.parse(source.observedAt))||!Array.isArray(source.assignments)||source.assignments.length>MAX_WINDOW_ROWS)return unavailableWindow;
   const first=businessDateStart(fromDate),last=businessDateStart(addDays(throughDate,1));
   const assignments=source.assignments.filter(row=>{const period=shiftPeriod(row);return period.end>first&&period.start<last;})
    .map(row=>assignment(row,workspace.timeZone));
-  await executor.transaction([...employeeReadLimits,...employeeViewGuards(proof,workspace)],signal);
+  if(!await finalLocationAuthority(proof,workspace,source.allowedLocationIds,executor,signal))return unavailableWindow;
   return {state:'ready',observedAt:source.observedAt,timeZone:workspace.timeZone,assignments};
  }catch{return unavailableWindow;}
 }
