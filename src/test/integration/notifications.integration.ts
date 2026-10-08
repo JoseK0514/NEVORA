@@ -1,3 +1,4 @@
+vi.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import { fixtureProof } from './shift-change-api';
 import { publishScheduleWithRevision, reviewTimeOffRequest, setAvailabilityDeadline } from './management-api';

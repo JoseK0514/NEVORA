@@ -52,7 +52,7 @@ export function attentionSourceStatement(proof:SessionMutationProof,workspace:Wo
  // Schedule details are produced by the coherent weekly reader. This limited
  // projection checks current revision plus actual canonical acknowledgement.
  if(ref.kind==='SCHEDULE'&&isValidWeekStart(ref.id))return {text:`SELECT jsonb_build_object('id',r.week_start::text,'version',r.id,'required',NOT EXISTS(
-  SELECT 1 FROM schedule_acknowledgements a WHERE a.employee_id=$2 AND a.week_start=r.week_start AND a.publication_revision_id=r.id)) AS detail
+  SELECT 1 FROM schedule_acknowledgements a WHERE a.employee_id=$2 AND a.week_start=r.week_start AND (a.publication_revision_id=r.id OR COALESCE((SELECT jsonb_agg(jsonb_build_array(rs.source_shift_id,rs.location_id,rs.employee_id,rs.date,rs.start_time,rs.end_time,rs.position_id,rs.is_designated_lead,rs.is_callout_approved) ORDER BY rs.source_shift_id) FROM schedule_publication_revision_shifts rs WHERE rs.employee_id=$2 AND rs.revision_id=a.publication_revision_id),'[]'::jsonb)=COALESCE((SELECT jsonb_agg(jsonb_build_array(rs.source_shift_id,rs.location_id,rs.employee_id,rs.date,rs.start_time,rs.end_time,rs.position_id,rs.is_designated_lead,rs.is_callout_approved) ORDER BY rs.source_shift_id) FROM schedule_publication_revision_shifts rs WHERE rs.employee_id=$2 AND rs.revision_id=r.id),'[]'::jsonb)))) AS detail
   FROM (SELECT * FROM schedule_publication_revisions WHERE week_start=$3::date ORDER BY revision_number DESC LIMIT 1) r WHERE r.week_start=$3::date AND EXISTS(SELECT 1 FROM workspaces WHERE id=$1 AND active)
   AND EXISTS(SELECT 1 FROM schedule_publication_revision_shifts rs WHERE rs.revision_id=r.id AND rs.employee_id=$2
    AND rs.location_id IN (SELECT id FROM (${employeeAllowedLocationsSql()}) allowed)) ORDER BY r.revision_number DESC LIMIT 1`,values};
@@ -70,7 +70,13 @@ export type AttentionDetailRead={state:'ready';ref:AttentionRef;detail:Record<st
  * list impression calls this command. COMMUNICATION awaits its E2 producer. */
 export async function readEmployeeAttentionDetail(proof:SessionMutationProof,ref:AttentionRef,executor:SqlExecutor=neonNotificationExecutor()):Promise<AttentionDetailRead>{
  try{
-  assertEmployeeViewProof(proof);if(ref.kind==='COMMUNICATION'||ref.kind==='SCHEDULE')return {state:'unavailable'};
+  assertEmployeeViewProof(proof);if(ref.kind==='COMMUNICATION')return {state:'unavailable'};
+  if(ref.kind==='SCHEDULE'){
+   const {readEmployeeWeeklyReview}=await import('./employee-weekly-review.server');
+   const review=await readEmployeeWeeklyReview(proof,ref.id,executor);
+   if(review.state==='unavailable'||!review.displayedRevisionId)return {state:'unavailable'};
+   return {state:'ready',ref:{...ref,version:review.displayedRevisionId},detail:{weekStart:ref.id,shifts:review.shifts,locations:review.locations},read:review.read,intent:review.readIntent};
+  }
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),guards=attentionGuards(proof,workspace,ref),source=attentionSourceStatement(proof,workspace,ref);
   const results=await executor.transaction([...employeeReadLimits,...guards,source],signal);
   const detail=(results[employeeReadLimits.length+guards.length]?.[0] as {detail:Record<string,unknown>}|undefined)?.detail;

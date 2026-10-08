@@ -79,3 +79,11 @@ it('additive migration rollback leaves canonical acknowledgement and history int
  expect(await q('SELECT * FROM schedule_acknowledgements')).toEqual(before);expect(await q('SELECT * FROM schedule_publication_revision_shifts')).toEqual(history);
  await q(await readFile('db/migrations/0023_employee_attention_receipts.sql','utf8'));expect(await q('SELECT * FROM schedule_acknowledgements')).toEqual(before);
 });
+
+it('informational schedule receipt follows equivalent canonical acknowledgement and never replaces it',async()=>{
+ expect((await acknowledgeScheduleWeek(await reviewed(),db.executor)).status).toBe('committed');await publish(2);
+ const read=await readEmployeeAttentionDetail(proof,{kind:'SCHEDULE',id:week,version:''},db.executor);expect(read).toMatchObject({state:'ready',read:false});
+ if(read.state!=='ready'||!read.intent)throw Error('Expected current informational weekly intent');
+ const before=await q('SELECT * FROM schedule_acknowledgements');expect((await recordEmployeeAttentionReceipt(proof,{kind:'MARK_READ',ref:read.ref,...read.intent},db.executor)).status).toBe('committed');expect(await q('SELECT * FROM schedule_acknowledgements')).toEqual(before);
+ expect(await readEmployeeAttentionDetail(proof,{kind:'SCHEDULE',id:week,version:''},db.executor)).toMatchObject({state:'ready',read:true});
+});

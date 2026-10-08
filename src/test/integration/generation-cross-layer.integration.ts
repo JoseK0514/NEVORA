@@ -1,3 +1,4 @@
+vi.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import { deleteGeneratedDraftShift, publishScheduleWithRevision, insertShift, updateShift, setAvailabilityDeadline, reviewTimeOffRequest } from './management-api';
 import { createHash } from 'node:crypto';

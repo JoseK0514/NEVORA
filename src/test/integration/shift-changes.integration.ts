@@ -1,3 +1,4 @@
+vi.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';

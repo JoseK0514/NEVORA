@@ -31,7 +31,7 @@ export const SQL_DATABASE_PREFIXES = Object.freeze({
   'calendar-feed': 'nevora_foundation_test_',
   'employee-navigation': 'nevora_foundation_test_',
 });
-export const BROWSER_SUITES = Object.freeze(Object.fromEntries(['home', 'communications', 'calendar', 'navigation'].map(suite => [suite, `scripts/phase-e-${suite}-browser-scenarios.mjs`])));
+export const BROWSER_SUITES = Object.freeze(Object.fromEntries(['home', 'communications', 'calendar', 'navigation', 'attention'].map(suite => [suite, `scripts/phase-e-${suite}-browser-scenarios.mjs`])));
 export const ENGINES = Object.freeze(['chromium', 'webkit']);
 export const WIDTHS = Object.freeze([320, 375, 390, 430, 768, 1024, 1440]);
 const REQUIRED_JOBS = ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui'];
