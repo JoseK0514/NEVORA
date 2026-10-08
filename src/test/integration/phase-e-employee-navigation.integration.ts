@@ -92,6 +92,9 @@ it('pending Exchange is current before its clock-only deadline and becomes permi
  proof.employee.id=scenario.actors[1];await q('UPDATE employee_sessions SET employee_id=$1 WHERE token_hash=$2',[proof.employee.id,proof.sessionTokenHash]);await intent('pending-notice','EXCHANGE','pending','r:1');
  expect(ids(await inbox())).toEqual(['pending-notice']);
  await q("UPDATE shift_exchanges SET completion_deadline=clock_timestamp()+interval '300 milliseconds' WHERE id='pending'");
+ // Existing revision trigger advances for a deadline edit. Bind the fixture to
+ // that current revision before testing time-only change during the wait.
+ await q("UPDATE notifications SET source_version='r:'||(SELECT request_revision FROM shift_exchanges WHERE id='pending'),effective_version='r:'||(SELECT request_revision FROM shift_exchanges WHERE id='pending') WHERE id='pending-notice'");
  const result=await inbox(beforeFinal(async()=>{await q('SELECT pg_sleep(0.35)');}));expect(ids(result)).toEqual(['pending-notice']);expect(result.state==='ready'&&result.validForMs).toBeGreaterThan(1000);
 });
 it('same-version operational location eligibility revoked after discovery blocks an active Exchange',async()=>{

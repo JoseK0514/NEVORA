@@ -14,7 +14,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   const primary=['/app','/app/schedule','/app/my-time'].includes(href);
   if(mobile&&!primary){await page.getByRole('button',{name:'More',exact:true}).click();await page.locator('#employee-more-navigation').waitFor({state:'visible'});}
   const root=mobile?(primary?page.locator('.mobile-nav'):page.locator('#employee-more-navigation')):page.locator('nav[aria-label="Primary navigation"]');
-  const destination=root.locator(`a[href="${href}"]`);if(mobile)await destination.tap();else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
+  const destination=root.locator(`a[href="${href}"]`);if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.tap({position:{x:rect.width-8,y:rect.height/2}});}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
   assert.equal(await page.locator('#employee-more-navigation').isVisible(),false);
  }
  async function ready(kind){await page.waitForFunction(k=>{const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?e.querySelector('dd'):e.querySelector('.employee-notification-list'));},kind);}
@@ -25,8 +25,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await q('DELETE FROM notifications WHERE employee_id=$1',[actor]);
   await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES($1,$2,current_date+7,current_date+7,'APPROVED','Fictional private reason')",[requestId,actor]);
   await q("INSERT INTO notifications(id,employee_id,type,title,body,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,due_at,expires_at,urgency,push_state) VALUES($1,$2,'TIME_OFF_DECIDED','STORED PRIVATE TITLE','STORED PRIVATE BODY',$1,'test','TIME_OFF',$3,'APPROVED','APPROVED','EVENT',now()-interval '1 hour',now()+interval '1 day','high','pending')",[noticeId,actor,requestId]);
+  const actualRole=[320,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);
   await login(actor);await settle();
-  assert.equal(await page.evaluate(()=>navigator.maxTouchPoints>0),width<768);assert.equal(await page.evaluate(()=>innerWidth),width);checks.push('Required CSS width and mobile touch emulation verified; native taps used on mobile navigation');
+  assert.equal(await page.evaluate(()=>navigator.maxTouchPoints>0),width<768);assert.equal(await page.evaluate(()=>innerWidth),width);checks.push(`Actual authenticated ${actualRole} role`);checks.push('Required CSS width and mobile touch emulation verified; native taps used on mobile navigation');
   for(const href of ['/app/schedule','/app/my-time','/app']){await nav(href);const current=await page.locator('.mobile-nav').isVisible()?page.locator('.mobile-nav a[aria-current="page"]'):page.locator('nav[aria-label="Primary navigation"] a[aria-current="page"]');assert.equal(await current.getAttribute('href'),href);}
   checks.push('Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation');
   await nav('/app/requests/hub');await bounds();await screenshot('requests');
