@@ -2,9 +2,9 @@ import {expect,it} from 'vitest';
 import type {HomeSnapshot,AttentionItem} from './types';
 // Dynamic lookup executes each behavioral test even before this new interface exists.
 async function project(snapshot:HomeSnapshot){
- const module=await import('./project').catch(()=>null);
- expect(module?.projectEmployeeHome,'Home needs the approved deterministic aggregate interface').toBeTypeOf('function');
- return module!.projectEmployeeHome(snapshot);
+ const subject=await import('./project').catch(()=>null);
+ expect(subject?.projectEmployeeHome,'Home needs the approved deterministic aggregate interface').toBeTypeOf('function');
+ return subject!.projectEmployeeHome(snapshot);
 }
 export const at='2030-10-07T12:00:00.000Z';
 export const keys=['schedule','acknowledgements','exchanges','timeOff','ownTime','communications'] as const;
