@@ -47,14 +47,14 @@ function indexStatement(source:HomeSource,workspaceId:string,employeeId:string):
   FROM time_correction_requests r JOIN allowed l ON l.id=r.location_id JOIN LATERAL
    (SELECT revision,event_kind,occurred_at FROM time_correction_events WHERE request_id=r.id ORDER BY revision DESC LIMIT 1)e ON true
   WHERE r.workspace_id=$1 AND r.employee_id=$2 ORDER BY e.occurred_at DESC,r.id LIMIT ${CAP+1}`};
- if(source==='exchanges')return {values,text:`/* home_exchanges */ ${allowed} SELECT x.id,x.request_revision::text AS version,x.created_at::text AS "changedAt",
+ if(source==='exchanges')return {values,text:`/* home_exchanges */ ${allowed} SELECT x.id,x.request_revision::text AS version,GREATEST(x.created_at,x.resolved_at,(SELECT max(e.created_at) FROM shift_change_events e WHERE e.workspace_id=$1 AND e.request_kind='EXCHANGE' AND e.request_id=x.id))::text AS "changedAt",
   jsonb_build_object('status',x.status,'sourceTerms',x.source_terms,'targetTerms',x.target_terms,'deadline',x.completion_deadline,
    'policy',(SELECT shift_change_policy FROM workspaces WHERE id=$1),'sourceRevision',sh.terms_revision,'sourceEpisode',sh.assignment_episode_id,
    'targetRevision',target.terms_revision,'targetEpisode',target.assignment_episode_id,'legacy',x.legacy_manual) AS detail
   FROM shift_exchanges x JOIN shifts sh ON sh.id=x.source_shift_id JOIN schedules s ON s.id=sh.schedule_id JOIN allowed l ON l.id=s.location_id
   LEFT JOIN shifts target ON target.id=x.target_shift_id
   WHERE ($2 IN(x.requested_by_employee_id,x.target_employee_id) OR (x.kind='COVERAGE' AND x.status='OPEN' AND s.status='PUBLISHED'))
-  ORDER BY x.created_at DESC,x.id LIMIT ${CAP+1}`};
+  ORDER BY "changedAt" DESC,x.id LIMIT ${CAP+1}`};
  throw Error('Unknown Home index');
 }
 
@@ -113,9 +113,9 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
       if(row.detail?.legacy){partial=true;continue;}
       const responds=exchange.status==='OPEN'&&exchange.requestedByEmployeeId!==proof.employee.id||exchange.status==='EMPLOYEE_PENDING'&&exchange.targetEmployeeId===proof.employee.id;
       const allowed=responds&&exchange.actionable?await readShiftChangeAvailability(proof,{kind:'ACCEPT',operationId:randomUUID(),requestId:row.id,expectedRevision:exchange.requestRevision!},protectedExecutor):{allowed:false,notice:null};
+      if(!exchange.actionable&&exchange.attention==='CONFIGURATION_REQUIRED'||allowed.notice==='Needs Owner rule review')partial=true;
       if(!participant&&!allowed.allowed)continue;
       const ref={kind:'EXCHANGE' as const,id:row.id,version:`r:${row.version}`};
-      if(!exchange.actionable&&exchange.attention==='CONFIGURATION_REQUIRED')partial=true;
       items.push({ref,label:allowed.allowed?(exchange.kind==='SWAP'?'Review swap request':'Review coverage offer'):exchange.status==='MANAGER_PENDING'?'Shift request awaiting manager review':'Shift request pending',href:homeDestination(ref,participant?'requests':'available')!,required:false,actionable:allowed.allowed,deadlineAt:allowed.allowed?exchange.effectiveCompletionDeadline??null:null,changedAt:row.changedAt});
      }else{
       const kind=source==='timeOff'?'TIME_OFF':'TIME_CORRECTION',detail=row.detail;
