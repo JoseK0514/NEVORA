@@ -120,3 +120,10 @@ it('terminal exchange changedAt uses actual latest resolution rather than old re
  const [source]=await q('SELECT resolved_at::text AS at FROM shift_exchanges WHERE id=$1',[id]) as {at:string}[];
  const r=await home();if(!('snapshot' in r))throw Error('No Home');const item=r.snapshot.attention.find(i=>i.ref.id===id);expect(item).toBeDefined();expect(Date.parse(item!.changedAt)).toBe(Date.parse(source.at));
 });
+it('own same-status time-off rows identify distinct canonical dates and ranges without private reasons',async()=>{
+ await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('home-other-period',$1,'2030-12-02','2030-12-04','APPROVED','PRIVATE OTHER PERIOD')",[proof.employee.id]);
+ const r=await home();if(!('snapshot' in r))throw Error('No Home');
+ expect(r.snapshot.attention.find(i=>i.ref.id==='home-leave')?.label).toBe('Time off approved · Nov 1, 2030');
+ expect(r.snapshot.attention.find(i=>i.ref.id==='home-other-period')?.label).toBe('Time off approved · Dec 2, 2030 – Dec 4, 2030');
+ expect(JSON.stringify(r)).not.toContain('PRIVATE OTHER PERIOD');
+});
