@@ -11,7 +11,7 @@ export type PublishedAssignmentRead =
 
 import type {AttentionRef} from '../employee-attention/types';
 export type SourceState='complete'|'partial'|'unavailable'|'not_applicable';
-export type SourceObservation={state:SourceState;observedAt:string;version:string|null;reason:string|null};
+export type SourceObservation={state:SourceState;observedAt:string;version:string|null;reason:string|null;validUntil?:string};
 export type HomeSource='schedule'|'acknowledgements'|'exchanges'|'timeOff'|'ownTime'|'communications';
 export type AttentionItem={ref:AttentionRef;label:string;href:string;required:boolean;actionable:boolean;deadlineAt:string|null;changedAt:string};
 export type HomeSnapshot={observedAt:string;authority:string;timeZone:string;validForMs:number;

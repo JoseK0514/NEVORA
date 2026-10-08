@@ -28,7 +28,7 @@ function Assignment({shift,zone}:{shift:PublishedAssignment;zone:string}){
  </div>;
 }
 const names:Record<HomeSource,string>={schedule:'Schedule',acknowledgements:'Schedule reviews',exchanges:'Shift requests',timeOff:'Time off',ownTime:'Recorded time and corrections',communications:'Communications'};
-const destinations:Record<HomeSource,string>={schedule:'/app/schedule',acknowledgements:'/app/schedule',exchanges:'/app/exchange',timeOff:'/app/requests?tab=my',ownTime:'/app/my-time',communications:'/app/notifications'};
+const destinations:Record<HomeSource,string>={schedule:'/app/schedule',acknowledgements:'/app/schedule',exchanges:'/app/exchange',timeOff:'/app/requests?tab=my',ownTime:'/app/my-time',communications:'/app/updates'};
 export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:PrivatePanelState<HomeLifetime>;timeAuthority:string;onRetry:()=>void;authority?:string}){
  const [showAll,setShowAll]=useState(false);
  const replaced=state.snapshot?.state==='ready'&&authority!==undefined&&state.snapshot.home.snapshot.authority!==authority;
@@ -36,7 +36,7 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const loading=!state.paused&&(!state.snapshot||replaced);
  const items=snapshot?.attention??[],visible=showAll?items:items.slice(0,5);
- return <div className="employee-home-layout" data-home-state={state.paused?'paused':snapshot?'partial':denied?'unauthorized':loading?'loading':'unavailable'}>
+ return <div className="employee-home-layout" data-home-state={state.paused?'paused':snapshot?home!.state:denied?'unauthorized':loading?'loading':'unavailable'}>
   <div className="employee-home-surface employee-home-primary">
    <section aria-labelledby="employee-next-heading" className="employee-home-next">
     <p className="employee-home-eyebrow">Your schedule</p><h2 id="employee-next-heading">Next Shift</h2>
@@ -47,10 +47,10 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
     </>:<div className="employee-home-recovery" role="status"><p>{state.paused?'Home paused — return online to refresh.':denied?'Sign in again to view Home.':loading?'Loading Home…':'Home unavailable — try again.'}</p></div>}
    </section>
    {snapshot?<section className="employee-home-actions" aria-labelledby="employee-actions-heading"><h2 id="employee-actions-heading">Needs your attention</h2>
-    <p className="employee-home-partial" role="status">Home is partial. Communications are not included yet.</p>
+    {home!.state==='partial'?<p className="employee-home-partial" role="status">Some Home sections could not be fully checked.</p>:null}
     {items.length?<><ul>{visible.map(item=><li key={`${item.ref.kind}:${item.ref.id}`}><Link href={item.href}><span><strong>{item.label}</strong>{item.ref.kind==='SCHEDULE'?<small>Week of <time dateTime={item.ref.id}>{new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric',year:'numeric'}).format(new Date(`${item.ref.id}T12:00:00Z`))}</time></small>:<small>Recorded <time dateTime={item.changedAt}>{stamp(item.changedAt,snapshot.timeZone)}</time></small>}{item.required?<small>Required review</small>:null}{item.deadlineAt?<small>Respond by <time dateTime={item.deadlineAt}>{stamp(item.deadlineAt,snapshot.timeZone)}</time></small>:null}</span><span aria-hidden="true">→</span></Link></li>)}</ul>
      {items.length>5?<button className="button secondary" type="button" aria-expanded={showAll} onClick={()=>setShowAll(v=>!v)}>{showAll?'Show fewer':`Show all ${items.length} items (${items.length-5} more)`}</button>:null}
-    </>:<p>No items in the available sections.</p>}
+    </>:<p role="status">{home!.allSet?"You're all set.":'No items in the available sections.'}</p>}
     <ul className="employee-home-source-notices">{HOME_SOURCES.filter(key=>snapshot.sources[key].state!=='complete').map(key=><li key={key}>
      <span>{names[key]} {snapshot.sources[key].state==='unavailable'?(snapshot.sources[key].reason==='review_unavailable'?'unavailable — a changed schedule needs review':'unavailable'):snapshot.sources[key].reason==='source_cap'?'partially shown — more records are available':'partial'}</span>
      <Link href={destinations[key]}>Open {names[key].toLowerCase()}</Link>

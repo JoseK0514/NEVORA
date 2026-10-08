@@ -1,4 +1,7 @@
 import {beforeEach,afterEach,expect,it} from 'vitest';
+import {randomUUID} from 'node:crypto';
+import {previewCommunicationAudience,executeCommunicationCommand,communicationAuthority,readCommunication,recordCommunicationRead} from '../../lib/communications/service.server';
+import type {CommunicationDraft} from '../../lib/communications/types';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {seedOwnedApp,seedOwnedScenario} from './owned-app-fixture';
@@ -20,7 +23,7 @@ beforeEach(async()=>{
 });
 afterEach(async()=>{await db?.dispose();});
 it('actual six-source PARTIAL Home retains distant published Next Shift and current-week publication notice',async()=>{
- const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{authority:homeAuthority(proof),publicationState:'partial',nextShift:{shiftId:fixture.sourceId},sources:{schedule:{state:'partial'},acknowledgements:{state:'complete'},exchanges:{state:'complete'},timeOff:{state:'complete'},ownTime:{state:'complete'},communications:{state:'partial',reason:'integration_pending'}}}});
+ const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{authority:homeAuthority(proof),publicationState:'partial',nextShift:{shiftId:fixture.sourceId},sources:{schedule:{state:'partial'},acknowledgements:{state:'complete'},exchanges:{state:'complete'},timeOff:{state:'complete'},ownTime:{state:'complete'},communications:{state:'complete'}}}});
  if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.some(i=>i.ref.kind==='SCHEDULE'&&i.required)).toBe(true);expect(r.snapshot.attention.some(i=>i.ref.id==='home-leave')).toBe(true);
  expect(JSON.stringify(r)).not.toMatch(/PRIVATE|foreign-leave|managerNotes|attendanceScore|sessionTokenHash|proof/);
 });
@@ -44,7 +47,7 @@ it('cap sentinel discloses partial time-off without silently truncating to compl
 });
 it('actual blocked time-off SQL preserves independently authorized Next Shift and names unavailable source',async()=>{
  const blocker=new Client({connectionString:db.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');
- const r=await home();expect(r).toMatchObject({state:'partial',snapshot:{nextShift:{shiftId:fixture.sourceId},sources:{timeOff:{state:'unavailable'},communications:{state:'partial'}}}});
+ const r=await home();expect(r).toMatchObject({state:'partial',snapshot:{nextShift:{shiftId:fixture.sourceId},sources:{timeOff:{state:'unavailable'},communications:{state:'complete'}}}});
  }finally{await blocker.query('ROLLBACK');await blocker.end();}
 });
 it.each(['schedule','acknowledgements','exchanges','ownTime'])('actual source adapter %s failure cannot produce empty-complete or expose raw errors',async source=>{
@@ -170,4 +173,91 @@ it('foreign and formerly authorized own historical weeks cannot broaden current 
  await q("DELETE FROM employee_location_eligibility WHERE employee_id=$1 AND location_id='loc-2'",[proof.employee.id]);
  const r=await home();expect(r).toMatchObject({state:'partial',snapshot:{sources:{acknowledgements:{state:'complete'}}}});
  if('snapshot' in r)expect(r.snapshot.attention.filter(row=>row.ref.kind==='SCHEDULE').map(row=>row.ref.id)).toEqual([fixture.week]);
+});
+
+const ownerProof:SessionMutationProof={employee:{id:'QAOWNER',firstName:'Fictional',lastName:'Owner',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
+async function publishUpdate(acknowledgement:CommunicationDraft['acknowledgement']='REQUIRED',expiresAt:string|null=null){
+ await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'QAOWNER',clock_timestamp()+interval '1 day') ON CONFLICT(token_hash) DO NOTHING",[ownerProof.sessionTokenHash]);
+ const draft:CommunicationDraft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'loc-1'},title:'Fictional operational update',body:'Read the full fictional content before acknowledgement.',acknowledgement,expiresAt};
+ const preview=await previewCommunicationAudience(ownerProof,draft,db.executor);if(preview.state!=='ready')throw Error('No actual audience');
+ const result=await executeCommunicationCommand(ownerProof,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},db.executor);if(result.status!=='committed')throw Error('No actual publication');return {result,draft};
+}
+it('announcement_required_ack_keeps_attention and push_disabled_still_required_in_app',async()=>{
+ const {result}=await publishUpdate();const r=await home();if(!('snapshot' in r))throw Error('No Home');
+ expect(r.snapshot.sources.communications.state).toBe('complete');expect(r.snapshot.attention.find(row=>row.ref.id===result.id)).toMatchObject({ref:{kind:'COMMUNICATION',version:result.version},required:true,actionable:true,href:'/app/updates/'+result.id,deadlineAt:null});
+ expect(await q('SELECT * FROM communication_receipts')).toEqual([]);expect(JSON.stringify(r)).not.toContain('Read the full fictional content');
+ expect(await recordCommunicationRead(proof,{kind:'MARK_READ',operationId:randomUUID(),authority:communicationAuthority(proof),ref:{kind:'COMMUNICATION',id:result.id,version:result.version}},db.executor)).toMatchObject({status:'blocked',reason:'required_action'});
+ const still=await home();if(!('snapshot' in still))throw Error('No Home');expect(still.snapshot.attention.some(row=>row.ref.id===result.id&&row.required)).toBe(true);
+});
+it('edit_new_version_resurfaces after full-content current acknowledgement',async()=>{
+ const {result,draft}=await publishUpdate();const detail=await readCommunication(proof,result.id,db.executor);if(detail.state!=='ready')throw Error('No current content');
+ expect(await executeCommunicationCommand(proof,{kind:'ACKNOWLEDGE',operationId:randomUUID(),authority:detail.authority,communicationId:result.id,expectedRevisionId:detail.revisionId,contentHash:detail.contentHash},db.executor)).toMatchObject({status:'committed'});
+ let r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(false);
+ const revised={...draft,body:'New fictional content needs a fresh acknowledgement.'},preview=await previewCommunicationAudience(ownerProof,revised,db.executor);if(preview.state!=='ready')throw Error('No revised audience');
+ const revision=await executeCommunicationCommand(ownerProof,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:result.id,expectedRevisionId:result.version,draft:revised,audienceFingerprint:preview.fingerprint},db.executor);if(revision.status!=='committed')throw Error('No revision');
+ r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.find(row=>row.ref.id===result.id)).toMatchObject({ref:{version:revision.version},required:true});
+});
+it('withdrawal_removes_requirement and optional seen receipt removes only its own version',async()=>{
+ const {result}=await publishUpdate('OPTIONAL');expect(await recordCommunicationRead(proof,{kind:'MARK_READ',operationId:randomUUID(),authority:communicationAuthority(proof),ref:{kind:'COMMUNICATION',id:result.id,version:result.version}},db.executor)).toMatchObject({status:'committed'});
+ let r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(false);
+ const required=await publishUpdate();expect(await executeCommunicationCommand(ownerProof,{kind:'WITHDRAW',operationId:randomUUID(),authority:communicationAuthority(ownerProof),communicationId:required.result.id,expectedRevisionId:required.result.version},db.executor)).toMatchObject({status:'committed'});
+ r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.some(row=>row.ref.id===required.result.id)).toBe(false);expect(r.snapshot.sources.communications.state).toBe('complete');
+});
+it('communications_failure_never_clear and retained known schedule remains available',async()=>{
+ const ex:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{if(statements.some(s=>s.text.includes('communication_list_index')))throw Error('PRIVATE COMMUNICATION FAILURE');return db.executor.transaction(statements,signal);}};
+ const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{nextShift:{shiftId:fixture.sourceId},sources:{communications:{state:'unavailable'}}}});expect(JSON.stringify(r)).not.toContain('PRIVATE COMMUNICATION');
+});
+it('empty communication insertion while final Home observation waits never produces complete empty',async()=>{
+ let observations=0;const ex:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{if(statements.some(s=>s.text.includes('home_authority'))&&++observations===2)await publishUpdate();return db.executor.transaction(statements,signal);}};
+ const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'unavailable',reason:'source_changed'}}}});
+});
+it('expiration and current grant loss during final Home wait discard former communication rows',async()=>{
+ const {result}=await publishUpdate();let observations=0;const ex:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{if(statements.some(s=>s.text.includes('home_authority'))&&++observations===2)await q("UPDATE locations SET active=false WHERE id='loc-1'");return db.executor.transaction(statements,signal);}};
+ const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'unauthorized',reason:'access_denied'});expect(JSON.stringify(r)).not.toContain(result.id);
+});
+
+async function fullyClearProof():Promise<SessionMutationProof>{
+ const p:SessionMutationProof={employee:{id:'QA-HOME-CLEAR',firstName:'Fictional',lastName:'Clear',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:'c'.repeat(64)};
+ await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Clear','555-0105','EMPLOYEE','loc-1')",[p.employee.id]);
+ await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);
+ const [clock]=await q("SELECT date_trunc('week',clock_timestamp() AT TIME ZONE time_zone)::date::text AS week FROM workspaces") as {week:string}[];
+ await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('home-current-clear','loc-1',$1,'DRAFT','QAOWNER')",[clock.week]);
+ await publishScheduleWithRevision({locationId:'loc-1',weekStart:clock.week,managerId:'QAOWNER'},db.executor);
+ return p;
+}
+it('all_sources_complete_zero_items_exact_copy producer has a real complete authorized fixture',async()=>{
+ const p=await fullyClearProof(),r=await readEmployeeHome(p,db.executor);expect(r).toMatchObject({state:'ready',allSet:true,snapshot:{publicationState:'complete',attention:[],sources:Object.fromEntries(['schedule','acknowledgements','exchanges','timeOff','ownTime','communications'].map(key=>[key,{state:'complete'}]))}});
+});
+it.each(['schedule','acknowledgements','exchanges','timeOff','ownTime','communications'])('complete-zero fixture single %s failure never becomes all-clear',async source=>{
+ const p=await fullyClearProof(),ex:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{if(statements.some(s=>source==='schedule'?s.text.includes('WITH clock AS MATERIALIZED'):source==='communications'?s.text.includes('communication_list_index'):s.text.includes('home_'+source)))throw Error('PRIVATE ZERO SOURCE FAILURE');return db.executor.transaction(statements,signal);}};
+ const r=await readEmployeeHome(p,ex);expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{[source]:{state:'unavailable'}}}});expect(JSON.stringify(r)).not.toContain('PRIVATE ZERO');
+});
+it('optional expiration bounds lifetime then expiration during final wait cannot retain its row',async()=>{
+ const [clock]=await q("SELECT to_jsonb(clock_timestamp()+interval '3 seconds') AS until") as {until:string}[];
+ const {result}=await publishUpdate('OPTIONAL',new Date(clock.until).toISOString());const initial=await home();if(!('snapshot' in initial))throw Error('No Home');expect(initial.snapshot.attention.find(row=>row.ref.id===result.id)).toMatchObject({required:false,actionable:false,deadlineAt:null});expect(initial.snapshot.validForMs).toBeLessThan(3000);
+ let observations=0;const ex:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{if(statements.some(s=>s.text.includes('home_authority'))&&++observations===2)await q('SELECT pg_sleep(GREATEST(0,EXTRACT(EPOCH FROM ($1::timestamptz-clock_timestamp())))+0.05)',[clock.until]);return db.executor.transaction(statements,signal);}};
+ const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'unavailable',reason:'source_changed'}}}});if('snapshot' in r)expect(r.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(false);
+ const expired=await home();if(!('snapshot' in expired))throw Error('No Home');expect(expired.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(false);expect(expired.snapshot.sources.communications.state).toBe('complete');
+});
+it('current acknowledgement inserted during final Home wait cannot return the buffered required row',async()=>{
+ const {result}=await publishUpdate();const detail=await readCommunication(proof,result.id,db.executor);if(detail.state!=='ready')throw Error('No content');
+ let observations=0;const ex:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{if(statements.some(s=>s.text.includes('home_authority'))&&++observations===2){expect(await executeCommunicationCommand(proof,{kind:'ACKNOWLEDGE',operationId:randomUUID(),authority:detail.authority,communicationId:result.id,expectedRevisionId:detail.revisionId,contentHash:detail.contentHash},db.executor)).toMatchObject({status:'committed'});}return db.executor.transaction(statements,signal);}};
+ const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'unavailable',reason:'source_changed'}}}});if('snapshot' in r)expect(r.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(false);
+});
+it('communication cap sentinel retains known rows and never claims complete',async()=>{
+ for(let n=0;n<101;n++)await publishUpdate('OPTIONAL');
+ const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'partial',reason:'source_cap'}}}});if('snapshot' in r)expect(r.snapshot.attention.filter(row=>row.ref.kind==='COMMUNICATION')).toHaveLength(100);
+},30000);
+it('shift reassignment during final Home wait revokes current grant without backfilling the replacement',async()=>{
+ const {currentShiftFingerprintSql}=await import('../../lib/data/shift-change-release');
+ await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'QAOWNER',clock_timestamp()+interval '1 day')",[ownerProof.sessionTokenHash]);
+ const [source]=await q(`SELECT sh.assignment_episode_id::text AS episode,${currentShiftFingerprintSql()} AS fingerprint FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id=$1`,[fixture.sourceId]) as {episode:string;fingerprint:string}[];
+ const draft:CommunicationDraft={type:'SHIFT_NOTE',scope:{kind:'SHIFT',locationId:'loc-1',sourceShiftId:fixture.sourceId,assignmentEpisodeId:source.episode,termsFingerprint:source.fingerprint},title:'Fictional shift update',body:'Private fictional shift context.',acknowledgement:'REQUIRED',expiresAt:null};
+ const preview=await previewCommunicationAudience(ownerProof,draft,db.executor);if(preview.state!=='ready')throw Error('No canonical shift audience');
+ const result=await executeCommunicationCommand(ownerProof,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},db.executor);if(result.status!=='committed')throw Error('No shift note');
+ const initial=await home();if(!('snapshot' in initial))throw Error('No Home');expect(initial.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(true);
+ let observations=0;const ex:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{if(statements.some(s=>s.text.includes('home_authority'))&&++observations===2)await q('UPDATE shifts SET employee_id=$1 WHERE id=$2',[fixture.actors[2],fixture.sourceId]);return db.executor.transaction(statements,signal);}};
+ const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'unavailable',reason:'source_changed'}}}});if('snapshot' in r)expect(r.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(false);
+ expect(await readCommunication(proof,result.id,db.executor)).toMatchObject({state:'unauthorized'});
+ expect(await q('SELECT employee_id FROM communication_recipients WHERE communication_id=$1',[result.id])).toEqual([{employee_id:proof.employee.id}]);
 });

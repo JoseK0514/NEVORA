@@ -7,6 +7,7 @@ const text=(value:unknown):value is string=>typeof value==='string'&&value.lengt
 /** Exact canonical destinations only; these links never grant mutation authority. */
 export function homeDestination(ref:AttentionItem['ref'],tab?:string):string|null{
  if(!text(ref.id)||!text(ref.version))return null;
+ if(ref.kind==='COMMUNICATION')return /^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(ref.id)&&/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(ref.version)?`/app/updates/${ref.id}`:null;
  if(ref.kind==='SCHEDULE')return isValidWeekStart(ref.id)?`/app/schedule?week=${encodeURIComponent(ref.id)}`:null;
  if(ref.kind==='TIME_OFF')return `/app/requests?tab=my&requestId=${encodeURIComponent(ref.id)}`;
  if(ref.kind==='TIME_CORRECTION')return '/app/my-time';
@@ -39,11 +40,10 @@ export function projectEmployeeHome(input:HomeSnapshot):EmployeeHomeRead{
    if(!source||!['complete','partial','unavailable','not_applicable'].includes(source.state)||age<0||age>45000||source.state==='not_applicable'){
     sources[key]={state:'unavailable',observedAt:input.observedAt,version:null,reason:age>45000?'expired':'unknown_source'};continue;
    }
-   sources[key]={state:source.state,observedAt:source.observedAt,version:text(source.version)?source.version:null,reason:reasons.has(source.reason??'')?source.reason:null};
+   sources[key]={state:source.state,observedAt:source.observedAt,version:text(source.version)?source.version:null,reason:reasons.has(source.reason??'')?source.reason:null,...(source.validUntil?{validUntil:source.validUntil}:{})};
    if(source.state==='complete'&&!sources[key].version)sources[key]={...sources[key],state:'unavailable',reason:'unknown_source'};
+   if(source.validUntil&&(!instant(source.validUntil)||Date.parse(source.validUntil)<=at))sources[key]={state:'unavailable',observedAt:input.observedAt,version:null,reason:'expired'};
   }
-  // Task5 staging is explicit even if a premature producer claims completion.
-  if(sources.communications.state!=='unavailable')sources.communications={...sources.communications,state:'partial',reason:'integration_pending'};
   const rows=input.attention.map(safeItem);
   // Source revisions do not establish time validity. A deadline crossed during
   // the protected read requires revalidation, including equality at observation.
@@ -64,8 +64,9 @@ export function projectEmployeeHome(input:HomeSnapshot):EmployeeHomeRead{
   const available=sources.schedule.state!=='unavailable'&&input.publicationState!=='unavailable';
   const nextShift=available?safeAssignment(input.nextShift):null,currentShift=available?safeAssignment(input.currentShift):null;
   if(nextShift&&Date.parse(nextShift.startAt)<=at||currentShift&&(Date.parse(currentShift.startAt)>at||Date.parse(currentShift.endAt)<=at))throw Error('Expired assignment');
-  const boundaries=[nextShift?.startAt,currentShift?.endAt,...[...merged.values()].filter(i=>i.actionable).map(i=>i.deadlineAt)].filter((v):v is string=>!!v).map(v=>Date.parse(v)-at).filter(v=>v>0);
+  const boundaries=[nextShift?.startAt,currentShift?.endAt,...Object.values(sources).map(s=>s.validUntil),...[...merged.values()].filter(i=>i.actionable).map(i=>i.deadlineAt)].filter((v):v is string=>!!v).map(v=>Date.parse(v)-at).filter(v=>v>0);
   const snapshot:HomeSnapshot={observedAt:input.observedAt,authority:input.authority,timeZone:input.timeZone,validForMs:Math.min(input.validForMs,...boundaries),sources,publicationState:available?input.publicationState:'unavailable',nextShift,currentShift,attention:[...merged.values()].sort(compare)};
-  return {state:'partial',snapshot,allSet:false};
+  const complete=HOME_SOURCES.every(key=>sources[key].state==='complete')&&snapshot.publicationState==='complete';
+  return {state:complete?'ready':'partial',snapshot,allSet:complete&&snapshot.attention.length===0};
  }catch{return {state:'unavailable',reason:'read_failed'};}
 }

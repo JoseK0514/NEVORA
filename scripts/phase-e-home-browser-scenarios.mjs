@@ -2,19 +2,21 @@ import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {writeFile} from 'node:fs/promises';
 import {Client} from 'pg';
+import {randomUUID,createHash} from 'node:crypto';
+import {hashPassword} from '../src/lib/auth/password.ts';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 
-// Actual authenticated persisted Home journeys. Task5 is PARTIAL in every cell.
-export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile}){
+// Actual authenticated persisted Task11 Home journeys with canonical communication sources.
+export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile}){
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
  const scenario=await seedOwnedScenario(app.database.executor,label,index),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values});
- const checks=[],runtimeErrors=[],screenshots=[],details={stage:'Task5 PARTIAL',engine,width,actor,checks,screenshots,runtimeErrors};let stage='seed',binding,homeResponse;
+ const checks=[],runtimeErrors=[],screenshots=[],details={stage:'Task11 developer verification',engine,width,actor,checks,screenshots,runtimeErrors};let stage='seed',binding,homeResponse,managerContext,manager;
  page.on('pageerror',error=>runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')}));
  page.on('request',request=>{if(new URL(request.url()).pathname==='/api/employee/home')binding=request.headers()['x-nevora-home'];});
- const shot=async name=>{const path=join(evidenceDirectory,`home-partial-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
+ const shot=async name=>{const path=join(evidenceDirectory,`home-task11-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
  const next=()=>page.locator('.employee-home-next');
- const ready=async()=>{await page.locator('[data-home-state="partial"]').waitFor();await page.waitForLoadState('networkidle');};
+ const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor();await page.waitForLoadState('networkidle');};
  const refresh=async()=>{const response=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home');await page.getByRole('button',{name:'Retry Home',exact:true}).click();await (await response).finished();await page.getByRole('button',{name:'Retry Home',exact:true}).waitFor();await ready();};
  async function login(target=page,id=actor){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign In',exact:true}).click()]);}
  function gate(path){let release,started,used=false;const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;});const handler=async route=>{if(used)return route.continue();used=true;const response=await route.fetch();if(path.includes('/home'))homeResponse=await response.json();started();await wait;await route.fulfill({response}).catch(()=>{});};return {handler,seen,release:()=>release(),path};}
@@ -31,14 +33,47 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  stage='loading';const loading=gate('**/api/employee/home');await page.route(loading.path,loading.handler);await login();await loading.seen;
  assert(await page.getByText('Loading Home…',{exact:true}).isVisible());assert.equal(await next().locator('.employee-home-assignment').count(),0);await shot('loading');loading.release();await ready();await page.unroute(loading.path,loading.handler);
  await page.getByText('Clocked In',{exact:true}).waitFor();
- assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'partial');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
- assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert(await page.getByText('Home is partial. Communications are not included yet.',{exact:true}).isVisible());assert.equal(await page.getByText("You're all set.",{exact:true}).count(),0);
+ assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'complete');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
+ assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert(await page.getByText('Some Home sections could not be fully checked.',{exact:true}).isVisible());assert.equal(await page.getByText("You're all set.",{exact:true}).count(),0);
  assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('Scheduled now',{exact:true}).isVisible());
  const positions=await page.locator('.employee-home-next,.employee-home-actions').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().top));assert(positions[0]<positions[1]);
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot('ready');
- checks.push('H01 actual loading contains no private row/success; persisted future Next Shift leads, Scheduled now and actual recorded Clocked In coexist; six-source communications PARTIAL and private notes absent');
+ checks.push('H01 actual loading contains no private row/success; persisted future Next Shift leads, Scheduled now and actual recorded Clocked In coexist; six-source canonical communications complete and private notes absent');
  const show=page.getByRole('button',{name:/Show all \d+ items/});await show.click();assert.equal(await page.locator('.employee-home-actions>ul:first-of-type li').count(),homeResponse.snapshot.attention.length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);for(const item of homeResponse.snapshot.attention.filter(item=>item.ref.kind==='SCHEDULE'))assert(await page.locator(`.employee-home-actions time[datetime="${item.ref.id}"]`).isVisible());assert.equal(await page.locator('.employee-home-actions small').filter({hasText:'Recorded '}).count(),homeResponse.snapshot.attention.filter(item=>item.ref.kind!=='SCHEDULE').length);const leave=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='TIME_OFF');assert.equal(new Set(leave.map(item=>item.label)).size,7);for(const item of leave)assert(await page.getByText(item.label,{exact:true}).isVisible());await shot('show-all');
  checks.push('H02 actual overflow count and Show all expose every returned item; weekly reviews show their own week and distinct time-off periods remain distinguishable; Home has canonical review links and no compact consent or Mark read');
+ stage='canonical-communications';
+ managerContext=await browser.newContext({viewport:{width,height:900}});await managerContext.route('**/*',route=>new URL(route.request().url()).origin===new URL(app.url).origin?route.continue():route.abort());manager=await managerContext.newPage();await login(manager,'QAOWNER');
+ const [ownerSession]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',['QAOWNER']);
+ const owner={employee:{id:'QAOWNER'},sessionTokenHash:ownerSession.token_hash};
+ const [session]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[actor]);
+ const self={employee:{id:actor,firstName:'Fictional',lastName:'Self',role:'LEAD',primaryLocationId:'loc-1'},sessionTokenHash:session.token_hash};
+ // Public lifetime header is derived only from this fixture's actual SQL session;
+ // no raw proof is sent to the browser or stored in evidence.
+ const communicationAuthority=proof=>createHash('sha256').update(JSON.stringify(['nevora:communication:lifetime:v1',proof.employee.id,proof.sessionTokenHash])).digest('hex');
+ const communicationRequest=async(proof,action,value,id)=>{const target=proof===owner?manager:page,mode=proof===owner?'manager':'employee';return target.evaluate(async({mode,action,value,id,authority})=>{
+ const read=action==='read',path='/api/'+mode+'/communications'+(read?'/'+id:action==='preview'?'/preview':'');
+ const response=await fetch(path,{method:read?'GET':'POST',credentials:'same-origin',cache:'no-store',headers:{'X-Nevora-Communication':'1','X-Nevora-Communication-Authority':authority,...(read?{}:{'Content-Type':'application/json'})},...(read?{}:{body:JSON.stringify(value)})});return response.json();
+ },{mode,action,value,id,authority:communicationAuthority(proof)});};
+ const previewCommunicationAudience=(proof,draft)=>communicationRequest(proof,'preview',draft),executeCommunicationCommand=(proof,command)=>communicationRequest(proof,'command',command),recordCommunicationRead=executeCommunicationCommand,readCommunication=(proof,id)=>communicationRequest(proof,'read',null,id);
+
+ async function publishUpdate(acknowledgement){const draft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'loc-1'},title:'Operational update '+label+' — revisión 👷',body:'PRIVATE COMPLETE CONTENT '+label,acknowledgement,expiresAt:null};
+ const preview=await previewCommunicationAudience(owner,draft,app.database.executor);assert.equal(preview.state,'ready');const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(result.status,'committed');return {result,draft};}
+ const required=await publishUpdate('REQUIRED');await refresh();
+ const row=()=>page.locator('.employee-home-actions li').filter({has:page.locator('a[href="/app/updates/'+required.result.id+'"]')});
+ assert(await row().getByText('Required review',{exact:true}).isVisible());assert.equal(await page.getByText("You're all set.",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
+ assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);
+ assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:communicationAuthority(self),ref:{kind:'COMMUNICATION',id:required.result.id,version:required.result.version}},app.database.executor)).status,'blocked');
+ await refresh();assert(await row().getByText('Required review',{exact:true}).isVisible());await shot('required-push-off');
+ // The Task11 fixture uses the authenticated full-content API before a receipt;
+ // Task10 owns the actual detail-screen acknowledgement journey.
+ const detail=await readCommunication(self,required.result.id,app.database.executor);assert.equal(detail.state,'ready');assert.equal(detail.body,required.draft.body);
+ assert.equal((await executeCommunicationCommand(self,{kind:'ACKNOWLEDGE',operationId:randomUUID(),authority:detail.authority,communicationId:detail.id,expectedRevisionId:detail.revisionId,contentHash:detail.contentHash},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
+ const revisedDraft={...required.draft,body:'PRIVATE REVISED CONTENT '+label},preview=await previewCommunicationAudience(owner,revisedDraft,app.database.executor);assert.equal(preview.state,'ready');
+ const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();assert(await row().getByText('Required review',{exact:true}).isVisible());await shot('new-revision');
+ assert.equal((await executeCommunicationCommand(owner,{kind:'WITHDRAW',operationId:randomUUID(),authority:communicationAuthority(owner),communicationId:required.result.id,expectedRevisionId:revised.version},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
+ const optional=await publishUpdate('OPTIONAL');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),1);
+ const optionalDetail=await readCommunication(self,optional.result.id,app.database.executor);assert.equal(optionalDetail.state,'ready');assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:optionalDetail.authority,ref:{kind:'COMMUNICATION',id:optional.result.id,version:optional.result.version}},app.database.executor)).status,'committed');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),0);
+ checks.push('H14 authenticated Home follows actual canonical required receipt, push-off/Mark read denial, revision reset, withdrawal and optional version read; private body is absent and full review stays on Updates');
  stage='keyboard';await page.locator('h1').click();const link=next().getByRole('link',{name:'View schedule',exact:false}).first(),tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));const rect=await link.boundingBox();assert(rect&&rect.height>=44&&rect.width>=44);
@@ -65,7 +100,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const [published]=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);
  assert.equal(ack.publication_revision_id,published.id);
  await page.goto(app.url+'/app');await ready();
- stage='empty';await q('DELETE FROM shifts WHERE employee_id=$1',[actor]);await refresh();await page.getByText('No upcoming published shift',{exact:true}).waitFor();assert.equal(await page.getByText('Scheduled now',{exact:true}).count(),0);assert.equal(await page.getByText("You're all set.",{exact:true}).count(),0);await shot('empty');checks.push('H12 actual no-future-assignment state uses precise empty copy and communications remains partial');
+ stage='empty';await q('DELETE FROM shifts WHERE employee_id=$1',[actor]);await refresh();await page.getByText('No upcoming published shift',{exact:true}).waitFor();assert.equal(await page.getByText('Scheduled now',{exact:true}).count(),0);assert.equal(await page.getByText("You're all set.",{exact:true}).count(),0);await shot('empty');checks.push('H12 actual no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
  stage='last-shift-removal';
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:scenario.week,managerId:'QAOWNER'},app.database.executor);
  await refresh();
@@ -76,7 +111,14 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  await shot('last-shift-removal');
  checks.push('H13 actual canonical confirmation then last own shift removal and republish discloses unavailable weekly review, preserves independent time-off rows and canonical recovery without compact consent');
+ stage='complete-zero';const clearActor='QA-'+label+'-CLEAR';
+ await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Clear','555-0197','EMPLOYEE','loc-1')",[clearActor]);
+ await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[clearActor,await hashPassword(TEST_PASSWORD)]);
+ await login(page,clearActor);await ready();await page.getByText("You're all set.",{exact:true}).waitFor();assert.equal(await page.locator('[data-home-state="ready"]').count(),1);assert.equal(await page.locator('.employee-home-actions li').count(),0);await shot('all-set');
+ const clearApi=await page.evaluate(async binding=>{const r=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return r.json();},binding);assert.equal(clearApi.allSet,true);assert.equal(clearApi.snapshot.publicationState,'complete');for(const source of Object.values(clearApi.snapshot.sources))assert.equal(source.state,'complete');
+ checks.push('H15 actual new eligible account has no historical communication grants; all six canonical sources/publication complete and zero items yield exact all-set copy');
+ if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await page.getByText('Communications unavailable',{exact:true}).waitFor();assert.equal(await page.getByText("You're all set.",{exact:true}).count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await page.getByText("You're all set.",{exact:true}).waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='axe-diagnostic';await page.addScriptTag({path:axeFile});details.axe=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({target:n.target.map(t=>String(t).replace(/\[[^\]]*\]/g,'[attribute]')),contrast:n.any.filter(a=>a.id==='color-contrast').map(a=>({ratio:a.data?.contrastRatio,foreground:a.data?.fgColor,background:a.data?.bgColor}))}))}));});assert.deepEqual(details.axe,[]);
- details.runtimeErrors=runtimeErrors;assert.deepEqual(runtimeErrors,[]);details.html=await page.locator('.employee-home').innerHTML();await writeFile(join(evidenceDirectory,`home-partial-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
- }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-partial-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}
+ details.runtimeErrors=runtimeErrors;assert.deepEqual(runtimeErrors,[]);details.html=await page.locator('.employee-home').innerHTML();await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
+ }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{await managerContext?.close();}
 }

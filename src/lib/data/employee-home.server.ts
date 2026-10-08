@@ -15,6 +15,8 @@ import {attentionSourceVersion} from './employee-attention-receipts.server';
 import {readEmployeeTime} from './employee-time.server';
 import {getExchange} from './exchanges';
 import {readShiftChangeAvailability} from './shift-changes';
+import {listEmployeeCommunications} from '../communications/service.server';
+import {communicationRecipientAllowedSql} from '../communications/sql';
 
 const hash=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 /** Public, domain-separated lifetime binding; never a cookie/session proof. */
@@ -30,6 +32,7 @@ function timeOffPeriod(detail:Record<string,unknown>):string{
 type IndexRow={id:string;changedAt:string;version?:string;detail?:Record<string,unknown>;read?:boolean};
 type Section={observation:SourceObservation;items:AttentionItem[]};
 type Authority={observedAt:string;expiresAt:string;locations:string[]};
+type CommunicationIndex={id:string;revision:string;contentHash:string;expiresAt:string|null;allowed:boolean;acknowledged:string|null;read:string|null};
 const denied:EmployeeHomeRead={state:'unauthorized',reason:'access_denied'};
 const unavailable:EmployeeHomeRead={state:'unavailable',reason:'read_failed'};
 
@@ -78,9 +81,15 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal);
   const guards=()=>[...employeeReadLimits,...employeeViewGuards(proof,workspace)];
   const session=()=>managementSessionStatements(proof,proof.employee.id,[proof.employee.role]);
+  const indexes=new Map<HomeSource,{statement:SqlStatement;rows:unknown[]}>();
+  const receipts=new Map<string,{statement:SqlStatement;rows:unknown[]}>();
+  let assignmentIndex:{statement:SqlStatement;rows:unknown[]}|undefined;
+  const assignmentFingerprint=(rows:unknown[])=>hash(rows.map(row=>{const {observedAt:_at,...facts}=row as Record<string,unknown>;void _at;return facts;}));
   const protectedExecutor:SqlExecutor={
    query:async<T>(statement:SqlStatement)=>{const prefix=guards();const result=await executor.transaction([...prefix,statement,...session()],signal);return result[prefix.length] as T[];},
-   transaction:async(statements)=>{const prefix=employeeReadLimits;const result=await executor.transaction([...prefix,...statements,...session()],signal);return result.slice(prefix.length,prefix.length+statements.length);},
+   transaction:async(statements)=>{const prefix=employeeReadLimits;const result=await executor.transaction([...prefix,...statements,...session()],signal);const rows=result.slice(prefix.length,prefix.length+statements.length);
+    const at=statements.findIndex(s=>s.text.includes('WITH clock AS MATERIALIZED')&&s.text.includes('"coverageComplete"'));
+    if(at>=0)assignmentIndex={statement:statements[at],rows:rows[at]};return rows;},
   };
   const authorityStatement:SqlStatement={text:`/* home_authority */ SELECT to_jsonb(clock_timestamp()) AS "observedAt",s.expires_at::text AS "expiresAt",
    ARRAY(SELECT id FROM (${employeeAllowedLocationsSql('$3','$2')}) allowed ORDER BY id) AS locations
@@ -93,7 +102,8 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
   const before=await authority();
   const observation=(state:SourceObservation['state'],reason:string|null,version:string|null=hash([])):SourceObservation=>({state,reason,version,observedAt:before.observedAt});
   const failed=():Section=>({observation:observation('unavailable','read_failed',null),items:[]});
-  const readReceipts=async(kind:string)=>new Set((await protectedExecutor.query<{id:string;version:string}>({text:`SELECT source_id AS id,source_version AS version FROM employee_attention_receipts WHERE workspace_id=$1 AND employee_id=$2 AND source_kind=$3`,values:[workspace.id,proof.employee.id,kind]})).map(r=>JSON.stringify([r.id,r.version])));
+  const readReceipts=async(kind:string)=>{const statement:SqlStatement={text:`/* home_receipts */ SELECT source_id AS id,source_version AS version FROM employee_attention_receipts WHERE workspace_id=$1 AND employee_id=$2 AND source_kind=$3 ORDER BY source_id,source_version`,values:[workspace.id,proof.employee.id,kind]};
+   const rows=await protectedExecutor.query<{id:string;version:string}>(statement);receipts.set(kind,{statement,rows});return new Set(rows.map(r=>JSON.stringify([r.id,r.version])));};
   async function section(source:'acknowledgements'|'timeOff'|'exchanges'|'ownTime'):Promise<Section>{
    try{
     const statement=indexStatement(source,workspace.id,proof.employee.id),rows=await protectedExecutor.query<IndexRow>(statement),items:AttentionItem[]=[];
@@ -147,17 +157,75 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
     }
     // Reject an index that changed while its canonical details were awaited.
     if(hash(await protectedExecutor.query<IndexRow>(statement))!==hash(rows))return {observation:observation('unavailable','source_changed',null),items:[]};
+    indexes.set(source,{statement,rows});
     return {observation:observation(partial?'partial':'complete',partial?(rows.length>CAP?'source_cap':'unknown_source'):null,hash(rows)),items};
    }catch{return failed();}
   }
   const [acknowledgements,exchanges,timeOff,ownTime]=await Promise.all([section('acknowledgements'),section('exchanges'),section('timeOff'),section('ownTime')]);
   // Assignment producer preserves its actual null metadata on unavailable.
   const assignments=await readEmployeePublishedAssignments(proof,protectedExecutor);
-  const after=await authority();
+  // This metadata observation uses the canonical communication recipient SQL;
+  // it is a coherency witness, never a second content/audience producer.
+  const communicationIndex:SqlStatement={text:`/* home_communications */ SELECT c.id::text,c.head_revision_id::text AS revision,r.content_hash AS "contentHash",r.expires_at::text AS "expiresAt",
+   (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ${communicationRecipientAllowedSql()} AS allowed,
+   (SELECT acknowledged_at::text FROM communication_receipts WHERE workspace_id=c.workspace_id AND communication_id=c.id AND revision_id=r.id AND employee_id=$2) AS acknowledged,
+   (SELECT read_at::text FROM employee_attention_receipts WHERE workspace_id=c.workspace_id AND source_kind='COMMUNICATION' AND source_id=c.id::text AND source_version=r.id::text AND employee_id=$2) AS read
+   FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=$1 AND c.state='PUBLISHED'
+   AND (c.author_employee_id=$2 OR EXISTS(SELECT 1 FROM communication_recipients g WHERE g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=r.id AND g.employee_id=$2))
+   ORDER BY c.created_at DESC,c.id LIMIT ${CAP+1}`,values:[workspace.id,proof.employee.id]};
+  let communicationRows:CommunicationIndex[]|null=null,communicationItems:AttentionItem[]=[],communications=failed().observation;
+  try{
+   communicationRows=await protectedExecutor.query<CommunicationIndex>(communicationIndex);
+   const read=await listEmployeeCommunications(proof,protectedExecutor);
+   if(read.state==='complete'||read.state==='partial'){
+    const partial=read.state==='partial'||communicationRows.length>CAP;
+    communications=observation(partial?'partial':'complete',partial?(communicationRows.length>CAP?'source_cap':'read_failed'):null,hash(communicationRows));
+    const visible=read.items.filter(item=>item.state==='ready');
+    if(communicationRows.slice(0,CAP).filter(row=>row.allowed).some(row=>!visible.some(item=>item.state==='ready'&&item.id===row.id&&item.revisionId===row.revision)))throw Error('Incomplete communication manifest');
+    for(const item of read.items){if(item.state!=='ready')continue;
+     const current=communicationRows.find(row=>row.id===item.id&&row.revision===item.revisionId&&row.contentHash===item.contentHash&&row.allowed);
+     if(!current||Date.parse(current.acknowledged??'')!==Date.parse(item.ownAcknowledgedAt??'')&&current.acknowledged!==item.ownAcknowledgedAt||Date.parse(current.read??'')!==Date.parse(item.ownReadAt??'')&&current.read!==item.ownReadAt)throw Error('Communication source changed');
+     const required=item.acknowledgement==='REQUIRED';
+     if(required?!!item.ownAcknowledgedAt:!!(item.ownReadAt||item.ownAcknowledgedAt))continue;
+     const ref={kind:'COMMUNICATION' as const,id:item.id,version:item.revisionId},href=homeDestination(ref);if(!href)throw Error('Invalid communication destination');
+     communicationItems.push({ref,label:`${required?'Review update':'Update'}: ${item.title}`,href,required,actionable:required,deadlineAt:null,changedAt:item.editedAt??item.publishedAt});
+    }
+   }
+  }catch{communications=failed().observation;communicationItems=[];}
+  // One final SQL batch locks source ranges before re-reading their canonical
+  // observations. This includes empty indexes and receipt/grant membership;
+  // comparing two separately buffered API responses cannot prove all-clear.
+  const checks=[...indexes.entries()].map(([source,value])=>({source,...value}));
+  const receiptChecks=[...receipts.entries()].map(([kind,value])=>({kind,...value}));
+  const tables=new Set(['communications','communication_revisions','communication_recipients','communication_receipts','employee_attention_receipts','shifts','schedules','shift_callouts','schedule_publication_revisions','schedule_publication_revision_shifts','schedule_acknowledgements','locations','employees','employee_location_eligibility','employee_sessions','workspaces','positions']);
+  if(indexes.has('timeOff'))tables.add('time_off_requests');
+  if(indexes.has('exchanges')){tables.add('shift_exchanges');tables.add('shift_change_events');}
+  if(indexes.has('ownTime')){tables.add('time_correction_requests');tables.add('time_correction_events');}
+  let after:Authority;
+  try{
+   const prefix=[...guards(),{text:`/* home_final_sources */ LOCK TABLE ${[...tables].sort().join(',')} IN SHARE MODE`,values:[]}];
+   const statements=[...checks.map(c=>c.statement),...receiptChecks.map(c=>c.statement),communicationIndex,...(assignmentIndex?[assignmentIndex.statement]:[]),authorityStatement];
+   const result=await executor.transaction([...prefix,...statements,...session()],signal),rows=result.slice(prefix.length,prefix.length+statements.length);
+   for(let i=0;i<checks.length;i++)if(hash(rows[i])!==hash(checks[i].rows)){
+    const source=checks[i].source;const section={acknowledgements,exchanges,timeOff,ownTime}[source as 'acknowledgements'|'exchanges'|'timeOff'|'ownTime'];section.observation=observation('unavailable','source_changed',null);section.items=[];
+   }
+   for(let i=0;i<receiptChecks.length;i++)if(hash(rows[checks.length+i])!==hash(receiptChecks[i].rows)){
+    const source=receiptChecks[i].kind==='TIME_OFF'?'timeOff':receiptChecks[i].kind==='TIME_CORRECTION'?'ownTime':'exchanges';const section={timeOff,ownTime,exchanges}[source];section.observation=observation('unavailable','source_changed',null);section.items=[];
+   }
+   const finalCommunicationRows=rows[checks.length+receiptChecks.length] as CommunicationIndex[];
+   if(communicationRows===null||hash(finalCommunicationRows)!==hash(communicationRows)){communications=observation('unavailable','source_changed',null);communicationItems=[];}
+   after=rows.at(-1)?.[0] as Authority;
+   if(!after||!Number.isFinite(Date.parse(after.observedAt)))throw Error('Final observation unavailable');
+   if(assignmentIndex&&assignmentFingerprint(rows[checks.length+receiptChecks.length+1])!==assignmentFingerprint(assignmentIndex.rows)){
+    assignments.nextShift=null;assignments.currentShift=null;assignments.publicationState='unavailable';
+   }
+   const expiry=finalCommunicationRows.filter(row=>communicationItems.some(item=>item.ref.id===row.id)&&row.expiresAt).map(row=>row.expiresAt!).sort((a,b)=>Date.parse(a)-Date.parse(b))[0];
+   if(expiry)communications={...communications,validUntil:expiry};
+  }catch(error){if(isManagementAuthorizationError(error))throw error;after=await authority();communications=observation('unavailable','read_failed',null);communicationItems=[];}
   if(JSON.stringify(before.locations)!==JSON.stringify(after.locations))return denied;
   const validForMs=Math.min(45000,Date.parse(after.expiresAt)-Date.parse(after.observedAt),45000-(Date.parse(after.observedAt)-Date.parse(before.observedAt)));
   if(validForMs<=0)return unavailable;
-  const sources={schedule:assignments.publicationState==='unavailable'?observation('unavailable','read_failed',null):{...observation(assignments.publicationState,assignments.publicationState==='partial'?'unpublished':null,hash(assignments)),observedAt:assignments.observedAt},acknowledgements:acknowledgements.observation,exchanges:exchanges.observation,timeOff:timeOff.observation,ownTime:ownTime.observation,communications:observation('partial','integration_pending',null)};
-  return projectEmployeeHome({observedAt:after.observedAt,authority:homeAuthority(proof),timeZone:workspace.timeZone,validForMs,sources,publicationState:assignments.publicationState,nextShift:assignments.nextShift,currentShift:assignments.currentShift,attention:[...acknowledgements.items,...exchanges.items,...timeOff.items,...ownTime.items]});
+  const sources={schedule:assignments.publicationState==='unavailable'?observation('unavailable','read_failed',null):{...observation(assignments.publicationState,assignments.publicationState==='partial'?'unpublished':null,hash(assignments)),observedAt:assignments.observedAt},acknowledgements:acknowledgements.observation,exchanges:exchanges.observation,timeOff:timeOff.observation,ownTime:ownTime.observation,communications};
+  return projectEmployeeHome({observedAt:after.observedAt,authority:homeAuthority(proof),timeZone:workspace.timeZone,validForMs,sources,publicationState:assignments.publicationState,nextShift:assignments.nextShift,currentShift:assignments.currentShift,attention:[...acknowledgements.items,...exchanges.items,...timeOff.items,...ownTime.items,...communicationItems]});
  }catch(error){return isManagementAuthorizationError(error)?denied:unavailable;}
 }
