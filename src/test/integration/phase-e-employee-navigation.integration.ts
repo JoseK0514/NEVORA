@@ -2,6 +2,7 @@ import {afterEach,beforeEach,expect,it} from 'vitest';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {seedOwnedApp,seedOwnedScenario} from './owned-app-fixture';
+import {workspaceReadSql} from '../../lib/data/workspaces';
 import {readEmployeeProfile} from '../../lib/data/employee-profile.server';
 import {readEmployeeNotificationList} from '../../lib/data/employee-notification-list.server';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
@@ -115,8 +116,8 @@ it('microsecond/null/set ordering and legacy empty query facts replay without ch
  await q("UPDATE time_off_requests SET created_at='2026-10-08T10:11:12.123456Z',start_time=NULL,end_time=NULL,reason=NULL WHERE id='own-request'");await intent();
  for(let n=0;n<3;n++)expect(ids(await inbox())).toEqual(['current']);await q("DELETE FROM time_off_requests WHERE id='own-request'");expect(ids(await inbox())).toEqual([]);
 });
-it('owned PostgreSQL statement and lock timeouts yield unavailable instead of a completed inbox',async()=>{
+it.each(['bootstrap','final'] as const)('owned PostgreSQL %s statement timeout yields unavailable instead of a completed inbox',async stage=>{
  await intent();const timeout={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
-  if(statements.some(s=>s.text.startsWith('WITH facts AS MATERIALIZED'))){const copy=[...statements];copy.splice(copy.length-1,0,{text:'SELECT pg_sleep(3)',values:[]});return db.executor.transaction(copy,signal);}return db.executor.transaction(statements,signal);
+  if(statements.some(s=>stage==='bootstrap'?s.text===workspaceReadSql():s.text.startsWith('WITH facts AS MATERIALIZED'))){const copy=[...statements];copy.splice(copy.length-1,0,{text:'SELECT pg_sleep(3)',values:[]});return db.executor.transaction(copy,signal);}return db.executor.transaction(statements,signal);
  }};expect((await inbox(timeout)).state).toBe('unavailable');
 });

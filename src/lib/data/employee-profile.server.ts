@@ -5,7 +5,18 @@ import type {Workspace} from '../domain';
 import {parseEmployeeView,type EmployeeViewSnapshot} from '../employee-view';
 import {neonNotificationExecutor} from './notification-transactions';
 import {assertManagementProof,isManagementAuthorizationError,managementSessionStatements} from './management-session';
-import {getWorkspace,workspaceReadGuard} from './workspaces';
+import {getWorkspace,workspaceReadSql,workspaceReadGuard} from './workspaces';
+
+export const employeeReadLimits:SqlStatement[]=[{text:"SET LOCAL lock_timeout='1500ms'",values:[]},{text:"SET LOCAL statement_timeout='2500ms'",values:[]}];
+/** Only the canonical workspace read is accepted here; even bootstrap is
+ * bounded, before any private/source observation begins. */
+export function readEmployeeWorkspace(executor:SqlExecutor,signal:AbortSignal){
+ return getWorkspace({transaction:async()=>{throw Error('Unexpected workspace transaction');},query:async<T>(statement:SqlStatement)=>{
+  if(statement.text!==workspaceReadSql()||statement.values.length)throw Error('Unexpected workspace query');
+  const results=await executor.transaction([...employeeReadLimits,statement],signal);
+  return results[employeeReadLimits.length] as T[];
+ }});
+}
 
 export function assertEmployeeViewProof(proof:SessionMutationProof){
  assertManagementProof(proof,proof?.employee?.id);
@@ -27,7 +38,7 @@ export function employeeViewGuards(proof:SessionMutationProof,workspace:Workspac
 export async function readEmployeeProfile(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeViewSnapshot>{
  try{assertEmployeeViewProof(proof);}catch{return {state:'unavailable',reason:'access_denied'};}
  try{
-  const workspace=await getWorkspace(executor),guards=employeeViewGuards(proof,workspace);
+  const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),guards=[...employeeReadLimits,...employeeViewGuards(proof,workspace)];
   const results=await executor.transaction([...guards,{text:`SELECT jsonb_build_object('state','ready','kind','profile','observedAt',clock_timestamp(),
     'validForMs',LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (s.expires_at-clock_timestamp()))*1000)),
     'profile',jsonb_build_object('name',trim(e.first_name||' '||e.last_name),'role',CASE e.role WHEN 'LEAD' THEN 'Lead' ELSE 'Employee' END,
@@ -35,7 +46,7 @@ export async function readEmployeeProfile(proof:SessionMutationProof,executor:Sq
         FROM locations l WHERE l.workspace_id=w.id AND l.active AND (l.id=e.primary_location_id OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=l.id))),'[]'::jsonb))) AS snapshot
     FROM employees e JOIN employee_sessions s ON s.employee_id=e.id JOIN workspaces w ON w.id=$3
     WHERE e.id=$1 AND s.token_hash=$2`,values:[proof.employee.id,proof.sessionTokenHash,workspace.id]},
-    ...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])]);
+    ...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   return parseEmployeeView((results[guards.length]?.[0] as {snapshot:unknown})?.snapshot,'profile');
  }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }

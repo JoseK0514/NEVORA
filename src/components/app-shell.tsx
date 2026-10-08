@@ -212,6 +212,7 @@ export function AppShell({
                 {mobileMore.map((item) => (
                   <Link key={item.href} href={item.href}
                     className={item.href === activeHref ? "employee-more-link active" : "employee-more-link"}
+                    onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}
                     aria-current={item.href === activeHref ? "page" : undefined}>
                     <NavIcon name={item.icon} employee size={22} />
                     <span>{employeeNavigationLabel(item.label)}</span>

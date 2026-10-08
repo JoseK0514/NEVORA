@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import {Client} from 'pg';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory}){
@@ -15,7 +16,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(mobile&&!primary){await page.getByRole('button',{name:'More',exact:true}).click();await page.locator('#employee-more-navigation').waitFor({state:'visible'});}
   const root=mobile?(primary?page.locator('.mobile-nav'):page.locator('#employee-more-navigation')):page.locator('nav[aria-label="Primary navigation"]');
   const destination=root.locator(`a[href="${href}"]`);if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.tap({position:{x:rect.width-8,y:rect.height/2}});}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
-  assert.equal(await page.locator('#employee-more-navigation').isVisible(),false);
+  await page.locator('#employee-more-navigation').waitFor({state:'hidden'});assert.equal(await page.locator('#employee-more-navigation').isVisible(),false,`More must close after ${href}`);
  }
  async function ready(kind){await page.waitForFunction(k=>{const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?e.querySelector('dd'):e.querySelector('.employee-notification-list'));},kind);}
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
@@ -52,6 +53,16 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await context.setOffline(true);await page.waitForFunction(()=>!document.querySelector('.employee-notification-list'));await context.setOffline(false);await ready('notifications');
   await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});assert.equal(await page.locator('.employee-notification-list').count(),0);await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});await ready('notifications');
   checks.push('Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization');
+  if(width===390){
+   const lock=new Client({connectionString:app.database.connectionString});await lock.connect();
+   try{await lock.query('BEGIN');await lock.query('LOCK TABLE notifications IN ACCESS EXCLUSIVE MODE');await page.locator('[data-private-view] button').click();await page.getByRole('heading',{name:'Notifications unavailable',exact:true}).waitFor();assert.equal(await page.locator('.employee-notification-list').count(),0);}
+   finally{await lock.query('ROLLBACK');await lock.end();}
+   await page.getByRole('button',{name:'Retry',exact:true}).click();await ready('notifications');
+   await q("INSERT INTO notifications(id,employee_id,type,title,body) VALUES($1,$2,'LEGACY','PRIVATE','PRIVATE')",['legacy-'+label,actor]);await page.locator('[data-private-view] button').click();await page.getByText('Some notifications are unavailable or outside this bounded view. Retry to check current access.',{exact:true}).waitFor();assert.equal(await page.locator('.employee-notification-list a').count(),1);
+   await q('DELETE FROM notifications WHERE id=$1',['legacy-'+label]);await q("UPDATE time_off_requests SET status='DENIED' WHERE id=$1",[requestId]);await page.locator('[data-private-view] button').click();await page.getByText('No notifications in this current view.',{exact:true}).waitFor();
+   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await page.locator('[data-private-view] button').click();await ready('notifications');
+   checks.push('Actual PostgreSQL lock timeout renders unavailable+Retry; legacy source renders partial; authorized source exclusion renders empty; recovery reauthorizes');
+  }
   await nav('/app/profile');await ready('profile');
   if(width===390){
    const endpoint='/api/employee/profile',binding=headers[endpoint];assert(binding);const get=(path=endpoint,b=binding)=>context.request.get(app.url+path,{headers:{'X-Nevora-Employee-View':b}});
@@ -66,6 +77,11 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    // Actual session replacement through login binds the old mounted view out.
    await login(scenario.actors[1]);assert.equal((await get(endpoint,binding)).status(),403);await login(actor);await nav('/app/profile');await ready('profile');checks.push('Actual account/session replacement rejects former mounted-view binding');
   }
+  if(width<768){
+   await page.goto(app.url+'/app/requests?tab=new');await settle();const field=page.locator('textarea').first();await field.fill('Fictional long keyboard text '.repeat(20));await field.focus();assert(await field.evaluate(e=>e===document.activeElement));await page.keyboard.press('Tab');assert(await page.evaluate(()=>document.activeElement instanceof HTMLElement&&getComputedStyle(document.activeElement).visibility!=='hidden'));await page.keyboard.press('Shift+Tab');await page.goto(app.url+'/app/profile');await ready('profile');
+   checks.push('Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified');
+  }
+  assert(await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].every(v=>!v.includes('STORED PRIVATE')&&!v.includes('QA E'))));
   await q("UPDATE employees SET first_name=$1,last_name=$2 WHERE id=$3",['Avery With A Very Long Fictional Display Name','Long Employee Name For Reflow Verification',actor]);await page.reload();await ready('profile');await bounds();
   await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{document.documentElement.style.zoom='2';});await bounds();await screenshot('zoom-long-content');await page.evaluate(()=>{document.documentElement.style.zoom='';});await page.emulateMedia({reducedMotion:'no-preference'});
   if(width<768){const clearance=await page.locator('.employee-shell .page-frame').evaluate(e=>parseFloat(getComputedStyle(e).paddingBottom));assert(clearance>=100);}

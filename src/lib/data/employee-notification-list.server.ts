@@ -9,8 +9,8 @@ import {exchangeReadSql} from './exchanges';
 import {calloutReadSql} from './callouts';
 import {maintenanceReadSql} from './shift-change-maintenance';
 import {neonNotificationExecutor,notificationWeekReadSql} from './notification-transactions';
-import {getWorkspace,workspaceReadSql} from './workspaces';
-import {assertEmployeeViewProof,employeeViewGuards} from './employee-profile.server';
+import {workspaceReadSql} from './workspaces';
+import {assertEmployeeViewProof,employeeViewGuards,readEmployeeWorkspace,employeeReadLimits} from './employee-profile.server';
 import {isManagementAuthorizationError} from './management-session';
 
 const LIMIT=25,MAX_READS=64,MAX_BYTES=1_000_000,BUDGET_MS=8000;
@@ -65,9 +65,9 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
  if(environment!=='test'&&environment!=='production')return {state:'unavailable',reason:'read_failed'};
  const signal=AbortSignal.timeout(BUDGET_MS),started=performance.now();
  const budget=()=>{signal.throwIfAborted();if(performance.now()-started>=BUDGET_MS)throw Error('Notification read budget');};
- const limits:SqlStatement[]=[{text:"SET LOCAL lock_timeout='1500ms'",values:[]},{text:"SET LOCAL statement_timeout='2500ms'",values:[]}];
+ const limits=employeeReadLimits;
  try{
-  const workspace=await getWorkspace(executor);budget();
+  const workspace=await readEmployeeWorkspace(executor,signal);budget();
   // Inbox history does not require a still-active operational location. Each
   // source's canonical open policy owns location eligibility, including history.
   const guards=employeeViewGuards(proof,workspace,false);
