@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [development, main, "phase-c/**", "phase-d/**", "codex/phase-d-**", "fix/**", "release/**"]
+    branches: [development, main, "phase-c/**", "phase-d/**", "codex/phase-d-**", "phase-e/**", "codex/phase-e-**", "fix/**", "release/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**"]
 
@@ -73,7 +73,7 @@ jobs:
 
   phase-d-attendance-ui:
     name: phase-d-attendance-ui
-    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/phase-d/') || startsWith(github.head_ref, 'phase-d/') || startsWith(github.ref, 'refs/heads/codex/phase-d-') || startsWith(github.head_ref, 'codex/phase-d-')
+    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/phase-d/') || startsWith(github.head_ref, 'phase-d/') || startsWith(github.ref, 'refs/heads/codex/phase-d-') || startsWith(github.head_ref, 'codex/phase-d-') || startsWith(github.ref, 'refs/heads/phase-e/') || startsWith(github.head_ref, 'phase-e/') || startsWith(github.ref, 'refs/heads/codex/phase-e-') || startsWith(github.head_ref, 'codex/phase-e-')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -222,7 +222,7 @@ jobs:
 
   release-postgres:
     name: release-postgres
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || github.base_ref == 'main' || github.base_ref == 'development' || startsWith(github.ref, 'refs/heads/phase-c/') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.head_ref, 'phase-c/') || startsWith(github.head_ref, 'release/') || startsWith(github.base_ref, 'phase-c/') || startsWith(github.base_ref, 'release/') || startsWith(github.ref, 'refs/heads/codex/phase-d-') || startsWith(github.head_ref, 'codex/phase-d-')
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || github.base_ref == 'main' || github.base_ref == 'development' || startsWith(github.ref, 'refs/heads/phase-c/') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.head_ref, 'phase-c/') || startsWith(github.head_ref, 'release/') || startsWith(github.base_ref, 'phase-c/') || startsWith(github.base_ref, 'release/') || startsWith(github.ref, 'refs/heads/codex/phase-d-') || startsWith(github.head_ref, 'codex/phase-d-') || startsWith(github.ref, 'refs/heads/phase-e/') || startsWith(github.head_ref, 'phase-e/') || startsWith(github.ref, 'refs/heads/codex/phase-e-') || startsWith(github.head_ref, 'codex/phase-e-')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -251,3 +251,134 @@ jobs:
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
       - name: Release PostgreSQL integration gates
         run: npm run test:release:postgres
+
+  phase-e-postgres:
+    name: phase-e-postgres
+    if: startsWith(github.ref, 'refs/heads/phase-e/') || startsWith(github.head_ref, 'phase-e/') || startsWith(github.ref, 'refs/heads/codex/phase-e-') || startsWith(github.head_ref, 'codex/phase-e-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-sql-evidence
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql
+          PG_INITDB="$(find /usr/lib/postgresql -type f -name initdb -print -quit)"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Owned Phase E sql gates
+        run: npm run test:phase-e:sql
+      - name: Verify exact-source executed Phase E evidence
+        run: node scripts/phase-e-owned.mjs verify-evidence --suite sql
+      - name: Upload Phase E sql evidence
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-e-sql-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-phase-e-sql-evidence/*-report.json
+            ${{ runner.temp }}/nevora-phase-e-sql-evidence/sql-*.json
+            ${{ runner.temp }}/nevora-phase-e-sql-evidence/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-e-sql-evidence/owned-postgres-*/ownership.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  phase-e-ui:
+    name: phase-e-ui
+    if: startsWith(github.ref, 'refs/heads/phase-e/') || startsWith(github.head_ref, 'phase-e/') || startsWith(github.ref, 'refs/heads/codex/phase-e-') || startsWith(github.head_ref, 'codex/phase-e-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-browser-evidence
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install pinned Playwright runtime
+        shell: bash
+        run: |
+          PW_ROOT="$RUNNER_TEMP/nevora-playwright-runtime"
+          mkdir -p "$PW_ROOT"
+          printf '{"private":true}\n' > "$PW_ROOT/package.json"
+          npm install --prefix "$PW_ROOT" --no-package-lock --no-save playwright@1.62.1 axe-core@4.11.0
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Install Chromium and WebKit
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql
+          PG_INITDB="$(find /usr/lib/postgresql -type f -name initdb -print -quit)"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Owned Phase E browser gates
+        run: npm run test:phase-e:ui
+      - name: Verify exact-source executed Phase E evidence
+        run: node scripts/phase-e-owned.mjs verify-evidence --suite browser
+      - name: Upload Phase E browser evidence
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-postgres-*/ownership.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-next-*/ownership.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-next-*/source-manifest.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  phase-e-evidence:
+    name: phase-e-evidence
+    if: ${{ always() && (startsWith(github.ref, 'refs/heads/phase-e/') || startsWith(github.head_ref, 'phase-e/') || startsWith(github.ref, 'refs/heads/codex/phase-e-') || startsWith(github.head_ref, 'codex/phase-e-')) }}
+    needs: [validate, clocker-postgres, release-postgres, phase-d-attendance-ui, phase-e-postgres, phase-e-ui]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Reject any skipped or failed mandatory E/D regression job
+        env:
+          PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-ci-evidence
+          PHASE_E_CI_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node scripts/phase-e-owned.mjs verify-ci
