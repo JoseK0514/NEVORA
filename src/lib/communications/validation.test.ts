@@ -20,7 +20,7 @@ it('oversize_32KiB_denied',()=>{
 });
 it('strict shapes and plain text preserve escaped rendering responsibility',()=>{
  expect(validate({...draft,body:'<b>Plain text</b> https://example.test'})?.ok).toBe(true);
- for(const mutation of [{scope:{...draft.scope,recipientIds:['x']}},{replyTo:'id'},{attachments:[]},{expiresAt:'tomorrow'},{scope:{...draft.scope,businessDate:'2030-02-30'}}])expect(validate({...draft,...mutation}).ok).toBe(false);
+ for(const mutation of [{scope:{...draft.scope,recipientIds:['x']}},{replyTo:'id'},{attachments:[]},{expiresAt:'tomorrow'},{expiresAt:'2030-02-30T12:00:00Z'},{scope:{...draft.scope,businessDate:'2030-02-30'}}])expect(validate({...draft,...mutation}).ok).toBe(false);
  expect(parse(JSON.stringify(draft).padEnd(32768,' ')).ok).toBe(true);
  expect(parse(JSON.stringify(draft).padEnd(32769,' ')).ok).toBe(false);
 });

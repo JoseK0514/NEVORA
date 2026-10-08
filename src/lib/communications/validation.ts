@@ -25,7 +25,7 @@ export function validateCommunicationDraft(input:unknown):Validation{
   if(unsafe.test(input.title.replace(/\r\n?/g,'\n'))||unsafe.test(input.body.replace(/\r\n?/g,'\n'))||title.includes('\n')||[...title].length<1||[...title].length>120||[...body].length<1||[...body].length>2000)return {ok:false,reason:'text'};
   const selected=scope(input.scope);if(!selected)return {ok:false,reason:'scope'};
   if((input.type==='TODAYS_TEAM'&&selected.kind!=='TODAYS_TEAM')||(input.type==='LOCATION_ANNOUNCEMENT'&&selected.kind!=='LOCATION')||(input.type==='SHIFT_NOTE'&&selected.kind!=='SHIFT')||(input.type==='TODAYS_TEAM'&&input.acknowledgement==='REQUIRED'))return {ok:false,reason:'scope'};
-  if(input.expiresAt!==null&&(typeof input.expiresAt!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(input.expiresAt)||!Number.isFinite(Date.parse(input.expiresAt))))return {ok:false,reason:'shape'};
+  if(input.expiresAt!==null&&(typeof input.expiresAt!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(input.expiresAt)||!Number.isFinite(Date.parse(input.expiresAt))||!isValidIsoDate(input.expiresAt.slice(0,10))))return {ok:false,reason:'shape'};
   return {ok:true,value:{type:input.type as CommunicationDraft['type'],scope:selected,title,body,acknowledgement:input.acknowledgement as CommunicationDraft['acknowledgement'],expiresAt:input.expiresAt as string|null}};
  }catch{return {ok:false,reason:'shape'};}
 }

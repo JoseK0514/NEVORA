@@ -27,3 +27,14 @@ it('management scope remains workspace wide while missing or stale authority fai
  for(const mutation of [{workspaceActive:false},{actor:{...manager.actor,workspaceId:'foreign'}},{actor:{...manager.actor,role:'UNKNOWN'}},{observedAt:'invalid'},{location:{...context.location,active:false}}])expect(allow(team,{...manager,...mutation})).toBe(false);
  expect(allow({...team,expiresAt:'2030-10-07T12:00:00Z'},manager)).toBe(false);
 });
+it('only current management sees named receipts; employees withdraw only their own current team message',async()=>{
+ const {canManageCommunication,canWithdrawCommunication}=await import('./policy');
+ expect(canManageCommunication(context)).toBe(false);
+ expect(canWithdrawCommunication(team,'employee',context)).toBe(true);
+ expect(canWithdrawCommunication(team,'other',context)).toBe(false);
+ expect(canWithdrawCommunication(team,'employee',{...context,assignments:[]})).toBe(false);
+ const manager={...context,actor:{...context.actor,role:'MANAGER'},assignments:[]};
+ expect(canManageCommunication(manager)).toBe(true);
+ expect(canWithdrawCommunication(team,'other',manager)).toBe(true);
+ expect(canManageCommunication({...manager,actor:{...manager.actor,active:false}})).toBe(false);
+});

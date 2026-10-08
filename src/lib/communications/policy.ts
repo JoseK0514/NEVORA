@@ -29,3 +29,13 @@ export function canAuthorCommunication(input:unknown,c:CommunicationPolicyContex
   return management;
  }catch{return false;}
 }
+/** Named coworker receipt access and edits stay management-only. This is a
+ * policy predicate, not an authorized read: callers still protect current proof. */
+export function canManageCommunication(c:CommunicationPolicyContext):boolean{
+ return c.workspaceActive&&c.actor.active&&c.actor.workspaceId===c.workspaceId&&['OWNER','MANAGER'].includes(c.actor.role);
+}
+export function canWithdrawCommunication(draft:unknown,authorId:string,c:CommunicationPolicyContext):boolean{
+ if(canManageCommunication(c))return true;
+ const parsed=validateCommunicationDraft(draft);
+ return parsed.ok&&parsed.value.type==='TODAYS_TEAM'&&authorId===c.actor.id&&canAuthorCommunication(parsed.value,c);
+}
