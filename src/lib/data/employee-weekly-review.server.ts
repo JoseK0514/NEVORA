@@ -9,6 +9,7 @@ import {isValidWeekStart} from '../date-utils';
 import {assertEmployeeViewProof,employeeReadLimits,readEmployeeWorkspace} from './employee-profile.server';
 import {attentionGuards,attentionIntent,type AttentionIntent} from './employee-attention-receipts.server';
 import {employeeAllowedLocationsSql} from './employee-schedule';
+import {managementSessionStatements} from './management-session';
 import {neonNotificationExecutor} from './notification-transactions';
 
 export type EmployeeWeeklyReview=EmployeeScheduleRead&{displayedRevisionId:string|null;acknowledgement:EmployeeAcknowledgementState;intent:AttentionIntent|null;readIntent:AttentionIntent|null;read:boolean;publicationChanges:ReturnType<typeof ownPublicationChanges>};
@@ -40,9 +41,9 @@ export async function readEmployeeWeeklyReview(proof:SessionMutationProof,weekSt
     COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'shortName',short_name) ORDER BY id) FROM allowed),'[]'::jsonb) AS locations,
     COALESCE((SELECT jsonb_agg(to_jsonb(before)) FROM before),'[]'::jsonb) AS before,
     COALESCE((SELECT jsonb_agg(to_jsonb(after)) FROM after),'[]'::jsonb) AS after`,values:[workspace.id,proof.employee.id,weekStart]};
-  const results=await executor.transaction([...guards,source],signal),row=results[guards.length]?.[0] as Observation|undefined;
+  const results=await executor.transaction([...guards,source,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal),row=results[guards.length]?.[0] as Observation|undefined;
   if(!row||!Array.isArray(row.shifts)||row.shifts.length>500||!Array.isArray(row.locations)||row.shifts.some(s=>s.employeeId!==proof.employee.id||!row.locations.some(l=>l.id===s.locationId)))return unavailable;
-  const final=await executor.transaction([...guards,source],signal);
+  const final=await executor.transaction([...guards,source,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   if(JSON.stringify(final[guards.length]?.[0])!==JSON.stringify(row))return unavailable;
   const acknowledgement=buildAcknowledgementState({employeeId:proof.employee.id,latestRevisionId:row.revisionId??undefined,
    acknowledgementRevisionId:row.acknowledgedRevisionId??undefined,acknowledgedRevisionShifts:row.before,latestRevisionShifts:row.after});

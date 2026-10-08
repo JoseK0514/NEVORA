@@ -78,13 +78,13 @@ export async function readEmployeeAttentionDetail(proof:SessionMutationProof,ref
    return {state:'ready',ref:{...ref,version:review.displayedRevisionId},detail:{weekStart:ref.id,shifts:review.shifts,locations:review.locations},read:review.read,intent:review.readIntent};
   }
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),guards=attentionGuards(proof,workspace,ref),source=attentionSourceStatement(proof,workspace,ref);
-  const results=await executor.transaction([...employeeReadLimits,...guards,source],signal);
+  const results=await executor.transaction([...employeeReadLimits,...guards,source,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   const detail=(results[employeeReadLimits.length+guards.length]?.[0] as {detail:Record<string,unknown>}|undefined)?.detail;
   if(!detail)return {state:'unavailable'};const current={...ref,version:attentionSourceVersion(ref,detail)};
-  const final=await executor.transaction([...employeeReadLimits,...guards,source,{text:`SELECT id FROM employee_attention_receipts WHERE workspace_id=$1 AND employee_id=$2 AND source_kind=$3 AND source_id=$4 AND source_version=$5`,values:[workspace.id,proof.employee.id,current.kind,current.id,current.version]}],signal);
+  const final=await executor.transaction([...employeeReadLimits,...guards,source,{text:`SELECT id FROM employee_attention_receipts WHERE workspace_id=$1 AND employee_id=$2 AND source_kind=$3 AND source_id=$4 AND source_version=$5`,values:[workspace.id,proof.employee.id,current.kind,current.id,current.version]},...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   const fresh=(final[employeeReadLimits.length+guards.length]?.[0] as {detail:unknown}|undefined)?.detail;
   if(hash(fresh)!==hash(detail))return {state:'unavailable'};
-  return {state:'ready',ref:current,detail,read:final.at(-1)!.length>0,intent:informational(current,detail)?attentionIntent(proof,workspace.id,'MARK_READ',current):null};
+  return {state:'ready',ref:current,detail,read:final[employeeReadLimits.length+guards.length+1].length>0,intent:informational(current,detail)?attentionIntent(proof,workspace.id,'MARK_READ',current):null};
  }catch{return {state:'unavailable'};}
 }
 
@@ -97,8 +97,8 @@ export async function commitAttention(proof:SessionMutationProof,kind:Kind,comma
   const commandHash=hash(payload(workspace.id,kind,operationId,ref)),identity=[workspace.id,proof.employee.id,operationId];
   const guards=[...employeeReadLimits,...attentionGuards(proof,workspace,ref),{text:"SELECT pg_advisory_xact_lock(hashtextextended($1,0))",values:[JSON.stringify(['attention',...identity])]},...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])];
   const source=attentionSourceStatement(proof,workspace,ref);
-  const observation=await executor.transaction([...guards,source,{text:'SELECT command_hash,result FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid',values:identity}],signal);
-  const existing=observation.at(-1)?.[0] as {command_hash:string;result:CommandResult}|undefined;
+  const observation=await executor.transaction([...guards,source,{text:'SELECT command_hash,result FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid',values:identity},...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  const existing=observation[guards.length+1]?.[0] as {command_hash:string;result:CommandResult}|undefined;
   if(existing)return existing.command_hash===commandHash?existing.result:{status:'conflict',reason:'operation_payload_changed'};
   const detail=(observation[guards.length]?.[0] as {detail:Record<string,unknown>}|undefined)?.detail;
   if(!detail)return {status:'unavailable',reason:'source_unavailable'};
