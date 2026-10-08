@@ -104,3 +104,28 @@ it('shift episode change denies old note and current location loss denies announ
 it('arbitrary recipient IDs are rejected on full otherwise valid command',async()=>{
  const c=await command();expect(await executeCommunicationCommand(owner,{...c,recipientIds:['other']} as never,db.executor)).toEqual({status:'blocked',reason:'invalid_command'});expect(await q('SELECT * FROM communications')).toEqual([]);
 });
+it('expiry during final operation wait rejects publication without source rows',async()=>{
+ const c=await command({...draft,expiresAt:new Date(Date.now()+600).toISOString()});
+ const executor:SqlExecutor={...db.executor,transaction:async(s,signal)=>{
+  if(s.some(x=>x.text.includes('communication-operation:')))await new Promise(resolve=>setTimeout(resolve,750));
+  return db.executor.transaction(s,signal);
+ }};
+ expect(await executeCommunicationCommand(owner,c,executor)).toMatchObject({status:'conflict'});expect(await q('SELECT * FROM communications')).toEqual([]);
+});
+it.each(['eligibility','withdrawal'])('list final %s change discards an earlier private body',async change=>{
+ await q("UPDATE employees SET primary_location_id='loc-2' WHERE id='employee'; INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('employee','loc-1')");
+ const {r}=await publish();let changed=false;
+ const executor:SqlExecutor={...db.executor,transaction:async(s,signal)=>{
+  const result=await db.executor.transaction(s,signal);
+  if(!changed&&s.some(x=>x.text.includes('SELECT g.grant_kind'))){changed=true;
+   if(change==='eligibility')await q("DELETE FROM employee_location_eligibility WHERE employee_id='employee' AND location_id='loc-1'");
+   else expect(await executeCommunicationCommand(owner,{kind:'WITHDRAW',operationId:randomUUID(),authority:communicationAuthority(owner),communicationId:r.id,expectedRevisionId:r.version},db.executor)).toMatchObject({status:'committed'});
+  }return result;
+ }};
+ const list=await listEmployeeCommunications(employee,executor);expect(JSON.stringify(list)).not.toContain(draft.body);expect(list).toMatchObject({state:'partial',items:[]});
+});
+it('another eligible team assignment does not replace an immutable existing read grant',async()=>{
+ const team=await overnightTeam(),c=await command(team,employee),r=await executeCommunicationCommand(employee,c,db.executor);if(r.status!=='committed')throw Error('No team');
+ await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT 'zzzz-other-shift',schedule_id,employee_id,date,start_time,end_time FROM shifts WHERE id='overnight-shift'");
+ expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'ready'});
+});
