@@ -46,9 +46,10 @@ it('partial_locations_keep_known_shift while draft_coworker_released_ineligible_
   SELECT 'approved-release',sh.id,sh.employee_id,'OTHER','APPROVED',false,sh.assignment_episode_id,${currentShiftTermsSql()},${currentShiftFingerprintSql()}
   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='released-own'`);
  await schedule('ineligible',addDays(future,21),'loc-2');await shift('ineligible-own','ineligible','QA-E11-SELF',addDays(future,22));
- await q("DELETE FROM employee_location_eligibility WHERE employee_id='QA-E11-SELF' AND location_id='loc-2'");
  const result=await read();expect(result.nextShift?.shiftId).toBe('known-own');expect(result.publicationState).toBe('partial');
- expect(JSON.stringify(result)).not.toContain('PRIVATE NOTE');for(const hidden of ['coworker','draft-own','released-own','ineligible-own'])expect(JSON.stringify(result)).not.toContain(hidden);
+ expect(JSON.stringify(result)).not.toContain('PRIVATE NOTE');for(const hidden of ['coworker','draft-own','released-own'])expect(JSON.stringify(result)).not.toContain(hidden);
+ await q("DELETE FROM employee_location_eligibility WHERE employee_id='QA-E11-SELF' AND location_id='loc-2'");
+ const afterEligibility=await read();expect(afterEligibility.publicationState).toBe('complete');expect(JSON.stringify(afterEligibility)).not.toContain('ineligible-own');
  const window=await readEmployeePublishedAssignmentWindow(proof,future,addDays(future,28),db.executor);
  expect(window.state).toBe('ready');expect(window.assignments.map(item=>item.shiftId)).toEqual(['known-own']);
 });
