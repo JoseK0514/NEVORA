@@ -127,7 +127,8 @@ it('clock-only session expiry across the final wait returns no private DTO',asyn
 });
 it('64 distinct canonical observations cap is unavailable rather than a partial or empty success',async()=>{
  for(let n=0;n<25;n++){
-  await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,target_employee_id,status) VALUES($1,'COVERAGE',$2,$3,$4,'EMPLOYEE_PENDING')",['budget-'+n,scenario.sourceId,proof.employee.id,scenario.actors[1]]);
+  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) SELECT $1,schedule_id,employee_id,date+$2::integer,start_time,end_time,position_id FROM shifts WHERE id=$3",['budget-shift-'+n,n+1,scenario.sourceId]);
+  await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,target_employee_id,status) VALUES($1,'COVERAGE',$2,$3,$4,'EMPLOYEE_PENDING')",['budget-'+n,'budget-shift-'+n,proof.employee.id,scenario.actors[1]]);
   await intent('budget-notice-'+n,'EXCHANGE','budget-'+n,'r:1');
  }
  let observations=0;const counted={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
@@ -137,8 +138,9 @@ it('64 distinct canonical observations cap is unavailable rather than a partial 
  expect(await inbox(counted)).toEqual({state:'unavailable',reason:'read_failed'});expect(observations).toBe(64);
 });
 it('8-second total read budget expires across individually bounded actual PostgreSQL waits',async()=>{
- await intent();let waits=0;const slow={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
-  const result=await db.executor.transaction(statements,signal);waits++;await q('SELECT pg_sleep(1.65)');return result;
+ await intent();let waits=0,queue=Promise.resolve();const slow={...db.executor,transaction:(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+  // Serialize only this fixture's controlled waits: canonical recipient/source reads otherwise run concurrently.
+  const run=queue.then(async()=>{const result=await db.executor.transaction(statements,signal);waits++;await q('SELECT pg_sleep(1.65)');return result;});queue=run.then(()=>undefined,()=>undefined);return run;
  }};
  const started=performance.now();expect(await inbox(slow)).toEqual({state:'unavailable',reason:'read_failed'});expect(performance.now()-started).toBeGreaterThanOrEqual(8000);expect(waits).toBeLessThanOrEqual(5);
 });

@@ -1,10 +1,26 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { accessSync, constants, existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
+
+/** Darwin's pinned wrapper launches a child whose marker macOS can inspect;
+ * launch that exact packaged binary directly, with the wrapper's two DYLD vars.
+ * This keeps the strict marked-root supervisor unchanged. */
+export function darwinWebKitLaunch(engine, wrapper, revisions, platform=process.platform) {
+  if (engine !== 'webkit' || platform !== 'darwin') return {};
+  const directory=dirname(wrapper),executablePath=join(directory,'Playwright.app/Contents/MacOS/Playwright');
+  assert.equal(basename(wrapper),'pw_run.sh','Expected pinned WebKit wrapper');
+  assert(revisions.some(revision=>/^\d+$/.test(revision)&&basename(directory)==='webkit-'+revision),'Expected pinned WebKit revision layout');
+  assert(statSync(wrapper).isFile()&&statSync(executablePath).isFile(),'Expected packaged WebKit files');
+  accessSync(executablePath,constants.X_OK);
+  const wrapperSource=readFileSync(wrapper,'utf8');
+  assert(wrapperSource.includes('DYLD_FRAMEWORK_PATH="$DYLIB_PATH" DYLD_LIBRARY_PATH="$DYLIB_PATH" "$PLAYWRIGHT" "$@"'),'Unexpected pinned WebKit launcher environment');
+  return {executablePath,environment:{DYLD_FRAMEWORK_PATH:directory,DYLD_LIBRARY_PATH:directory},identity:{executablePath,binaryHash:createHash('sha256').update(readFileSync(executablePath)).digest('hex'),wrapperHash:createHash('sha256').update(wrapperSource).digest('hex')}};
+}
 
 /**
  * Each owning module exports async runScenario({ app, browser, context, page,
@@ -34,6 +50,8 @@ async function main() {
   if (!existsSync(axeFile)) throw Error('Select the existing approved pinned axe runtime');
   assert.equal(JSON.parse(readFileSync(join(dirname(axeFile), 'package.json'), 'utf8')).version, '4.11.0', 'Select the existing approved pinned axe runtime');
   const playwright = runtime('playwright');
+  const webkitPackage=JSON.parse(readFileSync(join(dirname(runtime.resolve('playwright-core/package.json')),'browsers.json'),'utf8')).browsers.find(browser=>browser.name==='webkit');
+  const webkitRevisions=[webkitPackage.revision,...Object.entries(webkitPackage.revisionOverrides??{}).filter(([platform])=>platform.startsWith('mac')).map(([,revision])=>revision)];
   const modules = [];
   for (const item of suites) {
     const scenarioModule = await import(pathToFileURL(join(source, BROWSER_SUITES[item])).href);
@@ -42,7 +60,7 @@ async function main() {
   }
   const { createOwnedNextApp } = await import('../src/test/integration/owned-next-app.ts');
   const { seedOwnedApp } = await import('../src/test/integration/owned-app-fixture.ts');
-  const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
+  const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, launches: [], sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
   const controller = new AbortController(), servers = new Set();
   const removeSignals = installTerminationHandlers(() => controller.abort(Error('Owned browser termination signal')));
   let app;
@@ -56,7 +74,9 @@ async function main() {
     for (const engine of ENGINES) {
       controller.signal.throwIfAborted();
       const launch = (async () => {
-        const server = await playwright[engine].launchServer({ headless: true, env: { ...safeEnvironment(), NEVORA_OWNED_PROCESS_OWNER: owner.ownerId }, handleSIGINT: false, handleSIGTERM: false, handleSIGHUP: false });
+        const launchOptions=darwinWebKitLaunch(engine,playwright[engine].executablePath(),webkitRevisions);
+        report.launches.push({engine,...launchOptions.identity});
+        const server = await playwright[engine].launchServer({ headless: true, ...(launchOptions.executablePath?{executablePath:launchOptions.executablePath}:{}), env: { ...safeEnvironment(), ...launchOptions.environment, NEVORA_OWNED_PROCESS_OWNER: owner.ownerId }, handleSIGINT: false, handleSIGTERM: false, handleSIGHUP: false });
         servers.add(server);
         await registerOwnedProcess({ kind: 'browser-' + engine, pid: server.process().pid, ownerId: owner.ownerId });
         if (controller.signal.aborted) { await server.close(); servers.delete(server); controller.signal.throwIfAborted(); }
