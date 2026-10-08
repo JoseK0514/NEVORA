@@ -102,3 +102,32 @@ it('weekly source delayed after final session check must not release rows after 
  expect(await readEmployeeWeeklyReview(proof,week,executor)).toMatchObject({state:'unavailable',shifts:[],intent:null});
  }finally{if(release)clearTimeout(release);await blocker.query('ROLLBACK');await blocker.end();}
 });
+it('live EXCHANGE has no read intent; terminal participant version can be read and changed revision resurfaces',async()=>{
+ await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,status,legacy_manual) VALUES('attention-exchange','COVERAGE','attention-shift','QAEMP','OPEN',false)");
+ const exchangeRef:AttentionRef={kind:'EXCHANGE',id:'attention-exchange',version:'r:1'};
+ expect(await readEmployeeAttentionDetail(proof,exchangeRef,db.executor)).toMatchObject({state:'ready',intent:null,read:false});
+ const workspace=(await q('SELECT id FROM workspaces'))[0] as {id:string};
+ expect(await recordEmployeeAttentionReceipt(proof,{kind:'MARK_READ',ref:exchangeRef,...attentionIntent(proof,workspace.id,'MARK_READ',exchangeRef)},db.executor)).toEqual({status:'blocked',reason:'required_action'});
+ expect((await q("SELECT status FROM shift_exchanges WHERE id='attention-exchange'"))[0]).toEqual({status:'OPEN'});
+ await q("UPDATE shift_exchanges SET status='CANCELLED' WHERE id='attention-exchange'");
+ const read=await readEmployeeAttentionDetail(proof,exchangeRef,db.executor);expect(read).toMatchObject({state:'ready',ref:{version:'r:2'},read:false});if(read.state!=='ready'||!read.intent)throw Error('Missing terminal intent');
+ expect((await recordEmployeeAttentionReceipt(proof,{kind:'MARK_READ',ref:read.ref,...read.intent},db.executor)).status).toBe('committed');
+ await q("UPDATE shift_exchanges SET outcome_reason='Updated terminal explanation' WHERE id='attention-exchange'");expect(await readEmployeeAttentionDetail(proof,exchangeRef,db.executor)).toMatchObject({state:'ready',ref:{version:'r:3'},read:false});
+ expect(await recordEmployeeAttentionReceipt(proof,{kind:'MARK_READ',ref:read.ref,...attentionIntent(proof,workspace.id,'MARK_READ',read.ref)},db.executor)).toEqual({status:'conflict',reason:'source_changed'});
+ await q("UPDATE shift_exchanges SET legacy_manual=true WHERE id='attention-exchange'");expect(await readEmployeeAttentionDetail(proof,exchangeRef,db.executor)).toEqual({state:'unavailable'});
+});
+it('own TIME_CORRECTION detail uses append-only event revision; new decision resurfaces and foreign source is denied',async()=>{
+ const workspace=(await q('SELECT id FROM workspaces'))[0] as {id:string},id='11111111-1111-4111-8111-111111111111';
+ await q(`INSERT INTO time_correction_requests(id,workspace_id,employee_id,requested_by_employee_id,kind,location_id,source_revision,source_snapshot,proposal,reason,request_hash)
+ VALUES($1,$2,'QAEMP','QAEMP','MISSING_ENTRY','loc-1',0,'{}','{"startAt":"2030-10-07T12:00:00Z","endAt":"2030-10-07T20:00:00Z"}','Fictional correction',repeat('f',64))`,[id,workspace.id]);
+ await q("INSERT INTO time_correction_events(id,request_id,revision,event_kind,actor_employee_id,operation_hash,result) VALUES('22222222-2222-4222-8222-222222222222',$1,1,'REQUESTED','QAEMP',repeat('f',64),'{}')",[id]);
+ const correctionRef:AttentionRef={kind:'TIME_CORRECTION',id,version:''},read=await readEmployeeAttentionDetail(proof,correctionRef,db.executor);expect(read).toMatchObject({state:'ready',ref:{version:'r:1'},read:false});if(read.state!=='ready'||!read.intent)throw Error('Missing correction intent');
+ expect((await recordEmployeeAttentionReceipt(proof,{kind:'MARK_READ',ref:read.ref,...read.intent},db.executor)).status).toBe('committed');
+ await q("INSERT INTO time_correction_events(id,request_id,revision,event_kind,actor_employee_id,operation_hash,result,decision_note) VALUES('33333333-3333-4333-8333-333333333333',$1,2,'REJECTED','QAOWNER',repeat('e',64),'{}','Fictional decision')",[id]);
+ expect(await readEmployeeAttentionDetail(proof,correctionRef,db.executor)).toMatchObject({state:'ready',ref:{version:'r:2'},read:false});
+ expect(await recordEmployeeAttentionReceipt(proof,{kind:'MARK_READ',ref:read.ref,...attentionIntent(proof,workspace.id,'MARK_READ',read.ref)},db.executor)).toEqual({status:'conflict',reason:'source_changed'});
+ await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('QAOTHER','Fictional','Other','555-0198','EMPLOYEE','loc-1');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'QAOTHER',now()+interval '1 day')");
+ const other={...proof,employee:{...proof.employee,id:'QAOTHER'},sessionTokenHash:'d'.repeat(64)};
+ expect(await readEmployeeAttentionDetail(other,correctionRef,db.executor)).toEqual({state:'unavailable'});expect(await readEmployeeAttentionDetail(other,ref,db.executor)).toEqual({state:'unavailable'});
+ expect(await recordEmployeeAttentionReceipt(other,{kind:'MARK_READ',ref:read.ref,...read.intent},db.executor)).toEqual({status:'blocked',reason:'review_authority'});
+});
