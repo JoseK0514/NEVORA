@@ -97,7 +97,7 @@ BEGIN
  FROM schedule_publication_revisions next JOIN schedule_publication_revisions prior ON prior.id=(SELECT id FROM schedule_publication_revisions WHERE week_start=next.week_start AND revision_number<next.revision_number ORDER BY revision_number DESC LIMIT 1)
  JOIN schedule_publication_revision_shifts old ON old.revision_id=prior.id JOIN locations l ON l.id=old.location_id
  WHERE next.id=new_revision AND old.source_shift_id IS NOT NULL AND NOT old.is_callout_approved
- AND NOT EXISTS(SELECT 1 FROM schedule_publication_revision_shifts current WHERE current.revision_id=next.id AND current.employee_id=old.employee_id AND current.source_shift_id=old.source_shift_id AND NOT current.is_callout_approved)
+ AND NOT EXISTS(SELECT 1 FROM schedule_publication_revision_shifts current WHERE current.revision_id=next.id AND current.employee_id=old.employee_id AND current.source_shift_id=old.source_shift_id AND current.location_id=old.location_id AND NOT current.is_callout_approved)
  ON CONFLICT DO NOTHING;
 END $$;
 COMMIT;

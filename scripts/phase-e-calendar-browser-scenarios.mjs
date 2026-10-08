@@ -29,6 +29,9 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   const head=await page.request.head(firstUrl);assert.equal(head.status(),200);assert.equal(await head.text(),'');
   const stored=JSON.stringify(await q('SELECT * FROM calendar_subscriptions WHERE employee_id=$1',[fixture.actors[0]]))+JSON.stringify(await q('SELECT * FROM calendar_operations WHERE actor_employee_id=$1',[fixture.actors[0]]));assert.equal(stored.includes(firstUrl),false);assert.equal(stored.includes(new URL(firstUrl).pathname.split('/')[3]),false);
  });
+ await step('Completed controlled clipboard write shows copied feedback only after completion',async()=>{
+  await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>new Promise(resolve=>{window.finishFictionalCopy=resolve;})}}));await panel.getByRole('button',{name:'Copy link',exact:true}).click();assert.equal(await panel.getByText('Link copied.',{exact:true}).count(),0);await page.evaluate(()=>window.finishFictionalCopy?.());await panel.getByText('Link copied.',{exact:true}).waitFor();
+ });
  await step('Clipboard rejection offers keyboard-accessible manual select without false copied success',async()=>{
   await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('Fictional clipboard unavailable');}}}));await panel.getByRole('button',{name:'Copy link',exact:true}).click();await panel.getByText('Copy was unavailable. Use Select link, then copy it manually.',{exact:true}).waitFor();assert.equal(await panel.getByText('Link copied.',{exact:true}).count(),0);
   await panel.getByRole('button',{name:'Select link',exact:true}).focus();await page.keyboard.press('Enter');assert.equal(await page.evaluate(()=>{const field=document.activeElement;return field instanceof HTMLTextAreaElement&&field.selectionStart===0&&field.selectionEnd===field.value.length;}),true);

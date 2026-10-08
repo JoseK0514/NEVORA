@@ -108,7 +108,6 @@ export async function readCalendarFeed(token:string,executor:SqlExecutor=neonNot
    removed AS (SELECT DISTINCT ON(m.source_shift_id) m.source_shift_id AS "sourceShiftId",old.date::text AS date,left(old.start_time::text,5) AS "startTime",left(old.end_time::text,5) AS "endTime",m.calendar_serial AS sequence,m.removed_at::text AS "modifiedAt",'CANCELLED'::text AS status,NULL::text AS location
     FROM calendar_removals m JOIN schedule_publication_revision_shifts old ON old.id=m.previous_publication_shift_id JOIN allowed a ON a.id=old.location_id
     WHERE m.workspace_id=$1 AND m.employee_id=$2 AND m.removed_at>(SELECT at FROM clock)-interval '60 days' AND old.employee_id=$2 AND old.source_shift_id=m.source_shift_id AND old.location_id=ANY($3::text[])
-    AND NOT EXISTS(SELECT 1 FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id=m.source_shift_id AND sh.employee_id=$2 AND s.status='PUBLISHED' AND NOT EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}))
     ORDER BY m.source_shift_id,m.calendar_serial DESC LIMIT 501)
    SELECT to_jsonb(clock.at) AS "observedAt",COALESCE((SELECT jsonb_agg(active) FROM active),'[]'::jsonb) AS active,COALESCE((SELECT jsonb_agg(removed) FROM removed),'[]'::jsonb) AS removed FROM clock`;
   const results=await executor.transaction([...guards,{text:source,values:[workspace.id,subscription.employee_id,subscription.allowed_location_ids,workspace.timeZone]}],signal);
@@ -117,12 +116,25 @@ export async function readCalendarFeed(token:string,executor:SqlExecutor=neonNot
   const today=businessDate(new Date(observation.observedAt),workspace.timeZone);
   const midnight=(date:string)=>Date.parse(shiftBoundaryInstants({date,startTime:'00:00',endTime:'00:01'},workspace.timeZone).startAt);
   const from=midnight(addDays(today,-30)),until=midnight(addDays(today,181));
-  const events=[...observation.active,...observation.removed].map(row=>event(row,workspace.id,subscription.employee_id,workspace.timeZone)).filter(row=>Date.parse(row.endAt)>from&&Date.parse(row.startAt)<until);
+  const overlaps=(row:CalendarEvent)=>Date.parse(row.endAt)>from&&Date.parse(row.startAt)<until;
+  const activeEvents=observation.active.map(row=>event(row,workspace.id,subscription.employee_id,workspace.timeZone)).filter(overlaps),activeUids=new Set(activeEvents.map(row=>row.uid));
+  // Only an event actually emitted in this capability's scope/window replaces a
+  // former-own cancellation. A newly eligible location needs deliberate rotation.
+  const events=[...activeEvents,...observation.removed.map(row=>event(row,workspace.id,subscription.employee_id,workspace.timeZone)).filter(row=>overlaps(row)&&!activeUids.has(row.uid))];
   if(Buffer.byteLength(serializeCalendar(events))>1024*1024)throw Error('Calendar resource unavailable');
   // Linearization point: after source conversion, no newly authorized read can
   // pass once revoke/account/location loss completed. Earlier in-flight responses
   // cannot be recalled; the token is independent of a portal session.
   await executor.transaction(capabilityGuards(workspace,subscription),signal);
   return {state:'ready',observedAt:observation.observedAt,events};
- }catch(error){return denied(error)?unauthorized:{state:'unavailable',reason:'read_failed'};}
+ }catch(error){
+  if(denied(error))return unauthorized;
+  if(error&&typeof error==='object'&&'code'in error&&error.code==='22P02'&&'message'in error&&String(error.message).includes('workspace_version_conflict')){
+   // A changed configuration stays an infrastructure failure; completed authority
+   // loss (including permanent revocation on reactivation) uses the same 404.
+   try{const [current]=await executor.query<{lost:boolean}>({text:'SELECT EXISTS(SELECT 1 FROM calendar_subscriptions c JOIN workspaces w ON w.id=c.workspace_id WHERE c.digest=$1 AND (c.revoked_at IS NOT NULL OR NOT w.active)) AS lost',values:[calendarDigest(token)]});if(current?.lost)return unauthorized;}catch{}
+  }
+  return {state:'unavailable',reason:'read_failed'};
+ }
 }
+
