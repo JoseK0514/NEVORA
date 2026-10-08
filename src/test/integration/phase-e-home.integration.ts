@@ -79,3 +79,31 @@ it('source changed between index and final index observation is unavailable with
  }};
  const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'partial',snapshot:{sources:{timeOff:{state:'unavailable',reason:'source_changed'}}}});if('snapshot' in r)expect(r.snapshot.attention.some(i=>i.ref.kind==='TIME_OFF')).toBe(false);
 });
+it('actual eligible coverage uses canonical availability and deadline; expiry removes the offer',async()=>{
+ const {createCoverageOffer}=await import('./shift-change-api');
+ const id=await createCoverageOffer({sourceShiftId:fixture.targetId,requestedByEmployeeId:fixture.actors[1]},db.executor);
+ const r=await home();if(!('snapshot' in r))throw Error('No Home');
+ const offer=r.snapshot.attention.find(i=>i.ref.id===id);expect(offer).toMatchObject({label:'Review coverage offer',actionable:true,required:false});
+ const [source]=await q('SELECT completion_deadline::text AS deadline FROM shift_exchanges WHERE id=$1',[id]) as {deadline:string}[];
+ expect(Date.parse(offer!.deadlineAt!)).toBe(Date.parse(source.deadline));expect(offer!.href).toBe('/app/exchange?tab=available&requestId='+encodeURIComponent(id));
+ await q("UPDATE shift_exchanges SET completion_deadline=clock_timestamp()-interval '1 second' WHERE id=$1",[id]);
+ const expired=await home();if(!('snapshot' in expired))throw Error('No Home');expect(expired.snapshot.attention.some(i=>i.ref.id===id)).toBe(false);
+});
+it('own correction event revision resurfaces without private decision notes or another employee content',async()=>{
+ const id='11111111-1111-4111-8111-111111111111';
+ await q(`INSERT INTO time_correction_requests(id,workspace_id,employee_id,requested_by_employee_id,kind,location_id,source_revision,source_snapshot,proposal,reason,request_hash)
+ VALUES($1,'workspace-fuel',$2,$2,'MISSING_ENTRY','loc-1',0,'{}','{"startAt":"2030-10-07T12:00:00Z","endAt":"2030-10-07T20:00:00Z"}','PRIVATE CORRECTION REASON',repeat('f',64))`,[id,proof.employee.id]);
+ await q("INSERT INTO time_correction_events(id,request_id,revision,event_kind,actor_employee_id,operation_hash,result) VALUES('22222222-2222-4222-8222-222222222222',$1,1,'REQUESTED',$2,repeat('f',64),'{}')",[id,proof.employee.id]);
+ let r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.find(i=>i.ref.id===id)).toMatchObject({ref:{version:'r:1'},label:'Time correction requested',href:'/app/my-time'});
+ const detail=await readEmployeeAttentionDetail(proof,{kind:'TIME_CORRECTION',id,version:''},db.executor);if(detail.state!=='ready'||!detail.intent)throw Error('Missing detail');await recordEmployeeAttentionReceipt(proof,{kind:'MARK_READ',ref:detail.ref,...detail.intent},db.executor);
+ r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.some(i=>i.ref.id===id)).toBe(false);
+ await q("INSERT INTO time_correction_events(id,request_id,revision,event_kind,actor_employee_id,operation_hash,result,decision_note) VALUES('33333333-3333-4333-8333-333333333333',$1,2,'REJECTED','QAOWNER',repeat('e',64),'{}','PRIVATE MANAGER DECISION')",[id]);
+ r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.find(i=>i.ref.id===id)).toMatchObject({ref:{version:'r:2'},label:'Time correction rejected'});expect(JSON.stringify(r)).not.toMatch(/PRIVATE MANAGER|PRIVATE CORRECTION/);
+});
+it('multiple persisted future weeks remain in the acknowledgement source; no convenient current-week cut-off',async()=>{
+ const {addDays}=await import('../../lib/date-utils');const week=addDays(fixture.week,70);
+ await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('further-schedule','loc-1',$1,'DRAFT','QAOWNER')",[week]);
+ await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('further-shift','further-schedule',$1,$2,'08:00','16:00')",[proof.employee.id,week]);
+ await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},db.executor);
+ const r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.filter(i=>i.ref.kind==='SCHEDULE').map(i=>i.ref.id)).toEqual([fixture.week,week]);expect(r.snapshot.sources.acknowledgements.state).toBe('partial');
+});
