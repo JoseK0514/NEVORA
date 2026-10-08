@@ -561,7 +561,7 @@ describe('notification workspace policy',()=>{
    await db.executor.transaction(notificationIntentStatements([event]));
    const open=createNotificationOpenHandler({state,environment:'test',clock:()=>now,session:async()=>({id:'notify-test',firstName:'Test',lastName:'Worker',role:'EMPLOYEE',primaryLocationId:'loc-1'})});
    const opening=()=>open(new Request('https://portal.example/app/notifications/open?notificationId=notify-event'));
-   const expectHistoryOpen=async()=>{const response=await opening();expect(response.status).toBe(303);expect(response.headers.get('location')).toBe(`https://portal.example/app/exchange?tab=${kind==='EXCHANGE'?'history':'requests'}&requestId=${source.id}#request-${source.id}`);expect(response.headers.get('cache-control')).toBe('no-store');};
+   const expectHistoryOpen=async()=>{const response=await opening();expect(response.status).toBe(303);expect(response.headers.get('location')).toBe(`/app/exchange?tab=${kind==='EXCHANGE'?'history':'requests'}&requestId=${source.id}#request-${source.id}`);expect(response.headers.get('cache-control')).toBe('no-store');};
    expect((await state.check(event,'notify-test',now)).deliverable).toBe(true);
    await db.executor.query({text:accessChange==='inactive_location' ? "UPDATE locations SET active=false WHERE id='loc-1'" : "DELETE FROM employee_location_eligibility WHERE employee_id='notify-test'",values:[]});
    expect((await state.check(event,'notify-test',now)).deliverable).toBe(false);
