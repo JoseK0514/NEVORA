@@ -29,11 +29,12 @@ function Assignment({shift,zone}:{shift:PublishedAssignment;zone:string}){
 }
 const names:Record<HomeSource,string>={schedule:'Schedule',acknowledgements:'Schedule reviews',exchanges:'Shift requests',timeOff:'Time off',ownTime:'Recorded time and corrections',communications:'Communications'};
 const destinations:Record<HomeSource,string>={schedule:'/app/schedule',acknowledgements:'/app/schedule',exchanges:'/app/exchange',timeOff:'/app/requests?tab=my',ownTime:'/app/my-time',communications:'/app/notifications'};
-export function EmployeeHomeView({state,timeAuthority,onRetry}:{state:PrivatePanelState<HomeLifetime>;timeAuthority:string;onRetry:()=>void}){
+export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:PrivatePanelState<HomeLifetime>;timeAuthority:string;onRetry:()=>void;authority?:string}){
  const [showAll,setShowAll]=useState(false);
- const home=!state.paused&&state.snapshot?.state==='ready'?state.snapshot.home:null,snapshot=home?.snapshot;
+ const replaced=state.snapshot?.state==='ready'&&authority!==undefined&&state.snapshot.home.snapshot.authority!==authority;
+ const home=!replaced&&!state.paused&&state.snapshot?.state==='ready'?state.snapshot.home:null,snapshot=home?.snapshot;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
- const loading=!state.paused&&!state.snapshot;
+ const loading=!state.paused&&(!state.snapshot||replaced);
  const items=snapshot?.attention??[],visible=showAll?items:items.slice(0,5);
  return <div className="employee-home-layout" data-home-state={state.paused?'paused':snapshot?'partial':denied?'unauthorized':loading?'loading':'unavailable'}>
   <div className="employee-home-surface employee-home-primary">
@@ -58,7 +59,7 @@ export function EmployeeHomeView({state,timeAuthority,onRetry}:{state:PrivatePan
    <footer className="employee-home-refresh">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button className="button secondary" type="button" onClick={onRetry} disabled={state.paused||state.refreshing}>{state.refreshing?'Checking…':'Retry Home'}</button>}{snapshot?<small>Checked <time dateTime={snapshot.observedAt}>{stamp(snapshot.observedAt,snapshot.timeZone)}</time></small>:null}</footer>
   </div>
   <aside className="employee-home-surface employee-home-recorded" aria-label="Own recorded time">
-   {snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:<EmployeeTimeView compact state={{time:null,refreshing:loading,paused:state.paused}} onRefresh={onRetry}/>}
+   {snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:<EmployeeTimeView compact state={{time:state.snapshot?.state==='unavailable'?{state:'unavailable',reason:denied?'access_denied':'read_failed'}:null,refreshing:loading,paused:state.paused}} onRefresh={onRetry}/>}
   </aside>
  </div>;
 }
@@ -80,5 +81,5 @@ export function EmployeeHomeActions({authority,timeAuthority}:{authority:string;
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,pathname]);
- return <EmployeeHomeView state={state} timeAuthority={timeAuthority} onRetry={()=>control.current?.refresh()}/>;
+ return <EmployeeHomeView authority={authority} state={state} timeAuthority={timeAuthority} onRetry={()=>control.current?.refresh()}/>;
 }
