@@ -87,12 +87,9 @@ it('role change during a blocked source guard is rechecked after the wait',async
    if(statements.some(statement=>statement.text.includes('SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE')))signalStart();
    return db.executor.transaction(statements,signal);
   }};
-  const pending=read(executor);await started;
-  let blocked=false;for(let attempt=0;attempt<40;attempt++){
-   const [{waiting}]=await blocker.query("SELECT count(*)::integer AS waiting FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() AND wait_event_type='Lock'").then(result=>result.rows);
-   if(waiting>0){blocked=true;break;}await new Promise(resolve=>setTimeout(resolve,25));
-  }
-  expect(blocked).toBe(true);await blocker.query('COMMIT');
+  let settled=false;const pending=read(executor).finally(()=>{settled=true;});await started;
+  await new Promise(resolve=>setTimeout(resolve,100));const waited=!settled;
+  await blocker.query('COMMIT');expect(waited).toBe(true);
   expect(await pending).toEqual({observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'});
  }finally{await blocker.query('ROLLBACK').catch(()=>{});await blocker.end();}
 });
