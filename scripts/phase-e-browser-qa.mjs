@@ -4,7 +4,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, parseSuiteArguments, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
+import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 
 /**
  * Each owning module exports async runScenario({ app, browser, context, page,
@@ -43,17 +43,30 @@ async function main() {
   const { createOwnedNextApp } = await import('../src/test/integration/owned-next-app.ts');
   const { seedOwnedApp } = await import('../src/test/integration/owned-app-fixture.ts');
   const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
+  const controller = new AbortController(), servers = new Set();
+  const removeSignals = installTerminationHandlers(() => controller.abort(Error('Owned browser termination signal')));
   let app;
   try {
-    app = await createOwnedNextApp(evidence);
+    // Setup observes abort itself and awaits its owned teardown before rejecting.
+    app = await createOwnedNextApp(evidence, { pinDevTypeReferences: true, signal: controller.signal, processOwnerId: owner.ownerId, onProcessStarted: async child => registerOwnedProcess({ kind: 'next', pid: child.pid, ownerId: owner.ownerId }) });
     report.sourceManifest = join(app.root, 'source-manifest.json'); report.appRoot = app.root;
     report.appOwnerId = JSON.parse(readFileSync(join(app.root, 'ownership.json'), 'utf8')).ownerId;
     verifySourceManifest(source, app.root, custody.checkpoint);
     await seedOwnedApp(app.database.executor);
     for (const engine of ENGINES) {
-      const browser = await playwright[engine].launch({ headless: true });
+      controller.signal.throwIfAborted();
+      const launch = (async () => {
+        const server = await playwright[engine].launchServer({ headless: true, env: { ...safeEnvironment(), NEVORA_OWNED_PROCESS_OWNER: owner.ownerId }, handleSIGINT: false, handleSIGTERM: false, handleSIGHUP: false });
+        servers.add(server);
+        await registerOwnedProcess({ kind: 'browser-' + engine, pid: server.process().pid, ownerId: owner.ownerId });
+        if (controller.signal.aborted) { await server.close(); servers.delete(server); controller.signal.throwIfAborted(); }
+        return server;
+      })();
+      const server = await raceOwnedAbort(launch, controller.signal);
+      const browser = await raceOwnedAbort(playwright[engine].connect(server.wsEndpoint(), { timeout: 15_000 }), controller.signal);
       try {
         for (const [item, runScenario] of modules) for (const width of WIDTHS) {
+          controller.signal.throwIfAborted();
           const record = { suite: item, engine, width, status: 'failed', checks: [] }; report.executions.push(record);
           const context = await browser.newContext({ viewport: { width, height: 1000 }, serviceWorkers: 'block' });
           try {
@@ -66,7 +79,7 @@ async function main() {
             });
             context.on('page', page => page.on('pageerror', () => report.errors.push(`${item} ${engine} ${width}: page runtime error`)));
             const page = await context.newPage(); page.setDefaultTimeout(15_000);
-            const result = await runScenario({ app, browser, context, page, engine, width, evidenceDirectory: evidence, axeFile });
+            const result = await raceOwnedAbort(runScenario({ app, browser, context, page, engine, width, evidenceDirectory: evidence, axeFile }), controller.signal);
             if (!result || !Array.isArray(result.checks) || !result.checks.length || result.checks.some(check => typeof check !== 'string' || !check.trim())) throw Error('Missing executed browser cases: ' + item);
             if (new URL(page.url()).origin !== app.url) throw Error('Browser scenario did not exercise the owned application: ' + item);
             await page.addScriptTag({ path: axeFile });
@@ -76,7 +89,7 @@ async function main() {
           } finally { await context.close(); }
           assertOwnedFixture(); verifySourceManifest(source, app.root, custody.checkpoint); assertSourceUnchanged(source, custody);
         }
-      } finally { await browser.close(); }
+      } finally { await browser.close(); await server.close(); servers.delete(server); }
     }
     verifyBrowserExecutions(report.executions, suites);
     assert.equal(report.errors.length, 0, 'Browser runtime/network errors recorded');
@@ -89,6 +102,9 @@ async function main() {
     process.exitCode = 1;
   } finally {
     const failedTeardown = () => { report.errors.push('Source or ownership teardown validation failed'); report.status = 'failed'; process.exitCode = 1; };
+    if (controller.signal.aborted) { report.errors.push('Owned browser termination signal'); report.status = 'failed'; process.exitCode = 1; }
+    const closedServers = await Promise.allSettled([...servers].map(server => server.close()));
+    if (closedServers.some(result => result.status === 'rejected')) failedTeardown();
     if (app) {
       try { verifySourceManifest(source, app.root, custody.checkpoint); } catch { failedTeardown(); }
       // Source failure does not prevent stopping processes we still demonstrably own.
@@ -102,6 +118,8 @@ async function main() {
     try { assertOwnedFixture(); assertSourceUnchanged(source, custody); } catch { failedTeardown(); }
     writeFileSync(join(evidence, 'browser-report.json'), JSON.stringify(report, null, 2));
     console.log(JSON.stringify({ checkpoint: report.checkpoint, executions: report.executions.length, status: report.status, errors: report.errors.length }));
+    removeSignals();
+    if (controller.signal.aborted) process.exit(1);
   }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main().catch(error => { console.error(error.message); process.exitCode = 1; });

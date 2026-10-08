@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { createHash, randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 // Suite owners add real fixtures at these paths. Absence never means success.
 export const SQL_SUITES = Object.freeze({
@@ -35,6 +35,190 @@ export const WIDTHS = Object.freeze([320, 375, 390, 430, 768, 1024, 1440]);
 const REQUIRED_JOBS = ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui'];
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const json = path => JSON.parse(readFileSync(path, 'utf8'));
+const delay = ms => new Promise(ready => setTimeout(ready, ms));
+export function installTerminationHandlers(handler) {
+  let received = false;
+  const listeners = ['SIGINT', 'SIGTERM', 'SIGHUP'].map(signal => {
+    const listener = () => { if (!received) { received = true; Promise.resolve(handler(signal)).catch(() => { process.exitCode = 1; }); } };
+    process.on(signal, listener); return [signal, listener];
+  });
+  return () => { for (const [signal, listener] of listeners) process.off(signal, listener); };
+}
+export function raceOwnedAbort(promise, signal) {
+  return new Promise((ready, reject) => {
+    const aborted = () => reject(signal.reason ?? Error('Owned runtime aborted'));
+    if (signal.aborted) aborted(); else signal.addEventListener('abort', aborted, { once: true });
+    Promise.resolve(promise).then(ready, reject).finally(() => signal.removeEventListener('abort', aborted));
+  });
+}
+function processTable() {
+  const result = spawnSync('ps', ['-axo', 'pid=,ppid=,pgid='], { encoding: 'utf8', timeout: 2000 });
+  if (result.error || result.status !== 0) throw Error('Cannot prove owned process ancestry');
+  return new Map(result.stdout.trim().split('\n').map(line => line.trim().split(/\s+/).map(Number)).filter(row => row.length === 3).map(([pid, ppid, pgid]) => [pid, { ppid, pgid }]));
+}
+function isDescendant(pid, ancestor, table) {
+  const visited = new Set();
+  while (pid > 1 && !visited.has(pid)) {
+    if (pid === ancestor) return true;
+    visited.add(pid); pid = table.get(pid)?.ppid ?? 0;
+  }
+  return false;
+}
+function processIdentity(pid) {
+  if (!Number.isSafeInteger(pid) || pid < 2) throw Error('Invalid owned process identity');
+  const result = spawnSync('ps', ['-p', String(pid), '-o', 'pid=,ppid=,pgid=,lstart=,stat=,command='], { encoding: 'utf8', timeout: 2000 });
+  if (result.status === 1 || !result.stdout?.trim()) return undefined;
+  if (result.error || result.status !== 0) throw Error('Cannot verify owned process identity');
+  const parts = result.stdout.trim().split(/\s+/);
+  if (parts[8]?.startsWith('Z')) return undefined;
+  return { pid, ppid: Number(parts[1]), pgid: Number(parts[2]), started: parts.slice(3, 8).join(' '), commandHash: hash(parts.slice(9).join(' ')) };
+}
+function ownedProcessIdentity(pid, ownerId, required = false) {
+  const identity = processIdentity(pid);
+  if (!identity) return undefined;
+  const marker = 'NEVORA_OWNED_PROCESS_OWNER=' + ownerId;
+  let owned;
+  if (process.platform === 'linux') {
+    try { owned = readFileSync('/proc/' + pid + '/environ', 'utf8').split('\0').includes(marker); }
+    catch { if (required) throw Error('Cannot reprove owned process environment'); return undefined; }
+  } else {
+    const environment = spawnSync('ps', ['eww', '-p', String(pid), '-o', 'command='], { encoding: 'utf8', timeout: 2000 });
+    if (environment.error || environment.status !== 0) { if (required) throw Error('Cannot reprove owned process environment'); return undefined; }
+    owned = new RegExp('(?:^|\\s)' + marker + '(?:\\s|$)').test(environment.stdout);
+  }
+  if (!owned) { if (required) throw Error('Live process lost invocation ownership; refusing signal'); return undefined; }
+  return identity;
+}
+function assertSameProcess(actual, lease) {
+  if (actual && (actual.pid !== lease.pid || actual.pgid !== lease.pgid || actual.started !== lease.started || actual.commandHash !== lease.commandHash)) throw Error('Owned process identity changed; refusing signal');
+}
+export async function registerOwnedProcess({ kind, pid, ownerId }) {
+  if (!process.send || ownerId !== process.env.PHASE_E_OWNER_ID) throw Error('Owned runtime supervisor required');
+  const requestId = randomBytes(16).toString('hex');
+  await new Promise((ready, reject) => {
+    const finish = error => { clearTimeout(timer); process.off('message', reply); error ? reject(error) : ready(); };
+    const reply = message => { if (message?.type === 'owned-process-registered' && message.requestId === requestId) finish(message.accepted ? undefined : Error('Owned process registration refused')); };
+    const timer = setTimeout(() => finish(Error('Owned process registration timed out')), 5000);
+    process.on('message', reply);
+    process.send({ type: 'register-owned-process', requestId, kind, pid, ownerId }, error => { if (error) finish(Error('Owned runtime supervisor disconnected')); });
+  });
+}
+/** Async supervision keeps the cleanup owner alive for grace, then signals only
+ * independently observed descendants carrying this invocation's random marker.
+ * Start/command identity is rechecked before every fallback signal; mutable
+ * runtime ownership JSON is never sufficient authority to signal a PID. */
+export async function superviseOwnedChild({ command, args, cwd, env, ownerId, timeoutMs, graceMs = 7500, signal }) {
+  if (!/^[a-f0-9]{32}$/.test(ownerId) || !Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || !Number.isSafeInteger(graceMs) || graceMs < 1) throw Error('Invalid owned supervision contract');
+  const leases = new Map(), child = spawn(command, args, { cwd, env: { ...env, NEVORA_OWNED_PROCESS_OWNER: ownerId }, detached: process.platform !== 'win32', stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
+  let failure, escalation, stopping = false;
+  const remember = (pid, kind, table = processTable()) => {
+    if (!child.pid || pid === child.pid || !isDescendant(pid, child.pid, table)) throw Error('Process is not an owned child descendant');
+    const identity = ownedProcessIdentity(pid, ownerId);
+    if (!identity) throw Error('Process lacks invocation ownership');
+    const previous = leases.get(pid);
+    if (previous) assertSameProcess(identity, previous);
+    leases.set(pid, { ...identity, kind: previous?.kind === 'owned-descendant' ? kind : previous?.kind ?? kind });
+  };
+  const snapshot = () => {
+    const table = processTable();
+    for (const pid of table.keys()) if (pid !== child.pid && isDescendant(pid, child.pid, table) && ownedProcessIdentity(pid, ownerId)) remember(pid, 'owned-descendant', table);
+  };
+  const stop = (message, status) => {
+    if (stopping) return;
+    stopping = true; failure = { message, status };
+    try { snapshot(); } catch { failure.message = 'Owned resource observation failed'; }
+    if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
+    escalation = setTimeout(() => {
+      try { snapshot(); } catch { failure.message = 'Owned resource observation failed'; }
+      if (child.exitCode === null && child.signalCode === null && child.pid) {
+        try { process.kill(process.platform === 'win32' ? child.pid : -child.pid, 'SIGKILL'); } catch (error) { if (error.code !== 'ESRCH') failure.message = 'Owned child forced termination failed'; }
+      }
+    }, graceMs);
+  };
+  child.on('message', message => {
+    if (message?.type !== 'register-owned-process') return;
+    let accepted = false;
+    try {
+      if (message.ownerId !== ownerId || !['next', 'browser-chromium', 'browser-webkit'].includes(message.kind)) throw Error('Invalid resource registration');
+      remember(message.pid, message.kind); accepted = true;
+    } catch { stop('Owned process registration refused', 1); }
+    if (child.connected) child.send({ type: 'owned-process-registered', requestId: message.requestId, accepted }, () => {});
+  });
+  const deadline = setTimeout(() => stop('Owned child timed out', 124), timeoutMs);
+  const poll = setInterval(() => { if (!stopping) { try { snapshot(); } catch { stop('Owned resource observation failed', 1); } } }, 250);
+  const aborted = () => stop('Owned supervisor termination signal', 1);
+  signal?.addEventListener('abort', aborted, { once: true });
+  if (signal?.aborted) aborted();
+  const outcome = await new Promise(ready => {
+    child.once('error', () => { failure = { message: 'Owned child could not start', status: 1 }; ready({ status: 1, signal: undefined }); });
+    child.once('exit', (status, exitSignal) => ready({ status, signal: exitSignal }));
+  });
+  clearTimeout(deadline); clearTimeout(escalation); clearInterval(poll); signal?.removeEventListener('abort', aborted);
+  const resources = [...leases.values()];
+  const groups = new Map(resources.filter(lease => lease.pgid === lease.pid).map(lease => [lease.pgid, lease]));
+  const individuals = resources.filter(lease => !groups.has(lease.pgid));
+  const sameLifetime = (actual, lease) => {
+    if (actual && (actual.pid !== lease.pid || actual.pgid !== lease.pgid || actual.started !== lease.started)) throw Error('Owned process lifetime changed; refusing signal');
+    return actual;
+  };
+  const liveResource = lease => sameLifetime(processIdentity(lease.pid), lease);
+  const signalGroup = (leader, kind) => {
+    const actual = processIdentity(leader.pid);
+    if (actual) {
+      // A live leader must still carry the independently verified marker/identity.
+      assertSameProcess(ownedProcessIdentity(leader.pid, ownerId, true), leader);
+    } else {
+      // Its original observed member keeps this invocation-created process group
+      // alive: the PGID cannot be reused while that same member remains in it.
+      // Next may overwrite a member's argv/environment with process.title; that
+      // member grants no individual signalling authority. Only the proven group
+      // is signalled, using PID/start/PGID continuity, never mutable JSON/title.
+      if (!resources.filter(lease => lease.pgid === leader.pgid).some(liveResource)) return;
+    }
+    try { process.kill(process.platform === 'win32' ? leader.pid : -leader.pgid, kind); }
+    catch (error) { if (error.code !== 'ESRCH') throw error; }
+  };
+  const signalIndividual = (lease, kind) => {
+    const actual = ownedProcessIdentity(lease.pid, ownerId, true); assertSameProcess(actual, lease);
+    if (!actual) return;
+    try { process.kill(actual.pid, kind); } catch (error) { if (error.code !== 'ESRCH') throw error; }
+  };
+  let cleanupFailed = false;
+  const signalAll = kind => {
+    // Stop independently proven leaders before checking members' mutable titles.
+    for (const leader of groups.values()) { try { signalGroup(leader, kind); } catch { cleanupFailed = true; } }
+    for (const lease of individuals) { try { signalIndividual(lease, kind); } catch { cleanupFailed = true; } }
+  };
+  try {
+    if (resources.some(liveResource) && !failure) failure = { message: 'Owned child left runtime resources running', status: 1 };
+    signalAll('SIGTERM');
+    const grace = Date.now() + Math.min(graceMs, 1000);
+    while (Date.now() < grace && resources.some(liveResource)) await delay(25);
+    signalAll('SIGKILL');
+    const forced = Date.now() + 2000;
+    while (Date.now() < forced && resources.some(liveResource)) await delay(25);
+    for (const lease of resources) {
+      lease.stopped = !liveResource(lease);
+      if (!lease.stopped) cleanupFailed = true;
+    }
+  } catch { cleanupFailed = true; }
+  if (cleanupFailed) failure = { message: 'Owned resource cleanup could not be proven', status: failure?.status ?? 1 };
+  return { status: failure?.status ?? outcome.status ?? 1, signal: outcome.signal, timedOut: failure?.status === 124, error: failure?.message, resources };
+}
+const approvedAdapters = new Map();
+function approvedDbAdapterHash(originalDb) {
+  const generator = new URL('../src/test/integration/owned-next-app.ts', import.meta.url);
+  const key = hash(readFileSync(generator)) + ':' + hash(originalDb);
+  if (!approvedAdapters.has(key)) {
+    // Import the approved source generator, never the writable runtime mirror.
+    const script = `import {createOwnedDbAdapter} from ${JSON.stringify(generator.href)};import fs from 'node:fs';process.stdout.write(createOwnedDbAdapter(fs.readFileSync(0,'utf8')));`;
+    try {
+      const bytes = execFileSync(process.execPath, ['--import', 'tsx', '--input-type=module', '-e', script], { cwd: fileURLToPath(new URL('..', import.meta.url)), input: originalDb, encoding: 'utf8', env: safeEnvironment(), timeout: 15_000, stdio: ['pipe', 'pipe', 'pipe'] });
+      approvedAdapters.set(key, hash(bytes));
+    } catch { throw Error('Source manifest mismatch: approved DB adapter cannot be derived'); }
+  }
+  return approvedAdapters.get(key);
+}
 export function selectSuites(mode, suite) {
   const allowed = mode === 'sql' ? SQL_SUITES : mode === 'browser' ? BROWSER_SUITES : undefined;
   if (!allowed || (suite !== 'all' && !Object.hasOwn(allowed, suite))) throw Error('Unknown Phase E mode/suite');
@@ -96,11 +280,29 @@ export function assertOwnedFixture(env = process.env) {
 }
 export function verifySourceManifest(source, root, checkpoint) {
   const manifest = json(join(root, 'source-manifest.json'));
-  if (manifest.checkpoint !== checkpoint || JSON.stringify(manifest.substitutedFiles) !== '["src/lib/db.ts"]' || !manifest.hashes || !Object.keys(manifest.hashes).length) throw Error('Source manifest mismatch');
+  const hasTypes = existsSync(join(source, 'next-env.d.ts'));
+  const substitutions = hasTypes ? ['src/lib/db.ts', 'next-env.d.ts'] : ['src/lib/db.ts'];
+  if (manifest.checkpoint !== checkpoint || JSON.stringify(manifest.substitutedFiles) !== JSON.stringify(substitutions) || !manifest.hashes || !Object.keys(manifest.hashes).length) throw Error('Source manifest mismatch');
+  const approvedHash = approvedDbAdapterHash(readFileSync(join(source, 'src/lib/db.ts'), 'utf8'));
+  if (manifest.substitutedDbHash !== approvedHash || hash(readFileSync(join(root, 'app/src/lib/db.ts'))) !== approvedHash) throw Error('Source manifest mismatch: unapproved DB adapter');
+  let typesHash;
+  if (hasTypes) {
+    const original = readFileSync(join(source, 'next-env.d.ts'), 'utf8');
+    let derived = original;
+    // Independent full-byte derivation: only these two source-pinned imports.
+    for (const name of ['routes.d.ts', 'root-params.d.ts']) {
+      const production = `import "./.next/types/${name}";`;
+      if (original.split(`./.next/types/${name}`).length !== 2 || original.split(/\r?\n/).filter(line => line === production).length !== 1) throw Error('Source manifest mismatch: generated type references source imports');
+      derived = derived.replace(production, `import "./.next/dev/types/${name}";`);
+    }
+    typesHash = hash(derived);
+    if (manifest.generatedTypeReferences?.originalHash !== hash(original) || manifest.generatedTypeReferences?.derivedHash !== typesHash || manifest.generatedTypeReferences?.reason !== 'Next 16.3.8 dev generated type-reference paths' || hash(readFileSync(join(root, 'app/next-env.d.ts'))) !== typesHash) throw Error('Source manifest mismatch: generated type references');
+  }
   for (const [file, originalHash] of Object.entries(manifest.hashes)) {
     if (isAbsolute(file) || file.split('/').some(part => part === '..' || part.startsWith('.env')) || !/^[a-f0-9]{64}$/.test(originalHash)) throw Error('Source manifest mismatch: unsafe entry');
     const sourceHash = hash(readFileSync(join(source, file))), mirrorHash = hash(readFileSync(join(root, 'app', file)));
-    if (sourceHash !== originalHash || mirrorHash !== (file === 'src/lib/db.ts' ? manifest.substitutedDbHash : originalHash)) throw Error('Source manifest mismatch: ' + file);
+    const expected = file === 'src/lib/db.ts' ? approvedHash : file === 'next-env.d.ts' ? typesHash : originalHash;
+    if (sourceHash !== originalHash || mirrorHash !== expected) throw Error('Source manifest mismatch: ' + file);
   }
   if (manifest.originalDbHash !== manifest.hashes['src/lib/db.ts']) throw Error('Source manifest mismatch: original DB');
   const files = execFileSync('git', ['ls-files', '-c', '-o', '--exclude-standard', '-z'], { cwd: source, encoding: 'utf8' }).split('\0').filter(Boolean)
@@ -120,11 +322,25 @@ export function verifyBrowserExecutions(executions, suites) {
 export function verifyRequiredJobs(jobs) {
   for (const job of REQUIRED_JOBS) if (jobs?.[job]?.result !== 'success') throw Error('Required Phase E/D CI job did not pass: ' + job);
 }
-function verifySqlExecution(report) {
+function sqlCommand(suite, evidence) {
+  return [process.execPath, 'node_modules/vitest/vitest.mjs', 'run', '--config', 'vitest.phase-e-integration.config.mts', SQL_SUITES[suite], '--reporter=default', '--reporter=json', '--outputFile', join(evidence, 'sql-' + suite + '.json')];
+}
+function verifySqlExecution(report, source, suite) {
   const cases = report.testResults?.flatMap(item => item.assertionResults ?? []) ?? [];
   if (report.success !== true || !Number.isSafeInteger(report.numTotalTests) || report.numTotalTests < 1 || report.numPassedTests !== report.numTotalTests || report.numPendingTests || report.numTodoTests || report.numFailedTests || cases.length !== report.numTotalTests || cases.some(item => item.status !== 'passed')) throw Error('Required SQL suite has missing/failed/skipped executed tests');
+  if (!Object.hasOwn(SQL_SUITES, suite) || report.testResults.length !== 1 || report.testResults[0].status !== 'passed' || report.testResults[0].name !== join(source, SQL_SUITES[suite])) throw Error('SQL evidence does not identify the exact owning fixture: ' + suite);
   if (cases.some(item => typeof item.fullName !== 'string' || !item.fullName.trim())) throw Error('Missing executed SQL case identity');
+  if (new Set(cases.map(item => item.fullName)).size !== cases.length) throw Error('Duplicate executed SQL case identity');
   return cases.map(item => item.fullName);
+}
+function verifySqlResults(results, evidence, source, suites) {
+  if (!Array.isArray(results) || results.length !== suites.length || new Set(results.map(item => item.suite)).size !== suites.length) throw Error('Missing/duplicate SQL selector evidence');
+  for (const suite of suites) {
+    const record = results.find(item => item.suite === suite);
+    if (!record || record.exitCode !== 0) throw Error('Missing SQL command result: ' + suite);
+    assert.deepEqual(record.command, sqlCommand(suite, evidence), 'SQL command identity mismatch: ' + suite);
+    assert.deepEqual(record.checks, verifySqlExecution(json(join(evidence, 'sql-' + suite + '.json')), source, suite), 'SQL executed case identity mismatch: ' + suite);
+  }
 }
 export function verifyEvidence(evidence, kind, source) {
   const report = json(join(evidence, kind + '-report.json'));
@@ -141,8 +357,7 @@ export function verifyEvidence(evidence, kind, source) {
     if (appOwner.ownerId !== report.appOwnerId || appOwner.source !== owner.source || appOwner.closed !== true || dirname(report.appRoot) !== evidence || !basename(report.appRoot).startsWith('owned-next-')) throw Error('Invalid Phase E application ownership receipt');
   }
   else {
-    for (const suite of suites) verifySqlExecution(json(join(evidence, 'sql-' + suite + '.json')));
-    if (report.results?.length !== suites.length || report.results.some(item => item.exitCode !== 0 || !item.checks?.length)) throw Error('Missing SQL command evidence');
+    verifySqlResults(report.results, evidence, owner.source, suites);
   }
   return report;
 }
@@ -163,6 +378,8 @@ async function runOwned(mode, suite, source, custody, evidence) {
   const env = { ...safeEnvironment(), PHASE_E_EXPECTED_SHA: custody.checkpoint, PHASE_E_EVIDENCE_DIR: evidence, PHASE_E_OWNERSHIP_FILE: ownerPath, PHASE_E_OWNER_ID: ownerId, PHASE_E_MODE: mode, FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes' };
   const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId, ownershipFile: ownerPath, ownershipClosed: false, suites, mode, status: 'failed', results: [], errors: [], limitations: ['Owned local foundation verification is not hosted, client or independent phase acceptance.'] };
   let exitCode = 0;
+  const controller = new AbortController();
+  const removeSignals = installTerminationHandlers(() => controller.abort(Error('Owned supervisor termination signal')));
   const runPg = (name, args) => {
     assertOwner();
     const result = spawnSync(join(bin, name), args, { env, encoding: 'utf8', timeout: 45_000 });
@@ -171,18 +388,19 @@ async function runOwned(mode, suite, source, custody, evidence) {
   };
   try {
     runPg('initdb', ['-D', data, '-U', 'nevora_e', '--auth-local=trust', '--auth-host=trust', '--encoding=UTF8', '--no-locale']);
-    runPg('pg_ctl', ['-D', data, '-l', join(root, 'postgres.log'), '-w', 'start', '-o', `-h 127.0.0.1 -p ${port} -k ${root}`]);
+    runPg('pg_ctl', ['-D', data, '-l', join(root, 'postgres.log'), '-w', 'start', '-o', `-h 127.0.0.1 -p ${port} -k ''`]);
     owner.started = true; writeOwner();
     for (const item of mode === 'sql' ? suites : [suite]) {
       const prefix = mode === 'sql' ? SQL_DATABASE_PREFIXES[item] : 'nevora_exchange_test_';
       const childEnv = { ...env, FUEL_TEST_DATABASE_URL: `postgresql://nevora_e@127.0.0.1:${port}/${prefix}e_${ownerId.slice(0, 12)}_s${mode === 'sql' ? suites.indexOf(item) : 0}`, PHASE_E_SQL_SUITE: item };
       const output = join(evidence, 'sql-' + item + '.json');
       rmSync(mode === 'sql' ? output : join(evidence, 'browser-report.json'), { force: true });
-      const args = mode === 'sql' ? ['node_modules/vitest/vitest.mjs', 'run', '--config', 'vitest.phase-e-integration.config.mts', SQL_SUITES[item], '--reporter=default', '--reporter=json', '--outputFile', output] : ['--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', item];
-      const result = spawnSync(process.execPath, args, { cwd: source, env: childEnv, stdio: 'inherit', timeout: mode === 'sql' ? 480_000 : 1_800_000 });
-      const record = { suite: item, command: [process.execPath, ...args], exitCode: result.status ?? 1, checks: [] }; report.results.push(record);
-      if (result.error || result.status !== 0) { exitCode = result.status ?? 1; throw Error(`Phase E child failed: ${item} (exit ${exitCode})`); }
-      if (mode === 'sql') record.checks = verifySqlExecution(json(output));
+      const args = mode === 'sql' ? sqlCommand(item, evidence).slice(1) : ['--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', item];
+      controller.signal.throwIfAborted();
+      const result = await superviseOwnedChild({ command: process.execPath, args, cwd: source, env: childEnv, ownerId, timeoutMs: mode === 'sql' ? 480_000 : 1_800_000, signal: controller.signal });
+      const record = { suite: item, command: [process.execPath, ...args], exitCode: result.status ?? 1, checks: [], resources: result.resources }; report.results.push(record);
+      if (result.error || result.status !== 0) { exitCode = result.status ?? 1; throw Error(`Phase E child failed: ${item} (exit ${exitCode})${result.error ? ': ' + result.error : ''}`); }
+      if (mode === 'sql') record.checks = verifySqlExecution(json(output), source, item);
       else {
         const browser = json(join(evidence, 'browser-report.json'));
         if (browser.checkpoint !== custody.checkpoint || browser.tree !== custody.tree || browser.sourceClean !== true || browser.ownerId !== ownerId || browser.errors.length || browser.status !== 'passed' || browser.ownershipClosed !== true) throw Error('Invalid Phase E browser child evidence');
@@ -190,6 +408,7 @@ async function runOwned(mode, suite, source, custody, evidence) {
       }
       assertOwner(); assertSourceUnchanged(source, custody);
     }
+    if (mode === 'sql') verifySqlResults(report.results, evidence, source, suites);
     report.status = 'passed';
   } catch (error) { report.errors.push(error.message); console.error(error.message); exitCode ||= 1; }
   finally {
@@ -200,6 +419,7 @@ async function runOwned(mode, suite, source, custody, evidence) {
       assertSourceUnchanged(source, custody);
     } catch (error) { report.errors.push(error.message); console.error(error.message); exitCode ||= 1; report.status = 'failed'; }
     writeFileSync(join(evidence, mode === 'sql' ? 'sql-report.json' : 'owned-browser-report.json'), JSON.stringify(report, null, 2));
+    removeSignals();
   }
   return exitCode;
 }

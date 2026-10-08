@@ -25,6 +25,7 @@
     "test:release:postgres": "node scripts/phase-c-release-postgres.mjs",
     "test:phase-d:attendance-ui": "node scripts/phase-d-attendance-postgres.mjs",
     "test:phase-d2:corrections-ui": "node scripts/phase-d2-corrections-postgres.mjs",
+    "test:phase-e:startup": "node --test scripts/phase-e-owned-startup.check.mjs",
     "test:phase-e:sql": "node scripts/phase-e-owned.mjs sql --suite all",
     "test:phase-e:ui": "node scripts/phase-e-owned.mjs browser --suite all",
     "test:phase-e:evidence": "node scripts/phase-e-owned.mjs verify-ci"

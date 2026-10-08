@@ -17,6 +17,12 @@ function put(root: string, name: string, content: string, executable = false) {
   mkdirSync(dirname(join(root, name)), { recursive: true });
   writeFileSync(join(root, name), content, { mode: executable ? 0o700 : 0o600 });
 }
+function approvedAdapterFixture() {
+  const original = 'export function queryRows() { return []; }\n';
+  // Hand-reviewed bytes of the approved adapter, independently of its verifier.
+  const adapter = `import { createOwnedPgTransport } from '../test/integration/owned-pg-transport';\nimport { ownedAppBarriers } from '../test/integration/owned-app-barriers';\nlet sql: ReturnType<typeof createOwnedPgTransport> | undefined;\nexport function getDb() {\n if (!sql) {\n  const url=process.env.NEVORA_OWNED_APP_DATABASE;\n  const identity=process.env.NEVORA_OWNED_APP_IDENTITY;\n  const directory=process.env.NEVORA_OWNED_APP_BARRIERS;\n  if(!url||!identity||!directory) throw new Error('Owned application test setup missing');\n  sql=createOwnedPgTransport(url,JSON.parse(identity),ownedAppBarriers(directory));\n }\n return sql;\n}\n${original}`;
+  return { original, adapter };
+}
 function environment(extra: Partial<NodeJS.ProcessEnv> = {}) {
   const env: NodeJS.ProcessEnv = { PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: 'test', ...extra };
   return env;
@@ -35,11 +41,11 @@ function fixture(childExit = 0) {
   put(root, 'vitest.phase-e-integration.config.mts', 'export default {};\n');
   for (const suite of sqlSuites) put(root, `src/test/integration/phase-e-${suite === 'assignments' ? 'published-assignments' : suite}.integration.ts`, '/* fictional runner boundary fixture */\n');
   // This executable boundary verifies dispatch, env and lifecycle, not feature acceptance.
-  put(root, 'node_modules/vitest/vitest.mjs', `import fs from 'node:fs';
+  put(root, 'node_modules/vitest/vitest.mjs', `import fs from 'node:fs';import {resolve} from 'node:path';
 const a=process.argv.slice(2), output=a[a.indexOf('--outputFile')+1];
 fs.appendFileSync(${JSON.stringify(trace)},JSON.stringify({args:a,suite:process.env.PHASE_E_SQL_SUITE,url:process.env.FUEL_TEST_DATABASE_URL,owner:process.env.PHASE_E_OWNER_ID,provider:process.env.PUSH_DELIVERY_ENABLED,database:process.env.DATABASE_URL})+'\\n');
 if(${childExit})process.exit(${childExit});
-fs.writeFileSync(output,JSON.stringify({success:true,numTotalTests:1,numPassedTests:1,numFailedTests:0,numPendingTests:0,numTodoTests:0,testResults:[{status:'passed',assertionResults:[{status:'passed',fullName:'fictional subprocess case'}]}]}));\n`);
+fs.writeFileSync(output,JSON.stringify({success:true,numTotalTests:1,numPassedTests:1,numFailedTests:0,numPendingTests:0,numTodoTests:0,testResults:[{name:resolve(a.find(value=>value.endsWith('.integration.ts'))),status:'passed',assertionResults:[{status:'passed',fullName:'fictional subprocess case'}]}]}));\n`);
   put(bin, 'initdb', `#!${process.execPath}\nconst fs=require('node:fs');const a=process.argv;fs.mkdirSync(a[a.indexOf('-D')+1],{recursive:true});\n`, true);
   put(bin, 'pg_ctl', `#!${process.execPath}\nconst fs=require('node:fs'),p=require('node:path'),a=process.argv,d=a[a.indexOf('-D')+1];if(a.includes('start')){fs.writeFileSync(p.join(d,'postmaster.pid'),'fictional');fs.appendFileSync(${JSON.stringify(trace)},'START='+d+'\\n');}else if(a.includes('stop')){fs.appendFileSync(${JSON.stringify(trace)},'STOP\\n');fs.rmSync(p.join(d,'postmaster.pid'));}else process.exit(3);\n`, true);
   execFileSync('git', ['init', '-q', root]);
@@ -175,11 +181,12 @@ it('accepts a tracked environment template while never forwarding application cr
   expect(record.database).toBeUndefined();
 });
 it('source_manifest_mismatch_fails for modified source or an unapproved mirror substitution', () => {
-  const source = directory(), root = directory();
-  execFileSync('git', ['init', '-q', source]);
-  put(source, 'src/lib/db.ts', 'original'); put(root, 'app/src/lib/db.ts', 'adapter');
-  const expression = `import {createHash} from 'node:crypto';import fs from 'node:fs';const h=s=>createHash('sha256').update(s).digest('hex');const [source,root]=process.argv.slice(1);fs.writeFileSync(root+'/source-manifest.json',JSON.stringify({checkpoint:'a'.repeat(40),hashes:{'src/lib/db.ts':h('original')},originalDbHash:h('original'),substitutedDbHash:h('adapter'),substitutedFiles:['src/lib/db.ts']}));api.verifySourceManifest(source,root,'a'.repeat(40));fs.writeFileSync(root+'/app/src/lib/db.ts','tampered');api.verifySourceManifest(source,root,'a'.repeat(40));`;
-  const result = evaluate(runner, expression, [source, root]);
+  const source = directory(), root = directory(); execFileSync('git', ['init', '-q', source]);
+  const { original, adapter } = approvedAdapterFixture();
+  put(source, 'src/lib/db.ts', original); put(root, 'app/src/lib/db.ts', adapter);
+  const setup = `import {createHash} from 'node:crypto';import fs from 'node:fs';const h=s=>createHash('sha256').update(s).digest('hex');const [source,root]=process.argv.slice(1);const manifest={checkpoint:'a'.repeat(40),hashes:{'src/lib/db.ts':h(${JSON.stringify(original)})},originalDbHash:h(${JSON.stringify(original)}),substitutedDbHash:h(${JSON.stringify(adapter)}),substitutedFiles:['src/lib/db.ts']};fs.writeFileSync(root+'/source-manifest.json',JSON.stringify(manifest));api.verifySourceManifest(source,root,'a'.repeat(40));`;
+  expect(evaluate(runner, setup, [source, root]).status).toBe(0);
+  const result = evaluate(runner, `import fs from 'node:fs';const [source,root]=process.argv.slice(1);fs.writeFileSync(root+'/app/src/lib/db.ts','tampered');api.verifySourceManifest(source,root,'a'.repeat(40));`, [source, root]);
   expect(result.status).not.toBe(0); expect(result.stderr).toContain('manifest mismatch');
 });
 it('executed_engine_width_requirement_check rejects missing, skipped or failed browser executions', () => {
@@ -206,6 +213,81 @@ it('evidence acceptance rejects modified source manifests and removed ownership 
     const result = invoke(['verify-evidence', '--suite', 'sql'], f.env, f.root);
     expect(result.status).not.toBe(0);
   }
+});
+it('rejects a successful unrelated SQL fixture during execution', () => {
+  const f = fixture();
+  const child = readFileSync(join(f.root, 'node_modules/vitest/vitest.mjs'), 'utf8').replace("a.find(value=>value.endsWith('.integration.ts'))", "'src/test/integration/phase-e-home.integration.ts'");
+  put(f.root, 'node_modules/vitest/vitest.mjs', child);
+  const result = invoke(['sql', '--suite', 'assignments'], f.env, f.root);
+  expect(result.status).not.toBe(0); expect(result.stderr).toContain('owning fixture');
+});
+it.each(['fixture', 'duplicate-selector', 'command', 'case-identity'])('later SQL evidence rejects %s substitution', mutation => {
+  const f = fixture(); expect(invoke(['sql', '--suite', 'all'], f.env, f.root).status).toBe(0);
+  const path = join(f.evidence, 'sql-report.json'), report = JSON.parse(readFileSync(path, 'utf8'));
+  if (mutation === 'fixture') {
+    writeFileSync(join(f.evidence, 'sql-assignments.json'), readFileSync(join(f.evidence, 'sql-home.json')));
+  } else if (mutation === 'duplicate-selector') report.results[1].suite = report.results[0].suite;
+  else if (mutation === 'command') report.results[0].command[5] = 'src/test/integration/phase-e-home.integration.ts';
+  else report.results[0].checks = ['unexecuted copied case'];
+  writeFileSync(path, JSON.stringify(report));
+  const result = invoke(['verify-evidence', '--suite', 'sql'], f.env, f.root);
+  expect(result.status).not.toBe(0);
+});
+it('rejects changing both the mirror DB adapter and its declared manifest hash', () => {
+  const source = directory(), root = directory(); execFileSync('git', ['init', '-q', source]);
+  const { original, adapter } = approvedAdapterFixture();
+  put(source, 'src/lib/db.ts', original); put(root, 'app/src/lib/db.ts', adapter);
+  const setup = `import {createHash} from 'node:crypto';import fs from 'node:fs';const h=s=>createHash('sha256').update(s).digest('hex');const [source,root]=process.argv.slice(1);const manifest={checkpoint:'a'.repeat(40),hashes:{'src/lib/db.ts':h(${JSON.stringify(original)})},originalDbHash:h(${JSON.stringify(original)}),substitutedDbHash:h(${JSON.stringify(adapter)}),substitutedFiles:['src/lib/db.ts']};fs.writeFileSync(root+'/source-manifest.json',JSON.stringify(manifest));api.verifySourceManifest(source,root,'a'.repeat(40));`;
+  expect(evaluate(runner, setup, [source, root]).status).toBe(0);
+  const result = evaluate(runner, `import {createHash} from 'node:crypto';import fs from 'node:fs';const [source,root]=process.argv.slice(1);const m=JSON.parse(fs.readFileSync(root+'/source-manifest.json'));fs.writeFileSync(root+'/app/src/lib/db.ts','unapproved adapter');m.substitutedDbHash=createHash('sha256').update('unapproved adapter').digest('hex');fs.writeFileSync(root+'/source-manifest.json',JSON.stringify(m));api.verifySourceManifest(source,root,'a'.repeat(40));`, [source, root]);
+  expect(result.status).not.toBe(0); expect(result.stderr).toContain('approved DB adapter');
+});
+
+it.each(['mirror-only', 'mirror-and-hash', 'third-line', 'extra-import'])('pins complete generated next-env bytes and rejects %s alteration', mutation => {
+  const source = directory(), root = directory(); execFileSync('git', ['init', '-q', source]);
+  const { original, adapter } = approvedAdapterFixture();
+  const originalTypes = '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\nimport "./.next/types/routes.d.ts";\nimport "./.next/types/root-params.d.ts";\n\n// exact source-pinned notice\n';
+  const devTypes = '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\nimport "./.next/dev/types/routes.d.ts";\nimport "./.next/dev/types/root-params.d.ts";\n\n// exact source-pinned notice\n';
+  put(source, 'src/lib/db.ts', original); put(root, 'app/src/lib/db.ts', adapter);
+  put(source, 'next-env.d.ts', originalTypes); put(root, 'app/next-env.d.ts', devTypes);
+  const setup = `import {createHash} from 'node:crypto';import fs from 'node:fs';const h=s=>createHash('sha256').update(s).digest('hex');const [source,root]=process.argv.slice(1);const m={checkpoint:'a'.repeat(40),hashes:{'src/lib/db.ts':h(${JSON.stringify(original)}),'next-env.d.ts':h(${JSON.stringify(originalTypes)})},originalDbHash:h(${JSON.stringify(original)}),substitutedDbHash:h(${JSON.stringify(adapter)}),substitutedFiles:['src/lib/db.ts','next-env.d.ts'],generatedTypeReferences:{originalHash:h(${JSON.stringify(originalTypes)}),derivedHash:h(${JSON.stringify(devTypes)}),reason:'Next 16.3.8 dev generated type-reference paths'}};fs.writeFileSync(root+'/source-manifest.json',JSON.stringify(m));api.verifySourceManifest(source,root,'a'.repeat(40));`;
+  expect(evaluate(runner, setup, [source, root]).status).toBe(0);
+  const changed = mutation === 'third-line' ? devTypes.replace('types/routes.d.ts', 'types/unapproved.d.ts') : mutation === 'extra-import' ? devTypes+'import "unsafe-source";\n' : devTypes.replace('exact source-pinned notice', 'changed notice');
+  put(root, 'app/next-env.d.ts', changed);
+  const expression = `import {createHash} from 'node:crypto';import fs from 'node:fs';const [source,root]=process.argv.slice(1);${mutation !== 'mirror-only' ? `const m=JSON.parse(fs.readFileSync(root+'/source-manifest.json'));m.generatedTypeReferences.derivedHash=createHash('sha256').update(fs.readFileSync(root+'/app/next-env.d.ts')).digest('hex');fs.writeFileSync(root+'/source-manifest.json',JSON.stringify(m));` : ''}api.verifySourceManifest(source,root,'a'.repeat(40));`;
+  const result = evaluate(runner, expression, [source, root]);
+  expect(result.status).not.toBe(0); expect(result.stderr).toContain('generated type references');
+});
+
+it.each(['adapter-and-hash', 'next-env-and-hash'])('later browser evidence rejects %s substitution', mutation => {
+  const source = directory(), evidence = directory(), root = join(evidence, 'owned-next-fixture');
+  execFileSync('git', ['init', '-q', source]);
+  const { original, adapter } = approvedAdapterFixture();
+  const originalTypes = `import "./.next/types/routes.d.ts";
+import "./.next/types/root-params.d.ts";
+// preserved source notice
+`;
+  const devTypes = `import "./.next/dev/types/routes.d.ts";
+import "./.next/dev/types/root-params.d.ts";
+// preserved source notice
+`;
+  put(source, 'src/lib/db.ts', original); put(root, 'app/src/lib/db.ts', adapter);
+  put(source, 'next-env.d.ts', originalTypes); put(root, 'app/next-env.d.ts', devTypes);
+  const executions = browserSuites.flatMap(suite => ['chromium', 'webkit'].flatMap(engine => widths.map(width => ({ suite, engine, width, status: 'passed', checks: ['fictional evidence-verifier boundary only'] }))));
+  const setup = `import {createHash} from 'node:crypto';import fs from 'node:fs';import {join,resolve} from 'node:path';const h=s=>createHash('sha256').update(s).digest('hex');const [sourceArgument,evidence,root]=process.argv.slice(1);process.chdir(sourceArgument);const source=resolve(process.cwd());const checkpoint='a'.repeat(40),tree='b'.repeat(40),hashes={'src/lib/db.ts':h(${JSON.stringify(original)}),'next-env.d.ts':h(${JSON.stringify(originalTypes)})};const custody={checkpoint,tree,sourceClean:true,hashes};fs.writeFileSync(join(evidence,'source-manifest.json'),JSON.stringify(custody));const pgRoot=join(evidence,'owned-postgres-fixture');fs.mkdirSync(pgRoot);const ownershipFile=join(pgRoot,'ownership.json'),ownerId='c'.repeat(32);fs.writeFileSync(ownershipFile,JSON.stringify({ownerId,checkpoint,source,root:pgRoot,started:true,closed:true}));fs.writeFileSync(join(root,'ownership.json'),JSON.stringify({ownerId:'app-owner',source,closed:true}));const m={checkpoint,hashes,originalDbHash:hashes['src/lib/db.ts'],substitutedDbHash:h(${JSON.stringify(adapter)}),substitutedFiles:['src/lib/db.ts','next-env.d.ts'],generatedTypeReferences:{originalHash:hashes['next-env.d.ts'],derivedHash:h(${JSON.stringify(devTypes)}),reason:'Next 16.3.8 dev generated type-reference paths'}};fs.writeFileSync(join(root,'source-manifest.json'),JSON.stringify(m));fs.writeFileSync(join(evidence,'browser-report.json'),JSON.stringify({checkpoint,tree,sourceClean:true,status:'passed',errors:[],ownershipClosed:true,suites:${JSON.stringify(browserSuites)},ownerId,ownershipFile,appRoot:root,appOwnerId:'app-owner',executions:${JSON.stringify(executions)}}));api.verifyEvidence(evidence,'browser',custody);`;
+  const alteration = mutation === 'adapter-and-hash' ? `fs.writeFileSync(join(root,'app/src/lib/db.ts'),'unapproved adapter');m.substitutedDbHash=h('unapproved adapter');` : `fs.writeFileSync(join(root,'app/next-env.d.ts'),${JSON.stringify(devTypes.replace('preserved', 'changed'))});m.generatedTypeReferences.derivedHash=h(fs.readFileSync(join(root,'app/next-env.d.ts')));`;
+  const result = evaluate(runner, setup+alteration+`fs.writeFileSync(join(root,'source-manifest.json'),JSON.stringify(m));api.verifyEvidence(evidence,'browser',custody);`, [source, evidence, root]);
+  expect(result.status).not.toBe(0); expect(result.stderr).toContain(mutation === 'adapter-and-hash' ? 'approved DB adapter' : 'generated type references');
+});
+
+it.each(['missing', 'duplicate'])('refuses a %s original Next type import when deriving the allowed dev bytes', mutation => {
+  const source = directory(), root = directory(); execFileSync('git', ['init', '-q', source]);
+  const { original, adapter } = approvedAdapterFixture();
+  const types = mutation === 'missing' ? 'import "./.next/types/routes.d.ts";\n' : 'import "./.next/types/routes.d.ts";\nimport "./.next/types/routes.d.ts";\nimport "./.next/types/root-params.d.ts";\n';
+  put(source, 'src/lib/db.ts', original); put(root, 'app/src/lib/db.ts', adapter);
+  put(source, 'next-env.d.ts', types); put(root, 'app/next-env.d.ts', types);
+  const result = evaluate(runner, `import {createHash} from 'node:crypto';import fs from 'node:fs';const h=s=>createHash('sha256').update(s).digest('hex');const [source,root]=process.argv.slice(1);fs.writeFileSync(root+'/source-manifest.json',JSON.stringify({checkpoint:'a'.repeat(40),hashes:{'src/lib/db.ts':h(${JSON.stringify(original)}),'next-env.d.ts':h(${JSON.stringify(types)})},originalDbHash:h(${JSON.stringify(original)}),substitutedDbHash:h(${JSON.stringify(adapter)}),substitutedFiles:['src/lib/db.ts','next-env.d.ts']}));api.verifySourceManifest(source,root,'a'.repeat(40));`, [source, root]);
+  expect(result.status).not.toBe(0); expect(result.stderr).toContain('generated type references source imports');
 });
 
 const require = createRequire(resolve('package.json'));

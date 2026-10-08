@@ -284,6 +284,10 @@ jobs:
           test -x "$PG_BIN/initdb"
           test -x "$PG_BIN/pg_ctl"
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Long-path owned TCP startup regression
+        env:
+          PHASE_E_STARTUP_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence
+        run: npm run test:phase-e:startup
       - name: Owned Phase E sql gates
         run: npm run test:phase-e:sql
       - name: Verify exact-source executed Phase E evidence
@@ -295,6 +299,10 @@ jobs:
         with:
           name: phase-e-sql-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/startup-receipt.json
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/runner.log
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/tcp-query.log
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/ownership.json
             ${{ runner.temp }}/nevora-phase-e-sql-evidence/*-report.json
             ${{ runner.temp }}/nevora-phase-e-sql-evidence/sql-*.json
             ${{ runner.temp }}/nevora-phase-e-sql-evidence/source-manifest.json
