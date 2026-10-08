@@ -14,8 +14,8 @@ import {assertEmployeeViewProof,employeeViewGuards,readEmployeeWorkspace,employe
 import {isManagementAuthorizationError} from './management-session';
 
 const LIMIT=25,MAX_READS=64,MAX_BYTES=1_000_000,BUDGET_MS=8000;
-const supported=['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','SELF_TEST'] as const;
-const labels:Record<typeof supported[number],string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Callout update',AVAILABILITY:'Availability update',SELF_TEST:'Device notification test'};
+const supported=['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','SELF_TEST','COMMUNICATION'] as const;
+const labels:Record<typeof supported[number],string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Callout update',AVAILABILITY:'Availability update',SELF_TEST:'Device notification test',COMMUNICATION:'Team update'};
 const candidateSql=(actor='$1')=>`SELECT id FROM notifications WHERE employee_id=${actor} ORDER BY created_at DESC,id DESC LIMIT 26`;
 type Template={name:string;args:number;sql:(args:string[])=>string;clockField?:'observed_at'|'observedAt'};
 /** Finite canonical SELECT templates only. No SQL rewriting, arbitrary query
@@ -33,6 +33,7 @@ const templates:Template[]=[
  {name:'schedule',args:1,sql:p=>notificationWeekReadSql(p[0])},
  {name:'availability',args:1,sql:p=>notificationReadSql.availability(p[0])},
  {name:'locations',args:1,sql:p=>notificationReadSql.locations(p[0])},
+ {name:'communication',args:1,sql:p=>notificationReadSql.communication(p[0])},
  {name:'selfTest',args:2,sql:p=>notificationReadSql.selfTest(p[0],p[1])},
 ];
 type Entry={key:string;template:Template;values:readonly unknown[]};

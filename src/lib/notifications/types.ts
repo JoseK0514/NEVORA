@@ -11,7 +11,7 @@ import type { WeekSettings } from '../data/week-settings';
 import type { AvailabilitySubmissionListItem } from '../data/availability-submissions';
 
 export type PushEnvironment = 'test' | 'production';
-export type SourceKind = 'SCHEDULE' | 'TIME_OFF' | 'EXCHANGE' | 'CALLOUT' | 'AVAILABILITY' | 'MANAGER_SUMMARY' | 'SELF_TEST';
+export type SourceKind = 'SCHEDULE' | 'TIME_OFF' | 'EXCHANGE' | 'CALLOUT' | 'AVAILABILITY' | 'MANAGER_SUMMARY' | 'SELF_TEST' | 'COMMUNICATION';
 /** SELF_TEST id = internal subscription id, version = verified ownership generation. */
 export type SourceRef = { kind: SourceKind; id: string; version: string };
 export type NotificationIntent = NotificationEvent & {
@@ -33,6 +33,7 @@ export type ScheduleSourceSnapshot = SnapshotBase<'SCHEDULE'> & {
   employeePublications?: Readonly<Record<string, EmployeePublicationProjection>>;
 };
 export type SourceSnapshot =
+  | (SnapshotBase<'COMMUNICATION'> & {kind:'COMMUNICATION';recipientIds:readonly string[];expiresAt:string|null})
   | ScheduleSourceSnapshot
   | (SnapshotBase<'TIME_OFF'> & { kind: 'TIME_OFF'; record: TimeOffListItem })
   | (SnapshotBase<'EXCHANGE'> & { kind: 'EXCHANGE'; record: ExchangeRecord; eligibleEmployeeIds?:readonly string[]; completionDeadline?:string|null; semanticNeedKey?:string; attentionReason?:string })

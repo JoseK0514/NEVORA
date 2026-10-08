@@ -26,7 +26,7 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
   function make(event: NotificationEvent, recipient: RecipientAccess, options: { expiresAt: number; dueAt?: number; purpose?: NotificationIntent['purpose']; urgency?: NotificationIntent['urgency']; effectiveVersion?: string; itemKeys?: readonly string[] }): NotificationIntent | null {
     if (!isReviewRole(recipient) && ((after.kind==='EXCHANGE' && !recipient.allowedLocationIds.includes(after.record.sourceShift.locationId)) || (after.kind==='CALLOUT' && !recipient.allowedLocationIds.includes(after.record.locationId)))) return null;
     const actionHref = destinationForSource(destinationSource,recipient);
-    if (!actionHref || recipient.employeeId === actorEmployeeId) return null;
+    if (!actionHref || after.kind !== 'COMMUNICATION' && recipient.employeeId === actorEmployeeId) return null;
     const urgency = options.urgency ?? 'normal';
     const due = new Date(options.dueAt ?? now.getTime());
     const dueAt = urgency === 'high' ? due : nextRoutineTime(due,policy);
@@ -141,6 +141,14 @@ export function buildNotificationIntents(input: { before?: SourceSnapshot; after
         intent.eventKey = [environment,'MANAGER_SUMMARY',recipient.employeeId,day,...itemKeys].map(encodeURIComponent).join(':');
         intents.push(intent);
       }
+    }
+    return intents;
+  }
+  if (after.kind === 'COMMUNICATION') {
+    if (environment !== 'test') return [];
+    for (const recipient of recipients) {
+      const intent=make({employeeId:recipient.employeeId,type:'COMMUNICATION',title:'NEVORA update',body:'Open NEVORA to review an update.',eventKey:''},recipient,{expiresAt:after.expiresAt?Date.parse(after.expiresAt):now.getTime()+30*24*HOUR_MS});
+      if (intent) intents.push(intent);
     }
     return intents;
   }

@@ -13,6 +13,11 @@ import {assertManagementProof,managementSessionStatements,isManagementAuthorizat
 import {readEmployeeWorkspace,employeeReadLimits} from '../data/employee-profile.server';
 import {workspaceReadGuard} from '../data/workspaces';
 import {neonNotificationExecutor} from '../data/notification-transactions';
+import {communicationDevelopmentAllowedSql,communicationRecipientAllowedSql} from './sql';
+export {communicationRecipientAllowedSql} from './sql';
+import {notificationPolicyFor} from '../notifications/policy';
+import {buildNotificationIntents} from '../notifications/recipients';
+import {notificationIntentStatements} from '../data/notifications';
 import {currentCalloutReleaseSql,currentShiftFingerprintSql} from '../data/shift-change-release';
 
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i,hex=/^[a-f0-9]{64}$/;
@@ -23,10 +28,7 @@ export function communicationAuthority(proof:SessionMutationProof):string{
 }
 /** D04 live activation is held. A flag or database name alone is insufficient:
  * actual PostgreSQL loopback address AND disposable ownership comment required. */
-export const communicationDevelopmentGuard:SqlStatement={text:`SELECT (CASE WHEN inet_server_addr() IN('127.0.0.1'::inet,'::1'::inet)
- AND current_database() ~ '^(nevora_foundation_test_|nevora_exchange_test_|fuel_phase3_test_)[a-z0-9_]+$'
- AND EXISTS(SELECT 1 FROM pg_database WHERE datname=current_database() AND shobj_description(oid,'pg_database') ~ '^fuel-phase3-disposable:[a-f0-9-]{36}$')
- THEN '1' ELSE 'communication_activation_held' END)::integer`,values:[]};
+export const communicationDevelopmentGuard:SqlStatement={text:`SELECT (CASE WHEN ${communicationDevelopmentAllowedSql()} THEN '1' ELSE 'communication_activation_held' END)::integer`,values:[]};
 function proofValid(proof:SessionMutationProof){assertManagementProof(proof,proof?.employee?.id);if(!['OWNER','MANAGER','EMPLOYEE','LEAD'].includes(proof.employee.role))throw Error('communication_authority');}
 /** Range locks protect new grants/assignments as well as existing rows. Existing
  * workspace/employee/catalog/source/session order is retained. Locks/timeouts
@@ -148,10 +150,9 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
    const hash=communicationContentHash(d.value);
    for(const g of o.grants){
     writes.push(communicationGrantInsert({workspaceId:w.id,communicationId:id,revisionId,employeeId:g.employeeId,contentHash:hash,locationId:d.value.scope.locationId,observedAt:o.observedAt,provenance:{source:'canonical',audienceFingerprint:o.fingerprint},...(g.kind==='LOCATION'?{kind:'LOCATION'}:{kind:'ASSIGNMENT',sourceShiftId:g.sourceShiftId!,assignmentEpisodeId:g.assignmentEpisodeId!,termsFingerprint:g.termsFingerprint!})}));
-    writes.push({text:`INSERT INTO notifications(id,employee_id,type,title,body,action_href,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,urgency,due_at,expires_at,push_state)
-     VALUES($1,$2,'COMMUNICATION','NEVORA update','Open NEVORA to review an update.',$3,$4,'test','COMMUNICATION',$5,$6,$6,'EVENT','normal',$7::timestamptz,COALESCE($8::timestamptz,$7::timestamptz+interval '30 days'),'pending')
-     ON CONFLICT(environment,event_key) WHERE environment IS NOT NULL AND event_key IS NOT NULL DO NOTHING`,values:[randomUUID(),g.employeeId,'/app/updates/'+id,['communication',id,revisionId,g.employeeId,'EVENT'].join(':'),id,revisionId,o.observedAt,d.value.expiresAt]});
+
    }
+   writes.push(...notificationIntentStatements(buildNotificationIntents({after:{kind:'COMMUNICATION',source:{kind:'COMMUNICATION',id,version:revisionId},updatedAt:o.observedAt,recipientIds:o.grants.map(g=>g.employeeId),expiresAt:d.value.expiresAt},recipients:o.grants.map(g=>({employeeId:g.employeeId,role:'EMPLOYEE',active:true,allowedLocationIds:[]})),environment:'test',now:new Date(o.observedAt),policy:notificationPolicyFor(w.timeZone)})));
    writes.push({text:"UPDATE communications SET state='PUBLISHED',head_revision_id=$3::uuid WHERE workspace_id=$1 AND id=$2::uuid",values:[w.id,id,revisionId]});
   }
   if(c.kind!=='ACKNOWLEDGE')writes.push({text:'INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,$5,$6)',values:[randomUUID(),w.id,id,revisionId,proof.employee.id,c.kind==='WITHDRAW'?'WITHDRAWN':c.kind==='REVISE'?'REVISED':'PUBLISHED']});
@@ -193,14 +194,6 @@ export async function readCommunication(proof:SessionMutationProof,id:string,exe
 }
 /** Final protected membership check for list/Home/ack consumers. Immutable
  * grants intersect current exact assignment and current location eligibility. */
-export function communicationRecipientAllowedSql(actor='$2'):string{return `EXISTS(SELECT 1 FROM employees e JOIN locations primary_l ON primary_l.id=e.primary_location_id
- JOIN locations scope_l ON scope_l.id=r.location_id AND scope_l.workspace_id=c.workspace_id AND scope_l.active
- JOIN communication_recipients g ON g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=r.id AND g.employee_id=e.id
- WHERE e.id=${actor} AND e.active AND e.role IN('EMPLOYEE','LEAD') AND primary_l.workspace_id=c.workspace_id
- AND (e.primary_location_id=scope_l.id OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=scope_l.id))
- AND (g.grant_kind='LOCATION' OR EXISTS(SELECT 1 FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id=g.source_shift_id AND sh.employee_id=e.id AND s.location_id=g.location_id AND s.status='PUBLISHED'
- AND sh.assignment_episode_id::text=g.assignment_episode_id AND ${currentShiftFingerprintSql()}=g.terms_fingerprint AND NOT EXISTS(SELECT 1 FROM shift_callouts callout WHERE ${currentCalloutReleaseSql('callout')})
- AND EXISTS(SELECT 1 FROM schedule_publication_revisions pr WHERE pr.week_start=s.week_start))))`;}
 function recipientCommandGuard(proof:SessionMutationProof,w:Workspace,id:string,revision:string,contentHash?:string):SqlStatement{return {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid
  AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ($5::text IS NULL OR r.content_hash=$5) AND ${communicationRecipientAllowedSql()}) THEN '1' ELSE 'communication_recipient_denied' END)::integer`,values:[w.id,proof.employee.id,id,revision,contentHash??null]};}
 export async function recordCommunicationRead(proof:SessionMutationProof,c:AttentionCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{

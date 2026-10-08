@@ -6,7 +6,9 @@ export function buildPushEnvelope(intent: NotificationIntent, ownershipGeneratio
   if (!/^[A-Za-z0-9_-]{1,128}$/.test(ownershipGeneration) || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(intent.id) || !Number.isFinite(Date.parse(intent.expiresAt))) throw new Error('Invalid push envelope metadata');
   let title: string;
   let body: string;
-  if (intent.type === 'SCHEDULE_PUBLISHED' || intent.type === 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER') {
+  if (intent.type === 'COMMUNICATION' && intent.source.kind === 'COMMUNICATION' && intent.purpose === 'EVENT') {
+    title='NEVORA update'; body='Open NEVORA to review an update.';
+  } else if (intent.type === 'SCHEDULE_PUBLISHED' || intent.type === 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER') {
     title=`Your ${NUVORA_BRAND.platformLabel} Schedule Is Ready`; body=`Open ${NUVORA_BRAND.platformLabel} to review your schedule.`;
   } else if (intent.type === 'SCHEDULE_CHANGED') {
     title=`Your ${NUVORA_BRAND.platformLabel} Schedule Changed`; body=`Open ${NUVORA_BRAND.platformLabel} to review your schedule.`;

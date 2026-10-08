@@ -1,12 +1,13 @@
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import {createECDH,randomUUID} from 'node:crypto';
 import {createDisposableNotificationDatabase} from './local-postgres';
-import {previewCommunicationAudience,executeCommunicationCommand,readCommunication} from '../../lib/communications/service.server';
+import {previewCommunicationAudience,executeCommunicationCommand} from '../../lib/communications/service.server';
 import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
 import {sqlSubscriptionRepository} from '../../lib/data/push-subscriptions';
 import {sqlDeliveryRepository} from '../../lib/data/push-deliveries';
 import {readEmployeeNotificationList} from '../../lib/data/employee-notification-list.server';
 import {createNotificationOpenHandler} from '../../lib/notifications/open';
+import {notificationPolicyFor} from '../../lib/notifications/policy';
 import {readNotificationConfig} from '../../lib/notifications/config';
 import {encryptSubscriptionMaterial} from '../../lib/notifications/installation';
 import {runDispatch,type WorkerDeps} from '../../lib/notifications/worker';
@@ -23,15 +24,16 @@ async function worker(){
  const enrollment={employeeId:'employee',installationHash:'c'.repeat(64),endpointFingerprint:'fictional-endpoint',encryptedMaterial:'fixture',sessionHash:employee.sessionTokenHash,generation:randomUUID(),expectedGeneration:null,environment:'test' as const,expiresAt:null};
  const subscriptions=sqlSubscriptionRepository(db.executor);expect((await subscriptions.enroll(enrollment)).state).toBe('active');
  const material=encryptSubscriptionMaterial({endpoint:'https://fcm.googleapis.com/fcm/send/QA-never-contact',expirationTime:null,keys:{p256dh:pair.getPublicKey().toString('base64url'),auth:Buffer.alloc(16,2).toString('base64url')}},key,enrollment);await q('UPDATE push_subscriptions SET encrypted_material=$1',[material]);
- const config={...readNotificationConfig({PUSH_ENVIRONMENT:'test',PUSH_SUBSCRIPTION_ENCRYPTION_KEY:key.toString('base64url')}),featureEnabled:true,deliveryEnabled:true,testDeliveryEnabled:true,testAccountIds:['employee']};
+ const config={...readNotificationConfig({PUSH_ENVIRONMENT:'test',PUSH_SUBSCRIPTION_ENCRYPTION_KEY:key.toString('base64url')}),featureEnabled:true,deliveryEnabled:true,testDeliveryEnabled:true,testAccountIds:['employee'],policy:notificationPolicyFor('America/Puerto_Rico')};
  const send=vi.fn(async()=>({kind:'accepted' as const}));
  const deps:WorkerDeps={config,clock:()=>new Date(),executor:db.executor,subscriptions,deliveries:sqlDeliveryRepository('test',db.executor),state:sqlNotificationStateRepository(db.executor),sender:{send}};
  return {deps,send};
 }
-beforeEach(async()=>{db=await createDisposableNotificationDatabase();await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','QA-NO-PHONE','OWNER','loc-1'),('employee','Fictional','Self','QA-NO-PHONE','EMPLOYEE','loc-1')");for(const p of [owner,employee])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);});
+beforeEach(async()=>{db=await createDisposableNotificationDatabase();await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','QA-NO-PHONE','OWNER','loc-1'),('employee','Fictional','Self','QA-NO-PHONE','EMPLOYEE','loc-1'),('foreign','Fictional','Other','QA-NO-PHONE','EMPLOYEE','loc-2')");for(const p of [owner,employee])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);});
 afterEach(async()=>{await db?.dispose();});
 it('duplicate intent one event per version recipient; inbox and safe open work without push',async()=>{
  const {c,r,state,intent}=await publish();expect(intent).not.toBeNull();if(!intent)throw Error('missing current communication source');
+ expect(await state.readSource(intent.source)).toMatchObject({recipientIds:['employee']});
  expect(await executeCommunicationCommand(owner,c,db.executor)).toEqual(r);expect(await q('SELECT * FROM notifications')).toHaveLength(1);
  expect(await state.check(intent,'employee',new Date(),'open')).toMatchObject({deliverable:true,destination:'/app/updates/'+r.id});
  const list=await readEmployeeNotificationList(employee,'test',db.executor);expect(list).toMatchObject({state:'ready',coverage:'complete',items:[{label:'Team update'}]});
@@ -54,5 +56,5 @@ it('provider ambiguous retry may repeat generic payload but never creates acknow
 });
 it('outbox fault leaves no partial publication and unmarked database activation is held',async()=>{
  await q("ALTER TABLE notifications ADD CONSTRAINT fixture_outbox_fault CHECK(type<>'COMMUNICATION')");const p=await previewCommunicationAudience(owner,draft,db.executor);if(p.state!=='ready')throw Error('preview');expect((await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:p.authority,draft,audienceFingerprint:p.fingerprint},db.executor)).status).not.toBe('committed');expect(await q('SELECT * FROM communications')).toEqual([]);await q('ALTER TABLE notifications DROP CONSTRAINT fixture_outbox_fault');
- const {intent,state}=await publish();if(!intent)throw Error('source');await q('COMMENT ON DATABASE '+db.name+' IS NULL');expect(await state.readSource(intent.source)).toBeNull();
+ const {intent,state}=await publish();if(!intent)throw Error('source');const [meta]=await q("SELECT current_database() AS name,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()");try{await q('COMMENT ON DATABASE '+meta.name+' IS NULL');expect(await state.readSource(intent.source)).toBeNull();}finally{await q("COMMENT ON DATABASE "+meta.name+" IS '"+meta.marker+"'");}
 });

@@ -1,3 +1,4 @@
+import {communicationDevelopmentAllowedSql,communicationRecipientAllowedSql} from '../communications/sql';
 import {readShiftChangeMaintenanceSnapshot,maintenanceExchangeSource} from './shift-change-maintenance';
 import {currentShiftTermsSql} from './shift-change-release';
 import { getWorkspace } from './workspaces';
@@ -21,6 +22,10 @@ import { canAccessPublishedAssignment, destinationForSource, isReviewRole, isSel
 import { nextRoutineTime } from '../notifications/policy';
 import { buildAcknowledgementState } from '../assistance/acknowledgement-state';
 export const notificationReadSql = {
+    communication: (id='$1') => `SELECT r.id::text AS version,to_jsonb(r.published_at) AS updated_at,to_jsonb(r.expires_at) AS expires_at,
+      ARRAY(SELECT candidate.id FROM employees candidate WHERE ${communicationRecipientAllowedSql('candidate.id')} ORDER BY candidate.id) AS recipient_ids
+      FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id JOIN workspaces w ON w.id=c.workspace_id AND w.singleton AND w.active
+      WHERE c.id::text=${id} AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ${communicationDevelopmentAllowedSql()}`, 
     intent: (id='$1') => `SELECT * FROM notifications WHERE id = ${id} AND environment IS NOT NULL AND cancelled_at IS NULL LIMIT 1`,
     recipient: (id='$1') => `SELECT e.id, e.role, e.active,
         COALESCE(array_agg(elig.location_id ORDER BY elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL AND l.active=true), ARRAY[]::text[]) AS allowed_location_ids
@@ -45,7 +50,7 @@ export const notificationReadSql = {
       FROM schedule_week_settings WHERE week_start=${week}`,
 };
 
-const SOURCE_KINDS: readonly SourceKind[] = ['SCHEDULE', 'TIME_OFF', 'EXCHANGE', 'CALLOUT', 'AVAILABILITY', 'MANAGER_SUMMARY', 'SELF_TEST'];
+const SOURCE_KINDS: readonly SourceKind[] = ['SCHEDULE', 'TIME_OFF', 'EXCHANGE', 'CALLOUT', 'AVAILABILITY', 'MANAGER_SUMMARY', 'SELF_TEST','COMMUNICATION'];
 function instant(value: unknown): string | null {
     const time = value instanceof Date ? value.getTime() : Date.parse(String(value));
     return Number.isFinite(time) ? new Date(time).toISOString() : null;
@@ -136,6 +141,10 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                     items.push(...summarySourceItems(current).filter(item=>item.id===member.itemId));
                 }
                 return {kind:'MANAGER_SUMMARY',source:{...source,kind:'MANAGER_SUMMARY'},updatedAt:intent.dueAt,weekStart:'',items,expiresAt:intent.expiresAt};
+            }
+            if (source.kind === 'COMMUNICATION') {
+                const [row]=await executor.query<{version:string;updated_at:string;expires_at:string|null;recipient_ids:string[]}>({text:notificationReadSql.communication(),values:[source.id]});
+                return row && Array.isArray(row.recipient_ids) ? {kind:'COMMUNICATION',source:{kind:'COMMUNICATION',id:source.id,version:row.version},updatedAt:row.updated_at,expiresAt:row.expires_at,recipientIds:row.recipient_ids} : null;
             }
             const [row] = await executor.query<{employee_id:string;expires_at:string}>({text:notificationReadSql.selfTest(),values:[source.id,source.version]});
             return row ? {kind:'SELF_TEST',source:{...source,kind:'SELF_TEST'},updatedAt:'',employeeId:row.employee_id,expiresAt:row.expires_at ? instant(row.expires_at)! : '9999-01-01T00:00:00.000Z'} : null;
@@ -234,6 +243,9 @@ export function evaluateNotificationSource(intent: NotificationIntent, recipient
         const coverage = source.items.filter(i=>i.type==='COVERAGE_GAP').map(i=>notificationBoundary(i.dateTime ?? '',policy.timeZone));
         if (intent.urgency==='high' && !coverage.some(start=>start>now.getTime() && start-now.getTime()<=12*3600000)) return rejected(intent,'urgent_source_resolved');
         expiry = Math.min(expiry,Date.parse(source.expiresAt),...coverage);
+    } else if (source.kind==='COMMUNICATION') {
+        if(intent.environment!=='test' || intent.type!=='COMMUNICATION' || intent.purpose!=='EVENT' || source.source.version!==intent.source.version || !isSelfServiceRecipient(recipient) || !source.recipientIds.includes(recipient.employeeId)) return rejected(intent,'communication_access_lost');
+        if(source.expiresAt)expiry=Math.min(expiry,Date.parse(source.expiresAt));
     } else if (source.kind==='SELF_TEST') {
         if (intent.purpose!=='TEST' || source.employeeId!==recipient.employeeId) return rejected(intent,'test_access_lost');
         expiry = Math.min(expiry,Date.parse(source.expiresAt));

@@ -30,7 +30,7 @@ export function safeReturnTo(candidate: string | undefined): string | null {
   if (!candidate || candidate.length > 2048 || /[\\\u0000-\u0020\u007f#]/.test(candidate) || !candidate.startsWith('/') || candidate.startsWith('//')) return null;
   const rawPath = candidate.split('?')[0];
   if (rawPath.includes('%') || rawPath.split('/').some(segment => segment === '.' || segment === '..')) return null;
-  const allowed = ROUTE_PARAMS[rawPath];
+  const allowed = ROUTE_PARAMS[rawPath] ?? (/^\/app\/updates\/[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(rawPath) ? [] : undefined);
   if (!allowed) return null;
   const url = new URL(candidate, 'https://fuel.invalid');
   if (url.pathname !== rawPath || url.origin !== 'https://fuel.invalid') return null;
@@ -100,6 +100,8 @@ export function destinationForSource(source: SourceSnapshot, recipient: Recipien
         }
         return safeReturnTo(`${url.pathname}${url.search}`);
       }).find(href => href !== null) ?? null : null;
+    case 'COMMUNICATION':
+      return isSelfServiceRecipient(recipient) && source.recipientIds.includes(recipient.employeeId) ? safeReturnTo('/app/updates/'+source.source.id) : null;
     case 'SELF_TEST':
       return source.employeeId === recipient.employeeId ? '/app' : null;
   }
