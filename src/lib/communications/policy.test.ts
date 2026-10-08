@@ -1,6 +1,5 @@
 import {expect,it} from 'vitest';
-const modules=import.meta.glob('./policy.ts',{eager:true}) as Record<string,{canAuthorCommunication?:(draft:unknown,context:unknown)=>boolean}>;
-const allow=(draft:unknown,context:unknown)=>modules['./policy.ts']?.canAuthorCommunication?.(draft,context);
+import {canAuthorCommunication as allow} from './policy';
 const team={type:'TODAYS_TEAM',scope:{kind:'TODAYS_TEAM',locationId:'loc-1',businessDate:'2030-10-07'},title:'Today',body:'Operational',acknowledgement:'OPTIONAL',expiresAt:null};
 const assignment={employeeId:'employee',workspaceId:'workspace-fuel',locationId:'loc-1',sourceShiftId:'shift',assignmentEpisodeId:'episode',termsFingerprint:'terms',published:true,released:false,startAt:'2030-10-07T02:00:00Z',endAt:'2030-10-07T06:00:00Z'};
 const context={actor:{id:'employee',role:'EMPLOYEE',active:true,workspaceId:'workspace-fuel'},workspaceId:'workspace-fuel',workspaceActive:true,timeZone:'America/Puerto_Rico',observedAt:'2030-10-07T12:00:00Z',location:{id:'loc-1',workspaceId:'workspace-fuel',active:true},assignments:[assignment]};
@@ -19,4 +18,12 @@ it('required_ack_management_only_non_team',()=>{
  for(const type of ['LOCATION_ANNOUNCEMENT','OPERATIONAL_UPDATE'])expect(allow({...team,type,scope:{kind:'LOCATION',locationId:'loc-1'},acknowledgement:'REQUIRED'},c)).toBe(['OWNER','MANAGER'].includes(role));
  expect(allow({...team,type:'SHIFT_NOTE',scope:{kind:'SHIFT',locationId:'loc-1',sourceShiftId:'shift',assignmentEpisodeId:'episode',termsFingerprint:'terms'},acknowledgement:'REQUIRED'},c)).toBe(['OWNER','MANAGER'].includes(role));
  }
+});
+it('management scope remains workspace wide while missing or stale authority fails closed',()=>{
+ const manager={...context,actor:{...context.actor,role:'MANAGER'}};
+ const shift={...team,type:'SHIFT_NOTE',scope:{kind:'SHIFT',locationId:'loc-1',sourceShiftId:'shift',assignmentEpisodeId:'episode',termsFingerprint:'terms'}};
+ expect(allow(shift,manager)).toBe(true);
+ expect(allow({...shift,scope:{...shift.scope,assignmentEpisodeId:'replacement'}},manager)).toBe(false);
+ for(const mutation of [{workspaceActive:false},{actor:{...manager.actor,workspaceId:'foreign'}},{actor:{...manager.actor,role:'UNKNOWN'}},{observedAt:'invalid'},{location:{...context.location,active:false}}])expect(allow(team,{...manager,...mutation})).toBe(false);
+ expect(allow({...team,expiresAt:'2030-10-07T12:00:00Z'},manager)).toBe(false);
 });
