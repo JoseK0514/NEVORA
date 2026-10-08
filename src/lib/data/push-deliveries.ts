@@ -1,3 +1,4 @@
+import {communicationIntentAllowedSql} from '../communications/sql';
 import type { DeliveryClaim, DeliveryRepository, NotificationIntent, PushEnvironment, SqlExecutor } from '../notifications/types';
 import { neonNotificationExecutor } from './notification-transactions';
 
@@ -24,6 +25,7 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
         SELECT n.* FROM notifications n WHERE n.id = ANY($1::text[]) AND n.environment = $2 AND n.push_state = 'pending'
           AND n.cancelled_at IS NULL AND n.due_at <= now() AND n.expires_at > now()
           AND (n.purpose <> 'SUMMARY' OR n.source_kind = 'MANAGER_SUMMARY')
+          AND (n.source_kind <> 'COMMUNICATION' OR ${communicationIntentAllowedSql()})
         ORDER BY n.id FOR UPDATE
       ), inserted AS (
         INSERT INTO push_deliveries (notification_id, subscription_id, generation, next_attempt_at, expires_at)
@@ -62,6 +64,7 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
           WHERE d.expires_at > now() AND d.next_attempt_at <= now() AND d.attempt_count < 5
             AND ($5::text[] IS NULL OR n.employee_id = ANY($5::text[]))
             AND (n.purpose <> 'SUMMARY' OR n.source_kind = 'MANAGER_SUMMARY')
+            AND (n.source_kind <> 'COMMUNICATION' OR ${communicationIntentAllowedSql()})
             AND n.environment = $4 AND n.push_state = 'materialized' AND n.cancelled_at IS NULL AND n.expires_at > now()
             AND s.status = 'active' AND s.generation = d.generation AND e.active = true
             AND s.employee_id = n.employee_id AND s.environment = n.environment
