@@ -88,8 +88,8 @@ async function overnightTeam(){
 it('yesterday overnight is today team; approved exact callout denies sender and recipient',async()=>{
  const team=await overnightTeam(),c=await command(team,employee),r=await executeCommunicationCommand(employee,c,db.executor);expect(r.status).toBe('committed');if(r.status!=='committed')throw Error('No team');
  expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'ready'});
- await q(`INSERT INTO shift_callouts(id,shift_id,employee_id,status,assignment_episode_id,reviewed_terms_fingerprint,source_terms)
- SELECT 'callout',sh.id,sh.employee_id,'APPROVED',sh.assignment_episode_id,${currentShiftFingerprintSql()},${currentShiftTermsSql()} FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='overnight-shift'`);
+ await q(`INSERT INTO shift_callouts(id,shift_id,employee_id,status,reason_code,assignment_episode_id,reviewed_terms_fingerprint,source_terms)
+ SELECT 'callout',sh.id,sh.employee_id,'APPROVED','SICK',sh.assignment_episode_id,${currentShiftFingerprintSql()},${currentShiftTermsSql()} FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='overnight-shift'`);
  expect(await previewCommunicationAudience(employee,team,db.executor)).toMatchObject({state:'blocked'});
  expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'unauthorized'});
 });

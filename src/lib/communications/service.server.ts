@@ -168,7 +168,7 @@ export async function readCommunication(proof:SessionMutationProof,id:string,exe
   const o=await observe(proof,w,r.draft,executor,signal,id),p=guards(proof,w,id),result=await executor.transaction([...p,sourceGuard(proof,w,r.draft,o.fingerprint),rootStatement(w,id),recipientStatement(proof,w,r),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   const current=result[p.length+1]?.[0] as Root|undefined,grant=result[p.length+2]?.[0] as {kind:string;sourceShiftId:string;assignmentEpisodeId:string;termsFingerprint:string;acknowledgedAt:string|null;readAt:string|null}|undefined;
   const management=canManageCommunication(o.context),member=o.facts.members.some(m=>m.id===proof.employee.id),currentGrant=o.grants.find(g=>g.employeeId===proof.employee.id);
-  const allowed=management||(member&&grant&&(grant.kind==='LOCATION'||(currentGrant?.sourceShiftId===grant.sourceShiftId&&currentGrant.assignmentEpisodeId===grant.assignmentEpisodeId&&currentGrant.termsFingerprint===grant.termsFingerprint)));
+  const allowed=management||(o.context.location.active&&o.context.location.workspaceId===w.id&&member&&grant&&(grant.kind==='LOCATION'||(currentGrant?.sourceShiftId===grant.sourceShiftId&&currentGrant.assignmentEpisodeId===grant.assignmentEpisodeId&&currentGrant.termsFingerprint===grant.termsFingerprint)));
   if(!allowed)return {state:'unauthorized',reason:'update_unavailable'};
   if(!current||current.revisionId!==r.revisionId)return {state:'unavailable',reason:'update_changed'};
   if(current.state==='WITHDRAWN')return {state:'withdrawn',reason:'update_unavailable'};
