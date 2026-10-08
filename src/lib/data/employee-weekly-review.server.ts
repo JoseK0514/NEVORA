@@ -34,7 +34,7 @@ export async function readEmployeeWeeklyReview(proof:SessionMutationProof,weekSt
     rs.position_id AS "positionId",rs.is_designated_lead AS "isDesignatedLead",rs.is_callout_approved AS "isCalloutApproved",'PUBLISHED'::text AS "scheduleStatus"
     FROM schedule_publication_revision_shifts rs JOIN allowed l ON l.id=rs.location_id WHERE rs.employee_id=$2 AND rs.revision_id=(SELECT id FROM latest)
     ORDER BY rs.date,rs.start_time,rs.source_shift_id LIMIT 501)
-   SELECT EXISTS(SELECT 1 FROM employee_attention_receipts WHERE workspace_id=$1 AND employee_id=$2 AND source_kind='SCHEDULE' AND source_id=$3 AND source_version=(SELECT id FROM latest)) AS read,(SELECT id FROM latest) AS "revisionId",(SELECT id FROM ack) AS "acknowledgedRevisionId",
+   SELECT EXISTS(SELECT 1 FROM employee_attention_receipts WHERE workspace_id=$1 AND employee_id=$2 AND source_kind='SCHEDULE' AND source_id=$3::text AND source_version=(SELECT id FROM latest)) AS read,(SELECT id FROM latest) AS "revisionId",(SELECT id FROM ack) AS "acknowledgedRevisionId",
     (SELECT count(*)>0 AND bool_and(EXISTS(SELECT 1 FROM schedules s WHERE s.location_id=l.id AND s.week_start=$3::date AND s.status='PUBLISHED')) FROM allowed l) AS complete,
     COALESCE((SELECT jsonb_agg(to_jsonb(own)) FROM own),'[]'::jsonb) AS shifts,
     COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'shortName',short_name) ORDER BY id) FROM allowed),'[]'::jsonb) AS locations,
