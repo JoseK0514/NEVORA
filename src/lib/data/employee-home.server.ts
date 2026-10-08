@@ -3,6 +3,7 @@ import {createHash,randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {AttentionItem,EmployeeHomeRead,HomeSource,SourceObservation} from '../employee-home/types';
+import {isValidIsoDate} from '../date-utils';
 import {homeDestination,projectEmployeeHome} from '../employee-home/project';
 import {assertEmployeeViewProof,employeeReadLimits,employeeViewGuards,readEmployeeWorkspace} from './employee-profile.server';
 import {employeeAllowedLocationsSql} from './employee-schedule';
@@ -19,6 +20,13 @@ const hash=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).d
 /** Public, domain-separated lifetime binding; never a cookie/session proof. */
 export function homeAuthority(proof:SessionMutationProof):string{return hash(['nevora:employee-home:lifetime:v1',proof.employee.id,proof.sessionTokenHash]);}
 const CAP=100;
+function timeOffPeriod(detail:Record<string,unknown>):string{
+ const start=String(detail.startDate),end=String(detail.endDate);
+ if(!isValidIsoDate(start)||!isValidIsoDate(end)||end<start)throw Error('Invalid request period');
+ // These are calendar dates; UTC formatting preserves them in every workspace zone.
+ const format=(day:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric',year:'numeric'}).format(new Date(`${day}T12:00:00Z`));
+ return start===end?format(start):`${format(start)} – ${format(end)}`;
+}
 type IndexRow={id:string;changedAt:string;version?:string;detail?:Record<string,unknown>;read?:boolean};
 type Section={observation:SourceObservation;items:AttentionItem[]};
 type Authority={observedAt:string;expiresAt:string;locations:string[]};
@@ -122,7 +130,7 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
       if(!detail||!(source==='timeOff'?['PENDING','APPROVED','DENIED','CANCELLED']:['REQUESTED','APPROVED','REJECTED']).includes(String(detail.status)))throw Error('Unknown status');
       const ref:AttentionItem['ref']={kind,id:row.id,version:attentionSourceVersion({kind,id:row.id,version:''},detail)};
       if(refs?.has(JSON.stringify([ref.id,ref.version])))continue;
-      items.push({ref,label:`${source==='timeOff'?'Time off':'Time correction'} ${String(detail.status).toLowerCase()}`,href:homeDestination(ref)!,required:false,actionable:false,deadlineAt:null,changedAt:row.changedAt});
+      items.push({ref,label:`${source==='timeOff'?'Time off':'Time correction'} ${String(detail.status).toLowerCase()}${source==='timeOff'?` · ${timeOffPeriod(detail)}`:''}`,href:homeDestination(ref)!,required:false,actionable:false,deadlineAt:null,changedAt:row.changedAt});
      }
     }
     if(source==='ownTime'){
