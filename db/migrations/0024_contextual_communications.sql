@@ -161,7 +161,7 @@ BEGIN
    (r.scope_kind='LOCATION' AND NEW.grant_kind<>'LOCATION') OR
    (r.scope_kind<>'LOCATION' AND NEW.grant_kind<>'ASSIGNMENT') OR
    (r.scope_kind='SHIFT' AND (r.source_shift_id,r.assignment_episode_id,r.terms_fingerprint) IS DISTINCT FROM (NEW.source_shift_id,NEW.assignment_episode_id,NEW.terms_fingerprint)) THEN RAISE EXCEPTION 'communication_grant_context'; END IF;
-  SELECT hr.version INTO h FROM communications c JOIN communication_revisions hr ON hr.id=c.head_revision_id WHERE c.id=NEW.communication_id;
+  SELECT hr.version INTO h FROM communications root JOIN communication_revisions hr ON hr.id=root.head_revision_id WHERE root.id=NEW.communication_id;
   IF h IS NOT NULL AND r.version<=h THEN RAISE EXCEPTION 'communication_audience_frozen'; END IF;
  ELSIF TG_TABLE_NAME='communication_receipts' THEN
   actor=NEW.employee_id;

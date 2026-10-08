@@ -113,7 +113,7 @@ it('0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSO
  INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('history-shift','history','employee','2030-10-07','08:00','16:00');
  INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('history-revision','2030-10-07',1,'PUBLISH','owner');
  INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,is_designated_lead,is_callout_approved) SELECT 'history-snapshot','history-revision',id,schedule_id,'loc-1',employee_id,date,start_time,end_time,false,false FROM shifts WHERE id='history-shift';
- INSERT INTO schedule_acknowledgements(employee_id,week_start,acknowledged_revision_id) VALUES('employee','2030-10-07','history-revision');
+ INSERT INTO schedule_acknowledgements(employee_id,week_start,publication_revision_id) VALUES('employee','2030-10-07','history-revision');
  INSERT INTO clocker_devices(id,location_id,name) VALUES('history-device','loc-1','Fictional tablet');
  INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status) VALUES('history-entry','employee','loc-1','history-device','2030-10-07T12:00:00Z','2030-10-07T20:00:00Z','CLOCKED_OUT');
  INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('history-break','history-entry','2030-10-07T16:00:00Z','2030-10-07T16:30:00Z');
