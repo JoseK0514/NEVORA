@@ -8,7 +8,7 @@ import { afterEach, expect, it } from 'vitest';
 const runner = resolve('scripts/phase-e-owned.mjs');
 const browserRunner = resolve('scripts/phase-e-browser-qa.mjs');
 const scratch: string[] = [];
-const sqlSuites = ['assignments', 'attention', 'communications-schema', 'communications', 'communication-ack', 'communication-notifications', 'home', 'calendar-tokens', 'calendar-feed'];
+const sqlSuites = ['assignments', 'attention', 'communications-schema', 'communications', 'communication-ack', 'communication-notifications', 'home', 'calendar-tokens', 'calendar-feed', 'employee-navigation'];
 const browserSuites = ['home', 'communications', 'calendar', 'navigation'];
 const widths = [320, 375, 390, 430, 768, 1024, 1440];
 afterEach(() => { for (const root of scratch.splice(0)) rmSync(root, { recursive: true, force: true }); });
@@ -91,6 +91,8 @@ it.each(sqlSuites)('supports_each_allowlisted_suite: SQL %s executes only its ex
   expect(new URL(lines[0].url).pathname).toMatch(suite === 'communication-notifications' ? /^\/fuel_phase3_test_/ : /^\/nevora_foundation_test_/);
 });
 it.each([
+  ['employee-navigation', 'nevora_foundation_test_', 0],
+  ['employee-navigation', 'fuel_phase3_test_', 1],
   ['assignments', 'nevora_foundation_test_', 0],
   ['assignments', 'fuel_phase3_test_', 1],
   ['communication-notifications', 'fuel_phase3_test_', 0],
@@ -101,7 +103,7 @@ it.each([
   const env = { PHASE_E_OWNER_ID: ownerId, PHASE_E_OWNERSHIP_FILE: marker, PHASE_E_EXPECTED_SHA: sha, PHASE_E_MODE: 'sql', PHASE_E_SQL_SUITE: suite, FUEL_TEST_DATABASE_URL: `postgresql://nevora_e@127.0.0.1:54321/${prefix}e_${ownerId.slice(0, 12)}_s0` };
   expect(evaluate(runner, `api.assertOwnedFixture(${JSON.stringify(env)});`).status).toBe(status);
 });
-it('all dispatches all nine SQL suites without accepting unknown arguments', () => {
+it('all dispatches all ten SQL suites without accepting unknown arguments', () => {
   const f = fixture(), result = invoke(['sql', '--suite', 'all'], f.env, f.root);
   expect(result.status, result.stderr).toBe(0);
   const suites = readFileSync(f.trace, 'utf8').split('\n').filter(line => line.startsWith('{')).map(line => JSON.parse(line).suite);

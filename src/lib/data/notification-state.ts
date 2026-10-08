@@ -20,6 +20,31 @@ import { addDays, weekDates, weekStartFor } from '../date-utils';
 import { canAccessPublishedAssignment, destinationForSource, isReviewRole, isSelfServiceRecipient } from '../notifications/destinations';
 import { nextRoutineTime } from '../notifications/policy';
 import { buildAcknowledgementState } from '../assistance/acknowledgement-state';
+export const notificationReadSql = {
+    intent: (id='$1') => `SELECT * FROM notifications WHERE id = ${id} AND environment IS NOT NULL AND cancelled_at IS NULL LIMIT 1`,
+    recipient: (id='$1') => `SELECT e.id, e.role, e.active,
+        COALESCE(array_agg(elig.location_id ORDER BY elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL AND l.active=true), ARRAY[]::text[]) AS allowed_location_ids
+        FROM employees e LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id LEFT JOIN locations l ON l.id=elig.location_id
+        WHERE e.id = ${id} GROUP BY e.id, e.role, e.active`,
+    exchangeTerms: (id='$1') => `SELECT x.id FROM shift_exchanges x
+                      JOIN shifts sh ON sh.id=x.source_shift_id JOIN schedules s ON s.id=sh.schedule_id
+                      JOIN locations l ON l.id=s.location_id AND l.active=true
+                      JOIN employee_location_eligibility elig ON elig.employee_id=x.requested_by_employee_id AND elig.location_id=l.id
+                      LEFT JOIN shifts target ON target.id=x.target_shift_id LEFT JOIN schedules ts ON ts.id=target.schedule_id
+                      WHERE x.id=${id} AND (x.legacy_manual OR (x.source_terms=${currentShiftTermsSql()} AND (x.target_shift_id IS NULL OR x.target_terms=${currentShiftTermsSql('target','ts')}))) AND s.status='PUBLISHED' AND sh.employee_id=x.requested_by_employee_id
+                        AND (x.target_shift_id IS NULL OR (ts.status='PUBLISHED' AND target.employee_id=x.target_employee_id AND EXISTS(SELECT 1 FROM locations tl JOIN employee_location_eligibility te ON te.location_id=tl.id WHERE tl.id=ts.location_id AND tl.active=true AND te.employee_id=x.target_employee_id)))`,
+    calloutTerms: (id='$1') => `SELECT c.id FROM shift_callouts c JOIN shifts sh ON sh.id=c.shift_id JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id AND l.active=true JOIN employee_location_eligibility elig ON elig.employee_id=c.employee_id AND elig.location_id=l.id WHERE c.id=${id} AND (c.legacy_manual OR c.source_terms=${currentShiftTermsSql()}) AND s.status='PUBLISHED' AND sh.employee_id=c.employee_id`,
+    selfTest: (id='$1',version='$2') => `SELECT employee_id, expires_at FROM push_subscriptions WHERE id=${id} AND generation=${version} AND status='active'`,
+    locations: (ids='$1') => `SELECT id FROM locations WHERE id=ANY(${ids}::text[]) AND active=true`,
+    availability: (week='$1') => `SELECT availability_deadline::text AS deadline,updated_at::text,
+      (SELECT COALESCE(jsonb_agg(jsonb_build_object('employeeId',id,'employeeName',first_name || ' ' || last_name) ORDER BY id),'[]') FROM employees WHERE active=true AND role IN ('EMPLOYEE','LEAD')) AS employees,
+      (SELECT COALESCE(jsonb_agg(w ORDER BY to_jsonb(w)),'[]') FROM availability_windows w) AS normal,
+      (SELECT COALESCE(jsonb_agg(w ORDER BY to_jsonb(w)),'[]') FROM weekly_availability_windows w WHERE week_start=${week}) AS weekly,
+      (SELECT COALESCE(jsonb_agg(s ORDER BY to_jsonb(s)),'[]') FROM weekly_availability_submissions s WHERE week_start=${week}) AS submissions,
+      (SELECT COALESCE(jsonb_agg(e ORDER BY to_jsonb(e)),'[]') FROM availability_exceptions e WHERE date >= ${week}::date AND date < ${week}::date + 7) AS exceptions
+      FROM schedule_week_settings WHERE week_start=${week}`,
+};
+
 const SOURCE_KINDS: readonly SourceKind[] = ['SCHEDULE', 'TIME_OFF', 'EXCHANGE', 'CALLOUT', 'AVAILABILITY', 'MANAGER_SUMMARY', 'SELF_TEST'];
 function instant(value: unknown): string | null {
     const time = value instanceof Date ? value.getTime() : Date.parse(String(value));
@@ -29,7 +54,7 @@ function instant(value: unknown): string | null {
 export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotificationExecutor(), workspace?: Workspace): NotificationStateRepository {
     const repository: NotificationStateRepository = {
         async findIntent(notificationId) {
-            const [row] = await executor.query<Record<string, unknown>>({ text: `SELECT * FROM notifications WHERE id = $1 AND environment IS NOT NULL AND cancelled_at IS NULL LIMIT 1`, values: [notificationId] });
+            const [row] = await executor.query<Record<string, unknown>>({ text: notificationReadSql.intent(), values: [notificationId] });
             if (!row || (row.environment !== 'test' && row.environment !== 'production') || !SOURCE_KINDS.includes(row.source_kind as SourceKind))
                 return null;
             const dueAt = instant(row.due_at), expiresAt = instant(row.expires_at);
@@ -44,10 +69,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 role: UserRole;
                 active: boolean;
                 allowed_location_ids: string[];
-            }>({ text: `SELECT e.id, e.role, e.active,
-        COALESCE(array_agg(elig.location_id ORDER BY elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL AND l.active=true), ARRAY[]::text[]) AS allowed_location_ids
-        FROM employees e LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id LEFT JOIN locations l ON l.id=elig.location_id
-        WHERE e.id = $1 GROUP BY e.id, e.role, e.active`, values: [employeeId] });
+            }>({ text: notificationReadSql.recipient(), values: [employeeId] });
             if (!row || !['OWNER', 'MANAGER', 'LEAD', 'EMPLOYEE'].includes(row.role))
                 return null;
             return { employeeId: row.id, role: row.role, active: row.active, allowedLocationIds: row.allowed_location_ids } satisfies RecipientAccess;
@@ -63,13 +85,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 if (['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(record.status)) {
                     const zone=(workspace ?? await getWorkspace(executor)).timeZone;
                     if(!Number.isFinite(notificationShiftStart(record.sourceShift,zone)) || (record.targetShift && !Number.isFinite(notificationShiftStart(record.targetShift,zone)))) return null;
-                    const [valid] = await executor.query({text: `SELECT x.id FROM shift_exchanges x
-                      JOIN shifts sh ON sh.id=x.source_shift_id JOIN schedules s ON s.id=sh.schedule_id
-                      JOIN locations l ON l.id=s.location_id AND l.active=true
-                      JOIN employee_location_eligibility elig ON elig.employee_id=x.requested_by_employee_id AND elig.location_id=l.id
-                      LEFT JOIN shifts target ON target.id=x.target_shift_id LEFT JOIN schedules ts ON ts.id=target.schedule_id
-                      WHERE x.id=$1 AND (x.legacy_manual OR (x.source_terms=${currentShiftTermsSql()} AND (x.target_shift_id IS NULL OR x.target_terms=${currentShiftTermsSql('target','ts')}))) AND s.status='PUBLISHED' AND sh.employee_id=x.requested_by_employee_id
-                        AND (x.target_shift_id IS NULL OR (ts.status='PUBLISHED' AND target.employee_id=x.target_employee_id AND EXISTS(SELECT 1 FROM locations tl JOIN employee_location_eligibility te ON te.location_id=tl.id WHERE tl.id=ts.location_id AND tl.active=true AND te.employee_id=x.target_employee_id)))`,values:[source.id]});
+                    const [valid] = await executor.query({text: notificationReadSql.exchangeTerms(),values:[source.id]});
                     if (!valid) return null;
                 }
                 const current=await readShiftChangeMaintenanceSnapshot(source.id,'EXCHANGE',executor);
@@ -87,7 +103,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 if (!record) return null;
                 if (record.status === 'PENDING') {
                     if(!Number.isFinite(notificationShiftStart(record,(workspace ?? await getWorkspace(executor)).timeZone))) return null;
-                    const [valid] = await executor.query({text: `SELECT c.id FROM shift_callouts c JOIN shifts sh ON sh.id=c.shift_id JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id AND l.active=true JOIN employee_location_eligibility elig ON elig.employee_id=c.employee_id AND elig.location_id=l.id WHERE c.id=$1 AND (c.legacy_manual OR c.source_terms=${currentShiftTermsSql()}) AND s.status='PUBLISHED' AND sh.employee_id=c.employee_id`,values:[source.id]});
+                    const [valid] = await executor.query({text: notificationReadSql.calloutTerms(),values:[source.id]});
                     if (!valid) return null;
                 }
                 const snapshot=requestSnapshot('CALLOUT',record);
@@ -121,7 +137,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 }
                 return {kind:'MANAGER_SUMMARY',source:{...source,kind:'MANAGER_SUMMARY'},updatedAt:intent.dueAt,weekStart:'',items,expiresAt:intent.expiresAt};
             }
-            const [row] = await executor.query<{employee_id:string;expires_at:string}>({text:`SELECT employee_id, expires_at FROM push_subscriptions WHERE id=$1 AND generation=$2 AND status='active'`,values:[source.id,source.version]});
+            const [row] = await executor.query<{employee_id:string;expires_at:string}>({text:notificationReadSql.selfTest(),values:[source.id,source.version]});
             return row ? {kind:'SELF_TEST',source:{...source,kind:'SELF_TEST'},updatedAt:'',employeeId:row.employee_id,expiresAt:row.expires_at ? instant(row.expires_at)! : '9999-01-01T00:00:00.000Z'} : null;
         },
         async check(intent, recipientId, now, use = 'delivery') {
@@ -139,7 +155,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                     : source?.kind==='CALLOUT' ? [source.record.locationId]
                     : source?.kind==='SCHEDULE' && recipient ? [...source.previousShifts,...source.currentShifts].filter(s=>canAccessPublishedAssignment(recipient,s)).map(s=>s.locationId) : [];
                 if(locationIds.length) {
-                    const active=await executor.query<{id:string}>({text:'SELECT id FROM locations WHERE id=ANY($1::text[]) AND active=true',values:[[...new Set(locationIds)]]});
+                    const active=await executor.query<{id:string}>({text:notificationReadSql.locations(),values:[[...new Set(locationIds)]]});
                     if(locationIds.some(id=>!active.some(l=>l.id===id))) return rejected(intent,'location_inactive');
                 }
                 return evaluateNotificationSource(intent, recipient, source, now,notificationPolicyFor(current.timeZone));
@@ -287,13 +303,7 @@ export function summarySourceItems(source: SourceSnapshot): ManagerActionItem[] 
 }
 
 async function readAvailabilitySource(week: string, executor: SqlExecutor): Promise<SourceSnapshot | null> {
-    const [row] = await executor.query<{deadline:string|null;updated_at:string;employees:{employeeId:string;employeeName:string}[];normal:Record<string,unknown>[];weekly:Record<string,unknown>[];submissions:Record<string,unknown>[];exceptions:Record<string,unknown>[]}>({text:`SELECT availability_deadline::text AS deadline,updated_at::text,
-      (SELECT COALESCE(jsonb_agg(jsonb_build_object('employeeId',id,'employeeName',first_name || ' ' || last_name)),'[]') FROM employees WHERE active=true AND role IN ('EMPLOYEE','LEAD')) AS employees,
-      (SELECT COALESCE(jsonb_agg(w),'[]') FROM availability_windows w) AS normal,
-      (SELECT COALESCE(jsonb_agg(w),'[]') FROM weekly_availability_windows w WHERE week_start=$1) AS weekly,
-      (SELECT COALESCE(jsonb_agg(s),'[]') FROM weekly_availability_submissions s WHERE week_start=$1) AS submissions,
-      (SELECT COALESCE(jsonb_agg(e),'[]') FROM availability_exceptions e WHERE date >= $1::date AND date < $1::date + 7) AS exceptions
-      FROM schedule_week_settings WHERE week_start=$1`,values:[week]});
+    const [row] = await executor.query<{deadline:string|null;updated_at:string;employees:{employeeId:string;employeeName:string}[];normal:Record<string,unknown>[];weekly:Record<string,unknown>[];submissions:Record<string,unknown>[];exceptions:Record<string,unknown>[]}>({text:notificationReadSql.availability(),values:[week]});
     if (!row?.deadline) return null;
     const deadline = instant(row.deadline);
     if (!deadline) return null;

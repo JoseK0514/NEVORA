@@ -125,8 +125,10 @@ export async function listEmployeeCallouts(
   return rows.map(mapCallout);
 }
 
+export const calloutReadSql = (id="$1") => `${CALLOUT_SELECT} WHERE c.id=${id} LIMIT 1`;
+
 export async function getCallout(calloutId: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<CalloutRecord | null> {
-  const rows = await executor.query({ text: `${CALLOUT_SELECT} WHERE c.id=$1 LIMIT 1`, values: [calloutId] });
+  const rows = await executor.query({ text: calloutReadSql(), values: [calloutId] });
   return rows[0] ? mapCallout(rows[0]) : null;
 }
 

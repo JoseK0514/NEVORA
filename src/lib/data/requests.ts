@@ -48,8 +48,10 @@ function mapRequest(row: unknown): TimeOffListItem {
   };
 }
 
+export const timeOffReadSql = (id='$1') => `SELECT r.*, e.first_name || ' ' || e.last_name AS employee_name FROM time_off_requests r JOIN employees e ON e.id=r.employee_id WHERE r.id=${id}`;
+
 export async function getTimeOffRequest(id: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<TimeOffListItem | null> {
-  const [row] = await executor.query({text: `SELECT r.*, e.first_name || ' ' || e.last_name AS employee_name FROM time_off_requests r JOIN employees e ON e.id=r.employee_id WHERE r.id=$1`, values:[id]});
+  const [row] = await executor.query({text: timeOffReadSql(), values:[id]});
   return row ? mapRequest(row) : null;
 }
 

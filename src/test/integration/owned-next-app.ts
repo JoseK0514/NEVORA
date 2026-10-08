@@ -137,7 +137,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
       ...(options.recoverySmtpPort?{FUEL_PORTAL_ORIGIN:url,NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:String(options.recoverySmtpPort),NEVORA_RECOVERY_FROM:'recovery@example.invalid'}:{}),
-      NEXT_TELEMETRY_DISABLED: '1', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
+      NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
       ...(options.processOwnerId ? { NEVORA_OWNED_PROCESS_OWNER: options.processOwnerId } : {}),

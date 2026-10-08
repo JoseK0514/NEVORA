@@ -32,7 +32,7 @@ it.each(["EMPLOYEE", "LEAD"] as const)("keeps %s My Time directly reachable and 
   expect(primary).toMatch(/href="\/app\/my-time" class="mobile-nav-link active" aria-current="page"/);
   expect(more).toContain('popover="auto"');
   expect([...more.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app/availability", "/app/requests", "/app/exchange",
+    "/app/requests/hub", "/app/availability", "/app/notifications", "/app/profile",
   ]);
   expect(html).toContain("app-shell employee-shell");
   expect(html).not.toContain("sidebar-mantra");
@@ -65,14 +65,14 @@ it.each(["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const)("renders the NEVORA p
   expect(html).not.toContain("Fuel Scheduler");
 });
 
-it.each(['EMPLOYEE','LEAD','MANAGER','OWNER'] as const)('places %s device settings only in existing profile affordances when enabled',role=>{
+it.each(['MANAGER','OWNER'] as const)('places %s device settings only in existing profile affordances when enabled',role=>{
  const html=renderToStaticMarkup(<AppShell workspaceName="Northside Services" notificationsEnabled user={{firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
  expect(html.match(/id="portal-device-settings"/g)).toHaveLength(1);
  expect(html.match(/popoverTarget="portal-device-settings"/g)?.length).toBeGreaterThanOrEqual(2);
  expect(html).not.toContain('href="/app/notifications"');
 });
 it('feature off retains the ordinary profile and does not mount setup',()=>{
- const {html}=render('EMPLOYEE');expect(html).not.toContain('portal-device-settings');expect(html).toContain('<div class="sidebar-profile">');
+ const {html}=render('EMPLOYEE');expect(html).not.toContain('portal-device-settings');expect(html).toContain('href="/app/profile" class="sidebar-profile portal-profile-trigger"');expect(html).toContain('href="/app/notifications"');
 });
 
 it("preserves configured Fuel customer identity in the sidebar", () => {
@@ -88,4 +88,8 @@ it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reac
  expect([...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual([
   '/app/employees','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),
  ]);
+});
+
+it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessible shell affordances for %s',role=>{
+ const {html}=render(role);expect(html).toContain('href="/app/profile"');expect(html).toContain('href="/app/notifications"');expect(html).not.toContain('portal-device-settings');
 });

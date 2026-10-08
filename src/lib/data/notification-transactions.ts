@@ -99,7 +99,7 @@ export type WeekMutationResult = {
 };
 // Read every component in one PostgreSQL statement/MVCC snapshot. Keep database
 // timestamps as text; Date round-tripping would silently discard microseconds.
-const currentShiftsSql = `SELECT sh.id AS "sourceShiftId", sh.schedule_id AS "scheduleId",
+const currentShiftsSql = (weeks="$1") => `SELECT sh.id AS "sourceShiftId", sh.schedule_id AS "scheduleId",
   s.week_start::text AS "weekStart", s.location_id AS "locationId", sh.employee_id AS "employeeId",
   sh.date::text AS date, left(sh.start_time::text,5) AS "startTime", left(sh.end_time::text,5) AS "endTime",
   sh.assignment_origin AS "assignmentOrigin", sh.generated_claims AS "generatedClaims",
@@ -109,12 +109,12 @@ const currentShiftsSql = `SELECT sh.id AS "sourceShiftId", sh.schedule_id AS "sc
   EXISTS (SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}) AS "isCalloutApproved",
   (SELECT c.employee_id FROM shift_callouts c WHERE ${currentCalloutReleaseSql()} LIMIT 1) AS "approvedCalloutEmployeeId",
   EXISTS (SELECT 1 FROM shift_exchanges x WHERE x.source_shift_id=sh.id OR x.target_shift_id=sh.id) AS "hasExchangeHistory"
-  FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=ANY($1::date[])`;
+  FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=ANY(${weeks}::date[])`;
 const revisionShiftsSql = `SELECT source_shift_id AS "sourceShiftId", schedule_id AS "scheduleId", location_id AS "locationId",
   employee_id AS "employeeId", date::text AS date, left(start_time::text,5) AS "startTime", left(end_time::text,5) AS "endTime",
   position_id AS "positionId", position_name AS "positionName", notes, is_designated_lead AS "isDesignatedLead", is_callout_approved AS "isCalloutApproved"
   FROM schedule_publication_revision_shifts WHERE revision_id=r.id`;
-export const notificationStateSql = `jsonb_build_object(
+export const notificationStateExpression = (weeks="$1") => `jsonb_build_object(
   'assignmentFacts', jsonb_build_object(
     'workspace',(SELECT jsonb_build_object('id',id,'active',active,'timeZone',time_zone) FROM workspaces WHERE singleton=true),
     'locations',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'workspaceId',workspace_id,'active',active) ORDER BY id) FROM locations),'[]'::jsonb),
@@ -122,21 +122,23 @@ export const notificationStateSql = `jsonb_build_object(
     'memberships',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',employee_id,'positionId',position_id) ORDER BY employee_id,position_id) FROM employee_positions),'[]'::jsonb)),
   'schedules', COALESCE((SELECT jsonb_agg(t ORDER BY t.id) FROM (
     SELECT id, location_id AS "locationId", week_start::text AS "weekStart", status, updated_at::text AS "updatedAt"
-    FROM schedules WHERE week_start=ANY($1::date[])) t),'[]'::jsonb),
-  'shifts', COALESCE((SELECT jsonb_agg(t ORDER BY t."sourceShiftId") FROM (${currentShiftsSql}) t),'[]'::jsonb),
+    FROM schedules WHERE week_start=ANY(${weeks}::date[])) t),'[]'::jsonb),
+  'shifts', COALESCE((SELECT jsonb_agg(t ORDER BY t."sourceShiftId") FROM (${currentShiftsSql(weeks)}) t),'[]'::jsonb),
   'revisions', COALESCE((SELECT jsonb_agg(t ORDER BY t."weekStart",t."revisionNumber") FROM (
     SELECT r.id, r.week_start::text AS "weekStart", r.revision_number AS "revisionNumber", r.source_type AS "sourceType",
     r.source_id AS "sourceId", r.affected_location_id AS "affectedLocationId", r.created_by AS "createdBy", r.created_at::text AS "createdAt",
     COALESCE((SELECT jsonb_agg(rs ORDER BY rs."sourceShiftId") FROM (${revisionShiftsSql}) rs),'[]'::jsonb) AS shifts
-    FROM schedule_publication_revisions r WHERE r.week_start=ANY($1::date[])) t),'[]'::jsonb),
+    FROM schedule_publication_revisions r WHERE r.week_start=ANY(${weeks}::date[])) t),'[]'::jsonb),
   'acknowledgements', COALESCE((SELECT jsonb_agg(t ORDER BY t."weekStart",t."employeeId") FROM (
     SELECT week_start::text AS "weekStart", employee_id AS "employeeId", publication_revision_id AS "revisionId"
-    FROM schedule_acknowledgements WHERE week_start=ANY($1::date[])) t),'[]'::jsonb),
+    FROM schedule_acknowledgements WHERE week_start=ANY(${weeks}::date[])) t),'[]'::jsonb),
   'recipients', COALESCE((SELECT jsonb_agg(t ORDER BY t."employeeId") FROM (
     SELECT e.id AS "employeeId", e.role, e.active,
     COALESCE((SELECT jsonb_agg(location_id ORDER BY location_id) FROM employee_location_eligibility elig JOIN locations l ON l.id=elig.location_id AND l.active=true WHERE employee_id=e.id),'[]'::jsonb) AS "allowedLocationIds"
     FROM employees e) t),'[]'::jsonb))`;
 /** Shared authoritative read used by reminder/open/worker checks. */
+export const notificationStateSql = notificationStateExpression();
+export const notificationWeekReadSql = (weeks="$1") => `SELECT ${notificationStateExpression(weeks)} AS state`;
 export async function readNotificationWeekState(weeks: readonly string[], executor: SqlExecutor): Promise<GuardedWeekState> {
     const [row] = await executor.query<{state: GuardedWeekState}>({text: `SELECT ${notificationStateSql} AS state`, values: [[...weeks]]});
     if (!row) throw new Error('Schedule snapshot could not be read.');

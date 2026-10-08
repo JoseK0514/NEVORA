@@ -10,13 +10,10 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import type { UserRole } from "@/lib/domain";
-import { navigationForRole } from "@/lib/navigation";
+import { activeNavigationHref, navigationForRole } from "@/lib/navigation";
 import { NUVORA_BRAND } from "../lib/brand";
 
-const employeeOrder = [
-  "/app", "/app/schedule", "/app/my-time",
-  "/app/availability", "/app/requests", "/app/exchange",
-];
+const employeePrimary = ["/app", "/app/schedule", "/app/my-time"];
 
 function employeeNavigationLabel(label: string) {
   if (label === "My schedule") return "My Schedule";
@@ -44,19 +41,10 @@ export function AppShell({
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
   const navigation = navigationForRole(user.role);
-  if (employee) {
-    navigation.sort((a, b) => employeeOrder.indexOf(a.href) - employeeOrder.indexOf(b.href));
-  }
-  const mobilePrimary = navigation.filter((item) => employeeOrder.slice(0, 3).includes(item.href));
-  const mobileMore = navigation.filter((item) => !employeeOrder.slice(0, 3).includes(item.href));
+  const mobilePrimary = navigation.filter((item) => employeePrimary.includes(item.href));
+  const mobileMore = navigation.filter((item) => !employeePrimary.includes(item.href));
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
-  const activeHref = navigation
-    .filter((item) =>
-      item.href === "/app"
-        ? pathname === "/app"
-        : pathname === item.href || pathname.startsWith(`${item.href}/`),
-    )
-    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
+  const activeHref = activeNavigationHref(user.role, pathname);
 
   useEffect(() => {
     for (const id of ['employee-more-navigation', 'manager-more-navigation']) {
@@ -124,14 +112,18 @@ export function AppShell({
           })}
         </nav>
 
-        <Profile className={`sidebar-profile${notificationsEnabled ? " portal-profile-trigger" : ""}`} {...(notificationsEnabled ? { type: "button" as const, popoverTarget: "portal-device-settings", "aria-label": "Profile and device settings" } : {})}>
+        {employee ? <Link href="/app/profile" className="sidebar-profile portal-profile-trigger" aria-label="Your profile">
+          <div className="avatar">{initials}</div>
+          <div className="sidebar-profile-copy"><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "LEAD" ? "Lead" : "Employee"}</small></div>
+        </Link> : <>        <Profile className={`sidebar-profile${notificationsEnabled ? " portal-profile-trigger" : ""}`} {...(notificationsEnabled ? { type: "button" as const, popoverTarget: "portal-device-settings", "aria-label": "Profile and device settings" } : {})}>
           <div className="avatar">{initials}</div>
           <div className="sidebar-profile-copy">
             <strong>{user.firstName} {user.lastName}</strong>
             <small>{user.role[0]}{user.role.slice(1).toLowerCase()}</small>
           </div>
           {employee ? null : <span className="sidebar-profile-chevron" aria-hidden="true">⌄</span>}
-        </Profile>
+        </Profile></>}
+
 
         <PortalSignout className="sidebar-signout-form">
           <button className="sidebar-logout sidebar-logout-row" type="submit">
@@ -193,6 +185,7 @@ export function AppShell({
                 onPointerDown={() => {
                   employeeMoreKeyboardOpen.current = false;
                 }}
+                aria-label="More"
                 className={mobileMore.some((item) => item.href === activeHref) ? "mobile-nav-link employee-more-trigger active" : "mobile-nav-link employee-more-trigger"}>
                 <NavIcon name="more" employee size={22} />
                 <span>More</span>
@@ -225,7 +218,7 @@ export function AppShell({
                   </Link>
                 ))}
                 <div className="employee-more-profile">
-                  <Profile className={notificationsEnabled ? "portal-more-profile-trigger" : undefined} {...(notificationsEnabled ? { type: "button" as const, popoverTarget: "portal-device-settings", "aria-label": "Profile and device settings" } : {})}><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "LEAD" ? "Lead" : "Employee"}</small></Profile>
+                  <div><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "LEAD" ? "Lead" : "Employee"}</small></div>
                   <PortalSignout><button type="submit"><NavIcon name="logout" employee size={18} /><span>Sign out</span></button></PortalSignout>
                 </div>
               </div>

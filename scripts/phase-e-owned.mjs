@@ -17,6 +17,7 @@ export const SQL_SUITES = Object.freeze({
   home: 'src/test/integration/phase-e-home.integration.ts',
   'calendar-tokens': 'src/test/integration/phase-e-calendar-tokens.integration.ts',
   'calendar-feed': 'src/test/integration/phase-e-calendar-feed.integration.ts',
+  'employee-navigation': 'src/test/integration/phase-e-employee-navigation.integration.ts',
 });
 export const SQL_DATABASE_PREFIXES = Object.freeze({
   assignments: 'nevora_foundation_test_',
@@ -28,6 +29,7 @@ export const SQL_DATABASE_PREFIXES = Object.freeze({
   home: 'nevora_foundation_test_',
   'calendar-tokens': 'nevora_foundation_test_',
   'calendar-feed': 'nevora_foundation_test_',
+  'employee-navigation': 'nevora_foundation_test_',
 });
 export const BROWSER_SUITES = Object.freeze(Object.fromEntries(['home', 'communications', 'calendar', 'navigation'].map(suite => [suite, `scripts/phase-e-${suite}-browser-scenarios.mjs`])));
 export const ENGINES = Object.freeze(['chromium', 'webkit']);

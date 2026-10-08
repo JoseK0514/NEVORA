@@ -17,3 +17,7 @@ describe("role navigation", () => {
     expect(employee).not.toContain("/app/settings");
   });
 });
+
+it.each(['EMPLOYEE','LEAD'] as const)('Home_Schedule_MyTime_More_all_routes_reachable for %s in explicit order',role=>{
+ expect(navigationForRole(role).map(item=>item.href)).toEqual(['/app','/app/schedule','/app/my-time','/app/requests/hub','/app/availability','/app/notifications','/app/profile']);
+});

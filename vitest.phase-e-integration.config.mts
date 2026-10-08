@@ -12,6 +12,7 @@ const suites: Record<string, string> = {
   home: 'src/test/integration/phase-e-home.integration.ts',
   'calendar-tokens': 'src/test/integration/phase-e-calendar-tokens.integration.ts',
   'calendar-feed': 'src/test/integration/phase-e-calendar-feed.integration.ts',
+  'employee-navigation': 'src/test/integration/phase-e-employee-navigation.integration.ts',
 };
 const suite = process.env.PHASE_E_SQL_SUITE;
 if (!suite || !Object.hasOwn(suites, suite)) throw new Error('PHASE_E_SQL_SUITE must identify an allowlisted owned suite');

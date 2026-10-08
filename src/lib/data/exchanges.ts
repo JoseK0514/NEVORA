@@ -83,13 +83,13 @@ function mapShift(row: Record<string, unknown>, prefix: string): ExchangeShift {
   };
 }
 
-const EXCHANGE_SELECT = `
+const exchangeSelect = (observedAt="clock_timestamp()") => `
   SELECT
     x.id,
     x.request_revision,
     x.legacy_manual,x.completion_deadline,x.source_terms,x.target_terms,x.escalated_at,
     (SELECT shift_change_policy FROM workspaces WHERE singleton) AS shift_change_policy,
-    clock_timestamp()::text AS observed_at,
+    ${observedAt}::text AS observed_at,
     ${currentShiftTermsSql('source','source_schedule')} AS live_source_terms,
     (CASE WHEN x.target_shift_id IS NOT NULL THEN ${currentShiftTermsSql('target_shift','target_schedule')} ELSE NULL END) AS live_target_terms,
     (source_schedule.status='PUBLISHED' AND x.source_terms=${currentShiftTermsSql('source','source_schedule')} AND (x.target_shift_id IS NULL OR (target_schedule.status='PUBLISHED' AND x.target_terms=${currentShiftTermsSql('target_shift','target_schedule')}))) AS terms_current,
@@ -154,6 +154,9 @@ const EXCHANGE_SELECT = `
   LEFT JOIN locations target_location
     ON target_location.id = target_schedule.location_id
 `;
+
+const EXCHANGE_SELECT = exchangeSelect();
+export const exchangeReadSql = (id="$1", observedAt="clock_timestamp()") => `${exchangeSelect(observedAt)} WHERE x.id=${id} LIMIT 1`;
 
 function mapExchange(row: unknown): ExchangeRecord {
   const item = row as Record<string, unknown>;
@@ -416,7 +419,7 @@ export async function listManagerPendingExchanges(): Promise<ExchangeRecord[]> {
 }
 
 export async function getExchange(exchangeId: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<ExchangeRecord | null> {
-  const rows = await executor.query({ text: `${EXCHANGE_SELECT} WHERE x.id=$1 LIMIT 1`, values: [exchangeId] });
+  const rows = await executor.query({ text: exchangeReadSql(), values: [exchangeId] });
   return rows[0] ? mapExchange(rows[0]) : null;
 }
 

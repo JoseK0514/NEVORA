@@ -36,12 +36,13 @@ type SystemSnapshot = {
     recipients: RecipientAccess[];
     eligibleEmployeeIds: string[];
 };
+export const maintenanceReadSql = (observedAt="clock_timestamp()") => `SELECT ${generationSourceSql} AS source,to_jsonb(${observedAt}) AS "observedAt"`;
 /** Read-only, coherent system source. No employee/session identity is synthesized. */
 export async function readShiftChangeMaintenanceSnapshot(requestId: string, kind: 'EXCHANGE' | 'CALLOUT', executor: SqlExecutor, now?: Date): Promise<SystemSnapshot | null> {
     const [read] = await executor.query<{
         source: GenerationSource;
         observedAt: string;
-    }>({ text: `SELECT ${generationSourceSql} AS source,to_jsonb(clock_timestamp()) AS "observedAt"`, values: [] });
+    }>({ text: maintenanceReadSql(), values: [] });
     if (!read?.source)
         return null;
     const source = read.source, w = source.workspaces[0], row = (kind === 'EXCHANGE' ? source.shift_exchanges : source.shift_callouts).find(r => r.id === requestId);

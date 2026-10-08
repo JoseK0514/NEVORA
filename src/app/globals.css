@@ -13705,3 +13705,30 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
   body:has(.employee-view h1) .app-shell { display: block; min-height: 0; }
   body:has(.employee-view h1) .main-content { margin: 0; padding: 0; max-width: none; width: 100%; }
 }
+
+/* E4 employee destinations extend the existing portal geometry only. */
+.employee-shell .employee-account-view { max-width: 680px; }
+.employee-shell .employee-account-panel { padding: 24px; overflow-wrap: anywhere; }
+.employee-shell .employee-account-panel h2 { font-size: 17px; font-weight: 600; margin: 0 0 12px; }
+.employee-shell .employee-account-panel p { line-height: 1.5; }
+.employee-shell .employee-account-footer { margin-top: 24px; }
+.employee-shell .employee-profile-details { margin: 0; display: grid; gap: 20px; }
+.employee-shell .employee-profile-details dt { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.employee-shell .employee-profile-details dd { margin: 0; font-size: 16px; }
+.employee-shell .employee-account-settings { border-top: 1px solid var(--color-border-subtle); margin-top: 24px; padding-top: 24px; }
+.employee-shell .employee-account-settings .button { margin: 0 8px 8px 0; }
+.employee-shell .employee-account-note { color: var(--muted); font-size: 13px; }
+.employee-shell .employee-destination-list { overflow: hidden; }
+.employee-shell .employee-destination-list > a { display: flex; gap: 16px; align-items: center; min-height: 80px; padding: 20px; }
+.employee-shell .employee-destination-list > a + a { border-top: 1px solid var(--color-border-subtle); }
+.employee-shell .employee-destination-list > a > span:nth-child(2) { flex: 1; min-width: 0; }
+.employee-shell .employee-destination-list strong, .employee-shell .employee-destination-list small { display: block; overflow-wrap: anywhere; }
+.employee-shell .employee-destination-list small { color: var(--muted); margin-top: 8px; line-height: 1.5; }
+.employee-shell .employee-destination-list > a:hover { background: var(--color-bg-main); }
+.employee-shell .employee-notification-list { list-style: none; margin: 0; padding: 0; }
+.employee-shell .employee-notification-list li + li { border-top: 1px solid var(--color-border-subtle); }
+.employee-shell .employee-notification-list a { display: grid; gap: 8px; min-height: 80px; padding: 16px 0; }
+.employee-shell .employee-notification-list time { font-size: 13px; color: var(--muted); }
+.employee-shell .employee-notification-list a > span { font-size: 13px; }
+.employee-shell .sidebar-profile.portal-profile-trigger { text-decoration: none; }
+@media(max-width:767px) { .employee-shell .employee-account-panel { padding: 20px; } }

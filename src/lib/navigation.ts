@@ -24,11 +24,24 @@ const managementNavigation: NavigationItem[] = [
 const employeeNavigation: NavigationItem[] = [
   { href: "/app", label: "Home", icon: "dashboard" },
   { href: "/app/schedule", label: "My schedule", icon: "schedule" },
-  { href: "/app/availability", label: "Availability", icon: "availability" },
-  { href: "/app/requests", label: "Time off", icon: "timeOff" },
-  { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
   { href: "/app/my-time", label: "My Time", icon: "clock" },
+  { href: "/app/requests/hub", label: "Requests", icon: "requests" },
+  { href: "/app/availability", label: "Availability", icon: "availability" },
+  { href: "/app/notifications", label: "Notifications", icon: "alert" },
+  { href: "/app/profile", label: "Profile", icon: "employee" },
 ];
+
+/** Canonical workflows keep their URLs, queries and commands. Only their
+ * employee navigation owner is the Requests group. Manager owners are unchanged. */
+export function activeNavigationHref(role: UserRole, path: string): string | undefined {
+  const pathname = path.split(/[?#]/, 1)[0];
+  const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  if ((role === "EMPLOYEE" || role === "LEAD") &&
+      (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
+  return navigationForRole(role)
+    .filter(item => item.href === "/app" ? pathname === "/app" : matches(item.href))
+    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
+}
 
 export function navigationForRole(role: UserRole) {
   if (role === "OWNER") {

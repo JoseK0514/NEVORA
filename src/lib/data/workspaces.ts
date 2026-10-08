@@ -20,9 +20,10 @@ export class WorkspacePermissionError extends Error {
 }
 // Keep exact PostgreSQL timestamp text: Date conversion loses microseconds.
 const fields = 'id, name, time_zone AS "timeZone", active, created_at::text AS "createdAt", updated_at::text AS "updatedAt"';
+export const workspaceReadSql = () => `SELECT ${fields} FROM workspaces WHERE singleton=true`;
 export async function getWorkspace(executor: SqlExecutor = neonNotificationExecutor()): Promise<Workspace> {
   try {
-    const rows = await executor.query<Workspace>({ text: `SELECT ${fields} FROM workspaces WHERE singleton=true`, values: [] });
+    const rows = await executor.query<Workspace>({ text: workspaceReadSql(), values: [] });
     if (rows.length !== 1 || !rows[0].active) throw new WorkspaceUnavailableError();
     validateWorkspaceProfile(rows[0]);
     return rows[0];
