@@ -121,3 +121,24 @@ it.each(['bootstrap','final'] as const)('owned PostgreSQL %s statement timeout y
   if(statements.some(s=>stage==='bootstrap'?s.text===workspaceReadSql():s.text.startsWith('WITH facts AS MATERIALIZED'))){const copy=[...statements];copy.splice(copy.length-1,0,{text:'SELECT pg_sleep(3)',values:[]});return db.executor.transaction(copy,signal);}return db.executor.transaction(statements,signal);
  }};expect((await inbox(timeout)).state).toBe('unavailable');
 });
+it('clock-only session expiry across the final wait returns no private DTO',async()=>{
+ await intent();await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '250 milliseconds' WHERE token_hash=$1",[proof.sessionTokenHash]);
+ expect((await inbox(beforeFinal(async()=>{await q('SELECT pg_sleep(0.3)');}))).state).toBe('unavailable');
+});
+it('64 distinct canonical observations cap is unavailable rather than a partial or empty success',async()=>{
+ for(let n=0;n<25;n++){
+  await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,target_employee_id,status) VALUES($1,'COVERAGE',$2,$3,$4,'EMPLOYEE_PENDING')",['budget-'+n,scenario.sourceId,proof.employee.id,scenario.actors[1]]);
+  await intent('budget-notice-'+n,'EXCHANGE','budget-'+n,'r:1');
+ }
+ let observations=0;const counted={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+  if(statements.some(s=>s.text.startsWith('SELECT (SELECT COALESCE(jsonb_agg')))observations++;
+  return db.executor.transaction(statements,signal);
+ }};
+ expect(await inbox(counted)).toEqual({state:'unavailable',reason:'read_failed'});expect(observations).toBe(64);
+});
+it('8-second total read budget expires across individually bounded actual PostgreSQL waits',async()=>{
+ await intent();let waits=0;const slow={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+  const result=await db.executor.transaction(statements,signal);waits++;await q('SELECT pg_sleep(1.65)');return result;
+ }};
+ const started=performance.now();expect(await inbox(slow)).toEqual({state:'unavailable',reason:'read_failed'});expect(performance.now()-started).toBeGreaterThanOrEqual(8000);expect(waits).toBeLessThanOrEqual(5);
+});
