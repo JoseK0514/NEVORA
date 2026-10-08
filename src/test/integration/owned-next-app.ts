@@ -47,8 +47,9 @@ export async function assertExternalEvidencePath(source:string,evidenceDirectory
  * SQL. Only the scratch copy of src/lib/db.ts is replaced. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string; clockerPunchEnabled?: boolean } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string; clockerPunchEnabled?: boolean; recoverySmtpPort?:number } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
+  if(options.recoverySmtpPort!==undefined&&(!Number.isInteger(options.recoverySmtpPort)||options.recoverySmtpPort<1||options.recoverySmtpPort>65535))throw Error('Owned SMTP port must be explicit.');
   const source = resolve(process.cwd());
   const evidence = resolve(evidenceDirectory);
   await assertExternalEvidencePath(source,evidenceDirectory);
@@ -103,6 +104,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: 'development', CI: '1',
       NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
+      ...(options.recoverySmtpPort?{FUEL_PORTAL_ORIGIN:url,NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:String(options.recoverySmtpPort),NEVORA_RECOVERY_FROM:'recovery@example.invalid'}:{}),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,

@@ -5,9 +5,9 @@ import { saveBreakType } from '../../lib/clocker/break-types.server';
 import { setEmployeeClockerPin, verifyEmployeeClockerPin, readClockerIdentity } from '../../lib/clocker/pins.server';
 
 /** Fictional employees and owned loopback PostgreSQL only. */
-export async function createPunchFixture(options:{breaks?:boolean;migrationStage?:'current'|'pre-break'}={}){
+export async function createPunchFixture(options:{breaks?:boolean;migrationStage?:'current'|'pre-break'|'phase-d2'}={}){
  const preBreak=options.migrationStage==='pre-break';
- const db=await createDisposableFoundationDatabase({mode:preBreak?'phase-c-base':'current-runtime'});
+ const db=await createDisposableFoundationDatabase({mode:preBreak?'phase-c-base':options.migrationStage==='phase-d2'?'phase-d2-base':'current-runtime'});
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>db.executor.query<T>({text,values});
  const key=Buffer.alloc(32,61),owner={employeeId:'c34-owner',sessionTokenHash:'a'.repeat(64)};
  try{

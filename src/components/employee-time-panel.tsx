@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import {useEffect,useRef,useState} from 'react';
+import {useCallback,useEffect,useRef,useState} from 'react';
 import {createEmployeeTimeController,fetchEmployeeTime,type EmployeeTimePanelState} from '../lib/employee-time-client';
 import {formatRecordedDuration,type EmployeeTimeEntry} from '../lib/employee-time';
+import {EmployeeCorrectionCenter,EmployeeCorrectionRecoveryContext,EmployeeEntryCorrection} from './employee-time-corrections';
+import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off Clock':entry.state==='ON_BREAK'?'On Break':'Clocked In';
 function stamp(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date(at));}
@@ -15,6 +17,7 @@ function EntryDetails({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
    {entry.breaks.map(b=><div className="employee-time-break" key={b.id}><dt>{b.name??'Break'}</dt><dd><time dateTime={b.startAt}>{stamp(b.startAt,zone)}</time><span> → {b.endAt?<time dateTime={b.endAt}>{stamp(b.endAt,zone)}</time>:'In progress'}</span><small>{formatRecordedDuration(b.elapsedSeconds)} recorded break</small></dd></div>)}
    <div><dt>Clock Out</dt><dd>{entry.clockOutAt?<time dateTime={entry.clockOutAt}>{stamp(entry.clockOutAt,zone)}</time>:'Not recorded yet'}</dd></div></dl>
    <p>Entry elapsed time: {formatRecordedDuration(entry.elapsedSeconds)} · Breaks: {formatRecordedDuration(entry.breakSeconds)}</p>
+   <EmployeeEntryCorrection entry={entry} zone={zone}/>
   </div>
  </details>;
 }
@@ -51,15 +54,30 @@ export function EmployeeTimeView({state,compact=false,onRefresh}:{state:Employee
     <header className="employee-time-section-heading"><h2 id="employee-time-recent-title">Recent Entries</h2></header>
     {ready.recent.entries.length?<><p className="employee-time-note">Showing {ready.recent.entries.length} of {ready.recent.total} earlier entries · most recent first.</p><div className="employee-time-entries">{ready.recent.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div></>:<p className="employee-time-empty">No earlier entries.</p>}
    </section>
+   <EmployeeCorrectionCenter zone={ready.timeZone}/>
   </>:null}
  </div>;
 }
 
-export function EmployeeTimePanel({compact=false}:{compact?:boolean}){
+export function EmployeeTimePanel({compact=false,authority}:{compact?:boolean;authority?:string}){
  const [state,setState]=useState<EmployeeTimePanelState>({time:null,refreshing:true,paused:false});
+ const [commands,setCommands]=useState<Record<string,CorrectionRequestCommand>>({});
+ const authorityLost=useRef(false);
+ const update=useCallback((key:string,command:CorrectionRequestCommand|null)=>{
+  if(command&&authorityLost.current)return;
+  setCommands(current=>{
+  const next={...current};if(command)next[key]=command;else delete next[key];return next;
+  });
+ },[]);
  const controller=useRef<ReturnType<typeof createEmployeeTimeController>|null>(null);
  useEffect(()=>{
-  const time=createEmployeeTimeController(setState,fetchEmployeeTime);controller.current=time;let mounted=true;
+  const time=createEmployeeTimeController(next=>{
+   setState(next);
+   if(next.time){
+    authorityLost.current=next.time.state==='unavailable'&&next.time.reason==='access_denied';
+    if(authorityLost.current)setCommands({});
+   }
+  },signal=>fetchEmployeeTime(signal,authority));controller.current=time;let mounted=true;
   // Clear first on re-entry/account-change signals; no earlier self data is reused.
   const sync=()=>{time.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)time.start();};
   const pause=()=>time.pause();
@@ -67,6 +85,6 @@ export function EmployeeTimePanel({compact=false}:{compact?:boolean}){
   window.addEventListener('pagehide',pause);window.addEventListener('pageshow',sync);window.addEventListener('focus',sync);window.addEventListener('storage',sync);
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;time.stop();controller.current=null;document.removeEventListener('visibilitychange',sync);window.removeEventListener('online',sync);window.removeEventListener('offline',pause);window.removeEventListener('pagehide',pause);window.removeEventListener('pageshow',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',sync);};
- },[]);
- return <EmployeeTimeView state={state} compact={compact} onRefresh={()=>controller.current?.refresh()}/>;
+ },[authority]);
+ return <EmployeeCorrectionRecoveryContext.Provider value={{commands,update,authority}}><EmployeeTimeView state={state} compact={compact} onRefresh={()=>controller.current?.refresh()}/></EmployeeCorrectionRecoveryContext.Provider>;
 }

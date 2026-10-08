@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { canRetirePendingPunch, forgetPendingPunch, makePunchCommand, parseClockView, parseReceiptReply,
- postPunch, punchActions, PunchRequestError, readPendingPunch, savePendingPunch, type ClockView, type PendingPunch } from '../lib/clocker/punch-client';
+import { canRetirePendingPunch, forgetSubjectPendingPunch, makePunchCommand, parseClockView, parseReceiptReply,
+ postPunch, punchActions, PunchRequestError, readSubjectPendingPunch, saveSubjectPendingPunch, pendingPunchReferences, type ClockView, type PendingPunch } from '../lib/clocker/punch-client';
 import type { PunchAction, PunchReceipt } from '../lib/clocker/punch-types';
 import type { BreakSelection } from '../lib/clocker/break-types';
 import styles from './clocker-punch.module.css';
@@ -18,6 +18,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
  const [view,setView]=useState<ClockView|null>(null),[pending,setPending]=useState<PendingPunch|null>(null);
  const [mode,setMode]=useState<Mode>('loading'),[message,setMessage]=useState<string|null>(null);
  const [receipt,setReceipt]=useState<PunchReceipt|null>(null);
+ const [references,setReferences]=useState<ReturnType<typeof pendingPunchReferences>>([]),[showReferences,setShowReferences]=useState(false);
  const busy=useRef(false),alive=useRef(false),heading=useRef<HTMLHeadingElement>(null);
  function failed(error:unknown,hasPending:boolean){
   if(error instanceof PunchRequestError&&(['AUTH_REQUIRED','CONTEXT_CHANGED'].includes(error.code)||error.status===401)){
@@ -31,12 +32,13 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
  useEffect(()=>{
   let current=true;alive.current=true;
   const load=async()=>{
-   let saved:PendingPunch|null;
-   try{saved=readPendingPunch(window.sessionStorage,locationKey);}
-   catch{if(current){setMode('storage');setMessage('This tablet cannot read its recovery data. Allow browser storage and reload before clocking.');}return;}
+   let saved:PendingPunch|null=null;
    try{
     const fresh=parseClockView(await postPunch(locationKey,{operation:'state'}));
-    if(!current)return;setView(fresh);setPending(saved);setMode(saved?(saved.subject===fresh.subject?'recovery':'other-person'):'ready');
+    if(!current)return;
+    try{saved=readSubjectPendingPunch(window.sessionStorage,locationKey,fresh.subject);setReferences(pendingPunchReferences(window.sessionStorage,locationKey));}
+    catch{setMode('storage');setMessage('Your recovery record cannot be verified. Keep it saved and ask a manager to review it.');return;}
+    setView(fresh);setPending(saved);setMode(saved?'recovery':'ready');
    }catch(error){if(current){setPending(saved);failed(error,Boolean(saved));}}
   };
   void load();return()=>{current=false;alive.current=false;};
@@ -49,7 +51,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
  function confirmed(value:unknown,saved:PendingPunch){
   const result=parseReceiptReply(value,saved.command);
   let storageWarning:string|null=null;
-  try{forgetPendingPunch(window.sessionStorage,locationKey);setPending(null);}
+  try{forgetSubjectPendingPunch(window.sessionStorage,locationKey,saved);setPending(null);setReferences(pendingPunchReferences(window.sessionStorage,locationKey));}
   catch{storageWarning='The action was recorded, but this browser could not clear its recovery data. Check it again after allowing browser storage.';}
   setReceipt(result);setMessage(storageWarning);setMode('success');
  }
@@ -58,7 +60,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
   busy.current=true;setMode('sending');setMessage(null);
   try{
    // Durable per-tab intent is saved and read back BEFORE the HTTP request.
-   try{savePendingPunch(window.sessionStorage,locationKey,saved);}
+   try{saveSubjectPendingPunch(window.sessionStorage,locationKey,saved);}
    catch{setMode('storage');setMessage('Recovery storage is unavailable. No new request was sent. Allow browser storage before continuing.');return;}
    setPending(saved);
    const result=await postPunch(locationKey,{operation:'execute',command:saved.command});
@@ -88,7 +90,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
    if(result&&typeof result==='object'&&'state' in result&&result.state==='committed'){confirmed(result,pending);return;}
    if(!result||typeof result!=='object'||!('state' in result)||result.state!=='unknown')throw Error('Unconfirmed response');
    if(canRetirePendingPunch(pending.command,fresh)){
-    forgetPendingPunch(window.sessionStorage,locationKey);setPending(null);setMode('ready');
+    forgetSubjectPendingPunch(window.sessionStorage,locationKey,pending);setPending(null);setReferences(pendingPunchReferences(window.sessionStorage,locationKey));setMode('ready');
     setMessage('Your clock state or verification changed. No confirmation was found for the previous action, and nothing was replayed. Review the current state before choosing a new action.');
    }else{setMode('retry');setMessage('No saved confirmation was found yet. Retry the same action only; it keeps the original request ID.');}
   }catch(error){if(alive.current)failed(error,Boolean(pending));}
@@ -127,6 +129,11 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
   </>:null}
   {mode==='success'&&receipt?<p role="status" className={styles.detail}>Saved at <time dateTime={receipt.performedAt}>{clockTime(receipt.performedAt,timeZone)}</time>. This screen will clear shortly.</p>:null}
   {mode==='other-person'?<p className={styles.notice}>A previous employee’s action needs verification on this tablet. Ask that employee to enter their PIN again. No new action was sent.</p>:null}
+  {references.length>0&&!waiting?<aside className={styles.notice}>
+   <p>Saved actions remain on this tablet. Each employee can check their own action after entering their PIN. A manager can review a reference at Clocker Recovery in the portal.</p>
+   <button type="button" className="button secondary" onClick={()=>setShowReferences(v=>!v)}>{showReferences?'Hide saved references':'Show saved references for a manager'}</button>
+   {showReferences?<ul>{references.map((r,i)=><li key={r.commandId??i}>{r.commandId?<code style={{overflowWrap:'anywhere'}}>{r.commandId}</code>:'Unreadable recovery record — keep it saved for assistance'}</li>)}</ul>:null}
+  </aside>:null}
   {waiting?<p role="status" className={styles.detail}>{mode==='sending'?'Keep this screen open while the action is checked.':'Reading the latest saved information.'}</p>:null}
   {message&&mode!=='other-person'?<p role={mode==='ready'||mode==='success'?'status':'alert'} className={styles.notice}>{message}</p>:null}
   {mode==='recovery'||mode==='retry'?<div className={styles.actions}>

@@ -1,0 +1,11 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+const f=vi.hoisted(()=>({after:vi.fn(),request:vi.fn(),delivery:vi.fn()}));
+vi.mock('next/server',()=>({after:f.after}));
+vi.mock('@/lib/auth/recovery.server',()=>({requestPasswordRecovery:f.request}));
+vi.mock('@/lib/auth/recovery-delivery.server',()=>({recoveryDelivery:f.delivery}));
+import {POST,recoveryMessage} from './route';
+const request=(employeeId='known',email='known@example.invalid',headers:Record<string,string>={})=>new Request('https://portal.test/api/auth/recovery',{method:'POST',headers:{origin:'https://portal.test','content-type':'application/json','x-nevora-recovery':'1',...headers},body:JSON.stringify({employeeId,email})});
+beforeEach(()=>{f.after.mockReset();f.request.mockReset();f.delivery.mockReset();});
+it('UX-01 known and unknown account details get identical private responses before any channel or account lookup',async()=>{const known=await POST(request()),unknown=await POST(request('unknown','unknown@example.invalid'));expect(known.status).toBe(202);expect(unknown.status).toBe(202);expect(await known.json()).toEqual(await unknown.json());expect(recoveryMessage).toContain('assisted recovery');expect(f.request).not.toHaveBeenCalled();expect(f.delivery).not.toHaveBeenCalled();expect(f.after).toHaveBeenCalledTimes(2);expect(known.headers.get('cache-control')).toContain('no-store');expect(known.headers.get('referrer-policy')).toBe('no-referrer');});
+it.each<Record<string,string>>([{'x-nevora-recovery':''},{origin:'https://other.test'},{'sec-fetch-site':'cross-site'},{'content-type':'text/plain'}])('UX-01 rejects cross-origin or invalid transport %j',async headers=>{expect((await POST(request(undefined,undefined,headers))).status).toBe(403);expect(f.after).not.toHaveBeenCalled();});
+it('UX-01 rejects an oversized identifier without scheduling email work',async()=>{expect((await POST(request('x'.repeat(201)))).status).toBe(400);expect(f.after).not.toHaveBeenCalled();});

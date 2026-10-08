@@ -2,7 +2,7 @@ import 'server-only';
 
 import { MANAGER_ROLES, requireRoles } from '../auth/permissions';
 import { requireSessionMutationProof } from '../auth/session';
-import type { AttendanceReview } from '../attendance/read-model';
+import type { AttendanceDisplayReview } from '../attendance/read-model';
 import { getDb } from '../db';
 import { readAttendanceReview } from './attendance-review.server';
 
@@ -10,7 +10,7 @@ import { readAttendanceReview } from './attendance-review.server';
  * Manager server boundary: current role and proof both derive from the actual
  * HttpOnly portal cookie. No caller-supplied employee/location/date selects data.
  */
-export async function getAttendanceReview(): Promise<AttendanceReview> {
+export async function getAttendanceReview(): Promise<AttendanceDisplayReview> {
   await requireRoles(MANAGER_ROLES);
 
   try {

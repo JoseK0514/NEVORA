@@ -1,7 +1,11 @@
 import 'server-only';
 
 import { Temporal } from '@js-temporal/polyfill';
-import { ATTENDANCE_MAX_VALID_MS, type AttendanceReview } from '../attendance/read-model';
+import {
+  ATTENDANCE_MAX_VALID_MS,
+  type AttendanceDisplayLabel,
+  type AttendanceDisplayReview,
+} from '../attendance/read-model';
 import { projectAttendance } from '../attendance/project';
 import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
@@ -126,6 +130,18 @@ const sourceSql = `WITH observed AS MATERIALIZED (
    AND sh.revision_id=ref.revision_id
   JOIN schedule_publication_revisions r ON r.id=sh.revision_id
   LEFT JOIN locations l ON l.id=sh.location_id
+), employee_label_rows AS MATERIALIZED (
+  SELECT DISTINCT
+    e.employee_id AS id,
+    trim(concat_ws(' ', emp.first_name, emp.last_name)) AS name
+  FROM selected e
+  JOIN employees emp ON emp.id=e.employee_id
+), location_label_rows AS MATERIALIZED (
+  SELECT DISTINCT
+    e.location_id AS id,
+    COALESCE(NULLIF(trim(l.short_name),''),trim(l.name)) AS name
+  FROM selected e
+  JOIN locations l ON l.id=e.location_id
 )
 SELECT
   o.at::text AS "observedAt",
@@ -133,6 +149,17 @@ SELECT
   c.entry_count AS "entryCount",
   c.break_count AS "breakCount",
   c.publication_count AS "publicationCount",
+  (SELECT LEAST(count(*),10001)::integer
+   FROM nevora_pending_time_corrections pending
+   WHERE pending.workspace_id=$1) AS "pendingCorrectionCount",
+  COALESCE((
+    SELECT jsonb_agg(jsonb_build_object('id',id,'name',name) ORDER BY id)
+    FROM employee_label_rows
+  ),'[]'::jsonb) AS "employeeLabels",
+  COALESCE((
+    SELECT jsonb_agg(jsonb_build_object('id',id,'name',name) ORDER BY id)
+    FROM location_label_rows
+  ),'[]'::jsonb) AS "locationLabels",
   CASE
     WHEN c.entry_count>500 OR c.break_count>5000 OR c.publication_count>500 THEN NULL
     ELSE jsonb_build_object(
@@ -157,8 +184,43 @@ type SourceRow = {
   entryCount: number;
   breakCount: number;
   publicationCount: number;
+  pendingCorrectionCount: number;
+  employeeLabels: unknown;
+  locationLabels: unknown;
   source: unknown | null;
 };
+
+type LabelValue = { id?: unknown; name?: unknown };
+
+function displayLabels(
+  value: unknown,
+  requiredIds: readonly string[],
+): AttendanceDisplayLabel[] | null {
+  if (!Array.isArray(value)) return null;
+  const labels = new Map<string, string>();
+  for (const candidate of value as LabelValue[]) {
+    if (
+      !candidate ||
+      typeof candidate !== 'object' ||
+      typeof candidate.id !== 'string' ||
+      candidate.id.length === 0 ||
+      candidate.id.length > 200 ||
+      typeof candidate.name !== 'string'
+    ) return null;
+    const name = candidate.name.trim();
+    if (
+      !name ||
+      name.length > 300 ||
+      /[\u0000-\u001f\u007f]/.test(name) ||
+      labels.has(candidate.id)
+    ) return null;
+    labels.set(candidate.id, name);
+  }
+
+  const required = [...new Set(requiredIds)].sort();
+  if (required.some((id) => !labels.has(id))) return null;
+  return required.map((id) => ({ id, name: labels.get(id)! }));
+}
 
 // Take this observation after the protected batch and projection, immediately
 // before returning. Recheck current authority as well as the database clock;
@@ -219,7 +281,7 @@ function validForMs(
 export async function readAttendanceReview(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),
-): Promise<AttendanceReview> {
+): Promise<AttendanceDisplayReview> {
   try {
     assertManagementProof(proof, proof?.employee?.id);
   } catch {
@@ -252,7 +314,10 @@ export async function readAttendanceReview(
     if (
       row.entryCount > 500 ||
       row.breakCount > 5_000 ||
-      row.publicationCount > 500
+      row.publicationCount > 500 ||
+      !Number.isSafeInteger(row.pendingCorrectionCount) ||
+      row.pendingCorrectionCount < 0 ||
+      row.pendingCorrectionCount > 10_000
     ) {
       return { state: 'unavailable', reason: 'source_limit' };
     }
@@ -261,6 +326,18 @@ export async function readAttendanceReview(
 
     const projection = projectAttendance(row.source);
     if (projection.state !== 'ready') return projection;
+
+    const employeeLabels = displayLabels(
+      row.employeeLabels,
+      projection.groups.map((group) => group.employeeId),
+    );
+    const locationLabels = displayLabels(
+      row.locationLabels,
+      projection.groups.map((group) => group.locationId),
+    );
+    if (!employeeLabels || !locationLabels) {
+      return { state: 'unavailable', reason: 'read_failed' };
+    }
 
     const queryStartedAt = performance.now();
     const [final] = await executor.query<FinalObservation>({
@@ -272,7 +349,21 @@ export async function readAttendanceReview(
       return { state: 'unavailable', reason: 'access_denied' };
     }
 
-    return { ...projection, validForMs: lifetime };
+    return {
+      ...projection,
+      validForMs: lifetime,
+      pendingCorrectionCount: row.pendingCorrectionCount,
+      coverage: {
+        ...projection.coverage,
+        deferredCapabilities: projection.coverage.deferredCapabilities.filter(
+          (capability) => capability !== 'correction_review',
+        ),
+      },
+      labels: {
+        employees: employeeLabels,
+        locations: locationLabels,
+      },
+    };
   } catch (error) {
     if (isManagementAuthorizationError(error)) {
       return { state: 'unavailable', reason: 'access_denied' };

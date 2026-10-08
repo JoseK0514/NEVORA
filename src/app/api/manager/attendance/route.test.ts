@@ -21,6 +21,7 @@ const ready=()=>({
   recordCount:0,
   signalCount:0,
   affectedEmployeeCount:0,
+  pendingCorrectionCount:0,
   coverage:{state:'complete' as const,limitations:[],deferredCapabilities:[]},
 });
 

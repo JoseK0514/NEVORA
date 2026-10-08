@@ -14,6 +14,9 @@ const managementNavigation: NavigationItem[] = [
   { href: "/app/requests", label: "Time off", icon: "timeOff" },
   { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
   { href: "/app/employees", label: "Employees", icon: "employees" },
+  { href: "/app/timecards", label: "Timecards", icon: "clock" },
+  { href: "/app/reports", label: "Reports", icon: "clock" },
+  { href: "/app/payroll-export", label: "Payroll export", icon: "clock" },
   { href: "/app/schedule/templates", label: "Templates", icon: "templates" },
   { href: "/app/schedule/settings", label: "Scheduling rules", icon: "rules" },
 ];

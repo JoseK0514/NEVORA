@@ -196,6 +196,30 @@ describe('D1.2 authorized recorded-time reader',()=>{
     expect(JSON.stringify(result)).not.toMatch(/d12-rev-2|d12-published-new|12:00:00/);
   });
 
+  it('returns fresh display labels from the protected snapshot, including inactive historical locations',async()=>{
+    await insertMatchedOpenEntry();
+    await f.q("UPDATE locations SET active=false,short_name='Archived Historical' WHERE id='loc-1'");
+    await f.q("UPDATE employees SET first_name='Archived',last_name='Worker' WHERE id='c34-a'");
+
+    let result=await read();
+    expect(result.state).toBe('ready');
+    if(result.state!=='ready') return;
+    expect(result.labels).toEqual({
+      employees:[{id:'c34-a',name:'Archived Worker'}],
+      locations:[{id:'loc-1',name:'Archived Historical'}],
+    });
+
+    await f.q("UPDATE locations SET short_name='Renamed Historical' WHERE id='loc-1'");
+    await f.q("UPDATE employees SET first_name='Renamed',last_name='Worker' WHERE id='c34-a'");
+    result=await read();
+    expect(result.state).toBe('ready');
+    if(result.state!=='ready') return;
+    expect(result.labels).toEqual({
+      employees:[{id:'c34-a',name:'Renamed Worker'}],
+      locations:[{id:'loc-1',name:'Renamed Historical'}],
+    });
+  });
+
   it('includes an older supporting overlap so an open entry cannot look trustworthy by filtering history',async()=>{
     await f.q(`
       INSERT INTO time_entries

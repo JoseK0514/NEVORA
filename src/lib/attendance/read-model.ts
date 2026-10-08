@@ -12,3 +12,19 @@ export type AttendanceReadUnavailableReason =
 export type AttendanceReview =
   | (ReadyProjection & { validForMs: number })
   | { state: 'unavailable'; reason: AttendanceReadUnavailableReason };
+
+export type AttendanceDisplayLabel = {
+  id: string;
+  name: string;
+};
+
+export type AttendanceDisplayReview =
+  | (ReadyProjection & {
+      validForMs: number;
+      pendingCorrectionCount: number;
+      labels: {
+        employees: readonly AttendanceDisplayLabel[];
+        locations: readonly AttendanceDisplayLabel[];
+      };
+    })
+  | { state: 'unavailable'; reason: AttendanceReadUnavailableReason };

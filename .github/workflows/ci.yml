@@ -2,9 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [development, main, "phase-c/**", "fix/**", "release/**"]
+    branches: [development, main, "phase-c/**", "phase-d/**", "codex/phase-d-**", "fix/**", "release/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: ${{ startsWith(github.head_ref || github.ref_name, 'codex/phase-d-') }}
 
 permissions:
   contents: read
@@ -17,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -38,10 +44,12 @@ jobs:
   clocker-postgres:
     name: clocker-postgres
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -63,15 +71,165 @@ jobs:
       - name: Persisted Clocker PostgreSQL tests
         run: npm run test:clocker:owned
 
+  phase-d-attendance-ui:
+    name: phase-d-attendance-ui
+    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/phase-d/') || startsWith(github.head_ref, 'phase-d/') || startsWith(github.ref, 'refs/heads/codex/phase-d-') || startsWith(github.head_ref, 'codex/phase-d-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install pinned Playwright runtime
+        shell: bash
+        run: |
+          PW_ROOT="$RUNNER_TEMP/nevora-playwright-runtime"
+          mkdir -p "$PW_ROOT"
+          printf '{"private":true}\n' > "$PW_ROOT/package.json"
+          npm install --prefix "$PW_ROOT" --no-package-lock --no-save playwright@1.62.1 axe-core@4.11.0
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Install Chromium and WebKit
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql
+          PG_INITDB="$(find /usr/lib/postgresql -type f -name initdb -print -quit)"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Exact-SHA D1.3 attendance browser gate
+        env:
+          PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
+          PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run test:phase-d:attendance-ui
+      - name: Verify SHA-bound report
+        env:
+          PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
+          PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const report = JSON.parse(fs.readFileSync(path.join(process.env.PHASE_D_ATTENDANCE_EVIDENCE_DIR, 'report.json'), 'utf8'));
+          if (report.checkpoint !== process.env.PHASE_D_ATTENDANCE_EXPECTED_SHA) throw new Error('Attendance evidence SHA mismatch');
+          if (report.sourceClean !== true) throw new Error('Attendance evidence did not run from a clean tracked worktree');
+          if (report.errors.length !== 0) throw new Error('Attendance browser report contains errors');
+          console.log(JSON.stringify({ checkpoint: report.checkpoint, tree: report.tree, checks: report.checks.length, errors: report.errors }, null, 2));
+          NODE
+      - name: Whole Phase D exact-candidate browser regression
+        env:
+          PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/phase-d-owned.mjs browser
+      - name: Independent Phase D audit remediation regressions
+        env:
+          PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/phase-d-owned.mjs remediation
+      - name: Verify remediation SHA-bound evidence
+        env:
+          PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs'),path=require('node:path');
+          for(const item of ['account/report.json','missing/report.json','report.json']) {
+            const r=JSON.parse(fs.readFileSync(path.join(process.env.PHASE_D_REMEDIATION_EVIDENCE_DIR,item),'utf8'));
+            if(r.checkpoint!==process.env.PHASE_D_EXPECTED_SHA||!r.sourceClean)throw Error('Invalid remediation custody: '+item);
+            if((r.errors??[]).length||(r.runtimeErrors??[]).length||(r.results??[]).some(x=>x.result!=='PASS'))throw Error('Failed remediation gate: '+item);
+            console.log(JSON.stringify({item,checkpoint:r.checkpoint,tree:r.tree,checks:(r.results??r.checks).length}));
+          }
+          NODE
+      - name: Existing D2 correction browser regression
+        env:
+          PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d2-browser-evidence
+          PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run test:phase-d2:corrections-ui
+      - name: Existing Clocker lifecycle and recovery browser regression
+        env:
+          PHASE_C_EVIDENCE_DIR: ${{ runner.temp }}/nevora-clocker-browser-evidence
+          PHASE_C_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/phase-c-clocker-postgres.mjs --punch-ui
+      - name: Verify whole-phase SHA and mandatory UX evidence
+        env:
+          PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const report = JSON.parse(fs.readFileSync(path.join(process.env.PHASE_D_EVIDENCE_DIR, 'report.json'), 'utf8'));
+          if (report.checkpoint !== process.env.PHASE_D_EXPECTED_SHA || !report.sourceClean || report.errors.length) throw new Error('Invalid whole-phase candidate evidence');
+          for (const engine of ['chromium','webkit']) for (const item of ['D7','UX-01','UX-03','UX-04','UX-05']) {
+            if (!report.checks.some(check => check.startsWith(engine+':') && check.includes(item))) throw new Error('Missing '+engine+' '+item+' evidence');
+          }
+          console.log(JSON.stringify({checkpoint:report.checkpoint,tree:report.tree,checks:report.checks.length,errors:report.errors}));
+          NODE
+      - name: Upload whole Phase D browser evidence
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-d-whole-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/report.json
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.csv
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.pdf
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-d2-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-d2-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-d2-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-d2-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/**/ownership.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload D1.3 browser evidence
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: d13-attendance-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-d13-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-d13-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-d13-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-d13-browser-evidence/**/ownership.json
+          if-no-files-found: warn
+          retention-days: 14
+
   release-postgres:
     name: release-postgres
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || github.base_ref == 'main' || github.base_ref == 'development' || startsWith(github.ref, 'refs/heads/phase-c/') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.head_ref, 'phase-c/') || startsWith(github.head_ref, 'release/') || startsWith(github.base_ref, 'phase-c/') || startsWith(github.base_ref, 'release/')
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || github.base_ref == 'main' || github.base_ref == 'development' || startsWith(github.ref, 'refs/heads/phase-c/') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.head_ref, 'phase-c/') || startsWith(github.head_ref, 'release/') || startsWith(github.base_ref, 'phase-c/') || startsWith(github.base_ref, 'release/') || startsWith(github.ref, 'refs/heads/codex/phase-d-') || startsWith(github.head_ref, 'codex/phase-d-')
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
       - name: Use Node.js
         uses: actions/setup-node@v4

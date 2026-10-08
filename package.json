@@ -22,24 +22,28 @@
     "test:navigation:ui": "node --import tsx scripts/nevora-navigation-ui-qa.mjs",
     "test:clocker:integration": "vitest run --config vitest.clocker-integration.config.mts",
     "test:clocker:owned": "node scripts/phase-c-clocker-postgres.mjs",
-    "test:release:postgres": "node scripts/phase-c-release-postgres.mjs"
+    "test:release:postgres": "node scripts/phase-c-release-postgres.mjs",
+    "test:phase-d:attendance-ui": "node scripts/phase-d-attendance-postgres.mjs",
+    "test:phase-d2:corrections-ui": "node scripts/phase-d2-corrections-postgres.mjs"
   },
   "dependencies": {
     "@js-temporal/polyfill": "0.5.1",
     "@neondatabase/serverless": "1.1.0",
-    "next": "16.3.6",
+    "next": "16.3.8",
+    "nodemailer": "10.0.16",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "web-push": "3.6.7"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/nodemailer": "8.0.2",
     "@types/pg": "8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/web-push": "3.6.4",
     "eslint": "^9.0.0",
-    "eslint-config-next": "16.3.6",
+    "eslint-config-next": "16.3.8",
     "pg": "8.23.1",
     "tsx": "4.23.15",
     "typescript": "^5.9.0",
