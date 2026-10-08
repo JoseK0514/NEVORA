@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  logging: {incomingRequests: {ignore: [/^\/api\/calendar\//]}},
   async headers() {
     const portal = ["/fuel-portal-sw.js", "/fuel-portal.webmanifest"].map((source) => ({
       source,

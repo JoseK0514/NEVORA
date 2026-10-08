@@ -363,6 +363,9 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
         EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}),sh.position_id,(SELECT p.name FROM positions p WHERE p.id=sh.position_id)
         FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=$2 AND s.status='PUBLISHED'`, values: [revision.id, week]
             });
+            // Reference previous own published facts atomically, including a
+            // callout release. No schedule body is copied into calendar state.
+            statements.push({text:'SELECT calendar_capture_removals($1)',values:[revision.id]});
             const projections = personalProjections(state, week);
             const source: ScheduleSourceSnapshot = {
                 kind: 'SCHEDULE', source: {

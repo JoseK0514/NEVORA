@@ -1,0 +1,8 @@
+.employee-calendar { margin-top: 24px; padding: 20px; }
+.employee-calendar h2 { font-size: 17px; margin: 0 0 12px; }
+.employee-calendar p { font-size: 13px; line-height: 1.55; margin: 12px 0; }
+.employee-calendar-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.employee-calendar-state { font-weight: 600; }
+.employee-calendar-secret label { display: block; font-size: 13px; margin: 16px 0 8px; }
+.employee-calendar-secret textarea { display: block; box-sizing: border-box; width: 100%; max-width: 100%; font: 16px/1.5 monospace; padding: 12px; resize: vertical; overflow-wrap: anywhere; border: 1px solid var(--color-border-subtle); border-radius: 8px; }
+.employee-calendar summary { min-height: 44px; display: flex; align-items: center; font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }

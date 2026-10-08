@@ -145,6 +145,7 @@ export default async function SchedulePage({
             <Link href={`/app/schedule?week=${nextWeek}`} aria-label="Next week">›</Link>
           </nav>
         </header>
+        <Link href="/app/profile#employee-calendar-title" className="button secondary">Calendar subscription</Link>
 
         {params.error ? <p className="employee-notice error" role="alert">{params.error === "conflict" ? "The schedule changed. Review the current week before confirming." : params.error === "blocked" ? "This review is no longer authorized. Sign in and review the schedule again." : "The result could not be confirmed. Retry the original confirmation to check its outcome."}</p> : null}
         {params.acknowledged && employeeAcknowledgement.acknowledged ? <p className="employee-notice success" role="status">Schedule confirmed.</p> : null}

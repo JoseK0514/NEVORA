@@ -6,6 +6,7 @@ import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import type { OwnedDatabaseIdentity } from './owned-pg-transport';
+import {createCalendarLogRedactor} from './calendar-log-redaction';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 /** The sole approved scratch DB substitution, derived from the original source. */
@@ -147,8 +148,13 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
     child = spawn(process.execPath, [join(mirror, 'node_modules/next/dist/bin/next'), 'dev', '--hostname', '127.0.0.1', '--port', String(port)], {
       cwd: mirror, env, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'],
     });
-    child.stdout!.pipe(log); child.stderr!.pipe(log);
-    child.once('exit', () => log.end());
+    // Credentials must never reach the persistent sink, even across chunks.
+    let endedStreams=0;
+    for(const stream of [child.stdout!,child.stderr!]){
+      const redactor=createCalendarLogRedactor();
+      stream.pipe(redactor).pipe(log,{end:false});
+      redactor.once('end',()=>{if(++endedStreams===2)log.end();});
+    }
     Object.assign(metadata, { pid: child.pid, port, url, identity, started: true });
     await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
     await options.onProcessStarted?.(child, { ownerId, root, source });
