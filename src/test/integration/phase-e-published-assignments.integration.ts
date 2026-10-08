@@ -1,7 +1,8 @@
 import {afterEach,beforeEach,expect,it} from 'vitest';
+import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {seedOwnedApp} from './owned-app-fixture';
-import {readEmployeePublishedAssignments} from '../../lib/data/employee-published-assignments.server';
+import {readEmployeePublishedAssignments,readEmployeePublishedAssignmentWindow} from '../../lib/data/employee-published-assignments.server';
 import {addDays,weekStartFor} from '../../lib/date-utils';
 import {businessDate} from '../../lib/business-time';
 import {currentShiftFingerprintSql,currentShiftTermsSql} from '../../lib/data/shift-change-release';
@@ -36,6 +37,7 @@ it('next_shift_crosses_multiple_weeks and year_rollover with actual source/date/
  expect(JSON.stringify(result)).not.toContain('PRIVATE NOTE');
 });
 it('partial_locations_keep_known_shift while draft_coworker_released_ineligible_excluded',async()=>{
+ await schedule('covered-now',week(0));
  const future=week(14),date=addDays(future,1);await schedule('known',future);await shift('known-own','known','QA-E11-SELF',date);
  await schedule('draft',addDays(future,7),'loc-2','DRAFT');await shift('draft-own','draft','QA-E11-SELF',addDays(future,8));
  await shift('coworker','known','QA-E11-COWORKER',date);
@@ -47,6 +49,18 @@ it('partial_locations_keep_known_shift while draft_coworker_released_ineligible_
  await q("DELETE FROM employee_location_eligibility WHERE employee_id='QA-E11-SELF' AND location_id='loc-2'");
  const result=await read();expect(result.nextShift?.shiftId).toBe('known-own');expect(result.publicationState).toBe('partial');
  expect(JSON.stringify(result)).not.toContain('PRIVATE NOTE');for(const hidden of ['coworker','draft-own','released-own','ineligible-own'])expect(JSON.stringify(result)).not.toContain(hidden);
+ const window=await readEmployeePublishedAssignmentWindow(proof,future,addDays(future,28),db.executor);
+ expect(window.state).toBe('ready');expect(window.assignments.map(item=>item.shiftId)).toEqual(['known-own']);
+});
+it('complete current-week coverage with no shift is distinct from unavailable and does not invent future publication',async()=>{
+ await schedule('empty-main',week(0));await schedule('empty-west',week(0),'loc-2');
+ const result=await read();expect(result).toMatchObject({nextShift:null,currentShift:null,publicationState:'complete',timeZone:'America/Puerto_Rico'});
+ expect(result.observedAt).toMatch(/^\d{4}-\d\d-\d\dT/);
+});
+it('missing publication identity closes a known assignment without exposing its data',async()=>{
+ const future=week(14);await schedule('legacy',future);await shift('legacy-own','legacy','QA-E11-SELF',addDays(future,1));
+ await q("DELETE FROM schedule_publication_revisions WHERE id='rev-legacy'");
+ expect(await read()).toEqual({observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'});
 });
 it('current authorization is checked after a source wait',async()=>{
  const future=week(14);await schedule('known',future);await shift('known-own','known','QA-E11-SELF',addDays(future,1));
@@ -61,4 +75,18 @@ it('final session check suppresses rows after source observation',async()=>{
   calls++;if(calls===3)await q("DELETE FROM employee_sessions WHERE employee_id='QA-E11-SELF'");return db.executor.transaction(statements,signal);
  }};
  expect((await read(executor)).publicationState).toBe('unavailable');
+});
+it('role change during a blocked source guard is rechecked after the wait',async()=>{
+ const future=week(14);await schedule('known',future);await shift('known-own','known','QA-E11-SELF',addDays(future,1));
+ const blocker=new Client({connectionString:db.connectionString});await blocker.connect();
+ let signalStart:()=>void=()=>{};const started=new Promise<void>(resolve=>{signalStart=resolve;});
+ try{
+  await blocker.query('BEGIN');await blocker.query("UPDATE employees SET role='MANAGER' WHERE id='QA-E11-SELF'");
+  const executor={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+   if(statements.some(statement=>statement.text.includes('SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE')))signalStart();
+   return db.executor.transaction(statements,signal);
+  }};
+  const pending=read(executor);await started;await blocker.query('COMMIT');
+  expect(await pending).toEqual({observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'});
+ }finally{await blocker.query('ROLLBACK').catch(()=>{});await blocker.end();}
 });
