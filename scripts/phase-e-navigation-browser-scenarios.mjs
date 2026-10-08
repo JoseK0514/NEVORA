@@ -6,7 +6,7 @@ import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile}){
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
- const checks=[],contrast=[],focusTrace=[],prefix=`navigation-${engine}-${width}`,headers={};
+ const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],prefix=`navigation-${engine}-${width}`,headers={};
  const q=(text,values=[])=>app.database.executor.query({text,values});
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/'))headers[path]=request.headers()['x-nevora-employee-view'];});
  async function login(id){await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);}
@@ -82,6 +82,20 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});assert.equal(await page.locator('.employee-notification-list').count(),0);await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});await ready('notifications');
   checks.push('Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization');
   if(width===390){
+   const session=await q("SELECT count(*)::integer AS count,bool_and(expires_at>clock_timestamp()+interval '1 day') AS long_lived FROM employee_sessions WHERE employee_id=$1",[actor]);assert.equal(session[0].count,1);assert.equal(session[0].long_lived,true);
+   const nextInbox=()=>page.waitForResponse(response=>new URL(response.url()).pathname==='/api/employee/notifications'&&response.request().method()==='GET');
+   await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '3 seconds' WHERE id=$1",[noticeId]);
+   const expiring=nextInbox();await page.locator('[data-private-view] button').click();const shortResponse=await expiring,shortView=await shortResponse.json();assert.equal(shortResponse.status(),200);assert.equal(shortView.state,'ready');assert(shortView.validForMs>0&&shortView.validForMs<=3000);assert.equal(shortView.items.length,1);await ready('notifications');
+   await page.getByRole('heading',{name:'Notifications unavailable',exact:true}).waitFor();assert.equal(await page.locator('.employee-notification-list').count(),0);assert.equal(await page.getByRole('heading',{name:'Sign in again',exact:true}).count(),0);assert(await page.getByRole('button',{name:'Retry',exact:true}).isEnabled());await screenshot('source-expired-retry');
+   const refreshed=nextInbox();await page.getByRole('button',{name:'Retry',exact:true}).click();const currentResponse=await refreshed,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.equal(currentView.state,'ready');assert.deepEqual(currentView.items,[]);await page.getByText('No notifications in this current view.',{exact:true}).waitFor();assert.equal(await page.getByRole('heading',{name:'Sign in again',exact:true}).count(),0);
+   expiryRecovery.push({sessionLongLived:session[0].long_lived,sourceLifetimeMs:shortView.validForMs,expiredRowsCleared:true,retryEnabled:true,falseSignIn:false,revalidationStatus:currentResponse.status(),currentItems:currentView.items.length});
+   await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '1 day' WHERE id=$1",[noticeId]);await page.locator('[data-private-view] button').click();await ready('notifications');
+   for(const status of [401,403]){
+    const cookies=await context.cookies();if(status===401)await context.clearCookies();else await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[actor]);
+    const refused=nextInbox();await page.locator('[data-private-view] button').click();assert.equal((await refused).status(),status);await page.getByRole('heading',{name:'Sign in again',exact:true}).waitFor();assert.equal(await page.locator('.employee-notification-list').count(),0);assert.equal(await page.getByRole('button',{name:'Retry',exact:true}).count(),0);expiryRecovery.push({actualRefusalStatus:status,privateRowsCleared:true,signInRequired:true});
+    if(status===401)await context.addCookies(cookies);else await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');
+   }
+   checks.push('Long-lived actual session plus near-expiry persisted source clears stale rows without false Sign in; Retry reauthorizes current empty state; actual 401/403 still clears and denies');
    const lock=new Client({connectionString:app.database.connectionString});await lock.connect();
    try{await lock.query('BEGIN');await lock.query('LOCK TABLE notifications IN ACCESS EXCLUSIVE MODE');await page.locator('[data-private-view] button').click();await page.getByRole('heading',{name:'Notifications unavailable',exact:true}).waitFor();assert.equal(await page.locator('.employee-notification-list').count(),0);}
    finally{await lock.query('ROLLBACK');await lock.end();}
@@ -115,7 +129,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(width<768){const clearance=await page.locator('.employee-shell .page-frame').evaluate(e=>parseFloat(getComputedStyle(e).paddingBottom));assert(clearance>=100);}
   checks.push('long_content_safe_area_keyboard: real long identity, 200% CSS zoom/reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
-  await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
+  await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
   return {checks};
- }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,error:String(error)},null,2));throw error;}
+ }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,error:String(error)},null,2));throw error;}
 }

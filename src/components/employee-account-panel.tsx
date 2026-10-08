@@ -28,11 +28,13 @@ export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false}
  const [state,setState]=useState<PrivatePanelState<EmployeeViewSnapshot>>({snapshot:null,paused:false,refreshing:true});
  const control=useRef<ReturnType<typeof createPrivateSnapshotController<EmployeeViewSnapshot>>|null>(null);
  useEffect(()=>{
+  // A short snapshot may reflect a source deadline, not lost session access.
+  // Clear it and permit current revalidation; only a server refusal denies.
   const controller=createPrivateSnapshotController<EmployeeViewSnapshot>(setState,async signal=>{
    const response=await fetch(`/api/employee/${kind}`,{cache:'no-store',credentials:'same-origin',redirect:'error',signal,headers:{Accept:'application/json','X-Nevora-Employee-View':authority}});
    if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};
    if(!response.ok)throw Error('View unavailable');return response.json();
-  },value=>parseEmployeeView(value,kind),reason=>({state:'unavailable',reason}));
+  },value=>parseEmployeeView(value,kind),reason=>({state:'unavailable',reason}),()=> 'read_failed');
   control.current=controller;let mounted=true;
   const pause=()=>controller.pause();
   // Clear before every re-entry. Old replies are generation-fenced by the
