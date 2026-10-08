@@ -5,7 +5,7 @@ import {Client} from 'pg';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile}){
- const checks=[],prefix=`navigation-${engine}-${width}`,headers={};
+ const checks=[],contrast=[],prefix=`navigation-${engine}-${width}`,headers={};
  const q=(text,values=[])=>app.database.executor.query({text,values});
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/'))headers[path]=request.headers()['x-nevora-employee-view'];});
  async function login(id){await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);}
@@ -21,6 +21,28 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  async function ready(kind){await page.waitForFunction(k=>{const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?e.querySelector('dd'):e.querySelector('.employee-notification-list'));},kind);}
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
  async function accessibility(name){await page.addScriptTag({path:axeFile});const violations=await page.evaluate(async()=> (await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}})).violations.map(v=>v.id));assert.deepEqual(violations,[],name+' accessibility');checks.push(name+' axe WCAG A/AA');}
+ async function contrastStates(){
+  const target=page.locator('.employee-account-footer button');
+  for(const state of ['normal','hover','pressed','focus']){
+   if(state==='normal')await page.mouse.move(0,0);
+   if(state==='hover')await target.hover();
+   if(state==='pressed')await page.mouse.down();
+   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();await page.keyboard.press('Tab');await target.focus();}
+   const sample=await target.evaluate(element=>{
+    const rgba=value=>{const parts=value.match(/[\d.]+/g).map(Number);return [parts[0],parts[1],parts[2],parts[3]??1];};
+    const blend=(front,back)=>front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
+    const layers=[];for(let node=element;node;node=node.parentElement)layers.unshift(rgba(getComputedStyle(node).backgroundColor));
+    const background=layers.reduce((back,front)=>blend(front,back),[255,255,255]),style=getComputedStyle(element),foreground=blend(rgba(style.color),background);
+    const luminance=color=>color.map(v=>v/255).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[0.2126,0.7152,0.0722][i],0);
+    const ratio=(a,b)=>(Math.max(luminance(a),luminance(b))+0.05)/(Math.min(luminance(a),luminance(b))+0.05);
+    return {foreground,background,textRatio:ratio(foreground,background),outline:style.outlineStyle,outlineWidth:style.outlineWidth,outlineRatio:ratio(blend(rgba(style.outlineColor),background),background)};
+   });
+   assert(sample.textRatio>=4.5,state+' actual composited button text contrast');
+   if(state==='focus'){assert.notEqual(sample.outline,'none');assert(sample.outlineRatio>=3,'focus outline contrast');}
+   contrast.push({state,...sample});
+  }
+  await page.mouse.move(0,0);await page.mouse.up();checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
+ }
  async function bounds(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document horizontal overflow');const bad=await page.locator('.employee-account-panel a,.employee-account-panel button,.employee-destination-list a').evaluateAll(elements=>elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&& (r.left< -1||r.right>innerWidth+1||r.height<43);}).map(e=>e.textContent));assert.deepEqual(bad,[]);}
  try{
   const label='E'+(engine==='chromium'?'C':'W')+width,scenario=await seedOwnedScenario(app.database.executor,label,0),actor=scenario.actors[0],requestId='e41-'+label,noticeId='notice-'+label;
@@ -46,7 +68,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    const trigger=page.getByRole('button',{name:'More',exact:true}),menu=page.locator('#employee-more-navigation');await trigger.focus();await page.keyboard.press('Enter');await menu.waitFor({state:'visible'});await page.waitForFunction(()=>document.querySelector('#employee-more-navigation')?.contains(document.activeElement));assert(await menu.evaluate(e=>e.contains(document.activeElement)),'Keyboard open moves focus into More');assert.deepEqual(await menu.locator('.employee-more-link').allTextContents(),['Requests','Availability','Notifications','Profile']);await page.keyboard.press('Escape');await menu.waitFor({state:'hidden'});await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='More');assert(await trigger.evaluate(e=>document.activeElement===e),'Escape restores trigger focus');
    checks.push('More_Escape_restores_focus with native Enter/Escape and explicit link order');
   }else{const link=page.locator('nav[aria-label="Primary navigation"] a[href="/app/profile"]');await link.focus();await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/profile');checks.push('Native keyboard desktop destination navigation');}
-  await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.locator('[data-private-view="profile"]').innerText().then(t=>t.includes('Device notification setup is unavailable')));await bounds();await screenshot('profile');await accessibility('Profile');
+  await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.locator('[data-private-view="profile"]').innerText().then(t=>t.includes('Device notification setup is unavailable')));await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
   await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator('.employee-notification-list a').count(),1);assert.equal(await page.locator('.employee-notification-list a').getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);assert(!await page.locator('[data-private-view]').innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
   const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator('.employee-notification-list a').click();await page.waitForURL(u=>u.pathname==='/app/requests');const opened=new URL(page.url());assert.equal(opened.searchParams.get('requestId'),requestId);assert.equal(opened.searchParams.get('tab'),'my');assert.equal(opened.hash,'#request-'+requestId);assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);await page.goBack();await ready('notifications');
   checks.push('push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation');
@@ -88,7 +110,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(width<768){const clearance=await page.locator('.employee-shell .page-frame').evaluate(e=>parseFloat(getComputedStyle(e).paddingBottom));assert(clearance>=100);}
   checks.push('long_content_safe_area_keyboard: real long identity, 200% CSS zoom/reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
-  await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
+  await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
   return {checks};
- }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'failed',checks,error:String(error)},null,2));throw error;}
+ }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,error:String(error)},null,2));throw error;}
 }

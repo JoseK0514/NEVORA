@@ -8,7 +8,9 @@ export type NotificationOpenDeps = {
     clock(): Date;
 };
 function unavailable() { return new Response('This notification is unavailable.', { status: 404, headers: { 'Cache-Control': 'no-store', 'Content-Type': 'text/plain; charset=utf-8' } }); }
-function redirectTo(path: string, request: Request) { return new Response(null, { status: 303, headers: { Location: new URL(path, request.url).href, 'Cache-Control': 'no-store' } }); }
+// Callers supply only validated rooted local paths. A relative Location keeps
+// the browser origin even when a reverse proxy supplies a different request URL.
+function redirectTo(path: string) { return new Response(null, { status: 303, headers: { Location: path, 'Cache-Control': 'no-store' } }); }
 export function createNotificationOpenHandler(deps: NotificationOpenDeps) {
     return async (request: Request): Promise<Response> => {
         try {
@@ -21,7 +23,7 @@ export function createNotificationOpenHandler(deps: NotificationOpenDeps) {
                 return unavailable();
             const session = await deps.session();
             if (!session)
-                return redirectTo(`/login?returnTo=${encodeURIComponent(returnTo)}`, request);
+                return redirectTo(`/login?returnTo=${encodeURIComponent(returnTo)}`);
             const intent = await deps.state.findIntent(notificationId);
             const now = deps.clock();
             if (!intent || intent.id !== notificationId || intent.employeeId !== session.id || intent.environment !== deps.environment || !(Date.parse(intent.expiresAt) > now.getTime()))
@@ -33,7 +35,7 @@ export function createNotificationOpenHandler(deps: NotificationOpenDeps) {
             const destination = safeReturnTo(check.destination);
             if (!check.deliverable || check.effectiveVersion !== intent.effectiveVersion || !(Date.parse(check.expiresAt) > now.getTime()) || !destination || destination.startsWith('/app/notifications/open'))
                 return unavailable();
-            return redirectTo(withRequestFragment(destination) ?? destination, request);
+            return redirectTo(withRequestFragment(destination) ?? destination);
         }
         catch {
             return unavailable();
