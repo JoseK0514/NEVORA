@@ -1,3 +1,4 @@
+import {vi} from 'vitest';
 vi.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import {reviewedFixtureSource} from './shift-change-api';

@@ -87,3 +87,18 @@ it('informational schedule receipt follows equivalent canonical acknowledgement 
  const before=await q('SELECT * FROM schedule_acknowledgements');expect((await recordEmployeeAttentionReceipt(proof,{kind:'MARK_READ',ref:read.ref,...read.intent},db.executor)).status).toBe('committed');expect(await q('SELECT * FROM schedule_acknowledgements')).toEqual(before);
  expect(await readEmployeeAttentionDetail(proof,{kind:'SCHEDULE',id:week,version:''},db.executor)).toMatchObject({state:'ready',read:true});
 });
+
+it('weekly source delayed after final session check must not release rows after expiry',async()=>{
+ const blocker=new Client({connectionString:db.connectionString});await blocker.connect();let reads=0,release:ReturnType<typeof setTimeout>|undefined;
+ try{
+ const executor={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+  if(statements.some(s=>s.text.startsWith('WITH allowed AS MATERIALIZED'))&&++reads===2){
+   await blocker.query('BEGIN');await blocker.query('LOCK TABLE schedule_publication_revisions IN ACCESS EXCLUSIVE MODE');
+   await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '250 milliseconds' WHERE employee_id='QAEMP'");
+   release=setTimeout(()=>{void blocker.query('COMMIT');},400);
+  }
+  return db.executor.transaction(statements,signal);
+ }};
+ expect(await readEmployeeWeeklyReview(proof,week,executor)).toMatchObject({state:'unavailable',shifts:[],intent:null});
+ }finally{if(release)clearTimeout(release);await blocker.query('ROLLBACK');await blocker.end();}
+});
