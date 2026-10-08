@@ -26,3 +26,10 @@ it("types the cancellation week parameter for text source IDs and both date comp
   expect(cancellation.text).toMatch(/a\.week_start\s*=\s*\$1::date\b/);
   expect(cancellation.text).toMatch(/FROM schedule_publication_revisions WHERE week_start\s*=\s*\$1::date\b/);
 });
+
+// E1.2 regression: a displayed revision/session is required, never the latest ID alone.
+it("unseen_republish_conflicts", async () => {
+ const transaction=vi.fn(async (statements:readonly import('../notifications/types').SqlStatement[])=>statements.map(s=>s.text.includes('INSERT INTO schedule_acknowledgements')?[{employee_id:'employee-1',publication_revision_id:'revision-new'}]:[]));
+ const result=await acknowledgeScheduleWeek({weekStart:'2030-10-07',employeeId:'employee-1',expectedRevisionId:'revision-old',operationId:'op-old',authority:'old'} as Parameters<typeof acknowledgeScheduleWeek>[0],{query:vi.fn(),transaction});
+ expect(result).toMatchObject({status:'blocked'});
+});
