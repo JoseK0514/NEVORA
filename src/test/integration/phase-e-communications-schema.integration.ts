@@ -107,6 +107,62 @@ async function canonical():Promise<Record<string,unknown[]>>{
 it('fresh chain installs empty communication foundation without operational seeds',async()=>{
  await start();expect(Object.values(await evidence()).every(rows=>rows.length===0)).toBe(true);
 });
+it('E21-QA-D001 current management withdraws after historical author deactivation while retaining evidence',async()=>{
+ await start();await publish();await ack();
+ await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('manager','Fictional','Manager','555-0103','MANAGER','loc-1')");
+ const before=await evidence();
+ await q("UPDATE employees SET active=false,primary_location_id='loc-2' WHERE id='owner'");
+ await db.executor.transaction([
+  {text:"UPDATE communications SET state='WITHDRAWN' WHERE id=$1",values:[cid]},
+  {text:"INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,'manager','WITHDRAWN')",values:[op,ws,cid,rid]},
+ ]);
+ expect(await q('SELECT author_employee_id,state,head_revision_id FROM communications WHERE id=$1',[cid])).toEqual([{author_employee_id:'owner',state:'WITHDRAWN',head_revision_id:rid}]);
+ const after=await evidence();
+ for(const table of ['communication_revisions','communication_recipients','communication_receipts','communication_operations'])expect(after[table]).toEqual(before[table]);
+ expect(await q('SELECT actor_employee_id,kind FROM communication_lifecycle')).toEqual([{actor_employee_id:'manager',kind:'WITHDRAWN'}]);
+ await expect(q("DELETE FROM employees WHERE id='owner'")).rejects.toThrow(/foreign key/);
+ await expect(q("UPDATE communications SET state='PUBLISHED' WHERE id=$1",[cid])).rejects.toThrow(/identity_immutable/);
+});
+it('E21-QA-D001 current management advances a revision after historical author deactivation without carrying receipts forward',async()=>{
+ await start();await publish();await ack();
+ await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('manager','Fictional','Manager','555-0103','MANAGER','loc-1')");
+ const before=await evidence(),changed={...draft,body:'Current management revision'};
+ await q("UPDATE employees SET active=false WHERE id='owner'");
+ await db.executor.transaction([
+  communicationRevisionInsert({workspaceId:ws,communicationId:cid,revisionId:r2,version:2,actorId:'manager',draft:changed,audienceFingerprint:'b'.repeat(64),observedAt:at,publishedAt:at}),
+  communicationGrantInsert({workspaceId:ws,communicationId:cid,revisionId:r2,employeeId:'employee',contentHash:communicationContentHash(changed),locationId:'loc-1',observedAt:at,kind:'LOCATION',provenance:{eligibility:'primary_location',audienceFingerprint:'b'.repeat(64)}}),
+  {text:'UPDATE communications SET head_revision_id=$1 WHERE id=$2',values:[r2,cid]},
+  {text:"INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,'manager','REVISED')",values:[op,ws,cid,r2]},
+ ]);
+ expect(await q('SELECT author_employee_id,state,head_revision_id FROM communications WHERE id=$1',[cid])).toEqual([{author_employee_id:'owner',state:'PUBLISHED',head_revision_id:r2}]);
+ const after=await evidence();
+ expect(after.communication_receipts).toEqual(before.communication_receipts);
+ for(const table of ['communication_revisions','communication_recipients'])for(const row of before[table])expect(after[table]).toContainEqual(row);
+ expect(await q('SELECT created_by,version FROM communication_revisions WHERE id=$1',[r2])).toEqual([{created_by:'manager',version:2}]);
+ expect(await q('SELECT revision_id FROM communication_receipts')).toEqual([{revision_id:rid}]);
+ await expect(ack()).rejects.toThrow(/receipt_head/);
+ await expect(q('UPDATE communications SET head_revision_id=$1 WHERE id=$2',[rid,cid])).rejects.toThrow(/head_must_advance/);
+ await expect(grant(cid,r2,'other',communicationContentHash(changed))).rejects.toThrow(/audience_frozen/);
+});
+it('E21-QA-D001 creation eligibility immutable root identity and current actor guards stay enforced',async()=>{
+ await start();await publish();await ack();
+ await q("UPDATE employees SET active=false WHERE id='other'");
+ await expect(db.executor.query(communicationRootInsert(ws,other,'other'))).rejects.toThrow(/actor_workspace/);
+ await expect(db.executor.query(communicationRootInsert('unrelated-workspace',other,'owner'))).rejects.toThrow(/actor_workspace/);
+ await expect(db.executor.query(communicationRootInsert(ws,other,'missing-author'))).rejects.toThrow(/actor_workspace/);
+ await expect(q("UPDATE communications SET author_employee_id='employee' WHERE id=$1",[cid])).rejects.toThrow(/identity_immutable/);
+ await expect(q("UPDATE communications SET workspace_id='unrelated-workspace' WHERE id=$1",[cid])).rejects.toThrow(/actor_workspace|identity_immutable/);
+ const revision={workspaceId:ws,communicationId:cid,revisionId:r2,version:2,actorId:'other',draft,audienceFingerprint:'a'.repeat(64),observedAt:at,publishedAt:at};
+ await expect(db.executor.query(communicationRevisionInsert(revision))).rejects.toThrow(/author_role/);
+ await expect(db.executor.query(communicationRevisionInsert({...revision,actorId:'employee'}))).rejects.toThrow(/author_role/);
+ await expect(q("INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,'other','WITHDRAWN')",[op,ws,cid,rid])).rejects.toThrow(/actor_workspace/);
+ const before=await evidence();
+ await expect(db.executor.transaction([
+  {text:"UPDATE communications SET state='WITHDRAWN' WHERE id=$1",values:[cid]},
+  {text:"INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,'other','WITHDRAWN')",values:[op,ws,cid,rid]},
+ ])).rejects.toThrow(/actor_workspace/);
+ expect(await evidence()).toEqual(before);
+});
 it('0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes',async()=>{
  await start('empty');
  await q(`INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('history','loc-1','2030-10-07','PUBLISHED','owner');
