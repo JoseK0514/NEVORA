@@ -27,6 +27,7 @@ const CURRENT_MIGRATIONS = [
   '0020_account_recovery.sql',
   '0021_timecard_reassignment_interlock.sql',
   '0022_timecard_reopen_revision_authority.sql',
+  '0023_employee_attention_receipts.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

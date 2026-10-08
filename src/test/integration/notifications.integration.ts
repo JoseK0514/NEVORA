@@ -1,3 +1,4 @@
+import {reviewedAttentionInput} from './attention-api';
 import { fixtureProof } from './shift-change-api';
 import { publishScheduleWithRevision, reviewTimeOffRequest, setAvailabilityDeadline } from './management-api';
 import { configureFictionalShiftChanges } from './shift-change-api';
@@ -118,7 +119,7 @@ describe('actual ordered publication and request SQL', () => {
     await expect(commitPublishedWeekChange({ weekStarts: [week], actorEmployeeId: 'QA-M',proof:await fixtureProof(db,'QA-M'), sourceType: 'MANAGER_MUTATION', build: s => ({ statements: [{ text: 'SELECT 1', values: [] }], afterSchedules: s.schedules, afterShifts: s.shifts.map(sh => ({ ...sh, startTime: '11:00' })) }) }, db)).rejects.toThrow(/schedule_week_version_conflict/);
   });
   it('equivalent_revision_preserves_acknowledgement_and_personal_budget', async () => {
-    await publish(); expect(await acknowledgeScheduleWeek({ weekStart: week, employeeId: 'QA-E' }, db)).toBe(true);
+    await publish(); expect(await acknowledgeScheduleWeek(await reviewedAttentionInput(db,'QA-E',week), db)).toMatchObject({status:'committed'});
     const first = personalProjections(await readNotificationWeekState([week], db), week)['QA-E'];
     await publish('loc-2'); await publish();
     const next = personalProjections(await readNotificationWeekState([week], db), week)['QA-E'];
@@ -126,7 +127,7 @@ describe('actual ordered publication and request SQL', () => {
   });
   it('explicit_acknowledgement_cancels_claimed_reminder', async () => {
     await publish(); await delivery(); const [leased] = await claim(); expect(leased).toBeDefined();
-    expect(await acknowledgeScheduleWeek({ weekStart: week, employeeId: 'QA-E' }, db)).toBe(true);
+    expect(await acknowledgeScheduleWeek(await reviewedAttentionInput(db,'QA-E',week), db)).toMatchObject({status:'committed'});
     expect(await sqlDeliveryRepository('test', db).finish(leased, { state: 'provider_accepted' })).toBe(false);
     expect((await sql('SELECT status FROM push_deliveries'))[0].status).toBe('cancelled');
   });
@@ -370,7 +371,7 @@ describe('logout and reminder SQL', () => {
     const now=new Date(new Date(Date.now()-4*3600000).toISOString().slice(0,10)+'T16:00:00Z'),start=new Date(now);start.setUTCDate(start.getUTCDate()-((start.getUTCDay()+6)%7)+7);const upcoming=start.toISOString().slice(0,10),shiftDate=new Date(start.getTime()+4*86400000).toISOString().slice(0,10);
     await sql(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) SELECT 'QA-S'||i,'QA-Schedule','Fictional','QA-NO-PHONE','EMPLOYEE','loc-1' FROM generate_series(0,3) i`);await sql(`INSERT INTO employee_location_eligibility SELECT id,'loc-1' FROM employees WHERE id LIKE 'QA-S%'`);
     await sql(`INSERT INTO schedules(id,location_id,week_start,created_by) VALUES ('QA-upcoming','loc-1',$1,'QA-M')`,[upcoming]);await sql(`INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT 'QA-upcoming-'||i,'QA-upcoming','QA-S'||i,$1,'09:00','17:00' FROM generate_series(0,3) i`,[shiftDate]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:upcoming,managerId:'QA-M'},db);await sql(`UPDATE schedule_publication_revisions SET created_at=now()-interval '2 days' WHERE week_start=$1`,[upcoming]);
-    await acknowledgeScheduleWeek({weekStart:upcoming,employeeId:'QA-S0'},db);await sql(`DELETE FROM employee_location_eligibility WHERE employee_id='QA-S1'`);await sql(`UPDATE employees SET active=false WHERE id='QA-S2'`);
+    await acknowledgeScheduleWeek(await reviewedAttentionInput(db,'QA-S0',upcoming),db);await sql(`DELETE FROM employee_location_eligibility WHERE employee_id='QA-S1'`);await sql(`UPDATE employees SET active=false WHERE id='QA-S2'`);
     // Exercise source reconstruction when no durable reminder exists; normal publication already creates one.
     await sql(`DELETE FROM notifications WHERE purpose='REMINDER' AND source_kind='SCHEDULE'`);
     let conflicts=0,attempts=0,elapsed=0;let armed=true;const traced:SqlExecutor={query:db.query,transaction:async statements=>{if(statements.some(s=>s.text.includes('notification_source_conflict'))){attempts++;if(armed&&conflicts<(mode==='retry'?2:1))await sql(`UPDATE schedules SET updated_at=updated_at+interval '1 microsecond' WHERE id='QA-upcoming'`);}try{return await db.transaction(statements);}catch(error){expect((error as {code:string}).code).toBe('22P02');expect((error as Error).message).toContain('notification_source_conflict');conflicts++;if(mode==='budget_resume')elapsed=20000;throw error;}}};

@@ -9,9 +9,10 @@ vi.mock('@/components/schedule-location-control', () => import('../../../compone
 vi.mock('@/components/action-menu', () => import('../../../components/action-menu'));
 vi.mock('@/components/page-header',()=>({PageHeader:()=>null}));
 vi.mock('@/components/status-pill',()=>({StatusPill:()=>null}));
-vi.mock('@/components/employee-submit-button',()=>import('../../../components/employee-submit-button'));
+vi.mock('@/components/employee-weekly-confirmation',()=>({EmployeeWeeklyConfirmation:()=>createElement('button',null,'Confirm schedule')}));
 vi.mock('@/components/schedule-publication-change',()=>import('../../../components/schedule-publication-change'));
 vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'self',role:f.role}),requireSessionMutationProof:async()=>({employee:{id:'self',role:f.role},sessionTokenHash:'a'.repeat(64)})}));
+vi.mock('@/lib/data/employee-weekly-review.server',()=>({readEmployeeWeeklyReview:async()=>{const {ownPublicationChanges}=await import('../../../lib/notifications/device-state');f.reads('coherent');return {state:f.active?'unpublished':'unavailable',shifts:f.active?f.shifts:[],locations:f.locations,displayedRevisionId:f.active?'latest':null,acknowledgement:{latestRevisionId:'latest',acknowledgedRevisionId:'before',needsAcknowledgement:true,acknowledged:false},intent:{operationId:'operation',authority:'authority'},publicationChanges:f.active?ownPublicationChanges(f.before.filter(s=>s.locationId==='2'),f.after.filter(s=>s.locationId==='2'),'self'):[]};}}));
 vi.mock('@/lib/data/employee-schedule',()=>({readEmployeeSchedule:async()=>({state:'unpublished',shifts:f.shifts,locations:f.locations}),emptyScheduleLabel:(state:string)=>state==='published'?'Off — no assignment':state==='unpublished'?'Schedule not published yet':'Schedule unavailable — try again'}));
 vi.mock('@/lib/auth/permissions',()=>({isManagerRole:(role:string)=>['MANAGER','OWNER'].includes(role)}));
 vi.mock('@/lib/data/employees',()=>({listEmployees:async()=>f.employees,listLocations:async()=>f.locations}));
@@ -31,15 +32,15 @@ beforeEach(()=>{f.positions=[];f.shifts=[];f.employees=[];f.captured=[];f.histor
 async function html(){return renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05'})}));}
 it('loads actual history and renders own changes behind authenticated access',async()=>{
  f.after.push({...f.after[0],sourceShiftId:'private',employeeId:'coworker',startTime:'15:00'});
- expect(await html()).toContain('What changed in your schedule');expect(await html()).not.toContain('3:00 PM');expect(f.reads.mock.calls.flat()).toContain('before');
+ expect(await html()).toContain('What changed in your schedule');expect(await html()).not.toContain('3:00 PM');expect(f.reads.mock.calls.flat()).toContain('coherent');
 });
 it('filters revoked location history on both sides and hides unchanged shifts',async()=>{
  f.after=[...f.before];expect(await html()).not.toContain('What changed');
  f.after=[{...f.before[0],locationId:'110'}];const result=await html();expect(result).toContain('Shift removed');expect(result).not.toContain('Location 110');
 });
-it('feature off and access loss disclose no history',async()=>{
- f.enabled=false;expect(await html()).not.toContain('What changed');expect(f.reads).not.toHaveBeenCalled();
- f.enabled=true;f.active=false;expect(await html()).not.toContain('What changed');
+it('push feature off retains canonical review while protected access loss discloses no history',async()=>{
+ f.enabled=false;expect(await html()).toContain('What changed');
+ f.active=false;expect(await html()).not.toContain('What changed');
 });
 
 vi.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));
@@ -97,3 +98,5 @@ it('Add shift preserves the selected second-location destination',async()=>{
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc-2'})}));
  expect(output).toContain('href="/app/schedule/new?week=2026-10-05&amp;locationId=loc-2"');
 });
+
+it('forged acknowledged query does not manufacture success without canonical receipt',async()=>{const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',acknowledged:'1'})}));expect(output).not.toContain('Schedule confirmed.');});

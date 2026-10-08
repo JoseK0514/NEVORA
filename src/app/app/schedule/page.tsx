@@ -3,10 +3,7 @@ import { ScheduleLocationControl } from "@/components/schedule-location-control"
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
 import { SchedulePublicationChange } from "@/components/schedule-publication-change";
-import { listCapturedShiftPositions, listRevisionShifts } from "@/lib/data/publication-revisions";
-import { sqlNotificationStateRepository } from "@/lib/data/notification-state";
-import { readNotificationConfig } from "@/lib/notifications/config";
-import { ownPublicationChanges } from "@/lib/notifications/device-state";
+import { listCapturedShiftPositions } from "@/lib/data/publication-revisions";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
@@ -15,9 +12,9 @@ import { SchedulePublicationControls } from "@/components/schedule-publication-c
 import { getSchedulePublishReadiness } from "@/lib/data/schedule-publication-review";
 import { listPositions } from "@/lib/data/positions";
 import { getScheduleGenerationReview, type ScheduleGenerationReview } from "@/lib/data/schedule-generation-review";
-import { EmployeeSubmitButton } from "@/components/employee-submit-button";
+import {EmployeeWeeklyConfirmation} from "@/components/employee-weekly-confirmation";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
-import {readEmployeeSchedule,emptyScheduleLabel} from '@/lib/data/employee-schedule';
+import {emptyScheduleLabel} from '@/lib/data/employee-schedule';
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import { listWeekShifts } from "@/lib/data/schedules";
@@ -34,8 +31,7 @@ import {
   setAvailabilityDeadlineAction,
 } from "@/app/app/schedule/actions";
 import { getWeekSettings } from "@/lib/data/week-settings";
-import { getEmployeeAcknowledgementState } from "@/lib/data/acknowledgements";
-import { acknowledgeScheduleAction } from "@/app/app/schedule/acknowledge-actions";
+import {readEmployeeWeeklyReview} from "@/lib/data/employee-weekly-review.server";
 import { employeeRoleLabel } from "@/lib/employee-display";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -98,7 +94,7 @@ export default async function SchedulePage({
   const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const dates = weekDates(weekStart);
-  const employeeSchedule=manager?null:await readEmployeeSchedule(await requireSessionMutationProof(),weekStart);
+  const employeeSchedule=manager?null:await readEmployeeWeeklyReview(await requireSessionMutationProof(),weekStart);
   const [locations, allShifts, employees, weekSettings, employeeAcknowledgement] =
     await Promise.all([
       manager?listLocations():Promise.resolve(employeeSchedule!.locations),
@@ -110,7 +106,7 @@ export default async function SchedulePage({
       manager ? listEmployees() : Promise.resolve([]),
       manager ? getWeekSettings(weekStart) : Promise.resolve(null),
       !manager
-        ? getEmployeeAcknowledgementState(weekStart, session.id)
+        ? Promise.resolve(employeeSchedule!.acknowledgement)
         : Promise.resolve({
             acknowledged: false,
             acknowledgedRevisionId: undefined,
@@ -137,20 +133,7 @@ export default async function SchedulePage({
 
   if (!manager) {
     const hasPublishedShifts = allShifts.length > 0;
-    let publicationChanges: ReturnType<typeof ownPublicationChanges> = [];
-    if (employeeSchedule!.state!=='unavailable' && readNotificationConfig(process.env).featureEnabled && employeeAcknowledgement.latestRevisionId && employeeAcknowledgement.needsAcknowledgement) {
-      const access = await sqlNotificationStateRepository().recipientAccess(session.id);
-      if (access?.active && access.employeeId === session.id && access.role === session.role) {
-        const [before, after] = await Promise.all([
-          employeeAcknowledgement.acknowledgedRevisionId ? listRevisionShifts(employeeAcknowledgement.acknowledgedRevisionId) : Promise.resolve([]),
-          listRevisionShifts(employeeAcknowledgement.latestRevisionId),
-        ]);
-        publicationChanges = ownPublicationChanges(
-          before.filter(shift => access.allowedLocationIds.includes(shift.locationId)),
-          after.filter(shift => access.allowedLocationIds.includes(shift.locationId)), session.id,
-        );
-      }
-    }
+    const publicationChanges=employeeSchedule!.publicationChanges;
 
     return (
       <div className="employee-view employee-schedule-view">
@@ -163,19 +146,16 @@ export default async function SchedulePage({
           </nav>
         </header>
 
-        {params.error ? <p className="employee-notice error" role="alert">The schedule could not be acknowledged. Please try again.</p> : null}
-        {params.acknowledged && !employeeAcknowledgement.acknowledged ? <p className="employee-notice success" role="status">Schedule acknowledged.</p> : null}
+        {params.error ? <p className="employee-notice error" role="alert">{params.error === "conflict" ? "The schedule changed. Review the current week before confirming." : params.error === "blocked" ? "This review is no longer authorized. Sign in and review the schedule again." : "The result could not be confirmed. Retry the original confirmation to check its outcome."}</p> : null}
+        {params.acknowledged && employeeAcknowledgement.acknowledged ? <p className="employee-notice success" role="status">Schedule confirmed.</p> : null}
         {employeeSchedule!.state!=='published'?<p className="employee-notice" role="status">{emptyScheduleLabel(employeeSchedule!.state)}{employeeSchedule!.shifts.length?' — showing your confirmed assignments only.':''}</p>:null}
 
         {hasPublishedShifts && employeeAcknowledgement.latestRevisionId ? (
           <div className={`employee-schedule-ack${employeeAcknowledgement.acknowledged ? " acknowledged" : employeeAcknowledgement.needsAcknowledgement ? " needs-ack" : ""}`}>
-            <p>{employeeAcknowledgement.acknowledged ? "Schedule acknowledged" : "Review and acknowledge this week’s schedule."}</p>
-            {employeeAcknowledgement.needsAcknowledgement ? (
-              <form action={acknowledgeScheduleAction}>
-                <input type="hidden" name="weekStart" value={weekStart} />
-                <EmployeeSubmitButton className="employee-action primary" pendingText="Acknowledging…">Acknowledge</EmployeeSubmitButton>
-              </form>
-            ) : <span className="employee-quiet-status success">Acknowledged</span>}
+            <p>{employeeAcknowledgement.acknowledged ? "Schedule confirmed" : "Review this week’s schedule, then confirm it."}</p>
+            {employeeAcknowledgement.needsAcknowledgement && employeeSchedule!.intent ? (
+              <EmployeeWeeklyConfirmation key={employeeSchedule!.intent.operationId} weekStart={weekStart} expectedRevisionId={employeeSchedule!.displayedRevisionId!} intent={employeeSchedule!.intent}/>
+            ) : <span className="employee-quiet-status success">Confirmed</span>}
           </div>
         ) : null}
 

@@ -1,3 +1,4 @@
+import {reviewedAttentionInput} from './attention-api';
 import { deleteGeneratedDraftShift, publishScheduleWithRevision, insertShift, updateShift, setAvailabilityDeadline, reviewTimeOffRequest } from './management-api';
 import { createHash } from 'node:crypto';
 import { fixtureProof } from './shift-change-api';
@@ -130,7 +131,7 @@ it('generated draft publishes atomically later; promotion preserves history, ack
   } finally {await q('ALTER TABLE notifications DROP CONSTRAINT task6_reject_intent');}
   expect(await publish()).toMatchObject({published:true});
   expect(await q("SELECT count(*)::integer n FROM notifications WHERE employee_id='worker' AND source_kind='SCHEDULE' AND purpose='EVENT'")).toEqual([{n:1}]);
-  expect(await acknowledgeScheduleWeek({weekStart:request.weekStart,employeeId:'worker'},database.executor)).toBe(true);
+  expect(await acknowledgeScheduleWeek(await reviewedAttentionInput(database.executor,'worker',request.weekStart),database.executor)).toMatchObject({status:'committed'});
   const before=await readNotificationWeekState([request.weekStart],database.executor);
   const original=personalProjections(before,request.weekStart).worker;
   expect(original.acknowledgement).toMatchObject({acknowledged:true,needsAcknowledgement:false});

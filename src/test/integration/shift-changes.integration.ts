@@ -1,3 +1,4 @@
+import {reviewedAttentionInput} from './attention-api';
 import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
 import { beforeAll, afterAll, expect, it } from 'vitest';
@@ -135,7 +136,7 @@ it('A054/A057 affected publication preserves uninvolved acknowledgement and crea
  const t=await shift('ack-change','e1','2035-11-02');
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('unrelated-week','loc-2','2035-10-08','PUBLISHED','owner')");
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:'2035-10-01',managerId:'owner'},db.executor);
- for(const id of ['e1','e2','e3'])expect(await acknowledgeScheduleWeek({weekStart:'2035-10-01',employeeId:id},db.executor)).toBe(true);
+ for(const id of ['e1','e2','e3'])expect(await acknowledgeScheduleWeek(await reviewedAttentionInput(db.executor,id,'2035-10-01'),db.executor)).toMatchObject({status:'committed'});
  const before=personalProjections(await readNotificationWeekState(['2035-10-01'],db.executor),'2035-10-01');
  const revisionsBefore=await q('SELECT id FROM schedule_publication_revisions');
  const offer=await executeShiftChange(proof('e1'),{kind:'OFFER_COVERAGE',operationId:randomUUID(),...t},db.executor);expect(offer.status).toBe('pending');if(offer.status!=='pending')return;

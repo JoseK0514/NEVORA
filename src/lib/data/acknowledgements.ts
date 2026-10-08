@@ -1,5 +1,10 @@
+import type {SessionMutationProof} from '../shift-changes/types';
+import type {CommandResult} from '../employee-attention/types';
+import {isValidWeekStart} from '../date-utils';
+import {assertEmployeeViewProof} from './employee-profile.server';
+import {commitAttention} from './employee-attention-receipts.server';
 import { getDb, queryRows } from "../db";
-import { neonNotificationExecutor, scheduleWeekLockStatements } from "./notification-transactions";
+import { neonNotificationExecutor } from "./notification-transactions";
 import type { SqlExecutor } from "../notifications/types";
 import {
   buildAcknowledgementState,
@@ -15,55 +20,10 @@ export type AcknowledgementSummary = {
   acknowledgedEmployees: number;
 };
 
-export async function acknowledgeScheduleWeek(input: {
-  weekStart: string;
-  employeeId: string;
-}, executor: SqlExecutor = neonNotificationExecutor()) {
-  const results = await executor.transaction([
-    ...scheduleWeekLockStatements([input.weekStart]),
-    {text:
-      `WITH latest_revision AS (
-         SELECT id
-         FROM schedule_publication_revisions
-         WHERE week_start = $1
-         ORDER BY revision_number DESC
-         LIMIT 1
-       )
-       INSERT INTO schedule_acknowledgements (
-         week_start,
-         employee_id,
-         publication_revision_id,
-         acknowledged_at
-       )
-       SELECT
-         $1,
-         $2,
-         r.id,
-         now()
-       FROM latest_revision r
-       WHERE EXISTS (
-         SELECT 1
-         FROM schedule_publication_revision_shifts rs
-         WHERE rs.revision_id = r.id
-           AND rs.employee_id = $2
-       )
-       ON CONFLICT (week_start, employee_id)
-       DO UPDATE SET
-         publication_revision_id = EXCLUDED.publication_revision_id,
-         acknowledged_at = now()
-       RETURNING employee_id, publication_revision_id`,
-      values: [input.weekStart, input.employeeId]},
-    {text: `WITH cancelled AS (
-      UPDATE notifications SET push_state = 'cancelled', cancelled_at = now()
-      WHERE source_kind = 'SCHEDULE' AND source_id = $1::text AND employee_id = $2
-        AND purpose = 'REMINDER' AND push_state IN ('pending','materialized','no_active_subscription')
-        AND EXISTS (SELECT 1 FROM schedule_acknowledgements a WHERE a.week_start=$1::date AND a.employee_id=$2
-          AND a.publication_revision_id=(SELECT id FROM schedule_publication_revisions WHERE week_start=$1::date ORDER BY revision_number DESC LIMIT 1))
-      RETURNING id
-    ) UPDATE push_deliveries SET status='cancelled', lease_token=NULL, lease_expires_at=NULL, updated_at=now()
-      WHERE notification_id IN (SELECT id FROM cancelled) AND status IN ('queued','retry_pending','processing')`,values:[input.weekStart,input.employeeId]},
-  ]);
-  return Boolean(results[1]?.[0]);
+export async function acknowledgeScheduleWeek(input:{proof:SessionMutationProof;weekStart:string;expectedRevisionId:string;operationId:string;authority:string},executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
+  try { assertEmployeeViewProof(input.proof); } catch { return {status:'blocked',reason:'session_unavailable'}; }
+  if(!isValidWeekStart(input.weekStart))return {status:'blocked',reason:'invalid_week'};
+  return commitAttention(input.proof,'CONFIRM_WEEK',{operationId:input.operationId,authority:input.authority,ref:{kind:'SCHEDULE',id:input.weekStart,version:input.expectedRevisionId}},executor);
 }
 
 export async function getEmployeeAcknowledgementState(

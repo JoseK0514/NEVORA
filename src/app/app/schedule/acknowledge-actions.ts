@@ -2,12 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireSessionMutationProof } from "@/lib/auth/session";
 import { requireSelfService } from "@/lib/auth/permissions";
 import { isValidWeekStart } from "@/lib/date-utils";
 import { acknowledgeScheduleWeek } from "@/lib/data/acknowledgements";
 
 export async function acknowledgeScheduleAction(formData: FormData) {
-  const session = await requireSelfService("/app/schedule");
+  await requireSelfService("/app/schedule");
   const weekStart = String(formData.get("weekStart") ?? "");
 
   if (
@@ -18,14 +19,15 @@ export async function acknowledgeScheduleAction(formData: FormData) {
 
   const acknowledged = await acknowledgeScheduleWeek({
     weekStart,
-    employeeId: session.id,
+    proof: await requireSessionMutationProof(),
+    expectedRevisionId: String(formData.get("expectedRevisionId") ?? ""),
+    operationId: String(formData.get("operationId") ?? ""),
+    authority: String(formData.get("authority") ?? ""),
   });
 
-  if (!acknowledged) {
-    redirect(`/app/schedule?week=${weekStart}&error=NO_SCHEDULE`);
-  }
+  if (acknowledged.status !== "committed") return acknowledged;
 
   revalidatePath("/app");
   revalidatePath("/app/schedule");
-  redirect(`/app/schedule?week=${weekStart}&acknowledged=1`);
+  return acknowledged;
 }

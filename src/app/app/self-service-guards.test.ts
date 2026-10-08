@@ -1,3 +1,4 @@
+vi.mock('server-only',()=>({}));
 import { managementProof } from "../../test/fixtures/management";
 import { beforeEach, expect, it, vi } from "vitest";
 import { requireSession } from "@/lib/auth/session";
