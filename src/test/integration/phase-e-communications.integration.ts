@@ -6,6 +6,7 @@ import {previewCommunicationAudience,executeCommunicationCommand,readCommunicati
 import type {CommunicationDraft,CommunicationCommand} from '../../lib/communications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {SqlExecutor} from '../../lib/notifications/types';
+import {currentShiftFingerprintSql,currentShiftTermsSql} from '../../lib/data/shift-change-release';
 let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
 const owner:SessionMutationProof={employee:{id:'owner',firstName:'Fictional',lastName:'Owner',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 const employee:SessionMutationProof={employee:{id:'employee',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:'b'.repeat(64)};
@@ -75,4 +76,31 @@ it('source changed between protected observations is rejected after locks',async
   return db.executor.transaction(s,signal);
  }};
  expect(await executeCommunicationCommand(owner,c,executor)).toMatchObject({status:'conflict'});expect(await q('SELECT * FROM communications')).toEqual([]);
+});
+async function overnightTeam(){
+ const [date]=await q("SELECT (clock_timestamp() AT TIME ZONE time_zone)::date::text AS today FROM workspaces") as {today:string}[];
+ await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('overnight-schedule','loc-1',date_trunc('week',$1::date-1)::date,'PUBLISHED','owner')",[date.today]);
+ await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('overnight-shift','overnight-schedule','employee',$1::date-1,'23:00','07:00')",[date.today]);
+ await q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) SELECT 'overnight-revision',week_start,1,'PUBLISH','owner' FROM schedules WHERE id='overnight-schedule'");
+ const team:CommunicationDraft={...draft,type:'TODAYS_TEAM',scope:{kind:'TODAYS_TEAM',locationId:'loc-1',businessDate:date.today},acknowledgement:'OPTIONAL'};
+ return team;
+}
+it('yesterday overnight is today team; approved exact callout denies sender and recipient',async()=>{
+ const team=await overnightTeam(),c=await command(team,employee),r=await executeCommunicationCommand(employee,c,db.executor);expect(r.status).toBe('committed');if(r.status!=='committed')throw Error('No team');
+ expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'ready'});
+ await q(`INSERT INTO shift_callouts(id,shift_id,employee_id,status,assignment_episode_id,reviewed_terms_fingerprint,source_terms)
+ SELECT 'callout',sh.id,sh.employee_id,'APPROVED',sh.assignment_episode_id,${currentShiftFingerprintSql()},${currentShiftTermsSql()} FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='overnight-shift'`);
+ expect(await previewCommunicationAudience(employee,team,db.executor)).toMatchObject({state:'blocked'});
+ expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'unauthorized'});
+});
+it('shift episode change denies old note and current location loss denies announcement',async()=>{
+ await overnightTeam();const [source]=await q(`SELECT sh.assignment_episode_id::text AS episode,${currentShiftFingerprintSql()} AS fingerprint FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='overnight-shift'`) as {episode:string;fingerprint:string}[];
+ const note:CommunicationDraft={...draft,type:'SHIFT_NOTE',scope:{kind:'SHIFT',locationId:'loc-1',sourceShiftId:'overnight-shift',assignmentEpisodeId:source.episode,termsFingerprint:source.fingerprint}};
+ const c=await command(note),r=await executeCommunicationCommand(owner,c,db.executor);if(r.status!=='committed')throw Error('No note');
+ expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'ready'});
+ await q("UPDATE shifts SET employee_id='other' WHERE id='overnight-shift'");expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'unauthorized'});
+ const announcement=await publish();await q("UPDATE locations SET active=false WHERE id='loc-1'");expect(await readCommunication(employee,announcement.r.id,db.executor)).toMatchObject({state:'unauthorized'});
+});
+it('arbitrary recipient IDs are rejected on full otherwise valid command',async()=>{
+ const c=await command();expect(await executeCommunicationCommand(owner,{...c,recipientIds:['other']} as never,db.executor)).toEqual({status:'blocked',reason:'invalid_command'});expect(await q('SELECT * FROM communications')).toEqual([]);
 });

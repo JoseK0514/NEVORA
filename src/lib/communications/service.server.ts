@@ -158,7 +158,7 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
 }
 function recipientStatement(proof:SessionMutationProof,w:Workspace,r:Root):SqlStatement{return {text:`SELECT g.grant_kind AS kind,g.source_shift_id AS "sourceShiftId",g.assignment_episode_id AS "assignmentEpisodeId",g.terms_fingerprint AS "termsFingerprint",
  (SELECT acknowledged_at::text FROM communication_receipts WHERE workspace_id=g.workspace_id AND communication_id=g.communication_id AND revision_id=g.revision_id AND employee_id=g.employee_id) AS "acknowledgedAt",
- (SELECT created_at::text FROM employee_attention_receipts WHERE workspace_id=g.workspace_id AND employee_id=g.employee_id AND source_kind='COMMUNICATION' AND source_id=g.communication_id::text AND source_version=g.revision_id::text) AS "readAt"
+ (SELECT read_at::text FROM employee_attention_receipts WHERE workspace_id=g.workspace_id AND employee_id=g.employee_id AND source_kind='COMMUNICATION' AND source_id=g.communication_id::text AND source_version=g.revision_id::text) AS "readAt"
  FROM communication_recipients g WHERE g.workspace_id=$1 AND g.communication_id=$2::uuid AND g.revision_id=$3::uuid AND g.employee_id=$4`,values:[w.id,r.id,r.revisionId,proof.employee.id]};}
 export async function readCommunication(proof:SessionMutationProof,id:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationRead>{
  try{
