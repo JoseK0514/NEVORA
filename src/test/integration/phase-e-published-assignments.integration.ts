@@ -90,6 +90,56 @@ it('final session check suppresses rows after source observation',async()=>{
  }};
  expect((await read(executor)).publicationState).toBe('unavailable');
 });
+const privateNextUnavailable={observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'};
+const privateWindowUnavailable={state:'unavailable',observedAt:null,timeZone:null,assignments:[]};
+const privateRead=(kind:'next'|'window',date:string,executor:SqlExecutor)=>kind==='next'
+ ? read(executor):readEmployeePublishedAssignmentWindow(proof,date,date,executor);
+
+it.each(['next','window'] as const)('%s final read loses loc-2 eligibility after its source observation while loc-1 remains authorized',async kind=>{
+ const future=week(14),date=addDays(future,1);await schedule('private',future,'loc-2');await shift('private-shift','private','QA-E11-SELF',date);
+ const before=await privateRead(kind,date,db.executor);expect(JSON.stringify(before)).toContain('private-shift');
+ let sourceSeen=false,mutated=false;
+ const executor={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+  if(statements.some(statement=>statement.text.startsWith('WITH clock AS MATERIALIZED')))sourceSeen=true;
+  else if(sourceSeen&&!mutated){mutated=true;await q("DELETE FROM employee_location_eligibility WHERE employee_id='QA-E11-SELF' AND location_id='loc-2'");}
+  return db.executor.transaction(statements,signal);
+ }};
+ const after=await privateRead(kind,date,executor);
+ expect(sourceSeen).toBe(true);expect(mutated).toBe(true);
+ expect(after).toEqual(kind==='next'?privateNextUnavailable:privateWindowUnavailable);
+ expect(JSON.stringify(after)).not.toContain('private-shift');
+});
+it.each(['next','window'] as const)('%s final read loses loc-2 active status after its source observation while loc-1 remains authorized',async kind=>{
+ const future=week(14),date=addDays(future,1);await schedule('private',future,'loc-2');await shift('private-shift','private','QA-E11-SELF',date);
+ const before=await privateRead(kind,date,db.executor);expect(JSON.stringify(before)).toContain('private-shift');
+ let sourceSeen=false,mutated=false;
+ const executor={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+  if(statements.some(statement=>statement.text.startsWith('WITH clock AS MATERIALIZED')))sourceSeen=true;
+  else if(sourceSeen&&!mutated){mutated=true;await q("UPDATE locations SET active=false WHERE id='loc-2'");}
+  return db.executor.transaction(statements,signal);
+ }};
+ const after=await privateRead(kind,date,executor);
+ expect(sourceSeen).toBe(true);expect(mutated).toBe(true);
+ expect(after).toEqual(kind==='next'?privateNextUnavailable:privateWindowUnavailable);
+ expect(JSON.stringify(after)).not.toContain('private-shift');
+});
+it.each(['next','window'] as const)('%s final guard rechecks loc-2 active loss after a blocked wait',async kind=>{
+ const future=week(14),date=addDays(future,1);await schedule('private',future,'loc-2');await shift('private-shift','private','QA-E11-SELF',date);
+ const blocker=new Client({connectionString:db.connectionString});await blocker.connect();
+ let signalFinal:()=>void=()=>{};const finalStarted=new Promise<void>(resolve=>{signalFinal=resolve;});
+ let sourceSeen=false,held=false;
+ try{
+  const executor={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+   if(statements.some(statement=>statement.text.startsWith('WITH clock AS MATERIALIZED')))sourceSeen=true;
+   else if(sourceSeen&&!held){held=true;await blocker.query('BEGIN');await blocker.query("UPDATE locations SET active=false WHERE id='loc-2'");signalFinal();}
+   return db.executor.transaction(statements,signal);
+  }};
+  let settled=false;const pending=privateRead(kind,date,executor).finally(()=>{settled=true;});await finalStarted;
+  await new Promise(resolve=>setTimeout(resolve,100));const waited=!settled;
+  await blocker.query('COMMIT');expect(sourceSeen).toBe(true);expect(held).toBe(true);expect(waited).toBe(true);
+  expect(await pending).toEqual(kind==='next'?privateNextUnavailable:privateWindowUnavailable);
+ }finally{await blocker.query('ROLLBACK').catch(()=>{});await blocker.end();}
+});
 it('role change during a blocked source guard is rechecked after the wait',async()=>{
  const future=week(14);await schedule('known',future);await shift('known-own','known','QA-E11-SELF',addDays(future,1));
  const blocker=new Client({connectionString:db.connectionString});await blocker.connect();
