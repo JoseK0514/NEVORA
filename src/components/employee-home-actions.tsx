@@ -53,7 +53,7 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
     </>:<p>No items in the available sections.</p>}
     <ul className="employee-home-source-notices">{HOME_SOURCES.filter(key=>snapshot.sources[key].state!=='complete').map(key=><li key={key}>
      <span>{names[key]} {snapshot.sources[key].state==='unavailable'?'unavailable':snapshot.sources[key].reason==='source_cap'?'partially shown — more records are available':'partial'}</span>
-     <Link href={destinations[key]}>{snapshot.sources[key].reason==='source_cap'?'Show all':'Open'} {names[key].toLowerCase()}</Link>
+     <Link href={destinations[key]}>Open {names[key].toLowerCase()}</Link>
     </li>)}</ul>
    </section>:null}
    <footer className="employee-home-refresh">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button className="button secondary" type="button" onClick={onRetry} disabled={state.paused||state.refreshing}>{state.refreshing?'Checking…':'Retry Home'}</button>}{snapshot?<small>Checked <time dateTime={snapshot.observedAt}>{stamp(snapshot.observedAt,snapshot.timeZone)}</time></small>:null}</footer>

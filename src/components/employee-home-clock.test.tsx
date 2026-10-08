@@ -22,3 +22,5 @@ it('an old ready snapshot is synchronously hidden when the rendered authority ch
  const html=renderToStaticMarkup(<EmployeeHomeView {...{authority:'c'.repeat(64)}} state={{snapshot:{state:'ready',observedAt:at,validForMs:45000,home:{state:'partial',snapshot:oldSnapshot,allSet:false}},refreshing:false,paused:false}} timeAuthority={timeAuthority} onRetry={()=>{}}/>);
  expect(html).not.toContain('Main Office');expect(html).not.toContain('2030-10-08');
 });
+
+it('capped source discloses incomplete coverage and opens canonical source without promising an unbounded list',()=>{const sources=Object.fromEntries(['schedule','acknowledgements','exchanges','timeOff','ownTime','communications'].map(k=>[k,{state:'partial',observedAt:at,version:'v1',reason:'source_cap'}])) as HomeSnapshot['sources'];const html=view({sources});expect(html).toContain('partially shown — more records are available');expect(html).toContain('Open shift requests');expect(html).not.toContain('Show all shift requests');});

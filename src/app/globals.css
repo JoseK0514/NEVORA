@@ -13753,7 +13753,7 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 .employee-home .employee-home-actions li>a { display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:56px; padding:12px 0; border-bottom:1px solid #e3e4e8; color:#18191F; overflow-wrap:anywhere; }
 .employee-home .employee-home-actions li>a small { display:block; color:#565965; margin-top:4px; }
 .employee-home .employee-home-source-notices li { font-size:14px; padding:8px 0; }
-.employee-home .employee-home-source-notices li>a { display:inline-flex; min-height:44px; padding:0 8px; color:#0756D9; border:0; }
+.employee-home .employee-home-source-notices li>a { display:inline-flex; min-height:44px; padding:0 8px; color:#0756D9; border:0; text-decoration:underline; text-underline-offset:3px; }
 .employee-home .employee-home-refresh { display:flex; align-items:center; flex-wrap:wrap; gap:12px; padding-top:20px; }
 .employee-home .employee-home-refresh small { color:#565965; }
 .employee-home .employee-home-recovery { min-height:120px; }
