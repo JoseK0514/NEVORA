@@ -157,3 +157,17 @@ it('actual actionable coverage expiring between source reads and final SQL obser
  expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{exchanges:{state:'unavailable',reason:'expired'},timeOff:{state:'complete'}}}});
  if('snapshot' in r)expect(r.snapshot.attention.some(row=>row.ref.id===id)).toBe(false);
 });
+it('foreign and formerly authorized own historical weeks cannot broaden current weekly relevance',async()=>{
+ const {addDays}=await import('../../lib/date-utils');
+ for(const [suffix,location,employee,offset] of [['foreign','loc-1',fixture.actors[1],14],['ineligible','loc-2',proof.employee.id,21]] as const){
+  const week=addDays(fixture.week,offset);
+  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,$2,$3,'DRAFT','QAOWNER')",['history-'+suffix,location,week]);
+  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,$2,$3,$4,'08:00','16:00')",['history-shift-'+suffix,'history-'+suffix,employee,week]);
+  await publishScheduleWithRevision({locationId:location,weekStart:week,managerId:'QAOWNER'},db.executor);
+  await q('DELETE FROM shifts WHERE id=$1',['history-shift-'+suffix]);
+  await publishScheduleWithRevision({locationId:location,weekStart:week,managerId:'QAOWNER'},db.executor);
+ }
+ await q("DELETE FROM employee_location_eligibility WHERE employee_id=$1 AND location_id='loc-2'",[proof.employee.id]);
+ const r=await home();expect(r).toMatchObject({state:'partial',snapshot:{sources:{acknowledgements:{state:'complete'}}}});
+ if('snapshot' in r)expect(r.snapshot.attention.filter(row=>row.ref.kind==='SCHEDULE').map(row=>row.ref.id)).toEqual([fixture.week]);
+});

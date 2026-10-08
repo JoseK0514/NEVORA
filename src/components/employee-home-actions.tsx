@@ -52,7 +52,7 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
      {items.length>5?<button className="button secondary" type="button" aria-expanded={showAll} onClick={()=>setShowAll(v=>!v)}>{showAll?'Show fewer':`Show all ${items.length} items (${items.length-5} more)`}</button>:null}
     </>:<p>No items in the available sections.</p>}
     <ul className="employee-home-source-notices">{HOME_SOURCES.filter(key=>snapshot.sources[key].state!=='complete').map(key=><li key={key}>
-     <span>{names[key]} {snapshot.sources[key].state==='unavailable'?'unavailable':snapshot.sources[key].reason==='source_cap'?'partially shown — more records are available':'partial'}</span>
+     <span>{names[key]} {snapshot.sources[key].state==='unavailable'?(snapshot.sources[key].reason==='review_unavailable'?'unavailable — a changed schedule needs review':'unavailable'):snapshot.sources[key].reason==='source_cap'?'partially shown — more records are available':'partial'}</span>
      <Link href={destinations[key]}>Open {names[key].toLowerCase()}</Link>
     </li>)}</ul>
    </section>:null}

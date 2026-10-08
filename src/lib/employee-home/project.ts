@@ -1,7 +1,7 @@
 import type {AttentionItem,EmployeeHomeRead,HomeSnapshot,HomeSource,PublishedAssignment,SourceObservation} from './types';
 import {isValidIsoDate,isValidWeekStart} from '../date-utils';
 export const HOME_SOURCES:HomeSource[]=['schedule','acknowledgements','exchanges','timeOff','ownTime','communications'];
-const reasons=new Set(['read_failed','source_cap','source_changed','unpublished','integration_pending','expired','unknown_source']);
+const reasons=new Set(['read_failed','source_cap','source_changed','unpublished','integration_pending','expired','unknown_source','review_unavailable']);
 const instant=(value:unknown):value is string=>typeof value==='string'&&Number.isFinite(Date.parse(value));
 const text=(value:unknown):value is string=>typeof value==='string'&&value.length>0&&value.length<=300;
 /** Exact canonical destinations only; these links never grant mutation authority. */
@@ -44,9 +44,18 @@ export function projectEmployeeHome(input:HomeSnapshot):EmployeeHomeRead{
   }
   // Task5 staging is explicit even if a premature producer claims completion.
   if(sources.communications.state!=='unavailable')sources.communications={...sources.communications,state:'partial',reason:'integration_pending'};
+  const rows=input.attention.map(safeItem);
+  // Source revisions do not establish time validity. A deadline crossed during
+  // the protected read requires revalidation, including equality at observation.
+  for(const row of rows){
+   const source=itemSource[row.ref.kind];
+   if(row.actionable&&row.deadlineAt!==null&&Date.parse(row.deadlineAt)<=at&&sources[source].state!=='unavailable'){
+    sources[source]={state:'unavailable',observedAt:input.observedAt,version:null,reason:'expired'};
+   }
+  }
   const merged=new Map<string,AttentionItem>();
-  for(const value of input.attention){
-   const row=safeItem(value);if(sources[itemSource[row.ref.kind]].state==='unavailable')continue;
+  for(const row of rows){
+   if(sources[itemSource[row.ref.kind]].state==='unavailable')continue;
    const key=row.ref.kind+':'+row.ref.id,old=merged.get(key);
    if(old){if(old.ref.version!==row.ref.version)throw Error('Mixed source revisions');
     merged.set(key,{...old,required:old.required||row.required,actionable:old.actionable||row.actionable,label:row.ref.kind==='SCHEDULE'&&(old.required||row.required)?'Schedule updated — review required':[old.label,row.label].sort()[0],changedAt:old.changedAt>row.changedAt?old.changedAt:row.changedAt});

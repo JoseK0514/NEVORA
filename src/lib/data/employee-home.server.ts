@@ -43,8 +43,11 @@ function indexStatement(source:HomeSource,workspaceId:string,employeeId:string):
   SELECT r.week_start::text AS id,r.id AS version,r.created_at::text AS "changedAt",
    (SELECT publication_revision_id FROM schedule_acknowledgements WHERE employee_id=$2 AND week_start=r.week_start) AS ack,
    EXISTS(SELECT 1 FROM employee_attention_receipts WHERE workspace_id=$1 AND employee_id=$2 AND source_kind='SCHEDULE' AND source_id=r.week_start::text AND source_version=r.id) AS read
-  FROM latest r WHERE EXISTS(SELECT 1 FROM schedule_publication_revision_shifts rs JOIN allowed l ON l.id=rs.location_id
-   WHERE rs.revision_id=r.id AND rs.employee_id=$2)
+  FROM latest r WHERE EXISTS(
+   SELECT 1 FROM schedule_publication_revision_shifts rs
+   JOIN schedule_publication_revisions prior ON prior.id=rs.revision_id
+   JOIN allowed l ON l.id=rs.location_id
+   WHERE prior.week_start=r.week_start AND rs.employee_id=$2)
   ORDER BY r.week_start DESC LIMIT ${CAP+1}`};
  if(source==='timeOff')return {values,text:`/* home_timeOff */ SELECT id,COALESCE(reviewed_at,created_at)::text AS "changedAt",
   jsonb_build_object('id',id,'status',status,'startDate',start_date::text,'endDate',end_date::text,'startTime',start_time::text,'endTime',end_time::text,'reason',reason) AS detail
@@ -102,8 +105,14 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
       const review=await readEmployeeWeeklyReview(proof,row.id,protectedExecutor);
       if(review.state==='unavailable'||review.displayedRevisionId!==row.version)throw Error('Weekly source unavailable');
       if(review.state==='unpublished')partial=true;
-      if(!review.shifts.length)continue;
       const required=review.acknowledgement.needsAcknowledgement;
+      if(!review.shifts.length){
+       // Prior own relevance can include a removal. The canonical empty-week
+       // reader cannot issue an intent; do not silently call that review clear.
+       // Resolved/equivalent empty states still follow canonical acknowledgement.
+       if(required)return {observation:observation('unavailable','review_unavailable',null),items:[]};
+       continue;
+      }
       // Weekly confirmation is canonical; receipts cannot resolve it.
       if(required){const ref={kind:'SCHEDULE' as const,id:row.id,version:row.version!};items.push({ref,label:required?(review.publicationChanges.length?'Schedule updated — review required':'Review schedule'):'Schedule updated',href:homeDestination(ref)!,required,actionable:required,deadlineAt:null,changedAt:row.changedAt});}
      }else if(source==='exchanges'){
