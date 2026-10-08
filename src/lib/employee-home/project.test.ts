@@ -18,3 +18,15 @@ it('stable_priority_and_duplicate_schedule_merge',async()=>{const s=snapshot(),s
 it('no_private_notes',async()=>{const s=snapshot();s.attention=[Object.assign(item('own'),{managerNotes:'NEVER EXPOSE',attendanceScore:42,sessionTokenHash:'SECRET'})];const result=await project(s);expect(JSON.stringify(result)).not.toMatch(/NEVER EXPOSE|attendanceScore|sessionTokenHash|SECRET/);});
 it('communications remain explicitly partial even when a caller supplies complete',async()=>{const s=snapshot();s.sources.communications.state='complete';expect(await project(s)).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'partial',reason:'integration_pending'}}}});});
 it('untrusted destinations and expired observations fail closed',async()=>{const s=snapshot();s.attention=[item('bad',{href:'https://example.com/private'})];expect(await project(s)).toMatchObject({state:'unavailable'});s.attention=[];s.sources.timeOff.observedAt='2029-01-01T00:00:00Z';expect(await project(s)).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{timeOff:{state:'unavailable'}}}});});
+it.each(['2030-10-07T11:59:59.000Z','2030-10-07T12:00:00.000Z'])('actionable deadline %s at or before aggregate observation invalidates its source',async deadlineAt=>{
+ const s=snapshot();
+ s.attention=[item('expired',{ref:{kind:'EXCHANGE',id:'expired',version:'r:1'},href:'/app/exchange?tab=available&requestId=expired',actionable:true,deadlineAt}),item('independent')];
+ const result=await project(s);
+ expect(result).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{exchanges:{state:'unavailable',reason:'expired'},timeOff:{state:'complete'}}}});
+ if(!('snapshot' in result))throw Error('Expected independent sections');
+ expect(result.snapshot.attention.map(row=>row.ref.id)).toEqual(['independent']);
+});
+it('a future actionable deadline bounds the lifetime to its remaining interval',async()=>{
+ const s=snapshot();s.attention=[item('soon',{ref:{kind:'EXCHANGE',id:'soon',version:'r:1'},href:'/app/exchange?tab=available&requestId=soon',actionable:true,deadlineAt:'2030-10-07T12:00:00.250Z'})];
+ expect(await project(s)).toMatchObject({state:'partial',snapshot:{validForMs:250,attention:[{actionable:true}]}});
+});

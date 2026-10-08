@@ -127,3 +127,33 @@ it('own same-status time-off rows identify distinct canonical dates and ranges w
  expect(r.snapshot.attention.find(i=>i.ref.id==='home-other-period')?.label).toBe('Time off approved · Dec 2, 2030 – Dec 4, 2030');
  expect(JSON.stringify(r)).not.toContain('PRIVATE OTHER PERIOD');
 });
+it('acknowledged last own shift removal remains explicitly unavailable rather than complete-empty weekly coverage',async()=>{
+ const review=await readEmployeeWeeklyReview(proof,fixture.week,db.executor);
+ if(!review.intent||!review.displayedRevisionId)throw Error('Missing actual reviewed intent');
+ expect(await acknowledgeScheduleWeek({proof,weekStart:fixture.week,expectedRevisionId:review.displayedRevisionId,...review.intent},db.executor)).toMatchObject({status:'committed'});
+ await q('DELETE FROM shifts WHERE id=$1',[fixture.sourceId]);
+ await publishScheduleWithRevision({locationId:'loc-1',weekStart:fixture.week,managerId:'QAOWNER'},db.executor);
+ const removal=await readEmployeeWeeklyReview(proof,fixture.week,db.executor);
+ expect(removal.shifts).toEqual([]);expect(removal.acknowledgement.needsAcknowledgement).toBe(true);expect(removal.publicationChanges.length).toBeGreaterThan(0);expect(removal.intent).toBeNull();
+ const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{acknowledgements:{state:'unavailable',reason:'review_unavailable'},timeOff:{state:'complete'}}}});
+ if(!('snapshot' in r))throw Error('Expected independently authorized source');
+ expect(r.snapshot.attention.some(row=>row.ref.id==='home-leave')).toBe(true);
+ expect(r.snapshot.attention.some(row=>row.ref.kind==='SCHEDULE')).toBe(false);
+});
+it('actual actionable coverage expiring between source reads and final SQL observation requires source revalidation',async()=>{
+ const {createCoverageOffer}=await import('./shift-change-api');
+ const id=await createCoverageOffer({sourceShiftId:fixture.targetId,requestedByEmployeeId:fixture.actors[1]},db.executor);
+ await q("UPDATE shift_exchanges SET completion_deadline=clock_timestamp()+interval '3 seconds' WHERE id=$1",[id]);
+ let observations=0,validBeforeWait=false;
+ const ex:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  if(statements.some(s=>s.text.includes('home_authority'))&&++observations===2){
+   const [row]=await q('SELECT clock_timestamp()<completion_deadline AS valid FROM shift_exchanges WHERE id=$1',[id]) as {valid:boolean}[];
+   validBeforeWait=row.valid;
+   await q('SELECT pg_sleep(GREATEST(0,EXTRACT(EPOCH FROM (completion_deadline-clock_timestamp())))+0.05) FROM shift_exchanges WHERE id=$1',[id]);
+  }
+  return db.executor.transaction(statements,signal);
+ }};
+ const r=await readEmployeeHome(proof,ex);expect(validBeforeWait).toBe(true);
+ expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{exchanges:{state:'unavailable',reason:'expired'},timeOff:{state:'complete'}}}});
+ if('snapshot' in r)expect(r.snapshot.attention.some(row=>row.ref.id===id)).toBe(false);
+});
