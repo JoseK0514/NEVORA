@@ -54,6 +54,7 @@ export type ManagerCorrectionItem = PublicCorrectionItem & {
 export type EmployeeTimeCorrections =
   | {
       state: 'ready';
+      authority?: string;
       observedAt: string;
       timeZone: string;
       totalRequests: number;
@@ -66,6 +67,7 @@ export type EmployeeTimeCorrections =
 export type ManagerTimeCorrections =
   | {
       state: 'ready';
+      authority?: string;
       validForMs: number;
       observedAt: string;
       timeZone: string;
@@ -197,6 +199,7 @@ export function parseEmployeeTimeCorrections(value: unknown): EmployeeTimeCorrec
   });
   return {
     state:'ready',
+    ...(typeof value.authority==='string'&&/^[a-f0-9]{64}$/.test(value.authority)?{authority:value.authority}:{}),
     observedAt:value.observedAt,
     timeZone:value.timeZone,
     totalRequests:value.totalRequests,
@@ -220,5 +223,5 @@ export function parseManagerTimeCorrections(value: unknown): ManagerTimeCorrecti
     }
     return {...item(entry),employeeName:entry.employeeName,isSelf:entry.isSelf};
   });
-  return {state:'ready',validForMs:value.validForMs,observedAt:value.observedAt,timeZone:value.timeZone,requests};
+  return {state:'ready',...(typeof value.authority==='string'&&/^[a-f0-9]{64}$/.test(value.authority)?{authority:value.authority}:{}),validForMs:value.validForMs,observedAt:value.observedAt,timeZone:value.timeZone,requests};
 }

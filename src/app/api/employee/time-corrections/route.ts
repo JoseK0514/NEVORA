@@ -1,3 +1,4 @@
+import {matchesCorrectionAuthority} from '@/lib/time-corrections/authority.server';
 import { getSession } from '@/lib/auth/session';
 import {
   getEmployeeTimeCorrections,
@@ -20,6 +21,8 @@ export async function GET(request: Request): Promise<Response> {
     const session=await getSession();
     if (!session) return correctionJson({state:'unavailable'},401);
     if (session.role!=='EMPLOYEE' && session.role!=='LEAD') return correctionJson({state:'unavailable'},403);
+    const binding=request.headers.get('x-nevora-correction-authority');
+    if(binding&&!await matchesCorrectionAuthority(binding))return correctionJson({state:'unavailable'},403);
     const result=await getEmployeeTimeCorrections();
     if (result.state==='ready') return correctionJson(result);
     return correctionJson(result,result.reason==='access_denied'?403:503);
@@ -35,6 +38,7 @@ export async function POST(request: Request): Promise<Response> {
     const session=await getSession();
     if (!session) return correctionJson({state:'unavailable'},401);
     if (session.role!=='EMPLOYEE' && session.role!=='LEAD') return correctionJson({state:'unavailable'},403);
+    if(!await matchesCorrectionAuthority(request.headers.get('x-nevora-correction-authority')))return correctionJson({state:'unavailable'},403);
     let command;
     try {
       command=parseCorrectionRequestCommand(await readCorrectionJson(request));

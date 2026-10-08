@@ -17,7 +17,7 @@ it('D8 upgrades the frozen D2 schema without changing actual punches, breaks, re
   const tables=['employees','employee_credentials','employee_sessions','employee_location_eligibility','employee_clocker_pins','clocker_devices','clocker_device_credentials','time_entries','break_entries','clocker_command_ledger','time_correction_requests','time_correction_adjustments','time_correction_events'];
   const snapshot=async()=>Promise.all(tables.map(table=>f.q(`SELECT to_jsonb(t) AS row FROM ${table} t ORDER BY to_jsonb(t)::text`)));
   const before=await snapshot();
-  for(const file of ['0018_timecards.sql','0019_payroll_export_mappings.sql','0020_account_recovery.sql','0021_timecard_reassignment_interlock.sql'])await f.q(await readFile('db/migrations/'+file,'utf8'));
+  for(const file of ['0018_timecards.sql','0019_payroll_export_mappings.sql','0020_account_recovery.sql','0021_timecard_reassignment_interlock.sql','0022_timecard_reopen_revision_authority.sql'])await f.q(await readFile('db/migrations/'+file,'utf8'));
   expect(await snapshot()).toEqual(before);
   expect(await f.q('SELECT (SELECT count(*)::int FROM timecard_revisions) AS reviews,(SELECT count(*)::int FROM payroll_export_receipts) AS exports,(SELECT count(*)::int FROM password_recovery_proofs) AS proofs')).toEqual([{reviews:0,exports:0,proofs:0}]);
   const cards=await readTimecards(employee,{startDate:'2026-09-28',endDate:'2026-10-04'},f.db.executor);expect(cards.state).toBe('ready');if(cards.state==='ready'){expect(cards.cards).toHaveLength(1);expect(cards.cards[0].card.recordedNanoseconds).toBe('3600000000000');expect(cards.cards[0].card.entries[0]).toMatchObject({sourceKind:'ADJUSTMENT',rawStartAt:null});}

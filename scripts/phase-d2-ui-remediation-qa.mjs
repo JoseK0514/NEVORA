@@ -1,3 +1,4 @@
+import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {join} from 'node:path';
@@ -39,11 +40,11 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
  const add=(at,minutes)=>Temporal.Instant.from(at).add({minutes}).toString();
  const local=(at)=>Temporal.Instant.from(at).toZonedDateTimeISO('America/Puerto_Rico').toPlainDateTime().toString({smallestUnit:'minute'});
  const submit=async(kind,start,end)=>{
-  const response=await employee.request.post(app.url+'/api/employee/time-corrections',{headers,data:{operationId:randomUUID(),kind,timeEntryId:entryId,...(kind==='BREAK_BOUNDARY'?{breakEntryId:breakId}:{}),proposedStartAt:start,proposedEndAt:end,reason:`Fictional ${kind} comparison.`}});
+  const response=await boundCorrectionPost(employee.request,app.url+'/api/employee/time-corrections',{headers,data:{operationId:randomUUID(),kind,timeEntryId:entryId,...(kind==='BREAK_BOUNDARY'?{breakEntryId:breakId}:{}),proposedStartAt:start,proposedEndAt:end,reason:`Fictional ${kind} comparison.`}});
   assert.equal(response.status(),202);return (await response.json()).requestId;
  };
  const review=async(requestId,decision='APPROVE')=>{
-  const response=await owner.request.post(app.url+'/api/manager/time-corrections',{headers,data:{operationId:randomUUID(),requestId,expectedRevision:1,decision,note:'Compared against fictional recorded time.'}});
+  const response=await boundCorrectionPost(owner.request,app.url+'/api/manager/time-corrections',{headers,data:{operationId:randomUUID(),requestId,expectedRevision:1,decision,note:'Compared against fictional recorded time.'}});
   assert.equal(response.status(),200);
  };
  const shots=async(page,selector,state)=>{

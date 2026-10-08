@@ -1,3 +1,4 @@
+vi.mock('server-only',()=>({}));
 import {beforeEach,expect,it,vi} from 'vitest';
 const mocks=vi.hoisted(()=>({session:vi.fn(),time:vi.fn()}));
 vi.mock('@/lib/auth/session',()=>({getSession:mocks.session}));

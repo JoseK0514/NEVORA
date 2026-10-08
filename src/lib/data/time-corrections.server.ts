@@ -1,3 +1,4 @@
+import {correctionAuthority} from '../time-corrections/authority.server';
 import 'server-only';
 
 import type { SqlExecutor } from '../notifications/types';
@@ -19,6 +20,22 @@ import { getWorkspace, workspaceReadGuard } from './workspaces';
 const selfRoles = ['EMPLOYEE','LEAD'] as const;
 const managerRoles = ['OWNER','MANAGER'] as const;
 
+// The connected approved missing-time chain is scoped before traversal. UNION
+// de-duplicates ancestors/descendants; unrelated missing intervals never join.
+const missingChain=(workspace:string,employee:string,kind:string,request:string)=>`WITH RECURSIVE chain AS (
+  SELECT a.id,a.request_id,a.supersedes_adjustment_id
+  FROM time_correction_adjustments a
+  WHERE ${kind}='MISSING_ENTRY' AND a.kind='MISSING_ENTRY'
+    AND a.workspace_id=${workspace} AND a.employee_id=${employee}
+    AND (a.request_id=${request} OR a.id=(SELECT captured.base_adjustment_id FROM time_correction_requests captured
+      WHERE captured.id=${request} AND captured.workspace_id=${workspace} AND captured.employee_id=${employee}))
+  UNION
+  SELECT a.id,a.request_id,a.supersedes_adjustment_id
+  FROM time_correction_adjustments a JOIN chain c
+    ON a.supersedes_adjustment_id=c.id OR c.supersedes_adjustment_id=a.id
+  WHERE a.kind='MISSING_ENTRY' AND a.workspace_id=${workspace} AND a.employee_id=${employee}
+)`;
+
 // Existing canonical views supply effective time. History is scoped to this
 // employee/workspace/recorded target; limits are disclosed, never completeness.
 const contextJoins=(workspace:string,employee:string,kind:string,entry:string,brk:string,request:string)=>`
@@ -39,7 +56,7 @@ LEFT JOIN LATERAL (
   SELECT v.start_at,v.end_at,v.adjustment_id,v.recorded_version,v.source_kind
   FROM nevora_effective_time_entries v
   JOIN time_correction_adjustments a ON a.id=v.adjustment_id
-  WHERE ${kind}='MISSING_ENTRY' AND (a.request_id=${request} OR a.id=(SELECT base_adjustment_id FROM time_correction_requests WHERE id=${request}))
+  WHERE ${kind}='MISSING_ENTRY' AND a.id IN (${missingChain(workspace,employee,kind,request)} SELECT id FROM chain)
     AND a.workspace_id=${workspace} AND a.employee_id=${employee} AND v.employee_id=${employee}
 ) effective ON true
 LEFT JOIN LATERAL (
@@ -53,7 +70,8 @@ LEFT JOIN LATERAL (
     WHERE h.workspace_id=${workspace} AND h.employee_id=${employee} AND h.kind=${kind}
       AND h.time_entry_id IS NOT DISTINCT FROM ${entry}
       AND h.break_entry_id IS NOT DISTINCT FROM ${brk}
-      AND ${kind}<>'MISSING_ENTRY'
+      AND (${kind}<>'MISSING_ENTRY' OR h.base_adjustment_id IN (${missingChain(workspace,employee,kind,request)} SELECT id FROM chain)
+        OR h.id IN (${missingChain(workspace,employee,kind,request)} SELECT request_id FROM chain))
       AND (${request} IS NULL OR h.id<>${request})
       AND e.event_kind IN ('APPROVED','REJECTED')
   ) history
@@ -95,9 +113,10 @@ const publicRequestJson = (alias: string) => `jsonb_build_object(
   'breakName',CASE WHEN ${alias}.kind='BREAK_BOUNDARY'
     THEN ${alias}.source_snapshot #>> '{breakTypeSnapshot,name}' ELSE NULL END,
   'reason',${alias}.reason,
-  'baseChanged',${alias}.kind<>'MISSING_ENTRY' AND (
-    effective.adjustment_id IS DISTINCT FROM ${alias}.base_adjustment_id
-    OR effective.recorded_version::text IS DISTINCT FROM ${alias}.source_snapshot->>'sourceVersion'),
+  'baseChanged',CASE WHEN ${alias}.kind='MISSING_ENTRY' THEN
+    effective.adjustment_id IS DISTINCT FROM CASE WHEN latest.event_kind='APPROVED' THEN latest.adjustment_id ELSE ${alias}.base_adjustment_id END
+    ELSE effective.adjustment_id IS DISTINCT FROM ${alias}.base_adjustment_id
+      OR effective.recorded_version::text IS DISTINCT FROM ${alias}.source_snapshot->>'sourceVersion' END,
   'context',${contextJson(`${alias}.kind`)}
 )`;
 
@@ -256,7 +275,8 @@ export async function readEmployeeTimeCorrections(
         !Number.isSafeInteger(row.targetCount) || (row.totalRequests ?? 0)>10_000 || (row.locationCount ?? 0)>100 || (row.targetCount ?? 0)>100 || !row.snapshot) {
       return {state:'unavailable',reason:(row?.totalRequests ?? 0)>10_000 || (row?.locationCount ?? 0)>100 || (row?.targetCount ?? 0)>100 ? 'source_limit':'read_failed'};
     }
-    return parseEmployeeTimeCorrections(row.snapshot);
+    const snapshot=parseEmployeeTimeCorrections(row.snapshot);
+    return snapshot.state==='ready'?{...snapshot,authority:correctionAuthority(proof)}:snapshot;
   } catch (error) {
     if (isManagementAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
     if (schemaMissing(error)) return {state:'unavailable',reason:'schema_missing'};
@@ -300,7 +320,7 @@ export async function readManagerTimeCorrections(
     if(!final)return {state:'unavailable',reason:'access_denied'};
     const remaining=final.validForMs-Math.ceil(performance.now()-started);
     if(source.state!=='ready'||remaining<1)return {state:'unavailable',reason:'read_failed'};
-    return {...source,validForMs:remaining};
+    return {...source,validForMs:remaining,authority:correctionAuthority(proof)};
   } catch (error) {
     if (isManagementAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
     if (schemaMissing(error)) return {state:'unavailable',reason:'schema_missing'};

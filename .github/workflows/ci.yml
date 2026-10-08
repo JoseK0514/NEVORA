@@ -95,7 +95,7 @@ jobs:
           PW_ROOT="$RUNNER_TEMP/nevora-playwright-runtime"
           mkdir -p "$PW_ROOT"
           printf '{"private":true}\n' > "$PW_ROOT/package.json"
-          npm install --prefix "$PW_ROOT" --no-package-lock --no-save playwright@1.62.1
+          npm install --prefix "$PW_ROOT" --no-package-lock --no-save playwright@1.62.1 axe-core@4.11.0
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
       - name: Install Chromium and WebKit
@@ -135,6 +135,25 @@ jobs:
           PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
           PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node scripts/phase-d-owned.mjs browser
+      - name: Independent Phase D audit remediation regressions
+        env:
+          PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/phase-d-owned.mjs remediation
+      - name: Verify remediation SHA-bound evidence
+        env:
+          PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs'),path=require('node:path');
+          for(const item of ['account/report.json','missing/report.json','report.json']) {
+            const r=JSON.parse(fs.readFileSync(path.join(process.env.PHASE_D_REMEDIATION_EVIDENCE_DIR,item),'utf8'));
+            if(r.checkpoint!==process.env.PHASE_D_EXPECTED_SHA||!r.sourceClean)throw Error('Invalid remediation custody: '+item);
+            if((r.errors??[]).length||(r.runtimeErrors??[]).length||(r.results??[]).some(x=>x.result!=='PASS'))throw Error('Failed remediation gate: '+item);
+            console.log(JSON.stringify({item,checkpoint:r.checkpoint,tree:r.tree,checks:(r.results??r.checks).length}));
+          }
+          NODE
       - name: Existing D2 correction browser regression
         env:
           PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d2-browser-evidence
@@ -167,6 +186,10 @@ jobs:
         with:
           name: phase-d-whole-browser-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/report.json
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/ownership.json
             ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.json
             ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.png
             ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.csv

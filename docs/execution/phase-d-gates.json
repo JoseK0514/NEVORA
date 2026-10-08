@@ -9,8 +9,8 @@
   "historical_register": "phase-d-gates-october6-historical.json",
   "current_ledger": "phase-d-d3-d8-ledger.md",
   "D2": {
-    "status": "FROZEN_VERIFIED_BASELINE",
-    "source": "Jose master authorization; D2-CODEX-002 through D2-CODEX-008 independently VERIFIED CLOSED on starting SHA. No restart or repurposing of frozen branches."
+    "status": "FROZEN_BASELINE_INDEPENDENT_FINDINGS_OPEN",
+    "source": "Original baseline custody preserved. Independent Phase D report on 184a393 reproduces D2-CODEX-005, D2-CODEX-006 and dependent D2-CODEX-008 as OPEN; the earlier blanket independent-closure claim was unsupported. Jose authorizes focused remediation, not independent closure."
   },
   "sections": [
     {
@@ -146,5 +146,26 @@
       "owner": "Existing independent release authority",
       "description": "Inherited production gate is not closed by this package."
     }
-  ]
+  ],
+  "independent_remediation": {
+    "original_sha": "184a393a4e89676b9d7f0a40e5f3fe6db87993de",
+    "audit_report": "/Users/josek0514/Documents/NEVORA-Audits/Phase-D-184a393-20261007/NEVORA_PHASE_D_INDEPENDENT_AUDIT.md",
+    "status": "IMPLEMENTED_PENDING_EXACT_CANDIDATE_VERIFICATION",
+    "independent_acceptance": "NO_GO",
+    "findings": [
+      "D2-CODEX-005",
+      "D2-CODEX-006",
+      "D2-CODEX-008",
+      "D-AUD-001",
+      "D-AUD-002",
+      "D-AUD-003"
+    ],
+    "independent_finding_status": "PENDING",
+    "nonblocking_followups": [
+      "D-AUD-004",
+      "D8-DEV-TOOLING"
+    ],
+    "plan": "phase-d-independent-remediation-plan.md",
+    "handoff": "phase-d-independent-remediation-handoff.md"
+  }
 }

@@ -68,6 +68,7 @@ export type DashboardScheduleEmployeeItem = {
 
 type Props = {
   actorId?: string;
+  correctionAuthority?:string;
   workspaceName: string;
   timeZone: string;
   firstName: string;
@@ -481,7 +482,7 @@ export function ManagerDashboard(props: Props) {
       ) : props.view === "attendance" ? (
         <div className="manager-attendance-stack">
           <ManagerAttendanceReview />
-          <ManagerTimeCorrections key={props.actorId} actorId={props.actorId}/>
+          <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
           <Link className="button secondary" href="/app/clocker-recovery">Clocker Recovery</Link>
         </div>
       ) : props.view === "schedule" ? (

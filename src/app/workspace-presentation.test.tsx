@@ -1,3 +1,4 @@
+vi.mock('server-only',()=>({}));
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
@@ -6,7 +7,7 @@ import MyTimePage from './app/my-time/page';
 import { EmployeeDashboard } from '../components/employee-dashboard';
 
 vi.mock('@/lib/auth/permissions', () => ({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>{},isManagerRole:()=>false}));
-vi.mock('@/lib/auth/session', () => ({requireSession:async()=>({role:'EMPLOYEE'})}));
+vi.mock('@/lib/auth/session', () => ({requireSession:async()=>({id:'self',role:'EMPLOYEE'}),requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
 vi.mock('@/lib/data/employees', () => ({listEmployees:async()=>[],listLocations:async()=>[]}));
 vi.mock('@/lib/employee-display', () => import('../lib/employee-display'));
 vi.mock('@/lib/phone', () => import('../lib/phone'));

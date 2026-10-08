@@ -59,7 +59,7 @@ export function EmployeeTimeView({state,compact=false,onRefresh}:{state:Employee
  </div>;
 }
 
-export function EmployeeTimePanel({compact=false}:{compact?:boolean}){
+export function EmployeeTimePanel({compact=false,authority}:{compact?:boolean;authority?:string}){
  const [state,setState]=useState<EmployeeTimePanelState>({time:null,refreshing:true,paused:false});
  const [commands,setCommands]=useState<Record<string,CorrectionRequestCommand>>({});
  const authorityLost=useRef(false);
@@ -77,7 +77,7 @@ export function EmployeeTimePanel({compact=false}:{compact?:boolean}){
     authorityLost.current=next.time.state==='unavailable'&&next.time.reason==='access_denied';
     if(authorityLost.current)setCommands({});
    }
-  },fetchEmployeeTime);controller.current=time;let mounted=true;
+  },signal=>fetchEmployeeTime(signal,authority));controller.current=time;let mounted=true;
   // Clear first on re-entry/account-change signals; no earlier self data is reused.
   const sync=()=>{time.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)time.start();};
   const pause=()=>time.pause();
@@ -85,6 +85,6 @@ export function EmployeeTimePanel({compact=false}:{compact?:boolean}){
   window.addEventListener('pagehide',pause);window.addEventListener('pageshow',sync);window.addEventListener('focus',sync);window.addEventListener('storage',sync);
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;time.stop();controller.current=null;document.removeEventListener('visibilitychange',sync);window.removeEventListener('online',sync);window.removeEventListener('offline',pause);window.removeEventListener('pagehide',pause);window.removeEventListener('pageshow',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',sync);};
- },[]);
- return <EmployeeCorrectionRecoveryContext.Provider value={{commands,update}}><EmployeeTimeView state={state} compact={compact} onRefresh={()=>controller.current?.refresh()}/></EmployeeCorrectionRecoveryContext.Provider>;
+ },[authority]);
+ return <EmployeeCorrectionRecoveryContext.Provider value={{commands,update,authority}}><EmployeeTimeView state={state} compact={compact} onRefresh={()=>controller.current?.refresh()}/></EmployeeCorrectionRecoveryContext.Provider>;
 }

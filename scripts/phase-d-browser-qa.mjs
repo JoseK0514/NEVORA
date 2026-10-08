@@ -1,3 +1,4 @@
+import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -59,7 +60,14 @@ try{
     const card=mp.getByRole('article').filter({has:mp.getByRole('heading',{name:'Avery Period QA',exact:true})});await card.waitFor();
     await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByText('approved',{exact:true}).waitFor();
     await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByText('finalized',{exact:true}).waitFor();
-    await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await card.getByText('reopened',{exact:true}).waitFor();
+    const frozenRevisions=await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' ORDER BY revision");
+    const labels=await q("SELECT name,short_name FROM locations WHERE id='loc-1'");
+    await q("UPDATE employees SET first_name='Renamed' WHERE id='D3-E'");await q("UPDATE locations SET name='Renamed historical location',short_name='Renamed' WHERE id='loc-1'");
+    await mp.getByRole('button',{name:'Refresh timecards',exact:true}).click();await card.getByText('finalized',{exact:true}).waitFor();
+    await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await mp.getByRole('article').filter({has:mp.getByRole('heading',{name:'Renamed Period QA',exact:true})}).getByText('reopened',{exact:true}).waitFor();
+    assert.deepEqual(await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' AND revision<=(SELECT max(revision)-1 FROM timecard_revisions WHERE employee_id='D3-E') ORDER BY revision"),frozenRevisions);
+    await q("UPDATE employees SET first_name='Avery' WHERE id='D3-E'");await q("UPDATE locations SET name=$1,short_name=$2 WHERE id='loc-1'",[labels[0].name,labels[0].short_name]);
+    await mp.getByRole('button',{name:'Refresh timecards',exact:true}).click();await card.getByText('reopened',{exact:true}).waitFor();checked(engine+': D-AUD-001 actual reopen after employee/location labels change preserves finalized history');
     assert.match(await card.innerText(),/Historical revisions \(3\)/);checked(engine+': actual Manager approve-finalize-reopen with history');
     for(const width of [320,375,390,430,768,1024,1440]){
       await mp.setViewportSize({width,height:1000});
@@ -99,7 +107,7 @@ try{
     let releaseQueue;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));
     await mp.goto(app.url+'/app?view=attendance');await mp.getByText('Loading correction requests',{exact:true}).waitFor();assert.equal(await mp.getByText('No correction requests',{exact:true}).count(),0);checked(engine+': UX-04 loading never claims empty');
     await waitUntil(()=>releaseQueue);assert(releaseQueue);await releaseQueue();await mp.unroute('**/api/manager/time-corrections');await mp.getByText('No correction requests',{exact:true}).waitFor();checked(engine+': UX-04 verified empty');
-    const requestId=crypto.randomUUID(),submitted=await ep.request.post(app.url+'/api/employee/time-corrections',{headers:{origin:app.url,'x-nevora-time-correction':'1'},data:{operationId:requestId,kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:'2026-09-28T12:00:00Z',proposedEndAt:'2026-09-28T13:00:00Z',reason:'Fictional completed work for queue verification'}});assert(submitted.ok());const submittedBody=await submitted.json();
+    const requestId=crypto.randomUUID(),submitted=await boundCorrectionPost(ep.request,app.url+'/api/employee/time-corrections',{headers:{origin:app.url,'x-nevora-time-correction':'1'},data:{operationId:requestId,kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:'2026-09-28T12:00:00Z',proposedEndAt:'2026-09-28T13:00:00Z',reason:'Fictional completed work for queue verification'}});assert(submitted.ok());const submittedBody=await submitted.json();
     await mp.evaluate(()=>window.dispatchEvent(new Event('nevora:time-correction-changed')));await mp.locator('.manager-correction-row').filter({hasText:'Avery Period QA'}).waitFor();checked(engine+': UX-04 actual pending queue');
     await management.setOffline(true);await mp.evaluate(()=>window.dispatchEvent(new Event('offline')));await mp.getByText('Correction requests unavailable offline',{exact:true}).waitFor();assert.equal(await mp.locator('.manager-correction-row').count(),0);assert.equal(await mp.getByText('No correction requests',{exact:true}).count(),0);checked(engine+': UX-04 offline clears names and no false all-clear');
     releaseQueue=null;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));await management.setOffline(false);await mp.evaluate(()=>window.dispatchEvent(new Event('online')));await mp.getByText('Reconnecting to correction requests',{exact:true}).waitFor();assert.equal(await mp.getByText('No correction requests',{exact:true}).count(),0);await waitUntil(()=>releaseQueue);assert(releaseQueue);await releaseQueue();await mp.unroute('**/api/manager/time-corrections');await mp.locator('.manager-correction-row').waitFor();checked(engine+': UX-04 reconnecting remains unconfirmed until response');
@@ -123,7 +131,7 @@ try{
     assert.equal((await lp.request.post(app.url+'/api/manager/action-center',{headers:{origin:app.url,'x-nevora-action-center':'1','x-nevora-actor':'D3-L'},data:{weekStart:'2026-09-21'}})).status(),403);checked(engine+': D7 Lead denied management source');await q('DELETE FROM time_off_requests WHERE id=$1',[timeOffId]);
     await mp.goto(centerUrl);await center.getByLabel('Total actions').waitFor();
     const d7Screen=join(evidence,engine+'-action-center-390.png');await mp.setViewportSize({width:390,height:1000});await mp.screenshot({path:d7Screen,fullPage:true});report.screenshots.push(d7Screen);
-    const rejected=await mp.request.post(app.url+'/api/manager/time-corrections',{headers:{origin:app.url,'x-nevora-time-correction':'1'},data:{operationId:crypto.randomUUID(),requestId:submittedBody.requestId,expectedRevision:submittedBody.revision,decision:'REJECT'}});assert(rejected.ok());
+    const rejected=await boundCorrectionPost(mp.request,app.url+'/api/manager/time-corrections',{headers:{origin:app.url,'x-nevora-time-correction':'1'},data:{operationId:crypto.randomUUID(),requestId:submittedBody.requestId,expectedRevision:submittedBody.revision,decision:'REJECT'}});assert(rejected.ok());
     const uxWeek=engine==='chromium'?'2030-10-07':'2030-10-14',uxSchedule='ux3-'+engine;
     await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,'loc-1',$2,'DRAFT','QAOWNER')",[uxSchedule,uxWeek]);
     await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes) VALUES($1,$2,'D3-E',$3,'08:00','12:00','PRIVATE UX3 DRAFT')",[uxSchedule+'-draft',uxSchedule,uxWeek]);

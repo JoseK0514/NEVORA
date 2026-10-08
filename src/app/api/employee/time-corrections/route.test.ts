@@ -1,6 +1,7 @@
+vi.mock('@/lib/time-corrections/authority.server',()=>({matchesCorrectionAuthority:mocks.binding}));
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mocks = vi.hoisted(() => ({ session:vi.fn(), read:vi.fn(), submit:vi.fn() }));
+const mocks = vi.hoisted(() => ({ binding:vi.fn(),session:vi.fn(), read:vi.fn(), submit:vi.fn() }));
 vi.mock('@/lib/auth/session', () => ({ getSession:mocks.session }));
 vi.mock('@/lib/data/time-corrections', () => ({
   getEmployeeTimeCorrections:mocks.read,
@@ -11,7 +12,7 @@ import { GET, POST } from './route';
 const url='https://nevora.invalid/api/employee/time-corrections';
 const get=(query='',headers:Record<string,string>={'X-Nevora-Time-Correction':'1'})=>new Request(url+query,{headers});
 const post=(body:unknown,headers:Record<string,string>={
-  'X-Nevora-Time-Correction':'1','Content-Type':'application/json','Sec-Fetch-Site':'same-origin','Origin':'https://nevora.invalid',
+  'X-Nevora-Time-Correction':'1','X-Nevora-Correction-Authority':'a'.repeat(64),'Content-Type':'application/json','Sec-Fetch-Site':'same-origin','Origin':'https://nevora.invalid',
 })=>new Request(url,{method:'POST',headers,body:JSON.stringify(body)});
 const command=()=>({
   operationId:'11111111-1111-4111-8111-111111111111',kind:'ENTRY_BOUNDARY',
@@ -22,6 +23,7 @@ const command=()=>({
 describe('D2 employee correction API boundary',()=>{
  beforeEach(()=>{
   vi.resetAllMocks();
+  mocks.binding.mockImplementation(async(binding:string|null)=>binding==='a'.repeat(64));
   mocks.session.mockResolvedValue({id:'self',role:'EMPLOYEE'});
   mocks.read.mockResolvedValue({state:'ready',observedAt:'2030-10-07T16:10:00Z',timeZone:'America/Puerto_Rico',locations:[],requests:[]});
   mocks.submit.mockResolvedValue({status:'pending',operationId:command().operationId,requestId:command().operationId,revision:1});
@@ -52,6 +54,7 @@ describe('D2 employee correction API boundary',()=>{
     'Host':'127.0.0.1:50515',
     'Origin':'http://127.0.0.1:50515',
     'X-Nevora-Time-Correction':'1',
+    'X-Nevora-Correction-Authority':'a'.repeat(64),
     'Content-Type':'application/json',
     'Sec-Fetch-Site':'same-origin',
    },
@@ -83,4 +86,14 @@ describe('D2 employee correction API boundary',()=>{
   const response=await POST(post(command())),copy=response.clone();expect(response.status).toBe(503);
   expect(await response.json()).toEqual({state:'unavailable'});expect(await copy.text()).not.toMatch(/postgres|token_hash|secret/i);
  });
+ it('rejects a correction mutation without originating session binding',async()=>{
+  const response=await POST(post(command(),{'X-Nevora-Time-Correction':'1','Content-Type':'application/json','Origin':'https://nevora.invalid'}));
+  expect(response.status).toBe(403);
+ });
+
+ it('rejects stale account or replaced-session bindings before mutation',async()=>{
+  const response=await POST(post(command(),{'X-Nevora-Time-Correction':'1','X-Nevora-Correction-Authority':'b'.repeat(64),'Content-Type':'application/json','Origin':'https://nevora.invalid'}));
+  expect(response.status).toBe(403);expect(mocks.submit).not.toHaveBeenCalled();
+ });
+
 });

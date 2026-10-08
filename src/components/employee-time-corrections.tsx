@@ -16,6 +16,7 @@ const changedEvent='nevora:time-correction-changed';
 
 // Owned by the authenticated My Time page, not by a temporarily cleared snapshot.
 export const EmployeeCorrectionRecoveryContext=createContext<{
+  authority?:string;
   commands:Record<string,CorrectionRequestCommand>;
   update:(key:string,command:CorrectionRequestCommand|null)=>void;
 }|null>(null);
@@ -82,6 +83,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
       })),
     ];
   },[entry]);
+  const recovery=useContext(EmployeeCorrectionRecoveryContext);
   const [open,setOpen]=useState(false);
   const [targetKey,setTargetKey]=useState('entry');
   const target=targets.find((item)=>item.key===targetKey)??targets[0];
@@ -106,7 +108,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
       controller?.abort();controller=new AbortController();const current=controller;
       setContextSnapshot(null);setContextLoading(true);
       try{
-        const next=await fetchEmployeeTimeCorrections(current.signal);
+        const next=await fetchEmployeeTimeCorrections(current.signal,recovery?.authority);
         if(!active||current.signal.aborted)return;
         setContextSnapshot(next);
         const match=next.state==='ready'?next.targets.find(item=>item.timeEntryId===entry.id&&item.breakEntryId===(target.breakEntryId??null)&&
@@ -125,7 +127,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
     window.addEventListener(changedEvent,refresh);window.addEventListener('focus',refresh);window.addEventListener('online',refresh);window.addEventListener('pageshow',refresh);
     window.addEventListener('offline',clear);window.addEventListener('pagehide',clear);document.addEventListener('visibilitychange',visibility);
     return()=>{active=false;controller?.abort();window.removeEventListener(changedEvent,refresh);window.removeEventListener('focus',refresh);window.removeEventListener('online',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('offline',clear);window.removeEventListener('pagehide',clear);document.removeEventListener('visibilitychange',visibility);};
-  },[open,entry.id,target,zone]);
+  },[open,entry.id,target,zone,recovery?.authority]);
 
   if(!entry.clockOutAt||!target)return null;
 
@@ -140,7 +142,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
     // A private-reader pause can unmount this form before delivery settles.
     setRetry(command);setBusy(true);setResult(null);
     try{
-      const response=await submitEmployeeTimeCorrection(command);
+      const response=await submitEmployeeTimeCorrection(command,recovery?.authority);
       setResult(response);
       setRetry(response.state==='outcome_unknown'?command:null);
       if(response.state==='pending'){
@@ -206,6 +208,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
 export function EmployeeCorrectionCenter({zone}:{zone:string}){
   const [snapshot,setSnapshot]=useState<EmployeeTimeCorrections|null>(null);
   const [loading,setLoading]=useState(true);
+  const recovery=useContext(EmployeeCorrectionRecoveryContext);
   const [open,setOpen]=useState(false);
   const [location,setLocation]=useState('');
   const [start,setStart]=useState('');
@@ -224,7 +227,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
       abortRef.current?.abort();
       const controller=new AbortController();abortRef.current=controller;setLoading(true);
       try{
-        const next=await fetchEmployeeTimeCorrections(controller.signal);
+        const next=await fetchEmployeeTimeCorrections(controller.signal,recovery?.authority);
         if(!active||controller.signal.aborted)return;
         setSnapshot(next);
         authorityLost.current=next.state==='unavailable'&&next.reason==='access_denied';
@@ -245,13 +248,13 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
     window.addEventListener('pagehide',clear);
     document.addEventListener('visibilitychange',visibility);
     return()=>{active=false;abortRef.current?.abort();window.removeEventListener(changedEvent,refresh);window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',refresh);window.removeEventListener('offline',clear);window.removeEventListener('pagehide',clear);document.removeEventListener('visibilitychange',visibility);};
-  },[setRetry]);
+  },[setRetry,recovery?.authority]);
 
   const send=async(command:CorrectionRequestCommand)=>{
     if(authorityLost.current)return;
     setRetry(command);setBusy(true);setResult(null);
     try{
-      const response=await submitEmployeeTimeCorrection(command);
+      const response=await submitEmployeeTimeCorrection(command,recovery?.authority);
       if(authorityLost.current)return;
       setResult(response);setRetry(response.state==='outcome_unknown'?command:null);
       if(response.state==='pending'){

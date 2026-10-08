@@ -1,3 +1,4 @@
+import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
@@ -10,7 +11,7 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
   const day=engine==='chromium'?'05':'06';
   const start=`2026-01-${day}T08:00:00Z`,end=`2026-01-${day}T09:00:00Z`;
   const headers={'X-Nevora-Time-Correction':'1','Origin':app.url};
-  const post=(c,path,data,custom=headers)=>c.request.post(app.url+path,{headers:custom,data});
+  const post=(c,path,data,custom=headers)=>boundCorrectionPost(c.request,app.url+path,{headers:custom,data});
   const employeePath='/api/employee/time-corrections',managerPath='/api/manager/time-corrections';
   const raw=async()=>{
     const result={};

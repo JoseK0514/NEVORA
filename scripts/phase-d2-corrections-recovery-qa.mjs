@@ -1,3 +1,4 @@
+import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {join} from 'node:path';
@@ -12,7 +13,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
  const entryCommand=()=>({operationId:randomUUID(),kind:'ENTRY_BOUNDARY',timeEntryId:'d2-browser-entry',proposedStartAt:Temporal.Instant.from(entry.start).add({minutes:5}).toString(),proposedEndAt:Temporal.Instant.from(entry.finish).subtract({minutes:5}).toString(),reason:'Fictional response recovery regression.'});
  const watch=page=>{page.on('pageerror',error=>observations.runtimeErrors.push(String(error)));page.on('console',message=>{if(message.type()==='error')observations.consoleErrors.push(message.text());});};
  const decide=async(c,id,decision='REJECT')=>{
-  const response=await c.request.post(app.url+'/api/manager/time-corrections',{headers,data:{operationId:randomUUID(),requestId:id,expectedRevision:1,decision}});
+  const response=await boundCorrectionPost(c.request,app.url+'/api/manager/time-corrections',{headers,data:{operationId:randomUUID(),requestId:id,expectedRevision:1,decision}});
   assert.equal(response.status(),200);return response.json();
  };
  const owner=await context(browser);await login(owner,'QAOWNER');
@@ -93,7 +94,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
 
   for(const decision of ['APPROVE','REJECT'])for(const loss of ['before','after','malformed','unknown']){
    const employee=await context(browser);await login(employee,'D2-E');
-   const submitted=await employee.request.post(app.url+'/api/employee/time-corrections',{headers,data:entryCommand()});
+   const submitted=await boundCorrectionPost(employee.request,app.url+'/api/employee/time-corrections',{headers,data:entryCommand()});
    assert.equal(submitted.status(),202);const pending=await submitted.json();await employee.close();
    const c=await context(browser,{width:390,height:844});await login(c,'QAOWNER');
    try{
@@ -137,7 +138,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   }
 
   const employee=await context(browser);await login(employee,'D2-E');
-  const submitted=await employee.request.post(app.url+'/api/employee/time-corrections',{headers,data:entryCommand()});
+  const submitted=await boundCorrectionPost(employee.request,app.url+'/api/employee/time-corrections',{headers,data:entryCommand()});
   assert.equal(submitted.status(),202);const pending=await submitted.json();await employee.close();
   const manager=await context(browser);await login(manager,'QAOWNER');
   try{

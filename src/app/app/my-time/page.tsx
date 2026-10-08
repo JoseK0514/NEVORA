@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import Link from 'next/link';
 import { EmployeeTimePanel } from "@/components/employee-time-panel";
 import { isManagerRole } from "@/lib/auth/permissions";
-import { requireSession } from "@/lib/auth/session";
+import {correctionAuthority} from '@/lib/time-corrections/authority.server';
+import { requireSession,requireSessionMutationProof } from "@/lib/auth/session";
 
 export default async function MyTimePage() {
   const session = await requireSession();
@@ -10,6 +11,8 @@ export default async function MyTimePage() {
   if (isManagerRole(session.role)) {
     redirect("/app");
   }
+
+  const authority=correctionAuthority(await requireSessionMutationProof());
 
   return (
     <div className="employee-view employee-my-time-view">
@@ -20,7 +23,7 @@ export default async function MyTimePage() {
         </div>
       </header>
 
-      <EmployeeTimePanel key={session.id} />
+      <EmployeeTimePanel key={authority} authority={authority} />
       <Link className="button secondary" href="/app/timecards">View period timecards</Link>
     </div>
   );

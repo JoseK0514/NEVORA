@@ -1,3 +1,4 @@
+import {matchesCorrectionAuthority} from '@/lib/time-corrections/authority.server';
 import {getSession} from '@/lib/auth/session';
 import {getEmployeeTime} from '@/lib/data/employee-time';
 export const runtime='nodejs';
@@ -10,6 +11,8 @@ export async function GET(request:Request):Promise<Response>{
   const session=await getSession();
   if(!session)return json({state:'unavailable',reason:'access_denied'},401);
   if(session.role!=='EMPLOYEE'&&session.role!=='LEAD')return json({state:'unavailable',reason:'access_denied'},403);
+  const binding=request.headers.get('x-nevora-correction-authority');
+  if(binding&&!await matchesCorrectionAuthority(binding))return json({state:'unavailable',reason:'access_denied'},403);
   const time=await getEmployeeTime();
   return json(time,time.state==='ready'?200:time.reason==='access_denied'?403:503);
  }catch{return json({state:'unavailable',reason:'read_failed'},503);}

@@ -1,3 +1,4 @@
+import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import Link from 'next/link';
 import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
 import {getWorkspace} from '@/lib/data/workspaces';
@@ -88,6 +89,7 @@ export default async function DashboardPage({
   return (
     <ManagerDashboard
       actorId={session.id}
+      correctionAuthority={correctionAuthority(await requireSessionMutationProof())}
       workspaceName={workspace.name}
       timeZone={workspace.timeZone}
       firstName={session.firstName}
