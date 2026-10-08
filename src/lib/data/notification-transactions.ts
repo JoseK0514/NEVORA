@@ -329,7 +329,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
         // that became a no-op must abort/recompute rather than return false success.
         statements.push({
             text: `SELECT (CASE WHEN
-      COALESCE((SELECT jsonb_agg(to_jsonb(t) - 'weekStart' - 'hasExchangeHistory' - 'approvedCalloutEmployeeId' - 'assignmentOrigin' - 'generatedClaims' - 'hasCalloutHistory' - 'hasPublicationHistory' ORDER BY t."sourceShiftId" COLLATE "C") FROM (${currentShiftsSql}) t),'[]'::jsonb)=$2::jsonb
+      COALESCE((SELECT jsonb_agg(to_jsonb(t) - 'weekStart' - 'hasExchangeHistory' - 'approvedCalloutEmployeeId' - 'assignmentOrigin' - 'generatedClaims' - 'hasCalloutHistory' - 'hasPublicationHistory' ORDER BY t."sourceShiftId" COLLATE "C") FROM (${currentShiftsSql()}) t),'[]'::jsonb)=$2::jsonb
       AND COALESCE((SELECT jsonb_agg(t ORDER BY t.id COLLATE "C") FROM (
         SELECT id,location_id AS "locationId",week_start::text AS "weekStart",status FROM schedules WHERE week_start=ANY($1::date[])) t),'[]'::jsonb)=$3::jsonb
       THEN '1' ELSE 'schedule_week_version_conflict' END)::integer AS guarded_after`,
