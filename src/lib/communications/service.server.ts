@@ -218,14 +218,18 @@ export async function recordCommunicationRead(proof:SessionMutationProof,c:Atten
 function finalItemStatement(proof:SessionMutationProof,w:Workspace,item:Extract<CommunicationRead,{state:'ready'}>):SqlStatement{return {text:`SELECT EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id
  WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp())
  AND ($5 IN('OWNER','MANAGER') OR ${communicationRecipientAllowedSql()})) AS allowed`,values:[w.id,proof.employee.id,item.id,item.revisionId,proof.employee.role]};}
+function communicationIndex(proof:SessionMutationProof,w:Workspace):SqlStatement{return {text:`/* communication_list_index */ SELECT c.id::text,c.head_revision_id::text AS revision,
+ (SELECT acknowledged_at::text FROM communication_receipts WHERE workspace_id=c.workspace_id AND communication_id=c.id AND revision_id=c.head_revision_id AND employee_id=$2) AS acknowledged,
+ (SELECT read_at::text FROM employee_attention_receipts WHERE workspace_id=c.workspace_id AND source_kind='COMMUNICATION' AND source_id=c.id::text AND source_version=c.head_revision_id::text AND employee_id=$2) AS read FROM communications c WHERE c.workspace_id=$1 AND c.state='PUBLISHED' AND
+ ($3 IN('OWNER','MANAGER') OR c.author_employee_id=$2 OR EXISTS(SELECT 1 FROM communication_recipients g WHERE g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=c.head_revision_id AND g.employee_id=$2)) ORDER BY c.created_at DESC,c.id LIMIT 101`,values:[w.id,proof.employee.id,proof.employee.role]};}
 export async function listEmployeeCommunications(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationListRead>{
- try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),p=guards(proof,w),results=await executor.transaction([...p,{text:`SELECT c.id::text FROM communications c WHERE c.workspace_id=$1 AND c.state='PUBLISHED' AND
- ($3 IN('OWNER','MANAGER') OR c.author_employee_id=$2 OR EXISTS(SELECT 1 FROM communication_recipients g WHERE g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=c.head_revision_id AND g.employee_id=$2)) ORDER BY c.created_at DESC,c.id LIMIT 101`,values:[w.id,proof.employee.id,proof.employee.role]}],signal);
+ try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),p=guards(proof,w),results=await executor.transaction([...p,communicationIndex(proof,w)],signal);
   const rows=results[p.length] as {id:string}[],items:CommunicationRead[]=[];let partial=rows.length>100;
   for(const row of rows.slice(0,100)){const r=await readCommunication(proof,row.id,executor);if(r.state==='ready')items.push(r);else if(r.state==='unavailable')partial=true;}
   const ready=items.filter((i):i is Extract<CommunicationRead,{state:'ready'}>=>i.state==='ready');
-  const finalPrefix=[...guards(proof,w),{text:'SELECT id FROM communications WHERE workspace_id=$1 AND id=ANY($2::uuid[]) ORDER BY id FOR SHARE',values:[w.id,ready.map(i=>i.id).sort()]}];
-  const final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  const finalPrefix=[...guards(proof,w),{text:'LOCK TABLE communications IN SHARE MODE',values:[]},{text:'SELECT id FROM communications WHERE workspace_id=$1 AND id=ANY($2::uuid[]) ORDER BY id FOR SHARE',values:[w.id,ready.map(i=>i.id).sort()]}];
+  const final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),communicationIndex(proof,w),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  if(JSON.stringify(final[finalPrefix.length+ready.length])!==JSON.stringify(rows))partial=true;
   const current=ready.filter((_,i)=>(final[finalPrefix.length+i]?.[0] as {allowed:boolean}|undefined)?.allowed===true);if(current.length!==ready.length)partial=true;
   return {state:partial?'partial':'complete',observedAt:new Date().toISOString(),items:current,reason:partial?'source_unavailable':null};
  }catch(error){return {state:isManagementAuthorizationError(error)?'unauthorized':'unavailable',reason:'updates_unavailable'};}

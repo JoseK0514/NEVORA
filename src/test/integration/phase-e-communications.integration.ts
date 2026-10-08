@@ -131,6 +131,6 @@ it('another eligible team assignment does not replace an immutable existing read
 });
 
 it('publication after empty list discovery cannot report complete all-clear',async()=>{
- let observed=false;const ex:SqlExecutor={...db.executor,transaction:async(s,signal)=>{const r=await db.executor.transaction(s,signal);if(!observed&&s.some(x=>x.text.includes('SELECT c.id::text FROM communications c'))){observed=true;await publish();}return r;}};
+ let observed=false;const ex:SqlExecutor={...db.executor,transaction:async(s,signal)=>{const r=await db.executor.transaction(s,signal);if(!observed&&s.some(x=>x.text.includes('communication_list_index'))){observed=true;await publish();}return r;}};
  const result=await listEmployeeCommunications(employee,ex);expect(observed).toBe(true);expect(result.state).not.toBe('complete');
 });
