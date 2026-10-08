@@ -3,9 +3,10 @@ import {createHash,randomUUID} from 'node:crypto';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import type {Workspace} from '../domain';
-import type {CommunicationCommand,CommunicationDraft,CommunicationRead,CommunicationListRead,CommandResult} from './types';
+import type {CommunicationCommand,CommunicationDraft,CommunicationRead,CommunicationListRead,CommunicationContext,CommandResult} from './types';
 import type {AttentionCommand} from '../employee-attention/types';
 import {validateCommunicationDraft,COMMUNICATION_TRANSPORT_BYTES} from './validation';
+import {businessDate} from '../business-time';
 import {canManageCommunication,canWithdrawCommunication} from './policy';
 import {projectCommunicationAudience,type CommunicationFacts} from './project';
 import {communicationContentHash,communicationPayloadHash,communicationRootInsert,communicationRevisionInsert,communicationGrantInsert} from '../data/communications.server';
@@ -80,8 +81,8 @@ function validCommand(input:unknown):input is CommunicationCommand{
  if(c.kind==='ACKNOWLEDGE'&&!hex.test(String(c.contentHash)))return false;
  try{return Buffer.byteLength(JSON.stringify(c),'utf8')<=COMMUNICATION_TRANSPORT_BYTES;}catch{return false;}
 }
-type Root={id:string;authorId:string;state:'PUBLISHED'|'WITHDRAWN'|'DRAFT';revisionId:string;version:number;contentHash:string;draft:CommunicationDraft;publishedAt:string};
-function rootStatement(w:Workspace,id:string):SqlStatement{return {text:`SELECT c.id::text,c.author_employee_id AS "authorId",c.state,r.id::text AS "revisionId",r.version,r.content_hash AS "contentHash",r.published_at::text AS "publishedAt",
+type Root={id:string;authorId:string;state:'PUBLISHED'|'WITHDRAWN'|'DRAFT';revisionId:string;version:number;contentHash:string;draft:CommunicationDraft;publishedAt:string;authorContext:string};
+function rootStatement(w:Workspace,id:string):SqlStatement{return {text:`SELECT c.id::text,c.author_employee_id AS "authorId",c.state,r.id::text AS "revisionId",r.version,r.content_hash AS "contentHash",r.published_at::text AS "publishedAt",(SELECT CASE WHEN role IN('OWNER','MANAGER') THEN 'Management' ELSE 'Team member' END FROM employees WHERE id=c.author_employee_id) AS "authorContext",
  jsonb_build_object('type',r.type,'scope',CASE r.scope_kind WHEN 'LOCATION' THEN jsonb_build_object('kind',r.scope_kind,'locationId',r.location_id)
  WHEN 'TODAYS_TEAM' THEN jsonb_build_object('kind',r.scope_kind,'locationId',r.location_id,'businessDate',r.business_date::text)
  ELSE jsonb_build_object('kind',r.scope_kind,'locationId',r.location_id,'sourceShiftId',r.source_shift_id,'assignmentEpisodeId',r.assignment_episode_id,'termsFingerprint',r.terms_fingerprint) END,
@@ -175,12 +176,14 @@ function recipientStatement(proof:SessionMutationProof,w:Workspace,r:Root):SqlSt
  (SELECT acknowledged_at::text FROM communication_receipts WHERE workspace_id=g.workspace_id AND communication_id=g.communication_id AND revision_id=g.revision_id AND employee_id=g.employee_id) AS "acknowledgedAt",
  (SELECT read_at::text FROM employee_attention_receipts WHERE workspace_id=g.workspace_id AND employee_id=g.employee_id AND source_kind='COMMUNICATION' AND source_id=g.communication_id::text AND source_version=g.revision_id::text) AS "readAt"
  FROM communication_recipients g WHERE g.workspace_id=$1 AND g.communication_id=$2::uuid AND g.revision_id=$3::uuid AND g.employee_id=$4`,values:[w.id,r.id,r.revisionId,proof.employee.id]};}
+function lifetimeStatement(proof:SessionMutationProof):SqlStatement{return {text:`/* communication_lifetime */ SELECT to_jsonb(clock_timestamp()) AS "observedAt",LEAST(45000,FLOOR(EXTRACT(EPOCH FROM(expires_at-clock_timestamp()))*1000))::integer AS "validForMs" FROM employee_sessions WHERE token_hash=$1 AND employee_id=$2 AND expires_at>clock_timestamp()`,values:[proof.sessionTokenHash,proof.employee.id]};}
+function statusStatement(proof:SessionMutationProof,w:Workspace,r:Root):SqlStatement{return {text:`SELECT count(*)::integer AS count,CASE WHEN $4 IN('OWNER','MANAGER') THEN COALESCE(jsonb_agg(jsonb_build_object('name',trim(e.first_name||' '||e.last_name),'acknowledgedAt',(SELECT to_jsonb(acknowledged_at) FROM communication_receipts receipt WHERE receipt.workspace_id=g.workspace_id AND receipt.communication_id=g.communication_id AND receipt.revision_id=g.revision_id AND receipt.employee_id=g.employee_id)) ORDER BY e.id),'[]') ELSE NULL END AS recipients FROM communication_recipients g JOIN employees e ON e.id=g.employee_id WHERE g.workspace_id=$1 AND g.communication_id=$2::uuid AND g.revision_id=$3::uuid`,values:[w.id,r.id,r.revisionId,proof.employee.role]};}
 export async function readCommunication(proof:SessionMutationProof,id:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationRead>{
  try{
   proofValid(proof);if(!uuid.test(id))return {state:'unauthorized',reason:'update_unavailable'};
   const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),r=await rootRead(proof,w,id,executor,signal);
   if(!r)return {state:'unauthorized',reason:'update_unavailable'};
-  const o=await observe(proof,w,r.draft,executor,signal,id),p=guards(proof,w,id),result=await executor.transaction([...p,sourceGuard(proof,w,r.draft,o.fingerprint),rootStatement(w,id),recipientStatement(proof,w,r),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  const o=await observe(proof,w,r.draft,executor,signal,id),p=guards(proof,w,id),result=await executor.transaction([...p,sourceGuard(proof,w,r.draft,o.fingerprint),rootStatement(w,id),recipientStatement(proof,w,r),lifetimeStatement(proof),statusStatement(proof,w,r),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   const current=result[p.length+1]?.[0] as Root|undefined,grant=result[p.length+2]?.[0] as {kind:string;sourceShiftId:string;assignmentEpisodeId:string;termsFingerprint:string;acknowledgedAt:string|null;readAt:string|null}|undefined;
   const management=canManageCommunication(o.context),member=o.facts.members.some(m=>m.id===proof.employee.id);
   const assignmentValid=grant&&o.context.assignments.some(a=>a.employeeId===proof.employee.id&&a.published&&!a.released&&a.sourceShiftId===grant.sourceShiftId&&a.assignmentEpisodeId===grant.assignmentEpisodeId&&a.termsFingerprint===grant.termsFingerprint);
@@ -189,7 +192,9 @@ export async function readCommunication(proof:SessionMutationProof,id:string,exe
   if(!current||current.revisionId!==r.revisionId)return {state:'unavailable',reason:'update_changed'};
   if(current.state==='WITHDRAWN')return {state:'withdrawn',reason:'update_unavailable'};
   if(current.draft.expiresAt&&Date.parse(current.draft.expiresAt)<=Date.now())return {state:'withdrawn',reason:'update_unavailable'};
-  return {state:'ready',id:r.id,revisionId:r.revisionId,contentHash:r.contentHash,title:r.draft.title,body:r.draft.body,type:r.draft.type,publishedAt:r.publishedAt,editedAt:r.version>1?r.publishedAt:null,acknowledgement:r.draft.acknowledgement,ownAcknowledgedAt:grant?.acknowledgedAt??null,ownReadAt:grant?.readAt??null,authority:communicationAuthority(proof)};
+  const lifetime=result[p.length+3]?.[0] as {observedAt:string;validForMs:number}|undefined,status=result[p.length+4]?.[0] as {count:number;recipients:{name:string;acknowledgedAt:string|null}[]|null};
+  if(!lifetime||lifetime.validForMs<=0)return {state:'unauthorized',reason:'update_unavailable'};
+  return {state:'ready',id:r.id,revisionId:r.revisionId,contentHash:r.contentHash,title:r.draft.title,body:r.draft.body,type:r.draft.type,publishedAt:r.publishedAt,editedAt:r.version>1?r.publishedAt:null,acknowledgement:r.draft.acknowledgement,ownAcknowledgedAt:grant?.acknowledgedAt??null,ownReadAt:grant?.readAt??null,authority:communicationAuthority(proof),...lifetime,validForMs:Math.min(lifetime.validForMs,r.draft.expiresAt?Date.parse(r.draft.expiresAt)-Date.parse(lifetime.observedAt):45000),timeZone:w.timeZone,expiresAt:r.draft.expiresAt,authorContext:r.authorContext??'Team member',canWithdraw:canWithdrawCommunication(r.draft,r.authorId,o.context),...(r.authorId===proof.employee.id?{sentCount:status.count}:{}),...(management?{management:{draft:r.draft,recipients:status.recipients??[]}}:{})};
  }catch(error){return {state:isManagementAuthorizationError(error)?'unauthorized':'unavailable',reason:'update_unavailable'};}
 }
 /** Final protected membership check for list/Home/ack consumers. Immutable
@@ -228,9 +233,20 @@ export async function listEmployeeCommunications(proof:SessionMutationProof,exec
   for(const row of rows.slice(0,100)){const r=await readCommunication(proof,row.id,executor);if(r.state==='ready')items.push(r);else if(r.state==='unavailable')partial=true;}
   const ready=items.filter((i):i is Extract<CommunicationRead,{state:'ready'}>=>i.state==='ready');
   const finalPrefix=[...guards(proof,w),{text:'LOCK TABLE communications IN SHARE MODE',values:[]},{text:'SELECT id FROM communications WHERE workspace_id=$1 AND id=ANY($2::uuid[]) ORDER BY id FOR SHARE',values:[w.id,ready.map(i=>i.id).sort()]}];
-  const final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),communicationIndex(proof,w),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  const final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),communicationIndex(proof,w),lifetimeStatement(proof),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   if(JSON.stringify(final[finalPrefix.length+ready.length])!==JSON.stringify(rows))partial=true;
   const current=ready.filter((_,i)=>(final[finalPrefix.length+i]?.[0] as {allowed:boolean}|undefined)?.allowed===true);if(current.length!==ready.length)partial=true;
-  return {state:partial?'partial':'complete',observedAt:new Date().toISOString(),items:current,reason:partial?'source_unavailable':null};
+  const lifetime=final[finalPrefix.length+ready.length+1]?.[0] as {observedAt:string;validForMs:number}|undefined;if(!lifetime||lifetime.validForMs<=0)return {state:'unauthorized',reason:'updates_unavailable'};
+  return {state:partial?'partial':'complete',...lifetime,validForMs:Math.min(lifetime.validForMs,...current.map(i=>i.validForMs-(Date.parse(lifetime.observedAt)-Date.parse(i.observedAt)))),authority:communicationAuthority(proof),timeZone:w.timeZone,items:current,reason:partial?'source_unavailable':null};
  }catch(error){return {state:isManagementAuthorizationError(error)?'unauthorized':'unavailable',reason:'updates_unavailable'};}
+}
+
+/** Bounded current composition context; employee context has no coworker roster. */
+export async function readCommunicationContext(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationContext>{
+ try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),prefix=guards(proof,w),management=['OWNER','MANAGER'].includes(proof.employee.role);
+  const r=await executor.transaction([...prefix,{text:`SELECT l.id,l.short_name AS label FROM locations l WHERE l.workspace_id=$1 AND l.active AND ($3 IN('OWNER','MANAGER') OR EXISTS(SELECT 1 FROM employees e WHERE e.id=$2 AND (e.primary_location_id=l.id OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=l.id)))) ORDER BY l.id LIMIT 101`,values:[w.id,proof.employee.id,proof.employee.role]},
+   {text:`SELECT sh.id,s.location_id AS "locationId",sh.date::text,left(sh.start_time::text,5) AS "startTime",left(sh.end_time::text,5) AS "endTime",sh.assignment_episode_id::text AS "assignmentEpisodeId",${currentShiftFingerprintSql()} AS "termsFingerprint" FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id WHERE $2 IN('OWNER','MANAGER') AND l.workspace_id=$1 AND l.active AND s.status='PUBLISHED' AND sh.date BETWEEN (clock_timestamp() AT TIME ZONE $3)::date-1 AND (clock_timestamp() AT TIME ZONE $3)::date+28 AND EXISTS(SELECT 1 FROM schedule_publication_revisions pr WHERE pr.week_start=s.week_start) AND NOT EXISTS(SELECT 1 FROM shift_callouts callout WHERE ${currentCalloutReleaseSql('callout')}) ORDER BY sh.date,sh.id LIMIT 501`,values:[w.id,proof.employee.role,w.timeZone]},lifetimeStatement(proof),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  const locations=r[prefix.length] as Extract<CommunicationContext,{state:'ready'}>['locations'],shifts=r[prefix.length+1] as Extract<CommunicationContext,{state:'ready'}>['shifts'],lifetime=r[prefix.length+2]?.[0] as {observedAt:string;validForMs:number};if(!lifetime||lifetime.validForMs<=0||locations.length>100||shifts.length>500)return {state:'unavailable',reason:'context_unavailable'};
+  return {state:'ready',...lifetime,authority:communicationAuthority(proof),management,businessDate:businessDate(new Date(lifetime.observedAt),w.timeZone),timeZone:w.timeZone,locations,shifts};
+ }catch(error){return {state:isManagementAuthorizationError(error)?'unauthorized':'unavailable',reason:'context_unavailable'};}
 }

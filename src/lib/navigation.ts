@@ -27,6 +27,7 @@ const employeeNavigation: NavigationItem[] = [
   { href: "/app/my-time", label: "My Time", icon: "clock" },
   { href: "/app/requests/hub", label: "Requests", icon: "requests" },
   { href: "/app/availability", label: "Availability", icon: "availability" },
+  { href: "/app/updates", label: "Updates", icon: "alert" },
   { href: "/app/notifications", label: "Notifications", icon: "alert" },
   { href: "/app/profile", label: "Profile", icon: "employee" },
 ];

@@ -311,6 +311,7 @@ export default async function SchedulePage({
               Templates
             </Link>
 
+            <Link className="button secondary compact-button" href="/app/updates">Team updates</Link>
             <ActionMenu
               id="schedule-more-actions"
               label="More"

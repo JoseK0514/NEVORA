@@ -13764,3 +13764,29 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
  .employee-home .employee-home-layout { grid-template-columns:minmax(0,1fr); gap:16px; }
  .employee-home .employee-home-primary, .employee-home .employee-home-recorded { padding:20px; }
 }
+
+/* Phase E contextual plain-text updates, within the employee content rail. */
+.communication-view{max-width:800px;margin-inline:auto}
+.communication-back{display:inline-flex;align-items:center;min-height:44px;padding:8px 0;border:0;background:none;color:#0756D9;font:inherit;text-decoration:none;cursor:pointer}
+.communication-detail header h1{font-size:clamp(24px,4vw,32px);line-height:1.2;overflow-wrap:anywhere;margin:12px 0}
+.communication-meta,.communication-counter{font-size:14px;color:#555862}
+.communication-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;margin:24px 0;max-width:66ch}
+.communication-receipt{border-top:1px solid #dcdde3;padding-block:20px;display:grid;gap:12px}
+.communication-review-check{display:flex;align-items:center;gap:12px;min-height:44px}
+.communication-review-check input{width:20px;height:20px;flex:none}
+.communication-detail .button,.communication-compose .button{min-height:44px;width:fit-content;max-width:100%;white-space:normal}
+.communication-detail .button+.button{margin-top:12px}
+.communication-management{border-top:1px solid #dcdde3;margin-top:20px;padding-top:20px}
+.communication-management ul{padding:0;list-style:none;display:grid;gap:12px}
+.communication-management li{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.communication-compose fieldset{display:grid;gap:12px;border:0;padding:0;margin:0;min-width:0}
+.communication-compose legend{font-size:18px;font-weight:600;margin-bottom:20px}
+.communication-compose label:not(.communication-review-check){display:grid;gap:8px;font-weight:500}
+.communication-compose input:not([type=checkbox]),.communication-compose textarea,.communication-compose select{width:100%;min-width:0;min-height:44px;font-size:16px;line-height:1.4;padding:12px;border:1px solid #b9bbc5;border-radius:8px;background:#fff;color:#18191F}
+.communication-compose textarea{resize:vertical}
+.communication-compose [aria-invalid=true]{border-color:#a32b24}
+.communication-compose .communication-counter{margin:0 0 8px}
+.communication-audience{padding-top:20px;border-top:1px solid #dcdde3}
+.communication-list strong{overflow-wrap:anywhere}
+.communication-view :focus-visible{outline:3px solid #0756D9;outline-offset:3px}
+@media(max-width:430px){.communication-view .employee-view-heading{align-items:flex-start;flex-wrap:wrap;gap:12px}.communication-view .employee-view-heading .button{width:100%;justify-content:center}.communication-detail{padding:20px 16px}}

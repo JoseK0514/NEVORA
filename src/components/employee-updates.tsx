@@ -1,0 +1,10 @@
+'use client';
+import Link from 'next/link';
+import {useCommunicationResource,type CommunicationMode} from '../lib/communications/client';
+export function EmployeeUpdates({authority,mode}:{authority:string;mode:CommunicationMode}){
+ const {state,value,refresh}=useCommunicationResource(mode,authority,'');const list=value&&'items'in value?value:null;
+ return <div className="employee-view communication-view"><header className="employee-view-heading"><div><p className="employee-view-eyebrow">Operational updates</p><h1>Updates</h1></div><Link className="button secondary" href="/app/updates/compose">{mode==='manager'?'Create update':"Message today's team"}</Link></header><section className="employee-view-surface">
+  {!list?<p role="status">{state.paused?'Updates paused — return online to refresh.':state.snapshot?.state==='unavailable'?state.snapshot.reason==='access_denied'?'Sign in again to view updates.':'Updates unavailable. Retry to check current information.':'Loading updates…'}</p>:<>{list.state==='partial'?<p role="status">Some updates are unavailable or outside this view. Retry to check current information.</p>:null}{list.items.length?<ul className="employee-notification-list communication-list">{list.items.map(item=>item.state==='ready'?<li key={item.id}><Link href={'/app/updates/'+item.id}><strong>{item.title}</strong><span>{item.acknowledgement==='REQUIRED'?(item.ownAcknowledgedAt?'Acknowledged':'Acknowledgement required'):item.ownReadAt?'Read':'Optional update'}</span><time dateTime={item.publishedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:item.timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(item.publishedAt))}</time><span>Review update <span aria-hidden="true">→</span></span></Link></li>:null)}</ul>:list.state==='complete'?<p>No current updates.</p>:null}</>}
+  <footer className="employee-account-footer"><button className="button secondary" disabled={state.paused||state.refreshing} onClick={refresh}>{state.refreshing?'Checking…':'Refresh updates'}</button></footer>
+ </section></div>;
+}
