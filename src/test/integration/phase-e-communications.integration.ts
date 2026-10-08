@@ -129,3 +129,8 @@ it('another eligible team assignment does not replace an immutable existing read
  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT 'zzzz-other-shift',schedule_id,employee_id,date,start_time,end_time FROM shifts WHERE id='overnight-shift'");
  expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'ready'});
 });
+
+it('publication after empty list discovery cannot report complete all-clear',async()=>{
+ let observed=false;const ex:SqlExecutor={...db.executor,transaction:async(s,signal)=>{const r=await db.executor.transaction(s,signal);if(!observed&&s.some(x=>x.text.includes('SELECT c.id::text FROM communications c'))){observed=true;await publish();}return r;}};
+ const result=await listEmployeeCommunications(employee,ex);expect(observed).toBe(true);expect(result.state).not.toBe('complete');
+});
