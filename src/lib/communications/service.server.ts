@@ -4,6 +4,7 @@ import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import type {Workspace} from '../domain';
 import type {CommunicationCommand,CommunicationDraft,CommunicationRead,CommunicationListRead,CommandResult} from './types';
+import type {AttentionCommand} from '../employee-attention/types';
 import {validateCommunicationDraft,COMMUNICATION_TRANSPORT_BYTES} from './validation';
 import {canManageCommunication,canWithdrawCommunication} from './policy';
 import {projectCommunicationAudience,type CommunicationFacts} from './project';
@@ -86,7 +87,8 @@ function rootStatement(w:Workspace,id:string):SqlStatement{return {text:`SELECT 
  FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=$1 AND c.id=$2::uuid`,values:[w.id,id]};}
 async function rootRead(proof:SessionMutationProof,w:Workspace,id:string,executor:SqlExecutor,signal:AbortSignal){const p=guards(proof,w,id),r=await executor.transaction([...p,rootStatement(w,id),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);return r[p.length]?.[0] as Root|undefined;}
 type Operation={payloadHash:string;sessionHash:string;id:string;version:string};
-function operationStatement(proof:SessionMutationProof,w:Workspace,id:string):SqlStatement{return {text:'SELECT payload_hash AS "payloadHash",session_hash AS "sessionHash",communication_id::text AS id,revision_id::text AS version FROM communication_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid',values:[w.id,proof.employee.id,id]};}
+function operationStatement(proof:SessionMutationProof,w:Workspace,id:string):SqlStatement{return {text:`SELECT payload_hash AS "payloadHash",session_hash AS "sessionHash",communication_id::text AS id,revision_id::text AS version FROM communication_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid
+ UNION ALL SELECT command_hash::text AS "payloadHash",$4::text AS "sessionHash",result->>'id' AS id,result->>'version' AS version FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid AND result->>'kind'='COMMUNICATION_READ' AND result->>'authority'=$5 LIMIT 1`,values:[w.id,proof.employee.id,id,proof.sessionTokenHash,communicationAuthority(proof)]};}
 const committed=(id:string,version:string,operationId:string):CommandResult=>({status:'committed',id,version,operationId});
 export async function findCommunicationOperation(proof:SessionMutationProof,operationId:string,authority:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
  try{proofValid(proof);if(!uuid.test(operationId)||authority!==communicationAuthority(proof))return blocked;
@@ -121,8 +123,11 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
    if(!o.allowed||(c.kind==='REVISE'&&!canManageCommunication(o.context)))return blocked;
    if(o.fingerprint!==c.audienceFingerprint)return conflict;
   }else if(c.kind==='WITHDRAW'){if(!canWithdrawCommunication(d.value,root!.authorId,o.context))return blocked;}
-  else return {status:'blocked',reason:'acknowledgement_not_implemented'};
-  const id=root?.id??randomUUID(),revisionId=c.kind==='WITHDRAW'?root!.revisionId:randomUUID(),version=(root?.version??0)+1;
+  else{
+   if(!['EMPLOYEE','LEAD'].includes(proof.employee.role)||root!.draft.acknowledgement==='NONE')return blocked;
+   if(c.contentHash!==root!.contentHash)return conflict;
+  }
+  const id=root?.id??randomUUID(),revisionId=c.kind==='WITHDRAW'||c.kind==='ACKNOWLEDGE'?root!.revisionId:randomUUID(),version=(root?.version??0)+1;
   const identity=[w.id,proof.employee.id,c.operationId],prefix=guards(proof,w,root?.id);
   const opLock:SqlStatement={text:"SELECT pg_advisory_xact_lock(hashtextextended('communication-operation:'||$1||':'||$2||':'||$3,0))",values:identity};
   const opCheck:SqlStatement={text:`SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM communication_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid AND (payload_hash<>$4 OR session_hash<>$5)) THEN '1' ELSE 'communication_operation_conflict' END)::integer`,values:[...identity,payloadHash,proof.sessionTokenHash]};
@@ -132,8 +137,11 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
   const writes:SqlStatement[]=[];
   if(root)writes.push({text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM communications WHERE workspace_id=$1 AND id=$2::uuid AND state='PUBLISHED' AND head_revision_id=$3::uuid) THEN '1' ELSE 'communication_source_conflict' END)::integer`,values:[w.id,id,root.revisionId]});
   writes.push(sourceGuard(proof,w,d.value,o.fingerprint));
-  if(c.kind!=='WITHDRAW')writes.push(publicationClockGuard(w,d.value));
+  if(c.kind==='PUBLISH'||c.kind==='REVISE')writes.push(publicationClockGuard(w,d.value));
+  if(c.kind==='ACKNOWLEDGE')writes.push(recipientCommandGuard(proof,w,id,revisionId,c.contentHash));
   if(c.kind==='WITHDRAW')writes.push(...cancelStatements(id),{text:"UPDATE communications SET state='WITHDRAWN' WHERE workspace_id=$1 AND id=$2::uuid",values:[w.id,id]});
+  else if(c.kind==='ACKNOWLEDGE')writes.push({text:`INSERT INTO communication_receipts(id,workspace_id,communication_id,revision_id,employee_id,content_hash)
+   VALUES($1::uuid,$2,$3::uuid,$4::uuid,$5,$6) ON CONFLICT(workspace_id,communication_id,revision_id,employee_id) DO NOTHING`,values:[randomUUID(),w.id,id,revisionId,proof.employee.id,c.contentHash]});
   else{
    if(!root)writes.push(communicationRootInsert(w.id,id,proof.employee.id));else writes.push(...cancelStatements(id));
    writes.push(communicationRevisionInsert({workspaceId:w.id,communicationId:id,revisionId,version,actorId:proof.employee.id,draft:d.value,audienceFingerprint:o.fingerprint,observedAt:o.observedAt,publishedAt:o.observedAt}));
@@ -146,13 +154,16 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
    }
    writes.push({text:"UPDATE communications SET state='PUBLISHED',head_revision_id=$3::uuid WHERE workspace_id=$1 AND id=$2::uuid",values:[w.id,id,revisionId]});
   }
-  writes.push({text:'INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,$5,$6)',values:[randomUUID(),w.id,id,revisionId,proof.employee.id,c.kind==='WITHDRAW'?'WITHDRAWN':c.kind==='REVISE'?'REVISED':'PUBLISHED']},
-   {text:'INSERT INTO communication_operations(workspace_id,actor_employee_id,operation_id,session_hash,payload_hash,kind,communication_id,revision_id) VALUES($1,$2,$3::uuid,$4,$5,$6,$7::uuid,$8::uuid)',values:[...identity,proof.sessionTokenHash,payloadHash,c.kind,id,revisionId]});
-  dispatched=true;await executor.transaction([...prefix,opLock,opCheck,freshCheck,...writes,...(c.kind==='WITHDRAW'?[]:[publicationClockGuard(w,d.value)]),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  if(c.kind!=='ACKNOWLEDGE')writes.push({text:'INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,$5,$6)',values:[randomUUID(),w.id,id,revisionId,proof.employee.id,c.kind==='WITHDRAW'?'WITHDRAWN':c.kind==='REVISE'?'REVISED':'PUBLISHED']});
+  writes.push({text:`INSERT INTO communication_operations(workspace_id,actor_employee_id,operation_id,session_hash,payload_hash,kind,communication_id,revision_id,receipt_id)
+   VALUES($1,$2,$3::uuid,$4,$5,$6,$7::uuid,$8::uuid,${c.kind==='ACKNOWLEDGE'?"(SELECT id FROM communication_receipts WHERE workspace_id=$1 AND employee_id=$2 AND communication_id=$7::uuid AND revision_id=$8::uuid)":'NULL'})`,values:[...identity,proof.sessionTokenHash,payloadHash,c.kind,id,revisionId]});
+  const finalClock=c.kind==='PUBLISH'||c.kind==='REVISE'?[publicationClockGuard(w,d.value)]:c.kind==='ACKNOWLEDGE'?[recipientCommandGuard(proof,w,id,revisionId,c.contentHash)]:[];
+  dispatched=true;await executor.transaction([...prefix,opLock,opCheck,freshCheck,...writes,...finalClock,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   return committed(id,revisionId,c.operationId);
  }catch(error){
   const message=error instanceof Error?error.message:'';
   if(isManagementAuthorizationError(error))return blocked;
+  if(message.includes('communication_recipient_denied'))return blocked;
   if(message.includes('communication_operation_replay'))return findCommunicationOperation(proof,c.operationId,c.authority,executor);
   if(message.includes('communication_source_conflict')||message.includes('communication_operation_conflict'))return conflict;
   if(error&&typeof error==='object'&&'code'in error&&['55P03','57014','40P01','40001'].includes(String(error.code)))return {status:'unavailable',reason:'retry_original_operation'};
@@ -190,6 +201,27 @@ export function communicationRecipientAllowedSql(actor='$2'):string{return `EXIS
  AND (g.grant_kind='LOCATION' OR EXISTS(SELECT 1 FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id=g.source_shift_id AND sh.employee_id=e.id AND s.location_id=g.location_id AND s.status='PUBLISHED'
  AND sh.assignment_episode_id::text=g.assignment_episode_id AND ${currentShiftFingerprintSql()}=g.terms_fingerprint AND NOT EXISTS(SELECT 1 FROM shift_callouts callout WHERE ${currentCalloutReleaseSql('callout')})
  AND EXISTS(SELECT 1 FROM schedule_publication_revisions pr WHERE pr.week_start=s.week_start))))`;}
+function recipientCommandGuard(proof:SessionMutationProof,w:Workspace,id:string,revision:string,contentHash?:string):SqlStatement{return {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid
+ AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ($5::text IS NULL OR r.content_hash=$5) AND ${communicationRecipientAllowedSql()}) THEN '1' ELSE 'communication_recipient_denied' END)::integer`,values:[w.id,proof.employee.id,id,revision,contentHash??null]};}
+export async function recordCommunicationRead(proof:SessionMutationProof,c:AttentionCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
+ let dispatched=false;
+ try{
+  proofValid(proof);if(!c||Object.keys(c).sort().join(',')!=='authority,kind,operationId,ref'||c.kind!=='MARK_READ'||!c.ref||Object.keys(c.ref).sort().join(',')!=='id,kind,version'||c.ref.kind!=='COMMUNICATION'||!uuid.test(c.operationId)||!uuid.test(c.ref.id)||!uuid.test(c.ref.version)||c.authority!==communicationAuthority(proof)||!['EMPLOYEE','LEAD'].includes(proof.employee.role))return blocked;
+  const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),identity=[w.id,proof.employee.id,c.operationId],payloadHash=createHash('sha256').update(JSON.stringify(['communication:read:v1',c])).digest('hex');
+  const prefix=guards(proof,w,c.ref.id),op:SqlStatement={text:'SELECT command_hash::text AS hash,result FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid',values:identity};
+  const current=(await executor.transaction([...prefix,op,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal))[prefix.length]?.[0] as {hash:string;result:Record<string,string>}|undefined;
+  if(current)return current.hash===payloadHash?committed(current.result.id,current.result.version,c.operationId):conflict;
+  const root=await rootRead(proof,w,c.ref.id,executor,signal);if(!root||root.state!=='PUBLISHED'||root.revisionId!==c.ref.version)return conflict;if(root.draft.acknowledgement==='REQUIRED')return {status:'blocked',reason:'required_action'};
+  dispatched=true;
+  await executor.transaction([...prefix,{text:"SELECT pg_advisory_xact_lock(hashtextextended('communication-read-operation:'||$1||':'||$2||':'||$3,0))",values:identity},
+   {text:`SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid AND command_hash<>$4) THEN '1' ELSE 'communication_operation_conflict' END)::integer`,values:[...identity,payloadHash]},
+   recipientCommandGuard(proof,w,c.ref.id,c.ref.version),
+   {text:`INSERT INTO employee_attention_receipts(id,workspace_id,employee_id,source_kind,source_id,source_version) VALUES($1::uuid,$2,$3,'COMMUNICATION',$4,$5) ON CONFLICT(workspace_id,employee_id,source_kind,source_id,source_version) DO NOTHING`,values:[randomUUID(),w.id,proof.employee.id,c.ref.id,c.ref.version]},
+   {text:`INSERT INTO employee_attention_operations(workspace_id,employee_id,operation_id,command_hash,result) VALUES($1,$2,$3::uuid,$4,jsonb_build_object('status','committed','operationId',$3::text,'id',$5::text,'version',$6::text,'kind','COMMUNICATION_READ','authority',$7::text)) ON CONFLICT(workspace_id,employee_id,operation_id) DO NOTHING`,values:[...identity,payloadHash,c.ref.id,c.ref.version,c.authority]},
+   recipientCommandGuard(proof,w,c.ref.id,c.ref.version),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  return committed(c.ref.id,c.ref.version,c.operationId);
+ }catch(error){const message=error instanceof Error?error.message:'';if(isManagementAuthorizationError(error)||message.includes('communication_recipient_denied'))return blocked;if(message.includes('communication_operation_conflict'))return conflict;return dispatched?{status:'outcome_unknown',operationId:c.operationId}:{status:'unavailable',reason:'read_failed'};}
+}
 function finalItemStatement(proof:SessionMutationProof,w:Workspace,item:Extract<CommunicationRead,{state:'ready'}>):SqlStatement{return {text:`SELECT EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id
  WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp())
  AND ($5 IN('OWNER','MANAGER') OR ${communicationRecipientAllowedSql()})) AS allowed`,values:[w.id,proof.employee.id,item.id,item.revisionId,proof.employee.role]};}

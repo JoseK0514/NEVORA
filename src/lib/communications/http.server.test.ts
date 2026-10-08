@@ -11,7 +11,7 @@ it('authorized list stays private and cannot select another employee',async()=>{
  const selected=new Request('https://nevora.invalid/api/employee/communications?employeeId=other',{headers:{'X-Nevora-Communication':'1','X-Nevora-Communication-Authority':'a'.repeat(64)}});expect((await handle(selected)).status).toBe(400);
 });
 it('cross origin, replacement binding and wrong management role cannot invoke a command',async()=>{
- for(const headers of [{'Origin':'https://other.invalid'},{'X-Nevora-Communication-Authority':'b'.repeat(64)},{'Sec-Fetch-Site':'cross-site'}])expect((await handle(request('POST',{kind:'PUBLISH'},headers), 'EMPLOYEE','command')).status).toBe(403);
+ for(const headers of [{'Origin':'https://other.invalid'},{'X-Nevora-Communication-Authority':'b'.repeat(64)},{'Sec-Fetch-Site':'cross-site'}] as Record<string,string>[])expect((await handle(request('POST',{kind:'PUBLISH'},headers), 'EMPLOYEE','command')).status).toBe(403);
  expect((await handle(request('POST',{}),'MANAGER','command')).status).toBe(403);expect(mocks.execute).not.toHaveBeenCalled();
 });
 it('raw JSON whitespace and invalid UTF8 cannot bypass transport ceiling',async()=>{
