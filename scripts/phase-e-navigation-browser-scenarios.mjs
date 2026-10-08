@@ -5,7 +5,7 @@ import {Client} from 'pg';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile}){
- const tabKey=engine==='webkit'?'Alt+Tab':'Tab',backTabKey=engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
+ const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const checks=[],contrast=[],focusTrace=[],prefix=`navigation-${engine}-${width}`,headers={};
  const q=(text,values=[])=>app.database.executor.query({text,values});
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/'))headers[path]=request.headers()['x-nevora-employee-view'];});
@@ -107,7 +107,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }
   if(width<768){
    await page.goto(app.url+'/app/requests?tab=new');await settle();const field=page.locator('textarea').first();await field.fill('Fictional long keyboard text '.repeat(20));await field.focus();assert(await field.evaluate(e=>e===document.activeElement));await page.keyboard.press(tabKey);assert(await page.evaluate(()=>document.activeElement instanceof HTMLElement&&getComputedStyle(document.activeElement).visibility!=='hidden'));await page.keyboard.press(backTabKey);await page.goto(app.url+'/app/profile');await ready('profile');
-   checks.push('Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified');
+   checks.push(`Native focus, text entry and ${tabKey}/${backTabKey} on existing request form; no submission; physical keyboard occlusion remains unverified`);
   }
   assert(await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].every(v=>!v.includes('STORED PRIVATE')&&!v.includes('QA E'))));
   await q("UPDATE employees SET first_name=$1,last_name=$2 WHERE id=$3",['Avery With A Very Long Fictional Display Name','Long Employee Name For Reflow Verification',actor]);await page.reload();await ready('profile');await bounds();

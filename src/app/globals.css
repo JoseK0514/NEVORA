@@ -13731,4 +13731,7 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 .employee-shell .employee-notification-list time { font-size: 13px; color: var(--muted); }
 .employee-shell .employee-notification-list a > span { font-size: 13px; }
 .employee-shell .sidebar-profile.portal-profile-trigger { text-decoration: none; }
-@media(max-width:767px) { .employee-shell .employee-account-panel { padding: 20px; } }
+@media(max-width:767px) {
+  .employee-shell .employee-account-panel { padding: 20px; }
+  .employee-shell .employee-account-view :is(a, button) { scroll-margin-block: 80px calc(100px + env(safe-area-inset-bottom, 0px)); }
+}
