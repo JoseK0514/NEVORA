@@ -113,3 +113,11 @@ it('move into newly added location cancels original scoped event until deliberat
  const oldScope=await readCalendarFeed(token,db.executor);if(oldScope.state!=='ready')throw Error('No old scoped feed');expect(oldScope.events).toHaveLength(1);expect(oldScope.events[0]).toMatchObject({uid:initial.events[0].uid,status:'CANCELLED',location:null,startAt:initial.events[0].startAt});expect(oldScope.events[0].sequence).toBeGreaterThan(initial.events[0].sequence);
  const rotated=await manageEmployeeCalendarSubscription(proof,{kind:'ROTATE',operationId:randomUUID(),authority:calendarAuthority(proof),expectedGeneration:created.generation},db.executor);if(rotated.status!=='created')throw Error('No replacement');const newScope=await readCalendarFeed(rotated.url.split('/')[3],db.executor);if(newScope.state!=='ready')throw Error('No new scoped feed');expect(newScope.events).toHaveLength(1);expect(newScope.events[0]).toMatchObject({uid:initial.events[0].uid,status:'CONFIRMED'});expect(newScope.events[0].location).not.toBeNull();expect((await readCalendarFeed(token,db.executor)).state).toBe('unauthorized');
 });
+
+it.each([
+ ["UPDATE workspaces SET active=false,updated_at=clock_timestamp()",'unauthorized'],
+ ["UPDATE workspaces SET name='Fictional updated workspace',updated_at=clock_timestamp()",'unavailable'],
+] as const)('workspace changes after feed observation classify authority loss separately from configuration failure: %s',async(sql,expected)=>{
+ const {token}=await seed();let observed=false;const executor={...db.executor,transaction:async(statements:Parameters<typeof db.executor.transaction>[0],signal?:AbortSignal)=>{if(observed)await q(sql);const result=await db.executor.transaction(statements,signal);if(statements.some(s=>s.text.includes('calendar_feed_observation')))observed=true;return result;}};
+ expect((await readCalendarFeed(token,executor)).state).toBe(expected);expect(observed).toBe(true);
+});
