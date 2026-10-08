@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {Temporal} from '/Users/josek0514/.codex/worktrees/phase-d-audit-remediation/Fuel Scheduler/node_modules/@js-temporal/polyfill/dist/index.esm.js';
+import {Temporal} from '@js-temporal/polyfill';
 import {createOwnedNextApp} from '../src//test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src//test/integration/owned-app-fixture.ts';
 import {hashPassword} from '../src//lib/auth/password.ts';
