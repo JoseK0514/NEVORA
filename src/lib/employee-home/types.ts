@@ -8,3 +8,13 @@ export type PublishedAssignment = {
 export type PublishedAssignmentRead =
   | {observedAt:string;timeZone:string;nextShift:PublishedAssignment|null;currentShift:PublishedAssignment|null;publicationState:'complete'|'partial'}
   | {observedAt:null;timeZone:null;nextShift:null;currentShift:null;publicationState:'unavailable'};
+
+import type {AttentionRef} from '../employee-attention/types';
+export type SourceState='complete'|'partial'|'unavailable'|'not_applicable';
+export type SourceObservation={state:SourceState;observedAt:string;version:string|null;reason:string|null};
+export type HomeSource='schedule'|'acknowledgements'|'exchanges'|'timeOff'|'ownTime'|'communications';
+export type AttentionItem={ref:AttentionRef;label:string;href:string;required:boolean;actionable:boolean;deadlineAt:string|null;changedAt:string};
+export type HomeSnapshot={observedAt:string;authority:string;timeZone:string;validForMs:number;
+ sources:Record<HomeSource,SourceObservation>;publicationState:'complete'|'partial'|'unavailable';
+ nextShift:PublishedAssignment|null;currentShift:PublishedAssignment|null;attention:AttentionItem[]};
+export type EmployeeHomeRead={state:'ready'|'partial';snapshot:HomeSnapshot;allSet:boolean}|{state:'unauthorized'|'unavailable';reason:string};

@@ -2,14 +2,13 @@ import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import Link from 'next/link';
 import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
 import {getWorkspace} from '@/lib/data/workspaces';
-import {businessDate,businessTime} from '@/lib/business-time';
+import {businessDate} from '@/lib/business-time';
 import {EmployeeDashboard} from '@/components/employee-dashboard';
 import {ManagerDashboard,type ManagerDashboardView} from '@/components/manager-dashboard';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
-import {readEmployeeSchedule} from '@/lib/data/employee-schedule';
+import {homeAuthority} from '@/lib/data/employee-home.server';
 import {isManagerRole} from '@/lib/auth/permissions';
 import {addDays,formatWeekRange,isValidWeekStart,weekStartFor} from '@/lib/date-utils';
-import {calculateScheduledHours} from '@/lib/employee-compensation';
 
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
   "overview",
@@ -42,39 +41,11 @@ export default async function DashboardPage({
   const manager = isManagerRole(session.role);
   const params = await searchParams;
   const currentDate = businessDate(new Date(), workspace.timeZone);
-  const currentTime = businessTime(new Date(), workspace.timeZone);
   const currentWeek = weekStartFor(currentDate);
 
   if (!manager) {
-    const employeeSchedule=await readEmployeeSchedule(await requireSessionMutationProof(),currentWeek);
-    const {shifts:employeeShifts,locations:employeeLocations}=employeeSchedule;
-    const locationNames = new Map(employeeLocations.map((location) => [location.id, location.shortName]));
-    const publishedShifts = employeeShifts
-      .filter((shift) => !shift.isCalloutApproved)
-      .map((shift) => ({
-        id: shift.id,
-        date: shift.date,
-        startTime: shift.startTime,
-        endTime: shift.endTime,
-        positionId: shift.positionId,
-      isDesignatedLead: shift.isDesignatedLead,
-        locationName: locationNames.get(shift.locationId),
-      }));
-
-    const scheduledHours = calculateScheduledHours(publishedShifts);
-
-    return (
-      <EmployeeDashboard
-        firstName={session.firstName}
-        weekStart={currentWeek}
-        weekLabel={formatWeekRange(currentWeek)}
-        currentDate={currentDate}
-        currentTime={currentTime}
-        publishedShifts={publishedShifts}
-        scheduledHours={scheduledHours}
-        scheduleState={employeeSchedule.state}
-      />
-    );
+    const proof=await requireSessionMutationProof();
+    return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)}/>;
   }
 
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;

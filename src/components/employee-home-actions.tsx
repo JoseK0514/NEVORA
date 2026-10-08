@@ -1,0 +1,84 @@
+'use client';
+import Link from 'next/link';
+import {useEffect,useRef,useState} from 'react';
+import {usePathname} from 'next/navigation';
+import {createPrivateSnapshotController,type PrivatePanelState} from '../lib/private-snapshot-client';
+import {projectEmployeeHome,HOME_SOURCES} from '../lib/employee-home/project';
+import type {EmployeeHomeRead,HomeSnapshot,HomeSource,PublishedAssignment} from '../lib/employee-home/types';
+import {EmployeeTimePanel,EmployeeTimeView} from './employee-time-panel';
+export type HomeLifetime={state:'ready';observedAt:string;validForMs:number;home:Extract<EmployeeHomeRead,{snapshot:HomeSnapshot}>}|{state:'unavailable';reason:string};
+export function createEmployeeHomeController(changed:(state:PrivatePanelState<HomeLifetime>)=>void,request:(signal:AbortSignal)=>Promise<unknown>,authority:string){
+ return createPrivateSnapshotController<HomeLifetime>(changed,request,value=>{
+  const read=value as EmployeeHomeRead;
+  if(read?.state==='unauthorized')return {state:'unavailable',reason:'access_denied'};
+  if(!read||!('snapshot' in read))return {state:'unavailable',reason:'read_failed'};
+  if(read.snapshot?.authority!==authority)return {state:'unavailable',reason:'access_denied'};
+  const projected=projectEmployeeHome(read.snapshot);
+  if(!('snapshot' in projected))return {state:'unavailable',reason:'read_failed'};
+  return {state:'ready',observedAt:projected.snapshot.observedAt,validForMs:projected.snapshot.validForMs,home:projected};
+ },reason=>({state:'unavailable',reason}),()=> 'read_failed');
+}
+function stamp(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));}
+function Assignment({shift,zone}:{shift:PublishedAssignment;zone:string}){
+ return <div className="employee-home-assignment">
+  <p className="employee-home-shift-time"><time dateTime={shift.startAt}>{stamp(shift.startAt,zone)}</time><span aria-hidden="true"> – </span><time dateTime={shift.endAt}>{stamp(shift.endAt,zone)}</time></p>
+  <p className="employee-home-location">{shift.locationLabel}{shift.positionLabel?` · ${shift.positionLabel}`:''}</p>
+  {shift.designatedLead?<p>Designated Lead</p>:null}
+  <Link className="employee-home-review" href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}>View schedule <span aria-hidden="true">→</span></Link>
+ </div>;
+}
+const names:Record<HomeSource,string>={schedule:'Schedule',acknowledgements:'Schedule reviews',exchanges:'Shift requests',timeOff:'Time off',ownTime:'Recorded time and corrections',communications:'Communications'};
+const destinations:Record<HomeSource,string>={schedule:'/app/schedule',acknowledgements:'/app/schedule',exchanges:'/app/exchange',timeOff:'/app/requests?tab=my',ownTime:'/app/my-time',communications:'/app/notifications'};
+export function EmployeeHomeView({state,timeAuthority,onRetry}:{state:PrivatePanelState<HomeLifetime>;timeAuthority:string;onRetry:()=>void}){
+ const [showAll,setShowAll]=useState(false);
+ const home=!state.paused&&state.snapshot?.state==='ready'?state.snapshot.home:null,snapshot=home?.snapshot;
+ const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
+ const loading=!state.paused&&!state.snapshot;
+ const items=snapshot?.attention??[],visible=showAll?items:items.slice(0,5);
+ return <div className="employee-home-layout" data-home-state={state.paused?'paused':snapshot?'partial':denied?'unauthorized':loading?'loading':'unavailable'}>
+  <div className="employee-home-surface employee-home-primary">
+   <section aria-labelledby="employee-next-heading" className="employee-home-next">
+    <p className="employee-home-eyebrow">Your schedule</p><h2 id="employee-next-heading">Next Shift</h2>
+    {snapshot?<>
+     {snapshot.publicationState==='unavailable'?<p>Schedule unavailable</p>:snapshot.nextShift?<Assignment shift={snapshot.nextShift} zone={snapshot.timeZone}/>:<><p>No upcoming published shift</p><Link className="employee-home-review" href="/app/schedule">View schedule</Link></>}
+     {snapshot.currentShift?<section className="employee-home-scheduled-now" aria-label="Scheduled now"><h3>Scheduled now</h3><p>Scheduled assignment; clock status is shown separately.</p><Assignment shift={snapshot.currentShift} zone={snapshot.timeZone}/></section>:null}
+     {snapshot.publicationState==='partial'?<p className="employee-home-publication" role="status">Schedule not published yet for all your eligible locations. Known published shifts are shown.</p>:null}
+    </>:<div className="employee-home-recovery" role="status"><p>{state.paused?'Home paused — return online to refresh.':denied?'Sign in again to view Home.':loading?'Loading Home…':'Home unavailable — try again.'}</p></div>}
+   </section>
+   {snapshot?<section className="employee-home-actions" aria-labelledby="employee-actions-heading"><h2 id="employee-actions-heading">Needs your attention</h2>
+    <p className="employee-home-partial" role="status">Home is partial. Communications are not included yet.</p>
+    {items.length?<><ul>{visible.map(item=><li key={`${item.ref.kind}:${item.ref.id}`}><Link href={item.href}><span><strong>{item.label}</strong>{item.required?<small>Required review</small>:null}{item.deadlineAt?<small>Respond by <time dateTime={item.deadlineAt}>{stamp(item.deadlineAt,snapshot.timeZone)}</time></small>:null}</span><span aria-hidden="true">→</span></Link></li>)}</ul>
+     {items.length>5?<button className="button secondary" type="button" aria-expanded={showAll} onClick={()=>setShowAll(v=>!v)}>{showAll?'Show fewer':`Show all ${items.length} items (${items.length-5} more)`}</button>:null}
+    </>:<p>No items in the available sections.</p>}
+    <ul className="employee-home-source-notices">{HOME_SOURCES.filter(key=>snapshot.sources[key].state!=='complete').map(key=><li key={key}>
+     <span>{names[key]} {snapshot.sources[key].state==='unavailable'?'unavailable':snapshot.sources[key].reason==='source_cap'?'partially shown — more records are available':'partial'}</span>
+     <Link href={destinations[key]}>{snapshot.sources[key].reason==='source_cap'?'Show all':'Open'} {names[key].toLowerCase()}</Link>
+    </li>)}</ul>
+   </section>:null}
+   <footer className="employee-home-refresh">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button className="button secondary" type="button" onClick={onRetry} disabled={state.paused||state.refreshing}>{state.refreshing?'Checking…':'Retry Home'}</button>}{snapshot?<small>Checked <time dateTime={snapshot.observedAt}>{stamp(snapshot.observedAt,snapshot.timeZone)}</time></small>:null}</footer>
+  </div>
+  <aside className="employee-home-surface employee-home-recorded" aria-label="Own recorded time">
+   {snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:<EmployeeTimeView compact state={{time:null,refreshing:loading,paused:state.paused}} onRefresh={onRetry}/>}
+  </aside>
+ </div>;
+}
+export function EmployeeHomeActions({authority,timeAuthority}:{authority:string;timeAuthority:string}){
+ const [state,setState]=useState<PrivatePanelState<HomeLifetime>>({snapshot:null,refreshing:true,paused:false});
+ const control=useRef<ReturnType<typeof createEmployeeHomeController>|null>(null),pathname=usePathname();
+ useEffect(()=>{
+  const controller=createEmployeeHomeController(setState,async signal=>{
+   const response=await fetch('/api/employee/home',{credentials:'same-origin',cache:'no-store',redirect:'error',signal,headers:{Accept:'application/json','X-Nevora-Home':authority}});
+   if(response.status===401||response.status===403)return {state:'unauthorized',reason:'access_denied'};
+   if(!response.ok)throw Error('Home unavailable');return response.json();
+  },authority);
+  control.current=controller;let mounted=true;
+  const pause=()=>controller.pause();
+  const sync=()=>{controller.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)controller.start();};
+  document.addEventListener('visibilitychange',sync);
+  for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
+  for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,sync);
+  void Promise.resolve().then(()=>{if(mounted)sync();});
+  return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
+ },[authority,pathname]);
+ return <EmployeeHomeView state={state} timeAuthority={timeAuthority} onRetry={()=>control.current?.refresh()}/>;
+}

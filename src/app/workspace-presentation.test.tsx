@@ -16,7 +16,7 @@ vi.mock('@/components/status-pill', () => import('../components/status-pill'));
 vi.mock('@/components/nav-icon', () => import('../components/nav-icon'));
 vi.mock('@/lib/date-utils', () => import('../lib/date-utils'));
 vi.mock('next/link', () => ({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
-vi.mock('next/navigation', () => ({redirect:()=>{throw Error('REDIRECT');}}));
+vi.mock('next/navigation', () => ({usePathname:()=>'/app',redirect:()=>{throw Error('REDIRECT');}}));
 it('uses generic customer copy in the directory and unconnected timekeeping page', async () => {
   const directory=renderToStaticMarkup(await EmployeesPage());
   expect(directory).not.toContain('across Fuel');
@@ -29,7 +29,7 @@ it('keeps recorded timekeeping guidance independent of customer identity', async
   expect(time).not.toContain('connected yet');
 });
 it('keeps the employee dashboard kiosk guidance independent of customer identity', () => {
-  const html=renderToStaticMarkup(<EmployeeDashboard firstName="Sam" weekStart="2030-10-07" weekLabel="Oct 7 – 13" currentDate="2030-10-07" currentTime="09:00" publishedShifts={[]} scheduledHours={0} />);
+  const html=renderToStaticMarkup(<EmployeeDashboard authority={"a".repeat(64)} timeAuthority={"b".repeat(64)} />);
   expect(html).not.toContain('Fuel kiosk');
   expect(html).toContain('Clocker');
 });

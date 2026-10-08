@@ -6,8 +6,8 @@ it('late_former_authority_reply_discarded',async()=>{
  expect(module?.createEmployeeHomeController,'Home requires a bound private lifetime controller').toBeTypeOf('function');
  vi.useFakeTimers();let resolve!:(v:unknown)=>void;const changed=vi.fn();
  const controller=module!.createEmployeeHomeController(changed,()=>new Promise(r=>{resolve=r;}),'a'.repeat(64));
- controller.start();await Promise.resolve();controller.pause();resolve({state:'partial',snapshot:snapshot(),allSet:false});await Promise.resolve();await Promise.resolve();
+ controller.start();await Promise.resolve();controller.pause();resolve({state:'partial',snapshot:snapshot(),allSet:false});await vi.advanceTimersByTimeAsync(0);
  expect(changed.mock.calls.at(-1)?.[0]).toMatchObject({snapshot:null,paused:true});
- controller.start();await Promise.resolve();resolve({state:'partial',snapshot:{...snapshot(),authority:'b'.repeat(64)},allSet:false});await Promise.resolve();await Promise.resolve();
+ controller.start();await Promise.resolve();resolve({state:'partial',snapshot:{...snapshot(),authority:'b'.repeat(64)},allSet:false});await vi.advanceTimersByTimeAsync(0);
  expect(changed.mock.calls.at(-1)?.[0].snapshot).toMatchObject({state:'unavailable',reason:'access_denied'});controller.stop();
 });

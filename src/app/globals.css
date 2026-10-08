@@ -13735,3 +13735,32 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
   .employee-shell .employee-account-panel { padding: 20px; }
   .employee-shell .employee-account-view :is(a, button) { scroll-margin-block: 80px calc(100px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* Task5 partial employee Home: local layout and existing brand tokens only. */
+.employee-home .employee-home-layout { display:grid; grid-template-columns:minmax(0, 1.7fr) minmax(0, 1fr); gap:20px; align-items:start; }
+.employee-home .employee-home-primary, .employee-home .employee-home-recorded { min-width:0; padding:24px; }
+.employee-home .employee-home-next h2 { margin:0 0 16px; font-size:24px; }
+.employee-home .employee-home-assignment { overflow-wrap:anywhere; }
+.employee-home .employee-home-shift-time { font-size:20px; line-height:1.5; }
+.employee-home .employee-home-review { min-height:44px; display:inline-flex; align-items:center; gap:12px; font-weight:600; color:#0756D9; }
+.employee-home .employee-home-scheduled-now { border-top:1px solid #e3e4e8; padding-top:16px; margin-top:16px; }
+.employee-home .employee-home-scheduled-now h3 { font-size:16px; margin:0; }
+.employee-home .employee-home-scheduled-now p, .employee-home .employee-home-scheduled-now .employee-home-shift-time { font-size:14px; }
+.employee-home .employee-home-publication, .employee-home .employee-home-partial { color:#565965; font-size:14px; line-height:1.5; }
+.employee-home .employee-home-actions { margin-top:24px; border-top:1px solid #e3e4e8; padding-top:20px; }
+.employee-home .employee-home-actions h2 { margin:0; font-size:20px; }
+.employee-home .employee-home-actions ul { list-style:none; margin:12px 0; padding:0; }
+.employee-home .employee-home-actions li>a { display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:56px; padding:12px 0; border-bottom:1px solid #e3e4e8; color:#18191F; overflow-wrap:anywhere; }
+.employee-home .employee-home-actions li>a small { display:block; color:#565965; margin-top:4px; }
+.employee-home .employee-home-source-notices li { font-size:14px; padding:8px 0; }
+.employee-home .employee-home-source-notices li>a { display:inline-flex; min-height:44px; padding:0 8px; color:#0756D9; border:0; }
+.employee-home .employee-home-refresh { display:flex; align-items:center; flex-wrap:wrap; gap:12px; padding-top:20px; }
+.employee-home .employee-home-refresh small { color:#565965; }
+.employee-home .employee-home-recovery { min-height:120px; }
+.employee-home .employee-home-primary a:focus-visible, .employee-home .employee-home-primary button:focus-visible { outline:3px solid #0756D9; outline-offset:3px; }
+.employee-home .employee-home-primary a:hover { color:#003AAE; }
+.employee-home .employee-home-primary a:active { color:#003AAE; }
+@media(max-width:767px) {
+ .employee-home .employee-home-layout { grid-template-columns:minmax(0,1fr); gap:16px; }
+ .employee-home .employee-home-primary, .employee-home .employee-home-recorded { padding:20px; }
+}
