@@ -30,4 +30,6 @@ it('at_exact_start_becomes_current and Next Shift advances',()=>{
 it('invalid_DST_boundary_unavailable instead of normalizing a skipped local time',()=>{
  expect(projectPublishedAssignmentRows({observedAt:'2026-03-01T12:00:00.000Z',timeZone:'America/New_York',
   current:[],future:[row({weekStart:'2026-03-02',date:'2026-03-08',startTime:'02:30',endTime:'03:30'})],coverageComplete:true})).toBeNull();
+ expect(projectPublishedAssignmentRows({observedAt:'2026-10-31T12:00:00.000Z',timeZone:'America/New_York',
+  current:[],future:[row({weekStart:'2026-10-26',date:'2026-11-01',startTime:'01:30',endTime:'02:30'})],coverageComplete:true})).toBeNull();
 });

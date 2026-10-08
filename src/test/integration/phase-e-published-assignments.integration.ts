@@ -30,10 +30,12 @@ afterEach(async()=>{await db?.dispose();});
 const read=(executor:SqlExecutor=db.executor)=>readEmployeePublishedAssignments(proof,executor);
 
 it('next_shift_crosses_multiple_weeks and year_rollover with actual source/date/episode/revision',async()=>{
- const future=week(42),date=addDays(future,2);await schedule('far',future);await shift('far-own','far','QA-E11-SELF',date);
+ const future=weekStartFor(`${Number(businessDate(new Date(),'America/Puerto_Rico').slice(0,4))+2}-01-07`),date=addDays(future,2);
+ await schedule('far',future);await shift('far-own','far','QA-E11-SELF',date);
  const result=await read();expect(result.nextShift).toMatchObject({shiftId:'far-own',weekStart:future,date,locationId:'loc-1',locationLabel:'Main Office',positionLabel:'Customer Support',publicationRevisionId:'rev-far'});
  expect(result.nextShift?.assignmentEpisodeId).toMatch(/^[a-f0-9-]{36}$/);expect(result.nextShift?.termsRevision).toBeGreaterThan(0);
  expect(result.nextShift?.startAt).toBe(`${date}T12:00:00.000Z`);expect(result.publicationState).toBe('partial');
+ console.log('E11 fictional source identity',JSON.stringify({actor:proof.employee.id,shift:result.nextShift?.shiftId,episode:result.nextShift?.assignmentEpisodeId,termsRevision:result.nextShift?.termsRevision,revision:result.nextShift?.publicationRevisionId,date:result.nextShift?.date,startAt:result.nextShift?.startAt,observedAt:result.observedAt,timeZone:result.timeZone}));
  expect(JSON.stringify(result)).not.toContain('PRIVATE NOTE');
 });
 it('partial_locations_keep_known_shift while draft_coworker_released_ineligible_excluded',async()=>{
@@ -58,10 +60,21 @@ it('complete current-week coverage with no shift is distinct from unavailable an
  const result=await read();expect(result).toMatchObject({nextShift:null,currentShift:null,publicationState:'complete',timeZone:'America/Puerto_Rico'});
  expect(result.observedAt).toMatch(/^\d{4}-\d\d-\d\dT/);
 });
+it('unpublished current week and no future row stays partial with no invented off state',async()=>{
+ expect(await read()).toMatchObject({nextShift:null,currentShift:null,publicationState:'partial',timeZone:'America/Puerto_Rico'});
+});
 it('missing publication identity closes a known assignment without exposing its data',async()=>{
  const future=week(14);await schedule('legacy',future);await shift('legacy-own','legacy','QA-E11-SELF',addDays(future,1));
  await q("DELETE FROM schedule_publication_revisions WHERE id='rev-legacy'");
  expect(await read()).toEqual({observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'});
+});
+it('a fresh read reflects changed live ownership, time and position rather than stale capture',async()=>{
+ const future=week(14),date=addDays(future,1);await schedule('change',future);await shift('change-own','change','QA-E11-SELF',date);
+ const before=await read();expect(before.nextShift).toMatchObject({shiftId:'change-own',startAt:`${date}T12:00:00.000Z`,positionLabel:'Customer Support',termsRevision:1});
+ await q("UPDATE shifts SET start_time='09:00',position_id='qa-pos2' WHERE id='change-own'");
+ const changed=await read();expect(changed.nextShift).toMatchObject({shiftId:'change-own',startAt:`${date}T13:00:00.000Z`,positionLabel:'Operations',termsRevision:2});
+ await q("UPDATE shifts SET employee_id='QA-E11-COWORKER' WHERE id='change-own'");
+ expect((await read()).nextShift).toBeNull();
 });
 it('session lost before protected source read exposes no private rows',async()=>{
  const future=week(14);await schedule('known',future);await shift('known-own','known','QA-E11-SELF',addDays(future,1));
