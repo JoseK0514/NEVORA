@@ -25,10 +25,11 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  async function contrastStates(){
   const target=page.locator('.employee-account-footer button');
   for(const state of ['normal','hover','pressed','focus']){
+   await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.disabled===false);
    if(state==='normal')await page.mouse.move(0,0);
    if(state==='hover')await target.hover();
    if(state==='pressed')await page.mouse.down();
-   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();await page.keyboard.press('Tab');await target.focus();}
+   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();let reached=false;for(let n=0;n<30;n++){await page.keyboard.press('Tab');if(await target.evaluate(e=>e===document.activeElement)){reached=true;break;}}assert(reached,'Native Tab reaches Refresh');await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.matches(':focus-visible'));}
    const sample=await target.evaluate(element=>{
     const rgba=value=>{const parts=value.match(/[\d.]+/g).map(Number);return [parts[0],parts[1],parts[2],parts[3]??1];};
     const blend=(front,back)=>front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
@@ -36,11 +37,11 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
     const background=layers.reduce((back,front)=>blend(front,back),[255,255,255]),style=getComputedStyle(element),foreground=blend(rgba(style.color),background);
     const luminance=color=>color.map(v=>v/255).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[0.2126,0.7152,0.0722][i],0);
     const ratio=(a,b)=>(Math.max(luminance(a),luminance(b))+0.05)/(Math.min(luminance(a),luminance(b))+0.05);
-    return {foreground,background,textRatio:ratio(foreground,background),outline:style.outlineStyle,outlineWidth:style.outlineWidth,outlineRatio:ratio(blend(rgba(style.outlineColor),background),background)};
+    return {active:element===document.activeElement,focusVisible:element.matches(':focus-visible'),disabled:element.disabled,foreground,background,textRatio:ratio(foreground,background),outline:style.outlineStyle,outlineWidth:style.outlineWidth,outlineRatio:ratio(blend(rgba(style.outlineColor),background),background)};
    });
-   assert(sample.textRatio>=4.5,state+' actual composited button text contrast');
-   if(state==='focus'){assert.notEqual(sample.outline,'none');assert(sample.outlineRatio>=3,'focus outline contrast');}
    contrast.push({state,...sample});
+   assert(sample.textRatio>=4.5,state+' actual composited button text contrast');
+   if(state==='focus'){assert(sample.active&&sample.focusVisible&&!sample.disabled,'Actual native keyboard focus is visible');assert.notEqual(sample.outline,'none');assert(sample.outlineRatio>=3,'focus outline contrast');}
   }
   await page.mouse.move(0,0);await page.mouse.up();checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
  }
