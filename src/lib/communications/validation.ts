@@ -18,7 +18,7 @@ function scope(v:unknown):CommunicationScope|null{
 export function validateCommunicationDraft(input:unknown):Validation{
  try{
   if(new TextEncoder().encode(JSON.stringify(input)).byteLength>COMMUNICATION_TRANSPORT_BYTES)return {ok:false,reason:'transport'};
-  if(!object(input)||!keys(input,['type','scope','title','body','acknowledgement','expiresAt'])||!['TODAYS_TEAM','LOCATION_ANNOUNCEMENT','SHIFT_NOTE','OPERATIONAL_UPDATE'].includes(String(input.type))||!['NONE','OPTIONAL','REQUIRED'].includes(String(input.acknowledgement)))return {ok:false,reason:'shape'};
+  if(!object(input)||!keys(input,['type','scope','title','body','acknowledgement','expiresAt'])||typeof input.type!=='string'||typeof input.acknowledgement!=='string'||!['TODAYS_TEAM','LOCATION_ANNOUNCEMENT','SHIFT_NOTE','OPERATIONAL_UPDATE'].includes(input.type)||!['NONE','OPTIONAL','REQUIRED'].includes(input.acknowledgement))return {ok:false,reason:'shape'};
   if(typeof input.title!=='string'||typeof input.body!=='string')return {ok:false,reason:'text'};
   const title=input.title.replace(/\r\n?/g,'\n').trim(),body=input.body.replace(/\r\n?/g,'\n').trim();
   // Check controls before trimming as well, so a leading tab/control cannot disappear.

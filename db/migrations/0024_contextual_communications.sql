@@ -131,7 +131,10 @@ DECLARE r communication_revisions%ROWTYPE; c communications%ROWTYPE; h integer; 
 BEGIN
  IF TG_TABLE_NAME='communications' THEN
   IF TG_OP='DELETE' THEN RAISE EXCEPTION 'communication_history_immutable'; END IF;
-  IF NOT communication_same_workspace(NEW.author_employee_id,NEW.workspace_id) THEN RAISE EXCEPTION 'communication_actor_workspace'; END IF;
+  -- Author eligibility is a creation-time fact; later deactivation or relocation
+  -- must not invalidate immutable history. New revision/lifecycle actors retain
+  -- their current eligibility guards; protected commands own session authority.
+  IF TG_OP='INSERT' AND NOT communication_same_workspace(NEW.author_employee_id,NEW.workspace_id) THEN RAISE EXCEPTION 'communication_actor_workspace'; END IF;
   IF TG_OP='INSERT' AND NEW.state<>'DRAFT' THEN RAISE EXCEPTION 'communication_stage_required'; END IF;
   IF TG_OP='UPDATE' THEN
    IF (NEW.id,NEW.workspace_id,NEW.author_employee_id,NEW.created_at) IS DISTINCT FROM (OLD.id,OLD.workspace_id,OLD.author_employee_id,OLD.created_at) OR OLD.state='WITHDRAWN' OR NEW.state='DRAFT' THEN RAISE EXCEPTION 'communication_identity_immutable'; END IF;
