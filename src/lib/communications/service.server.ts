@@ -97,6 +97,8 @@ export async function findCommunicationOperation(proof:SessionMutationProof,oper
 function sourceGuard(proof:SessionMutationProof,w:Workspace,d:CommunicationDraft,fingerprint:string):SqlStatement{
  const s=snapshot(proof,w,d);return {text:`SELECT (CASE WHEN fingerprint=$7 THEN '1' ELSE 'communication_source_conflict' END)::integer FROM (${s.text}) source`,values:[...s.values,fingerprint]};
 }
+function publicationClockGuard(w:Workspace,d:CommunicationDraft):SqlStatement{return {text:`SELECT (CASE WHEN ($1::timestamptz IS NULL OR $1::timestamptz>clock_timestamp())
+ AND ($2::date IS NULL OR $2::date=(clock_timestamp() AT TIME ZONE $3)::date) THEN '1' ELSE 'communication_source_conflict' END)::integer`,values:[d.expiresAt,d.scope.kind==='TODAYS_TEAM'?d.scope.businessDate:null,w.timeZone]};}
 const conflict:CommandResult={status:'conflict',reason:'source_or_operation_changed'};
 function cancelStatements(id:string):SqlStatement[]{return [{text:`WITH cancelled AS (UPDATE notifications SET push_state='cancelled',cancelled_at=clock_timestamp()
  WHERE source_kind='COMMUNICATION' AND source_id=$1 AND push_state IN('pending','materialized','no_active_subscription') RETURNING id)
@@ -130,6 +132,7 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
   const writes:SqlStatement[]=[];
   if(root)writes.push({text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM communications WHERE workspace_id=$1 AND id=$2::uuid AND state='PUBLISHED' AND head_revision_id=$3::uuid) THEN '1' ELSE 'communication_source_conflict' END)::integer`,values:[w.id,id,root.revisionId]});
   writes.push(sourceGuard(proof,w,d.value,o.fingerprint));
+  if(c.kind!=='WITHDRAW')writes.push(publicationClockGuard(w,d.value));
   if(c.kind==='WITHDRAW')writes.push(...cancelStatements(id),{text:"UPDATE communications SET state='WITHDRAWN' WHERE workspace_id=$1 AND id=$2::uuid",values:[w.id,id]});
   else{
    if(!root)writes.push(communicationRootInsert(w.id,id,proof.employee.id));else writes.push(...cancelStatements(id));
@@ -145,7 +148,7 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
   }
   writes.push({text:'INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,$5,$6)',values:[randomUUID(),w.id,id,revisionId,proof.employee.id,c.kind==='WITHDRAW'?'WITHDRAWN':c.kind==='REVISE'?'REVISED':'PUBLISHED']},
    {text:'INSERT INTO communication_operations(workspace_id,actor_employee_id,operation_id,session_hash,payload_hash,kind,communication_id,revision_id) VALUES($1,$2,$3::uuid,$4,$5,$6,$7::uuid,$8::uuid)',values:[...identity,proof.sessionTokenHash,payloadHash,c.kind,id,revisionId]});
-  dispatched=true;await executor.transaction([...prefix,opLock,opCheck,freshCheck,...writes,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  dispatched=true;await executor.transaction([...prefix,opLock,opCheck,freshCheck,...writes,...(c.kind==='WITHDRAW'?[]:[publicationClockGuard(w,d.value)]),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   return committed(id,revisionId,c.operationId);
  }catch(error){
   const message=error instanceof Error?error.message:'';
@@ -167,8 +170,9 @@ export async function readCommunication(proof:SessionMutationProof,id:string,exe
   if(!r)return {state:'unauthorized',reason:'update_unavailable'};
   const o=await observe(proof,w,r.draft,executor,signal,id),p=guards(proof,w,id),result=await executor.transaction([...p,sourceGuard(proof,w,r.draft,o.fingerprint),rootStatement(w,id),recipientStatement(proof,w,r),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   const current=result[p.length+1]?.[0] as Root|undefined,grant=result[p.length+2]?.[0] as {kind:string;sourceShiftId:string;assignmentEpisodeId:string;termsFingerprint:string;acknowledgedAt:string|null;readAt:string|null}|undefined;
-  const management=canManageCommunication(o.context),member=o.facts.members.some(m=>m.id===proof.employee.id),currentGrant=o.grants.find(g=>g.employeeId===proof.employee.id);
-  const allowed=management||(o.context.location.active&&o.context.location.workspaceId===w.id&&member&&grant&&(grant.kind==='LOCATION'||(currentGrant?.sourceShiftId===grant.sourceShiftId&&currentGrant.assignmentEpisodeId===grant.assignmentEpisodeId&&currentGrant.termsFingerprint===grant.termsFingerprint)));
+  const management=canManageCommunication(o.context),member=o.facts.members.some(m=>m.id===proof.employee.id);
+  const assignmentValid=grant&&o.context.assignments.some(a=>a.employeeId===proof.employee.id&&a.published&&!a.released&&a.sourceShiftId===grant.sourceShiftId&&a.assignmentEpisodeId===grant.assignmentEpisodeId&&a.termsFingerprint===grant.termsFingerprint);
+  const allowed=management||(o.context.location.active&&o.context.location.workspaceId===w.id&&member&&grant&&(grant.kind==='LOCATION'||assignmentValid));
   if(!allowed)return {state:'unauthorized',reason:'update_unavailable'};
   if(!current||current.revisionId!==r.revisionId)return {state:'unavailable',reason:'update_changed'};
   if(current.state==='WITHDRAWN')return {state:'withdrawn',reason:'update_unavailable'};
@@ -176,12 +180,28 @@ export async function readCommunication(proof:SessionMutationProof,id:string,exe
   return {state:'ready',id:r.id,revisionId:r.revisionId,contentHash:r.contentHash,title:r.draft.title,body:r.draft.body,type:r.draft.type,publishedAt:r.publishedAt,editedAt:r.version>1?r.publishedAt:null,acknowledgement:r.draft.acknowledgement,ownAcknowledgedAt:grant?.acknowledgedAt??null,ownReadAt:grant?.readAt??null,authority:communicationAuthority(proof)};
  }catch(error){return {state:isManagementAuthorizationError(error)?'unauthorized':'unavailable',reason:'update_unavailable'};}
 }
+/** Final protected membership check for list/Home/ack consumers. Immutable
+ * grants intersect current exact assignment and current location eligibility. */
+export function communicationRecipientAllowedSql(actor='$2'):string{return `EXISTS(SELECT 1 FROM employees e JOIN locations primary_l ON primary_l.id=e.primary_location_id
+ JOIN locations scope_l ON scope_l.id=r.location_id AND scope_l.workspace_id=c.workspace_id AND scope_l.active
+ JOIN communication_recipients g ON g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=r.id AND g.employee_id=e.id
+ WHERE e.id=${actor} AND e.active AND e.role IN('EMPLOYEE','LEAD') AND primary_l.workspace_id=c.workspace_id
+ AND (e.primary_location_id=scope_l.id OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=scope_l.id))
+ AND (g.grant_kind='LOCATION' OR EXISTS(SELECT 1 FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id=g.source_shift_id AND sh.employee_id=e.id AND s.location_id=g.location_id AND s.status='PUBLISHED'
+ AND sh.assignment_episode_id::text=g.assignment_episode_id AND ${currentShiftFingerprintSql()}=g.terms_fingerprint AND NOT EXISTS(SELECT 1 FROM shift_callouts callout WHERE ${currentCalloutReleaseSql('callout')})
+ AND EXISTS(SELECT 1 FROM schedule_publication_revisions pr WHERE pr.week_start=s.week_start))))`;}
+function finalItemStatement(proof:SessionMutationProof,w:Workspace,item:Extract<CommunicationRead,{state:'ready'}>):SqlStatement{return {text:`SELECT EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id
+ WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp())
+ AND ($5 IN('OWNER','MANAGER') OR ${communicationRecipientAllowedSql()})) AS allowed`,values:[w.id,proof.employee.id,item.id,item.revisionId,proof.employee.role]};}
 export async function listEmployeeCommunications(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationListRead>{
  try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),p=guards(proof,w),results=await executor.transaction([...p,{text:`SELECT c.id::text FROM communications c WHERE c.workspace_id=$1 AND c.state='PUBLISHED' AND
  ($3 IN('OWNER','MANAGER') OR c.author_employee_id=$2 OR EXISTS(SELECT 1 FROM communication_recipients g WHERE g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=c.head_revision_id AND g.employee_id=$2)) ORDER BY c.created_at DESC,c.id LIMIT 101`,values:[w.id,proof.employee.id,proof.employee.role]}],signal);
   const rows=results[p.length] as {id:string}[],items:CommunicationRead[]=[];let partial=rows.length>100;
   for(const row of rows.slice(0,100)){const r=await readCommunication(proof,row.id,executor);if(r.state==='ready')items.push(r);else if(r.state==='unavailable')partial=true;}
-  await executor.transaction([...guards(proof,w),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
-  return {state:partial?'partial':'complete',observedAt:new Date().toISOString(),items,reason:partial?'source_unavailable':null};
+  const ready=items.filter((i):i is Extract<CommunicationRead,{state:'ready'}>=>i.state==='ready');
+  const finalPrefix=[...guards(proof,w),{text:'SELECT id FROM communications WHERE workspace_id=$1 AND id=ANY($2::uuid[]) ORDER BY id FOR SHARE',values:[w.id,ready.map(i=>i.id).sort()]}];
+  const final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  const current=ready.filter((_,i)=>(final[finalPrefix.length+i]?.[0] as {allowed:boolean}|undefined)?.allowed===true);if(current.length!==ready.length)partial=true;
+  return {state:partial?'partial':'complete',observedAt:new Date().toISOString(),items:current,reason:partial?'source_unavailable':null};
  }catch(error){return {state:isManagementAuthorizationError(error)?'unauthorized':'unavailable',reason:'updates_unavailable'};}
 }
