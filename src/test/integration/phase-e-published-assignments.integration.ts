@@ -63,7 +63,7 @@ it('missing publication identity closes a known assignment without exposing its 
  await q("DELETE FROM schedule_publication_revisions WHERE id='rev-legacy'");
  expect(await read()).toEqual({observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'});
 });
-it('current authorization is checked after a source wait',async()=>{
+it('session lost before protected source read exposes no private rows',async()=>{
  const future=week(14);await schedule('known',future);await shift('known-own','known','QA-E11-SELF',addDays(future,1));
  let calls=0;const executor={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
   calls++;if(calls===2)await q("DELETE FROM employee_sessions WHERE employee_id='QA-E11-SELF'");return db.executor.transaction(statements,signal);
@@ -87,7 +87,35 @@ it('role change during a blocked source guard is rechecked after the wait',async
    if(statements.some(statement=>statement.text.includes('SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE')))signalStart();
    return db.executor.transaction(statements,signal);
   }};
-  const pending=read(executor);await started;await blocker.query('COMMIT');
+  const pending=read(executor);await started;
+  let blocked=false;for(let attempt=0;attempt<40;attempt++){
+   const [{waiting}]=await blocker.query("SELECT count(*)::integer AS waiting FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() AND wait_event_type='Lock'").then(result=>result.rows);
+   if(waiting>0){blocked=true;break;}await new Promise(resolve=>setTimeout(resolve,25));
+  }
+  expect(blocked).toBe(true);await blocker.query('COMMIT');
   expect(await pending).toEqual({observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'});
  }finally{await blocker.query('ROLLBACK').catch(()=>{});await blocker.end();}
+});
+it('fictional small and large future sets retain bounded query count and expose local EXPLAIN plans',async()=>{
+ const first=week(14);
+ await schedule('perf-0',first);await shift('shift-perf-0','perf-0','QA-E11-SELF',addDays(first,1));
+ let batches=0,source:{text:string;values:readonly unknown[]}|undefined;
+ const executor={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+  batches++;source=statements.find(statement=>statement.text.startsWith('WITH clock AS MATERIALIZED'))??source;
+  return db.executor.transaction(statements,signal);
+ }};
+ const explain=async(label:string)=>{
+  expect(source).toBeDefined();
+  const plan=await q('EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) '+source!.text,[...source!.values]);
+  const root=(plan[0] as {'QUERY PLAN':Array<{Plan:Record<string,unknown>}>})['QUERY PLAN'][0].Plan;
+  const operators:string[]=[];const visit=(node:Record<string,unknown>)=>{operators.push([node['Node Type'],node['Index Name']].filter(Boolean).join(':'));for(const child of (node.Plans as Record<string,unknown>[]|undefined)??[])visit(child);};visit(root);
+  console.log('E11 fictional '+label+' EXPLAIN',JSON.stringify({batches,operators,actualMs:root['Actual Total Time']}));
+  expect(operators.length).toBeGreaterThan(0);
+ };
+ expect((await read(executor)).nextShift?.shiftId).toBe('shift-perf-0');expect(batches).toBe(3);await explain('one-week');
+ await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) SELECT 'perf-'||n,'loc-1',$1::date+n*7,'PUBLISHED','QAOWNER' FROM generate_series(1,299) n",[first]);
+ await q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) SELECT 'rev-perf-'||n,$1::date+n*7,1,'PUBLISH','QAOWNER' FROM generate_series(1,299) n",[first]);
+ await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) SELECT 'shift-perf-'||n,'perf-'||n,'QA-E11-SELF',$1::date+n*7+1,'08:00','16:00','qa-pos' FROM generate_series(1,299) n",[first]);
+ await q('ANALYZE shifts');batches=0;
+ expect((await read(executor)).nextShift?.shiftId).toBe('shift-perf-0');expect(batches).toBe(3);await explain('300-weeks');
 });
