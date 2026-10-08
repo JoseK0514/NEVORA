@@ -15,7 +15,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const shot=async name=>{const path=join(evidenceDirectory,`home-partial-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
  const next=()=>page.locator('.employee-home-next');
  const ready=async()=>{await page.locator('[data-home-state="partial"]').waitFor();await page.waitForLoadState('networkidle');};
- const refresh=async()=>{await page.getByRole('button',{name:'Retry Home',exact:true}).click();await ready();};
+ const refresh=async()=>{const response=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home');await page.getByRole('button',{name:'Retry Home',exact:true}).click();await (await response).finished();await page.getByRole('button',{name:'Retry Home',exact:true}).waitFor();await ready();};
  async function login(target=page,id=actor){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign In',exact:true}).click()]);}
  function gate(path){let release,started,used=false;const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;});const handler=async route=>{if(used)return route.continue();used=true;const response=await route.fetch();if(path.includes('/home'))homeResponse=await response.json();started();await wait;await route.fulfill({response}).catch(()=>{});};return {handler,seen,release:()=>release(),path};}
  try {

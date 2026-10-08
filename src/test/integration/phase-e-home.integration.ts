@@ -107,3 +107,16 @@ it('multiple persisted future weeks remain in the acknowledgement source; no con
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},db.executor);
  const r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.filter(i=>i.ref.kind==='SCHEDULE').map(i=>i.ref.id)).toEqual([fixture.week,week]);expect(r.snapshot.sources.acknowledgements.state).toBe('partial');
 });
+it('unknown current coverage policy is partial rather than an empty complete eligible source',async()=>{
+ const {createCoverageOffer}=await import('./shift-change-api');
+ const id=await createCoverageOffer({sourceShiftId:fixture.targetId,requestedByEmployeeId:fixture.actors[1]},db.executor);
+ await q("UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,completionAdvanceMinutes}','null')");
+ const r=await home();expect(r).toMatchObject({state:'partial',snapshot:{sources:{exchanges:{state:'partial'}}}});if('snapshot' in r)expect(r.snapshot.attention.some(i=>i.ref.id===id&&i.actionable)).toBe(false);
+});
+it('terminal exchange changedAt uses actual latest resolution rather than old request creation time',async()=>{
+ const {createCoverageOffer}=await import('./shift-change-api');
+ const id=await createCoverageOffer({sourceShiftId:fixture.sourceId,requestedByEmployeeId:proof.employee.id},db.executor);
+ await q("UPDATE shift_exchanges SET status='CANCELLED',created_at=clock_timestamp()-interval '1 year',resolved_at=clock_timestamp() WHERE id=$1",[id]);
+ const [source]=await q('SELECT resolved_at::text AS at FROM shift_exchanges WHERE id=$1',[id]) as {at:string}[];
+ const r=await home();if(!('snapshot' in r))throw Error('No Home');const item=r.snapshot.attention.find(i=>i.ref.id===id);expect(item).toBeDefined();expect(Date.parse(item!.changedAt)).toBe(Date.parse(source.at));
+});
