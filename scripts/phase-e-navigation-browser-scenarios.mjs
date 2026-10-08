@@ -5,7 +5,7 @@ import {Client} from 'pg';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile}){
- const checks=[],contrast=[],prefix=`navigation-${engine}-${width}`,headers={};
+ const checks=[],contrast=[],focusTrace=[],prefix=`navigation-${engine}-${width}`,headers={};
  const q=(text,values=[])=>app.database.executor.query({text,values});
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/'))headers[path]=request.headers()['x-nevora-employee-view'];});
  async function login(id){await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);}
@@ -29,7 +29,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    if(state==='normal')await page.mouse.move(0,0);
    if(state==='hover')await target.hover();
    if(state==='pressed')await page.mouse.down();
-   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();let reached=false;for(let n=0;n<30;n++){await page.keyboard.press('Tab');if(await target.evaluate(e=>e===document.activeElement)){reached=true;break;}}assert(reached,'Native Tab reaches Refresh');await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.matches(':focus-visible'));}
+   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();focusTrace.push(await target.evaluate(e=>({stage:'after pointer release',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')})));await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.disabled===false&&!!document.querySelector('.employee-profile-details'));let reached=false;for(let n=0;n<30;n++){await page.keyboard.press('Tab');focusTrace.push(await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible'),activeTag:document.activeElement?.tagName,activeClass:document.activeElement?.className})));if(await target.evaluate(e=>e===document.activeElement)){reached=true;break;}}assert(reached,'Native Tab reaches Refresh');await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.matches(':focus-visible'));}
    const sample=await target.evaluate(element=>{
     const rgba=value=>{const parts=value.match(/[\d.]+/g).map(Number);return [parts[0],parts[1],parts[2],parts[3]??1];};
     const blend=(front,back)=>front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
@@ -112,7 +112,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(width<768){const clearance=await page.locator('.employee-shell .page-frame').evaluate(e=>parseFloat(getComputedStyle(e).paddingBottom));assert(clearance>=100);}
   checks.push('long_content_safe_area_keyboard: real long identity, 200% CSS zoom/reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
-  await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
+  await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
   return {checks};
- }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,error:String(error)},null,2));throw error;}
+ }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,error:String(error)},null,2));throw error;}
 }
