@@ -87,3 +87,33 @@ it('malformed final observation/result index and oversized source cannot leak a 
  }};expect((await inbox(bad)).state).toBe('unavailable');
  await q("UPDATE notifications SET body=repeat('x',1100000) WHERE id='current'");expect((await inbox()).state).toBe('unavailable');
 });
+it('pending Exchange is current before its clock-only deadline and becomes permitted terminal history after the final wait',async()=>{
+ await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,target_employee_id,status,completion_deadline) VALUES('pending','COVERAGE',$1,$2,$3,'EMPLOYEE_PENDING',clock_timestamp()+interval '1 day')",[scenario.sourceId,proof.employee.id,scenario.actors[1]]);
+ proof.employee.id=scenario.actors[1];await q('UPDATE employee_sessions SET employee_id=$1 WHERE token_hash=$2',[proof.employee.id,proof.sessionTokenHash]);await intent('pending-notice','EXCHANGE','pending','r:1');
+ expect(ids(await inbox())).toEqual(['pending-notice']);
+ await q("UPDATE shift_exchanges SET completion_deadline=clock_timestamp()+interval '300 milliseconds' WHERE id='pending'");
+ const result=await inbox(beforeFinal(async()=>{await q('SELECT pg_sleep(0.35)');}));expect(ids(result)).toEqual(['pending-notice']);expect(result.state==='ready'&&result.validForMs).toBeGreaterThan(1000);
+});
+it('same-version operational location eligibility revoked after discovery blocks an active Exchange',async()=>{
+ await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,target_employee_id,status) VALUES('pending','COVERAGE',$1,$2,$3,'EMPLOYEE_PENDING')",[scenario.sourceId,proof.employee.id,scenario.actors[1]]);
+ proof.employee.id=scenario.actors[1];await q('UPDATE employee_sessions SET employee_id=$1 WHERE token_hash=$2',[proof.employee.id,proof.sessionTokenHash]);await intent('pending-notice','EXCHANGE','pending','r:1');expect(ids(await inbox())).toEqual(['pending-notice']);
+ expect(ids(await inbox(beforeFinal(async()=>{await q('DELETE FROM employee_location_eligibility WHERE employee_id=$1',[proof.employee.id]);})))).toEqual([]);
+});
+it('terminal Callout preserves exact own history after operational location loss; foreign participants cannot open it',async()=>{
+ await q("INSERT INTO shift_callouts(id,shift_id,employee_id,reason_code,status) VALUES('callout',$1,$2,'OTHER','DENIED')",[scenario.sourceId,proof.employee.id]);await intent('callout-notice','CALLOUT','callout','r:1');expect(ids(await inbox())).toEqual(['callout-notice']);
+ await q('DELETE FROM employee_location_eligibility WHERE employee_id=$1',[proof.employee.id]);await q("UPDATE locations SET active=false WHERE id='loc-1'");expect(ids(await inbox())).toEqual(['callout-notice']);
+ await q('UPDATE notifications SET employee_id=$1 WHERE id=$2',[scenario.actors[1],'callout-notice']);proof.employee.id=scenario.actors[1];await q('UPDATE employee_sessions SET employee_id=$1 WHERE token_hash=$2',[proof.employee.id,proof.sessionTokenHash]);expect(ids(await inbox())).toEqual([]);
+});
+it('active singleton workspace and configured profile locations are required; a second workspace is structurally rejected',async()=>{
+ await expect(q("INSERT INTO workspaces(id,name,time_zone,singleton) VALUES('foreign','Foreign','UTC',false)")).rejects.toMatchObject({code:'23514'});
+ await q('UPDATE locations SET active=false');expect((await readEmployeeProfile(proof,db.executor)).state).toBe('unavailable');await q('UPDATE workspaces SET active=false');expect((await inbox()).state).toBe('unavailable');
+});
+it('microsecond/null/set ordering and legacy empty query facts replay without changing authorized outcomes',async()=>{
+ await q("UPDATE time_off_requests SET created_at='2026-10-08T10:11:12.123456Z',start_time=NULL,end_time=NULL,reason=NULL WHERE id='own-request'");await intent();
+ for(let n=0;n<3;n++)expect(ids(await inbox())).toEqual(['current']);await q("DELETE FROM time_off_requests WHERE id='own-request'");expect(ids(await inbox())).toEqual([]);
+});
+it('owned PostgreSQL statement and lock timeouts yield unavailable instead of a completed inbox',async()=>{
+ await intent();const timeout={...db.executor,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{
+  if(statements.some(s=>s.text.startsWith('WITH facts AS MATERIALIZED'))){const copy=[...statements];copy.splice(copy.length-1,0,{text:'SELECT pg_sleep(3)',values:[]});return db.executor.transaction(copy,signal);}return db.executor.transaction(statements,signal);
+ }};expect((await inbox(timeout)).state).toBe('unavailable');
+});

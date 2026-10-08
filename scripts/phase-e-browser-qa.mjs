@@ -68,7 +68,7 @@ async function main() {
         for (const [item, runScenario] of modules) for (const width of WIDTHS) {
           controller.signal.throwIfAborted();
           const record = { suite: item, engine, width, status: 'failed', checks: [] }; report.executions.push(record);
-          const context = await browser.newContext({ viewport: { width, height: 1000 }, serviceWorkers: 'block' });
+          const context = await browser.newContext({ viewport: { width, height: 1000 }, hasTouch: width < 768, isMobile: width < 768, serviceWorkers: 'block' });
           try {
             await context.route('**/*', route => {
               const target = new URL(route.request().url());
