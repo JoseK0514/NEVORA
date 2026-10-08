@@ -11,6 +11,10 @@ export type EmployeeScheduleState = 'published'|'unpublished'|'unavailable';
 export type EmployeeScheduleRead = {state:EmployeeScheduleState;shifts:ScheduleShiftRow[];locations:{id:string;shortName:string}[]};
 const unavailable:EmployeeScheduleRead={state:'unavailable',shifts:[],locations:[]};
 
+/** Canonical active, currently eligible location source for employee reads. */
+export const employeeAllowedLocationsSql=(workspace='$1',employee='$2')=>`SELECT l.id,l.short_name FROM locations l WHERE l.workspace_id=${workspace} AND l.active AND
+   (l.id=(SELECT primary_location_id FROM employees WHERE id=${employee}) OR EXISTS(SELECT 1 FROM employee_location_eligibility elig WHERE elig.employee_id=${employee} AND elig.location_id=l.id))`;
+
 /** The existing live published schedule is the source. Coverage and own rows
  * share one SQL observation; no draft row, note, coworker or draft status leaves it. */
 export async function readEmployeeSchedule(proof:SessionMutationProof,weekStart:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeScheduleRead>{
@@ -20,8 +24,7 @@ export async function readEmployeeSchedule(proof:SessionMutationProof,weekStart:
   const workspace=await getWorkspace(executor);
   const guards=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 FOR SHARE',values:[proof.employee.id]},...managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD'])];
   const results=await executor.transaction([...guards,{text:`WITH allowed AS (
-   SELECT l.id,l.short_name FROM locations l WHERE l.workspace_id=$1 AND l.active AND
-   (l.id=(SELECT primary_location_id FROM employees WHERE id=$2) OR EXISTS(SELECT 1 FROM employee_location_eligibility elig WHERE elig.employee_id=$2 AND elig.location_id=l.id))
+   ${employeeAllowedLocationsSql()}
   ), coverage AS (
    SELECT count(*)>0 AND bool_and(EXISTS(SELECT 1 FROM schedules s WHERE s.week_start=$3::date AND s.location_id=l.id AND s.status='PUBLISHED')) AS complete FROM allowed l
   ), own AS (
