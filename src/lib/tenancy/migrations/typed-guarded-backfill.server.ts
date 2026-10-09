@@ -5,15 +5,19 @@ import {types as utilTypes} from 'node:util';
 import {Client,type QueryResult} from 'pg';
 import {canonicalOwnershipJson,getOwnershipRegistry,ownershipDigest,OWNERSHIP_SCHEMA_COMMIT,OWNERSHIP_SOURCE,verifyOwnershipSource,type JsonValue,type TableOwnership} from './ownership';
 import {observeMigrationCatalog,type TypedMigrationCaptureFacts,type MigrationCaptureRequest} from './capture.server';
-import {decodeTypedMigrationWireValue,isIssuedTypedMigrationWireValue} from './typed-wire';
+import {decodeTypedMigrationWireValue,isIssuedTypedMigrationWireValue,projectTypedMigrationWireValueToLegacy} from './typed-wire';
 import {inspectTypedMigrationSnapshot} from './typed-snapshot';
 import {isIssuedTypedTenantBackfillPlan,type TypedTenantBackfillPlan,type TypedBackfillEntry} from './typed-backfill';
 import type {OwnedLocalBackfillIdentity} from './guarded-backfill.server';
 import type {DatabaseComparatorRow} from './backfill';
 import {assertTypedKeyComparatorsOnLockedSource,isKeyComparatorRecheckFailure} from './key-comparator-recheck.server';
 
+import {describeTypedBackfillJournal,validateTypedBackfillJournalObservation,type TypedBackfillJournalDescriptor,type TypedBackfillJournalAssessment} from './typed-journal-contract';
+import {bindOwnedTypedJournalInstallation,assertOwnedTypedJournalInstallation,isTypedJournalBindingFailure,type TypedJournalInstallation,type TypedJournalBindingCode} from './typed-journal-binding.server';
+
 export type GuardedTypedBackfillRequest={mode:'OWNED_LOCAL';identity:OwnedLocalBackfillIdentity;facts:TypedMigrationCaptureFacts;captureRequest:MigrationCaptureRequest;plan:TypedTenantBackfillPlan;authority:{reference:string;operatorRole:string;factsDigest:string;planDigest:string}};
-export type GuardedTypedBackfillCode=
+export type GuardedTypedBackfillCode=TypedJournalBindingCode|
+ 'TYPED_JOURNAL_DESCRIPTOR_DRIFT'|'TYPED_JOURNAL_RETRY_STATE_DRIFT'|'TYPED_JOURNAL_STORAGE_FAILED'|
  'UNSUPPORTED_REQUEST'|'TYPED_PLAN_REQUIRED'|'OWNED_LOCAL_MODE_REQUIRED'|'CAPTURE_BINDING_DRIFT'|'OPERATOR_CUSTODY_BINDING_DRIFT'|'OWNED_LOCAL_IDENTITY_REQUIRED'|
  'OWNED_PG_CLIENT_REQUIRED'|'CLIENT_ALREADY_IN_USE'|'CLIENT_NOT_IDLE'|'CLIENT_CONNECTION_NOT_OWNED'|'OWNED_LOCAL_IDENTITY_DRIFT'|'OWNED_DATABASE_IDENTITY_DRIFT'|'OPERATOR_ROLE_DRIFT'|
  'INSTALLED_SOURCE_DRIFT'|'INSTALLED_REGISTRY_DRIFT'|'CURRENT_CATALOG_DRIFT'|'CURRENT_COMPARATOR_CATALOG_DRIFT'|'CURRENT_COLLATION_DRIFT'|'CURRENT_COMPARATOR_ROW_DRIFT'|'FENCE_PROTOCOL_DRIFT'|
@@ -24,6 +28,12 @@ export type GuardedTypedBackfillOutcome=
  {status:'APPLIED'|'UNCHANGED';mode:'WHOLE_PLAN_ATOMIC';planDigest:string;sourceRows:number;verification:'OWNED_LOCAL_ATOMIC_TYPED_BACKFILL_NOT_F10_COMPLETE'}|
  {status:'BLOCKED';code:GuardedTypedBackfillCode}|
  {status:'UNCERTAIN';code:'COMMIT_OUTCOME_UNKNOWN'|'ROLLBACK_UNCONFIRMED';planDigest:string;reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};
+export type GuardedTypedJournalBackfillOutcome=Exclude<GuardedTypedBackfillOutcome,{status:'APPLIED'|'UNCHANGED'}>|{
+ status:'APPLIED'|'UNCHANGED';mode:'WHOLE_PLAN_ATOMIC';planDigest:string;sourceRows:number;
+ verification:'OWNED_LOCAL_ATOMIC_TYPED_JOURNAL_BACKFILL_NOT_F10_COMPLETE';
+ journal:{descriptorChecksum:string;chunkCount:number;effectsVerified:false;integration:'SAME_TRANSACTION_STRUCTURAL_WRITES'|'MATCHING_EXISTING_OBSERVATIONS_NO_PRIOR_ATOMICITY_CLAIM';verification:'ATOMIC_STRUCTURE_NOT_EFFECTS_OR_DATABASE_VERIFICATION'};
+};
+
 const active=new WeakSet<Client>(),SHA=/^[a-f0-9]{64}$/,UINT=/^(0|[1-9][0-9]*)$/;
 const ident=(value:string)=>'"'+value.replace(/"/g,'""')+'"';
 const same=(a:unknown,b:unknown)=>canonicalOwnershipJson(a)===canonicalOwnershipJson(b);
@@ -203,14 +213,48 @@ async function attribute(client:Client,rule:TableOwnership,entry:TypedBackfillEn
   const result=await client.query('INSERT INTO public.'+ident(effect.table)+'('+columns.map(c=>ident(c.name)).join(',')+') VALUES('+columns.map((c,i)=>'$'+(i+1)+'::'+casts[c.type]).join(',')+')',columns.map(c=>c.wire));if(result.rowCount!==1)fail('SIDECAR_ATTRIBUTION_NOT_EXACT');
  }
 }
+/** Journal functions accept only complete immutable metadata derived beside
+ * the genuine original compiler plan. No native source cell is projected. */
+async function journalQuery(client:Client,text:string,values:unknown[]=[]){
+ try{return await raw(client,text,values);}catch{fail('TYPED_JOURNAL_STORAGE_FAILED');}
+}
+async function journalObservation(client:Client,plan:TypedTenantBackfillPlan,descriptor:TypedBackfillJournalDescriptor,text:string,values:unknown[]):Promise<TypedBackfillJournalAssessment>{
+ const rows=(await journalQuery(client,text,values)).rows;
+ if(rows.length!==1||rows[0].length!==1||typeof rows[0][0]!=='string')fail('TYPED_JOURNAL_DESCRIPTOR_DRIFT');
+ const decoded=decodeTypedMigrationWireValue('jsonb',rows[0][0]);if(decoded.status!=='DECODED')fail('TYPED_JOURNAL_DESCRIPTOR_DRIFT');
+ const projected=projectTypedMigrationWireValueToLegacy(decoded.value);if(projected.status!=='CONVERTED'||projected.origin!=='JSON')fail('TYPED_JOURNAL_DESCRIPTOR_DRIFT');
+ const assessment=validateTypedBackfillJournalObservation(plan,descriptor,projected.value);
+ if(assessment.status!=='STRUCTURAL_OBSERVATIONS_ONLY')fail('TYPED_JOURNAL_DESCRIPTOR_DRIFT');return assessment.assessment;
+}
+async function journalPresent(client:Client,plan:TypedTenantBackfillPlan){
+ const rows=(await journalQuery(client,'/* F10_TYPED_JOURNAL_EXISTS */ SELECT plan_digest FROM nevora_tenancy.typed_backfill_journal_plan WHERE plan_digest=$1::pg_catalog.text',[plan.digest])).rows;
+ if(rows.length>1||rows.length===1&&!same(rows[0],[plan.digest]))fail('TYPED_JOURNAL_DESCRIPTOR_DRIFT');return rows.length===1;
+}
+const journalRead=(client:Client,plan:TypedTenantBackfillPlan,d:TypedBackfillJournalDescriptor)=>journalObservation(client,plan,d,'/* F10_TYPED_JOURNAL_READ */ SELECT nevora_tenancy.read_typed_backfill_journal($1::pg_catalog.text)::pg_catalog.text',[canonicalOwnershipJson(d)]);
+function journalStarted(a:TypedBackfillJournalAssessment){if(a.chunks.some(c=>c.observedState!=='STARTED'&&c.observedState!=='UNKNOWN'))fail('TYPED_JOURNAL_RETRY_STATE_DRIFT');}
+async function prepareJournal(client:Client,plan:TypedTenantBackfillPlan,d:TypedBackfillJournalDescriptor,retry:boolean){
+ const present=await journalPresent(client,plan);if(retry&&!present)fail('TYPED_JOURNAL_RETRY_STATE_DRIFT');
+ let observed=present?await journalRead(client,plan,d):await journalObservation(client,plan,d,'/* F10_TYPED_JOURNAL_REGISTER */ SELECT nevora_tenancy.register_typed_backfill_journal($1::pg_catalog.text)::pg_catalog.text',[canonicalOwnershipJson(d)]);
+ if(retry){journalStarted(observed);return;}
+ // Complete locked original source/target checks already proved absence. This
+ // is the fresh original-plan reconciliation needed to retain UNKNOWN. Never
+ // downgrade UNKNOWN, allocate a new ID or claim prior effects/atomicity.
+ for(const c of observed.chunks)if(c.observedState==='NOT_STARTED')observed=await journalObservation(client,plan,d,'/* F10_TYPED_JOURNAL_START */ SELECT nevora_tenancy.observe_typed_backfill_journal($1::pg_catalog.text,$2::pg_catalog.text,$3::pg_catalog.text,$4::pg_catalog.text)::pg_catalog.text',[canonicalOwnershipJson(d),c.chunk.id,c.retryIdentity,'STARTED']);
+ journalStarted(await journalRead(client,plan,d));
+}
+
 /** Root-authorized exact fictional LOCAL custody only. No connection/resource is
  * created. Every original native wire is rechecked; only compiler-issued added
  * metadata effects are attempted, atomically. Parser/plan/digest identity never
  * authenticates an operator. There is no legacy projection, durable chunk
- * completion, journal, tenant proof, RLS, runtime, cutover or F10 completion.
+ * completion, tenant proof, RLS, runtime, cutover or F10 completion. The private
+ * journal mode only adds same-transaction structural observations; the original
+ * entrypoint remains journal-free.
  * Caller transactions are refused; a begun COMMIT is always uncertain on error.
  */
-export async function executeGuardedTypedLocalBackfill(client:Client,value:unknown):Promise<GuardedTypedBackfillOutcome>{
+function execute(client:Client,value:unknown,journalMode:false):Promise<GuardedTypedBackfillOutcome>;
+function execute(client:Client,value:unknown,journalMode:true):Promise<GuardedTypedJournalBackfillOutcome>;
+async function execute(client:Client,value:unknown,journalMode:boolean):Promise<GuardedTypedBackfillOutcome|GuardedTypedJournalBackfillOutcome>{
  let began=false,committing=false,planDigest='',registered=false;
  try{
   // Genuine plan and complete safe detachment precede client/DB property reads.
@@ -218,16 +262,20 @@ export async function executeGuardedTypedLocalBackfill(client:Client,value:unkno
   if(typeof client!=='object'||client===null||utilTypes.isProxy(client)||!(client instanceof Client))fail('OWNED_PG_CLIENT_REQUIRED');
   if(active.has(client))fail('CLIENT_ALREADY_IN_USE');active.add(client);registered=true;
   requireIdle(client);localConnection(client,request.identity);const lease=ownedLease(request);
-  await databaseIdentity(client,request,lease);await installedContracts(client);await catalog(client,request.facts);await protocol(client,request,plan,false);requireIdle(client);localConnection(client,request.identity);
+  let installation:TypedJournalInstallation|undefined,descriptor:TypedBackfillJournalDescriptor|undefined;
+  if(journalMode){installation=bindOwnedTypedJournalInstallation(lease,request.identity);const description=describeTypedBackfillJournal(plan);if(description.status!=='DESCRIBED')fail('TYPED_JOURNAL_DESCRIPTOR_DRIFT');descriptor=description.descriptor;}
+  await databaseIdentity(client,request,lease);if(installation)await assertOwnedTypedJournalInstallation(client,installation);await installedContracts(client);await catalog(client,request.facts);await protocol(client,request,plan,false);requireIdle(client);localConnection(client,request.identity);
   began=true;await client.query('BEGIN ISOLATION LEVEL SERIALIZABLE');
   // Session controls contain no MVCC SELECT; no snapshot/protocol read can occur
   // before the complete deterministic self-conflicting source lock set.
   await client.query("SET LOCAL search_path=pg_catalog; SET LOCAL row_security=off; SET LOCAL DateStyle='ISO, YMD'; SET LOCAL TimeZone='UTC'; SET LOCAL lock_timeout='5000ms'; SET LOCAL statement_timeout='15000ms'");
   const registry=getOwnershipRegistry(),locks=[...new Set([...registry.tables.map(t=>t.table),...registry.tables.flatMap(t=>t.sidecar?[t.sidecar]:[])])].sort(order);
   await client.query('LOCK TABLE '+locks.map(t=>'public.'+ident(t)).join(',')+' IN SHARE ROW EXCLUSIVE MODE');
+  if(journalMode)await client.query('/* F10_TYPED_JOURNAL_LOCK */ LOCK TABLE nevora_tenancy.typed_backfill_journal_chunk,nevora_tenancy.typed_backfill_journal_plan IN SHARE ROW EXCLUSIVE MODE');
   const retry=await protocol(client,request,plan,true);ownedLease(request);await databaseIdentity(client,request,lease);await installedContracts(client);await catalog(client,request.facts);await originalRows(client,request.facts);await namespaceWitnesses(client,request.facts);await ownershipState(client,plan,retry);
   const keys=plan.manifest.observations.constraints.keyComparators;
   await assertTypedKeyComparatorsOnLockedSource(client,request.facts,request.captureRequest,keys,retry?{manifestDigest:plan.digest,actor:null}:undefined);
+  if(installation&&descriptor){const current=bindOwnedTypedJournalInstallation(ownedLease(request),request.identity);if(!same(current,installation))fail('TYPED_JOURNAL_INSTALLATION_DRIFT');await assertOwnedTypedJournalInstallation(client,current);await prepareJournal(client,plan,descriptor,retry);}
   if(!retry){
    const armed=await client.query("UPDATE nevora_tenancy.expansion_protocol SET backfill_actor=session_user,capture_manifest_sha256=$1 WHERE migration_id=26 AND phase='FENCED' AND fence_generation=$2::bigint AND backfill_actor IS NULL AND capture_manifest_sha256 IS NULL",[plan.digest,request.facts.fence.generation]);if(armed.rowCount!==1)fail('OPERATOR_ARM_NOT_EXACT');
    await client.query('SET LOCAL search_path=pg_catalog,public');const rules=new Map(registry.tables.map(t=>[t.table,t]));for(const entry of plan.entries)await attribute(client,rules.get(entry.table)!,entry,plan.digest);
@@ -239,11 +287,28 @@ export async function executeGuardedTypedLocalBackfill(client:Client,value:unkno
   if(!await protocol(client,request,plan,true))fail('COMMITTED_MANIFEST_REQUIRED');
   await originalRows(client,request.facts);await ownershipState(client,plan,true);await namespaceWitnesses(client,request.facts);await catalog(client,request.facts);await installedContracts(client);await databaseIdentity(client,request,lease);ownedLease(request);localConnection(client,request.identity);
   await assertTypedKeyComparatorsOnLockedSource(client,request.facts,request.captureRequest,keys,{manifestDigest:plan.digest,actor:null});
+  if(installation&&descriptor){
+   // Deferred identity/coverage guards remain enabled; make every pending
+   // journal/source constraint effective before the final committed snapshot.
+   await client.query('SET CONSTRAINTS ALL IMMEDIATE');
+   const current=bindOwnedTypedJournalInstallation(ownedLease(request),request.identity);if(!same(current,installation))fail('TYPED_JOURNAL_INSTALLATION_DRIFT');await assertOwnedTypedJournalInstallation(client,current);journalStarted(await journalRead(client,plan,descriptor));await databaseIdentity(client,request,lease);localConnection(client,request.identity);
+  }
   committing=true;await client.query('COMMIT');began=false;
+  if(descriptor)return {status:retry?'UNCHANGED':'APPLIED',mode:'WHOLE_PLAN_ATOMIC',planDigest:plan.digest,sourceRows:request.facts.tables.reduce((n,t)=>n+t.expectedCount,0),verification:'OWNED_LOCAL_ATOMIC_TYPED_JOURNAL_BACKFILL_NOT_F10_COMPLETE',journal:{descriptorChecksum:descriptor.descriptorChecksum,chunkCount:descriptor.chunks.length,effectsVerified:false,integration:retry?'MATCHING_EXISTING_OBSERVATIONS_NO_PRIOR_ATOMICITY_CLAIM':'SAME_TRANSACTION_STRUCTURAL_WRITES',verification:'ATOMIC_STRUCTURE_NOT_EFFECTS_OR_DATABASE_VERIFICATION'}};
   return {status:retry?'UNCHANGED':'APPLIED',mode:'WHOLE_PLAN_ATOMIC',planDigest:plan.digest,sourceRows:request.facts.tables.reduce((n,t)=>n+t.expectedCount,0),verification:'OWNED_LOCAL_ATOMIC_TYPED_BACKFILL_NOT_F10_COMPLETE'};
  }catch(error){
   if(committing)return {status:'UNCERTAIN',code:'COMMIT_OUTCOME_UNKNOWN',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};
   if(began){try{await client.query('ROLLBACK');}catch{return {status:'UNCERTAIN',code:'ROLLBACK_UNCONFIRMED',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};}}
-  return {status:'BLOCKED',code:typeof error==='object'&&error!==null&&!utilTypes.isProxy(error)&&error instanceof GuardFailure?error.code:isKeyComparatorRecheckFailure(error)?error.code:'TYPED_GUARDED_BACKFILL_FAILED'};
+  return {status:'BLOCKED',code:typeof error==='object'&&error!==null&&!utilTypes.isProxy(error)&&error instanceof GuardFailure?error.code:isTypedJournalBindingFailure(error)?error.code:isKeyComparatorRecheckFailure(error)?error.code:'TYPED_GUARDED_BACKFILL_FAILED'};
  }finally{if(registered)active.delete(client);}
 }
+
+/** Original journal-free entrypoint and outcome remain unchanged. */
+export function executeGuardedTypedLocalBackfill(client:Client,value:unknown):Promise<GuardedTypedBackfillOutcome>{return execute(client,value,false);}
+/** Distinct opt-in owned-local successor. Root-installed exact journal controls
+ * must precede original capture. Original metadata attribution and STARTED
+ * structural observations share one transaction; UNKNOWN is never promoted.
+ * An applied retry cannot retrospectively create/repair journal evidence. No
+ * COMPLETE, effectsVerified=true, chunk resume or F10/tenant authority follows.
+ */
+export function executeGuardedTypedLocalBackfillWithJournal(client:Client,value:unknown):Promise<GuardedTypedJournalBackfillOutcome>{return execute(client,value,true);}

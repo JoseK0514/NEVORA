@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { appendFileSync, existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync, realpathSync, renameSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { createHash, randomBytes } from 'node:crypto';
 import { Client } from 'pg';
@@ -12,7 +12,8 @@ import { getTypedReferenceColumnContract, isIssuedTypedMigrationCellReferences, 
 import { isIssuedTypedOwnershipSourceObservations, validateTypedSnapshotOwnership, type TypedOwnershipAssignments, type TypedOwnershipSourceObservations } from './typed-ownership';
 import { isIssuedTypedSourceConstraintObservations, validateTypedSourceConstraints, type TypedSourceConstraintWithKeysObservations } from './typed-constraints';
 import { compileTypedTenantBackfill, isIssuedTypedTenantBackfillPlan, type TypedTenantBackfillPlan } from './typed-backfill';
-import { executeGuardedTypedLocalBackfill } from './typed-guarded-backfill.server';
+import { executeGuardedTypedLocalBackfill, executeGuardedTypedLocalBackfillWithJournal } from './typed-guarded-backfill.server';
+import { describeTypedBackfillJournal, validateTypedBackfillJournalObservation, type TypedBackfillJournalDescriptor } from './typed-journal-contract';
 import type { OwnedLocalBackfillIdentity } from './guarded-backfill.server';
 
 // Opt-in root invocation only. No fixture startup, ambient URL, role creation,
@@ -43,8 +44,13 @@ const literal = (value: string) => "'" + value.replace(/'/g, "''") + "'";
 
 describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill', () => {
   type Lease = { closed: false; scope: 'OWNED_LOCAL_F10'; root: string; data: string; port: number; pid: number; pidStart: string;
-    credentialFile: string; user: string; database: string; databaseOid: string; systemIdentifier: string; marker: string;
-    authorizationReference: string; operatorRoles: { name: string; catalog: string[] }[] };
+    credentialFile: string; user: string; database: string; databaseOid: string | number; systemIdentifier: string; marker: string;
+    authorizationReference: string; operatorRoles: { name: string; catalog: string[] }[]; invocation?: string; typedJournalInstallations?: JournalInstallation[] };
+  type JournalInstallation = { format: 'OWNED_TYPED_JOURNAL_INSTALLATION_V1'; sourceSHA256: string; database: string; databaseOid: string;
+    marker: string; invocation: string; schemaOid: string; ownerRoleOid: string; tables: { name: string; oid: string }[];
+    functions: { signature: string; oid: string; definitionSHA256: string }[];
+    triggers: { name: string; table: string; oid: string; definitionSHA256: string; enabled: 'O'; constraint: boolean; deferrable: boolean; initiallyDeferred: boolean }[];
+    operators: { name: string; oid: string }[] };
   type OriginalRows = Record<string, { columns: string[]; rows: (string | null)[][] }>;
   type Chain = { facts: TypedMigrationCaptureFacts; snapshot: InspectedTypedSnapshot; ownership: TypedOwnershipSourceObservations;
     namespaces: TypedDatabaseNamespaceObservations; keys: TypedKeyComparatorObservations; constraints: TypedSourceConstraintWithKeysObservations;
@@ -52,9 +58,11 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
   type Request = { mode: 'OWNED_LOCAL'; identity: OwnedLocalBackfillIdentity; facts: TypedMigrationCaptureFacts;
     captureRequest: MigrationCaptureRequest; plan: TypedTenantBackfillPlan; authority: { reference: string; operatorRole: string; factsDigest: string; planDigest: string } };
   type Fixture = { id: string; name: string; oid: string; marker: string; observer: Client; first: Client; second: Client;
-    original: OriginalRows; chain: Chain; request: Request; queries: string[]; finalCatalogChanges?: '0027_VALIDATION' };
+    original: OriginalRows; chain: Chain; request: Request; queries: string[]; finalCatalogChanges?: '0027_VALIDATION' | 'JOURNAL_INSTALLATION'; permittedJournalCatalogDigest?: string;
+    journal?: { installation: JournalInstallation; descriptor: TypedBackfillJournalDescriptor } };
   let lease: Lease, runDirectory: string, admin: Client | undefined;
   const clients = new Map<Client, string>(), databases: { name: string; oid: string; marker: string }[] = [];
+  const journalInstallCatalogs = new Map<string, { before: JsonValue; after: JsonValue; beforeDigest: string; afterDigest: string }>();
   const fixtures: Fixture[] = [], cases: { id: string; name: string; status: 'PASS' | 'FAIL' }[] = [];
   const receipt = (name: string, value: unknown) => writeFileSync(join(runDirectory, name), JSON.stringify(value, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
   function sourceRow(snapshot: InspectedTypedSnapshot, table: string, key: readonly JsonValue[]): InspectedTypedSnapshotRow {
@@ -183,7 +191,210 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     return result;
   }
 
-  async function fixture(id: string): Promise<Fixture> {
+  // These fixtures execute only within root's explicit one-shot owned lease.
+  // They install the accepted artifact before capture; the application API never installs or adopts objects.
+  const journalSourceSHA256 = 'fd9bdfb4f2b8c36fd8cc97917a97d1945164290a04978fa5d214a71eb27f8fb9';
+  const journalTables = ['typed_backfill_journal_chunk', 'typed_backfill_journal_plan'];
+  const journalFunctionSignatures = [
+    '_typed_journal_canonical_json(json)', '_typed_journal_fields(jsonb, text[])', '_typed_journal_digest(jsonb)',
+    '_typed_journal_key(jsonb, integer)', '_typed_journal_validate_description(text)', '_typed_journal_plan_identity()',
+    '_typed_journal_chunk_identity()', '_typed_journal_assert_coverage(text)', '_typed_journal_coverage_trigger()', '_typed_journal_no_truncate()',
+    'read_typed_backfill_journal(text)', 'register_typed_backfill_journal(text)', 'observe_typed_backfill_journal(text, text, text, text)',
+  ];
+  const journalGuards = [
+    { name: 'typed_journal_chunk_coverage', table: journalTables[0], constraint: true, deferrable: true, initiallyDeferred: true },
+    { name: 'typed_journal_chunk_identity', table: journalTables[0], constraint: false, deferrable: false, initiallyDeferred: false },
+    { name: 'typed_journal_chunk_no_truncate', table: journalTables[0], constraint: false, deferrable: false, initiallyDeferred: false },
+    { name: 'typed_journal_plan_coverage', table: journalTables[1], constraint: true, deferrable: true, initiallyDeferred: true },
+    { name: 'typed_journal_plan_identity', table: journalTables[1], constraint: false, deferrable: false, initiallyDeferred: false },
+    { name: 'typed_journal_plan_no_truncate', table: journalTables[1], constraint: false, deferrable: false, initiallyDeferred: false },
+  ];
+  const hashText = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
+  function verifiedParentLeaseBytes(): string {
+    const exact = realpathSync(leasePath!), info = statSync(exact);
+    expect(exact).toBe(join(lease.root, 'ownership.json')); expect(resolve(leasePath!)).toBe(exact); expect(info.isFile()).toBe(true);
+    expect(info.mode & 0o777).toBe(0o600); expect(info.uid).toBe(process.getuid!());
+    const bytes = readFileSync(exact, 'utf8'), current: Lease = JSON.parse(bytes);
+    expect(current.closed).toBe(false); expect(current.scope).toBe('OWNED_LOCAL_F10');
+    expect(current.invocation).toMatch(/^[a-f0-9]{16}$/); expect(current.invocation).toBe(process.env.F_BACKFILL_ROOT_INVOCATION);
+    expect(current.marker).toBe('f10-owned:' + current.invocation);
+    expect(current.authorizationReference).toBe('F-DEV-COMPLETE-001:typed-capture:' + current.invocation);
+    for (const field of ['root','data','port','pid','pidStart','credentialFile','user','database','databaseOid','systemIdentifier','marker','authorizationReference','operatorRoles','invocation'] as const) {
+      expect(current[field]).toEqual(lease[field]);
+    }
+    expect(realpathSync(current.root)).toBe(lease.root); expect(realpathSync(current.data)).toBe(join(lease.root, 'data'));
+    const pid = readFileSync(join(lease.data, 'postmaster.pid'), 'utf8').split('\n');
+    expect(Number(pid[0])).toBe(lease.pid); expect(realpathSync(pid[1])).toBe(lease.data); expect(pid[2]).toBe(lease.pidStart); expect(Number(pid[3])).toBe(lease.port);
+    return bytes;
+  }
+  function privateAtomicLeaseReplacement(expected: string, replacement: string) {
+    expect(verifiedParentLeaseBytes()).toBe(expected);
+    const temporary = join(lease.root, '.journal-fixture-' + randomBytes(8).toString('hex') + '.json');
+    try {
+      writeFileSync(temporary, replacement, { flag: 'wx', mode: 0o600 });
+      expect(readFileSync(leasePath!, 'utf8')).toBe(expected); renameSync(temporary, leasePath!);
+      expect(statSync(leasePath!).mode & 0o777).toBe(0o600); expect(statSync(leasePath!).uid).toBe(process.getuid!());
+      expect(readFileSync(leasePath!, 'utf8')).toBe(replacement);
+    } finally { if (existsSync(temporary)) unlinkSync(temporary); }
+  }
+  async function verifyActualParentAndChild(name: string, oid: string, marker: string) {
+    if (!admin || !databases.some(d => d.name === name && d.oid === oid && d.marker === marker)) throw Error('Only invocation-created marked child allowed');
+    verifiedParentLeaseBytes();
+    const base = (await admin.query("SELECT current_setting('data_directory') data,(SELECT system_identifier::text FROM pg_control_system()) system_identifier,(SELECT oid::text FROM pg_database WHERE datname=current_database()) oid,shobj_description((SELECT oid FROM pg_database WHERE datname=current_database()),'pg_database') marker")).rows[0];
+    expect(realpathSync(base.data)).toBe(lease.data); expect(base.system_identifier).toBe(lease.systemIdentifier);
+    expect(base.oid).toBe(String(lease.databaseOid)); expect(base.marker).toBe(lease.marker);
+    expect((await admin.query("SELECT oid::text oid,shobj_description(oid,'pg_database') marker FROM pg_database WHERE datname=$1", [name])).rows)
+      .toEqual([{ oid, marker }]);
+  }
+  async function installJournalForRootFixture(id: string, name: string, oid: string, marker: string, observer: Client, ordering: 'BEFORE_CAPTURE' | 'INTENTIONAL_AFTER_CAPTURE_DENIAL' = 'BEFORE_CAPTURE'): Promise<JournalInstallation> {
+    if (ordering === 'INTENTIONAL_AFTER_CAPTURE_DENIAL') expect(id).toBe('J12-late-install');
+    await verifyActualParentAndChild(name, oid, marker);
+    const sql = readFileSync(resolve('src/lib/tenancy/migrations/typed-journal-storage.sql'), 'utf8');
+    expect(hashText(sql)).toBe(journalSourceSHA256);
+    const beforeCatalog = await observeMigrationCatalog(observer);
+    expect((await observer.query("SELECT count(*)::int n FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='nevora_tenancy' AND c.relname=ANY($1::text[])", [journalTables])).rows[0].n).toBe(0);
+    await observer.query(sql);
+    const roles = lease.operatorRoles.map(r => quoted(r.name)).join(','), tables = journalTables.map(t => 'nevora_tenancy.' + quoted(t)).join(',');
+    await observer.query('GRANT USAGE ON SCHEMA nevora_tenancy TO ' + roles);
+    await observer.query('GRANT SELECT,INSERT,UPDATE ON TABLE ' + tables + ' TO ' + roles);
+    await observer.query('GRANT EXECUTE ON FUNCTION ' + journalFunctionSignatures.map(s => 'nevora_tenancy.' + s).join(',') + ' TO ' + roles);
+    const schema = (await observer.query("SELECT n.oid::text oid,n.nspowner::text owner,(SELECT oid::text FROM pg_roles WHERE rolname=current_user) current_owner FROM pg_namespace n WHERE n.nspname='nevora_tenancy'")).rows[0];
+    expect(schema.owner).toBe(schema.current_owner); expect(lease.operatorRoles.map(r => r.catalog[0])).not.toContain(schema.owner);
+    const tableRows = (await observer.query("SELECT c.relname name,c.oid::text oid,c.relowner::text owner FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='nevora_tenancy' AND c.relname=ANY($1::text[]) ORDER BY c.relname", [journalTables])).rows;
+    expect(tableRows.map(t => t.name)).toEqual(journalTables); expect(tableRows.every(t => t.owner === schema.owner)).toBe(true);
+    const functionRows = (await observer.query("SELECT p.oid::text oid,p.proname||'('||pg_catalog.oidvectortypes(p.proargtypes)||')' signature,pg_get_functiondef(p.oid) definition,p.proowner::text owner,p.prosecdef,p.proconfig FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='nevora_tenancy' AND p.proname=ANY($1::text[]) ORDER BY signature", [journalFunctionSignatures.map(s => s.slice(0, s.indexOf('(')))])).rows;
+    expect(functionRows).toHaveLength(13); expect(functionRows.map(f => f.signature)).toEqual([...journalFunctionSignatures].sort());
+    expect(functionRows.every(f => f.owner === schema.owner && f.prosecdef === false && same(f.proconfig, ['search_path=pg_catalog']))).toBe(true);
+    const triggerRows = (await observer.query("SELECT t.tgname name,c.relname \"table\",t.oid::text oid,pg_get_triggerdef(t.oid) definition,t.tgenabled enabled,(t.tgconstraint<>0) \"constraint\",t.tgdeferrable deferrable,t.tginitdeferred \"initiallyDeferred\" FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='nevora_tenancy' AND c.relname=ANY($1::text[]) AND NOT t.tgisinternal ORDER BY t.tgname", [journalTables])).rows;
+    expect(triggerRows).toHaveLength(6);
+    expect(triggerRows.map(t => ({ name: t.name, table: t.table, constraint: t.constraint, deferrable: t.deferrable, initiallyDeferred: t.initiallyDeferred }))).toEqual(journalGuards);
+    expect(triggerRows.every(t => t.enabled === 'O')).toBe(true);
+    const privileges: unknown[] = [];
+    for (const operator of lease.operatorRoles) {
+      for (const table of journalTables) {
+        const row = (await observer.query("SELECT has_table_privilege($1,$2,'SELECT') sel,has_table_privilege($1,$2,'INSERT') ins,has_table_privilege($1,$2,'UPDATE') upd,has_table_privilege($1,$2,'DELETE') del,has_table_privilege($1,$2,'TRUNCATE') trunc,has_table_privilege($1,$2,'TRIGGER') trig,has_column_privilege($1,$2,$3,'UPDATE') exact_update", [operator.name, 'nevora_tenancy.' + table, table === journalTables[0] ? 'state' : 'plan_digest'])).rows[0];
+        expect(row).toEqual({ sel: true, ins: true, upd: true, del: false, trunc: false, trig: false, exact_update: true }); privileges.push({ operator: operator.name, table, row });
+      }
+      expect((await observer.query("SELECT has_function_privilege($1,p.oid,'EXECUTE') allowed FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='nevora_tenancy' AND p.proname=ANY($2::text[])", [operator.name, journalFunctionSignatures.map(s => s.slice(0, s.indexOf('(')))])).rows.every(r => r.allowed === true)).toBe(true);
+    }
+    const publicPrivileges = (await observer.query("SELECT count(*)::int n FROM (SELECT a.grantee FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace CROSS JOIN LATERAL aclexplode(COALESCE(c.relacl,acldefault('r',c.relowner))) a WHERE n.nspname='nevora_tenancy' AND c.relname=ANY($1::text[]) UNION ALL SELECT a.grantee FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace CROSS JOIN LATERAL aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a WHERE n.nspname='nevora_tenancy' AND p.proname=ANY($2::text[])) x WHERE grantee=0", [journalTables, journalFunctionSignatures.map(s => s.slice(0, s.indexOf('(')))])).rows[0].n;
+    expect(publicPrivileges).toBe(0);
+    const aclRows = (await observer.query<(string | null)[]>({
+      text: "SELECT 'TABLE',c.relname,'',a.grantee::text,a.grantor::text,a.privilege_type,a.is_grantable::text FROM pg_class c CROSS JOIN LATERAL aclexplode(COALESCE(c.relacl,acldefault('r',c.relowner))) a WHERE c.oid=ANY($1::oid[]) AND a.grantee<>$3::oid UNION ALL SELECT 'COLUMN',c.relname,v.attname,a.grantee::text,a.grantor::text,a.privilege_type,a.is_grantable::text FROM pg_class c JOIN pg_attribute v ON v.attrelid=c.oid CROSS JOIN LATERAL aclexplode(v.attacl) a WHERE c.oid=ANY($1::oid[]) AND a.grantee<>$3::oid UNION ALL SELECT 'FUNCTION',p.proname,'',a.grantee::text,a.grantor::text,a.privilege_type,a.is_grantable::text FROM pg_proc p CROSS JOIN LATERAL aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a WHERE p.oid=ANY($2::oid[]) AND a.grantee<>$3::oid UNION ALL SELECT 'SCHEMA','nevora_tenancy','',a.grantee::text,a.grantor::text,a.privilege_type,a.is_grantable::text FROM pg_namespace n CROSS JOIN LATERAL aclexplode(COALESCE(n.nspacl,acldefault('n',n.nspowner))) a WHERE n.oid=$4::oid AND a.grantee<>$3::oid",
+      values: [tableRows.map(t => t.oid), functionRows.map(f => f.oid), schema.owner, schema.oid], rowMode: 'array', types: { getTypeParser: () => (wire: string) => wire },
+    })).rows;
+    const expectedAcl: string[][] = [];
+    for (const role of lease.operatorRoles) {
+      const grant = (kind: string, name: string, column: string, privilege: string) => expectedAcl.push([kind, name, column, role.catalog[0], schema.owner, privilege, 'false']);
+      for (const table of journalTables) for (const privilege of ['INSERT','SELECT','UPDATE']) grant('TABLE', table, '', privilege);
+      for (const signature of journalFunctionSignatures) grant('FUNCTION', signature.slice(0, signature.indexOf('(')), '', 'EXECUTE');
+      grant('SCHEMA', 'nevora_tenancy', '', 'USAGE');
+    }
+    expect(aclRows.map(canonicalOwnershipJson).sort()).toEqual(expectedAcl.map(canonicalOwnershipJson).sort());
+    const installation: JournalInstallation = { format: 'OWNED_TYPED_JOURNAL_INSTALLATION_V1', sourceSHA256: journalSourceSHA256,
+      database: name, databaseOid: oid, marker, invocation: lease.invocation!, schemaOid: schema.oid, ownerRoleOid: schema.owner,
+      tables: tableRows.map(t => ({ name: t.name, oid: t.oid })),
+      functions: functionRows.map(f => ({ signature: 'nevora_tenancy.' + f.signature.replace(/, /g, ','), oid: f.oid, definitionSHA256: hashText(f.definition) })),
+      triggers: triggerRows.map(t => ({ name: t.name, table: t.table, oid: t.oid, definitionSHA256: hashText(t.definition), enabled: t.enabled,
+        constraint: t.constraint, deferrable: t.deferrable, initiallyDeferred: t.initiallyDeferred })),
+      operators: lease.operatorRoles.map(r => ({ name: r.name, oid: r.catalog[0] })) };
+    const afterCatalog = await observeMigrationCatalog(observer);
+    journalInstallCatalogs.set(name, { before: beforeCatalog.catalog, after: afterCatalog.catalog, beforeDigest: beforeCatalog.digest, afterDigest: afterCatalog.digest });
+    assertJournalOnlyCatalogDelta(beforeCatalog.catalog, afterCatalog.catalog, journalInstallCatalogs.get(name)!);
+    await verifyActualParentAndChild(name, oid, marker);
+    const before = verifiedParentLeaseBytes(), current = JSON.parse(before) as Lease;
+    if (current.typedJournalInstallations !== undefined && !Array.isArray(current.typedJournalInstallations)) throw Error('Malformed prior journal custody');
+    const prior = current.typedJournalInstallations ?? [];
+    expect(prior.some(r => r.database === name || r.databaseOid === oid)).toBe(false);
+    const replacement = JSON.stringify({ ...current, typedJournalInstallations: [...prior, installation] }, null, 2) + '\n';
+    privateAtomicLeaseReplacement(before, replacement);
+    expect(JSON.parse(readFileSync(leasePath!, 'utf8')).typedJournalInstallations.slice(0, prior.length)).toEqual(prior);
+    receipt('case-' + id + '-journal-installation-custody.json', { installation, privilegeObservations: privileges, exactMinimalNonOwnerACL: aclRows, functions: functionRows, guards: triggerRows,
+      completeCatalogBeforeInstallation: beforeCatalog, completeCatalogAfterInstallation: afterCatalog,
+      completeJournalCatalogDeltaIndependentlyRetained: true, parentBeforeSHA256: hashText(before), parentAfterSHA256: hashText(replacement), unrelatedRecordsPreserved: true,
+      installedAndIndependentlyObservedBeforeOriginalCapture: ordering === 'BEFORE_CAPTURE', ordering, rootOnlyActualInvocation: true });
+    return installation;
+  }
+  function assertJournalOnlyCatalogDelta(original: JsonValue, current: JsonValue, retained: { before: JsonValue; after: JsonValue }) {
+    // Complete catalogs are independently read immediately around the pinned
+    // artifact and exact named grants, rather than synthesized from table names.
+    expect(original).toEqual(retained.before); expect(current).toEqual(retained.after);
+    const before = original as Record<string, JsonValue>, after = current as Record<string, JsonValue>;
+    expect(Object.keys(after)).toEqual(Object.keys(before));
+    const tableSections = ['columns', 'constraints', 'not_null', 'indexes', 'triggers'];
+    for (const section of Object.keys(before)) {
+      if (!['relations', 'functions', ...tableSections].includes(section)) { expect(after[section]).toEqual(before[section]); continue; }
+      const rows = after[section] as Record<string, JsonValue>[];
+      const isJournal = (r: Record<string, JsonValue>) => r.schema === 'nevora_tenancy' && (section === 'relations' ? journalTables.includes(r.name as string)
+        : section === 'functions' ? journalFunctionSignatures.some(s => s.slice(0, s.indexOf('(')) === r.name) : journalTables.includes(r.table_name as string));
+      expect(rows.filter(r => !isJournal(r))).toEqual(before[section]);
+      if (section === 'relations') expect(rows.filter(isJournal)).toHaveLength(2);
+      if (section === 'functions') expect(rows.filter(isJournal)).toHaveLength(13);
+      if (section === 'triggers') expect(rows.filter(r => isJournal(r) && r.internal === false)).toHaveLength(6);
+    }
+  }
+  function journalDescriptor(f: Fixture) {
+    if (!f.journal) throw Error('Explicit journal-enabled root fixture required'); return f.journal.descriptor;
+  }
+  async function journalRows(f: Fixture) {
+    const result: Record<string, (string | null)[][]> = {};
+    for (const table of journalTables) result[table] = (await f.observer.query<(string | null)[]>({
+      text: 'SELECT * FROM nevora_tenancy.' + quoted(table) + ' ORDER BY plan_digest' + (table === journalTables[0] ? ',ordinal' : ''),
+      rowMode: 'array', types: { getTypeParser: () => (wire: string) => wire } })).rows;
+    return result;
+  }
+  async function journalObservation(f: Fixture) {
+    const observation = (await f.observer.query('SELECT nevora_tenancy.read_typed_backfill_journal($1) observation', [canonicalOwnershipJson(journalDescriptor(f))])).rows[0].observation;
+    const validated = validateTypedBackfillJournalObservation(f.chain.plan, journalDescriptor(f), observation);
+    expect(validated.status, JSON.stringify(validated)).toBe('STRUCTURAL_OBSERVATIONS_ONLY');
+    expect(observation.effectsVerified).toBe(false); expect(observation.reconciliation).toBeNull();
+    expect(observation.rows).toHaveLength(journalDescriptor(f).chunks.length); return observation;
+  }
+  async function expectJournalEmpty(f: Fixture) {
+    expect(await journalRows(f)).toEqual({ typed_backfill_journal_chunk: [], typed_backfill_journal_plan: [] });
+  }
+  async function expectJournalApplied(f: Fixture) {
+    await expectApplied(f); const observed = await journalObservation(f);
+    expect(observed.rows.every((r: { state: string }) => r.state === 'STARTED' || r.state === 'UNKNOWN')).toBe(true);
+    expect((await journalRows(f)).typed_backfill_journal_plan).toHaveLength(1);
+  }
+  async function registerFixtureJournal(f: Fixture, state?: 'UNKNOWN') {
+    const canonical = canonicalOwnershipJson(journalDescriptor(f));
+    await f.observer.query('BEGIN');
+    try {
+      await f.observer.query('SELECT nevora_tenancy.register_typed_backfill_journal($1)', [canonical]);
+      if (state) for (const chunk of journalDescriptor(f).chunks) await f.observer.query('SELECT nevora_tenancy.observe_typed_backfill_journal($1,$2,$3,$4)', [canonical, chunk.id, chunk.retryIdentity, state]);
+      await f.observer.query('SET CONSTRAINTS ALL IMMEDIATE'); await f.observer.query('COMMIT');
+    } catch (error) { await f.observer.query('ROLLBACK'); throw error; }
+  }
+  function journalCase(id: string, name: string, check: (f: Fixture) => Promise<void>) {
+    it(name, async () => {
+      let status: 'PASS' | 'FAIL' = 'FAIL', f: Fixture | undefined;
+      try { f = await fixture(id, true); await expectJournalEmpty(f); await check(f);
+        expect(await originalRows(f.observer)).toEqual(f.original); expect((await metadata(f)).actor).toBeNull(); status = 'PASS'; }
+      finally { const record = { id, name, status }; cases.push(record);
+        receipt('case-' + id + '-outcome.json', { ...record, fixturePrepared: !!f, originalPlanDigest: f?.chain.plan.digest,
+          factsDigest: f?.chain.facts.factsDigest, sourceBoundary: f?.chain.ownership.boundary, actualRootInvocation: true,
+          scope: 'WHOLE_PLAN_ATOMIC_STRUCTURAL_JOURNAL_NOT_EFFECTS_VERIFICATION_RUNTIME_RLS_OR_F10_COMPLETE' }); }
+    }, 60000);
+  }
+  function anyDml(commands: string[]) {
+    return commands.some(sql => /^(?:\/\*.*?\*\/\s*)?(?:INSERT|UPDATE|DELETE|TRUNCATE)\b/.test(sql) || /F10_TYPED_JOURNAL_(REGISTER|START)/.test(sql));
+  }
+  async function withOwnInstallationMutation(f: Fixture, label: string, change: (records: JournalInstallation[]) => JournalInstallation[], check: () => Promise<void>) {
+    await verifyActualParentAndChild(f.name, f.oid, f.marker);
+    const before = verifiedParentLeaseBytes(), parsed: Lease = JSON.parse(before), records = parsed.typedJournalInstallations!;
+    const unrelated = records.filter(r => r.database !== f.name), mutated = change(records);
+    expect(mutated.filter(r => r.database !== f.name)).toEqual(unrelated);
+    const replacement = JSON.stringify({ ...parsed, typedJournalInstallations: mutated }, null, 2) + '\n';
+    privateAtomicLeaseReplacement(before, replacement);
+    try { await check(); }
+    finally { privateAtomicLeaseReplacement(replacement, before);
+      receipt('case-' + f.id + '-custody-mutation-' + label + '.json', { label, ownChild: f.name, ownOid: f.oid, originalSHA256: hashText(before),
+        mutatedSHA256: hashText(replacement), restoredOriginalBytes: readFileSync(leasePath!, 'utf8') === before, parentAndUnrelatedRecordsPreserved: true }); }
+  }
+
+  async function fixture(id: string, withJournal = false): Promise<Fixture> {
     if (!admin) throw Error('Root owned base connection required');
     const name = lease.database + '_case_' + randomBytes(5).toString('hex'), marker = lease.marker + ':case:' + name;
     expect(Buffer.byteLength(name)).toBeLessThanOrEqual(63); expect((await admin.query('SELECT 1 FROM pg_database WHERE datname=$1', [name])).rowCount).toBe(0);
@@ -218,6 +429,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     await observer.query('GRANT SELECT,UPDATE ON nevora_tenancy.expansion_protocol TO ' + roles);
     await observer.query('GRANT SELECT ON nevora_tenancy.source_migration_contract,nevora_tenancy.owned_table_contract TO ' + roles);
     await observer.query('SET search_path=pg_catalog');
+    const journalInstallation = withJournal ? await installJournalForRootFixture(id, name, oid, marker, observer) : undefined;
     const first = await connect(name, lease.operatorRoles[0].name), second = await connect(name, lease.operatorRoles[1].name);
     expect((await first.query("SELECT has_schema_privilege(session_user,'public','CREATE') public_create,has_schema_privilege(session_user,'nevora_tenancy','CREATE') tenancy_create,has_table_privilege(session_user,'public.employees','TRIGGER') trigger_privilege,(SELECT relowner<>(SELECT oid FROM pg_roles WHERE rolname=session_user) FROM pg_class WHERE oid='public.employees'::regclass) nonowner")).rows[0])
       .toEqual({ public_create: false, tenancy_create: false, trigger_privilege: false, nonowner: true });
@@ -282,6 +494,17 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     const queries: string[] = [], native = first.query.bind(first);
     vi.spyOn(first, 'query').mockImplementation(((...args: unknown[]) => { queries.push(queryText(args[0])); return Reflect.apply(native, first, args); }) as Client['query']);
     const f: Fixture = { id, name, oid, marker, observer, first, second, original: initial, chain, request, queries }; fixtures.push(f);
+    if (journalInstallation) {
+      const described = describeTypedBackfillJournal(plan); expect(described.status).toBe('DESCRIBED');
+      if (described.status !== 'DESCRIBED') throw Error('Genuine original typed journal descriptor required');
+      f.journal = { installation: journalInstallation, descriptor: described.descriptor };
+      const catalog = facts.catalog as { relations: { schema: string; name: string }[]; functions: { schema: string; name: string }[]; triggers: { schema: string; name: string }[] };
+      expect(catalog.relations.filter(t => t.schema === 'nevora_tenancy' && journalTables.includes(t.name))).toHaveLength(2);
+      expect(catalog.functions.filter(t => t.schema === 'nevora_tenancy' && journalFunctionSignatures.some(s => s.slice(0, s.indexOf('(')) === t.name))).toHaveLength(13);
+      expect(catalog.triggers.filter(t => t.schema === 'nevora_tenancy' && journalGuards.some(g => g.name === t.name))).toHaveLength(6);
+      receipt('case-' + id + '-journal-before-original-capture.json', { installation: journalInstallation, descriptor: described.descriptor,
+        originalCatalogDigest: facts.currentSchemaDigest, installedBeforeWorkerConnectionsAndOriginalCapture: true });
+    }
     receipt('case-' + id + '-source-evidence.json', { facts, assignments, ownership: owner.observations, namespaces: ns.observations, keyObservations: key.observations,
       constraints: constrained.observations, plan, original: initial, independentPairs: { captureSnapshot, pairs: sqlPairs },
       note: 'Explicit fictional review dictionaries are not human review or database operator approval' });
@@ -340,9 +563,11 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
         expect(await originalRows(f.observer)).toEqual(f.original); expect((await metadata(f)).actor).toBeNull();
         await f.observer.query('SET search_path=pg_catalog'); const finalCatalog = await observeMigrationCatalog(f.observer);
         if (!f.finalCatalogChanges) expect(finalCatalog.digest).toBe(f.request.captureRequest.catalogBaseline.catalogDigest);
-        else expect((await f.observer.query("SELECT count(*)::int n,bool_and(convalidated AND conenforced) valid FROM pg_constraint WHERE conname LIKE 'f10_scoped_%' AND contype='f'")).rows[0]).toEqual({ n: 89, valid: true });
+        else if (f.finalCatalogChanges === '0027_VALIDATION') expect((await f.observer.query("SELECT count(*)::int n,bool_and(convalidated AND conenforced) valid FROM pg_constraint WHERE conname LIKE 'f10_scoped_%' AND contype='f'")).rows[0]).toEqual({ n: 89, valid: true });
+        else { expect(finalCatalog.digest).toBe(f.permittedJournalCatalogDigest); assertJournalOnlyCatalogDelta(f.chain.facts.catalog, finalCatalog.catalog, journalInstallCatalogs.get(f.name)!); }
         receipt('case-' + f.id + '-final-source.json', { originals: await originalRows(f.observer), metadata: await metadata(f), targets: await targets(f),
-          finalCatalog, permittedCatalogChange: f.finalCatalogChanges ?? null });
+          finalCatalog, permittedCatalogChange: f.finalCatalogChanges ?? null,
+          ...(f.journal ? { journalInstallation: f.journal.installation, journalRows: await journalRows(f) } : {}) });
       } catch { failures.push('SOURCE_OR_UNARMED_OPERATOR_CHECK_FAILED:' + f.id); }
     }
     for (const [c, name] of clients) {
@@ -368,7 +593,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     if (runDirectory) receipt('database-custody.json', { cases, databases, drops, closedClients, allClientsClosed: closedClients.length === clients.size, failures, actualRootInvocation: true,
       open: ['ACTUAL_A_B_POST_CUTOVER', 'DURABLE_JOURNAL_AND_CHUNK_RESUME', 'PG17_AND_ACTUAL_NEON', 'RUNTIME_RLS_AND_FULL_F10'] });
     if (failures.length) throw Error('Owned source/cleanup unconfirmed; preserve exact custody and failure receipts');
-  }, 30000);
+  }, 120000);
 
   actualCase('01', 'writes only added direct ownership and both exact typed sidecars, then retries without any DML', async f => {
     const outcome = await executeGuardedTypedLocalBackfill(f.first, f.request);
@@ -595,5 +820,350 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     receipt('case-13-rollback-ack-reconciliation.json', { outcome, commands, nativeIdleObservedAfterLostAck: true, freshCommands,
       sameOriginalPlan: f.chain.plan.digest, independentUnappliedObservationBeforeReconciliation: true,
       freshApplyThenNoDmlRetry: true, adapterDefiniteRollbackClaim: false });
+  });
+
+  journalCase('J01', 'atomically persists only structural STARTED journal and exact ownership, then fresh retries perform no DML anywhere', async f => {
+    const outcome = await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request);
+    expect(outcome).toEqual({ status: 'APPLIED', mode: 'WHOLE_PLAN_ATOMIC', planDigest: f.chain.plan.digest,
+      sourceRows: f.chain.facts.tables.reduce((n, t) => n + t.expectedCount, 0), verification: 'OWNED_LOCAL_ATOMIC_TYPED_JOURNAL_BACKFILL_NOT_F10_COMPLETE',
+      journal: { descriptorChecksum: journalDescriptor(f).descriptorChecksum, chunkCount: journalDescriptor(f).chunks.length,
+        effectsVerified: false, verification: 'ATOMIC_STRUCTURE_NOT_EFFECTS_OR_DATABASE_VERIFICATION', integration: 'SAME_TRANSACTION_STRUCTURAL_WRITES' } });
+    const begin = f.queries.indexOf('BEGIN ISOLATION LEVEL SERIALIZABLE'), commit = f.queries.indexOf('COMMIT');
+    const register = f.queries.findIndex(sql => sql.includes('F10_TYPED_JOURNAL_REGISTER'));
+    const start = f.queries.findIndex(sql => sql.includes('F10_TYPED_JOURNAL_START'));
+    const arm = f.queries.findIndex(sql => sql.startsWith('UPDATE nevora_tenancy.expansion_protocol'));
+    expect(register).toBeGreaterThan(begin); expect(start).toBeGreaterThan(register); expect(arm).toBeGreaterThan(start); expect(commit).toBeGreaterThan(arm);
+    expect(f.queries.slice(0, begin).some(sql => /F10_TYPED_JOURNAL_(REGISTER|START)/.test(sql))).toBe(false);
+    await expectJournalApplied(f); const firstJournal = await journalRows(f), firstTargets = await targets(f), firstMetadata = await metadata(f);
+    const observation = await journalObservation(f); expect(observation.rows.every((r: { state: string }) => r.state === 'STARTED')).toBe(true);
+    const fresh = await connect(f.name, f.request.identity.role), native = fresh.query.bind(fresh), commands: string[] = [];
+    const spy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { commands.push(queryText(args[0])); return Reflect.apply(native, fresh, args); }) as Client['query']);
+    try { expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toEqual({ ...outcome, status: 'UNCHANGED',
+      journal: { descriptorChecksum: journalDescriptor(f).descriptorChecksum, chunkCount: journalDescriptor(f).chunks.length, effectsVerified: false,
+        verification: 'ATOMIC_STRUCTURE_NOT_EFFECTS_OR_DATABASE_VERIFICATION', integration: 'MATCHING_EXISTING_OBSERVATIONS_NO_PRIOR_ATOMICITY_CLAIM' } }); }
+    finally { spy.mockRestore(); }
+    expect(anyDml(commands)).toBe(false); expect(commands.some(sql => sql.includes('F10_TYPED_JOURNAL_READ'))).toBe(true);
+    expect(await journalRows(f)).toEqual(firstJournal); expect(await targets(f)).toEqual(firstTargets); expect(await metadata(f)).toEqual(firstMetadata);
+    await expectJournalApplied(f);
+    const sourceNames = [...new Set([...registry.tables.map(t => t.table), ...registry.tables.flatMap(t => t.sidecar ? [t.sidecar] : [])])].sort();
+    const sourceLockSql = 'LOCK TABLE ' + sourceNames.map(t => 'public.' + quoted(t)).join(',') + ' IN SHARE ROW EXCLUSIVE MODE';
+    const journalLockSql = 'LOCK TABLE nevora_tenancy.typed_backfill_journal_chunk,nevora_tenancy.typed_backfill_journal_plan IN SHARE ROW EXCLUSIVE MODE';
+    let lockRows: unknown[] = [];
+    await fresh.query('BEGIN');
+    try {
+      // Native success under exact nonowner table UPDATE is observed only
+      // after all70 original source locks, before the first transaction read.
+      await fresh.query(sourceLockSql); await fresh.query(journalLockSql);
+      lockRows = (await fresh.query("SELECT n.nspname schema,c.relname name,l.mode,l.granted FROM pg_locks l JOIN pg_class c ON c.oid=l.relation JOIN pg_namespace n ON n.oid=c.relnamespace WHERE l.pid=pg_backend_pid() AND l.mode='ShareRowExclusiveLock' AND ((n.nspname='public' AND c.relname=ANY($1::text[])) OR (n.nspname='nevora_tenancy' AND c.relname=ANY($2::text[]))) ORDER BY n.nspname,c.relname", [sourceNames, journalTables])).rows;
+      expect(lockRows).toHaveLength(72); expect(lockRows.every(r => (r as { granted: boolean }).granted)).toBe(true);
+      await fresh.query('SAVEPOINT immutable_journal_probe');
+      await expect(fresh.query('UPDATE nevora_tenancy.typed_backfill_journal_plan SET chunk_count=chunk_count+1 WHERE plan_digest=$1', [f.chain.plan.digest])).rejects.toMatchObject({ code: 'P0001' });
+      await fresh.query('ROLLBACK TO SAVEPOINT immutable_journal_probe');
+      await expect(fresh.query('UPDATE nevora_tenancy.typed_backfill_journal_chunk SET retry_identity=$1 WHERE plan_digest=$2 AND chunk_id=$3', ['f'.repeat(64), f.chain.plan.digest, journalDescriptor(f).chunks[0].id])).rejects.toMatchObject({ code: 'P0001' });
+    } finally { await fresh.query('ROLLBACK'); }
+    expect(await journalRows(f)).toEqual(firstJournal); expect(await targets(f)).toEqual(firstTargets); expect(await metadata(f)).toEqual(firstMetadata);
+    await expectJournalApplied(f);
+    receipt('case-J01-corrected-lock-grants-immutable-guards.json', { sourceLockSql, journalLockSql, lockRows,
+      effectiveJournalTableGrants: ['SELECT','INSERT','UPDATE'], explicitColumnGrants: [], immutablePlanCountAndChunkRetryUpdates: 'P0001',
+      journalTargetSourceMetadataUnchanged: true, noAdditionalSourceGrants: true });
+    receipt('case-J01-atomic-tuple.json', { outcome, firstCommands: f.queries, commands, originalRows: f.original, targets: firstTargets, metadata: firstMetadata, journal: firstJournal,
+      observation, effectsVerificationClaim: false, chunkCompletionClaim: false, freshRetryDmlCount: 0 });
+  });
+  journalCase('J02', 'serializes a concurrent original-plan retry on all source locks before MVCC and journal reads', async f => {
+    const native = Client.prototype.query.bind(f.first), firstCommands: string[] = [];
+    let release!: () => void, acquired!: () => void;
+    const gate = new Promise<void>(resolve => { release = resolve; }), locked = new Promise<void>(resolve => { acquired = resolve; });
+    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+      const sql = queryText(args[0]); firstCommands.push(sql); const result = await Reflect.apply(native, f.first, args);
+      if (sql.startsWith('LOCK TABLE public.')) { acquired(); await gate; } return result;
+    }) as Client['query']);
+    const secondCommands: string[] = [], secondNative = Client.prototype.query.bind(f.second);
+    const secondSpy = vi.spyOn(f.second, 'query').mockImplementation(((...args: unknown[]) => { secondCommands.push(queryText(args[0])); return Reflect.apply(secondNative, f.second, args); }) as Client['query']);
+    const one = executeGuardedTypedLocalBackfillWithJournal(f.first, f.request); let two: ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal> | undefined;
+    try {
+      await Promise.race([locked, one.then(() => { throw Error('First source-lock acquisition required'); })]);
+      two = executeGuardedTypedLocalBackfillWithJournal(f.second, secondRequest(f));
+      let waiting = false;
+      for (let attempt = 0; attempt < 100 && !waiting; attempt++) {
+        waiting = (await f.observer.query("SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE datname=$1 AND usename=$2 AND wait_event_type='Lock' AND query LIKE 'LOCK TABLE public.%') waiting", [f.name, lease.operatorRoles[1].name])).rows[0].waiting;
+        if (!waiting) await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      expect(waiting).toBe(true);
+      const secondBegin = secondCommands.indexOf('BEGIN ISOLATION LEVEL SERIALIZABLE');
+      expect(secondCommands.slice(secondBegin + 1).every(sql => sql.startsWith('SET LOCAL ') || sql.startsWith('LOCK TABLE public.'))).toBe(true);
+      release(); const outcomes = await Promise.all([one, two]); expect(outcomes.map(o => o.status).sort()).toEqual(['APPLIED','UNCHANGED']);
+      await expectJournalApplied(f); expect(anyDml(secondCommands.slice(secondBegin + 1))).toBe(false);
+      receipt('case-J02-concurrent-tuple.json', { outcomes, waitingOnOriginal70SourceLocks: waiting, firstCommands, secondCommands,
+        targets: await targets(f), metadata: await metadata(f), journal: await journalRows(f) });
+    } finally { release(); await Promise.allSettled(two ? [one, two] : [one]); spy.mockRestore(); secondSpy.mockRestore(); }
+    for (const commands of [firstCommands, secondCommands]) {
+      const begin = commands.indexOf('BEGIN ISOLATION LEVEL SERIALIZABLE'), sourceLock = commands.findIndex(sql => sql.startsWith('LOCK TABLE public.'));
+      const journalLock = commands.findIndex(sql => sql.includes('F10_TYPED_JOURNAL_LOCK'));
+      expect(sourceLock).toBeGreaterThan(begin); expect(journalLock).toBeGreaterThan(sourceLock);
+      expect(commands[sourceLock].match(/public\."/g)).toHaveLength(70);
+      expect(commands[journalLock]).toContain('typed_backfill_journal_chunk'); expect(commands[journalLock]).toContain('typed_backfill_journal_plan');
+      expect(commands[journalLock].indexOf('typed_backfill_journal_chunk')).toBeLessThan(commands[journalLock].indexOf('typed_backfill_journal_plan'));
+      expect(commands.slice(begin + 1, journalLock).every(sql => sql.startsWith('SET LOCAL ') || sql.startsWith('LOCK TABLE public.'))).toBe(true);
+      expect(commands[journalLock]).toContain('SHARE ROW EXCLUSIVE MODE');
+    }
+  });
+  journalCase('J03', 'rolls back STARTED journal and all earlier direct effects on actual mid-attribution failure', async f => {
+    const native = Client.prototype.query.bind(f.first), commands: string[] = []; let failed = false, directWrites = 0;
+    const spy = vi.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => {
+      const sql = queryText(args[0]); commands.push(sql); if (sql.startsWith('UPDATE public.')) directWrites++;
+      if (sql.startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) { failed = true; return native('SELECT 1/0'); }
+      return Reflect.apply(native, f.first, args);
+    }) as Client['query']);
+    let outcome: Awaited<ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal>>;
+    try { outcome = await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request); } finally { spy.mockRestore(); }
+    expect(failed).toBe(true); expect(directWrites).toBeGreaterThan(0);
+    expect(commands.some(sql => sql.includes('F10_TYPED_JOURNAL_REGISTER'))).toBe(true); expect(commands.some(sql => sql.includes('F10_TYPED_JOURNAL_START'))).toBe(true);
+    expect(outcome).toEqual({ status: 'BLOCKED', code: 'TYPED_GUARDED_BACKFILL_FAILED' });
+    expect(commands.filter(sql => sql === 'ROLLBACK')).toHaveLength(1); expect(commands).not.toContain('COMMIT');
+    await expectUnapplied(f); await expectJournalEmpty(f); receipt('case-J03-rollback.json', { outcome, commands, directWrites, allJournalAndTargetEffectsAbsent: true });
+  });
+  journalCase('J04', 'real deferred journal coverage failure rolls back the already written journal and ownership tuple', async f => {
+    const alternate = compileTypedTenantBackfill(f.chain.snapshot, f.chain.ownership, f.chain.constraints, { chunkSize: 3 });
+    expect(alternate.status).toBe('PLANNED'); if (alternate.status !== 'PLANNED') throw Error('Genuine distinct technical plan required');
+    const described = describeTypedBackfillJournal(alternate.plan); expect(described.status).toBe('DESCRIBED');
+    if (described.status !== 'DESCRIBED') throw Error('Genuine distinct descriptor required');
+    const native = Client.prototype.query.bind(f.first), commands: string[] = []; let injected = false, directWrites = 0, deferredCode = '';
+    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+      const sql = queryText(args[0]); commands.push(sql); if (sql.startsWith('UPDATE public.')) directWrites++;
+      if (sql === 'SET CONSTRAINTS ALL IMMEDIATE' && !injected) {
+        injected = true;
+        // Real invoker/identity triggers validate this genuine descriptor. Its
+        // deliberately absent chunks violate the unchanged deferred guards.
+        await native('INSERT INTO nevora_tenancy.typed_backfill_journal_plan(plan_digest,descriptor_canonical,boundary,chunk_count) VALUES($1,$2,$3::jsonb,$4)',
+          [alternate.plan.digest, canonicalOwnershipJson(described.descriptor), canonicalOwnershipJson(described.descriptor.boundary), described.descriptor.chunks.length]);
+        try { return await Reflect.apply(native, f.first, args); } catch (error) { deferredCode = (error as { code: string }).code; throw error; }
+      }
+      return Reflect.apply(native, f.first, args);
+    }) as Client['query']);
+    let outcome: Awaited<ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal>>;
+    try { outcome = await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request); } finally { spy.mockRestore(); }
+    expect(injected).toBe(true); expect(directWrites).toBeGreaterThan(0); expect(deferredCode).toBe('P0001');
+    expect(outcome).toEqual({ status: 'BLOCKED', code: 'TYPED_GUARDED_BACKFILL_FAILED' });
+    expect(commands.filter(sql => sql === 'ROLLBACK')).toHaveLength(1); expect(commands).not.toContain('COMMIT');
+    await expectUnapplied(f); await expectJournalEmpty(f);
+    receipt('case-J04-real-deferred-coverage.json', { outcome, commands, injectedGenuineDifferentPlanDigest: alternate.plan.digest, deferredCode,
+      originalGuardsUnchanged: true, originalAndInjectedJournalRowsAbsentAfterRollback: true });
+  });
+  journalCase('J05', 'lost real BEGIN acknowledgement rolls back only its own attempt, then a fresh original-plan request applies safely', async f => {
+    const native = Client.prototype.query.bind(f.first), commands: string[] = [];
+    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+      const sql = queryText(args[0]); commands.push(sql); const result = await Reflect.apply(native, f.first, args);
+      if (sql === 'BEGIN ISOLATION LEVEL SERIALIZABLE') throw Error('PRIVATE_FICTIONAL_JOURNAL_BEGIN_ACK'); return result;
+    }) as Client['query']);
+    let outcome: Awaited<ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal>>;
+    try { outcome = await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request); } finally { spy.mockRestore(); }
+    expect(outcome).toEqual({ status: 'BLOCKED', code: 'TYPED_GUARDED_BACKFILL_FAILED' });
+    expect(commands.filter(sql => sql === 'ROLLBACK')).toHaveLength(1); expect(commands).not.toContain('COMMIT');
+    await expectUnapplied(f); await expectJournalEmpty(f);
+    const fresh = await connect(f.name, f.request.identity.role);
+    expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toMatchObject({ status: 'APPLIED', planDigest: f.chain.plan.digest }); await expectJournalApplied(f);
+    receipt('case-J05-begin-ack.json', { outcome, commands, independentOriginalTupleObservedBeforeFreshApply: true });
+  });
+  journalCase('J06', 'lost real COMMIT acknowledgement remains uncertain, performs no later SQL, and fresh retry leaves the entire tuple identical', async f => {
+    const native = Client.prototype.query.bind(f.first), commands: string[] = [];
+    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+      const sql = queryText(args[0]); commands.push(sql); const result = await Reflect.apply(native, f.first, args);
+      if (sql === 'COMMIT') throw Error('PRIVATE_FICTIONAL_JOURNAL_COMMIT_ACK'); return result;
+    }) as Client['query']);
+    let outcome: Awaited<ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal>>;
+    try { outcome = await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request); } finally { spy.mockRestore(); }
+    expect(outcome).toEqual({ status: 'UNCERTAIN', code: 'COMMIT_OUTCOME_UNKNOWN', planDigest: f.chain.plan.digest, reconciliation: 'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED' });
+    expect(commands[commands.length - 1]).toBe('COMMIT'); expect(commands).not.toContain('ROLLBACK'); await expectJournalApplied(f);
+    const tuple = { journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) };
+    const fresh = await connect(f.name, f.request.identity.role), freshNative = fresh.query.bind(fresh), freshCommands: string[] = [];
+    const freshSpy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { freshCommands.push(queryText(args[0])); return Reflect.apply(freshNative, fresh, args); }) as Client['query']);
+    try { expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toMatchObject({ status: 'UNCHANGED', planDigest: f.chain.plan.digest }); }
+    finally { freshSpy.mockRestore(); }
+    expect(anyDml(freshCommands)).toBe(false); expect({ journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }).toEqual(tuple);
+    receipt('case-J06-commit-ack.json', { outcome, commands, freshCommands, tuple, noAdapterEffectVerificationClaim: true });
+  });
+  journalCase('J07', 'lost real ROLLBACK acknowledgement remains uncertain and a fresh original-plan request safely applies exactly once', async f => {
+    const native = Client.prototype.query.bind(f.first), commands: string[] = []; let dmlFailed = false;
+    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+      const sql = queryText(args[0]); commands.push(sql);
+      if (sql.startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) { dmlFailed = true; return native('SELECT 1/0'); }
+      const result = await Reflect.apply(native, f.first, args);
+      if (sql === 'ROLLBACK') throw Error('PRIVATE_FICTIONAL_JOURNAL_ROLLBACK_ACK'); return result;
+    }) as Client['query']);
+    let outcome: Awaited<ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal>>;
+    try { outcome = await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request); } finally { spy.mockRestore(); }
+    expect(dmlFailed).toBe(true); expect(outcome).toEqual({ status: 'UNCERTAIN', code: 'ROLLBACK_UNCONFIRMED', planDigest: f.chain.plan.digest,
+      reconciliation: 'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED' });
+    expect(commands[commands.length - 1]).toBe('ROLLBACK'); expect(commands.filter(sql => sql === 'ROLLBACK')).toHaveLength(1);
+    await expectUnapplied(f); await expectJournalEmpty(f);
+    const fresh = await connect(f.name, f.request.identity.role), freshNative = fresh.query.bind(fresh), freshCommands: string[] = [];
+    const freshSpy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { freshCommands.push(queryText(args[0])); return Reflect.apply(freshNative, fresh, args); }) as Client['query']);
+    try {
+      expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toMatchObject({ status: 'APPLIED', planDigest: f.chain.plan.digest });
+      await expectJournalApplied(f); const tuple = { journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }, boundary = freshCommands.length;
+      expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toMatchObject({ status: 'UNCHANGED', planDigest: f.chain.plan.digest });
+      expect(anyDml(freshCommands.slice(boundary))).toBe(false); expect({ journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }).toEqual(tuple);
+    } finally { freshSpy.mockRestore(); }
+    receipt('case-J07-rollback-ack.json', { outcome, commands, freshCommands, adapterDefiniteRollbackClaim: false, independentUnappliedTupleBeforeFreshOriginalPlanApply: true });
+  });
+  journalCase('J08', 'denies legacy applied metadata without an atomic journal and never creates a retrospective record', async f => {
+    expect(await executeGuardedTypedLocalBackfill(f.first, f.request)).toMatchObject({ status: 'APPLIED' }); await expectApplied(f); await expectJournalEmpty(f);
+    const targetBefore = await targets(f), metadataBefore = await metadata(f), boundary = f.queries.length;
+    expect(await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request)).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_RETRY_STATE_DRIFT' });
+    expect(anyDml(f.queries.slice(boundary))).toBe(false); expect(await targets(f)).toEqual(targetBefore); expect(await metadata(f)).toEqual(metadataBefore); await expectJournalEmpty(f);
+    receipt('case-J08-no-retrospective-journal.json', { legacyApplied: true, newModeDenied: true, noJournalOrTargetDml: true });
+  });
+  journalCase('J09', 'denies NOT_STARTED and partial or foreign journal ownership tuples without repairing them', async f => {
+    await registerFixtureJournal(f); const observation = await journalObservation(f);
+    expect(observation.rows.every((r: { state: string }) => r.state === 'NOT_STARTED')).toBe(true);
+    expect(await executeGuardedTypedLocalBackfill(f.first, f.request)).toMatchObject({ status: 'APPLIED' });
+    const tuple = { journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }, boundary = f.queries.length;
+    expect(await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request)).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_RETRY_STATE_DRIFT' });
+    expect(anyDml(f.queries.slice(boundary))).toBe(false); expect({ journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }).toEqual(tuple);
+    const partial = await fixture('J09-partial', true); await registerFixtureJournal(partial, 'UNKNOWN');
+    await partial.observer.query('BEGIN');
+    await partial.observer.query('UPDATE nevora_tenancy.expansion_protocol SET backfill_actor=session_user,capture_manifest_sha256=$1', [partial.chain.plan.digest]);
+    await partial.observer.query('SET LOCAL search_path=pg_catalog,public');
+    await partial.observer.query('UPDATE public.employees SET workspace_id=$1 WHERE id=$2', ['workspace-fuel', ownedEmployee]);
+    await partial.observer.query('UPDATE nevora_tenancy.expansion_protocol SET backfill_actor=NULL'); await partial.observer.query('COMMIT');
+    const partialBefore = { journal: await journalRows(partial), targets: await targets(partial), metadata: await metadata(partial) }, partialBoundary = partial.queries.length;
+    expect(await executeGuardedTypedLocalBackfillWithJournal(partial.first, partial.request)).toEqual({ status: 'BLOCKED', code: 'DIRECT_OWNERSHIP_STATE_DRIFT' });
+    expect(anyDml(partial.queries.slice(partialBoundary))).toBe(false); expect({ journal: await journalRows(partial), targets: await targets(partial), metadata: await metadata(partial) }).toEqual(partialBefore);
+    const foreign = await fixture('J09-foreign', true), alternate = compileTypedTenantBackfill(foreign.chain.snapshot, foreign.chain.ownership, foreign.chain.constraints, { chunkSize: 3 });
+    expect(alternate.status).toBe('PLANNED'); if (alternate.status !== 'PLANNED') throw Error('Genuine distinct technical descriptor required');
+    const described = describeTypedBackfillJournal(alternate.plan); expect(described.status).toBe('DESCRIBED'); if (described.status !== 'DESCRIBED') throw Error('Genuine alternate journal description required');
+    await foreign.observer.query('SELECT nevora_tenancy.register_typed_backfill_journal($1)', [canonicalOwnershipJson(described.descriptor)]);
+    expect(await executeGuardedTypedLocalBackfill(foreign.first, foreign.request)).toMatchObject({ status: 'APPLIED' });
+    const foreignTuple = { journal: await journalRows(foreign), targets: await targets(foreign), metadata: await metadata(foreign) }, foreignBoundary = foreign.queries.length;
+    expect(await executeGuardedTypedLocalBackfillWithJournal(foreign.first, foreign.request)).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_RETRY_STATE_DRIFT' });
+    expect(anyDml(foreign.queries.slice(foreignBoundary))).toBe(false); expect({ journal: await journalRows(foreign), targets: await targets(foreign), metadata: await metadata(foreign) }).toEqual(foreignTuple);
+    receipt('case-J09-denied-tuples.json', {
+      notStarted: { originalPlan: f.chain.plan, originalDescriptor: journalDescriptor(f), before: tuple,
+        after: { journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) } },
+      partial: { child: partial.name, originalPlan: partial.chain.plan, originalDescriptor: journalDescriptor(partial), before: partialBefore,
+        after: { journal: await journalRows(partial), targets: await targets(partial), metadata: await metadata(partial) } },
+      foreign: { child: foreign.name, originalPlan: foreign.chain.plan, originalDescriptor: journalDescriptor(foreign), alternatePlan: alternate.plan,
+        alternateDescriptor: described.descriptor, before: foreignTuple,
+        after: { journal: await journalRows(foreign), targets: await targets(foreign), metadata: await metadata(foreign) } },
+      noRetrospectiveRepair: true });
+  });
+  journalCase('J10', 'preserves UNKNOWN terminal observations while independently rechecking all source and target effects on fresh retry', async f => {
+    await registerFixtureJournal(f, 'UNKNOWN'); const before = await journalRows(f);
+    expect(await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request)).toMatchObject({ status: 'APPLIED' });
+    await expectJournalApplied(f); expect(await journalRows(f)).toEqual(before);
+    const observation = await journalObservation(f); expect(observation.rows.every((r: { state: string }) => r.state === 'UNKNOWN')).toBe(true);
+    const firstChunk = journalDescriptor(f).chunks[0]; expect(firstChunk).toBeDefined();
+    await expect(f.observer.query('SELECT nevora_tenancy.observe_typed_backfill_journal($1,$2,$3,$4)', [canonicalOwnershipJson(journalDescriptor(f)), firstChunk.id, firstChunk.retryIdentity, 'STARTED']))
+      .rejects.toMatchObject({ code: 'P0001' });
+    expect(await journalRows(f)).toEqual(before);
+    const fresh = await connect(f.name, f.request.identity.role), native = fresh.query.bind(fresh), commands: string[] = [];
+    const spy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => { commands.push(queryText(args[0])); return Reflect.apply(native, fresh, args); }) as Client['query']);
+    try { expect(await executeGuardedTypedLocalBackfillWithJournal(fresh, f.request)).toMatchObject({ status: 'UNCHANGED' }); } finally { spy.mockRestore(); }
+    expect(anyDml(commands)).toBe(false); expect(commands.some(sql => sql.includes('FROM public."employees"'))).toBe(true);
+    expect(commands.some(sql => sql.includes('clocker_pin_events_tenant_ownership'))).toBe(true); expect(commands.some(sql => sql.includes('F10_TYPED_JOURNAL_READ'))).toBe(true);
+    expect(await journalRows(f)).toEqual(before); await expectJournalApplied(f);
+    receipt('case-J10-terminal-unknown.json', { observation, commands, journalRowsUnchanged: true, independentSourceAndTargetRecheck: true, completionOrEffectsVerifiedClaim: false });
+  });
+  journalCase('J11', 'rejects absent or changed exact own child installation custody before BEGIN and before every effect', async f => {
+    const originalTuple = { journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }, results: unknown[] = [];
+    const mutations: { name: string; code: string; alter: (record: JournalInstallation) => JournalInstallation }[] = [
+      { name: 'source', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, sourceSHA256: 'f'.repeat(64) }) },
+      { name: 'database-oid', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, databaseOid: r.databaseOid + '1' }) },
+      { name: 'marker', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, marker: r.marker + ':foreign' }) },
+      { name: 'invocation', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, invocation: 'f'.repeat(16) }) },
+      { name: 'schema-oid', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, schemaOid: r.schemaOid + '1' }) },
+      { name: 'owner-oid', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, ownerRoleOid: r.operators[0].oid }) },
+      { name: 'table-oid', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, tables: r.tables.map((t, i) => i ? t : { ...t, oid: t.oid + '1' }) }) },
+      { name: 'function-definition', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, functions: r.functions.map((t, i) => i ? t : { ...t, definitionSHA256: 'f'.repeat(64) }) }) },
+      { name: 'trigger-definition', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, triggers: r.triggers.map((t, i) => i ? t : { ...t, definitionSHA256: 'f'.repeat(64) }) }) },
+      { name: 'operators', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT', alter: r => ({ ...r, operators: r.operators.slice(0, 1) }) },
+    ];
+    await withOwnInstallationMutation(f, 'missing', rows => rows.filter(r => r.database !== f.name), async () => {
+      const boundary = f.queries.length, outcome = await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request);
+      expect(outcome).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_INSTALLATION_REQUIRED' });
+      expect(f.queries.slice(boundary)).not.toContain('BEGIN ISOLATION LEVEL SERIALIZABLE'); expect(anyDml(f.queries.slice(boundary))).toBe(false); results.push({ name: 'missing', outcome });
+    });
+    for (const mutation of mutations) await withOwnInstallationMutation(f, mutation.name, rows => rows.map(r => r.database === f.name ? mutation.alter(r) : r), async () => {
+      const boundary = f.queries.length, outcome = await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request);
+      expect(outcome).toEqual({ status: 'BLOCKED', code: mutation.code }); expect(f.queries.slice(boundary)).not.toContain('BEGIN ISOLATION LEVEL SERIALIZABLE');
+      expect(anyDml(f.queries.slice(boundary))).toBe(false); expect({ journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }).toEqual(originalTuple); results.push({ name: mutation.name, outcome });
+    });
+    const signature = 'nevora_tenancy.register_typed_backfill_journal(text)';
+    await f.observer.query('REVOKE EXECUTE ON FUNCTION ' + signature + ' FROM ' + quoted(f.request.identity.role));
+    try { const boundary = f.queries.length; expect(await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request)).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_INSTALLATION_DRIFT' });
+      expect(f.queries.slice(boundary)).not.toContain('BEGIN ISOLATION LEVEL SERIALIZABLE'); expect(anyDml(f.queries.slice(boundary))).toBe(false); }
+    finally {
+      // Regranting the first principal alone changes raw proacl ordering.
+      // Restore the exact original named grants, without catalog exemptions.
+      await f.observer.query('REVOKE EXECUTE ON FUNCTION ' + signature + ' FROM ' + lease.operatorRoles.map(r => quoted(r.name)).join(','));
+      for (const role of lease.operatorRoles) await f.observer.query('GRANT EXECUTE ON FUNCTION ' + signature + ' TO ' + quoted(role.name));
+    }
+    const restoredCatalog = await observeMigrationCatalog(f.observer);
+    expect(restoredCatalog.catalog).toEqual(f.chain.facts.catalog);
+    expect(restoredCatalog.digest).toBe(f.request.captureRequest.catalogBaseline.catalogDigest);
+    receipt('case-J11-exact-grant-catalog-restoration.json', { signature, restoredCatalog, exactOriginalCatalogRestored: true, noCatalogAssertionExemptions: true });
+    expect({ journal: await journalRows(f), targets: await targets(f), metadata: await metadata(f) }).toEqual(originalTuple);
+    receipt('case-J11-custody-denials.json', { results, ownChildRecordOnly: true, exactLeaseBytesRestored: true, actualNamedGrantRevokeRestored: true });
+  });
+  journalCase('J12', 'denies request descriptor injection, cloned plans, namespace and authority drift without reissuing provenance', async f => {
+    const mutations = [
+      { name: 'descriptor injection', request: { ...f.request, journal: journalDescriptor(f) }, code: 'UNSUPPORTED_REQUEST' },
+      { name: 'clone plan', request: { ...f.request, plan: JSON.parse(JSON.stringify(f.chain.plan)) }, code: 'TYPED_PLAN_REQUIRED' },
+      { name: 'foreign metadata clone', request: { ...f.request, plan: { ...f.chain.plan, digest: 'f'.repeat(64) } }, code: 'TYPED_PLAN_REQUIRED' },
+      { name: 'namespace source', request: { ...f.request, captureRequest: { ...f.request.captureRequest, sourceDigest: 'f'.repeat(64) } }, code: 'CAPTURE_BINDING_DRIFT' },
+      { name: 'authority manifest', request: { ...f.request, authority: { ...f.request.authority, planDigest: 'f'.repeat(64) } }, code: 'OPERATOR_CUSTODY_BINDING_DRIFT' },
+      { name: 'operator oid', request: { ...f.request, identity: { ...f.request.identity, roleOid: f.request.identity.roleOid + '1' } }, code: 'OWNED_LOCAL_IDENTITY_DRIFT' },
+    ];
+    const results: unknown[] = [];
+    for (const m of mutations) { const boundary = f.queries.length, outcome = await executeGuardedTypedLocalBackfillWithJournal(f.first, m.request);
+      expect(outcome).toEqual({ status: 'BLOCKED', code: m.code }); expect(f.queries).toHaveLength(boundary); results.push({ name: m.name, outcome }); }
+    await expectUnapplied(f); await expectJournalEmpty(f);
+    // Root-approved negative setup: installing after a genuine capture must
+    // not retrofit that earlier catalog/plan into journal integration authority.
+    const late = await fixture('J12-late-install');
+    const originalCaptureChecksum = ownershipDigest(late.chain.facts), originalPlanDigest = late.chain.plan.digest;
+    const installed = await installJournalForRootFixture(late.id, late.name, late.oid, late.marker, late.observer, 'INTENTIONAL_AFTER_CAPTURE_DENIAL');
+    const described = describeTypedBackfillJournal(late.chain.plan); expect(described.status).toBe('DESCRIBED');
+    if (described.status !== 'DESCRIBED') throw Error('Genuine unchanged original descriptor required');
+    late.journal = { installation: installed, descriptor: described.descriptor };
+    const current = await observeMigrationCatalog(late.observer); assertJournalOnlyCatalogDelta(late.chain.facts.catalog, current.catalog, journalInstallCatalogs.get(late.name)!);
+    late.finalCatalogChanges = 'JOURNAL_INSTALLATION'; late.permittedJournalCatalogDigest = current.digest;
+    const boundary = late.queries.length;
+    expect(await executeGuardedTypedLocalBackfillWithJournal(late.first, late.request)).toEqual({ status: 'BLOCKED', code: 'CURRENT_CATALOG_DRIFT' });
+    expect(late.queries.slice(boundary)).not.toContain('BEGIN ISOLATION LEVEL SERIALIZABLE'); expect(anyDml(late.queries.slice(boundary))).toBe(false);
+    expect(ownershipDigest(late.chain.facts)).toBe(originalCaptureChecksum); expect(late.chain.plan.digest).toBe(originalPlanDigest);
+    await expectUnapplied(late); await expectJournalEmpty(late);
+    receipt('case-J12-late-install-denied.json', { originalCaptureChecksum, originalPlanDigest, installation: installed,
+      originalCatalog: late.chain.facts.catalog, currentCatalog: current, independentlyRetainedInstallationCatalogs: journalInstallCatalogs.get(late.name), exactJournalOnlyCatalogDelta: true, noOwnedBeginOrEffects: true,
+      expectedClosedDenial: 'CURRENT_CATALOG_DRIFT', retrospectiveRegistrationOrRepair: false });
+    receipt('case-J12-unissued-input-denials.json', results);
+  });
+  journalCase('J13', 'denies current source catalog and role drift without any journal or metadata effects', async f => {
+    await f.observer.query('BEGIN'); await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='EXPANDED_LEGACY'");
+    await f.observer.query('SET LOCAL search_path=pg_catalog,public'); await f.observer.query("UPDATE public.employees SET first_name='Journal source drift' WHERE id=$1", [ownedEmployee]);
+    await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='FENCED'"); await f.observer.query('COMMIT');
+    try { const boundary = f.queries.length; expect(await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request)).toEqual({ status: 'BLOCKED', code: 'CURRENT_SOURCE_DRIFT' });
+      expect(anyDml(f.queries.slice(boundary))).toBe(false); await expectJournalEmpty(f); }
+    finally { await f.observer.query('BEGIN'); await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='EXPANDED_LEGACY'");
+      await f.observer.query('SET LOCAL search_path=pg_catalog,public'); await f.observer.query("UPDATE public.employees SET first_name='Fictional' WHERE id=$1", [ownedEmployee]);
+      await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='FENCED'"); await f.observer.query('COMMIT'); }
+    await f.observer.query('CREATE INDEX typed_journal_fixture_drift ON public.employees(first_name)');
+    try { const boundary = f.queries.length; expect(await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request)).toEqual({ status: 'BLOCKED', code: 'CURRENT_CATALOG_DRIFT' }); expect(anyDml(f.queries.slice(boundary))).toBe(false); }
+    finally { await f.observer.query('DROP INDEX public.typed_journal_fixture_drift'); }
+    if (!admin) throw Error('Root base role unavailable');
+    await admin.query('GRANT pg_write_all_data TO ' + quoted(f.request.identity.role) + ' WITH INHERIT TRUE');
+    try { const boundary = f.queries.length; expect(await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request)).toEqual({ status: 'BLOCKED', code: 'OPERATOR_ROLE_DRIFT' }); expect(anyDml(f.queries.slice(boundary))).toBe(false); }
+    finally { await admin.query('REVOKE pg_write_all_data FROM ' + quoted(f.request.identity.role)); }
+    await expectUnapplied(f); await expectJournalEmpty(f);
+    receipt('case-J13-current-drift-denials.json', { currentSourceRestored: true, catalogIndexRemoved: true, namedRoleMembershipRestored: true, noJournalOrTargetDml: true });
+  });
+  journalCase('J14', 'refuses the caller transaction without rolling it back or reading the journal', async f => {
+    await f.first.query('BEGIN'); await f.first.query("SET LOCAL application_name='fictional-caller-journal-transaction'"); const boundary = f.queries.length;
+    try {
+      expect(await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request)).toEqual({ status: 'BLOCKED', code: 'CLIENT_NOT_IDLE' });
+      expect(f.queries).toHaveLength(boundary); expect(f.first.getTransactionStatus()).toBe('T');
+      expect((await f.first.query("SELECT current_setting('application_name') marker")).rows[0].marker).toBe('fictional-caller-journal-transaction');
+    } finally { await f.first.query('ROLLBACK'); }
+    await expectUnapplied(f); await expectJournalEmpty(f); receipt('case-J14-caller-transaction.json', { callerRollbackOnly: true, noEntrypointQueries: true });
   });
 });
