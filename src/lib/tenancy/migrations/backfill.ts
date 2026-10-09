@@ -6,7 +6,15 @@ export type HistoricalReference = { target: string; targetColumns: string[]; key
 export type LeafBinding = { path: string[]; kind: 'DATA' | 'GLOBAL_FENCE' | 'REFERENCE'; target?: string; targetColumns?: string[]; key?: JsonValue[]; historical?: boolean };
 export type PayloadCapture = { table: string; key: JsonValue[]; column: string; contractId: string; valueDigest: string; bindings: LeafBinding[]; unresolvedPaths: string[][]; reviewEvidenceDigest: string };
 export type WriteFence = { mode: 'EXCLUSIVE_FENCED' | 'DUAL_WRITE'; sourceDigest: string; schemaDigest: string; databaseFenceToken: string; allWritersCovered: boolean; immutableOwnershipEnabled: boolean; registeredWriterDigest: string; newWriteJournalDigest: string; newWritesReconciled: boolean };
-export type BackfillCapture = { migrations: MigrationSource[]; registryDigest: string; sourceDigest: string; currentSchemaDigest: string; snapshot: { id: string; isolation: 'SERIALIZABLE'; includesInactive: boolean; includesHistory: boolean }; tables: TableCapture[]; mappings: ImmutableMapping[]; historicalReferences: HistoricalReference[]; payloadCaptures: PayloadCapture[]; installation?: { workspaceId: string; evidenceDigest: string; coveredRows: { table: string; key: JsonValue[]; rowChecksum: string }[] }; writeFence: WriteFence; chunkSize: number };
+/** Captured SQL equality classes are opaque DB results, not JS/locale keys.
+ * The future privileged adapter must obtain expression output AND equivalence
+ * classes using these exact index collations at the same fenced snapshot.
+ * Checksums bind supplied evidence; they do not authenticate a database call. */
+export type DatabaseCollationCapture = { oid:string; schema:string; name:string; provider:string; deterministic:boolean; encoding:number; lcCollate:string|null; lcCtype:string|null; locale:string|null; version:string|null; actualVersion:string|null };
+export type DatabaseComparatorCatalog = { contractId:string; source:{path:string;line:number}; sourceStatementChecksum:string; definition:{indexDefinition:string; expression:string; predicate:string|null; expressionCollation:DatabaseCollationCapture; indexCollation:DatabaseCollationCapture; serverVersion:string; serverEncoding:string}; checksum:string };
+export type DatabaseComparatorRow = { contractId:string; key:JsonValue[]; rowChecksum:string; included:boolean; expressionValue:string|null; comparisonClass:string|null };
+export type DatabaseNamespaceComparators = { binding:{registryDigest:string;sourceDigest:string;schemaDigest:string;snapshotId:string;rowSetChecksum:string}; catalogs:DatabaseComparatorCatalog[]; rows:DatabaseComparatorRow[]; captureChecksum:string };
+export type BackfillCapture = { migrations: MigrationSource[]; registryDigest: string; sourceDigest: string; currentSchemaDigest: string; snapshot: { id: string; isolation: 'SERIALIZABLE'; includesInactive: boolean; includesHistory: boolean }; tables: TableCapture[]; mappings: ImmutableMapping[]; historicalReferences: HistoricalReference[]; payloadCaptures: PayloadCapture[]; namespaceComparators:DatabaseNamespaceComparators; installation?: { workspaceId: string; evidenceDigest: string; coveredRows: { table: string; key: JsonValue[]; rowChecksum: string }[] }; writeFence: WriteFence; chunkSize: number };
 export type BackfillEntry = { table: string; key: JsonValue[]; workspaceId: string | null; storage: TableOwnership['storage']; sidecar: string | null; sourceChecksum: string; mirroredIdentity: Record<string, JsonValue>; mirroredIdentityChecksum: string; evidenceDigests: string[] };
 export type BackfillChunk = { id: string; table: string; entries: BackfillEntry[]; count: number; sourceChecksum: string; targetChecksum: string };
 export type BackfillPlan = { status: 'READY_FOR_GUARDED_EXECUTION' | 'BLOCKED'; digest: string; registryDigest: string; sourceDigest: string; schemaDigest: string; snapshotId: string; manifest: JsonValue | null; chunks: BackfillChunk[]; entries: BackfillEntry[]; diagnostics: OwnershipDiagnostic[]; preservesAllOriginalColumns: true; verification: 'PURE_PREFLIGHT_NOT_DATABASE_VERIFICATION' };
@@ -124,8 +132,98 @@ function buildChunks(entries:BackfillEntry[],digest:string,chunkSize:number):Bac
  return chunks;
 }
 
-export function preflightTenantBackfill(capture:BackfillCapture):BackfillPlan{
- const registry=getOwnershipRegistry(),diagnostics:OwnershipDiagnostic[]=[...verifyOwnershipSource(capture.migrations)];
+// Closed source contracts supplement (and do not change) the ownership registry.
+// pg_get_expr/pg_get_indexdef spellings below require exact catalog capture;
+// a different catalog/engine contract needs explicit reviewed reconciliation.
+const DATABASE_NAMESPACES=[
+ {contractId:'employees.email_ci',table:'employees',column:'email',label:'email_ci',source:{path:'db/migrations/0001_initial.sql',line:31},expression:'lower(email)',predicate:'(email IS NOT NULL)',indexDefinition:'CREATE UNIQUE INDEX employees_email_unique ON public.employees USING btree (lower(email)) WHERE (email IS NOT NULL)'},
+ {contractId:'positions.name_ci',table:'positions',column:'name',label:'name_ci',source:{path:'db/migrations/0008_workspace_positions.sql',line:42},expression:'lower(name)',predicate:null,indexDefinition:'CREATE UNIQUE INDEX positions_workspace_name_unique ON public.positions USING btree (workspace_id, lower(name))'},
+ {contractId:'clocker_break_types.name_ci',table:'clocker_break_types',column:'name',label:'name_ci',source:{path:'db/migrations/0014_clocker_breaks.sql',line:16},expression:'lower(name)',predicate:null,indexDefinition:'CREATE UNIQUE INDEX clocker_break_type_name ON public.clocker_break_types USING btree (workspace_id, lower(name))'},
+ {contractId:'schedule_templates.active_name_ci',table:'schedule_templates',column:'name',label:'active_name_ci',source:{path:'db/migrations/0003_schedule_assistance.sql',line:91},expression:'lower(name)',predicate:'(active = true)',indexDefinition:'CREATE UNIQUE INDEX schedule_templates_name_unique ON public.schedule_templates USING btree (lower(name)) WHERE (active = true)'},
+] as const;
+function namespaceRowSetChecksum(capture:BackfillCapture):string{
+ return ownershipDigest([...capture.tables].sort((a,b)=>a.table<b.table?-1:1).map(t=>({table:t.table,count:t.expectedCount,checksum:t.expectedChecksum})));
+}
+function safeSame(a:unknown,b:unknown):boolean{try{return same(a,b);}catch{return false;}}
+function databaseComparatorValue(witness:DatabaseNamespaceComparators){
+ return {binding:witness.binding,catalogs:[...witness.catalogs].sort((a,b)=>a.contractId<b.contractId?-1:a.contractId>b.contractId?1:0),rows:[...witness.rows].sort((a,b)=>{const x=canonicalOwnershipJson([a.contractId,a.key]),y=canonicalOwnershipJson([b.contractId,b.key]);return x<y?-1:x>y?1:0;})};
+}
+function validCollation(value:unknown):value is DatabaseCollationCapture{
+ if(!value||typeof value!=='object')return false;
+ const v=value as Record<string,unknown>;
+ return same(Object.keys(v).sort(),['oid','schema','name','provider','deterministic','encoding','lcCollate','lcCtype','locale','version','actualVersion'].sort())&&
+  typeof v.oid==='string'&&/^[0-9]+$/.test(v.oid)&&['schema','name','provider'].every(k=>typeof v[k]==='string'&&v[k]!=='')&&typeof v.deterministic==='boolean'&&Number.isSafeInteger(v.encoding)&&
+  ['lcCollate','lcCtype','locale','version','actualVersion'].every(k=>v[k]===null||typeof v[k]==='string');
+}
+function validateDatabaseComparators(capture:BackfillCapture,nodes:RowNode[],diagnostics:OwnershipDiagnostic[]):Map<string,DatabaseComparatorRow>{
+ const result=new Map<string,DatabaseComparatorRow>(),witness=capture.namespaceComparators;
+ if(!witness||typeof witness!=='object'||!safeSame(Object.keys(witness).sort(),['binding','catalogs','rows','captureChecksum'].sort())){diagnostics.push(problem('DATABASE_COMPARATOR_REQUIRED','Actual DB namespace expression, collation and equality results must be captured; no JS lower-case fallback.'));return result;}
+ const expectedBinding={registryDigest:capture.registryDigest,sourceDigest:capture.sourceDigest,schemaDigest:capture.currentSchemaDigest,snapshotId:capture.snapshot.id,rowSetChecksum:namespaceRowSetChecksum(capture)};
+ if(!safeSame(witness.binding,expectedBinding))diagnostics.push(problem('DATABASE_COMPARATOR_BINDING_DRIFT','DB comparator capture differs from the exact registry/source/schema/snapshot/full-row boundary.'));
+ if(!Array.isArray(witness.catalogs)||!Array.isArray(witness.rows)){
+  diagnostics.push(problem('DATABASE_COMPARATOR_REQUIRED','Closed catalog and per-row result arrays are required.'));return result;
+ }
+ const catalogSeen=new Set<string>(),rowSeen=new Set<string>(),expressionClasses=new Map<string,string>();
+ for(const catalog of witness.catalogs){
+  if(!catalog||typeof catalog!=='object'){diagnostics.push(problem('DATABASE_COMPARATOR_CATALOG_DRIFT','Malformed catalog record.'));continue;}
+  const contract=DATABASE_NAMESPACES.find(c=>c.contractId===catalog.contractId);
+  if(!contract){diagnostics.push(problem('DATABASE_COMPARATOR_UNUSED','Unknown comparator catalog.'));continue;}
+  if(catalogSeen.has(catalog.contractId))diagnostics.push(problem('DATABASE_COMPARATOR_DUPLICATE','Duplicate comparator catalog.'));catalogSeen.add(catalog.contractId);
+  const {checksum,...catalogValue}=catalog,definition=catalog.definition;
+  const source=capture.migrations.find(m=>m.path===contract.source.path)?.text.split('\n').slice(contract.source.line-1).join('\n').split(';')[0]+';';
+  if(!safeSame(Object.keys(catalog).sort(),['contractId','source','sourceStatementChecksum','definition','checksum'].sort())||!safeSame(catalog.source,contract.source)||catalog.sourceStatementChecksum!==ownershipDigest(source)||!SHA.test(checksum)||checksum!==ownershipDigest(catalogValue)||
+   !definition||!safeSame(Object.keys(definition).sort(),['indexDefinition','expression','predicate','expressionCollation','indexCollation','serverVersion','serverEncoding'].sort())||definition.indexDefinition!==contract.indexDefinition||definition.expression!==contract.expression||definition.predicate!==contract.predicate||
+   !validCollation(definition.expressionCollation)||!validCollation(definition.indexCollation)||typeof definition.serverVersion!=='string'||!definition.serverVersion||typeof definition.serverEncoding!=='string'||!definition.serverEncoding)
+   diagnostics.push(problem('DATABASE_COMPARATOR_CATALOG_DRIFT','Exact source statement, index expression/predicate, engine and both collations must match the checksum-bound catalog evidence.'));
+ }
+ for(const contract of DATABASE_NAMESPACES)if(!catalogSeen.has(contract.contractId))diagnostics.push(problem('DATABASE_COMPARATOR_CATALOG_REQUIRED',contract.contractId));
+ for(const row of witness.rows){
+  if(!row||typeof row!=='object'){diagnostics.push(problem('DATABASE_COMPARATOR_ROW_DRIFT','Malformed comparator row.'));continue;}
+  const contract=DATABASE_NAMESPACES.find(c=>c.contractId===row.contractId),node=contract&&nodes.find(n=>n.rule.table===contract.table&&safeSame(n.key,row.key));
+  if(!contract||!node){diagnostics.push(problem('DATABASE_COMPARATOR_UNUSED','Comparator result does not belong to an exact captured row.'));continue;}
+  const id=canonicalOwnershipJson([row.contractId,row.key]);
+  if(rowSeen.has(id))diagnostics.push(problem('DATABASE_COMPARATOR_DUPLICATE','Duplicate comparator row result.',node));rowSeen.add(id);
+  const included=contract.table==='employees'?node.row.values.email!==null:contract.table==='schedule_templates'?node.row.values.active===true:true;
+  const input=node.row.values[contract.column];
+  if(!same(Object.keys(row).sort(),['contractId','key','rowChecksum','included','expressionValue','comparisonClass'].sort())||row.rowChecksum!==node.row.originalChecksum||row.included!==included||
+   (input===null?row.expressionValue!==null:typeof row.expressionValue!=='string')||(included?typeof row.comparisonClass!=='string':row.comparisonClass!==null))
+   diagnostics.push(problem('DATABASE_COMPARATOR_ROW_DRIFT','Every expression result, predicate and DB equality class must bind the complete original row, including inactive/excluded rows.',node,contract.label));
+  else{
+   if(row.included){
+    const expression=canonicalOwnershipJson([contract.contractId,row.expressionValue]),prior=expressionClasses.get(expression);
+    if(prior!==undefined&&prior!==row.comparisonClass)diagnostics.push(problem('DATABASE_COMPARATOR_ROW_DRIFT','Identical DB expression output cannot belong to different equality classes.',node,contract.label));
+    expressionClasses.set(expression,row.comparisonClass!);
+   }
+   result.set(canonicalOwnershipJson([contract.contractId,node.key]),row);
+  }
+ }
+ for(const node of nodes)for(const contract of DATABASE_NAMESPACES)if(contract.table===node.rule.table&&!rowSeen.has(canonicalOwnershipJson([contract.contractId,node.key])))
+  diagnostics.push(problem('DATABASE_COMPARATOR_ROW_REQUIRED','Missing actual DB expression/equality result for the complete original row.',node,contract.label));
+ if(diagnostics.length)return result;
+ const value=databaseComparatorValue(witness);
+ if(!SHA.test(witness.captureChecksum)||ownershipDigest(value)!==witness.captureChecksum)diagnostics.push(problem('DATABASE_COMPARATOR_CAPTURE_DRIFT','Captured DB comparator manifest/checksum differs.'));
+ return result;
+}
+
+/** Capture JSON is untrusted until all preflight checks finish. Any malformed
+ * structure blocks the whole plan without leaking supplied values or emitting
+ * partially executable metadata. This boundary never performs database work. */
+export function preflightTenantBackfill(capture:unknown):BackfillPlan{
+ const registry=getOwnershipRegistry();
+ function invalid(code:string,detail:string):BackfillPlan{
+  const diagnostic=problem(code,detail);
+  return {status:'BLOCKED',registryDigest:registry.digest,sourceDigest:'',schemaDigest:'',snapshotId:'',digest:ownershipDigest(diagnostic),manifest:null,chunks:[],entries:[],diagnostics:[diagnostic],preservesAllOriginalColumns:true,verification:'PURE_PREFLIGHT_NOT_DATABASE_VERIFICATION'};
+ }
+ try{canonicalOwnershipJson(capture);}catch{
+  return invalid('UNSUPPORTED_CAPTURE_VALUE','Capture must contain only dense, ordinary, finite JSON data without accessors, ignored properties or cycles.');
+ }
+ try{return preflightCapturedData(capture as BackfillCapture);}catch{
+  return invalid('INVALID_CAPTURE_STRUCTURE','Capture structure must satisfy the complete source-bound preflight contract.');
+ }
+}
+function preflightCapturedData(capture:BackfillCapture):BackfillPlan{
+ const registry=getOwnershipRegistry();
+ const diagnostics:OwnershipDiagnostic[]=[...verifyOwnershipSource(capture.migrations)];
  const base={registryDigest:registry.digest,sourceDigest:capture.sourceDigest,schemaDigest:capture.currentSchemaDigest,snapshotId:capture.snapshot.id,
   preservesAllOriginalColumns:true as const,verification:'PURE_PREFLIGHT_NOT_DATABASE_VERIFICATION' as const};
  function blocked():BackfillPlan{return {...base,status:'BLOCKED',digest:ownershipDigest({base,diagnostics:sorted(diagnostics)}),manifest:null,entries:[],chunks:[],diagnostics:sorted(diagnostics)};}
@@ -160,6 +258,8 @@ export function preflightTenantBackfill(capture:BackfillCapture):BackfillPlan{
   if(table.expectedChecksum!==ownershipDigest(checksums))diagnostics.push(problem('TABLE_CHECKSUM_DRIFT',table.table));
  }
  for(const name of rules.keys())if(!seenTables.has(name))diagnostics.push(problem('TABLE_CAPTURE_REQUIRED',name));
+ if(diagnostics.length)return blocked();
+ const databaseComparators=validateDatabaseComparators(capture,nodes,diagnostics);
  if(diagnostics.length)return blocked();
  nodes.sort((a,b)=>a.identity<b.identity?-1:1);
  const owners=new Map<string,string|null>(),evidence=new Map<string,string[]>(),mappingSeen=new Set<ImmutableMapping>();
@@ -263,10 +363,11 @@ export function preflightTenantBackfill(capture:BackfillCapture):BackfillPlan{
    const number=typeof v.id==='string'?v.id.trim().toUpperCase():'';
    if(!number||/[\u0000-\u001f\u007f]/.test(number))diagnostics.push(problem('LEGACY_SELECTOR_UNREADABLE','Preserve the row; unreadable legacy selector requires explicit source reconciliation.',n));
    else unique(n,'normalized_number',[number]);
-   if(typeof v.email==='string'&&v.email!=='')unique(n,'email_ci',[v.email.toLowerCase()]);
   }
-  if(['positions','clocker_break_types'].includes(n.rule.table)&&typeof v.name==='string')unique(n,'name_ci',[v.name.toLowerCase()]);
-  if(n.rule.table==='schedule_templates'&&v.active===true&&typeof v.name==='string')unique(n,'active_name_ci',[v.name.toLowerCase()]);
+  for(const contract of DATABASE_NAMESPACES)if(contract.table===n.rule.table){
+   const result=databaseComparators.get(canonicalOwnershipJson([contract.contractId,n.key]))!;
+   if(result.included)unique(n,contract.label,[result.comparisonClass]);
+  }
   if(n.rule.table==='locations')unique(n,'clocker_key',[v.clocker_key]);
   if(n.rule.table==='schedule_week_settings')unique(n,'week',[v.week_start]);
   if(n.rule.table==='schedule_publication_revisions')unique(n,'publication_number',[v.week_start,v.revision_number]);
@@ -279,17 +380,48 @@ export function preflightTenantBackfill(capture:BackfillCapture):BackfillPlan{
  const entries=nodes.map(n=>makeEntry(n,owners.get(n.identity)!,evidence.get(n.identity)??[]));
  const binding={...base,registryDigest:registry.digest,entries,chunkSize:capture.chunkSize,writeFence:fence,
   historicalReferences:sorted(capture.historicalReferences),mappings:sorted(capture.mappings),payloadCaptures:sorted(capture.payloadCaptures),
+  namespaceComparators:{...databaseComparatorValue(capture.namespaceComparators),captureChecksum:capture.namespaceComparators.captureChecksum},
   installation:capture.installation??null};
  const digest=ownershipDigest(binding),chunks=buildChunks(entries,digest,capture.chunkSize);
  return {...base,status:'READY_FOR_GUARDED_EXECUTION',digest,manifest:JSON.parse(canonicalOwnershipJson(binding)),entries,chunks,diagnostics:[]};
 }
+/** Resume still requires the immutable DB capture evidence. This checks saved
+ * structure/checksums only; execution must recheck its actual fenced DB boundary. */
+function validSavedDatabaseComparators(plan:BackfillPlan,value:unknown):boolean{
+ if(!value||typeof value!=='object')return false;
+ const witness=value as DatabaseNamespaceComparators;
+ if(!same(Object.keys(witness).sort(),['binding','catalogs','rows','captureChecksum'].sort())||!Array.isArray(witness.catalogs)||!Array.isArray(witness.rows))return false;
+ const tables=getOwnershipRegistry().tables.map(t=>{
+  const checksums=plan.entries.filter(e=>e.table===t.table).map(e=>({key:e.key,checksum:e.sourceChecksum})).sort((a,b)=>{const x=canonicalOwnershipJson(a.key),y=canonicalOwnershipJson(b.key);return x<y?-1:x>y?1:0;});
+  return {table:t.table,count:checksums.length,checksum:ownershipDigest(checksums)};
+ });
+ if(!same(witness.binding,{registryDigest:plan.registryDigest,sourceDigest:plan.sourceDigest,schemaDigest:plan.schemaDigest,snapshotId:plan.snapshotId,rowSetChecksum:ownershipDigest(tables)})||
+  !SHA.test(witness.captureChecksum)||ownershipDigest(databaseComparatorValue(witness))!==witness.captureChecksum||witness.catalogs.length!==DATABASE_NAMESPACES.length)return false;
+ const catalogIds=new Set<string>();
+ for(const catalog of witness.catalogs){
+  const contract=DATABASE_NAMESPACES.find(c=>c.contractId===catalog.contractId);
+  if(!contract||catalogIds.has(catalog.contractId)||!same(catalog.source,contract.source)||!SHA.test(catalog.sourceStatementChecksum))return false;
+  catalogIds.add(catalog.contractId);const {checksum,...rest}=catalog,d=catalog.definition;
+  if(!SHA.test(checksum)||ownershipDigest(rest)!==checksum||!d||d.indexDefinition!==contract.indexDefinition||d.expression!==contract.expression||d.predicate!==contract.predicate||!validCollation(d.expressionCollation)||!validCollation(d.indexCollation)||typeof d.serverVersion!=='string'||!d.serverVersion||typeof d.serverEncoding!=='string'||!d.serverEncoding)return false;
+ }
+ const expected=plan.entries.filter(e=>DATABASE_NAMESPACES.some(c=>c.table===e.table)),seen=new Set<string>(),classes=new Map<string,string>();
+ if(witness.rows.length!==expected.length)return false;
+ for(const row of witness.rows){
+  const contract=DATABASE_NAMESPACES.find(c=>c.contractId===row.contractId),entry=contract&&expected.find(e=>e.table===contract.table&&same(e.key,row.key));
+  if(!entry||!contract||row.rowChecksum!==entry.sourceChecksum||typeof row.included!=='boolean'||(row.expressionValue!==null&&typeof row.expressionValue!=='string')||(row.included?typeof row.comparisonClass!=='string'||row.expressionValue===null:row.comparisonClass!==null))return false;
+  const id=canonicalOwnershipJson([row.contractId,row.key]);if(seen.has(id))return false;seen.add(id);
+  if(row.included){const key=canonicalOwnershipJson([row.contractId,row.expressionValue]),prior=classes.get(key);if(prior!==undefined&&prior!==row.comparisonClass)return false;classes.set(key,row.comparisonClass!);}
+ }
+ return true;
+}
+
 export function resumeTenantBackfill(plan:BackfillPlan,completed:CompletedChunk[],existing:OwnershipRecord[]):ResumeOutcome{
  const diagnostics:OwnershipDiagnostic[]=[],pending:BackfillEntry[]=[],seen=new Set<string>(),records=new Map<string,OwnershipRecord>();
  if(plan.status!=='READY_FOR_GUARDED_EXECUTION')return {status:'BLOCKED',pending:[],diagnostics:[problem('BLOCKED_PREFLIGHT','Cannot resume a blocked plan.')]};
  let coherent=false;
  try {
   const m=plan.manifest as Record<string,JsonValue>|null;
-  coherent=!!m&&ownershipDigest(m)===plan.digest&&m.registryDigest===plan.registryDigest&&plan.registryDigest===getOwnershipRegistry().digest&&m.sourceDigest===plan.sourceDigest&&m.schemaDigest===plan.schemaDigest&&m.snapshotId===plan.snapshotId&&same(m.entries,plan.entries)&&typeof m.chunkSize==='number'&&Number.isSafeInteger(m.chunkSize)&&m.chunkSize>=1&&m.chunkSize<=1000&&same(buildChunks(plan.entries,plan.digest,m.chunkSize),plan.chunks);
+  coherent=!!m&&validSavedDatabaseComparators(plan,m.namespaceComparators)&&ownershipDigest(m)===plan.digest&&m.registryDigest===plan.registryDigest&&plan.registryDigest===getOwnershipRegistry().digest&&m.sourceDigest===plan.sourceDigest&&m.schemaDigest===plan.schemaDigest&&m.snapshotId===plan.snapshotId&&same(m.entries,plan.entries)&&typeof m.chunkSize==='number'&&Number.isSafeInteger(m.chunkSize)&&m.chunkSize>=1&&m.chunkSize<=1000&&same(buildChunks(plan.entries,plan.digest,m.chunkSize),plan.chunks);
  } catch {coherent=false;}
  if(!coherent)return {status:'BLOCKED',pending:[],diagnostics:[problem('PLAN_MANIFEST_DRIFT','Saved plan rows, chunks, source/registry/mapping manifest or digest changed.')]};
  const expectedIdentities=new Set(plan.entries.map(e=>identity(e.table,e.key)));

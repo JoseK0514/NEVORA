@@ -52,3 +52,33 @@ describe('source-bound immutable tenant ownership registry', () => {
   expect(()=>canonicalOwnershipJson({bad:undefined})).toThrow('Unsupported migration capture value');
  });
 });
+
+
+describe('lossless canonical ownership captures',()=>{
+ it('keeps dense JSON arrays and detached ordinary objects deterministic',()=>{
+  expect(canonicalOwnershipJson({z:[null,true,1,'x',{b:2,a:1}],a:[]})).toBe('{"a":[],"z":[null,true,1,"x",{"a":1,"b":2}]}');
+ });
+ it.each([['one-hole',new Array(1)],['inner-hole',[1,,3]],['deleted-index',(()=>{const v=[1,2];delete v[0];return v;})()]])('rejects sparse %s arrays instead of producing invalid or lossy JSON',(_label,value)=>{
+  expect(()=>canonicalOwnershipJson(value)).toThrow('Unsupported migration capture value');
+ });
+ it('rejects accessor indices without executing their getters',()=>{
+  let reads=0;const v:unknown[]=[];Object.defineProperty(v,'0',{get:()=>{reads++;return 1;},enumerable:true});
+  expect(()=>canonicalOwnershipJson(v)).toThrow('Unsupported migration capture value');expect(reads).toBe(0);
+ });
+ it.each([
+  ['extra-key',Object.assign([1],{extra:2})],
+  ['symbol-key',Object.assign([1],{[Symbol('hidden')]:2})],
+  ['hidden-key',Object.defineProperty([1],'hidden',{value:2})],
+  ['custom-prototype',Object.setPrototypeOf([1],Object.create(Array.prototype))],
+  ['nonenumerable-index',Object.defineProperty([1],'0',{value:1,enumerable:false})],
+ ])('rejects non-data %s arrays',(_label,value)=>expect(()=>canonicalOwnershipJson(value)).toThrow('Unsupported migration capture value'));
+ it('rejects object accessors, hidden or symbol properties without silently losing or invoking data',()=>{
+  let reads=0;const getter={get a(){reads++;return 1;}};
+  for(const value of [getter,Object.defineProperty({a:1},'hidden',{value:2}),Object.assign({a:1},{[Symbol('hidden')]:2})])expect(()=>canonicalOwnershipJson(value)).toThrow('Unsupported migration capture value');
+  expect(reads).toBe(0);
+ });
+ it('revalidates a capture after mutation and rejects cycles with the same deterministic error',()=>{
+  const v=[1,2];expect(canonicalOwnershipJson(v)).toBe('[1,2]');delete v[1];expect(()=>canonicalOwnershipJson(v)).toThrow('Unsupported migration capture value');
+  const circular:unknown[]=[];circular.push(circular);expect(()=>canonicalOwnershipJson(circular)).toThrow('Unsupported migration capture value');
+ });
+});

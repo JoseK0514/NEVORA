@@ -13,12 +13,40 @@ export type OwnershipRegistry = { version: 1; schemaCommit: string; schemaTree: 
 export type OwnershipDiagnostic = { code: string; table?: string; key?: JsonValue[]; field?: string; detail: string };
 export const OWNERSHIP_SCHEMA_COMMIT = '7c628e374f03c9025b2c0cfd3568be033f07238d';
 export const OWNERSHIP_SCHEMA_TREE = '5a2df7788b4a5f52b77b1273bedd59e191438379';
+/** Only lossless own JSON data is accepted. Descriptor inspection never invokes
+ * capture accessors; arrays must be dense, ordinary and free of ignored fields. */
 export function canonicalOwnershipJson(value: unknown): string {
- if (value === null || typeof value === 'boolean' || typeof value === 'string') return JSON.stringify(value);
- if (typeof value === 'number' && Number.isFinite(value)) return JSON.stringify(value);
- if (Array.isArray(value)) return '[' + value.map(canonicalOwnershipJson).join(',') + ']';
- if (typeof value === 'object' && value && Object.getPrototypeOf(value) === Object.prototype) return '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + canonicalOwnershipJson((value as Record<string, unknown>)[k])).join(',') + '}';
- throw new Error('Unsupported migration capture value');
+ const ancestors=new Set<object>();
+ const unsupported=():never=>{throw new Error('Unsupported migration capture value');};
+ function encode(current:unknown):string{
+  if(current===null||typeof current==='boolean'||typeof current==='string')return JSON.stringify(current);
+  if(typeof current==='number'&&Number.isFinite(current))return JSON.stringify(current);
+  if(typeof current!=='object'||!current||ancestors.has(current))return unsupported();
+  const array=Array.isArray(current);
+  if(Object.getPrototypeOf(current)!==(array?Array.prototype:Object.prototype))return unsupported();
+  const keys=Reflect.ownKeys(current),descriptors=Object.getOwnPropertyDescriptors(current);
+  if(keys.some(k=>typeof k!=='string'))return unsupported();
+  ancestors.add(current);
+  try{
+   if(array){
+    const length=descriptors.length;
+    if(!length||!('value' in length)||!Number.isSafeInteger(length.value)||length.value<0||keys.length!==length.value+1)return unsupported();
+    const values:string[]=[];
+    for(let i=0;i<length.value;i++){
+     const descriptor=descriptors[String(i)];
+     if(!descriptor||!('value' in descriptor)||!descriptor.enumerable)return unsupported();
+     values.push(encode(descriptor.value));
+    }
+    return '['+values.join(',')+']';
+   }
+   return '{'+(keys as string[]).sort().map(k=>{
+    const descriptor=descriptors[k];
+    if(!descriptor||!('value' in descriptor)||!descriptor.enumerable)return unsupported();
+    return JSON.stringify(k)+':'+encode(descriptor.value);
+   }).join(',')+'}';
+  }finally{ancestors.delete(current);}
+ }
+ return encode(value);
 }
 export function ownershipDigest(value: unknown): string { return createHash('sha256').update(canonicalOwnershipJson(value)).digest('hex'); }
 export const OWNERSHIP_SOURCE = [

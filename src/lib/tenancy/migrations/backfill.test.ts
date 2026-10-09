@@ -10,19 +10,47 @@ const row=(table:string,values:Record<string,JsonValue>):LegacyRow=>{
  const r={values:Object.fromEntries(rule(table).columns.map(c=>[c.name,c.nullable?null:c.type==='boolean'?false:/^(integer|bigint|numeric)/.test(c.type)?1:c.type==='jsonb'?{}:c.type.endsWith('[]')?[]:/^(date|time|timestamp)/.test(c.type)?'2030-01-01T00:00:00Z':'fixture'])) as Record<string,JsonValue>,originalChecksum:''};
  Object.assign(r.values,values);r.originalChecksum=ownershipDigest(r.values);return r;
 };
-function seal(c:BackfillCapture):BackfillCapture {
+// These are fictional captured DB results, not JavaScript casing or a DB adapter.
+const comparatorSources=[
+ {contractId:'employees.email_ci',table:'employees',column:'email',index:'employees_email_unique',line:31,path:'db/migrations/0001_initial.sql',statement:'CREATE UNIQUE INDEX IF NOT EXISTS employees_email_unique\n  ON employees (lower(email))\n  WHERE email IS NOT NULL;',expression:'lower(email)',predicate:'(email IS NOT NULL)',indexDefinition:'CREATE UNIQUE INDEX employees_email_unique ON public.employees USING btree (lower(email)) WHERE (email IS NOT NULL)'},
+ {contractId:'positions.name_ci',table:'positions',column:'name',index:'positions_workspace_name_unique',line:42,path:'db/migrations/0008_workspace_positions.sql',statement:'CREATE UNIQUE INDEX positions_workspace_name_unique ON positions (workspace_id, lower(name));',expression:'lower(name)',predicate:null,indexDefinition:'CREATE UNIQUE INDEX positions_workspace_name_unique ON public.positions USING btree (workspace_id, lower(name))'},
+ {contractId:'clocker_break_types.name_ci',table:'clocker_break_types',column:'name',index:'clocker_break_type_name',line:16,path:'db/migrations/0014_clocker_breaks.sql',statement:'CREATE UNIQUE INDEX clocker_break_type_name ON clocker_break_types(workspace_id,lower(name));',expression:'lower(name)',predicate:null,indexDefinition:'CREATE UNIQUE INDEX clocker_break_type_name ON public.clocker_break_types USING btree (workspace_id, lower(name))'},
+ {contractId:'schedule_templates.active_name_ci',table:'schedule_templates',column:'name',index:'schedule_templates_name_unique',line:91,path:'db/migrations/0003_schedule_assistance.sql',statement:'CREATE UNIQUE INDEX IF NOT EXISTS schedule_templates_name_unique\n  ON schedule_templates (lower(name))\n  WHERE active = true;',expression:'lower(name)',predicate:'(active = true)',indexDefinition:'CREATE UNIQUE INDEX schedule_templates_name_unique ON public.schedule_templates USING btree (lower(name)) WHERE (active = true)'},
+];
+const collation=()=>({oid:'100',schema:'pg_catalog',name:'default',provider:'d',deterministic:true,encoding:-1,lcCollate:'C',lcCtype:'C',locale:null,version:null,actualVersion:null});
+type BaseCapture=Omit<BackfillCapture,'namespaceComparators'>;
+function fictionalComparators(c:BaseCapture){
+ const binding={registryDigest:c.registryDigest,sourceDigest:c.sourceDigest,schemaDigest:c.currentSchemaDigest,snapshotId:c.snapshot.id,rowSetChecksum:ownershipDigest([...c.tables].sort((a,b)=>a.table<b.table?-1:1).map(t=>({table:t.table,count:t.expectedCount,checksum:t.expectedChecksum})))};
+ const catalogs=comparatorSources.map(s=>{
+  const value={contractId:s.contractId,source:{path:s.path,line:s.line},sourceStatementChecksum:ownershipDigest(s.statement),definition:{indexDefinition:s.indexDefinition,expression:s.expression,predicate:s.predicate,expressionCollation:collation(),indexCollation:collation(),serverVersion:'18.4 fictional',serverEncoding:'UTF8'}};
+  return {...value,checksum:ownershipDigest(value)};
+ });
+ const rows=comparatorSources.flatMap(s=>c.tables.find(t=>t.table===s.table)!.rows.map(r=>{
+  const included=s.table==='employees'?r.values.email!==null:s.table==='schedule_templates'?r.values.active===true:true;
+  const expressionValue=r.values[s.column] as string|null;
+  return {contractId:s.contractId,key:key(s.table,r),rowChecksum:r.originalChecksum,included,expressionValue,comparisonClass:included?expressionValue:null};
+ }));
+ const value={binding,catalogs,rows};return {...value,captureChecksum:ownershipDigest(value)};
+}
+type ComparatorCapture=ReturnType<typeof fictionalComparators>;
+type FixtureCapture=BackfillCapture&{namespaceComparators:ComparatorCapture};
+function resealComparators(c:FixtureCapture){
+ const {binding,catalogs,rows}=c.namespaceComparators;
+ c.namespaceComparators.captureChecksum=ownershipDigest({binding,catalogs:[...catalogs].sort((a,b)=>a.contractId<b.contractId?-1:1),rows:[...rows].sort((a,b)=>canonicalOwnershipJson([a.contractId,a.key])<canonicalOwnershipJson([b.contractId,b.key])?-1:1)});
+}
+function seal(c:BaseCapture):FixtureCapture {
  for(const t of c.tables){for(const r of t.rows)r.originalChecksum=ownershipDigest(r.values);t.expectedCount=t.rows.length;t.expectedChecksum=ownershipDigest(t.rows.map(r=>({key:key(t.table,r),checksum:r.originalChecksum})).sort((a,b)=>canonicalOwnershipJson(a.key).localeCompare(canonicalOwnershipJson(b.key))));}
  for(const m of c.mappings){const r=c.tables.find(t=>t.table===m.table)?.rows.find(r=>canonicalOwnershipJson(key(m.table,r))===canonicalOwnershipJson(m.key));if(r)m.rowChecksum=r.originalChecksum;}
- return c;
+ (c as FixtureCapture).namespaceComparators=fictionalComparators(c);resealComparators(c as FixtureCapture);return c as FixtureCapture;
 }
-function fixture():BackfillCapture {
- const r=registry(),c:BackfillCapture={migrations:loadPinnedMigrations({repo:process.cwd(),source:OWNERSHIP_SCHEMA_COMMIT,tree:OWNERSHIP_SCHEMA_TREE}).migrations,registryDigest:r.digest,sourceDigest:digest,currentSchemaDigest:r.schemaDigest,snapshot:{id:'owned-fictional-snapshot-1',isolation:'SERIALIZABLE',includesInactive:true,includesHistory:true},tables:r.tables.map(t=>({table:t.table,rows:[],expectedCount:0,expectedChecksum:''})),mappings:[],historicalReferences:[],payloadCaptures:[],writeFence:{mode:'EXCLUSIVE_FENCED',sourceDigest:digest,schemaDigest:r.schemaDigest,databaseFenceToken:'owned-fixture-fence',allWritersCovered:true,immutableOwnershipEnabled:true,registeredWriterDigest:digest,newWriteJournalDigest:digest,newWritesReconciled:true},chunkSize:2};
+function fixture():FixtureCapture {
+ const r=registry(),c:BaseCapture={migrations:loadPinnedMigrations({repo:process.cwd(),source:OWNERSHIP_SCHEMA_COMMIT,tree:OWNERSHIP_SCHEMA_TREE}).migrations,registryDigest:r.digest,sourceDigest:digest,currentSchemaDigest:r.schemaDigest,snapshot:{id:'owned-fictional-snapshot-1',isolation:'SERIALIZABLE',includesInactive:true,includesHistory:true},tables:r.tables.map(t=>({table:t.table,rows:[],expectedCount:0,expectedChecksum:''})),mappings:[],historicalReferences:[],payloadCaptures:[],writeFence:{mode:'EXCLUSIVE_FENCED',sourceDigest:digest,schemaDigest:r.schemaDigest,databaseFenceToken:'owned-fixture-fence',allWritersCovered:true,immutableOwnershipEnabled:true,registeredWriterDigest:digest,newWriteJournalDigest:digest,newWritesReconciled:true},chunkSize:2};
  add(c,'workspaces',{id:'A',active:false});add(c,'locations',{id:'LA',workspace_id:'A',clocker_key:'2',active:false});
  add(c,'employees',{id:'007',primary_location_id:'LA',active:false});
  c.mappings.push({table:'employees',key:['007'],workspaceId:'A',rowChecksum:'',evidenceDigest:digest});
  return seal(c);
 }
-function add(c:BackfillCapture,t:string,v:Record<string,JsonValue>){c.tables.find(x=>x.table===t)!.rows.push(row(t,v));}
+function add(c:BaseCapture,t:string,v:Record<string,JsonValue>){c.tables.find(x=>x.table===t)!.rows.push(row(t,v));}
 const codes=(c:BackfillCapture)=>preflightTenantBackfill(c).diagnostics.map(x=>x.code);
 const historic=(target:string,key:JsonValue[],sourceRowChecksum:string,workspaceId='A'):HistoricalReference=>({target,targetColumns:rule(target).primaryKey,key,workspaceId,evidenceDigest:digest,sourceRowChecksum});
 describe('complete-row migration preflight without SQL or rewritten history',()=>{
@@ -119,4 +147,119 @@ describe('interruption/resume and atomic new immutable-row protocol',()=>{
   expect(planNewOwnershipWrite(t,{workspaceId:'A',values:{id:'E'},parentOwnership:[],payloadCaptures:[]}).diagnostics.map(x=>x.code)).toContain('ROW_SHAPE_DRIFT');
  });
 
+});
+
+
+describe('source/schema/snapshot/row-bound database namespace witnesses',()=>{
+ const employeePair=(first:string|null,second:string|null)=>{
+  const c=fixture();c.tables.find(t=>t.table==='employees')!.rows[0].values.email=first;
+  add(c,'employees',{id:'008',primary_location_id:'LA',active:false,email:second});c.mappings.push({table:'employees',key:['008'],workspaceId:'A',rowChecksum:'',evidenceDigest:digest});return seal(c);
+ };
+ it('includes empty email in the retained IS NOT NULL namespace and excludes NULL',()=>{
+  expect(codes(employeePair('',''))).toContain('NAMESPACE_COLLISION');expect(preflightTenantBackfill(employeePair(null,null)).status).toBe('READY_FOR_GUARDED_EXECUTION');
+ });
+ it('uses captured DB casing instead of guessing JavaScript lower-case equality',()=>{
+  const c=employeePair('I','i');const rows=c.namespaceComparators.rows;
+  rows[0].expressionValue='ı';rows[0].comparisonClass='db-class-1';rows[1].expressionValue='i';rows[1].comparisonClass='db-class-2';resealComparators(c);
+  expect(preflightTenantBackfill(c).status).toBe('READY_FOR_GUARDED_EXECUTION');
+ });
+ it('uses actual DB collation equality classes even when lower-result bytes differ',()=>{
+  const c=employeePair('resume','résumé');for(const r of c.namespaceComparators.rows)r.comparisonClass='db-equivalent';resealComparators(c);
+  expect(codes(c)).toContain('NAMESPACE_COLLISION');
+ });
+ it.each(['positions','clocker_break_types','schedule_templates'])('uses DB result witnesses for %s names and its original predicate',table=>{
+  const c=fixture();const extra:Record<string,JsonValue>=table==='clocker_break_types'?{workspace_id:'A',created_by:'007',updated_by:'007'}:table==='schedule_templates'?{created_by:'007'}:{workspace_id:'A'};
+  add(c,table,{id:'N1',name:'I',active:true,...extra});add(c,table,{id:'N2',name:'i',active:true,...extra});seal(c);
+  const rows=c.namespaceComparators.rows.filter(r=>r.contractId.startsWith(table+'.'));rows[0].expressionValue='ı';rows[0].comparisonClass='one';rows[1].expressionValue='i';rows[1].comparisonClass='two';resealComparators(c);
+  expect(preflightTenantBackfill(c).status).toBe('READY_FOR_GUARDED_EXECUTION');rows[1].comparisonClass='one';resealComparators(c);expect(codes(c)).toContain('NAMESPACE_COLLISION');
+ });
+ it('requires every closed catalog even for empty tables and rejects absent result witnesses',()=>{
+  const c=fixture();delete (c as Partial<FixtureCapture>).namespaceComparators;expect(codes(c)).toContain('DATABASE_COMPARATOR_REQUIRED');
+  const d=fixture();d.namespaceComparators.catalogs.pop();resealComparators(d);expect(codes(d)).toContain('DATABASE_COMPARATOR_CATALOG_REQUIRED');
+  const e=fixture();e.namespaceComparators.rows=[];resealComparators(e);expect(codes(e)).toContain('DATABASE_COMPARATOR_ROW_REQUIRED');
+ });
+ it.each(['sourceDigest','schemaDigest','snapshotId','rowSetChecksum'] as const)('rejects %s drift at the capture boundary',field=>{
+  const c=fixture();c.namespaceComparators.binding[field]='different';resealComparators(c);expect(codes(c)).toContain('DATABASE_COMPARATOR_BINDING_DRIFT');
+ });
+ it('rejects whole-row witness drift even after source row and table checksums are refreshed',()=>{
+  const c=fixture(),old=c.namespaceComparators;c.tables.find(t=>t.table==='employees')!.rows[0].values.first_name='changed';seal(c);c.namespaceComparators=old;expect(codes(c)).toContain('DATABASE_COMPARATOR_BINDING_DRIFT');
+  c.namespaceComparators.binding.rowSetChecksum=fictionalComparators(c).binding.rowSetChecksum;resealComparators(c);expect(codes(c)).toContain('DATABASE_COMPARATOR_ROW_DRIFT');
+ });
+ it('rejects changed catalog expression, predicate, source evidence and collation checksum',()=>{
+  for(const field of ['expression','predicate','indexDefinition'] as const){const c=fixture();const catalog=c.namespaceComparators.catalogs[0];catalog.definition[field]='tampered';const value={contractId:catalog.contractId,source:catalog.source,sourceStatementChecksum:catalog.sourceStatementChecksum,definition:catalog.definition};catalog.checksum=ownershipDigest(value);resealComparators(c);expect(codes(c)).toContain('DATABASE_COMPARATOR_CATALOG_DRIFT');}
+  const c=fixture();c.namespaceComparators.catalogs[0].source.line++;resealComparators(c);expect(codes(c)).toContain('DATABASE_COMPARATOR_CATALOG_DRIFT');
+  const d=fixture();d.namespaceComparators.catalogs[0].definition.expressionCollation.lcCtype='tampered';resealComparators(d);expect(codes(d)).toContain('DATABASE_COMPARATOR_CATALOG_DRIFT');
+ });
+ it('rejects omitted collation metadata, predicate mismatch, duplicate and unused witness records',()=>{
+  const a=fixture();delete (a.namespaceComparators.catalogs[0].definition as Partial<ComparatorCapture['catalogs'][number]['definition']>).indexCollation;resealComparators(a);expect(codes(a)).toContain('DATABASE_COMPARATOR_CATALOG_DRIFT');
+  const b=fixture();b.namespaceComparators.rows[0].included=true;b.namespaceComparators.rows[0].comparisonClass='null-is-included';resealComparators(b);expect(codes(b)).toContain('DATABASE_COMPARATOR_ROW_DRIFT');
+  const c=fixture();c.namespaceComparators.rows.push({...c.namespaceComparators.rows[0],key:['absent']});resealComparators(c);expect(codes(c)).toContain('DATABASE_COMPARATOR_UNUSED');
+  const d=fixture();d.namespaceComparators.rows.push({...d.namespaceComparators.rows[0]});resealComparators(d);expect(codes(d)).toContain('DATABASE_COMPARATOR_DUPLICATE');
+ });
+ it('binds witnessed DB results into the saved plan and stays independent of capture order',()=>{
+  const c=fixture(),p=preflightTenantBackfill(c);expect((p.manifest as Record<string,JsonValue>).namespaceComparators).toBeDefined();
+  c.namespaceComparators.catalogs.reverse();c.namespaceComparators.rows.reverse();expect(preflightTenantBackfill(c).digest).toBe(p.digest);
+  const saved=JSON.parse(JSON.stringify(p));delete saved.manifest.namespaceComparators;expect(resumeTenantBackfill(saved,[],[]).status).toBe('BLOCKED');
+ });
+});
+
+
+describe('malformed comparator capture rejection without executing data accessors',()=>{
+ it.each(['null-catalog','null-row','missing-definition','missing-binding'])('blocks %s deterministically without throwing',kind=>{
+  const c=fixture();const raw=c.namespaceComparators as unknown as {catalogs:unknown[];rows:unknown[];binding?:unknown};
+  if(kind==='null-catalog')raw.catalogs[0]=null;
+  if(kind==='null-row')raw.rows[0]=null;
+  if(kind==='missing-definition')delete (raw.catalogs[0] as {definition?:unknown}).definition;
+  if(kind==='missing-binding')delete raw.binding;
+  expect(()=>preflightTenantBackfill(c)).not.toThrow();expect(preflightTenantBackfill(c).status).toBe('BLOCKED');
+ });
+ it('does not execute an accessor or serialize a mutated sparse original payload',()=>{
+  const c=fixture();let reads=0;Object.defineProperty(c.tables[0],'rows',{get:()=>{reads++;return [];},enumerable:true});
+  expect(preflightTenantBackfill(c).status).toBe('BLOCKED');expect(reads).toBe(0);
+  const d=fixture();add(d,'calendar_subscriptions',{id:'C',workspace_id:'A',employee_id:'007',allowed_location_ids:['LA']});seal(d);
+  const values=d.tables.find(t=>t.table==='calendar_subscriptions')!.rows[0].values.allowed_location_ids as JsonValue[];delete values[0];
+  expect(()=>preflightTenantBackfill(d)).not.toThrow();expect(codes(d)).toContain('UNSUPPORTED_CAPTURE_VALUE');
+ });
+ it('retains inactive template rows but excludes them from the exact active name predicate',()=>{
+  const c=fixture();add(c,'schedule_templates',{id:'T1',created_by:'007',name:'fixture',active:false});add(c,'schedule_templates',{id:'T2',created_by:'007',name:'fixture',active:false});seal(c);
+  const plan=preflightTenantBackfill(c);expect(plan.status).toBe('READY_FOR_GUARDED_EXECUTION');expect(plan.entries.filter(e=>e.table==='schedule_templates')).toHaveLength(2);
+ });
+});
+
+
+describe('internal consistency of captured DB comparison classes',()=>{
+ it('rejects different equality classes for identical DB expression output',()=>{
+  const c=fixture();c.tables.find(t=>t.table==='employees')!.rows[0].values.email='same';add(c,'employees',{id:'008',primary_location_id:'LA',email:'same'});c.mappings.push({table:'employees',key:['008'],workspaceId:'A',rowChecksum:'',evidenceDigest:digest});seal(c);
+  c.namespaceComparators.rows[0].comparisonClass='one';c.namespaceComparators.rows[1].comparisonClass='two';resealComparators(c);
+  expect(codes(c)).toContain('DATABASE_COMPARATOR_ROW_DRIFT');
+ });
+});
+
+
+describe('saved comparator manifest obligations',()=>{
+ it.each(['omit','checksum'])('blocks %s witnesses in a rehashed empty-work saved plan',kind=>{
+  const c=fixture();for(const t of c.tables)t.rows=[];c.mappings=[];seal(c);const plan=preflightTenantBackfill(c);
+  expect(plan.status).toBe('READY_FOR_GUARDED_EXECUTION');expect(plan.entries).toEqual([]);
+  const m=plan.manifest as Record<string,JsonValue>;
+  if(kind==='omit')delete m.namespaceComparators;else (m.namespaceComparators as Record<string,JsonValue>).captureChecksum='f'.repeat(64);
+  plan.digest=ownershipDigest(m);expect(resumeTenantBackfill(plan,[],[]).status).toBe('BLOCKED');
+ });
+});
+
+// Runtime capture deserialization can produce JSON that violates the TypeScript
+// shape. It must stop before any executable entries or chunks are returned.
+describe('root capture ingestion regression',()=>{
+ it.each([null,[],{}, {migrations:[]}])('blocks malformed top-level JSON without throwing (%j)',value=>{
+  const result=preflightTenantBackfill(value as unknown as BackfillCapture);
+  expect(result.status).toBe('BLOCKED');
+  expect(result.diagnostics.map(d=>d.code)).toContain('INVALID_CAPTURE_STRUCTURE');
+  expect(result.manifest).toBeNull();expect(result.entries).toEqual([]);expect(result.chunks).toEqual([]);
+ });
+ it.each(['snapshot','tables','mappings','historicalReferences','payloadCaptures','writeFence'] as const)('blocks a null %s capture component without throwing',field=>{
+  const value={...fixture(),[field]:null};
+  const result=preflightTenantBackfill(value as unknown as BackfillCapture);
+  expect(result.status).toBe('BLOCKED');
+  expect(result.diagnostics.map(d=>d.code)).toContain('INVALID_CAPTURE_STRUCTURE');
+  expect(result.manifest).toBeNull();expect(result.entries).toEqual([]);expect(result.chunks).toEqual([]);
+ });
 });
