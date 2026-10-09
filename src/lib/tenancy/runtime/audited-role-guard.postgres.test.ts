@@ -1,4 +1,6 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
+import { RUNTIME_CATALOG_SHARED_FENCE_SQL, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 import { Client } from 'pg';
 import { appendFileSync, lstatSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -13,13 +15,13 @@ const helper = readFileSync(helperPath, 'utf8');
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 // Reused accepted fixture custody. Final preparation separately pins both new audited artifacts. These hashes are source custody,
 // never authentication, installation authority, runtime proof or tenant authority.
-const expectedSourceSHA256 = '4d098ae63c85ebc4e774ab4f17aafa05cedc303d3700005a6f2e72ef59635f20';
+const expectedSourceSHA256 = '4edaaa14492e8b91b30ecb26b4f9582af97c8380543761eee8bcc605ef40de66';
 const expectedHelperSHA256 = '7c0ce83b99d401aac9a31db391cb750b676a22bf3c76e440194de986299bbd6a';
 const expectedOldTestSHA256 = '0d4be75794a63927d94148b2cc8ce6931dfdaf72672ce04b07467b51744f783a';
 const auditedStoragePath = resolve('src/lib/tenancy/runtime/audited-helper-storage.sql');
 const auditedGuardPath = resolve('src/lib/tenancy/runtime/audited-role-guard.sql');
 // Actual root invocation is held until final preparation pins frozen source.
-const expectedAuditedStorageSHA256 = 'd166719958a2892a9c9fb1f28ecacc225631a65e4de4f86f4b0dbac488ce4c79';
+const expectedAuditedStorageSHA256 = '2a7d8c979e5e854ddd0e516a07ce20eed15365efcfb1c21812ffffe9e31d9603';
 const expectedAuditedGuardSHA256 = '46857b02d424eb6d7939b609517b67e26549e07af7d1d44ae250a332be770f96';
 const q = (value: string) => '"' + value.replace(/"/g, '""') + '"';
 const literal = (value: string) => "'" + value.replace(/'/g, "''") + "'";
@@ -387,6 +389,129 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
     return capabilities;
   }
 
+
+  let fenceInstaller: Client | undefined;
+  const pendingFenceAttempts = new Set<Promise<unknown>>();
+  async function fenceIdentity(client: Client, expectedName: string, expectedOid: string) {
+    const native = (await query(client, `SELECT pg_catalog.pg_backend_pid() pid,session_user::text session,
+      current_user::text current_role,pg_catalog.current_setting('role') role,
+      (SELECT usesysid::text FROM pg_catalog.pg_stat_activity WHERE pid=pg_catalog.pg_backend_pid()) original_oid`)).rows[0];
+    expect(native).toMatchObject({ session: expectedName, current_role: expectedName, role: 'none', original_oid: expectedOid });
+    return native;
+  }
+  function fenceKeyTuple(pid: number, mode: string, granted: boolean) {
+    const bits = BigInt('0x' + hash('nevora.runtime.catalog-fence.v1:' + String(lease.databaseOid)).slice(0, 16));
+    return { database: String(lease.databaseOid), classid: (bits >> BigInt(32)).toString(),
+      objid: (bits & BigInt('4294967295')).toString(), objsubid: 1, pid, mode, granted };
+  }
+  async function fenceLocks(pids: number[]) {
+    return (await query(admin, `SELECT database::text database,classid::text classid,objid::text objid,objsubid,pid,mode,granted
+      FROM pg_catalog.pg_locks WHERE locktype='advisory' AND pid=ANY($1::int4[]) ORDER BY pid,mode`, [pids])).rows;
+  }
+  async function fencePoll(predicate: () => Promise<boolean>, label: string) {
+    const deadline = Date.now() + 8000;
+    do { if (await predicate()) return; await new Promise(done => setTimeout(done, 10)); } while (Date.now() < deadline);
+    throw Error('owned_installer_fence_observation_timeout_' + label);
+  }
+  async function exactNewDrop(object: ObjectReceipt) {
+    if (object.kind === 'table') expect((await query(admin,
+      'SELECT pg_catalog.to_regclass($1)::oid::text oid', [q(object.schema) + '.' + q(object.name)])).rows).toEqual([{ oid: object.oid }]);
+    await dropObject(object);
+  }
+  function stagedArtifact(artifact: string) {
+    const begin = 'BEGIN ISOLATION LEVEL READ COMMITTED;';
+    expect(artifact.split(begin)).toHaveLength(2);
+    const end = artifact.indexOf(begin) + begin.length, opening = artifact.slice(0, end), tail = artifact.slice(end);
+    expect(tail.startsWith('\n' + INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text + '\n')).toBe(true);
+    const remaining = tail.slice(1 + INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text.length);
+    expect(opening + '\n' + INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text + remaining).toBe(artifact);
+    expect(remaining.startsWith('\nSET LOCAL search_path = pg_catalog;')).toBe(true);
+    return { opening, remaining };
+  }
+  async function installerFenceAttempt(caseId: string, artifact: string, staged: boolean, expectedCode: string,
+    changeWhileWaiting?: () => Promise<void>) {
+    fenceInstaller ??= await connect(lease.user);
+    const installer = fenceInstaller;
+    expect(installer.getTransactionStatus()).toBe('I'); expect(app.getTransactionStatus()).toBe('I');
+    const installerIdentity = await fenceIdentity(installer, lease.user, installerOid), readerIdentity = await fenceIdentity(app, appRole.name, appRole.oid);
+    const pids = [installerIdentity.pid as number, readerIdentity.pid as number];
+    const beforeDefault = (await query(installer, 'SHOW default_transaction_isolation')).rows[0].default_transaction_isolation as string;
+    expect(['read committed', 'repeatable read', 'serializable']).toContain(beforeDefault);
+    let pending: Promise<{ sqlstate: string; commands: string[]; nativeRows: unknown[] }> | undefined;
+    let blocked: unknown, nativeIsolation: unknown, outcome: unknown, failed: unknown;
+    try {
+      await query(installer, "SET default_transaction_isolation='repeatable read'");
+      expect((await query(installer, 'SHOW default_transaction_isolation')).rows).toEqual([{ default_transaction_isolation: 'repeatable read' }]);
+      await query(app, 'BEGIN ISOLATION LEVEL READ COMMITTED');
+      await query(app, RUNTIME_CATALOG_SHARED_FENCE_SQL.text, [...RUNTIME_CATALOG_SHARED_FENCE_SQL.values]);
+      expect(await fenceLocks(pids)).toEqual([fenceKeyTuple(readerIdentity.pid as number, 'ShareLock', true)]);
+      const parts = staged ? stagedArtifact(artifact) : null;
+      if (parts) await query(installer, parts.opening);
+      // Entire-source mode deliberately remains ONE original native query call.
+      // Staged mode sends the exact first source statements and inserts only a
+      // test observation after acquire, before the unchanged prerequisite body.
+      pending = installer.query(parts ? INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text : artifact).then(result => ({
+        sqlstate: 'NO_ERROR', commands: Array.isArray(result) ? result.map(row => row.command as string) : [result.command],
+        nativeRows: Array.isArray(result) ? result.map(row => row.rows) : [result.rows],
+      }), error => ({ sqlstate: sqlstate(error), commands: [], nativeRows: [] }));
+      pendingFenceAttempts.add(pending);
+      await fencePoll(async () => {
+        const locks = await fenceLocks(pids);
+        if (!locks.some(row => JSON.stringify(row) === JSON.stringify(fenceKeyTuple(installerIdentity.pid as number, 'ExclusiveLock', false)))) return false;
+        const activity = (await query(admin, `SELECT pid,usename::text name,usesysid::text original_oid,state,wait_event_type,wait_event,
+          pg_catalog.pg_blocking_pids(pid) blockers FROM pg_catalog.pg_stat_activity WHERE pid=$1`, [installerIdentity.pid])).rows;
+        expect(activity).toMatchObject([{ pid: installerIdentity.pid, name: lease.user, original_oid: installerOid,
+          state: 'active', wait_event_type: 'Lock', wait_event: 'advisory' }]);
+        expect(activity[0].blockers).toContain(readerIdentity.pid);
+        expect(locks).toContainEqual(fenceKeyTuple(readerIdentity.pid as number, 'ShareLock', true));
+        const relations = (await query(admin, `SELECT l.database::text database,l.relation::text oid,l.mode,l.granted,n.nspname,c.relname
+          FROM pg_catalog.pg_locks l LEFT JOIN pg_catalog.pg_class c ON c.oid=l.relation
+          LEFT JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE l.pid=$1 AND l.locktype='relation' ORDER BY l.relation,l.mode`, [installerIdentity.pid])).rows;
+        const prerequisites = ['pg_namespace', 'pg_class', 'pg_attribute', 'pg_constraint', 'pg_trigger', 'pg_rewrite', 'pg_roles'];
+        expect(relations.filter(row => row.nspname === 'nevora_tenancy' || prerequisites.includes(row.relname))).toEqual([]);
+        blocked = { locks, activity, relations, assertion: 'NO_PREREQUISITE_OR_FIXTURE_RELATION_LOCK_BEFORE_EXCLUSIVE_ACQUIRE' };
+        return true;
+      }, 'EXCLUSIVE_WAIT');
+      record({ caseId, stage: 'ACTUAL_BLOCKED_BEFORE_PREREQUISITES', invocation: staged ? 'STAGED_EXACT_SOURCE_OBSERVATION_SEAM' : 'ENTIRE_FROZEN_ARTIFACT_SINGLE_QUERY',
+        sourceSHA256: hash(artifact), installerIdentity, readerIdentity, beforeDefault, blocked });
+      if (changeWhileWaiting) await changeWhileWaiting();
+      await query(app, 'COMMIT'); outcome = await pending; pendingFenceAttempts.delete(pending); pending = undefined;
+      if (parts) {
+        expect(outcome).toMatchObject({ sqlstate: 'NO_ERROR', commands: ['SELECT'], nativeRows: [[{ catalog_fence: '' }]] }); expect(installer.getTransactionStatus()).toBe('T');
+        expect(await fenceLocks(pids)).toEqual([fenceKeyTuple(installerIdentity.pid as number, 'ExclusiveLock', true)]);
+        nativeIsolation = (await query(installer, `SELECT pg_catalog.current_setting('transaction_isolation') isolation,
+          pg_catalog.current_setting('default_transaction_isolation') session_default,session_user::text session,current_user::text current_role`)).rows;
+        expect(nativeIsolation).toEqual([{ isolation: 'read committed', session_default: 'repeatable read', session: lease.user, current_role: lease.user }]);
+        record({ caseId, stage: 'NATIVE_READ_COMMITTED_AFTER_WAIT_BEFORE_PREREQUISITES', nativeIsolation, acquireOutcome: outcome, sourceReconstructionSHA256: hash(parts.opening + '\n' + INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text + parts.remaining) });
+        const code = await rejected(installer, parts.remaining); outcome = { sqlstate: code };
+      }
+      expect(outcome).toMatchObject({ sqlstate: expectedCode });
+      if (expectedCode !== 'NO_ERROR') {
+        const immediateStatus = installer.getTransactionStatus();
+        await fencePoll(async () => {
+          const activity = (await query(admin, 'SELECT pid,state FROM pg_catalog.pg_stat_activity WHERE pid=$1', [installerIdentity.pid])).rows;
+          return activity.length === 1 && activity[0].state === 'idle in transaction (aborted)' && installer.getTransactionStatus() === 'E';
+        }, 'ABORTED_NATIVE_AND_READY_FOR_QUERY');
+        expect(installer.getTransactionStatus()).toBe('E'); expect(await rejected(installer, 'SELECT 1')).toBe('25P02');
+        failed = { immediateStatus, synchronizedStatus: installer.getTransactionStatus(), locksBeforeRollback: await fenceLocks(pids),
+          backend: (await query(admin, 'SELECT pid,state FROM pg_catalog.pg_stat_activity WHERE pid=$1', [installerIdentity.pid])).rows, subsequentSQLstate: '25P02' };
+        await query(installer, 'ROLLBACK');
+      }
+      expect(installer.getTransactionStatus()).toBe('I'); expect(await fenceLocks(pids)).toEqual([]);
+      record({ caseId, stage: 'SOURCE_ATTEMPT_FINISHED', outcome, nativeIsolation, failed, locksAfterEnd: await fenceLocks(pids),
+        claim: 'SINGLE_OWNED_DATABASE_INSTALLER_PROTOCOL_ONLY_NOT_ALL_WRITER_ADOPTION_OR_RUNTIME_AUTHORITY' });
+    } finally {
+      if (['T', 'E'].includes(app.getTransactionStatus() ?? '')) await query(app, 'ROLLBACK');
+      if (pending) { const reconciled = await pending; pendingFenceAttempts.delete(pending); record({ caseId, stage: 'PENDING_OWN_ATTEMPT_RECONCILED', reconciled }); }
+      if (['T', 'E'].includes(installer.getTransactionStatus() ?? '')) await query(installer, 'ROLLBACK');
+      await query(installer, "SELECT pg_catalog.set_config('default_transaction_isolation',$1,false)", [beforeDefault]);
+      expect((await query(installer, 'SHOW default_transaction_isolation')).rows).toEqual([{ default_transaction_isolation: beforeDefault }]);
+      expect(await fenceIdentity(installer, lease.user, installerOid)).toEqual(installerIdentity);
+      expect(await fenceIdentity(app, appRole.name, appRole.oid)).toEqual(readerIdentity);
+      expect(await fenceLocks(pids)).toEqual([]); record({ caseId, stage: 'OWN_CLIENT_DEFAULT_AND_NATIVE_IDENTITY_RESTORED', beforeDefault, pending: pendingFenceAttempts.size });
+    }
+  }
+
   beforeAll(async () => {
     expect(leasePath !== undefined && runPath !== undefined).toBe(true);
     expect(process.env.DATABASE_URL === undefined && process.env.FUEL_TEST_DATABASE_URL === undefined).toBe(true);
@@ -422,6 +547,7 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
     auditedStorage = readFileSync(auditedStoragePath, 'utf8'); auditedGuard = readFileSync(auditedGuardPath, 'utf8');
     expect(hash(auditedStorage)).toBe(expectedAuditedStorageSHA256);
     expect(hash(auditedGuard)).toBe(expectedAuditedGuardSHA256);
+    expect(hash(readFileSync(resolve('src/lib/tenancy/runtime/catalog-fence.server.ts')))).toBe('2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f');
     password = readFileSync(lease.credentialFile, 'utf8'); expect(password.length > 0).toBe(true);
     admin = await connect(lease.user);
     const actual = await checkBase();
@@ -500,6 +626,74 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
       fixtureSetupCommitted, sourceSHA256: hash(source), helperSHA256: hash(helper),
       claim: 'EXPLICIT_FICTIONAL_TEST_ROLES_ONLY_NO_RUNTIME_AUTHORITY' }, null, 2), { flag: 'wx', mode: 0o600 });
   }, 30000);
+
+
+  // Added cases restore the exact original installed fixture before A01-A20.
+  // Temporary names are own-object observation seams, never object adoption.
+  it('AFI01 waits then installs from exact staged READ COMMITTED source and restores the original capability OID', async () => {
+    const before = await controlCatalog(), beforeRows = await registryRows(), binding = await controlRows();
+    const original = objects.find(object => object.kind === 'table' && object.name === 'audited_helper_capability' && !object.dropped)!;
+    const shadow = lease.invocation + '_cap_fence_shadow', undo = 'ALTER TABLE nevora_tenancy.' + q(shadow) + ' RENAME TO audited_helper_capability';
+    expect((await query(admin, 'SELECT pg_catalog.to_regclass($1)::oid::text oid', ['nevora_tenancy.audited_helper_capability'])).rows).toEqual([{ oid: original.oid }]);
+    expect((await query(admin, 'SELECT pg_catalog.to_regclass($1)::oid::text oid', ['nevora_tenancy.' + q(shadow)])).rows).toEqual([{ oid: null }]);
+    repairs.add(undo); await query(admin, 'ALTER TABLE nevora_tenancy.audited_helper_capability RENAME TO ' + q(shadow));
+    let replacement: ObjectReceipt | undefined;
+    try {
+      await installerFenceAttempt('AFI01', auditedStorage, true, 'NO_ERROR');
+      replacement = await remember('table', 'nevora_tenancy', 'audited_helper_capability', installerOid);
+      expect(replacement.oid).not.toBe(original.oid); expect(await registryRows()).toEqual([]);
+      expect((await controlCatalog()).columns.filter(column => column.relname === 'audited_helper_capability')).toHaveLength(12);
+      record({ caseId: 'AFI01', original, shadow, replacement, emptyRows: [], catalog: await controlCatalog(), stagedObservationOnly: true });
+    } finally {
+      if (replacement) await exactNewDrop(replacement);
+      expect((await query(admin, 'SELECT pg_catalog.to_regclass($1)::oid::text oid', ['nevora_tenancy.' + q(shadow)])).rows).toEqual([{ oid: original.oid }]);
+      await query(admin, undo); repairs.delete(undo);
+    }
+    expect(canonicalAclCatalog(await controlCatalog())).toEqual(canonicalAclCatalog(before)); expect(await registryRows()).toEqual(beforeRows); expect(await controlRows()).toEqual(binding);
+    record({ caseId: 'AFI01', stage: 'EXACT_ORIGINAL_NATIVE_CAPABILITY_RESTORED', original, before, after: await controlCatalog(), beforeRows, afterRows: await registryRows() });
+  });
+  it('AFI02 whole-source installer sees changed own schema owner after wait despite repeatable-read default', async () => {
+    const before = await controlCatalog(), rows = await registryRows(), binding = await controlRows();
+    const schema = objects.find(object => object.kind === 'schema' && !object.dropped)!;
+    const undo = 'ALTER SCHEMA nevora_tenancy OWNER TO ' + q(lease.user);
+    try {
+      await installerFenceAttempt('AFI02', auditedStorage, false, '42501', async () => {
+        expect(before.schema.filter(row => row.nspname === 'nevora_tenancy')).toMatchObject([{ oid: schema.oid, owner: installerOid }]); repairs.add(undo);
+        await query(admin, 'ALTER SCHEMA nevora_tenancy OWNER TO ' + q(outsiderRole.name));
+        expect((await controlCatalog()).schema.filter(row => row.nspname === 'nevora_tenancy')).toMatchObject([{ oid: schema.oid, owner: outsiderRole.oid }]);
+        record({ caseId: 'AFI02', stage: 'DELIBERATE_NONCOOPERATING_OWN_SCHEMA_OWNER_DELTA', schema, before, changed: await controlCatalog() });
+      });
+    } finally { if (repairs.has(undo)) { await query(admin, undo); repairs.delete(undo); } }
+    expect(canonicalAclCatalog(await controlCatalog())).toEqual(canonicalAclCatalog(before)); expect(await registryRows()).toEqual(rows); expect(await controlRows()).toEqual(binding);
+    record({ caseId: 'AFI02', stage: 'EXACT_SCHEMA_AND_SOURCE_RESTORED', before, after: await controlCatalog(), rows, binding });
+  });
+  it('AFI03 whole-source duplicate rejection after a native wait preserves every original registry row and source tuple', async () => {
+    const before = await controlCatalog(), rows = await registryRows(), binding = await controlRows();
+    await installerFenceAttempt('AFI03', auditedStorage, false, '42P07');
+    expect(await controlCatalog()).toEqual(before); expect(await registryRows()).toEqual(rows); expect(await controlRows()).toEqual(binding);
+    record({ caseId: 'AFI03', before, after: await controlCatalog(), rows, binding });
+  });
+  it('AFI04 whole-source missing binding after a wait fails before duplicate/adoption then restores its exact OID', async () => {
+    const before = await controlCatalog(), rows = await registryRows(), binding = await controlRows();
+    const original = objects.find(object => object.kind === 'table' && object.name === 'runtime_role_binding' && !object.dropped)!;
+    const shadow = lease.invocation + '_binding_fence_shadow', undo = 'ALTER TABLE nevora_tenancy.' + q(shadow) + ' RENAME TO runtime_role_binding';
+    expect((await query(admin, 'SELECT pg_catalog.to_regclass($1)::oid::text oid', ['nevora_tenancy.' + q(shadow)])).rows).toEqual([{ oid: null }]);
+    try {
+      await installerFenceAttempt('AFI04', auditedStorage, false, '55000', async () => {
+        expect((await query(admin, 'SELECT pg_catalog.to_regclass($1)::oid::text oid', ['nevora_tenancy.runtime_role_binding'])).rows).toEqual([{ oid: original.oid }]);
+        repairs.add(undo); await query(admin, 'ALTER TABLE nevora_tenancy.runtime_role_binding RENAME TO ' + q(shadow));
+        expect((await query(admin, 'SELECT pg_catalog.to_regclass($1)::oid::text oid', ['nevora_tenancy.' + q(shadow)])).rows).toEqual([{ oid: original.oid }]);
+        record({ caseId: 'AFI04', stage: 'EXACT_OWN_BINDING_NAME_DELTA_WHILE_WAITING', original, shadow, changed: await controlCatalog() });
+      });
+    } finally {
+      if (repairs.has(undo)) {
+        expect((await query(admin, 'SELECT pg_catalog.to_regclass($1)::oid::text oid', ['nevora_tenancy.' + q(shadow)])).rows).toEqual([{ oid: original.oid }]);
+        await query(admin, undo); repairs.delete(undo);
+      }
+    }
+    expect(await controlCatalog()).toEqual(before); expect(await registryRows()).toEqual(rows); expect(await controlRows()).toEqual(binding);
+    record({ caseId: 'AFI04', stage: 'EXACT_ORIGINAL_BINDING_RESTORED', original, before, after: await controlCatalog(), rows, binding });
+  });
 
   it('A01 retains an empty no-seed registry and denies reachable unaudited direct/trigger helpers', async () => {
     expect(artifactInstalled && helperInstalled).toBe(true);
@@ -771,12 +965,25 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
   it('A16 current final denial aborts and rolls back only the own fictional UPDATE', async () => {
     const wrapper = "SELECT 1 / CASE WHEN nevora_tenancy.assert_audited_runtime_role('APP') IS TRUE THEN 1 ELSE 0 END AS guard";
     expect((await query(app, wrapper)).rows).toEqual([{ guard: 1 }]);
+    const originalBackend = await fenceIdentity(app, appRole.name, appRole.oid);
     await query(app, 'BEGIN ISOLATION LEVEL READ COMMITTED');
     try {
       expect((await query(app, wrapper)).rows).toEqual([{ guard: 1 }]);
       expect((await query(app, 'UPDATE ' + business() + ' SET id=2 WHERE id=1 RETURNING id')).rows).toEqual([{ id: 2 }]);
       await mutateGrant('GRANT CREATE ON DATABASE ' + q(lease.database) + ' TO ' + q(appRole.name), 'REVOKE CREATE ON DATABASE ' + q(lease.database) + ' FROM ' + q(appRole.name), async () => {
-        expect(await rejected(app, wrapper)).toBe('22012'); expect(app.getTransactionStatus()).toBe('E');
+        expect(await rejected(app, wrapper)).toBe('22012');
+        const immediateStatus = app.getTransactionStatus();
+        let nativeAborted: Record<string, unknown>[] = [];
+        await fencePoll(async () => {
+          nativeAborted = (await query(admin, `SELECT pid,usename::text name,usesysid::text original_oid,state
+            FROM pg_catalog.pg_stat_activity WHERE pid=$1`, [originalBackend.pid])).rows;
+          return nativeAborted.length === 1 && nativeAborted[0].state === 'idle in transaction (aborted)' && app.getTransactionStatus() === 'E';
+        }, 'A16_NATIVE_ABORT_AND_READY_FOR_QUERY');
+        expect(nativeAborted).toEqual([{ pid: originalBackend.pid, name: appRole.name,
+          original_oid: appRole.oid, state: 'idle in transaction (aborted)' }]);
+        expect(app.getTransactionStatus()).toBe('E');
+        record({ caseId: 'A16', stage: 'NATIVE_ABORT_AND_READY_STATUS_SYNCHRONIZED', immediateStatus,
+          synchronizedStatus: app.getTransactionStatus(), nativeAborted, originalBackend });
         expect(await rejected(app, 'SELECT 1')).toBe('25P02');
         await query(app, 'COMMIT'); expect(app.getTransactionStatus()).toBe('I');
         expect((await query(admin, 'SELECT id FROM ' + business())).rows).toEqual([{ id: 1 }]);
@@ -954,7 +1161,8 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
       password = '';
       if (runVerified) writeFileSync(join(runPath!, 'audited-cleanup.json'), JSON.stringify({ verified, fixtureSetupCommitted,
         artifactInstalled, helperInstalled, cleaned, roles, objects, records, closure, installationCatalog,
-        connectedOrAttemptedClients: clients.size, closedClients: closedClients.size, pendingRepairs: repairs.size, actualSQLAttempted: sqlAttempted,
+        connectedOrAttemptedClients: clients.size, closedClients: closedClients.size, pendingRepairs: repairs.size,
+        extraInstallerFenceClients: fenceInstaller ? 1 : 0, pendingFenceAttempts: pendingFenceAttempts.size, actualSQLAttempted: sqlAttempted,
         scope: 'EXACT_NEW_FICTIONAL_SCHEMA_TABLE_HELPERS_ROLES_ROUTES_ONLY_NO_DATABASE_DROP_OR_CLUSTER_CONTROL',
         claim: 'PREPARED_SUITE_IS_NOT_ACTUAL_EXECUTION_HELPER_SEMANTICS_AUTHORITY_RUNTIME_PROOF_RLS_CUTOVER_FULL_F10_OR_EXTERNAL_REVIEW' }, null, 2), { flag: 'wx', mode: 0o600 });
     }

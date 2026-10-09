@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
+import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 import { parseDdlDeclarations, tokenizeDdl } from '../inventory/ddl';
 import { lexSql } from '../inventory/sql-lexer';
 const source = readFileSync(resolve('src/lib/tenancy/runtime/audited-helper-storage.sql'), 'utf8');
@@ -9,6 +11,18 @@ const statements = journal.parts.filter(part => part.kind === 'statement');
 const words = (text: string) => tokenizeDdl(text).map(token => token.kind === 'word' ? token.raw.toUpperCase() : token.raw);
 const table = () => parseDdlDeclarations(source).tables[0];
 describe('audited helper registry inert source', () => {
+  it('acquires the exact exclusive catalog plan first after BEGIN before any setting, prerequisite or DDL', () => {
+    expect(statements[0].leadingKeyword).toBe('BEGIN');
+    expect(words(statements[0].text)).toEqual(['BEGIN', 'ISOLATION', 'LEVEL', 'READ', 'COMMITTED', ';']);
+    // The lossless journal includes the exact separator newline with this statement.
+    expect(statements[1].text).toBe('\n' + INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+    expect(statements.filter(part => part.text === '\n' + INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text)).toHaveLength(1);
+    expect(statements.findIndex(part => part.leadingKeyword === 'SET')).toBe(2);
+    expect(statements.findIndex(part => part.leadingKeyword === 'DO')).toBe(3);
+    expect(statements.findIndex(part => part.leadingKeyword === 'CREATE')).toBe(4);
+    expect(statements.filter(part => part.leadingKeyword === 'BEGIN')).toHaveLength(1);
+    expect(statements.filter(part => part.leadingKeyword === 'COMMIT')).toHaveLength(1);
+  });
   it('declares a separate permanent12-column registry, not role-binding replacement', () => {
     expect(parseDdlDeclarations(source).tables).toHaveLength(1);
     const t = table();
@@ -55,10 +69,10 @@ describe('audited helper registry inert source', () => {
     for (const name of ['DEPENDENCIES', 'OWNER_LOCK_COLUMNS']) expect(checks.some(c => c.includes(name) && c.includes("'array'"))).toBe(true);
   });
   it('guards the owned existing schema/storage and duplicate registry before a fixed atomic CREATE', () => {
-    expect(statements.map(s => s.leadingKeyword)).toEqual(['BEGIN', 'SET', 'DO', 'CREATE', 'REVOKE', 'REVOKE', 'COMMIT']);
+    expect(statements.map(s => s.leadingKeyword)).toEqual(['BEGIN', 'WITH', 'SET', 'DO', 'CREATE', 'REVOKE', 'REVOKE', 'COMMIT']);
     const guard = statements.find(s => s.leadingKeyword === 'DO'); expect(guard).toBeDefined();
     for (const error of ['audited_helper_schema_missing', 'audited_helper_schema_not_owned', 'audited_helper_binding_missing', 'audited_helper_already_installed']) expect(guard!.text).toContain(error);
-    expect(words(statements[1].text)).toEqual(['SET', 'LOCAL', 'SEARCH_PATH', '=', 'PG_CATALOG', ';']);
+    expect(words(statements[2].text)).toEqual(['SET', 'LOCAL', 'SEARCH_PATH', '=', 'PG_CATALOG', ';']);
   });
   it('has only PUBLIC revocation effects and no seed/role/helper/grant/customer DML', () => {
     expect(statements.filter(s => s.leadingKeyword === 'REVOKE').map(s => words(s.text))).toEqual([

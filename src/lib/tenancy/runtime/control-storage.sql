@@ -8,7 +8,18 @@
 -- or source observations alone do not authenticate an installer or approve a
 -- helper's source. Current-proof, RLS, transport and full F10 gates remain open.
 -- Duplicate installation fails closed; this source never replaces an object.
-BEGIN;
+BEGIN ISOLATION LEVEL READ COMMITTED;
+WITH catalog_fence_key AS MATERIALIZED (
+  SELECT (
+    'x'::pg_catalog.text OPERATOR(pg_catalog.||) pg_catalog.substr(
+      pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(
+        'nevora.runtime.catalog-fence.v1:'::pg_catalog.text OPERATOR(pg_catalog.||) database_identity.oid::pg_catalog.text,
+        'UTF8'::pg_catalog.name)), 'hex'::pg_catalog.text), 1, 16)
+  )::pg_catalog.bit(64)::pg_catalog.int8 AS key
+  FROM pg_catalog.pg_database AS database_identity
+  WHERE database_identity.datname OPERATOR(pg_catalog.=) pg_catalog.current_database()
+)
+SELECT pg_catalog.pg_advisory_xact_lock(key) AS catalog_fence FROM catalog_fence_key;
 SET LOCAL search_path = pg_catalog;
 
 DO $runtime_control_prerequisites$

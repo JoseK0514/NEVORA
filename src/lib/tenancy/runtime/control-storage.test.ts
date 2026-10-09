@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
+import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 import { parseDdlDeclarations, tokenizeDdl } from '../inventory/ddl';
 import type { CreateTableDeclaration } from '../inventory/ddl';
 import { lexSql } from '../inventory/sql-lexer';
@@ -35,6 +37,18 @@ function hasSequence(tokens: string[], sequence: string[]) {
 // These tests inspect inert source declarations and statement boundaries. They
 // do not parse PL/pgSQL semantically or execute installation, guards or ACLs.
 describe('runtime control-storage source preparation', () => {
+  it('acquires the exact exclusive catalog plan first after BEGIN before any setting, prerequisite or DDL', () => {
+    expect(statements[0].leadingKeyword).toBe('BEGIN');
+    expect(words(statements[0].text)).toEqual(['BEGIN', 'ISOLATION', 'LEVEL', 'READ', 'COMMITTED', ';']);
+    // The lossless journal includes the exact separator newline with this statement.
+    expect(statements[1].text).toBe('\n' + INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+    expect(statements.filter(part => part.text === '\n' + INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text)).toHaveLength(1);
+    expect(statements.findIndex(part => part.leadingKeyword === 'SET')).toBe(2);
+    expect(statements.findIndex(part => part.leadingKeyword === 'DO')).toBe(3);
+    expect(statements.findIndex(part => part.leadingKeyword === 'CREATE')).toBe(4);
+    expect(statements.filter(part => part.leadingKeyword === 'BEGIN')).toHaveLength(1);
+    expect(statements.filter(part => part.leadingKeyword === 'COMMIT')).toHaveLength(1);
+  });
   it('declares the exact original six persistent columns without defaults or inferred authority', () => {
     const tables = parseDdlDeclarations(source).tables;
     expect(tables).toHaveLength(1);
@@ -81,9 +95,9 @@ describe('runtime control-storage source preparation', () => {
   });
 
   it('encloses guard, creation and PUBLIC revocation within one fixed transaction', () => {
-    expect(statements.map(part => part.leadingKeyword)).toEqual(['BEGIN', 'SET', 'DO', 'CREATE', 'REVOKE', 'REVOKE', 'COMMIT']);
-    expect(words(statements[0].text)).toEqual(['BEGIN', ';']);
-    expect(words(statements[1].text)).toEqual(['SET', 'LOCAL', 'SEARCH_PATH', '=', 'PG_CATALOG', ';']);
+    expect(statements.map(part => part.leadingKeyword)).toEqual(['BEGIN', 'WITH', 'SET', 'DO', 'CREATE', 'REVOKE', 'REVOKE', 'COMMIT']);
+    expect(words(statements[0].text)).toEqual(['BEGIN', 'ISOLATION', 'LEVEL', 'READ', 'COMMITTED', ';']);
+    expect(words(statements[2].text)).toEqual(['SET', 'LOCAL', 'SEARCH_PATH', '=', 'PG_CATALOG', ';']);
     expect(words(statements[statements.length - 1].text)).toEqual(['COMMIT', ';']);
     expect(statements.every(part => part.terminated)).toBe(true);
   });
