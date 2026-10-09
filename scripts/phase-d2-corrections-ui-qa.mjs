@@ -26,9 +26,9 @@ catch{
 
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 const tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
-const tracked=execFileSync('git',['status','--porcelain=v1','--untracked-files=no'],{encoding:'utf8'}).trim();
+const tracked=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim();
 const expected=process.env.PHASE_D2_CORRECTIONS_EXPECTED_SHA?.trim();
-assert.equal(tracked,'','D2 browser evidence requires a clean tracked worktree');
+assert.equal(tracked,'','D2 browser evidence requires a clean worktree including untracked files');
 if(expected)assert.equal(checkpoint,expected,'D2 browser evidence must run on requested SHA');
 
 const report={

@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
-import { createWriteStream, existsSync } from 'node:fs';
+import { createWriteStream } from 'node:fs';
 import { access, copyFile, mkdir, mkdtemp, readFile, realpath, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
@@ -9,6 +9,13 @@ import type { OwnedDatabaseIdentity } from './owned-pg-transport';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
+const applicationInput = (name: string) => ['src/', 'public/'].some(prefix => name.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(name);
+function trackedApplicationFiles(source: string): string[] {
+  const gitPaths = (args: string[]) => execFileSync('git', args, { cwd: source, encoding: 'utf8' }).split('\0').filter(Boolean);
+  if (gitPaths(['ls-files', '-o', '--exclude-standard', '-z']).some(applicationInput)) throw Error('Untracked application source cannot produce exact-SHA evidence');
+  if (gitPaths(['diff', '--name-only', 'HEAD', '-z']).some(applicationInput)) throw Error('Tracked application source differs from HEAD');
+  return gitPaths(['ls-files', '-c', '-z']).filter(applicationInput).sort();
+}
 /** The sole approved scratch DB substitution, derived from the original source. */
 export function createOwnedDbAdapter(originalDb: string): string {
   const queryRows = originalDb.slice(originalDb.indexOf('export function queryRows'));
@@ -72,6 +79,9 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
   if (options.onProcessStarted && !options.processOwnerId) throw Error('Owned process registration requires its invocation marker.');
   options.signal?.throwIfAborted();
   const source = resolve(process.cwd());
+  // Validate before allocating a runtime or database. Only committed input is
+  // eligible for an exact-SHA mirror; a clean tracked status alone is insufficient.
+  const files = trackedApplicationFiles(source);
   const evidence = resolve(evidenceDirectory);
   await assertExternalEvidencePath(source,evidenceDirectory);
   await mkdir(evidence, { recursive: true });
@@ -84,6 +94,11 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
   let child: ChildProcess | undefined;
   let closed = false;
   let closing: Promise<void> | undefined;
+  const hashes: Record<string, string> = {};
+  const verifySource = async () => {
+    if (JSON.stringify(trackedApplicationFiles(source)) !== JSON.stringify(files)) throw Error('Application source inventory changed during verification');
+    for (const [name, expected] of Object.entries(hashes)) if (hash(await readFile(join(source, name))) !== expected) throw Error('Application source changed during verification: ' + name);
+  };
   const manifestPath = join(root, 'ownership.json');
   const metadata: Record<string, unknown> = { ownerId, source, root, runtime: 'Next development + owned PostgreSQL; substituted DB transport', started: false };
   await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
@@ -97,6 +112,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       metadata.closed = true; metadata.closedAt = new Date().toISOString();
       await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
       closed = true; options.signal?.removeEventListener('abort', abort);
+      await verifySource();
     })().catch(error => { closing = undefined; throw error; });
     return closing;
   };
@@ -107,18 +123,14 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
     const [identity] = await database.executor.query<OwnedDatabaseIdentity>({
       text: "SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()", values: [],
     });
-    const files = [...new Set(execFileSync('git', ['ls-files', '-c', '-o', '--exclude-standard', '-z'], { cwd: source, encoding: 'utf8' }).split('\0').filter(Boolean))]
-      .filter(name => ['src/', 'public/'].some(prefix => name.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(name))
-      .filter(name => !name.split('/').some(part => part.startsWith('.env') || part === 'node_modules'))
-      .filter(name => existsSync(join(source, name)))
-      .sort();
-    const hashes: Record<string, string> = {};
     for (const name of files) {
       if (isAbsolute(name) || name.split('/').includes('..')) throw new Error('Unsafe tracked source path');
       await mkdir(dirname(join(mirror, name)), { recursive: true });
-      await copyFile(join(source, name), join(mirror, name));
       hashes[name] = hash(await readFile(join(source, name)));
+      await copyFile(join(source, name), join(mirror, name));
+      if (hash(await readFile(join(mirror, name))) !== hashes[name]) throw Error('Application mirror differs from captured source: ' + name);
     }
+    await verifySource();
     await access(join(source, 'node_modules/next/dist/bin/next'));
     execFileSync('cp', process.platform === 'darwin' ? ['-cR', join(source, 'node_modules'), join(mirror, 'node_modules')] : ['-R', join(source, 'node_modules'), join(mirror, 'node_modules')]);
     const originalDb = await readFile(join(source, 'src/lib/db.ts'), 'utf8');
@@ -170,7 +182,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
     }
     if (!ready) throw new Error(`Owned Next did not become ready; see ${join(root, 'next.log')}`);
     options.signal?.throwIfAborted();
-    if (hash(await readFile(join(source, 'src/lib/db.ts'))) !== hash(originalDb)) throw new Error('Original DB source changed during test setup');
+    await verifySource();
     return { root, mirror, barriers, url, database, close, sourceHashes: hashes };
   } catch (error) { await close(); throw error; }
 }
