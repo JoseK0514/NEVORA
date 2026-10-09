@@ -1,7 +1,8 @@
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import {createECDH,randomUUID} from 'node:crypto';
 import {createDisposableNotificationDatabase} from './local-postgres';
-import {previewCommunicationAudience,executeCommunicationCommand} from '../../lib/communications/service.server';
+import {previewCommunicationAudience,executeCommunicationCommand,readCommunication} from '../../lib/communications/service.server';
+import {businessTime} from '../../lib/business-time';
 import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
 import {sqlSubscriptionRepository} from '../../lib/data/push-subscriptions';
 import {sqlDeliveryRepository} from '../../lib/data/push-deliveries';
@@ -14,6 +15,11 @@ import {runDispatch,type WorkerDeps} from '../../lib/notifications/worker';
 import type {CommunicationDraft} from '../../lib/communications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 let db:Awaited<ReturnType<typeof createDisposableNotificationDatabase>>;
+let fixtureTimeZone:string;
+// Set only the disposable workspace's civil hour. Keep real DB/service clocks
+// and the actual quiet-hours policy; immediate-delivery tests must not depend on
+// the engineer's wall clock. Fixed-offset zones avoid DST boundary ambiguity.
+function fixtureZoneForHour(hour:number){const offset=(new Date().getUTCHours()-hour+36)%24-12;return 'Etc/GMT'+(offset>=0?'+':'')+offset;}
 const owner:SessionMutationProof={employee:{id:'owner',firstName:'Fictional',lastName:'Owner',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 const employee:SessionMutationProof={employee:{id:'employee',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:'b'.repeat(64)};
 const draft:CommunicationDraft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'loc-1'},title:'Private operational title',body:'Private body and location',acknowledgement:'REQUIRED',expiresAt:null};
@@ -24,12 +30,12 @@ async function worker(){
  const enrollment={employeeId:'employee',installationHash:'c'.repeat(64),endpointFingerprint:'fictional-endpoint',encryptedMaterial:'fixture',sessionHash:employee.sessionTokenHash,generation:randomUUID(),expectedGeneration:null,environment:'test' as const,expiresAt:null};
  const subscriptions=sqlSubscriptionRepository(db.executor);expect((await subscriptions.enroll(enrollment)).state).toBe('active');
  const material=encryptSubscriptionMaterial({endpoint:'https://fcm.googleapis.com/fcm/send/QA-never-contact',expirationTime:null,keys:{p256dh:pair.getPublicKey().toString('base64url'),auth:Buffer.alloc(16,2).toString('base64url')}},key,enrollment);await q('UPDATE push_subscriptions SET encrypted_material=$1',[material]);
- const config={...readNotificationConfig({PUSH_ENVIRONMENT:'test',PUSH_SUBSCRIPTION_ENCRYPTION_KEY:key.toString('base64url')}),featureEnabled:true,deliveryEnabled:true,testDeliveryEnabled:true,testAccountIds:['employee'],policy:notificationPolicyFor('America/Puerto_Rico')};
+ const config={...readNotificationConfig({PUSH_ENVIRONMENT:'test',PUSH_SUBSCRIPTION_ENCRYPTION_KEY:key.toString('base64url')}),featureEnabled:true,deliveryEnabled:true,testDeliveryEnabled:true,testAccountIds:['employee'],policy:notificationPolicyFor(fixtureTimeZone)};
  const send=vi.fn(async()=>({kind:'accepted' as const}));
  const deps:WorkerDeps={config,clock:()=>new Date(),executor:db.executor,subscriptions,deliveries:sqlDeliveryRepository('test',db.executor),state:sqlNotificationStateRepository(db.executor),sender:{send}};
  return {deps,send};
 }
-beforeEach(async()=>{db=await createDisposableNotificationDatabase();await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','QA-NO-PHONE','OWNER','loc-1'),('employee','Fictional','Self','QA-NO-PHONE','EMPLOYEE','loc-1'),('foreign','Fictional','Other','QA-NO-PHONE','EMPLOYEE','loc-2')");for(const p of [owner,employee])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);});
+beforeEach(async()=>{db=await createDisposableNotificationDatabase();fixtureTimeZone=fixtureZoneForHour(12);await q('UPDATE workspaces SET time_zone=$1 WHERE singleton=true',[fixtureTimeZone]);const hour=Number(businessTime(new Date(),fixtureTimeZone).slice(0,2));expect(hour).toBeGreaterThanOrEqual(7);expect(hour).toBeLessThan(21);await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','QA-NO-PHONE','OWNER','loc-1'),('employee','Fictional','Self','QA-NO-PHONE','EMPLOYEE','loc-1'),('foreign','Fictional','Other','QA-NO-PHONE','EMPLOYEE','loc-2')");for(const p of [owner,employee])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);});
 afterEach(async()=>{await db?.dispose();});
 it('duplicate intent one event per version recipient; inbox and safe open work without push',async()=>{
  const {c,r,state,intent}=await publish();expect(intent).not.toBeNull();if(!intent)throw Error('missing current communication source');
@@ -39,6 +45,13 @@ it('duplicate intent one event per version recipient; inbox and safe open work w
  const list=await readEmployeeNotificationList(employee,'test',db.executor);expect(list).toMatchObject({state:'ready',coverage:'complete',items:[{label:'Team update'}]});
  const open=createNotificationOpenHandler({session:async()=>employee.employee,state,environment:'test',clock:()=>new Date()});expect((await open(new Request('https://fictional.invalid/app/notifications/open?notificationId='+intent.id))).headers.get('Location')).toBe('/app/updates/'+r.id);
  expect(await q('SELECT * FROM communication_receipts')).toEqual([]);
+});
+it('quiet hours retain the exact-version intent and Updates content while deferring routine transport',async()=>{
+ fixtureTimeZone=fixtureZoneForHour(22);await q('UPDATE workspaces SET time_zone=$1 WHERE singleton=true',[fixtureTimeZone]);const hour=Number(businessTime(new Date(),fixtureTimeZone).slice(0,2));expect(hour>=21||hour<7).toBe(true);
+ const {deps,send}=await worker(),{r,intent}=await publish();if(!intent)throw Error('missing quiet-hours intent');expect(Date.parse(intent.dueAt)).toBeGreaterThan(Date.now());
+ expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'ready',id:r.id,revisionId:r.version});
+ expect(await readEmployeeNotificationList(employee,'test',db.executor)).toMatchObject({state:'ready',coverage:'complete',items:[]});
+ await runDispatch({mode:'all',deps});expect(send).not.toHaveBeenCalled();expect(await q('SELECT * FROM push_deliveries')).toEqual([]);expect(await q('SELECT * FROM notifications')).toHaveLength(1);expect(await q('SELECT * FROM communication_receipts')).toEqual([]);
 });
 it.each(['recipient','location','withdraw'] as const)('revocation before materialize send and open denies %s',async kind=>{
  const {deps,send}=await worker();const {r,state,intent}=await publish();if(!intent)throw Error('missing source');
