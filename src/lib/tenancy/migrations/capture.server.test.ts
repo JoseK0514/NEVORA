@@ -8,6 +8,7 @@ import { decodeMigrationWireValue,captureTenantMigrationFacts,captureTypedTenant
 import { getOwnershipRegistry,OWNERSHIP_SOURCE,ownershipDigest,canonicalOwnershipJson } from './ownership';
 import { preflightTenantBackfill } from './backfill';
 import { parseLosslessTextArrayWire,isIssuedLosslessTextArrayEnvelope } from './lossless-array';
+import { traverseTypedMigrationWireValue,isIssuedTypedMigrationCellLineage } from './typed-lineage';
 
 describe('privileged migration capture wire decoding',()=>{
  it('keeps signed bigint and fixed-scale numeric without Number conversion',()=>{
@@ -240,6 +241,17 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
    for(const row of table.rows){
     expect(row.columns.map(c=>[c.name,c.type])).toEqual(rule.columns.map(c=>[c.name,c.type]));
     expect(row.originalChecksum).toBe(ownershipDigest({format:'TYPED_SQL_WIRE_V1',columns:row.columns}));
+    for(const column of row.columns){
+     const traced=traverseTypedMigrationWireValue(column.value);
+     expect(traced.status,rule.table+'.'+column.name).toBe('TRAVERSED');
+     if(traced.status!=='TRAVERSED')throw Error('Expected complete captured cell lineage');
+     expect(traced.lineage.source.type).toBe(column.type);
+     expect(traced.lineage.source.kind).toBe(column.value.kind);
+     expect(traced.lineage.source.wire?.text??null).toBe(column.wire);
+     expect(traced.lineage.nodes.length).toBeGreaterThan(0);
+     expect(isIssuedTypedMigrationCellLineage(traced.lineage)).toBe(true);
+     expect(traced.lineage.verification).toBe('PURE_TYPED_CELL_LINEAGE_NOT_DATABASE_REFERENCE_OR_OWNERSHIP_VERIFICATION');
+    }
    }
   }
   expect(await allOriginalRows()).toEqual(before);
@@ -261,6 +273,11 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
    expect(JSON.stringify(column.value)).toContain('9007199254740993');
    expect(JSON.stringify(column.value)).toContain('0.123456789012345678901');
    expect(JSON.stringify(column.value)).toContain('1.00');
+   const traced=traverseTypedMigrationWireValue(column.value);
+   expect(traced.status).toBe('TRAVERSED');if(traced.status!=='TRAVERSED')throw Error('Expected exact captured JSON lineage');
+   expect(traced.lineage.nodes.filter(n=>n.value.kind==='JSON_NUMBER').map(n=>n.value)).toEqual(expect.arrayContaining([
+    {kind:'JSON_NUMBER',lexeme:'9007199254740993'},{kind:'JSON_NUMBER',lexeme:'0.123456789012345678901'},{kind:'JSON_NUMBER',lexeme:'1.00'}
+   ]));
    expect(await allOriginalRows()).toEqual(before);
   }finally{
    await resetFence();await client.query("UPDATE employee_scheduling_settings SET operational_rule_profile=NULL WHERE employee_id='capture-owner'");
@@ -426,6 +443,12 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   expect(parsed.envelope.wire.text).toBe(column.wire);
   expect(isIssuedLosslessTextArrayEnvelope(parsed.envelope)).toBe(true);
   expect(parsed.envelope.verification).toBe('PURE_ARRAY_PARSE_NOT_DATABASE_VERIFICATION');
+  const traced=traverseTypedMigrationWireValue(column.value);
+  expect(traced.status).toBe('TRAVERSED');if(traced.status!=='TRAVERSED')throw Error('Expected exact captured native-array lineage');
+  expect(traced.lineage.nodes).toEqual([
+   {address:[],value:{kind:'SQL_ARRAY',dimensions:[{lowerBound:0,length:1}],elementCount:1}},
+   {address:[{kind:'SQL_ARRAY_ELEMENT',ordinal:0,subscripts:[0]}],value:{kind:'SQL_ARRAY_TEXT',text:'loc-1'}}
+  ]);
   expect(await allOriginalRows()).toEqual(before);
  });
  it('blocks a JSON literal null that the existing manifest cannot distinguish from SQL NULL',async()=>{
@@ -454,6 +477,11 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
    const employee=typed.facts.tables.find(t=>t.table==='employees')!.rows.find(r=>r.key[0]==='null-owner')!;
    expect(employee.columns.find(c=>c.name==='email')!.wire).toBeNull();
    expect(operation.columns.find(c=>c.name==='result')!.value).not.toEqual(employee.columns.find(c=>c.name==='email')!.value);
+   for(const [column,expected] of [[operation.columns.find(c=>c.name==='result')!,'JSON_NULL'],[employee.columns.find(c=>c.name==='email')!,'SQL_NULL']] as const){
+    const traced=traverseTypedMigrationWireValue(column.value);
+    expect(traced.status).toBe('TRAVERSED');if(traced.status!=='TRAVERSED')throw Error('Expected captured null lineage');
+    expect(traced.lineage.nodes).toEqual([{address:[],value:{kind:expected}}]);
+   }
    expect((await isolated.query("SELECT result::text raw,authority FROM public.calendar_operations WHERE operation_id='00000000-0000-4000-8000-000000000006'")).rows).toEqual(originals);
 
   }finally{
