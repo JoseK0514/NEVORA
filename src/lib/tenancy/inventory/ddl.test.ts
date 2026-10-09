@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { parseDdlDeclarations } from './ddl';
+import { Cursor, createDdlParser, parseDdlDeclarations, tokenizeDdl } from './ddl';
 import type { DdlConstraint, DdlJournal, DdlSpan } from './ddl';
 import { loadPinnedMigrations } from './source';
 
@@ -13,6 +13,21 @@ function checkSpan(text: string, span: DdlSpan, raw: string) {
 }
 
 describe('bounded inert CREATE TABLE declarations', () => {
+  it('reuses direct token/parser helpers with original offsets instead of synthetic SQL', () => {
+    const text = '-- é\r\nALTER TABLE x ADD COLUMN "名" numeric(8,2) NOT NULL;';
+    const tokens = tokenizeDdl(text);
+    const parser = createDdlParser(text);
+    const columnStart = tokens.findIndex(token => token.raw === '"名"');
+    const declared = parser.column(tokens.slice(columnStart, -1));
+    expect(declared.name.normalized).toBe('名');
+    expect(declared.dataType.raw).toBe('numeric(8,2)');
+    checkSpan(text, declared.span, declared.raw);
+    const typeCursor = new Cursor(tokens.slice(columnStart + 1, -1));
+    const type = parser.dataType(typeCursor);
+    expect(type.raw).toBe('numeric(8,2)');
+    expect(typeCursor.word('NOT')).toBe(true);
+    checkSpan(text, type.span, type.raw);
+  });
   it('captures actual column types and separates declared nullability from PK implication', () => {
     const result = parseDdlDeclarations('CREATE TABLE "Ops"."Roster" ("ID" uuid PRIMARY KEY, staff_id text NOT NULL, note text, amount numeric(8,2), stamp timestamp(3) with time zone, tags text[]);');
     expect(result.tables).toHaveLength(1);

@@ -27,15 +27,15 @@ export type DdlJournal = {
   effectiveSchema: 'NOT_COMPUTED'; tenantOwnership: 'NOT_CLASSIFIED'; syntaxValidation: 'BOUNDED_DECLARATIONS_ONLY';
 };
 
-type Token = { kind: 'word' | 'identifier' | 'literal' | 'symbol'; raw: string; start: number; end: number };
+export type Token = { kind: 'word' | 'identifier' | 'literal' | 'symbol'; raw: string; start: number; end: number };
 const asciiFold = (text: string) => text.replace(/[A-Z]/g, c => c.toLowerCase());
 const isWordChar = (c: string | undefined) => c !== undefined && /[A-Za-z_0-9$\u0080-\uFFFF]/.test(c);
 
-class ParseFault extends Error {
+export class ParseFault extends Error {
   constructor(readonly code: string, readonly severity: 'ERROR' | 'UNSUPPORTED', readonly token?: Token) { super(code); }
 }
 
-function tokenize(text: string, base: number): Token[] {
+export function tokenizeDdl(text: string, base = 0): Token[] {
   const result: Token[] = [];
   const lineEnd = (from: number) => {
     const cr = text.indexOf('\r', from), lf = text.indexOf('\n', from);
@@ -90,7 +90,7 @@ function tokenize(text: string, base: number): Token[] {
   return result;
 }
 
-class Cursor {
+export class Cursor {
   index = 0;
   constructor(readonly tokens: Token[]) {}
   get current() { return this.tokens[this.index]; }
@@ -106,7 +106,7 @@ function constraintStart(c: Cursor) {
     || c.word('NULL') || (c.word('NOT') && c.word('NULL', 1));
 }
 
-function closeGroup(tokens: Token[], opening: number): number {
+export function closeGroup(tokens: Token[], opening: number): number {
   const stack: string[] = [];
   for (let n = opening; n < tokens.length; n++) {
     const token = tokens[n];
@@ -127,8 +127,7 @@ function closeGroup(tokens: Token[], opening: number): number {
  * are not resolved. Nullability records explicit syntax separately from PK
  * membership; ALTER/DROP/body statements never change these declarations.
  */
-export function parseDdlDeclarations(text: string): DdlJournal {
-  const result: DdlJournal = { tables: [], unresolved: [], diagnostics: [], effectiveSchema: 'NOT_COMPUTED', tenantOwnership: 'NOT_CLASSIFIED', syntaxValidation: 'BOUNDED_DECLARATIONS_ONLY' };
+export function createDdlParser(text: string) {
   const lineStarts = [0];
   for (let n = 0; n < text.length; n++) {
     if (text[n] === '\r') lineStarts.push(n + (text[n + 1] === '\n' ? 2 : 1));
@@ -241,8 +240,8 @@ export function parseDdlDeclarations(text: string): DdlJournal {
     const tokens = c.tokens.slice(start, c.index);
     return { kind, scope: column ? 'COLUMN' : 'TABLE', ...(named ? { name: named } : {}), columns, ...(reference ? { reference } : {}), ...(expression ? { expression } : {}), raw: rawTokens(tokens), span: tokenSpan(tokens) };
   };
-  const column = (tokens: Token[]): DdlColumn => {
-    const c = new Cursor(tokens), columnName = identifier(c), typeStart = c.index;
+  const dataType = (c: Cursor): DdlColumn['dataType'] => {
+    const typeStart = c.index;
     const typeName = name(c);
     if (typeName.identifiers.length === 1 && !typeName.identifiers[0].quoted) {
       const head = typeName.normalized[0];
@@ -259,14 +258,18 @@ export function parseDdlDeclarations(text: string): DdlJournal {
       if (inside.some(t => t.kind !== 'symbol' || !/^[0-9]$/.test(t.raw))) throw new ParseFault('UNSUPPORTED_ARRAY_BOUND', 'UNSUPPORTED', c.current);
       c.index = close + 1;
     }
-    const typeTokens = tokens.slice(typeStart, c.index);
+    const typeTokens = c.tokens.slice(typeStart, c.index);
+    return { raw: rawTokens(typeTokens), span: tokenSpan(typeTokens) };
+  };
+  const column = (tokens: Token[]): DdlColumn => {
+    const c = new Cursor(tokens), columnName = identifier(c), declaredType = dataType(c);
     if (c.current && !constraintStart(c)) throw new ParseFault('UNSUPPORTED_DATA_TYPE', 'UNSUPPORTED', c.current);
     const constraints: DdlConstraint[] = [];
     while (c.current) constraints.push(constraint(c, columnName));
     const nulls = constraints.filter(c => c.kind === 'NOT_NULL' || c.kind === 'NULL');
     if (nulls.length > 1) throw new ParseFault('DDL_CONFLICTING_NULLABILITY', 'ERROR', tokens[0]);
     if (constraints.filter(c => c.kind === 'DEFAULT').length > 1) throw new ParseFault('DDL_MULTIPLE_DEFAULTS', 'ERROR', tokens[0]);
-    return { name: columnName, dataType: { raw: rawTokens(typeTokens), span: tokenSpan(typeTokens) }, nullability: { explicit: nulls[0]?.kind === 'NOT_NULL' ? 'NOT_NULL' : nulls[0]?.kind === 'NULL' ? 'NULL' : 'UNSPECIFIED', primaryKey: false }, constraints, raw: rawTokens(tokens), span: tokenSpan(tokens) };
+    return { name: columnName, dataType: declaredType, nullability: { explicit: nulls[0]?.kind === 'NOT_NULL' ? 'NOT_NULL' : nulls[0]?.kind === 'NULL' ? 'NULL' : 'UNSPECIFIED', primaryKey: false }, constraints, raw: rawTokens(tokens), span: tokenSpan(tokens) };
   };
   const createTable = (tokens: Token[]): CreateTableDeclaration => {
     const c = new Cursor(tokens); c.require('CREATE');
@@ -316,6 +319,13 @@ export function parseDdlDeclarations(text: string): DdlJournal {
     return { kind: 'CREATE_TABLE', name: tableName, ifNotExists, persistence, columns, constraints, raw: rawTokens(tokens), span: tokenSpan(tokens) };
   };
 
+  return { span, tokenSpan, rawTokens, identifier, name, columnList, group, constraint, column, dataType, createTable };
+}
+
+/** Keeps the existing declaration-only API and output contract unchanged. */
+export function parseDdlDeclarations(text: string): DdlJournal {
+  const result: DdlJournal = { tables: [], unresolved: [], diagnostics: [], effectiveSchema: 'NOT_COMPUTED', tenantOwnership: 'NOT_CLASSIFIED', syntaxValidation: 'BOUNDED_DECLARATIONS_ONLY' };
+  const { span, createTable } = createDdlParser(text);
   const lexical = lexSql(text);
   if (!lexical.complete) {
     result.diagnostics = lexical.diagnostics.map(d => ({ code: d.code, severity: d.severity, span: span(d.startOffset, d.endOffset) }));
@@ -324,7 +334,7 @@ export function parseDdlDeclarations(text: string): DdlJournal {
   }
   for (const part of lexical.parts) {
     if (part.kind !== 'statement') continue;
-    const tokens = tokenize(part.text, part.startOffset);
+    const tokens = tokenizeDdl(part.text, part.startOffset);
     const c = new Cursor(tokens);
     const isCreateTable = c.word('CREATE') && (c.word('TABLE', 1) || (['TEMP', 'TEMPORARY', 'UNLOGGED'].some(word => c.word(word, 1)) && c.word('TABLE', 2)));
     const partSpan = span(part.startOffset, part.endOffset);
