@@ -13789,4 +13789,6 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 .communication-audience{padding-top:20px;border-top:1px solid #dcdde3}
 .communication-list strong{overflow-wrap:anywhere}
 .communication-view :focus-visible{outline:3px solid #0756D9;outline-offset:3px}
+.communication-view :is(a,button,input,textarea,select){scroll-margin-block:8px}
+@media(max-width:767px){.communication-view :is(a,button,input,textarea,select){scroll-margin-block:80px calc(100px + env(safe-area-inset-bottom,0px))}}
 @media(max-width:430px){.communication-view .employee-view-heading{align-items:flex-start;flex-wrap:wrap;gap:12px}.communication-view .employee-view-heading .button{width:100%;justify-content:center}.communication-detail{padding:20px 16px}}
