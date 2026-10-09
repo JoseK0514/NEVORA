@@ -7,6 +7,7 @@ import { Client } from 'pg';
 import { decodeMigrationWireValue,captureTenantMigrationFacts,captureTypedTenantMigrationFacts,observeMigrationCatalog,type MigrationCaptureRequest } from './capture.server';
 import { getOwnershipRegistry,OWNERSHIP_SOURCE,ownershipDigest,canonicalOwnershipJson } from './ownership';
 import { preflightTenantBackfill } from './backfill';
+import { parseLosslessTextArrayWire,isIssuedLosslessTextArrayEnvelope } from './lossless-array';
 
 describe('privileged migration capture wire decoding',()=>{
  it('keeps signed bigint and fixed-scale numeric without Number conversion',()=>{
@@ -417,6 +418,14 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   const column=row.columns.find(c=>c.name==='allowed_location_ids')!;
   expect(column.wire).toBe('[0:0]={loc-1}');
   expect(JSON.stringify(column.value)).toContain('[0:0]={loc-1}');
+  const parsed=parseLosslessTextArrayWire(column.wire);
+  expect(parsed.status).toBe('PARSED');
+  if(parsed.status!=='PARSED')throw new Error('Expected exact captured native array parsing');
+  expect(parsed.envelope.dimensions).toEqual([{lowerBound:0,length:1}]);
+  expect(parsed.envelope.elements).toEqual(['loc-1']);
+  expect(parsed.envelope.wire.text).toBe(column.wire);
+  expect(isIssuedLosslessTextArrayEnvelope(parsed.envelope)).toBe(true);
+  expect(parsed.envelope.verification).toBe('PURE_ARRAY_PARSE_NOT_DATABASE_VERIFICATION');
   expect(await allOriginalRows()).toEqual(before);
  });
  it('blocks a JSON literal null that the existing manifest cannot distinguish from SQL NULL',async()=>{
