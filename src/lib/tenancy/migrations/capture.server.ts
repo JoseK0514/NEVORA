@@ -3,6 +3,8 @@ import { canonicalOwnershipJson, getOwnershipRegistry, ownershipDigest, OWNERSHI
 import type { TableCapture, DatabaseNamespaceComparators, DatabaseCollationCapture, DatabaseComparatorCatalog, DatabaseComparatorRow } from './backfill';
 import { lexSql } from '../inventory/sql-lexer';
 import { decodeTypedMigrationWireValue, type TypedMigrationWireValue } from './typed-wire';
+import type { TypedKeyComparatorCapture } from './typed-key-comparators';
+import {collectTypedKeyComparatorCapture,isKeyComparatorCaptureFailure} from './key-comparator-capture.server';
 
 export type OwnedCaptureIdentity = { database:string; databaseOid:string; marker:string; systemIdentifier:string; dataDirectory:string; role:string; port:number };
 export type CaptureCatalogBaseline = { sourceDigest:string; expansionSha256:string; registryDigest:string; catalogDigest:string };
@@ -18,6 +20,7 @@ export type TypedMigrationCaptureFacts = Omit<MigrationCaptureFacts,'tables'|'ve
  verification:'OWNED_LOCAL_TYPED_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY';
 };
 export type TypedMigrationCaptureOutcome = {status:'CAPTURED';facts:TypedMigrationCaptureFacts}|{status:'BLOCKED';code:string}|CaptureUncertaintyOutcome;
+export type TypedMigrationCaptureWithKeysOutcome = {status:'CAPTURED_WITH_KEYS';facts:TypedMigrationCaptureFacts;keyComparators:TypedKeyComparatorCapture}|{status:'BLOCKED';code:string}|CaptureUncertaintyOutcome;
 
 const expansionSha256='fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb';
 const SHA=/^[a-f0-9]{64}$/, UINT=/^(0|[1-9][0-9]*)$/;
@@ -209,9 +212,16 @@ export async function captureTenantMigrationFacts(client:Client,request:Migratio
 export async function captureTypedTenantMigrationFacts(client:Client,request:MigrationCaptureRequest):Promise<TypedMigrationCaptureOutcome>{
  return captureMigrationFacts(client,request,'TYPED');
 }
+/** Separate SQL key observations from the original owned typed transaction.
+ * Core TYPED_SQL_WIRE_V1 facts remain unchanged. Neither a second snapshot
+ * nor JavaScript wire inequality can supply these comparison classes. */
+export async function captureTypedTenantMigrationFactsWithKeyComparators(client:Client,request:MigrationCaptureRequest):Promise<TypedMigrationCaptureWithKeysOutcome>{
+ return captureMigrationFacts(client,request,'TYPED_WITH_KEYS');
+}
 function captureMigrationFacts(client:Client,value:MigrationCaptureRequest,mode:'LEGACY'):Promise<MigrationCaptureOutcome>;
 function captureMigrationFacts(client:Client,value:MigrationCaptureRequest,mode:'TYPED'):Promise<TypedMigrationCaptureOutcome>;
-async function captureMigrationFacts(client:Client,value:MigrationCaptureRequest,mode:'LEGACY'|'TYPED'):Promise<MigrationCaptureOutcome|TypedMigrationCaptureOutcome>{
+function captureMigrationFacts(client:Client,value:MigrationCaptureRequest,mode:'TYPED_WITH_KEYS'):Promise<TypedMigrationCaptureWithKeysOutcome>;
+async function captureMigrationFacts(client:Client,value:MigrationCaptureRequest,mode:'LEGACY'|'TYPED'|'TYPED_WITH_KEYS'):Promise<MigrationCaptureOutcome|TypedMigrationCaptureOutcome|TypedMigrationCaptureWithKeysOutcome>{
  let began=false,committing=false;
  if(active.has(client))return {status:'BLOCKED',code:'CLIENT_ALREADY_IN_USE'};
  active.add(client);
@@ -260,8 +270,8 @@ async function captureMigrationFacts(client:Client,value:MigrationCaptureRequest
    }
    const columns=table.columns.map(c=>mode==='LEGACY'&&c.type==='text[]'?'to_jsonb('+ident(c.name)+')::text AS '+ident(c.name):ident(c.name)).join(',');
    const result=await raw(client,'SELECT '+columns+' FROM public.'+ident(table.table));
-   if(result.fields.length!==table.columns.length||result.fields.some((f,index)=>f.name!==table.columns[index].name||f.format!=='text'||f.dataTypeID!==(mode==='TYPED'&&table.columns[index].type==='text[]'?1009:wireOids[table.columns[index].type])))fail('INCOMPLETE_ROW_FIELDS');
-   if(mode==='TYPED'){
+   if(result.fields.length!==table.columns.length||result.fields.some((f,index)=>f.name!==table.columns[index].name||f.format!=='text'||f.dataTypeID!==(mode!=='LEGACY'&&table.columns[index].type==='text[]'?1009:wireOids[table.columns[index].type])))fail('INCOMPLETE_ROW_FIELDS');
+   if(mode!=='LEGACY'){
     const rows:TypedMigrationRowCapture[]=result.rows.map(values=>{
      if(values.length!==table.columns.length)fail('INCOMPLETE_ROW_FIELDS');
      const columns:TypedMigrationColumnCapture[]=table.columns.map((column,index)=>{
@@ -311,11 +321,20 @@ async function captureMigrationFacts(client:Client,value:MigrationCaptureRequest
   const namespaceComparators=await namespaces(client,request,tables,observed.digest,snapshotId,observation[9],observation[10]);
   if((await observeMigrationCatalog(client)).digest!==observed.digest)fail('CATALOG_CHANGED_DURING_CAPTURE');
   const common={sourceDigest:request.sourceDigest,registryDigest:registry.digest,currentSchemaDigest:observed.digest,snapshot:{id:snapshotId,isolation:'SERIALIZABLE' as const,includesInactive:true as const,includesHistory:true as const},namespaceComparators,wireRows,fence:{phase:'FENCED' as const,generation:transition[0][0],actor:null,manifest:null},catalog:observed.catalog};
-  if(mode==='TYPED'){
+  if(mode!=='LEGACY'){
    const facts={...common,format:'TYPED_SQL_WIRE_V1' as const,tables:typedTables,verification:'OWNED_LOCAL_TYPED_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY' as const};
    const factsDigest=ownershipDigest(facts);
+   const completeFacts={...facts,factsDigest};
+   if(mode==='TYPED_WITH_KEYS'){
+    let keyComparators:TypedKeyComparatorCapture;
+    try{keyComparators=await collectTypedKeyComparatorCapture(client,completeFacts,request);}
+    catch(error){if(isKeyComparatorCaptureFailure(error))fail(error.code);throw error;}
+    if((await observeMigrationCatalog(client)).digest!==observed.digest)fail('CATALOG_CHANGED_DURING_KEY_CAPTURE');
+    committing=true;await client.query('COMMIT');began=false;
+    return {status:'CAPTURED_WITH_KEYS',facts:completeFacts,keyComparators};
+   }
    committing=true;await client.query('COMMIT');began=false;
-   return {status:'CAPTURED',facts:{...facts,factsDigest}};
+   return {status:'CAPTURED',facts:completeFacts};
   }
   const facts={...common,tables,verification:'OWNED_LOCAL_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY' as const};
   const factsDigest=ownershipDigest(facts);
