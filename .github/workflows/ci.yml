@@ -88,6 +88,10 @@ jobs:
           test -x "$PG_BIN/initdb"
           test -x "$PG_BIN/pg_ctl"
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Owned mirror mutation and inventory regressions
+        run: |
+          NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/mirror-mutated" node --import tsx scripts/release-mirror-custody-qa.mjs mutated
+          NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/mirror-extra" node --import tsx scripts/release-mirror-custody-qa.mjs extra
       - name: Persisted Clocker PostgreSQL tests
         run: npm run test:clocker:owned
 
@@ -114,6 +118,7 @@ jobs:
         run: |
           PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
           npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
       - name: Install Chromium and WebKit
@@ -353,6 +358,7 @@ jobs:
         run: |
           PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
           npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
       - name: Install Chromium and WebKit
