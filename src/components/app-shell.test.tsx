@@ -32,7 +32,7 @@ it.each(["EMPLOYEE", "LEAD"] as const)("keeps %s My Time directly reachable and 
   expect(primary).toMatch(/href="\/app\/my-time" class="mobile-nav-link active" aria-current="page"/);
   expect(more).toContain('popover="auto"');
   expect([...more.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app/requests/hub", "/app/availability", "/app/notifications", "/app/profile",
+    "/app/requests/hub", "/app/availability", "/app/updates", "/app/notifications", "/app/profile",
   ]);
   expect(html).toContain("app-shell employee-shell");
   expect(html).not.toContain("sidebar-mantra");
