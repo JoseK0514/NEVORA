@@ -62,6 +62,64 @@ function denies(value: unknown, reason?: string) {
   expect(decision).not.toHaveProperty('scope');
 }
 
+describe('F6 exact persisted keys and inert observation input', () => {
+  it('preserves ordinary explicitly undefined optional source observations', () => {
+    const value = input('OWNER', 'workspace.edit');
+    value.source.subject = undefined; value.source.team = undefined;
+    value.source.review = undefined; value.source.ownerChange = undefined;
+    value.roleGrant = undefined; value.membershipChange = undefined; value.batchRoles = undefined;
+    allows(value);
+  });
+  it.each([' tenant-a ', 'tenant-' + 'x'.repeat(400)])('preserves exact workspace key %s', key => {
+    const value = input('OWNER');
+    value.workspace.id = key; value.actor.workspaceId = key; value.source.workspaceId = key;
+    value.source.locations.forEach(location => { location.workspaceId = key; });
+    value.source.subject!.workspaceId = key;
+    allows(value);
+    value.source.workspaceId = key.trim() === key ? key + ' ' : key.trim();
+    denies(value, 'TENANT_MISMATCH');
+  });
+  it.each([' actor-a ', 'actor-' + 'x'.repeat(400)])('matches exact own-workforce key %s', key => {
+    const value = input('EMPLOYEE', 'self.schedule.read');
+    value.actor.id = key; value.source.subject!.id = key; value.source.resourceOwnerEmployeeId = key;
+    value.source.team!.authorEmployeeId = key;
+    allows(value);
+    value.source.subject!.id = key.trim() === key ? key + ' ' : key.trim();
+    denies(value, 'SELF_SCOPE_DENIED');
+  });
+  it.each([' loc-a ', 'loc-' + 'x'.repeat(400)])('keeps exact scoped location key %s', key => {
+    const value = input();
+    value.source.locations[0].id = key; value.affectedLocationIds = [key];
+    value.actor.administrativeScope = { kind: 'LOCATIONS', origin: 'EXPLICIT_GRANT', locationIds: [key] };
+    value.source.subject!.locationIds = [key]; value.membershipChange!.nextLocationIds = [key];
+    allows(value);
+    value.affectedLocationIds = [key.trim() === key ? key + ' ' : key.trim()];
+    denies(value, 'LOCATION_SCOPE_DENIED');
+  });
+  it('rejects envelope and nested accessors before invoking either getter', () => {
+    for (const nested of [false, true]) {
+      const value = input(); let reads = 0;
+      Object.defineProperty(nested ? value.actor : value, nested ? 'id' : 'capability',
+        { enumerable: true, get() { reads++; return nested ? 'actor-a' : 'employee.roster.read'; } });
+      denies(value, 'INVALID_INPUT'); expect(reads).toBe(0);
+    }
+  });
+  it('rejects accessor arrays without invoking an index getter', () => {
+    const value = input(); let reads = 0;
+    Object.defineProperty(value.affectedLocationIds, '0',
+      { enumerable: true, get() { reads++; return 'loc-a'; } });
+    denies(value, 'INVALID_INPUT'); expect(reads).toBe(0);
+  });
+  it.each(['sparse', 'hidden', 'symbol', 'prototype'] as const)('rejects unsupported %s observations', kind => {
+    const value = input();
+    if (kind === 'sparse') value.affectedLocationIds = new Array(1);
+    if (kind === 'hidden') Object.defineProperty(value.actor, 'hidden', { value: 'ignored' });
+    if (kind === 'symbol') Object.defineProperty(value, Symbol('hidden'), { value: 'ignored', enumerable: true });
+    if (kind === 'prototype') Object.setPrototypeOf(value.actor, { id: 'inherited' });
+    denies(value, 'INVALID_INPUT');
+  });
+});
+
 describe('F6 approved capability role matrix', () => {
   it('implements a state evaluator rather than accepting arbitrary truthy input', () => {
     expect(implementation?.evaluateCapability).toBeTypeOf('function');

@@ -50,13 +50,45 @@ const CONTACT_CAPABILITIES = new Set<Capability>(['profile.self.read', 'employee
 const capabilities = new Set<string>(CAPABILITIES);
 const fields = new Set<string>(CAPABILITY_FIELDS);
 const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v);
-const text = (v: unknown): v is string => typeof v === 'string' && v.length > 0 && v === v.trim() && !/[\u0000-\u001f\u007f]/.test(v);
+// Persisted text keys retain exact bytes. New locator/number syntax is enforced
+// by its own identity contract; this policy must not trim or re-key old rows.
+const text = (v: unknown): v is string => typeof v === 'string' && v.length > 0 && !/[\u0000-\u001f\u007f]/.test(v);
 const strings = (v: unknown): v is string[] => Array.isArray(v) && v.every(text) && new Set(v).size === v.length;
 const enumValue = (v: unknown, values: readonly string[]) => typeof v === 'string' && values.includes(v);
 const role = (v: unknown): v is UserRole => enumValue(v, ALL);
 const portal = (v: unknown) => enumValue(v, ['DISABLED', 'PROOF_PENDING', 'ENABLED', 'SUSPENDED']);
 const caps = (v: unknown): v is Capability[] => strings(v) && v.every(c => capabilities.has(c));
 const fieldList = (v: unknown): v is CapabilityField[] => strings(v) && v.every(f => fields.has(f));
+/** Accept inert observations before reading properties or iterating arrays.
+ * These finite traversal bounds protect the parser; they do not define owner
+ * performance, record-size or operational limits. No value becomes authority. */
+function plainObservation(value: unknown): boolean {
+  const seen = new Set<object>(); let remaining = 100_000;
+  function visit(v: unknown, depth: number): boolean {
+    if (--remaining < 0 || depth > 40) return false;
+    if (v === null || v === undefined || typeof v === 'string' || typeof v === 'boolean') return true;
+    if (typeof v === 'number') return Number.isFinite(v);
+    if (typeof v !== 'object' || seen.has(v)) return false;
+    const prototype = Object.getPrototypeOf(v), descriptors = Object.getOwnPropertyDescriptors(v);
+    seen.add(v);
+    if (Array.isArray(v)) {
+      if (prototype !== Array.prototype || Reflect.ownKeys(descriptors).length !== v.length + 1) return false;
+      for (let index = 0; index < v.length; index++) {
+        const d = descriptors[String(index)];
+        if (!d || !('value' in d) || !d.enumerable || !visit(d.value, depth + 1)) return false;
+      }
+    } else {
+      if (prototype !== Object.prototype && prototype !== null) return false;
+      for (const key of Reflect.ownKeys(descriptors)) {
+        if (typeof key !== 'string') return false;
+        const d = descriptors[key];
+        if (!('value' in d) || !d.enumerable || !visit(d.value, depth + 1)) return false;
+      }
+    }
+    seen.delete(v); return true;
+  }
+  return visit(value, 0);
+}
 function scope(v: unknown): boolean {
   return v === null || object(v) && (v.kind === 'ALL_TENANT' && enumValue(v.origin, ['LEGACY_COMPATIBILITY', 'EXPLICIT_GRANT']) ||
     v.kind === 'LOCATIONS' && v.origin === 'EXPLICIT_GRANT' && strings(v.locationIds));
@@ -153,7 +185,7 @@ function policyFields(capability: Capability): readonly CapabilityField[] {
  * proof. No route/service/SQL/UI integration until full F10 and F6 consumer QA.
  * Canonical source semantics remain mandatory; this helper cannot override them. */
 export function evaluateCapability(value: unknown): CapabilityDecision {
-  try { return evaluate(value); } catch { return denied('INVALID_INPUT'); }
+  try { return plainObservation(value) ? evaluate(value) : denied('INVALID_INPUT'); } catch { return denied('INVALID_INPUT'); }
 }
 function evaluate(value: unknown): CapabilityDecision {
   if (!valid(value)) return denied('INVALID_INPUT');
