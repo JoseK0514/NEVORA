@@ -27,12 +27,12 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22.23.3
+          node-version: 24.19.0
           cache: npm
       - name: Install locked dependencies
         run: npm ci
       - name: Unit tests
-        run: npm test
+        run: npm test -- --maxWorkers=1
       - name: Notification and foundation configuration regressions
         run: |
           npm run test:notifications:qa
@@ -73,7 +73,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22.23.3
+          node-version: 24.19.0
           cache: npm
       - name: Install locked dependencies
         run: npm ci
@@ -109,7 +109,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22.23.3
+          node-version: 24.19.0
           cache: npm
       - name: Install locked dependencies
         run: npm ci
@@ -255,7 +255,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22.23.3
+          node-version: 24.19.0
           cache: npm
       - name: Install locked dependencies
         run: npm ci
@@ -291,7 +291,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22.23.3
+          node-version: 24.19.0
           cache: npm
       - name: Install locked dependencies
         run: npm ci
@@ -349,7 +349,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22.23.3
+          node-version: 24.19.0
           cache: npm
       - name: Install locked dependencies
         run: npm ci
@@ -408,7 +408,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22.23.3
+          node-version: 24.19.0
       - name: Reject any skipped or failed mandatory E/D regression job
         env:
           PHASE_E_EXPECTED_SHA: ${{ github.sha }}
