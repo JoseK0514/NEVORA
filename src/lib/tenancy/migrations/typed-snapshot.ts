@@ -6,7 +6,7 @@ import type { TypedMigrationCellLineage } from './typed-lineage';
 export type TypedSnapshotBoundary = Readonly<{sourceDigest:string;currentSchemaDigest:string;snapshotId:string;fenceGeneration:string;factsDigest:string}>;
 export type InspectedTypedSnapshotColumn = Readonly<{name:string;type:string;wire:string|null;lineage:TypedMigrationCellLineage}>;
 export type InspectedTypedSnapshotRow = Readonly<{key:readonly JsonValue[];originalChecksum:string;columns:readonly InspectedTypedSnapshotColumn[]}>;
-export type InspectedTypedSnapshot = Readonly<{format:'TYPED_SNAPSHOT_INSPECTION_V1';registryDigest:string;sourceDigest:string;currentSchemaDigest:string;snapshotId:string;fenceGeneration:string;factsDigest:string;tables:readonly Readonly<{table:string;rows:readonly InspectedTypedSnapshotRow[];expectedCount:number;expectedChecksum:string}>[];verification:'PURE_TYPED_SNAPSHOT_INTEGRITY_NOT_OWNERSHIP_NAMESPACE_SEMANTICS_OPERATOR_OR_DATABASE_AUTHORITY'}>;
+export type InspectedTypedSnapshot = Readonly<{format:'TYPED_SNAPSHOT_INSPECTION_V1';registryDigest:string;sourceDigest:string;currentSchemaDigest:string;snapshotId:string;fenceGeneration:string;factsDigest:string;namespaceCaptureChecksum:string;tables:readonly Readonly<{table:string;rows:readonly InspectedTypedSnapshotRow[];expectedCount:number;expectedChecksum:string}>[];verification:'PURE_TYPED_SNAPSHOT_INTEGRITY_NOT_OWNERSHIP_NAMESPACE_SEMANTICS_OPERATOR_OR_DATABASE_AUTHORITY'}>;
 export type TypedSnapshotInspectionOutcome=Readonly<{status:'INSPECTED';snapshot:InspectedTypedSnapshot}>|Readonly<{status:'BLOCKED';code:string}>;
 
 const issued=new WeakSet<object>();
@@ -99,7 +99,7 @@ export function inspectTypedMigrationSnapshot(input:unknown,expected:unknown):Ty
   if(typeof namespace.captureChecksum!=='string'||!SHA.test(namespace.captureChecksum)||namespace.captureChecksum!==ownershipDigest({binding:namespace.binding,catalogs:namespace.catalogs,rows:namespace.rows}))fail('TYPED_SNAPSHOT_NAMESPACE_CHECKSUM_DRIFT');
   const {factsDigest,...factsValue}=facts;
   if(typeof factsDigest!=='string'||!SHA.test(factsDigest)||factsDigest!==ownershipDigest(factsValue))fail('TYPED_SNAPSHOT_FACTS_CHECKSUM_DRIFT');
-  const snapshot:InspectedTypedSnapshot=freeze({format:'TYPED_SNAPSHOT_INSPECTION_V1',registryDigest:registry.digest,sourceDigest:facts.sourceDigest,currentSchemaDigest:facts.currentSchemaDigest,snapshotId:facts.snapshot.id,fenceGeneration:facts.fence.generation,factsDigest,tables,verification:'PURE_TYPED_SNAPSHOT_INTEGRITY_NOT_OWNERSHIP_NAMESPACE_SEMANTICS_OPERATOR_OR_DATABASE_AUTHORITY'});
+  const snapshot:InspectedTypedSnapshot=freeze({format:'TYPED_SNAPSHOT_INSPECTION_V1',registryDigest:registry.digest,sourceDigest:facts.sourceDigest,currentSchemaDigest:facts.currentSchemaDigest,snapshotId:facts.snapshot.id,fenceGeneration:facts.fence.generation,factsDigest,namespaceCaptureChecksum:namespace.captureChecksum,tables,verification:'PURE_TYPED_SNAPSHOT_INTEGRITY_NOT_OWNERSHIP_NAMESPACE_SEMANTICS_OPERATOR_OR_DATABASE_AUTHORITY'});
   issued.add(snapshot);return Object.freeze({status:'INSPECTED',snapshot});
  }catch(error){return blocked(error instanceof InspectionFailure?error.code:'INVALID_TYPED_SNAPSHOT_STRUCTURE');}
 }

@@ -9,7 +9,9 @@ import { getOwnershipRegistry,OWNERSHIP_SOURCE,ownershipDigest,canonicalOwnershi
 import { preflightTenantBackfill } from './backfill';
 import { parseLosslessTextArrayWire,isIssuedLosslessTextArrayEnvelope } from './lossless-array';
 import { traverseTypedMigrationWireValue,isIssuedTypedMigrationCellLineage } from './typed-lineage';
-import {inspectTypedMigrationSnapshot,isIssuedInspectedTypedSnapshot} from './typed-snapshot';
+import {inspectTypedMigrationSnapshot,isIssuedInspectedTypedSnapshot,type InspectedTypedSnapshot} from './typed-snapshot';
+import {validateTypedDatabaseNamespaceComparators,isIssuedTypedDatabaseNamespaceObservations} from './namespace-comparators';
+import {getTypedReferenceColumnContract,validateTypedMigrationCellReferences,isIssuedTypedMigrationCellReferences,type TypedReferenceClassificationInput} from './typed-reference';
 
 describe('privileged migration capture wire decoding',()=>{
  it('keeps signed bigint and fixed-scale numeric without Number conversion',()=>{
@@ -57,7 +59,43 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   expect(result.status,JSON.stringify(result)).toBe('INSPECTED');if(result.status!=='INSPECTED')throw Error('Expected complete owned typed snapshot integrity');
   expect(result.snapshot.tables.map(t=>[t.table,t.expectedCount,t.expectedChecksum])).toEqual(facts.tables.map(t=>[t.table,t.expectedCount,t.expectedChecksum]));
   expect(isIssuedInspectedTypedSnapshot(result.snapshot)).toBe(true);expect(result.snapshot.verification).toContain('NOT_OWNERSHIP_NAMESPACE_SEMANTICS_OPERATOR_OR_DATABASE_AUTHORITY');
-  expect(Object.isFrozen(result.snapshot)).toBe(true);return result.snapshot;
+  expect(Object.isFrozen(result.snapshot)).toBe(true);
+  const namespace=validateTypedDatabaseNamespaceComparators(result.snapshot,facts.namespaceComparators,sourceRequest.migrations);
+  expect(namespace.status,JSON.stringify(namespace)).toBe('VALIDATED');if(namespace.status!=='VALIDATED')throw Error('Expected actual captured namespace contract checks');
+  expect(namespace.observations.captureChecksum).toBe(facts.namespaceComparators.captureChecksum);expect(namespace.observations.factsDigest).toBe(facts.factsDigest);expect(namespace.observations.fenceGeneration).toBe(facts.fence.generation);
+  expect(namespace.observations.rows).toHaveLength(facts.namespaceComparators.rows.length);expect(isIssuedTypedDatabaseNamespaceObservations(namespace.observations)).toBe(true);
+  expect(namespace.observations.verification).toContain('NOT_DATABASE_OPERATOR_OR_TENANT_VERIFICATION');
+  reviewedOwnFixtureCells(result.snapshot);return result.snapshot;
+ }
+ // These explicit classifications apply only to the fictional cells seeded in
+ // this test: named numeric profile properties and literal frozen location IDs.
+ // They neither supply target existence/history/tenant nor authorize a reviewer.
+ function reviewedOwnFixtureCells(snapshot:InspectedTypedSnapshot){
+  for(const table of snapshot.tables){
+   const field=table.table==='employee_scheduling_settings'?'operational_rule_profile':table.table==='calendar_subscriptions'?'allowed_location_ids':null;
+   if(!field)continue;
+   for(const row of table.rows){
+    const lineage=row.columns.find(c=>c.name===field)!.lineage;
+    const outcome=getTypedReferenceColumnContract(table.table,field);if(outcome.status!=='CONTRACT')throw Error('Expected fixture source contract');
+    const contract=outcome.contract,classifications:TypedReferenceClassificationInput[]=[];
+    for(const node of lineage.nodes){
+     if(node.value.kind==='JSON_OBJECT'&&node.value.memberCount||node.value.kind==='JSON_ARRAY'&&node.value.length||node.value.kind==='SQL_ARRAY'&&node.value.elementCount)continue;
+     if(['SQL_NULL','JSON_NULL','SQL_ARRAY_NULL'].includes(node.value.kind)){classifications.push({address:node.address,kind:'ABSENCE'});continue;}
+     if(field==='allowed_location_ids'&&node.value.kind==='SQL_ARRAY_TEXT'){
+      classifications.push({address:node.address,kind:'REFERENCE',target:'locations',targetColumns:['id'],key:[{kind:'TEXT',text:node.value.text}],historical:false});continue;
+     }
+     if(field==='allowed_location_ids'&&node.value.kind==='SQL_ARRAY'&&node.value.elementCount===0){classifications.push({address:node.address,kind:'DATA'});continue;}
+     expect(field).toBe('operational_rule_profile');expect(node.value.kind).toBe('JSON_NUMBER');expect(node.address).toHaveLength(1);const segment=node.address[0];expect(segment.kind).toBe('JSON_MEMBER');
+     if(segment.kind!=='JSON_MEMBER'||!['number','fraction','scale'].includes(segment.name))throw Error('Unreviewed fixture property; no default DATA classification');
+     classifications.push({address:node.address,kind:'DATA'});
+    }
+    const review={binding:{schemaCommit:contract.source.schemaCommit,schemaTree:contract.source.schemaTree,schemaDigest:contract.source.schemaDigest,registryDigest:contract.source.registryDigest,table:table.table,column:field,contractChecksum:contract.checksum,sourceChecksum:lineage.source.checksum},reviewEvidenceDigest:'c'.repeat(64),classifications,unresolvedAddresses:[]};
+    const classified=validateTypedMigrationCellReferences(lineage,review);
+    expect(classified.status,JSON.stringify(classified)).toBe('VALIDATED');if(classified.status!=='VALIDATED')throw Error('Expected fictional explicit cell reference observations');
+    expect(isIssuedTypedMigrationCellReferences(classified.classification)).toBe(true);expect(classified.classification.verification).toContain('NOT_DATABASE_REVIEWER_OR_TENANT_VERIFICATION');
+    for(const reference of classified.classification.references)expect(reference.retainedHistoryVerification).toBe('NOT_PERFORMED');
+   }
+  }
  }
  let initialRows:unknown;
  const connect=(database:string)=>new Client({host:'127.0.0.1',port:lease.port,user:lease.user,password:readFileSync(lease.credentialFile,'utf8'),database,connectionTimeoutMillis:3000,statement_timeout:15000});
