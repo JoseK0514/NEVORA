@@ -50,3 +50,15 @@ it('lost commit response is recovered without issuing or revealing a second raw 
  await seed();const cmd=command();const executor={...db.executor,transaction:async(statements:Parameters<typeof db.executor.transaction>[0])=>{const result=await db.executor.transaction(statements);if(statements.some(s=>s.text.startsWith('INSERT INTO calendar_operations')))throw Error('Fictional response lost after commit');return result;}};
  expect((await manage(proof,cmd,executor)).status).toBe('outcome_unknown');const recovered=await manage(proof,cmd,db.executor);expect(recovered.status).toBe('active_url_unavailable');expect(recovered).not.toHaveProperty('url');expect(await q('SELECT count(*)::integer n FROM calendar_subscriptions')).toEqual([{n:1}]);
 });
+
+it.each([
+ ['ISSUE array',['ISSUE']],['ROTATE array',['ROTATE']],['REVOKE array',['REVOKE']],['object with shadowed toString',{toString:null}],
+])('rejects malformed %s without rotating or revoking an active calendar link',async(_name,kind)=>{
+ const {created,token}=await issue();
+ const subscriptions=await q('SELECT * FROM calendar_subscriptions ORDER BY id'),operations=await q('SELECT * FROM calendar_operations ORDER BY operation_id');
+ const malformed=JSON.parse(JSON.stringify({...command('ISSUE',created.generation),kind})) as Parameters<typeof manage>[1];
+ expect((await manage(proof,malformed,db.executor)).status).toBe('blocked');
+ expect(await q('SELECT * FROM calendar_subscriptions ORDER BY id')).toEqual(subscriptions);
+ expect(await q('SELECT * FROM calendar_operations ORDER BY operation_id')).toEqual(operations);
+ expect((await readCalendarFeed(token,db.executor)).state).toBe('ready');
+});

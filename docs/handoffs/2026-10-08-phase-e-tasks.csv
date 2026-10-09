@@ -1,0 +1,20 @@
+task,deliverable,developer_status,external_status
+1,Owned CI/verifier foundation,HISTORICALLY_ACCEPTED_RECEIPT_PRESERVED,No new independent disposition under E-OPS-005
+2,Employee navigation baseline,HISTORICALLY_ACCEPTED_RECEIPT_PRESERVED,No new independent disposition under E-OPS-005
+3,Published own-assignment projection,HISTORICALLY_ACCEPTED_RECEIPT_PRESERVED,No new independent disposition under E-OPS-005
+4,Weekly review/informational receipts,HISTORICALLY_ACCEPTED_RECEIPT_PRESERVED,No new independent disposition under E-OPS-005
+5,Honest Home aggregate,HISTORICALLY_ACCEPTED_RECEIPT_PRESERVED,No new independent disposition under E-OPS-005
+6,Immutable communication domain,DEVELOPER_QA_VERIFIED_RETAINED_FINDINGS,No new independent disposition under E-OPS-005
+7,Contextual preview/publish/revise/withdraw/reads,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+8,Exact-version acknowledgement/optional read,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+9,Existing notification integration,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+10,Updates author/review UI,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+11,Canonical communications in Home,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+12,Digest-only calendar subscription lifecycle,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+13,Canonical calendar serializer/event/removal source,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+14,Calendar route/settings/private lifetime,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+15,Actual named-calendar acceptance preparation,DEVELOPER_PREPARATION_COMPLETE,Actual HTTPS/accounts/Apple/Google/Outlook execution held; NOT VERIFIED
+16,Employee journey preservation,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+17,Integrated responsive/accessibility polish,DEVELOPMENT_AND_CODEX_INTERNAL_QA_COMPLETE,No new independent disposition under E-OPS-005
+18,Final developer regressions,FINAL_LOCAL_REGRESSIONS_VERIFIED_EXTERNAL_OPERATIONS_HELD,No new independent disposition under E-OPS-005
+19,Developer audit package and deferred disposition,DEVELOPER_AUDIT_PACKAGE_COMPLETE,DEFERRED_TO_ENTIRE_PROJECT_FINAL_3_OF_3

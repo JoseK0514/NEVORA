@@ -293,7 +293,7 @@ it.each(['missing', 'duplicate'])('refuses a %s original Next type import when d
 });
 
 const require = createRequire(resolve('package.json'));
-type Job = { if?: string; needs?: string[]; steps: { run?: string; with?: Record<string, string> }[] };
+type Job = { if?: string; needs?: string[]; steps: { run?: string; uses?: string; with?: Record<string, string> }[] };
 const workflow = require('js-yaml').load(readFileSync('.github/workflows/ci.yml', 'utf8')) as { on: Record<string, { branches: string[] }>; jobs: Record<string, Job> };
 function eventMatches(event: string, branch: string) {
   return workflow.on[event].branches.some(pattern => require('minimatch')(branch, pattern));
@@ -310,7 +310,7 @@ function jobMatches(job: string, ref: string, head = '', base = '') {
     throw new Error('Unsupported predicate in event test: ' + part);
   });
 }
-it.each(['development', 'main', 'phase-c/punch', 'phase-d/timecards', 'codex/phase-d-audit', 'fix/authority', 'release/candidate', 'phase-e/employee', 'codex/phase-e-employee-experience-20261008'])('workflow accepts existing and Phase E push ref %s', branch => {
+it.each(['development', 'main', 'phase-c/punch', 'phase-d/timecards', 'codex/phase-d-audit', 'fix/authority', 'release/candidate', 'phase-e/employee', 'codex/phase-e-employee-experience-20261008', 'phase-f/tenancy', 'codex/phase-f-inventory', 'codex/par-001-remediation-20261008'])('workflow accepts existing and Phase E push ref %s', branch => {
   expect(eventMatches('push', branch)).toBe(true);
 });
 it('workflow ignores unrelated pushes and schedules every E/D/regression job for E push and E PR', () => {
@@ -318,32 +318,37 @@ it('workflow ignores unrelated pushes and schedules every E/D/regression job for
   for (const [ref, head, base] of [['refs/heads/codex/phase-e-employee-experience-20261008', '', ''], ['refs/heads/phase-e/employee', '', ''], ['refs/pull/12/merge', 'codex/phase-e-employee-experience-20261008', 'development']]) {
     for (const job of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']) expect(jobMatches(job, ref, head, base), job).toBe(true);
   }
-  expect(jobMatches('phase-e-ui', 'refs/heads/fix/unrelated')).toBe(false);
+  expect(jobMatches('phase-e-ui', 'refs/heads/fix/unrelated')).toBe(true);
 });
 it.each([
-  ['refs/heads/development', '', '', true, true, false],
-  ['refs/heads/main', '', '', true, true, false],
-  ['refs/heads/phase-c/punch', '', '', false, true, false],
-  ['refs/heads/phase-d/timecards', '', '', true, false, false],
-  ['refs/heads/codex/phase-d-audit', '', '', true, true, false],
-  ['refs/heads/fix/authority', '', '', false, false, false],
-  ['refs/heads/release/candidate', '', '', false, true, false],
-  ['refs/pull/12/merge', 'feature/unrelated', 'development', false, true, false],
-  ['refs/pull/12/merge', 'codex/phase-e-example', 'development', true, true, true],
-])('preserves regression job routing for %s head=%s base=%s', (ref, head, base, d, release, e) => {
-  expect(jobMatches('phase-d-attendance-ui', ref as string, head as string, base as string)).toBe(d);
-  expect(jobMatches('release-postgres', ref as string, head as string, base as string)).toBe(release);
-  expect(jobMatches('phase-e-ui', ref as string, head as string, base as string)).toBe(e);
-});
-it('E jobs checkout the exact PR head and acceptance depends on every required E/D job', () => {
-  for (const name of ['phase-e-postgres', 'phase-e-ui']) {
-    expect(workflow.jobs[name].steps[0].with?.ref).toBe('${{ github.event.pull_request.head.sha || github.sha }}');
+  ['refs/heads/development', '', ''],
+  ['refs/heads/main', '', ''],
+  ['refs/heads/phase-c/punch', '', ''],
+  ['refs/heads/phase-d/timecards', '', ''],
+  ['refs/heads/codex/phase-d-audit', '', ''],
+  ['refs/heads/fix/authority', '', ''],
+  ['refs/heads/release/candidate', '', ''],
+  ['refs/pull/12/merge', 'feature/unrelated', 'development'],
+  ['refs/pull/12/merge', 'codex/phase-e-example', 'development'],
+  ['refs/pull/13/merge', 'codex/phase-f-inventory', 'main'],
+])('requires every SQL/browser regression for triggered %s head=%s base=%s', (ref, head, base) => {
+  for (const name of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']) {
+    expect(workflow.jobs[name].if, name+' must not skip branches').toBeUndefined();
+    expect(jobMatches(name, ref, head, base), name).toBe(true);
   }
+});
+it('all jobs checkout github.sha and acceptance depends on every required E/D job', () => {
+  for (const name of Object.keys(workflow.jobs)) {
+    const checkout = workflow.jobs[name].steps.find(step => step.uses?.startsWith('actions/checkout@'));
+    expect(checkout?.with?.ref, name).toBe('${{ github.sha }}');
+    expect(checkout?.with?.['persist-credentials'], name).toBe(false);
+  }
+  expect(workflow.jobs['phase-e-evidence'].if).toBe('${{ always() }}');
   expect(workflow.jobs['phase-e-evidence'].needs).toEqual(['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']);
 });
-it('the source safeguard disables only the current exact E branch', () => {
+it('source safeguards disable the frozen E branch and unpublished release candidate', () => {
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
-  expect(config.git.deploymentEnabled).toEqual({ 'codex/phase-e-employee-experience-20261008': false });
+  expect(config.git.deploymentEnabled).toEqual({ 'codex/phase-e-employee-experience-20261008': false, 'codex/par-001-remediation-20261008': false });
   for (const branch of ['development', 'main', 'codex/phase-d-audit', 'codex/phase-e-other']) {
     expect(config.git.deploymentEnabled[branch] ?? true).toBe(true);
   }

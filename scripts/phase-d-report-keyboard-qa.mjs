@@ -13,7 +13,7 @@ await mkdir(evidence,{recursive:true});
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
 const sourceClean=execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()==='';
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert(sourceClean);}
-const report={checkpoint,tree,sourceClean,checks:[],errors:[],geometry:[],keyPaths:[],accessibility:[],networkCancellations:[]};
+const report={checkpoint,tree,sourceClean,checks:[],errors:[],geometry:[],keyPaths:[],accessibility:[],networkCancellations:[],navigation:[]};
 let app,browser;
 async function check(name,fn){try{await fn();report.checks.push(name);console.log('PASS '+name);}catch(error){report.errors.push({name,error:String(error.stack??error)});console.log('FAIL '+name);}await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));}
 async function until(fn){const deadline=Date.now()+2000;while(!await fn()){if(Date.now()>deadline)throw Error('Native keyboard scrolling did not reach the expected column');await new Promise(r=>setTimeout(r,20));}}
@@ -27,7 +27,13 @@ try{
   browser=await pw[engine].launch({headless:true});const context=await browser.newContext({viewport:{width:390,height:1000},serviceWorkers:'block'});
   await context.route('**/*',r=>new URL(r.request().url()).origin!==app.url?r.abort():r.continue());const page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',e=>{if(e.message.endsWith('due to access control checks.')&&e.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push({engine,error:String(e)});else report.errors.push({name:engine+' runtime',error:String(e)});});
   await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);
-  await page.goto(app.url+'/app/reports?start=2026-09-21&end=2026-09-27');await page.getByRole('heading',{name:'Period summary',exact:true}).waitFor();
+  // The report responds before WebKit's load event settles in this owned dev
+  // runtime. DOM readiness plus the real report heading is the test precondition.
+  const navigationStarted=Date.now();
+  const response=await page.goto(app.url+'/app/reports?start=2026-09-21&end=2026-09-27',{waitUntil:'domcontentloaded'});
+  assert(response?.ok(),'Report navigation must return a successful response');
+  await page.getByRole('heading',{name:'Period summary',exact:true}).waitFor();
+  report.navigation.push({engine,waitUntil:'domcontentloaded',status:response.status(),elapsedMs:Date.now()-navigationStarted});
   for(const width of [320,375,390,430,768,1024,1440]){
    await page.setViewportSize({width,height:1000});
    await page.getByRole('button',{name:'Refresh',exact:true}).click();await page.getByRole('heading',{name:'Period summary',exact:true}).waitFor();

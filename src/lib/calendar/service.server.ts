@@ -21,7 +21,7 @@ function ownProof(proof:SessionMutationProof){assertManagementProof(proof,proof?
 export function validCalendarCommand(value:unknown):value is CalendarCommand {
  if(!value||typeof value!=='object')return false;
  const v=value as Record<string,unknown>;
- return Object.keys(v).sort().join(',')==='authority,expectedGeneration,kind,operationId'&&['ISSUE','ROTATE','REVOKE'].includes(String(v.kind))&&typeof v.operationId==='string'&&uuid.test(v.operationId)&&typeof v.authority==='string'&&/^[a-f0-9]{64}$/.test(v.authority)&&(v.expectedGeneration===null||typeof v.expectedGeneration==='string'&&uuid.test(v.expectedGeneration));
+ return Object.keys(v).sort().join(',')==='authority,expectedGeneration,kind,operationId'&&typeof v.kind==='string'&&['ISSUE','ROTATE','REVOKE'].includes(v.kind)&&typeof v.operationId==='string'&&uuid.test(v.operationId)&&typeof v.authority==='string'&&/^[a-f0-9]{64}$/.test(v.authority)&&(v.expectedGeneration===null||typeof v.expectedGeneration==='string'&&uuid.test(v.expectedGeneration));
 }
 const latestSql=(employee:string,workspace:string):SqlStatement=>({text:`SELECT ${subscriptionColumns} FROM calendar_subscriptions WHERE employee_id=$1 AND workspace_id=$2 ORDER BY issued_at DESC,id DESC LIMIT 1`,values:[employee,workspace]});
 export async function getEmployeeCalendarSubscription(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CalendarSubscriptionStatus>{

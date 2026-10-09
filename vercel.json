@@ -2,7 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
-      "codex/phase-e-employee-experience-20261008": false
+      "codex/phase-e-employee-experience-20261008": false,
+      "codex/par-001-remediation-20261008": false
     }
   }
 }

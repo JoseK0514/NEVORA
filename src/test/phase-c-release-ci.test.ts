@@ -8,15 +8,12 @@ it('defines an exact release PostgreSQL gate for non-Clocker integration suites'
   const workflow = await readFile('.github/workflows/ci.yml', 'utf8');
   expect(workflow).toContain('release-postgres:');
   expect(workflow).toContain('npm run test:release:postgres');
-  expect(workflow).toContain("startsWith(github.ref, 'refs/heads/phase-c/')");
-  expect(workflow).toContain("startsWith(github.head_ref, 'phase-c/')");
-  expect(workflow).toContain("startsWith(github.base_ref, 'phase-c/')");
-  expect(workflow).toContain("startsWith(github.base_ref, 'release/')");
+  // Unconditional routing covers every accepted candidate rather than naming
+  // branch prefixes that can silently omit the next feature or fix branch.
+  const gate = workflow.split('  release-postgres:')[1].split('  phase-e-postgres:')[0];
+  expect(gate).not.toMatch(/^    if:/m);
+  expect(gate).toContain('ref: ${{ github.sha }}');
   expect(workflow).toContain('branches: [development, main, "phase-c/**", "release/**"]');
-  expect(workflow).toContain("github.ref == 'refs/heads/main'");
-  expect(workflow).toContain("github.ref == 'refs/heads/development'");
-  expect(workflow).toContain("github.base_ref == 'main'");
-  expect(workflow).toContain("github.base_ref == 'development'");
 });
 
 it('release PostgreSQL runner includes every omitted critical SQL suite', async () => {

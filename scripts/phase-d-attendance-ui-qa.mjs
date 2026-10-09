@@ -35,7 +35,7 @@ const checkpoint = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8'
 const tree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim();
 const trackedStatus = execFileSync(
   'git',
-  ['status', '--porcelain=v1', '--untracked-files=no'],
+  ['status', '--porcelain=v1'],
   { encoding: 'utf8' },
 ).trim();
 const sourceClean = trackedStatus.length === 0;
@@ -45,7 +45,7 @@ if (expectedSha) {
   assert.equal(checkpoint, expectedSha, 'D1.3 browser evidence must run on the requested exact SHA');
 }
 if (!allowDirty) {
-  assert.equal(sourceClean, true, 'D1.3 browser evidence requires a clean tracked worktree');
+  assert.equal(sourceClean, true, 'D1.3 browser evidence requires a clean worktree including untracked files');
 }
 const report = {
   generatedAt: new Date().toISOString(),

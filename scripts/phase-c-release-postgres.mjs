@@ -79,7 +79,7 @@ try {
   }
 
 } finally {
-  if (started) {
+  if (started || existsSync(join(data, 'postmaster.pid'))) {
     runPg('pg_ctl', ['-D', data, '-w', 'stop', '-m', 'fast']);
     console.log('[Release PostgreSQL] Owned cluster stopped.');
   }
