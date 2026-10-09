@@ -4,7 +4,7 @@ import { readFileSync,writeFileSync,realpathSync } from 'node:fs';
 import { join,resolve } from 'node:path';
 import { randomBytes } from 'node:crypto';
 import { Client } from 'pg';
-import { decodeMigrationWireValue,captureTenantMigrationFacts,observeMigrationCatalog,type MigrationCaptureRequest } from './capture.server';
+import { decodeMigrationWireValue,captureTenantMigrationFacts,captureTypedTenantMigrationFacts,observeMigrationCatalog,type MigrationCaptureRequest } from './capture.server';
 import { getOwnershipRegistry,OWNERSHIP_SOURCE,ownershipDigest,canonicalOwnershipJson } from './ownership';
 import { preflightTenantBackfill } from './backfill';
 
@@ -224,6 +224,113 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   expect((await client.query('SELECT phase,fence_generation::text generation FROM nevora_tenancy.expansion_protocol')).rows[0]).toEqual({phase:'EXPANDED_LEGACY',generation:'0'});
   await client.query("UPDATE employee_scheduling_settings SET operational_rule_profile=NULL WHERE employee_id='capture-owner'");
  });
+ it('captures every source column in a distinct typed wire format without claiming legacy backfill compatibility',async()=>{
+  await resetFence();
+  const before=await allOriginalRows();
+  const result=await captureTypedTenantMigrationFacts(client,request);
+  expect(result.status,JSON.stringify(result)).toBe('CAPTURED');
+  if(result.status!=='CAPTURED')throw new Error('Expected typed capture');
+  expect(result.facts.format).toBe('TYPED_SQL_WIRE_V1');
+  expect(result.facts.verification).toBe('OWNED_LOCAL_TYPED_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY');
+  expect(result.facts.tables.map(t=>t.table)).toEqual(registry.tables.map(t=>t.table));
+  for(const rule of registry.tables){
+   const table=result.facts.tables.find(t=>t.table===rule.table)!;
+   expect(table.expectedCount).toBe((await client.query('SELECT count(*)::int n FROM public.'+quote(rule.table))).rows[0].n);
+   for(const row of table.rows){
+    expect(row.columns.map(c=>[c.name,c.type])).toEqual(rule.columns.map(c=>[c.name,c.type]));
+    expect(row.originalChecksum).toBe(ownershipDigest({format:'TYPED_SQL_WIRE_V1',columns:row.columns}));
+   }
+  }
+  expect(await allOriginalRows()).toEqual(before);
+  expect(result.facts.fence).toMatchObject({phase:'FENCED',actor:null,manifest:null});
+ });
+ it('preserves arbitrary-precision JSON numeric wire during typed capture while the legacy capture still refuses it',async()=>{
+  await resetFence();
+  await client.query("UPDATE employee_scheduling_settings SET operational_rule_profile='{\"number\":9007199254740993,\"fraction\":0.123456789012345678901,\"scale\":1.00}'::jsonb WHERE employee_id='capture-owner'");
+  try{
+   expect(await capture()).toEqual({status:'BLOCKED',code:'LOSSLESS_JSON_NUMBER_UNSUPPORTED'});
+   const before=await allOriginalRows();
+   const actual=(await client.query("SELECT operational_rule_profile::text raw FROM employee_scheduling_settings WHERE employee_id='capture-owner'")).rows[0].raw;
+   const result=await captureTypedTenantMigrationFacts(client,request);
+   expect(result.status,JSON.stringify(result)).toBe('CAPTURED');
+   if(result.status!=='CAPTURED')throw new Error('Expected typed JSON capture');
+   const row=result.facts.tables.find(t=>t.table==='employee_scheduling_settings')!.rows.find(r=>r.key[0]==='capture-owner')!;
+   const column=row.columns.find(c=>c.name==='operational_rule_profile')!;
+   expect(column.wire).toBe(actual);
+   expect(JSON.stringify(column.value)).toContain('9007199254740993');
+   expect(JSON.stringify(column.value)).toContain('0.123456789012345678901');
+   expect(JSON.stringify(column.value)).toContain('1.00');
+   expect(await allOriginalRows()).toEqual(before);
+  }finally{
+   await resetFence();await client.query("UPDATE employee_scheduling_settings SET operational_rule_profile=NULL WHERE employee_id='capture-owner'");
+  }
+ });
+ it('does not claim rollback when typed-capture COMMIT actually completed but its acknowledgement is lost',async()=>{
+  await resetFence();
+  const before=await allOriginalRows(),original=client.query.bind(client);
+  let rollbackCalls=0;
+  const spy=vi.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
+   if(args[0]==='ROLLBACK')rollbackCalls++;
+   const result=await Reflect.apply(original,client,args);
+   if(args[0]==='COMMIT')throw new Error('fictional lost COMMIT acknowledgement PRIVATE_CAPTURE_PAYLOAD');
+   return result;
+  }) as Client['query']);
+  try{
+   expect(await captureTypedTenantMigrationFacts(client,request)).toEqual({status:'UNCERTAIN',code:'CAPTURE_COMMIT_OUTCOME_UNKNOWN',reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_REQUEST_REQUIRED'});
+   expect(rollbackCalls).toBe(0);
+   expect(client.getTransactionStatus()).toBe('I');
+   expect((await other.query('SELECT phase,fence_generation::text generation FROM nevora_tenancy.expansion_protocol')).rows[0]).toEqual({phase:'FENCED',generation:'1'});
+   expect(await allOriginalRows()).toEqual(before);
+  }finally{spy.mockRestore();await resetFence();}
+ });
+ it('rolls back only its own attempted BEGIN when the server entered the transaction but its acknowledgement is lost',async()=>{
+  await resetFence();
+  const original=client.query.bind(client);let rollbackCalls=0;
+  const spy=vi.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
+   if(args[0]==='ROLLBACK')rollbackCalls++;
+   const result=await Reflect.apply(original,client,args);
+   if(args[0]==='BEGIN ISOLATION LEVEL SERIALIZABLE')throw new Error('fictional lost BEGIN acknowledgement PRIVATE_CAPTURE_PAYLOAD');
+   return result;
+  }) as Client['query']);
+  try{
+   expect(await captureTypedTenantMigrationFacts(client,request)).toEqual({status:'BLOCKED',code:'CAPTURE_FAILED'});
+   expect(rollbackCalls).toBe(1);
+   expect(client.getTransactionStatus()).toBe('I');
+   expect((await other.query('SELECT phase,fence_generation::text generation FROM nevora_tenancy.expansion_protocol')).rows[0]).toEqual({phase:'EXPANDED_LEGACY',generation:'0'});
+  }finally{spy.mockRestore();await client.query('ROLLBACK');}
+ });
+ it('reports unconfirmed rollback as uncertain without exposing raw failures or claiming the fence was restored',async()=>{
+  await resetFence();const original=client.query.bind(client);
+  const spy=vi.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
+   const result=await Reflect.apply(original,client,args);
+   const text=typeof args[0]==='string'?args[0]:(args[0] as {text?:string}).text;
+   if(text==='SELECT pg_current_snapshot()::text'||text==='ROLLBACK')throw new Error('fictional lost rollback acknowledgement PRIVATE_CAPTURE_PAYLOAD');
+   return result;
+  }) as Client['query']);
+  try{
+   expect(await captureTypedTenantMigrationFacts(client,request)).toEqual({status:'UNCERTAIN',code:'CAPTURE_ROLLBACK_UNCONFIRMED',reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_REQUEST_REQUIRED'});
+   expect(client.getTransactionStatus()).toBe('I');
+   expect((await other.query('SELECT phase,fence_generation::text generation FROM nevora_tenancy.expansion_protocol')).rows[0]).toEqual({phase:'EXPANDED_LEGACY',generation:'0'});
+  }finally{spy.mockRestore();await client.query('ROLLBACK');}
+ });
+ it('detaches the exact typed-capture request before an awaited identity observation',async()=>{
+  await resetFence();
+  const supplied=JSON.parse(canonicalOwnershipJson(request)) as MigrationCaptureRequest,original=client.query.bind(client);
+  let altered=false;
+  const spy=vi.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
+   const result=await Reflect.apply(original,client,args);
+   const text=typeof args[0]==='string'?args[0]:(args[0] as {text?:string}).text;
+   if(!altered&&text?.startsWith('SELECT current_database()')){
+    altered=true;supplied.sourceDigest='b'.repeat(64);supplied.catalogBaseline.sourceDigest=supplied.sourceDigest;supplied.expectedFenceGeneration='999';
+   }
+   return result;
+  }) as Client['query']);
+  try{
+   const result=await captureTypedTenantMigrationFacts(client,supplied);
+   expect(altered).toBe(true);expect(result.status,JSON.stringify(result)).toBe('CAPTURED');
+   if(result.status==='CAPTURED'){expect(result.facts.sourceDigest).toBe(request.sourceDigest);expect(result.facts.fence.generation).toBe('1');}
+  }finally{spy.mockRestore();await resetFence();}
+ });
  it('waits for an already-open legacy writer BEFORE protocol locking and sees its committed row',async()=>{
   await resetFence();await other.query('BEGIN');await other.query("UPDATE employees SET phone='writer-before-capture' WHERE id='capture-owner'");
   const backend=(await client.query('SELECT pg_backend_pid() pid')).rows[0].pid;
@@ -300,6 +407,18 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   expect((await client.query('SELECT phase FROM nevora_tenancy.expansion_protocol')).rows[0].phase).toBe('EXPANDED_LEGACY');
  });
 
+ it('preserves actual native SQL array bounds without claiming a parsed or legacy array projection',async()=>{
+  await resetFence();
+  const before=await allOriginalRows();
+  const result=await captureTypedTenantMigrationFacts(client,request);
+  expect(result.status,JSON.stringify(result)).toBe('CAPTURED');
+  if(result.status!=='CAPTURED')throw new Error('Expected typed array capture');
+  const row=result.facts.tables.find(t=>t.table==='calendar_subscriptions')!.rows.find(r=>r.key[0]==='00000000-0000-4000-8000-000000000004')!;
+  const column=row.columns.find(c=>c.name==='allowed_location_ids')!;
+  expect(column.wire).toBe('[0:0]={loc-1}');
+  expect(JSON.stringify(column.value)).toContain('[0:0]={loc-1}');
+  expect(await allOriginalRows()).toEqual(before);
+ });
  it('blocks a JSON literal null that the existing manifest cannot distinguish from SQL NULL',async()=>{
   const name=db.name+'_null',marker=db.marker+':null';
   await admin.query('CREATE DATABASE '+quote(name));
@@ -317,6 +436,17 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
    const local={...request,identity:{...request.identity,database:name,databaseOid:oid,marker},catalogBaseline:{...request.catalogBaseline,catalogDigest:baseline.digest}};
    expect(await captureTenantMigrationFacts(isolated,local)).toEqual({status:'BLOCKED',code:'SQL_JSON_NULL_REPRESENTATION_UNSUPPORTED'});
    expect((await isolated.query('SELECT phase,fence_generation::text generation FROM nevora_tenancy.expansion_protocol')).rows[0]).toEqual({phase:'EXPANDED_LEGACY',generation:'0'});
+   const originals=(await isolated.query("SELECT result::text raw,authority FROM public.calendar_operations WHERE operation_id='00000000-0000-4000-8000-000000000006'")).rows;
+   const typed=await captureTypedTenantMigrationFacts(isolated,local);
+   expect(typed.status,JSON.stringify(typed)).toBe('CAPTURED');
+   if(typed.status!=='CAPTURED')throw new Error('Expected distinct JSON null capture');
+   const operation=typed.facts.tables.find(t=>t.table==='calendar_operations')!.rows[0];
+   expect(operation.columns.find(c=>c.name==='result')!.wire).toBe('null');
+   const employee=typed.facts.tables.find(t=>t.table==='employees')!.rows.find(r=>r.key[0]==='null-owner')!;
+   expect(employee.columns.find(c=>c.name==='email')!.wire).toBeNull();
+   expect(operation.columns.find(c=>c.name==='result')!.value).not.toEqual(employee.columns.find(c=>c.name==='email')!.value);
+   expect((await isolated.query("SELECT result::text raw,authority FROM public.calendar_operations WHERE operation_id='00000000-0000-4000-8000-000000000006'")).rows).toEqual(originals);
+
   }finally{
    await isolated.end();
    expect((await admin.query("SELECT oid::text oid,shobj_description(oid,'pg_database') marker FROM pg_database WHERE datname=$1",[name])).rows[0]).toEqual({oid,marker});

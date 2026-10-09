@@ -2,12 +2,23 @@ import type { Client, QueryResult } from 'pg';
 import { canonicalOwnershipJson, getOwnershipRegistry, ownershipDigest, OWNERSHIP_SCHEMA_COMMIT, OWNERSHIP_SOURCE, verifyOwnershipSource, type JsonValue, type MigrationSource } from './ownership';
 import type { TableCapture, DatabaseNamespaceComparators, DatabaseCollationCapture, DatabaseComparatorCatalog, DatabaseComparatorRow } from './backfill';
 import { lexSql } from '../inventory/sql-lexer';
+import { decodeTypedMigrationWireValue, type TypedMigrationWireValue } from './typed-wire';
 
 export type OwnedCaptureIdentity = { database:string; databaseOid:string; marker:string; systemIdentifier:string; dataDirectory:string; role:string; port:number };
 export type CaptureCatalogBaseline = { sourceDigest:string; expansionSha256:string; registryDigest:string; catalogDigest:string };
 export type MigrationCaptureRequest = { identity:OwnedCaptureIdentity; migrations:MigrationSource[]; sourceDigest:string; catalogBaseline:CaptureCatalogBaseline; expectedFenceGeneration:string };
 export type MigrationCaptureFacts = { sourceDigest:string; registryDigest:string; currentSchemaDigest:string; snapshot:{id:string;isolation:'SERIALIZABLE';includesInactive:true;includesHistory:true}; tables:TableCapture[]; namespaceComparators:DatabaseNamespaceComparators; wireRows:JsonValue[]; fence:{phase:'FENCED';generation:string;actor:null;manifest:null}; catalog:JsonValue; factsDigest:string; verification:'OWNED_LOCAL_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY' };
-export type MigrationCaptureOutcome = { status:'CAPTURED'; facts:MigrationCaptureFacts } | {status:'BLOCKED';code:string};
+export type CaptureUncertaintyOutcome = {status:'UNCERTAIN';code:'CAPTURE_COMMIT_OUTCOME_UNKNOWN'|'CAPTURE_ROLLBACK_UNCONFIRMED';reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_REQUEST_REQUIRED'};
+export type MigrationCaptureOutcome = { status:'CAPTURED'; facts:MigrationCaptureFacts } | {status:'BLOCKED';code:string} | CaptureUncertaintyOutcome;
+export type TypedMigrationColumnCapture = {name:string;type:string;wire:string|null;value:TypedMigrationWireValue};
+export type TypedMigrationRowCapture = {key:JsonValue[];columns:TypedMigrationColumnCapture[];originalChecksum:string};
+export type TypedMigrationTableCapture = {table:string;rows:TypedMigrationRowCapture[];expectedCount:number;expectedChecksum:string};
+export type TypedMigrationCaptureFacts = Omit<MigrationCaptureFacts,'tables'|'verification'> & {
+ format:'TYPED_SQL_WIRE_V1';tables:TypedMigrationTableCapture[];
+ verification:'OWNED_LOCAL_TYPED_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY';
+};
+export type TypedMigrationCaptureOutcome = {status:'CAPTURED';facts:TypedMigrationCaptureFacts}|{status:'BLOCKED';code:string}|CaptureUncertaintyOutcome;
+
 const expansionSha256='fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb';
 const SHA=/^[a-f0-9]{64}$/, UINT=/^(0|[1-9][0-9]*)$/;
 const active=new WeakSet<Client>();
@@ -187,11 +198,26 @@ function checkCatalog(catalog:JsonValue):void{
  * On success COMMIT leaves FENCED with actor/manifest NULL. No row attribution,
  * payload lineage, installation mapping or backfill execution is performed. */
 export async function captureTenantMigrationFacts(client:Client,request:MigrationCaptureRequest):Promise<MigrationCaptureOutcome>{
- let began=false;
+ return captureMigrationFacts(client,request,'LEGACY');
+}
+/** Exact observed native text protocol in the same source/catalog/fenced snapshot.
+ * JSON tokens, SQL/JSON null and native array bounds are preserved as typed data.
+ * This format is intentionally incompatible with legacy BackfillCapture: raw
+ * arrays are unparsed and complete typed lineage/execution remain separate gates.
+ * Module-issued column envelopes authenticate only parsing, never the DB/operator.
+ */
+export async function captureTypedTenantMigrationFacts(client:Client,request:MigrationCaptureRequest):Promise<TypedMigrationCaptureOutcome>{
+ return captureMigrationFacts(client,request,'TYPED');
+}
+function captureMigrationFacts(client:Client,value:MigrationCaptureRequest,mode:'LEGACY'):Promise<MigrationCaptureOutcome>;
+function captureMigrationFacts(client:Client,value:MigrationCaptureRequest,mode:'TYPED'):Promise<TypedMigrationCaptureOutcome>;
+async function captureMigrationFacts(client:Client,value:MigrationCaptureRequest,mode:'LEGACY'|'TYPED'):Promise<MigrationCaptureOutcome|TypedMigrationCaptureOutcome>{
+ let began=false,committing=false;
  if(active.has(client))return {status:'BLOCKED',code:'CLIENT_ALREADY_IN_USE'};
  active.add(client);
  try{
-  canonicalOwnershipJson(request);
+  // Detach the complete caller data before the first asynchronous observation.
+  const request=JSON.parse(canonicalOwnershipJson(value)) as MigrationCaptureRequest;
   const registry=getOwnershipRegistry(),b=request.catalogBaseline,i=request.identity;
   if(verifyOwnershipSource(request.migrations).length||!SHA.test(request.sourceDigest)||b.sourceDigest!==request.sourceDigest||b.registryDigest!==registry.digest||b.expansionSha256!==expansionSha256||!SHA.test(b.catalogDigest)||!UINT.test(request.expectedFenceGeneration))fail('SOURCE_BINDING_DRIFT');
   if(client.getTransactionStatus()!=='I')fail('CLIENT_NOT_IDLE');
@@ -199,7 +225,9 @@ export async function captureTenantMigrationFacts(client:Client,request:Migratio
   const observation=outside.rows[0];
   if(outside.rows.length!==1||!same(observation.slice(0,6),[i.database,i.databaseOid,i.marker,i.systemIdentifier,i.dataDirectory,i.role])||observation[6]!==i.role||observation[7]!=='127.0.0.1'||observation[8]!==String(i.port)||observation[11]!=='origin'||!i.marker.startsWith('f10-owned:'))fail('OWNED_DATABASE_IDENTITY_DRIFT');
   if(client.getTransactionStatus()!=='I')fail('CLIENT_NOT_IDLE');
-  await client.query('BEGIN ISOLATION LEVEL SERIALIZABLE');began=true;
+  // An acknowledgement can be lost after the server executes BEGIN. Only this
+  // exclusively owned idle client's attempted transaction may be rolled back.
+  began=true;await client.query('BEGIN ISOLATION LEVEL SERIALIZABLE');
   await client.query("SET LOCAL search_path=pg_catalog; SET LOCAL row_security=off; SET LOCAL DateStyle='ISO, YMD'; SET LOCAL TimeZone='UTC'; SET LOCAL lock_timeout='5000ms'; SET LOCAL statement_timeout='15000ms'");
   const locked=[...registry.tables.map(t=>t.table),...registry.tables.filter(t=>t.sidecar).map(t=>t.sidecar!)].sort(order);
   // Source table locks FIRST. A legacy statement already holds ROW EXCLUSIVE
@@ -220,17 +248,46 @@ export async function captureTenantMigrationFacts(client:Client,request:Migratio
   if(transition.length!==1)fail('FENCE_PROTOCOL_DRIFT');
   const snapshotId=(await raw(client,'SELECT pg_current_snapshot()::text')).rows[0]?.[0];
   if(!snapshotId)fail('SNAPSHOT_REQUIRED');
-  const tables:TableCapture[]=[],wireRows:JsonValue[]=[];
+  // In typed mode tables is only a private PK/checksum index for actual SQL
+  // namespace comparison; it is never returned as a legacy row capture.
+  const tables:TableCapture[]=[],typedTables:TypedMigrationTableCapture[]=[],wireRows:JsonValue[]=[];
   const catalogColumns=(observed.catalog as Record<string,JsonValue>).columns as Array<Record<string,JsonValue>>;
   for(const table of registry.tables){
    const arrays=table.columns.filter(c=>c.type==='text[]');
-   if(arrays.length){
+   if(mode==='LEGACY'&&arrays.length){
     const invalid=arrays.map(c=>'('+ident(c.name)+' IS NOT NULL AND COALESCE(array_ndims('+ident(c.name)+'),1)<>1 OR COALESCE(array_lower('+ident(c.name)+',1),1)<>1)').join(' OR ');
     if((await raw(client,'SELECT 1 FROM public.'+ident(table.table)+' WHERE '+invalid+' LIMIT 1')).rowCount)fail('UNSUPPORTED_ARRAY_DIMENSIONS');
    }
-   const columns=table.columns.map(c=>c.type==='text[]'?'to_jsonb('+ident(c.name)+')::text AS '+ident(c.name):ident(c.name)).join(',');
+   const columns=table.columns.map(c=>mode==='LEGACY'&&c.type==='text[]'?'to_jsonb('+ident(c.name)+')::text AS '+ident(c.name):ident(c.name)).join(',');
    const result=await raw(client,'SELECT '+columns+' FROM public.'+ident(table.table));
-   if(result.fields.length!==table.columns.length||result.fields.some((f,index)=>f.name!==table.columns[index].name||f.format!=='text'||f.dataTypeID!==wireOids[table.columns[index].type]))fail('INCOMPLETE_ROW_FIELDS');
+   if(result.fields.length!==table.columns.length||result.fields.some((f,index)=>f.name!==table.columns[index].name||f.format!=='text'||f.dataTypeID!==(mode==='TYPED'&&table.columns[index].type==='text[]'?1009:wireOids[table.columns[index].type])))fail('INCOMPLETE_ROW_FIELDS');
+   if(mode==='TYPED'){
+    const rows:TypedMigrationRowCapture[]=result.rows.map(values=>{
+     if(values.length!==table.columns.length)fail('INCOMPLETE_ROW_FIELDS');
+     const columns:TypedMigrationColumnCapture[]=table.columns.map((column,index)=>{
+      if(values[index]===null&&!column.nullable)fail('SOURCE_NULLABILITY_DRIFT');
+      if(!catalogColumns.some(c=>c.schema==='public'&&c.table_name===table.table&&c.name===column.name))fail('SOURCE_COLUMN_DRIFT');
+      const decoded=decodeTypedMigrationWireValue(column.type,values[index]);
+      if(decoded.status!=='DECODED')throw new CaptureFailure(decoded.code);
+      return {name:column.name,type:column.type,wire:values[index],value:decoded.value};
+     });
+     const key=table.primaryKey.map(name=>{
+      const index=table.columns.findIndex(c=>c.name===name),column=table.columns[index];
+      if(index<0||column.type==='jsonb'||column.type==='text[]')fail('UNSUPPORTED_TYPED_KEY');
+      return decodeMigrationWireValue(column.type,values[index]);
+     });
+     if(key.some(v=>v===null||typeof v==='object'))fail('UNSUPPORTED_TYPED_KEY');
+     const originalChecksum=ownershipDigest({format:'TYPED_SQL_WIRE_V1',columns});
+     wireRows.push({table:table.table,key,values,originalChecksum,wireChecksum:ownershipDigest(values)});
+     return {key,columns,originalChecksum};
+    });
+    rows.sort((a,b)=>order(canonicalOwnershipJson(a.key),canonicalOwnershipJson(b.key)));
+    if(new Set(rows.map(r=>canonicalOwnershipJson(r.key))).size!==rows.length)fail('DUPLICATE_CAPTURE_KEY');
+    const expectedChecksum=ownershipDigest(rows.map(r=>({key:r.key,checksum:r.originalChecksum})));
+    typedTables.push({table:table.table,rows,expectedCount:rows.length,expectedChecksum});
+    tables.push({table:table.table,rows:rows.map(r=>({values:Object.fromEntries(table.primaryKey.map((name,i)=>[name,r.key[i]])),originalChecksum:r.originalChecksum})),expectedCount:rows.length,expectedChecksum});
+    continue;
+   }
    const rows=result.rows.map(values=>{
     if(values.length!==table.columns.length)fail('INCOMPLETE_ROW_FIELDS');
     const row:Record<string,JsonValue>={};
@@ -253,12 +310,21 @@ export async function captureTenantMigrationFacts(client:Client,request:Migratio
   wireRows.sort((a,b)=>order(canonicalOwnershipJson([(a as Record<string,JsonValue>).table,(a as Record<string,JsonValue>).key]),canonicalOwnershipJson([(b as Record<string,JsonValue>).table,(b as Record<string,JsonValue>).key])));
   const namespaceComparators=await namespaces(client,request,tables,observed.digest,snapshotId,observation[9],observation[10]);
   if((await observeMigrationCatalog(client)).digest!==observed.digest)fail('CATALOG_CHANGED_DURING_CAPTURE');
-  const facts={sourceDigest:request.sourceDigest,registryDigest:registry.digest,currentSchemaDigest:observed.digest,snapshot:{id:snapshotId,isolation:'SERIALIZABLE' as const,includesInactive:true as const,includesHistory:true as const},tables,namespaceComparators,wireRows,fence:{phase:'FENCED' as const,generation:transition[0][0],actor:null,manifest:null},catalog:observed.catalog,verification:'OWNED_LOCAL_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY' as const};
+  const common={sourceDigest:request.sourceDigest,registryDigest:registry.digest,currentSchemaDigest:observed.digest,snapshot:{id:snapshotId,isolation:'SERIALIZABLE' as const,includesInactive:true as const,includesHistory:true as const},namespaceComparators,wireRows,fence:{phase:'FENCED' as const,generation:transition[0][0],actor:null,manifest:null},catalog:observed.catalog};
+  if(mode==='TYPED'){
+   const facts={...common,format:'TYPED_SQL_WIRE_V1' as const,tables:typedTables,verification:'OWNED_LOCAL_TYPED_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY' as const};
+   const factsDigest=ownershipDigest(facts);
+   committing=true;await client.query('COMMIT');began=false;
+   return {status:'CAPTURED',facts:{...facts,factsDigest}};
+  }
+  const facts={...common,tables,verification:'OWNED_LOCAL_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY' as const};
   const factsDigest=ownershipDigest(facts);
-  await client.query('COMMIT');began=false;
+  committing=true;await client.query('COMMIT');began=false;
   return {status:'CAPTURED',facts:{...facts,factsDigest}};
  }catch(error){
-  if(began){try{await client.query('ROLLBACK');}catch{return {status:'BLOCKED',code:'CAPTURE_ROLLBACK_UNCONFIRMED'};}}
+  // ROLLBACK cannot prove that an attempted COMMIT did not already complete.
+  if(committing)return {status:'UNCERTAIN',code:'CAPTURE_COMMIT_OUTCOME_UNKNOWN',reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_REQUEST_REQUIRED'};
+  if(began){try{await client.query('ROLLBACK');}catch{return {status:'UNCERTAIN',code:'CAPTURE_ROLLBACK_UNCONFIRMED',reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_REQUEST_REQUIRED'};}}
   return {status:'BLOCKED',code:error instanceof CaptureFailure?error.code:'CAPTURE_FAILED'};
  }finally{active.delete(client);}
 }
