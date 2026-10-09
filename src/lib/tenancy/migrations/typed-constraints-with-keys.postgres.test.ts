@@ -14,6 +14,7 @@ import { getTypedReferenceColumnContract, isIssuedTypedMigrationCellReferences, 
 import { isIssuedTypedOwnershipSourceObservations, validateTypedSnapshotOwnership, type TypedOwnershipAssignments, type TypedOwnershipSourceObservations } from './typed-ownership';
 import { isIssuedTypedSourceConstraintObservations, validateTypedSourceConstraints, type TypedSourceConstraintWithKeysObservations } from './typed-constraints';
 import { compileTypedTenantBackfill, isIssuedTypedTenantBackfillPlan } from './typed-backfill';
+import { assertTypedKeyComparatorsOnLockedSource, isKeyComparatorRecheckFailure } from './key-comparator-recheck.server';
 
 // Root alone starts/stops the fictional cluster and invokes this opt-in suite.
 // No ambient application URL, cluster startup, foreign DB, role installation or
@@ -549,5 +550,59 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed constraint successor with 
     receipt('case-07-scope.json', { completeTables: 68, originalCellsRetained: true, chunkSizes: [1, 2, 1000],
       effectsExecuted: false, journalWritten: false, operatorAuthorityIssued: false, businessRowsChanged: false,
       verification: 'PURE_TYPED_PLAN_FROM_ACTUAL_SOURCE_ONLY' });
+  });
+  actualCase('08', 'rechecks genuine SQL source under all current-backend locks and exact armed or cleared manifest without writes', async () => {
+    if (!client) throw Error('Exact owned client required');
+    const c = client, source = secondChain;
+    const captureRequest = { ...request, expectedFenceGeneration: (BigInt(source.facts.fence.generation) - BigInt(1)).toString() };
+    const compiled = compileTypedTenantBackfill(source.snapshot, source.ownership, v2(source), { chunkSize: 2 });
+    if (compiled.status !== 'PLANNED') throw Error('Genuine source plan required');
+    const digest = compiled.plan.digest;
+    const original = canonicalOwnershipJson(source.facts), originalKeys = canonicalOwnershipJson(source.keyObservations);
+    const deny = async (code: string, protocol?: Readonly<{ manifestDigest: string; actor: string | null }>) => {
+      let thrown: unknown;
+      try { await assertTypedKeyComparatorsOnLockedSource(c, source.facts, captureRequest, source.keyObservations, protocol); }
+      catch (error) { thrown = error; }
+      expect(isKeyComparatorRecheckFailure(thrown)).toBe(true);
+      if (!isKeyComparatorRecheckFailure(thrown)) throw Error('Closed failure required');
+      expect(thrown.code).toBe(code); expect(Object.isFrozen(thrown)).toBe(true);
+    };
+    await deny('KEY_RECHECK_TRANSACTION_REQUIRED');
+    const setContext = () => c.query("SET LOCAL search_path=pg_catalog; SET LOCAL row_security=off; SET LOCAL DateStyle='ISO, YMD'; SET LOCAL TimeZone='UTC'");
+    await c.query('BEGIN ISOLATION LEVEL SERIALIZABLE'); await setContext();
+    try { await deny('KEY_RECHECK_LOCKS_REQUIRED'); } finally { await c.query('ROLLBACK'); }
+    await c.query('BEGIN ISOLATION LEVEL SERIALIZABLE'); await setContext();
+    const locks = [...new Set([...registry.tables.map(t => t.table), ...registry.tables.flatMap(t => t.sidecar ? [t.sidecar] : [])])].sort();
+    expect(locks).toHaveLength(70); await c.query('LOCK TABLE ' + locks.map(t => 'public.' + quoted(t)).join(',') + ' IN SHARE ROW EXCLUSIVE MODE');
+    const calls: { protocol: unknown; queries: string[] }[] = [];
+    const recheck = async (protocol?: Readonly<{ manifestDigest: string; actor: string | null }>) => {
+      const queries: string[] = [], native = Client.prototype.query.bind(c);
+      const spy = vi.spyOn(c, 'query').mockImplementation(((...args: unknown[]) => {
+        const value = args[0]; queries.push(typeof value === 'string' ? value : (value as { text: string }).text);
+        return Reflect.apply(native, c, args);
+      }) as Client['query']);
+      try { expect(await assertTypedKeyComparatorsOnLockedSource(c, source.facts, captureRequest, source.keyObservations, protocol)).toBeUndefined(); }
+      finally { spy.mockRestore(); calls.push({ protocol: protocol ?? null, queries }); }
+      expect(queries.every(sql => /^\s*(?:\/\*[\s\S]*?\*\/\s*)?SELECT\b/i.test(sql))).toBe(true);
+      expect(queries.some(sql => sql.includes('F10_KEY_RECHECK_LOCKS'))).toBe(true);
+      expect(queries.some(sql => sql.includes('F10_KEY_RECHECK_SNAPSHOT'))).toBe(true);
+      expect(c.getTransactionStatus()).toBe('T');
+    };
+    try {
+      await recheck();
+      expect((await c.query("UPDATE nevora_tenancy.expansion_protocol SET backfill_actor=session_user,capture_manifest_sha256=$1 WHERE migration_id=26 AND fence_generation=$2::bigint AND backfill_actor IS NULL AND capture_manifest_sha256 IS NULL", [digest, source.facts.fence.generation])).rowCount).toBe(1);
+      await deny('KEY_RECHECK_SOURCE_DRIFT');
+      await deny('KEY_RECHECK_SOURCE_DRIFT', { manifestDigest: '0'.repeat(64), actor: request.identity.role });
+      await recheck({ manifestDigest: digest, actor: request.identity.role });
+      expect((await c.query("UPDATE nevora_tenancy.expansion_protocol SET backfill_actor=NULL WHERE migration_id=26 AND backfill_actor=session_user AND capture_manifest_sha256=$1", [digest])).rowCount).toBe(1);
+      await recheck({ manifestDigest: digest, actor: null });
+      expect(canonicalOwnershipJson(source.facts)).toBe(original); expect(canonicalOwnershipJson(source.keyObservations)).toBe(originalKeys);
+      receipt('case-08-read-only-rechecks.json', { calls, locks, originalBoundary: source.keyObservations.binding,
+        originalCaptureUnchanged: true, helperEffects: false, helperTransactionOwnership: false, operatorAuthorityIssued: false });
+    } finally { await c.query('ROLLBACK'); }
+    expect(c.getTransactionStatus()).toBe('I');
+    expect(await originalRows()).toEqual(initialRows);
+    expect((await c.query('SELECT phase,fence_generation::text generation,backfill_actor::text actor,capture_manifest_sha256 manifest FROM nevora_tenancy.expansion_protocol WHERE migration_id=26')).rows)
+      .toEqual([{ phase: 'FENCED', generation: source.facts.fence.generation, actor: null, manifest: null }]);
   });
 });

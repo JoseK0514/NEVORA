@@ -3,9 +3,10 @@ import {types as utilTypes} from 'node:util';
 import {canonicalOwnershipJson as canonical,ownershipDigest as digest,getOwnershipRegistry,verifyOwnershipSource,OWNERSHIP_SOURCE,OWNERSHIP_SCHEMA_COMMIT,type JsonValue} from './ownership';
 import {observeMigrationCatalog,type TypedMigrationCaptureFacts,type MigrationCaptureRequest} from './capture.server';
 import {inspectTypedMigrationSnapshot} from './typed-snapshot';
+import {isIssuedTypedMigrationWireValue} from './typed-wire';
 import {getTypedKeyComparatorContracts,getTypedKeyComparatorStockDescriptors,type TypedKeyComparatorCapture,type TypedKeyComparatorCatalog,type TypedKeyComparatorContract,type TypedKeyComparatorComponent,type TypedKeyOperatorCapture,type TypedKeyOpclassCapture,type TypedKeyDatabaseCollationCapture,type TypedKeyCollationCapture,type TypedKeySupportCapture} from './typed-key-comparators';
 
-export type KeyComparatorCaptureCode='KEY_COMPARATOR_TRANSACTION_REQUIRED'|'KEY_COMPARATOR_CLIENT_IN_USE'|'KEY_COMPARATOR_INVALID_FACTS'|'KEY_COMPARATOR_REQUEST_DRIFT'|'KEY_COMPARATOR_IDENTITY_DRIFT'|'KEY_COMPARATOR_FENCE_DRIFT'|'KEY_COMPARATOR_SOURCE_DRIFT'|'KEY_COMPARATOR_CATALOG_DRIFT'|'KEY_COMPARATOR_DATABASE_COLLATION_DRIFT'|'KEY_COMPARATOR_CONSTRAINT_DRIFT'|'KEY_COMPARATOR_INDEX_DRIFT'|'KEY_COMPARATOR_TYPE_DRIFT'|'KEY_COMPARATOR_OPCLASS_DRIFT'|'KEY_COMPARATOR_OPERATOR_DRIFT'|'KEY_COMPARATOR_SUPPORT_DRIFT'|'KEY_COMPARATOR_COLLATION_DRIFT'|'KEY_COMPARATOR_ROW_DRIFT'|'KEY_COMPARATOR_READ_FAILED';
+export type KeyComparatorCaptureCode='KEY_COMPARATOR_TRANSACTION_REQUIRED'|'KEY_COMPARATOR_LOCKS_REQUIRED'|'KEY_COMPARATOR_CLIENT_IN_USE'|'KEY_COMPARATOR_INVALID_FACTS'|'KEY_COMPARATOR_REQUEST_DRIFT'|'KEY_COMPARATOR_IDENTITY_DRIFT'|'KEY_COMPARATOR_FENCE_DRIFT'|'KEY_COMPARATOR_SOURCE_DRIFT'|'KEY_COMPARATOR_CATALOG_DRIFT'|'KEY_COMPARATOR_DATABASE_COLLATION_DRIFT'|'KEY_COMPARATOR_CONSTRAINT_DRIFT'|'KEY_COMPARATOR_INDEX_DRIFT'|'KEY_COMPARATOR_TYPE_DRIFT'|'KEY_COMPARATOR_OPCLASS_DRIFT'|'KEY_COMPARATOR_OPERATOR_DRIFT'|'KEY_COMPARATOR_SUPPORT_DRIFT'|'KEY_COMPARATOR_COLLATION_DRIFT'|'KEY_COMPARATOR_ROW_DRIFT'|'KEY_COMPARATOR_READ_FAILED';
 export type KeyComparatorCaptureFailure=Readonly<Error&{code:KeyComparatorCaptureCode}>;
 const failures=new WeakSet<object>(),active=new WeakSet<Client>();
 class ClosedFailure extends Error{constructor(readonly code:KeyComparatorCaptureCode){super(code);failures.add(this);Object.freeze(this);}}
@@ -32,7 +33,7 @@ async function identity(client:Client,request:MigrationCaptureRequest,facts:Type
  if(!same(r.slice(0,9),[i.database,i.databaseOid,i.marker,i.systemIdentifier,i.dataDirectory,i.role,i.role,'127.0.0.1',String(i.port)])||!r[9]||!/^1[78]\./.test(r[9])||r[10]!=='UTF8'||!same(r.slice(11,18),['origin','pg_catalog','serializable','off','ISO, YMD','UTC','scram-sha-256:'+i.role])||!r[18]||!OID.test(r[18])||r[18]!==r[19]||r[20]!=='none'||r[21]!==facts.snapshot.id)fail('KEY_COMPARATOR_IDENTITY_DRIFT');
  return r[9];
 }
-async function fence(client:Client,facts:TypedMigrationCaptureFacts){const r=one(await raw(client,'/* F10_KEY_PROTOCOL */ SELECT phase,fence_generation::text,backfill_actor::text,capture_manifest_sha256,schema_source_commit,registry_sha256 FROM nevora_tenancy.expansion_protocol WHERE migration_id=26'),6,'KEY_COMPARATOR_FENCE_DRIFT');if(!same(r,['FENCED',facts.fence.generation,null,null,OWNERSHIP_SCHEMA_COMMIT,registry.digest]))fail('KEY_COMPARATOR_FENCE_DRIFT');}
+async function fence(client:Client,facts:TypedMigrationCaptureFacts,expected:Readonly<{actor:string|null;manifest:string|null}>={actor:null,manifest:null}){const r=one(await raw(client,'/* F10_KEY_PROTOCOL */ SELECT phase,fence_generation::text,backfill_actor::text,capture_manifest_sha256,schema_source_commit,registry_sha256 FROM nevora_tenancy.expansion_protocol WHERE migration_id=26'),6,'KEY_COMPARATOR_FENCE_DRIFT');if(!same(r,['FENCED',facts.fence.generation,expected.actor,expected.manifest,OWNERSHIP_SCHEMA_COMMIT,registry.digest]))fail('KEY_COMPARATOR_FENCE_DRIFT');}
 async function databaseCollation(client:Client,databaseOid:string):Promise<TypedKeyDatabaseCollationCapture>{
  const r=one(await raw(client,"/* F10_KEY_DATABASE_COLLATION */ SELECT datlocprovider::text,encoding::text,datcollate,datctype,datlocale,daticurules,datcollversion,pg_catalog.pg_database_collation_actual_version(oid) FROM pg_catalog.pg_database WHERE oid=$1::oid",[databaseOid]),8,'KEY_COMPARATOR_DATABASE_COLLATION_DRIFT');
  if(!['b','c','i'].includes(r[0]!)||r[1]!=='6'||!r[2]||!r[3]||r[6]!==r[7]||((r[0]==='b'||r[0]==='i')&&(!r[4]||r[2]===''||r[3]===''))||(r[0]!=='i'&&r[5]!==null)||(r[0]==='c'&&r[4]!==null))fail('KEY_COMPARATOR_DATABASE_COLLATION_DRIFT');
@@ -97,30 +98,85 @@ async function rows(client:Client,c:TypedKeyComparatorContract,observed:TypedKey
   return {contractId:c.contractId,key:[...original.key],rowChecksum:original.originalChecksum,included:include,comparisonClass};
  });
 }
+/** Reject proxies before reflection/accessors before reads; typed cells retain
+ * their genuine private parser provenance rather than JSON-clone reissuance. */
+function detach(value:unknown,ancestors=new Set<object>()):unknown{
+ if(isIssuedTypedMigrationWireValue(value))return value;
+ if(value===null||typeof value==='string'||typeof value==='boolean')return value;
+ if(typeof value==='number'&&Number.isSafeInteger(value)&&!Object.is(value,-0))return value;
+ if(typeof value!=='object'||value===null||utilTypes.isProxy(value)||ancestors.has(value))fail('KEY_COMPARATOR_INVALID_FACTS');
+ const array=Array.isArray(value);if(Object.getPrototypeOf(value)!==(array?Array.prototype:Object.prototype))fail('KEY_COMPARATOR_INVALID_FACTS');
+ const keys=Reflect.ownKeys(value),descriptors=Object.getOwnPropertyDescriptors(value);if(keys.some(k=>typeof k!=='string'))fail('KEY_COMPARATOR_INVALID_FACTS');ancestors.add(value);
+ try{
+  if(array){const length=descriptors.length;if(!length||!('value'in length)||!Number.isSafeInteger(length.value)||length.value<0||keys.length!==length.value+1)fail('KEY_COMPARATOR_INVALID_FACTS');const result:unknown[]=[];for(let i=0;i<length.value;i++){const d=descriptors[String(i)];if(!d||!('value'in d)||!d.enumerable)fail('KEY_COMPARATOR_INVALID_FACTS');result.push(detach(d.value,ancestors));}return result;}
+  const result:Record<string,unknown>={};for(const k of keys as string[]){const d=descriptors[k];if(!d||!('value'in d)||!d.enumerable)fail('KEY_COMPARATOR_INVALID_FACTS');Object.defineProperty(result,k,{value:detach(d.value,ancestors),enumerable:true});}return result;
+ }finally{ancestors.delete(value);}
+}
+function protocolExpectation(input:unknown,role:unknown):Readonly<{actor:string|null;manifest:string|null}>{
+ if(input===undefined)return Object.freeze({actor:null,manifest:null});
+ let p:unknown;try{p=detach(input);}catch{fail('KEY_COMPARATOR_REQUEST_DRIFT');}
+ if(typeof p!=='object'||p===null||Array.isArray(p))fail('KEY_COMPARATOR_REQUEST_DRIFT');
+ const v=p as Record<string,unknown>;if(Object.keys(v).length!==2||!Object.hasOwn(v,'manifestDigest')||!Object.hasOwn(v,'actor')||typeof v.manifestDigest!=='string'||!SHA.test(v.manifestDigest)||(v.actor!==null&&(typeof v.actor!=='string'||v.actor!==role)))fail('KEY_COMPARATOR_REQUEST_DRIFT');
+ return Object.freeze({actor:v.actor as string|null,manifest:v.manifestDigest});
+}
+async function sourceLocks(client:Client){
+ const names=[...registry.tables.map(t=>t.table),...registry.tables.flatMap(t=>t.sidecar?[t.sidecar]:[])].sort(order);
+ const result=await raw(client,`/* F10_KEY_RECHECK_LOCKS */ SELECT c.relname::text,l.mode,l.granted::text,c.oid::text FROM pg_catalog.pg_locks l JOIN pg_catalog.pg_class c ON c.oid=l.relation JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE l.locktype='relation' AND l.pid=pg_catalog.pg_backend_pid() AND l.database=(SELECT oid FROM pg_catalog.pg_database WHERE datname=pg_catalog.current_database()) AND n.nspname='public' AND c.relname=ANY($1::text[]) ORDER BY c.relname,l.mode`,[names]);
+ const granted=new Set<string>(),oids=new Map<string,string>();
+ for(const row of result.rows){if(row.length!==4||row.some(v=>typeof v!=='string')||!names.includes(row[0]!)||!['true','false'].includes(row[2]!)||!OID.test(row[3]!))fail('KEY_COMPARATOR_LOCKS_REQUIRED');if(oids.has(row[0]!)&&oids.get(row[0]!)!==row[3])fail('KEY_COMPARATOR_LOCKS_REQUIRED');oids.set(row[0]!,row[3]!);if(row[2]==='true'&&['ShareRowExclusiveLock','AccessExclusiveLock'].includes(row[1]!))granted.add(row[0]!);}
+ if(granted.size!==names.length||names.some(name=>!granted.has(name)))fail('KEY_COMPARATOR_LOCKS_REQUIRED');
+}
+function deriveCurrentMetadata(original:TypedMigrationCaptureFacts,snapshotId:string):TypedMigrationCaptureFacts{
+ const nsBody={binding:{...original.namespaceComparators.binding,snapshotId},catalogs:original.namespaceComparators.catalogs,rows:original.namespaceComparators.rows};
+ const namespaceComparators={...nsBody,captureChecksum:digest(nsBody)};
+ const {factsDigest:omitted,...body}=original;void omitted;
+ const fresh={...body,snapshot:{...body.snapshot,id:snapshotId},namespaceComparators};
+ return freeze({...fresh,factsDigest:digest(fresh)});
+}
 /** Privileged LOCAL source observations only, inside the caller's exclusively
  * owned original SERIALIZABLE capture transaction after core facts are sealed.
  * No BEGIN/COMMIT/ROLLBACK, write, grant, resource or operator authority is issued.
  * Root must install and verify source/catalog/roles and retain original evidence.
  */
-export async function collectTypedKeyComparatorCapture(client:Client,facts:TypedMigrationCaptureFacts,value:MigrationCaptureRequest):Promise<TypedKeyComparatorCapture>{
+async function collect(client:Client,facts:TypedMigrationCaptureFacts,value:MigrationCaptureRequest,locked?:Readonly<{protocol:unknown}>):Promise<TypedKeyComparatorCapture|TypedKeyComparatorLockedRecheck>{
  if(active.has(client))fail('KEY_COMPARATOR_CLIENT_IN_USE');active.add(client);
  try{
   if(client.getTransactionStatus()!=='T')fail('KEY_COMPARATOR_TRANSACTION_REQUIRED');
-  let request:MigrationCaptureRequest;try{if(utilTypes.isProxy(value)||utilTypes.isProxy(facts))fail('KEY_COMPARATOR_INVALID_FACTS');canonical(facts);request=JSON.parse(canonical(value));}catch{fail('KEY_COMPARATOR_INVALID_FACTS');}
+  let request:MigrationCaptureRequest;
+  try{facts=freeze(detach(facts) as TypedMigrationCaptureFacts);request=freeze(detach(value) as MigrationCaptureRequest);}catch{fail('KEY_COMPARATOR_INVALID_FACTS');}
   const inspected=inspectTypedMigrationSnapshot(facts,{sourceDigest:facts.sourceDigest,currentSchemaDigest:facts.currentSchemaDigest,snapshotId:facts.snapshot?.id,fenceGeneration:facts.fence?.generation,factsDigest:facts.factsDigest});if(inspected.status!=='INSPECTED')fail('KEY_COMPARATOR_INVALID_FACTS');
-  // Issuance was checked before detachment. This private data copy is never
-  // reissued as typed cells or exported as a legacy source-row projection.
-  facts=freeze(JSON.parse(canonical(facts)) as TypedMigrationCaptureFacts);
+  const originalBinding={registryDigest:facts.registryDigest,sourceDigest:facts.sourceDigest,currentSchemaDigest:facts.currentSchemaDigest,snapshotId:facts.snapshot.id,fenceGeneration:facts.fence.generation,factsDigest:facts.factsDigest};
+  // Preserve issued immutable wire cells in the private detached original facts.
+  // Fresh metadata below is distinctly tagged, never exported as original facts.
+  const expected=locked?protocolExpectation(locked.protocol,request.identity?.role):{actor:null,manifest:null};
   const r=request!,b=r.catalogBaseline,i=r.identity;
   if(!b||!i||verifyOwnershipSource(r.migrations).length||!SHA.test(r.sourceDigest)||r.sourceDigest!==facts.sourceDigest||b.sourceDigest!==r.sourceDigest||b.registryDigest!==registry.digest||b.expansionSha256!=='fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb'||b.catalogDigest!==facts.currentSchemaDigest||!UINT.test(r.expectedFenceGeneration)||BigInt(r.expectedFenceGeneration)+BigInt(1)!==BigInt(facts.fence.generation)||typeof i.marker!=='string'||!i.marker.startsWith('f10-owned:')||!OID.test(i.databaseOid)||!Number.isSafeInteger(i.port)||i.port<1024||i.port>65535)fail('KEY_COMPARATOR_REQUEST_DRIFT');
-  const serverVersion=await identity(client,r,facts);await fence(client,facts);
+  if(locked){await sourceLocks(client);const snapshotId=one(await raw(client,'/* F10_KEY_RECHECK_SNAPSHOT */ SELECT pg_catalog.pg_current_snapshot()::text'),1,'KEY_COMPARATOR_IDENTITY_DRIFT')[0];if(!snapshotId||!/^(0|[1-9][0-9]*):(0|[1-9][0-9]*):(?:(0|[1-9][0-9]*)(?:,(0|[1-9][0-9]*))*)?$/.test(snapshotId))fail('KEY_COMPARATOR_IDENTITY_DRIFT');facts=deriveCurrentMetadata(facts,snapshotId);}
+  const serverVersion=await identity(client,r,facts);await fence(client,facts,expected);
   if(!same((await raw(client,'/* F10_KEY_INSTALLED_SOURCE */ SELECT path,source_sha256 FROM nevora_tenancy.source_migration_contract ORDER BY path')).rows,OWNERSHIP_SOURCE.map(s=>[s.path,s.sha256])))fail('KEY_COMPARATOR_SOURCE_DRIFT');
   const before=await observeMigrationCatalog(client);if(before.digest!==facts.currentSchemaDigest||!same(before.catalog,facts.catalog))fail('KEY_COMPARATOR_CATALOG_DRIFT');
   const effective=await databaseCollation(client,i.databaseOid),catalogs:TypedKeyComparatorCatalog[]=[],allRows:TypedKeyComparatorCapture['rows']=[];
   for(const c of contracts){const observed=await catalog(client,c);catalogs.push(observed);allRows.push(...await rows(client,c,observed,facts));}
-  const after=await observeMigrationCatalog(client);if(after.digest!==before.digest||!same(after.catalog,before.catalog))fail('KEY_COMPARATOR_CATALOG_DRIFT');await fence(client,facts);
+  const after=await observeMigrationCatalog(client);if(after.digest!==before.digest||!same(after.catalog,before.catalog))fail('KEY_COMPARATOR_CATALOG_DRIFT');await fence(client,facts,expected);
   if(await identity(client,r,facts)!==serverVersion||!same(await databaseCollation(client,i.databaseOid),effective))fail('KEY_COMPARATOR_IDENTITY_DRIFT');
   const body={format:'TYPED_KEY_COMPARATOR_CAPTURE_V1' as const,binding:{registryDigest:registry.digest,sourceDigest:facts.sourceDigest,currentSchemaDigest:facts.currentSchemaDigest,snapshotId:facts.snapshot.id,fenceGeneration:facts.fence.generation,factsDigest:facts.factsDigest},serverVersion,serverEncoding:'UTF8' as const,databaseCollation:effective,catalog:JSON.parse(canonical(before.catalog)) as JsonValue,catalogs:catalogs.sort((a,b)=>order(a.contractId,b.contractId)),rows:allRows.sort((a,b)=>order(canonical([a.contractId,a.key]),canonical([b.contractId,b.key])))};
+  if(locked){const fresh={...body,format:'TYPED_KEY_COMPARATOR_LOCKED_RECHECK_V1' as const,originalBinding,derivedNamespaceCaptureChecksum:facts.namespaceComparators.captureChecksum,protocol:expected,verification:'READ_ONLY_SOURCE_RECHECK_NOT_OPERATOR_OR_EFFECT_AUTHORITY' as const};return freeze({...fresh,captureChecksum:digest(fresh)});}
   return freeze({...body,captureChecksum:digest(body)});
  }catch(error){if(isKeyComparatorCaptureFailure(error))throw error;fail('KEY_COMPARATOR_READ_FAILED');}finally{active.delete(client);}
 }
+
+export type TypedKeyComparatorLockedRecheck=Readonly<Omit<TypedKeyComparatorCapture,'format'>&{
+ format:'TYPED_KEY_COMPARATOR_LOCKED_RECHECK_V1';originalBinding:Readonly<TypedKeyComparatorCapture['binding']>;
+ derivedNamespaceCaptureChecksum:string;protocol:Readonly<{actor:string|null;manifest:string|null}>;
+ verification:'READ_ONLY_SOURCE_RECHECK_NOT_OPERATOR_OR_EFFECT_AUTHORITY';
+}>;
+/** Existing capture stays in its original, unarmed NULL/NULL protocol only. */
+export async function collectTypedKeyComparatorCapture(client:Client,facts:TypedMigrationCaptureFacts,request:MigrationCaptureRequest):Promise<TypedKeyComparatorCapture>{return await collect(client,facts,request) as TypedKeyComparatorCapture;}
+/** Distinct read-only current metadata, never reissued original capture/proof.
+ * All70 exact locks must already be held by this backend. This cannot establish
+ * first-lock ordering, operator authority, effects, chunks or journal completion.
+ * Source/catalog/SCRAM/UTC/ISO/fence/all104 SQL comparisons retain the original
+ * checks; only the explicitly checked original manifest/actor expectation and
+ * fresh SQL snapshot metadata differ. No lock/transaction/resource is acquired.
+ */
+export async function collectTypedKeyComparatorLockedSourceRecheck(client:Client,facts:TypedMigrationCaptureFacts,request:MigrationCaptureRequest,protocol?:Readonly<{manifestDigest:string;actor:string|null}>):Promise<TypedKeyComparatorLockedRecheck>{return await collect(client,facts,request,{protocol}) as TypedKeyComparatorLockedRecheck;}

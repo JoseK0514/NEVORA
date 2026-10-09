@@ -63,4 +63,6 @@ describe('owned in-transaction SQL key comparison collector, mocked preparation 
  it('rejects incomplete comparator row coverage',async()=>{const f=fixture();f.row('employees',{id:'missing'});f.setMutation((t,r)=>{if(t==='ROWS')r.pop();});await expect(f.collect()).rejects.toThrow('KEY_COMPARATOR_ROW_DRIFT');});
  it('rejects changed captured facts before reading SQL',async()=>{const f=fixture();f.seal();f.facts.factsDigest='9'.repeat(64);await expect(collectTypedKeyComparatorCapture(f.client,f.facts,f.request)).rejects.toThrow('KEY_COMPARATOR_INVALID_FACTS');expect(f.queries).toEqual([]);});
  it('suppresses underlying SQL/credential-bearing exception text',async()=>{const f=fixture();vi.spyOn(f.client,'query').mockRejectedValueOnce(Error('SECRET_SENTINEL_NOT_FORWARDED'));await expect(f.collect()).rejects.toThrow('KEY_COMPARATOR_READ_FAILED');});
+ it.each(['facts','request'] as const)('rejects nested%s proxies before their meta traps or SQL',async kind=>{const f=fixture();f.seal();const get=vi.fn(()=>{throw Error('trap');}),proxy=new Proxy({},{get,ownKeys:get,getPrototypeOf:get});if(kind==='facts')f.facts.catalog=proxy;else f.request.identity=proxy as never;await expect(collectTypedKeyComparatorCapture(f.client,f.facts,f.request)).rejects.toThrow('KEY_COMPARATOR_INVALID_FACTS');expect(get).not.toHaveBeenCalled();expect(f.queries).toEqual([]);});
+
 });
