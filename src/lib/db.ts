@@ -1,6 +1,22 @@
-import { neon } from "@neondatabase/serverless";
+import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 
 let database: ReturnType<typeof neon> | null = null;
+const tenantRuntimeTransports = new Map<'APP' | 'WORKER', NeonQueryFunction<false, false>>();
+
+/** Dedicated runtime principals only; the legacy/bootstrap URL is never a
+ * tenant-runtime fallback. Cache transport configuration, never tenant state. */
+export function getTenantRuntimeDb(role: 'APP' | 'WORKER') {
+  if (role !== 'APP' && role !== 'WORKER') throw new Error('tenant_runtime_not_configured');
+  const cached = tenantRuntimeTransports.get(role);
+  if (cached) return cached;
+  const url = role === 'APP' ? process.env.NEVORA_APP_DATABASE_URL : process.env.NEVORA_WORKER_DATABASE_URL;
+  if (!url) throw new Error('tenant_runtime_not_configured');
+  try {
+    const transport = neon(url);
+    tenantRuntimeTransports.set(role, transport);
+    return transport;
+  } catch { throw new Error('tenant_runtime_not_configured'); }
+}
 
 export function getDb() {
   if (database) return database;
