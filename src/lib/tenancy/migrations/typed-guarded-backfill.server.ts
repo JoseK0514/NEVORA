@@ -1,0 +1,249 @@
+import {readFileSync,realpathSync,statSync} from 'node:fs';
+import {join} from 'node:path';
+import {Socket} from 'node:net';
+import {types as utilTypes} from 'node:util';
+import {Client,type QueryResult} from 'pg';
+import {canonicalOwnershipJson,getOwnershipRegistry,ownershipDigest,OWNERSHIP_SCHEMA_COMMIT,OWNERSHIP_SOURCE,verifyOwnershipSource,type JsonValue,type TableOwnership} from './ownership';
+import {observeMigrationCatalog,type TypedMigrationCaptureFacts,type MigrationCaptureRequest} from './capture.server';
+import {decodeTypedMigrationWireValue,isIssuedTypedMigrationWireValue} from './typed-wire';
+import {inspectTypedMigrationSnapshot} from './typed-snapshot';
+import {isIssuedTypedTenantBackfillPlan,type TypedTenantBackfillPlan,type TypedBackfillEntry} from './typed-backfill';
+import type {OwnedLocalBackfillIdentity} from './guarded-backfill.server';
+import type {DatabaseComparatorRow} from './backfill';
+import {assertTypedKeyComparatorsOnLockedSource,isKeyComparatorRecheckFailure} from './key-comparator-recheck.server';
+
+export type GuardedTypedBackfillRequest={mode:'OWNED_LOCAL';identity:OwnedLocalBackfillIdentity;facts:TypedMigrationCaptureFacts;captureRequest:MigrationCaptureRequest;plan:TypedTenantBackfillPlan;authority:{reference:string;operatorRole:string;factsDigest:string;planDigest:string}};
+export type GuardedTypedBackfillCode=
+ 'UNSUPPORTED_REQUEST'|'TYPED_PLAN_REQUIRED'|'OWNED_LOCAL_MODE_REQUIRED'|'CAPTURE_BINDING_DRIFT'|'OPERATOR_CUSTODY_BINDING_DRIFT'|'OWNED_LOCAL_IDENTITY_REQUIRED'|
+ 'OWNED_PG_CLIENT_REQUIRED'|'CLIENT_ALREADY_IN_USE'|'CLIENT_NOT_IDLE'|'CLIENT_CONNECTION_NOT_OWNED'|'OWNED_LOCAL_IDENTITY_DRIFT'|'OWNED_DATABASE_IDENTITY_DRIFT'|'OPERATOR_ROLE_DRIFT'|
+ 'INSTALLED_SOURCE_DRIFT'|'INSTALLED_REGISTRY_DRIFT'|'CURRENT_CATALOG_DRIFT'|'CURRENT_COMPARATOR_CATALOG_DRIFT'|'CURRENT_COLLATION_DRIFT'|'CURRENT_COMPARATOR_ROW_DRIFT'|'FENCE_PROTOCOL_DRIFT'|
+ 'SOURCE_COLUMN_TYPE_DRIFT'|'SOURCE_ROW_SHAPE_DRIFT'|'SOURCE_NULLABILITY_DRIFT'|'SOURCE_WIRE_UNSUPPORTED'|'CURRENT_SOURCE_DRIFT'|'CURRENT_WIRE_SOURCE_DRIFT'|
+ 'DIRECT_OWNERSHIP_STATE_DRIFT'|'SIDECAR_OWNERSHIP_STATE_DRIFT'|'DIRECT_ATTRIBUTION_NOT_EXACT'|'SIDECAR_ATTRIBUTION_NOT_EXACT'|'OPERATOR_ARM_NOT_EXACT'|'OPERATOR_CLEAR_NOT_EXACT'|'COMMITTED_MANIFEST_REQUIRED'|
+ 'KEY_RECHECK_UNISSUED_OBSERVATIONS'|'KEY_RECHECK_TRANSACTION_REQUIRED'|'KEY_RECHECK_LOCKS_REQUIRED'|'KEY_RECHECK_SOURCE_DRIFT'|'KEY_RECHECK_COMPARATOR_DRIFT'|'KEY_RECHECK_READ_FAILED'|'TYPED_GUARDED_BACKFILL_FAILED';
+export type GuardedTypedBackfillOutcome=
+ {status:'APPLIED'|'UNCHANGED';mode:'WHOLE_PLAN_ATOMIC';planDigest:string;sourceRows:number;verification:'OWNED_LOCAL_ATOMIC_TYPED_BACKFILL_NOT_F10_COMPLETE'}|
+ {status:'BLOCKED';code:GuardedTypedBackfillCode}|
+ {status:'UNCERTAIN';code:'COMMIT_OUTCOME_UNKNOWN'|'ROLLBACK_UNCONFIRMED';planDigest:string;reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};
+const active=new WeakSet<Client>(),SHA=/^[a-f0-9]{64}$/,UINT=/^(0|[1-9][0-9]*)$/;
+const ident=(value:string)=>'"'+value.replace(/"/g,'""')+'"';
+const same=(a:unknown,b:unknown)=>canonicalOwnershipJson(a)===canonicalOwnershipJson(b);
+const order=(a:string,b:string)=>a<b?-1:a>b?1:0;
+const key=(v:unknown):v is string=>typeof v==='string'&&v.length>0&&!/[\p{Cc}\p{Cf}]/u.test(v);
+const wireTypes={getTypeParser:()=>((value:string)=>value)};
+const wireOids:Record<string,number>={text:25,date:1082,time:1083,smallint:21,timestamptz:1184,integer:23,jsonb:3802,boolean:16,uuid:2950,'text[]':1009,'char(64)':1042,'numeric(5,2)':1700,bigint:20,timestamp:1114,'char(32)':1042};
+const casts:Record<string,string>={text:'pg_catalog.text',date:'pg_catalog.date',time:'pg_catalog.time',smallint:'pg_catalog.int2',timestamptz:'pg_catalog.timestamptz',integer:'pg_catalog.int4',jsonb:'pg_catalog.jsonb',boolean:'pg_catalog.bool',uuid:'pg_catalog.uuid','text[]':'pg_catalog.text[]','char(64)':'pg_catalog.bpchar(64)','numeric(5,2)':'pg_catalog.numeric(5,2)',bigint:'pg_catalog.int8',timestamp:'pg_catalog.timestamp','char(32)':'pg_catalog.bpchar(32)'};
+class GuardFailure extends Error{constructor(readonly code:GuardedTypedBackfillCode){super(code);}}
+function fail(code:GuardedTypedBackfillCode):never{throw new GuardFailure(code);}
+async function raw(client:Client,text:string,values:unknown[]=[]):Promise<QueryResult<(string|null)[]>>{return client.query<(string|null)[]>({text,values,rowMode:'array',types:wireTypes});}
+function closed(value:unknown,names:string[]):boolean{return value!==null&&typeof value==='object'&&!Array.isArray(value)&&same(Object.keys(value).sort(),[...names].sort());}
+/** Copies only ordinary data descriptors. Proxies are rejected using Node's
+ * trap-free predicate. The compiler plan and parser-issued immutable cells keep
+ * their actual identity; JSON serialization never reissues either capability.
+ */
+function detach(value:unknown,ancestors=new Set<object>()):unknown{
+ if(value===null||typeof value==='string'||typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value))return value;
+ if(typeof value!=='object'||value===null||utilTypes.isProxy(value)||ancestors.has(value))fail('UNSUPPORTED_REQUEST');
+ if(isIssuedTypedTenantBackfillPlan(value)||isIssuedTypedMigrationWireValue(value))return value;
+ const array=Array.isArray(value);if(Object.getPrototypeOf(value)!==(array?Array.prototype:Object.prototype))fail('UNSUPPORTED_REQUEST');
+ const descriptors=Object.getOwnPropertyDescriptors(value),names=Reflect.ownKeys(value);if(names.some(n=>typeof n!=='string'))fail('UNSUPPORTED_REQUEST');
+ ancestors.add(value);
+ try{
+  if(array){const length=descriptors.length;if(!length||!('value'in length)||!Number.isSafeInteger(length.value)||length.value<0||names.length!==length.value+1)fail('UNSUPPORTED_REQUEST');const out:unknown[]=[];for(let i=0;i<length.value;i++){const d=descriptors[String(i)];if(!d||!('value'in d)||!d.enumerable)fail('UNSUPPORTED_REQUEST');out.push(detach(d.value,ancestors));}return Object.freeze(out);}
+  const out:Record<string,unknown>={};for(const n of names as string[]){const d=descriptors[n];if(!d||!('value'in d)||!d.enumerable)fail('UNSUPPORTED_REQUEST');Object.defineProperty(out,n,{value:detach(d.value,ancestors),enumerable:true});}return Object.freeze(out);
+ }finally{ancestors.delete(value);}
+}
+function requestBinding(value:unknown):GuardedTypedBackfillRequest{
+ if(typeof value!=='object'||value===null||utilTypes.isProxy(value))fail('UNSUPPORTED_REQUEST');
+ const p=Object.getOwnPropertyDescriptor(value,'plan');
+ if(!p||!('value'in p)||!isIssuedTypedTenantBackfillPlan(p.value))fail('TYPED_PLAN_REQUIRED');
+ const captured=detach(value);if(!closed(captured,['mode','identity','facts','captureRequest','plan','authority']))fail('UNSUPPORTED_REQUEST');
+ const request=captured as GuardedTypedBackfillRequest,{identity:i,facts,plan,authority:a,captureRequest:c}=request;
+ if(request.mode!=='OWNED_LOCAL')fail('OWNED_LOCAL_MODE_REQUIRED');
+ if(!closed(i,['database','databaseOid','marker','systemIdentifier','dataDirectory','role','port','clusterRoot','leasePath','postmasterPid','postmasterStart','roleOid'])||!closed(a,['reference','operatorRole','factsDigest','planDigest']))fail('UNSUPPORTED_REQUEST');
+ if(!key(i.database)||!key(i.role)||!key(i.clusterRoot)||!key(i.leasePath)||!key(i.dataDirectory)||!key(i.marker)||!i.marker.startsWith('f10-owned:')||![i.databaseOid,i.systemIdentifier,i.roleOid,i.postmasterStart].every(v=>typeof v==='string'&&/^[1-9][0-9]*$/.test(v))||!Number.isSafeInteger(i.port)||i.port<1||i.port>65535||!Number.isSafeInteger(i.postmasterPid)||i.postmasterPid<1)fail('OWNED_LOCAL_IDENTITY_REQUIRED');
+ const b=plan.manifest.boundary,inspected=inspectTypedMigrationSnapshot(facts,{sourceDigest:b.sourceDigest,currentSchemaDigest:b.currentSchemaDigest,snapshotId:b.snapshotId,fenceGeneration:b.fenceGeneration,factsDigest:b.factsDigest});
+ if(inspected.status!=='INSPECTED'||!same(inspected.snapshot,plan.manifest.observations.snapshot))fail('CAPTURE_BINDING_DRIFT');
+ const ownedIdentity={database:i.database,databaseOid:i.databaseOid,marker:i.marker,systemIdentifier:i.systemIdentifier,dataDirectory:i.dataDirectory,role:i.role,port:i.port};
+ if(!closed(c,['identity','migrations','sourceDigest','catalogBaseline','expectedFenceGeneration'])||!closed(c.catalogBaseline,['sourceDigest','expansionSha256','registryDigest','catalogDigest'])||!same(c.identity,ownedIdentity)||c.sourceDigest!==facts.sourceDigest||c.catalogBaseline.sourceDigest!==facts.sourceDigest||c.catalogBaseline.registryDigest!==facts.registryDigest||c.catalogBaseline.catalogDigest!==facts.currentSchemaDigest||c.catalogBaseline.expansionSha256!=='fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb'||typeof c.expectedFenceGeneration!=='string'||!UINT.test(c.expectedFenceGeneration)||BigInt(c.expectedFenceGeneration)+BigInt(1)!==BigInt(facts.fence.generation)||!Array.isArray(c.migrations)||verifyOwnershipSource(c.migrations).length)fail('CAPTURE_BINDING_DRIFT');
+ if(!key(a.reference)||a.operatorRole!==i.role||a.factsDigest!==facts.factsDigest||a.planDigest!==plan.digest||!SHA.test(a.planDigest))fail('OPERATOR_CUSTODY_BINDING_DRIFT');
+ return request;
+}
+function requireIdle(client:Client){const d=Object.getOwnPropertyDescriptors(client);if(client.getTransactionStatus()!=='I'||d._activeQuery?.value!==null||!Array.isArray(d._queryQueue?.value)||d._queryQueue.value.length!==0||d._connected?.value!==true||d._connecting?.value!==false||d._ending?.value!==false||d.readyForQuery?.value!==true)fail('CLIENT_NOT_IDLE');}
+function localConnection(client:Client,i:OwnedLocalBackfillIdentity){const s=client.connection.stream;if(client.host!=='127.0.0.1'||client.port!==i.port||client.database!==i.database||client.user!==i.role||client.ssl!==false||client.pipeline!==false||!(s instanceof Socket)||s.destroyed||s.remoteAddress!=='127.0.0.1'||s.remotePort!==i.port||s.localAddress!=='127.0.0.1')fail('CLIENT_CONNECTION_NOT_OWNED');}
+function parseMetadata(value:unknown):JsonValue{if(typeof value!=='string')fail('INSTALLED_REGISTRY_DRIFT');const decoded=decodeTypedMigrationWireValue('jsonb',value);if(decoded.status!=='DECODED')fail('INSTALLED_REGISTRY_DRIFT');/* Only installed registry arrays/strings/small line numbers, never source cells. */const parsed=JSON.parse(value) as JsonValue;canonicalOwnershipJson(parsed);return parsed;}
+type LocalLease = { root: string; data: string; port: number; pid: number; pidStart: string; systemIdentifier: string;
+  closed: false; scope: 'OWNED_LOCAL_F10'; database: string; marker: string; authorizationReference: string;
+  operatorRoles: { name: string; catalog: string[] }[] };
+function ownedLease(request: GuardedTypedBackfillRequest): LocalLease {
+  try {
+    const i = request.identity, root = realpathSync(i.clusterRoot), data = realpathSync(i.dataDirectory);
+    if (root !== i.clusterRoot || data !== i.dataDirectory || data !== join(root, 'data') || realpathSync(i.leasePath) !== join(root, 'ownership.json')) fail('OWNED_LOCAL_IDENTITY_DRIFT');
+    const info = statSync(i.leasePath);
+    if (!info.isFile() || (info.mode & 0o077) !== 0 || process.getuid && info.uid !== process.getuid()) fail('OWNED_LOCAL_IDENTITY_DRIFT');
+    const lease = JSON.parse(readFileSync(i.leasePath, 'utf8')) as LocalLease;
+    canonicalOwnershipJson(lease);
+    if (lease.closed !== false || lease.scope !== 'OWNED_LOCAL_F10' || lease.root !== root || lease.data !== data || lease.port !== i.port || lease.pid !== i.postmasterPid ||
+      lease.pidStart !== i.postmasterStart || lease.systemIdentifier !== i.systemIdentifier || lease.authorizationReference !== request.authority.reference ||
+      !key(lease.database) || !key(lease.marker) || i.database.indexOf(lease.database + '_case_') !== 0 || i.marker !== lease.marker + ':case:' + i.database ||
+      !Array.isArray(lease.operatorRoles) || !lease.operatorRoles.some(r => r.name === i.role && Array.isArray(r.catalog) && r.catalog[0] === i.roleOid)) fail('OWNED_LOCAL_IDENTITY_DRIFT');
+    const pid = readFileSync(join(data, 'postmaster.pid'), 'utf8').split('\n');
+    if (Number(pid[0]) !== i.postmasterPid || realpathSync(pid[1]) !== data || pid[2] !== i.postmasterStart || Number(pid[3]) !== i.port) fail('OWNED_LOCAL_IDENTITY_DRIFT');
+    process.kill(i.postmasterPid, 0); // Presence check only; never stop/terminate a process.
+    return lease;
+  } catch { return fail('OWNED_LOCAL_IDENTITY_DRIFT'); }
+}
+async function databaseIdentity(client: Client, request: GuardedTypedBackfillRequest, lease: LocalLease) {
+  const i = request.identity;
+  const result = await raw(client, "SELECT current_database(),(SELECT oid::text FROM pg_database WHERE datname=current_database()),shobj_description((SELECT oid FROM pg_database WHERE datname=current_database()),'pg_database'),(SELECT system_identifier::text FROM pg_control_system()),current_setting('data_directory'),session_user::text,current_user::text,host(inet_server_addr()),inet_server_port()::text,current_setting('server_version'),current_setting('server_encoding'),current_setting('session_replication_role'),floor(extract(epoch FROM pg_postmaster_start_time()))::bigint::text,current_setting('search_path'),current_setting('unix_socket_directories'),SYSTEM_USER::text,(SELECT usesysid::text FROM pg_stat_activity WHERE pid=pg_backend_pid()),current_setting('role')");
+  const row = result.rows[0];
+  if (result.rows.length !== 1 || !same(row.slice(0, 6), [i.database, i.databaseOid, i.marker, i.systemIdentifier, i.dataDirectory, i.role]) ||
+    row[6] !== i.role || row[7] !== '127.0.0.1' || row[8] !== String(i.port) || (typeof row[9]!=='string'||!/^1[78]\./.test(row[9])) || row[10] !== 'UTF8' || row[11] !== 'origin' ||
+    row[12] !== i.postmasterStart || row[13] !== 'pg_catalog' || row[14] !== '' || row[15] !== 'scram-sha-256:'+i.role || row[16] !== i.roleOid || row[17] !== 'none') fail('OWNED_DATABASE_IDENTITY_DRIFT');
+  const role = (await raw(client, 'SELECT oid::text,rolname,rolsuper::text,rolinherit::text,rolcreaterole::text,rolcreatedb::text,rolcanlogin::text,rolreplication::text,rolbypassrls::text FROM pg_roles WHERE rolname=session_user')).rows;
+  const allowed = lease.operatorRoles.find(r => r.name === i.role)!;
+  if (role.length !== 1 || !same(role[0], allowed.catalog) || role[0][0] !== i.roleOid || !same(role[0].slice(2), ['false', 'false', 'false', 'false', 'true', 'false', 'false'])) fail('OPERATOR_ROLE_DRIFT');
+  const membership = (await raw(client, 'SELECT p.rolname,m.admin_option::text,m.inherit_option::text,m.set_option::text FROM pg_auth_members m JOIN pg_roles r ON r.oid=m.member JOIN pg_roles p ON p.oid=m.roleid WHERE r.rolname=session_user ORDER BY p.rolname')).rows;
+  if (!same(membership, [['pg_read_all_settings', 'false', 'true', 'true']])) fail('OPERATOR_ROLE_DRIFT');
+  const privileges = (await raw(client, "SELECT has_schema_privilege(session_user,'public','CREATE')::text,has_schema_privilege(session_user,'nevora_tenancy','CREATE')::text,EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname IN('public','nevora_tenancy') AND (c.relowner=(SELECT oid FROM pg_roles WHERE rolname=session_user) OR has_table_privilege(session_user,c.oid,'TRIGGER')))::text")).rows;
+  if (!same(privileges, [['false', 'false', 'false']])) fail('OPERATOR_ROLE_DRIFT');
+}
+async function installedContracts(client: Client) {
+  const registry = getOwnershipRegistry();
+  const installed = (await raw(client, 'SELECT path,source_sha256 FROM nevora_tenancy.source_migration_contract ORDER BY path')).rows;
+  if (!same(installed, OWNERSHIP_SOURCE.map(s => [s.path, s.sha256]))) fail('INSTALLED_SOURCE_DRIFT');
+  const rows = (await raw(client, "SELECT COALESCE(jsonb_agg(to_jsonb(q)),'[]'::jsonb)::text FROM (SELECT table_name,storage,anchor,primary_key_columns,sidecar_name,mirror_columns,original_columns,source_path,source_line FROM nevora_tenancy.owned_table_contract ORDER BY table_name) q")).rows;
+  const expected = registry.tables.map(t => ({ table_name: t.table, storage: t.storage, anchor: t.anchor, primary_key_columns: t.primaryKey,
+    sidecar_name: t.sidecar, mirror_columns: t.mirroredIdentityColumns, original_columns: t.columns.map(c => c.name), source_path: t.source.path, source_line: t.source.line }));
+  if (rows.length !== 1 || rows[0].length !== 1 || !same(parseMetadata(rows[0][0]), expected)) fail('INSTALLED_REGISTRY_DRIFT');
+}
+async function catalog(client: Client, facts: TypedMigrationCaptureFacts) {
+  const observed = await observeMigrationCatalog(client);
+  if (observed.digest !== facts.currentSchemaDigest || !same(observed.catalog, facts.catalog)) fail('CURRENT_CATALOG_DRIFT');
+}
+const comparatorContracts = [
+  { id: 'employees.email_ci', table: 'employees', column: 'email', index: 'employees_email_unique', expression: 'lower(email)', predicate: '(email IS NOT NULL)' },
+  { id: 'positions.name_ci', table: 'positions', column: 'name', index: 'positions_workspace_name_unique', expression: 'lower(name)', predicate: null },
+  { id: 'clocker_break_types.name_ci', table: 'clocker_break_types', column: 'name', index: 'clocker_break_type_name', expression: 'lower(name)', predicate: null },
+  { id: 'schedule_templates.active_name_ci', table: 'schedule_templates', column: 'name', index: 'schedule_templates_name_unique', expression: 'lower(name)', predicate: '(active = true)' },
+] as const;
+/** Re-evaluate the exact closed SQL comparators using the current DB collation.
+ * No JavaScript normalization, inferred locale, or tenant grouping is used. */
+async function namespaceWitnesses(client: Client, facts: TypedMigrationCaptureFacts) {
+  const rows: DatabaseComparatorRow[] = [];
+  const engine = (await raw(client, "SELECT current_setting('server_version'),current_setting('server_encoding')")).rows;
+  for (const contract of comparatorContracts) {
+    const captured = facts.namespaceComparators.catalogs.find(c => c.contractId === contract.id)!;
+    const d = captured.definition;
+    if (!same(engine, [[d.serverVersion, d.serverEncoding]])) fail('CURRENT_COMPARATOR_CATALOG_DRIFT');
+    const observed = (await raw(client, "SELECT pg_get_indexdef(i.indexrelid),pg_get_expr(i.indexprs,i.indrelid),pg_get_expr(i.indpred,i.indrelid),a.attcollation::text,i.indcollation[(i.indnkeyatts-1)]::text,i.indisunique::text,i.indisvalid::text,i.indisready::text,i.indislive::text,am.amname FROM pg_index i JOIN pg_class x ON x.oid=i.indexrelid JOIN pg_namespace n ON n.oid=x.relnamespace JOIN pg_attribute a ON a.attrelid=i.indrelid AND a.attname=$2 JOIN pg_am am ON am.oid=x.relam WHERE n.nspname='public' AND x.relname=$1 AND i.indrelid=$3::regclass", [contract.index, contract.column, 'public.' + contract.table])).rows;
+    if (observed.length !== 1 || d.expression !== contract.expression || d.predicate !== contract.predicate || !same(observed[0], [d.indexDefinition, d.expression, d.predicate, d.expressionCollation.oid, d.indexCollation.oid, 'true', 'true', 'true', 'true', 'btree'])) fail('CURRENT_COMPARATOR_CATALOG_DRIFT');
+    for (const c of [d.expressionCollation, d.indexCollation]) {
+      const actual = (await raw(client, "SELECT c.oid::text,n.nspname,c.collname,c.collprovider,c.collisdeterministic::text,c.collencoding::text,c.collcollate,c.collctype,COALESCE(to_jsonb(c)->>'colllocale',to_jsonb(c)->>'colliculocale'),c.collversion,pg_collation_actual_version(c.oid) FROM pg_collation c JOIN pg_namespace n ON n.oid=c.collnamespace WHERE c.oid=$1::oid", [c.oid])).rows;
+      if (c.version !== c.actualVersion || actual.length !== 1 || !same(actual[0], [c.oid, c.schema, c.name, c.provider, String(c.deterministic), String(c.encoding), c.lcCollate, c.lcCtype, c.locale, c.version, c.actualVersion])) fail('CURRENT_COLLATION_DRIFT');
+    }
+    const rule = getOwnershipRegistry().tables.find(t => t.table === contract.table)!;
+    const predicate = contract.predicate ?? 'true';
+    const compared = contract.expression + ' COLLATE ' + ident(d.indexCollation.schema) + '.' + ident(d.indexCollation.name);
+    const results = (await raw(client, 'SELECT ' + rule.primaryKey.map(ident).join(',') + ',(' + predicate + ')::text,' + contract.expression + ',CASE WHEN ' + predicate + ' THEN dense_rank() OVER (ORDER BY CASE WHEN ' + predicate + ' THEN ' + compared + ' END)::text ELSE NULL END FROM public.' + ident(contract.table))).rows;
+    const source = facts.tables.find(t => t.table === contract.table)!;
+    for (const result of results) {
+      const keyWires=result.slice(0,rule.primaryKey.length);
+      const row=source.rows.find(r=>same(rule.primaryKey.map(name=>r.columns.find(c=>c.name===name)!.wire),keyWires))??fail('CURRENT_COMPARATOR_ROW_DRIFT');
+      const k=[...row.key];
+      if (!['true', 'false'].includes(result[rule.primaryKey.length]??'')) fail('CURRENT_COMPARATOR_ROW_DRIFT');
+      rows.push({ contractId: contract.id, key: k, rowChecksum: row.originalChecksum, included: result[rule.primaryKey.length] === 'true', expressionValue: result[rule.primaryKey.length + 1], comparisonClass: result[rule.primaryKey.length + 2] });
+    }
+  }
+  rows.sort((a, b) => order(canonicalOwnershipJson([a.contractId, a.key]), canonicalOwnershipJson([b.contractId, b.key])));
+  if (!same(rows, facts.namespaceComparators.rows)) fail('CURRENT_COMPARATOR_ROW_DRIFT');
+}
+async function protocol(client: Client, request: GuardedTypedBackfillRequest, plan: TypedTenantBackfillPlan, lock: boolean) {
+  const rows = (await raw(client, 'SELECT phase,fence_generation::text,backfill_actor::text,capture_manifest_sha256,schema_source_commit,registry_sha256 FROM nevora_tenancy.expansion_protocol WHERE migration_id=26' + (lock ? ' FOR UPDATE' : ''))).rows;
+  const row = rows[0];
+  if (rows.length !== 1 || row[0] !== 'FENCED' || row[1] !== request.facts.fence.generation || row[2] !== null ||
+    row[3] !== null && row[3] !== plan.digest || row[4] !== OWNERSHIP_SCHEMA_COMMIT || row[5] !== plan.manifest.boundary.registryDigest) fail('FENCE_PROTOCOL_DRIFT');
+  return row[3] === plan.digest;
+}
+
+function keyWires(rule:TableOwnership,entry:TypedBackfillEntry):(string|null)[]{return rule.primaryKey.map(n=>entry.source.columns.find(c=>c.name===n)!.wire);}
+function checkedFields(result:QueryResult<(string|null)[]>,columns:ReadonlyArray<{name:string;type:string}>){if(result.fields.length!==columns.length||result.fields.some((f,i)=>f.name!==columns[i].name||f.format!=='text'||f.dataTypeID!==wireOids[columns[i].type]))fail('SOURCE_COLUMN_TYPE_DRIFT');}
+async function originalRows(client:Client,facts:TypedMigrationCaptureFacts){
+ const all:JsonValue[]=[];
+ for(const rule of getOwnershipRegistry().tables){
+  const result=await raw(client,'SELECT '+rule.columns.map(c=>ident(c.name)).join(',')+' FROM public.'+ident(rule.table));checkedFields(result,rule.columns);
+  const expected=facts.tables.find(t=>t.table===rule.table)!,seen=new Set<string>(),checks:{key:JsonValue[];checksum:string}[]=[];
+  for(const values of result.rows){
+   if(values.length!==rule.columns.length||values.some(v=>v!==null&&typeof v!=='string'))fail('SOURCE_ROW_SHAPE_DRIFT');
+   const pk=rule.primaryKey.map(n=>values[rule.columns.findIndex(c=>c.name===n)]),source=expected.rows.find(r=>same(rule.primaryKey.map(n=>r.columns.find(c=>c.name===n)!.wire),pk));if(!source||seen.has(canonicalOwnershipJson(source.key)))fail('CURRENT_SOURCE_DRIFT');seen.add(canonicalOwnershipJson(source.key));
+   const columns=rule.columns.map((c,index)=>{const wire=values[index];if(wire===null&&!c.nullable)fail('SOURCE_NULLABILITY_DRIFT');const d=decodeTypedMigrationWireValue(c.type,wire);if(d.status!=='DECODED')fail('SOURCE_WIRE_UNSUPPORTED');return {name:c.name,type:c.type,wire,value:d.value};});
+   const checksum=ownershipDigest({format:'TYPED_SQL_WIRE_V1',columns});if(checksum!==source.originalChecksum||!same(columns,source.columns))fail('CURRENT_SOURCE_DRIFT');checks.push({key:[...source.key],checksum});all.push({table:rule.table,key:[...source.key],values,originalChecksum:checksum,wireChecksum:ownershipDigest(values)});
+  }
+  checks.sort((a,b)=>order(canonicalOwnershipJson(a.key),canonicalOwnershipJson(b.key)));if(checks.length!==expected.expectedCount||ownershipDigest(checks)!==expected.expectedChecksum)fail('CURRENT_SOURCE_DRIFT');
+ }
+ all.sort((a,b)=>order(canonicalOwnershipJson([(a as Record<string,JsonValue>).table,(a as Record<string,JsonValue>).key]),canonicalOwnershipJson([(b as Record<string,JsonValue>).table,(b as Record<string,JsonValue>).key])));if(!same(all,facts.wireRows))fail('CURRENT_WIRE_SOURCE_DRIFT');
+}
+async function ownershipState(client:Client,plan:TypedTenantBackfillPlan,applied:boolean){
+ for(const rule of getOwnershipRegistry().tables){const entries=plan.entries.filter(e=>e.table===rule.table);
+  if(rule.storage==='DIRECT_IMMUTABLE'&&rule.anchor.kind!=='ROOT'&&!rule.columns.some(c=>c.name==='workspace_id')){
+   const columns=rule.primaryKey.map(n=>rule.columns.find(c=>c.name===n)!);const result=await raw(client,'SELECT '+rule.primaryKey.map(ident).join(',')+',workspace_id FROM public.'+ident(rule.table));checkedFields(result,[...columns,{name:'workspace_id',type:'text'}]);
+   const expected=entries.map(e=>[...keyWires(rule,e),applied?e.source.workspaceId:null]);const actual=result.rows;if(actual.some(r=>r.length!==columns.length+1)||!same([...actual].sort((a,b)=>order(canonicalOwnershipJson(a),canonicalOwnershipJson(b))),expected.sort((a,b)=>order(canonicalOwnershipJson(a),canonicalOwnershipJson(b)))))fail('DIRECT_OWNERSHIP_STATE_DRIFT');
+  }
+  if(rule.sidecar){const names=[...new Set([...rule.primaryKey,...rule.mirroredIdentityColumns])].sort(order),columns=names.map(n=>rule.columns.find(c=>c.name===n)!);const result=await raw(client,'SELECT '+names.map(ident).join(',')+',workspace_id,source_checksum_sha256,capture_manifest_sha256 FROM public.'+ident(rule.sidecar));checkedFields(result,[...columns,{name:'workspace_id',type:'text'},{name:'source_checksum_sha256',type:'text'},{name:'capture_manifest_sha256',type:'text'}]);
+   const expected=(applied?entries:[]).map(e=>[...names.map(n=>e.mirroredIdentity.find(c=>c.name===n)!.wire),e.source.workspaceId,e.sourceChecksum,plan.digest]);if(result.rows.some(r=>r.length!==columns.length+3)||!same([...result.rows].sort((a,b)=>order(canonicalOwnershipJson(a),canonicalOwnershipJson(b))),expected.sort((a,b)=>order(canonicalOwnershipJson(a),canonicalOwnershipJson(b)))))fail('SIDECAR_OWNERSHIP_STATE_DRIFT');
+  }
+ }
+}
+async function attribute(client:Client,rule:TableOwnership,entry:TypedBackfillEntry,planDigest:string){
+ const effect=entry.effect;
+ if(effect.kind==='ASSIGN_ADDED_DIRECT_WORKSPACE'){
+  const values=[effect.workspaceId,...keyWires(rule,entry)],where=rule.primaryKey.map((n,i)=>ident(n)+'=$'+(i+2)+'::'+casts[rule.columns.find(c=>c.name===n)!.type]).join(' AND ');
+  const result=await client.query('UPDATE public.'+ident(rule.table)+' SET workspace_id=$1::pg_catalog.text WHERE '+where+' AND workspace_id IS NULL',values);if(result.rowCount!==1)fail('DIRECT_ATTRIBUTION_NOT_EXACT');
+ }else if(effect.kind==='INSERT_TYPED_SIDECAR'){
+  const columns=effect.identity.map(c=>({name:c.name,type:c.type,wire:c.wire}));columns.push({name:'workspace_id',type:'text',wire:effect.workspaceId},{name:'source_checksum_sha256',type:'text',wire:effect.sourceChecksum},{name:'capture_manifest_sha256',type:'text',wire:planDigest});
+  const result=await client.query('INSERT INTO public.'+ident(effect.table)+'('+columns.map(c=>ident(c.name)).join(',')+') VALUES('+columns.map((c,i)=>'$'+(i+1)+'::'+casts[c.type]).join(',')+')',columns.map(c=>c.wire));if(result.rowCount!==1)fail('SIDECAR_ATTRIBUTION_NOT_EXACT');
+ }
+}
+/** Root-authorized exact fictional LOCAL custody only. No connection/resource is
+ * created. Every original native wire is rechecked; only compiler-issued added
+ * metadata effects are attempted, atomically. Parser/plan/digest identity never
+ * authenticates an operator. There is no legacy projection, durable chunk
+ * completion, journal, tenant proof, RLS, runtime, cutover or F10 completion.
+ * Caller transactions are refused; a begun COMMIT is always uncertain on error.
+ */
+export async function executeGuardedTypedLocalBackfill(client:Client,value:unknown):Promise<GuardedTypedBackfillOutcome>{
+ let began=false,committing=false,planDigest='',registered=false;
+ try{
+  // Genuine plan and complete safe detachment precede client/DB property reads.
+  const request=requestBinding(value),plan=request.plan;planDigest=plan.digest;
+  if(typeof client!=='object'||client===null||utilTypes.isProxy(client)||!(client instanceof Client))fail('OWNED_PG_CLIENT_REQUIRED');
+  if(active.has(client))fail('CLIENT_ALREADY_IN_USE');active.add(client);registered=true;
+  requireIdle(client);localConnection(client,request.identity);const lease=ownedLease(request);
+  await databaseIdentity(client,request,lease);await installedContracts(client);await catalog(client,request.facts);await protocol(client,request,plan,false);requireIdle(client);localConnection(client,request.identity);
+  began=true;await client.query('BEGIN ISOLATION LEVEL SERIALIZABLE');
+  // Session controls contain no MVCC SELECT; no snapshot/protocol read can occur
+  // before the complete deterministic self-conflicting source lock set.
+  await client.query("SET LOCAL search_path=pg_catalog; SET LOCAL row_security=off; SET LOCAL DateStyle='ISO, YMD'; SET LOCAL TimeZone='UTC'; SET LOCAL lock_timeout='5000ms'; SET LOCAL statement_timeout='15000ms'");
+  const registry=getOwnershipRegistry(),locks=[...new Set([...registry.tables.map(t=>t.table),...registry.tables.flatMap(t=>t.sidecar?[t.sidecar]:[])])].sort(order);
+  await client.query('LOCK TABLE '+locks.map(t=>'public.'+ident(t)).join(',')+' IN SHARE ROW EXCLUSIVE MODE');
+  const retry=await protocol(client,request,plan,true);ownedLease(request);await databaseIdentity(client,request,lease);await installedContracts(client);await catalog(client,request.facts);await originalRows(client,request.facts);await namespaceWitnesses(client,request.facts);await ownershipState(client,plan,retry);
+  const keys=plan.manifest.observations.constraints.keyComparators;
+  await assertTypedKeyComparatorsOnLockedSource(client,request.facts,request.captureRequest,keys,retry?{manifestDigest:plan.digest,actor:null}:undefined);
+  if(!retry){
+   const armed=await client.query("UPDATE nevora_tenancy.expansion_protocol SET backfill_actor=session_user,capture_manifest_sha256=$1 WHERE migration_id=26 AND phase='FENCED' AND fence_generation=$2::bigint AND backfill_actor IS NULL AND capture_manifest_sha256 IS NULL",[plan.digest,request.facts.fence.generation]);if(armed.rowCount!==1)fail('OPERATOR_ARM_NOT_EXACT');
+   await client.query('SET LOCAL search_path=pg_catalog,public');const rules=new Map(registry.tables.map(t=>[t.table,t]));for(const entry of plan.entries)await attribute(client,rules.get(entry.table)!,entry,plan.digest);
+   await client.query('SET CONSTRAINTS ALL IMMEDIATE');await client.query('SET LOCAL search_path=pg_catalog');
+   await originalRows(client,request.facts);await namespaceWitnesses(client,request.facts);await ownershipState(client,plan,true);await catalog(client,request.facts);await installedContracts(client);await databaseIdentity(client,request,lease);ownedLease(request);
+   await assertTypedKeyComparatorsOnLockedSource(client,request.facts,request.captureRequest,keys,{manifestDigest:plan.digest,actor:request.identity.role});
+   const cleared=await client.query("UPDATE nevora_tenancy.expansion_protocol SET backfill_actor=NULL WHERE migration_id=26 AND phase='FENCED' AND fence_generation=$2::bigint AND backfill_actor=session_user AND capture_manifest_sha256=$1",[plan.digest,request.facts.fence.generation]);if(cleared.rowCount!==1)fail('OPERATOR_CLEAR_NOT_EXACT');
+  }
+  if(!await protocol(client,request,plan,true))fail('COMMITTED_MANIFEST_REQUIRED');
+  await originalRows(client,request.facts);await ownershipState(client,plan,true);await namespaceWitnesses(client,request.facts);await catalog(client,request.facts);await installedContracts(client);await databaseIdentity(client,request,lease);ownedLease(request);localConnection(client,request.identity);
+  await assertTypedKeyComparatorsOnLockedSource(client,request.facts,request.captureRequest,keys,{manifestDigest:plan.digest,actor:null});
+  committing=true;await client.query('COMMIT');began=false;
+  return {status:retry?'UNCHANGED':'APPLIED',mode:'WHOLE_PLAN_ATOMIC',planDigest:plan.digest,sourceRows:request.facts.tables.reduce((n,t)=>n+t.expectedCount,0),verification:'OWNED_LOCAL_ATOMIC_TYPED_BACKFILL_NOT_F10_COMPLETE'};
+ }catch(error){
+  if(committing)return {status:'UNCERTAIN',code:'COMMIT_OUTCOME_UNKNOWN',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};
+  if(began){try{await client.query('ROLLBACK');}catch{return {status:'UNCERTAIN',code:'ROLLBACK_UNCONFIRMED',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};}}
+  return {status:'BLOCKED',code:typeof error==='object'&&error!==null&&!utilTypes.isProxy(error)&&error instanceof GuardFailure?error.code:isKeyComparatorRecheckFailure(error)?error.code:'TYPED_GUARDED_BACKFILL_FAILED'};
+ }finally{if(registered)active.delete(client);}
+}
