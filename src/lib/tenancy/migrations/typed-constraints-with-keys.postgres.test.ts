@@ -13,6 +13,7 @@ import { DATABASE_NAMESPACES, isIssuedTypedDatabaseNamespaceObservations, valida
 import { getTypedReferenceColumnContract, isIssuedTypedMigrationCellReferences, validateTypedMigrationCellReferences, type TypedReferenceClassificationInput } from './typed-reference';
 import { isIssuedTypedOwnershipSourceObservations, validateTypedSnapshotOwnership, type TypedOwnershipAssignments, type TypedOwnershipSourceObservations } from './typed-ownership';
 import { isIssuedTypedSourceConstraintObservations, validateTypedSourceConstraints, type TypedSourceConstraintWithKeysObservations } from './typed-constraints';
+import { compileTypedTenantBackfill, isIssuedTypedTenantBackfillPlan } from './typed-backfill';
 
 // Root alone starts/stops the fictional cluster and invokes this opt-in suite.
 // No ambient application URL, cluster startup, foreign DB, role installation or
@@ -50,6 +51,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed constraint successor with 
   type CaptureChain = { facts: TypedMigrationCaptureFacts; snapshot: InspectedTypedSnapshot; keyObservations: TypedKeyComparatorObservations;
     ownership: TypedOwnershipSourceObservations; namespaces: TypedDatabaseNamespaceObservations; assignments: TypedOwnershipAssignments };
   let chain: CaptureChain, currentFenceGeneration = '0';
+  let secondChain: CaptureChain;
   type SqlPair = { contractId: string; left: (string | null)[]; right: (string | null)[]; equal: boolean; less: boolean };
   let sqlPairs: SqlPair[] = [], referenceSnapshot: string | undefined;
   let initialRows: Record<string, { columns: string[]; rows: (string | null)[][] }> | undefined;
@@ -471,5 +473,81 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed constraint successor with 
     const observation = v2(other); expect(observation.boundary).toEqual(other.ownership.boundary);
     expect(observation.keyComparators).toBe(other.keyObservations); expect(observation.keyCaptureChecksum).toBe(other.keyObservations.captureChecksum);
     receipt('case-06-second-v2-observations.json', observation);
+    secondChain = other;
+  });
+  actualCase('07', 'compiles complete immutable typed plans from actual source without projecting cells or granting write authority', () => {
+    const constraints = v2();
+    const before = canonicalOwnershipJson(chain.facts);
+    const compile = (chunkSize: number) => {
+      const result = compileTypedTenantBackfill(chain.snapshot, chain.ownership, constraints, { chunkSize });
+      expect(result.status, JSON.stringify(result)).toBe('PLANNED');
+      if (result.status !== 'PLANNED') throw Error('Genuine source compiler rejected fixture');
+      expect(isIssuedTypedTenantBackfillPlan(result.plan)).toBe(true);
+      return result.plan;
+    };
+    const plan = compile(2);
+    expect(plan.digest).toBe(ownershipDigest(plan.manifest));
+    expect(plan.verification).toBe('PURE_NOT_DATABASE_OPERATOR_OR_EFFECT_AUTHORITY');
+    expect(plan.manifest.observations.snapshot).toBe(chain.snapshot);
+    expect(plan.manifest.observations.ownership).toBe(chain.ownership);
+    expect(plan.manifest.observations.constraints).toBe(constraints);
+    expect(plan.manifest.tables).toHaveLength(68);
+    expect(plan.entries).toHaveLength(chain.ownership.rows.length);
+    for (const [index, table] of plan.manifest.tables.entries()) {
+      const rule = registry.tables[index], source = chain.snapshot.tables[index];
+      expect(table.table).toBe(rule.table); expect(table.originalColumns).toEqual(rule.columns);
+      expect(table.globalFences).toEqual(rule.globalFences); expect(table.primaryKey).toEqual(rule.primaryKey);
+      expect(table.count).toBe(source.rows.length); expect(table.sourceChecksum).toBe(source.expectedChecksum);
+    }
+    for (const entry of plan.entries) {
+      const rule = registry.tables.find(t => t.table === entry.table)!;
+      const owner = chain.ownership.rows.find(r => r.table === entry.table && same(r.key, entry.key))!;
+      const wire = chain.facts.wireRows.find(r => r !== null && typeof r === 'object' && !Array.isArray(r)
+        && r.table === entry.table && same(r.key, entry.key)) as { values: (string | null)[]; wireChecksum: string };
+      expect(entry.source).toBe(owner); expect(entry.sourceChecksum).toBe(owner.rowChecksum);
+      expect(entry.wireValues).toEqual(wire.values); expect(entry.wireChecksum).toBe(wire.wireChecksum);
+      expect(entry.mirroredIdentity).toEqual([...new Set([...rule.primaryKey, ...rule.mirroredIdentityColumns])].sort()
+        .map(name => owner.columns.find(c => c.name === name)!));
+      expect(entry.mirroredIdentityChecksum).toBe(ownershipDigest(entry.mirroredIdentity));
+      expect(entry.expectedMetadataChecksum).toBe(ownershipDigest(entry.effect));
+      const expected = rule.storage === 'GLOBAL_SECURITY_CONTROL' ? 'GLOBAL_NO_WRITE' : rule.sidecar ? 'INSERT_TYPED_SIDECAR'
+        : rule.storage === 'DIRECT_IMMUTABLE' && rule.anchor.kind !== 'ROOT' && !rule.columns.some(c => c.name === 'workspace_id')
+          ? 'ASSIGN_ADDED_DIRECT_WORKSPACE' : 'PRESERVE_EXISTING_NO_WRITE';
+      expect(entry.action).toBe(expected); expect(entry.effect.kind).toBe(expected);
+      for (const [i, cell] of owner.columns.entries()) expect(entry.source.columns[i].lineage).toBe(cell.lineage);
+      if (entry.effect.kind === 'INSERT_TYPED_SIDECAR') {
+        expect(entry.effect.table).toBe(rule.sidecar); expect(entry.effect.identity).toBe(entry.mirroredIdentity);
+        expect(entry.effect.captureManifestBinding).toBe('ORIGINAL_TYPED_PLAN_DIGEST');
+      }
+      expect(Object.isFrozen(entry)).toBe(true); expect(Object.isFrozen(entry.source)).toBe(true);
+    }
+    expect(compile(2)).toEqual(plan);
+    for (const chunkSize of [1, 2, 1000]) {
+      const candidate = compile(chunkSize);
+      expect(candidate.chunks.flatMap(c => c.entries)).toEqual(candidate.entries);
+      for (const [ordinal, chunk] of candidate.chunks.entries()) {
+        const { id, retryIdentity, entries, verification, ...descriptor } = chunk;
+        expect(chunk.count).toBe(entries.length); expect(chunk.count).toBeGreaterThan(0); expect(chunk.count).toBeLessThanOrEqual(chunkSize);
+        expect(chunk.ordinal).toBe(ordinal); expect(chunk.planDigest).toBe(candidate.digest);
+        expect(chunk.keys).toEqual(entries.map(e => e.key)); expect(chunk.firstKey).toEqual(chunk.keys[0]); expect(chunk.lastKey).toEqual(chunk.keys.at(-1));
+        expect(chunk.sourceChecksum).toBe(ownershipDigest(entries.map(e => ({ key: e.key, sourceChecksum: e.sourceChecksum, wireChecksum: e.wireChecksum }))));
+        expect(chunk.expectedMetadataChecksum).toBe(ownershipDigest(entries.map(e => ({ key: e.key, action: e.action, checksum: e.expectedMetadataChecksum }))));
+        expect(id).toBe(ownershipDigest(descriptor)); expect(retryIdentity).toBe(id);
+        expect(verification).toBe('PURE_NOT_DATABASE_OPERATOR_OR_EFFECT_AUTHORITY'); expect(Object.isFrozen(chunk)).toBe(true);
+      }
+    }
+    expect(Object.isFrozen(plan)).toBe(true); expect(Object.isFrozen(plan.manifest)).toBe(true);
+    expect(Object.isFrozen(plan.entries)).toBe(true); expect(Object.isFrozen(plan.chunks)).toBe(true);
+    for (const imitation of [{ ...plan }, JSON.parse(canonicalOwnershipJson(plan))]) expect(isIssuedTypedTenantBackfillPlan(imitation)).toBe(false);
+    let traps = 0;
+    const proxy = new Proxy(plan, { get() { traps++; throw Error('Unexpected plan read'); } });
+    expect(isIssuedTypedTenantBackfillPlan(proxy)).toBe(false); expect(traps).toBe(0);
+    expect(compileTypedTenantBackfill(chain.snapshot, secondChain.ownership, constraints, { chunkSize: 2 }))
+      .toEqual({ status: 'BLOCKED', code: 'TYPED_BACKFILL_BOUNDARY_DRIFT' });
+    expect(canonicalOwnershipJson(chain.facts)).toBe(before);
+    receipt('case-07-typed-plan.json', plan);
+    receipt('case-07-scope.json', { completeTables: 68, originalCellsRetained: true, chunkSizes: [1, 2, 1000],
+      effectsExecuted: false, journalWritten: false, operatorAuthorityIssued: false, businessRowsChanged: false,
+      verification: 'PURE_TYPED_PLAN_FROM_ACTUAL_SOURCE_ONLY' });
   });
 });
