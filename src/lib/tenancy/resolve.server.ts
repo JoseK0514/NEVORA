@@ -1,6 +1,6 @@
 import 'server-only';
 import { createHash } from 'node:crypto';
-import { getDb } from '../db';
+import { getTenantRuntimeDb } from '../db';
 import { normalizeWorkspaceLocator } from './identity';
 import type {
   CalendarReadProof, CalendarReadProofFacts, ClockerProof, ClockerProofFacts, PortalProof, PortalProofFacts,
@@ -15,11 +15,11 @@ const provisionerFacts = new WeakMap<object, ProvisionerScopeFacts>();
 const DENY = Object.freeze({ status: 'DENY' as const });
 const UNAVAILABLE = Object.freeze({ status: 'UNAVAILABLE' as const });
 const seams = {
-  portal: 'SELECT nevora_tenancy.resolve_portal($1::text,$2::text) AS facts',
-  clocker: 'SELECT nevora_tenancy.resolve_clocker($1::text,$2::text) AS facts',
-  calendar: 'SELECT nevora_tenancy.resolve_calendar($1::text) AS facts',
-  worker: 'SELECT nevora_tenancy.resolve_worker($1::text,$2::text,$3::text,$4::text,$5::text,$6::text) AS facts',
-  provisioner: 'SELECT nevora_tenancy.resolve_provisioner($1::text,$2::text,$3::text,$4::text,$5::text,$6::text,$7::text,$8::text) AS facts',
+  portal: 'nevora_tenancy.resolve_portal($1::text,$2::text)',
+  clocker: 'nevora_tenancy.resolve_clocker($1::text,$2::text)',
+  calendar: 'nevora_tenancy.resolve_calendar($1::text)',
+  worker: 'nevora_tenancy.resolve_worker($1::text,$2::text,$3::text,$4::text,$5::text,$6::text)',
+  provisioner: 'nevora_tenancy.resolve_provisioner($1::text,$2::text,$3::text,$4::text,$5::text,$6::text,$7::text,$8::text)',
 } as const;
 class Denied extends Error {}
 const malformed = (): never => { throw new Error('resolver_metadata'); };
@@ -123,7 +123,13 @@ function parseProvisioner(row: Record<string, unknown>): ProvisionerScopeFacts {
 }
 async function lookup(seam: keyof typeof seams, values: string[]): Promise<Record<string, unknown> | null> {
   // No queryRows coercion: malformed transport must not silently become DENY.
-  const rows: unknown = await getDb().query(seams[seam], values);
+  // Resolver expressions are closed server constants. No legacy/bootstrap URL
+  // is permitted even for anonymous or control-purpose identity discovery.
+  // Provisioner lookup yields only narrow grant metadata; it grants no DDL or
+  // ordinary tenant authority. SQL role helpers remain an installation gate.
+  const role = seam === 'worker' ? 'WORKER' : 'APP';
+  const sql = `SELECT CASE WHEN nevora_tenancy.assert_runtime_role('${role}'::text) IS TRUE THEN ${seams[seam]} ELSE NULL::jsonb END AS facts`;
+  const rows: unknown = await getTenantRuntimeDb(role).query(sql, values);
   if (!Array.isArray(rows) || rows.length > 1) return malformed();
   if (!rows.length) return null;
   const row = record(rows[0]);

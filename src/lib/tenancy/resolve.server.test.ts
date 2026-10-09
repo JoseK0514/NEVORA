@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
 vi.mock('server-only', () => ({}));
 const database = vi.hoisted(() => ({ query: vi.fn() }));
-vi.mock('../db', () => ({ getDb: () => database }));
+const transports = vi.hoisted(() => ({ legacy: vi.fn(() => database), runtime: vi.fn(() => database) }));
+vi.mock('../db', () => ({ getDb: transports.legacy, getTenantRuntimeDb: transports.runtime }));
 import { getProvisionerScopeFacts, getTenantProofFacts, resolveCalendarReadProof, resolveClockerProof, resolvePortalProof, resolveProvisionerScope, resolveWorkerProof } from './resolve.server';
 import type { ProvisionerScope, TenantProof } from './types';
 
@@ -29,7 +30,7 @@ async function allowedPortal() {
   return result.proof;
 }
 
-beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(NOW); database.query.mockReset(); });
+beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(NOW); database.query.mockReset(); transports.legacy.mockClear(); transports.runtime.mockClear(); });
 
 describe('server-local proof authenticity and least metadata', () => {
   it('issues genuine frozen authority without exposing DB metadata in the proof object', async () => {
@@ -70,7 +71,7 @@ describe('server-local proof authenticity and least metadata', () => {
 describe('narrow resolver boundary', () => {
   it('uses a constant parameterized portal seam and binds locator and session digest', async () => {
     await allowedPortal();
-    expect(database.query.mock.calls).toEqual([['SELECT nevora_tenancy.resolve_portal($1::text,$2::text) AS facts', ['tenant-aa', digest]]]);
+    expect(database.query.mock.calls).toEqual([['SELECT CASE WHEN nevora_tenancy.assert_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_portal($1::text,$2::text) ELSE NULL::jsonb END AS facts', ['tenant-aa', digest]]]);
     for (const changed of [{ locator: 'tenant-bb' }, { sessionTokenHash: 'b'.repeat(64) }, { kind: 'CLOCKER' }]) {
       respond({ ...portal(), ...changed });
       expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'DENY' });
@@ -133,7 +134,7 @@ describe('narrow resolver boundary', () => {
     expect(result.status).toBe('ALLOW');
     if (result.status !== 'ALLOW') throw Error('fixture');
     expect(getTenantProofFacts(result.proof)).toMatchObject({ kind: 'CLOCKER', employeeId: 'employee-a', credentialVersion: '6', pinVersion: '5' });
-    expect(database.query.mock.calls[0]).toEqual(['SELECT nevora_tenancy.resolve_clocker($1::text,$2::text) AS facts', [hash(device, 'nevora-clocker-v1\0'), hash(pin, 'nevora-clocker-identity-v1\0')]]);
+    expect(database.query.mock.calls[0]).toEqual(['SELECT CASE WHEN nevora_tenancy.assert_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_clocker($1::text,$2::text) ELSE NULL::jsonb END AS facts', [hash(device, 'nevora-clocker-v1\0'), hash(pin, 'nevora-clocker-identity-v1\0')]]);
     expect(JSON.stringify(getTenantProofFacts(result.proof))).not.toContain(device);
     respond({ ...clocker(), pinSessionTokenHash: digest });
     expect(await resolveClockerProof(device, pin)).toEqual({ status: 'DENY' });
@@ -308,4 +309,27 @@ describe('variant-specific bounded authority', () => {
     respond({ ...portal(), role: 'EMPLOYEE' });
     expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' });
   });
+});
+
+describe('root dedicated resolver transport regression',()=>{
+ it.each([
+  ['PORTAL','APP',portal,()=>resolvePortalProof('tenant-aa',digest)],
+  ['CLOCKER','APP',clocker,()=>resolveClockerProof(device,pin)],
+  ['CALENDAR_READ','APP',calendar,()=>resolveCalendarReadProof(digest)],
+  ['WORKER','WORKER',worker,()=>resolveWorkerProof(workerIdentity,claim)],
+  ['PROVISIONER','APP',provisioner,()=>resolveProvisionerScope(operator,'test','TENANT_RESTORE')],
+ ] as const)('resolves %s only with dedicated %s transport and role guard',async(_kind,role,facts,resolve)=>{
+  respond(facts());expect((await resolve()).status).toBe('ALLOW');
+  expect(transports.legacy).not.toHaveBeenCalled();
+  expect(transports.runtime).toHaveBeenCalledExactlyOnceWith(role);
+  const query=database.query.mock.calls[0][0];
+  expect(query).toContain(`CASE WHEN nevora_tenancy.assert_runtime_role('${role}'::text) IS TRUE THEN nevora_tenancy.resolve_`);
+  expect(query).toContain('ELSE NULL::jsonb END AS facts');
+ });
+});
+
+it('returns only unavailable when dedicated runtime configuration throws private diagnostics',async()=>{
+ transports.runtime.mockImplementationOnce(()=>{throw Error('fictional-private-configuration-marker');});respond(portal());
+ expect(await resolvePortalProof('tenant-aa',digest)).toEqual({status:'UNAVAILABLE'});
+ expect(transports.legacy).not.toHaveBeenCalled();expect(database.query).not.toHaveBeenCalled();
 });

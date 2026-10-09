@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
 const db = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
-vi.mock('../db', () => ({ getDb: () => db, getTenantRuntimeDb: vi.fn(() => db) }));
+vi.mock('../db', () => ({ getDb: vi.fn(()=>{throw Error('legacy proof transport forbidden');}), getTenantRuntimeDb: vi.fn(() => db) }));
 import { getTenantRuntimeDb } from '../db';
 import { resolvePortalProof } from './resolve.server';
 import type { PortalProof } from './types';

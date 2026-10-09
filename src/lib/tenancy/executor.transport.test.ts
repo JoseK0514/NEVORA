@@ -52,7 +52,8 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     const { proof, contract, executor } = await modules();
     expect(await executor.createTenantExecutor(proof).query(contract.workspaceSnapshot(proof))).toMatchObject({ id: 'tenant-a' });
     expect(requests).toHaveLength(2);
-    expect(new Headers(requests[0].options.headers).get('Neon-Connection-String')).toContain('fictional_resolver:fictional_password@ep-fictional-resolver');
+    expect(new Headers(requests[0].options.headers).get('Neon-Connection-String')).toContain('fictional_app:fictional_password@ep-fictional-app');
+    expect(requests[0].body.query).toContain("CASE WHEN nevora_tenancy.assert_runtime_role('APP'::text) IS TRUE THEN nevora_tenancy.resolve_portal");
     expect(new Headers(requests[1].options.headers).get('Neon-Connection-String')).toContain('fictional_app:fictional_password@ep-fictional-app');
     expect(requests[1].body.queries).toHaveLength(5);
     expect(requests[1].body).not.toHaveProperty('query');
@@ -91,4 +92,20 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     expect(() => getTenantRuntimeDb('RESOLVER' as never)).toThrow('tenant_runtime_not_configured');
     expect(requests).toHaveLength(0);
   });
+});
+
+describe('installed SDK resolver configuration isolation',()=>{
+ it('returns unavailable with zero HTTP when APP is absent despite configured legacy and WORKER URLs',async()=>{
+  vi.stubEnv('NEVORA_APP_DATABASE_URL','');
+  const resolver=await import('./resolve.server');
+  expect(await resolver.resolvePortalProof('tenant-aa',digest)).toEqual({status:'UNAVAILABLE'});
+  expect(requests).toHaveLength(0);
+ });
+ it('returns unavailable with zero HTTP when WORKER is absent despite configured legacy and APP URLs',async()=>{
+  vi.stubEnv('NEVORA_WORKER_DATABASE_URL','');
+  const resolver=await import('./resolve.server');
+  expect(await resolver.resolveWorkerProof({workerId:'worker-a',credentialDigest:digest,environment:'test'},
+   {deliveryId:'delivery-a',generation:'generation-a',leaseToken:'fictional-lease-token-a'})).toEqual({status:'UNAVAILABLE'});
+  expect(requests).toHaveLength(0);
+ });
 });
