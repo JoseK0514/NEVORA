@@ -4,11 +4,12 @@ import { readFileSync,writeFileSync,realpathSync } from 'node:fs';
 import { join,resolve } from 'node:path';
 import { randomBytes } from 'node:crypto';
 import { Client } from 'pg';
-import { decodeMigrationWireValue,captureTenantMigrationFacts,captureTypedTenantMigrationFacts,observeMigrationCatalog,type MigrationCaptureRequest } from './capture.server';
+import { decodeMigrationWireValue,captureTenantMigrationFacts,captureTypedTenantMigrationFacts,observeMigrationCatalog,type MigrationCaptureRequest,type TypedMigrationCaptureFacts } from './capture.server';
 import { getOwnershipRegistry,OWNERSHIP_SOURCE,ownershipDigest,canonicalOwnershipJson } from './ownership';
 import { preflightTenantBackfill } from './backfill';
 import { parseLosslessTextArrayWire,isIssuedLosslessTextArrayEnvelope } from './lossless-array';
 import { traverseTypedMigrationWireValue,isIssuedTypedMigrationCellLineage } from './typed-lineage';
+import {inspectTypedMigrationSnapshot,isIssuedInspectedTypedSnapshot} from './typed-snapshot';
 
 describe('privileged migration capture wire decoding',()=>{
  it('keeps signed bigint and fixed-scale numeric without Number conversion',()=>{
@@ -51,6 +52,13 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
  let lease:{closed:boolean;root:string;data:string;port:number;pid:number;pidStart:string;credentialFile:string;user:string;database:string;databaseOid:number;systemIdentifier:string;marker:string};
  const quote=(v:string)=>'"'+v.replace(/"/g,'""')+'"';
  const registry=getOwnershipRegistry();
+ function inspectedTypedCapture(facts:TypedMigrationCaptureFacts,sourceRequest:MigrationCaptureRequest=request){
+  const result=inspectTypedMigrationSnapshot(facts,{sourceDigest:sourceRequest.sourceDigest,currentSchemaDigest:sourceRequest.catalogBaseline.catalogDigest,snapshotId:facts.snapshot.id,fenceGeneration:facts.fence.generation,factsDigest:facts.factsDigest});
+  expect(result.status,JSON.stringify(result)).toBe('INSPECTED');if(result.status!=='INSPECTED')throw Error('Expected complete owned typed snapshot integrity');
+  expect(result.snapshot.tables.map(t=>[t.table,t.expectedCount,t.expectedChecksum])).toEqual(facts.tables.map(t=>[t.table,t.expectedCount,t.expectedChecksum]));
+  expect(isIssuedInspectedTypedSnapshot(result.snapshot)).toBe(true);expect(result.snapshot.verification).toContain('NOT_OWNERSHIP_NAMESPACE_SEMANTICS_OPERATOR_OR_DATABASE_AUTHORITY');
+  expect(Object.isFrozen(result.snapshot)).toBe(true);return result.snapshot;
+ }
  let initialRows:unknown;
  const connect=(database:string)=>new Client({host:'127.0.0.1',port:lease.port,user:lease.user,password:readFileSync(lease.credentialFile,'utf8'),database,connectionTimeoutMillis:3000,statement_timeout:15000});
  async function catalog(){
@@ -232,6 +240,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   const result=await captureTypedTenantMigrationFacts(client,request);
   expect(result.status,JSON.stringify(result)).toBe('CAPTURED');
   if(result.status!=='CAPTURED')throw new Error('Expected typed capture');
+  inspectedTypedCapture(result.facts);
   expect(result.facts.format).toBe('TYPED_SQL_WIRE_V1');
   expect(result.facts.verification).toBe('OWNED_LOCAL_TYPED_DATABASE_FACTS_NOT_BACKFILL_AUTHORITY');
   expect(result.facts.tables.map(t=>t.table)).toEqual(registry.tables.map(t=>t.table));
@@ -267,6 +276,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
    const result=await captureTypedTenantMigrationFacts(client,request);
    expect(result.status,JSON.stringify(result)).toBe('CAPTURED');
    if(result.status!=='CAPTURED')throw new Error('Expected typed JSON capture');
+  inspectedTypedCapture(result.facts);
    const row=result.facts.tables.find(t=>t.table==='employee_scheduling_settings')!.rows.find(r=>r.key[0]==='capture-owner')!;
    const column=row.columns.find(c=>c.name==='operational_rule_profile')!;
    expect(column.wire).toBe(actual);
@@ -431,6 +441,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   const result=await captureTypedTenantMigrationFacts(client,request);
   expect(result.status,JSON.stringify(result)).toBe('CAPTURED');
   if(result.status!=='CAPTURED')throw new Error('Expected typed array capture');
+  inspectedTypedCapture(result.facts);
   const row=result.facts.tables.find(t=>t.table==='calendar_subscriptions')!.rows.find(r=>r.key[0]==='00000000-0000-4000-8000-000000000004')!;
   const column=row.columns.find(c=>c.name==='allowed_location_ids')!;
   expect(column.wire).toBe('[0:0]={loc-1}');
@@ -472,6 +483,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
    const typed=await captureTypedTenantMigrationFacts(isolated,local);
    expect(typed.status,JSON.stringify(typed)).toBe('CAPTURED');
    if(typed.status!=='CAPTURED')throw new Error('Expected distinct JSON null capture');
+   inspectedTypedCapture(typed.facts,local);
    const operation=typed.facts.tables.find(t=>t.table==='calendar_operations')!.rows[0];
    expect(operation.columns.find(c=>c.name==='result')!.wire).toBe('null');
    const employee=typed.facts.tables.find(t=>t.table==='employees')!.rows.find(r=>r.key[0]==='null-owner')!;
