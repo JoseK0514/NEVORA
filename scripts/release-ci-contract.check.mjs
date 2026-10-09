@@ -22,3 +22,9 @@ test('existing aggregate rejects failed, cancelled, skipped, neutral and missing
   assert.throws(()=>verifyRequiredJobs(candidate), name+' '+state+' must reject');
  }
 });
+test('owner release hold disables Vercel Git deployments for every branch',()=>{
+ const config=JSON.parse(readFileSync('vercel.json','utf8'));
+ // Branch maps leave unspecified integration branches enabled by default.
+ assert.equal(config.git?.deploymentEnabled,false,
+  'The release hold requires global false; branch exclusions do not cover eventual integration');
+});
