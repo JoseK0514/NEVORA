@@ -16,6 +16,13 @@ export type TypedMigrationLegacyOutcome=Readonly<{status:'CONVERTED';value:JsonV
 // Local parser provenance only. A serialized descriptor, clone or proxy cannot
 // become issued. Issuance NEVER authenticates a database, operator or tenant.
 const issued=new WeakMap<object,LosslessJsonEnvelope|null>();
+/** Trap-free local cell-parser provenance for lossless traversal. Does not
+ * certify array syntax, database observations, references, operator authority
+ * or tenant/runtime capabilities. Clones and proxies cannot become issued.
+ */
+export function isIssuedTypedMigrationWireValue(input:unknown):input is TypedMigrationWireValue{
+ return typeof input==='object'&&input!==null&&issued.has(input);
+}
 const blocked=(code:string)=>Object.freeze({status:'BLOCKED' as const,code});
 function issue(value:TypedMigrationWireValue,json:LosslessJsonEnvelope|null=null):TypedMigrationWireOutcome{
  const frozen=Object.freeze(value);

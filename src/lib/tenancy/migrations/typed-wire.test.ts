@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { describe,expect,it } from 'vitest';
 import { canonicalOwnershipJson,getOwnershipRegistry } from './ownership';
 import { decodeTypedMigrationWireValue,projectTypedMigrationWireValueToLegacy,TYPED_MIGRATION_SOURCE_TYPES,type TypedMigrationWireValue } from './typed-wire';
+import * as typedCodec from './typed-wire';
 
 function decoded(type:unknown,raw:unknown):TypedMigrationWireValue{
  const result=decodeTypedMigrationWireValue(type,raw);
@@ -21,6 +22,35 @@ const samples:Record<string,string>={
  'numeric(5,2)':'99.10',bigint:'9223372036854775807',
  timestamp:'2026-10-09 01:02:03.000001','char(32)':'value   ',
 };
+describe('typed cell parser issuance boundary for lossless traversal',()=>{
+ const isIssued=(input:unknown)=>(typedCodec as unknown as {isIssuedTypedMigrationWireValue:(value:unknown)=>boolean}).isIssuedTypedMigrationWireValue(input);
+ it('recognizes only issued cells for every source type, including exact SQL NULL',()=>{
+  for(const type of TYPED_MIGRATION_SOURCE_TYPES){expect(isIssued(decoded(type,samples[type]))).toBe(true);expect(isIssued(decoded(type,null))).toBe(true);}
+ });
+ it('rejects clones and serialized descriptors without structural authority',()=>{
+  const value=decoded('jsonb','{"id":9007199254740993}');
+  expect(isIssued({...value})).toBe(false);expect(isIssued(JSON.parse(JSON.stringify(value)))).toBe(false);
+ });
+ it('rejects hostile and revoked proxies without invoking traps',()=>{
+  let calls=0;const value=decoded('text','exact');
+  const proxy=new Proxy(value,{get(){calls++;throw Error('must not read');},getOwnPropertyDescriptor(){calls++;throw Error('must not inspect');},ownKeys(){calls++;throw Error('must not enumerate');}});
+  const revoked=Proxy.revocable(value,{});revoked.revoke();
+  expect(isIssued(proxy)).toBe(false);expect(isIssued(revoked.proxy)).toBe(false);expect(calls).toBe(0);
+ });
+ it('rejects primitives, functions and arbitrary non-data objects',()=>{
+  for(const value of [null,undefined,true,0,'text',Symbol('fictional'),()=>{},Object.create(null),new Date()])expect(isIssued(value)).toBe(false);
+ });
+ it('keeps outcome, wire metadata and nested JSON data distinct from cell issuance',()=>{
+  const result=decodeTypedMigrationWireValue('jsonb','{"kind":"PORTAL","tenant":"a"}');
+  expect(result.status).toBe('DECODED');if(result.status!=='DECODED'||result.value.kind!=='JSON')throw Error('fixture');
+  expect(isIssued(result)).toBe(false);expect(isIssued(result.value.wire)).toBe(false);expect(isIssued(result.value.value)).toBe(false);expect(isIssued(result.value)).toBe(true);
+ });
+ it('does not turn raw-array cell issuance into parsed-array or DB authority',()=>{
+  const raw=decoded('text[]','deliberately unparsed array wire');
+  expect(isIssued(raw)).toBe(true);expect(raw.kind).toBe('RAW_SQL_ARRAY');
+  expect(projectTypedMigrationWireValueToLegacy(raw)).toEqual({status:'BLOCKED',code:'RAW_SQL_ARRAY_PROJECTION_UNSUPPORTED'});
+ });
+});
 describe('pure exact typed migration wire descriptors',()=>{
  it('covers exactly every source registry type with source-bound representative values',()=>{
   const actual=[...new Set(getOwnershipRegistry().tables.flatMap(t=>t.columns.map(c=>c.type)))].sort();
