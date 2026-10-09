@@ -18,8 +18,9 @@ let db:Awaited<ReturnType<typeof createDisposableNotificationDatabase>>;
 let fixtureTimeZone:string;
 // Set only the disposable workspace's civil hour. Keep real DB/service clocks
 // and the actual quiet-hours policy; immediate-delivery tests must not depend on
-// the engineer's wall clock. Fixed-offset zones avoid DST boundary ambiguity.
-function fixtureZoneForHour(hour:number){const offset=(new Date().getUTCHours()-hour+36)%24-12;return 'Etc/GMT'+(offset>=0?'+':'')+offset;}
+// the engineer's wall clock. Select a supported named IANA zone using its actual
+// current civil hour, preserving the workspace's named-zone validation.
+function fixtureZoneForHour(hour:number){const now=new Date(),zone=Intl.supportedValuesOf('timeZone').find(value=>Number(businessTime(now,value).slice(0,2))===hour);if(!zone)throw Error('No controlled named fixture timezone');notificationPolicyFor(zone);return zone;}
 const owner:SessionMutationProof={employee:{id:'owner',firstName:'Fictional',lastName:'Owner',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 const employee:SessionMutationProof={employee:{id:'employee',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:'b'.repeat(64)};
 const draft:CommunicationDraft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'loc-1'},title:'Private operational title',body:'Private body and location',acknowledgement:'REQUIRED',expiresAt:null};
