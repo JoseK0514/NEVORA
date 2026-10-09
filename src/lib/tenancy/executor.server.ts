@@ -49,7 +49,8 @@ export function createTenantExecutor(proof: TenantProof): TenantExecutor {
         sql.query(CONTEXT, [facts.workspaceId, facts.kind, principal(facts), facts.workspaceIncarnation]),
         sql.query(LOCK_AND_GUARD, [factsJson]),
         ...plans.map(plan => sql.query(plan.text, [...plan.values])),
-        sql.query(FINAL_GUARD, [factsJson])];
+        sql.query(FINAL_GUARD, [factsJson]),
+        sql.query(ROLE, [role])];
       results = await sql.transaction(queries, { isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false,
         ...(signal ? { fetchOptions: { signal } } : {}) });
     } catch {
@@ -58,8 +59,9 @@ export function createTenantExecutor(proof: TenantProof): TenantExecutor {
     }
     checkAbort(signal);
     getTenantProofFacts(proof);
-    if (!Array.isArray(results) || results.length !== plans.length + 4 ||
-      !guardResult(results[0]) || !guardResult(results[2]) || !guardResult(results[results.length - 1])) return unavailable();
+    if (!Array.isArray(results) || results.length !== plans.length + 5 ||
+      !guardResult(results[0]) || !guardResult(results[2]) ||
+      !guardResult(results[results.length - 2]) || !guardResult(results[results.length - 1])) return unavailable();
     try { return plans.map((plan, index) => plan.decode(results[index + 3])); } catch { return unavailable(); }
   }
   return Object.freeze({

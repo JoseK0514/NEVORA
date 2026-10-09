@@ -24,13 +24,39 @@ async function proof(workspaceId = 'tenant-a') {
   return result.proof;
 }
 const workspaceRows = (id = 'tenant-a') => [{ id, name: 'Fictional', time_zone: 'UTC', active: true }];
-const guardedResults = (rows: unknown[][]) => [[{ guard: 1 }], [{ context: 'ignored-internal' }], [{ guard: 1 }], ...rows, [{ guard: 1 }]];
+const guardedResults = (rows: unknown[][]) => [[{ guard: 1 }], [{ context: 'ignored-internal' }], [{ guard: 1 }], ...rows, [{ guard: 1 }], [{ guard: 1 }]];
 beforeEach(() => {
   vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
   db.query.mockReset(); db.transaction.mockReset(); vi.mocked(getTenantRuntimeDb).mockClear();
 });
 
 describe('tenant executor noninteractive transaction boundary', () => {
+  it('rechecks the current runtime role after business and proof guards before returning data', async () => {
+    const p=await proof();db.transaction.mockResolvedValue(guardedResults([workspaceRows()]));
+    await e!.createTenantExecutor(p).query(c!.workspaceSnapshot(p));
+    const queries=db.transaction.mock.calls[0][0];
+    expect(queries.filter((query:{text:string})=>query.text.includes('assert_runtime_role'))).toHaveLength(2);
+    expect(queries.at(-1).text).toContain('assert_runtime_role');expect(queries.at(-1).values).toEqual(['APP']);
+    expect(queries.at(-2).text).toContain('assert_current_proof');
+  });
+  it('rejects a role rejection at the end of the batch without replaying or exposing business data', async () => {
+    const p=await proof();
+    db.transaction.mockImplementation(async queries=>{
+      const count=queries.filter((query:{text:string})=>query.text.includes('assert_runtime_role')).length;
+      if(count===2)throw Error('fictional-current-role-rejection');
+      return guardedResults([workspaceRows()]);
+    });
+    await expect(e!.createTenantExecutor(p).query(c!.workspaceSnapshot(p))).rejects.toThrow('tenant_execution_unavailable');
+    expect(db.transaction).toHaveBeenCalledTimes(1);
+  });
+  it('rejects malformed final runtime-role results after otherwise valid business and proof results', async () => {
+    const p=await proof();
+    for(const bad of [[{guard:0}],[{guard:null}],[],[{guard:1},{guard:1}]]){
+      db.transaction.mockImplementation(async queries=>queries.map((query:{text:string},index:number)=>index===3?workspaceRows():
+        index===1?[{context:'ignored'}]:index===queries.length-1&&query.text.includes('assert_runtime_role')?bad:[{guard:1}]));
+      await expect(e!.createTenantExecutor(p).query(c!.workspaceSnapshot(p))).rejects.toThrow('tenant_execution_unavailable');
+    }
+  });
   it('rejects forged proof before creating a runtime transport', () => {
     expect(() => e!.createTenantExecutor({ kind: 'PORTAL' } as PortalProof)).toThrow('tenant_proof_denied');
     expect(getTenantRuntimeDb).not.toHaveBeenCalled();
@@ -42,7 +68,7 @@ describe('tenant executor noninteractive transaction boundary', () => {
     expect(output).toEqual({ id: 'tenant-a', name: 'Fictional', timeZone: 'UTC', active: true });
     expect(db.transaction).toHaveBeenCalledTimes(1);
     const [queries, options] = db.transaction.mock.calls[0];
-    expect(queries).toHaveLength(5);
+    expect(queries).toHaveLength(6);
     expect(queries[0].text).toContain('assert_runtime_role');
     expect(queries[0].values).toEqual(['APP']);
     expect(queries[1].text).toContain("set_config('nevora.workspace_id', $1::text, true)");
@@ -50,6 +76,7 @@ describe('tenant executor noninteractive transaction boundary', () => {
     expect(queries[2].text).toContain('lock_and_assert_current_proof');
     expect(queries[3].text).toContain('WHERE w.id = $1::text');
     expect(queries[4].text).toContain('assert_current_proof');
+    expect(queries[5].text).toContain('assert_runtime_role');expect(queries[5].values).toEqual(['APP']);
     expect(options).toMatchObject({ isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
     const bound = JSON.parse(queries[2].values[0]);
     expect(bound.workspaceIncarnation).toBe('9007199254740993');

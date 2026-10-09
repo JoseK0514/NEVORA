@@ -471,4 +471,24 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL direct runtime-role he
     finally { await query(app, 'ROLLBACK'); }
     expect(app.getTransactionStatus()).toBe('I'); expect(await guard(app, 'APP')).toBe(true);
   });
+  it('aborts and rolls back own business writes when a final current-role check rejects catalog drift', async () => {
+    const wrapper='SELECT 1 / CASE WHEN nevora_tenancy.assert_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard';
+    await mutate('GRANT UPDATE(id) ON TABLE '+rowsTable()+' TO '+q(appRole.name),'REVOKE UPDATE(id) ON TABLE '+rowsTable()+' FROM '+q(appRole.name),async()=>{
+      await query(app,'BEGIN ISOLATION LEVEL READ COMMITTED');
+      try {
+        expect((await query(app,wrapper,['APP'])).rows).toEqual([{guard:1}]);
+        expect((await query(app,'UPDATE '+rowsTable()+' SET id=2 WHERE id=1 RETURNING id')).rows).toEqual([{id:2}]);
+        await mutate('GRANT TRUNCATE ON TABLE '+rowsTable()+' TO '+q(appRole.name),'REVOKE TRUNCATE ON TABLE '+rowsTable()+' FROM '+q(appRole.name),async()=>{
+          expect(await rejected(app,wrapper,['APP'])).toBe('22012');expect(app.getTransactionStatus()).toBe('E');
+          expect(await rejected(app,'COMMIT')).toBe('NO_ERROR');
+          // COMMIT in an aborted PostgreSQL transaction acknowledges ROLLBACK;
+          // independently inspect the original row rather than infer a write.
+          expect(app.getTransactionStatus()).toBe('I');
+          expect((await query(admin,'SELECT id FROM '+rowsTable())).rows).toEqual([{id:1}]);
+          record({operation:'ACTUAL_FINAL_ROLE_DRIFT_ROLLBACK',beginningGuard:1,ownObservedWrite:2,finalSQLstate:'22012',independentlyObservedOriginalRows:[1]});
+        });
+      } finally {if(app.getTransactionStatus()!=='I')await query(app,'ROLLBACK');}
+    });
+    expect(await guard(app,'APP')).toBe(true);
+  });
 });

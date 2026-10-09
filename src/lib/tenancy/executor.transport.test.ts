@@ -17,9 +17,10 @@ const cell = (name: string, dataTypeID: number) => ({ name, dataTypeID });
 const result = (fields: ReturnType<typeof cell>[], rows: (string | null)[][]) => ({ fields, rows, command: 'SELECT', rowCount: rows.length });
 const guard = () => result([cell('guard', 23)], [['1']]);
 let databaseFailure = false;
+let finalRoleFailure = false;
 beforeEach(() => {
   vi.resetModules(); vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
-  requests.length = 0; databaseFailure = false;
+  requests.length = 0; databaseFailure = false; finalRoleFailure = false;
   vi.stubEnv('DATABASE_URL', 'postgresql://fictional_resolver:fictional_password@ep-fictional-resolver.us-east-1.aws.neon.tech/fictional_fixture');
   vi.stubEnv('NEVORA_APP_DATABASE_URL', 'postgresql://fictional_app:fictional_password@ep-fictional-app.us-east-1.aws.neon.tech/fictional_fixture');
   vi.stubEnv('NEVORA_WORKER_DATABASE_URL', 'postgresql://fictional_worker:fictional_password@ep-fictional-worker.us-east-1.aws.neon.tech/fictional_fixture');
@@ -29,6 +30,8 @@ beforeEach(() => {
     if (body.query?.includes('resolve_portal')) return new Response(JSON.stringify(result([cell('facts', 3802)], [[JSON.stringify(facts)]])), { status: 200 });
     if (!body.queries) throw Error('Unexpected standalone query');
     if (databaseFailure) return new Response(JSON.stringify({ message: 'private-database-marker', code: '42501' }), { status: 400 });
+    if(finalRoleFailure&&body.queries.filter(q=>q.query.includes('assert_runtime_role')).length===2)
+      return new Response(JSON.stringify({message:'fictional-final-role-denial',code:'22012'}),{status:400});
     const results = body.queries.map(q => {
       if (q.query.includes('FROM public.workspaces')) return result([cell('id', 25), cell('name', 25), cell('time_zone', 25), cell('active', 16)], [['tenant-a', 'Fictional', 'UTC', 't']]);
       if (q.query.includes('FROM public.employees')) return result([cell('id', 25), cell('first_name', 25), cell('last_name', 25), cell('role', 25), cell('active', 16)], [['employee-a', 'A', 'B', 'EMPLOYEE', 't']]);
@@ -48,6 +51,13 @@ async function modules() {
   return { proof: resolved.proof, contract, executor };
 }
 describe('installed Neon SDK local HTTP serialization contract', () => {
+  it('rejects intercepted final runtime-role SQL denial with one atomic request and no replay',async()=>{
+    const {proof,contract,executor}=await modules();finalRoleFailure=true;
+    await expect(executor.createTenantExecutor(proof).query(contract.workspaceSnapshot(proof))).rejects.toThrow('tenant_execution_unavailable');
+    expect(requests).toHaveLength(2);const queries=requests[1].body.queries!;
+    expect(queries.at(-1)!.query).toContain('assert_runtime_role');expect(queries.at(-1)!.params).toEqual(['APP']);
+    expect(queries.at(-2)!.query).toContain('assert_current_proof');
+  });
   it('uses the dedicated runtime URL and one serialized guarded batch for a query', async () => {
     const { proof, contract, executor } = await modules();
     expect(await executor.createTenantExecutor(proof).query(contract.workspaceSnapshot(proof))).toMatchObject({ id: 'tenant-a' });
@@ -55,7 +65,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     expect(new Headers(requests[0].options.headers).get('Neon-Connection-String')).toContain('fictional_app:fictional_password@ep-fictional-app');
     expect(requests[0].body.query).toContain("CASE WHEN nevora_tenancy.assert_runtime_role('APP'::text) IS TRUE THEN nevora_tenancy.resolve_portal");
     expect(new Headers(requests[1].options.headers).get('Neon-Connection-String')).toContain('fictional_app:fictional_password@ep-fictional-app');
-    expect(requests[1].body.queries).toHaveLength(5);
+    expect(requests[1].body.queries).toHaveLength(6);
     expect(requests[1].body).not.toHaveProperty('query');
     expect(requests[1].body.queries![1].params).toEqual(['tenant-a', 'PORTAL', 'employee-a', '9007199254740993']);
     expect(requests[1].body.queries![3].params).toEqual(['tenant-a']);
@@ -67,7 +77,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     const { proof, contract, executor } = await modules();
     const result = await executor.createTenantExecutor(proof).transaction(contract.tenantBatch(proof, [contract.workspaceSnapshot(proof), contract.portalEmploymentSnapshot(proof)]));
     expect(result).toHaveLength(2); expect(result[0]).toMatchObject({ id: 'tenant-a' }); expect(result[1]).toMatchObject({ id: 'employee-a' });
-    expect(requests).toHaveLength(2); expect(requests[1].body.queries).toHaveLength(6);
+    expect(requests).toHaveLength(2); expect(requests[1].body.queries).toHaveLength(7);
   });
   it('forwards AbortSignal through installed SDK fetch options', async () => {
     const { proof, contract, executor } = await modules(), controller = new AbortController();
