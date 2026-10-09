@@ -47,17 +47,18 @@ jobs:
           PHASE_E_EXPECTED_SHA: ${{ github.sha }}
           NEVORA_BUILD_RECEIPT: ${{ runner.temp }}/nevora-build-source.json
         run: node scripts/release-build.mjs
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+      - name: Full dependency audit including development tooling
+        run: npm audit --audit-level=high
       - name: Upload build custody receipt
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: build-source-${{ github.sha }}
           path: ${{ runner.temp }}/nevora-build-source.json
           if-no-files-found: error
           retention-days: 14
-      - name: Production dependency audit
-        run: npm audit --omit=dev --audit-level=high
-      - name: Full dependency audit including development tooling
-        run: npm audit --audit-level=high
 
   clocker-postgres:
     name: clocker-postgres
