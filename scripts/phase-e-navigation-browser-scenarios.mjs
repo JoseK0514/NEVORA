@@ -6,8 +6,9 @@ import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile}){
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
- const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],prefix=`navigation-${engine}-${width}`,headers={};
+ const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],prefix=`navigation-${engine}-${width}`,headers={};
  const q=(text,values=[])=>app.database.executor.query({text,values});
+ page.on('pageerror',error=>runtimeErrors.push({name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]'),path:new URL(page.url()).pathname.replace(/\/api\/calendar\/[^/]+/g,'/api/calendar/[redacted]'),lastCompleted:checks.at(-1),stack:error.stack?.replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]')}));
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/'))headers[path]=request.headers()['x-nevora-employee-view'];});
  async function login(id){await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);}
  async function settle(){await page.waitForLoadState('networkidle');}
@@ -140,7 +141,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(width<768){const clearance=await page.locator('.employee-shell .page-frame').evaluate(e=>parseFloat(getComputedStyle(e).paddingBottom));assert(clearance>=100);}
   checks.push('long_content_safe_area_keyboard: real long identity, 200% CSS zoom/reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
-  await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
+  await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
   return {checks};
- }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,error:String(error)},null,2));throw error;}
+ }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,error:String(error)},null,2));throw error;}
 }
