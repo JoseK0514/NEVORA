@@ -273,8 +273,9 @@ jobs:
     timeout-minutes: 40
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
-      PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-sql-evidence
     steps:
+      - name: Select owned evidence directory
+        run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/nevora-phase-e-sql-evidence" >> "$GITHUB_ENV"
       - name: Checkout exact candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -330,8 +331,9 @@ jobs:
     timeout-minutes: 50
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
-      PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-browser-evidence
     steps:
+      - name: Select owned evidence directory
+        run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/nevora-phase-e-browser-evidence" >> "$GITHUB_ENV"
       - name: Checkout exact candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
