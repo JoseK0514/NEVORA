@@ -92,7 +92,12 @@ function ownedProcessIdentity(pid, ownerId, required = false) {
   return identity;
 }
 function assertSameProcess(actual, lease) {
-  if (actual && (actual.pid !== lease.pid || actual.pgid !== lease.pgid || actual.started !== lease.started || actual.commandHash !== lease.commandHash)) throw Error('Owned process identity changed; refusing signal');
+  if (actual && (actual.pid !== lease.pid || actual.pgid !== lease.pgid || actual.started !== lease.started || actual.commandHash !== lease.commandHash)) throw Object.assign(Error('Owned process identity changed; refusing signal'), {
+    observationFailure: { reason: 'IDENTITY_CHANGED', expected: processLeaseFields(lease), observed: processLeaseFields(actual) },
+  });
+}
+function processLeaseFields(identity) {
+  return { pid: identity.pid, ppid: identity.ppid, pgid: identity.pgid, started: identity.started, commandHash: identity.commandHash };
 }
 export async function registerOwnedProcess({ kind, pid, ownerId }) {
   if (!process.send || ownerId !== process.env.PHASE_E_OWNER_ID) throw Error('Owned runtime supervisor required');
@@ -112,7 +117,19 @@ export async function registerOwnedProcess({ kind, pid, ownerId }) {
 export async function superviseOwnedChild({ command, args, cwd, env, ownerId, timeoutMs, graceMs = 7500, signal }) {
   if (!/^[a-f0-9]{32}$/.test(ownerId) || !Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || !Number.isSafeInteger(graceMs) || graceMs < 1) throw Error('Invalid owned supervision contract');
   const leases = new Map(), child = spawn(command, args, { cwd, env: { ...env, NEVORA_OWNED_PROCESS_OWNER: ownerId }, detached: process.platform !== 'win32', stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
-  let failure, escalation, stopping = false;
+  let failure, observationFailure, escalation, stopping = false;
+  // Keep only our bounded reason codes and identity hashes, never argv/env.
+  const retainObservationFailure = error => {
+    observationFailure ??= error.observationFailure ?? { reason: ({
+      'Cannot prove owned process ancestry': 'ANCESTRY_UNAVAILABLE',
+      'Cannot verify owned process identity': 'IDENTITY_UNAVAILABLE',
+      'Cannot reprove owned process environment': 'OWNERSHIP_UNAVAILABLE',
+      'Live process lost invocation ownership; refusing signal': 'OWNERSHIP_LOST',
+      'Process is not an owned child descendant': 'DESCENDANT_UNPROVEN',
+      'Process lacks invocation ownership': 'OWNERSHIP_UNPROVEN',
+      'Owned group leader is no longer proven': 'LEADER_UNPROVEN',
+    })[error.message] ?? 'UNCLASSIFIED_OBSERVATION_FAILURE' };
+  };
   const remember = (pid, kind, table = processTable(), observedIdentity) => {
     if (!child.pid || pid === child.pid || !isDescendant(pid, child.pid, table)) throw Error('Process is not an owned child descendant');
     // Only snapshot supplies this current independently collected identity.
@@ -126,7 +143,9 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
         // A title change grants no new signal authority. Only re-observation of
         // an already proven member may vary argv, while birth/group/parent and
         // ancestry continue and its still-live group leader has full proof.
-        if (identity.pid !== previous.pid || identity.started !== previous.started || identity.pgid !== previous.pgid || identity.ppid !== previous.ppid || !isDescendant(pid, leader.pid, table) || !isDescendant(leader.pid, child.pid, table)) throw Error('Owned member continuity changed');
+        if (identity.pid !== previous.pid || identity.started !== previous.started || identity.pgid !== previous.pgid || identity.ppid !== previous.ppid || !isDescendant(pid, leader.pid, table) || !isDescendant(leader.pid, child.pid, table)) throw Object.assign(Error('Owned member continuity changed'), {
+          observationFailure: { reason: 'MEMBER_CONTINUITY_CHANGED', expected: processLeaseFields(previous), observed: processLeaseFields(identity) },
+        });
         const actualLeader = ownedProcessIdentity(leader.pid, ownerId, true);
         if (!actualLeader) throw Error('Owned group leader is no longer proven');
         assertSameProcess(actualLeader, leader);
@@ -147,10 +166,10 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
   const stop = (message, status) => {
     if (stopping) return;
     stopping = true; failure = { message, status };
-    try { snapshot(); } catch { failure.message = 'Owned resource observation failed'; }
+    try { snapshot(); } catch (error) { retainObservationFailure(error); failure.message = 'Owned resource observation failed'; }
     if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
     escalation = setTimeout(() => {
-      try { snapshot(); } catch { failure.message = 'Owned resource observation failed'; }
+      try { snapshot(); } catch (error) { retainObservationFailure(error); failure.message = 'Owned resource observation failed'; }
       if (child.exitCode === null && child.signalCode === null && child.pid) {
         try { process.kill(process.platform === 'win32' ? child.pid : -child.pid, 'SIGKILL'); } catch (error) { if (error.code !== 'ESRCH') failure.message = 'Owned child forced termination failed'; }
       }
@@ -166,7 +185,7 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     if (child.connected) child.send({ type: 'owned-process-registered', requestId: message.requestId, accepted }, () => {});
   });
   const deadline = setTimeout(() => stop('Owned child timed out', 124), timeoutMs);
-  const poll = setInterval(() => { if (!stopping) { try { snapshot(); } catch { stop('Owned resource observation failed', 1); } } }, 250);
+  const poll = setInterval(() => { if (!stopping) { try { snapshot(); } catch (error) { retainObservationFailure(error); stop('Owned resource observation failed', 1); } } }, 250);
   const aborted = () => stop('Owned supervisor termination signal', 1);
   signal?.addEventListener('abort', aborted, { once: true });
   if (signal?.aborted) aborted();
@@ -224,7 +243,7 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     }
   } catch { cleanupFailed = true; }
   if (cleanupFailed) failure = { message: 'Owned resource cleanup could not be proven', status: failure?.status ?? 1 };
-  return { status: failure?.status ?? outcome.status ?? 1, signal: outcome.signal, timedOut: failure?.status === 124, error: failure?.message, resources };
+  return { status: failure?.status ?? outcome.status ?? 1, signal: outcome.signal, timedOut: failure?.status === 124, error: failure?.message, observationFailure, resources };
 }
 const approvedAdapters = new Map();
 function approvedDbAdapterHash(originalDb) {
@@ -419,7 +438,7 @@ async function runOwned(mode, suite, source, custody, evidence) {
       const args = mode === 'sql' ? sqlCommand(item, evidence).slice(1) : ['--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', item];
       controller.signal.throwIfAborted();
       const result = await superviseOwnedChild({ command: process.execPath, args, cwd: source, env: childEnv, ownerId, timeoutMs: mode === 'sql' ? 480_000 : 1_800_000, signal: controller.signal });
-      const record = { suite: item, command: [process.execPath, ...args], exitCode: result.status ?? 1, checks: [], resources: result.resources }; report.results.push(record);
+      const record = { suite: item, command: [process.execPath, ...args], exitCode: result.status ?? 1, checks: [], resources: result.resources, observationFailure: result.observationFailure }; report.results.push(record);
       if (result.error || result.status !== 0) { exitCode = result.status ?? 1; throw Error(`Phase E child failed: ${item} (exit ${exitCode})${result.error ? ': ' + result.error : ''}`); }
       if (mode === 'sql') record.checks = verifySqlExecution(json(output), source, item);
       else {

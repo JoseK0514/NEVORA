@@ -66,7 +66,11 @@ cp.spawnSync=function(command,args,options){const result=rawSpawn(command,args,o
     const receipt = JSON.parse(execution.stdout), supervised = receipt.result;
     expect(supervised.timedOut).toBe(false);
     expect(supervised.status, JSON.stringify(receipt)).toBe(['stable-member', 'changed-member', 'departed-member'].includes(mode) ? 0 : 1);
-    if (!['stable-member', 'changed-member', 'departed-member'].includes(mode)) expect(supervised.error).toBe('Owned resource observation failed');
+    if (!['stable-member', 'changed-member', 'departed-member'].includes(mode)) {
+      expect(supervised.error).toBe('Owned resource observation failed');
+      expect(supervised.observationFailure.reason).toMatch(/^(IDENTITY_CHANGED|MEMBER_CONTINUITY_CHANGED)$/);
+      expect(JSON.stringify(supervised.observationFailure)).not.toContain('NEVORA_OWNED_PROCESS_OWNER');
+    }
     if (mode === 'departed-member') expect(receipt.departureTriggered).toBe(true);
     expect(supervised.resources.length).toBeGreaterThan(0);
     expect(supervised.resources.every((item: { stopped: boolean }) => item.stopped)).toBe(true);
