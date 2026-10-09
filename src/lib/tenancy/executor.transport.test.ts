@@ -40,9 +40,16 @@ beforeEach(() => {
   vi.stubGlobal('fetch', vi.fn(async (url: string, options: RequestInit) => {
     if (!/^https:\/\/api\.us-east-1\.aws\.neon\.tech\/sql$/.test(String(url))) throw Error('Unexpected mocked transport URL');
     const body: Request = JSON.parse(String(options.body)); requests.push({ url: String(url), body, options });
-    if (body.query?.includes('resolve_portal')) return new Response(JSON.stringify(result([cell('facts', 3802)], [[JSON.stringify(facts)]])), { status: 200 });
-    if (body.query?.includes('resolve_worker')) return new Response(JSON.stringify(result([cell('facts', 3802)], [[JSON.stringify(workerFacts)]])), { status: 200 });
     if (!body.queries) throw Error('Unexpected standalone query');
+    const lookup = body.queries[1]?.query;
+    if (lookup?.includes('resolve_portal') || lookup?.includes('resolve_worker')) {
+      expect(body.queries).toHaveLength(3);
+      expect(body.queries[0]).toEqual({ query: RUNTIME_CATALOG_SHARED_FENCE_SQL.text, params: [] });
+      expect(body.queries[2].query).toContain('assert_runtime_role');
+      const lookupFacts = lookup.includes('resolve_worker') ? workerFacts : facts;
+      return new Response(JSON.stringify({ results: [result([cell('catalog_fence', 2278)], [['']]),
+        result([cell('facts', 3802)], [[JSON.stringify(lookupFacts)]]), guard()] }), { status: 200 });
+    }
     if (body.queries[0].query === RUNTIME_CATALOG_SHARED_FENCE_SQL.text) {
       if (fenceGate) await fenceGate;
       if (fenceFailure) return new Response(JSON.stringify({ message: 'private-fence-marker', code: '42501' }), { status: 400 });
@@ -113,7 +120,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
       await expect(executor.createTenantExecutor(resolved.proof).query({} as never)).resolves.toEqual([{ fictional_dispatch: 1 }]);
       expect(requests).toHaveLength(2);
       for (const request of requests) expect(new Headers(request.options.headers).get('Neon-Connection-String')).toContain('fictional_worker:fictional_password@ep-fictional-worker');
-      expect(requests[0].body.query).toContain("assert_runtime_role('WORKER'::text)");
+      expect(requests[0].body.queries![1].query).toContain("assert_runtime_role('WORKER'::text)");
       const queries = requests[1].body.queries!;
       expect(queries).toHaveLength(7);
       expect(queries[0]).toEqual({ query: RUNTIME_CATALOG_SHARED_FENCE_SQL.text, params: [] });
@@ -131,7 +138,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     if (worker.status !== 'ALLOW') throw Error('fictional worker resolver fixture');
     await expect(executor.createTenantExecutor(worker.proof).query(contract.workspaceSnapshot(proof))).rejects.toThrow('tenant_statement_denied');
     await expect(executor.createTenantExecutor(worker.proof).query({ name: 'FORGED_WORKER_STATEMENT' } as never)).rejects.toThrow('tenant_statement_denied');
-    expect(requests).toHaveLength(2); expect(requests.every(request => !request.body.queries)).toBe(true);
+    expect(requests).toHaveLength(2); expect(requests.every(request => request.body.queries?.length === 3 && request.body.queries[1].query.includes('resolve_'))).toBe(true);
   });
   it('rejects intercepted final runtime-role SQL denial with one atomic request and no replay',async()=>{
     const {proof,contract,executor}=await modules();finalRoleFailure=true;
@@ -145,7 +152,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     expect(await executor.createTenantExecutor(proof).query(contract.workspaceSnapshot(proof))).toMatchObject({ id: 'tenant-a' });
     expect(requests).toHaveLength(2);
     expect(new Headers(requests[0].options.headers).get('Neon-Connection-String')).toContain('fictional_app:fictional_password@ep-fictional-app');
-    expect(requests[0].body.query).toContain("CASE WHEN nevora_tenancy.assert_runtime_role('APP'::text) IS TRUE THEN nevora_tenancy.resolve_portal");
+    expect(requests[0].body.queries![1].query).toContain("CASE WHEN nevora_tenancy.assert_runtime_role('APP'::text) IS TRUE THEN nevora_tenancy.resolve_portal");
     expect(new Headers(requests[1].options.headers).get('Neon-Connection-String')).toContain('fictional_app:fictional_password@ep-fictional-app');
     expect(requests[1].body.queries).toHaveLength(7);
     expect(requests[1].body).not.toHaveProperty('query');

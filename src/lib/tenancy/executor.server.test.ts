@@ -16,15 +16,20 @@ const c: typeof import('./query-contract') | null = await import(cp).catch(() =>
 const e: typeof import('./executor.server') | null = await import(ep).catch(() => null);
 const digest = 'a'.repeat(64);
 async function proof(workspaceId = 'tenant-a') {
-  db.query.mockResolvedValue([{ facts: { authorityCurrent: true, kind: 'PORTAL', workspaceId,
+  db.query.mockImplementation((text, values) => ({ text, values, then: () => { throw Error('query awaited outside transaction'); } }));
+  db.transaction.mockResolvedValueOnce([[{ catalog_fence: '' }], [{ facts: { authorityCurrent: true, kind: 'PORTAL', workspaceId,
     workspaceVersion: '2026-10-08 10:00:00.123456+00', workspaceIncarnation: '9007199254740993',
     resolvedAt: '2026-10-09 12:00:00+00', expiresAt: '2026-10-09 12:01:00+00', locator: 'tenant-aa',
     employeeId: 'employee-a', employeeVersion: '2026-10-08 11:00:00.654321+00',
     authorizationVersion: '4', portalAccessVersion: '2', sessionTokenHash: digest,
     sessionExpiresAt: '2026-10-09 12:01:00+00', role: 'EMPLOYEE', capabilityPolicyRevision: '3',
-    capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [] } }]);
+    capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [] } }], [{ guard: 1 }]]);
   const result = await resolvePortalProof('tenant-aa', digest);
   if (result.status !== 'ALLOW') throw Error('fixture');
+  const lookup = db.transaction.mock.calls.at(-1)!;
+  expect(lookup[0]).toHaveLength(3); expect(lookup[0][0].text).toBe(RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
+  expect(lookup[0][1].text).toContain('resolve_portal'); expect(lookup[0][2].text).toContain('assert_runtime_role');
+  db.transaction.mockReset();
   db.query.mockReset();
   db.query.mockImplementation((text, values) => ({ text, values, then: () => { throw Error('query awaited outside transaction'); } }));
   return result.proof;

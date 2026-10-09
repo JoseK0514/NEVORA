@@ -1,10 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { runInNewContext } from 'node:vm';
+import { types as nodeTypes } from 'node:util';
+import { transpileModule, ScriptTarget } from 'typescript';
 vi.mock('server-only', () => ({}));
-const database = vi.hoisted(() => ({ query: vi.fn() }));
+const database = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
 const transports = vi.hoisted(() => ({ legacy: vi.fn(() => database), runtime: vi.fn(() => database) }));
 vi.mock('../db', () => ({ getDb: transports.legacy, getTenantRuntimeDb: transports.runtime }));
 import { getProvisionerScopeFacts, getTenantProofFacts, resolveCalendarReadProof, resolveClockerProof, resolvePortalProof, resolveProvisionerScope, resolveWorkerProof } from './resolve.server';
+import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 import type { ProvisionerScope, TenantProof } from './types';
 
 const NOW = new Date('2026-10-09T12:00:00Z');
@@ -21,7 +27,8 @@ const claim = { deliveryId: 'delivery-a', generation: 'generation-a', leaseToken
 const worker = () => ({ ...common, kind: 'WORKER', workerId: 'worker-a', workerCredentialDigest: digest, workerGrantVersion: '2', environment: 'test', deliveryId: 'delivery-a', intentId: 'intent-a', subscriptionId: 'subscription-a', generation: 'generation-a', leaseTokenHash: hash(claim.leaseToken), leaseExpiresAt: common.expiresAt });
 const operator = { operatorId: 'operator-a', credentialDigest: digest, requestId: 'request-a', requestDigest: 'b'.repeat(64), operationId: 'operation-a', payloadDigest: 'c'.repeat(64) };
 const provisioner = () => ({ authorityCurrent: true, kind: 'PROVISIONER', operatorId: 'operator-a', operatorGrantId: 'grant-a', operatorGrantVersion: '2', operatorCredentialDigest: digest, environment: 'test', purpose: 'TENANT_RESTORE', workspaceId: 'tenant-a', bootstrapNonce: null, subjectEmployeeId: 'owner-a', workspaceIncarnation: '3', sourceVersion: '2026-10-08 10:00:00.123456+00', requestId: 'request-a', requestDigest: operator.requestDigest, operationId: 'operation-a', payloadDigest: operator.payloadDigest, verifiedIdentityReference: 'verification-a', resolvedAt: common.resolvedAt, expiresAt: common.expiresAt });
-function respond(facts: unknown) { database.query.mockResolvedValue([{ facts }]); }
+const fenced = (rows: unknown) => [[{ catalog_fence: '' }], rows, [{ guard: 1 }]];
+function respond(facts: unknown) { database.transaction.mockResolvedValue(fenced([{ facts }])); }
 async function allowedPortal() {
   respond(portal());
   const result = await resolvePortalProof('tenant-aa', digest);
@@ -30,7 +37,100 @@ async function allowedPortal() {
   return result.proof;
 }
 
-beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(NOW); database.query.mockReset(); transports.legacy.mockClear(); transports.runtime.mockClear(); });
+beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(NOW); database.query.mockReset(); database.transaction.mockReset();
+  database.query.mockImplementation((text, values) => ({ text, values, then() { throw Error('resolver query awaited outside transaction'); } })); transports.legacy.mockClear(); transports.runtime.mockClear(); });
+
+describe('resolver owning catalog-fenced transaction', () => {
+  it.each(['catalog_fence', 'guard'] as const)('rejects inherited descriptor-map fields for %s in isolated realms', field => {
+    // Exercise the actual private source for the known descriptor-map cause,
+    // without mutating this worker's Object.prototype or widening exports.
+    const source = readFileSync(resolve('src/lib/tenancy/resolve.server.ts'), 'utf8');
+    const start = source.indexOf('function singleWireResult('), end = source.indexOf('async function lookup(', start);
+    expect(start >= 0 && end > start).toBe(true);
+    const validator = transpileModule(source.slice(start, end), { compilerOptions: { target: ScriptTarget.ES2022 } }).outputText;
+    const expected = field === 'guard' ? 1 : '';
+    const fixtures = [
+      `input=[{unexpected:1}];Object.defineProperty(Object.prototype,alias,{value:{value:good},writable:true,configurable:true});`,
+      `input=new Array(1);input.unexpected=1;Object.defineProperty(Object.prototype,'0',{value:{value:{[alias]:good}},writable:true,configurable:true});`,
+      `input=[Object.defineProperty({},alias,{enumerable:true,get(){throw Error('getter must not run');}})];Object.defineProperty(Object.prototype,'value',{value:good,writable:true,configurable:true});`,
+    ];
+    for (const fixture of fixtures) {
+      const observed = runInNewContext(validator + `\nconst ordinary=singleWireResult([{[alias]:good}],alias,good);let input;${fixture}\n({ordinary,malformed:singleWireResult(input,alias,good)});`, { nodeTypes, alias: field, good: expected });
+      expect(observed.ordinary).toBe(true); expect(observed.malformed).toBe(false);
+    }
+  });
+
+  it('waits for its first-fence batch before issuing private proof identity', async () => {
+    let finish!: (value: unknown) => void;
+    database.transaction.mockImplementation(() => new Promise(done => { finish = done; }));
+    let settled = false;
+    const pending = resolvePortalProof('tenant-aa', digest).then(result => { settled = true; return result; });
+    await Promise.resolve(); expect(settled).toBe(false);
+    expect(database.query.mock.calls[0]).toEqual([RUNTIME_CATALOG_SHARED_FENCE_SQL.text, []]);
+    expect(database.transaction).toHaveBeenCalledTimes(1);
+    finish(fenced([{ facts: portal() }])); expect((await pending).status).toBe('ALLOW');
+  });
+  it('does not replay a fence/final-role transaction rejection or expose its diagnostics', async () => {
+    database.transaction.mockRejectedValue(Error('private-fence-or-final-role-diagnostic'));
+    expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' });
+    expect(database.transaction).toHaveBeenCalledTimes(1); expect(database.query).toHaveBeenCalledTimes(3);
+  });
+  it.each([
+    ['SQL NULL', [{ catalog_fence: null }]], ['wrong alias', [{ guard: '' }]], ['nonempty void', [{ catalog_fence: 'held' }]],
+    ['missing row', []], ['multiple rows', [{ catalog_fence: '' }, { catalog_fence: '' }]],
+    ['extra field', [{ catalog_fence: '', guard: 1 }]], ['non-row', null], ['sparse wrong keys', Object.assign(new Array(1), { unrelated: '' })],
+  ])('rejects malformed fence %s before reading resolver metadata', async (_label, fence) => {
+    let reads = 0;
+    const row = new Proxy({ facts: portal() }, { getPrototypeOf(target) { reads++; return Reflect.getPrototypeOf(target); } });
+    database.transaction.mockResolvedValue([fence, [row], [{ guard: 1 }]]);
+    expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' }); expect(reads).toBe(0);
+  });
+  it('rejects fence accessor and proxy behavior without reading it', async () => {
+    let reads = 0;
+    const accessor = Object.defineProperty({}, 'catalog_fence', { enumerable: true, get() { reads++; return ''; } });
+    const proxy = new Proxy({ catalog_fence: '' }, { getOwnPropertyDescriptor() { reads++; throw Error('private-proxy'); } });
+    const revoked = Proxy.revocable({ catalog_fence: '' }, {}); revoked.revoke();
+    for (const row of [accessor, proxy, revoked.proxy]) {
+      database.transaction.mockResolvedValue([[row], [{ facts: portal() }], [{ guard: 1 }]]);
+      expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' });
+    }
+    expect(reads).toBe(0);
+  });
+  it.each([['false', [{ guard: 0 }]], ['SQL NULL', [{ guard: null }]], ['missing row', []], ['multiple rows', [{ guard: 1 }, { guard: 1 }]]] as const)('rejects malformed final role rows %s before issuance', async (_label, guard) => {
+    let reads = 0;
+    const row = new Proxy({ facts: portal() }, { getPrototypeOf(target) { reads++; return Reflect.getPrototypeOf(target); } });
+    database.transaction.mockResolvedValue([[{ catalog_fence: '' }], [row], guard]);
+    expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' }); expect(reads).toBe(0);
+  });
+  it.each(['catalog_fence', 'guard'] as const)('requires own data fields and own row index for %s without global prototype changes', async field => {
+    const expected = field === 'catalog_fence' ? '' : 1;
+    let reads = 0;
+    const inheritedRow = Object.assign(Object.create({ [field]: expected }), { unrelated: expected });
+    const accessor = Object.defineProperty({}, field, { enumerable: true, get() { reads++; return expected; } });
+    const proxy = new Proxy({ [field]: expected }, { getOwnPropertyDescriptor() { reads++; throw Error('private-wire-proxy'); } });
+    const inheritedIndex = Object.assign(Object.create(Array.prototype), { 0: { [field]: expected } });
+    const sparse = Object.assign(new Array(1), { unrelated: expected });
+    Object.setPrototypeOf(sparse, inheritedIndex);
+    const metadata = new Proxy({ facts: portal() }, { getPrototypeOf(target) { reads++; return Reflect.getPrototypeOf(target); } });
+    for (const bad of [[inheritedRow], [accessor], [proxy], sparse]) {
+      const results = [[{ catalog_fence: '' }], [metadata], [{ guard: 1 }]];
+      results[field === 'catalog_fence' ? 0 : 2] = bad;
+      database.transaction.mockResolvedValue(results);
+      expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' });
+    }
+    expect(reads).toBe(0);
+    expect(Object.hasOwn(Object.prototype, field)).toBe(false);
+    expect(Object.hasOwn(Array.prototype, '0')).toBe(false);
+  });
+  it('requires exactly three results and rechecks lifetime after waiting', async () => {
+    for (const results of [null, [], fenced([{ facts: portal() }]).slice(0, 2), [...fenced([{ facts: portal() }]), []]]) {
+      database.transaction.mockResolvedValue(results);
+      expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' });
+    }
+    database.transaction.mockImplementation(async () => { vi.setSystemTime(new Date('2026-10-09T12:01:01Z')); return fenced([{ facts: portal() }]); });
+    expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'DENY' });
+  });
+});
 
 describe('server-local proof authenticity and least metadata', () => {
   it('issues genuine frozen authority without exposing DB metadata in the proof object', async () => {
@@ -71,7 +171,7 @@ describe('server-local proof authenticity and least metadata', () => {
 describe('narrow resolver boundary', () => {
   it('uses a constant parameterized portal seam and binds locator and session digest', async () => {
     await allowedPortal();
-    expect(database.query.mock.calls).toEqual([['SELECT CASE WHEN nevora_tenancy.assert_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_portal($1::text,$2::text) ELSE NULL::jsonb END AS facts', ['tenant-aa', digest]]]);
+    expect(database.query.mock.calls[1]).toEqual(['SELECT CASE WHEN nevora_tenancy.assert_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_portal($1::text,$2::text) ELSE NULL::jsonb END AS facts', ['tenant-aa', digest]]);
     for (const changed of [{ locator: 'tenant-bb' }, { sessionTokenHash: 'b'.repeat(64) }, { kind: 'CLOCKER' }]) {
       respond({ ...portal(), ...changed });
       expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'DENY' });
@@ -87,7 +187,7 @@ describe('narrow resolver boundary', () => {
   it('uses the frozen locator normalizer before resolving and rejects Unicode confusables', async () => {
     respond(portal());
     expect((await resolvePortalProof(' TENANT-AA ', digest)).status).toBe('ALLOW');
-    expect(database.query.mock.calls[0][1][0]).toBe('tenant-aa');
+    expect(database.query.mock.calls[1][1][0]).toBe('tenant-aa');
     expect(await resolvePortalProof('tenant-\u212a', digest)).toEqual({ status: 'DENY' });
   });
 
@@ -96,7 +196,7 @@ describe('narrow resolver boundary', () => {
     expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'DENY' });
     respond(null);
     expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'DENY' });
-    database.query.mockResolvedValue([]);
+    database.transaction.mockResolvedValue(fenced([]));
     expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'DENY' });
   });
 
@@ -113,10 +213,10 @@ describe('narrow resolver boundary', () => {
   });
 
   it('returns sanitized unavailability for missing helpers, malformed transport or ambiguous rows', async () => {
-    database.query.mockRejectedValue(Error('secret SQL and bearer must not escape'));
+    database.transaction.mockRejectedValue(Error('secret SQL and bearer must not escape'));
     expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' });
     for (const result of [{}, [{ facts: portal() }, { facts: portal() }], [{ wrong: portal() }]]) {
-      database.query.mockResolvedValue(result);
+      database.transaction.mockResolvedValue(fenced(result));
       expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' });
     }
   });
@@ -134,7 +234,7 @@ describe('narrow resolver boundary', () => {
     expect(result.status).toBe('ALLOW');
     if (result.status !== 'ALLOW') throw Error('fixture');
     expect(getTenantProofFacts(result.proof)).toMatchObject({ kind: 'CLOCKER', employeeId: 'employee-a', credentialVersion: '6', pinVersion: '5' });
-    expect(database.query.mock.calls[0]).toEqual(['SELECT CASE WHEN nevora_tenancy.assert_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_clocker($1::text,$2::text) ELSE NULL::jsonb END AS facts', [hash(device, 'nevora-clocker-v1\0'), hash(pin, 'nevora-clocker-identity-v1\0')]]);
+    expect(database.query.mock.calls[1]).toEqual(['SELECT CASE WHEN nevora_tenancy.assert_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_clocker($1::text,$2::text) ELSE NULL::jsonb END AS facts', [hash(device, 'nevora-clocker-v1\0'), hash(pin, 'nevora-clocker-identity-v1\0')]]);
     expect(JSON.stringify(getTenantProofFacts(result.proof))).not.toContain(device);
     respond({ ...clocker(), pinSessionTokenHash: digest });
     expect(await resolveClockerProof(device, pin)).toEqual({ status: 'DENY' });
@@ -171,11 +271,12 @@ describe('narrow resolver boundary', () => {
   it('captures worker input bindings before the asynchronous resolver wait', async () => {
     const identity = { ...workerIdentity }, lease = { ...claim };
     let finish!: (value: unknown) => void;
-    database.query.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+    database.transaction.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
     const pending = resolveWorkerProof(identity, lease);
     identity.workerId = 'worker-b';
     lease.deliveryId = 'delivery-b';
-    finish([{ facts: worker() }]);
+    expect(database.transaction).toHaveBeenCalledTimes(1);
+    finish(fenced([{ facts: worker() }]));
     expect((await pending).status).toBe('ALLOW');
   });
 });
@@ -231,10 +332,11 @@ describe('separate purpose-bound provisioning authority', () => {
   it('captures provisioner request bindings before the asynchronous resolver wait', async () => {
     const request = { ...operator };
     let finish!: (value: unknown) => void;
-    database.query.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+    database.transaction.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
     const pending = resolveProvisionerScope(request, 'test', 'TENANT_RESTORE');
     request.payloadDigest = digest;
-    finish([{ facts: provisioner() }]);
+    expect(database.transaction).toHaveBeenCalledTimes(1);
+    finish(fenced([{ facts: provisioner() }]));
     expect((await pending).status).toBe('ALLOW');
   });
 
@@ -254,7 +356,7 @@ describe('separate purpose-bound provisioning authority', () => {
   it('reports stale grants as denial and helper failures without operator details', async () => {
     respond({ ...provisioner(), authorityCurrent: false });
     expect(await resolveProvisionerScope(operator, 'test', 'TENANT_RESTORE')).toEqual({ status: 'DENY' });
-    database.query.mockRejectedValue(Error('operator secret and SQL'));
+    database.transaction.mockRejectedValue(Error('operator secret and SQL'));
     expect(await resolveProvisionerScope(operator, 'test', 'TENANT_RESTORE')).toEqual({ status: 'UNAVAILABLE' });
   });
 });
@@ -322,9 +424,14 @@ describe('root dedicated resolver transport regression',()=>{
   respond(facts());expect((await resolve()).status).toBe('ALLOW');
   expect(transports.legacy).not.toHaveBeenCalled();
   expect(transports.runtime).toHaveBeenCalledExactlyOnceWith(role);
-  const query=database.query.mock.calls[0][0];
+  const query=database.query.mock.calls[1][0];
   expect(query).toContain(`CASE WHEN nevora_tenancy.assert_runtime_role('${role}'::text) IS TRUE THEN nevora_tenancy.resolve_`);
   expect(query).toContain('ELSE NULL::jsonb END AS facts');
+  expect(database.query).toHaveBeenCalledTimes(3);
+  expect(database.query.mock.calls[0]).toEqual([RUNTIME_CATALOG_SHARED_FENCE_SQL.text, []]);
+  expect(database.query.mock.calls[2][0]).toContain('assert_runtime_role($1::text)');
+  expect(database.query.mock.calls[2][1]).toEqual([role]);
+  expect(database.transaction).toHaveBeenCalledExactlyOnceWith(database.query.mock.results.map(result => result.value), { isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
  });
 });
 

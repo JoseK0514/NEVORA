@@ -27,6 +27,7 @@ const pinnedSources = {
   'src/lib/tenancy/runtime/role-guard.test.ts': '0d4be75794a63927d94148b2cc8ce6931dfdaf72672ce04b07467b51744f783a',
   'src/lib/tenancy/runtime/catalog-fence.server.ts': '2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f',
   'src/lib/tenancy/executor.server.ts': '26745ac03e23d6d43bfc5ecd2495de9ffd51b6fa83101b430c22e36c73f7800f',
+  'src/lib/tenancy/resolve.server.ts': '0d450b2d2ea1df95816af588e6540f90913640364fb687c91e8e22830278ce0b',
 } as const;
 type Lease = { scope: string; closed: boolean; invocation: string; authorizationReference: string;
   root: string; data: string; pid: number; pidStart: string; port: number; systemIdentifier: string;
@@ -167,12 +168,21 @@ describe.skipIf(!leasePath && !runPath)('owned native executor catalog fence pre
   function installAdapter() {
     transport.value = {
       query(text, values) {
-        if (phase === 'LOOKUP') return Promise.resolve([{ facts: lookupFacts }]);
         const plan: Plan = { text, values: [...values], then() { throw Error('native_query_awaited_outside_atomic_batch'); } }; plans.add(plan); return plan;
       },
       async transaction(batch, options) {
         expect(options).toMatchObject({ isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
-        expect(batch.every(plan => plans.has(plan))).toBe(true); expect(app.getTransactionStatus()).toBe('I');
+        expect(batch.every(plan => plans.has(plan))).toBe(true);
+        if (phase === 'LOOKUP') {
+          // Literal fixture facts only. This resolver batch is intercepted in
+          // full; no database issuer/fence/current-domain authority is claimed.
+          expect(batch).toHaveLength(3); expect(batch[0].text).toBe(RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
+          expect(batch[1].text).toContain('resolve_portal'); expect(batch[2].text).toContain('assert_runtime_role');
+          record({ operation: 'MOCKED_LITERAL_RESOLVER_THREE_PLAN_BATCH', plans: batch,
+            claim: 'NO_NATIVE_RESOLVER_OR_DATABASE_ISSUER_AUTHORITY' });
+          return [[{ catalog_fence: '' }], [{ facts: lookupFacts }], [{ guard: 1 }]];
+        }
+        expect(app.getTransactionStatus()).toBe('I');
         const receipt: TransactionReceipt = { id: ++transactionCount, plans: batch.map(plan => ({ text: plan.text, values: [...plan.values] })),
           dispatched: [], nativeResults: [], committed: false, rolledBack: false, sqlstate: null, probe: null }; transactions.push(receipt);
         const before = await identity(app); await query(app, 'BEGIN ISOLATION LEVEL READ COMMITTED');

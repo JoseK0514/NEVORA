@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
-const db = vi.hoisted(() => ({ query: vi.fn() }));
+const db = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
 vi.mock('../db', () => ({ getDb: vi.fn(()=>{throw Error('legacy proof transport forbidden');}), getTenantRuntimeDb: () => db }));
 import { resolvePortalProof, resolveCalendarReadProof } from './resolve.server';
 import type { PortalProof } from './types';
@@ -15,14 +15,37 @@ const facts = (workspaceId = 'tenant-a') => ({ authorityCurrent: true, kind: 'PO
   sessionExpiresAt: '2026-10-09 12:01:00+00', role: 'EMPLOYEE', capabilityPolicyRevision: '3',
   capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [] });
 async function proof(workspaceId = 'tenant-a') {
-  db.query.mockResolvedValue([{ facts: facts(workspaceId) }]);
+  db.transaction.mockResolvedValue([[{ catalog_fence: '' }], [{ facts: facts(workspaceId) }], [{ guard: 1 }]]);
   const result = await resolvePortalProof('tenant-aa', digest);
   if (result.status !== 'ALLOW') throw new Error('fixture');
   return result.proof;
 }
-beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:00Z')); db.query.mockReset(); });
+beforeEach(() => {
+  vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
+  db.query.mockReset(); db.transaction.mockReset();
+  // These are lazy transport plans, not proof constructors or database effects.
+  // Awaiting a plan outside the resolver's one owning transaction must fail.
+  db.query.mockImplementation((text: string, values: readonly unknown[]) => ({ text, values,
+    then: () => { throw Error('fixture lookup plan awaited outside transaction'); } }));
+});
 
 describe('closed tenant statement contract', () => {
+  it('retains genuine issuer facts through the fenced read-committed resolver prefix', async () => {
+    const p = await proof();
+    expect(db.query).toHaveBeenCalledTimes(3); expect(db.transaction).toHaveBeenCalledTimes(1);
+    const [plans, options] = db.transaction.mock.calls[0];
+    expect(options).toEqual({ isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
+    expect(plans).toEqual(db.query.mock.results.map(result => result.value));
+    expect(db.query.mock.calls[0][0]).toContain('pg_advisory_xact_lock_shared');
+    expect(db.query.mock.calls[0][1]).toEqual([]);
+    expect(db.query.mock.calls[1][0]).toContain('assert_runtime_role');
+    expect(db.query.mock.calls[1][0]).toContain('resolve_portal');
+    expect(db.query.mock.calls[1][1]).toEqual(['tenant-aa', digest]);
+    expect(db.query.mock.calls[2][0]).toContain('assert_runtime_role');
+    expect(db.query.mock.calls[2][1]).toEqual(['APP']);
+    expect(JSON.stringify(p)).toBe('{"kind":"PORTAL"}');
+    expect(contract!.compileTenantStatement(p, contract!.portalEmploymentSnapshot(p)).values).toEqual(['tenant-a', 'employee-a']);
+  });
   it('implements named server builders', () => {
     expect(contract?.workspaceSnapshot).toBeTypeOf('function');
     expect(contract?.portalEmploymentSnapshot).toBeTypeOf('function');
@@ -64,7 +87,7 @@ describe('closed tenant statement contract', () => {
     for (const p of [b, foreign]) expect(() => contract!.compileTenantStatement(p, statement!)).toThrow('tenant_statement_denied');
   });
   it('rejects a genuine calendar proof for portal metadata queries', async () => {
-    db.query.mockResolvedValue([{ facts: { ...facts(), kind: 'CALENDAR_READ', subscriptionId: 'sub-a', digest, generation: 'g-a' } }]);
+    db.transaction.mockResolvedValue([[{ catalog_fence: '' }], [{ facts: { ...facts(), kind: 'CALENDAR_READ', subscriptionId: 'sub-a', digest, generation: 'g-a' } }], [{ guard: 1 }]]);
     const result = await resolveCalendarReadProof(digest);
     expect(result.status).toBe('ALLOW');
     if (result.status !== 'ALLOW') throw Error('fixture');

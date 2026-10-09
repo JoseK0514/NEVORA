@@ -1,7 +1,9 @@
 import 'server-only';
 import { createHash } from 'node:crypto';
+import { types as nodeTypes } from 'node:util';
 import { getTenantRuntimeDb } from '../db';
 import { normalizeWorkspaceLocator } from './identity';
+import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 import type {
   CalendarReadProof, CalendarReadProofFacts, ClockerProof, ClockerProofFacts, PortalProof, PortalProofFacts,
   ProofResolution, ProvisionerEnvironment, ProvisionerOperator, ProvisionerPurpose, ProvisionerScope,
@@ -121,6 +123,23 @@ function parseProvisioner(row: Record<string, unknown>): ProvisionerScopeFacts {
   for (const key of bootstrap ? ['workspaceId', 'workspaceIncarnation', 'sourceVersion', 'verifiedIdentityReference'] : ['bootstrapNonce']) if (row[key] !== null) return malformed();
   return Object.freeze({ kind: 'PROVISIONER', operatorId: id(row, 'operatorId'), operatorGrantId: id(row, 'operatorGrantId'), operatorGrantVersion: revision(row, 'operatorGrantVersion'), operatorCredentialDigest: digest(row, 'operatorCredentialDigest'), environment: field(row, 'environment', validEnvironment) as ProvisionerEnvironment, purpose, workspaceId, bootstrapNonce, workspaceIncarnation, sourceVersion, verifiedIdentityReference, subjectEmployeeId: id(row, 'subjectEmployeeId'), requestId: id(row, 'requestId'), requestDigest: digest(row, 'requestDigest'), operationId: id(row, 'operationId'), payloadDigest: digest(row, 'payloadDigest'), ...lifetime(row) });
 }
+const FINAL_ROLE = 'SELECT 1 / CASE WHEN nevora_tenancy.assert_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard';
+// Closed native transport shapes only, never held-lock/catalog/role authority.
+// Descriptor ownership is essential: inherited names or descriptor values may
+// not substitute for observed data fields. Reject proxy/accessor behavior.
+function singleWireResult(value: unknown, field: 'catalog_fence' | 'guard', expected: '' | 1): boolean {
+  if (!value || typeof value !== 'object' || nodeTypes.isProxy(value) || !Array.isArray(value)) return false;
+  const items = Object.getOwnPropertyDescriptors(value as object);
+  if (Reflect.ownKeys(items).length !== 2 || !Object.hasOwn(items, 'length') || !Object.hasOwn(items, '0') ||
+    !Object.hasOwn(items.length, 'value') || items.length.value !== 1 || !Object.hasOwn(items[0], 'value')) return false;
+  const row: unknown = items[0].value;
+  if (!row || typeof row !== 'object' || nodeTypes.isProxy(row) || Array.isArray(row)) return false;
+  const prototype = Object.getPrototypeOf(row);
+  if (prototype !== Object.prototype && prototype !== null) return false;
+  const fields = Object.getOwnPropertyDescriptors(row);
+  return Reflect.ownKeys(fields).length === 1 && Object.hasOwn(fields, field) &&
+    Object.hasOwn(fields[field], 'value') && fields[field].value === expected;
+}
 async function lookup(seam: keyof typeof seams, values: string[]): Promise<Record<string, unknown> | null> {
   // No queryRows coercion: malformed transport must not silently become DENY.
   // Resolver expressions are closed server constants. No legacy/bootstrap URL
@@ -129,7 +148,19 @@ async function lookup(seam: keyof typeof seams, values: string[]): Promise<Recor
   // ordinary tenant authority. SQL role helpers remain an installation gate.
   const role = seam === 'worker' ? 'WORKER' : 'APP';
   const sql = `SELECT CASE WHEN nevora_tenancy.assert_runtime_role('${role}'::text) IS TRUE THEN ${seams[seam]} ELSE NULL::jsonb END AS facts`;
-  const rows: unknown = await getTenantRuntimeDb(role).query(sql, values);
+  const transport = getTenantRuntimeDb(role);
+  // Leave every query lazy. ReadCommitted gives the lookup a fresh statement
+  // snapshot after a blocked shared fence; final role denial raises in the same
+  // owning transaction before private issuance. No replay or standalone await.
+  const queries = [
+    transport.query(RUNTIME_CATALOG_SHARED_FENCE_SQL.text, [...RUNTIME_CATALOG_SHARED_FENCE_SQL.values]),
+    transport.query(sql, values),
+    transport.query(FINAL_ROLE, [role]),
+  ];
+  const results: unknown = await transport.transaction(queries, { isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
+  if (!Array.isArray(results) || results.length !== 3 || !singleWireResult(results[0], 'catalog_fence', '') ||
+    !singleWireResult(results[2], 'guard', 1)) return malformed();
+  const rows: unknown = results[1];
   if (!Array.isArray(rows) || rows.length > 1) return malformed();
   if (!rows.length) return null;
   const row = record(rows[0]);
