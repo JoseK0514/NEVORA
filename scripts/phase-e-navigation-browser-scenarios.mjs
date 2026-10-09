@@ -50,7 +50,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  }
  async function bounds(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document horizontal overflow');const bad=await page.locator('.employee-account-panel a,.employee-account-panel button,.employee-destination-list a').evaluateAll(elements=>elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&& (r.left< -1||r.right>innerWidth+1||r.height<43);}).map(e=>e.textContent));assert.deepEqual(bad,[]);}
  try{
-  const label='E'+(engine==='chromium'?'C':'W')+width,scenario=await seedOwnedScenario(app.database.executor,label,[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0)),actor=scenario.actors[0],requestId='e41-'+label,noticeId='notice-'+label;
+  const label='E'+(engine==='chromium'?'C':'W')+width,scenario=await seedOwnedScenario(app.database.executor,label,[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0)+42),actor=scenario.actors[0],requestId='e41-'+label,noticeId='notice-'+label;
   await q('DELETE FROM notifications WHERE employee_id=$1',[actor]);
   await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES($1,$2,current_date+7,current_date+7,'APPROVED','Fictional private reason')",[requestId,actor]);
   await q("INSERT INTO notifications(id,employee_id,type,title,body,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,due_at,expires_at,urgency,push_state) VALUES($1,$2,'TIME_OFF_DECIDED','STORED PRIVATE TITLE','STORED PRIVATE BODY',$1,'test','TIME_OFF',$3,'APPROVED','APPROVED','EVENT',now()-interval '1 hour',now()+interval '1 day','high','pending')",[noticeId,actor,requestId]);

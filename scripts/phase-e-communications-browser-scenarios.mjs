@@ -7,7 +7,7 @@ import {businessDate} from '../src/lib/business-time.ts';
 import {weekStartFor} from '../src/lib/date-utils.ts';
 export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile}){
  const label=`U${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
- const scenario=await seedOwnedScenario(app.database.executor,label,index),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values}),checks=[],screenshots=[],managerErrors=[];let stage='seed';
+ const scenario=await seedOwnedScenario(app.database.executor,label,index+28),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values}),checks=[],screenshots=[],managerErrors=[];let stage='seed';
  const details={engine,width,checks,screenshots},shot=async name=>{const path=join(evidenceDirectory,`updates-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
  const login=async(target,id)=>{await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign In',exact:true}).click()]);await target.waitForLoadState('networkidle');};
  let managerContext,manager;

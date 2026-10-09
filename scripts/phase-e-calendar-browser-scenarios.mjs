@@ -15,6 +15,8 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   for(const method of ['GET','HEAD','POST']){const response=await fetch(endpoint,{method,redirect:'manual'});assert.equal(response.status,method==='POST'?405:404);await response.text();}
   await fetch(endpoint+'?probe=1');await fetch(app.url+'/login');await new Promise(resolve=>setTimeout(resolve,150));assert.equal((await readFile(join(app.root,'next.log'),'utf8')).includes(sentinel),false);
  });
+ // Other suites deliberately vary the fictional location label. Restore this suite's expected canonical label.
+ await app.database.executor.query({text:"UPDATE locations SET short_name='Main Office' WHERE id='loc-1'",values:[]});
  const fixture=await seedOwnedScenario(app.database.executor,'CALENDAR'+engine.toUpperCase()+width,[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0));
  const q=(text,values=[])=>app.database.executor.query({text,values});
  await step('Real fictional login and Schedule secondary calendar entry',async()=>{
