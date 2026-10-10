@@ -9,7 +9,7 @@ import { tokenizeDdl } from '../inventory/ddl';
 
 // Keep prior byte custody checks while allowing only the reviewed marked additions.
 function beforePortalDependencyInsertions(text: string): string {
-  for (const name of ['PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
+  for (const name of ['PORTAL_POLICY_COMPLETE_DEPENDENCY_ADMISSION', 'PORTAL_POLICY_COMPLETE_DEPENDENCY_CTES', 'PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
     const start = '-- ' + name + '_BEGIN', end = '-- ' + name + '_END';
     if (!text.includes(start) && !text.includes(end)) continue;
     expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);

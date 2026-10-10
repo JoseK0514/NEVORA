@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
 import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
+import { verifyCompleteNativeJsonl } from '../../../test/evidence/complete-native-jsonl';
 import { Client } from 'pg';
 import { appendFileSync, existsSync, lstatSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -15,15 +16,19 @@ const auditedStoragePath = resolve('src/lib/tenancy/runtime/audited-helper-stora
 const auditedGuardPath = resolve('src/lib/tenancy/runtime/audited-role-guard.sql');
 const expectedAuditedStorageSHA256 = '2a7d8c979e5e854ddd0e516a07ce20eed15365efcfb1c21812ffffe9e31d9603';
 const expectedAuditedGuardSHA256 = 'ba0b4617d66892ad350e42221e9ad1dc27b406c35d5103b9eba28b08ea6a02e0';
+const expectedCompleteAuditedGuardSHA256 = '5469198859b10441ffdcfe0150624cbccec9862c13b5a20ba77614d6d19f1414';
 const sourcePins: Readonly<Record<string, string>> = {
+  'src/lib/tenancy/runtime/portal-installed-policy-observation.sql': 'd25be72e0bede3e2ded9ce0ba782b060e41260b79db00e202e1db1d6c965573a',
+  'src/lib/tenancy/runtime/portal-policy-joint-locks.sql': 'a1394da4b29c86dbf9c87a2968325d359f2bbe4137cf4004e4e4d81245f1f79e',
+  'src/lib/tenancy/runtime/portal-policy-joint-observation.sql': '40283f6d7834a2dd01cbe4c418a8a12e6b4a8569d4680cf734c746e1cb55c9e3',
   'src/lib/tenancy/runtime/control-storage.sql': '4edaaa14492e8b91b30ecb26b4f9582af97c8380543761eee8bcc605ef40de66',
   'src/lib/tenancy/runtime/audited-helper-storage.sql': expectedAuditedStorageSHA256,
   'src/lib/tenancy/runtime/portal-source-locks.sql': 'fed4de46092c03be9a35d66c1d080444d9db5fc107d1c48b7b67ac95578cfa03',
   'src/lib/tenancy/runtime/portal-source-observation.sql': '72b6509933ca2bbd73fbb11eae7232db40bf5f5eafd94be56e291f236ff83dc7',
-  'src/lib/tenancy/runtime/audited-role-guard.sql': expectedAuditedGuardSHA256,
-  'src/lib/tenancy/runtime/audited-role-guard-installer.sql': 'cfbe111978adc37a1ce0025ce843fb37e7e43b71f568c3dd01c68b126c23f7d5',
-  'src/lib/tenancy/runtime/original-runtime-login.sql': '0993c3ba476cc8dab6d80ee2e0287ba9d18072b3dab99aee8bcab23814c4e6b8',
-  'src/lib/tenancy/runtime/original-runtime-login-installer.sql': 'a63f71569af622928d879c1b6759440a42f20f9f599efd24eb80bfb2e1be584f',
+  'src/lib/tenancy/runtime/audited-role-guard.sql': expectedCompleteAuditedGuardSHA256,
+  'src/lib/tenancy/runtime/audited-role-guard-installer.sql': '6cfcdf18fcf4eb9099b2b6b86f1c9d42cb0757fd2b20c1eeee5bb51a63f8297d',
+  'src/lib/tenancy/runtime/original-runtime-login.sql': 'e44dbeca8c034b0b92a8af595d3c3fcb932215ea09c8a8394b9bf7bd28c96da4',
+  'src/lib/tenancy/runtime/original-runtime-login-installer.sql': 'ba6053428fe34020c26f0e7e1e724a7fc9fa41018532875bbfb8e1909e6c8607',
 };
 const leasePath = process.env.F_PD_OWNED_LEASE, runPath = process.env.F_PD_RUN_DIR;
 type Lease = { scope: string; closed: boolean; invocation: string; authorizationReference: string; root: string; data: string;
@@ -40,7 +45,7 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 fixed Portal source dependen
   let lease: Lease, admin: Client, settings: Settings, appRole: Role, workerRole: Role, outsiderRole: Role, ownerRole: Role, unrelatedOwnerRole: Role;
   let app: Client, worker: Client, outsider: Client;
   let password = '', installerOid = '', verified = false, runVerified = false, fixtureSetupCommitted = false;
-  let auditedStorage = '', auditedGuard = '', sqlAttempted = false;
+  let auditedStorage = '', auditedGuard = '', completeAuditedGuard = '', sqlAttempted = false;
   let reader: ObjectReceipt, kernel: ObjectReceipt, portal: ObjectReceipt, calendar: ObjectReceipt, triggerFunction: ObjectReceipt, route: ObjectReceipt;
   let finalCatalog: Awaited<ReturnType<typeof controlCatalog>>, finalRows: Record<string, unknown>[], finalBindings: Record<string, unknown>[], finalRoles: Awaited<ReturnType<typeof roleCatalog>>;
   const clients = new Set<Client>(), closedClients = new Set<Client>();
@@ -266,8 +271,8 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 fixed Portal source dependen
   }
   function nativeQuery(select: string) {
     const start = '-- AUDITED_NATIVE_CTES_BEGIN', end = '-- AUDITED_NATIVE_CTES_END';
-    expect(auditedGuard.split(start)).toHaveLength(2); expect(auditedGuard.split(end)).toHaveLength(2);
-    return 'WITH ' + auditedGuard.slice(auditedGuard.indexOf(start) + start.length, auditedGuard.indexOf(end)).trim() + '\n' + select;
+    expect(completeAuditedGuard.split(start)).toHaveLength(2); expect(completeAuditedGuard.split(end)).toHaveLength(2);
+    return 'WITH ' + completeAuditedGuard.slice(completeAuditedGuard.indexOf(start) + start.length, completeAuditedGuard.indexOf(end)).trim() + '\n' + select;
   }
   async function native(oid: string) {
     const rows = (await query(admin, nativeQuery(`SELECT f.observation,f.source_sha256,o.observation owner_observation,o.acl_observation owner_acl_observation
@@ -317,6 +322,98 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 fixed Portal source dependen
     expect(admin.getTransactionStatus()).toBe('I'); expect(canonicalAclCatalog(await controlCatalog())).toEqual(before);
     expect(await registryRows()).toEqual(beforeRows); expect(await roleCatalog()).toEqual(beforeRoles); record({ caseId, stage: 'EXACT_ROLLBACK_RESTORATION', before, after: await controlCatalog(), beforeRows, afterRows: await registryRows() });
   }
+  // PREPARED ONLY. These helpers create exact new3 functions solely inside the
+  // existing admin-owned rollback mutation. No objects.push/role/client/commit.
+  type CompletePortalGroupMember = { file: string; name: string; signature: string; delimiter: string; oid: string };
+  function beforeCompletePortalPolicyAdditions(value: string) {
+    for (const marker of ['PORTAL_POLICY_COMPLETE_DEPENDENCY_ADMISSION', 'PORTAL_POLICY_COMPLETE_DEPENDENCY_CTES']) {
+      const start = '-- ' + marker + '_BEGIN', end = '-- ' + marker + '_END';
+      expect(value.split(start)).toHaveLength(2); expect(value.split(end)).toHaveLength(2);
+      const after = value.indexOf(end) + end.length; expect(value.slice(after, after + 1)).toBe('\n');
+      value = value.slice(0, value.indexOf(start)) + value.slice(after + 1);
+    }
+    expect(hash(value)).toBe(expectedAuditedGuardSHA256); return value;
+  }
+  function priorPolicyNativeQuery(select: string) {
+    const start = '-- AUDITED_NATIVE_CTES_BEGIN', end = '-- AUDITED_NATIVE_CTES_END';
+    // auditedGuard is exactly the accepted prior source, independently pinned.
+    return 'WITH ' + auditedGuard.slice(auditedGuard.indexOf(start) + start.length, auditedGuard.indexOf(end)).trim() + '\n' + select;
+  }
+  const completePortalGroupSources = [
+    ['portal-installed-policy-observation.sql', 'read_portal_installed_policy', '(text)', '$portal_installed_policy_observation$'],
+    ['portal-policy-joint-locks.sql', 'lock_portal_policy_source_rows', '(text,text,bpchar)', '$portal_policy_source_locks$'],
+    ['portal-policy-joint-observation.sql', 'read_portal_policy_source_rows', '(text,text,bpchar)', '$portal_policy_source_observation$'],
+  ] as const;
+  async function completeGroupDependencies(group: readonly CompletePortalGroupMember[]) {
+    const dependencies = [(await native(reader.oid)).observation, (await native(kernel.oid)).observation];
+    for (const member of group) {
+      const rows = (await query(admin, 'SELECT pg_catalog.to_regprocedure($1)::oid::text oid', ['nevora_tenancy.' + member.name + member.signature])).rows;
+      expect(rows).toHaveLength(1); expect(rows[0].oid).toMatch(/^[1-9][0-9]*$/);
+      dependencies.push((await native(rows[0].oid)).observation);
+    }
+    return dependencies;
+  }
+  async function captureCompleteGroup(group: readonly CompletePortalGroupMember[], overrides: Record<string, unknown[]> = {}) {
+    const dependencies = await completeGroupDependencies(group);
+    return capture({ [portal.oid]: dependencies, ...overrides });
+  }
+  async function withCompletePortalGroup(caseId: string, body: (group: readonly CompletePortalGroupMember[]) => Promise<void>) {
+    const priorCatalog = canonicalAclCatalog(await controlCatalog()), priorRows = await registryRows(), priorBindings = await bindingRows(), priorRoles = await roleCatalog();
+    const group: CompletePortalGroupMember[] = [];
+    try {
+      await mutation(caseId, async () => {
+        expect(admin.getTransactionStatus()).toBe('T');
+        for (const [file, name, signature, delimiter] of completePortalGroupSources) {
+          expect((await query(admin, 'SELECT oid FROM pg_catalog.pg_proc WHERE pronamespace=pg_catalog.to_regnamespace($1) AND proname=$2', ['nevora_tenancy', name])).rows).toEqual([]);
+          const fragment = helperFragment(file, delimiter); await query(admin, fragment);
+          await query(admin, 'REVOKE ALL ON FUNCTION nevora_tenancy.' + name + signature + ' FROM PUBLIC');
+          await query(admin, 'GRANT EXECUTE ON FUNCTION nevora_tenancy.' + name + signature + ' TO ' + q(ownerRole.name));
+          const oid = (await query(admin, 'SELECT pg_catalog.to_regprocedure($1)::oid::text oid', ['nevora_tenancy.' + name + signature])).rows[0].oid as string;
+          const member = { file, name, signature, delimiter, oid }; group.push(member);
+          const observed = await native(oid);
+          expect(observed.observation.ownerOid).toBe(installerOid);
+          record({ caseId, operation: 'ROLLBACK_ONLY_EXACT_NEW_HELPER_OBSERVED', member,
+            wholeSourceSHA256: sourcePins['src/lib/tenancy/runtime/' + file], fragmentSHA256: hash(fragment), fragment,
+            native: observed, neverCalled: true, noPersistentObjectReceipt: true });
+        }
+        await captureCompleteGroup(group); await body(group);
+      });
+    } finally {
+      // Even a failed feature assertion must verify rollback-owned catalog/role/
+      // registry/binding identity and absence, rather than losing those checks.
+      expect(admin.getTransactionStatus()).toBe('I');
+      for (const [, name] of completePortalGroupSources) expect((await query(admin, 'SELECT oid FROM pg_catalog.pg_proc WHERE pronamespace=pg_catalog.to_regnamespace($1) AND proname=$2', ['nevora_tenancy', name])).rows).toEqual([]);
+      expect(canonicalAclCatalog(await controlCatalog())).toEqual(priorCatalog);
+      expect(await registryRows()).toEqual(priorRows); expect(await bindingRows()).toEqual(priorBindings); expect(await roleCatalog()).toEqual(priorRoles);
+      expect(objects).toHaveLength(10); expect(roles).toHaveLength(5); expect(clients.size).toBe(4);
+      record({ caseId, operation: 'ROLLBACK_ONLY_NEW3_ABSENT_FULL_BASE_RECONCILED', group,
+        catalogSHA256: hash(JSON.stringify(priorCatalog)), registrySHA256: hash(JSON.stringify(priorRows)),
+        bindingsSHA256: hash(JSON.stringify(priorBindings)), rolesSHA256: hash(JSON.stringify(priorRoles)),
+        fullBeforeAfterCatalogRetainedByMutation: true, persistentObjects: 10, roles: 5, clients: 4 });
+    }
+  }
+  async function completeGroupVariant(caseId: string, label: string, body: () => Promise<void>) {
+    expect(admin.getTransactionStatus()).toBe('T');
+    const before = canonicalAclCatalog(await controlCatalog()), rows = await registryRows(), bindings = await bindingRows(), roleRows = await roleCatalog();
+    await query(admin, 'SAVEPOINT f10_complete_portal_variant');
+    try { await body(); }
+    finally {
+      // This is a fixed local test savepoint, not an application callback seam.
+      await query(admin, 'ROLLBACK TO SAVEPOINT f10_complete_portal_variant'); await query(admin, 'RELEASE SAVEPOINT f10_complete_portal_variant');
+      expect(canonicalAclCatalog(await controlCatalog())).toEqual(before); expect(await registryRows()).toEqual(rows);
+      expect(await bindingRows()).toEqual(bindings); expect(await roleCatalog()).toEqual(roleRows);
+      record({ caseId, operation: 'EXACT_VARIANT_ROLLBACK_RECONCILIATION', label,
+        catalogSHA256: hash(JSON.stringify(before)), registrySHA256: hash(JSON.stringify(rows)),
+        bindingsSHA256: hash(JSON.stringify(bindings)), rolesSHA256: hash(JSON.stringify(roleRows)),
+        fullParentMutationCatalogRetained: true });
+    }
+  }
+  async function completeGroupRows() {
+    return (await query(admin, nativeQuery(`SELECT d.runtime_kind,d.route_kind,d.root_function_oid::text root_function_oid,d.route_oid::text route_oid,d.function_oid::text function_oid,d.observation
+      FROM audit_portal_policy_dependency_current d JOIN audit_capabilities c
+        ON c.runtime_kind=d.runtime_kind AND c.route_kind=d.route_kind AND c.function_oid=d.root_function_oid AND c.route_oid=d.route_oid
+      WHERE d.root_function_oid=$1::oid ORDER BY d.function_oid`), [portal.oid])).rows;
+  }
   beforeAll(async () => {
     expect(leasePath !== undefined && runPath !== undefined).toBe(true);
     expect(process.env.DATABASE_URL === undefined && process.env.FUEL_TEST_DATABASE_URL === undefined).toBe(true);
@@ -348,7 +445,9 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 fixed Portal source dependen
     expect(realpathSync(lease.credentialFile)).toBe(lease.credentialFile);
     expect(lease.credentialFile.startsWith(lease.root + sep)).toBe(true);
     for (const [path, pin] of Object.entries(sourcePins)) expect(hash(readFileSync(resolve(path)))).toBe(pin);
-    auditedStorage = readFileSync(auditedStoragePath, 'utf8'); auditedGuard = readFileSync(auditedGuardPath, 'utf8');
+    auditedStorage = readFileSync(auditedStoragePath, 'utf8'); completeAuditedGuard = readFileSync(auditedGuardPath, 'utf8');
+    expect(hash(completeAuditedGuard)).toBe(expectedCompleteAuditedGuardSHA256);
+    auditedGuard = beforeCompletePortalPolicyAdditions(completeAuditedGuard);
     expect(hash(auditedStorage)).toBe(expectedAuditedStorageSHA256);
     expect(hash(auditedGuard)).toBe(expectedAuditedGuardSHA256);
     expect(hash(readFileSync(resolve('src/lib/tenancy/runtime/catalog-fence.server.ts')))).toBe('2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f');
@@ -586,6 +685,313 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 fixed Portal source dependen
       expect((await native(reader.oid)).observation.language).toBe('sql');expect(actual).toBe(false);expect(matched).toEqual([{name:kernel.name}]);
     });
   },45000);
+  // NEW callbacks: PREPARED/UNEXECUTED. Original SD01-SD16 stay byte-identical.
+  it('CG01 same genuine complete five-member capsule is denied by prior graph and admitted by fixed new graph', async () => {
+    await withCompletePortalGroup('CG01', async group => {
+      const beforeRows = await registryRows();
+      const oldRows = (await query(admin, priorPolicyNativeQuery('SELECT function_oid::text function_oid FROM audit_capabilities WHERE function_oid=$1::oid'), [portal.oid])).rows;
+      const actual = await admitted(), dependencyRows = await completeGroupRows();
+      record({ caseId: 'CG01', oldGuardSHA256: hash(auditedGuard), fullCurrentGuardSHA256: hash(completeAuditedGuard), oldRows, actual, dependencyRows,
+        rows: beforeRows, group, rootBodiesNeverCalled: true, scope: 'SAME_GENUINE_CAPSULE_METADATA_CONTROL_NOT_AUTHORITY_OR_NATIVE_RED_BEFORE_IMPLEMENTATION' });
+      expect(oldRows).toEqual([]); expect(actual).toBe(true); expect(dependencyRows).toHaveLength(3);
+      expect(dependencyRows.map(row => row.function_oid).sort()).toEqual(group.map(member => member.oid).sort());
+      expect(dependencyRows.every(row => row.root_function_oid === portal.oid && row.runtime_kind === 'APP' && row.route_kind === 'DIRECT_CALL' && row.route_oid === '0')).toBe(true);
+      expect(await registryRows()).toEqual(beforeRows); expect(await admitted(calendar)).toBe(true); expect(await admitted(triggerFunction)).toBe(true);
+    });
+  }, 45000);
+  it('CG02 each incomplete declaration denies new group while historical old-pair-only behavior remains', async () => {
+    await withCompletePortalGroup('CG02', async group => {
+      const full = await completeGroupDependencies(group);
+      for (let omitted = 0; omitted < full.length; omitted++) await completeGroupVariant('CG02', 'OMIT_' + omitted, async () => {
+        await capture({ [portal.oid]: full.filter((_, index) => index !== omitted) });
+        const actual = await admitted(), rows = await completeGroupRows(); record({ caseId: 'CG02', omitted, actual, rows });
+        expect(actual).toBe(false); expect(rows).toEqual([]);
+      });
+      for (const [label, deps] of [['OLD_PAIR_ONLY', full.slice(0, 2)], ['EMPTY_DECLARATION', []]] as const) await completeGroupVariant('CG02', label, async () => {
+        await capture({ [portal.oid]: [...deps] }); const actual = await admitted(), rows = await completeGroupRows();
+        record({ caseId: 'CG02', label, actual, rows, scope: 'UNCHANGED_ROOT_METADATA_NOT_SOURCE_OR_NEW_GROUP_AUTHORITY' });
+        expect(actual).toBe(true); expect(rows).toEqual([]);
+      });
+    });
+  }, 45000);
+  it('CG03 new group cannot be borrowed by a calendar root trigger route or wrong runtime kind', async () => {
+    await withCompletePortalGroup('CG03', async group => {
+      const full = await completeGroupDependencies(group);
+      for (const root of [calendar, triggerFunction]) await completeGroupVariant('CG03', root.name, async () => {
+        await captureCompleteGroup(group, { [root.oid]: full }); const actual = await admitted(root);
+        record({ caseId: 'CG03', root, actual, genuinelyRecapturedRows: await registryRows() }); expect(actual).toBe(false);
+      });
+      await completeGroupVariant('CG03', 'WRONG_WORKER_PORTAL_KIND', async () => {
+        await query(admin, "UPDATE nevora_tenancy.audited_helper_capability SET runtime_kind='WORKER' WHERE function_oid=$1::oid", [portal.oid]);
+        const actual = await admitted(), rows = await completeGroupRows(); record({ caseId: 'CG03', actual, rows, scope: 'NO_NEW_BOOL_ROOT_OR_KIND_GRANT_FIXTURE' });
+        expect(actual).toBe(false); expect(rows).toEqual([]);
+      });
+    });
+  }, 45000);
+  it('CG04 each changed exact source body denies both retained and honestly recaptured descriptors', async () => {
+    await withCompletePortalGroup('CG04', async group => {
+      for (const member of group) await completeGroupVariant('CG04', member.name, async () => {
+        const fragment = helperFragment(member.file, member.delimiter).replace('CREATE FUNCTION', 'CREATE OR REPLACE FUNCTION').replace(member.delimiter, member.delimiter + '\n-- fictional negative prosrc delta');
+        await query(admin, fragment); const staleActual = await admitted();
+        await captureCompleteGroup(group); const freshActual = await admitted(), observed = await native(member.oid);
+        record({ caseId: 'CG04', member, fragmentSHA256: hash(fragment), staleActual, freshActual, observed, bodiesNeverCalled: true });
+        expect(staleActual).toBe(false); expect(freshActual).toBe(false);
+      });
+    });
+  }, 45000);
+  it('CG05 actual rollback-owned replacement OID and each same-name overload refuse stale or widened tuples', async () => {
+    await withCompletePortalGroup('CG05', async group => {
+      for (const member of group) {
+        await completeGroupVariant('CG05', member.name + ':REPLACE', async () => {
+          const target = 'nevora_tenancy.' + member.name + member.signature;
+          await query(admin, 'DROP FUNCTION ' + target); const fragment = helperFragment(member.file, member.delimiter); await query(admin, fragment);
+          await query(admin, 'REVOKE ALL ON FUNCTION ' + target + ' FROM PUBLIC'); await query(admin, 'GRANT EXECUTE ON FUNCTION ' + target + ' TO ' + q(ownerRole.name));
+          const replacement = (await query(admin, 'SELECT pg_catalog.to_regprocedure($1)::oid::text oid', [target])).rows[0].oid;
+          const staleActual = await admitted(); await captureCompleteGroup(group); const reboundActual = await admitted();
+          record({ caseId: 'CG05', member, replacement, staleActual, reboundActual, nativeReplacement: await native(replacement),
+            scope: 'ROLLBACK_OWNED_IDENTITY_CHANGE_NOT_COMMITTED_REPLACEMENT_OR_SOURCE_APPROVAL' });
+          expect(replacement).not.toBe(member.oid); expect(staleActual).toBe(false); expect(reboundActual).toBe(true);
+        });
+        await completeGroupVariant('CG05', member.name + ':OVERLOAD', async () => {
+          const original = helperFragment(member.file, member.delimiter), returns = original.indexOf('\nRETURNS'), close = original.lastIndexOf(')', returns);
+          expect(close).toBeGreaterThan(0); const fragment = original.slice(0, close) + ', p_fixture_extra pg_catalog.text' + original.slice(close);
+          await query(admin, fragment); const signature = member.signature.slice(0, -1) + ',text)';
+          await query(admin, 'REVOKE ALL ON FUNCTION nevora_tenancy.' + member.name + signature + ' FROM PUBLIC');
+          const extra = (await query(admin, 'SELECT pg_catalog.to_regprocedure($1)::oid::text oid', ['nevora_tenancy.' + member.name + signature])).rows[0].oid;
+          await captureCompleteGroup(group); const actual = await admitted();
+          record({ caseId: 'CG05', member, signature, extra, fragmentSHA256: hash(fragment), nativeExtra: await native(extra), actual }); expect(actual).toBe(false);
+        });
+      }
+    });
+  }, 45000);
+  it('CG06 each supported real native metadata change denies after fresh complete owner and capsule capture', async () => {
+    await withCompletePortalGroup('CG06', async group => {
+      for (const member of group) for (const change of ['STRICT', 'SECURITY DEFINER', 'SET search_path=pg_catalog,nevora_tenancy', 'STABLE', 'PARALLEL SAFE']) await completeGroupVariant('CG06', member.name + ':' + change, async () => {
+        await query(admin, 'ALTER FUNCTION nevora_tenancy.' + member.name + member.signature + ' ' + change);
+        await captureCompleteGroup(group); const actual = await admitted(), observed = await native(member.oid);
+        record({ caseId: 'CG06', member, change, actual, observed }); expect(actual).toBe(false);
+      });
+      for (const member of group) await completeGroupVariant('CG06', member.name + ':LAST_ARGUMENT_DEFAULT_NULL', async () => {
+        const original = helperFragment(member.file, member.delimiter), returns = original.indexOf('\nRETURNS');
+        expect(returns).toBeGreaterThan(0);
+        const parameter = member.signature === '(text)' ? 'p_workspace_id pg_catalog.text' : 'p_session_token_hash pg_catalog.bpchar';
+        const header = original.slice(0, returns); expect(header.split(parameter)).toHaveLength(2);
+        const fragment = header.replace('CREATE FUNCTION', 'CREATE OR REPLACE FUNCTION').replace(parameter, parameter + ' DEFAULT NULL') + original.slice(returns);
+        expect(fragment.split(member.delimiter)[1]).toBe(original.split(member.delimiter)[1]);
+        await query(admin, fragment); await captureCompleteGroup(group);
+        const actual = await admitted(), observed = await native(member.oid);
+        record({ caseId: 'CG06', member, change: 'HEADER_ONLY_LAST_ARGUMENT_DEFAULT_NULL', fragmentSHA256: hash(fragment), actual, observed, rawBodyUnchanged: true });
+        expect(observed.observation.defaultArgumentCount).toBe(1);
+        expect(observed.observation.argumentTypeOids).toEqual(member.signature === '(text)' ? ['25'] : ['25', '25', '1042']);
+        expect(actual).toBe(false);
+      });
+      record({ caseId: 'CG06', status: 'UNEXECUTED_UNSUPPORTED_SUBVECTORS', gaps: ['NO_NATIVE_SUPPORT_FUNCTION_OR_VARIADIC_ISOLATED_CASE_PREPARED_WITHIN_EXACT3_OBJECT_BUDGET'], noSystemCatalogWrites: true });
+    });
+  }, 45000);
+  it('CG07 either raw bound original runtime role owning each helper denies despite honest observations', async () => {
+    await withCompletePortalGroup('CG07', async group => {
+      for (const member of group) for (const owned of [appRole, workerRole]) await completeGroupVariant('CG07', member.name + ':' + owned.name, async () => {
+        await query(admin, 'ALTER FUNCTION nevora_tenancy.' + member.name + member.signature + ' OWNER TO ' + q(owned.name));
+        await captureCompleteGroup(group); const actual = await admitted(), observed = await native(member.oid);
+        record({ caseId: 'CG07', member, owned, actual, observed, scope: 'RAW_BINDING_OWNER_EXCLUSION_NOT_SAFE_RUNTIME_AUTHORITY' });
+        expect(observed.observation.ownerOid).toBe(owned.oid); expect(actual).toBe(false);
+      });
+    });
+  }, 45000);
+  it('CG08 each helper ACL denies PUBLIC runtime unrelated rootless and grant-option grantees', async () => {
+    await withCompletePortalGroup('CG08', async group => {
+      for (const member of group) for (const grantee of ['PUBLIC', q(appRole.name), q(workerRole.name), q(outsiderRole.name), q(unrelatedOwnerRole.name), q(ownerRole.name) + ' WITH GRANT OPTION']) await completeGroupVariant('CG08', member.name + ':' + grantee, async () => {
+        await query(admin, 'GRANT EXECUTE ON FUNCTION nevora_tenancy.' + member.name + member.signature + ' TO ' + grantee);
+        await captureCompleteGroup(group); const actual = await admitted(), observed = await native(member.oid);
+        record({ caseId: 'CG08', member, grantee, actual, observed }); expect(actual).toBe(false);
+      });
+      for (const member of group) await completeGroupVariant('CG08', member.name + ':NATIVE_DEFAULT_NULL_ACL', async () => {
+        const target = 'nevora_tenancy.' + member.name + member.signature; await query(admin, 'DROP FUNCTION ' + target);
+        await query(admin, helperFragment(member.file, member.delimiter));
+        const current = (await query(admin, 'SELECT p.oid::text oid,p.proacl::text acl FROM pg_catalog.pg_proc p WHERE p.oid=pg_catalog.to_regprocedure($1)', [target])).rows[0];
+        await captureCompleteGroup(group); const actual = await admitted();
+        record({ caseId: 'CG08', member, current, actual, observed: await native(current.oid), scope: 'NATIVE_DEFAULT_ACL_NOT_CATALOG_ASSIGNMENT' });
+        expect(current.acl).toBe(null); expect(actual).toBe(false);
+      });
+    });
+  }, 45000);
+  it('CG09 actual unsafe declaring owner and inconsistent sibling profiles cannot authorize group capsules', async () => {
+    await withCompletePortalGroup('CG09', async group => {
+      for (const change of ['ALTER ROLE ' + q(ownerRole.name) + ' LOGIN', 'GRANT ' + q(outsiderRole.name) + ' TO ' + q(ownerRole.name)]) await completeGroupVariant('CG09', change.startsWith('ALTER') ? 'OWNER_LOGIN' : 'MEMBERSHIP', async () => {
+        await query(admin, change); await captureCompleteGroup(group); const actual = await admitted(), observed = await native(portal.oid);
+        record({ caseId: 'CG09', changeKind: change.startsWith('ALTER') ? 'OWNER_LOGIN' : 'MEMBERSHIP', actual, nativeOwner: observed.owner_observation, nativeAcl: observed.owner_acl_observation }); expect(actual).toBe(false);
+      });
+      await completeGroupVariant('CG09', 'INCONSISTENT_SIBLING_OWNER_CAPSULE', async () => {
+        await query(admin, "UPDATE nevora_tenancy.audited_helper_capability SET owner_observation=pg_catalog.jsonb_set(owner_observation,'{canLogin}','true'::jsonb,false) WHERE function_oid=$1::oid", [calendar.oid]);
+        const actual = await admitted(); record({ caseId: 'CG09', actual, rows: await registryRows() }); expect(actual).toBe(false);
+      });
+      record({ caseId: 'CG09', inheritedSequenceAndControlAndGlobalPrivilegeTestsRetainedInOtherAcceptedSuites: true,
+        newDangerousPrivilegeFixtureNotCreated: true, noClaimOfNewActualCoverage: true });
+    });
+  }, 45000);
+  it('CG10 every transitive helper needs exact declaring-owner EXECUTE and current schema USAGE', async () => {
+    await withCompletePortalGroup('CG10', async group => {
+      for (const member of group) await completeGroupVariant('CG10', member.name, async () => {
+        await query(admin, 'REVOKE EXECUTE ON FUNCTION nevora_tenancy.' + member.name + member.signature + ' FROM ' + q(ownerRole.name));
+        await captureCompleteGroup(group); const actual = await admitted(), observed = await native(member.oid);
+        record({ caseId: 'CG10', member, actual, observed }); expect(actual).toBe(false);
+      });
+      await completeGroupVariant('CG10', 'REVOKE_DECLARING_OWNER_SCHEMA_USAGE', async () => {
+        await query(admin, 'REVOKE USAGE ON SCHEMA nevora_tenancy FROM ' + q(ownerRole.name)); await captureCompleteGroup(group);
+        const actual = await admitted(); record({ caseId: 'CG10', actual, owner: await native(portal.oid) }); expect(actual).toBe(false);
+      });
+    });
+  }, 45000);
+  it('CG11 stale changed duplicate and contradictory retained helper observations deny without value defaults', async () => {
+    await withCompletePortalGroup('CG11', async group => {
+      const full = await completeGroupDependencies(group);
+      for (const delta of [{ oid: kernel.oid }, { ownerOid: ownerRole.oid }, { definition: 'name-only' }, { argumentTypeOids: ['1042'] }, { acl: [] }]) await completeGroupVariant('CG11', JSON.stringify(delta), async () => {
+        const altered = full.map((entry, index) => index === 2 ? { ...entry, ...delta } : entry);
+        expect(altered[2]).not.toEqual(full[2]);
+        await capture({ [portal.oid]: altered }); const actual = await admitted(); record({ caseId: 'CG11', delta, actual, retained: altered }); expect(actual).toBe(false);
+      });
+      await completeGroupVariant('CG11', 'DUPLICATE_CAPSULE', async () => {
+        await capture({ [portal.oid]: [...full, full[2]] }); const actual = await admitted(); record({ caseId: 'CG11', actual }); expect(actual).toBe(false);
+      });
+      await completeGroupVariant('CG11', 'UNDECLARED_OWNER_NAMED_GRANTEE', async () => {
+        await query(admin, 'GRANT EXECUTE ON FUNCTION nevora_tenancy.' + group[0].name + group[0].signature + ' TO ' + q(unrelatedOwnerRole.name));
+        await captureCompleteGroup(group); const actual = await admitted(); record({ caseId: 'CG11', actual, rows: await registryRows() }); expect(actual).toBe(false);
+      });
+    });
+  }, 45000);
+  it('CG12 parsed SQL custom target self and backward edge plus source metadata delta deny honestly', async () => {
+    await withCompletePortalGroup('CG12', async group => {
+      const [installed, joint, combined] = group;
+      const replacements = [
+        { member: combined, args: 'p_workspace_id pg_catalog.text,p_employee_id pg_catalog.text,p_session_token_hash pg_catalog.bpchar', result: 'jsonb', expression: 'nevora_tenancy.resolve_calendar(p_workspace_id)', target: calendar.oid },
+        { member: installed, args: 'p_workspace_id pg_catalog.text', result: 'jsonb', expression: 'nevora_tenancy.read_portal_installed_policy(p_workspace_id)', target: installed.oid },
+        { member: installed, args: 'p_workspace_id pg_catalog.text', result: 'jsonb', expression: "nevora_tenancy.read_portal_policy_source_rows(p_workspace_id,'fictional-unread-employee'::pg_catalog.text,'a'::pg_catalog.bpchar)", target: combined.oid },
+        { member: joint, args: 'p_workspace_id pg_catalog.text,p_employee_id pg_catalog.text,p_session_token_hash pg_catalog.bpchar', result: 'void', expression: 'nevora_tenancy.resolve_calendar(p_workspace_id)', target: calendar.oid },
+      ];
+      for (const replacement of replacements) await completeGroupVariant('CG12', replacement.member.name + ':' + replacement.target, async () => {
+        const last = replacement.result === 'void' ? ' SELECT pg_catalog.pg_sleep(0);' : '';
+        const fragment = 'CREATE OR REPLACE FUNCTION nevora_tenancy.' + replacement.member.name + '(' + replacement.args + ') RETURNS pg_catalog.' + replacement.result +
+          ' LANGUAGE sql VOLATILE PARALLEL UNSAFE SECURITY INVOKER SET search_path=pg_catalog BEGIN ATOMIC SELECT ' + replacement.expression + ';' + last + ' END';
+        await query(admin, fragment);
+        const edges = (await query(admin, `SELECT d.objid::text object_oid,d.refobjid::text target_oid,d.deptype FROM pg_catalog.pg_depend d
+          WHERE d.classid='pg_catalog.pg_proc'::pg_catalog.regclass AND d.objid=$1::oid AND d.refclassid='pg_catalog.pg_proc'::pg_catalog.regclass AND d.refobjid=$2::oid ORDER BY d.deptype`, [replacement.member.oid, replacement.target])).rows;
+        await captureCompleteGroup(group); const actual = await admitted();
+        record({ caseId: 'CG12', fragment, fragmentSHA256: hash(fragment), edges, actual,
+          scope: 'COMBINED_REAL_SQL_BODY_LANGUAGE_AND_NATIVE_EDGE_NEGATIVE_NOT_ISOLATED_PG_DEPEND_OR_HIDDEN_PLPGSQL_CALLGRAPH_PROOF' });
+        expect(edges).toHaveLength(1); expect(edges[0]).toMatchObject({ object_oid: replacement.member.oid, target_oid: replacement.target, deptype: 'n' }); expect(actual).toBe(false);
+      });
+    });
+  }, 45000);
+  it('CG13 root-authorized temporary committed private helpers refuse each original LOGIN before their bodies', async () => {
+    // ROOT-ONLY amended fixture lifecycle: temporarily at most13 objects; exact
+    // persistent10-object baseline/5roles/4clients and all old callbacks remain.
+    // This committed negative is distinct from rollback-only CG01-CG12.
+    expect(admin.getTransactionStatus()).toBe('I');
+    const beforeCatalog = canonicalAclCatalog(await controlCatalog()), beforeRows = await registryRows(), beforeBindings = await bindingRows(), beforeRoles = await roleCatalog();
+    const temporary: (CompletePortalGroupMember & { ownerOid: string; definition: string; definitionSHA256: string })[] = [];
+    let createCommitted = false, temporaryCleanupVerified = false;
+    repairs.add('CG13_EXACT_TEMPORARY_NEW3');
+    record({ caseId: 'CG13', operation: 'BEFORE_ROOT_AUTHORIZED_EXACT_TEMPORARY_COMMITTED_GROUP', sourcePins,
+      originalObjects: objects, originalRoles: roles, expectedMaximumObjects: 13,
+      beforeCatalog, beforeRows, beforeBindings, beforeRoles,
+      rootOnlyAdoptedFixtureCustodyRequired: true, noRuntimeExecuteGrantOrHelperSuccess: true });
+    try {
+      await query(admin, 'BEGIN ISOLATION LEVEL READ COMMITTED'); await query(admin, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+      for (const [file, name, signature, delimiter] of completePortalGroupSources) {
+        expect((await query(admin, 'SELECT oid FROM pg_catalog.pg_proc WHERE pronamespace=pg_catalog.to_regnamespace($1) AND proname=$2', ['nevora_tenancy', name])).rows).toEqual([]);
+        const fragment = helperFragment(file, delimiter); await query(admin, fragment);
+        const target = 'nevora_tenancy.' + name + signature;
+        await query(admin, 'REVOKE ALL ON FUNCTION ' + target + ' FROM PUBLIC');
+        // No named grant is added. Reject unexpected named defaults rather than
+        // silently granting the helper to a declared owner or runtime role.
+        const row = (await query(admin, `SELECT p.oid::text oid,p.proowner::text owner,pg_catalog.pg_get_functiondef(p.oid) definition,
+          COALESCE((SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('grantee',a.grantee::text,'privilege',a.privilege_type,'grantable',a.is_grantable) ORDER BY a.grantee,a.privilege_type)
+          FROM pg_catalog.aclexplode(COALESCE(p.proacl,pg_catalog.acldefault('f',p.proowner))) a),'[]'::jsonb) acl
+          FROM pg_catalog.pg_proc p WHERE p.oid=pg_catalog.to_regprocedure($1)`, [target])).rows[0];
+        expect(row.owner).toBe(installerOid); expect(row.acl).toEqual([{ grantee: installerOid, privilege: 'EXECUTE', grantable: false }]);
+        const member = { file, name, signature, delimiter, oid: row.oid as string, ownerOid: installerOid, definition: row.definition as string, definitionSHA256: hash(row.definition) };
+        temporary.push(member); record({ caseId: 'CG13', operation: 'EXACT_TEMPORARY_PRIVATE_FUNCTION_OBSERVED', member, fragmentSHA256: hash(fragment), native: await native(member.oid), acl: row.acl, neverCalled: true });
+      }
+      await query(admin, 'COMMIT'); createCommitted = true;
+      expect(admin.getTransactionStatus()).toBe('I');
+      expect(await registryRows()).toEqual(beforeRows); expect(await bindingRows()).toEqual(beforeBindings); expect(await roleCatalog()).toEqual(beforeRoles);
+      record({ caseId: 'CG13', operation: 'EXACT_TEMPORARY_PRIVATE_GROUP_COMMITTED', temporary, maximumObjects: 13, runtimeExecuteGrantsAdded: 0, sourceOrRlsPolicyInstalled: false });
+      for (const [client, owned] of [[app, appRole], [worker, workerRole], [outsider, outsiderRole]] as const) for (const member of temporary) {
+        const before = await originalLogin(client, owned);
+        const privileges = (await query(admin, `SELECT pg_catalog.has_function_privilege($1::oid,$2::oid,'EXECUTE') allowed,
+          pg_catalog.has_schema_privilege($1::oid,'nevora_tenancy','USAGE') schema_usage`, [owned.oid, member.oid])).rows[0];
+        await query(client, 'BEGIN ISOLATION LEVEL READ COMMITTED');
+        let code = 'NOT_ATTEMPTED', replayCode = 'NOT_ATTEMPTED', immediateStatus: ReturnType<Client['getTransactionStatus']> | undefined;
+        let nativeAbort: Awaited<ReturnType<typeof synchronizedNativeAbort>> | undefined, replayNativeAbort: Awaited<ReturnType<typeof synchronizedNativeAbort>> | undefined;
+        try {
+          const call = member.signature === '(text)' ? 'SELECT nevora_tenancy.' + member.name + '($1::text)' : 'SELECT nevora_tenancy.' + member.name + '($1::text,$2::text,$3::bpchar)';
+          const values = member.signature === '(text)' ? ['fictional-unread-workspace'] : ['fictional-unread-workspace', 'fictional-unread-employee', 'a'.repeat(64)];
+          code = await rejected(client, call, values); immediateStatus = client.getTransactionStatus();
+          nativeAbort = await synchronizedNativeAbort(client, owned, before.pid);
+          replayCode = await rejected(client, 'SELECT 1'); replayNativeAbort = await synchronizedNativeAbort(client, owned, before.pid);
+        } finally {
+          // Unconditional own ROLLBACK acknowledges ReadyForQuery even if pg's
+          // error promise preceded its cached transaction-status update.
+          await query(client, 'ROLLBACK');
+        }
+        const after = await originalLogin(client, owned);
+        record({ caseId: 'CG13', operation: 'TEMPORARY_COMMITTED_HELPER_ORIGINAL_LOGIN_DENIED', member, owned, privileges, code, replayCode, immediateStatus, nativeAbort, replayNativeAbort, before, after, noSuccessfulHelperCall: true });
+        expect(privileges.allowed).toBe(false); expect(code).toBe('42501'); expect(['T', 'E']).toContain(immediateStatus);
+        expect(nativeAbort?.clientStatus).toBe('E'); expect(nativeAbort?.rows[0].state).toBe('idle in transaction (aborted)');
+        expect(replayCode).toBe('25P02'); expect(replayNativeAbort?.clientStatus).toBe('E'); expect(replayNativeAbort?.rows[0].state).toBe('idle in transaction (aborted)');
+        expect(after).toEqual(before); expect(client.getTransactionStatus()).toBe('I');
+      }
+    } finally {
+      for (const client of [app, worker, outsider]) await query(client, 'ROLLBACK');
+      await query(admin, 'ROLLBACK');
+      try {
+        await query(admin, 'BEGIN ISOLATION LEVEL READ COMMITTED'); await query(admin, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+        for (const member of [...temporary].reverse()) {
+          const current = (await query(admin, `SELECT p.oid::text oid,p.proowner::text owner,pg_catalog.pg_get_functiondef(p.oid) definition
+            FROM pg_catalog.pg_proc p WHERE p.pronamespace=pg_catalog.to_regnamespace($1) AND p.proname=$2 ORDER BY p.oid`, ['nevora_tenancy', member.name])).rows;
+          if (current.length === 0) continue;
+          // COMMIT acknowledgement loss cannot be interpreted as absence.
+          // Only an exact retained OID/owner/body receipt permits own cleanup.
+          expect(current).toEqual([{ oid: member.oid, owner: installerOid, definition: member.definition }]);
+          expect(hash(current[0].definition)).toBe(member.definitionSHA256);
+          await query(admin, 'DROP FUNCTION nevora_tenancy.' + member.name + member.signature);
+          expect((await query(admin, 'SELECT oid FROM pg_catalog.pg_proc WHERE oid=$1::oid', [member.oid])).rows).toEqual([]);
+          record({ caseId: 'CG13', operation: 'EXACT_TEMPORARY_COMMITTED_FUNCTION_DROPPED', member });
+        }
+        await query(admin, 'COMMIT');
+      } finally { await query(admin, 'ROLLBACK'); }
+      for (const [, name] of completePortalGroupSources) expect((await query(admin, 'SELECT oid FROM pg_catalog.pg_proc WHERE pronamespace=pg_catalog.to_regnamespace($1) AND proname=$2', ['nevora_tenancy', name])).rows).toEqual([]);
+      const afterCatalog = canonicalAclCatalog(await controlCatalog()), afterRows = await registryRows(), afterBindings = await bindingRows(), afterRoles = await roleCatalog();
+      expect(afterCatalog).toEqual(beforeCatalog); expect(afterRows).toEqual(beforeRows); expect(afterBindings).toEqual(beforeBindings); expect(afterRoles).toEqual(beforeRoles);
+      expect(objects).toHaveLength(10); expect(roles).toHaveLength(5); expect(clients.size).toBe(4);
+      repairs.delete('CG13_EXACT_TEMPORARY_NEW3'); temporaryCleanupVerified = true;
+      record({ caseId: 'CG13', operation: 'EXACT_TEMPORARY_COMMITTED_GROUP_ABSENT_FULL_BASE_RECONCILED', temporary, createCommitted, temporaryCleanupVerified,
+        beforeCatalog, afterCatalog, beforeRows, afterRows, beforeBindings, afterBindings, beforeRoles, afterRoles,
+        persistentObjects: 10, maximumTemporaryObjects: 13, roles: 5, clients: 4, allClaimsPreparedUntilRootActualQA: true });
+    }
+    expect(temporaryCleanupVerified).toBe(true);
+  }, 45000);
+  it('CG14 full current four-copy source pins and exact historical source restoration remain mandatory', async () => {
+    const copies = [
+      ['audited-role-guard.sql', 'ba0b4617d66892ad350e42221e9ad1dc27b406c35d5103b9eba28b08ea6a02e0'],
+      ['audited-role-guard-installer.sql', 'cfbe111978adc37a1ce0025ce843fb37e7e43b71f568c3dd01c68b126c23f7d5'],
+      ['original-runtime-login.sql', '0993c3ba476cc8dab6d80ee2e0287ba9d18072b3dab99aee8bcab23814c4e6b8'],
+      ['original-runtime-login-installer.sql', 'a63f71569af622928d879c1b6759440a42f20f9f599efd24eb80bfb2e1be584f'],
+    ] as const;
+    const rows = [];
+    for (const [file, historical] of copies) {
+      const whole = readFileSync(resolve('src/lib/tenancy/runtime/' + file), 'utf8'); expect(hash(whole)).toBe(sourcePins['src/lib/tenancy/runtime/' + file]);
+      let erased = whole;
+      for (const marker of ['PORTAL_POLICY_COMPLETE_DEPENDENCY_ADMISSION', 'PORTAL_POLICY_COMPLETE_DEPENDENCY_CTES']) {
+        const start = '-- ' + marker + '_BEGIN', end = '-- ' + marker + '_END'; expect(erased.split(start)).toHaveLength(2); expect(erased.split(end)).toHaveLength(2);
+        const after = erased.indexOf(end) + end.length; expect(erased.slice(after, after + 1)).toBe('\n'); erased = erased.slice(0, erased.indexOf(start)) + erased.slice(after + 1);
+      }
+      expect(hash(erased)).toBe(historical); rows.push({ file, fullSHA256: hash(whole), erasedSHA256: hash(erased), historical });
+    }
+    expect(objects).toHaveLength(10); expect(roles).toHaveLength(5); expect(clients.size).toBe(4);
+    record({ caseId: 'CG14', rows, sourcePins, persistentObjects: 10, roles: 5, clients: 4,
+      noRuntimeSourceInstallationOrPrivatePolicyClaim: true });
+  }, 45000);
   afterAll(async()=>{
     let cleaned=false;
     const closure:{client:'ADMIN'|'FICTIONAL_LOGIN';status:string|null;closed:boolean}[]=[];
@@ -627,12 +1033,11 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 fixed Portal source dependen
       if(runVerified){
         const operationsPath=join(runPath!,'portal-source-dependency-operations.jsonl');
         if(!existsSync(operationsPath))writeFileSync(operationsPath,'',{flag:'wx',mode:0o600});
-        const bytes=readFileSync(operationsPath),lines=bytes.toString('utf8').split('\n');expect(lines.pop()).toBe('');expect(Buffer.from(bytes.toString('utf8'),'utf8').equals(bytes)).toBe(true);
-        const parsed=lines.map(line=>JSON.parse(line));expect(parsed.length).toBe(records.length);
-        for(let index=0;index<parsed.length;index++)expect(JSON.stringify(parsed[index])).toBe(JSON.stringify(records[index]));
+        const operations = await verifyCompleteNativeJsonl(operationsPath, records, { requireCanonicalLines: true });
+        expect(operations.count).toBe(records.length);
         writeFileSync(join(runPath!,'portal-source-dependency-cleanup.json'),JSON.stringify({verified,fixtureSetupCommitted,cleaned,roles,objects,closure,
           connectedOrAttemptedClients:clients.size,closedClients:closedClients.size,pendingRepairs:repairs.size,pendingFenceAttempts:0,
-          actualSQLAttempted:sqlAttempted,operations:{filename:'portal-source-dependency-operations.jsonl',count:parsed.length,bytes:bytes.length,SHA256:hash(bytes),completeUTF8JSONL:true},sourcePins,
+          actualSQLAttempted:sqlAttempted,operations,sourcePins,
           scope:'EXACT_OWN_EMPTY_BASE_GRAPH_CAPSULE_ONLY_NO_DATABASE_DROP_CLUSTER_CONTROL_PRIVATE_SOURCE_POLICY_OR_SUCCESSFUL_HELPER_CALL',
           claim:'PREPARED_SUITE_NOT_ACTUAL_NATIVE_SUCCESS_DOMAIN_AUTHORITY_CURRENT_PROOF_RLS_NEON_FULL_F10_OR_INDEPENDENT_F12'},null,2),{flag:'wx',mode:0o600});
       }

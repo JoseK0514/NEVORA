@@ -64,7 +64,8 @@ describe('fixed unused Portal source dependency source boundary', () => {
       for (const argument of ['p_workspace_id', 'p_employee_id', 'p_session_token_hash']) expect(ctes).toContain(argument);
     });
     it('preserves every byte outside the two authorized marked insertions', () => {
-      const erased = withoutInsertion(withoutInsertion(source, 'PORTAL_SOURCE_DEPENDENCY_ADMISSION'), 'PORTAL_SOURCE_DEPENDENCY_CTES');
+      const beforePolicy = withoutInsertion(withoutInsertion(source, 'PORTAL_POLICY_COMPLETE_DEPENDENCY_ADMISSION'), 'PORTAL_POLICY_COMPLETE_DEPENDENCY_CTES');
+      const erased = withoutInsertion(withoutInsertion(beforePolicy, 'PORTAL_SOURCE_DEPENDENCY_ADMISSION'), 'PORTAL_SOURCE_DEPENDENCY_CTES');
       expect(hash(erased)).toBe(pin);
     });
     it('uses native full signature/body/ACL/DAG checks with safe pre-capability owners and no cyclic capability bootstrap', () => {

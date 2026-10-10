@@ -645,6 +645,104 @@ audit_portal_source_contracts(name,return_type,body_sha256) AS (
     )
 ),
 -- PORTAL_SOURCE_DEPENDENCY_CTES_END
+-- PORTAL_POLICY_COMPLETE_DEPENDENCY_CTES_BEGIN
+-- Fixed INVOKER chain supplement to the unchanged old Portal pair. It grants
+-- no invocation, read/lock access, source approval, eligibility or proof.
+-- Exact native/source observations remain subject to retained installer review,
+-- caller/current/final guards and cooperative shared/exclusive catalog fences.
+audit_portal_policy_contracts(name,signature,argument_types,argument_names,return_type,body_sha256) AS (
+  VALUES
+    ('read_portal_installed_policy','nevora_tenancy.read_portal_installed_policy(text)','25'::pg_catalog.oidvector,ARRAY['p_workspace_id']::pg_catalog.text[],3802::pg_catalog.oid,'975487315f2e091f7659d5f9aa8c89cef4d13e1685e49f4a0162f5eb9a916baa'::pg_catalog.text),
+    ('lock_portal_policy_source_rows','nevora_tenancy.lock_portal_policy_source_rows(text,text,bpchar)','25 25 1042'::pg_catalog.oidvector,ARRAY['p_workspace_id','p_employee_id','p_session_token_hash']::pg_catalog.text[],2278::pg_catalog.oid,'6a25dc1ce379ce176f5995328032ad03d2a6749026d4aeafd42bfe68fb5703d1'::pg_catalog.text),
+    ('read_portal_policy_source_rows','nevora_tenancy.read_portal_policy_source_rows(text,text,bpchar)','25 25 1042'::pg_catalog.oidvector,ARRAY['p_workspace_id','p_employee_id','p_session_token_hash']::pg_catalog.text[],3802::pg_catalog.oid,'536d7d6dba8a9c709c8d89a558031617189653067c9ad677a2563f15a23ba9eb'::pg_catalog.text)
+), audit_portal_policy_edges(source_name,target_signature) AS (
+  VALUES
+    ('read_portal_policy_source_rows','nevora_tenancy.lock_portal_policy_source_rows(text,text,bpchar)'),
+    ('lock_portal_policy_source_rows','nevora_tenancy.read_portal_installed_policy(text)')
+), audit_portal_policy_native AS (
+  SELECT f.oid AS function_oid,f.owner_oid,f.schema_oid,f.observation,contract.name
+  FROM audit_functions AS f JOIN pg_catalog.pg_proc AS p ON p.oid=f.oid
+  JOIN audit_portal_policy_contracts AS contract ON p.proname=contract.name
+  WHERE f.schema_name='nevora_tenancy'
+    AND p.oid=pg_catalog.to_regprocedure(contract.signature)::pg_catalog.oid
+    AND (SELECT COUNT(*) FROM pg_catalog.pg_proc AS overload WHERE overload.pronamespace=p.pronamespace AND overload.proname=p.proname)=1
+    AND p.pronargs=pg_catalog.cardinality(contract.argument_names) AND p.proargtypes=contract.argument_types
+    AND p.proargnames COLLATE pg_catalog."C"=contract.argument_names COLLATE pg_catalog."C"
+    AND p.proallargtypes IS NULL AND p.proargmodes IS NULL
+    AND p.prorettype=contract.return_type AND p.prokind='f' AND NOT p.proretset
+    AND p.provolatile='v' AND NOT p.prosecdef AND NOT p.proisstrict AND NOT p.proleakproof AND p.proparallel='u'
+    AND p.provariadic=0 AND p.pronargdefaults=0 AND p.prosupport=0
+    AND (f.observation->>'language') COLLATE pg_catalog."C"='plpgsql' COLLATE pg_catalog."C"
+    AND p.proconfig COLLATE pg_catalog."C"=ARRAY['search_path=pg_catalog']::pg_catalog.text[] COLLATE pg_catalog."C"
+    AND NOT EXISTS (SELECT 1 FROM nevora_tenancy.runtime_role_binding AS bound_runtime
+      WHERE bound_runtime.kind COLLATE pg_catalog."C" IN ('APP','WORKER') AND bound_runtime.role_oid=p.proowner)
+    AND pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(p.prosrc,'UTF8')),'hex') COLLATE pg_catalog."C"=contract.body_sha256 COLLATE pg_catalog."C"
+    -- Only the two fixed directed edges supplement pg_catalog calls. The
+    -- installed-policy observer is terminal; self/back/root/unknown edges deny.
+    -- String-body PL/pgSQL edges may be absent: this is not callgraph proof.
+    AND NOT EXISTS (
+      SELECT 1 FROM pg_catalog.pg_depend AS edge
+      WHERE edge.classid='pg_catalog.pg_proc'::pg_catalog.regclass AND edge.objid=p.oid
+        AND edge.refclassid='pg_catalog.pg_proc'::pg_catalog.regclass
+        AND NOT EXISTS (SELECT 1 FROM pg_catalog.pg_proc AS target
+          JOIN pg_catalog.pg_namespace AS target_schema ON target_schema.oid=target.pronamespace
+          WHERE target.oid=edge.refobjid AND (target_schema.nspname='pg_catalog' OR EXISTS (
+            SELECT 1 FROM audit_portal_policy_edges AS permitted
+            WHERE permitted.source_name=contract.name
+              AND target.oid=pg_catalog.to_regprocedure(permitted.target_signature)::pg_catalog.oid)))
+    )
+), audit_portal_policy_declaration_current AS (
+  -- Reuse the existing pre-capability safe/consistent owner and root matcher.
+  -- The old declaration requires both retained reader/kernel descriptors and
+  -- their native EXECUTE/schema access; no original protection is replaced.
+  SELECT original.runtime_kind,original.route_kind,original.route_oid,
+    original.root_function_oid,original.owner_oid,original.reader_oid,original.kernel_oid,
+    installed_policy.function_oid AS installed_policy_oid,
+    joint_kernel.function_oid AS joint_kernel_oid,combined_reader.function_oid AS combined_reader_oid
+  FROM audit_portal_source_declaration_current AS original
+  JOIN nevora_tenancy.audited_helper_capability AS registered
+    ON registered.runtime_kind=original.runtime_kind AND registered.route_kind=original.route_kind
+    AND registered.function_oid=original.root_function_oid AND registered.route_oid=original.route_oid
+  CROSS JOIN audit_portal_policy_native AS installed_policy
+  CROSS JOIN audit_portal_policy_native AS joint_kernel
+  CROSS JOIN audit_portal_policy_native AS combined_reader
+  WHERE installed_policy.name='read_portal_installed_policy'
+    AND joint_kernel.name='lock_portal_policy_source_rows' AND combined_reader.name='read_portal_policy_source_rows'
+    AND NOT EXISTS (SELECT 1 FROM audit_portal_policy_native AS member
+      WHERE NOT pg_catalog.has_function_privilege(original.owner_oid,member.function_oid,'EXECUTE')
+        OR NOT pg_catalog.has_schema_privilege(original.owner_oid,member.schema_oid,'USAGE'))
+    AND EXISTS (SELECT 1 FROM pg_catalog.jsonb_array_elements(registered.dependencies) AS retained(value)
+      WHERE retained.value=installed_policy.observation)
+    AND EXISTS (SELECT 1 FROM pg_catalog.jsonb_array_elements(registered.dependencies) AS retained(value)
+      WHERE retained.value=joint_kernel.observation)
+    AND EXISTS (SELECT 1 FROM pg_catalog.jsonb_array_elements(registered.dependencies) AS retained(value)
+      WHERE retained.value=combined_reader.observation)
+), audit_portal_policy_dependency_current AS (
+  SELECT declared.runtime_kind,declared.route_kind,declared.route_oid,declared.root_function_oid,
+    dependency.function_oid,dependency.observation
+  FROM audit_portal_policy_declaration_current AS declared
+  CROSS JOIN audit_portal_policy_native AS dependency
+  WHERE dependency.function_oid IN (declared.installed_policy_oid,declared.joint_kernel_oid,declared.combined_reader_oid)
+    -- Complete three-member native/default ACL closure, never a wildcard
+    -- invocation exception. Named grantees must own an exact whole-group Portal
+    -- declaration, with the old pair and safe/consistent owner profile retained.
+    AND NOT EXISTS (
+      SELECT 1 FROM audit_portal_policy_native AS member
+      JOIN pg_catalog.pg_proc AS p ON p.oid=member.function_oid
+      CROSS JOIN LATERAL pg_catalog.aclexplode(COALESCE(p.proacl,pg_catalog.acldefault('f'::pg_catalog."char",p.proowner))) AS acl
+      WHERE member.function_oid IN (declared.installed_policy_oid,declared.joint_kernel_oid,declared.combined_reader_oid)
+        AND (acl.is_grantable OR acl.privilege_type<>'EXECUTE'
+          OR EXISTS (SELECT 1 FROM nevora_tenancy.runtime_role_binding AS bound_runtime
+            WHERE bound_runtime.kind COLLATE pg_catalog."C" IN ('APP','WORKER') AND bound_runtime.role_oid=acl.grantee)
+          OR (acl.grantee<>p.proowner AND NOT EXISTS (
+            SELECT 1 FROM audit_portal_policy_declaration_current AS permitted
+            WHERE permitted.owner_oid=acl.grantee AND permitted.reader_oid=declared.reader_oid AND permitted.kernel_oid=declared.kernel_oid
+              AND permitted.installed_policy_oid=declared.installed_policy_oid
+              AND permitted.joint_kernel_oid=declared.joint_kernel_oid AND permitted.combined_reader_oid=declared.combined_reader_oid
+          )))
+    )
+),
+-- PORTAL_POLICY_COMPLETE_DEPENDENCY_CTES_END
 audit_capabilities AS (
   SELECT c.runtime_kind,c.route_kind,c.function_oid,c.route_oid
   FROM nevora_tenancy.audited_helper_capability AS c JOIN audit_function_current AS current
@@ -673,6 +771,13 @@ audit_capabilities AS (
               AND dependency_profile.route_oid=c.route_oid
               AND dependency_profile.function_oid=f.oid AND dependency_profile.observation=f.observation)
 -- PORTAL_SOURCE_DEPENDENCY_ADMISSION_END
+-- PORTAL_POLICY_COMPLETE_DEPENDENCY_ADMISSION_BEGIN
+          OR EXISTS (SELECT 1 FROM audit_portal_policy_dependency_current AS policy_dependency
+            WHERE policy_dependency.root_function_oid=c.function_oid
+              AND policy_dependency.runtime_kind=c.runtime_kind AND policy_dependency.route_kind=c.route_kind
+              AND policy_dependency.route_oid=c.route_oid
+              AND policy_dependency.function_oid=f.oid AND policy_dependency.observation=f.observation)
+-- PORTAL_POLICY_COMPLETE_DEPENDENCY_ADMISSION_END
 )))
     AND pg_catalog.jsonb_array_length(c.dependencies)=(SELECT COUNT(DISTINCT dependency.value) FROM pg_catalog.jsonb_array_elements(c.dependencies) AS dependency(value))
     -- Every native pg_depend function edge is covered; this cannot prove PL/pgSQL

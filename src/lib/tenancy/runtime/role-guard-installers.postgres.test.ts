@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { isAbsolute, join, resolve, sep } from 'node:path';
 // Keep prior byte custody checks while allowing only the reviewed marked additions.
 function beforePortalDependencyInsertions(text: string): string {
-  for (const name of ['PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
+  for (const name of ['PORTAL_POLICY_COMPLETE_DEPENDENCY_ADMISSION', 'PORTAL_POLICY_COMPLETE_DEPENDENCY_CTES', 'PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
     const start = '-- ' + name + '_BEGIN', end = '-- ' + name + '_END';
     if (!text.includes(start) && !text.includes(end)) continue;
     expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
@@ -19,10 +19,10 @@ function beforePortalDependencyInsertions(text: string): string {
 }
 
 const portalDependencyCurrentPins: Record<string, string> = {
-  "audited-role-guard.sql": "ba0b4617d66892ad350e42221e9ad1dc27b406c35d5103b9eba28b08ea6a02e0",
-  "audited-role-guard-installer.sql": "cfbe111978adc37a1ce0025ce843fb37e7e43b71f568c3dd01c68b126c23f7d5",
-  "original-runtime-login.sql": "0993c3ba476cc8dab6d80ee2e0287ba9d18072b3dab99aee8bcab23814c4e6b8",
-  "original-runtime-login-installer.sql": "a63f71569af622928d879c1b6759440a42f20f9f599efd24eb80bfb2e1be584f"
+  "audited-role-guard.sql": "5469198859b10441ffdcfe0150624cbccec9862c13b5a20ba77614d6d19f1414",
+  "audited-role-guard-installer.sql": "6cfcdf18fcf4eb9099b2b6b86f1c9d42cb0757fd2b20c1eeee5bb51a63f8297d",
+  "original-runtime-login.sql": "e44dbeca8c034b0b92a8af595d3c3fcb932215ea09c8a8394b9bf7bd28c96da4",
+  "original-runtime-login-installer.sql": "ba6053428fe34020c26f0e7e1e724a7fc9fa41018532875bbfb8e1909e6c8607"
 };
 function expectFrozenSql(text: string, name: string, historicalPin: string): void {
   expect(hash(beforePortalDependencyInsertions(text))).toBe(historicalPin);
