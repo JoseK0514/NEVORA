@@ -22,7 +22,11 @@ const auditedStoragePath = resolve('src/lib/tenancy/runtime/audited-helper-stora
 const auditedGuardPath = resolve('src/lib/tenancy/runtime/audited-role-guard.sql');
 // Actual root invocation is held until final preparation pins frozen source.
 const expectedAuditedStorageSHA256 = '2a7d8c979e5e854ddd0e516a07ce20eed15365efcfb1c21812ffffe9e31d9603';
-const expectedAuditedGuardSHA256 = '46857b02d424eb6d7939b609517b67e26549e07af7d1d44ae250a332be770f96';
+const expectedAuditedGuardSHA256 = 'd00f270f726111283289dc02a050125128541fdb414e08812660bc0ccb232f21';
+const counterSourcePath = resolve('src/lib/tenancy/runtime/workspace-incarnation-storage.sql');
+const parentSourcePath = resolve('db/migrations/0008_workspace_positions.sql');
+const expectedCounterSourceSHA256 = 'b3d8c8ecf96fb4ff72255e85a53a50ddc97a1633dfdf94cea19b4496382a07f9';
+const expectedParentSourceSHA256 = 'f517e18d468556c25814141a959427c969f620fa4ac6e98cc709b31ee1d88756';
 const q = (value: string) => '"' + value.replace(/"/g, '""') + '"';
 const literal = (value: string) => "'" + value.replace(/'/g, "''") + "'";
 const leasePath = process.env.F_ROLE_OWNED_LEASE;
@@ -36,7 +40,7 @@ type Lease = {
 };
 type Role = { name: string; oid: string };
 type ObjectReceipt = {
-  kind: 'schema' | 'table' | 'sequence' | 'function' | 'trigger'; schema: string; name: string;
+  kind: 'schema' | 'table' | 'sequence' | 'function' | 'trigger' | 'policy'; schema: string; name: string;
   oid: string; ownerOid: string; signature?: string; dropped: boolean;
   relation?: string;
 };
@@ -125,6 +129,15 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
     return receipt;
   }
   async function dropObject(object: ObjectReceipt) {
+    if (object.kind === 'policy') {
+      const current = (await query(admin, `SELECT p.oid::text oid,c.relowner::text owner,p.polname name
+        FROM pg_catalog.pg_policy p JOIN pg_catalog.pg_class c ON c.oid=p.polrelid
+        WHERE p.oid=$1::oid AND p.polrelid=pg_catalog.to_regclass($2)`, [object.oid, object.relation])).rows;
+      expect(current).toEqual([{ oid: object.oid, owner: object.ownerOid, name: object.name }]);
+      await query(admin, 'DROP POLICY ' + q(object.name) + ' ON ' + object.relation);
+      expect((await query(admin, 'SELECT oid FROM pg_catalog.pg_policy WHERE oid=$1::oid', [object.oid])).rows).toEqual([]);
+      object.dropped = true; record({ operation: 'EXACT_OWN_POLICY_DROPPED', ...object }); return;
+    }
     if (object.kind === 'trigger') {
       const current = (await query(admin, 'SELECT t.oid::text oid,c.relowner::text owner,t.tgname FROM pg_catalog.pg_trigger t JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid WHERE t.oid=$1::oid AND t.tgrelid=pg_catalog.to_regclass($2)', [object.oid, object.relation])).rows[0];
       expect(current).toEqual({ oid: object.oid, owner: object.ownerOid, tgname: object.name });
@@ -194,7 +207,15 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
       UNION ALL SELECT 'FUNCTION',p.oid::text,a.grantor::text,a.grantee::text,a.privilege_type,a.is_grantable
       FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace CROSS JOIN LATERAL pg_catalog.aclexplode(p.proacl) a
       WHERE n.nspname IN ('nevora_tenancy','public') ORDER BY kind,oid,grantee,privilege_type`)).rows;
-    return { schema, relations, columns, constraints, functions, triggers, rules, memberships, expandedAcls };
+    const policies = (await query(admin, `SELECT p.oid::text oid,p.polrelid::text relation_oid,p.polname name,
+      p.polcmd::text command,p.polpermissive permissive,
+      ARRAY(SELECT r::text FROM pg_catalog.unnest(p.polroles) r ORDER BY r) AS role_oids,
+      pg_catalog.pg_get_expr(p.polqual,p.polrelid,false) AS using_expression,
+      pg_catalog.pg_get_expr(p.polwithcheck,p.polrelid,false) AS with_check_expression
+      FROM pg_catalog.pg_policy p JOIN pg_catalog.pg_class c ON c.oid=p.polrelid
+      JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+      WHERE n.nspname IN ('nevora_tenancy','public') ORDER BY p.oid`)).rows;
+    return { schema, relations, columns, constraints, functions, triggers, rules, memberships, expandedAcls, policies };
   }
   function canonicalAclCatalog(catalog: Awaited<ReturnType<typeof controlCatalog>>) {
     // Preserve every observed row/property; replace only each raw ACL array
@@ -548,6 +569,8 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
     expect(hash(auditedStorage)).toBe(expectedAuditedStorageSHA256);
     expect(hash(auditedGuard)).toBe(expectedAuditedGuardSHA256);
     expect(hash(readFileSync(resolve('src/lib/tenancy/runtime/catalog-fence.server.ts')))).toBe('2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f');
+    expect(hash(readFileSync(counterSourcePath))).toBe(expectedCounterSourceSHA256);
+    expect(hash(readFileSync(parentSourcePath))).toBe(expectedParentSourceSHA256);
     password = readFileSync(lease.credentialFile, 'utf8'); expect(password.length > 0).toBe(true);
     admin = await connect(lease.user);
     const actual = await checkBase();
@@ -1024,8 +1047,15 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
       expect(malformed.constraints.filter(constraint => constraint.relname === 'runtime_role_binding' && ['p', 'u', 'c'].includes(constraint.contype))).toEqual([]);
       expect(admin.getTransactionStatus()).toBe('I');
       const code = await rejected(admin, auditedStorage);
+      record({ caseId: 'A18', stage: 'PREREQUISITE_ERROR_BEFORE_READY_STATUS_SYNCHRONIZATION',
+        sqlstate: code, immediateStatus: admin.getTransactionStatus(),
+        note: 'The error promise may settle before native ReadyForQuery updates client status.' });
       try { expect(code).toBe('55000'); }
-      finally { if (['T', 'E'].includes(admin.getTransactionStatus() ?? '')) await query(admin, 'ROLLBACK'); }
+      finally {
+        // This exact artifact owns BEGIN, invoked above from verified idle.
+        // Queue ROLLBACK even if the early error leaves the cached status idle.
+        await query(admin, 'ROLLBACK'); expect(admin.getTransactionStatus()).toBe('I');
+      }
       expect(await registryRows()).toEqual(beforeCaps);
       record({ caseId: 'A18', original, beforeCatalog, beforeRows, bad, malformed, sqlstate: code,
         noRuntimeCallsWhileSubstituted: true, assertion: 'PREREQUISITE_DENIAL_BEFORE_DUPLICATE_OR_ADOPTION' });
@@ -1119,6 +1149,267 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
         ordinaryRuntimeSequenceRightsUnchanged: true });
     }
   });
+
+  it('A21 binds exact native counter policies to genuinely captured lock columns and denies every stale registration', async () => {
+    // Only root may invoke this sparse fixture. Literal reviewed functions remain
+    // literal fixtures; neither this registry nor a true guard issues a proof.
+    const beforeCatalog = await controlCatalog(), beforeRows = await registryRows(), beforeRoles = await roleCatalog();
+    const originalBinding = await controlRows(), firstObject = objects.length;
+    const counter = 'nevora_tenancy.workspace_incarnation_counter';
+    const workspaceId = ' ' + lease.invocation + '_counter_workspace ';
+    const selectName = lease.invocation + '_counter_select', updateName = lease.invocation + '_counter_update';
+    let selectPolicy: ObjectReceipt | undefined, updatePolicy: ObjectReceipt | undefined;
+    let sourceCounter: ObjectReceipt | undefined, sourceParent: ObjectReceipt | undefined;
+    let ownerUsageGranted = false;
+    const fixturePolicy = (name: string, command: 'SELECT' | 'UPDATE' | 'ALL', permissive = true, target = ownerRole.name) =>
+      'CREATE POLICY ' + q(name) + ' ON ' + counter + ' AS ' + (permissive ? 'PERMISSIVE' : 'RESTRICTIVE') +
+      ' FOR ' + command + ' TO ' + q(target) + ' USING (true)' + (command === 'SELECT' ? '' : ' WITH CHECK (false)');
+    const counterRows = async () => (await query(admin, 'SELECT workspace_id,incarnation::text incarnation FROM ' + counter + ' ORDER BY workspace_id COLLATE pg_catalog."C"')).rows;
+    const parentRows = async () => (await query(admin, 'SELECT pg_catalog.to_jsonb(w) value FROM public.workspaces w ORDER BY id COLLATE pg_catalog."C"')).rows;
+    async function fenced<T>(body: () => Promise<T>): Promise<T> {
+      expect(admin.getTransactionStatus()).toBe('I');
+      await query(admin, 'BEGIN ISOLATION LEVEL READ COMMITTED');
+      try {
+        await query(admin, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text, [...INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.values]);
+        const result = await body(); await query(admin, 'COMMIT'); return result;
+      } finally { if (['T', 'E'].includes(admin.getTransactionStatus() ?? '')) await query(admin, 'ROLLBACK'); }
+    }
+    async function rememberPolicy(name: string) {
+      const current = (await query(admin, `SELECT p.oid::text oid,c.relowner::text owner,p.polname name
+        FROM pg_catalog.pg_policy p JOIN pg_catalog.pg_class c ON c.oid=p.polrelid
+        WHERE p.polrelid=pg_catalog.to_regclass($1) AND p.polname=$2`, [counter, name])).rows;
+      expect(current).toEqual([{ oid: expect.stringMatching(/^[0-9]+$/), owner: installerOid, name }]);
+      const receipt: ObjectReceipt = { kind: 'policy', schema: 'nevora_tenancy', name,
+        oid: current[0].oid as string, ownerOid: installerOid, relation: counter, dropped: false };
+      objects.push(receipt); record({ operation: 'EXACT_OWN_COUNTER_POLICY_OBSERVED', ...receipt }); return receipt;
+    }
+    async function independentPolicies() {
+      // Independent native catalog read, not an expected-value constructor or
+      // a copied registration. OID/role ordering is performed by PostgreSQL.
+      return (await query(admin, `SELECT pg_catalog.jsonb_build_object(
+        'oid',p.oid::text,'name',p.polname::text,'command',p.polcmd::text,'permissive',p.polpermissive,
+        'roleOids',pg_catalog.to_jsonb(ARRAY(SELECT r::text FROM pg_catalog.unnest(p.polroles) AS r ORDER BY r)),
+        'using',pg_catalog.pg_get_expr(p.polqual,p.polrelid,false),
+        'withCheck',pg_catalog.pg_get_expr(p.polwithcheck,p.polrelid,false)) AS observation
+        FROM pg_catalog.pg_policy p WHERE p.polrelid=pg_catalog.to_regclass($1) ORDER BY p.oid`, [counter])).rows
+        .map(row => row.observation as Record<string, unknown>);
+    }
+    async function counterNative() {
+      return { catalog: await controlCatalog(), policies: await independentPolicies(),
+        indexes: (await query(admin, `SELECT i.indexrelid::text oid,i.indrelid::text relation_oid,
+          c.relowner::text owner,c.relname,i.indisunique,i.indisprimary,i.indisvalid,i.indisready,i.indislive,
+          i.indimmediate,i.indnullsnotdistinct,i.indnatts,i.indnkeyatts,i.indkey::text keys,
+          i.indclass::text opclasses,i.indcollation::text collations,i.indoption::text options,c.reloptions,
+          pg_catalog.pg_get_indexdef(i.indexrelid) definition FROM pg_catalog.pg_index i
+          JOIN pg_catalog.pg_class c ON c.oid=i.indexrelid
+          WHERE i.indrelid=pg_catalog.to_regclass($1) OR i.indrelid='public.workspaces'::regclass ORDER BY i.indexrelid`, [counter])).rows,
+        columnAcls: (await query(admin, `SELECT a.attrelid::text relation_oid,a.attnum,a.attname,
+          x.grantor::text grantor,x.grantee::text grantee,x.privilege_type,x.is_grantable
+          FROM pg_catalog.pg_attribute a CROSS JOIN LATERAL pg_catalog.aclexplode(a.attacl) x
+          WHERE a.attrelid=pg_catalog.to_regclass($1) AND a.attnum>0 AND NOT a.attisdropped
+          ORDER BY a.attnum,x.grantee,x.privilege_type,x.grantor`, [counter])).rows,
+        counterRows: await counterRows(), originalParentRows: await parentRows() };
+    }
+    async function captureCounterCapabilities() {
+      return fenced(async () => {
+        const original = await registryRows(); expect(original).toHaveLength(2);
+        const command = nativeQuery(`SELECT lock_column.observation FROM audit_lock_columns lock_column
+          WHERE lock_column.relation_oid=pg_catalog.to_regclass($1) AND lock_column.observation->>'column'='workspace_id'`);
+        const observed = (await query(admin, command.sql, [counter])).rows;
+        expect(observed).toHaveLength(1); const lockColumn = observed[0].observation as Record<string, unknown>;
+        expect(lockColumn).toMatchObject({ relationOid: sourceCounter!.oid, schema: 'nevora_tenancy',
+          name: 'workspace_incarnation_counter', column: 'workspace_id', typeOid: '25' });
+        const independent = await counterNative();
+        // Keep precisely the old/new helper's actually returned shape. Adding
+        // expected policy fields here would make the old RED a setup failure.
+        const provisional: Record<string, unknown>[] = original.map(row => ({ ...row, owner_lock_columns: [lockColumn],
+          owner_observation: {}, owner_acl_observation: {} }));
+        await query(admin, 'DELETE FROM nevora_tenancy.audited_helper_capability');
+        for (const row of provisional) await writeCapability(row);
+        const direct = await functionObservation(directFunction.oid), trigger = await functionObservation(triggerFunction.oid);
+        expect(direct.review_source_sha256).toBe(reviewedDirectSHA256);
+        expect(trigger.review_source_sha256).toBe(reviewedTriggerSHA256);
+        expect(direct.owner_observation).toEqual(trigger.owner_observation);
+        expect(direct.owner_acl_observation).toEqual(trigger.owner_acl_observation);
+        const captured: Record<string, unknown>[] = provisional.map(row => ({ ...row, owner_observation: direct.owner_observation,
+          owner_acl_observation: direct.owner_acl_observation }));
+        for (const row of captured) await query(admin, `UPDATE nevora_tenancy.audited_helper_capability
+          SET owner_observation=$1::jsonb,owner_acl_observation=$2::jsonb
+          WHERE runtime_kind=$3 AND route_kind=$4 AND function_oid=$5::oid AND route_oid=$6::oid`,
+        [JSON.stringify(row.owner_observation), JSON.stringify(row.owner_acl_observation), row.runtime_kind, row.route_kind, row.function_oid, row.route_oid]);
+        expect(await registryRows()).toEqual(captured);
+        record({ caseId: 'A21', stage: 'GENUINE_FENCED_NATIVE_LOCK_AND_ALL_OWNER_PROFILES',
+          helperSourceSHA256: hash(auditedGuard), nativeCTESHA256: command.blockSHA256,
+          originalRows: original, nativeLockColumn: lockColumn, independentNative: independent,
+          provisional, captured, noExpectedPolicyFieldsAdded: true, noFalseEffectiveChecksConstructor: true });
+        return { captured, lockColumn, independentPolicies: independent.policies };
+      });
+    }
+    async function replacePolicy(which: 'SELECT' | 'UPDATE', command: 'SELECT' | 'UPDATE' | 'ALL', permissive: boolean) {
+      const prior = which === 'SELECT' ? selectPolicy : updatePolicy; expect(prior).toBeDefined();
+      await dropObject(prior!);
+      const name = which === 'SELECT' ? selectName : updateName;
+      await query(admin, fixturePolicy(name, command, permissive));
+      const next = await rememberPolicy(name);
+      if (which === 'SELECT') selectPolicy = next; else updatePolicy = next;
+    }
+    try {
+      expect(await guard(app, 'APP')).toBe(true);
+      await fenced(async () => {
+        expect((await query(admin, 'SELECT pg_catalog.to_regclass(\'public.workspaces\')::oid::text oid')).rows).toEqual([{ oid: null }]);
+        const original = readFileSync(parentSourcePath, 'utf8');
+        expect(hash(original)).toBe(expectedParentSourceSHA256);
+        const fragments = original.match(/CREATE TABLE workspaces \([\s\S]*?\n\);/g); expect(fragments).toHaveLength(1);
+        await query(admin, 'SET LOCAL search_path=public,pg_catalog'); await query(admin, fragments![0]);
+        sourceParent = await remember('table', 'public', 'workspaces', installerOid);
+        await query(admin, `INSERT INTO public.workspaces(id,name,time_zone) VALUES($1,'Fictional counter policy workspace','UTC')`, [workspaceId]);
+        record({ caseId: 'A21', stage: 'EXACT_ORIGINAL_0008_SPARSE_PARENT', sourceParent,
+          sourceSHA256: hash(original), fragment: fragments![0], fragmentSHA256: hash(fragments![0]),
+          originalParentRows: await parentRows(), sparseOnlyNotCutover: true });
+      });
+      // This unchanged artifact owns its own RC/exclusive-first transaction.
+      await query(admin, readFileSync(counterSourcePath, 'utf8'));
+      sourceCounter = await remember('table', 'nevora_tenancy', 'workspace_incarnation_counter', installerOid);
+      await remember('function', 'nevora_tenancy', 'guard_workspace_incarnation_counter', installerOid, '()');
+      const nativeTriggers = (await query(admin, `SELECT t.oid::text oid,t.tgname name,c.relowner::text owner
+        FROM pg_catalog.pg_trigger t JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid
+        WHERE t.tgrelid=pg_catalog.to_regclass($1) AND NOT t.tgisinternal ORDER BY t.oid`, [counter])).rows;
+      expect(nativeTriggers).toHaveLength(2);
+      for (const trigger of nativeTriggers) {
+        expect(trigger.owner).toBe(installerOid);
+        const receipt: ObjectReceipt = { kind: 'trigger', schema: 'nevora_tenancy', name: trigger.name as string,
+          oid: trigger.oid as string, ownerOid: installerOid, relation: counter, dropped: false };
+        objects.push(receipt); record({ operation: 'EXACT_OWN_COUNTER_TRIGGER_OBSERVED', ...receipt });
+      }
+      await fenced(async () => {
+        expect(await counterRows()).toEqual([]);
+        await query(admin, 'INSERT INTO ' + counter + '(workspace_id,incarnation) VALUES($1,1)', [workspaceId]);
+        await query(admin, 'GRANT USAGE ON SCHEMA nevora_tenancy TO ' + q(ownerRole.name)); ownerUsageGranted = true;
+        await query(admin, 'GRANT SELECT,UPDATE(workspace_id) ON ' + counter + ' TO ' + q(ownerRole.name));
+        await query(admin, fixturePolicy(selectName, 'SELECT')); selectPolicy = await rememberPolicy(selectName);
+        await query(admin, fixturePolicy(updateName, 'UPDATE')); updatePolicy = await rememberPolicy(updateName);
+      });
+      const established = await counterNative(), originalParent = established.originalParentRows;
+      expect(established.counterRows).toEqual([{ workspace_id: workspaceId, incarnation: '1' }]);
+      expect(established.policies).toEqual([
+        { oid: selectPolicy!.oid, name: selectName, command: 'r', permissive: true, roleOids: [ownerRole.oid], using: 'true', withCheck: null },
+        { oid: updatePolicy!.oid, name: updateName, command: 'w', permissive: true, roleOids: [ownerRole.oid], using: 'true', withCheck: 'false' },
+      ]);
+      expect((await query(admin, `SELECT pg_catalog.has_table_privilege($1,$2::oid,'SELECT') read,
+        pg_catalog.has_table_privilege($1,$2::oid,'UPDATE') table_update,
+        pg_catalog.has_column_privilege($1,$2::oid,'workspace_id','UPDATE') identity_update,
+        pg_catalog.has_column_privilege($1,$2::oid,'incarnation','UPDATE') counter_update`, [ownerRole.name, sourceCounter.oid])).rows)
+        .toEqual([{ read: true, table_update: false, identity_update: true, counter_update: false }]);
+      await query(admin, 'BEGIN ISOLATION LEVEL READ COMMITTED');
+      try {
+        await query(admin, 'SET LOCAL ROLE ' + q(ownerRole.name));
+        const identity = (await query(admin, 'SELECT pg_catalog.pg_backend_pid() pid,session_user::text session,current_user::text current_role')).rows[0];
+        expect(identity).toMatchObject({ session: lease.user, current_role: ownerRole.name });
+        const held = (await query(admin, 'SELECT workspace_id,incarnation::text incarnation FROM ' + counter + ' WHERE workspace_id=$1 FOR SHARE', [workspaceId])).rows;
+        expect(held).toEqual(established.counterRows); expect(admin.getTransactionStatus()).toBe('T');
+        const denials: { label: string; code: string }[] = [];
+        for (const [label, sql, values, expected] of [
+          ['IDENTITY_SAME_NO_INCARNATION_ADVANCE', 'UPDATE ' + counter + ' SET workspace_id=$1 WHERE workspace_id=$1', [workspaceId], '23514'],
+          ['IMMUTABLE_IDENTITY', 'UPDATE ' + counter + ' SET workspace_id=$2 WHERE workspace_id=$1', [workspaceId, workspaceId + 'x'], '55000'],
+          ['NO_INCARNATION_COLUMN_GRANT', 'UPDATE ' + counter + ' SET incarnation=2 WHERE workspace_id=$1', [workspaceId], '42501'],
+          ['NO_INSERT_GRANT', 'INSERT INTO ' + counter + '(workspace_id,incarnation) VALUES($1,2)', [workspaceId], '42501'],
+          ['NO_DELETE_GRANT', 'DELETE FROM ' + counter + ' WHERE workspace_id=$1', [workspaceId], '42501'],
+          ['NO_TRUNCATE_GRANT', 'TRUNCATE ' + counter, [], '42501'],
+        ] as const) {
+          await query(admin, 'SAVEPOINT counter_owner_probe');
+          const code = await rejected(admin, sql, [...values]); denials.push({ label, code });
+          await query(admin, 'ROLLBACK TO SAVEPOINT counter_owner_probe'); await query(admin, 'RELEASE SAVEPOINT counter_owner_probe');
+          expect(code).toBe(expected);
+        }
+        await query(admin, 'RESET ROLE');
+        const nativeLocks = (await query(admin, `SELECT pid,relation::text relation_oid,mode,granted FROM pg_catalog.pg_locks
+          WHERE pid=$1 AND relation=$2::oid ORDER BY mode`, [identity.pid, sourceCounter.oid])).rows;
+        expect(nativeLocks).toContainEqual({ pid: identity.pid, relation_oid: sourceCounter.oid, mode: 'RowShareLock', granted: true });
+        record({ caseId: 'A21', stage: 'NATIVE_FOR_SHARE_AND_EXACT_OWNER_NONMUTATION', identity, held, nativeLocks, denials,
+          withCheckFalseNativeSource: established.policies, triggerDenialsNotMislabelledAsRlsCheck: true });
+      } finally { if (['T', 'E'].includes(admin.getTransactionStatus() ?? '')) await query(admin, 'ROLLBACK'); await query(admin, 'RESET ROLE'); }
+      for (const [client, role] of [[app, appRole], [worker, workerRole]] as const) {
+        const outcomes: string[] = [];
+        for (const sql of ['SELECT * FROM ' + counter, 'UPDATE ' + counter + ' SET workspace_id=workspace_id WHERE false',
+          'DELETE FROM ' + counter + ' WHERE false', 'INSERT INTO ' + counter + '(workspace_id,incarnation) VALUES(\'fictional\',1)', 'TRUNCATE ' + counter]) {
+          const code = await rejected(client, sql); outcomes.push(code); expect(code).toBe('42501');
+        }
+        record({ caseId: 'A21', stage: 'NO_DIRECT_APP_WORKER_COUNTER_ACCESS', role, outcomes });
+      }
+      let captured = await captureCounterCapabilities();
+      expect(await guard(app, 'APP')).toBe(true); expect(await guard(worker, 'WORKER')).toBe(true);
+      const changes = [
+        { label: 'USING', apply: () => query(admin, 'ALTER POLICY ' + q(updateName) + ' ON ' + counter + ' USING (false)'), undo: () => query(admin, 'ALTER POLICY ' + q(updateName) + ' ON ' + counter + ' USING (true)') },
+        { label: 'ROLE_TARGET', apply: () => query(admin, 'ALTER POLICY ' + q(selectName) + ' ON ' + counter + ' TO ' + q(outsiderRole.name)), undo: () => query(admin, 'ALTER POLICY ' + q(selectName) + ' ON ' + counter + ' TO ' + q(ownerRole.name)) },
+        { label: 'COMMAND', apply: () => replacePolicy('SELECT', 'ALL', true), undo: () => replacePolicy('SELECT', 'SELECT', true) },
+        { label: 'PERMISSIVENESS', apply: () => replacePolicy('UPDATE', 'UPDATE', false), undo: () => replacePolicy('UPDATE', 'UPDATE', true) },
+        { label: 'WITH_CHECK', apply: () => query(admin, 'ALTER POLICY ' + q(updateName) + ' ON ' + counter + ' WITH CHECK (true)'), undo: () => query(admin, 'ALTER POLICY ' + q(updateName) + ' ON ' + counter + ' WITH CHECK (false)') },
+      ];
+      for (const change of changes) {
+        const priorRows = await registryRows(), priorNative = await counterNative();
+        expect(priorRows).toEqual(captured.captured); expect(await guard(app, 'APP')).toBe(true);
+        let applied = false;
+        try {
+          await fenced(async () => { await change.apply(); }); applied = true;
+          const changed = await counterNative(), actualAppAllowed = await guard(app, 'APP');
+          expect(changed.policies).not.toEqual(priorNative.policies);
+          expect(await registryRows()).toEqual(priorRows);
+          record({ caseId: 'A21', stage: 'STALE_POLICY_REGISTRATION_MEASUREMENT_BEFORE_EXPECTATION', variant: change.label,
+            priorNative, changedNative: changed, priorRows, actualAppAllowed,
+            capturedOldShapeHasPolicies: Object.prototype.hasOwnProperty.call(captured.lockColumn.sourceObservation, 'policies'),
+            claim: 'SOURCE_METADATA_STALENESS_ONLY_NOT_ISSUER_PROOF_OR_MUTATION_AUTHORITY' });
+          // Old helper native observations omit policies, so its true baseline
+          // incorrectly remains true here. Root executes that cause-bearing RED.
+          expect(actualAppAllowed).toBe(false);
+        } finally {
+          if (applied) await fenced(async () => { await change.undo(); });
+          captured = await captureCounterCapabilities();
+          expect(await guard(app, 'APP')).toBe(true); expect(await guard(worker, 'WORKER')).toBe(true);
+          expect(await parentRows()).toEqual(originalParent);
+          expect(await counterRows()).toEqual(established.counterRows);
+          record({ caseId: 'A21', stage: 'EXACT_CONSISTENT_NATIVE_RECAPTURE_TECHNICAL_GUARD_ONLY', variant: change.label, captured });
+        }
+      }
+      // This belongs after the drift behavior, never before the genuine old RED.
+      expect((captured.lockColumn.sourceObservation as Record<string, unknown>).policies).toEqual(captured.independentPolicies);
+      expect(await registryRows()).toEqual(captured.captured);
+      record({ caseId: 'A21', stage: 'NEW_NATIVE_POLICY_CLOSURE_EQUALS_INDEPENDENT_CATALOG', captured,
+        noProofIssuerOrSemanticApproval: true, counterSourceSHA256: expectedCounterSourceSHA256 });
+    } finally {
+      if (['T', 'E'].includes(admin.getTransactionStatus() ?? '')) await query(admin, 'ROLLBACK'); await query(admin, 'RESET ROLE');
+      await fenced(async () => {
+        if (ownerUsageGranted) { await query(admin, 'REVOKE USAGE ON SCHEMA nevora_tenancy FROM ' + q(ownerRole.name)); ownerUsageGranted = false; }
+        // Every new object is invocation-owned. A failed setup's rollback may
+        // already remove its exact OID; record native absence rather than DROP
+        // an unrelated object or pretend a failed transaction was committed.
+        for (const object of objects.slice(firstObject).reverse()) if (!object.dropped || object.kind === 'policy') {
+          const catalog = object.kind === 'policy' ? 'pg_catalog.pg_policy' : object.kind === 'trigger' ? 'pg_catalog.pg_trigger' : object.kind === 'function' ? 'pg_catalog.pg_proc' : 'pg_catalog.pg_class';
+          const remaining = (await query(admin, 'SELECT oid FROM ' + catalog + ' WHERE oid=$1::oid', [object.oid])).rows;
+          if (remaining.length) {
+            // DROP/CREATE in a failed own transaction can restore a previously
+            // dropped policy OID. Reconcile that exact owned receipt before
+            // cleanup instead of trusting its earlier mutable dropped flag.
+            if (object.dropped) { object.dropped = false; record({ operation: 'EXACT_OWN_POLICY_OID_RESTORED_BY_ROLLBACK', ...object }); }
+            await dropObject(object);
+          } else if (!object.dropped) { object.dropped = true; record({ operation: 'EXACT_OWN_SETUP_ROLLBACK_OBJECT_ABSENCE', ...object }); }
+        }
+        await query(admin, 'DELETE FROM nevora_tenancy.audited_helper_capability');
+        for (const row of beforeRows) await writeCapability(row);
+        const currentDirect = await functionObservation(directFunction.oid), currentTrigger = await functionObservation(triggerFunction.oid);
+        expect(currentDirect.owner_observation).toEqual(currentTrigger.owner_observation);
+        expect(currentDirect.owner_acl_observation).toEqual(currentTrigger.owner_acl_observation);
+        expect(beforeRows.every(row => JSON.stringify(row.owner_observation) === JSON.stringify(currentDirect.owner_observation)
+          && JSON.stringify(row.owner_acl_observation) === JSON.stringify(currentDirect.owner_acl_observation))).toBe(true);
+      });
+      expect(canonicalAclCatalog(await controlCatalog())).toEqual(canonicalAclCatalog(beforeCatalog));
+      expect(await registryRows()).toEqual(beforeRows); expect(await controlRows()).toEqual(originalBinding);
+      expect(await roleCatalog()).toEqual(beforeRoles); expect(await guard(app, 'APP')).toBe(true);
+      expect((await query(admin, 'SELECT id FROM ' + business())).rows).toEqual([{ id: 1 }]);
+      record({ caseId: 'A21', stage: 'ALL_OWN_COUNTER_OBJECTS_AND_GRANTS_REMOVED_ORIGINAL_FIXTURE_RESTORED',
+        ownedObjects: objects.slice(firstObject), beforeCatalog, afterCatalog: await controlCatalog(),
+        beforeRows, afterRows: await registryRows(), sourceParent, sourceCounter });
+    }
+  }, 30_000);
 
   afterAll(async () => {
     let cleaned = false;

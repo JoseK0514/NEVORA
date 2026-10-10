@@ -5,6 +5,8 @@ import { lexSql } from '../inventory/sql-lexer';
 import { tokenizeDdl } from '../inventory/ddl';
 const source = readFileSync(resolve('src/lib/tenancy/runtime/audited-role-guard.sql'), 'utf8');
 const original = readFileSync(resolve('src/lib/tenancy/runtime/role-guard.sql'), 'utf8');
+const installer = readFileSync(resolve('src/lib/tenancy/runtime/audited-role-guard-installer.sql'), 'utf8');
+const lockColumns = source.slice(source.indexOf('), audit_lock_columns AS ('), source.indexOf('), audit_function_current AS ('));
 const normalized = (text: string) => tokenizeDdl(text).map(t => t.kind === 'word' ? t.raw.toUpperCase() : t.raw).join(' ');
 describe('distinct audited runtime guard inert source', () => {
   it('declares only the external invoker/VOLATILE fixed-searchpath boolean guard', () => {
@@ -85,6 +87,38 @@ describe('distinct audited runtime guard inert source', () => {
   it('denies unreviewed owner column mutations and binds complete allowed source-column observations', () => {
     for (const marker of ['owner_lock_columns', 'audit_lock_columns', 'sourceObservation', "'INSERT,REFERENCES'", 'audited_helper_capability', 'runtime_role_binding']) expect(source).toContain(marker);
     expect(source).toContain('lock_column.observation = declared.value');
+  });
+  it('includes native policies in every lock-column source capsule rather than only RLS flags', () => {
+    expect(lockColumns).toContain("'policies',COALESCE((SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(");
+    expect(lockColumns).toContain('FROM pg_catalog.pg_policy AS policy WHERE policy.polrelid=c.oid)');
+    for (const existing of ['rls', 'forceRls', 'columns', 'constraints', 'triggers', 'rules']) expect(lockColumns).toContain("'" + existing + "'");
+  });
+  it('pins the exact native policy tuple including nullable USING and WITH CHECK expressions', () => {
+    for (const clause of [
+      "'oid',policy.oid::text,'name',policy.polname::text,'command',policy.polcmd::text",
+      "'permissive',policy.polpermissive",
+      "'using',pg_catalog.pg_get_expr(policy.polqual,policy.polrelid,false)",
+      "'withCheck',pg_catalog.pg_get_expr(policy.polwithcheck,policy.polrelid,false)",
+    ]) expect(lockColumns).toContain(clause);
+    expect(lockColumns).not.toContain('COALESCE(pg_catalog.pg_get_expr(policy.');
+  });
+  it('orders policies and native target OIDs deterministically while preserving PUBLIC and empty policy arrays', () => {
+    expect(lockColumns).toContain("'roleOids',pg_catalog.to_jsonb(ARRAY(");
+    expect(lockColumns).toContain('SELECT target.role_oid::text FROM pg_catalog.unnest(policy.polroles) AS target(role_oid) ORDER BY target.role_oid)');
+    expect(lockColumns).toContain('ORDER BY policy.oid)');
+    expect(lockColumns).toContain("FROM pg_catalog.pg_policy AS policy WHERE policy.polrelid=c.oid),'[]'::pg_catalog.jsonb)");
+    expect(lockColumns).not.toMatch(/WHERE\s+(?:target\.)?role_oid\s*(?:>|<>)\s*0/);
+  });
+  it('embeds the whole unchanged external guard contract in the fresh installer declaration', () => {
+    const declaration = 'CREATE OR REPLACE FUNCTION nevora_tenancy.assert_audited_runtime_role';
+    const fragment = source.slice(source.indexOf(declaration));
+    const fresh = fragment.replace(declaration, 'CREATE FUNCTION nevora_tenancy.assert_audited_runtime_role');
+    const start = installer.indexOf('CREATE FUNCTION nevora_tenancy.assert_audited_runtime_role');
+    const end = installer.indexOf('$role_guard$;', start) + '$role_guard$;'.length;
+    expect(start).toBeGreaterThan(0);
+    expect(installer.slice(start, end)).toBe(fresh.trimEnd());
+    expect(lexSql(installer).diagnostics).toEqual([]);
+    expect(lexSql(installer).complete).toBe(true);
   });
   it('exposes native observation CTEs while retaining transitive/change-fencing uncertainty', () => {
     for (const text of ['AUDITED_NATIVE_CTES_BEGIN', 'AUDITED_NATIVE_CTES_END', 'cannot prove PL/pgSQL callgraph', 'trusted-change fencing remains OPEN', 'inherent ALTER/regrant']) expect(source).toContain(text);

@@ -13,7 +13,7 @@ const control = readFileSync(join(folder,'control-storage.sql'),'utf8');
 const capability = readFileSync(join(folder,'audited-helper-storage.sql'),'utf8');
 const specifications = [
   { id: 'HI-R', name: 'role-guard', helper: 'assert_runtime_role', controls: ['runtime_role_binding'], sourceSHA256: '1af5a6c342391d30af27c46a0880810deba3d2778fbe5fefecc09b5a836432b1', fragmentSHA256: '7c0ce83b99d401aac9a31db391cb750b676a22bf3c76e440194de986299bbd6a' },
-  { id: 'HI-A', name: 'audited-role-guard', helper: 'assert_audited_runtime_role', controls: ['runtime_role_binding','audited_helper_capability'], sourceSHA256: '56d18ac4666fcf86eb35fe89aff63f53cde88c2c110bce2c631b8048e4086bff', fragmentSHA256: '46857b02d424eb6d7939b609517b67e26549e07af7d1d44ae250a332be770f96' },
+  { id: 'HI-A', name: 'audited-role-guard', helper: 'assert_audited_runtime_role', controls: ['runtime_role_binding','audited_helper_capability'], sourceSHA256: 'c8ff5783981a93048359b66b35a35793cc131df843da40f1b432c5f75df69d30', fragmentSHA256: 'd00f270f726111283289dc02a050125128541fdb414e08812660bc0ccb232f21' },
 ].map(spec => ({ ...spec, source: readFileSync(join(folder,spec.name+'-installer.sql'),'utf8'), fragment: readFileSync(join(folder,spec.name+'.sql'),'utf8') }));
 type Specification = typeof specifications[number];
 const leasePath = process.env.F_HI_OWNED_LEASE, runPath = process.env.F_HI_RUN_DIR;

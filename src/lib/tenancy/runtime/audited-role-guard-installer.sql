@@ -305,6 +305,13 @@ audit_contracts(name,route_kind,argument_types,return_type,runtime_kinds) AS (
           'validated',co.convalidated,'deferrable',co.condeferrable,'deferred',co.condeferred,
           'enforced',pg_catalog.to_jsonb(co)->'conenforced') ORDER BY co.oid)
           FROM pg_catalog.pg_constraint AS co WHERE co.conrelid=c.oid),'[]'::pg_catalog.jsonb),
+        'policies',COALESCE((SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(
+          'oid',policy.oid::text,'name',policy.polname::text,'command',policy.polcmd::text,
+          'permissive',policy.polpermissive,'roleOids',pg_catalog.to_jsonb(ARRAY(
+            SELECT target.role_oid::text FROM pg_catalog.unnest(policy.polroles) AS target(role_oid) ORDER BY target.role_oid)),
+          'using',pg_catalog.pg_get_expr(policy.polqual,policy.polrelid,false),
+          'withCheck',pg_catalog.pg_get_expr(policy.polwithcheck,policy.polrelid,false)) ORDER BY policy.oid)
+          FROM pg_catalog.pg_policy AS policy WHERE policy.polrelid=c.oid),'[]'::pg_catalog.jsonb),
         'triggers',COALESCE((SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(
           'route',route.observation,'function',f.observation) ORDER BY route.oid)
           FROM audit_routes AS route JOIN audit_functions AS f ON f.oid=route.function_oid WHERE route.relation_oid=c.oid),'[]'::pg_catalog.jsonb),
