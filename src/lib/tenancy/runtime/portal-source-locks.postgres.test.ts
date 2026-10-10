@@ -1,0 +1,722 @@
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
+import { RUNTIME_CATALOG_SHARED_FENCE_SQL, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
+import { Client } from 'pg';
+import {CAPABILITIES} from '../../capabilities/types';
+import { appendFileSync, lstatSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { isAbsolute, join, resolve, sep } from 'node:path';
+
+const sourcePath = resolve('src/lib/tenancy/runtime/portal-source-locks.sql');
+let source = ''; // Loaded only after explicit owned opt-in and custody checks.
+const parentPath = resolve('db/migrations/0008_workspace_positions.sql');
+const parentSource = readFileSync(parentPath, 'utf8');
+const employeeSource = readFileSync(resolve('db/migrations/0001_initial.sql'), 'utf8');
+const expansionSource = readFileSync(resolve('db/migrations/0026_tenant_ownership_expand.sql'), 'utf8');
+const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
+const expectedSourceSHA256 = 'fed4de46092c03be9a35d66c1d080444d9db5fc107d1c48b7b67ac95578cfa03';
+const expectedSourceTestSHA256 = '0435180b5df892670215d8aa7a4a6cfaf9a2cb70374220e86b8d72721ee2aef0';
+const expectedFenceSHA256 = '2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f';
+const migrationPins: Readonly<Record<string, string>> = {
+  "db/migrations/0001_initial.sql": "330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1",
+  "db/migrations/0002_schedule_health.sql": "0dd019d1658c22763d11531ef72b39db9e5a106bb418b1a4fc63f5caaff7f9f0",
+  "db/migrations/0003_schedule_assistance.sql": "d82513ab58c0e8a84f976a05c2be0e342309467c586ded8347cce4ef9001900a",
+  "db/migrations/0004_assistance_layer.sql": "c0263d1e40bbfe3aa646a4740b0fe345728783eac39dfda916495ccf7a1ab7e5",
+  "db/migrations/0005_time_clock.sql": "fc4afbdf4770bd7a3a718cd54fd204bc8df1b96296c04cb676dab3f4f6d0c4e5",
+  "db/migrations/0006_scheduling_rule_inputs.sql": "4a0eb437395a5f4d1873c9b06b3c1104da5a23319e968d422a5a14f3c310483a",
+  "db/migrations/0007_portal_web_push.sql": "020c45cbeb1c5000be22b3ce240f94225fc0c88471e540a67246dd54085440d2",
+  "db/migrations/0008_workspace_positions.sql": "f517e18d468556c25814141a959427c969f620fa4ac6e98cc709b31ee1d88756",
+  "db/migrations/0009_schedule_generation.sql": "aadde6a1f5d3167ed4f346817d1feeb0c9f99f28d50adcf904a989b86120f007",
+  "db/migrations/0010_shift_coverage_automation.sql": "0d8b55abe49995204bda9e63492026158b91b8dc4ca414d05c77b595a6474d8e",
+  "db/migrations/0011_clocker_devices.sql": "788b748bbbd995c44f40d130ea079296aa3e6affcad86c78cbb3857e866c0cd0",
+  "db/migrations/0012_clocker_pins.sql": "9b607ca2e9e111953695ba5cf1a1dbc87f65ae483caeccc3d8056f19aab8c90f",
+  "db/migrations/0013_clocker_punches.sql": "f222d8b52e5cace6698f22b8d4a10fa5ffcd93db1d8c7d5cfd551a02b74216e5",
+  "db/migrations/0014_clocker_breaks.sql": "c20cd86b16fe2f82c05b69687402c52f37a648eb1d79c8f1418436ed8e4c5508",
+  "db/migrations/0015_clocker_schedule_context.sql": "5b5160bff760e17d4e235c35e4936271fba0b8124f5da8a8989e01478fff6796",
+  "db/migrations/0016_time_corrections.sql": "36532a3efc7c641a96b447f5caf2efbd3c4184cbfae2c6e080b548fa3fac4b35",
+  "db/migrations/0017_missing_time_supersession.sql": "2a35c4e3180c3294c7197af56415b231bf66a0b30417000e08de17d161ef8fea",
+  "db/migrations/0018_timecards.sql": "0221827d5faa0670a85661b6a15e59882382703a42bb9800576c30a1f66c1a81",
+  "db/migrations/0019_payroll_export_mappings.sql": "1610d1018824ec84ba9cdbe2f42f3ae36c12ba509a735ea10dce3ee21b594262",
+  "db/migrations/0020_account_recovery.sql": "26bc594863f1950588250be50a1ae66ba2191f90e8a908aea6a41a6ac76c61db",
+  "db/migrations/0021_timecard_reassignment_interlock.sql": "c5e9f1df923c67d4764427cca9f005fed93a4cb148c4a469866d15d4253b4918",
+  "db/migrations/0022_timecard_reopen_revision_authority.sql": "616dc741d8b48679b05958cfbd9dcf3ece018a356892034f2f1ad6a644ba584b",
+  "db/migrations/0023_employee_attention_receipts.sql": "2758fd0dd5567839537483bb49eba8f4e5618b67a9a77c1deccf0e550cefcef1",
+  "db/migrations/0024_contextual_communications.sql": "f130df4238379aa50347decbc863c51f37b108a9f5975b49ca8696b49fc08277",
+  "db/migrations/0025_calendar_subscriptions.sql": "357bce5c806af4f3f0d9ff8a5b48e09a90b1342e8168206efce4f949072d824b",
+  "db/migrations/0026_tenant_ownership_expand.sql": "fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb"
+};
+const table = 'nevora_tenancy.portal_administrative_authority';
+const childTables=['nevora_tenancy.portal_administrative_capability','nevora_tenancy.portal_administrative_location'] as const;
+const allTables=[table,...childTables] as const;
+const communicationSource=readFileSync(resolve('db/migrations/0024_contextual_communications.sql'),'utf8');
+const q = (value: string) => '"' + value.replace(/"/g, '""') + '"';
+const literal = (value: string) => "'" + value.replace(/'/g, "''") + "'";
+const leasePath = process.env.F_PS_OWNED_LEASE, runPath = process.env.F_PS_RUN_DIR;
+type Lease = { scope: string; closed: boolean; invocation: string; authorizationReference: string;
+  root: string; data: string; pid: number; pidStart: string; port: number; systemIdentifier: string;
+  database: string; databaseOid: string | number; marker: string; user: string; credentialFile: string };
+type Role = { name: string; oid: string; login: boolean };
+type OwnObject = { kind: 'schema' | 'table' | 'function' | 'trigger'; schema: string; name: string;
+  oid: string; ownerOid: string; signature?: string; relationOid?: string; dropped: boolean };
+
+// HOLD without explicit root-owned lease+run directory. No discovery, ambient URL,
+// startup, constructor side effect or SQL before the opt-in fixture checks.
+// Exact sparse original0008 singleton parent and original0001/0024/0026 fragments.
+// Positive installer mechanics only: no auth/current-proof/final comparison or full68/runtime/cutover proof.
+describe.skipIf(!leasePath && !runPath)('owned PG18 unused single-employment portal-source-lock mechanics only', () => {
+  let lease: Lease, admin: Client, app: Client, worker: Client, outsider: Client, installer: Client, writer: Client;
+  let appRole: Role, workerRole: Role, outsiderRole: Role;
+  let password = '', installerOid = '', workspaceId = '', verified = false, runVerified = false;
+  let installed = false, setupCommitted = false, sqlAttempted = false;
+  let originalRows: unknown, originalCatalog: unknown;
+  let credentialParent: OwnObject, sessionParent: OwnObject, live: OwnObject, kernel: OwnObject;
+  let parent: OwnObject, employeeParent: OwnObject, schema: OwnObject, counter: OwnObject, contracts: OwnObject, protocol: OwnObject, location: OwnObject, portalParent: OwnObject;
+  let employeeA = '', employeeB = '', nullOwnerEmployee = '';
+  const exactEmployeeIds: string[] = [], exactLocationIds: string[] = [];
+  let locationA = '';
+
+  const clients = new Set<Client>(), closedClients = new Set<Client>();
+  const objects: OwnObject[] = [], roles: Role[] = [];
+  let recordCount = 0;
+  const repairs = new Set<string>(), pendingFenceAttempts = new Set<Promise<unknown>>();
+  const sqlstate = (error: unknown) => {
+    const code = (error as { code?: unknown })?.code;
+    return typeof code === 'string' && /^[A-Z0-9]{5}$/.test(code) ? code : 'UNKNOWN';
+  };
+  async function query(client: Client, text: string, values: unknown[] = []) {
+    sqlAttempted = true;
+    try { return await client.query(text, values); }
+    catch (error) { throw Error('owned_portal_source_locks_sql_' + sqlstate(error)); }
+  }
+  async function rejected(client: Client, text: string, values: unknown[] = []) {
+    sqlAttempted = true;
+    try { await client.query(text, values); return 'NO_ERROR'; }
+    catch (error) { return sqlstate(error); }
+  }
+  function record(value: unknown) {
+    recordCount++;
+    appendFileSync(join(runPath!, 'portal-source-locks-operations.jsonl'), JSON.stringify(value) + '\n', { mode: 0o600 });
+  }
+  async function connect(user: string) {
+    const client = new Client({ host: '127.0.0.1', port: lease.port, database: lease.database,
+      user, password, connectionTimeoutMillis: 3000, statement_timeout: 15000 });
+    clients.add(client);
+    try { await client.connect(); } catch { throw Error('owned_portal_source_locks_connection_failed'); }
+    await query(client, 'SET search_path=pg_catalog');
+    await query(client, "SET TIME ZONE 'UTC'");
+    expect(client.getTransactionStatus()).toBe('I'); return client;
+  }
+  async function identity(client: Client, name: string, oid: string) {
+    const native = (await query(client, `SELECT pg_catalog.pg_backend_pid() pid,session_user::text session,
+      current_user::text current_role,pg_catalog.current_setting('role') role,
+      (SELECT usesysid::text FROM pg_catalog.pg_stat_activity WHERE pid=pg_catalog.pg_backend_pid()) original_oid`)).rows[0];
+    expect(native).toMatchObject({ session: name, current_role: name, role: 'none', original_oid: oid }); return native;
+  }
+  async function checkBase() {
+    const native = (await query(admin, `SELECT current_database() db,
+      (SELECT oid::text FROM pg_catalog.pg_database WHERE datname=current_database()) oid,
+      pg_catalog.shobj_description((SELECT oid FROM pg_catalog.pg_database WHERE datname=current_database()),'pg_database') marker,
+      pg_catalog.current_setting('data_directory') data,(SELECT system_identifier::text FROM pg_catalog.pg_control_system()) system_id,
+      session_user::text role,current_user::text current_role,pg_catalog.host(pg_catalog.inet_server_addr()) host,
+      pg_catalog.inet_server_port() port,pg_catalog.current_setting('server_version') version,
+      pg_catalog.current_setting('server_encoding') encoding`)).rows[0];
+    expect(native).toMatchObject({ db: lease.database, oid: String(lease.databaseOid), marker: lease.marker,
+      data: lease.data, system_id: lease.systemIdentifier, role: lease.user, current_role: lease.user,
+      host: '127.0.0.1', port: lease.port, encoding: 'UTF8' });
+    expect(native.version).toMatch(/^18\.4(?:\s|$)/); expect(admin.getTransactionStatus()).toBe('I'); return native;
+  }
+  async function role(name: string, login: boolean) {
+    expect((await query(admin, 'SELECT oid FROM pg_catalog.pg_roles WHERE rolname=$1', [name])).rows).toEqual([]);
+    record({ operation: 'BEFORE_EXACT_FICTIONAL_ROLE_CREATE', name, login });
+    await query(admin, 'CREATE ROLE ' + q(name) + (login ? ' LOGIN' : ' NOLOGIN') +
+      ' NOSUPERUSER NOBYPASSRLS NOCREATEROLE NOCREATEDB NOREPLICATION NOINHERIT' +
+      (login ? ' PASSWORD ' + literal(password) : ''));
+    const result: Role = { name, login, oid: (await query(admin, 'SELECT oid::text oid FROM pg_catalog.pg_roles WHERE rolname=$1', [name])).rows[0].oid as string };
+    roles.push(result); record({ operation: 'EXACT_FICTIONAL_ROLE_CREATED', ...result }); return result;
+  }
+  async function remember(kind: OwnObject['kind'], namespace: string, name: string, ownerOid: string, signature?: string) {
+    const found = kind === 'schema'
+      ? (await query(admin, 'SELECT oid::text oid,nspowner::text owner FROM pg_catalog.pg_namespace WHERE nspname=$1', [name])).rows[0]
+      : kind === 'function'
+        ? (await query(admin, 'SELECT oid::text oid,proowner::text owner FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure($1)', [q(namespace) + '.' + q(name) + signature])).rows[0]
+        : kind === 'trigger'
+          ? (await query(admin, `SELECT t.oid::text oid,c.relowner::text owner,c.oid::text relation_oid
+              FROM pg_catalog.pg_trigger t JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid
+              WHERE t.tgname=$1 AND t.tgrelid=pg_catalog.to_regclass($2) AND NOT t.tgisinternal`, [name, signature ?? table])).rows[0]
+          : (await query(admin, 'SELECT oid::text oid,relowner::text owner FROM pg_catalog.pg_class WHERE oid=pg_catalog.to_regclass($1)', [q(namespace) + '.' + q(name)])).rows[0];
+    expect(found).toMatchObject({ oid: expect.stringMatching(/^[0-9]+$/), owner: ownerOid });
+    const result: OwnObject = { kind, schema: namespace, name, oid: found.oid as string, ownerOid,
+      ...(kind === 'function' && signature ? { signature } : {}), ...(kind === 'trigger' ? { relationOid: found.relation_oid as string } : {}), dropped: false };
+    objects.push(result); record({ operation: 'EXACT_OWN_OBJECT_OBSERVED', ...result }); return result;
+  }
+  async function dropObject(object: OwnObject) {
+    let found;
+    if (object.kind === 'schema') found = (await query(admin, 'SELECT oid::text oid,nspowner::text owner FROM pg_catalog.pg_namespace WHERE nspname=$1', [object.name])).rows[0];
+    else if (object.kind === 'function') found = (await query(admin, 'SELECT oid::text oid,proowner::text owner FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure($1)', [q(object.schema) + '.' + q(object.name) + object.signature])).rows[0];
+    else if (object.kind === 'trigger') found = (await query(admin, `SELECT t.oid::text oid,c.relowner::text owner,t.tgrelid::text relation_oid
+      FROM pg_catalog.pg_trigger t JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid
+      WHERE t.oid=$1::oid AND t.tgname=$2 AND c.oid=$3::oid`, [object.oid, object.name, object.relationOid])).rows[0];
+    else found = (await query(admin, 'SELECT oid::text oid,relowner::text owner FROM pg_catalog.pg_class WHERE oid=pg_catalog.to_regclass($1)', [q(object.schema) + '.' + q(object.name)])).rows[0];
+    expect(found).toEqual({ oid: object.oid, owner: object.ownerOid, ...(object.kind === 'trigger' ? { relation_oid: object.relationOid } : {}) });
+    const target = object.kind === 'schema' ? q(object.name) : object.kind === 'trigger'
+      ? q(object.name) + ' ON ' + (await query(admin,`SELECT pg_catalog.quote_ident(n.nspname)||'.'||pg_catalog.quote_ident(c.relname) target FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.oid=$1::oid`,[object.relationOid])).rows[0].target : q(object.schema) + '.' + q(object.name) + (object.signature ?? '');
+    await query(admin, 'DROP ' + object.kind.toUpperCase() + ' ' + target);
+    const catalogName = object.kind === 'schema' ? 'pg_namespace' : object.kind === 'function' ? 'pg_proc' : object.kind === 'trigger' ? 'pg_trigger' : 'pg_class';
+    expect((await query(admin, 'SELECT oid FROM pg_catalog.' + catalogName + ' WHERE oid=$1::oid', [object.oid])).rows).toEqual([]);
+    object.dropped = true; record({ operation: 'EXACT_OWN_OBJECT_DROPPED', ...object });
+  }
+  async function catalog(namespaceOnly = false) {
+    const condition = namespaceOnly ? "n.nspname='nevora_tenancy'" : "(n.nspname='nevora_tenancy' OR (n.nspname='public' AND c.relname IN ('workspaces','employees','locations','employee_credentials','employee_sessions')))";
+    const schemas = (await query(admin, `SELECT oid::text oid,nspname,nspowner::text owner,nspacl::text acl FROM pg_catalog.pg_namespace
+      WHERE nspname='nevora_tenancy' ORDER BY oid`)).rows;
+    const relations = (await query(admin, `SELECT c.oid::text oid,n.nspname,c.relname,c.relowner::text owner,c.relkind,c.relpersistence,
+      c.relrowsecurity,c.relforcerowsecurity,c.relacl::text acl FROM pg_catalog.pg_class c
+      JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE ${condition} ORDER BY c.oid`)).rows;
+    const columns = (await query(admin, `SELECT c.oid::text relation_oid,a.attnum,a.attname,a.atttypid::text type_oid,a.atttypmod,
+      a.attnotnull,a.atthasdef,a.attidentity,a.attgenerated,a.attacl::text acl,pg_catalog.pg_get_expr(d.adbin,d.adrelid) default_source
+      FROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+      LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum
+      WHERE ${condition} AND a.attnum>0 AND NOT a.attisdropped ORDER BY c.oid,a.attnum`)).rows;
+    const constraints = (await query(admin, `SELECT c.oid::text relation_oid,co.oid::text oid,co.conname,co.contype::text contype,co.conkey,
+      co.confrelid::text parent_oid,co.confkey,co.confupdtype::text update_action,co.confdeltype::text delete_action,
+      co.convalidated,co.conenforced,co.condeferrable,co.condeferred,co.conindid::text index_oid,pg_catalog.pg_get_constraintdef(co.oid,false) definition
+      FROM pg_catalog.pg_constraint co JOIN pg_catalog.pg_class c ON c.oid=co.conrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+      WHERE ${condition} ORDER BY c.oid,co.oid`)).rows;
+    const indexes = (await query(admin, `SELECT c.oid::text relation_oid,i.indexrelid::text oid,i.indisunique,i.indisprimary,i.indisvalid,i.indisready,i.indimmediate,i.indislive,i.indnullsnotdistinct,i.indclass::text opclasses,i.indcollation::text collations,i.indoption::text options,
+      pg_catalog.pg_get_indexdef(i.indexrelid) definition FROM pg_catalog.pg_index i JOIN pg_catalog.pg_class c ON c.oid=i.indrelid
+      JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE ${condition} ORDER BY c.oid,i.indexrelid`)).rows;
+    const functions = (await query(admin, `SELECT p.oid::text oid,p.proname,p.proowner::text owner,p.prosecdef,p.proconfig,p.prorettype::text return_oid,
+      p.proargtypes::text arg_oids,p.proretset,p.provolatile,p.proparallel,l.lanname,p.proacl::text acl,pg_catalog.pg_get_functiondef(p.oid) definition
+      FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace JOIN pg_catalog.pg_language l ON l.oid=p.prolang
+      WHERE n.nspname='nevora_tenancy' ORDER BY p.oid`)).rows;
+    const triggers = (await query(admin, `SELECT c.oid::text relation_oid,t.oid::text oid,t.tgname,t.tgfoid::text function_oid,
+      t.tgtype,t.tgenabled,t.tgisinternal,t.tgconstraint::text constraint_oid,t.tgdeferrable,t.tginitdeferred,
+      pg_catalog.pg_get_triggerdef(t.oid,false) definition FROM pg_catalog.pg_trigger t JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid
+      JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE ${condition} ORDER BY c.oid,t.oid`)).rows;
+    const policies = (await query(admin, `SELECT c.oid::text relation_oid,p.oid::text oid,p.polname,p.polcmd::text command,p.polroles,p.polpermissive,
+      pg_catalog.pg_get_expr(p.polqual,p.polrelid) using_source,pg_catalog.pg_get_expr(p.polwithcheck,p.polrelid) check_source
+      FROM pg_catalog.pg_policy p JOIN pg_catalog.pg_class c ON c.oid=p.polrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+      WHERE ${condition} ORDER BY p.oid`)).rows;
+    const columnAcls = (await query(admin,`SELECT c.oid::text relation_oid,a.attnum,x.grantor::text grantor,x.grantee::text grantee,x.privilege_type,x.is_grantable
+      FROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+      CROSS JOIN LATERAL pg_catalog.aclexplode(a.attacl) x WHERE ${condition} AND a.attnum>0 AND NOT a.attisdropped
+      ORDER BY c.oid,a.attnum,x.grantee,x.privilege_type`)).rows;
+    const expandedAcls = (await query(admin, `SELECT 'SCHEMA' kind,n.oid::text oid,a.grantor::text grantor,a.grantee::text grantee,a.privilege_type,a.is_grantable
+      FROM pg_catalog.pg_namespace n CROSS JOIN LATERAL pg_catalog.aclexplode(COALESCE(n.nspacl,pg_catalog.acldefault('n',n.nspowner))) a WHERE n.nspname='nevora_tenancy'
+      UNION ALL SELECT 'TABLE',c.oid::text,a.grantor::text,a.grantee::text,a.privilege_type,a.is_grantable
+      FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace CROSS JOIN LATERAL pg_catalog.aclexplode(COALESCE(c.relacl,pg_catalog.acldefault('r',c.relowner))) a WHERE ${condition}
+      UNION ALL SELECT 'FUNCTION',p.oid::text,a.grantor::text,a.grantee::text,a.privilege_type,a.is_grantable
+      FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace CROSS JOIN LATERAL pg_catalog.aclexplode(COALESCE(p.proacl,pg_catalog.acldefault('f',p.proowner))) a
+      WHERE n.nspname='nevora_tenancy' ORDER BY kind,oid,grantee,privilege_type`)).rows;
+    return { schemas, relations, columns, constraints, indexes, functions, triggers, policies, columnAcls, expandedAcls };
+  }
+  function canonicalAcl(value: Awaited<ReturnType<typeof catalog>>) {
+    return { ...value, columns:value.columns.map(row=>({...row,acl:value.columnAcls.filter(x=>x.relation_oid===row.relation_oid&&x.attnum===row.attnum)})), schemas: value.schemas.map(row => ({ ...row, acl: value.expandedAcls.filter(x => x.kind === 'SCHEMA' && x.oid === row.oid) })),
+      relations: value.relations.map(row => ({ ...row, acl: value.expandedAcls.filter(x => x.kind === 'TABLE' && x.oid === row.oid) })),
+      functions: value.functions.map(row => ({ ...row, acl: value.expandedAcls.filter(x => x.kind === 'FUNCTION' && x.oid === row.oid) })) };
+  }
+
+  const kernelCall = 'SELECT nevora_tenancy.lock_portal_source_rows($1::text,$2::text,$3::bpchar) AS locked';
+  const createdAt = '2026-10-09T00:00:00.123456Z', expiry = '2000-01-01T00:00:00.654321Z';
+  const token = () => hash('fictional-kernel-session:' + employeeA);
+  const sourceTables = ['public.workspaces', 'public.locations', 'public.employees', 'public.employee_credentials', 'public.employee_sessions'] as const;
+  const privateTables = ['nevora_tenancy.workspace_incarnation_counter', 'nevora_tenancy.portal_authority', 'nevora_tenancy.portal_session_issuance', ...allTables] as const;
+  const completeTables = [...sourceTables, 'nevora_tenancy.owned_table_contract', 'nevora_tenancy.expansion_protocol', ...privateTables] as const;
+  function oneFragment(bytes: string, pattern: RegExp) { const found = bytes.match(pattern); expect(found).toHaveLength(1); return found![0]; }
+  const identitySource = oneFragment(expansionSource, /CREATE FUNCTION nevora_tenancy\.source_identity_guard\(\)[\s\S]*?\$identity_guard\$;/g);
+  const fenceSource = oneFragment(expansionSource, /CREATE FUNCTION nevora_tenancy\.source_write_fence\(\)[\s\S]*?\$write_fence\$;/g);
+  const storage = [
+    ['workspace-incarnation-storage', 'b3d8c8ecf96fb4ff72255e85a53a50ddc97a1633dfdf94cea19b4496382a07f9'],
+    ['portal-authority-storage', 'e8afeff01d13775eeecd462e7a6e2bb662e1279ce44fd3ded2b383e34821a094'],
+    ['portal-session-issuance-storage', '4625ff35db3c4c3b63ef9e575468af75f4e4935c8af9934ec5b99e3cf346397e'],
+    ['portal-administrative-authority-storage', '06d78b8e7e6118109312d07d48d56231266b38853bcdd8792e1e298836af42a4'],
+  ] as const;
+  async function rows() {
+    const result: Record<string, unknown> = {};
+    for (const name of completeTables) {
+      // Native text keeps every original value, unsafe int8 and UTC timestamp
+      // bytes losslessly. Credential material is an explicit fictional literal.
+      result[name] = (await query(admin, 'SELECT pg_catalog.to_jsonb(t)::text wire FROM ' + name + ' t ORDER BY pg_catalog.to_jsonb(t)::text COLLATE pg_catalog."C"')).rows;
+    }
+    return result;
+  }
+  async function preserve() {
+    expect(await rows()).toEqual(originalRows); expect(canonicalAcl(await catalog())).toEqual(originalCatalog);
+    for (const [path, pin] of Object.entries(migrationPins)) expect(hash(readFileSync(resolve(path)))).toBe(pin);
+  }
+  async function poll(predicate: () => Promise<boolean>, label: string) {
+    const deadline = Date.now() + 8000;
+    do { if (await predicate()) return; await new Promise(done => setTimeout(done, 10)); } while (Date.now() < deadline);
+    throw Error('owned_portal_source_locks_timeout_' + label);
+  }
+  async function begin(client: Client) {
+    expect(client.getTransactionStatus()).toBe('I'); await query(client, 'BEGIN ISOLATION LEVEL READ COMMITTED');
+    // This caller-owned fixture explicitly acquires the catalog fence FIRST.
+    await query(client, RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
+  }
+  async function call(client: Client, workspace: unknown = workspaceId, employee: unknown = employeeA, session: unknown = token()) {
+    expect((await query(client, kernelCall, [workspace, employee, session])).rows).toEqual([{ locked: '' }]);
+  }
+  async function aborted(client: Client, code: string, expected: string) {
+    const pid = (client as Client & { processID: number }).processID;
+    const immediate = client.getTransactionStatus();
+    await poll(async () => (await query(admin, 'SELECT state FROM pg_catalog.pg_stat_activity WHERE pid=$1', [pid])).rows[0]?.state === 'idle in transaction (aborted)' && client.getTransactionStatus() === 'E', 'aborted');
+    const activity = (await query(admin, 'SELECT pid,state FROM pg_catalog.pg_stat_activity WHERE pid=$1', [pid])).rows[0];
+    const next = await rejected(client, 'SELECT 1');
+    record({ operation: 'SYNCHRONIZED_NATIVE_ERROR', code, expected, immediate, activity, clientStatus: client.getTransactionStatus(), subsequentSQLSTATE: next });
+    expect(code).toBe(expected); expect(next).toBe('25P02'); expect(client.getTransactionStatus()).toBe('E');
+  }
+  async function waitEvidence(client: Client, blocker: Client, caseId: string) {
+    const pid = (client as Client & { processID: number }).processID, blockerPid = (blocker as Client & { processID: number }).processID;
+    await poll(async () => (await query(admin, `SELECT pg_catalog.pg_blocking_pids($1) blockers`, [pid])).rows[0].blockers.includes(blockerPid), caseId);
+    const activity = (await query(admin, `SELECT pid,state,wait_event_type,wait_event,pg_catalog.pg_blocking_pids(pid) blockers,usesysid::text original_oid
+      FROM pg_catalog.pg_stat_activity WHERE pid=ANY($1::int4[]) ORDER BY pid`, [[pid, blockerPid]])).rows;
+    const locks = (await query(admin, `SELECT pid,locktype,mode,granted,relation::text relation_oid,transactionid::text transaction_id,page,tuple
+      FROM pg_catalog.pg_locks WHERE pid=ANY($1::int4[]) ORDER BY pid,locktype,mode,relation,page,tuple`, [[pid, blockerPid]])).rows;
+    record({ operation: 'NATIVE_ROW_WAIT', caseId, pid, blockerPid, activity, locks });
+    expect(activity.find(row => row.pid === pid)).toMatchObject({ state: 'active', wait_event_type: 'Lock' });
+    expect(activity.find(row => row.pid === pid)?.blockers).toContain(blockerPid);
+    expect(locks.some(row => row.pid === pid && !row.granted)).toBe(true);
+    return { activity, locks };
+  }
+  async function rollback(client: Client) { await query(client, 'ROLLBACK'); expect(client.getTransactionStatus()).toBe('I'); }
+  async function rollbackBody(body: () => Promise<void>) {
+    const before = await rows(), beforeCatalog = canonicalAcl(await catalog()); await begin(admin);
+    try { await body(); } finally { await rollback(admin); }
+    expect(await rows()).toEqual(before); expect(canonicalAcl(await catalog())).toEqual(beforeCatalog);
+  }
+  async function credential(client: Client) {
+    await query(client, `INSERT INTO public.employee_credentials(employee_id,password_hash,must_change_password,password_updated_at)
+      VALUES($1,'fictional-not-a-password',true,$2::timestamptz)`, [employeeA, createdAt]);
+  }
+  async function session(client: Client) {
+    await query(client, 'INSERT INTO public.employee_sessions(token_hash,employee_id,expires_at,created_at) VALUES($1::bpchar(64),$2,$3::timestamptz,$4::timestamptz)', [token(), employeeA, expiry, createdAt]);
+  }
+  async function liveRow(client: Client) {
+    await query(client, `INSERT INTO nevora_tenancy.portal_session_issuance(token_hash,workspace_id,employee_id,workspace_incarnation,portal_access_version,session_created_at)
+      VALUES($1::bpchar(64),$2,$3,9007199254740993,1,$4::timestamptz)`, [token(), workspaceId, employeeA, createdAt]);
+  }
+  async function seedThrough(count: number) {
+    if (count >= 3) await credential(admin);
+    if (count >= 4) await query(admin, 'INSERT INTO nevora_tenancy.workspace_incarnation_counter(workspace_id,incarnation) VALUES($1,9007199254740993)', [workspaceId]);
+    if (count >= 5) await query(admin, `INSERT INTO nevora_tenancy.portal_authority(workspace_id,employee_id,authorization_version,portal_access_version,capability_policy_revision,portal_state,proof_provenance,provenance_reference)
+      VALUES($1,$2,1,1,1,'DISABLED','UNVERIFIED','fictional:unverified')`, [workspaceId, employeeA]);
+    if (count >= 6) await session(admin);
+    if (count >= 7) await liveRow(admin);
+  }
+  async function adminHeader(client: Client) { await query(client, `INSERT INTO ${table}(workspace_id,employee_id,scope_kind,scope_origin,provenance_reference,capability_policy_revision)
+    VALUES($1,$2,'LOCATIONS','EXPLICIT_GRANT','fictional:unverified',1)`, [workspaceId, employeeA]); }
+  async function restoreSession(client: Client) { await session(client); await liveRow(client); }
+  async function rememberStorage(bytes: string) {
+    for (const match of bytes.matchAll(/^CREATE TABLE nevora_tenancy\.(\w+)/gm)) await remember('table', 'nevora_tenancy', match[1], installerOid);
+    for (const match of bytes.matchAll(/^CREATE FUNCTION nevora_tenancy\.(\w+)\(\)/gm)) await remember('function', 'nevora_tenancy', match[1], installerOid, '()');
+    for (const match of bytes.matchAll(/^CREATE TRIGGER (\w+)\n[\s\S]*?ON nevora_tenancy\.(\w+)\n/gm)) await remember('trigger', 'nevora_tenancy', match[1], installerOid, 'nevora_tenancy.' + match[2]);
+  }
+  beforeAll(async () => {
+    expect(leasePath !== undefined && runPath !== undefined).toBe(true);
+    expect(process.env.DATABASE_URL === undefined && process.env.FUEL_TEST_DATABASE_URL === undefined).toBe(true);
+    expect(isAbsolute(leasePath!) && isAbsolute(runPath!)).toBe(true);
+    expect(realpathSync(leasePath!)).toBe(leasePath); expect(realpathSync(runPath!)).toBe(runPath);
+    const uid = process.getuid?.(); expect(uid !== undefined).toBe(true);
+    const leaseStat = lstatSync(leasePath!); expect(leaseStat.isFile() && !leaseStat.isSymbolicLink()).toBe(true);
+    expect(leaseStat.uid).toBe(uid); expect(leaseStat.mode & 0o777).toBe(0o600);
+    expect(statSync(runPath!).isDirectory()).toBe(true); expect(statSync(runPath!).uid).toBe(uid); runVerified = true;
+    lease = JSON.parse(readFileSync(leasePath!, 'utf8')) as Lease;
+    expect(lease.scope).toBe('OWNED_LOCAL_F10'); expect(lease.closed).toBe(false);
+    expect(lease.invocation).toMatch(/^[a-z][a-z0-9_]{7,30}$/);
+    expect(lease.authorizationReference).toBe('F-DEV-COMPLETE-001:portal-source-lock-kernel:' + lease.invocation);
+    expect(lease.marker).toBe('f10-owned:' + lease.invocation);
+    expect(Number.isSafeInteger(lease.port) && lease.port > 1024 && lease.port < 65536).toBe(true);
+    expect(Number.isSafeInteger(lease.pid) && lease.pid > 0).toBe(true);
+    expect(realpathSync(lease.root)).toBe(lease.root); expect(realpathSync(lease.data)).toBe(join(lease.root, 'data'));
+    expect(leasePath!.startsWith(lease.root + sep)).toBe(true);
+    const pid = readFileSync(join(lease.data, 'postmaster.pid'), 'utf8').split('\n');
+    expect(Number(pid[0])).toBe(lease.pid); expect(realpathSync(pid[1])).toBe(lease.data);
+    expect(pid[2]).toBe(lease.pidStart); expect(Number(pid[3])).toBe(lease.port);
+    const credentialFile = lstatSync(lease.credentialFile);
+    expect(credentialFile.isFile() && !credentialFile.isSymbolicLink()).toBe(true); expect(credentialFile.uid).toBe(uid);
+    expect(credentialFile.mode & 0o777).toBe(0o600); expect(realpathSync(lease.credentialFile)).toBe(lease.credentialFile);
+    expect(lease.credentialFile.startsWith(lease.root + sep)).toBe(true);
+    source = readFileSync(sourcePath, 'utf8'); expect(hash(source)).toBe(expectedSourceSHA256);
+    expect(hash(readFileSync(resolve('src/lib/tenancy/runtime/portal-source-locks.test.ts')))).toBe(expectedSourceTestSHA256);
+    expect(hash(readFileSync(resolve('src/lib/tenancy/runtime/catalog-fence.server.ts')))).toBe(expectedFenceSHA256);
+    for (const [path, pin] of Object.entries(migrationPins)) expect(hash(readFileSync(resolve(path)))).toBe(pin);
+    for (const [name, pin] of storage) expect(hash(readFileSync(resolve('src/lib/tenancy/runtime/' + name + '.sql')))).toBe(pin);
+    password = readFileSync(lease.credentialFile, 'utf8'); expect(password.length > 0).toBe(true);
+    admin = await connect(lease.user); const base = await checkBase();
+    installerOid = (await query(admin, 'SELECT oid::text oid FROM pg_catalog.pg_roles WHERE rolname=$1', [lease.user])).rows[0].oid as string;
+    expect((await query(admin, 'SELECT datdba::text owner FROM pg_catalog.pg_database WHERE oid=$1::oid', [String(lease.databaseOid)])).rows).toEqual([{ owner: installerOid }]);
+    expect((await query(admin, "SELECT oid FROM pg_catalog.pg_namespace WHERE nspname='nevora_tenancy'")).rows).toEqual([]);
+    expect((await query(admin, "SELECT c.oid FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN ('r','p','v','m','f','S')")).rows).toEqual([]);
+    verified = true;
+    record({ operation: 'EXACT_OWN_ROOT_BASE_VERIFIED', base, sourceSHA256: hash(source), migrationPins });
+    await query(admin, 'BEGIN ISOLATION LEVEL READ COMMITTED');
+    try {
+      await query(admin, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+      appRole = await role(lease.invocation + '_app', true); workerRole = await role(lease.invocation + '_worker', true); outsiderRole = await role(lease.invocation + '_outsider', true);
+      await query(admin, 'REVOKE CREATE,TEMPORARY ON DATABASE ' + q(lease.database) + ' FROM PUBLIC');
+      await query(admin, 'REVOKE CREATE ON SCHEMA public FROM PUBLIC');
+      await query(admin, 'GRANT CONNECT ON DATABASE ' + q(lease.database) + ' TO ' + roles.map(x => q(x.name)).join(','));
+      await query(admin, 'CREATE SCHEMA nevora_tenancy'); schema = await remember('schema', '', 'nevora_tenancy', installerOid);
+      await query(admin, 'SET LOCAL search_path=public,pg_catalog');
+      const parentFragment = oneFragment(parentSource, /CREATE TABLE workspaces \([\s\S]*?\n\);/g);
+      await query(admin, parentFragment); parent = await remember('table', 'public', 'workspaces', installerOid);
+      const locationFragment = oneFragment(employeeSource, /CREATE TABLE IF NOT EXISTS locations \([\s\S]*?\n\);/g);
+      await query(admin, locationFragment); location = await remember('table', 'public', 'locations', installerOid);
+      const locationStatements = [...parentSource.matchAll(/^ALTER TABLE locations[^;]*;/gm)].map(x => x[0]); expect(locationStatements).toHaveLength(8);
+      for (const statement of locationStatements) await query(admin, statement);
+      await query(admin, oneFragment(communicationSource, /^ALTER TABLE locations ADD CONSTRAINT communication_location_workspace_key[^;]*;/gm));
+      const employeeFragment = oneFragment(employeeSource, /CREATE TABLE IF NOT EXISTS employees \([\s\S]*?\n\);/g);
+      await query(admin, employeeFragment); employeeParent = await remember('table', 'public', 'employees', installerOid);
+      await query(admin, oneFragment(expansionSource, /ALTER TABLE public\."employees" ADD COLUMN workspace_id text;\nALTER TABLE public\."employees" ADD CONSTRAINT f10_workspace_reference[^\n]*\nALTER TABLE public\."employees" ADD CONSTRAINT f10_tenant_c49de3d265fb[^\n]*/g));
+      for (const name of ['employee_credentials', 'employee_sessions']) {
+        await query(admin, oneFragment(employeeSource, new RegExp('CREATE TABLE IF NOT EXISTS ' + name + ' \\([\\s\\S]*?\\n\\);', 'g')));
+        const item = await remember('table', 'public', name, installerOid); if (name === 'employee_credentials') credentialParent = item; else sessionParent = item;
+      }
+      for (const name of ['employee_sessions_employee_idx', 'employee_sessions_expires_idx']) await query(admin, oneFragment(employeeSource, new RegExp('^CREATE INDEX IF NOT EXISTS ' + name + '[^;]*;', 'gm')));
+      await query(admin, oneFragment(expansionSource, /CREATE TABLE nevora_tenancy\.expansion_protocol \([\s\S]*?\n\);/g)); protocol = await remember('table', 'nevora_tenancy', 'expansion_protocol', installerOid);
+      await query(admin, oneFragment(expansionSource, /CREATE TABLE nevora_tenancy\.owned_table_contract \([\s\S]*?\n\);/g)); contracts = await remember('table', 'nevora_tenancy', 'owned_table_contract', installerOid);
+      await query(admin, oneFragment(expansionSource, /INSERT INTO nevora_tenancy\.expansion_protocol\([^\n]*;/g));
+      const contractValues = oneFragment(expansionSource, /^INSERT INTO nevora_tenancy\.owned_table_contract VALUES\n[\s\S]*?;$/gm);
+      const contractRows = sourceTables.map(name => oneFragment(contractValues, new RegExp("^\\('" + name.split('.')[1] + "',[^\\n]*", 'gm')).replace(/[,;]$/, ''));
+      await query(admin, 'INSERT INTO nevora_tenancy.owned_table_contract VALUES\n' + contractRows.join(',\n') + ';');
+      workspaceId = ' ' + lease.invocation + '_workspace_位置 '; employeeA = ' ' + lease.invocation + '_employee_β ';
+      employeeB = lease.invocation + '_history_inactive'; nullOwnerEmployee = lease.invocation + '_unattributed';
+      exactEmployeeIds.push(employeeA, employeeB, nullOwnerEmployee);
+      exactLocationIds.push(' ' + lease.invocation + '_loc_β ', lease.invocation + '_loc_e\u0301', lease.invocation + '_loc_é'); locationA = exactLocationIds[0];
+      await query(admin, "INSERT INTO public.workspaces(id,name,time_zone,active,created_at,updated_at) VALUES($1,'Fictional workspace','UTC',true,$2::timestamptz,$2::timestamptz)", [workspaceId, createdAt]);
+      for (const [index, id] of exactLocationIds.entries()) await query(admin, `INSERT INTO public.locations(id,name,short_name,workspace_id,clocker_key,active,created_at,updated_at)
+        VALUES($1,'Fictional','Fixture',$2,$3,false,$4::timestamptz,$4::timestamptz)`, [id, workspaceId, 'fixture-' + index, createdAt]);
+      for (const id of exactEmployeeIds) await query(admin, `INSERT INTO public.employees(id,first_name,last_name,phone,email,role,primary_location_id,active,created_at,updated_at,workspace_id)
+        VALUES($1,'Fictional','Employee','0000000000',NULL,'EMPLOYEE',$2,$3,$4::timestamptz,$4::timestamptz,$5)`, [id, locationA, id === employeeA, createdAt, id === nullOwnerEmployee ? null : workspaceId]);
+      await query(admin, fenceSource); await remember('function', 'nevora_tenancy', 'source_write_fence', installerOid, '()');
+      await query(admin, identitySource); await remember('function', 'nevora_tenancy', 'source_identity_guard', installerOid, '()');
+      for (const name of sourceTables.map(x => x.split('.')[1])) for (const guard of ['f10_write_fence', 'f10_identity_guard']) {
+        await query(admin, oneFragment(expansionSource, new RegExp('^CREATE TRIGGER ' + guard + '[^\\n]*ON public\\."' + name + '"[^\\n]*;', 'gm')));
+        await remember('trigger', 'public', guard, installerOid, 'public.' + name);
+      }
+      await query(admin, 'REVOKE ALL ON SCHEMA nevora_tenancy FROM PUBLIC'); await query(admin, 'REVOKE ALL ON ALL TABLES IN SCHEMA nevora_tenancy FROM PUBLIC');
+      await query(admin, 'REVOKE ALL ON ALL FUNCTIONS IN SCHEMA nevora_tenancy FROM PUBLIC');
+      await query(admin, 'COMMIT'); setupCommitted = true;
+      record({ operation: 'SPARSE_UNCHANGED_SINGLETON_SOURCE_FIXTURE', parentFragment, parentSHA256: hash(parentFragment), locationFragment, locationStatements,
+        employeeFragmentSHA256: hash(employeeFragment), contractRows, identitySourceSHA256: hash(identitySource), sourceFenceSHA256: hash(fenceSource),
+        claim: 'ONE_FICTIONAL_WORKSPACE_NOT_FULL68_OR_CUTOVER_NO_SOURCE_GUARD_REWRITE' });
+    } finally { await rollback(admin); }
+    for (const [name] of storage) {
+      const bytes = readFileSync(resolve('src/lib/tenancy/runtime/' + name + '.sql'), 'utf8'); await query(admin, bytes); await rollback(admin); await rememberStorage(bytes);
+    }
+    counter = objects.find(x => x.kind === 'table' && x.name === 'workspace_incarnation_counter')!;
+    portalParent = objects.find(x => x.kind === 'table' && x.name === 'portal_authority')!;
+    live = objects.find(x => x.kind === 'table' && x.name === 'portal_session_issuance')!;
+    originalRows = await rows(); originalCatalog = canonicalAcl(await catalog());
+    app = await connect(appRole.name); worker = await connect(workerRole.name); outsider = await connect(outsiderRole.name);
+    installer = await connect(lease.user); writer = await connect(lease.user);
+    record({ operation: 'EMPTY_PRIVATE_STORAGE_NATIVE_BEFORE_KERNEL', roles, objects, rows: originalRows, catalog: originalCatalog, clients: clients.size });
+    writeFileSync(join(runPath!, 'portal-source-locks-fixture-custody.json'), JSON.stringify({ base, roles, objects, originalRows, originalCatalog,
+      sourceObjects: { parent, location, employeeParent, credentialParent, sessionParent, protocol, contracts, counter, portalParent, live }, expectedClients: 6, storage, migrationPins, kernelSourceSHA256: hash(source), scope: 'INSTALLER_ROW_LOCK_MECHANICS_NOT_RUNTIME_OR_AUTHORIZATION' }, null, 2), { flag: 'wx', mode: 0o600 });
+  }, 60000);
+
+  it('PS01 whole unchanged artifact installs only an ungranted invoker kernel with original rows unchanged', async () => {
+    const before = await rows(), beforeNative = await catalog();
+    await query(installer, source); await rollback(installer); installed = true;
+    kernel = await remember('function', 'nevora_tenancy', 'lock_portal_source_rows', installerOid, '(text,text,bpchar)');
+    const native = await catalog(), fn = native.functions.find(x => x.oid === kernel.oid)!;
+    record({ caseId: 'PS01', beforeNative, native, beforeRows: before, afterRows: await rows(), kernel, definitionSHA256: hash(fn.definition) });
+    expect(fn).toMatchObject({ owner: installerOid, prosecdef: false, proconfig: ['search_path=pg_catalog'], return_oid: '2278',
+      arg_oids: '25 25 1042', proretset: false, provolatile: 'v', proparallel: 'u', lanname: 'plpgsql' });
+    const body = (await query(admin, 'SELECT prosrc FROM pg_catalog.pg_proc WHERE oid=$1::oid', [kernel.oid])).rows[0].prosrc;
+    expect(body).toBe(source.split('$portal_source_locks$')[1]);
+    expect(await rows()).toEqual(before);
+    expect(native.relations).toEqual(beforeNative.relations); expect(native.columns).toEqual(beforeNative.columns);
+    expect(native.constraints).toEqual(beforeNative.constraints); expect(native.triggers).toEqual(beforeNative.triggers); expect(native.policies).toEqual([]);
+    originalCatalog = canonicalAcl(native); await preserve();
+  });
+  it('PS02 each missing required source row raises fixed55000 without optional seeding or effects', async () => {
+    const names = ['workspace', 'attributed-employee', 'credential', 'counter', 'persistent-portal', 'original-session', 'LIVE'];
+    for (const [index, name] of names.entries()) {
+      await rollbackBody(async () => {
+        await seedThrough(index);
+        await query(admin, 'SAVEPOINT exact_missing');
+        const args = [index === 0 ? 'nonexistent-tenant' : workspaceId, index === 1 ? 'nonexistent-employee' : employeeA, token()];
+        let code = 'NO_ERROR', message = '';
+        try { await admin.query(kernelCall, args); } catch (error) { code = sqlstate(error); message = (error as { message: string }).message; }
+        await query(admin, 'ROLLBACK TO SAVEPOINT exact_missing'); await query(admin, 'RELEASE SAVEPOINT exact_missing');
+        record({ caseId: 'PS02', required: name, index, code, message, rows: await rows(), args });
+        expect(code).toBe('55000'); expect(message).toBe('portal_source_lock_missing');
+        expect((await query(admin, 'SELECT * FROM ' + table)).rows).toEqual([]);
+      });
+    }
+    await preserve();
+  });
+  it('PS03 explicit fictional required rows preserve native unsafe int8 keys yet confer no active or session-valid authority', async () => {
+    const emptyBefore = await rows(); await begin(admin);
+    try { await seedThrough(7); await query(admin, 'COMMIT'); } finally { await rollback(admin); }
+    originalRows = await rows();
+    await begin(installer);
+    try { await call(installer); await query(installer, 'COMMIT'); } finally { await rollback(installer); }
+    const state = (await query(admin, `SELECT e.active,p.portal_state,p.proof_provenance,s.expires_at::text expires_at,
+      c.incarnation::text incarnation FROM public.employees e JOIN nevora_tenancy.portal_authority p ON p.employee_id=e.id
+      JOIN public.employee_sessions s ON s.employee_id=e.id JOIN nevora_tenancy.workspace_incarnation_counter c ON c.workspace_id=e.workspace_id WHERE e.id=$1`, [employeeA])).rows;
+    expect(state).toEqual([{ active: true, portal_state: 'DISABLED', proof_provenance: 'UNVERIFIED', expires_at: '2000-01-01 00:00:00.654321+00', incarnation: '9007199254740993' }]);
+    expect((await query(admin, 'SELECT * FROM ' + table)).rows).toEqual([]);
+    record({ caseId: 'PS03', emptyBefore, explicitFixtureRows: originalRows, state, claim: 'LOCKS_SUCCEED_WITH_DISABLED_PORTAL_AND_EXPIRED_SESSION_NOT_AUTHORIZATION' }); await preserve();
+  });
+  it('PS04 padded Unicode text stays byte-exact and session comparisons use original native bpchar semantics', async () => {
+    await begin(installer);
+    try {
+      await call(installer, workspaceId, employeeA, token() + '   ');
+      const native = (await query(installer, `SELECT employee_id,token_hash::text token_hash,pg_catalog.octet_length(token_hash) length,
+        token_hash=$1::bpchar equal_with_padding FROM public.employee_sessions WHERE employee_id=$2`, [token() + '   ', employeeA])).rows;
+      expect(native).toEqual([{ employee_id: employeeA, token_hash: token(), length: 64, equal_with_padding: true }]);
+      record({ caseId: 'PS04', workspaceId, employeeA, token: token(), native, rows: await rows(), claim: 'NATIVE_CHAR_EQUALITY_AND_UTF8_TEXT_BYTES_ONLY' });
+    } finally { await rollback(installer); }
+    await preserve();
+  });
+  it('PS05 foreign unattributed malformed and text-normalized keys never select another source', async () => {
+    for (const args of [[null, employeeA, token()], [workspaceId, null, token()], [workspaceId, employeeA, null],
+      ['foreign-workspace', employeeA, token()], [workspaceId, nullOwnerEmployee, token()], [workspaceId, employeeB, token()],
+      [workspaceId.trim(), employeeA, token()], [workspaceId, employeeA.trim(), token()], [workspaceId, employeeA, 'different-session']]) {
+      await begin(installer);
+      try { const code = await rejected(installer, kernelCall, args); await aborted(installer, code, '55000'); record({ caseId: 'PS05', args, code }); }
+      finally { await rollback(installer); }
+    }
+    await preserve();
+  });
+  it('PS06 private FORCE RLS controls and every original-login runtime lane remain unenrolled and ungranted', async () => {
+    const native = await catalog();
+    for (const name of privateTables) expect(native.relations.find(x => x.relname === name.split('.')[1])).toMatchObject({ relrowsecurity: true, relforcerowsecurity: true });
+    expect(native.policies).toEqual([]);
+    for (const [client, principal] of [[app, appRole], [worker, workerRole], [outsider, outsiderRole]] as const) {
+      const original = await identity(client, principal.name, principal.oid);
+      const effective = (await query(admin, `SELECT pg_catalog.has_schema_privilege($1,$2::oid,'USAGE,CREATE') schema_access,
+        pg_catalog.has_function_privilege($1,$3::oid,'EXECUTE') execute`, [principal.name, schema.oid, kernel.oid])).rows[0];
+      expect(effective).toEqual({ schema_access: false, execute: false });
+      expect(await rejected(client, kernelCall, [workspaceId, employeeA, token()])).toBe('42501');
+      for (const name of privateTables) {
+        expect((await query(admin, `SELECT pg_catalog.has_table_privilege($1,$2::regclass,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN') access`, [principal.name, name])).rows).toEqual([{ access: false }]);
+        expect(await rejected(client, 'SELECT * FROM ' + name)).toBe('42501');
+      }
+      expect(await identity(client, principal.name, principal.oid)).toEqual(original); record({ caseId: 'PS06', principal, original, effective });
+    }
+    expect(native.expandedAcls.filter(x => x.kind === 'FUNCTION' && x.oid === kernel.oid && x.grantee !== installerOid)).toEqual([]);
+    await preserve();
+  });
+  async function withAdministrative(body: () => Promise<void>, children = true) {
+    const before = await rows(); await begin(admin);
+    try {
+      await adminHeader(admin);
+      if (children) {
+        for (const code of [CAPABILITIES[1], CAPABILITIES[0]]) await query(admin, 'INSERT INTO ' + childTables[0] + '(workspace_id,employee_id,capability) VALUES($1,$2,$3)', [workspaceId, employeeA, code]);
+        for (const id of [...exactLocationIds].reverse()) await query(admin, 'INSERT INTO ' + childTables[1] + '(workspace_id,employee_id,location_id) VALUES($1,$2,$3)', [workspaceId, employeeA, id]);
+      }
+      await query(admin, 'COMMIT');
+    } finally { await rollback(admin); }
+    try { await body(); }
+    finally {
+      await rollback(installer); await rollback(writer);
+      for (const pending of pendingFenceAttempts) { await pending; pendingFenceAttempts.delete(pending); }
+      await begin(admin);
+      try { for (const name of [...childTables, table]) await query(admin, 'DELETE FROM ' + name + ' WHERE workspace_id=$1 AND employee_id=$2', [workspaceId, employeeA]); await query(admin, 'COMMIT'); }
+      finally { await rollback(admin); }
+      expect(await rows()).toEqual(before); await preserve();
+    }
+  }
+  it('PS07 optional header plus every existing capability and location row remain locked until caller rollback', async () => {
+    await withAdministrative(async () => {
+      const sorted = (await query(admin, `SELECT capability key FROM ${childTables[0]} ORDER BY pg_catalog.convert_to(capability,'UTF8')`)).rows;
+      const sortedLocations = (await query(admin, `SELECT location_id key FROM ${childTables[1]} ORDER BY pg_catalog.convert_to(location_id,'UTF8')`)).rows;
+      record({ caseId: 'PS07', sorted, sortedLocations });
+      // Native order witness: own writer holds the later byte-sorted child.
+      // Reader blocks there only after locking the earlier child; a separate
+      // NOWAIT installer observation proves that earlier tuple is already held.
+      for (const family of [{ name: childTables[0], column: 'capability', keys: sorted },
+        { name: childTables[1], column: 'location_id', keys: sortedLocations }]) {
+        await begin(writer);
+        await query(writer, 'SELECT ' + q(family.column) + ' FROM ' + family.name + ' WHERE workspace_id=$1 AND employee_id=$2 AND ' + q(family.column) + '=$3 FOR UPDATE', [workspaceId, employeeA, family.keys[1].key]);
+        await begin(installer);
+        const pending = rejected(installer, kernelCall, [workspaceId, employeeA, token()]); pendingFenceAttempts.add(pending);
+        try {
+          await waitEvidence(installer, writer, 'PS07-ordered-' + family.column);
+          const earlierCode = await rejected(admin, 'SELECT ' + q(family.column) + ' FROM ' + family.name + ' WHERE workspace_id=$1 AND employee_id=$2 AND ' + q(family.column) + '=$3 FOR UPDATE NOWAIT', [workspaceId, employeeA, family.keys[0].key]);
+          record({ caseId: 'PS07', nativeByteOrderedFamily: family.name, earlier: family.keys[0].key, later: family.keys[1].key, earlierCode });
+          expect(earlierCode).toBe('55P03'); expect(admin.getTransactionStatus()).toBe('I');
+          await rollback(writer); expect(await pending).toBe('NO_ERROR'); pendingFenceAttempts.delete(pending); await rollback(installer);
+        } finally { await rollback(writer); await rollback(installer); await pending; pendingFenceAttempts.delete(pending); }
+      }
+      const targets = [{ name: table, column: 'scope_kind', value: 'LOCATIONS' },
+        ...sorted.map(row => ({ name: childTables[0], column: 'capability', value: row.key })),
+        ...sortedLocations.map(row => ({ name: childTables[1], column: 'location_id', value: row.key }))];
+      for (const target of targets) {
+        await begin(installer); await call(installer); await begin(writer);
+        const pending = rejected(writer, 'UPDATE ' + target.name + ' SET ' + q(target.column) + '=' + q(target.column) + ' WHERE workspace_id=$1 AND employee_id=$2 AND ' + q(target.column) + '=$3', [workspaceId, employeeA, target.value]);
+        pendingFenceAttempts.add(pending);
+        try {
+          await waitEvidence(writer, installer, 'PS07-' + target.column); await rollback(installer);
+          expect(await pending).toBe('NO_ERROR'); pendingFenceAttempts.delete(pending); await rollback(writer);
+        } finally { await rollback(installer); await rollback(writer); await pending; pendingFenceAttempts.delete(pending); }
+      }
+    });
+  }, 30000);
+  it('PS08 autocommit releases row locks while an owned transaction retains locks through explicit COMMIT', async () => {
+    // Deliberately demonstrates an insufficient caller pattern, not adoption.
+    await call(installer); await begin(writer);
+    try { await query(writer, 'SELECT id FROM public.employees WHERE id=$1 FOR UPDATE NOWAIT', [employeeA]); }
+    finally { await rollback(writer); }
+    await begin(installer); await call(installer); await begin(writer);
+    const pending = rejected(writer, 'SELECT employee_id FROM public.employee_credentials WHERE employee_id=$1 FOR UPDATE', [employeeA]); pendingFenceAttempts.add(pending);
+    try { await waitEvidence(writer, installer, 'PS08'); await query(installer, 'COMMIT'); expect(await pending).toBe('NO_ERROR'); pendingFenceAttempts.delete(pending); }
+    finally { await rollback(installer); await rollback(writer); await pending; pendingFenceAttempts.delete(pending); }
+    await preserve(); record({ caseId: 'PS08', claim: 'AUTOCOMMIT_INSUFFICIENT_OWNING_TRANSACTION_REQUIRED' });
+  });
+  it('PS09 native top-level error releases row locks but remains aborted until explicit rollback', async () => {
+    await begin(installer); await call(installer);
+    try {
+      const code = await rejected(installer, 'SELECT 1/0'); await aborted(installer, code, '22012');
+      await begin(writer); await query(writer, 'SELECT id FROM public.employees WHERE id=$1 FOR UPDATE NOWAIT', [employeeA]); await rollback(writer);
+      record({ caseId: 'PS09', nativeError: code, rowLockAlreadyReleased: true, installerStillAborted: installer.getTransactionStatus() }); expect(installer.getTransactionStatus()).toBe('E');
+    } finally { await rollback(installer); await rollback(writer); }
+    await preserve();
+  });
+  const writerKinds = ['PASSWORD_RESET', 'DEACTIVATE', 'SESSION_DELETE'] as const;
+  async function originalWriter(client: Client, kind: typeof writerKinds[number]) {
+    if (kind !== 'SESSION_DELETE') {
+      await query(client, 'SELECT id FROM public.workspaces WHERE id=$1 FOR SHARE', [workspaceId]);
+      await query(client, 'SELECT id FROM public.employees WHERE id=$1 FOR UPDATE', [employeeA]);
+      if (kind === 'PASSWORD_RESET') {
+        await query(client, 'SELECT employee_id FROM public.employee_credentials WHERE employee_id=$1 FOR UPDATE', [employeeA]);
+        await query(client, `UPDATE public.employee_credentials SET password_hash='fictional-reset-not-a-password',must_change_password=false,password_updated_at=$2::timestamptz WHERE employee_id=$1`, [employeeA, '2026-10-09T00:00:00.123457Z']);
+      } else await query(client, 'UPDATE public.employees SET active=false WHERE id=$1', [employeeA]);
+    }
+    await query(client, 'DELETE FROM public.employee_sessions WHERE employee_id=$1', [employeeA]);
+  }
+  async function restoreWriter() {
+    await begin(admin);
+    try {
+      await query(admin, 'UPDATE public.employees SET active=true WHERE id=$1', [employeeA]);
+      await query(admin, `UPDATE public.employee_credentials SET password_hash='fictional-not-a-password',must_change_password=true,password_updated_at=$2::timestamptz WHERE employee_id=$1`, [employeeA, createdAt]);
+      if ((await query(admin, 'SELECT token_hash FROM public.employee_sessions WHERE token_hash=$1::bpchar', [token()])).rows.length === 0) await restoreSession(admin);
+      await query(admin, 'COMMIT');
+    } finally { await rollback(admin); }
+  }
+  it.each(writerKinds)('PS10 reader-first serializes original %s locks and session LIVE cascade until COMMIT', async kind => {
+    await begin(installer); await call(installer); await begin(writer);
+    const pending = originalWriter(writer, kind); pendingFenceAttempts.add(pending);
+    try {
+      await waitEvidence(writer, installer, 'PS10-' + kind); expect(await rows()).toEqual(originalRows);
+      await query(installer, 'COMMIT'); await pending; pendingFenceAttempts.delete(pending); await query(writer, 'COMMIT');
+      const changed = await rows(); record({ caseId: 'PS10', kind, changed, claim: 'PRESERVED_SOURCE_WRITER_LOCK_ORDER_ONLY_NOT_EXECUTION_OF_DOMAIN_COMMAND' });
+      expect((await query(admin, 'SELECT * FROM public.employee_sessions WHERE employee_id=$1', [employeeA])).rows).toEqual([]);
+      expect((await query(admin, 'SELECT * FROM nevora_tenancy.portal_session_issuance WHERE employee_id=$1', [employeeA])).rows).toEqual([]);
+    } finally { await rollback(installer); await rollback(writer); await pending; pendingFenceAttempts.delete(pending); await restoreWriter(); }
+    await preserve();
+  });
+  it.each(writerKinds)('PS11 writer-first %s COMMIT makes reader deny missing source after native wait', async kind => {
+    await begin(writer); await originalWriter(writer, kind); await begin(installer);
+    const pending = rejected(installer, kernelCall, [workspaceId, employeeA, token()]); pendingFenceAttempts.add(pending);
+    try {
+      await waitEvidence(installer, writer, 'PS11-' + kind); await query(writer, 'COMMIT');
+      const code = await pending; pendingFenceAttempts.delete(pending); await aborted(installer, code, '55000');
+      record({ caseId: 'PS11', kind, code, afterCommitRows: await rows(), claim: 'MISSING_SOURCE_AFTER_WAIT_NOT_AUTHORIZATION_OR_FINAL_SOURCE_EQUALITY' });
+    } finally { await rollback(writer); await rollback(installer); await pending; pendingFenceAttempts.delete(pending); await restoreWriter(); }
+    await preserve();
+  });
+  it('PS12 writer-first ROLLBACK lets exact original rows lock successfully after the observed wait', async () => {
+    await begin(writer); await originalWriter(writer, 'PASSWORD_RESET'); await begin(installer);
+    const pending = rejected(installer, kernelCall, [workspaceId, employeeA, token()]); pendingFenceAttempts.add(pending);
+    try { await waitEvidence(installer, writer, 'PS12'); await rollback(writer); expect(await pending).toBe('NO_ERROR'); pendingFenceAttempts.delete(pending); await rollback(installer); }
+    finally { await rollback(writer); await rollback(installer); await pending; pendingFenceAttempts.delete(pending); }
+    await preserve();
+  });
+  it('PS13 cooperative persistent portal writer blocks before replacing an optional administrative set', async () => {
+    await begin(installer); await call(installer); await begin(writer);
+    const pending = query(writer, 'SELECT workspace_id FROM nevora_tenancy.portal_authority WHERE workspace_id=$1 AND employee_id=$2 FOR UPDATE', [workspaceId, employeeA]); pendingFenceAttempts.add(pending);
+    try {
+      await waitEvidence(writer, installer, 'PS13'); await rollback(installer); await pending; pendingFenceAttempts.delete(pending);
+      await adminHeader(writer); await query(writer, 'ROLLBACK'); record({ caseId: 'PS13', claim: 'COOPERATIVE_PORTAL_SERIALIZATION_REQUIRED_NO_WRITER_ADOPTION_IMPLEMENTED' });
+    } finally { await rollback(installer); await rollback(writer); await pending; pendingFenceAttempts.delete(pending); }
+    await preserve();
+  });
+  it('PS14 existing-row kernel alone does not prevent a new administrative child phantom', async () => {
+    await withAdministrative(async () => {
+      await begin(installer); await call(installer); await begin(writer);
+      try {
+        // Intentionally noncooperating installer seam: no portal UPDATE lock.
+        // Existing-header FK KEY SHARE is compatible with kernel SHARE.
+        await query(writer, 'INSERT INTO ' + childTables[0] + '(workspace_id,employee_id,capability) VALUES($1,$2,$3)', [workspaceId, employeeA, CAPABILITIES[0]]);
+        await query(writer, 'COMMIT'); expect(installer.getTransactionStatus()).toBe('T');
+        const fresh = (await query(installer, 'SELECT capability FROM ' + childTables[0] + ' WHERE workspace_id=$1 AND employee_id=$2 ORDER BY pg_catalog.convert_to(capability,\'UTF8\')', [workspaceId, employeeA])).rows;
+        expect(fresh).toEqual([{ capability: CAPABILITIES[0] }]);
+        record({ caseId: 'PS14', fresh, heldReaderStatus: installer.getTransactionStatus(), claim: 'OBSERVED_PHANTOM_FINAL_SEPARATE_FRESH_SOURCE_EQUALITY_AND_COOPERATIVE_WRITERS_UNIMPLEMENTED' });
+      } finally { await rollback(installer); await rollback(writer); }
+    }, false);
+  });
+  it('PS15 exact original singleton rejects a second workspace without inventing simultaneous tenant coverage', async () => {
+    await rollbackBody(async () => {
+      await query(admin, 'SAVEPOINT singleton_reject');
+      const code = await rejected(admin, "INSERT INTO public.workspaces(id,name,time_zone) VALUES('fictional-second-workspace','Other fixture','UTC')");
+      await query(admin, 'ROLLBACK TO SAVEPOINT singleton_reject'); await query(admin, 'RELEASE SAVEPOINT singleton_reject');
+      expect(code).toBe('23505'); record({ caseId: 'PS15', code, singletonPreserved: true, simultaneousABClaim: false });
+    }); await preserve();
+  });
+  it('PS16 duplicate overload refusal leaves kernel OID source ACL and all original rows unchanged', async () => {
+    const before = await rows(), native = canonicalAcl(await catalog());
+    try { const code = await rejected(installer, source); await aborted(installer, code, '42723'); }
+    finally { await rollback(installer); }
+    expect(await rows()).toEqual(before); expect(canonicalAcl(await catalog())).toEqual(native); await preserve();
+  });
+  afterAll(async () => {
+    let cleaned = false;
+    const closure: { client: string; status: string | null; finalStatus: string | null; closed: boolean }[] = [];
+    try {
+      if (verified && admin) await rollback(admin);
+      if (installer) await rollback(installer); if (writer) await rollback(writer);
+      for (const pending of pendingFenceAttempts) { await pending; pendingFenceAttempts.delete(pending); }
+      for (const client of clients) if (client !== admin) {
+        const status = client.getTransactionStatus() ?? null; await rollback(client);
+        await client.end(); closedClients.add(client); closure.push({ client: 'OWN_FIXTURE_CLIENT', status, finalStatus: client.getTransactionStatus() ?? null, closed: true });
+      }
+      if (verified && admin) {
+        await query(admin, 'RESET ROLE'); await checkBase();
+        for (const undo of repairs) { await query(admin, undo); repairs.delete(undo); }
+        if (setupCommitted) {
+          if (originalRows && originalCatalog) await preserve();
+          record({ operation: 'FINAL_NATIVE_ALL_SOURCE_STORAGE_ROWS_AND_CATALOG', rows: await rows(), catalog: await catalog(), objects, roles, originalRows, originalCatalog });
+          for (const object of [...objects].reverse()) if (!object.dropped) await dropObject(object);
+        } else for (const object of objects) {
+          const name = object.kind === 'schema' ? 'pg_namespace' : object.kind === 'function' ? 'pg_proc' : object.kind === 'trigger' ? 'pg_trigger' : 'pg_class';
+          expect((await query(admin, 'SELECT oid FROM pg_catalog.' + name + ' WHERE oid=$1::oid', [object.oid])).rows).toEqual([]);
+          object.dropped = true; record({ operation: 'SETUP_ROLLBACK_EXACT_OBJECT_ABSENCE', ...object });
+        }
+        for (const principal of [...roles].reverse()) {
+          const current = (await query(admin, 'SELECT oid::text oid FROM pg_catalog.pg_roles WHERE rolname=$1', [principal.name])).rows[0];
+          if (!current && !setupCommitted) { record({ operation: 'SETUP_ROLLBACK_EXACT_ROLE_ABSENCE', ...principal }); continue; }
+          expect(current).toEqual({ oid: principal.oid }); await query(admin, 'REVOKE CONNECT ON DATABASE ' + q(lease.database) + ' FROM ' + q(principal.name));
+          await query(admin, 'DROP ROLE ' + q(principal.name));
+          expect((await query(admin, 'SELECT oid FROM pg_catalog.pg_roles WHERE oid=$1::oid OR rolname=$2', [principal.oid, principal.name])).rows).toEqual([]);
+          record({ operation: 'EXACT_FICTIONAL_ROLE_DROPPED', ...principal });
+        }
+        expect((await query(admin, "SELECT oid FROM pg_catalog.pg_namespace WHERE nspname='nevora_tenancy'")).rows).toEqual([]);
+        expect((await query(admin, "SELECT c.oid FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN ('r','p','v','m','f','S')")).rows).toEqual([]);
+        for (const [path, pin] of Object.entries(migrationPins)) expect(hash(readFileSync(resolve(path)))).toBe(pin);
+        expect(hash(readFileSync(sourcePath))).toBe(expectedSourceSHA256); cleaned = true;
+      }
+    } finally {
+      for (const client of clients) if (!closedClients.has(client)) {
+        const status = client.getTransactionStatus() ?? null;
+        try { await client.end(); closedClients.add(client); closure.push({ client: client === admin ? 'ADMIN' : 'OWN_FIXTURE_CLIENT', status, finalStatus: client.getTransactionStatus() ?? null, closed: true }); }
+        catch { closure.push({ client: client === admin ? 'ADMIN' : 'OWN_FIXTURE_CLIENT', status, finalStatus: null, closed: false }); }
+      }
+      password = '';
+      if (runVerified) {
+        const path = join(runPath!, 'portal-source-locks-operations.jsonl'), bytes = recordCount ? readFileSync(path) : Buffer.alloc(0);
+        const text = bytes.toString('utf8'); expect(Buffer.from(text, 'utf8')).toEqual(bytes);
+        const lines = text ? text.split('\n') : []; if (text) expect(lines.pop()).toBe(''); expect(lines).toHaveLength(recordCount);
+        for (const line of lines) JSON.parse(line);
+        writeFileSync(join(runPath!, 'portal-source-locks-cleanup.json'), JSON.stringify({ verified, setupCommitted, installed, cleaned, roles, objects, closure,
+          clients: clients.size, closedClients: closedClients.size, pendingRepairs: [...repairs], pendingFenceAttempts: pendingFenceAttempts.size, sqlAttempted,
+          completeJsonl: { recordCount, bytes: bytes.length, sha256: hash(bytes), validUTF8: true },
+          assertionScope: 'SPARSE_SINGLETON_INSTALLER_LOCK_MECHANICS_NOT_AUTHORITY_OR_FULL_F10', errorFailuresRetained: true }, null, 2), { flag: 'wx', mode: 0o600 });
+      }
+    }
+  }, 60000);
+});
