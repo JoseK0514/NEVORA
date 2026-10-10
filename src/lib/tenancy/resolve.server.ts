@@ -50,10 +50,13 @@ function timestampMillis(value: unknown): number {
   return Date.parse(value.replace(' ', 'T').replace(/\+00$/, '+00:00'));
 }
 function record(value: unknown): Record<string, unknown> {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return malformed();
+  if (!value || typeof value !== 'object' || nodeTypes.isProxy(value) || Array.isArray(value)) return malformed();
   const prototype = Object.getPrototypeOf(value);
   if (prototype !== Object.prototype && prototype !== null) return malformed();
-  if (Object.values(Object.getOwnPropertyDescriptors(value)).some(descriptor => !('value' in descriptor))) return malformed();
+  if (Reflect.ownKeys(value).some(key => {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    return !descriptor || !Object.hasOwn(descriptor, 'value');
+  })) return malformed();
   return value as Record<string, unknown>;
 }
 function inputSnapshot(value: unknown): Record<string, unknown> | null {
@@ -77,9 +80,29 @@ const portalRevision = (row: Record<string, unknown>, key: string) => field(row,
 const incarnation = (row: Record<string, unknown>, key: string) => field(row, key, value => validateWorkspaceIncarnation(value).status === 'VALID');
 const timestamp = (row: Record<string, unknown>, key: string) => field(row, key, value => Number.isFinite(timestampMillis(value)));
 function list(row: Record<string, unknown>, key: string, check: (value: unknown) => boolean, allowEmpty = true): readonly string[] {
-  const value = row[key];
-  if (!Array.isArray(value) || (!allowEmpty && value.length === 0) || value.length > 10000 || [...value].some(item => !check(item)) || new Set(value).size !== value.length) return malformed();
+  const value = wireArray(row[key], 10000);
+  if ((!allowEmpty && value.length === 0) || value.some(item => !check(item)) || new Set(value).size !== value.length) return malformed();
   return Object.freeze([...value] as string[]);
+}
+// Copy only dense owned data descriptors before indexing or iterating SDK
+// results/list metadata. Shape inspection must not execute a proxy, inherited
+// index, accessor or caller-supplied iterator. Bounds retain existing contracts.
+function wireArray(value: unknown, maxLength: number): readonly unknown[] {
+  if (!value || typeof value !== 'object' || nodeTypes.isProxy(value) || !Array.isArray(value) ||
+    Object.getPrototypeOf(value) !== Array.prototype) return malformed();
+  const descriptors = Object.getOwnPropertyDescriptors(value as object);
+  const lengthDescriptor = descriptors.length;
+  if (!lengthDescriptor || !Object.hasOwn(lengthDescriptor, 'value')) return malformed();
+  const length: unknown = lengthDescriptor.value;
+  if (typeof length !== 'number' || !Number.isSafeInteger(length) || length < 0 || length > maxLength ||
+    Reflect.ownKeys(descriptors).length !== length + 1) return malformed();
+  const items: unknown[] = [];
+  for (let index = 0; index < length; index++) {
+    const key = String(index), descriptor = Object.hasOwn(descriptors, key) ? descriptors[key] : undefined;
+    if (!descriptor || !Object.hasOwn(descriptor, 'value') || !descriptor.enumerable) return malformed();
+    items.push(descriptor.value);
+  }
+  return items;
 }
 function lifetime(row: Record<string, unknown>) {
   const resolvedAt = timestamp(row, 'resolvedAt');
@@ -218,10 +241,10 @@ async function lookup(seam: keyof typeof seams, values: string[]): Promise<Recor
     transport.query(FINAL_ROLE, [role]),
   ];
   const results: unknown = await transport.transaction(queries, { isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
-  if (!Array.isArray(results) || results.length !== 3 || !singleWireResult(results[0], 'catalog_fence', '') ||
-    !singleWireResult(results[2], 'guard', 1)) return malformed();
-  const rows: unknown = results[1];
-  if (!Array.isArray(rows) || rows.length > 1) return malformed();
+  const observations = wireArray(results, 3);
+  if (observations.length !== 3 || !singleWireResult(observations[0], 'catalog_fence', '') ||
+    !singleWireResult(observations[2], 'guard', 1)) return malformed();
+  const rows = wireArray(observations[1], 1);
   if (!rows.length) return null;
   const row = record(rows[0]);
   if (!Object.prototype.hasOwnProperty.call(row, 'facts')) return malformed();
