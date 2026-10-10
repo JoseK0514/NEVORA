@@ -1019,6 +1019,363 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 unused portal-source observa
     }, 45000);
   });
 
+  // APPEND ONLY as a sibling following the complete joint-lock child describe,
+  // before the byte-preserved outer afterAll. SOURCE ONLY / ALL CASES UNEXECUTED.
+  describe('unused combined Portal and installed-policy raw observer, fictional root-owned native wiring', () => {
+    const combinedPath = resolve('src/lib/tenancy/runtime/portal-policy-joint-observation.sql');
+    const combinedSHA = '40283f6d7834a2dd01cbe4c418a8a12e6b4a8569d4680cf734c746e1cb55c9e3';
+    const jointSourcePath = resolve('src/lib/tenancy/runtime/portal-policy-joint-locks.sql');
+    const jointSourceSHA = 'a1394da4b29c86dbf9c87a2968325d359f2bbe4137cf4004e4e4d81245f1f79e';
+    const installedSourcePath = resolve('src/lib/tenancy/runtime/portal-installed-policy-observation.sql');
+    const installedSourceSHA = 'd25be72e0bede3e2ded9ce0ba782b060e41260b79db00e202e1db1d6c965573a';
+    const fixturePath = resolve('src/lib/tenancy/runtime/fixtures/installed-policy-source.json');
+    const fixtureSHA = '52bd2a10cc91dd62d31e8fef66e8bec4c56450a977227b5a0698768a3afff1a7';
+    const combinedSQL = 'SELECT nevora_tenancy.read_portal_policy_source_rows($1::text,$2::text,$3::bpchar) AS observation';
+    const definitionTable = 'nevora_tenancy.capability_policy_definition', headTable = 'nevora_tenancy.workspace_capability_policy_installation';
+    const observationVerification = 'SOURCE_OBSERVATION_NOT_PROOF_OR_EXECUTING_SOURCE_AUTHENTICATION';
+    type SourceWire = { encoding: string; bytesBase64: string; byteLength: string; sha256: string };
+    type InstalledObservation = { kind: string; workspaceId: string; workspaceIncarnation: string;
+      installation: { workspaceId: string; workspaceIncarnation: string; installationEpoch: string; policyId: string; policyRevision: string };
+      definition: { policyId: string; revision: string; sourceBundle: Record<string, unknown>; sourceBundleWire: SourceWire & { text: string };
+        canonicalPolicySource: SourceWire; vocabularySource: SourceWire; approvedPRDSource: SourceWire }; verification: string };
+    type CombinedObservation = { kind: string; portalSource: Observation; installedPolicy: InstalledObservation; verification: string };
+    let combinedSource = '', combinedObject: OwnObject, combinedInstalled = false, siblingPrepared = false;
+    let currentPolicyId = '', currentPolicyRevision = '', currentEpoch = '';
+    let existingSafeRole: Role, expectedPortal: Observation, expectedPolicy: InstalledObservation;
+    let retainedPolicyRows: Awaited<ReturnType<typeof combinedPolicyRows>>;
+    const expectedBytes: Buffer[] = [];
+
+    async function combinedPolicyRows() {
+      const output: Record<string, unknown> = {};
+      for (const name of [definitionTable, headTable]) output[name] = (await query(admin,
+        'SELECT pg_catalog.to_jsonb(t)::text wire FROM ' + name + ' t ORDER BY pg_catalog.to_jsonb(t)::text COLLATE pg_catalog."C"')).rows;
+      return output;
+    }
+    async function combinedPreserve() {
+      await preserve(); expect(await combinedPolicyRows()).toEqual(retainedPolicyRows);
+      expect(hash(readFileSync(combinedPath))).toBe(combinedSHA); expect(hash(readFileSync(jointSourcePath))).toBe(jointSourceSHA);
+      expect(hash(readFileSync(installedSourcePath))).toBe(installedSourceSHA); expect(hash(readFileSync(fixturePath))).toBe(fixtureSHA);
+    }
+    async function combinedFailure(client: Client, text: string, values: unknown[] = []) {
+      sqlAttempted = true;
+      try { const result = await client.query(text, values); return { code: 'NO_ERROR', message: '', resultRows: result.rows }; }
+      catch (error) { return { code: sqlstate(error), message: (error as { message: string }).message, resultRows: [] }; }
+    }
+    async function combinedCall(client: Client, ws: unknown = workspaceId, employee: unknown = employeeA, sessionHash: unknown = token()) {
+      const result = (await query(client, combinedSQL, [ws, employee, sessionHash])).rows;
+      expect(result).toHaveLength(1); expect(Object.keys(result[0])).toEqual(['observation']);
+      const observed = result[0].observation as CombinedObservation;
+      expect(Object.keys(observed).sort()).toEqual(['kind', 'portalSource', 'installedPolicy', 'verification'].sort());
+      expect(observed.kind).toBe('PORTAL_POLICY_SOURCE_OBSERVATION_V1'); expect(observed.verification).toBe(observationVerification);
+      return observed;
+    }
+    async function freshCombined() { await begin(installer); try { return await combinedCall(installer); } finally { await rollback(installer); } }
+    async function combinedSettle(pending: Promise<unknown>) { try { await pending; } finally { pendingFenceAttempts.delete(pending); } }
+    async function independentComponents() {
+      await begin(installer);
+      try {
+        expectedPortal = await call(installer);
+        const policyRows = (await query(installer, 'SELECT nevora_tenancy.read_portal_installed_policy($1::text) AS observation', [workspaceId])).rows;
+        expect(policyRows).toHaveLength(1); expectedPolicy = policyRows[0].observation as InstalledObservation;
+      } finally { await rollback(installer); }
+    }
+    function nativeBase64(bytes: Buffer) {
+      // Native PG encode inserts LF only while processing the full-triplet prefix,
+      // before appending the final padded four characters (root IP15 provenance).
+      const fullTriplets = Math.floor(bytes.length / 3) * 3;
+      const prefix = bytes.subarray(0, fullTriplets).toString('base64').replace(/.{76}/g, '$&\n');
+      return prefix + bytes.subarray(fullTriplets).toString('base64');
+    }
+    function assertSourceWire(value: SourceWire, bytes: Buffer) {
+      expect(Object.keys(value).sort()).toEqual(['encoding', 'bytesBase64', 'byteLength', 'sha256'].sort());
+      expect(value).toEqual({ encoding: 'UTF8', bytesBase64: nativeBase64(bytes), byteLength: String(bytes.length), sha256: hash(bytes) });
+    }
+
+    beforeAll(async () => {
+      // This sibling runs only AFTER old PO01–16 and joint JP01–11 + its final hook.
+      // Root adoption/source acceptance is a required prerequisite, not assumed here.
+      expect(verified && setupCommitted && installed).toBe(true); await checkBase(); await preserve();
+      expect(objects).toHaveLength(52); expect(roles).toHaveLength(4); expect(clients.size).toBe(6);
+      expect(expectedCounter).toBe('9007199254740994');
+      existingSafeRole = roles.find(principal => principal.name === 'po_' + lease.invocation + '_joint_reader')!;
+      expect(existingSafeRole).toBeDefined(); expect(existingSafeRole.login).toBe(false);
+      combinedSource = readFileSync(combinedPath, 'utf8'); expect(hash(combinedSource)).toBe(combinedSHA);
+      expect(hash(readFileSync(jointSourcePath))).toBe(jointSourceSHA); expect(hash(readFileSync(installedSourcePath))).toBe(installedSourceSHA);
+      const bytes = readFileSync(fixturePath); expect(hash(bytes)).toBe(fixtureSHA);
+      const fixture = JSON.parse(bytes.toString('utf8')) as { expected: { canonicalPolicySource: number[]; vocabularySource: number[]; approvedPRDSource: number[] } };
+      expectedBytes.push(Buffer.from(fixture.expected.canonicalPolicySource), Buffer.from(fixture.expected.vocabularySource), Buffer.from(fixture.expected.approvedPRDSource));
+      expect(expectedBytes.map(hash)).toEqual(['2c8b81fdbb5a790f778f6de18062e788e312bf38bc873171c23fee8150940df8',
+        '1a58a71719cc656ffa2830a0ffcc075668d1d10593f9556bb3dc03dd8cca0444', '35e4084c2c365777c78f0d1e2e65533b06758c1f3062cf1b10feb539af8bf7a7']);
+      await independentComponents(); currentPolicyId = expectedPolicy.installation.policyId;
+      currentPolicyRevision = expectedPolicy.installation.policyRevision; currentEpoch = expectedPolicy.installation.installationEpoch;
+      expect(expectedPolicy.workspaceId).toBe(workspaceId); expect(expectedPolicy.workspaceIncarnation).toBe(expectedCounter);
+      retainedPolicyRows = await combinedPolicyRows(); siblingPrepared = true;
+      record({ operation: 'COMBINED_OBSERVER_AFTER_27_CASES_PREREQUISITES', expectedPortal, expectedPolicy, retainedPolicyRows,
+        originalRows, originalCatalog, roles, objects, clients: clients.size, sourceSHAs: expectedBytes.map(hash),
+        rootAdoption: 'REQUIRED_NATIVE_PREREQUISITE_NO_PRODUCER_ACCEPTANCE_CLAIM' });
+    }, 45000);
+
+    it('JO01 fresh whole artifact rejects STRICT joint dependency then adds only exact owner-only jsonb function', async () => {
+      const dependency = 'nevora_tenancy.lock_portal_policy_source_rows(text,text,bpchar)', undo = 'ALTER FUNCTION ' + dependency + ' CALLED ON NULL INPUT';
+      const beforeNative = canonicalAcl(await catalog()); repairs.add(undo);
+      try {
+        await query(admin, 'ALTER FUNCTION ' + dependency + ' STRICT'); const outcome = await combinedFailure(installer, combinedSource);
+        record({ caseId: 'JO01', variant: 'STRICT_JOINT_REFUSAL', outcome, catalog: await catalog() });
+        await aborted(installer, outcome.code, '55000'); expect(outcome.message).toBe('portal_policy_source_observation_dependency_invalid'); expect(outcome.resultRows).toEqual([]);
+      } finally { await rollback(installer); await query(admin, undo); repairs.delete(undo); }
+      expect(canonicalAcl(await catalog())).toEqual(beforeNative); await combinedPreserve();
+      const before = await catalog(), beforeRows = await rows(), beforePolicy = await combinedPolicyRows();
+      await query(installer, combinedSource); await rollback(installer);
+      combinedObject = await remember('function', 'nevora_tenancy', 'read_portal_policy_source_rows', installerOid, '(text,text,bpchar)'); combinedInstalled = true;
+      const native = await catalog(), fn = native.functions.find(row => row.oid === combinedObject.oid)!;
+      const body = (await query(admin, 'SELECT prosrc,proisstrict,prosupport::oid::text support_oid,proleakproof,pronargdefaults,provariadic::oid::text variadic_oid FROM pg_catalog.pg_proc WHERE oid=$1::oid', [combinedObject.oid])).rows[0];
+      expect(body).toEqual({ prosrc: combinedSource.split('$portal_policy_source_observation$')[1], proisstrict: false, support_oid: '0', proleakproof: false, pronargdefaults: 0, variadic_oid: '0' });
+      expect(hash(body.prosrc)).toBe('536d7d6dba8a9c709c8d89a558031617189653067c9ad677a2563f15a23ba9eb');
+      expect(fn).toMatchObject({ owner: installerOid, prosecdef: false, proconfig: ['search_path=pg_catalog'], return_oid: '3802', arg_oids: '25 25 1042', proretset: false, provolatile: 'v', proparallel: 'u', lanname: 'plpgsql' });
+      expect(native.functions.filter(row => row.oid !== combinedObject.oid)).toEqual(before.functions);
+      for (const field of ['schemas', 'relations', 'columns', 'constraints', 'indexes', 'triggers', 'policies', 'columnAcls'] as const) expect(native[field]).toEqual(before[field]);
+      expect(native.expandedAcls.filter(row => row.kind === 'FUNCTION' && row.oid === combinedObject.oid && row.grantee !== installerOid)).toEqual([]);
+      expect(await rows()).toEqual(beforeRows); expect(await combinedPolicyRows()).toEqual(beforePolicy); expect(objects).toHaveLength(53);
+      originalCatalog = canonicalAcl(native);
+      record({ caseId: 'JO01', variant: 'FRESH_WHOLE_INSTALL', before, native, combinedObject, body, originalRows, policyRows: beforePolicy,
+        statementContract: 'ONE_FIXED_JOINT_CALL_AND_SEPARATE_FRESH_JOIN_SOURCE_BODY_NOT_ISSUED_AUTHORITY' });
+      await combinedPreserve();
+    }, 45000);
+
+    it('JO02 duplicate whole artifact42723 preserves all original and joint objects bytes ACLs rows', async () => {
+      const before = canonicalAcl(await catalog());
+      try { const outcome = await combinedFailure(installer, combinedSource); await aborted(installer, outcome.code, '42723');
+        expect(outcome.message).toBe('portal_policy_source_observation_already_installed'); expect(outcome.resultRows).toEqual([]); record({ caseId: 'JO02', outcome }); }
+      finally { await rollback(installer); }
+      expect(canonicalAcl(await catalog())).toEqual(before); await combinedPreserve();
+    }, 45000);
+
+    it('JO03 closed four-key packet preserves complete canonical component bytes int8 strings timestamp spelling and contradictions', async () => {
+      await begin(installer);
+      try {
+        const observed = await combinedCall(installer, workspaceId, employeeA, token() + '   ');
+        expect(observed).toEqual({ kind: 'PORTAL_POLICY_SOURCE_OBSERVATION_V1', portalSource: expectedPortal, installedPolicy: expectedPolicy, verification: observationVerification });
+        expect(Object.keys(observed.portalSource).sort()).toEqual(['kind', 'workspace', 'employee', 'credential', 'incarnation', 'portal', 'session', 'issuance', 'administrative'].sort());
+        expect(Object.keys(observed.installedPolicy).sort()).toEqual(['kind', 'workspaceId', 'workspaceIncarnation', 'installation', 'definition', 'verification'].sort());
+        expect(observed.portalSource.portal.state).toBe('DISABLED'); expect(observed.portalSource.portal.proofProvenance).toBe('UNVERIFIED');
+        expect(observed.portalSource.credential.mustChangePassword).toBe(true); expect(observed.portalSource.session.expiresAt).toBe('2000-01-01 00:00:00.654321+00');
+        expect(observed.portalSource.portal.capabilityPolicyRevision).toBe('1'); expect(observed.installedPolicy.installation.policyRevision).toBe('9007199254740994');
+        expect(observed.portalSource.issuance.workspaceIncarnation).toBe('1'); expect(observed.portalSource.incarnation.version).toBe('9007199254740994');
+        expect(observed.portalSource.workspace.version).toBe('2026-10-09 00:00:00.123456+00');
+        const definition = observed.installedPolicy.definition;
+        expect(Object.keys(definition).sort()).toEqual(['policyId', 'revision', 'sourceBundle', 'sourceBundleWire', 'canonicalPolicySource', 'vocabularySource', 'approvedPRDSource'].sort());
+        assertSourceWire(definition.canonicalPolicySource, expectedBytes[0]); assertSourceWire(definition.vocabularySource, expectedBytes[1]); assertSourceWire(definition.approvedPRDSource, expectedBytes[2]);
+        const nativeWire = (await query(installer, 'SELECT definition::text wire FROM ' + definitionTable + ' WHERE policy_id=$1 AND revision=$2::int8', [currentPolicyId, currentPolicyRevision])).rows[0].wire;
+        expect(definition.sourceBundleWire).toEqual({ encoding: 'UTF8', text: nativeWire, bytesBase64: nativeBase64(Buffer.from(nativeWire, 'utf8')), byteLength: String(Buffer.byteLength(nativeWire, 'utf8')), sha256: hash(nativeWire) });
+        expect(JSON.parse(nativeWire)).toEqual(definition.sourceBundle);
+        const portalText = JSON.stringify(observed.portalSource); for (const forbidden of ['password_hash', 'passwordHash', 'fictional-not-a-password', 'firstName', 'lastName', 'phone', 'email', 'allowedLocationIds', 'authorityCurrent']) expect(portalText).not.toContain(forbidden);
+        record({ caseId: 'JO03', observed, nativeSourceBundleWire: nativeWire, expectedSourceSHAs: expectedBytes.map(hash),
+          claim: 'COHERENT_RAW_SOURCE_NOT_AUTHENTICATION_GRANT_OR_EXECUTING_SOURCE_APPROVAL' });
+      } finally { await rollback(installer); }
+      await combinedPreserve();
+    }, 45000);
+
+    it('JO04 original LOGIN callers42501 and rollback-only safe NOLOGIN FORCE0 denial never produce observation', async () => {
+      for (const [client, principal] of [[app, appRole], [worker, workerRole], [outsider, outsiderRole]] as const) {
+        await identity(client, principal.name, principal.oid); await begin(client);
+        try { const outcome = await combinedFailure(client, combinedSQL, [workspaceId, employeeA, token()]); await aborted(client, outcome.code, '42501');
+          expect(outcome.resultRows).toEqual([]); record({ caseId: 'JO04', variant: 'ORIGINAL_LOGIN', principal, outcome }); }
+        finally { await rollback(client); }
+        await identity(client, principal.name, principal.oid);
+      }
+      const nativeBefore = canonicalAcl(await catalog()); await begin(admin);
+      try {
+        await query(admin, 'GRANT USAGE ON SCHEMA nevora_tenancy TO ' + q(existingSafeRole.name));
+        await query(admin, 'GRANT EXECUTE ON FUNCTION nevora_tenancy.read_portal_policy_source_rows(text,text,bpchar),nevora_tenancy.lock_portal_policy_source_rows(text,text,bpchar),nevora_tenancy.read_portal_installed_policy(text) TO ' + q(existingSafeRole.name));
+        const lockColumns = [['public.workspaces', 'id'], ['public.employees', 'id'], ['public.employee_credentials', 'employee_id'],
+          ['nevora_tenancy.workspace_incarnation_counter', 'workspace_id'], [definitionTable, 'policy_id'], [headTable, 'workspace_id'],
+          ['nevora_tenancy.portal_authority', 'workspace_id'], ['public.employee_sessions', 'token_hash'], ['nevora_tenancy.portal_session_issuance', 'token_hash'],
+          [table, 'workspace_id'], [childTables[0], 'capability'], [childTables[1], 'location_id']] as const;
+        for (const [name, column] of lockColumns) { await query(admin, 'GRANT SELECT ON TABLE ' + name + ' TO ' + q(existingSafeRole.name)); await query(admin, 'GRANT UPDATE(' + q(column) + ') ON TABLE ' + name + ' TO ' + q(existingSafeRole.name)); }
+        const effective = await catalog(); const flags = (await query(admin, 'SELECT oid::text,rolname,rolcanlogin,rolsuper,rolbypassrls FROM pg_catalog.pg_roles WHERE oid=$1::oid', [existingSafeRole.oid])).rows;
+        expect(flags).toEqual([{ oid: existingSafeRole.oid, rolname: existingSafeRole.name, rolcanlogin: false, rolsuper: false, rolbypassrls: false }]);
+        await query(admin, 'SAVEPOINT exact_combined_nologin'); await query(admin, 'SET LOCAL ROLE ' + q(existingSafeRole.name));
+        expect((await query(admin, 'SELECT workspace_id FROM nevora_tenancy.workspace_incarnation_counter')).rows).toEqual([]);
+        const outcome = await combinedFailure(admin, combinedSQL, [workspaceId, employeeA, token()]);
+        const pid = (admin as Client & { processID: number }).processID, immediate = admin.getTransactionStatus();
+        await poll(async () => (await query(installer, 'SELECT state FROM pg_catalog.pg_stat_activity WHERE pid=$1', [pid])).rows[0]?.state === 'idle in transaction (aborted)' && admin.getTransactionStatus() === 'E', 'combined_safe_nologin_aborted');
+        const activity = (await query(installer, 'SELECT pid,state FROM pg_catalog.pg_stat_activity WHERE pid=$1', [pid])).rows;
+        const followup = await rejected(admin, 'SELECT 1'); expect(followup).toBe('25P02'); expect(admin.getTransactionStatus()).toBe('E');
+        expect(outcome).toEqual({ code: '55000', message: 'portal_source_lock_missing', resultRows: [] });
+        await query(admin, 'ROLLBACK TO SAVEPOINT exact_combined_nologin'); await query(admin, 'RESET ROLE');
+        record({ caseId: 'JO04', variant: 'ROLLBACK_ONLY_SAFE_NOLOGIN', flags, effective, lockColumns, outcome, activity, immediate, followup,
+          claim: 'NEGATIVE_FORCE0_NOT_SAFE_RUNTIME_OWNER_OR_GRAPH_ADOPTION' });
+      } finally { await rollback(admin); }
+      expect((await query(admin, 'SELECT current_user,session_user')).rows).toEqual([{ current_user: lease.user, session_user: lease.user }]);
+      expect(canonicalAcl(await catalog())).toEqual(nativeBefore); await combinedPreserve();
+    }, 45000);
+
+    it('JO05 nonRC refuses before source work; owningRC native error propagates E25P02 and top-level release', async () => {
+      for (const isolation of ['REPEATABLE READ', 'SERIALIZABLE']) {
+        await query(installer, 'BEGIN ISOLATION LEVEL ' + isolation); await query(installer, RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
+        try { const outcome = await combinedFailure(installer, combinedSQL, [workspaceId, employeeA, token()]); await aborted(installer, outcome.code, '55000');
+          expect(outcome.message).toBe('portal_policy_source_observation_isolation_required'); expect(outcome.resultRows).toEqual([]);
+          const held = (await query(admin, 'SELECT relation::text relation_oid,mode,granted FROM pg_catalog.pg_locks WHERE pid=$1 AND relation=ANY($2::oid[])', [(installer as Client & { processID: number }).processID, objects.filter(object => object.kind === 'table').map(object => object.oid)])).rows;
+          expect(held).toEqual([]); record({ caseId: 'JO05', isolation, outcome, held }); }
+        finally { await rollback(installer); }
+      }
+      await begin(installer); const observed = await combinedCall(installer);
+      try { const code = await rejected(installer, 'SELECT 1/0'); await aborted(installer, code, '22012');
+        await begin(writer); await query(writer, 'SELECT id FROM public.employees WHERE id=$1 FOR UPDATE NOWAIT', [employeeA]); await rollback(writer);
+        record({ caseId: 'JO05', observed, code, clientStatus: installer.getTransactionStatus(), nativeTopLevelRowLocksReleased: true }); expect(installer.getTransactionStatus()).toBe('E'); }
+      finally { await rollback(writer); await rollback(installer); }
+      await combinedPreserve();
+    }, 45000);
+
+    it('JO06 null foreign missing unattributed and exact-text mismatch give no partial packet; native char padding accepted', async () => {
+      for (const args of [[null, employeeA, token()], [workspaceId.trim(), employeeA, token()], ['nonexistent-tenant', employeeA, token()],
+        [workspaceId, null, token()], [workspaceId, employeeA.trim(), token()], [workspaceId, nullOwnerEmployee, token()], [workspaceId, employeeB, token()],
+        [workspaceId, employeeA, null], [workspaceId, employeeA, hash('fictional-combined-foreign-session')]]) {
+        await begin(installer);
+        try { const outcome = await combinedFailure(installer, combinedSQL, args); await aborted(installer, outcome.code, '55000');
+          expect(outcome.message).toBe('portal_source_lock_missing'); expect(outcome.resultRows).toEqual([]); record({ caseId: 'JO06', args, outcome }); }
+        finally { await rollback(installer); }
+      }
+      await begin(installer); try { const observed = await combinedCall(installer, workspaceId, employeeA, token() + '   ');
+        expect(observed.portalSource.session.tokenHash).toBe(token()); expect(observed.installedPolicy.workspaceId).toBe(workspaceId); record({ caseId: 'JO06', variant: 'NATIVE_CHAR_PADDING', observed }); }
+      finally { await rollback(installer); }
+      await begin(installer);
+      try {
+        const transient = (await query(installer, 'UPDATE nevora_tenancy.workspace_incarnation_counter SET incarnation=incarnation+1 WHERE workspace_id=$1 RETURNING incarnation::text', [workspaceId])).rows;
+        const outcome = await combinedFailure(installer, combinedSQL, [workspaceId, employeeA, token()]); await aborted(installer, outcome.code, '55000');
+        expect(outcome.message).toBe('portal_installed_policy_source_drift'); expect(outcome.resultRows).toEqual([]);
+        record({ caseId: 'JO06', variant: 'ROLLBACK_ONLY_COUNTER_HEAD_MISMATCH', transient, outcome, claim: 'NO_PARTIAL_PACKET_NO_HEAD_REPAIR' });
+      } finally { await rollback(installer); }
+      await combinedPreserve();
+    }, 45000);
+
+    it('JO07 writer-first COMMIT becomes fresh raw microsecond source in the single combined packet', async () => {
+      for (const family of ['workspace', 'employee', 'credential']) {
+        const before = await rows(); await begin(writer); await metadataChange(writer, family); await begin(installer);
+        const pending = combinedCall(installer); pendingFenceAttempts.add(pending);
+        try {
+          const wait = await waitEvidence(installer, writer, 'JO07:' + family); expect(await rows()).toEqual(before); await query(writer, 'COMMIT');
+          const observed = await pending; pendingFenceAttempts.delete(pending);
+          const group = family === 'workspace' ? observed.portalSource.workspace : family === 'employee' ? observed.portalSource.employee : observed.portalSource.credential;
+          expect(group.version).toBe('2026-10-09 00:00:00.123457+00'); expect(group[family === 'credential' ? 'mustChangePassword' : 'active']).toBe(false);
+          expect(observed.installedPolicy).toEqual(expectedPolicy);
+          record({ caseId: 'JO07', family, before, wait, observed, changedRows: await rows(),
+            seam: 'EXISTING_METADATA_CHANGE_AND_EXACT_RESTORE_FICTIONAL_SOURCE_ONLY', claim: 'FRESH_AFTER_WAIT_NOT_CURRENT_AUTHORIZATION' });
+        } finally { await rollback(writer); await combinedSettle(pending); await rollback(installer); await restoreMetadata(family); }
+        await combinedPreserve();
+      }
+    }, 45000);
+
+    it('JO08 reader-first combined observation holds source and head rows until COMMIT then exact rollback writers finish', async () => {
+      for (const [label, statement, values] of [
+        ['credential', 'UPDATE public.employee_credentials SET must_change_password=false WHERE employee_id=$1', [employeeA]],
+        ['head', 'UPDATE ' + headTable + ' SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1', [workspaceId]],
+      ] as const) {
+        await begin(installer); const original = await combinedCall(installer); await begin(writer);
+        const pending = query(writer, statement, [...values]); pendingFenceAttempts.add(pending);
+        try { const wait = await waitEvidence(writer, installer, 'JO08:' + label); await query(installer, 'COMMIT');
+          expect((await pending).rowCount).toBe(1); pendingFenceAttempts.delete(pending); record({ caseId: 'JO08', label, original, wait, ownWriterRows: (await query(writer, 'SELECT installation_epoch::text FROM ' + headTable + ' WHERE workspace_id=$1', [workspaceId])).rows }); }
+        finally { await rollback(installer); await combinedSettle(pending); await rollback(writer); }
+      }
+      await combinedPreserve();
+    }, 45000);
+
+    it('JO09 source and head writer rollback yields an exact coherent original packet after native wait', async () => {
+      for (const [label, statement, values] of [
+        ['credential', 'UPDATE public.employee_credentials SET must_change_password=false WHERE employee_id=$1', [employeeA]],
+        ['head', 'UPDATE ' + headTable + ' SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1', [workspaceId]],
+      ] as const) {
+        await begin(writer); await query(writer, statement, [...values]); await begin(installer);
+        const pending = combinedCall(installer); pendingFenceAttempts.add(pending);
+        try { const wait = await waitEvidence(installer, writer, 'JO09:' + label); await rollback(writer); const observed = await pending; pendingFenceAttempts.delete(pending);
+          expect(observed).toEqual({ kind: 'PORTAL_POLICY_SOURCE_OBSERVATION_V1', portalSource: expectedPortal, installedPolicy: expectedPolicy, verification: observationVerification }); record({ caseId: 'JO09', label, wait, observed }); }
+        finally { await rollback(writer); await combinedSettle(pending); await rollback(installer); }
+      }
+      await combinedPreserve();
+    }, 45000);
+
+    it('JO10 selected head advances during definition wait and fixed drift55000 returns no packet or automatic replay', async () => {
+      const beforePolicy = await combinedPolicyRows(), beforeRows = await rows();
+      await begin(writer); await query(writer, 'SELECT policy_id FROM ' + definitionTable + ' WHERE policy_id=$1 AND revision=$2::int8 FOR UPDATE', [currentPolicyId, currentPolicyRevision]);
+      await begin(installer); const pending = combinedFailure(installer, combinedSQL, [workspaceId, employeeA, token()]); pendingFenceAttempts.add(pending);
+      try {
+        const wait = await waitEvidence(installer, writer, 'JO10:definition');
+        const changed = (await query(writer, 'UPDATE ' + headTable + ' SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1 RETURNING installation_epoch::text', [workspaceId])).rows;
+        expect(changed).toHaveLength(1); await query(writer, 'COMMIT'); currentEpoch = changed[0].installation_epoch;
+        const outcome = await pending; pendingFenceAttempts.delete(pending); await aborted(installer, outcome.code, '55000');
+        expect(outcome.message).toBe('portal_installed_policy_source_drift'); expect(outcome.resultRows).toEqual([]);
+        const afterPolicy = await combinedPolicyRows(); expect(afterPolicy[definitionTable]).toEqual(beforePolicy[definitionTable]); expect(await rows()).toEqual(beforeRows);
+        retainedPolicyRows = afterPolicy;
+        record({ caseId: 'JO10', beforePolicy, afterPolicy, beforeRows, wait, outcome, currentEpoch,
+          seam: 'ONE_EXPLICIT_MONOTONIC_FICTIONAL_HEAD_STEP_SAME_DEFINITION_LOCKING_WRITER', claim: 'NO_AUTOMATIC_RETRY_REPAIR_OR_EXTERNAL_RECOVERY_HIGH_WATER' });
+      } finally { await rollback(writer); await combinedSettle(pending); await rollback(installer); }
+      // Refresh the independent expected component in a NEW test fixture transaction,
+      // never replay the failed request or label this source data authorized.
+      await independentComponents(); await combinedPreserve();
+    }, 45000);
+
+    it('JO11 optional absent empty and ALL_TENANT contradictory children remain raw without inferred grants', async () => {
+      for (const variant of ['absent', 'empty-locations', 'all-tenant-with-children']) {
+        await begin(installer);
+        try {
+          if (variant !== 'all-tenant-with-children') for (const name of childTables) await query(installer, 'DELETE FROM ' + name + ' WHERE workspace_id=$1 AND employee_id=$2', [workspaceId, employeeA]);
+          if (variant === 'absent') await query(installer, 'DELETE FROM ' + table + ' WHERE workspace_id=$1 AND employee_id=$2', [workspaceId, employeeA]);
+          if (variant === 'all-tenant-with-children') await query(installer, 'UPDATE ' + table + ' SET scope_kind=\'ALL_TENANT\' WHERE workspace_id=$1 AND employee_id=$2', [workspaceId, employeeA]);
+          const observed = await combinedCall(installer), administrative = observed.portalSource.administrative;
+          if (variant === 'absent') expect(administrative).toBe(null);
+          else {
+            expect(administrative).toMatchObject({ scopeKind: variant === 'empty-locations' ? 'LOCATIONS' : 'ALL_TENANT', scopeOrigin: 'EXPLICIT_GRANT', provenanceReference: 'fictional:unverified', capabilityPolicyRevision: '1' });
+            if (variant === 'empty-locations') expect(administrative).toMatchObject({ capabilities: [], locationIds: [] });
+            else expect(administrative).toEqual({ ...expectedPortal.administrative, scopeKind: 'ALL_TENANT' });
+          }
+          expect(observed.installedPolicy).toEqual(expectedPolicy); record({ caseId: 'JO11', variant, observed, seam: 'ROLLBACK_ONLY_RAW_ADMIN_SHAPE_NOT_SCOPE_AUTHORITY' });
+        } finally { await rollback(installer); }
+        await combinedPreserve();
+      }
+    }, 45000);
+
+    it('JO12 rollback-only MAXint8 remains exact in both nested source groups and policy bundle native wire', async () => {
+      const maximum = '9223372036854775807'; await begin(installer);
+      try {
+        await query(installer, 'UPDATE nevora_tenancy.workspace_incarnation_counter SET incarnation=$2::int8 WHERE workspace_id=$1', [workspaceId, maximum]);
+        await query(installer, `INSERT INTO ${definitionTable}(policy_id,revision,definition,canonical_policy_source,canonical_policy_source_sha256,vocabulary_source,vocabulary_source_sha256,approved_prd_source,approved_prd_source_sha256)
+          SELECT policy_id,$3::int8,pg_catalog.jsonb_set(definition,'{revision}',pg_catalog.to_jsonb($3::text),false),canonical_policy_source,canonical_policy_source_sha256,vocabulary_source,vocabulary_source_sha256,approved_prd_source,approved_prd_source_sha256
+          FROM ${definitionTable} WHERE policy_id=$1 AND revision=$2::int8`, [currentPolicyId, currentPolicyRevision, maximum]);
+        await query(installer, 'UPDATE ' + headTable + ' SET workspace_incarnation=$2::int8,installation_epoch=$2::int8,policy_revision=$2::int8 WHERE workspace_id=$1', [workspaceId, maximum]);
+        await query(installer, 'UPDATE nevora_tenancy.portal_authority SET authorization_version=$3::int8,portal_access_version=$3::int8,capability_policy_revision=$3::int8 WHERE workspace_id=$1 AND employee_id=$2', [workspaceId, employeeA, maximum]);
+        await query(installer, 'UPDATE ' + table + ' SET capability_policy_revision=$3::int8 WHERE workspace_id=$1 AND employee_id=$2', [workspaceId, employeeA, maximum]);
+        const observed = await combinedCall(installer);
+        for (const value of [observed.portalSource.incarnation.version, observed.portalSource.portal.authorizationVersion, observed.portalSource.portal.portalAccessVersion,
+          observed.portalSource.portal.capabilityPolicyRevision, observed.portalSource.administrative?.capabilityPolicyRevision, observed.installedPolicy.workspaceIncarnation,
+          observed.installedPolicy.installation.workspaceIncarnation, observed.installedPolicy.installation.installationEpoch, observed.installedPolicy.installation.policyRevision, observed.installedPolicy.definition.revision]) { expect(value).toBe(maximum); expect(typeof value).toBe('string'); }
+        expect(observed.installedPolicy.definition.sourceBundle.revision).toBe(maximum);
+        assertSourceWire(observed.installedPolicy.definition.canonicalPolicySource, expectedBytes[0]); assertSourceWire(observed.installedPolicy.definition.vocabularySource, expectedBytes[1]); assertSourceWire(observed.installedPolicy.definition.approvedPRDSource, expectedBytes[2]);
+        expect(observed.portalSource.issuance.workspaceIncarnation).toBe('1'); expect(observed.portalSource.issuance.portalAccessVersion).toBe('1');
+        expect(observed.portalSource.session.expiresAt).toBe('2000-01-01 00:00:00.654321+00');
+        record({ caseId: 'JO12', observed, seam: 'ROLLBACK_ONLY_EXPLICIT_NATIVE_PRECISION_FIXTURE_NOT_VERSION_DEFAULT_AUTHORITY_OR_LIVE_REPAIR' });
+      } finally { await rollback(installer); }
+      await combinedPreserve();
+    }, 45000);
+
+    afterAll(async () => {
+      if (!siblingPrepared) return;
+      await rollback(installer); await rollback(writer); await rollback(admin);
+      for (const pending of pendingFenceAttempts) await combinedSettle(pending);
+      await combinedPreserve(); const finalPolicyRows = await combinedPolicyRows();
+      expect(objects).toHaveLength(combinedInstalled ? 53 : 52); expect(roles).toHaveLength(4); expect(clients.size).toBe(6);
+      expect(repairs.size).toBe(0); expect(pendingFenceAttempts.size).toBe(0);
+      record({ operation: 'COMBINED_OBSERVER_FINAL_BEFORE_UNCHANGED_OUTER_CLEANUP', combinedInstalled, combinedObject,
+        policyRows: finalPolicyRows, retainedPolicyRows, originalRows, originalCatalog, currentPolicyId, currentPolicyRevision, currentEpoch, expectedCounter,
+        roles, objects, clients: clients.size, pendingRepairs: [...repairs], pendingFenceAttempts: pendingFenceAttempts.size,
+        limitations: ['Existing-row locks do not exclude new head/admin/child phantoms.', 'Complete sorted writer set and persistent Portal serialization remain unimplemented prerequisites.',
+          'Raw observation is not authenticated current facts, grants, executing policy source, safe owner access or tenant proof.', 'Neon/recovery/fullF10/protectedF6F9/externalF12 remain open or held.'] });
+      writeFileSync(join(runPath!, 'portal-policy-joint-observation-final-rows.json'), JSON.stringify({ combinedInstalled, combinedObject,
+        sourceRows: await rows(), policyRows: finalPolicyRows, retainedPolicyRows, sourceCatalog: await catalog(), currentPolicyId, currentPolicyRevision, currentEpoch, expectedCounter,
+        roles, objects, scope: 'PRE_DROP_FICTIONAL_RAW_OBSERVATION_PRESERVATION_NOT_AUTHORITY_OR_NATIVE_PRODUCER_ACCEPTANCE' }, null, 2), { flag: 'wx', mode: 0o600 });
+      // No new teardown mechanism: original outer afterAll owns exact53/4/6 cleanup.
+    }, 45000);
+  });
+
   afterAll(async () => {
     let cleaned = false;
     const closure: { client: string; status: string | null; finalStatus: string | null; closed: boolean }[] = [];
