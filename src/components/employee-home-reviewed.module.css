@@ -121,6 +121,7 @@
   .arrival h1 { font-size: 1.875rem; }
   .arrival p { font-size: .875rem; }
   .content { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: 28px; padding-inline: 24px; }
+  .secondary { padding-top: 28px; }
   .assignment { padding: 22px 24px 12px; }
   .interval { font-size: 1.875rem; }
   .freshness { grid-column: 1 / -1; }
