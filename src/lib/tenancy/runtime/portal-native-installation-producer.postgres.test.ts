@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
 import { Client } from 'pg';
 import { createHash } from 'node:crypto';
-import { appendFileSync, lstatSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { unlinkSync, appendFileSync, lstatSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { isAbsolute, join, resolve, sep } from 'node:path';
 import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 
@@ -24,7 +24,7 @@ const OLD_PRODUCER_PIN = '17f630edc500d40cb929e95a325246cf169ad913d4c16bd3348b14
 const SUCCESSOR_PINS: Readonly<Record<string, string>> = Object.freeze({
   RENDER_ONLY: 'c474d30df7829b372838d5d7f25456cc5915b34f31b43d4d63dd05617d8cc7a7',
   MARKER_ONLY: 'b1f1748bd9e1a413714242694120c147ba3cd9e304f6a15d7b29100ea7287171',
-  FINAL_INTENT: '772a55b59b28a1a2cca321daebd47ec264b8cbc064069417727aff61c98a34ea',
+  FINAL_INTENT: '971e1ba23570cb2239a2297f1f8559aaf59545a938f728e4c50807f4e1ed4055',
 });
 const PINNED_SOURCES: Readonly<Record<string, string>> = Object.freeze({
   'db/migrations/0001_initial.sql': '330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1',
@@ -631,6 +631,73 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
       retainedBytesSha256: hash(bytes), rootOid: retained.startup.rootOid, ownerOid: readerRole.oid,
       policyCount: definitions.length, producerSourceSha256: hash(Buffer.from(retained.producerSourceBytes)),
       generatedInstallationWritten: false, rootBodyInvoked: false, executingBuildAuthenticated: false, currentAuthorityIssued: false });
+    // UNEXECUTED additive block AFTER every original CI-P02 assertion/receipt.
+    // Original F_CI lease/fixture/role/native-input/preimage/controller required;
+    // root alone stages/executes this, preserves original CI-P01/default HOLD.
+    // No second enrollment, fabricated outcome/capture, generated input copy,
+    // root body invocation, build/start or private source/effect authority.
+    const publicationAPI=await import('./portal-native-installation-producer.server');
+    const generated=resolve('src/lib/tenancy/runtime/portal-native-installation.generated.json');
+    const assertAbsent=()=>{try{lstatSync(generated);}catch(error){if(error instanceof Error&&Object.getOwnPropertyDescriptor(error,'code')?.value==='ENOENT')return;throw error;}throw Error('GENERATED_FILE_UNEXPECTED');};
+    assertAbsent();
+    const copied=JSON.parse(JSON.stringify(outcome));
+    expect(await publicationAPI.writeCurrentControlledPortalInstallationBytes(installer,app,copied)).toEqual({status:'BLOCKED',code:'CONTROLLED_PORTAL_PUBLICATION_UNAVAILABLE',reconciliation:'FRESH_ROOT_OWNED_ORIGINAL_INPUT_RECHECK_REQUIRED'});
+    assertAbsent();
+    // Original real outcome remains genuine: the rejected clone does not consume it.
+    let generatedOid:Readonly<{dev:number;ino:number}>|null=null;
+    try{
+      // Observe the actual original Client transport, preserving native ACKs
+      // and fixed SQLSTATE/bind arity only. No response, identity or SQL mock.
+      const publicationObservations:{client:'INSTALLER'|'APP';sqlSHA256:string;bindCount:number;result:'ACK'|'ERROR';sqlstate?:string}[]=[];
+      const priorInstallerQuery=installer.query,priorAPPQuery=app.query;
+      for(const [client,kind,original] of [[installer,'INSTALLER',priorInstallerQuery],[app,'APP',priorAPPQuery]] as const){
+        const transport=original.bind(client);
+        client.query=(async(text:unknown,values?:unknown[])=>{
+          const observed={client:kind,sqlSHA256:hash(text as string),bindCount:values?.length??0};
+          try{const result=await transport(text as string,values);publicationObservations.push({...observed,result:'ACK'});return result;}
+          catch(error){publicationObservations.push({...observed,result:'ERROR',sqlstate:code(error)});throw error;}
+        }) as Client['query'];
+      }
+      let published:Awaited<ReturnType<typeof publicationAPI.writeCurrentControlledPortalInstallationBytes>>;
+      try{published=await publicationAPI.writeCurrentControlledPortalInstallationBytes(installer,app,outcome);}
+      finally{installer.query=priorInstallerQuery;app.query=priorAPPQuery;}
+      record({operation:'CI_P02_ACTUAL_PUBLICATION_TRANSPORT',observations:publicationObservations,
+        installerTransactionStatus:installer.getTransactionStatus(),appTransactionStatus:app.getTransactionStatus()});
+      record({operation:'CI_P02_GENUINE_CURRENT_CREATE_ONLY_PUBLICATION',result:published,rootBodyInvoked:false,executingBuildAuthenticated:false,currentAuthorityIssued:false});
+      expect(published.status).toBe('GENERATED_SOURCE_PUBLISHED_NOT_AUTHORITY');
+      if(published.status!=='GENERATED_SOURCE_PUBLISHED_NOT_AUTHORITY')throw Error('CURRENT_PUBLICATION_REQUIRED');
+      // Causal regression from actual native08P01: the unchanged AFTER query
+      // has precisely3 OID slots, with actual ACKs on both owning transactions.
+      expect(publicationObservations.every(observed=>observed.result==='ACK')).toBe(true);
+      const installerCalls=publicationObservations.filter(observed=>observed.client==='INSTALLER');
+      const appCalls=publicationObservations.filter(observed=>observed.client==='APP');
+      const first=['BEGIN ISOLATION LEVEL READ COMMITTED',RUNTIME_CATALOG_SHARED_FENCE_SQL.text,'SET LOCAL search_path=pg_catalog'].map(hash);
+      expect(installerCalls.slice(0,3).map(observed=>observed.sqlSHA256)).toEqual(first);
+      expect(appCalls.slice(0,3).map(observed=>observed.sqlSHA256)).toEqual(first);
+      expect(installerCalls.filter(observed=>observed.sqlSHA256===hash(queries['independent-current-catalog.candidate.sql']))).toEqual([
+        {client:'INSTALLER',sqlSHA256:hash(queries['independent-current-catalog.candidate.sql']),bindCount:3,result:'ACK'},
+      ]);
+      for(const calls of [installerCalls,appCalls]){
+        expect(calls.filter(observed=>observed.sqlSHA256===hash('COMMIT'))).toHaveLength(1);
+        expect(calls.at(-1)!.sqlSHA256).toBe(hash('COMMIT'));
+      }
+      expect(appCalls.filter(observed=>observed.sqlSHA256===hash(PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL.text))).toHaveLength(1);
+
+      const installed=lstatSync(generated);generatedOid={dev:installed.dev,ino:installed.ino};
+      expect(installed.isSymbolicLink()).toBe(false);expect(installed.uid).toBe(process.getuid?.());expect(installed.mode&0o777).toBe(0o600);expect(installed.nlink).toBe(1);
+      expect(readFileSync(generated).equals(bytes)).toBe(true);expect(published.sha256).toBe(hash(bytes));expect(published.byteLength).toBe(bytes.length);
+      expect(publicationAPI.isControlledPortalGeneratedPublication(published)).toBe(true);expect(publicationAPI.isControlledPortalGeneratedPublication(JSON.parse(JSON.stringify(published)))).toBe(false);
+      const before=readFileSync(generated);
+      expect(await publicationAPI.writeCurrentControlledPortalInstallationBytes(installer,app,outcome)).toEqual({status:'BLOCKED',code:'CONTROLLED_PORTAL_PUBLICATION_UNAVAILABLE',reconciliation:'FRESH_ROOT_OWNED_ORIGINAL_INPUT_RECHECK_REQUIRED'});
+      expect(readFileSync(generated).equals(before)).toBe(true);
+      expect(installer.getTransactionStatus()).toBe('I');expect(app.getTransactionStatus()).toBe('I');
+      expect(await catalog()).toBe(fullAfter);expect(await nativeDefinitions()).toEqual(intended.definitions);await assertEmptyOriginalAndPrivate();
+    }finally{
+      // ROOT ONLY exact-own inode deletion. If publication failed before its
+      // inode was acknowledged, leave partial bytes for explicit reconciliation;
+      // do not erase a preexisting/foreign/raced file or claim clean closure.
+      if(generatedOid){const now=lstatSync(generated);if(now.isSymbolicLink()||now.dev!==generatedOid.dev||now.ino!==generatedOid.ino)throw Error('GENERATED_CLEANUP_IDENTITY_DRIFT');unlinkSync(generated);assertAbsent();}
+    }
   }, 120000);
   // CI-P02 END.
   afterAll(async () => {

@@ -10,6 +10,8 @@ const source=resolve(process.cwd());
 const custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA);
 const receiptPath=resolve(process.env.NEVORA_BUILD_RECEIPT??'../build-source.json');
 externalEvidence(source,resolve(receiptPath,'..'));
+const portalGeneratedInput=await import('./portal-generated-installation-input.mjs');
+portalGeneratedInput.assertPortalGeneratedInstallationBuildInput();
 const env={...safeEnvironment(),NEXT_TELEMETRY_DISABLED:'1'};
 const npmVersion=spawnSync('npm',['--version'],{env,encoding:'utf8'});
 if(npmVersion.status!==0)throw Error('Cannot identify build package manager');

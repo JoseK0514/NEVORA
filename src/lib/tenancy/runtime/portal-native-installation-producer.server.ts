@@ -304,7 +304,11 @@ export async function prepareControlledLocalPortalInstallation(installer:Client,
   const retained={format:'PORTAL_NATIVE_INSTALLATION_RETAINED_V1',sourceImageSha256:HASH(imageBytes),producerSourceBytes:[...producerBytes],installationSourceBundle:sourceBundle,
    catalogFenceProtocolSha256:HASH(RUNTIME_CATALOG_SHARED_FENCE_SQL.text+'\n'+INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text),startup,privateEnrollment:enrollment};
   const result=Object.freeze({status:'RETAINED_SOURCE_INSTALLATION_NOT_AUTHORITY' as const,bytes:Object.freeze([...Buffer.from(JSON.stringify(retained)+'\n')])});
-  issuedRetainedBytes.add(result);return result;
+  issuedRetainedBytes.add(result);
+  publicationSources.set(result,Object.freeze({root,inputs:i,installer,app,producerBytes:Buffer.from(producerBytes),imageBytes:Buffer.from(imageBytes),captureBytes:Buffer.from(captureBytes),
+   sourceBundle:Object.freeze(Object.fromEntries(Object.entries(sourceBundle).map(([name,raw])=>[name,Object.freeze([...raw])]))),
+   nativeStartup:Object.freeze({...native}),enrollment:Object.freeze({...enrollment}),committedCatalog:text(committedCatalog)}));
+  return result;
  }catch{
   // Attempted COMMIT means no secondary SQL, fabricated rollback or artifact.
   if(attemptedCommit)return unavailable('COMMIT_OUTCOME_UNKNOWN');
@@ -322,4 +326,121 @@ export function writeControlledPortalInstallationBytes(outcome:ControlledPortalI
  const root=resolve(process.cwd());let parent=root;for(const part of INSTALLATION_FILE.split('/').slice(0,-1)){parent=join(parent,part);if(lstatSync(parent).isSymbolicLink()||!lstatSync(parent).isDirectory())return deny();}
  const file=join(root,INSTALLATION_FILE),fd=openSync(file,constants.O_WRONLY|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW,0o600);
  try{writeFileSync(fd,Buffer.from(outcome.bytes));fsyncSync(fd);}finally{closeSync(fd);}
+}
+
+// UNUSED additive source preparation. Old synchronous writer remains unchanged;
+// the controlled build controller must select this stronger separate entrypoint.
+// This closes local issued-outcome/current-native publication coherence only.
+// The original lease/PID/start/controlled source checkpoint and privileges remain
+// independently authenticated by root's existing live resource controller.
+type PublicationSource = Readonly<{
+ root:string;inputs:Inputs;installer:Client;app:Client;
+ producerBytes:Buffer;imageBytes:Buffer;captureBytes:Buffer;
+ sourceBundle:Readonly<Record<string,readonly number[]>>;
+ nativeStartup:Readonly<Record<string,unknown>>;
+ enrollment:Readonly<Record<string,unknown>>;committedCatalog:string;
+}>;
+const publicationSources = new WeakMap<object,PublicationSource>();
+const publishedSources = new WeakSet<object>();
+const publicationAttempts = new WeakSet<object>();
+export type ControlledPortalPublicationOutcome =
+ Readonly<{status:'GENERATED_SOURCE_PUBLISHED_NOT_AUTHORITY';file:'src/lib/tenancy/runtime/portal-native-installation.generated.json';sha256:string;byteLength:number}> |
+ Readonly<{status:'BLOCKED'|'PUBLICATION_INCOMPLETE'|'COMMIT_OUTCOME_UNKNOWN'|'ROLLBACK_UNRECONCILED';code:'CONTROLLED_PORTAL_PUBLICATION_UNAVAILABLE';reconciliation:'FRESH_ROOT_OWNED_ORIGINAL_INPUT_RECHECK_REQUIRED'}>;
+/** Local provenance, no installer/DB/proof authority and no serialized reissue. */
+export function isControlledPortalGeneratedPublication(value:unknown):value is Extract<ControlledPortalPublicationOutcome,{status:'GENERATED_SOURCE_PUBLISHED_NOT_AUTHORITY'}>{
+ return !!value&&typeof value==='object'&&publishedSources.has(value);
+}
+function publicationPath(root:string):string{
+ if(realpathSync(root)!==root||lstatSync(root).isSymbolicLink()||!lstatSync(root).isDirectory()||lstatSync(root).uid!==process.getuid?.())return deny();
+ let parent=root;
+ for(const part of INSTALLATION_FILE.split('/').slice(0,-1)){
+  parent=join(parent,part);const s=lstatSync(parent);
+  if(s.isSymbolicLink()||!s.isDirectory()||s.uid!==process.getuid?.()||realpathSync(parent)!==parent)return deny();
+ }
+ return join(root,INSTALLATION_FILE);
+}
+function requirePublicationAbsent(path:string):void{
+ try{lstatSync(path);}catch(error){
+  // Only a real filesystem ENOENT allows creation; no caller errors inspected.
+  if(error instanceof Error&&Object.getOwnPropertyDescriptor(error,'code')?.value==='ENOENT')return;
+  return deny();
+ }
+ return deny();
+}
+function unchangedPublicationSources(s:PublicationSource):void{
+ if(resolve(process.cwd())!==s.root)return deny();
+ if(!read(s.root,PRODUCER_FILE).equals(s.producerBytes)||!read(s.root,IMAGE_FILE).equals(s.imageBytes)||!read(s.root,CAPTURE_FILE).equals(s.captureBytes))return deny();
+ for(const name of Object.keys(SOURCE_PATHS) as (keyof typeof SOURCE_PATHS)[]){
+  if(!read(s.root,SOURCE_PATHS[name]).equals(Buffer.from(s.sourceBundle[name])))return deny();
+ }
+}
+function publishExactCurrentBytes(s:PublicationSource,raw:Buffer):Extract<ControlledPortalPublicationOutcome,{status:'GENERATED_SOURCE_PUBLISHED_NOT_AUTHORITY'}>{
+ unchangedPublicationSources(s);const file=publicationPath(s.root);
+ requirePublicationAbsent(file);requirePublicationAbsent(join(s.root,'.next'));
+ const fd=openSync(file,constants.O_RDWR|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW,0o600);
+ try{
+  const created=fstatSync(fd);
+  if(!created.isFile()||created.uid!==process.getuid?.()||(created.mode&0o777)!==0o600||created.nlink!==1)return deny();
+  writeFileSync(fd,raw);fsyncSync(fd);
+  const after=fstatSync(fd),named=lstatSync(file);
+  if(!after.isFile()||after.uid!==created.uid||(after.mode&0o777)!==0o600||after.nlink!==1||after.size!==raw.length||
+   after.dev!==created.dev||after.ino!==created.ino||named.isSymbolicLink()||named.dev!==after.dev||named.ino!==after.ino||realpathSync(file)!==file||!read(s.root,INSTALLATION_FILE).equals(raw))return deny();
+  unchangedPublicationSources(s);
+  const parent=openSync(join(s.root,'src/lib/tenancy/runtime'),constants.O_RDONLY|constants.O_NOFOLLOW);
+  try{const d=fstatSync(parent);if(!d.isDirectory()||d.uid!==created.uid)return deny();fsyncSync(parent);}finally{closeSync(parent);}
+ }finally{closeSync(fd);}
+ const result=Object.freeze({status:'GENERATED_SOURCE_PUBLISHED_NOT_AUTHORITY' as const,file:INSTALLATION_FILE as 'src/lib/tenancy/runtime/portal-native-installation.generated.json',sha256:HASH(raw),byteLength:raw.length});
+ publishedSources.add(result);return result;
+}
+/** Root-controlled direct call ONLY. Genuine original outcome + original live
+ * clients; no path/raw JSON/approval/role selector/callback. Never creates or
+ * discovers a connection, lease, role, cluster, build, Next process or provider.
+ * Once attempted, this outcome is not replayed, including publication failure.
+ * Installer and APP commits must acknowledge before file creation. A privileged
+ * change after that point is not atomically fenced with the filesystem: root's
+ * resource/source controller and the real startup fresh native check are still
+ * mandatory. No build may use an incomplete/uncertain publication.
+ */
+export async function writeCurrentControlledPortalInstallationBytes(installer:Client,app:Client,outcome:unknown):Promise<ControlledPortalPublicationOutcome>{
+ const blocked=(status:'BLOCKED'|'PUBLICATION_INCOMPLETE'|'COMMIT_OUTCOME_UNKNOWN'|'ROLLBACK_UNRECONCILED'):ControlledPortalPublicationOutcome=>Object.freeze({status,code:'CONTROLLED_PORTAL_PUBLICATION_UNAVAILABLE',reconciliation:'FRESH_ROOT_OWNED_ORIGINAL_INPUT_RECHECK_REQUIRED'});
+ let ownInstaller=false,ownAPP=false,attemptedCommit=false,publishing=false;
+ try{
+  // No arbitrary input property reads before private identity lookup.
+  if(!outcome||typeof outcome!=='object'||!issuedRetainedBytes.has(outcome))return blocked('BLOCKED');
+  const s=publicationSources.get(outcome);if(!s||s.installer!==installer||s.app!==app||installer===app||publicationAttempts.has(outcome))return blocked('BLOCKED');
+  publicationAttempts.add(outcome);
+  const genuine=outcome as Extract<ControlledPortalInstallationOutcome,{status:'RETAINED_SOURCE_INSTALLATION_NOT_AUTHORITY'}>;
+  unchangedPublicationSources(s);requirePublicationAbsent(publicationPath(s.root));requirePublicationAbsent(join(s.root,'.next'));
+  idle(installer);idle(app);local(installer,s.inputs,s.inputs.installerRole);local(app,s.inputs,s.inputs.appRole);
+  // Completed identity/system observations in a NEW owning RC/shared transaction.
+  // No privileged DDL/DML; source before-catalog is not replayed as current.
+  ownInstaller=true;await installer.query('BEGIN ISOLATION LEVEL READ COMMITTED');await fence(installer,false);await installer.query('SET LOCAL search_path=pg_catalog');
+  await identify(installer,s.inputs,s.inputs.installerRole,s.inputs.installerRoleOid);
+  const sys=one(await installer.query("SELECT system_identifier::pg_catalog.text AS system_identifier,pg_catalog.current_setting('data_directory') AS data_directory FROM pg_catalog.pg_control_system();"),['system_identifier','data_directory']);
+  if(sys.system_identifier!==s.inputs.systemIdentifier||sys.data_directory!==s.inputs.dataDirectory)return deny();
+  const native=one(await installer.query(AFTER_CATALOG_SQL,[s.inputs.installerRoleOid,s.inputs.readerOwnerOid,s.inputs.appRoleOid]),['before_catalog']);
+  if(native.before_catalog!==s.committedCatalog)return deny();
+  assertControlledPortalPrivatePolicyIntentOnCatalog(s.inputs.intendedPolicyDefinitionObservation,native.before_catalog);
+  ownAPP=true;await app.query('BEGIN ISOLATION LEVEL READ COMMITTED');await fence(app,false);await app.query('SET LOCAL search_path=pg_catalog');await identify(app,s.inputs,s.inputs.appRole,s.inputs.appRoleOid);
+  const current=one(await app.query(PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL.text,[]),['startup','privateEnrollment']);
+  const currentStartup=exact(current.startup,['format','databaseOid','rootOid','ownerOid','rootDefinition','rootDefinitionSha256','nativeAuditCapsuleText','nativeAuditCapsuleSha256']);
+  const currentEnrollment=exact(current.privateEnrollment,['format','nativeCatalogCapsuleText','nativeCatalogCapsuleSha256']);
+  if(Object.keys(s.nativeStartup).some(k=>s.nativeStartup[k]!==currentStartup[k])||Object.keys(s.enrollment).some(k=>s.enrollment[k]!==currentEnrollment[k]))return deny();
+  if(HASH(text(currentEnrollment.nativeCatalogCapsuleText))!==currentEnrollment.nativeCatalogCapsuleSha256)return deny();
+  const full=record(JSON.parse(text(currentEnrollment.nativeCatalogCapsuleText)));
+  if(full.installationCatalogText!==s.committedCatalog)return deny();
+  assertControlledPortalPrivatePolicyIntentOnCatalog(s.inputs.intendedPolicyDefinitionObservation,full.installationCatalogText);
+  if(one(await app.query(FINAL_APP),['guard']).guard!==1)return deny();
+  unchangedPublicationSources(s);
+  attemptedCommit=true;await app.query('COMMIT');ownAPP=false;attemptedCommit=false;
+  attemptedCommit=true;await installer.query('COMMIT');ownInstaller=false;attemptedCommit=false;
+  publishing=true;return publishExactCurrentBytes(s,Buffer.from(genuine.bytes));
+ }catch{
+  // No SQL on either client after attempted COMMIT with uncertain acknowledgement.
+  // The controller must close/reconcile ALL original owned client transactions.
+  if(attemptedCommit)return blocked('COMMIT_OUTCOME_UNKNOWN');
+  let clean=true;if(ownAPP)clean=(await ownRollback(app))&&clean;if(ownInstaller)clean=(await ownRollback(installer))&&clean;
+  if(!clean)return blocked('ROLLBACK_UNRECONCILED');
+  return blocked(publishing?'PUBLICATION_INCOMPLETE':'BLOCKED');
+ }
 }
