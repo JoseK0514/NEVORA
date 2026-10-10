@@ -1,3 +1,4 @@
+import { types as nodeTypes } from 'node:util';
 import { Temporal } from '@js-temporal/polyfill';
 import { evaluateCapability } from '../capabilities/policy';
 import { CAPABILITIES, CAPABILITY_FIELDS } from '../capabilities/types';
@@ -20,7 +21,7 @@ const activityFields = new Set<CapabilityField>([
 ]);
 const proofKinds = ['PORTAL', 'CLOCKER', 'CALENDAR_READ', 'WORKER', 'PROVISIONER'];
 const detailPermissions = ['ACTOR_IDENTITY', 'SOURCE_REFERENCE', 'SOURCE_HASH', 'PROVENANCE_REFERENCE', 'PROVENANCE_HASH'];
-const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v);
+const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !nodeTypes.isProxy(v) && !Array.isArray(v);
 const text = (v: unknown): v is string => typeof v === 'string' && v.length > 0 && v.length <= 200 && v.trim() === v && !/[\u0000-\u001f\u007f]/.test(v);
 // Exact existing DB keys/opaque versions are not display labels or selectors.
 // Preserve original bytes and match the tenant resolver's control rejection.
@@ -44,27 +45,32 @@ function fail(): never { throw new Error('Invalid activity observation'); }
 function dataSnapshot(value: unknown): unknown {
   const seen = new Set<object>(); let remaining = 100_000;
   const workspace = object(value) ? Object.getOwnPropertyDescriptor(value, 'workspace') : undefined;
-  const workspaceId = workspace && 'value' in workspace && object(workspace.value)
+  const workspaceId = workspace && Object.hasOwn(workspace, 'value') && object(workspace.value)
     ? Object.getOwnPropertyDescriptor(workspace.value, 'id') : undefined;
-  const tenant = workspaceId && 'value' in workspaceId && key(workspaceId.value) ? workspaceId.value : null;
+  const tenant = workspaceId && Object.hasOwn(workspaceId, 'value') && key(workspaceId.value) ? workspaceId.value : null;
   function copy(v: unknown, depth: number, observationRows = false): unknown {
     if (--remaining < 0 || depth > 20) return fail();
     // Optional observations can legitimately be explicitly undefined. Required
     // fields are checked below; no undefined value is copied into the public DTO.
     if (v === undefined || v === null || typeof v === 'string' || typeof v === 'boolean') return v;
     if (typeof v === 'number' && Number.isFinite(v)) return v;
-    if (typeof v !== 'object' || seen.has(v)) return fail();
+    if (typeof v !== 'object' || nodeTypes.isProxy(v) || seen.has(v)) return fail();
     seen.add(v);
-    const descriptors = Object.getOwnPropertyDescriptors(v);
+    const descriptors = Object.getOwnPropertyDescriptors(v as object);
     if (Array.isArray(v)) {
-      if (Object.getPrototypeOf(v) !== Array.prototype || Reflect.ownKeys(descriptors).length !== v.length + 1) return fail();
+      const lengthDescriptor = Object.hasOwn(descriptors, 'length') ? descriptors.length : undefined;
+      if (!lengthDescriptor || !Object.hasOwn(lengthDescriptor, 'value')) return fail();
+      const length: unknown = lengthDescriptor.value;
+      if (Object.getPrototypeOf(v) !== Array.prototype || typeof length !== 'number' || !Number.isSafeInteger(length) || length < 0 ||
+        Reflect.ownKeys(descriptors).length !== length + 1) return fail();
       const result: unknown[] = [];
-      for (let i = 0; i < v.length; i++) {
-        const d = descriptors[String(i)]; if (!d || !('value' in d) || !d.enumerable) return fail();
+      for (let i = 0; i < length; i++) {
+        const index = String(i), d = Object.hasOwn(descriptors, index) ? descriptors[index] : undefined;
+        if (!d || !Object.hasOwn(d, 'value') || !d.enumerable) return fail();
         // A foreign observation is not part of this tenant projection. Inspect
         // only its own data-bound tenant key, never any opaque payload property.
         const binding = observationRows && object(d.value) ? Object.getOwnPropertyDescriptor(d.value, 'workspaceId') : undefined;
-        if (tenant && binding && 'value' in binding && typeof binding.value === 'string' && binding.value !== tenant) continue;
+        if (tenant && binding && Object.hasOwn(binding, 'value') && typeof binding.value === 'string' && binding.value !== tenant) continue;
         result.push(copy(d.value, depth + 1));
       }
       seen.delete(v); return result;
@@ -73,7 +79,7 @@ function dataSnapshot(value: unknown): unknown {
     const result: Record<string, unknown> = Object.create(null);
     for (const key of Reflect.ownKeys(descriptors)) {
       if (typeof key !== 'string') return fail();
-      const d = descriptors[key]; if (!('value' in d) || !d.enumerable) return fail();
+      const d = descriptors[key]; if (!Object.hasOwn(d, 'value') || !d.enumerable) return fail();
       result[key] = copy(d.value, depth + 1, depth === 0 && (key === 'records' || key === 'coverage'));
     }
     seen.delete(v); return result;
