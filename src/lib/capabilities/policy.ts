@@ -1,3 +1,4 @@
+import { types as nodeTypes } from 'node:util';
 import { CAPABILITIES, CAPABILITY_FIELDS } from './types';
 import type { UserRole } from '../domain';
 import type { AdministrativeScope, Capability, CapabilityDecision, CapabilityDenial, CapabilityField, CapabilityInput } from './types';
@@ -68,21 +69,25 @@ function plainObservation(value: unknown): boolean {
     if (--remaining < 0 || depth > 40) return false;
     if (v === null || v === undefined || typeof v === 'string' || typeof v === 'boolean') return true;
     if (typeof v === 'number') return Number.isFinite(v);
-    if (typeof v !== 'object' || seen.has(v)) return false;
+    if (typeof v !== 'object' || nodeTypes.isProxy(v) || seen.has(v)) return false;
     const prototype = Object.getPrototypeOf(v), descriptors = Object.getOwnPropertyDescriptors(v);
     seen.add(v);
     if (Array.isArray(v)) {
-      if (prototype !== Array.prototype || Reflect.ownKeys(descriptors).length !== v.length + 1) return false;
-      for (let index = 0; index < v.length; index++) {
-        const d = descriptors[String(index)];
-        if (!d || !('value' in d) || !d.enumerable || !visit(d.value, depth + 1)) return false;
+      const lengthDescriptor = Object.hasOwn(descriptors, 'length') ? descriptors.length : undefined;
+      if (!lengthDescriptor || !Object.hasOwn(lengthDescriptor, 'value')) return false;
+      const length: unknown = lengthDescriptor.value;
+      if (prototype !== Array.prototype || typeof length !== 'number' || !Number.isSafeInteger(length) || length < 0 ||
+        Reflect.ownKeys(descriptors).length !== length + 1) return false;
+      for (let index = 0; index < length; index++) {
+        const key = String(index), d = Object.hasOwn(descriptors, key) ? descriptors[key] : undefined;
+        if (!d || !Object.hasOwn(d, 'value') || !d.enumerable || !visit(d.value, depth + 1)) return false;
       }
     } else {
       if (prototype !== Object.prototype && prototype !== null) return false;
       for (const key of Reflect.ownKeys(descriptors)) {
         if (typeof key !== 'string') return false;
         const d = descriptors[key];
-        if (!('value' in d) || !d.enumerable || !visit(d.value, depth + 1)) return false;
+        if (!Object.hasOwn(d, 'value') || !d.enumerable || !visit(d.value, depth + 1)) return false;
       }
     }
     seen.delete(v); return true;
