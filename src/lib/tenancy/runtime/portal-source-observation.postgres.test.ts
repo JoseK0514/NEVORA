@@ -684,6 +684,341 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 unused portal-source observa
     finally { await rollback(installer); }
     expect(await rows()).toEqual(before); expect(canonicalAcl(await catalog())).toEqual(native); await preserve();
   });
+  // APPEND ONLY after PO16 and before the unchanged outer afterAll.
+  // SOURCE PREPARATION ONLY: no producer invocation, resources or native result.
+  // These cases exercise installer-owned locking mechanics, not authorization.
+  describe('unused joint Portal and installed-policy lock kernel, root-owned fictional mechanics', () => {
+    const jointPath = resolve('src/lib/tenancy/runtime/portal-policy-joint-locks.sql');
+    const policyStoragePath = resolve('src/lib/tenancy/runtime/capability-policy-definition-storage.sql');
+    const policyObserverPath = resolve('src/lib/tenancy/runtime/portal-installed-policy-observation.sql');
+    const policyFixturePath = resolve('src/lib/tenancy/runtime/fixtures/installed-policy-source.json');
+    const jointSHA = 'a1394da4b29c86dbf9c87a2968325d359f2bbe4137cf4004e4e4d81245f1f79e';
+    const policyStorageSHA = '75e8f70dbd5e2381cdde2c425aa634fafe0fe420392b07ab858cf9900382a386';
+    const policyObserverSHA = 'd25be72e0bede3e2ded9ce0ba782b060e41260b79db00e202e1db1d6c965573a';
+    const policyFixtureSHA = '52bd2a10cc91dd62d31e8fef66e8bec4c56450a977227b5a0698768a3afff1a7';
+    const definitionTable = 'nevora_tenancy.capability_policy_definition';
+    const headTable = 'nevora_tenancy.workspace_capability_policy_installation';
+    const jointSignature = 'nevora_tenancy.lock_portal_policy_source_rows(text,text,bpchar)';
+    const jointSQL = 'SELECT nevora_tenancy.lock_portal_policy_source_rows($1::text,$2::text,$3::bpchar) AS locked';
+    let jointSource = '', jointObject: OwnObject, policyObserverObject: OwnObject;
+    let jointRole: Role, policyId = '', policyRevision = '', expectedEpoch = '';
+    let jointSetupComplete = false, jointInstalled = false;
+    let retainedPolicyRows: Awaited<ReturnType<typeof jointPolicyRows>> | undefined;
+    const policySourceBytes: Buffer[] = [];
+
+    async function jointPolicyRows() {
+      const output: Record<string, unknown> = {};
+      for (const name of [definitionTable, headTable]) output[name] = (await query(admin,
+        'SELECT pg_catalog.to_jsonb(t)::text wire FROM ' + name + ' t ORDER BY pg_catalog.to_jsonb(t)::text COLLATE pg_catalog."C"')).rows;
+      return output;
+    }
+    async function jointPreserve() {
+      await preserve(); expect(await jointPolicyRows()).toEqual(retainedPolicyRows);
+      expect(hash(readFileSync(jointPath))).toBe(jointSHA);
+      expect(hash(readFileSync(policyStoragePath))).toBe(policyStorageSHA);
+      expect(hash(readFileSync(policyObserverPath))).toBe(policyObserverSHA);
+      expect(hash(readFileSync(policyFixturePath))).toBe(policyFixtureSHA);
+    }
+    async function jointCall(client: Client, workspace: unknown = workspaceId, employee: unknown = employeeA, sessionHash: unknown = token()) {
+      const result = (await query(client, jointSQL, [workspace, employee, sessionHash])).rows;
+      expect(result).toEqual([{ locked: '' }]); // Native void wire only; not a proof or lock authority token.
+      return result;
+    }
+    async function jointFailure(client: Client, text: string, values: unknown[] = []) {
+      sqlAttempted = true;
+      try { await client.query(text, values); return { code: 'NO_ERROR', message: '' }; }
+      catch (error) { return { code: sqlstate(error), message: (error as { message: string }).message }; }
+    }
+    async function headObservation(client: Client = admin) {
+      return (await query(client, 'SELECT workspace_id,workspace_incarnation::text,installation_epoch::text,policy_id,policy_revision::text FROM ' + headTable + ' ORDER BY pg_catalog.convert_to(workspace_id,\'UTF8\')')).rows;
+    }
+    async function reconcileJoint(pending: Promise<unknown>) {
+      try { await pending; } finally { pendingFenceAttempts.delete(pending); }
+    }
+
+    beforeAll(async () => {
+      // This child hook is registered after PO16, so old 16 callbacks run against
+      // the original 43 objects/3 roles/6 clients before any new setup occurs.
+      expect(verified && setupCommitted && installed).toBe(true); await checkBase();
+      expect(objects).toHaveLength(43); expect(roles).toHaveLength(3); expect(clients.size).toBe(6);
+      expect(expectedCounter).toBe('9007199254740994'); await preserve();
+      jointSource = readFileSync(jointPath, 'utf8'); const storageBytes = readFileSync(policyStoragePath, 'utf8');
+      const observerBytes = readFileSync(policyObserverPath, 'utf8'), fixtureBytes = readFileSync(policyFixturePath);
+      expect(hash(jointSource)).toBe(jointSHA); expect(hash(storageBytes)).toBe(policyStorageSHA);
+      expect(hash(observerBytes)).toBe(policyObserverSHA); expect(hash(fixtureBytes)).toBe(policyFixtureSHA);
+      const fixture = JSON.parse(fixtureBytes.toString('utf8')) as { expected: {
+        policyRevision: string; installationEpoch: string; canonicalPolicySource: number[]; vocabularySource: number[]; approvedPRDSource: number[] } };
+      policySourceBytes.push(Buffer.from(fixture.expected.canonicalPolicySource), Buffer.from(fixture.expected.vocabularySource), Buffer.from(fixture.expected.approvedPRDSource));
+      expect(policySourceBytes.map(hash)).toEqual(['2c8b81fdbb5a790f778f6de18062e788e312bf38bc873171c23fee8150940df8',
+        '1a58a71719cc656ffa2830a0ffcc075668d1d10593f9556bb3dc03dd8cca0444', '35e4084c2c365777c78f0d1e2e65533b06758c1f3062cf1b10feb539af8bf7a7']);
+      policyId = ' ' + lease.invocation + '_joint_policy_β '; policyRevision = fixture.expected.policyRevision; expectedEpoch = fixture.expected.installationEpoch;
+      // Explicit fictional identity/revision/epoch, not defaults or installed executing-code authentication.
+      const beforeRows = await rows(), beforeCatalog = await catalog();
+      await query(admin, storageBytes); await rollback(admin); await rememberStorage(storageBytes);
+      expect(objects).toHaveLength(50);
+      await query(admin, observerBytes); await rollback(admin);
+      policyObserverObject = await remember('function', 'nevora_tenancy', 'read_portal_installed_policy', installerOid, '(text)');
+      expect(objects).toHaveLength(51);
+      jointRole = await role('po_' + lease.invocation + '_joint_reader', false);
+      await begin(admin);
+      try {
+        await query(admin, `INSERT INTO ${definitionTable}(policy_id,revision,definition,canonical_policy_source,canonical_policy_source_sha256,vocabulary_source,vocabulary_source_sha256,approved_prd_source,approved_prd_source_sha256)
+          VALUES($1,$2::int8,pg_catalog.jsonb_build_object('format','NEVORA_CAPABILITY_SOURCE_BUNDLE_V1','policyId',$1::text,'revision',($2::int8)::text,
+            'canonicalPolicySource',pg_catalog.jsonb_build_object('path','src/lib/capabilities/policy.ts','sha256',$4::text),
+            'vocabularySource',pg_catalog.jsonb_build_object('path','src/lib/capabilities/types.ts','sha256',$6::text),
+            'approvedPRD',pg_catalog.jsonb_build_object('path','F_IMPLEMENTATION_PRD.md','sha256',$8::text)),$3::bytea,$4,$5::bytea,$6,$7::bytea,$8)`,
+        [policyId, policyRevision, policySourceBytes[0], hash(policySourceBytes[0]), policySourceBytes[1], hash(policySourceBytes[1]), policySourceBytes[2], hash(policySourceBytes[2])]);
+        await query(admin, `INSERT INTO ${headTable}(workspace_id,workspace_incarnation,installation_epoch,policy_id,policy_revision) VALUES($1,$2::int8,$3::int8,$4,$5::int8)`,
+          [workspaceId, expectedCounter, expectedEpoch, policyId, policyRevision]);
+        for (const name of allTables) expect((await query(admin, 'SELECT * FROM ' + name)).rows).toEqual([]);
+        await adminHeader(admin);
+        // Explicit fictional complete children solely to witness individual native row order.
+        for (const code of [CAPABILITIES[1], CAPABILITIES[0]]) await query(admin, 'INSERT INTO ' + childTables[0] + '(workspace_id,employee_id,capability) VALUES($1,$2,$3)', [workspaceId, employeeA, code]);
+        for (const id of [...exactLocationIds].reverse()) await query(admin, 'INSERT INTO ' + childTables[1] + '(workspace_id,employee_id,location_id) VALUES($1,$2,$3)', [workspaceId, employeeA, id]);
+        await query(admin, 'COMMIT');
+      } finally { await rollback(admin); }
+      const afterRows = await rows(); for (const name of completeTables) if (!allTables.includes(name as typeof allTables[number])) expect(afterRows[name]).toEqual(beforeRows[name]);
+      originalRows = afterRows; originalCatalog = canonicalAcl(await catalog()); retainedPolicyRows = await jointPolicyRows(); jointSetupComplete = true;
+      expect(roles).toHaveLength(4); expect(clients.size).toBe(6);
+      record({ operation: 'JOINT_EXPLICIT_AFTER_PO16_SETUP', beforeRows, afterRows, beforeCatalog, afterCatalog: await catalog(),
+        policyRows: retainedPolicyRows, policyId, policyRevision, expectedEpoch, expectedCounter, policySourceSHAs: policySourceBytes.map(hash),
+        observer: policyObserverObject, safeNonloginRole: jointRole, objects, roles,
+        claim: 'EXPLICIT_FICTIONAL_STORAGE_AND_CHILD_ROWS_NOT_GRANTS_OR_SOURCE_AUTHENTICATION' });
+    }, 45000);
+
+    it('JP01 whole fresh installer rejects STRICT dependency profiles then installs exact ungranted void body', async () => {
+      for (const signature of ['nevora_tenancy.lock_portal_source_rows(text,text,bpchar)', 'nevora_tenancy.read_portal_installed_policy(text)']) {
+        const beforeNative = canonicalAcl(await catalog()), undo = 'ALTER FUNCTION ' + signature + ' CALLED ON NULL INPUT';
+        repairs.add(undo);
+        try {
+          await query(admin, 'ALTER FUNCTION ' + signature + ' STRICT');
+          const outcome = await jointFailure(installer, jointSource);
+          record({ caseId: 'JP01', variant: 'STRICT_DEPENDENCY', signature, outcome, native: await catalog() });
+          await aborted(installer, outcome.code, '55000'); expect(outcome.message).toBe('portal_policy_source_lock_dependency_invalid');
+        } finally { await rollback(installer); await query(admin, undo); repairs.delete(undo); }
+        expect(canonicalAcl(await catalog())).toEqual(beforeNative); await jointPreserve();
+      }
+      const before = await rows(), beforePolicy = await jointPolicyRows(), beforeNative = await catalog();
+      await query(installer, jointSource); await rollback(installer);
+      jointObject = await remember('function', 'nevora_tenancy', 'lock_portal_policy_source_rows', installerOid, '(text,text,bpchar)'); jointInstalled = true;
+      const native = await catalog(), fn = native.functions.find(row => row.oid === jointObject.oid)!;
+      const profile = (await query(admin, 'SELECT prosrc,proisstrict,prosupport::oid::text support_oid,proleakproof,pronargdefaults,provariadic::oid::text variadic_oid FROM pg_catalog.pg_proc WHERE oid=$1::oid', [jointObject.oid])).rows[0];
+      expect(profile).toEqual({ prosrc: jointSource.split('$portal_policy_source_locks$')[1], proisstrict: false, support_oid: '0', proleakproof: false, pronargdefaults: 0, variadic_oid: '0' });
+      expect(fn).toMatchObject({ owner: installerOid, prosecdef: false, proconfig: ['search_path=pg_catalog'], return_oid: '2278', arg_oids: '25 25 1042', proretset: false, provolatile: 'v', proparallel: 'u', lanname: 'plpgsql' });
+      expect(native.functions.filter(row => row.oid !== jointObject.oid)).toEqual(beforeNative.functions);
+      for (const field of ['schemas', 'relations', 'columns', 'constraints', 'indexes', 'triggers', 'policies', 'columnAcls'] as const) expect(native[field]).toEqual(beforeNative[field]);
+      expect(native.expandedAcls.filter(row => row.kind === 'FUNCTION' && row.oid === jointObject.oid && row.grantee !== installerOid)).toEqual([]);
+      expect(await rows()).toEqual(before); expect(await jointPolicyRows()).toEqual(beforePolicy); expect(objects).toHaveLength(52);
+      originalCatalog = canonicalAcl(native);
+      record({ caseId: 'JP01', variant: 'FRESH_WHOLE_INSTALL', jointObject, profile, native, beforeNative, policyRows: beforePolicy, functionSourceSHA256: hash(profile.prosrc), voidIsNotProof: true });
+      await jointPreserve();
+    }, 45000);
+
+    it('JP02 duplicate whole installer42723 keeps exact original function OID body controls and policy rows', async () => {
+      const native = canonicalAcl(await catalog());
+      try { const outcome = await jointFailure(installer, jointSource); record({ caseId: 'JP02', outcome });
+        await aborted(installer, outcome.code, '42723'); expect(outcome.message).toBe('portal_policy_source_lock_already_installed'); }
+      finally { await rollback(installer); }
+      expect(canonicalAcl(await catalog())).toEqual(native); await jointPreserve();
+    }, 45000);
+
+    it('JP03 original APP WORKER outsider LOGINs cannot execute joint or policy observer and keep exact identities', async () => {
+      for (const [client, principal] of [[app, appRole], [worker, workerRole], [outsider, outsiderRole]] as const) {
+        await identity(client, principal.name, principal.oid);
+        for (const [statement, values] of [[jointSQL, [workspaceId, employeeA, token()]], ['SELECT nevora_tenancy.read_portal_installed_policy($1::text)', [workspaceId]]] as const) {
+          await begin(client);
+          try { const outcome = await jointFailure(client, statement, [...values]); await aborted(client, outcome.code, '42501'); record({ caseId: 'JP03', role: principal, statement, outcome }); }
+          finally { await rollback(client); }
+          await identity(client, principal.name, principal.oid);
+        }
+      }
+      await jointPreserve();
+    }, 45000);
+
+    it('JP04 rollback-only minimal safe NOLOGIN lock grants do not bypass private FORCE zero-policy rows', async () => {
+      const beforeNative = canonicalAcl(await catalog()); await begin(admin);
+      try {
+        await query(admin, 'GRANT USAGE ON SCHEMA nevora_tenancy TO ' + q(jointRole.name));
+        await query(admin, 'GRANT EXECUTE ON FUNCTION ' + jointSignature + ',nevora_tenancy.read_portal_installed_policy(text) TO ' + q(jointRole.name));
+        const lockColumns = [['public.workspaces', 'id'], ['public.employees', 'id'], ['public.employee_credentials', 'employee_id'],
+          ['nevora_tenancy.workspace_incarnation_counter', 'workspace_id'], [definitionTable, 'policy_id'], [headTable, 'workspace_id'],
+          ['nevora_tenancy.portal_authority', 'workspace_id'], ['public.employee_sessions', 'token_hash'], ['nevora_tenancy.portal_session_issuance', 'token_hash'],
+          [table, 'workspace_id'], [childTables[0], 'capability'], [childTables[1], 'location_id']] as const;
+        for (const [name, column] of lockColumns) { await query(admin, 'GRANT SELECT ON TABLE ' + name + ' TO ' + q(jointRole.name)); await query(admin, 'GRANT UPDATE(' + q(column) + ') ON TABLE ' + name + ' TO ' + q(jointRole.name)); }
+        const grantedNative = await catalog(); const roleFlags = (await query(admin, 'SELECT oid::text,rolname,rolcanlogin,rolsuper,rolbypassrls FROM pg_catalog.pg_roles WHERE oid=$1::oid', [jointRole.oid])).rows;
+        expect(roleFlags).toEqual([{ oid: jointRole.oid, rolname: jointRole.name, rolcanlogin: false, rolsuper: false, rolbypassrls: false }]);
+        await query(admin, 'SAVEPOINT exact_safe_nonlogin'); await query(admin, 'SET LOCAL ROLE ' + q(jointRole.name));
+        expect((await query(admin, 'SELECT workspace_id FROM nevora_tenancy.workspace_incarnation_counter')).rows).toEqual([]);
+        const outcome = await jointFailure(admin, jointSQL, [workspaceId, employeeA, token()]);
+        const safePid = (admin as Client & { processID: number }).processID;
+        // An independent fixture client observes the aborted SAVEPOINT owner.
+        await poll(async () => (await query(installer, 'SELECT state FROM pg_catalog.pg_stat_activity WHERE pid=$1', [safePid])).rows[0]?.state === 'idle in transaction (aborted)' && admin.getTransactionStatus() === 'E', 'JP04_safe_owner_aborted');
+        const abortedActivity = (await query(installer, 'SELECT pid,state FROM pg_catalog.pg_stat_activity WHERE pid=$1', [safePid])).rows[0];
+        expect(admin.getTransactionStatus()).toBe('E');
+        const followup = await rejected(admin, 'SELECT 1');
+        expect(outcome).toEqual({ code: '55000', message: 'portal_source_lock_missing' }); expect(followup).toBe('25P02');
+        await query(admin, 'ROLLBACK TO SAVEPOINT exact_safe_nonlogin'); await query(admin, 'RESET ROLE');
+        expect((await query(admin, 'SELECT current_user,session_user')).rows).toEqual([{ current_user: lease.user, session_user: lease.user }]);
+        record({ caseId: 'JP04', roleFlags, lockColumns, grantedNative, outcome, followup, abortedActivity, abortedStatus: 'E', seam: 'ROLLBACK_BOUND_NONLOGIN_FORCE0_NOT_RUNTIME_OWNER_ADOPTION' });
+      } finally { await rollback(admin); }
+      expect(canonicalAcl(await catalog())).toEqual(beforeNative); await jointPreserve();
+    }, 45000);
+
+    it('JP05 only owning RC reaches void; native errors require E25P02 and rollback without retained top-level row locks', async () => {
+      for (const isolation of ['REPEATABLE READ', 'SERIALIZABLE']) {
+        await query(installer, 'BEGIN ISOLATION LEVEL ' + isolation); await query(installer, RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
+        try { const outcome = await jointFailure(installer, jointSQL, [workspaceId, employeeA, token()]);
+          await aborted(installer, outcome.code, '55000'); expect(outcome.message).toBe('portal_policy_source_lock_isolation_required'); record({ caseId: 'JP05', isolation, outcome }); }
+        finally { await rollback(installer); }
+      }
+      await begin(installer); expect(await jointCall(installer)).toEqual([{ locked: '' }]);
+      try { const code = await rejected(installer, 'SELECT 1/0'); await aborted(installer, code, '22012');
+        await begin(writer); await query(writer, 'SELECT id FROM public.employees WHERE id=$1 FOR UPDATE NOWAIT', [employeeA]); await rollback(writer);
+        record({ caseId: 'JP05', code, clientStatus: installer.getTransactionStatus(), nativeTopLevelLocksReleased: true }); expect(installer.getTransactionStatus()).toBe('E'); }
+      finally { await rollback(writer); await rollback(installer); }
+      await jointPreserve();
+    }, 45000);
+
+    it('JP06 null foreign unattributed and exact UTF8 mismatches refuse; native bpchar padding remains accepted', async () => {
+      const cases: unknown[][] = [[null, employeeA, token()], [workspaceId.trim(), employeeA, token()], ['nonexistent-tenant', employeeA, token()],
+        [workspaceId, null, token()], [workspaceId, employeeA.trim(), token()], [workspaceId, nullOwnerEmployee, token()], [workspaceId, employeeB, token()],
+        [workspaceId, employeeA, null], [workspaceId, employeeA, hash('fictional-foreign-session')]];
+      for (const args of cases) {
+        await begin(installer);
+        try { const outcome = await jointFailure(installer, jointSQL, args); record({ caseId: 'JP06', args, outcome });
+          await aborted(installer, outcome.code, '55000'); expect(outcome.message).toBe('portal_source_lock_missing'); }
+        finally { await rollback(installer); }
+      }
+      await begin(installer);
+      try { await jointCall(installer, workspaceId, employeeA, token() + '   '); const observed = await call(installer);
+        expect(observed.workspace.id).toBe(workspaceId); expect(observed.employee.id).toBe(employeeA);
+        expect(observed.portal.state).toBe('DISABLED'); expect(observed.portal.proofProvenance).toBe('UNVERIFIED');
+        expect(observed.credential.mustChangePassword).toBe(true); expect(observed.session.expiresAt).toBe('2000-01-01 00:00:00.654321+00');
+        expect(observed.issuance.workspaceIncarnation).toBe('1'); expect(observed.incarnation.version).toBe('9007199254740994');
+        record({ caseId: 'JP06', variant: 'EXACT_PADDED_UTF8_AND_NATIVE_CHAR', observed, claim: 'RAW_DISABLED_EXPIRED_UNVERIFIED_STALE_ISSUANCE_NOT_AUTHORIZATION' }); }
+      finally { await rollback(installer); }
+      await jointPreserve();
+    }, 45000);
+
+    it('JP07 adjacent two-blocker witnesses mechanically retain every source and complete bytewise child row order', async () => {
+      const caps = (await query(admin, 'SELECT capability FROM ' + childTables[0] + ' WHERE workspace_id=$1 AND employee_id=$2 ORDER BY pg_catalog.convert_to(capability,\'UTF8\')', [workspaceId, employeeA])).rows.map(row => row.capability as string);
+      const locations = (await query(admin, 'SELECT location_id FROM ' + childTables[1] + ' WHERE workspace_id=$1 AND employee_id=$2 ORDER BY pg_catalog.convert_to(location_id,\'UTF8\')', [workspaceId, employeeA])).rows.map(row => row.location_id as string);
+      expect(caps).toHaveLength(2); expect(locations).toHaveLength(3);
+      const locks: { label: string; text: string; values: unknown[] }[] = [
+        { label: 'workspace', text: 'SELECT id FROM public.workspaces WHERE id=$1 FOR UPDATE', values: [workspaceId] },
+        { label: 'employee', text: 'SELECT id FROM public.employees WHERE id=$1 FOR UPDATE', values: [employeeA] },
+        { label: 'credential', text: 'SELECT employee_id FROM public.employee_credentials WHERE employee_id=$1 FOR UPDATE', values: [employeeA] },
+        { label: 'counter', text: 'SELECT workspace_id FROM nevora_tenancy.workspace_incarnation_counter WHERE workspace_id=$1 FOR UPDATE', values: [workspaceId] },
+        { label: 'definition', text: 'SELECT policy_id FROM ' + definitionTable + ' WHERE policy_id=$1 AND revision=$2::int8 FOR UPDATE', values: [policyId, policyRevision] },
+        { label: 'head', text: 'SELECT workspace_id FROM ' + headTable + ' WHERE workspace_id=$1 FOR UPDATE', values: [workspaceId] },
+        { label: 'Portal', text: 'SELECT employee_id FROM nevora_tenancy.portal_authority WHERE workspace_id=$1 AND employee_id=$2 FOR UPDATE', values: [workspaceId, employeeA] },
+        { label: 'session', text: 'SELECT token_hash FROM public.employee_sessions WHERE token_hash=$1::bpchar FOR UPDATE', values: [token()] },
+        { label: 'LIVE', text: 'SELECT token_hash FROM nevora_tenancy.portal_session_issuance WHERE token_hash=$1::bpchar FOR UPDATE', values: [token()] },
+        { label: 'admin', text: 'SELECT employee_id FROM ' + table + ' WHERE workspace_id=$1 AND employee_id=$2 FOR UPDATE', values: [workspaceId, employeeA] },
+        ...caps.map(code => ({ label: 'capability:' + code, text: 'SELECT capability FROM ' + childTables[0] + ' WHERE workspace_id=$1 AND employee_id=$2 AND capability=$3 FOR UPDATE', values: [workspaceId, employeeA, code] })),
+        ...locations.map(id => ({ label: 'location:' + id, text: 'SELECT location_id FROM ' + childTables[1] + ' WHERE workspace_id=$1 AND employee_id=$2 AND location_id=$3 FOR UPDATE', values: [workspaceId, employeeA, id] })),
+      ];
+      for (let index = 0; index < locks.length - 1; index++) {
+        const first = locks[index], second = locks[index + 1]; await begin(admin); await begin(writer);
+        await query(admin, first.text, first.values); await query(writer, second.text, second.values); await begin(installer);
+        const pending = jointCall(installer); pendingFenceAttempts.add(pending);
+        try {
+          const firstWait = await waitEvidence(installer, admin, 'JP07:first:' + first.label);
+          expect(firstWait.activity.find(row => row.pid === (installer as Client & { processID: number }).processID)?.blockers).not.toContain((writer as Client & { processID: number }).processID);
+          await query(admin, 'COMMIT'); const secondWait = await waitEvidence(installer, writer, 'JP07:second:' + second.label);
+          await query(writer, 'COMMIT'); expect(await pending).toEqual([{ locked: '' }]); pendingFenceAttempts.delete(pending);
+          record({ caseId: 'JP07', index, first: first.label, second: second.label, firstWait, secondWait, orderedRows: locks.map(row => row.label), claim: 'SINGLE_EMPLOYMENT_ROW_LOCK_ORDER_NOT_COMPLETE_SET_WRITER_INTEGRATION' });
+        } finally { await rollback(admin); await rollback(writer); await reconcileJoint(pending); await rollback(installer); }
+      }
+      await jointPreserve();
+    }, 45000);
+
+    it('JP08 repeated joint call retains source and head locks until COMMIT and blocks real rollback-only writers', async () => {
+      const statements = [
+        ['credential', 'UPDATE public.employee_credentials SET must_change_password=false WHERE employee_id=$1', [employeeA]],
+        ['head', 'UPDATE ' + headTable + ' SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1', [workspaceId]],
+        ['Portal-row-probe', 'SELECT employee_id FROM nevora_tenancy.portal_authority WHERE workspace_id=$1 AND employee_id=$2 FOR UPDATE', [workspaceId, employeeA]],
+      ] as const;
+      for (const [label, text, values] of statements) {
+        await begin(installer); await jointCall(installer); await jointCall(installer); await begin(writer);
+        const pending = query(writer, text, [...values]); pendingFenceAttempts.add(pending);
+        try { const wait = await waitEvidence(writer, installer, 'JP08:' + label); await query(installer, 'COMMIT');
+          const result = await pending; pendingFenceAttempts.delete(pending); expect(result.rowCount).toBe(1);
+          record({ caseId: 'JP08', label, wait, writerResultRows: result.rows, headWhileOwnWriter: await headObservation(writer), repeatedVoidNotProof: true }); }
+        finally { await rollback(installer); await reconcileJoint(pending); await rollback(writer); }
+      }
+      await jointPreserve();
+    }, 45000);
+
+    it('JP09 reader waits for real source and head writers and rollback returns exact unchanged fixture tuples', async () => {
+      for (const [label, text, values] of [
+        ['credential', 'UPDATE public.employee_credentials SET must_change_password=false WHERE employee_id=$1', [employeeA]],
+        ['head', 'UPDATE ' + headTable + ' SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1', [workspaceId]],
+      ] as const) {
+        await begin(writer); await query(writer, text, [...values]); await begin(installer);
+        const pending = jointCall(installer); pendingFenceAttempts.add(pending);
+        try { const wait = await waitEvidence(installer, writer, 'JP09:' + label); await rollback(writer);
+          expect(await pending).toEqual([{ locked: '' }]); pendingFenceAttempts.delete(pending);
+          record({ caseId: 'JP09', label, wait, headAfterWriterRollback: await headObservation(installer) }); }
+        finally { await rollback(writer); await reconcileJoint(pending); await rollback(installer); }
+      }
+      await jointPreserve();
+    }, 45000);
+
+    it('JP10 changed selected head after definition wait55000 refuses without retry and retains monotonic fictional epoch', async () => {
+      const beforeHead = await headObservation(), beforeRows = await rows(), beforePolicy = await jointPolicyRows();
+      await begin(writer); await query(writer, 'SELECT policy_id FROM ' + definitionTable + ' WHERE policy_id=$1 AND revision=$2::int8 FOR UPDATE', [policyId, policyRevision]);
+      await begin(installer); const pending = jointFailure(installer, jointSQL, [workspaceId, employeeA, token()]); pendingFenceAttempts.add(pending);
+      try {
+        const wait = await waitEvidence(installer, writer, 'JP10:definition');
+        // The SAME definition-locking writer advances its own head. Its guard
+        // takes the unchanged definition SHARE lock self-compatibly; no bypass.
+        const changed = (await query(writer, 'UPDATE ' + headTable + ' SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1 RETURNING installation_epoch::text', [workspaceId])).rows;
+        expect(changed).toHaveLength(1); await query(writer, 'COMMIT'); expectedEpoch = changed[0].installation_epoch;
+        const outcome = await pending; pendingFenceAttempts.delete(pending); await aborted(installer, outcome.code, '55000');
+        expect(outcome.message).toBe('portal_installed_policy_source_drift');
+        const afterHead = await headObservation(), afterPolicy = await jointPolicyRows();
+        expect(afterPolicy[definitionTable]).toEqual(beforePolicy[definitionTable]); expect(await rows()).toEqual(beforeRows);
+        expect(afterHead).toEqual([{ ...beforeHead[0], installation_epoch: expectedEpoch }]);
+        retainedPolicyRows = afterPolicy;
+        record({ caseId: 'JP10', beforeHead, afterHead, beforePolicy, afterPolicy, wait, outcome, explicitFixtureEpochAdvance: true,
+          claim: 'MONOTONIC_FICTIONAL_HEAD_CHANGE_NO_RECOVERY_HIGH_WATER_OR_SOURCE_AUTHENTICATION' });
+      } finally { await rollback(writer); await reconcileJoint(pending); await rollback(installer); }
+      await jointPreserve();
+    }, 45000);
+
+    it('JP11 existing child row locks alone do not exclude a noncooperating new-child phantom', async () => {
+      await begin(installer); await jointCall(installer); await begin(writer);
+      try {
+        const inserted = (await query(writer, 'INSERT INTO ' + childTables[0] + '(workspace_id,employee_id,capability) VALUES($1,$2,$3) RETURNING capability', [workspaceId, employeeA, CAPABILITIES[2]])).rows;
+        expect(inserted).toEqual([{ capability: CAPABILITIES[2] }]);
+        const native = (await query(admin, 'SELECT pid,state,pg_catalog.pg_blocking_pids(pid) blockers FROM pg_catalog.pg_stat_activity WHERE pid=$1', [(writer as Client & { processID: number }).processID])).rows;
+        expect(native[0].blockers).toEqual([]);
+        record({ caseId: 'JP11', inserted, native, seam: 'DELIBERATELY_NONCOOPERATING_ROLLBACK_ONLY_CHILD_INSERT',
+          limitation: 'Kernel locks existing rows only; protected complete-set replacement requires persistent Portal writer serialization and fresh/final source equality.' });
+      } finally { await rollback(writer); await rollback(installer); }
+      await jointPreserve();
+    }, 45000);
+
+    afterAll(async () => {
+      // The inherited outer teardown stays byte-identical and remains sole object,
+      // role/client cleanup. New policy rows have their own retained final proof.
+      if (!jointSetupComplete) return;
+      await rollback(installer); await rollback(writer); await rollback(admin);
+      for (const pending of pendingFenceAttempts) await reconcileJoint(pending);
+      await jointPreserve(); const finalPolicyRows = await jointPolicyRows();
+      record({ operation: 'JOINT_FINAL_POLICY_ROWS_AND_SOURCE_PRESERVATION', jointInstalled, policyRows: finalPolicyRows,
+        retainedPolicyRows, originalRows, originalCatalog, policyId, policyRevision, expectedEpoch, expectedCounter,
+        objects, roles, clients: clients.size, pendingRepairs: [...repairs], pendingFenceAttempts: pendingFenceAttempts.size,
+        verification: 'OWNED_FICTIONAL_LOCK_MECHANICS_NOT_AUTHORITY_CURRENT_PROOF_RLS_ADOPTION_OR_FULL_F10' });
+      expect(objects).toHaveLength(jointInstalled ? 52 : 51); expect(roles).toHaveLength(4); expect(clients.size).toBe(6);
+      expect(repairs.size).toBe(0); expect(pendingFenceAttempts.size).toBe(0);
+      writeFileSync(join(runPath!, 'portal-policy-joint-locks-final-rows.json'), JSON.stringify({ jointInstalled, policyRows: finalPolicyRows,
+        retainedPolicyRows, expectedEpoch, expectedCounter, sourceRows: await rows(), sourceCatalog: await catalog(), objects, roles,
+        claim: 'PRE_DROP_FICTIONAL_SOURCE_PRESERVATION_NOT_EFFECTS_OR_RUNTIME_AUTHORITY' }, null, 2), { flag: 'wx', mode: 0o600 });
+    }, 45000);
+  });
+
   afterAll(async () => {
     let cleaned = false;
     const closure: { client: string; status: string | null; finalStatus: string | null; closed: boolean }[] = [];
