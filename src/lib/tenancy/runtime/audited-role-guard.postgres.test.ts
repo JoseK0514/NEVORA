@@ -22,7 +22,7 @@ const auditedStoragePath = resolve('src/lib/tenancy/runtime/audited-helper-stora
 const auditedGuardPath = resolve('src/lib/tenancy/runtime/audited-role-guard.sql');
 // Actual root invocation is held until final preparation pins frozen source.
 const expectedAuditedStorageSHA256 = '2a7d8c979e5e854ddd0e516a07ce20eed15365efcfb1c21812ffffe9e31d9603';
-const expectedAuditedGuardSHA256 = 'd00f270f726111283289dc02a050125128541fdb414e08812660bc0ccb232f21';
+const expectedAuditedGuardSHA256 = '28ce7c57e59426c12437fb4c14ded3e48c074ff67c9051ac36ae3e180c83443f';
 const counterSourcePath = resolve('src/lib/tenancy/runtime/workspace-incarnation-storage.sql');
 const parentSourcePath = resolve('db/migrations/0008_workspace_positions.sql');
 const expectedCounterSourceSHA256 = 'b3d8c8ecf96fb4ff72255e85a53a50ddc97a1633dfdf94cea19b4496382a07f9';

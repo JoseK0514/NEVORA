@@ -482,7 +482,54 @@ audit_contracts(name,route_kind,argument_types,return_type,runtime_kinds) AS (
   GROUP BY current.owner_oid
   HAVING COUNT(DISTINCT c.owner_observation)=1 AND COUNT(DISTINCT c.owner_acl_observation)=1
     AND COUNT(DISTINCT c.owner_lock_columns)=1
-), audit_capabilities AS (
+), -- ORIGINAL_RUNTIME_TERMINAL_CTE_BEGIN
+audit_original_login_dependency_current AS (
+  -- One fixed dependency-only invoker, not a callable runtime/root exception.
+  -- Native equality binds observed source; it is not reviewer authentication.
+  SELECT f.oid AS function_oid,f.observation
+  FROM audit_functions AS f JOIN pg_catalog.pg_proc AS p ON p.oid=f.oid
+  WHERE f.schema_name='nevora_tenancy' AND p.proname='require_original_runtime_login_kind'
+    AND p.oid=pg_catalog.to_regprocedure('nevora_tenancy.require_original_runtime_login_kind()')::pg_catalog.oid
+    AND p.pronargs=0 AND p.proargtypes::pg_catalog.oid[]=''::pg_catalog.oidvector::pg_catalog.oid[]
+    AND p.proallargtypes IS NULL AND p.proargmodes IS NULL AND p.proargnames IS NULL
+    AND p.prorettype=25::pg_catalog.oid AND p.prokind='f' AND NOT p.proretset
+    AND p.provolatile='v' AND NOT p.prosecdef AND NOT p.proleakproof AND p.proparallel='u'
+    AND p.provariadic=0 AND p.pronargdefaults=0 AND p.prosupport=0
+    AND f.observation->>'language'='plpgsql'
+    AND p.proconfig=ARRAY['search_path=pg_catalog']::pg_catalog.text[]
+    -- Default PUBLIC EXECUTE is an actual ACL entry and must deny. Extra named
+    -- grantees need a safe consistent native owner and an exact declaring root.
+    -- This stage uses pre-capability native profiles, never the full capability stage.
+    AND NOT EXISTS (
+      SELECT 1 FROM pg_catalog.aclexplode(COALESCE(p.proacl,pg_catalog.acldefault('f'::pg_catalog."char",p.proowner))) AS acl
+      WHERE acl.is_grantable OR acl.privilege_type<>'EXECUTE' OR (acl.grantee<>p.proowner AND NOT EXISTS (
+        SELECT 1 FROM audit_owners AS allowed_owner
+        JOIN audit_owner_consistency AS consistent ON consistent.owner_oid=allowed_owner.oid
+        JOIN audit_function_current AS declared_root ON declared_root.owner_oid=allowed_owner.oid
+        JOIN nevora_tenancy.audited_helper_capability AS registered
+          ON registered.runtime_kind=declared_root.runtime_kind AND registered.route_kind=declared_root.route_kind
+          AND registered.function_oid=declared_root.function_oid AND registered.route_oid=declared_root.route_oid
+        WHERE allowed_owner.oid=acl.grantee AND allowed_owner.safe
+          AND registered.owner_observation=allowed_owner.observation
+          AND registered.owner_acl_observation=allowed_owner.acl_observation
+          AND EXISTS (SELECT 1 FROM pg_catalog.jsonb_array_elements(registered.dependencies) AS retained(value)
+            WHERE retained.value=f.observation)
+      ))
+    )
+    -- The terminal never admits a native edge back to itself or another custom
+    -- function. This supplement is not a PL/pgSQL callgraph proof: string bodies
+    -- and dynamic calls still require exact installer/callsite source review.
+    AND NOT EXISTS (
+      SELECT 1 FROM pg_catalog.pg_depend AS edge
+      WHERE edge.classid='pg_catalog.pg_proc'::pg_catalog.regclass AND edge.objid=p.oid
+        AND edge.refclassid='pg_catalog.pg_proc'::pg_catalog.regclass
+        AND NOT EXISTS (SELECT 1 FROM pg_catalog.pg_proc AS target
+          JOIN pg_catalog.pg_namespace AS target_schema ON target_schema.oid=target.pronamespace
+          WHERE target.oid=edge.refobjid AND target_schema.nspname='pg_catalog')
+    )
+),
+-- ORIGINAL_RUNTIME_TERMINAL_CTE_END
+audit_capabilities AS (
   SELECT c.runtime_kind,c.route_kind,c.function_oid,c.route_oid
   FROM nevora_tenancy.audited_helper_capability AS c JOIN audit_function_current AS current
     ON current.runtime_kind=c.runtime_kind AND current.route_kind=c.route_kind AND current.function_oid=c.function_oid AND current.route_oid=c.route_oid
@@ -498,7 +545,12 @@ audit_contracts(name,route_kind,argument_types,return_type,runtime_kinds) AS (
     AND NOT EXISTS (SELECT 1 FROM pg_catalog.jsonb_array_elements(c.dependencies) AS dependency(value)
       WHERE NOT EXISTS (SELECT 1 FROM audit_functions AS f WHERE f.observation=dependency.value
         AND pg_catalog.has_function_privilege(o.oid,f.oid,'EXECUTE') AND pg_catalog.has_schema_privilege(o.oid,f.schema_oid,'USAGE')
-        AND (f.schema_name='pg_catalog' OR EXISTS (SELECT 1 FROM audit_function_current AS target WHERE target.function_oid=f.oid))))
+        AND (f.schema_name='pg_catalog' OR EXISTS (SELECT 1 FROM audit_function_current AS target WHERE target.function_oid=f.oid)
+-- ORIGINAL_RUNTIME_DEPENDENCY_ADMISSION_BEGIN
+          OR EXISTS (SELECT 1 FROM audit_original_login_dependency_current AS terminal
+            WHERE terminal.function_oid=f.oid AND terminal.observation=f.observation)
+-- ORIGINAL_RUNTIME_DEPENDENCY_ADMISSION_END
+)))
     AND pg_catalog.jsonb_array_length(c.dependencies)=(SELECT COUNT(DISTINCT dependency.value) FROM pg_catalog.jsonb_array_elements(c.dependencies) AS dependency(value))
     -- Every native pg_depend function edge is covered; this cannot prove PL/pgSQL
     -- callgraph completeness or dynamic SQL. Those source-review gates stay open.

@@ -8,7 +8,7 @@ import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 
 const specifications = [
   { name: 'role-guard', helper: 'assert_runtime_role', sha256: '7c0ce83b99d401aac9a31db391cb750b676a22bf3c76e440194de986299bbd6a', controls: ['runtime_role_binding'] },
-  { name: 'audited-role-guard', helper: 'assert_audited_runtime_role', sha256: 'd00f270f726111283289dc02a050125128541fdb414e08812660bc0ccb232f21', controls: ['runtime_role_binding', 'audited_helper_capability'] },
+  { name: 'audited-role-guard', helper: 'assert_audited_runtime_role', sha256: '28ce7c57e59426c12437fb4c14ded3e48c074ff67c9051ac36ae3e180c83443f', controls: ['runtime_role_binding', 'audited_helper_capability'] },
 ] as const;
 // Source scaffolds only, never native privilege/installation evidence. Missing
 // standalone RED observes the unchanged prior definition-only fragment.

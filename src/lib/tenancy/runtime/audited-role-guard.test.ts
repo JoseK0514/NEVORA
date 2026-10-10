@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -6,8 +7,15 @@ import { tokenizeDdl } from '../inventory/ddl';
 const source = readFileSync(resolve('src/lib/tenancy/runtime/audited-role-guard.sql'), 'utf8');
 const original = readFileSync(resolve('src/lib/tenancy/runtime/role-guard.sql'), 'utf8');
 const installer = readFileSync(resolve('src/lib/tenancy/runtime/audited-role-guard-installer.sql'), 'utf8');
+const login = readFileSync(resolve('src/lib/tenancy/runtime/original-runtime-login.sql'), 'utf8');
 const lockColumns = source.slice(source.indexOf('), audit_lock_columns AS ('), source.indexOf('), audit_function_current AS ('));
 const normalized = (text: string) => tokenizeDdl(text).map(t => t.kind === 'word' ? t.raw.toUpperCase() : t.raw).join(' ');
+const hash = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
+function section(text: string, start: string, end: string): string {
+  expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
+  return text.slice(text.indexOf(start) + start.length, text.indexOf(end)).trim();
+}
+const terminal = () => section(source, '-- ORIGINAL_RUNTIME_TERMINAL_CTE_BEGIN', '-- ORIGINAL_RUNTIME_TERMINAL_CTE_END');
 describe('distinct audited runtime guard inert source', () => {
   it('declares only the external invoker/VOLATILE fixed-searchpath boolean guard', () => {
     const parts = lexSql(source).parts.filter(p => p.kind === 'statement'); expect(parts).toHaveLength(1);
@@ -124,5 +132,66 @@ describe('distinct audited runtime guard inert source', () => {
     for (const text of ['AUDITED_NATIVE_CTES_BEGIN', 'AUDITED_NATIVE_CTES_END', 'cannot prove PL/pgSQL callgraph', 'trusted-change fencing remains OPEN', 'inherent ALTER/regrant']) expect(source).toContain(text);
     expect(lexSql(source).diagnostics).toEqual([]); expect(lexSql(source).complete).toBe(true);
     expect(normalized(source)).not.toContain('INSERT INTO');
+  });
+  it('keeps the complete existing signature map, definer matcher and runtime denials byte-exact', () => {
+    expect(hash(source.slice(source.indexOf('audit_contracts(name,route_kind,argument_types,return_type,runtime_kinds) AS ('), source.indexOf('), audit_runtime_bindings AS (')))).toBe('a5f08151bd046e7a09b3f85fe505796d69327eeaaa2bcb3ccf01b6c7c6fd2b7f');
+    expect(hash(source.slice(source.indexOf('), audit_function_current AS ('), source.indexOf('), audit_owner_ids AS (')))).toBe('999cd6a441b9457165169842b721f5bef90143f19b3c0e42635cb6174f51f50b');
+    expect(hash(source.slice(source.indexOf('    NOT EXISTS (SELECT 1 FROM nevora_tenancy.audited_helper_capability AS registered'), source.indexOf('\n);')))).toBe('d114b9eb70ebc35dddcfdfaf8e7c5825f007b877ea570f000e713f1ee97ad730');
+  });
+  it('allows only the exact fixed zero-argument native invoker terminal without registering a root', () => {
+    const candidate = terminal();
+    for (const clause of ["f.schema_name='nevora_tenancy'", "p.proname='require_original_runtime_login_kind'",
+      "p.oid=pg_catalog.to_regprocedure('nevora_tenancy.require_original_runtime_login_kind()')::pg_catalog.oid",
+      'p.pronargs=0', "p.proargtypes::pg_catalog.oid[]=''::pg_catalog.oidvector::pg_catalog.oid[]",
+      'p.proallargtypes IS NULL AND p.proargmodes IS NULL AND p.proargnames IS NULL',
+      "p.prorettype=25::pg_catalog.oid AND p.prokind='f' AND NOT p.proretset",
+      "p.provolatile='v' AND NOT p.prosecdef AND NOT p.proleakproof AND p.proparallel='u'",
+      'p.provariadic=0 AND p.pronargdefaults=0 AND p.prosupport=0', "f.observation->>'language'='plpgsql'",
+      "p.proconfig=ARRAY['search_path=pg_catalog']::pg_catalog.text[]"]) expect(candidate).toContain(clause);
+    const contracts = source.slice(source.indexOf('audit_contracts('), source.indexOf('), audit_runtime_bindings AS ('));
+    expect(contracts).not.toContain('require_original_runtime_login_kind');
+  });
+  it('checks native/default terminal EXECUTE ACLs rather than granting named or PUBLIC authority', () => {
+    const candidate = terminal();
+    for (const clause of ['pg_catalog.aclexplode(COALESCE(p.proacl,pg_catalog.acldefault',
+      "acl.is_grantable OR acl.privilege_type<>'EXECUTE'", 'acl.grantee<>p.proowner',
+      'allowed_owner.oid=acl.grantee AND allowed_owner.safe']) expect(candidate).toContain(clause);
+    expect(candidate).not.toMatch(/\b(?:GRANT|REVOKE)\b/);
+  });
+  it('requires every extra grantee to be a consistent safe root owner explicitly retaining this descriptor', () => {
+    const candidate = terminal();
+    for (const clause of ['consistent.owner_oid=allowed_owner.oid', 'declared_root.owner_oid=allowed_owner.oid',
+      'registered.runtime_kind=declared_root.runtime_kind AND registered.route_kind=declared_root.route_kind',
+      'registered.function_oid=declared_root.function_oid AND registered.route_oid=declared_root.route_oid',
+      'registered.owner_observation=allowed_owner.observation', 'registered.owner_acl_observation=allowed_owner.acl_observation',
+      'pg_catalog.jsonb_array_elements(registered.dependencies) AS retained(value)', 'retained.value=f.observation']) expect(candidate).toContain(clause);
+    expect(candidate).not.toContain('audit_capabilities');
+  });
+  it('rejects unresolved and noncatalog native function edges including terminal self or root edges', () => {
+    const candidate = terminal();
+    for (const clause of ['FROM pg_catalog.pg_depend AS edge', "edge.classid='pg_catalog.pg_proc'::pg_catalog.regclass AND edge.objid=p.oid",
+      "edge.refclassid='pg_catalog.pg_proc'::pg_catalog.regclass", 'AND NOT EXISTS (SELECT 1 FROM pg_catalog.pg_proc AS target',
+      "target.oid=edge.refobjid AND target_schema.nspname='pg_catalog'"]) expect(candidate).toContain(clause);
+    expect(candidate).not.toContain('edge.refobjid<>p.oid');
+    expect(source).toContain('not a PL/pgSQL callgraph proof');
+  });
+  it('adds a separate descriptor/OID dependency branch while retaining global invalid-row denial', () => {
+    const admission = section(source, '-- ORIGINAL_RUNTIME_DEPENDENCY_ADMISSION_BEGIN', '-- ORIGINAL_RUNTIME_DEPENDENCY_ADMISSION_END');
+    expect(admission).toContain('OR EXISTS (SELECT 1 FROM audit_original_login_dependency_current AS terminal');
+    expect(admission).toContain('terminal.function_oid=f.oid AND terminal.observation=f.observation');
+    expect(source).toContain("f.schema_name='pg_catalog' OR EXISTS (SELECT 1 FROM audit_function_current AS target WHERE target.function_oid=f.oid)");
+    expect(source).toContain('WHERE NOT EXISTS (SELECT 1 FROM audit_capabilities AS capability');
+    expect(admission).not.toContain('NOT f.security_definer');
+  });
+  it('keeps all three complete native CTE copies identical without a callable validator graph loop', () => {
+    const start = '-- AUDITED_NATIVE_CTES_BEGIN\n'; const end = '\n-- AUDITED_NATIVE_CTES_END';
+    const rawNative = (text: string) => {
+      expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
+      return text.slice(text.indexOf(start) + start.length, text.indexOf(end));
+    };
+    const native = rawNative(source);
+    expect(rawNative(installer)).toBe(native); expect(rawNative(login)).toBe(native);
+    expect(normalized(terminal())).not.toContain('NEVORA_TENANCY . REQUIRE_ORIGINAL_RUNTIME_LOGIN_KIND (');
+    expect(native).not.toContain('WITH RECURSIVE');
   });
 });

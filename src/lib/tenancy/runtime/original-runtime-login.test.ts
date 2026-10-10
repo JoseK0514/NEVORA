@@ -11,6 +11,12 @@ function section(start: string, end: string): string {
   expect(source.split(end)).toHaveLength(2);
   return source.slice(source.indexOf(start) + start.length, source.indexOf(end)).trim();
 }
+function withoutAddedSection(text: string, start: string, end: string): string {
+  expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
+  const after = text.indexOf(end) + end.length;
+  expect(text.slice(after, after + 1)).toBe('\n');
+  return text.slice(0, text.indexOf(start)) + text.slice(after + 1);
+}
 
 describe('unused original runtime login dependency inert source', () => {
   it('declares a zero-argument invoker text function, with no own transaction or installation', () => {
@@ -42,7 +48,9 @@ describe('unused original runtime login dependency inert source', () => {
   });
   it('reuses the exact pinned native audit closure including policies without a relaxed duplicate', () => {
     const native = section('-- AUDITED_NATIVE_CTES_BEGIN', '-- AUDITED_NATIVE_CTES_END');
-    expect(hash(native)).toBe('fba1c31e39cf91ef4f3287968d2a2ec3fa93ca6faf32d796b6fd03fbf53c137f');
+    const withoutTerminal = withoutAddedSection(native, '-- ORIGINAL_RUNTIME_TERMINAL_CTE_BEGIN', '-- ORIGINAL_RUNTIME_TERMINAL_CTE_END');
+    const preserved = withoutAddedSection(withoutTerminal, '\n-- ORIGINAL_RUNTIME_DEPENDENCY_ADMISSION_BEGIN', '-- ORIGINAL_RUNTIME_DEPENDENCY_ADMISSION_END');
+    expect(hash(preserved)).toBe('fba1c31e39cf91ef4f3287968d2a2ec3fa93ca6faf32d796b6fd03fbf53c137f');
     expect(native).toContain('AND p.provolatile=\'v\' AND p.prosecdef');
     expect(native).toContain("'policies',COALESCE(");
     expect(native).toContain('target.function_oid=f.oid');
@@ -81,9 +89,24 @@ describe('unused original runtime login dependency inert source', () => {
     expect(source).toContain('EXCEPTION WHEN OTHERS THEN');
     expect(source).not.toContain('SQLERRM');
   });
-  it('documents the still-closed graph and separate outer route/caller/installer obligations', () => {
-    for (const text of ['DEPENDENCY_ONLY INVOKER contract is not implemented', 'immediate calling function',
+  it('documents source-prepared dependency admission with native and caller integration still pending', () => {
+    for (const text of ['DEPENDENCY_ONLY INVOKER contract is source-prepared, native invocation remains pending', 'immediate calling function',
       'fixed literal service kind', 'source observations are not reviewer/operator authority', 'shared catalog fence',
       'cannot prove PL/pgSQL callgraph', 'No counter access, proof issuance']) expect(source).toContain(text);
+  });
+  it('requires even a safe extra EXECUTE grantee to declare the exact self descriptor in a full approved root tuple', () => {
+    const context = section('-- ORIGINAL_RUNTIME_OWNER_CONTEXT_BEGIN', '-- ORIGINAL_RUNTIME_OWNER_CONTEXT_END');
+    for (const clause of ['declared.runtime_kind=approved.runtime_kind AND declared.route_kind=approved.route_kind',
+      'declared.function_oid=approved.function_oid AND declared.route_oid=approved.route_oid',
+      'pg_catalog.jsonb_array_elements(declared.dependencies) AS retained(value)',
+      'retained.value=validator.observation']) expect(context).toContain(clause);
+  });
+  it('shares only the fixed terminal dependency instead of an invoker direct/trigger/root capability', () => {
+    const native = section('-- AUDITED_NATIVE_CTES_BEGIN', '-- AUDITED_NATIVE_CTES_END');
+    expect(native).toContain('audit_original_login_dependency_current AS (');
+    expect(native).toContain('terminal.function_oid=f.oid AND terminal.observation=f.observation');
+    const contracts = native.slice(native.indexOf('audit_contracts('), native.indexOf('), audit_runtime_bindings AS ('));
+    expect(contracts).not.toContain('require_original_runtime_login_kind');
+    expect(source).not.toMatch(/review_source_sha256\s*=\s*'[0-9a-f]{64}'/);
   });
 });
