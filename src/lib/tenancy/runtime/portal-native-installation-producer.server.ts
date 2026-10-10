@@ -94,9 +94,10 @@ function intentArray(value:unknown,limit:number):unknown[]{
 }
 function intentOid(value:unknown):string{const s=key(value);if(s.length>10||(s.length===10&&s>'4294967295'))return deny();return s;}
 function nativeCatalogOid(value:unknown):string{
-  // pg_catalog.to_jsonb emits OID as a native UInt32 JSON number. Every value
-  // fits exact JS integer range; this never rounds/parses a source row value.
-  if(typeof value!=='number'||!Number.isInteger(value)||value<1||value>4294967295)return deny();return String(value);
+  // Actual PG18.4 pg_catalog.to_jsonb serializes OID as canonical decimal
+  // strings, including polrelid and polroles. Preserve that exact native form;
+  // reject JSON numbers and coercions, zero, leading zeros and UInt32 overflow.
+  return intentOid(value);
 }
 function intentDefinitions(value:unknown,ownerOid:string):readonly PolicyDefinition[]{
   const list=intentArray(value,17);if(list.length!==17)return deny();const relationOids=new Map<string,string>(),oidRelations=new Map<string,string>();

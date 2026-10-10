@@ -24,7 +24,7 @@ const OLD_PRODUCER_PIN = '17f630edc500d40cb929e95a325246cf169ad913d4c16bd3348b14
 const SUCCESSOR_PINS: Readonly<Record<string, string>> = Object.freeze({
   RENDER_ONLY: 'c474d30df7829b372838d5d7f25456cc5915b34f31b43d4d63dd05617d8cc7a7',
   MARKER_ONLY: 'b1f1748bd9e1a413714242694120c147ba3cd9e304f6a15d7b29100ea7287171',
-  FINAL_INTENT: '87892cc6fa632a9a3060e3f32c0625edb54106a4e710b58e16c12664446c0f35',
+  FINAL_INTENT: '772a55b59b28a1a2cca321daebd47ec264b8cbc064069417727aff61c98a34ea',
 });
 const PINNED_SOURCES: Readonly<Record<string, string>> = Object.freeze({
   'db/migrations/0001_initial.sql': '330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1',
@@ -480,6 +480,159 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
     await assertEmptyOriginalAndPrivate();
   }, 120000);
 
+  // CI-P02 BEGIN: additive, UNEXECUTED clean source-enrollment vector only.
+  // The unchanged CI-P01 must first establish exact rollback. Only the final
+  // mandatory-intent producer can run this case; prior defect stages skip it.
+  it.skipIf(stage !== 'FINAL_INTENT')('CI-P02 clean enrollment retains exact independent policy intent and fresh APP source observations only', async () => {
+    const retainedBefore = await beforeText();
+    expect(retainedBefore).toBe(beforeCatalog); expect(await nativeDefinitions()).toEqual([]);
+    expect(installer.getTransactionStatus()).toBe('I'); expect(app.getTransactionStatus()).toBe('I');
+    await assertEmptyOriginalAndPrivate();
+    const { RUNTIME_CATALOG_SHARED_FENCE_SQL } = await import('./catalog-fence.server');
+    const { PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL } = await import('./portal-native-installation-capture.server');
+    const { PORTAL_SOURCE_IMAGE_BYTES } = await import('./portal-source-image.generated');
+    const { loadPortalRuntimeSourceImage } = await import('./portal-runtime-startup-loader');
+    const generatedInstallation = resolve('src/lib/tenancy/runtime/portal-native-installation.generated.json');
+    const requireNoGeneratedInstallation = () => {
+      try { lstatSync(generatedInstallation); throw new Error('CI_P02_GENERATED_INSTALLATION_UNEXPECTED'); }
+      catch (error) { expect((error as NodeJS.ErrnoException).code).toBe('ENOENT'); }
+    };
+    requireNoGeneratedInstallation();
+    const input = { mode: 'OWNED_LOCAL_SOURCE_ENROLLMENT', database: lease.database, databaseOid: lease.databaseOid,
+      marker: lease.marker, systemIdentifier: lease.systemIdentifier, dataDirectory: lease.data, port: lease.port,
+      installerRole: lease.user, installerRoleOid: installerOid, readerOwner: readerRole.name, readerOwnerOid: readerRole.oid,
+      appRole: appRole.name, appRoleOid: appRole.oid,
+      reviewReference: 'F-DEV-COMPLETE-001:portal-controlled-install-native-review:' + lease.invocation,
+      reviewedBeforeCatalogCapsuleText: retainedBefore, intendedPolicyDefinitionObservation: intended } as const;
+    type FreshCapture = { startup: Record<string, unknown>; privateEnrollment: {
+      format: string; nativeCatalogCapsuleText: string; nativeCatalogCapsuleSha256: string } };
+    const installerStatements: string[] = [], appStatements: string[] = [];
+    const observations: { client: 'INSTALLER' | 'APP'; sqlSHA256: string; result: 'ACK' | 'ERROR'; sqlstate?: string }[] = [];
+    let installerCommitAcknowledged = 0, appCommitAcknowledged = 0, captureCount = 0, catalogCount = 0;
+    let committedCatalog: string | undefined, freshCapture: FreshCapture | undefined, finalGuardRows: unknown;
+    const savedInstallerQuery = installer.query, savedAppQuery = app.query;
+    const installerTransport = savedInstallerQuery.bind(installer), appTransport = savedAppQuery.bind(app);
+    // Observe unchanged actual Client calls/results. No policy fault, fake row,
+    // source result, caller authorization flag or replay is introduced here.
+    installer.query = (async (text: unknown, values?: unknown[]) => {
+      installerStatements.push(text as string);
+      try {
+        const result = await installerTransport(text as string, values);
+        observations.push({ client: 'INSTALLER', sqlSHA256: hash(text as string), result: 'ACK' });
+        if (text === 'COMMIT') installerCommitAcknowledged += 1;
+        if (text === queries['independent-current-catalog.candidate.sql']) {
+          catalogCount += 1; committedCatalog = result.rows[0]?.before_catalog as string | undefined;
+          record({ operation: 'CI_P02_REAL_PRECOMMIT_CATALOG', rows: result.rows });
+        }
+        return result;
+      } catch (error) {
+        observations.push({ client: 'INSTALLER', sqlSHA256: hash(text as string), result: 'ERROR', sqlstate: code(error) }); throw error;
+      }
+    }) as Client['query'];
+    app.query = (async (text: unknown, values?: unknown[]) => {
+      appStatements.push(text as string);
+      try {
+        const result = await appTransport(text as string, values);
+        observations.push({ client: 'APP', sqlSHA256: hash(text as string), result: 'ACK' });
+        if (text === 'COMMIT') appCommitAcknowledged += 1;
+        if (text === PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL.text) {
+          captureCount += 1; expect(result.rows).toHaveLength(1);
+          expect(Object.keys(result.rows[0]).sort()).toEqual(['privateEnrollment', 'startup']);
+          freshCapture = result.rows[0] as FreshCapture;
+          record({ operation: 'CI_P02_REAL_FRESH_ORIGINAL_APP_CAPTURE', rows: result.rows });
+        }
+        if (text === "SELECT 1/CASE WHEN nevora_tenancy.assert_audited_runtime_role('APP'::pg_catalog.text) IS TRUE THEN 1 ELSE 0 END AS guard;") finalGuardRows = result.rows;
+        return result;
+      } catch (error) {
+        observations.push({ client: 'APP', sqlSHA256: hash(text as string), result: 'ERROR', sqlstate: code(error) }); throw error;
+      }
+    }) as Client['query'];
+    let outcome: Awaited<ReturnType<typeof api.prepareControlledLocalPortalInstallation>>;
+    try { outcome = await api.prepareControlledLocalPortalInstallation(installer, app, input); }
+    finally { installer.query = savedInstallerQuery; app.query = savedAppQuery; }
+    // Retain the real clean outcome/catalog before feature assertions. The fixed
+    // run artifact is evidence, not the create-only generated installation writer.
+    const definitions = await nativeDefinitions(), fullAfter = await catalog(); await retainObjects();
+    const bytes = 'bytes' in outcome ? Buffer.from(outcome.bytes) : null;
+    if (bytes) writeFileSync(join(runPath!, 'portal-controlled-install-clean-retained-source-bytes.json'), bytes, { flag: 'wx', mode: 0o600 });
+    record({ caseId: 'CI-P02', stage, sourcePin, installerCommitAcknowledged, appCommitAcknowledged, captureCount, catalogCount,
+      observations, outcome: bytes ? { status: outcome.status, byteLength: bytes.length, sha256: hash(bytes) } : outcome,
+      independentlyCompiledIntent: intended, currentDefinitions: definitions, afterCatalog: fullAfter,
+      claim: 'CLEAN_LOCAL_RETAINED_SOURCE_OBSERVATIONS_NOT_PROOF_ROOT_BODY_BUILD_CURRENT_AUTHORITY_OR_ACTIVATION' });
+    expect(outcome.status).toBe('RETAINED_SOURCE_INSTALLATION_NOT_AUTHORITY');
+    if (outcome.status !== 'RETAINED_SOURCE_INSTALLATION_NOT_AUTHORITY' || !bytes || !freshCapture || !committedCatalog)
+      throw new Error('CI_P02_CLEAN_SOURCE_OBSERVATIONS_NOT_RETAINED');
+    expect(Object.isFrozen(outcome)).toBe(true); expect(Object.isFrozen(outcome.bytes)).toBe(true);
+    expect(installerCommitAcknowledged).toBe(1); expect(appCommitAcknowledged).toBe(1);
+    expect(captureCount).toBe(1); expect(catalogCount).toBe(1);
+    expect(observations.every(value => value.result === 'ACK')).toBe(true);
+    expect(installerStatements.slice(0, 3)).toEqual(['BEGIN ISOLATION LEVEL READ COMMITTED', INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text, 'SET LOCAL search_path=pg_catalog']);
+    expect(installerStatements.slice(-2)).toEqual([queries['independent-current-catalog.candidate.sql'], 'COMMIT']);
+    expect(appStatements.slice(0, 3)).toEqual(['BEGIN ISOLATION LEVEL READ COMMITTED', RUNTIME_CATALOG_SHARED_FENCE_SQL.text, 'SET LOCAL search_path=pg_catalog']);
+    expect(appStatements.slice(-3)).toEqual([PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL.text,
+      "SELECT 1/CASE WHEN nevora_tenancy.assert_audited_runtime_role('APP'::pg_catalog.text) IS TRUE THEN 1 ELSE 0 END AS guard;", 'COMMIT']);
+    expect(finalGuardRows).toEqual([{ guard: 1 }]);
+    expect(installerStatements.filter(text => text === rendered)).toHaveLength(1);
+    expect([...installerStatements, ...appStatements].some(text => /^ALTER POLICY\b/.test(text))).toBe(false);
+    expect(installer.getTransactionStatus()).toBe('I'); expect(app.getTransactionStatus()).toBe('I');
+    expect(definitions).toEqual(intended.definitions); expect(definitions).toHaveLength(17);
+    expect(definitions.filter(value => value.command === 'w')).toHaveLength(8);
+    expect(new Set(definitions.map(value => value.relationName)).size).toBe(9);
+    const currentCatalog = (await query(admin, queries['independent-current-catalog.candidate.sql'], [installerOid, readerRole.oid, appRole.oid])).rows;
+    expect(currentCatalog).toEqual([{ before_catalog: committedCatalog }]);
+    expect(Buffer.from(bytes.toString('utf8'), 'utf8').equals(bytes)).toBe(true);
+    const retained = JSON.parse(bytes.toString('utf8')) as { format: string; sourceImageSha256: string; producerSourceBytes: number[];
+      installationSourceBundle: Record<string, number[]>; catalogFenceProtocolSha256: string; startup: Record<string, unknown>;
+      privateEnrollment: FreshCapture['privateEnrollment'] };
+    expect(Buffer.from(JSON.stringify(retained) + '\n').equals(bytes)).toBe(true);
+    expect(Object.keys(retained).sort()).toEqual(['catalogFenceProtocolSha256', 'format', 'installationSourceBundle', 'privateEnrollment', 'producerSourceBytes', 'sourceImageSha256', 'startup']);
+    expect(retained.format).toBe('PORTAL_NATIVE_INSTALLATION_RETAINED_V1');
+    expect(retained.sourceImageSha256).toBe(hash(readFileSync(resolve('src/lib/tenancy/runtime/portal-source-image.generated.ts'))));
+    expect(retained.producerSourceBytes).toEqual([...readFileSync(resolve('src/lib/tenancy/runtime/portal-native-installation-producer.server.ts'))]);
+    expect(retained.catalogFenceProtocolSha256).toBe(hash(RUNTIME_CATALOG_SHARED_FENCE_SQL.text + '\n' + INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text));
+    const fixedFiles = { auditedRoleGuardInstallerSource: 'audited-role-guard-installer.sql', originalRuntimeLoginInstallerSource: 'original-runtime-login-installer.sql',
+      portalSourceLocksSource: 'portal-source-locks.sql', portalSourceObservationSource: 'portal-source-observation.sql',
+      portalInstalledPolicyObservationSource: 'portal-installed-policy-observation.sql', portalPolicyJointLocksSource: 'portal-policy-joint-locks.sql',
+      portalPolicyJointObservationSource: 'portal-policy-joint-observation.sql', privateEnrollmentCaptureSource: 'portal-native-installation-capture.server.ts' };
+    const bundle = retained.installationSourceBundle;
+    expect(Object.keys(bundle).sort()).toEqual([...Object.keys(fixedFiles), 'resolvePortalSource', 'privatePoliciesTemplateSource', 'privateGrantsTemplateSource', 'privatePoliciesRenderedSource', 'privateGrantsRenderedSource'].sort());
+    for (const value of Object.values(bundle)) {
+      expect(Array.isArray(value)).toBe(true); expect(value.length).toBeGreaterThan(0);
+      expect(value.every(byte => Number.isInteger(byte) && byte >= 0 && byte <= 255)).toBe(true);
+      const raw = Buffer.from(value); expect(Buffer.from(raw.toString('utf8'), 'utf8').equals(raw)).toBe(true);
+    }
+    for (const [name, file] of Object.entries(fixedFiles)) expect(bundle[name]).toEqual([...readFileSync(resolve('src/lib/tenancy/runtime/' + file))]);
+    expect(hash(Buffer.from(bundle.resolvePortalSource))).toBe('068776a706cebc22d5b402f433a7e4ca5756d836948f42dacd1d9c5d4d928873');
+    expect(Buffer.from(bundle.privatePoliciesTemplateSource).toString('utf8')).toBe(intended.policyTemplateSource);
+    expect(hash(Buffer.from(bundle.privateGrantsTemplateSource))).toBe('7b292d5d46b82c7befcd8e990cab5543609a70cc5bf97617103ad18a022dbf5c');
+    expect(Buffer.from(bundle.privatePoliciesRenderedSource).toString('utf8')).toBe(intended.renderedPolicySource);
+    expect(Buffer.from(bundle.privateGrantsRenderedSource).toString('utf8')).toBe(Buffer.from(bundle.privateGrantsTemplateSource).toString('utf8').replaceAll('"__BOUND_PORTAL_READER_OWNER__"', q(readerRole.name)));
+    const image = loadPortalRuntimeSourceImage(PORTAL_SOURCE_IMAGE_BYTES);
+    expect(image.status).toBe('SOURCE_IMAGE_LOADED_NOT_EXECUTION_ATTESTATION');
+    if (image.status !== 'SOURCE_IMAGE_LOADED_NOT_EXECUTION_ATTESTATION') throw new Error('CI_P02_REAL_FIXED_IMAGE_NOT_LOADED');
+    expect(retained.startup).toEqual({ ...freshCapture.startup, format: 'PORTAL_ROOT_STARTUP_SOURCE_OBSERVATION_V1',
+      canonicalPolicySource: image.image.sources.canonicalPolicySource.text, vocabularySource: image.image.sources.vocabularySource.text,
+      approvedPRDSource: image.image.sources.approvedPRDSource.text });
+    expect(retained.startup.databaseOid).toBe(lease.databaseOid); expect(retained.startup.ownerOid).toBe(readerRole.oid);
+    expect(retained.startup.rootDefinitionSha256).toBe(hash(retained.startup.rootDefinition as string));
+    expect(retained.startup.nativeAuditCapsuleSha256).toBe(hash(retained.startup.nativeAuditCapsuleText as string));
+    const root = (JSON.parse(fullAfter) as { functions: { catalog: { oid: string; proname: string; proowner: string; prosrc: string }; definition: string }[] }).functions.filter(value => value.catalog.proname === 'resolve_portal');
+    expect(root).toHaveLength(1); expect(String(root[0].catalog.oid)).toBe(retained.startup.rootOid);
+    expect(String(root[0].catalog.proowner)).toBe(readerRole.oid); expect(root[0].definition).toBe(retained.startup.rootDefinition);
+    const rootBody = Buffer.from(bundle.resolvePortalSource).toString('utf8').split('$protected_portal_source_resolver$')[1];
+    expect(root[0].catalog.prosrc).toBe(rootBody);
+    expect(retained.privateEnrollment).toEqual(freshCapture.privateEnrollment);
+    expect(retained.privateEnrollment.format).toBe('PORTAL_PRIVATE_READER_ENROLLMENT_SOURCE_V1');
+    expect(retained.privateEnrollment.nativeCatalogCapsuleSha256).toBe(hash(retained.privateEnrollment.nativeCatalogCapsuleText));
+    expect((JSON.parse(retained.privateEnrollment.nativeCatalogCapsuleText) as { installationCatalogText: string }).installationCatalogText).toBe(committedCatalog);
+    requireNoGeneratedInstallation(); await assertEmptyOriginalAndPrivate();
+    expect(readFileSync(join(runPath!, 'portal-controlled-install-clean-retained-source-bytes.json')).equals(bytes)).toBe(true);
+    record({ operation: 'CI_P02_CLEAN_SOURCE_BYTE_POLICY_AND_FRESH_NATIVE_EQUALITIES', sourceImageSha256: retained.sourceImageSha256,
+      retainedBytesSha256: hash(bytes), rootOid: retained.startup.rootOid, ownerOid: readerRole.oid,
+      policyCount: definitions.length, producerSourceSha256: hash(Buffer.from(retained.producerSourceBytes)),
+      generatedInstallationWritten: false, rootBodyInvoked: false, executingBuildAuthenticated: false, currentAuthorityIssued: false });
+  }, 120000);
+  // CI-P02 END.
   afterAll(async () => {
     const closure: { pid?: number; closed: boolean; status: string | null }[] = [];
     let cleaned = false, cleanupError: string | null = null;

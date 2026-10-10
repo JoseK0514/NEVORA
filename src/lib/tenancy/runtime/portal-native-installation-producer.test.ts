@@ -49,8 +49,8 @@ function intentFixture(){
   const definitions=privateRelations.flatMap((relationName,index)=>(relationName==='workspace_locator'?['select']:['select','lock']).map(suffix=>({schema:'nevora_tenancy',relationName,relationOid:String(200+index),policyName:'portal_reader_'+relationName+'_'+suffix,command:suffix==='select'?'r':'w',permissive:true,roleOids:['102'],using:'FICTIONAL_DEPARSED_USING_'+relationName+'_'+suffix,withCheck:suffix==='select'?null:'FICTIONAL_DEPARSED_FALSE_NOT_NATIVE'})))
     .sort((a,b)=>a.relationName<b.relationName?-1:a.relationName>b.relationName?1:a.policyName<b.policyName?-1:a.policyName>b.policyName?1:0);
   const observation={...binding,format:'PORTAL_PRIVATE_POLICY_INTENT_NATIVE_V1',serverVersionNum:'180004',definitions};
-  const relations=[...privateRelations,'runtime_role_binding','audited_helper_capability'].map((relationName,index)=>({schema:{nspname:'nevora_tenancy'},relation:{relname:relationName,oid:200+index},policies:definitions.filter(d=>d.relationName===relationName).map(d=>({catalog:{polrelid:Number(d.relationOid),polname:d.policyName,polcmd:d.command,polpermissive:d.permissive,polroles:[102]},using:d.using,withCheck:d.withCheck}))}));
-  for(const [index,relname] of ['workspaces','employees','employee_credentials','employee_sessions'].entries())relations.push({schema:{nspname:'public'},relation:{relname,oid:500+index},policies:[]});
+  const relations=[...privateRelations,'runtime_role_binding','audited_helper_capability'].map((relationName,index)=>({schema:{nspname:'nevora_tenancy'},relation:{relname:relationName,oid:String(200+index)},policies:definitions.filter(d=>d.relationName===relationName).map(d=>({catalog:{polrelid:d.relationOid,polname:d.policyName,polcmd:d.command,polpermissive:d.permissive,polroles:['102']},using:d.using,withCheck:d.withCheck}))}));
+  for(const [index,relname] of ['workspaces','employees','employee_credentials','employee_sessions'].entries())relations.push({schema:{nspname:'public'},relation:{relname,oid:String(500+index)},policies:[]});
   return {binding,observation,catalog:{relations}};
 }
 describe('separately bound private policy intent; source facts only',()=>{
@@ -75,10 +75,30 @@ describe('separately bound private policy intent; source facts only',()=>{
     else if(variant==='numericExpectedOID')definitions[0].relationOid=200;else if(variant==='invalidOidRange')definitions[0].relationOid='4294967296';else if(variant==='SQLNUL')definitions[0].using='x\0';else if(variant==='unpairedSurrogate')definitions[0].using='x\ud800';else d.compilerVerified=true;
     expect(()=>detachControlledPortalPrivatePolicyIntent(observation,f.binding)).toThrow('controlled_portal_install_unavailable');});
   it.each(['missing','extra','duplicate','role','command','permissive','relOID','unsafeOID','missingPrivate','extraControlPolicy','nullUsing','selectCheck'])('rejects changed actual %s tuple',variant=>{const f=intentFixture(),intent=detachControlledPortalPrivatePolicyIntent(f.observation,f.binding),policies=f.catalog.relations[0].policies;
-    if(variant==='missing')policies.pop();else if(variant==='extra')policies.push({...policies[0]});else if(variant==='duplicate')policies[1]={...policies[0]};else if(variant==='role')policies[0].catalog.polroles=[103];else if(variant==='command')policies[0].catalog.polcmd='*';else if(variant==='permissive')policies[0].catalog.polpermissive=false;
-    else if(variant==='relOID')policies[0].catalog.polrelid=301;else if(variant==='unsafeOID')policies[0].catalog.polroles=[4294967296];else if(variant==='missingPrivate')f.catalog.relations[0].relation.relname='unknown';else if(variant==='extraControlPolicy')f.catalog.relations[9].policies.push({...policies[0]});
+    if(variant==='missing')policies.pop();else if(variant==='extra')policies.push({...policies[0]});else if(variant==='duplicate')policies[1]={...policies[0]};else if(variant==='role')policies[0].catalog.polroles=['103'];else if(variant==='command')policies[0].catalog.polcmd='*';else if(variant==='permissive')policies[0].catalog.polpermissive=false;
+    else if(variant==='relOID')policies[0].catalog.polrelid='301';else if(variant==='unsafeOID')policies[0].catalog.polroles=['4294967296'];else if(variant==='missingPrivate')f.catalog.relations[0].relation.relname='unknown';else if(variant==='extraControlPolicy')f.catalog.relations[9].policies.push({...policies[0]});
     else if(variant==='nullUsing')(policies[0] as Record<string,unknown>).using=null;else policies.find(x=>x.catalog.polcmd==='r')!.withCheck='true';
     expect(()=>assertControlledPortalPrivatePolicyIntentOnCatalog(intent,JSON.stringify(f.catalog))).toThrow('controlled_portal_install_unavailable');});
+  // Regression from actual CI-P02: native catalog OIDs are strings, never
+  // inferred JSON numbers. These fictional hostile variants grant no authority.
+  it.each([
+    {label:'numeric relation OID',target:'relation',value:200},
+    {label:'numeric policy relation OID',target:'policy',value:200},
+    {label:'numeric policy role OID',target:'role',value:102},
+    {label:'zero policy role OID',target:'role',value:'0'},
+    {label:'leading zero policy role OID',target:'role',value:'0102'},
+    {label:'negative policy role OID',target:'role',value:'-102'},
+    {label:'signed policy role OID',target:'role',value:'+102'},
+    {label:'overflow policy role OID',target:'role',value:'4294967296'},
+    {label:'fractional policy role OID',target:'role',value:'102.0'},
+  ])('rejects ambiguous native $label without OID coercion',({target,value})=>{
+    const f=intentFixture(),intent=detachControlledPortalPrivatePolicyIntent(f.observation,f.binding);
+    const relation=f.catalog.relations[0];
+    if(target==='relation')(relation.relation as Record<string,unknown>).oid=value;
+    else if(target==='policy')(relation.policies[0].catalog as Record<string,unknown>).polrelid=value;
+    else (relation.policies[0].catalog as Record<string,unknown>).polroles=[value];
+    expect(()=>assertControlledPortalPrivatePolicyIntentOnCatalog(intent,JSON.stringify(f.catalog))).toThrow('controlled_portal_install_unavailable');
+  });
   it('rejects transparent input/array proxies before metadata traps',()=>{const f=intentFixture();let traps=0;const handlers={get(t:object,k:PropertyKey,r:unknown){traps++;return Reflect.get(t,k,r);},ownKeys(t:object){traps++;return Reflect.ownKeys(t);},getPrototypeOf(t:object){traps++;return Reflect.getPrototypeOf(t);},getOwnPropertyDescriptor(t:object,k:PropertyKey){traps++;return Reflect.getOwnPropertyDescriptor(t,k);}};
     expect(()=>detachControlledPortalPrivatePolicyIntent(new Proxy(f.observation,handlers),f.binding)).toThrow();
     expect(()=>detachControlledPortalPrivatePolicyIntent({...f.observation,definitions:new Proxy(f.observation.definitions,handlers)},f.binding)).toThrow();expect(traps).toBe(0);});
