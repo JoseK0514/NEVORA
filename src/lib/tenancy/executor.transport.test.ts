@@ -14,7 +14,7 @@ const facts = { authorityCurrent: true, kind: 'PORTAL', workspaceId: 'tenant-a',
   employeeId: 'employee-a', employeeVersion: '2026-10-08 11:00:00.654321+00',
   authorizationVersion: '4', portalAccessVersion: '2', sessionTokenHash: digest,
   sessionExpiresAt: '2026-10-09 12:01:00+00', role: 'EMPLOYEE', capabilityPolicyRevision: '3',
-  capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [] };
+  capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [], administrativeScope: null };
 const workerIdentity = { workerId: 'worker-a', credentialDigest: digest, environment: 'test' as const };
 const workerClaim = { deliveryId: 'delivery-a', generation: 'generation-a', leaseToken: 'fictional-lease-token-a' };
 const workerFacts = { authorityCurrent: true, kind: 'WORKER', workspaceId: facts.workspaceId,

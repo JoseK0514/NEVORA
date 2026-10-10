@@ -16,7 +16,7 @@ import type { ProvisionerScope, TenantProof } from './types';
 const NOW = new Date('2026-10-09T12:00:00Z');
 const digest = 'a'.repeat(64);
 const common = { authorityCurrent: true, workspaceId: 'tenant-a', workspaceVersion: '2026-10-08 10:00:00.123456+00', workspaceIncarnation: '9007199254740993', resolvedAt: '2026-10-09 12:00:00+00', expiresAt: '2026-10-09 12:01:00.123456+00' };
-const portal = () => ({ ...common, kind: 'PORTAL', locator: 'tenant-aa', employeeId: 'employee-a', employeeVersion: '2026-10-08 11:00:00.654321+00', authorizationVersion: '4', portalAccessVersion: '2', sessionTokenHash: digest, sessionExpiresAt: '2026-10-09 12:01:00.123456+00', role: 'MANAGER', capabilityPolicyRevision: '3', capabilities: ['employee.core.edit'], allowedLocationIds: ['location-a'], administrativeLocationIds: ['location-a'] });
+const portal = () => ({ ...common, kind: 'PORTAL', locator: 'tenant-aa', employeeId: 'employee-a', employeeVersion: '2026-10-08 11:00:00.654321+00', authorizationVersion: '4', portalAccessVersion: '2', sessionTokenHash: digest, sessionExpiresAt: '2026-10-09 12:01:00.123456+00', role: 'MANAGER', capabilityPolicyRevision: '3', capabilities: ['employee.core.edit'], allowedLocationIds: ['location-a'], administrativeLocationIds: ['location-a'], administrativeScope: { kind: 'LOCATIONS', origin: 'EXPLICIT_GRANT', locationIds: ['location-a'] } });
 const device = `nev_dev_${'b'.repeat(64)}`;
 const pin = `nev_pin_${'c'.repeat(64)}`;
 const hash = (value: string, prefix = '') => createHash('sha256').update(prefix).update(value).digest('hex');
@@ -363,7 +363,7 @@ describe('separate purpose-bound provisioning authority', () => {
 
 describe('variant-specific bounded authority', () => {
   it('preserves exact legacy DB identity keys instead of imposing new ASCII identifier rules', async () => {
-    respond({ ...portal(), employeeId: 'legacy-\u00c1/001', allowedLocationIds: ['localizaci\u00f3n principal'], administrativeLocationIds: ['localizaci\u00f3n principal'] });
+    respond({ ...portal(), employeeId: 'legacy-\u00c1/001', allowedLocationIds: ['localizaci\u00f3n principal'], administrativeLocationIds: ['localizaci\u00f3n principal'], administrativeScope: { kind: 'LOCATIONS', origin: 'EXPLICIT_GRANT', locationIds: ['localizaci\u00f3n principal'] } });
     const result = await resolvePortalProof('tenant-aa', digest);
     expect(result.status).toBe('ALLOW');
     if (result.status !== 'ALLOW') throw Error('fixture');
@@ -371,7 +371,7 @@ describe('variant-specific bounded authority', () => {
   });
 
   it('permits a current Manager with explicitly empty administrative scope to authenticate without broadening it', async () => {
-    respond({ ...portal(), administrativeLocationIds: [], capabilities: ['profile.self.read'] });
+    respond({ ...portal(), administrativeLocationIds: [], administrativeScope: { kind: 'LOCATIONS', origin: 'EXPLICIT_GRANT', locationIds: [] }, capabilities: ['profile.self.read'] });
     const result = await resolvePortalProof('tenant-aa', digest);
     expect(result.status).toBe('ALLOW');
     if (result.status !== 'ALLOW') throw Error('fixture');
@@ -403,7 +403,7 @@ describe('variant-specific bounded authority', () => {
   });
 
   it('keeps explicit self-only portal authority separate from administrative scope', async () => {
-    respond({ ...portal(), role: 'EMPLOYEE', administrativeLocationIds: [], capabilities: ['profile.self.read'] });
+    respond({ ...portal(), role: 'EMPLOYEE', administrativeLocationIds: [], administrativeScope: null, capabilities: ['profile.self.read'] });
     const result = await resolvePortalProof('tenant-aa', digest);
     expect(result.status).toBe('ALLOW');
     if (result.status !== 'ALLOW') throw Error('fixture');

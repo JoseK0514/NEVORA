@@ -23,7 +23,7 @@ async function proof(workspaceId = 'tenant-a') {
     employeeId: 'employee-a', employeeVersion: '2026-10-08 11:00:00.654321+00',
     authorizationVersion: '4', portalAccessVersion: '2', sessionTokenHash: digest,
     sessionExpiresAt: '2026-10-09 12:01:00+00', role: 'EMPLOYEE', capabilityPolicyRevision: '3',
-    capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [] } }], [{ guard: 1 }]]);
+    capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [], administrativeScope: null } }], [{ guard: 1 }]]);
   const result = await resolvePortalProof('tenant-aa', digest);
   if (result.status !== 'ALLOW') throw Error('fixture');
   const lookup = db.transaction.mock.calls.at(-1)!;

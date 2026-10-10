@@ -159,7 +159,7 @@ describe.skipIf(!leasePath && !runPath)('owned native executor catalog fence pre
       workspaceIncarnation: '9007199254740993', resolvedAt: new Date(now).toISOString(), expiresAt: expiry, locator: 'tenant-aa',
       employeeId: 'employee-a', employeeVersion: '2026-10-08 11:00:00.654321+00', authorizationVersion: '4', portalAccessVersion: '2',
       sessionTokenHash: 'a'.repeat(64), sessionExpiresAt: expiry, role: 'EMPLOYEE', capabilityPolicyRevision: '3', capabilities: [],
-      allowedLocationIds: [], administrativeLocationIds: [] };
+      allowedLocationIds: [], administrativeLocationIds: [], administrativeScope: null };
     phase = 'LOOKUP';
     try { const resolved = await resolvePortalProof('tenant-aa', 'a'.repeat(64)); if (resolved.status !== 'ALLOW') throw Error('fictional_parser_fixture_denied');
       record({ operation: 'MOCKED_LITERAL_FACTS_REAL_PARSER_PRIVATE_ISSUER', facts: lookupFacts, claim: 'NO_DATABASE_ISSUER_AUTHORITY_OR_CURRENT_DOMAIN_PROOF' }); return resolved.proof;

@@ -13,7 +13,7 @@ const facts = (workspaceId = 'tenant-a') => ({ authorityCurrent: true, kind: 'PO
   employeeId: 'employee-a', employeeVersion: '2026-10-08 11:00:00.654321+00',
   authorizationVersion: '4', portalAccessVersion: '2', sessionTokenHash: digest,
   sessionExpiresAt: '2026-10-09 12:01:00+00', role: 'EMPLOYEE', capabilityPolicyRevision: '3',
-  capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [] });
+  capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [], administrativeScope: null });
 async function proof(workspaceId = 'tenant-a') {
   db.transaction.mockResolvedValue([[{ catalog_fence: '' }], [{ facts: facts(workspaceId) }], [{ guard: 1 }]]);
   const result = await resolvePortalProof('tenant-aa', digest);

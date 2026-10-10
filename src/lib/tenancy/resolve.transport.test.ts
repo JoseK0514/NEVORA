@@ -17,7 +17,7 @@ const claim = { deliveryId: 'delivery-a', generation: 'generation-a', leaseToken
 const operator = { operatorId: 'operator-a', credentialDigest: digest, requestId: 'request-a', requestDigest: 'b'.repeat(64), operationId: 'operation-a', payloadDigest: 'c'.repeat(64) };
 const portal = { ...common, kind: 'PORTAL', locator: 'tenant-aa', employeeId: 'employee-a', employeeVersion: '2026-10-08 11:00:00.654321+00',
   authorizationVersion: '4', portalAccessVersion: '2', sessionTokenHash: digest, sessionExpiresAt: common.expiresAt, role: 'EMPLOYEE',
-  capabilityPolicyRevision: '3', capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [] };
+  capabilityPolicyRevision: '3', capabilities: [], allowedLocationIds: ['location-a'], administrativeLocationIds: [], administrativeScope: null };
 const clocker = { ...common, kind: 'CLOCKER', locationId: 'location-a', deviceId: 'device-a', deviceVersion: '7', credentialHash: hash(device, 'nevora-clocker-v1\0'),
   credentialVersion: '6', pinSessionTokenHash: hash(pin, 'nevora-clocker-identity-v1\0'), pinVersion: '5', pinKeyIdentity: 'd'.repeat(64),
   employeeId: 'employee-a', employeeVersion: portal.employeeVersion, pinSessionExpiresAt: common.expiresAt };

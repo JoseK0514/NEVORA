@@ -93,6 +93,54 @@ function base<K extends TenantProof['kind']>(row: Record<string, unknown>, kind:
   current(row, kind);
   return { kind, workspaceId: id(row, 'workspaceId'), workspaceVersion: timestamp(row, 'workspaceVersion'), workspaceIncarnation: incarnation(row, 'workspaceIncarnation'), ...lifetime(row) };
 }
+// The new nested scope is a closed data observation. Inspect owned descriptors
+// before reading values; neither accessors, proxies nor custom array behavior
+// may run while decoding it. Preserve source text and array order exactly.
+function scopeLocationIds(value: unknown): readonly string[] {
+  if (!value || typeof value !== 'object' || nodeTypes.isProxy(value) || !Array.isArray(value) ||
+    Object.getPrototypeOf(value) !== Array.prototype) return malformed();
+  const descriptors = Object.getOwnPropertyDescriptors(value as object);
+  if (!Object.hasOwn(descriptors, 'length') || !Object.hasOwn(descriptors.length, 'value')) return malformed();
+  const length: unknown = descriptors.length.value;
+  if (typeof length !== 'number' || !Number.isSafeInteger(length) || length < 0 || length > 10000 ||
+    Reflect.ownKeys(descriptors).length !== length + 1) return malformed();
+  const ids: string[] = [], seen = new Set<string>();
+  for (let index = 0; index < length; index++) {
+    const key = String(index);
+    if (!Object.hasOwn(descriptors, key) || !Object.hasOwn(descriptors[key], 'value')) return malformed();
+    const item: unknown = descriptors[key].value;
+    if (!validId(item) || seen.has(item)) return malformed();
+    seen.add(item); ids.push(item);
+  }
+  return Object.freeze(ids);
+}
+function portalAdministrativeScope(row: Record<string, unknown>, role: PortalProofFacts['role'],
+  administrativeLocationIds: readonly string[]): PortalProofFacts['administrativeScope'] {
+  const descriptor = Object.getOwnPropertyDescriptor(row, 'administrativeScope');
+  if (!descriptor || !Object.hasOwn(descriptor, 'value')) return malformed();
+  const value: unknown = descriptor.value;
+  if (value === null) return role === 'MANAGER' ? malformed() : null;
+  if (role === 'LEAD' || role === 'EMPLOYEE' || !value || typeof value !== 'object' ||
+    nodeTypes.isProxy(value) || Array.isArray(value)) return malformed();
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) return malformed();
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  const keys = Reflect.ownKeys(descriptors);
+  if (!Object.hasOwn(descriptors, 'kind') || !Object.hasOwn(descriptors, 'origin') ||
+    keys.some(key => typeof key !== 'string' || !['kind', 'origin', 'locationIds'].includes(key)) ||
+    keys.some(key => !Object.hasOwn(descriptors[key as string], 'value'))) return malformed();
+  const kind: unknown = descriptors.kind.value, origin: unknown = descriptors.origin.value;
+  if (kind === 'ALL_TENANT') {
+    if (keys.length !== 2 || (origin !== 'LEGACY_COMPATIBILITY' && origin !== 'EXPLICIT_GRANT')) return malformed();
+    return Object.freeze({ kind, origin });
+  }
+  if (kind !== 'LOCATIONS' || origin !== 'EXPLICIT_GRANT' || keys.length !== 3 ||
+    !Object.hasOwn(descriptors, 'locationIds')) return malformed();
+  const locationIds = scopeLocationIds(descriptors.locationIds.value);
+  const administrativeSet = new Set(administrativeLocationIds);
+  if (locationIds.length !== administrativeSet.size || locationIds.some(location => !administrativeSet.has(location))) return malformed();
+  return Object.freeze({ kind, origin, locationIds });
+}
 function parsePortal(row: Record<string, unknown>): PortalProofFacts {
   const shared = base(row, 'PORTAL');
   const role = field(row, 'role', value => ['OWNER', 'MANAGER', 'LEAD', 'EMPLOYEE'].includes(value as string)) as PortalProofFacts['role'];
@@ -100,7 +148,8 @@ function parsePortal(row: Record<string, unknown>): PortalProofFacts {
   const administrativeLocationIds = list(row, 'administrativeLocationIds', validId);
   if (administrativeLocationIds.some(location => !allowedLocationIds.includes(location))) return malformed();
   if (['LEAD', 'EMPLOYEE'].includes(role) && administrativeLocationIds.length) return malformed();
-  return Object.freeze({ ...shared, locator: field(row, 'locator', validLocator), employeeId: id(row, 'employeeId'), employeeVersion: timestamp(row, 'employeeVersion'), authorizationVersion: revision(row, 'authorizationVersion'), portalAccessVersion: revision(row, 'portalAccessVersion'), sessionTokenHash: digest(row, 'sessionTokenHash'), sessionExpiresAt: boundedExpiry(row, 'sessionExpiresAt', shared.expiresAt), role, capabilityPolicyRevision: revision(row, 'capabilityPolicyRevision'), capabilities: list(row, 'capabilities', value => typeof value === 'string' && /^[a-z][a-z0-9.-]{0,127}$/.test(value)), allowedLocationIds, administrativeLocationIds });
+  const administrativeScope = portalAdministrativeScope(row, role, administrativeLocationIds);
+  return Object.freeze({ ...shared, locator: field(row, 'locator', validLocator), employeeId: id(row, 'employeeId'), employeeVersion: timestamp(row, 'employeeVersion'), authorizationVersion: revision(row, 'authorizationVersion'), portalAccessVersion: revision(row, 'portalAccessVersion'), sessionTokenHash: digest(row, 'sessionTokenHash'), sessionExpiresAt: boundedExpiry(row, 'sessionExpiresAt', shared.expiresAt), role, capabilityPolicyRevision: revision(row, 'capabilityPolicyRevision'), capabilities: list(row, 'capabilities', value => typeof value === 'string' && /^[a-z][a-z0-9.-]{0,127}$/.test(value)), allowedLocationIds, administrativeLocationIds, administrativeScope });
 }
 function parseClocker(row: Record<string, unknown>): ClockerProofFacts {
   const shared = base(row, 'CLOCKER');

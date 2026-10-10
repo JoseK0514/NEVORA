@@ -1,4 +1,5 @@
 import type { UserRole } from '../domain';
+import type { AdministrativeScope } from '../capabilities/types';
 
 // No exported value/constructor can supply either brand. Runtime authority is
 // independently enforced by the issuer's private object-identity registries.
@@ -16,12 +17,19 @@ type TenantFactsBase<K extends TenantProof['kind']> = Readonly<{
   kind: K; workspaceId: string; workspaceVersion: string; workspaceIncarnation: string;
   resolvedAt: string; expiresAt: string;
 }>;
+export type PortalAdministrativeScope =
+  | Readonly<Extract<AdministrativeScope, { kind: 'ALL_TENANT' }>>
+  | Readonly<Omit<Extract<AdministrativeScope, { kind: 'LOCATIONS' }>, 'locationIds'> & {
+      locationIds: readonly string[];
+    }>;
 export type PortalProofFacts = TenantFactsBase<'PORTAL'> & Readonly<{
   locator: string; employeeId: string; employeeVersion: string; authorizationVersion: string;
   portalAccessVersion: string; sessionTokenHash: string; sessionExpiresAt: string; role: UserRole;
   capabilityPolicyRevision: string; capabilities: readonly string[];
   /** Union of permitted tenant locations, not scheduling eligibility. */
   allowedLocationIds: readonly string[]; administrativeLocationIds: readonly string[];
+  /** Current source observation; never inferred from location lists or caller data. */
+  administrativeScope: PortalAdministrativeScope | null;
 }>;
 export type ClockerProofFacts = TenantFactsBase<'CLOCKER'> & Readonly<{
   locationId: string; deviceId: string; deviceVersion: string; credentialHash: string;

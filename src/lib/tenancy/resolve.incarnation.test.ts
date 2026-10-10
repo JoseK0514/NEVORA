@@ -32,6 +32,7 @@ const portal = () => ({
   sessionTokenHash: tokenDigest, sessionExpiresAt: common.expiresAt, role: 'MANAGER',
   capabilityPolicyRevision: '3', capabilities: ['employee.core.edit'],
   allowedLocationIds: ['location-a'], administrativeLocationIds: ['location-a'],
+  administrativeScope: { kind: 'LOCATIONS', origin: 'EXPLICIT_GRANT', locationIds: ['location-a'] },
 });
 const device = `nev_dev_${'b'.repeat(64)}`;
 const pin = `nev_pin_${'c'.repeat(64)}`;
