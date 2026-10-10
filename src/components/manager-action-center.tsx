@@ -33,3 +33,63 @@ export function ManagerActionCenter({weekStart,actorId}:{weekStart:string;actorI
  },[weekStart,actorId]);
  return <ActionCenterSurface snapshot={snapshot} connection={connection} expanded={expanded} onExpand={()=>setExpanded(true)} onRefresh={()=>controller.current?.refresh()}/>;
 }
+
+import { Temporal } from '@js-temporal/polyfill';
+import type { ActionIntelligenceResult, SourceKey } from '../lib/action-center/intelligence';
+
+export type ActionIntelligenceSurfaceProps = {
+ snapshot: ActionIntelligenceResult | null;
+ connection: Connection;
+ expectedViewId: string;
+ weekStart: string;
+ /** Explicit display observation. The future protected adapter owns clock,
+  * timer, live view and authority invalidation before releasing this DTO. */
+ now: string;
+ onRefresh?: () => void;
+ onRetrySource?: (source: SourceKey) => void;
+ expanded?: boolean;
+ onExpand?: () => void;
+};
+
+/** Isolated F1 display preparation. No reader, parser, proof, action engine or
+ * connected controller is introduced; full F10/F6 integration remains held. */
+export function ActionIntelligenceSurface({ snapshot, connection, expectedViewId, weekStart, now,
+ onRefresh, onRetrySource, expanded = false, onExpand }: ActionIntelligenceSurfaceProps) {
+ const candidate = snapshot?.state === 'ready' || snapshot?.state === 'partial' ? snapshot : null;
+ let current = false;
+ if (connection === 'ready' && candidate?.viewId === expectedViewId && candidate.weekStart === weekStart) {
+  try { current = Temporal.Instant.compare(Temporal.Instant.from(now), Temporal.Instant.from(candidate.validUntil)) < 0; }
+  catch { current = false; }
+ }
+ const ready = current ? candidate : null;
+ // A superseded/expired ready DTO cannot retain even its old source counts or
+ // retry actions. Non-ready projection sections contain only fixed statuses.
+ const sections = ready?.sections ?? (connection === 'ready' && !candidate && snapshot && 'sections' in snapshot ? snapshot.sections : []);
+ const status = connection === 'ready' ? snapshot?.state === 'loading' && !candidate ? 'loading' : 'unavailable' : connection;
+ return <section className={styles.root} aria-label="Manager Action Center intelligence">
+  <header><div><p>What needs my attention?</p><h2>Action Center</h2></div>
+   {ready ? <strong aria-label="Observed actions">{ready.counts.total}</strong> : null}
+   <button className="button secondary" type="button" onClick={onRefresh} disabled={!onRefresh}>Refresh actions</button>
+  </header>
+  {ready ? <>
+   <dl className={styles.counts}>{(['scheduling', 'requests', 'timekeeping'] as const).map(category =>
+    <div key={category}><dt>{category === 'scheduling' ? 'Scheduling' : category === 'requests' ? 'Requests' : 'Timekeeping'}</dt><dd>{ready.counts[category]}</dd></div>)}</dl>
+   {ready.state === 'partial' ? <p role="status">Action results are incomplete. Check the named sources below.</p> : null}
+   {ready.items.length ? <div className={styles.list}>{ready.items.slice(0, expanded ? ready.items.length : 20).map(item =>
+    <article key={item.id} data-action-id={item.id}>
+     <div><small>{item.category === 'timekeeping' ? 'Timekeeping' : item.category === 'requests' ? 'Request' : 'Scheduling'} · {item.priority === 'URGENT' ? 'Urgent' : item.priority === 'MISSING_INPUT' ? 'Missing input' : 'Review'}</small>
+      <h3>{item.title}</h3><p>{item.reason.text}</p>
+      <p className={styles.note}>Source version <code>{item.sourceVersion}</code> · Observed <time dateTime={item.observedAt}>{item.observedAt}</time></p>
+     </div><Link className="button secondary" href={item.nextAction.href}>{item.nextAction.label}</Link>
+    </article>)}</div> : ready.state === 'ready' && ready.allClear ? <p role="status">No actions need review in this authorized view.</p> : null}
+   {ready.items.length > 20 && !expanded ? <button className="button secondary" type="button" onClick={onExpand} disabled={!onExpand}>Show all {ready.items.length} observed actions</button> : null}
+   <p className={styles.note}>Counts include only observed actions in this authorized view. Incomplete or capped sources may contain additional actions. Counts identify review tasks, not policy violations.</p>
+  </> : <p role="status">{({loading: 'Loading actions', ready: 'Actions unavailable', offline: 'Actions unavailable offline', reconnecting: 'Reconnecting to actions', unavailable: 'Actions unavailable', access_lost: 'Action Center access ended', paused: 'Action updates paused'})[status]}. The action list is unconfirmed. Refresh a current protected read before reviewing.</p>}
+  {sections.length ? <div aria-label="Action source status">{sections.map(section =>
+   <article key={section.source} data-action-source={section.source}>
+    <h3>{section.label}</h3><p>{({complete: 'Checked source', limited: 'Incomplete source', loading: 'Loading', unavailable: 'Read unavailable'})[section.state]}</p>
+    {ready && section.observedCount !== null ? <p>Observed actions: {section.observedCount}</p> : null}
+    {section.retry ? <button className="button secondary" type="button" disabled={!onRetrySource} onClick={onRetrySource ? () => onRetrySource(section.retry!.source) : undefined}>Retry {section.label}</button> : null}
+   </article>)}</div> : null}
+ </section>;
+}
