@@ -12,7 +12,7 @@ import { getTypedReferenceColumnContract, isIssuedTypedMigrationCellReferences, 
 import { isIssuedTypedOwnershipSourceObservations, validateTypedSnapshotOwnership, type TypedOwnershipAssignments, type TypedOwnershipSourceObservations } from './typed-ownership';
 import { isIssuedTypedSourceConstraintObservations, validateTypedSourceConstraints, type TypedSourceConstraintWithKeysObservations } from './typed-constraints';
 import { compileTypedTenantBackfill, isIssuedTypedTenantBackfillPlan, type TypedTenantBackfillPlan } from './typed-backfill';
-import { executeGuardedTypedLocalBackfill, executeGuardedTypedLocalBackfillWithJournal } from './typed-guarded-backfill.server';
+import { executeGuardedTypedLocalBackfill, executeGuardedTypedLocalBackfillWithJournal, reconcileGuardedTypedLocalBackfillJournal } from './typed-guarded-backfill.server';
 import { describeTypedBackfillJournal, validateTypedBackfillJournalObservation, type TypedBackfillJournalDescriptor } from './typed-journal-contract';
 import type { OwnedLocalBackfillIdentity } from './guarded-backfill.server';
 
@@ -1166,4 +1166,331 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     } finally { await f.first.query('ROLLBACK'); }
     await expectUnapplied(f); await expectJournalEmpty(f); receipt('case-J14-caller-transaction.json', { callerRollbackOnly: true, noEntrypointQueries: true });
   });
+
+  // JR_RECONCILIATION_NATIVE_BEGIN
+  // Root-only opt-in additions. A genuine uncertain executor result is retained
+  // by identity; public fields and observed native idle never establish its
+  // original disposition. No reconciliation callback invokes apply/retry DML.
+  type JRUncertain = Extract<Awaited<ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal>>, { status: 'UNCERTAIN' }>;
+  async function jrMintUncertain(f: Fixture, ack: 'COMMIT' | 'ROLLBACK'): Promise<{ attempt: JRUncertain; commands: string[] }> {
+    const native = Client.prototype.query.bind(f.first), commands: string[] = []; let failedDml = false, acknowledgedNative = false;
+    const spy = vi.spyOn(f.first, 'query').mockImplementation((async (...args: unknown[]) => {
+      const sql = queryText(args[0]); commands.push(sql);
+      if (ack === 'ROLLBACK' && sql.startsWith('INSERT INTO public."clocker_pin_events_tenant_ownership"')) {
+        failedDml = true; return native('SELECT 1/0');
+      }
+      const result = await Reflect.apply(native, f.first, args);
+      if (sql === ack) { acknowledgedNative = true; throw Error('PRIVATE_FICTIONAL_JR_' + ack + '_ACK'); }
+      return result;
+    }) as Client['query']);
+    let attempt: Awaited<ReturnType<typeof executeGuardedTypedLocalBackfillWithJournal>>;
+    try { attempt = await executeGuardedTypedLocalBackfillWithJournal(f.first, f.request); } finally { spy.mockRestore(); }
+    expect(acknowledgedNative).toBe(true); expect(failedDml).toBe(ack === 'ROLLBACK');
+    expect(attempt).toEqual({ status: 'UNCERTAIN', code: ack === 'COMMIT' ? 'COMMIT_OUTCOME_UNKNOWN' : 'ROLLBACK_UNCONFIRMED',
+      planDigest: f.chain.plan.digest, reconciliation: 'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED' });
+    if (attempt.status !== 'UNCERTAIN') throw Error('A genuine original uncertain journal attempt is required');
+    expect(commands[commands.length - 1]).toBe(ack); expect(commands.filter(sql => sql === ack)).toHaveLength(1);
+    if (ack === 'COMMIT') { expect(commands).not.toContain('ROLLBACK'); await expectJournalApplied(f); }
+    else { expect(commands).not.toContain('COMMIT'); await expectUnapplied(f); await expectJournalEmpty(f); }
+    return { attempt, commands };
+  }
+  async function jrTuple(f: Fixture) {
+    return { originalRows: await originalRows(f.observer), metadata: await metadata(f), targets: await targets(f), journal: await journalRows(f) };
+  }
+  function jrNoEffects(commands: string[]) {
+    expect(anyDml(commands)).toBe(false);
+    expect(commands.some(sql => /(?:register|observe)_typed_backfill_journal\s*\(/i.test(sql))).toBe(false);
+    expect(commands.some(sql => /F10_TYPED_JOURNAL_(REGISTER|START)/.test(sql))).toBe(false);
+  }
+  function jrExpected(f: Fixture, metadataState: 'APPLIED_METADATA_PRESENT' | 'ORIGINAL_METADATA_ABSENT') {
+    return { status: 'OBSERVED', mode: 'WHOLE_PLAN_ATOMIC', metadata: metadataState, planDigest: f.chain.plan.digest,
+      sourceRows: f.chain.facts.tables.reduce((n, t) => n + t.expectedCount, 0),
+      verification: 'OWNED_LOCAL_ORIGINAL_ATTEMPT_OBSERVATION_NOT_COMMIT_DISPOSITION',
+      journal: { descriptorChecksum: journalDescriptor(f).descriptorChecksum, chunkCount: journalDescriptor(f).chunks.length, effectsVerified: false,
+        observation: metadataState === 'APPLIED_METADATA_PRESENT' ? 'MATCHING_EXISTING_OBSERVATIONS' : 'NO_JOURNAL_OBSERVED' } };
+  }
+  async function jrWithFreshClient<T>(f: Fixture, label: string, check: (client: Client, commands: string[]) => Promise<T>): Promise<T> {
+    const fresh = await connect(f.name, f.request.identity.role), native = Client.prototype.query.bind(fresh), commands: string[] = [];
+    const spy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => {
+      commands.push(queryText(args[0])); return Reflect.apply(native, fresh, args);
+    }) as Client['query']);
+    let closed = false;
+    try { expect(fresh).not.toBe(f.first); return await check(fresh, commands); }
+    finally {
+      spy.mockRestore();
+      try { if (fresh.getTransactionStatus() !== 'I') await fresh.query('ROLLBACK'); }
+      finally { await fresh.end(); closed = true; }
+      // Keep the original clients map so unchanged afterAll independently
+      // accounts for this ended native client and exact child deletion.
+      receipt('case-' + f.id + '-' + label + '-fresh-client.json', { database: f.name, databaseOid: f.oid,
+        role: f.request.identity.role, commands, closed, retainedInOriginalCleanupMap: clients.has(fresh) });
+    }
+  }
+  function jrLockOrder(commands: string[]) {
+    const begin = commands.indexOf('BEGIN ISOLATION LEVEL SERIALIZABLE');
+    const source = commands.findIndex((sql, i) => i > begin && sql.startsWith('LOCK TABLE public.'));
+    const journal = commands.findIndex((sql, i) => i > begin && sql.includes('F10_TYPED_JOURNAL_LOCK'));
+    const firstRead = commands.findIndex((sql, i) => i > begin && /^(?:\/\*.*?\*\/\s*)?SELECT\b/.test(sql));
+    expect(begin).toBeGreaterThan(-1); expect(source).toBeGreaterThan(begin); expect(journal).toBeGreaterThan(source); expect(firstRead).toBeGreaterThan(journal);
+    expect(commands[source].match(/public\."/g)).toHaveLength(70);
+    expect(commands[journal]).toContain('typed_backfill_journal_chunk'); expect(commands[journal]).toContain('typed_backfill_journal_plan');
+    expect(commands[journal].indexOf('typed_backfill_journal_chunk')).toBeLessThan(commands[journal].indexOf('typed_backfill_journal_plan'));
+    jrNoEffects(commands);
+  }
+  async function jrJournalCorruption(f: Fixture, label: string, change: () => Promise<void>, check: () => Promise<void>) {
+    // Explicit root-authorized corruption of this exact fictional child only.
+    // Native trigger definitions/flags stay unchanged. Replica setting is local
+    // to the installer transaction, restored before the original-role observer.
+    const before = await jrTuple(f), catalog = await observeMigrationCatalog(f.observer);
+    const settings = (await f.observer.query('SELECT current_user,session_user,current_setting(\'session_replication_role\') replication')).rows[0];
+    expect(settings.current_user).toBe(lease.user); expect(settings.session_user).toBe(lease.user); expect(settings.replication).toBe('origin');
+    let changed: Awaited<ReturnType<typeof jrTuple>> | undefined, afterDenial: Awaited<ReturnType<typeof jrTuple>> | undefined;
+    try {
+      await f.observer.query('BEGIN');
+      try { await f.observer.query("SET LOCAL session_replication_role='replica'"); await change(); await f.observer.query('COMMIT'); }
+      catch (error) { await f.observer.query('ROLLBACK'); throw error; }
+      expect((await f.observer.query("SELECT current_setting('session_replication_role') replication")).rows[0].replication).toBe('origin');
+      changed = await jrTuple(f); await check(); afterDenial = await jrTuple(f); expect(afterDenial).toEqual(changed);
+    } finally {
+      if (f.observer.getTransactionStatus() !== 'I') await f.observer.query('ROLLBACK');
+      await f.observer.query('BEGIN');
+      try {
+        await f.observer.query("SET LOCAL session_replication_role='replica'");
+        await f.observer.query('DELETE FROM nevora_tenancy.typed_backfill_journal_chunk');
+        await f.observer.query('DELETE FROM nevora_tenancy.typed_backfill_journal_plan');
+        for (const row of before.journal.typed_backfill_journal_plan) await f.observer.query(
+          'INSERT INTO nevora_tenancy.typed_backfill_journal_plan(plan_digest,descriptor_canonical,boundary,chunk_count) VALUES($1,$2,$3::jsonb,$4::int8)', row);
+        for (const row of before.journal.typed_backfill_journal_chunk) await f.observer.query(
+          'INSERT INTO nevora_tenancy.typed_backfill_journal_chunk(plan_digest,chunk_id,ordinal,chunk_canonical,retry_identity,state) VALUES($1,$2,$3::int8,$4,$5,$6)', row);
+        await f.observer.query('COMMIT');
+      } catch (error) { await f.observer.query('ROLLBACK'); throw error; }
+      const restoredSettings = (await f.observer.query('SELECT current_user,session_user,current_setting(\'session_replication_role\') replication')).rows[0];
+      expect(restoredSettings).toEqual(settings); expect(await jrTuple(f)).toEqual(before);
+      expect(await observeMigrationCatalog(f.observer)).toEqual(catalog);
+      receipt('case-' + f.id + '-' + label + '-journal-corruption.json', { before, changed, afterDenial, restored: await jrTuple(f),
+        originalCatalogDigest: catalog.digest, nativeSettingsBefore: settings, nativeSettingsAfter: restoredSettings,
+        corruptionIsRootFixtureOnly: true, guardDefinitionOrFlagChanges: false, reconciliationRepair: false });
+    }
+  }
+
+  journalCase('JR01', 'JR01 observes applied metadata after actual COMMIT ACK loss, waits on original source locks and performs no effect SQL', async f => {
+    const original = await jrMintUncertain(f, 'COMMIT'), before = await jrTuple(f);
+    await jrWithFreshClient(f, 'applied', async (fresh, commands) => {
+      if (!admin) throw Error('Independent owned base monitor required');
+      const pid = (await fresh.query('SELECT pg_backend_pid() pid')).rows[0].pid;
+      const holderPid = (await f.observer.query('SELECT pg_backend_pid() pid')).rows[0].pid;
+      commands.length = 0; await f.observer.query('BEGIN'); await f.observer.query('LOCK TABLE public.employees IN SHARE ROW EXCLUSIVE MODE');
+      const pending = reconcileGuardedTypedLocalBackfillJournal(fresh, original.attempt); let waitEvidence: unknown, outcome: unknown;
+      try {
+        for (let attempt = 0; attempt < 100; attempt++) {
+          const rows = (await admin.query("SELECT a.pid,a.datname,a.usename,a.wait_event_type,a.wait_event,a.query,pg_blocking_pids(a.pid) blockers,l.relation::text relation_oid,l.mode,l.granted FROM pg_stat_activity a JOIN pg_locks l ON l.pid=a.pid WHERE a.pid=$1 AND a.datname=$2 AND a.usename=$3 AND a.wait_event_type='Lock' AND NOT l.granted AND l.locktype='relation'", [pid, f.name, f.request.identity.role])).rows;
+          if (rows.some(r => r.blockers.includes(holderPid) && r.mode === 'ShareRowExclusiveLock' && r.query.startsWith('LOCK TABLE public.'))) { waitEvidence = rows; break; }
+          await new Promise(resolve => setTimeout(resolve, 10));
+        }
+        expect(waitEvidence).toBeDefined();
+        const begin = commands.indexOf('BEGIN ISOLATION LEVEL SERIALIZABLE');
+        expect(commands.slice(begin + 1).every(sql => sql.startsWith('SET LOCAL ') || sql.startsWith('LOCK TABLE public.'))).toBe(true);
+        await f.observer.query('COMMIT'); outcome = await pending; expect(outcome).toEqual(jrExpected(f, 'APPLIED_METADATA_PRESENT'));
+      } finally { if (f.observer.getTransactionStatus() !== 'I') await f.observer.query('ROLLBACK'); await Promise.allSettled([pending]); }
+      jrLockOrder(commands); expect(await jrTuple(f)).toEqual(before); await expectJournalApplied(f);
+      receipt('case-JR01-reconciliation.json', { originalAttempt: original.attempt, originalCommands: original.commands, outcome, waitEvidence,
+        sourceLockHolderPid: holderPid, reconciliationPid: pid, commands, before, after: await jrTuple(f),
+        originalAttemptStillUncertain: original.attempt.status === 'UNCERTAIN', commitDispositionClaim: false, effectsVerified: false });
+    });
+  });
+  journalCase('JR02', 'JR02 observes original metadata and journal wholly absent after actual ROLLBACK ACK loss without replay', async f => {
+    const original = await jrMintUncertain(f, 'ROLLBACK'), before = await jrTuple(f);
+    await jrWithFreshClient(f, 'absent', async (fresh, commands) => {
+      const outcome = await reconcileGuardedTypedLocalBackfillJournal(fresh, original.attempt);
+      expect(outcome).toEqual(jrExpected(f, 'ORIGINAL_METADATA_ABSENT')); jrLockOrder(commands);
+      expect(await jrTuple(f)).toEqual(before); await expectUnapplied(f); await expectJournalEmpty(f);
+      expect(commands.some(sql => sql.includes('F10_TYPED_JOURNAL_CHUNKS_EXIST'))).toBe(true);
+      receipt('case-JR02-reconciliation.json', { originalAttempt: original.attempt, originalCommands: original.commands, outcome, commands,
+        before, after: await jrTuple(f), definiteRollbackDispositionClaim: false, replayOrApply: false });
+    });
+  });
+  journalCase('JR03', 'JR03 rejects copied serialized accessor Proxy and same-client uncertain handles before any SQL or input effects', async f => {
+    const original = await jrMintUncertain(f, 'COMMIT'), before = await jrTuple(f);
+    await jrWithFreshClient(f, 'identity', async (fresh, commands) => {
+      let getterCalls = 0, proxyTraps = 0, clientReads = 0;
+      const accessor = Object.defineProperty({}, 'status', { enumerable: true, get() { getterCalls++; throw Error('Untrusted receipt getter'); } });
+      const proxy = new Proxy(original.attempt, { get() { proxyTraps++; throw Error('Untrusted receipt get'); },
+        getPrototypeOf() { proxyTraps++; throw Error('Untrusted receipt prototype'); }, ownKeys() { proxyTraps++; throw Error('Untrusted receipt keys'); },
+        getOwnPropertyDescriptor() { proxyTraps++; throw Error('Untrusted receipt descriptor'); } });
+      const hostileClient = new Proxy(fresh, { get() { clientReads++; throw Error('No client reads before receipt admission'); } });
+      const invalid: { name: string; value: unknown }[] = [
+        { name: 'plain clone', value: { ...original.attempt } }, { name: 'serialized roundtrip', value: JSON.parse(JSON.stringify(original.attempt)) },
+        { name: 'serialized text', value: JSON.stringify(original.attempt) }, { name: 'inherited fields', value: Object.create(original.attempt) },
+        { name: 'own accessor', value: accessor }, { name: 'Proxy identity', value: proxy }, { name: 'null', value: null },
+      ];
+      const results: unknown[] = [];
+      for (const item of invalid) {
+        const boundary = commands.length;
+        const outcome = await reconcileGuardedTypedLocalBackfillJournal(hostileClient, item.value);
+        expect(outcome).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_ORIGINAL_UNCERTAIN_ATTEMPT_REQUIRED' });
+        expect(commands).toHaveLength(boundary); results.push({ name: item.name, outcome });
+      }
+      const native = Client.prototype.query.bind(f.first), sameCommands: string[] = [];
+      const spy = vi.spyOn(f.first, 'query').mockImplementation(((...args: unknown[]) => { sameCommands.push(queryText(args[0])); return Reflect.apply(native, f.first, args); }) as Client['query']);
+      try { expect(await reconcileGuardedTypedLocalBackfillJournal(f.first, original.attempt)).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_FRESH_CLIENT_REQUIRED' }); }
+      finally { spy.mockRestore(); }
+      expect(sameCommands).toEqual([]); expect(commands).toEqual([]); expect(getterCalls).toBe(0); expect(proxyTraps).toBe(0); expect(clientReads).toBe(0);
+      expect(await jrTuple(f)).toEqual(before); await expectJournalApplied(f);
+      receipt('case-JR03-admission.json', { results, sameCommands, commands, getterCalls, proxyTraps, clientReads, before, after: await jrTuple(f) });
+    });
+  });
+  journalCase('JR04', 'JR04 retains matching terminal UNKNOWN without downgrade or completion on original-attempt observation', async f => {
+    await registerFixtureJournal(f, 'UNKNOWN'); const unknownBefore = await journalRows(f), original = await jrMintUncertain(f, 'COMMIT');
+    expect(await journalRows(f)).toEqual(unknownBefore); const before = await jrTuple(f);
+    await jrWithFreshClient(f, 'unknown', async (fresh, commands) => {
+      const outcome = await reconcileGuardedTypedLocalBackfillJournal(fresh, original.attempt);
+      expect(outcome).toEqual(jrExpected(f, 'APPLIED_METADATA_PRESENT')); jrLockOrder(commands);
+      expect(await jrTuple(f)).toEqual(before); const observation = await journalObservation(f);
+      expect(observation.rows.every((r: { state: string }) => r.state === 'UNKNOWN')).toBe(true);
+      expect(observation.effectsVerified).toBe(false); expect(observation.reconciliation).toBeNull();
+      const first = journalDescriptor(f).chunks[0]; expect(first).toBeDefined();
+      await expect(f.observer.query('SELECT nevora_tenancy.observe_typed_backfill_journal($1,$2,$3,$4)', [canonicalOwnershipJson(journalDescriptor(f)), first.id, first.retryIdentity, 'STARTED'])).rejects.toMatchObject({ code: 'P0001' });
+      expect(await jrTuple(f)).toEqual(before);
+      receipt('case-JR04-unknown.json', { originalAttempt: original.attempt, originalCommands: original.commands, outcome, commands, observation,
+        before, after: await jrTuple(f), downgradeOrCompletion: false });
+    });
+  });
+  journalCase('JR05', 'JR05 refuses absent NOT_STARTED partial foreign and unapplied journal tuples without retrospective repair', async f => {
+    const absentAttempt = await jrMintUncertain(f, 'ROLLBACK');
+    await jrWithFreshClient(f, 'tuples', async (fresh, commands) => {
+      const results: unknown[] = [];
+      const blocked = async (attempt: JRUncertain, label: string, code: string) => {
+        const before = await jrTuple(f), boundary = commands.length, outcome = await reconcileGuardedTypedLocalBackfillJournal(fresh, attempt);
+        expect(outcome).toEqual({ status: 'BLOCKED', code }); jrNoEffects(commands.slice(boundary));
+        expect(await jrTuple(f)).toEqual(before); results.push({ label, outcome, commands: commands.slice(boundary), before, after: await jrTuple(f) });
+      };
+      await jrJournalCorruption(f, 'unapplied-plan', async () => {
+        await f.observer.query('SELECT nevora_tenancy.register_typed_backfill_journal($1)', [canonicalOwnershipJson(journalDescriptor(f))]);
+      }, async () => blocked(absentAttempt.attempt, 'unapplied matching header+chunks', 'TYPED_JOURNAL_UNAPPLIED_JOURNAL_DRIFT'));
+      // An orphan chunk still blocks an unapplied tuple even without its header;
+      // this explicitly exercises the separate native chunk-absence query.
+      await jrJournalCorruption(f, 'unapplied-chunk', async () => {
+        await f.observer.query('SELECT nevora_tenancy.register_typed_backfill_journal($1)', [canonicalOwnershipJson(journalDescriptor(f))]);
+        await f.observer.query('DELETE FROM nevora_tenancy.typed_backfill_journal_plan');
+      }, async () => blocked(absentAttempt.attempt, 'unapplied orphan chunks', 'TYPED_JOURNAL_UNAPPLIED_JOURNAL_DRIFT'));
+      await expectUnapplied(f); await expectJournalEmpty(f);
+      const appliedAttempt = await jrMintUncertain(f, 'COMMIT');
+      await jrJournalCorruption(f, 'applied-missing', async () => {
+        await f.observer.query('DELETE FROM nevora_tenancy.typed_backfill_journal_chunk'); await f.observer.query('DELETE FROM nevora_tenancy.typed_backfill_journal_plan');
+      }, async () => blocked(appliedAttempt.attempt, 'applied missing journal', 'TYPED_JOURNAL_RETRY_STATE_DRIFT'));
+      await jrJournalCorruption(f, 'applied-not-started', async () => {
+        await f.observer.query("UPDATE nevora_tenancy.typed_backfill_journal_chunk SET state='NOT_STARTED'");
+      }, async () => blocked(appliedAttempt.attempt, 'applied NOT_STARTED', 'TYPED_JOURNAL_RETRY_STATE_DRIFT'));
+      await jrJournalCorruption(f, 'applied-partial', async () => {
+        await f.observer.query('DELETE FROM nevora_tenancy.typed_backfill_journal_chunk WHERE plan_digest=$1 AND chunk_id=$2', [f.chain.plan.digest, journalDescriptor(f).chunks[0].id]);
+      }, async () => blocked(appliedAttempt.attempt, 'applied missing chunk', 'TYPED_JOURNAL_STORAGE_FAILED'));
+      const alternate = compileTypedTenantBackfill(f.chain.snapshot, f.chain.ownership, f.chain.constraints, { chunkSize: 3 });
+      expect(alternate.status).toBe('PLANNED'); if (alternate.status !== 'PLANNED') throw Error('Genuine alternate compiler plan required');
+      const described = describeTypedBackfillJournal(alternate.plan); expect(described.status).toBe('DESCRIBED');
+      if (described.status !== 'DESCRIBED') throw Error('Genuine alternate descriptor required');
+      await jrJournalCorruption(f, 'applied-foreign', async () => {
+        await f.observer.query('DELETE FROM nevora_tenancy.typed_backfill_journal_chunk'); await f.observer.query('DELETE FROM nevora_tenancy.typed_backfill_journal_plan');
+        await f.observer.query('SELECT nevora_tenancy.register_typed_backfill_journal($1)', [canonicalOwnershipJson(described.descriptor)]);
+      }, async () => blocked(appliedAttempt.attempt, 'applied foreign plan descriptor', 'TYPED_JOURNAL_RETRY_STATE_DRIFT'));
+      await expectJournalApplied(f);
+      receipt('case-JR05-denied-tuples.json', { absentAttempt: absentAttempt.attempt, absentCommands: absentAttempt.commands,
+        appliedAttempt: appliedAttempt.attempt, appliedCommands: appliedAttempt.commands, originalPlan: f.chain.plan, originalDescriptor: journalDescriptor(f),
+        alternatePlan: alternate.plan, alternateDescriptor: described.descriptor, results, noReconciliationRepair: true });
+    });
+  });
+  journalCase('JR06', 'JR06 denies original source catalog operator and owned-installation drift without journal or attribution writes', async f => {
+    const original = await jrMintUncertain(f, 'ROLLBACK'), baseline = await jrTuple(f), baselineCatalog = await observeMigrationCatalog(f.observer);
+    await jrWithFreshClient(f, 'drift', async (fresh, commands) => {
+      const results: unknown[] = [];
+      const blocked = async (label: string, code: string) => {
+        const before = await jrTuple(f), boundary = commands.length, outcome = await reconcileGuardedTypedLocalBackfillJournal(fresh, original.attempt);
+        expect(outcome).toEqual({ status: 'BLOCKED', code }); jrNoEffects(commands.slice(boundary));
+        expect(await jrTuple(f)).toEqual(before); results.push({ label, outcome, before, after: await jrTuple(f), commands: commands.slice(boundary) });
+      };
+      await f.observer.query('BEGIN');
+      try { await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='EXPANDED_LEGACY'");
+        await f.observer.query('SET LOCAL search_path=pg_catalog,public'); await f.observer.query("UPDATE public.employees SET first_name='JR fictional source drift' WHERE id=$1", [ownedEmployee]);
+        await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='FENCED'"); await f.observer.query('COMMIT');
+      } catch (error) { await f.observer.query('ROLLBACK'); throw error; }
+      try { await blocked('current original source', 'CURRENT_SOURCE_DRIFT'); }
+      finally { await f.observer.query('BEGIN');
+        try { await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='EXPANDED_LEGACY'"); await f.observer.query('SET LOCAL search_path=pg_catalog,public');
+          await f.observer.query('UPDATE public.employees SET first_name=$1 WHERE id=$2', [f.original.employees.rows.find(row => row[f.original.employees.columns.indexOf('id')] === ownedEmployee)![f.original.employees.columns.indexOf('first_name')], ownedEmployee]);
+          await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='FENCED'"); await f.observer.query('COMMIT');
+        } catch (error) { await f.observer.query('ROLLBACK'); throw error; } }
+      await f.observer.query('CREATE INDEX typed_jr_fixture_drift ON public.employees(first_name)');
+      const index = (await f.observer.query("SELECT c.oid::text oid,c.relowner::text owner,i.indrelid::text table_oid FROM pg_class c JOIN pg_index i ON i.indexrelid=c.oid WHERE c.oid=to_regclass('public.typed_jr_fixture_drift') AND c.relowner=(SELECT oid FROM pg_roles WHERE rolname=current_user) AND i.indrelid=to_regclass('public.employees')")).rows[0];
+      expect(index).toBeDefined();
+      try { await blocked('current catalog index', 'CURRENT_CATALOG_DRIFT'); }
+      finally { const current = (await f.observer.query("SELECT c.oid::text oid,c.relowner::text owner,i.indrelid::text table_oid FROM pg_class c JOIN pg_index i ON i.indexrelid=c.oid WHERE c.oid=to_regclass('public.typed_jr_fixture_drift') AND c.relowner=(SELECT oid FROM pg_roles WHERE rolname=current_user) AND i.indrelid=to_regclass('public.employees')")).rows;
+        expect(current).toEqual([index]); await f.observer.query('DROP INDEX public.typed_jr_fixture_drift');
+        expect((await f.observer.query("SELECT to_regclass('public.typed_jr_fixture_drift') oid")).rows[0].oid).toBeNull(); }
+      if (!admin) throw Error('Owned base operator-role controller required');
+      await admin.query('GRANT pg_write_all_data TO ' + quoted(f.request.identity.role) + ' WITH INHERIT TRUE');
+      try { await blocked('actual original operator membership', 'OPERATOR_ROLE_DRIFT'); }
+      finally { await admin.query('REVOKE pg_write_all_data FROM ' + quoted(f.request.identity.role)); }
+      await withOwnInstallationMutation(f, 'JR06-missing', rows => rows.filter(row => row.database !== f.name),
+        async () => blocked('missing exact child installation custody', 'TYPED_JOURNAL_INSTALLATION_REQUIRED'));
+      await withOwnInstallationMutation(f, 'JR06-source', rows => rows.map(row => row.database === f.name ? { ...row, sourceSHA256: 'f'.repeat(64) } : row),
+        async () => blocked('child installed source digest', 'TYPED_JOURNAL_INSTALLATION_DRIFT'));
+      expect(await jrTuple(f)).toEqual(baseline); expect(await observeMigrationCatalog(f.observer)).toEqual(baselineCatalog);
+      await expectUnapplied(f); await expectJournalEmpty(f);
+      receipt('case-JR06-drift.json', { originalAttempt: original.attempt, originalCommands: original.commands, results,
+        removedOwnedIndex: index, before: baseline, restored: await jrTuple(f), originalCatalog: baselineCatalog,
+        exactOriginalSourceAndCatalogRestored: true, noReconciliationDml: true });
+    });
+  });
+  journalCase('JR07', 'JR07 keeps lost reconciliation COMMIT and ROLLBACK acknowledgements uncertain and only the original handle can be observed again', async f => {
+    const original = await jrMintUncertain(f, 'COMMIT'), before = await jrTuple(f);
+    let uncertainCommit: Awaited<ReturnType<typeof reconcileGuardedTypedLocalBackfillJournal>> | undefined;
+    await jrWithFreshClient(f, 'observe-commit-ack', async (fresh, commands) => {
+      const native = Client.prototype.query.bind(fresh); let realCommit = false;
+      const spy = vi.spyOn(fresh, 'query').mockImplementation((async (...args: unknown[]) => {
+        const sql = queryText(args[0]); commands.push(sql); const result = await Reflect.apply(native, fresh, args);
+        if (sql === 'COMMIT') { realCommit = true; throw Error('PRIVATE_FICTIONAL_JR_RECONCILIATION_COMMIT_ACK'); } return result;
+      }) as Client['query']);
+      try { uncertainCommit = await reconcileGuardedTypedLocalBackfillJournal(fresh, original.attempt); } finally { spy.mockRestore(); }
+      expect(realCommit).toBe(true); expect(uncertainCommit).toEqual({ status: 'UNCERTAIN', code: 'RECONCILIATION_COMMIT_OUTCOME_UNKNOWN',
+        planDigest: f.chain.plan.digest, reconciliation: 'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED' });
+      expect(commands[commands.length - 1]).toBe('COMMIT'); expect(commands).not.toContain('ROLLBACK'); jrLockOrder(commands);
+      expect(await jrTuple(f)).toEqual(before);
+      receipt('case-JR07-reconciliation-commit-ack.json', { originalAttempt: original.attempt, outcome: uncertainCommit, commands, before, after: await jrTuple(f), commitDispositionClaim: false });
+    });
+    await jrWithFreshClient(f, 'observe-rollback-ack', async (fresh, commands) => {
+      const invalidBoundary = commands.length;
+      expect(await reconcileGuardedTypedLocalBackfillJournal(fresh, uncertainCommit)).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_ORIGINAL_UNCERTAIN_ATTEMPT_REQUIRED' });
+      expect(commands).toHaveLength(invalidBoundary);
+      const native = Client.prototype.query.bind(fresh); let actualReadFailure = false, realRollback = false;
+      const spy = vi.spyOn(fresh, 'query').mockImplementation((async (...args: unknown[]) => {
+        const sql = queryText(args[0]); commands.push(sql);
+        if (!actualReadFailure && sql.includes('F10_TYPED_JOURNAL_READ')) { actualReadFailure = true; return native('SELECT 1/0'); }
+        const result = await Reflect.apply(native, fresh, args);
+        if (sql === 'ROLLBACK') { realRollback = true; throw Error('PRIVATE_FICTIONAL_JR_RECONCILIATION_ROLLBACK_ACK'); } return result;
+      }) as Client['query']);
+      let uncertainRollback: Awaited<ReturnType<typeof reconcileGuardedTypedLocalBackfillJournal>>;
+      try { uncertainRollback = await reconcileGuardedTypedLocalBackfillJournal(fresh, original.attempt); } finally { spy.mockRestore(); }
+      expect(actualReadFailure).toBe(true); expect(realRollback).toBe(true);
+      expect(uncertainRollback).toEqual({ status: 'UNCERTAIN', code: 'ROLLBACK_UNCONFIRMED', planDigest: f.chain.plan.digest,
+        reconciliation: 'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED' });
+      expect(commands[commands.length - 1]).toBe('ROLLBACK'); expect(commands.filter(sql => sql === 'ROLLBACK')).toHaveLength(1); expect(commands).not.toContain('COMMIT'); jrLockOrder(commands);
+      const failureCommands = [...commands]; expect(await jrTuple(f)).toEqual(before);
+      const boundary = commands.length, retryNative = Client.prototype.query.bind(fresh);
+      // Restore a recorder after the fault spy has restored the native method.
+      // The successful original-handle observation must have its own actual SQL.
+      const retrySpy = vi.spyOn(fresh, 'query').mockImplementation(((...args: unknown[]) => {
+        commands.push(queryText(args[0])); return Reflect.apply(retryNative, fresh, args);
+      }) as Client['query']);
+      try {
+        expect(await reconcileGuardedTypedLocalBackfillJournal(fresh, uncertainRollback)).toEqual({ status: 'BLOCKED', code: 'TYPED_JOURNAL_ORIGINAL_UNCERTAIN_ATTEMPT_REQUIRED' });
+        expect(commands).toHaveLength(boundary);
+        const outcome = await reconcileGuardedTypedLocalBackfillJournal(fresh, original.attempt);
+        expect(outcome).toEqual(jrExpected(f, 'APPLIED_METADATA_PRESENT')); jrLockOrder(commands.slice(boundary));
+        expect(await jrTuple(f)).toEqual(before); await expectJournalApplied(f);
+        receipt('case-JR07-reconciliation-rollback-ack.json', { originalAttempt: original.attempt, originalCommands: original.commands,
+          uncertainCommit, uncertainRollback, failureCommands, successfulOriginalHandleOutcome: outcome, successfulOriginalHandleCommands: commands.slice(boundary),
+          before, after: await jrTuple(f), reconciliationUncertaintyReissuedAsHandle: false, definiteRollbackDispositionClaim: false, effectsVerified: false });
+      } finally { retrySpy.mockRestore(); }
+    });
+  });
+  // JR_RECONCILIATION_NATIVE_END
 });
