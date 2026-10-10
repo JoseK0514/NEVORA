@@ -9,6 +9,29 @@ import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL, RUNTIME_CATALOG_SHARED_FENCE_SQL
 // PREPARATION HOLD: root alone selects fresh owned native OLD/GREEN invocations.
 // No URL/discovery/startup/provider. Exact final pin literals must be supplied
 // from the frozen five-file producer READY before any credential read/connection.
+// Keep prior byte custody checks while allowing only the reviewed marked additions.
+function beforePortalDependencyInsertions(text: string): string {
+  for (const name of ['PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
+    const start = '-- ' + name + '_BEGIN', end = '-- ' + name + '_END';
+    if (!text.includes(start) && !text.includes(end)) continue;
+    expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
+    const after = text.indexOf(end) + end.length;
+    expect(text.slice(after, after + 1)).toBe('\n');
+    text = text.slice(0, text.indexOf(start)) + text.slice(after + 1);
+  }
+  return text;
+}
+
+const portalDependencyCurrentPins: Record<string, string> = {
+  "audited-role-guard.sql": "ba0b4617d66892ad350e42221e9ad1dc27b406c35d5103b9eba28b08ea6a02e0",
+  "audited-role-guard-installer.sql": "cfbe111978adc37a1ce0025ce843fb37e7e43b71f568c3dd01c68b126c23f7d5",
+  "original-runtime-login.sql": "0993c3ba476cc8dab6d80ee2e0287ba9d18072b3dab99aee8bcab23814c4e6b8",
+  "original-runtime-login-installer.sql": "a63f71569af622928d879c1b6759440a42f20f9f599efd24eb80bfb2e1be584f"
+};
+function expectFrozenSql(text: string, name: string, historicalPin: string): void {
+  expect(hash(beforePortalDependencyInsertions(text))).toBe(historicalPin);
+  expect(hash(text)).toBe(portalDependencyCurrentPins[name] ?? historicalPin);
+}
 const pins = {
   'control-storage.sql': '4edaaa14492e8b91b30ecb26b4f9582af97c8380543761eee8bcc605ef40de66',
   'audited-helper-storage.sql': '2a7d8c979e5e854ddd0e516a07ce20eed15365efcfb1c21812ffffe9e31d9603',
@@ -299,7 +322,7 @@ describe.skipIf(!leasePath && !runPath)('root-owned original LOGIN native prereq
     expect(lease.credentialFile.startsWith(lease.root + sep)).toBe(true);
     for (const [name, expected] of Object.entries(effectivePins)) {
       expect(expected).toMatch(/^[0-9a-f]{64}$/); const value = readFileSync(resolve('src/lib/tenancy/runtime', name), 'utf8');
-      expect(hash(value)).toBe(expected); sources[name] = value;
+      expectFrozenSql(value, name, expected); sources[name] = value;
     }
     expect(hash(retainedOldNative)).toBe(oldNativeSHA256);
     guardSource = sources['audited-role-guard.sql']; validatorSource = sources['original-runtime-login.sql'];

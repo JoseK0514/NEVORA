@@ -6,6 +6,29 @@ import { appendFileSync, lstatSync, readFileSync, realpathSync, statSync, writeF
 import { createHash } from 'node:crypto';
 import { isAbsolute, join, resolve, sep } from 'node:path';
 
+// Keep prior byte custody checks while allowing only the reviewed marked additions.
+function beforePortalDependencyInsertions(text: string): string {
+  for (const name of ['PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
+    const start = '-- ' + name + '_BEGIN', end = '-- ' + name + '_END';
+    if (!text.includes(start) && !text.includes(end)) continue;
+    expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
+    const after = text.indexOf(end) + end.length;
+    expect(text.slice(after, after + 1)).toBe('\n');
+    text = text.slice(0, text.indexOf(start)) + text.slice(after + 1);
+  }
+  return text;
+}
+
+const portalDependencyCurrentPins: Record<string, string> = {
+  "audited-role-guard.sql": "ba0b4617d66892ad350e42221e9ad1dc27b406c35d5103b9eba28b08ea6a02e0",
+  "audited-role-guard-installer.sql": "cfbe111978adc37a1ce0025ce843fb37e7e43b71f568c3dd01c68b126c23f7d5",
+  "original-runtime-login.sql": "0993c3ba476cc8dab6d80ee2e0287ba9d18072b3dab99aee8bcab23814c4e6b8",
+  "original-runtime-login-installer.sql": "a63f71569af622928d879c1b6759440a42f20f9f599efd24eb80bfb2e1be584f"
+};
+function expectFrozenSql(text: string, name: string, historicalPin: string): void {
+  expect(hash(beforePortalDependencyInsertions(text))).toBe(historicalPin);
+  expect(hash(text)).toBe(portalDependencyCurrentPins[name] ?? historicalPin);
+}
 const sourcePath = resolve('src/lib/tenancy/runtime/control-storage.sql');
 const helperPath = resolve('src/lib/tenancy/runtime/role-guard.sql');
 const oldTestPath = resolve('src/lib/tenancy/runtime/role-guard.test.ts');
@@ -567,7 +590,7 @@ describe.skipIf(!leasePath && !runPath)('owned PostgreSQL audited runtime helper
     expect(hash(readFileSync(oldTestPath))).toBe(expectedOldTestSHA256);
     auditedStorage = readFileSync(auditedStoragePath, 'utf8'); auditedGuard = readFileSync(auditedGuardPath, 'utf8');
     expect(hash(auditedStorage)).toBe(expectedAuditedStorageSHA256);
-    expect(hash(auditedGuard)).toBe(expectedAuditedGuardSHA256);
+    expectFrozenSql(auditedGuard, 'audited-role-guard.sql', expectedAuditedGuardSHA256);
     expect(hash(readFileSync(resolve('src/lib/tenancy/runtime/catalog-fence.server.ts')))).toBe('2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f');
     expect(hash(readFileSync(counterSourcePath))).toBe(expectedCounterSourceSHA256);
     expect(hash(readFileSync(parentSourcePath))).toBe(expectedParentSourceSHA256);

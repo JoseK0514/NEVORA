@@ -4,6 +4,19 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { lexSql } from '../inventory/sql-lexer';
 
+// Keep prior byte custody checks while allowing only the reviewed marked additions.
+function beforePortalDependencyInsertions(text: string): string {
+  for (const name of ['PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
+    const start = '-- ' + name + '_BEGIN', end = '-- ' + name + '_END';
+    if (!text.includes(start) && !text.includes(end)) continue;
+    expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
+    const after = text.indexOf(end) + end.length;
+    expect(text.slice(after, after + 1)).toBe('\n');
+    text = text.slice(0, text.indexOf(start)) + text.slice(after + 1);
+  }
+  return text;
+}
+
 const source = readFileSync(resolve('src/lib/tenancy/runtime/original-runtime-login.sql'), 'utf8');
 const hash = (value: string) => createHash('sha256').update(value, 'utf8').digest('hex');
 function section(start: string, end: string): string {
@@ -48,7 +61,7 @@ describe('unused original runtime login dependency inert source', () => {
   });
   it('reuses the exact pinned native audit closure including policies without a relaxed duplicate', () => {
     const native = section('-- AUDITED_NATIVE_CTES_BEGIN', '-- AUDITED_NATIVE_CTES_END');
-    const withoutTerminal = withoutAddedSection(native, '-- ORIGINAL_RUNTIME_TERMINAL_CTE_BEGIN', '-- ORIGINAL_RUNTIME_TERMINAL_CTE_END');
+    const withoutTerminal = withoutAddedSection(beforePortalDependencyInsertions(native), '-- ORIGINAL_RUNTIME_TERMINAL_CTE_BEGIN', '-- ORIGINAL_RUNTIME_TERMINAL_CTE_END');
     const preserved = withoutAddedSection(withoutTerminal, '\n-- ORIGINAL_RUNTIME_DEPENDENCY_ADMISSION_BEGIN', '-- ORIGINAL_RUNTIME_DEPENDENCY_ADMISSION_END');
     expect(hash(preserved)).toBe('fba1c31e39cf91ef4f3287968d2a2ec3fa93ca6faf32d796b6fd03fbf53c137f');
     expect(native).toContain('AND p.provolatile=\'v\' AND p.prosecdef');

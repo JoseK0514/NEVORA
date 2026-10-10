@@ -7,6 +7,19 @@ import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 import { lexSql } from '../inventory/sql-lexer';
 import { tokenizeDdl } from '../inventory/ddl';
 
+// Keep prior byte custody checks while allowing only the reviewed marked additions.
+function beforePortalDependencyInsertions(text: string): string {
+  for (const name of ['PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
+    const start = '-- ' + name + '_BEGIN', end = '-- ' + name + '_END';
+    if (!text.includes(start) && !text.includes(end)) continue;
+    expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
+    const after = text.indexOf(end) + end.length;
+    expect(text.slice(after, after + 1)).toBe('\n');
+    text = text.slice(0, text.indexOf(start)) + text.slice(after + 1);
+  }
+  return text;
+}
+
 const source = readFileSync(resolve('src/lib/tenancy/runtime/original-runtime-login-installer.sql'), 'utf8');
 const validator = readFileSync(resolve('src/lib/tenancy/runtime/original-runtime-login.sql'), 'utf8');
 const existingInstaller = readFileSync(resolve('src/lib/tenancy/runtime/audited-role-guard-installer.sql'), 'utf8');
@@ -45,7 +58,7 @@ describe('unused original LOGIN validator fresh installer source', () => {
     expect(words(statements[7].text)).toEqual(['COMMIT', ';']);
   });
   it('retains the entire already-tested prerequisite envelope with only fixed installer target/labels changed', () => {
-    expect(hash(existingInstaller)).toBe('9f8fd73c7a0f2711aaac38836377d9a1ca6e0b504ab899c32c6558a2366b6f99');
+    expect(hash(beforePortalDependencyInsertions(existingInstaller))).toBe('9f8fd73c7a0f2711aaac38836377d9a1ca6e0b504ab899c32c6558a2366b6f99');
     expect(prerequisite()).toBe(expectedPrerequisite());
   });
   it('requires current installer ownership of the pre-existing exact controlled schema before any CREATE', () => {
@@ -83,7 +96,7 @@ describe('unused original LOGIN validator fresh installer source', () => {
     expect(words(source).filter(word => ['DROP', 'ALTER'].includes(word))).toEqual([]);
   });
   it('embeds the exact frozen validator body and comments with only the fresh CREATE declaration changed', () => {
-    expect(hash(validator)).toBe('d27ddb080930638b32557767b81d2d249cd46511351baad8eb9d4154a77533db');
+    expect(hash(beforePortalDependencyInsertions(validator))).toBe('d27ddb080930638b32557767b81d2d249cd46511351baad8eb9d4154a77533db');
     const fresh = validator.replace('CREATE OR REPLACE FUNCTION', 'CREATE FUNCTION');
     expect(source.split(fresh)).toHaveLength(2);
     const declaration = 'CREATE FUNCTION nevora_tenancy.require_original_runtime_login_kind()';

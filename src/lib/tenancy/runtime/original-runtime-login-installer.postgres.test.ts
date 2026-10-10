@@ -5,6 +5,29 @@ import { Client } from 'pg';
 import { appendFileSync, existsSync, lstatSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { isAbsolute, join, resolve, sep } from 'node:path';
+// Keep prior byte custody checks while allowing only the reviewed marked additions.
+function beforePortalDependencyInsertions(text: string): string {
+  for (const name of ['PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
+    const start = '-- ' + name + '_BEGIN', end = '-- ' + name + '_END';
+    if (!text.includes(start) && !text.includes(end)) continue;
+    expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
+    const after = text.indexOf(end) + end.length;
+    expect(text.slice(after, after + 1)).toBe('\n');
+    text = text.slice(0, text.indexOf(start)) + text.slice(after + 1);
+  }
+  return text;
+}
+
+const portalDependencyCurrentPins: Record<string, string> = {
+  "audited-role-guard.sql": "ba0b4617d66892ad350e42221e9ad1dc27b406c35d5103b9eba28b08ea6a02e0",
+  "audited-role-guard-installer.sql": "cfbe111978adc37a1ce0025ce843fb37e7e43b71f568c3dd01c68b126c23f7d5",
+  "original-runtime-login.sql": "0993c3ba476cc8dab6d80ee2e0287ba9d18072b3dab99aee8bcab23814c4e6b8",
+  "original-runtime-login-installer.sql": "a63f71569af622928d879c1b6759440a42f20f9f599efd24eb80bfb2e1be584f"
+};
+function expectFrozenSql(text: string, name: string, historicalPin: string): void {
+  expect(hash(beforePortalDependencyInsertions(text))).toBe(historicalPin);
+  expect(hash(text)).toBe(portalDependencyCurrentPins[name] ?? historicalPin);
+}
 const folder = resolve('src/lib/tenancy/runtime');
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const q = (value: string) => '"' + value.replace(/"/g, '""') + '"';
@@ -322,7 +345,7 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 fresh-only private original 
     expect(Number(pid[0])).toBe(lease.pid); expect(realpathSync(pid[1])).toBe(lease.data); expect(pid[2]).toBe(lease.pidStart); expect(Number(pid[3])).toBe(lease.port);
     const credential = lstatSync(lease.credentialFile); expect(credential.isFile() && !credential.isSymbolicLink()).toBe(true); expect(credential.uid).toBe(uid); expect(credential.mode & 0o777).toBe(0o600);
     expect(realpathSync(lease.credentialFile)).toBe(lease.credentialFile); expect(lease.credentialFile.startsWith(lease.root + sep)).toBe(true);
-    for(const spec of specifications){expect(hash(spec.source)).toBe(spec.sourceSHA256);expect(hash(spec.fragment)).toBe(spec.fragmentSHA256);
+    for(const spec of specifications){expectFrozenSql(spec.source, spec.name+'-installer.sql', spec.sourceSHA256);expectFrozenSql(spec.fragment, spec.name+'.sql', spec.fragmentSHA256);
       expect(spec.source.startsWith('BEGIN ISOLATION LEVEL READ COMMITTED;\n'+INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text+'\nSET LOCAL search_path = pg_catalog;\n')).toBe(true);
       expect(spec.source.split(spec.fragment.replace('CREATE OR REPLACE FUNCTION','CREATE FUNCTION'))).toHaveLength(2);}
     expect(hash(control)).toBe('4edaaa14492e8b91b30ecb26b4f9582af97c8380543761eee8bcc605ef40de66');

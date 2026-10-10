@@ -6,6 +6,19 @@ vi.mock('server-only', () => ({}));
 import { lexSql } from '../inventory/sql-lexer';
 import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 
+// Keep prior byte custody checks while allowing only the reviewed marked additions.
+function beforePortalDependencyInsertions(text: string): string {
+  for (const name of ['PORTAL_SOURCE_DEPENDENCY_ADMISSION', 'PORTAL_SOURCE_DEPENDENCY_CTES']) {
+    const start = '-- ' + name + '_BEGIN', end = '-- ' + name + '_END';
+    if (!text.includes(start) && !text.includes(end)) continue;
+    expect(text.split(start)).toHaveLength(2); expect(text.split(end)).toHaveLength(2);
+    const after = text.indexOf(end) + end.length;
+    expect(text.slice(after, after + 1)).toBe('\n');
+    text = text.slice(0, text.indexOf(start)) + text.slice(after + 1);
+  }
+  return text;
+}
+
 const specifications = [
   { name: 'role-guard', helper: 'assert_runtime_role', sha256: '7c0ce83b99d401aac9a31db391cb750b676a22bf3c76e440194de986299bbd6a', controls: ['runtime_role_binding'] },
   { name: 'audited-role-guard', helper: 'assert_audited_runtime_role', sha256: '28ce7c57e59426c12437fb4c14ded3e48c074ff67c9051ac36ae3e180c83443f', controls: ['runtime_role_binding', 'audited_helper_capability'] },
@@ -22,7 +35,7 @@ describe.each(specifications)('$name fresh-only standalone source contract', spe
   const parts = lexSql(artifact).parts.filter(part => part.kind === 'statement');
   it('adds a distinct artifact while retaining every accepted original fragment byte', () => {
     expect(written).toBe(true);
-    expect(createHash('sha256').update(original).digest('hex')).toBe(spec.sha256);
+    expect(createHash('sha256').update(beforePortalDependencyInsertions(original)).digest('hex')).toBe(spec.sha256);
     expect(artifact.split(freshDefinition)).toHaveLength(2);
   });
   it('owns explicit ReadCommitted and takes the exact first exclusive fence', () => {
