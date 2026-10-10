@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { addDays } from '../lib/date-utils';
 import type { GenerationExplanationBinding, GenerationExplanationView } from '../lib/scheduling/generation/explanation-view';
 
 type ReadyView = Extract<GenerationExplanationView, { state: 'ready' }>;
@@ -45,7 +46,9 @@ function Disclosure({ title, children }: { title: string; children: ReactNode })
 function Assignments({ rows, empty }: { rows: ReadyView['accepted']; empty: string }) {
  return rows.length ? <ul>{rows.map(row => <li key={row.assignmentId} data-assignment-id={row.assignmentId}>
   <strong>{row.employeeId} · {row.locationId}</strong>
-  <span>{row.date} {row.startTime} – {row.endDate ?? row.date} {row.endTime}</span>
+  {/* Canonical HH:MM rows use the following business day for implicit
+    overnight endpoints. Keep explicit dates and end-of-day 24:00 notation. */}
+  <span>{row.date} {row.startTime} – {row.endDate ?? (row.endTime < row.startTime ? addDays(row.date, 1) : row.date)} {row.endTime}</span>
   <span>Assignment: {row.assignmentId}{row.positionId !== undefined ? <> · Position: {row.positionId}</> : null}
    {row.isDesignatedLead ? ' · Designated Lead' : ''}</span>
   <span>{row.message}</span>

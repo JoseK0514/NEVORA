@@ -1,3 +1,4 @@
+import { shiftPeriod } from '../lib/scheduling/periods';
 import { createHash } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 import { createElement } from 'react';
@@ -280,5 +281,83 @@ describe('unused F3 source-bound generation explanation panel', () => {
   const binding = observation(s); Object.assign(binding, { [field]: 'replacement' });
   const html = render(s, { expected: binding, result: { state: 'view', view: project(s), binding } });
   noReadyDetails(html); expect(html).not.toContain('Look up original outcome');
+ });
+});
+
+describe('EQ-F-FUNC-002 canonical assignment interval display', () => {
+ function intervalInput(kind: 'overnight' | 'ordinary' | 'end-of-day') {
+  const i = automaticWeek(); i.staffing[0].minimumStaffPerShift = 1;
+  i.employees.forEach(employee => { employee.availability = Array.from({ length: 7 }, (_, dayOfWeek) =>
+   ({ dayOfWeek, startTime: '00:00', endTime: '24:00' })); });
+  const window = i.coverageWindows[0];
+  i.coverageWindows = kind === 'ordinary' ? [{ ...window, startTime: '08:00', endTime: '16:00' }] :
+   [{ ...window, startTime: '22:00', endTime: '24:00' }, ...(kind === 'overnight' ?
+    [{ ...window, id: 'fictional-tuesday-continuation', dayOfWeek: 2, startTime: '00:00', endTime: '02:00' }] : [])];
+  return i;
+ }
+ function assignmentInterval(html: string, assignmentId: string) {
+  // Demand rows also contain truthful end dates. Assert the assignment's own
+  // interval, so an unrelated date elsewhere cannot mask this display defect.
+  const escaped = renderToStaticMarkup(createElement('span', null, assignmentId)).slice(6, -7);
+  const start = html.indexOf(`data-assignment-id="${escaped}"`);
+  expect(start, 'exact canonical assignment must be rendered').toBeGreaterThanOrEqual(0);
+  const end = html.indexOf('</li>', start); expect(end).toBeGreaterThan(start);
+  const interval = html.slice(start, end).match(/<span>(.*?)<\/span>/)?.[1];
+  expect(interval, 'assignment interval span must exist').toBeDefined(); return interval;
+ }
+
+ it.each([
+  { kind: 'overnight' as const, startTime: '22:00', endTime: '02:00', endDate: '2026-10-06',
+   endISO: '2026-10-06T02:00:00.000Z', claimEnd: '2026-10-06T02:00', duration: 240 },
+  { kind: 'ordinary' as const, startTime: '08:00', endTime: '16:00', endDate: '2026-10-05',
+   endISO: '2026-10-05T16:00:00.000Z', claimEnd: '2026-10-05T16:00', duration: 480 },
+  { kind: 'end-of-day' as const, startTime: '22:00', endTime: '24:00', endDate: '2026-10-05',
+   endISO: '2026-10-06T00:00:00.000Z', claimEnd: '2026-10-06T00:00', duration: 120 },
+ ])('displays genuine proposed $kind endpoint without changing canonical 24:00 notation', control => {
+  const s = snapshot(intervalInput(control.kind)), before = structuredClone(s);
+  expect(s.record.plan.status).toBe('COMPLETE');
+  const assignment = s.record.plan.additions.find(a => a.startTime === control.startTime && a.endTime === control.endTime);
+  expect(assignment, 'real planWeek must emit the interval').toBeDefined();
+  if (!assignment) throw Error('Canonical proposed interval fixture missing');
+  expect(assignment).not.toHaveProperty('endDate');
+  const period = shiftPeriod(assignment);
+  // These are canonical business-wall-time coordinates, not worked-time UTC.
+  expect(period.end - period.start).toBe(control.duration);
+  expect(new Date(period.end * 60000).toISOString()).toBe(control.endISO);
+  expect(assignment.generatedClaims?.claims.some(claim => claim.coveredEnd === control.claimEnd)).toBe(true);
+  const view = ready(s), row = view.accepted.find(a => a.assignmentId === assignment.id);
+  expect(row).toMatchObject({ date: '2026-10-05', startTime: control.startTime, endTime: control.endTime,
+   code: 'CANONICAL_ADDITION', validation: 'CANONICAL_FINAL_EVALUATION' });
+  expect(row?.endDate).toBeUndefined();
+  const html = render(s); noWriteControls(html); expect(s).toEqual(before);
+  expect(assignmentInterval(html, assignment.id)).toBe(`2026-10-05 ${control.startTime} – ${control.endDate} ${control.endTime}`);
+ });
+
+ it.each([
+  { kind: 'overnight' as const, id: 'manual-implicit-overnight', startTime: '22:00', endTime: '02:00',
+   explicitEndDate: undefined, displayEndDate: '2026-10-06', endISO: '2026-10-06T02:00:00.000Z', duration: 240 },
+  { kind: 'ordinary' as const, id: 'manual-ordinary', startTime: '08:00', endTime: '16:00',
+   explicitEndDate: undefined, displayEndDate: '2026-10-05', endISO: '2026-10-05T16:00:00.000Z', duration: 480 },
+  { kind: 'overnight' as const, id: 'manual-explicit-multiday', startTime: '22:00', endTime: '02:00',
+   explicitEndDate: '2026-10-07', displayEndDate: '2026-10-07', endISO: '2026-10-07T02:00:00.000Z', duration: 1680 },
+  { kind: 'end-of-day' as const, id: 'manual-end-of-day', startTime: '22:00', endTime: '24:00',
+   explicitEndDate: undefined, displayEndDate: '2026-10-05', endISO: '2026-10-06T00:00:00.000Z', duration: 120 },
+ ])('displays exact MANAGER-preserved $id interval including explicit endDate precedence', control => {
+  const i = intervalInput(control.kind), original = automaticAssignment(control.id, 'e1', {
+   startTime: control.startTime, endTime: control.endTime,
+   ...(control.explicitEndDate ? { endDate: control.explicitEndDate } : {}) });
+  expect(original.assignmentOrigin).toBe('MANAGER'); i.ledger = [original];
+  const s = snapshot(i), before = structuredClone(s), period = shiftPeriod(original);
+  expect(period.end - period.start).toBe(control.duration);
+  expect(new Date(period.end * 60000).toISOString()).toBe(control.endISO);
+  expect(s.record.plan.preservedShiftIds).toContain(original.id);
+  expect(s.record.plan.fixedAssignments.find(a => a.id === original.id)).toEqual(original);
+  const view = ready(s), row = view.preserved.find(a => a.assignmentId === original.id);
+  expect(row).toMatchObject({ employeeId: original.employeeId, date: original.date, startTime: original.startTime,
+   endTime: original.endTime, code: 'MANUAL_PRESERVED', validation: 'RETAINED_UNCHANGED' });
+  expect(row?.endDate).toBe(control.explicitEndDate);
+  const html = render(s); expect(html).toContain('Existing manual assignment preserved.'); noWriteControls(html);
+  expect(s).toEqual(before);
+  expect(assignmentInterval(html, original.id)).toBe(`${original.date} ${original.startTime} – ${control.displayEndDate} ${original.endTime}`);
  });
 });
