@@ -1,0 +1,180 @@
+// UNUSED future src/lib/tenancy/runtime/portal-runtime-build-install-bootstrap.server.ts.
+// Static generated imports + fixed current Next install; no caller disk path,
+// metadata, policy ID/revision or approval parameter. Does not issue TenantProof.
+import 'server-only';
+import { createHash } from 'node:crypto';
+import { constants, closeSync, fstatSync, openSync, readFileSync, lstatSync, realpathSync, readdirSync } from 'node:fs';
+import { resolve, join, relative, sep } from 'node:path';
+import { types as nodeTypes } from 'node:util';
+import { getTenantRuntimeDb } from '../../db';
+import { RUNTIME_CATALOG_SHARED_FENCE_SQL, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
+import { loadPortalRuntimeSourceImage, linkPortalRuntimeStartupSourceImage } from './portal-runtime-startup-loader';
+import { parseLosslessJsonWire, toExistingJsonValue } from '../migrations/lossless-json';
+import { PORTAL_SOURCE_IMAGE_BYTES } from './portal-source-image.generated';
+import INSTALLATION from './portal-native-installation.generated.json';
+// Independently source-controlled producer exports this inert, closed APP
+// capture only. It must return startup + full current privateEnrollment.
+import { PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL } from './portal-native-installation-capture.server';
+
+const hash = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
+const fail = (): never => { throw new Error('portal_startup_binding_unavailable'); };
+const issued = new WeakSet<object>();
+const bundleNames=Object.freeze(['resolvePortalSource','auditedRoleGuardInstallerSource','originalRuntimeLoginInstallerSource',
+  'portalSourceLocksSource','portalSourceObservationSource','portalInstalledPolicyObservationSource',
+  'portalPolicyJointLocksSource','portalPolicyJointObservationSource','privatePoliciesTemplateSource',
+  'privateGrantsTemplateSource','privatePoliciesRenderedSource','privateGrantsRenderedSource','privateEnrollmentCaptureSource']);
+const denied = Object.freeze({status:'BLOCKED' as const,code:'PORTAL_STARTUP_BINDING_UNAVAILABLE' as const});
+function record(value:unknown):Record<string,unknown> {
+  if(!value || typeof value !== 'object' || nodeTypes.isProxy(value) || Array.isArray(value) ||
+    ![Object.prototype,null].includes(Object.getPrototypeOf(value)))return fail();
+  const descriptors=Object.getOwnPropertyDescriptors(value),out:Record<string,unknown>=Object.create(null);
+  for(const key of Reflect.ownKeys(descriptors)) {
+    const d=descriptors[key as string];
+    if(typeof key !== 'string' || !Object.hasOwn(d,'value') || !d.enumerable)return fail();
+    out[key]=d.value;
+  }
+  return out;
+}
+function exact(value:unknown,keys:readonly string[]) {
+  const out=record(value);if(Object.keys(out).length!==keys.length || Object.keys(out).some(key=>!keys.includes(key)))return fail();return out;
+}
+function bytes(value:unknown):Buffer {
+  if(!Array.isArray(value)||nodeTypes.isProxy(value)||Object.getPrototypeOf(value)!==Array.prototype)return fail();
+  const ds=Object.getOwnPropertyDescriptors(value as object),length=ds.length;
+  if(!length||!Object.hasOwn(length,'value')||typeof length.value!=='number'||!Number.isSafeInteger(length.value)||length.value<=0||
+    Reflect.ownKeys(ds).length!==length.value+1)return fail();
+  const out:number[]=[];
+  for(let n=0;n<length.value;n++){const d=Object.hasOwn(ds,String(n))?ds[String(n)]:undefined;
+    if(!d||!Object.hasOwn(d,'value')||!d.enumerable||typeof d.value!=='number'||!Number.isInteger(d.value)||d.value<0||d.value>255)return fail();out.push(d.value);}
+  return Buffer.from(out);
+}
+function json(raw:Buffer):unknown {
+  const text=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(raw);
+  if(!raw.equals(Buffer.from(text,'utf8')))return fail();
+  const parsed=parseLosslessJsonWire(text);if(parsed.status!=='PARSED')return fail();
+  const converted=toExistingJsonValue(parsed.envelope);if(converted.status!=='CONVERTED'||converted.origin!=='JSON')return fail();return converted.value;
+}
+function read(base:string,path:string):Buffer {
+  if(!path||path.startsWith('/')||path.includes('\\')||path.split('/').some(p=>!p||p==='.'||p==='..'))return fail();
+  if(realpathSync(base)!==base||lstatSync(base).isSymbolicLink())return fail();
+  let file=base;
+  for(const part of path.split('/')){file=join(file,part);if(lstatSync(file).isSymbolicLink())return fail();}
+  const distance=relative(base,file);if(distance.startsWith('..'+sep)||distance==='..')return fail();
+  const fd=openSync(file,constants.O_RDONLY|constants.O_NOFOLLOW);
+  try{const a=fstatSync(fd);if(!a.isFile())return fail();const result=readFileSync(fd),b=fstatSync(fd),c=lstatSync(file);
+    if(a.dev!==b.dev||a.ino!==b.ino||a.size!==b.size||a.mtimeMs!==b.mtimeMs||a.ctimeMs!==b.ctimeMs||
+      result.length!==b.size||c.isSymbolicLink()||c.dev!==b.dev||c.ino!==b.ino)return fail();return result;
+  }finally{closeSync(fd);}
+}
+function installedPaths(base:string,directory:string):string[] {
+  if(lstatSync(join(base,directory)).isSymbolicLink())return fail();
+  const paths:string[]=[];
+  for(const entry of readdirSync(join(base,directory),{withFileTypes:true})){const path=directory+'/'+entry.name;
+    if(entry.isSymbolicLink())return fail();if(entry.isDirectory())paths.push(...installedPaths(base,path));else if(entry.isFile())paths.push(path);else return fail();}
+  return paths.sort();
+}
+function singleton(value:unknown,key:string,expected:unknown):boolean {
+  if(!Array.isArray(value)||nodeTypes.isProxy(value)||Object.getPrototypeOf(value)!==Array.prototype)return false;
+  const ds=Object.getOwnPropertyDescriptors(value as object);
+  if(Reflect.ownKeys(ds).length!==2||!Object.hasOwn(ds,'length')||!Object.hasOwn(ds,'0')||
+    !Object.hasOwn(ds.length,'value')||ds.length.value!==1||!Object.hasOwn(ds['0'],'value'))return false;
+  try{const row=exact(ds['0'].value,[key]);return row[key]===expected;}catch{return false;}
+}
+function denseThree(value:unknown):readonly unknown[] {
+  if(!Array.isArray(value)||nodeTypes.isProxy(value)||Object.getPrototypeOf(value)!==Array.prototype)return fail();
+  const ds=Object.getOwnPropertyDescriptors(value as object);
+  if(Reflect.ownKeys(ds).length!==4||!Object.hasOwn(ds,'length')||!Object.hasOwn(ds.length,'value')||ds.length.value!==3)return fail();
+  const out=[];for(let n=0;n<3;n++){const d=Object.hasOwn(ds,String(n))?ds[String(n)]:undefined;if(!d||!Object.hasOwn(d,'value'))return fail();out.push(d.value);}return out;
+}
+const FINAL_ROLE = 'SELECT 1 / CASE WHEN nevora_tenancy.assert_audited_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard';
+export type PortalBuildInstallStartupIdentity = Readonly<{
+  kind:'PORTAL_BUILD_INSTALL_STARTUP_SOURCE_IDENTITY';buildBindingDigest:string;buildId:string;
+  sourceImage:unknown;startup:unknown;privateEnrollmentCapsuleText:string;
+  verification:'EXACT_RETAINED_BUILD_INSTALL_AND_CURRENT_GRAPH_SOURCE_JOIN_NOT_TENANT_PROOF';
+  remainingGates:readonly string[];
+}>;
+/** Closed bootstrap, not request-time arbitrary loader. Only admitted after root
+ * supplies controlled generated installation enrollment and immutable runtime
+ * installation/import custody. Equality cannot authenticate the producer. */
+export async function loadPortalBuildInstallStartupIdentity() {
+  try {
+    if(process.env.NODE_ENV!=='production'||process.env.NODE_OPTIONS||process.env.NODE_PATH||process.env.__NEXT_PRIVATE_STANDALONE_CONFIG||process.execArgv.length)return denied;
+    const root=resolve(process.cwd()),buildIdBytes=read(root,'.next/BUILD_ID'),buildId=buildIdBytes.toString('utf8');
+    if(!buildId||/[\r\n]/.test(buildId)||!buildIdBytes.equals(Buffer.from(buildId,'utf8')))return denied;
+    // Fixed sibling produced by the opt-in source extractor. No env path/current
+    // pointer; native BUILD_ID resolves a create-only immutable record.
+    const retainRoot=resolve(root,'../portal-build-bindings');
+    const stat=lstatSync(retainRoot);if(!stat.isDirectory()||stat.isSymbolicLink()||stat.uid!==process.getuid?.()||(stat.mode&0o077)!==0)return denied;
+    const slot=exact(json(read(retainRoot,'by-build-id/'+hash(buildIdBytes)+'.json')),['format','buildId','bindingDigest']);
+    if(slot.format!=='PORTAL_BUILD_BINDING_SLOT_V1'||slot.buildId!==buildId||typeof slot.bindingDigest!=='string'||!/^[a-f0-9]{64}$/.test(slot.bindingDigest))return denied;
+    const retainedBytes=read(retainRoot,slot.bindingDigest+'/binding.json');if(hash(retainedBytes)!==slot.bindingDigest)return denied;
+    const retained=exact(json(retainedBytes),['format','checkpoint','tree','releaseReceipt','runtime','buildId','sourceHashes','artifactHashes',
+      'requiredFiles','entries','traceEdges','dependencies','image','launcher','installationBytes','generatedImageSourceSha256','installationSourceSha256','verification','remainingGates']);
+    if(retained.format!=='PORTAL_BUILD_INSTALL_INPUT_RETENTION_V1'||retained.buildId!==buildId)return denied;
+    const runtime=exact(retained.runtime,['node','npm','platform','architecture','next','packageSha256','lockSha256']);
+    if(runtime.node!==process.version||runtime.platform!==process.platform||runtime.architecture!==process.arch||runtime.next!=='16.3.8')return denied;
+    const launcher=exact(retained.launcher,['path','sha256','command','nodeOptions','nodePath','standaloneConfig']);
+    if(launcher.path!=='node_modules/next/dist/bin/next'||launcher.command!=='next start'||launcher.nodeOptions!=='ABSENT'||launcher.nodePath!=='ABSENT'||launcher.standaloneConfig!=='ABSENT'||
+      process.argv[2]!=='start'||!process.argv[1]||realpathSync(process.argv[1])!==join(root,'node_modules/next/dist/bin/next')||hash(read(root,launcher.path))!==launcher.sha256)return denied;
+    const hashes=record(retained.artifactHashes);
+    if(JSON.stringify(installedPaths(root,'.next'))!==JSON.stringify(Object.keys(hashes).sort()))return denied;
+    for(const [path,digest] of Object.entries(hashes))if(!path.startsWith('.next/')||typeof digest!=='string'||hash(read(root,path))!==digest)return denied;
+    if(!Array.isArray(retained.dependencies))return denied;
+    for(const entry of retained.dependencies){const dependency=exact(entry,['path','sha256','byteLength']);
+      if(typeof dependency.path!=='string'||typeof dependency.sha256!=='string'||typeof dependency.byteLength!=='number')return denied;
+      const raw=read(root,dependency.path);if(raw.length!==dependency.byteLength||hash(raw)!==dependency.sha256)return denied;}
+    if(hash(read(root,'package.json'))!==runtime.packageSha256||hash(read(root,'package-lock.json'))!==runtime.lockSha256)return denied;
+    // Actual loaded static imports must match retained full preimages. No dynamic
+    // require/eval or search-path module choice. Generated data cannot reissue a
+    // TenantProof, reviewer approval or trusted installer by its own coherence.
+    const image=loadPortalRuntimeSourceImage(PORTAL_SOURCE_IMAGE_BYTES);
+    const retainedImage=loadPortalRuntimeSourceImage(retained.image);
+    if(image.status!=='SOURCE_IMAGE_LOADED_NOT_EXECUTION_ATTESTATION'||retainedImage.status!=='SOURCE_IMAGE_LOADED_NOT_EXECUTION_ATTESTATION')return denied;
+    for(const [name,source] of Object.entries(image.image.sources)){
+      const other=retainedImage.image.sources[name as keyof typeof retainedImage.image.sources];if(!Buffer.from(source.bytes).equals(Buffer.from(other.bytes)))return denied;
+    }
+    const installed=exact(INSTALLATION,['format','sourceImageSha256','producerSourceBytes','installationSourceBundle','catalogFenceProtocolSha256','startup','privateEnrollment']);
+    if(installed.format!=='PORTAL_NATIVE_INSTALLATION_RETAINED_V1'||installed.sourceImageSha256!==retained.generatedImageSourceSha256||
+      hash(bytes(retained.installationBytes))!==retained.installationSourceSha256||
+      !bytes(retained.installationBytes).equals(Buffer.from(JSON.stringify(INSTALLATION)+'\n','utf8'))||
+      !bytes(installed.producerSourceBytes).length||installed.catalogFenceProtocolSha256!==
+        hash(Buffer.from(RUNTIME_CATALOG_SHARED_FENCE_SQL.text+'\n'+INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text,'utf8')))return denied;
+    const sourceBundle=exact(installed.installationSourceBundle,bundleNames);
+    for(const name of bundleNames){const raw=bytes(sourceBundle[name]);const text=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(raw);
+      if(!raw.equals(Buffer.from(text,'utf8'))||text.includes('\0'))return denied;}
+    // Match actual executing producer module full source, not a caller-selected
+    // path or a claimed known hash. Its tracked bytes are in the build receipt.
+    if(!bytes(installed.producerSourceBytes).equals(read(root,'src/lib/tenancy/runtime/portal-native-installation-producer.server.ts')))return denied;
+    if(!bytes(sourceBundle.privateEnrollmentCaptureSource).equals(read(root,'src/lib/tenancy/runtime/portal-native-installation-capture.server.ts')))return denied;
+    const enrollment=exact(installed.privateEnrollment,['format','nativeCatalogCapsuleText','nativeCatalogCapsuleSha256']);
+    if(enrollment.format!=='PORTAL_PRIVATE_READER_ENROLLMENT_SOURCE_V1'||typeof enrollment.nativeCatalogCapsuleText!=='string'||!enrollment.nativeCatalogCapsuleText||
+      typeof enrollment.nativeCatalogCapsuleSha256!=='string'||hash(Buffer.from(enrollment.nativeCatalogCapsuleText))!==enrollment.nativeCatalogCapsuleSha256)return denied;
+    const db=getTenantRuntimeDb('APP');
+    const results=denseThree(await db.transaction([
+      db.query(RUNTIME_CATALOG_SHARED_FENCE_SQL.text,[]),
+      db.query(PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL.text,[]),
+      db.query(FINAL_ROLE,['APP']),
+    ],{isolationLevel:'ReadCommitted',arrayMode:false,fullResults:false}));
+    if(!singleton(results[0],'catalog_fence','')||!singleton(results[2],'guard',1))return denied;
+    const rows=results[1];if(!Array.isArray(rows)||nodeTypes.isProxy(rows)||Object.getPrototypeOf(rows)!==Array.prototype)return denied;
+    const rowDescriptors=Object.getOwnPropertyDescriptors(rows as object);
+    if(Reflect.ownKeys(rowDescriptors).length!==2||!Object.hasOwn(rowDescriptors,'length')||!Object.hasOwn(rowDescriptors,'0')||
+      !Object.hasOwn(rowDescriptors.length,'value')||rowDescriptors.length.value!==1||!Object.hasOwn(rowDescriptors['0'],'value'))return denied;
+    const row=exact(rowDescriptors['0'].value,['startup','privateEnrollment']);
+    const currentEnrollment=exact(row.privateEnrollment,['format','nativeCatalogCapsuleText','nativeCatalogCapsuleSha256']);
+    if(Object.keys(enrollment).some(key=>enrollment[key]!==currentEnrollment[key]))return denied;
+    const linked=linkPortalRuntimeStartupSourceImage(image.image,row.startup,{format:'PORTAL_STARTUP_RETAINED_SOURCE_INPUT_V1',sourceImage:retained.image,startup:installed.startup});
+    if(linked.status!=='PORTAL_SOURCE_IMAGE_AND_NATIVE_GRAPH_LINKED_NOT_AUTHORITY')return denied;
+    const identity:PortalBuildInstallStartupIdentity=Object.freeze({kind:'PORTAL_BUILD_INSTALL_STARTUP_SOURCE_IDENTITY',buildBindingDigest:slot.bindingDigest,
+      buildId,sourceImage:image.image,startup:linked.observation,privateEnrollmentCapsuleText:enrollment.nativeCatalogCapsuleText,
+      verification:'EXACT_RETAINED_BUILD_INSTALL_AND_CURRENT_GRAPH_SOURCE_JOIN_NOT_TENANT_PROOF',remainingGates:Object.freeze([
+        'CONTROLLED_INSTALLER_SOURCE_AND_OPERATOR_ENROLLMENT','IMMUTABLE_ACTUAL_SERVER_IMPORT_INSTALLATION_CUSTODY',
+        'ACTUAL_NATIVE_PRIVATE_ENROLLMENT_CAPSULE_AND_FINAL_SOURCE_QA','PRIVILEGED_WRITER_FENCE_ADOPTION',
+        'PROTECTED_RESOLVER_FULL_SCOPE_CURRENT_PROOF_PRIVATE_RLS_RECOVERY_NEON'])});
+    issued.add(identity);return Object.freeze({status:'STARTUP_SOURCE_IDENTITY_JOINED_NOT_AUTHORITY' as const,identity});
+  }catch{return denied;}
+}
+/** Trap-free local join provenance only. Never accepts a serialized clone. */
+export function isPortalBuildInstallStartupIdentity(value:unknown):value is PortalBuildInstallStartupIdentity {
+  return !!value&&typeof value==='object'&&issued.has(value);
+}

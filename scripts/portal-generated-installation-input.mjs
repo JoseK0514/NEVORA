@@ -75,7 +75,9 @@ export function assertPortalGeneratedInstallationBuildInput(){
  if(!capsule||typeof capsule!=='object'||capsule.databaseOid!==startup.databaseOid||typeof capsule.installationCatalogText!=='string')return fail();
  const catalog=JSON.parse(capsule.installationCatalogText);
  if(!catalog||!Array.isArray(catalog.roles))return fail();
- const owners=catalog.roles.filter(role=>role&&typeof role==='object'&&typeof role.oid==='number'&&Number.isSafeInteger(role.oid)&&role.oid>0&&role.oid<=4294967295&&String(role.oid)===startup.ownerOid);
+ // Postgres to_jsonb(pg_roles) retains OIDs as canonical text, matching the
+ // complete native capsule. Numeric/coerced values are not native preimages.
+ const owners=catalog.roles.filter(role=>role&&typeof role==='object'&&typeof role.oid==='string'&&/^[1-9][0-9]{0,9}$/.test(role.oid)&&BigInt(role.oid)<=4294967295n&&role.oid===startup.ownerOid);
  if(owners.length!==1||typeof owners[0].rolname!=='string'||!owners[0].rolname||owners[0].rolname.includes('\0'))return fail();
  const quoted='"'+owners[0].rolname.replaceAll('"','""')+'"';
  for(const [template,rendered]of [['privatePoliciesTemplateSource','privatePoliciesRenderedSource'],['privateGrantsTemplateSource','privateGrantsRenderedSource']]){
