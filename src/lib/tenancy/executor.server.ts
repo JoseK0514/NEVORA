@@ -15,7 +15,7 @@ export type TenantExecutor = Readonly<{
 // These helpers MUST raise on stale/foreign authority inside the transaction.
 // The SQL boolean wrapper also forces rollback for false/null helper returns.
 // No helper is claimed installed until actual migration/runtime verification.
-const ROLE = 'SELECT 1 / CASE WHEN nevora_tenancy.assert_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard';
+const ROLE = 'SELECT 1 / CASE WHEN nevora_tenancy.assert_audited_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard';
 const CONTEXT = "SELECT set_config('nevora.workspace_id', $1::text, true), set_config('nevora.proof_kind', $2::text, true), set_config('nevora.principal_id', $3::text, true), set_config('nevora.workspace_incarnation', $4::text, true)";
 const LOCK_AND_GUARD = 'SELECT 1 / CASE WHEN nevora_tenancy.lock_and_assert_current_proof($1::jsonb) IS TRUE THEN 1 ELSE 0 END AS guard';
 const FINAL_GUARD = 'SELECT 1 / CASE WHEN nevora_tenancy.assert_current_proof($1::jsonb) IS TRUE THEN 1 ELSE 0 END AS guard';

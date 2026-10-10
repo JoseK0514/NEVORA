@@ -38,10 +38,10 @@ describe('closed tenant statement contract', () => {
     expect(plans).toEqual(db.query.mock.results.map(result => result.value));
     expect(db.query.mock.calls[0][0]).toContain('pg_advisory_xact_lock_shared');
     expect(db.query.mock.calls[0][1]).toEqual([]);
-    expect(db.query.mock.calls[1][0]).toContain('assert_runtime_role');
+    expect(db.query.mock.calls[1][0]).toContain('assert_audited_runtime_role');
     expect(db.query.mock.calls[1][0]).toContain('resolve_portal');
     expect(db.query.mock.calls[1][1]).toEqual(['tenant-aa', digest]);
-    expect(db.query.mock.calls[2][0]).toContain('assert_runtime_role');
+    expect(db.query.mock.calls[2][0]).toContain('assert_audited_runtime_role');
     expect(db.query.mock.calls[2][1]).toEqual(['APP']);
     expect(JSON.stringify(p)).toBe('{"kind":"PORTAL"}');
     expect(contract!.compileTenantStatement(p, contract!.portalEmploymentSnapshot(p)).values).toEqual(['tenant-a', 'employee-a']);

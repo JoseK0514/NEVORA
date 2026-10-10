@@ -125,7 +125,7 @@ function parseProvisioner(row: Record<string, unknown>): ProvisionerScopeFacts {
   for (const key of bootstrap ? ['workspaceId', 'workspaceIncarnation', 'sourceVersion', 'verifiedIdentityReference'] : ['bootstrapNonce']) if (row[key] !== null) return malformed();
   return Object.freeze({ kind: 'PROVISIONER', operatorId: id(row, 'operatorId'), operatorGrantId: id(row, 'operatorGrantId'), operatorGrantVersion: revision(row, 'operatorGrantVersion'), operatorCredentialDigest: digest(row, 'operatorCredentialDigest'), environment: field(row, 'environment', validEnvironment) as ProvisionerEnvironment, purpose, workspaceId, bootstrapNonce, workspaceIncarnation, sourceVersion, verifiedIdentityReference, subjectEmployeeId: id(row, 'subjectEmployeeId'), requestId: id(row, 'requestId'), requestDigest: digest(row, 'requestDigest'), operationId: id(row, 'operationId'), payloadDigest: digest(row, 'payloadDigest'), ...lifetime(row) });
 }
-const FINAL_ROLE = 'SELECT 1 / CASE WHEN nevora_tenancy.assert_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard';
+const FINAL_ROLE = 'SELECT 1 / CASE WHEN nevora_tenancy.assert_audited_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard';
 // Closed native transport shapes only, never held-lock/catalog/role authority.
 // Descriptor ownership is essential: inherited names or descriptor values may
 // not substitute for observed data fields. Reject proxy/accessor behavior.
@@ -149,7 +149,7 @@ async function lookup(seam: keyof typeof seams, values: string[]): Promise<Recor
   // Provisioner lookup yields only narrow grant metadata; it grants no DDL or
   // ordinary tenant authority. SQL role helpers remain an installation gate.
   const role = seam === 'worker' ? 'WORKER' : 'APP';
-  const sql = `SELECT CASE WHEN nevora_tenancy.assert_runtime_role('${role}'::text) IS TRUE THEN ${seams[seam]} ELSE NULL::jsonb END AS facts`;
+  const sql = `SELECT CASE WHEN nevora_tenancy.assert_audited_runtime_role('${role}'::text) IS TRUE THEN ${seams[seam]} ELSE NULL::jsonb END AS facts`;
   const transport = getTenantRuntimeDb(role);
   // Leave every query lazy. ReadCommitted gives the lookup a fresh statement
   // snapshot after a blocked shared fence; final role denial raises in the same

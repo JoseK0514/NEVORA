@@ -45,7 +45,7 @@ beforeEach(() => {
     if (lookup?.includes('resolve_portal') || lookup?.includes('resolve_worker')) {
       expect(body.queries).toHaveLength(3);
       expect(body.queries[0]).toEqual({ query: RUNTIME_CATALOG_SHARED_FENCE_SQL.text, params: [] });
-      expect(body.queries[2].query).toContain('assert_runtime_role');
+      expect(body.queries[2].query).toContain('assert_audited_runtime_role');
       const lookupFacts = lookup.includes('resolve_worker') ? workerFacts : facts;
       return new Response(JSON.stringify({ results: [result([cell('catalog_fence', 2278)], [['']]),
         result([cell('facts', 3802)], [[JSON.stringify(lookupFacts)]]), guard()] }), { status: 200 });
@@ -55,7 +55,7 @@ beforeEach(() => {
       if (fenceFailure) return new Response(JSON.stringify({ message: 'private-fence-marker', code: '42501' }), { status: 400 });
     }
     if (databaseFailure) return new Response(JSON.stringify({ message: 'private-database-marker', code: '42501' }), { status: 400 });
-    if(finalRoleFailure&&body.queries.filter(q=>q.query.includes('assert_runtime_role')).length===2)
+    if(finalRoleFailure&&body.queries.filter(q=>q.query.includes('assert_audited_runtime_role')).length===2)
       return new Response(JSON.stringify({message:'fictional-final-role-denial',code:'22012'}),{status:400});
     const results = body.queries.map(q => {
       if (q.query === RUNTIME_CATALOG_SHARED_FENCE_SQL.text) return fenceResponse ?? result([cell('catalog_fence', 2278)], [['']]);
@@ -120,7 +120,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
       await expect(executor.createTenantExecutor(resolved.proof).query({} as never)).resolves.toEqual([{ fictional_dispatch: 1 }]);
       expect(requests).toHaveLength(2);
       for (const request of requests) expect(new Headers(request.options.headers).get('Neon-Connection-String')).toContain('fictional_worker:fictional_password@ep-fictional-worker');
-      expect(requests[0].body.queries![1].query).toContain("assert_runtime_role('WORKER'::text)");
+      expect(requests[0].body.queries![1].query).toContain("assert_audited_runtime_role('WORKER'::text)");
       const queries = requests[1].body.queries!;
       expect(queries).toHaveLength(7);
       expect(queries[0]).toEqual({ query: RUNTIME_CATALOG_SHARED_FENCE_SQL.text, params: [] });
@@ -144,7 +144,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     const {proof,contract,executor}=await modules();finalRoleFailure=true;
     await expect(executor.createTenantExecutor(proof).query(contract.workspaceSnapshot(proof))).rejects.toThrow('tenant_execution_unavailable');
     expect(requests).toHaveLength(2);const queries=requests[1].body.queries!;
-    expect(queries.at(-1)!.query).toContain('assert_runtime_role');expect(queries.at(-1)!.params).toEqual(['APP']);
+    expect(queries.at(-1)!.query).toContain('assert_audited_runtime_role');expect(queries.at(-1)!.params).toEqual(['APP']);
     expect(queries.at(-2)!.query).toContain('assert_current_proof');
   });
   it('uses the dedicated runtime URL and one serialized guarded batch for a query', async () => {
@@ -152,7 +152,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     expect(await executor.createTenantExecutor(proof).query(contract.workspaceSnapshot(proof))).toMatchObject({ id: 'tenant-a' });
     expect(requests).toHaveLength(2);
     expect(new Headers(requests[0].options.headers).get('Neon-Connection-String')).toContain('fictional_app:fictional_password@ep-fictional-app');
-    expect(requests[0].body.queries![1].query).toContain("CASE WHEN nevora_tenancy.assert_runtime_role('APP'::text) IS TRUE THEN nevora_tenancy.resolve_portal");
+    expect(requests[0].body.queries![1].query).toContain("CASE WHEN nevora_tenancy.assert_audited_runtime_role('APP'::text) IS TRUE THEN nevora_tenancy.resolve_portal");
     expect(new Headers(requests[1].options.headers).get('Neon-Connection-String')).toContain('fictional_app:fictional_password@ep-fictional-app');
     expect(requests[1].body.queries).toHaveLength(7);
     expect(requests[1].body).not.toHaveProperty('query');

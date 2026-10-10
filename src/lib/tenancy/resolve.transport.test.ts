@@ -67,7 +67,7 @@ beforeEach(() => {
     const results = body.queries.map(query => {
       if (query.query === RUNTIME_CATALOG_SHARED_FENCE_SQL.text) return fenceResponse ?? rows([field('catalog_fence', 2278)], [['']]);
       if (query.query.includes('nevora_tenancy.resolve_')) return factsResponse(query);
-      if (query.query.includes('assert_runtime_role')) return roleResponse ?? roleRows();
+      if (query.query.includes('assert_audited_runtime_role')) return roleResponse ?? roleRows();
       throw Error('Unexpected fictional batch query');
     });
     if (cardinalityDelta < 0) results.pop();
@@ -83,9 +83,9 @@ describe('installed SDK owning resolver catalog-fence serialization', () => {
     expect(requests).toHaveLength(1); const request = requests[0], queries = request.body.queries!;
     expect(request.body).not.toHaveProperty('query'); expect(queries).toHaveLength(3);
     expect(queries[0]).toEqual({ query: RUNTIME_CATALOG_SHARED_FENCE_SQL.text, params: [] });
-    expect(queries[1].query).toContain(`CASE WHEN nevora_tenancy.assert_runtime_role('${contract.role}'::text) IS TRUE THEN nevora_tenancy.resolve_${contract.seam}`);
+    expect(queries[1].query).toContain(`CASE WHEN nevora_tenancy.assert_audited_runtime_role('${contract.role}'::text) IS TRUE THEN nevora_tenancy.resolve_${contract.seam}`);
     expect(queries[1].query).toContain('ELSE NULL::jsonb END AS facts'); expect(queries[1].params).toEqual(contract.values);
-    expect(queries[2]).toEqual({ query: 'SELECT 1 / CASE WHEN nevora_tenancy.assert_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard', params: [contract.role] });
+    expect(queries[2]).toEqual({ query: 'SELECT 1 / CASE WHEN nevora_tenancy.assert_audited_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard', params: [contract.role] });
     expect(new Headers(request.options.headers).get('Neon-Batch-Isolation-Level')).toBe('ReadCommitted');
     const connection = new Headers(request.options.headers).get('Neon-Connection-String');
     expect(connection).toContain(`fictional_${contract.role.toLowerCase()}:fictional_password@ep-fictional-${contract.role.toLowerCase()}`); expect(connection).not.toContain('fictional_legacy');

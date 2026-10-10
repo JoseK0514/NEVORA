@@ -28,7 +28,7 @@ async function proof(workspaceId = 'tenant-a') {
   if (result.status !== 'ALLOW') throw Error('fixture');
   const lookup = db.transaction.mock.calls.at(-1)!;
   expect(lookup[0]).toHaveLength(3); expect(lookup[0][0].text).toBe(RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
-  expect(lookup[0][1].text).toContain('resolve_portal'); expect(lookup[0][2].text).toContain('assert_runtime_role');
+  expect(lookup[0][1].text).toContain('resolve_portal'); expect(lookup[0][2].text).toContain('assert_audited_runtime_role');
   db.transaction.mockReset();
   db.query.mockReset();
   db.query.mockImplementation((text, values) => ({ text, values, then: () => { throw Error('query awaited outside transaction'); } }));
@@ -76,6 +76,36 @@ describe('tenant executor noninteractive transaction boundary', () => {
     expect(db.transaction).toHaveBeenCalledTimes(1);
     expect(db.transaction.mock.calls[0][0][0].text).toBe(RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
   });
+  it.each(['first', 'final'] as const)('requires the %s audited graph check when fictional primitive identity succeeds', async position => {
+    const p = await proof(); let decoded = 0;
+    const row = new Proxy(workspaceRows()[0], { getPrototypeOf(target) { decoded++; return Reflect.getPrototypeOf(target); } });
+    // The real executor, proof issuer and closed builder remain in use. Only
+    // transport outcomes are fictional: primitive identity succeeds, while
+    // the audited graph denies at the selected point. No native guard,
+    // database graph, current-proof or tenant authorization is verified here.
+    db.transaction.mockImplementation(async (queries: { text: string; values: unknown[] }[]) => {
+      const deniedIndex = position === 'first' ? 1 : queries.length - 1;
+      const results = guardedResults([[row]]);
+      for (let index = 0; index < queries.length; index++) {
+        if (index === deniedIndex && queries[index].text.includes('nevora_tenancy.assert_audited_runtime_role(')) {
+          throw Error('fictional-private-audited-graph-diagnostic');
+        }
+      }
+      return results;
+    });
+    const outcome = await e!.createTenantExecutor(p).query(c!.workspaceSnapshot(p)).then(
+      value => ({ status: 'EXPOSED', value }),
+      (error: Error) => ({ status: 'UNAVAILABLE', message: error.message }),
+    );
+    expect(outcome).toEqual({ status: 'UNAVAILABLE', message: 'tenant_execution_unavailable' });
+    expect(decoded).toBe(0); expect(db.transaction).toHaveBeenCalledTimes(1);
+    const [queries, options] = db.transaction.mock.calls[0];
+    expect(queries[0]).toMatchObject({ text: RUNTIME_CATALOG_SHARED_FENCE_SQL.text, values: [] });
+    expect(queries[1].text).toContain('nevora_tenancy.assert_audited_runtime_role(');
+    expect(queries.at(-1).text).toContain('nevora_tenancy.assert_audited_runtime_role(');
+    expect(queries[1].values).toEqual(['APP']); expect(queries.at(-1).values).toEqual(['APP']);
+    expect(options).toMatchObject({ isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
+  });
   it.each([
     ['absent rows', []], ['SQL NULL', [{ catalog_fence: null }]], ['nonempty void', [{ catalog_fence: 'locked' }]],
     ['wrong alias', [{ guard: '' }]], ['boolean', [{ catalog_fence: true }]],
@@ -112,14 +142,14 @@ describe('tenant executor noninteractive transaction boundary', () => {
     const p=await proof();db.transaction.mockResolvedValue(guardedResults([workspaceRows()]));
     await e!.createTenantExecutor(p).query(c!.workspaceSnapshot(p));
     const queries=db.transaction.mock.calls[0][0];
-    expect(queries.filter((query:{text:string})=>query.text.includes('assert_runtime_role'))).toHaveLength(2);
-    expect(queries.at(-1).text).toContain('assert_runtime_role');expect(queries.at(-1).values).toEqual(['APP']);
+    expect(queries.filter((query:{text:string})=>query.text.includes('assert_audited_runtime_role'))).toHaveLength(2);
+    expect(queries.at(-1).text).toContain('assert_audited_runtime_role');expect(queries.at(-1).values).toEqual(['APP']);
     expect(queries.at(-2).text).toContain('assert_current_proof');
   });
   it('rejects a role rejection at the end of the batch without replaying or exposing business data', async () => {
     const p=await proof();
     db.transaction.mockImplementation(async queries=>{
-      const count=queries.filter((query:{text:string})=>query.text.includes('assert_runtime_role')).length;
+      const count=queries.filter((query:{text:string})=>query.text.includes('assert_audited_runtime_role')).length;
       if(count===2)throw Error('fictional-current-role-rejection');
       return guardedResults([workspaceRows()]);
     });
@@ -130,7 +160,7 @@ describe('tenant executor noninteractive transaction boundary', () => {
     const p=await proof();
     for(const bad of [[{guard:0}],[{guard:null}],[],[{guard:1},{guard:1}]]){
       db.transaction.mockImplementation(async queries=>queries.map((query:{text:string},index:number)=>index===4?workspaceRows():
-        index===0?[{catalog_fence:''}]:index===2?[{context:'ignored'}]:index===queries.length-1&&query.text.includes('assert_runtime_role')?bad:[{guard:1}]));
+        index===0?[{catalog_fence:''}]:index===2?[{context:'ignored'}]:index===queries.length-1&&query.text.includes('assert_audited_runtime_role')?bad:[{guard:1}]));
       await expect(e!.createTenantExecutor(p).query(c!.workspaceSnapshot(p))).rejects.toThrow('tenant_execution_unavailable');
     }
   });
@@ -147,14 +177,14 @@ describe('tenant executor noninteractive transaction boundary', () => {
     const [queries, options] = db.transaction.mock.calls[0];
     expect(queries).toHaveLength(7);
     expect(queries[0]).toMatchObject({ text: RUNTIME_CATALOG_SHARED_FENCE_SQL.text, values: [] });
-    expect(queries[1].text).toContain('assert_runtime_role');
+    expect(queries[1].text).toContain('assert_audited_runtime_role');
     expect(queries[1].values).toEqual(['APP']);
     expect(queries[2].text).toContain("set_config('nevora.workspace_id', $1::text, true)");
     expect(queries[2].values.slice(0, 2)).toEqual(['tenant-a', 'PORTAL']);
     expect(queries[3].text).toContain('lock_and_assert_current_proof');
     expect(queries[4].text).toContain('WHERE w.id = $1::text');
     expect(queries[5].text).toContain('assert_current_proof');
-    expect(queries[6].text).toContain('assert_runtime_role');expect(queries[6].values).toEqual(['APP']);
+    expect(queries[6].text).toContain('assert_audited_runtime_role');expect(queries[6].values).toEqual(['APP']);
     expect(options).toMatchObject({ isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
     const bound = JSON.parse(queries[3].values[0]);
     expect(bound.workspaceIncarnation).toBe('9007199254740993');

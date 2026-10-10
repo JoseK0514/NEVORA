@@ -84,7 +84,7 @@ const provisioner = (purpose: ProvisionerPurpose) => ({
   operationId: operator.operationId, payloadDigest: operator.payloadDigest,
   resolvedAt: common.resolvedAt, expiresAt: common.expiresAt,
 });
-const FINAL_ROLE = 'SELECT 1 / CASE WHEN nevora_tenancy.assert_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard';
+const FINAL_ROLE = 'SELECT 1 / CASE WHEN nevora_tenancy.assert_audited_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard';
 function respond(facts: unknown) {
   database.transaction.mockResolvedValue([[{ catalog_fence: '' }], [{ facts }], [{ guard: 1 }]]);
 }
@@ -92,7 +92,7 @@ function expectLookup(role: 'APP' | 'WORKER', expression: string, values: readon
   expect(runtime).toHaveBeenCalledExactlyOnceWith(role);
   expect(database.query.mock.calls).toEqual([
     [RUNTIME_CATALOG_SHARED_FENCE_SQL.text, []],
-    [`SELECT CASE WHEN nevora_tenancy.assert_runtime_role('${role}'::text) IS TRUE THEN ${expression} ELSE NULL::jsonb END AS facts`, values],
+    [`SELECT CASE WHEN nevora_tenancy.assert_audited_runtime_role('${role}'::text) IS TRUE THEN ${expression} ELSE NULL::jsonb END AS facts`, values],
     [FINAL_ROLE, [role]],
   ]);
   expect(database.transaction).toHaveBeenCalledExactlyOnceWith(expect.any(Array),

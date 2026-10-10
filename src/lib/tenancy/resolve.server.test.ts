@@ -171,7 +171,7 @@ describe('server-local proof authenticity and least metadata', () => {
 describe('narrow resolver boundary', () => {
   it('uses a constant parameterized portal seam and binds locator and session digest', async () => {
     await allowedPortal();
-    expect(database.query.mock.calls[1]).toEqual(['SELECT CASE WHEN nevora_tenancy.assert_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_portal($1::text,$2::text) ELSE NULL::jsonb END AS facts', ['tenant-aa', digest]]);
+    expect(database.query.mock.calls[1]).toEqual(['SELECT CASE WHEN nevora_tenancy.assert_audited_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_portal($1::text,$2::text) ELSE NULL::jsonb END AS facts', ['tenant-aa', digest]]);
     for (const changed of [{ locator: 'tenant-bb' }, { sessionTokenHash: 'b'.repeat(64) }, { kind: 'CLOCKER' }]) {
       respond({ ...portal(), ...changed });
       expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'DENY' });
@@ -234,7 +234,7 @@ describe('narrow resolver boundary', () => {
     expect(result.status).toBe('ALLOW');
     if (result.status !== 'ALLOW') throw Error('fixture');
     expect(getTenantProofFacts(result.proof)).toMatchObject({ kind: 'CLOCKER', employeeId: 'employee-a', credentialVersion: '6', pinVersion: '5' });
-    expect(database.query.mock.calls[1]).toEqual(['SELECT CASE WHEN nevora_tenancy.assert_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_clocker($1::text,$2::text) ELSE NULL::jsonb END AS facts', [hash(device, 'nevora-clocker-v1\0'), hash(pin, 'nevora-clocker-identity-v1\0')]]);
+    expect(database.query.mock.calls[1]).toEqual(['SELECT CASE WHEN nevora_tenancy.assert_audited_runtime_role(\'APP\'::text) IS TRUE THEN nevora_tenancy.resolve_clocker($1::text,$2::text) ELSE NULL::jsonb END AS facts', [hash(device, 'nevora-clocker-v1\0'), hash(pin, 'nevora-clocker-identity-v1\0')]]);
     expect(JSON.stringify(getTenantProofFacts(result.proof))).not.toContain(device);
     respond({ ...clocker(), pinSessionTokenHash: digest });
     expect(await resolveClockerProof(device, pin)).toEqual({ status: 'DENY' });
@@ -425,11 +425,11 @@ describe('root dedicated resolver transport regression',()=>{
   expect(transports.legacy).not.toHaveBeenCalled();
   expect(transports.runtime).toHaveBeenCalledExactlyOnceWith(role);
   const query=database.query.mock.calls[1][0];
-  expect(query).toContain(`CASE WHEN nevora_tenancy.assert_runtime_role('${role}'::text) IS TRUE THEN nevora_tenancy.resolve_`);
+  expect(query).toContain(`CASE WHEN nevora_tenancy.assert_audited_runtime_role('${role}'::text) IS TRUE THEN nevora_tenancy.resolve_`);
   expect(query).toContain('ELSE NULL::jsonb END AS facts');
   expect(database.query).toHaveBeenCalledTimes(3);
   expect(database.query.mock.calls[0]).toEqual([RUNTIME_CATALOG_SHARED_FENCE_SQL.text, []]);
-  expect(database.query.mock.calls[2][0]).toContain('assert_runtime_role($1::text)');
+  expect(database.query.mock.calls[2][0]).toContain('assert_audited_runtime_role($1::text)');
   expect(database.query.mock.calls[2][1]).toEqual([role]);
   expect(database.transaction).toHaveBeenCalledExactlyOnceWith(database.query.mock.results.map(result => result.value), { isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
  });
@@ -439,4 +439,62 @@ it('returns only unavailable when dedicated runtime configuration throws private
  transports.runtime.mockImplementationOnce(()=>{throw Error('fictional-private-configuration-marker');});respond(portal());
  expect(await resolvePortalProof('tenant-aa',digest)).toEqual({status:'UNAVAILABLE'});
  expect(transports.legacy).not.toHaveBeenCalled();expect(database.query).not.toHaveBeenCalled();
+});
+
+describe('audited external runtime role callsites', () => {
+  const cases = [
+    ['PORTAL', 'APP', portal, () => resolvePortalProof('tenant-aa', digest)],
+    ['CLOCKER', 'APP', clocker, () => resolveClockerProof(device, pin)],
+    ['CALENDAR_READ', 'APP', calendar, () => resolveCalendarReadProof(digest)],
+    ['WORKER', 'WORKER', worker, () => resolveWorkerProof(workerIdentity, claim)],
+    ['PROVISIONER', 'APP', provisioner, () => resolveProvisionerScope(operator, 'test', 'TENANT_RESTORE')],
+  ] as const;
+
+  it.each(cases)('does not resolve %s when primitive %s identity passes but the audited lookup graph denies', async (_kind, role, facts, run) => {
+    // Fictional transport model only. It models the closed CASE truth branch;
+    // primitive identity always passes while only the audited graph is denied.
+    // No native SQL, catalog or helper invocation is claimed by this mock.
+    let resolverInvocations = 0;
+    database.transaction.mockImplementation(async (plans: { text: string }[]) => {
+      const auditedLookup = plans[1].text.includes('nevora_tenancy.assert_audited_runtime_role(');
+      if (!auditedLookup) resolverInvocations++;
+      return fenced([{ facts: auditedLookup ? null : facts() }]);
+    });
+    const result = await run();
+    const issuedKind = result.status !== 'ALLOW' ? null
+      : 'proof' in result ? getTenantProofFacts(result.proof).kind : getProvisionerScopeFacts(result.scope).kind;
+    // Preserve the actual cause in RED: old code issues a genuine private local
+    // identity here, although this fictional audited lookup would return NULL.
+    const observed = { outcome: result.status, issuedKind, resolverInvocations };
+    expect(observed, 'FICTIONAL_LOOKUP_CAUSE ' + JSON.stringify(observed)).toEqual({ outcome: 'DENY', issuedKind: null, resolverInvocations: 0 });
+    expect(Object.keys(result)).toEqual(['status']);expect(Object.isFrozen(result)).toBe(true);
+    expect(transports.runtime).toHaveBeenCalledExactlyOnceWith(role);expect(transports.legacy).not.toHaveBeenCalled();
+    expect(database.query).toHaveBeenCalledTimes(3);expect(database.transaction).toHaveBeenCalledTimes(1);
+    expect(database.query.mock.calls[0]).toEqual([RUNTIME_CATALOG_SHARED_FENCE_SQL.text, []]);
+    expect(database.query.mock.calls[1][0]).toContain(`CASE WHEN nevora_tenancy.assert_audited_runtime_role('${role}'::text) IS TRUE THEN`);
+    expect(database.query.mock.calls[2]).toEqual(['SELECT 1 / CASE WHEN nevora_tenancy.assert_audited_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard', [role]]);
+    expect(database.transaction).toHaveBeenCalledExactlyOnceWith(database.query.mock.results.map(entry => entry.value), { isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
+  });
+
+  it.each(cases)('does not issue %s when primitive %s identity passes but the final audited graph rejects', async (_kind, role, facts, run) => {
+    const privateDiagnostic = 'fictional-final-audited-graph-query-and-credential-diagnostic';
+    database.transaction.mockImplementation(async (plans: { text: string }[]) => {
+      if (plans[2].text.includes('nevora_tenancy.assert_audited_runtime_role(')) throw Error(privateDiagnostic);
+      return fenced([{ facts: facts() }]);
+    });
+    const result = await run();
+    const issuedKind = result.status !== 'ALLOW' ? null
+      : 'proof' in result ? getTenantProofFacts(result.proof).kind : getProvisionerScopeFacts(result.scope).kind;
+    // The old primitive-only final check returns ALLOW with issued facts. The
+    // successor must sanitize transaction rejection and issue no identity.
+    const observed = { outcome: result.status, issuedKind };
+    expect(observed, 'FICTIONAL_FINAL_CAUSE ' + JSON.stringify(observed)).toEqual({ outcome: 'UNAVAILABLE', issuedKind: null });
+    expect(Object.keys(result)).toEqual(['status']);expect(Object.isFrozen(result)).toBe(true);
+    expect(JSON.stringify(result)).not.toContain(privateDiagnostic);
+    expect(transports.runtime).toHaveBeenCalledExactlyOnceWith(role);expect(transports.legacy).not.toHaveBeenCalled();
+    expect(database.query).toHaveBeenCalledTimes(3);expect(database.transaction).toHaveBeenCalledTimes(1);
+    expect(database.query.mock.calls[0]).toEqual([RUNTIME_CATALOG_SHARED_FENCE_SQL.text, []]);
+    expect(database.query.mock.calls[2]).toEqual(['SELECT 1 / CASE WHEN nevora_tenancy.assert_audited_runtime_role($1::text) IS TRUE THEN 1 ELSE 0 END AS guard', [role]]);
+    expect(database.transaction).toHaveBeenCalledExactlyOnceWith(database.query.mock.results.map(entry => entry.value), { isolationLevel: 'ReadCommitted', arrayMode: false, fullResults: false });
+  });
 });
