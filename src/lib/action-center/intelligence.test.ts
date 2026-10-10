@@ -1,3 +1,4 @@
+import { calculateScheduleHealth } from '../scheduling/schedule-health';
 import { describe, expect, it } from 'vitest';
 import type { ActionFact, ActionIntelligenceInput, SourceKey } from './intelligence';
 import { buildManagerActionItems } from '../assistance/manager-actions';
@@ -463,5 +464,134 @@ describe('F1 compatibility with current pure source contracts', () => {
     const v = add(input(), 'scheduling', ...Array.from({ length: 501 }, (_, n) => request(String(n))));
     for (let n = 0; n < 501; n++) { const row = attendance(); if (row.kind === 'ATTENDANCE') row.payload.entryId = String(n); row.meta.id = 'ATTENDANCE:' + n; add(v, 'attendance', row); }
     expect(project(v)).toEqual({ state: 'unavailable', reason: 'SOURCE_LIMIT', allClear: false });
+  });
+});
+
+describe('EQ-F-FUNC-001 canonical end-of-day coverage boundaries', () => {
+  // Real canonical health output, with fictional current observation metadata.
+  // These observations do not authenticate a caller or issue a tenant proof.
+  function coverage(windows: { startTime: string; endTime: string }[]) {
+    const health = calculateScheduleHealth({
+      workspace: { id: 'tenant-a', active: true }, shifts: [], employees: [],
+      locations: [{ id: 'a', name: 'North', minimumStaffPerShift: 1, requiresDesignatedLead: false }],
+      weekDates: ['2026-10-05'], coverageWindows: windows.map(window => ({ ...window,
+        locationId: 'a', dayOfWeek: 1, minimumStaff: 1, positionRequirements: [] })),
+    });
+    const facts = health.coverageBlocks.map(block => ({
+      kind: 'COVERAGE_GAP' as const,
+      meta: { ...meta('COVERAGE:' + block.key), subjectIds: [], permittedFields: ['schedule'] },
+      payload: { key: block.key, locationId: block.locationId, locationName: block.locationName,
+        date: block.date, startTime: block.startTime, endTime: block.endTime, gap: block.gap,
+        requiresLead: block.requiresLead, positionCoverage: block.positionCoverage },
+    }));
+    return { health, facts };
+  }
+  function actionFor(row: Extract<ActionFact, { kind: 'COVERAGE_GAP' }>) {
+    return buildManagerActionItems({ weekStart: binding.weekStart, availabilityDeadlineSet: true,
+      coverageRulesConfigured: true, coverageGaps: [row.payload] })[0];
+  }
+
+  it.each([
+    { startTime: '20:00', endTime: '23:59', relevantAt: '2026-10-06T00:00:00Z' },
+    { startTime: '20:00', endTime: '24:00', relevantAt: '2026-10-06T00:00:00Z' },
+    { startTime: '00:00', endTime: '24:00', relevantAt: '2026-10-05T04:00:00Z' },
+  ])('retains the actual canonical $startTime–$endTime uncovered block and exact review destination', window => {
+    const { health, facts } = coverage([window]);
+    expect(health.coverageBlocks).toHaveLength(1);
+    expect(health.coverageBlocks[0]).toMatchObject({ startTime: window.startTime, endTime: window.endTime,
+      assignedStaff: 0, requiredStaff: 1, gap: 1, requiresLead: false, covered: false });
+    expect(health.coverageSummary).toMatchObject({ totalBlocks: 1, uncoveredBlocks: 1, coveredBlocks: 0 });
+    const value = add(input(), 'scheduling', ...facts), before = structuredClone(value);
+    const result = ready(value), canonical = actionFor(facts[0]);
+    expect(result).toMatchObject({ state: 'ready', allClear: false,
+      counts: { total: 1, scheduling: 1, requests: 0, timekeeping: 0 } });
+    expect(result.sections[0]).toMatchObject({ state: 'complete', observedCount: 1 });
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]).toMatchObject({ id: canonical.id, type: canonical.type, priority: canonical.priority,
+      title: canonical.title, reason: { code: 'STAFF_COVERAGE_MISSING', text: canonical.detail },
+      relevantAt: window.relevantAt, source: 'scheduling', sourceVersion: 's1', rowVersion: '1', observedAt: NOW,
+      nextAction: { label: 'Open coverage review', href: canonical.href } });
+    expect(result.items[0].reason.text).toContain(`${window.startTime}–${window.endTime}`);
+    expect(value).toEqual(before);
+  });
+
+  it('keeps both ordinary and midnight canonical gaps complete and deterministically ordered', () => {
+    const { health, facts } = coverage([{ startTime: '08:00', endTime: '09:00' }, { startTime: '20:00', endTime: '24:00' }]);
+    expect(health.coverageBlocks.map(block => block.endTime)).toEqual(['09:00', '24:00']);
+    const value = add(input(), 'scheduling', ...facts), result = ready(value);
+    expect(result).toMatchObject({ state: 'ready', allClear: false,
+      counts: { total: 2, scheduling: 2, requests: 0, timekeeping: 0 } });
+    expect(result.sections[0]).toMatchObject({ state: 'complete', observedCount: 2 });
+    expect(result.items.map(item => item.id)).toEqual(facts.map(row => row.meta.id));
+    for (const row of facts) {
+      const canonical = actionFor(row);
+      expect(result.items.find(item => item.id === row.meta.id)).toMatchObject({
+        reason: { code: 'STAFF_COVERAGE_MISSING', text: canonical.detail }, nextAction: { href: canonical.href } });
+    }
+    for (const source of value.sources) if (source.state === 'ready') source.rows.reverse();
+    expect(ready(value).items).toEqual(result.items);
+  });
+
+  it.each(['24:00', '24:01', '25:00', '23:60'])('rejects %s as a start rather than extending the end-only exception', startTime => {
+    const { facts } = coverage([{ startTime: '20:00', endTime: '23:59' }]);
+    facts[0].payload.startTime = startTime;
+    const result = ready(add(input(), 'scheduling', ...facts));
+    expect(result).toMatchObject({ state: 'partial', allClear: false, items: [], counts: { total: 0, scheduling: 0 } });
+    expect(result.sections[0]).toMatchObject({ state: 'limited', reason: 'INCOMPLETE_SOURCE', observedCount: 0 });
+  });
+
+  it.each(['24:01', '24:00:00', '24:00.0', '24:00Z', '24:00 ', '25:00'])('rejects noncanonical end %j instead of coercing it to 24:00', endTime => {
+    const { facts } = coverage([{ startTime: '20:00', endTime: '23:59' }]);
+    facts[0].payload.endTime = endTime;
+    const result = ready(add(input(), 'scheduling', ...facts));
+    expect(result).toMatchObject({ state: 'partial', allClear: false, items: [], counts: { total: 0, scheduling: 0 } });
+    expect(result.sections[0]).toMatchObject({ state: 'limited', reason: 'INCOMPLETE_SOURCE', observedCount: 0 });
+  });
+
+  it('keeps an ordinary valid gap observed while a malformed end makes the scheduling source incomplete', () => {
+    const { facts } = coverage([{ startTime: '08:00', endTime: '09:00' }, { startTime: '20:00', endTime: '23:59' }]);
+    facts[1].payload.endTime = '24:01';
+    const result = ready(add(input(), 'scheduling', ...facts));
+    expect(result).toMatchObject({ state: 'partial', allClear: false, counts: { total: 1, scheduling: 1 } });
+    expect(result.items.map(item => item.id)).toEqual([facts[0].meta.id]);
+    expect(result.sections[0]).toMatchObject({ state: 'limited', reason: 'INCOMPLETE_SOURCE', observedCount: 1 });
+  });
+
+  it('retains a known midnight gap without claiming capped coverage is complete', () => {
+    const { facts } = coverage([{ startTime: '20:00', endTime: '24:00' }]);
+    const value = add(input(), 'scheduling', ...facts);
+    if (value.sources[0].state !== 'ready') throw Error('Fixture section is not ready');
+    value.sources[0].coverage = 'capped';
+    const result = ready(value);
+    expect(result).toMatchObject({ state: 'partial', allClear: false, counts: { total: 1, scheduling: 1 } });
+    expect(result.items.map(item => item.id)).toEqual([facts[0].meta.id]);
+    expect(result.sections[0]).toMatchObject({ state: 'limited', reason: 'INCOMPLETE_SOURCE', observedCount: 1 });
+  });
+
+  it('suppresses a midnight block with an outside-scope footprint before exposing its reason or destination', () => {
+    const { facts } = coverage([{ startTime: '20:00', endTime: '24:00' }]);
+    facts[0].meta.locationIds.push('b'); facts[0].payload.locationName = 'PRIVATE OUTSIDE M';
+    const result = ready(add(input(), 'scheduling', ...facts));
+    expect(result).toMatchObject({ state: 'ready', allClear: true, items: [], counts: { total: 0, scheduling: 0 } });
+    expect(JSON.stringify(result)).not.toContain('PRIVATE');
+    expect(JSON.stringify(result)).not.toContain(facts[0].meta.id);
+  });
+
+  it('does not expose a canonical midnight gap from another tenant', () => {
+    const { facts } = coverage([{ startTime: '20:00', endTime: '24:00' }]);
+    facts[0].meta.workspaceId = 'PRIVATE FOREIGN TENANT'; facts[0].payload.locationName = 'PRIVATE FOREIGN LOCATION';
+    const result = ready(add(input(), 'scheduling', ...facts));
+    expect(result).toMatchObject({ state: 'partial', allClear: false, items: [], counts: { total: 0 } });
+    expect(result.sections[0]).toMatchObject({ state: 'limited', reason: 'INCOMPLETE_SOURCE', observedCount: 0 });
+    expect(JSON.stringify(result)).not.toContain('PRIVATE');
+  });
+
+  it('requires the current scheduling source version even for a canonical midnight block', () => {
+    const { facts } = coverage([{ startTime: '20:00', endTime: '24:00' }]);
+    const value = add(input(), 'scheduling', ...facts); value.context.expectedSourceVersions.scheduling = 's2';
+    const result = ready(value);
+    expect(result).toMatchObject({ state: 'partial', allClear: false, items: [], counts: { total: 0 } });
+    expect(result.sections[0]).toMatchObject({ state: 'unavailable', reason: 'STALE_SOURCE', observedCount: null });
+    expect(JSON.stringify(result)).not.toContain(facts[0].meta.id);
   });
 });

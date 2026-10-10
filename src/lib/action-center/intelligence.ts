@@ -178,7 +178,9 @@ function projectFact(raw: unknown, source: Extract<IntelligenceSource, { state: 
     case 'COVERAGE_GAP': {
       location();
       if (!text(p.key) || !text(p.locationName) || !(p.gap === null || integer(p.gap)) || !(p.requiresLead === null || typeof p.requiresLead === 'boolean')) throw Error('Invalid coverage');
-      const day = date(p.date), start = time(p.startTime), end = time(p.endTime);
+      const day = date(p.date), start = time(p.startTime);
+      // Canonical coverage permits exactly 24:00 as an end boundary.
+      const end = p.endTime === '24:00' ? p.endTime : time(p.endTime);
       if (!isDateInWeek(day, context.weekStart)) throw Error('Incorrect coverage week');
       const actualStart = Temporal.PlainDateTime.from(`${day}T${start}`).toZonedDateTime(context.timeZone, { disambiguation: 'reject' }).toInstant().toString();
       if (startAt !== null && Temporal.Instant.compare(startAt, actualStart)) throw Error('Inconsistent start');
