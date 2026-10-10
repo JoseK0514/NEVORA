@@ -96,6 +96,68 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const optional=await publishUpdate('OPTIONAL');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),1);
  const optionalDetail=await readCommunication(self,optional.result.id,app.database.executor);assert.equal(optionalDetail.state,'ready');assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:optionalDetail.authority,ref:{kind:'COMMUNICATION',id:optional.result.id,version:optional.result.version}},app.database.executor)).status,'committed');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),0);
  checks.push('H14 authenticated Home follows actual canonical required receipt, push-off/Mark read denial, revision reset, withdrawal and optional version read; private body is absent and full review stays on Updates');
+ // ACTIONS_OVERFLOW_BROWSER_EXTENSION_BEGIN
+ // Four actual REQUIRED publications make Actions overflow mandatory. The
+ // canonical refreshed Home response supplies all membership and ordering.
+ stage='actions-overflow';
+ const overflowEvidence=details.actionsOverflow={fixturePublicationCount:4,phase:'baseline',publications:[],withdrawals:[],keyboard:[]};
+ const overflowPublished=[];
+ const overflowRefresh=async()=>{const observed=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home');await refresh();const response=await observed;assert.equal(response.status(),200);const result=await response.json();assert(['ready','partial'].includes(result.state));assert.equal(result.snapshot.sources.communications.state,'complete');return result;};
+ const overflowRows=(result,kind)=>result.snapshot.attention.filter(item=>kind==='actions'?item.required||item.actionable:!item.required&&!item.actionable);
+ const overflowGroup=kind=>page.locator(`[data-home-group="${kind}"]`);
+ const overflowOpen=async kind=>{const disclosure=overflowGroup(kind).locator('details');return await disclosure.count()?await disclosure.evaluate(e=>e.open):null;};
+ const overflowToggle=async(kind,key)=>{const summary=overflowGroup(kind).locator('details summary');await summary.focus();await page.keyboard.press(key);const observation={kind,key,actionsOpen:await overflowOpen('actions'),updatesOpen:await overflowOpen('updates'),focus:await summary.evaluate(e=>({active:e===document.activeElement,visible:e.matches(':focus-visible'),outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth}))};overflowEvidence.keyboard.push(observation);assert(observation.focus.active);assert(observation.focus.visible);assert.notEqual(observation.focus.outlineStyle,'none');assert(parseFloat(observation.focus.outlineWidth)>=2);return observation;};
+ const overflowBaseline=await overflowRefresh();
+ const overflowBaselineOpen={actions:await overflowOpen('actions'),updates:await overflowOpen('updates')};
+ overflowEvidence.baseline={state:overflowBaseline.state,allSet:overflowBaseline.allSet,hrefs:{actions:overflowRows(overflowBaseline,'actions').map(item=>item.href),updates:overflowRows(overflowBaseline,'updates').map(item=>item.href)},open:overflowBaselineOpen};
+ let overflowCause=null;
+ try{
+  overflowEvidence.phase='publish';
+  for(let i=0;i<4;i++){const published=await publishUpdate('REQUIRED');overflowPublished.push(published);overflowEvidence.publications.push({id:published.result.id,version:published.result.version,status:published.result.status});}
+  assert.equal(new Set(overflowPublished.map(published=>published.result.id)).size,4);
+  overflowEvidence.phase='refreshed-membership';const actual=await overflowRefresh();
+  const actionRows=overflowRows(actual,'actions'),updateRows=overflowRows(actual,'updates');
+  overflowEvidence.refreshed={state:actual.state,allSet:actual.allSet,communicationsState:actual.snapshot.sources.communications.state,attentionCount:actual.snapshot.attention.length,hrefs:{actions:actionRows.map(item=>item.href),updates:updateRows.map(item=>item.href)}};
+  assert.equal(actual.allSet,false);assert(actionRows.length>3);assert(updateRows.length>3);
+  assert.equal(actionRows.length,overflowEvidence.baseline.hrefs.actions.length+4);
+  assert.deepEqual(updateRows.map(item=>item.href),overflowEvidence.baseline.hrefs.updates);
+  assert.deepEqual(actionRows.filter(item=>!overflowPublished.some(published=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id)).map(item=>item.href),overflowEvidence.baseline.hrefs.actions);
+  for(const published of overflowPublished){const canonical=actionRows.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id);assert.equal(canonical.length,1);assert.equal(canonical[0].required,true);assert.equal(canonical[0].ref.version,published.result.version);assert.equal(canonical[0].href,'/app/updates/'+published.result.id);assert.equal(updateRows.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id).length,0);}
+  for(const kind of ['actions','updates']){const group=overflowGroup(kind),canonical=overflowRows(actual,kind);assert.equal(await group.locator('details').count(),1);assert.equal(await group.locator('li').count(),canonical.length);assert.deepEqual(await group.locator('li a').evaluateAll(es=>es.map(e=>e.getAttribute('href'))),canonical.map(item=>item.href));}
+  assert.equal(await items().count(),actual.snapshot.attention.length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await page.getByText("You're all set.",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
+  overflowEvidence.phase='native-keyboard';
+  // Exercise Actions with the peer Updates closed, then open, without setting
+  // details.open or replacing the actual controller/response.
+  if(await overflowOpen('updates'))await overflowToggle('updates','Space');
+  if(await overflowOpen('actions'))await overflowToggle('actions','Space');
+  assert.equal(await overflowOpen('actions'),false);assert.equal(await overflowOpen('updates'),false);
+  let observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,false);
+  for(const link of await overflowGroup('actions').locator('li a').all())assert(await link.isVisible());
+  observation=await overflowToggle('actions','Space');assert.equal(observation.actionsOpen,false);assert.equal(observation.updatesOpen,false);
+  for(const link of await overflowGroup('actions').locator('details li a').all())assert.equal(await link.isVisible(),false);
+  observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,false);
+  observation=await overflowToggle('updates','Enter');assert.equal(observation.updatesOpen,true);assert.equal(observation.actionsOpen,true);
+  for(const link of await overflowGroup('updates').locator('li a').all())assert(await link.isVisible());
+  observation=await overflowToggle('actions','Space');assert.equal(observation.actionsOpen,false);assert.equal(observation.updatesOpen,true);
+  observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,true);
+  for(const link of await overflowGroup('actions').locator('li a').all())assert(await link.isVisible());
+  await shot('actions-overflow');
+ }catch(error){overflowCause=error;throw error;}finally{
+  overflowEvidence.phase='withdraw-extra-publications';
+  // Try every created publication even on a failed assertion. Never mask the
+  // original browser failure with a later cleanup failure.
+  for(const published of overflowPublished){try{const withdrawn=await executeCommunicationCommand(owner,{kind:'WITHDRAW',operationId:randomUUID(),authority:communicationAuthority(owner),communicationId:published.result.id,expectedRevisionId:published.result.version},app.database.executor);overflowEvidence.withdrawals.push({id:published.result.id,version:published.result.version,status:withdrawn.status});}catch(error){overflowEvidence.withdrawals.push({id:published.result.id,version:published.result.version,status:'error',name:error.name,code:error.code??null});}}
+  const failed=overflowEvidence.withdrawals.filter(result=>result.status!=='committed');overflowEvidence.withdrawalComplete=failed.length===0&&overflowEvidence.withdrawals.length===overflowPublished.length;
+  if(!overflowCause)assert.equal(overflowEvidence.withdrawalComplete,true,'Every extra REQUIRED publication must be withdrawn before later journeys');
+ }
+ overflowEvidence.phase='restored-home';const restored=await overflowRefresh();
+ overflowEvidence.restored={state:restored.state,allSet:restored.allSet,hrefs:{actions:overflowRows(restored,'actions').map(item=>item.href),updates:overflowRows(restored,'updates').map(item=>item.href)}};
+ assert.deepEqual(overflowEvidence.restored.hrefs,overflowEvidence.baseline.hrefs);assert.equal(restored.state,overflowBaseline.state);assert.equal(restored.allSet,overflowBaseline.allSet);
+ for(const published of overflowPublished)assert.equal(await page.locator('a[href="/app/updates/'+published.result.id+'"]').count(),0);
+ assert.equal(await items().count(),restored.snapshot.attention.length);
+ for(const kind of ['actions','updates']){const target=overflowBaselineOpen[kind],current=await overflowOpen(kind);if(target!==null){assert.notEqual(current,null);if(current!==target)await overflowToggle(kind,'Space');assert.equal(await overflowOpen(kind),target);}else assert.equal(current,null);}
+ overflowEvidence.phase='complete';
+ // ACTIONS_OVERFLOW_BROWSER_EXTENSION_END
  stage='keyboard';await page.locator('h1').click();const link=next().getByRole('link',{name:'View schedule',exact:false}).first(),tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));const rect=await link.boundingBox();assert(rect&&rect.height>=44&&rect.width>=44);
