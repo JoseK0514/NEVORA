@@ -5,6 +5,8 @@ import { createHash } from 'node:crypto';
 import { unlinkSync, appendFileSync, lstatSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { isAbsolute, join, resolve, sep } from 'node:path';
 import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
+import { definePortalCurrentSourceEnvelopeNativeCases } from './portal-current-source-enrollment.postgres-cases';
+import { definePortalHeldControlGrantReconciliationNativeCases } from './portal-held-control-grant-reconciliation.postgres-cases';
 
 // UNEXECUTED preparation. Only ROOT may opt in, create the fresh PG18.4 lease,
 // adopt the fixed modules/generated source image, run SQL and close the cluster.
@@ -13,7 +15,7 @@ import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 const leasePath = process.env.F_CI_OWNED_LEASE;
 const runPath = process.env.F_CI_RUN_DIR;
 const stage = process.env.F_CI_SOURCE_STAGE;
-const prep = '/Users/josek0514/Documents/Codex/2026-10-08/files-pasted-by-the-user-nevora/work/f-dev/root/portal-controlled-installation/native-query-source-007';
+const prep = "/Users/josek0514/Documents/Codex/2026-10-08/files-pasted-by-the-user-nevora/work/f-dev/portal-current-source-native-fixture-extension-prep/native-query-sources";
 const hash = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
 const q = (value: string) => '"' + value.replace(/"/g, '""') + '"';
 const literal = (value: string) => "'" + value.replace(/'/g, "''") + "'";
@@ -24,12 +26,13 @@ const OLD_PRODUCER_PIN = '17f630edc500d40cb929e95a325246cf169ad913d4c16bd3348b14
 const SUCCESSOR_PINS: Readonly<Record<string, string>> = Object.freeze({
   RENDER_ONLY: 'c474d30df7829b372838d5d7f25456cc5915b34f31b43d4d63dd05617d8cc7a7',
   MARKER_ONLY: 'b1f1748bd9e1a413714242694120c147ba3cd9e304f6a15d7b29100ea7287171',
-  FINAL_INTENT: '971e1ba23570cb2239a2297f1f8559aaf59545a938f728e4c50807f4e1ed4055',
+  FINAL_INTENT: '3ba1dd7ca543a3a3142faba9f96fb14ccf3d778ddb78311a31c52cd6c08f19f4',
 });
 const PINNED_SOURCES: Readonly<Record<string, string>> = Object.freeze({
   'db/migrations/0001_initial.sql': '330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1',
   'db/migrations/0008_workspace_positions.sql': 'f517e18d468556c25814141a959427c969f620fa4ac6e98cc709b31ee1d88756',
   'db/migrations/0024_contextual_communications.sql': 'f130df4238379aa50347decbc863c51f37b108a9f5975b49ca8696b49fc08277',
+  'db/migrations/0025_calendar_subscriptions.sql': '357bce5c806af4f3f0d9ff8a5b48e09a90b1342e8168206efce4f949072d824b',
   'db/migrations/0026_tenant_ownership_expand.sql': 'fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb',
   'src/lib/tenancy/runtime/catalog-fence.server.ts': '2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f',
   'src/lib/tenancy/runtime/control-storage.sql': '4edaaa14492e8b91b30ecb26b4f9582af97c8380543761eee8bcc605ef40de66',
@@ -47,16 +50,23 @@ const PINNED_SOURCES: Readonly<Record<string, string>> = Object.freeze({
   'src/lib/tenancy/runtime/portal-installed-policy-observation.sql': 'd25be72e0bede3e2ded9ce0ba782b060e41260b79db00e202e1db1d6c965573a',
   'src/lib/tenancy/runtime/portal-policy-joint-locks.sql': 'a1394da4b29c86dbf9c87a2968325d359f2bbe4137cf4004e4e4d81245f1f79e',
   'src/lib/tenancy/runtime/portal-policy-joint-observation.sql': '40283f6d7834a2dd01cbe4c418a8a12e6b4a8569d4680cf734c746e1cb55c9e3',
-  'src/lib/tenancy/runtime/portal-native-installation-capture.server.ts': '54e8e45f6a763ba81b42f559e32a710d07ea5ba0b3de53b1d9d970f361138283',
+  'src/lib/tenancy/runtime/portal-native-installation-capture.server.ts': '9adf2319f1791f46e847e624ca95354f6c264e79265eab4bdc5476bbc2fbd9f5',
+  'src/lib/tenancy/runtime/portal-held-control-grant-reconciliation.postgres-cases.ts': '5cb2bdf58fdbe3b569a9527abdce524efe908c32a9c820783c74342c1043dbc2',
+  'src/lib/tenancy/runtime/protected-portal-root-source.test.sql': '068776a706cebc22d5b402f433a7e4ca5756d836948f42dacd1d9c5d4d928873',
 });
 const QUERY_PINS: Readonly<Record<string, string>> = Object.freeze({
   // Filled from these frozen source copies before READY; no query from lease.
-  'independent-before-catalog.candidate.sql': '0d5245c009008517c97c4274f33464653d9e4c15b9470abfe6e180810601bf4f',
-  'independent-current-catalog.candidate.sql': '200dc2c8d2eb560344d8e78cdfb0f315dbc1c881f3e0f151386b63f7eb81aff3',
+  'independent-before-catalog.candidate.sql': '59f432659514e0f6941459abbc6802f9d9428926e9b6e4b3e1f0af7a78dccefe',
+  'independent-current-catalog.candidate.sql': '99cc05e4a127503b4d559827fb53be2e097a3601ee6428005e0233931c0a7afe',
+  'installer-held-source-controls.candidate.sql': '7eab4266c224eded206cf81a6bd1c973a47f469c4a3a2d3184687f69b3eced6e',
   'independent-policy-definitions.candidate.sql': 'f6ce0beea310f73842e7381baa3d23b5eef8d5427e140b653336d7aae46a7eac',
+  'current-source-envelope-probe.test.sql': 'ae1e4cf83ca42553eae704ee8467079e94ea5d289dc6015357f2378f001ec0a1',
+  'current-source-reader-columns-probe.test.sql': 'f78080a75cdd90f8ebef45bfbb9b3c337b1c14a871a2c4d5c00ca93a1ec7bf57',
+  'installer-held-source-controls.test.sql': '7eab4266c224eded206cf81a6bd1c973a47f469c4a3a2d3184687f69b3eced6e',
+  'held-source-controls-grant-reconciliation.test.sql': 'a3e6f9cac5efc9f8eb06423cc793213b0b5acceab91d967d470de0ebda985c17',
   'reviewed-policy-template.candidate.sql': '1fd3a947b3217e67ca2e354b0a5b872633c9c4e1e3f4217344de1a4c639cedc9',
 });
-const publicTables = ['workspaces', 'locations', 'employees', 'employee_credentials', 'employee_sessions'] as const;
+const publicTables = ['workspaces', 'locations', 'employees', 'employee_credentials', 'employee_sessions', 'employee_location_eligibility'] as const;
 const privateTables = ['workspace_incarnation_counter', 'portal_authority', 'portal_session_issuance',
   'portal_administrative_authority', 'portal_administrative_capability', 'portal_administrative_location',
   'capability_policy_definition', 'workspace_capability_policy_installation', 'workspace_locator'] as const;
@@ -64,14 +74,15 @@ const tablesToDrop = ['nevora_tenancy.portal_administrative_location', 'nevora_t
   'nevora_tenancy.portal_administrative_authority', 'nevora_tenancy.portal_session_issuance', 'nevora_tenancy.portal_authority',
   'nevora_tenancy.workspace_capability_policy_installation', 'nevora_tenancy.capability_policy_definition',
   'nevora_tenancy.workspace_locator', 'nevora_tenancy.workspace_incarnation_counter',
-  'public.employee_sessions', 'public.employee_credentials', 'public.employees', 'public.locations', 'public.workspaces',
+  'public.employee_sessions', 'public.employee_credentials', 'public.employee_location_eligibility', 'public.employees', 'public.locations', 'public.workspaces',
   'nevora_tenancy.audited_helper_capability', 'nevora_tenancy.runtime_role_binding',
   'nevora_tenancy.owned_table_contract', 'nevora_tenancy.expansion_protocol'] as const;
 const functionNames = ['source_write_fence', 'source_identity_guard', 'guard_workspace_incarnation_counter',
   'guard_portal_authority', 'guard_portal_session_issuance', 'guard_portal_administrative_authority',
   'guard_workspace_locator', 'guard_capability_policy_storage', 'assert_audited_runtime_role',
   'require_original_runtime_login_kind', 'lock_portal_source_rows', 'read_portal_source_rows',
-  'read_portal_installed_policy', 'lock_portal_policy_source_rows', 'read_portal_policy_source_rows', 'resolve_portal'] as const;
+  'read_portal_installed_policy', 'lock_portal_policy_source_rows', 'read_portal_policy_source_rows', 'resolve_portal',
+  'nevora_calendar_source_stamp', 'nevora_calendar_authority_loss'] as const;
 type Lease = Readonly<{ scope: string; closed: boolean; invocation: string; authorizationReference: string;
   root: string; data: string; pid: number; pidStart: string; port: number; systemIdentifier: string;
   database: string; databaseOid: string; marker: string; user: string; credentialFile: string }>;
@@ -167,7 +178,7 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
         WHERE n.nspname IN ('public','nevora_tenancy') AND c.relkind='r'
       UNION ALL SELECT 'FUNCTION',n.nspname::text,p.proname::text,p.oid::text,p.proowner::text,
         pg_catalog.pg_get_function_identity_arguments(p.oid),NULL::text
-        FROM pg_catalog.pg_proc AS p JOIN pg_catalog.pg_namespace AS n ON n.oid=p.pronamespace WHERE n.nspname='nevora_tenancy'
+        FROM pg_catalog.pg_proc AS p JOIN pg_catalog.pg_namespace AS n ON n.oid=p.pronamespace WHERE n.nspname IN ('public','nevora_tenancy')
       UNION ALL SELECT 'TRIGGER',n.nspname::text,t.tgname::text,t.oid::text,c.relowner::text,NULL::text,c.oid::text
         FROM pg_catalog.pg_trigger AS t JOIN pg_catalog.pg_class AS c ON c.oid=t.tgrelid
         JOIN pg_catalog.pg_namespace AS n ON n.oid=c.relnamespace
@@ -193,7 +204,7 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
       'defaults',COALESCE((SELECT jsonb_agg(to_jsonb(d) ORDER BY d.oid) FROM pg_catalog.pg_attrdef d JOIN pg_catalog.pg_class c ON c.oid=d.adrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname IN ('public','nevora_tenancy')),'[]'::jsonb),
       'constraints',COALESCE((SELECT jsonb_agg(to_jsonb(k) ORDER BY k.oid) FROM pg_catalog.pg_constraint k JOIN pg_catalog.pg_namespace n ON n.oid=k.connamespace WHERE n.nspname IN ('public','nevora_tenancy')),'[]'::jsonb),
       'indexes',COALESCE((SELECT jsonb_agg(to_jsonb(i) ORDER BY i.indexrelid) FROM pg_catalog.pg_index i JOIN pg_catalog.pg_class c ON c.oid=i.indrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname IN ('public','nevora_tenancy')),'[]'::jsonb),
-      'functions',COALESCE((SELECT jsonb_agg(jsonb_build_object('catalog',to_jsonb(p),'definition',pg_catalog.pg_get_functiondef(p.oid)) ORDER BY p.oid) FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='nevora_tenancy'),'[]'::jsonb),
+      'functions',COALESCE((SELECT jsonb_agg(jsonb_build_object('catalog',to_jsonb(p),'definition',pg_catalog.pg_get_functiondef(p.oid)) ORDER BY p.oid) FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname IN ('public','nevora_tenancy')),'[]'::jsonb),
       'triggers',COALESCE((SELECT jsonb_agg(to_jsonb(t) ORDER BY t.oid) FROM pg_catalog.pg_trigger t JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname IN ('public','nevora_tenancy')),'[]'::jsonb),
       'rules',COALESCE((SELECT jsonb_agg(to_jsonb(r) ORDER BY r.oid) FROM pg_catalog.pg_rewrite r JOIN pg_catalog.pg_class c ON c.oid=r.ev_class JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname IN ('public','nevora_tenancy')),'[]'::jsonb),
       'policies',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY p.oid) FROM pg_catalog.pg_policy p JOIN pg_catalog.pg_class c ON c.oid=p.polrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname IN ('public','nevora_tenancy')),'[]'::jsonb),
@@ -257,6 +268,32 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
     expect(await catalog()).toBe(fullBefore); expect(await beforeText()).toBe(beforeCatalog);
     record({ operation: 'POLICY_COMPILATION_ROLLED_BACK_FULL_NATIVE_BEFORE_CATALOG_RESTORED', beforeCatalog, fullBeforeCatalog: fullBefore });
   }
+  // Complete native source/catalog snapshots are retained separately by exact
+  // UTF8 bytes, avoiding repeated giant nested raw records in JSONL. This is QA
+  // restoration evidence from an already verified EMPTY own fixture, not proof.
+  const sourceSnapshots=new Map<string,{file:string;sha256:string;byteLength:number}>();
+  async function captureCurrentSourceCatalogAndRows():Promise<string>{
+    const nativeCatalog=await catalog();const rows:{table:string;nativeRowsText:string}[]=[];
+    const tables=[...publicTables.map(name=>'public.'+name),...privateTables.map(name=>'nevora_tenancy.'+name),
+      'nevora_tenancy.runtime_role_binding','nevora_tenancy.audited_helper_capability',
+      'nevora_tenancy.owned_table_contract','nevora_tenancy.expansion_protocol'];
+    for(const target of tables){const [schema,name]=target.split('.');
+      const observed=(await query(admin,'SELECT COALESCE(pg_catalog.jsonb_agg(pg_catalog.to_jsonb(source_row) ORDER BY pg_catalog.convert_to(pg_catalog.to_jsonb(source_row)::pg_catalog.text,\'UTF8\')),\'[]\'::pg_catalog.jsonb)::pg_catalog.text AS rows FROM '+q(schema)+'.'+q(name)+' AS source_row')).rows;
+      expect(observed).toHaveLength(1);expect(Object.keys(observed[0])).toEqual(['rows']);expect(typeof observed[0].rows).toBe('string');
+      rows.push({table:target,nativeRowsText:observed[0].rows as string});
+    }
+    const text=JSON.stringify({format:'PORTAL_CURRENT_SOURCE_FIXTURE_FULL_SNAPSHOT_V1',nativeCatalog,rows});
+    const raw=Buffer.from(text,'utf8');expect(Buffer.from(raw.toString('utf8'),'utf8').equals(raw)).toBe(true);
+    const digest=hash(raw);let snapshot=sourceSnapshots.get(digest);
+    if(!snapshot){const file='portal-current-source-full-snapshot-'+digest+'.json';
+      writeFileSync(join(runPath!,file),raw,{flag:'wx',mode:0o600});
+      expect(readFileSync(join(runPath!,file)).equals(raw)).toBe(true);
+      snapshot={file,sha256:digest,byteLength:raw.length};sourceSnapshots.set(digest,snapshot);
+      record({operation:'COMPLETE_NATIVE_SOURCE_CATALOG_ROW_SNAPSHOT_RETAINED',snapshot,tableCount:rows.length,
+        claim:'QA_RESTORATION_ONLY_NOT_SOURCE_PROOF_OR_CREDENTIAL_AUTHORITY'});
+    }else{expect(readFileSync(join(runPath!,snapshot.file)).equals(raw)).toBe(true);}
+    return text;
+  }
   beforeAll(async () => {
     expect(leasePath !== undefined && runPath !== undefined && stage !== undefined).toBe(true);
     expect(['ORIGINAL_993', 'RENDER_ONLY', 'MARKER_ONLY', 'FINAL_INTENT']).toContain(stage);
@@ -288,7 +325,8 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
       sources[path] = readFileSync(resolve(path), 'utf8'); expect(hash(sources[path])).toBe(pin);
     }
     for (const [name, pin] of Object.entries(QUERY_PINS)) {
-      queries[name] = readFileSync(join(prep, name), 'utf8'); expect(hash(queries[name])).toBe(pin);
+      const path=name.endsWith('.test.sql')?resolve('src/lib/tenancy/runtime/'+name):join(prep,name);
+      queries[name] = readFileSync(path, 'utf8'); expect(hash(queries[name])).toBe(pin);
     }
     sourcePin = stage === 'ORIGINAL_993' ? OLD_PRODUCER_PIN : SUCCESSOR_PINS[stage!];
     expect(sourcePin).toMatch(/^[a-f0-9]{64}$/);
@@ -321,6 +359,7 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
       await query(admin, 'CREATE SCHEMA nevora_tenancy'); await query(admin, 'SET LOCAL search_path=public,pg_catalog');
       const initial = sources['db/migrations/0001_initial.sql'], workspace = sources['db/migrations/0008_workspace_positions.sql'];
       const communication = sources['db/migrations/0024_contextual_communications.sql'];
+      const calendar = sources['db/migrations/0025_calendar_subscriptions.sql'];
       const expand = sources['db/migrations/0026_tenant_ownership_expand.sql'];
       await query(admin, fragment(workspace, /CREATE TABLE workspaces \([\s\S]*?\n\);/g));
       await query(admin, fragment(initial, /CREATE TABLE IF NOT EXISTS locations \([\s\S]*?\n\);/g));
@@ -329,6 +368,20 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
       await query(admin, fragment(communication, /^ALTER TABLE locations ADD CONSTRAINT communication_location_workspace_key[^;]*;/gm));
       await query(admin, fragment(initial, /CREATE TABLE IF NOT EXISTS employees \([\s\S]*?\n\);/g));
       await query(admin, fragment(expand, /ALTER TABLE public\."employees" ADD COLUMN workspace_id text;\nALTER TABLE public\."employees" ADD CONSTRAINT f10_workspace_reference[^\n]*\nALTER TABLE public\."employees" ADD CONSTRAINT f10_tenant_c49de3d265fb[^\n]*/g));
+      // Exact original membership table and nullable0026 additive owner/key.
+      // Registry-intended composite FKs are not installed or invented here.
+      await query(admin, fragment(initial, /CREATE TABLE IF NOT EXISTS employee_location_eligibility \([\s\S]*?\n\);/g));
+      await query(admin, fragment(expand, /ALTER TABLE public\."employee_location_eligibility" ADD COLUMN workspace_id text;\nALTER TABLE public\."employee_location_eligibility" ADD CONSTRAINT f10_workspace_reference[^\n]*\nALTER TABLE public\."employee_location_eligibility" ADD CONSTRAINT f10_tenant_d4d2dd749788[^\n]*/g));
+      // Sparse EMPTY fixture: retain original columns/native function bodies and
+      // only the three required source routes. Do not run calendar writes or
+      // pretend the uninstalled clock/subscription domain is operational.
+      for (const name of ['calendar_serial','calendar_modified_at'])
+        await query(admin, fragment(calendar, new RegExp('^ALTER TABLE locations ADD COLUMN '+name+'[^;]*;', 'gm')));
+      await query(admin, fragment(calendar, /^ALTER TABLE locations ALTER COLUMN calendar_serial SET NOT NULL,ALTER COLUMN calendar_modified_at SET NOT NULL;/gm));
+      for (const name of ['nevora_calendar_source_stamp','nevora_calendar_authority_loss'])
+        await query(admin, fragment(calendar, new RegExp('CREATE FUNCTION '+name+'\\(\\) RETURNS trigger LANGUAGE plpgsql AS \\$\\$[\\s\\S]*?END \\$\\$;', 'g')));
+      for (const name of ['calendar_location_stamp','calendar_location_loss','calendar_eligibility_loss'])
+        await query(admin, fragment(calendar, new RegExp('^CREATE TRIGGER '+name+'[^;]*;', 'gm')));
       for (const name of ['employee_credentials', 'employee_sessions'])
         await query(admin, fragment(initial, new RegExp('CREATE TABLE IF NOT EXISTS ' + name + ' \\([\\s\\S]*?\\n\\);', 'g')));
       for (const name of ['employee_sessions_employee_idx', 'employee_sessions_expires_idx'])
@@ -377,10 +430,10 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
     await retainObjects();
     const currentObjects = await observedObjects();
     expect(currentObjects.filter(row => row.kind === 'SCHEMA')).toHaveLength(1);
-    expect(currentObjects.filter(row => row.kind === 'TABLE')).toHaveLength(18);
-    expect(currentObjects.filter(row => row.kind === 'FUNCTION')).toHaveLength(15);
-    expect(currentObjects.filter(row => row.kind === 'TRIGGER')).toHaveLength(27);
-    expect(currentObjects).toHaveLength(61); expect(roles).toHaveLength(3);
+    expect(currentObjects.filter(row => row.kind === 'TABLE')).toHaveLength(19);
+    expect(currentObjects.filter(row => row.kind === 'FUNCTION')).toHaveLength(17);
+    expect(currentObjects.filter(row => row.kind === 'TRIGGER')).toHaveLength(32);
+    expect(currentObjects).toHaveLength(69); expect(roles).toHaveLength(3);
     expect((await query(admin, 'SELECT * FROM nevora_tenancy.audited_helper_capability')).rows).toEqual([]);
     await assertEmptyOriginalAndPrivate();
     rendered = queries['reviewed-policy-template.candidate.sql'].replaceAll('"__BOUND_PORTAL_READER_OWNER__"', q(readerRole.name));
@@ -394,9 +447,9 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
     expect(clients.size).toBe(3); expect(installer.getTransactionStatus()).toBe('I'); expect(app.getTransactionStatus()).toBe('I');
     writeFileSync(join(runPath!, 'portal-controlled-install-fixture-custody.json'), JSON.stringify({
       base, stage, sourcePin, sources: PINNED_SOURCES, queries: QUERY_PINS, objects: [...objects.values()], roles,
-      selectedEnrollmentRelations: 15, physicalTables: 18, prerequisiteExtras: ['public.locations', 'nevora_tenancy.owned_table_contract', 'nevora_tenancy.expansion_protocol'],
-      intendedPolicyDefinitionObservation: intended, clientCount: 3, maximumNamedObjects: 62,
-      sourceBusinessRows: 0, privateRows: 0, controlRows: 'EXACT_PROTOCOL_FIVE_CONTRACTS_TWO_ROLE_BINDINGS_ONLY',
+      selectedEnrollmentRelations: 17, physicalTables: 19, prerequisiteExtras: ['nevora_tenancy.owned_table_contract', 'nevora_tenancy.expansion_protocol'],
+      intendedPolicyDefinitionObservation: intended, clientCount: 3, maximumNamedObjects: 70,
+      sourceBusinessRows: 0, privateRows: 0, controlRows: 'EXACT_PROTOCOL_SIX_CONTRACTS_TWO_ROLE_BINDINGS_ONLY',
       claim: 'ROOT_OWNED_NATIVE_INSTALL_SOURCE_OBSERVATIONS_NOT_RUNTIME_PROOF_OR_EXECUTING_BUILD_AUTHORITY',
     }, null, 2), { flag: 'wx', mode: 0o600 });
   }, 120000);
@@ -520,6 +573,8 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
         const result = await installerTransport(text as string, values);
         observations.push({ client: 'INSTALLER', sqlSHA256: hash(text as string), result: 'ACK' });
         if (text === 'COMMIT') installerCommitAcknowledged += 1;
+        if (text === queries['installer-held-source-controls.candidate.sql'])
+          record({ operation: 'CI_P02_REAL_HELD_SOURCE_CONTROL_REPLY', rows: result.rows });
         if (text === queries['independent-current-catalog.candidate.sql']) {
           catalogCount += 1; committedCatalog = result.rows[0]?.before_catalog as string | undefined;
           record({ operation: 'CI_P02_REAL_PRECOMMIT_CATALOG', rows: result.rows });
@@ -567,7 +622,7 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
     expect(captureCount).toBe(1); expect(catalogCount).toBe(1);
     expect(observations.every(value => value.result === 'ACK')).toBe(true);
     expect(installerStatements.slice(0, 3)).toEqual(['BEGIN ISOLATION LEVEL READ COMMITTED', INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text, 'SET LOCAL search_path=pg_catalog']);
-    expect(installerStatements.slice(-2)).toEqual([queries['independent-current-catalog.candidate.sql'], 'COMMIT']);
+    expect(installerStatements.slice(-4)).toEqual([queries['independent-current-catalog.candidate.sql'], queries['installer-held-source-controls.candidate.sql'], queries['held-source-controls-grant-reconciliation.test.sql'], 'COMMIT']);
     expect(appStatements.slice(0, 3)).toEqual(['BEGIN ISOLATION LEVEL READ COMMITTED', RUNTIME_CATALOG_SHARED_FENCE_SQL.text, 'SET LOCAL search_path=pg_catalog']);
     expect(appStatements.slice(-3)).toEqual([PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL.text,
       "SELECT 1/CASE WHEN nevora_tenancy.assert_audited_runtime_role('APP'::pg_catalog.text) IS TRUE THEN 1 ELSE 0 END AS guard;", 'COMMIT']);
@@ -604,7 +659,7 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
     for (const [name, file] of Object.entries(fixedFiles)) expect(bundle[name]).toEqual([...readFileSync(resolve('src/lib/tenancy/runtime/' + file))]);
     expect(hash(Buffer.from(bundle.resolvePortalSource))).toBe('068776a706cebc22d5b402f433a7e4ca5756d836948f42dacd1d9c5d4d928873');
     expect(Buffer.from(bundle.privatePoliciesTemplateSource).toString('utf8')).toBe(intended.policyTemplateSource);
-    expect(hash(Buffer.from(bundle.privateGrantsTemplateSource))).toBe('7b292d5d46b82c7befcd8e990cab5543609a70cc5bf97617103ad18a022dbf5c');
+    expect(hash(Buffer.from(bundle.privateGrantsTemplateSource))).toBe('46005e5fb9926b1302eb87601f8b38a4b7f7342b235dacf8ffc1184dbb251dc6');
     expect(Buffer.from(bundle.privatePoliciesRenderedSource).toString('utf8')).toBe(intended.renderedPolicySource);
     expect(Buffer.from(bundle.privateGrantsRenderedSource).toString('utf8')).toBe(Buffer.from(bundle.privateGrantsTemplateSource).toString('utf8').replaceAll('"__BOUND_PORTAL_READER_OWNER__"', q(readerRole.name)));
     const image = loadPortalRuntimeSourceImage(PORTAL_SOURCE_IMAGE_BYTES);
@@ -700,6 +755,27 @@ describe.skipIf(!leasePath && !runPath && !stage)('root-owned PG18.4 Portal inst
     }
   }, 120000);
   // CI-P02 END.
+  // Source envelope regressions run only after the same real CI-P02 baseline;
+  // a setup failure cannot masquerade as the source/callgraph feature result.
+  describe.skipIf(stage!=='FINAL_INTENT')('expanded current-source original native envelope',()=>{
+    beforeAll(async()=>{
+      expect(admin.getTransactionStatus()).toBe('I');expect(installer.getTransactionStatus()).toBe('I');expect(app.getTransactionStatus()).toBe('I');
+      expect(await nativeDefinitions()).toEqual(intended.definitions);
+      const geometry=await query(admin,queries['current-source-envelope-probe.test.sql']);
+      const columns=await query(admin,queries['current-source-reader-columns-probe.test.sql']);
+      expect(geometry.rows).toHaveLength(1);expect(columns.rows).toHaveLength(1);
+      expect(columns.rows[0].reader_owner_oid).toBe(readerRole.oid);
+      let owned=false;
+      try{owned=true;await query(admin,'BEGIN ISOLATION LEVEL READ COMMITTED');await query(admin,INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);await query(admin,'SET LOCAL search_path=pg_catalog');
+        const controls=await query(admin,queries['installer-held-source-controls.test.sql']);expect(controls.rows).toHaveLength(1);
+        record({operation:'REAL_EXPANDED_17_RELATION_ENROLLED_PREREQUISITE',geometry:geometry.rows,columns:columns.rows,controls:controls.rows,
+          claim:'NATIVE_QA_BASELINE_ONLY_NOT_TRUSTED_PROOF_OR_EXECUTING_BUILD'});
+      }finally{if(owned)await rollback(admin);}
+      await assertEmptyOriginalAndPrivate();await captureCurrentSourceCatalogAndRows();
+    },30000);
+    definePortalCurrentSourceEnvelopeNativeCases(()=>({admin,captureCompleteCatalogAndRows:captureCurrentSourceCatalogAndRows,record}));
+    definePortalHeldControlGrantReconciliationNativeCases(()=>({admin,captureCompleteCatalogAndRows:captureCurrentSourceCatalogAndRows,record}));
+  });
   afterAll(async () => {
     const closure: { pid?: number; closed: boolean; status: string | null }[] = [];
     let cleaned = false, cleanupError: string | null = null;

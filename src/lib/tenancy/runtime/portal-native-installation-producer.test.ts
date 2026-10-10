@@ -35,10 +35,20 @@ describe('controlled Portal source preparation boundary',()=>{
  it('captures full policy/column/default/index/function/native owner evidence',()=>{const s=PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL.text;
   for(const evidence of ['installationCatalogText','enrollment_relation_catalog','owner_lock_columns','pg_catalog.pg_policy','pg_catalog.pg_default_acl','pg_catalog.pg_largeobject_metadata','pg_catalog.pg_depend','pg_catalog.pg_collation_actual_version','pg_catalog.pg_database_collation_actual_version','pg_catalog.pg_index','procedureCatalog'])expect(s).toContain(evidence);
   expect(s).toContain("'portal_administrative_capability','workspace_id'");expect(s).toContain("'portal_administrative_location','workspace_id'");
-  expect(s).toContain(')=17');expect(s).toContain(')=12');});
+  expect(s).toContain(')=17');expect(s).toContain(')=14');});
  it('has no source payload selection, arbitrary path/GUC or SQL lifecycle',()=>{const s=PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL.text;
   expect(s).not.toMatch(/\b(?:BEGIN|COMMIT|ROLLBACK|INSERT|DELETE|GRANT|CREATE|ALTER)\s+(?:TRANSACTION|TABLE|FUNCTION|POLICY|INTO|ON|ISOLATION)\b/i);
-  expect(s).not.toContain('password_hash');expect(s).not.toContain('authorityCurrent');expect(s).not.toContain('current_proof_true');expect(s).not.toContain('$1');});
+  // Original calendar pg_proc source text legitimately names NEW.password_hash.
+  // Check the enrollment payload projection and forbid credential-row selection;
+  // credential attribute/function-definition metadata is not credential values.
+  const marker='), enrollment_current AS (',start=s.indexOf(marker);
+  expect(start).toBeGreaterThanOrEqual(0);expect(s.indexOf(marker,start+marker.length)).toBe(-1);
+  const projection=s.slice(start);
+  expect(s).toContain('NEW.password_hash IS DISTINCT FROM OLD.password_hash');
+  expect(projection).not.toContain('password_hash');
+  expect(s).not.toMatch(/\b(?:FROM|JOIN)\s+public\.employee_credentials\b/i);
+  expect(projection).not.toContain('SELECT * FROM public.employee_credentials');
+  expect(s).not.toContain('authorityCurrent');expect(s).not.toContain('current_proof_true');expect(s).not.toContain('$1');});
 });
 
 // Additional UNEXECUTED local source tests. Every expression below is explicitly
@@ -50,7 +60,7 @@ function intentFixture(){
     .sort((a,b)=>a.relationName<b.relationName?-1:a.relationName>b.relationName?1:a.policyName<b.policyName?-1:a.policyName>b.policyName?1:0);
   const observation={...binding,format:'PORTAL_PRIVATE_POLICY_INTENT_NATIVE_V1',serverVersionNum:'180004',definitions};
   const relations=[...privateRelations,'runtime_role_binding','audited_helper_capability'].map((relationName,index)=>({schema:{nspname:'nevora_tenancy'},relation:{relname:relationName,oid:String(200+index)},policies:definitions.filter(d=>d.relationName===relationName).map(d=>({catalog:{polrelid:d.relationOid,polname:d.policyName,polcmd:d.command,polpermissive:d.permissive,polroles:['102']},using:d.using,withCheck:d.withCheck}))}));
-  for(const [index,relname] of ['workspaces','employees','employee_credentials','employee_sessions'].entries())relations.push({schema:{nspname:'public'},relation:{relname,oid:String(500+index)},policies:[]});
+  for(const [index,relname] of ['workspaces','employees','employee_credentials','employee_sessions','locations','employee_location_eligibility'].entries())relations.push({schema:{nspname:'public'},relation:{relname,oid:String(500+index)},policies:[]});
   return {binding,observation,catalog:{relations}};
 }
 describe('separately bound private policy intent; source facts only',()=>{
