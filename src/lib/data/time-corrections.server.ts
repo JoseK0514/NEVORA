@@ -1,5 +1,6 @@
 import {correctionAuthority} from '../time-corrections/authority.server';
 import 'server-only';
+import { parseCorrectionActionCapture, type CorrectionActionCapture } from '../action-center/canonical-source';
 
 import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
@@ -197,7 +198,61 @@ SELECT
   ) AS snapshot
 FROM observed o`;
 
-const managerSql = `WITH observed AS MATERIALIZED (
+// Internal F1 source capture only. Reuse the canonical connected missing-time chain;
+// capture every relevant location before the public last-five decision projection.
+const internalCorrectionJoins = `
+LEFT JOIN LATERAL (
+  WITH relevant_requests AS MATERIALIZED (
+    SELECT h.* FROM time_correction_requests h
+    WHERE h.workspace_id=r.workspace_id AND h.employee_id=r.employee_id
+      AND (h.id=r.id OR (h.kind=r.kind
+        AND h.time_entry_id IS NOT DISTINCT FROM r.time_entry_id
+        AND h.break_entry_id IS NOT DISTINCT FROM r.break_entry_id
+        AND (r.kind<>'MISSING_ENTRY'
+          OR h.base_adjustment_id IN (${missingChain('r.workspace_id','r.employee_id','r.kind','r.id')} SELECT id FROM chain)
+          OR h.id IN (${missingChain('r.workspace_id','r.employee_id','r.kind','r.id')} SELECT request_id FROM chain))))
+  ), relevant_adjustments AS MATERIALIZED (
+    SELECT a.* FROM time_correction_adjustments a
+    WHERE a.workspace_id=r.workspace_id AND a.employee_id=r.employee_id
+      AND (a.request_id IN (SELECT id FROM relevant_requests)
+        OR a.id IN (${missingChain('r.workspace_id','r.employee_id','r.kind','r.id')} SELECT id FROM chain))
+  ), location_ids AS (
+    SELECT location_id AS id FROM relevant_requests
+    UNION SELECT source_snapshot->>'locationId' FROM relevant_requests
+    UNION SELECT location_id FROM relevant_adjustments
+    UNION SELECT source_snapshot->>'locationId' FROM relevant_adjustments
+    UNION SELECT t.location_id FROM time_entries t WHERE t.id=r.time_entry_id
+  )
+  SELECT jsonb_build_object(
+    'id',r.id::text,'workspaceId',r.workspace_id,'employeeId',r.employee_id,
+    'kind',r.kind,'status',CASE latest.event_kind WHEN 'APPROVED' THEN 'APPROVED' WHEN 'REJECTED' THEN 'REJECTED' ELSE 'PENDING' END,
+    'locationId',r.location_id,'timeEntryId',r.time_entry_id,'breakEntryId',r.break_entry_id,
+    'sourceRevision',r.source_revision,'baseAdjustmentId',r.base_adjustment_id::text,
+    'revision',latest.revision,'createdAt',r.created_at::text,
+    'requests',COALESCE((SELECT jsonb_agg(jsonb_build_object(
+      'id',h.id::text,'workspaceId',h.workspace_id,'employeeId',h.employee_id,
+      'locationId',h.location_id,'snapshotLocationId',h.source_snapshot->>'locationId',
+      'revision',e.revision,'occurredAt',e.occurred_at::text) ORDER BY h.id)
+      FROM relevant_requests h LEFT JOIN LATERAL (
+        SELECT revision,occurred_at FROM time_correction_events WHERE request_id=h.id ORDER BY revision DESC LIMIT 1
+      ) e ON true),'[]'::jsonb),
+    'adjustments',COALESCE((SELECT jsonb_agg(jsonb_build_object(
+      'id',a.id::text,'requestId',a.request_id::text,'workspaceId',a.workspace_id,
+      'employeeId',a.employee_id,'locationId',a.location_id,
+      'snapshotLocationId',a.source_snapshot->>'locationId',
+      'sourceRevision',a.source_revision,'supersedesId',a.supersedes_adjustment_id::text,
+      'occurredAt',a.created_at::text) ORDER BY a.id) FROM relevant_adjustments a),'[]'::jsonb),
+    'recordedTarget', (SELECT jsonb_build_object('id',t.id,'employeeId',t.employee_id,
+      'locationId',t.location_id,'version',t.version) FROM time_entries t WHERE t.id=r.time_entry_id),
+    'breakTarget', (SELECT jsonb_build_object('id',b.id,'timeEntryId',b.time_entry_id,'version',b.version)
+      FROM break_entries b WHERE b.id=r.break_entry_id),
+    'locations',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',ids.id,'workspaceId',l.workspace_id)
+      ORDER BY ids.id COLLATE "C") FROM location_ids ids LEFT JOIN locations l ON l.id=ids.id
+      WHERE ids.id IS NOT NULL),'[]'::jsonb)
+  ) AS capture
+) internal_source ON true`;
+
+const managerSqlFor = (includeInternalCapture = false) => `WITH observed AS MATERIALIZED (
   SELECT clock_timestamp() AS at
 ), pending AS MATERIALIZED (
   SELECT r.*,trim(concat_ws(' ',emp.first_name,emp.last_name)) AS employee_name,
@@ -218,7 +273,7 @@ const managerSql = `WITH observed AS MATERIALIZED (
 ), rows AS MATERIALIZED (
   SELECT (${publicRequestJson('r')} ||
     jsonb_build_object('employeeName',r.employee_name,'isSelf',r.employee_id=$2)) AS value,
-    r.created_at,r.id
+    ${includeInternalCapture ? 'internal_source.capture,' : ''}r.created_at,r.id
   FROM pending r
   JOIN locations loc ON loc.id=r.location_id
   JOIN LATERAL (
@@ -229,6 +284,7 @@ const managerSql = `WITH observed AS MATERIALIZED (
     LIMIT 1
   ) latest ON true
   ${contextJoins('r.workspace_id','r.employee_id','r.kind','r.time_entry_id','r.break_entry_id','r.id')}
+  ${includeInternalCapture ? internalCorrectionJoins : ''}
   ORDER BY r.created_at,r.id
   LIMIT 100
 )
@@ -241,8 +297,12 @@ SELECT
       'timeZone',$3::text,
       'requests',COALESCE((SELECT jsonb_agg(value ORDER BY created_at,id) FROM rows),'[]'::jsonb)
     )
-  END AS snapshot
+  END AS snapshot${includeInternalCapture ? `,
+  CASE WHEN (SELECT count(*) FROM pending)>100 THEN NULL ELSE
+    COALESCE((SELECT jsonb_agg(capture ORDER BY created_at,id) FROM rows),'[]'::jsonb)
+  END AS "internalCapture"` : ''}
 FROM observed o`;
+const managerSql = managerSqlFor();
 
 function schemaMissing(error: unknown) {
   return Boolean(error && typeof error === 'object' && 'code' in error &&
@@ -284,9 +344,10 @@ export async function readEmployeeTimeCorrections(
   }
 }
 
-export async function readManagerTimeCorrections(
+async function readManagerTimeCorrectionsCore(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),
+  capture?: (value: CorrectionActionCapture) => void,
 ): Promise<ManagerTimeCorrections> {
   try { assertManagementProof(proof,proof?.employee?.id); }
   catch { return {state:'unavailable',reason:'access_denied'}; }
@@ -302,10 +363,10 @@ export async function readManagerTimeCorrections(
     ];
     const result=await executor.transaction([
       ...guards,
-      {text:managerSql,values:[workspace.id,proof.employee.id,workspace.timeZone]},
+      {text:capture ? managerSqlFor(true) : managerSql,values:[workspace.id,proof.employee.id,workspace.timeZone]},
       ...managementSessionStatements(proof,proof.employee.id,managerRoles),
     ]);
-    const row=result[guards.length]?.[0] as {pendingCount?:number;snapshot?:unknown|null}|undefined;
+    const row=result[guards.length]?.[0] as {pendingCount?:number;snapshot?:unknown|null;internalCapture?:unknown}|undefined;
     if (!row || !Number.isSafeInteger(row.pendingCount)) return {state:'unavailable',reason:'read_failed'};
     if ((row.pendingCount ?? 0)>100) return {state:'unavailable',reason:'source_limit'};
     if (!row.snapshot) return {state:'unavailable',reason:'read_failed'};
@@ -320,10 +381,21 @@ export async function readManagerTimeCorrections(
     if(!final)return {state:'unavailable',reason:'access_denied'};
     const remaining=final.validForMs-Math.ceil(performance.now()-started);
     if(source.state!=='ready'||remaining<1)return {state:'unavailable',reason:'read_failed'};
+    if (capture) capture(parseCorrectionActionCapture(row.internalCapture, source, workspace.id, proof.employee.id, remaining));
     return {...source,validForMs:remaining,authority:correctionAuthority(proof)};
   } catch (error) {
     if (isManagementAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
     if (schemaMissing(error)) return {state:'unavailable',reason:'schema_missing'};
     return {state:'unavailable',reason:'read_failed'};
   }
+}
+
+// Public DTO/parser unchanged; the new internal reader is not a F10 authority boundary.
+export async function readManagerTimeCorrections(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<ManagerTimeCorrections> {
+ return readManagerTimeCorrectionsCore(proof,executor);
+}
+export async function readManagerTimeCorrectionsWithInternalCapture(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
+ const retained: {capture: CorrectionActionCapture | null} = {capture:null};
+ const view = await readManagerTimeCorrectionsCore(proof,executor,value => { retained.capture = value; });
+ return { view, capture: view.state === 'ready' ? retained.capture : null };
 }

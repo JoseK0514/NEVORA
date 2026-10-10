@@ -5,6 +5,7 @@ import { assertManagementProof, isManagementAuthorizationError, managementSessio
 import { neonNotificationExecutor } from '../data/notification-transactions';
 import { getWorkspace, workspaceReadGuard } from '../data/workspaces';
 import { parsePeriod, type Period } from './project';
+import type { TimecardActionCapture } from '../action-center/canonical-source';
 import { parseTimecardsResponse, type TimecardsResult } from './read-model';
 export type { TimecardsResult } from './read-model';
 
@@ -29,7 +30,61 @@ export function parseTimecardCommand(v:unknown):TimecardCommand {
     expectedSourceHash:v.expectedSourceHash,action:v.action as TimecardCommand['action'],...(v.note?{note:v.note as string}:{})};
 }
 
-export const timecardReadSql=`WITH scope AS (
+// Internal only: retain native correction locations omitted from TimecardSource.
+// Roots are the exact request IDs in current source and every retained period
+// snapshot; the connected missing-entry traversal is the canonical D2 UNION
+// ancestor/descendant closure, not the public last-five decision list.
+const timecardCorrectionCaptureSql = `(WITH RECURSIVE captured_ids AS (
+  SELECT c->>'id' AS id FROM jsonb_array_elements(s.current_source->'corrections') c
+  UNION SELECT c->>'id' FROM timecard_revisions h
+    CROSS JOIN LATERAL jsonb_array_elements(h.snapshot->'corrections') c
+    WHERE h.workspace_id=$1 AND h.employee_id=s.id AND h.start_date=$4::date AND h.end_date=$5::date
+), roots AS MATERIALIZED (
+  SELECT r.* FROM time_correction_requests r WHERE r.id::text IN (SELECT id FROM captured_ids)
+    AND r.workspace_id=$1 AND r.employee_id=s.id
+), chain AS (
+  SELECT a.id,a.request_id,a.supersedes_adjustment_id FROM time_correction_adjustments a
+    WHERE a.workspace_id=$1 AND a.employee_id=s.id AND a.kind='MISSING_ENTRY'
+      AND (a.request_id IN (SELECT id FROM roots WHERE kind='MISSING_ENTRY')
+        OR a.id IN (SELECT base_adjustment_id FROM roots WHERE kind='MISSING_ENTRY'))
+  UNION
+  SELECT a.id,a.request_id,a.supersedes_adjustment_id FROM time_correction_adjustments a JOIN chain c
+    ON a.supersedes_adjustment_id=c.id OR c.supersedes_adjustment_id=a.id
+    WHERE a.workspace_id=$1 AND a.employee_id=s.id AND a.kind='MISSING_ENTRY'
+), requests AS MATERIALIZED (
+  SELECT r.* FROM time_correction_requests r WHERE r.workspace_id=$1 AND r.employee_id=s.id
+    AND (r.id IN (SELECT id FROM roots) OR r.id IN (SELECT request_id FROM chain)
+      OR EXISTS (SELECT 1 FROM roots base WHERE base.kind<>'MISSING_ENTRY' AND r.kind=base.kind
+        AND r.time_entry_id IS NOT DISTINCT FROM base.time_entry_id AND r.break_entry_id IS NOT DISTINCT FROM base.break_entry_id))
+), adjustments AS MATERIALIZED (
+  SELECT a.* FROM time_correction_adjustments a WHERE a.workspace_id=$1 AND a.employee_id=s.id
+    AND (a.request_id IN (SELECT id FROM requests) OR a.id IN (SELECT id FROM chain))
+), location_ids AS (
+  SELECT location_id AS id FROM requests
+  UNION SELECT source_snapshot->>'locationId' FROM requests
+  UNION SELECT location_id FROM adjustments
+  UNION SELECT source_snapshot->>'locationId' FROM adjustments
+  UNION SELECT t.location_id FROM time_entries t WHERE t.id IN (SELECT time_entry_id FROM requests)
+)
+SELECT jsonb_build_object(
+  'referencedRequestIds',COALESCE((SELECT jsonb_agg(id ORDER BY id COLLATE "C") FROM captured_ids),'[]'::jsonb),
+  'requests',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',r.id::text,
+    'workspaceId',r.workspace_id,'employeeId',r.employee_id,'locationId',r.location_id,
+    'snapshotLocationId',r.source_snapshot->>'locationId','revision',e.revision)
+    ORDER BY r.id) FROM requests r LEFT JOIN LATERAL (
+      SELECT revision FROM time_correction_events WHERE request_id=r.id ORDER BY revision DESC LIMIT 1
+    ) e ON true),'[]'::jsonb),
+  'adjustments',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',a.id::text,
+    'workspaceId',a.workspace_id,'employeeId',a.employee_id,'locationId',a.location_id,
+    'snapshotLocationId',a.source_snapshot->>'locationId','requestId',a.request_id::text,
+    'sourceRevision',a.source_revision,'supersedesId',a.supersedes_adjustment_id::text)
+    ORDER BY a.id) FROM adjustments a),'[]'::jsonb),
+  'locations',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',ids.id,'workspaceId',l.workspace_id)
+    ORDER BY ids.id COLLATE "C") FROM location_ids ids LEFT JOIN locations l ON l.id=ids.id
+    WHERE ids.id IS NOT NULL),'[]'::jsonb)
+))`;
+
+const timecardReadSqlFor=(includeInternalCapture = false)=>`WITH scope AS (
   SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id
   WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3)
 ), sources AS (
@@ -48,9 +103,11 @@ SELECT clock_timestamp()::text AS "observedAt",COALESCE(jsonb_agg(jsonb_build_ob
     'note',h.note,'sourceHash',h.source_hash,'snapshot',h.snapshot) ORDER BY h.revision DESC)
     FROM timecard_revisions h JOIN employees a ON a.id=h.actor_employee_id
     WHERE h.workspace_id=$1 AND h.employee_id=s.id AND h.start_date=$4::date AND h.end_date=$5::date),'[]'::jsonb)
-) ORDER BY s.id),'[]'::jsonb) AS cards FROM sources s`;
+) ORDER BY s.id),'[]'::jsonb) AS cards${includeInternalCapture ? `,
+COALESCE(jsonb_agg(jsonb_build_object('employeeId',s.id,'source',s.current_source,'sourceHash',md5(s.current_source::text),'correctionFootprint',${timecardCorrectionCaptureSql}) ORDER BY s.id),'[]'::jsonb) AS "internalCurrentSources"` : ''} FROM sources s`;
+export const timecardReadSql=timecardReadSqlFor();
 
-export async function readTimecards(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()):Promise<TimecardsResult> {
+async function readTimecardsCore(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor(),capture?: (value: TimecardActionCapture) => void):Promise<TimecardsResult> {
   try{assertManagementProof(proof,proof?.employee?.id);}catch{return {state:'unavailable',reason:'access_denied'};}
   const period=parsePeriod(requested.startDate,requested.endDate);
   const readRoles=manager(proof)?['OWNER','MANAGER'] as const:['EMPLOYEE','LEAD'] as const;
@@ -60,7 +117,7 @@ export async function readTimecards(proof:SessionMutationProof,requested:Period,
       {text:'SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3) ORDER BY e.id FOR SHARE OF e',values:[workspace.id,manager(proof),proof.employee.id]},
       ...managementSessionStatements(proof,proof.employee.id,readRoles),
     ];
-    const results=await executor.transaction([...guards,{text:timecardReadSql,values:[workspace.id,manager(proof),proof.employee.id,period.startDate,period.endDate]},
+    const results=await executor.transaction([...guards,{text:capture ? timecardReadSqlFor(true) : timecardReadSql,values:[workspace.id,manager(proof),proof.employee.id,period.startDate,period.endDate]},
       ...managementSessionStatements(proof,proof.employee.id,readRoles)]);
     const result=parseTimecardsResponse(results[guards.length]?.[0],period);
     if(!manager(proof)&&result.cards.some(c=>c.card.employeeId!==proof.employee.id))throw new Error('Incorrect scope');
@@ -69,6 +126,13 @@ export async function readTimecards(proof:SessionMutationProof,requested:Period,
       WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[]) AND l.workspace_id=$4 AND s.expires_at>clock_timestamp()`,values:[proof.sessionTokenHash,proof.employee.id,readRoles,workspace.id]});
     if(!authority[0])return {state:'unavailable',reason:'access_denied'};
     const validForMs=Math.floor(authority[0].remaining-(performance.now()-started));if(validForMs<1)throw Error('Timecards expired');
+    if (capture) {
+      const capturedRow = results[guards.length]?.[0] as { internalCurrentSources?: unknown } | undefined;
+      const raw = capturedRow?.internalCurrentSources;
+      // Validation/coherence remains in the pure capture parser; do not copy private rows to view.
+      capture({ workspaceId: workspace.id, actorEmployeeId: proof.employee.id, projection: result, currentSources: raw,
+        validForMs });
+    }
     return {...result,validForMs};
   }catch(error){
     if(isManagementAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};
@@ -113,4 +177,13 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
     }
   }
   return {status:'conflict'};
+}
+
+export async function readTimecards(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()):Promise<TimecardsResult> {
+ return readTimecardsCore(proof,requested,executor);
+}
+export async function readTimecardsWithInternalCapture(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()) {
+ const retained: {capture: TimecardActionCapture | null} = {capture:null};
+ const view=await readTimecardsCore(proof,requested,executor,value => { retained.capture=value; });
+ return { view, capture: view.state==='ready' ? retained.capture : null };
 }

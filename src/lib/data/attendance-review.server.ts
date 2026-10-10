@@ -7,6 +7,8 @@ import {
   type AttendanceDisplayReview,
 } from '../attendance/read-model';
 import { projectAttendance } from '../attendance/project';
+import { validateAttendanceSource } from '../attendance/validation';
+import type { AttendanceActionCapture } from '../action-center/canonical-source';
 import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
 import {
@@ -278,9 +280,10 @@ function validForMs(
  * publication tables are database-append-only; that custody limitation remains
  * an open governance dependency outside this reader.
  */
-export async function readAttendanceReview(
+async function readAttendanceReviewCore(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),
+  capture?: (value: AttendanceActionCapture) => void,
 ): Promise<AttendanceDisplayReview> {
   try {
     assertManagementProof(proof, proof?.employee?.id);
@@ -349,6 +352,13 @@ export async function readAttendanceReview(
       return { state: 'unavailable', reason: 'access_denied' };
     }
 
+    if (capture) {
+      if (typeof row.expiresAt !== 'string') return { state: 'unavailable', reason: 'read_failed' };
+      const source = validateAttendanceSource(row.source);
+      if ('state' in source) return source;
+      capture({ actorEmployeeId: proof.employee.id, source, projection, labels: { employees: employeeLabels, locations: locationLabels },
+        sessionExpiresAt: row.expiresAt, validForMs: lifetime });
+    }
     return {
       ...projection,
       validForMs: lifetime,
@@ -378,4 +388,14 @@ export async function readAttendanceReview(
     }
     return { state: 'unavailable', reason: 'read_failed' };
   }
+}
+
+// Internal capture retains overlap/publication causes; public review is unchanged.
+export async function readAttendanceReview(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<AttendanceDisplayReview> {
+ return readAttendanceReviewCore(proof,executor);
+}
+export async function readAttendanceReviewWithInternalCapture(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
+ const retained: {capture: AttendanceActionCapture | null} = {capture:null};
+ const view = await readAttendanceReviewCore(proof,executor,value => { retained.capture = value; });
+ return { view, capture: view.state === 'ready' ? retained.capture : null };
 }

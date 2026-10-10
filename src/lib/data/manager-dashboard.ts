@@ -19,7 +19,9 @@ import {managementSessionStatements} from './management-session';
 import {neonNotificationExecutor} from './notification-transactions';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor} from '../notifications/types';
-export async function loadManagerDashboardData(weekStart:string,proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()){
+import type { SchedulingActionCapture } from '../action-center/canonical-source';
+
+async function loadManagerDashboardDataCore(weekStart:string,proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor(), capture?: (value: SchedulingActionCapture) => void){
  if(!isValidWeekStart(weekStart))throw Error('Invalid dashboard week');
  const workspace=await getWorkspace(executor);
  const guards=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 FOR SHARE',values:[proof.employee.id]},...managementSessionStatements(proof,proof.employee.id)];
@@ -93,8 +95,9 @@ export async function loadManagerDashboardData(weekStart:string,proof:SessionMut
     ]),
   );
 
+  const positions = await listPositions({includeInactive:true});
   const health = calculateScheduleHealth({
-      positions: await listPositions({includeInactive:true}),
+      positions,
     shifts: healthShifts.filter(shift => !shift.isCalloutApproved).map((shift) => ({
       id: shift.id,
       employeeId: shift.employeeId,
@@ -143,7 +146,7 @@ export async function loadManagerDashboardData(weekStart:string,proof:SessionMut
     ]),
   );
 
-  const managerActions = buildManagerActionItems({
+  const actionInput: Parameters<typeof buildManagerActionItems>[0] = {
     weekStart,
     coverageGaps: health.coverageBlocks
       .filter((block) => !block.covered)
@@ -212,7 +215,8 @@ export async function loadManagerDashboardData(weekStart:string,proof:SessionMut
     })),
     availabilityDeadlineSet: Boolean(weekSettings?.availabilityDeadline),
     coverageRulesConfigured,
-  });
+  };
+  const managerActions = buildManagerActionItems(actionInput);
 
   const dashboard = buildManagerDashboardStatus({
     locations: health.locationCoverage,
@@ -276,5 +280,18 @@ export async function loadManagerDashboardData(weekStart:string,proof:SessionMut
 
 
  await executor.transaction(guards);
+ capture?.({ workspaceId: workspace.id, actorEmployeeId: proof.employee.id, weekStart, actionInput, healthShifts,
+   positions, employeeTargets, staffingSettings, coverageWindows, pendingTimeOff, pendingExchanges, pendingCallouts,
+   availabilityDeadline: weekSettings?.availabilityDeadline ?? null });
  return {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,scheduleRoster,daySummaries,hourRows,pendingTimeOff,pendingExchanges,pendingCallouts,latestRevision};
+}
+
+// Internal only: not a protected F10 reader and not a public DTO extension.
+export async function loadManagerDashboardData(weekStart:string,proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()){
+ return loadManagerDashboardDataCore(weekStart,proof,executor);
+}
+export async function loadManagerDashboardDataWithInternalCapture(weekStart:string,proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()){
+ const retained: {capture: SchedulingActionCapture | null} = {capture:null};
+ const view = await loadManagerDashboardDataCore(weekStart,proof,executor,value => { retained.capture = value; });
+ return { view, capture: retained.capture };
 }
