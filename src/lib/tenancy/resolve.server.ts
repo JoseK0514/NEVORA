@@ -4,6 +4,7 @@ import { types as nodeTypes } from 'node:util';
 import { getTenantRuntimeDb } from '../db';
 import { normalizeWorkspaceLocator } from './identity';
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
+import { validateWorkspaceIncarnation } from './runtime/workspace-incarnation';
 import type {
   CalendarReadProof, CalendarReadProofFacts, ClockerProof, ClockerProofFacts, PortalProof, PortalProofFacts,
   ProofResolution, ProvisionerEnvironment, ProvisionerOperator, ProvisionerPurpose, ProvisionerScope,
@@ -64,6 +65,7 @@ function field(row: Record<string, unknown>, key: string, check: (value: unknown
 const id = (row: Record<string, unknown>, key: string) => field(row, key, validId);
 const digest = (row: Record<string, unknown>, key: string) => field(row, key, validDigest);
 const revision = (row: Record<string, unknown>, key: string) => field(row, key, validRevision);
+const incarnation = (row: Record<string, unknown>, key: string) => field(row, key, value => validateWorkspaceIncarnation(value).status === 'VALID');
 const timestamp = (row: Record<string, unknown>, key: string) => field(row, key, value => Number.isFinite(timestampMillis(value)));
 function list(row: Record<string, unknown>, key: string, check: (value: unknown) => boolean, allowEmpty = true): readonly string[] {
   const value = row[key];
@@ -89,7 +91,7 @@ function current(row: Record<string, unknown>, kind: string) {
 }
 function base<K extends TenantProof['kind']>(row: Record<string, unknown>, kind: K) {
   current(row, kind);
-  return { kind, workspaceId: id(row, 'workspaceId'), workspaceVersion: timestamp(row, 'workspaceVersion'), workspaceIncarnation: revision(row, 'workspaceIncarnation'), ...lifetime(row) };
+  return { kind, workspaceId: id(row, 'workspaceId'), workspaceVersion: timestamp(row, 'workspaceVersion'), workspaceIncarnation: incarnation(row, 'workspaceIncarnation'), ...lifetime(row) };
 }
 function parsePortal(row: Record<string, unknown>): PortalProofFacts {
   const shared = base(row, 'PORTAL');
@@ -117,7 +119,7 @@ function parseProvisioner(row: Record<string, unknown>): ProvisionerScopeFacts {
   const bootstrap = purpose === 'TENANT_BOOTSTRAP';
   const workspaceId = bootstrap ? null : id(row, 'workspaceId');
   const bootstrapNonce = bootstrap ? id(row, 'bootstrapNonce') : null;
-  const workspaceIncarnation = bootstrap ? null : revision(row, 'workspaceIncarnation');
+  const workspaceIncarnation = bootstrap ? null : incarnation(row, 'workspaceIncarnation');
   const sourceVersion = bootstrap ? null : timestamp(row, 'sourceVersion');
   const verifiedIdentityReference = bootstrap ? null : id(row, 'verifiedIdentityReference');
   for (const key of bootstrap ? ['workspaceId', 'workspaceIncarnation', 'sourceVersion', 'verifiedIdentityReference'] : ['bootstrapNonce']) if (row[key] !== null) return malformed();
