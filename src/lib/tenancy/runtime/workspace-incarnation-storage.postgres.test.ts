@@ -10,6 +10,8 @@ const sourcePath = resolve('src/lib/tenancy/runtime/workspace-incarnation-storag
 const source = readFileSync(sourcePath, 'utf8');
 const policyStoragePath = resolve('src/lib/tenancy/runtime/capability-policy-definition-storage.sql');
 const policyStorage = readFileSync(policyStoragePath, 'utf8');
+const installedPolicyPath = resolve('src/lib/tenancy/runtime/portal-installed-policy-observation.sql');
+const installedPolicySource = readFileSync(installedPolicyPath, 'utf8');
 const parentPath = resolve('db/migrations/0008_workspace_positions.sql');
 const parentSource = readFileSync(parentPath, 'utf8');
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
@@ -824,6 +826,194 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 workspace incarnation storag
     }finally{
       await query(admin,'ROLLBACK');if(pending&&pendingFenceAttempts.has(pending)){await pending;pendingFenceAttempts.delete(pending);}await query(installer,'ROLLBACK');
     }
+  });
+
+  // Root-owned installed-policy observer extension. The unchanged earlier thirty
+  // callbacks remain historical storage checks. Root superuser positive calls
+  // exercise observations, never protected runtime invocation or source authority.
+  const readInstalledPolicy = 'SELECT nevora_tenancy.read_portal_installed_policy($1::text) observation';
+  async function installedPolicyObservation(client = admin, id: string | null = workspaceId) {
+    return (await query(client,readInstalledPolicy,[id])).rows[0].observation;
+  }
+  async function installedPolicyPrerequisiteReject(change: string, expected = '55000') {
+    const prerequisite = installedPolicySource.match(/DO \$portal_installed_policy_prerequisites\$[\s\S]*?\$portal_installed_policy_prerequisites\$;/);
+    expect(prerequisite).not.toBeNull();
+    await inRollback(async()=>{
+      await query(admin,INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+      await query(admin,change); await rejectedSavepoint(prerequisite![0],[],expected);
+    });
+  }
+  it('IP00 installer rejects altered guards constraints defaults RLS triggers and private ACLs', async()=>{
+    for(const change of [
+      'ALTER FUNCTION nevora_tenancy.guard_capability_policy_storage() STRICT',
+      'ALTER TABLE '+definitionTable+' DROP CONSTRAINT capability_policy_definition_revision_check',
+      'ALTER TABLE '+installationTable+' ALTER COLUMN installation_epoch SET DEFAULT 1',
+      'ALTER TABLE '+definitionTable+' NO FORCE ROW LEVEL SECURITY',
+      'ALTER TABLE '+installationTable+' DISABLE TRIGGER workspace_capability_policy_installation_row_guard',
+      'GRANT SELECT ON '+definitionTable+' TO '+q(outsiderRole.name),
+    ])await installedPolicyPrerequisiteReject(change);
+    record({caseId:'IP00',alteredSourcePrerequisitesDenied:6,restored:true});
+  });
+  it('IP01 installs the exact complete fresh observer without private runtime grants or source adoption', async()=>{
+    const code=await rejected(installer,installedPolicySource);
+    record({caseId:'IP01',operation:'EXACT_WHOLE_INSTALLED_POLICY_SOURCE_INSTALL',sourceSHA256:hash(installedPolicySource),code});
+    if(code!=='NO_ERROR')await query(installer,'ROLLBACK');expect(code).toBe('NO_ERROR');
+    await remember('function','nevora_tenancy','read_portal_installed_policy',installerOid,'(text)');
+    expect(installer.getTransactionStatus()).toBe('I');await preserveParent();
+  });
+  it('IP02 observes exact native invoker metadata and rejects a duplicate without effects or failed-transaction replay', async()=>{
+    const before=await catalog();const fn=before.functions.find(x=>x.proname==='read_portal_installed_policy');
+    expect(fn).toMatchObject({owner:installerOid,prosecdef:false,proretset:false,proconfig:['search_path=pg_catalog'],arg_oids:'25',lanname:'plpgsql'});
+    expect(before.expandedAcls.filter(x=>x.oid===fn!.oid).every(x=>x.grantee===installerOid)).toBe(true);
+    const code=await rejected(installer,installedPolicySource);try{await finishRejected(installer,code,'42723');}finally{await query(installer,'ROLLBACK');}
+    expect(await catalog()).toEqual(before);record({caseId:'IP02',fn,code,noEffects:true});
+  });
+  it('IP03 emits closed lossless source observations and keeps coherent fictional bytes unauthenticated', async()=>{
+    await query(admin,'UPDATE '+installationTable+' SET workspace_incarnation=3,installation_epoch=installation_epoch+1 WHERE workspace_id=$1',[workspaceId]);
+    await inRollback(async()=>{
+      const next=bundle('9007199254740994');const bytes=Buffer.from((' Fictional π policy bytes; no executing-source authority.\n').repeat(8));
+      next[3]=bytes;next[4]=hash(bytes);(next[2] as {canonicalPolicySource:{sha256:string}}).canonicalPolicySource.sha256=hash(bytes);
+      await query(admin,insertDefinition,next);await query(admin,'UPDATE '+installationTable+' SET policy_revision=$1::int8,installation_epoch=installation_epoch+1',[next[1]]);
+      await query(admin,RUNTIME_CATALOG_SHARED_FENCE_SQL.text);await query(admin,'SET LOCAL search_path=pg_temp,public');
+      const observation=await installedPolicyObservation();
+      expect(Object.keys(observation).sort()).toEqual(['kind','workspaceId','workspaceIncarnation','installation','definition','verification'].sort());
+      expect(observation).toMatchObject({kind:'PORTAL_INSTALLED_POLICY_OBSERVATION_V1',workspaceId,workspaceIncarnation:'3',
+        installation:{workspaceId,workspaceIncarnation:'3',installationEpoch:'9007199254740995',policyId:testPolicyId,policyRevision:'9007199254740994'},
+        verification:'SOURCE_OBSERVATION_NOT_PROOF_OR_EXECUTING_SOURCE_AUTHENTICATION'});
+      expect(Object.keys(observation.installation).sort()).toEqual(['workspaceId','workspaceIncarnation','installationEpoch','policyId','policyRevision'].sort());
+      expect(Object.keys(observation.definition).sort()).toEqual(['policyId','revision','sourceBundle','sourceBundleWire','canonicalPolicySource','vocabularySource','approvedPRDSource'].sort());
+      expect(observation.definition.sourceBundle).toEqual(next[2]);
+      for(const [field,offset]of [['canonicalPolicySource',3],['vocabularySource',5],['approvedPRDSource',7]] as const){
+        const retained=observation.definition[field],original=next[offset] as Buffer;
+        expect(Object.keys(retained).sort()).toEqual(['encoding','bytesBase64','byteLength','sha256'].sort());
+        expect(retained.encoding).toBe('UTF8');expect(Buffer.from(retained.bytesBase64,'base64')).toEqual(original);
+        expect(retained.byteLength).toBe(String(original.length));expect(retained.sha256).toBe(hash(original));
+      }
+      expect(observation.definition.canonicalPolicySource.bytesBase64).toContain('\n');
+      const wire=observation.definition.sourceBundleWire;expect(Object.keys(wire).sort()).toEqual(['encoding','text','bytesBase64','byteLength','sha256'].sort());
+      const nativeBytes=Buffer.from(wire.text,'utf8');expect(JSON.parse(wire.text)).toEqual(next[2]);
+      expect(Buffer.from(wire.bytesBase64,'base64')).toEqual(nativeBytes);expect(wire.byteLength).toBe(String(nativeBytes.length));expect(wire.sha256).toBe(hash(nativeBytes));
+      record({caseId:'IP03',observation,claim:'NATIVE_SOURCE_OBSERVATION_ONLY_NOT_REVIEWED_OR_EXECUTING_SOURCE_AUTHENTICATION'});
+    });
+  });
+  it('IP04 original fictional application worker outsider cannot invoke the private helper', async()=>{
+    for(const [owned,client]of [[appRole,app],[workerRole,worker],[outsiderRole,outsider]] as const){
+      const before=await identity(client,owned.name,owned.oid);expect(await rejected(client,readInstalledPolicy,[workspaceId])).toBe('42501');
+      expect(await identity(client,owned.name,owned.oid)).toEqual(before);
+    }record({caseId:'IP04',noRuntimeEnrollment:true});
+  });
+  it('IP05 explicitly granted nonbypass NOLOGIN owner seam is denied by zero-policy counter RLS', async()=>{
+    await inRollback(async()=>{
+      await query(admin,'GRANT USAGE ON SCHEMA nevora_tenancy TO '+q(forceOwner.name));
+      await query(admin,'ALTER FUNCTION nevora_tenancy.read_portal_installed_policy(text) OWNER TO '+q(forceOwner.name));
+      await query(admin,'GRANT SELECT ON public.workspaces,'+table+' TO '+q(forceOwner.name));
+      await query(admin,'GRANT UPDATE(id) ON public.workspaces TO '+q(forceOwner.name));
+      await query(admin,'GRANT UPDATE(workspace_id) ON '+table+' TO '+q(forceOwner.name));
+      await query(admin,'SET ROLE '+q(forceOwner.name));
+      try{
+        const native=(await query(admin,'SELECT pg_catalog.row_security_active($1::regclass) rls,(SELECT rolsuper FROM pg_catalog.pg_roles WHERE rolname=current_user) superuser,(SELECT rolbypassrls FROM pg_catalog.pg_roles WHERE rolname=current_user) bypass',[table])).rows;
+        expect(native).toEqual([{rls:true,superuser:false,bypass:false}]);
+        await rejectedSavepoint(readInstalledPolicy,[workspaceId],'55000');record({caseId:'IP05',native,claim:'ROOT_SET_ROLE_NEGATIVE_NO_PROTECTED_RUNTIME_ACCESS'});
+      }finally{await query(admin,'RESET ROLE');}
+    });
+  });
+  it('IP06 rejects repeatable-read and serializable before accepting any observation', async()=>{
+    for(const level of ['REPEATABLE READ','SERIALIZABLE']){
+      await query(installer,'BEGIN ISOLATION LEVEL '+level);
+      const code=await rejected(installer,readInstalledPolicy,[workspaceId]);try{await finishRejected(installer,code,'55000');}finally{await query(installer,'ROLLBACK');}
+      record({caseId:'IP06',level,code});
+    }
+  });
+  it('IP07 refuses NULL normalized missing workspace counter and installation without inserting a replacement', async()=>{
+    await inRollback(async()=>{
+      for(const id of [null,workspaceId.trim(),workspaceId+'_missing'])await rejectedSavepoint(readInstalledPolicy,[id],'55000');
+      // The original 0008 singleton workspace constraint stays operative. Only
+      // this root-owned rollback fixture suspends its own private row guards to
+      // represent absent initialization rows; no runtime writer or bypass grant.
+      await query(admin,'ALTER TABLE '+installationTable+' DISABLE TRIGGER USER');
+      await query(admin,'DELETE FROM '+installationTable+' WHERE workspace_id=$1',[workspaceId]);
+      await rejectedSavepoint(readInstalledPolicy,[workspaceId],'55000');
+      await query(admin,'ALTER TABLE '+table+' DISABLE TRIGGER USER');
+      await query(admin,'DELETE FROM '+table+' WHERE workspace_id=$1',[workspaceId]);
+      await rejectedSavepoint(readInstalledPolicy,[workspaceId],'55000');
+      expect((await query(admin,'SELECT * FROM '+installationTable)).rows).toEqual([]);
+      expect(await counterRows()).toEqual([]);
+    });record({caseId:'IP07',noReplacementOrNormalization:true,scope:'ROOT_ONLY_PRIVATE_ABSENCE_ROLLBACK_SEAM_ORIGINAL_SINGLETON_UNCHANGED'});
+  });
+  it('IP08 refuses an unchanged installation after its actual counter advances', async()=>{
+    await inRollback(async()=>{
+      await query(admin,'UPDATE '+table+' SET incarnation=4 WHERE workspace_id=$1',[workspaceId]);
+      await rejectedSavepoint(readInstalledPolicy,[workspaceId],'55000');
+    });record({caseId:'IP08',staleIncarnationDenied:true});
+  });
+  async function waitedPolicyRead(kind:'DEFINITION_EPOCH'|'DEFINITION_REVISION'|'HEAD_EPOCH'|'COUNTER'|'HEAD_ROLLBACK'){
+    const left=await identity(admin,lease.user,installerOid),right=await identity(installer,lease.user,installerOid);
+    let pending:Promise<{code:string;rows:unknown[]}>|undefined;
+    try{
+      await query(admin,'BEGIN ISOLATION LEVEL READ COMMITTED');await query(admin,RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
+      if(kind.startsWith('DEFINITION'))await query(admin,'SELECT policy_id FROM '+definitionTable+' WHERE policy_id=$1 AND revision=$2::int8 FOR UPDATE',[testPolicyId,testRevision]);
+      else if(kind==='COUNTER')await query(admin,'UPDATE '+table+' SET incarnation=incarnation+1 WHERE workspace_id=$1',[workspaceId]);
+      else await query(admin,'UPDATE '+installationTable+' SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1',[workspaceId]);
+      await query(installer,'BEGIN ISOLATION LEVEL READ COMMITTED');await query(installer,RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
+      pending=installer.query(readInstalledPolicy,[workspaceId]).then(r=>({code:'NO_ERROR',rows:r.rows}),e=>({code:sqlstate(e),rows:[]}));pendingFenceAttempts.add(pending);
+      await poll(async()=> (await query(admin,'SELECT pg_catalog.pg_blocking_pids($1) blockers',[right.pid])).rows[0].blockers.includes(left.pid),'installed_policy_'+kind);
+      const wait=(await query(admin,'SELECT pid,state,wait_event_type,wait_event,pg_catalog.pg_blocking_pids(pid) blockers FROM pg_catalog.pg_stat_activity WHERE pid=$1',[right.pid])).rows;
+      expect(wait).toMatchObject([{state:'active',wait_event_type:'Lock',blockers:[left.pid]}]);
+      if(kind==='DEFINITION_EPOCH')await query(admin,'UPDATE '+installationTable+' SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1',[workspaceId]);
+      if(kind==='DEFINITION_REVISION'){
+        const next=bundle('9007199254740994');await query(admin,insertDefinition,next);
+        await query(admin,'UPDATE '+installationTable+' SET policy_revision=$1::int8,installation_epoch=installation_epoch+1 WHERE workspace_id=$2',[next[1],workspaceId]);
+      }
+      await query(admin,kind==='HEAD_ROLLBACK'?'ROLLBACK':'COMMIT');const result=await pending;pendingFenceAttempts.delete(pending);
+      if(kind==='HEAD_ROLLBACK'){
+        expect(result.code).toBe('NO_ERROR');expect(result.rows).toHaveLength(1);await query(installer,'COMMIT');
+      }else{await finishRejected(installer,result.code,'55000');expect(result.rows).toEqual([]);}
+      record({caseId:'IP_WAIT_'+kind,wait,result,claim:'NATIVE_WAIT_THEN_FRESH_FULL_SELECTED_HEAD_COMPARISON_NOT_PROTECTED_RUNTIME_PROOF'});
+    }finally{
+      await query(admin,'ROLLBACK');if(pending&&pendingFenceAttempts.has(pending)){await pending;pendingFenceAttempts.delete(pending);}await query(installer,'ROLLBACK');
+    }
+    if(kind==='DEFINITION_REVISION'){
+      // Later fixture cases use the actual new revision, never reset/decrease it.
+      expect((await policyRows())[0].revision).toBe('9007199254740994');
+    }
+    if(kind==='COUNTER')await query(admin,'UPDATE '+installationTable+' SET workspace_incarnation=(SELECT incarnation FROM '+table+' WHERE workspace_id=$1),installation_epoch=installation_epoch+1 WHERE workspace_id=$1',[workspaceId]);
+    await preserveParent();
+  }
+  it('IP09 definition wait refuses the changed epoch instead of silently rebinding',async()=>{await waitedPolicyRead('DEFINITION_EPOCH');});
+  it('IP10 head wait refuses the changed epoch after commit',async()=>{await waitedPolicyRead('HEAD_EPOCH');});
+  it('IP11 counter wait observes the committed incarnation and refuses the stale head',async()=>{await waitedPolicyRead('COUNTER');});
+  it('IP12 head wait accepts the unchanged exact source after writer rollback',async()=>{await waitedPolicyRead('HEAD_ROLLBACK');});
+  it('IP13 definition wait refuses replacement revision and retained bytes rather than reselecting',async()=>{await waitedPolicyRead('DEFINITION_REVISION');});
+  it('IP14 duplicate installer waits at first exclusive fence and checks changed catalog fresh under RR default',async()=>{
+    const left=await identity(admin,lease.user,installerOid),right=await identity(installer,lease.user,installerOid);let pending:Promise<string>|undefined;
+    try{
+      await query(installer,"SET default_transaction_isolation='repeatable read'");await query(admin,'BEGIN ISOLATION LEVEL READ COMMITTED');await query(admin,RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
+      pending=rejected(installer,installedPolicySource);pendingFenceAttempts.add(pending);
+      await poll(async()=> (await query(admin,'SELECT pg_catalog.pg_blocking_pids($1) blockers',[right.pid])).rows[0].blockers.includes(left.pid),'installed_policy_first_fence');
+      const wait=(await query(admin,'SELECT pid,state,wait_event_type,wait_event,pg_catalog.pg_blocking_pids(pid) blockers FROM pg_catalog.pg_stat_activity WHERE pid=$1',[right.pid])).rows;
+      expect(wait).toMatchObject([{state:'active',wait_event_type:'Lock',wait_event:'advisory',blockers:[left.pid]}]);
+      await query(admin,'ALTER FUNCTION nevora_tenancy.guard_workspace_incarnation_counter() STRICT');await query(admin,'COMMIT');
+      const code=await pending;pendingFenceAttempts.delete(pending);await finishRejected(installer,code,'55000');record({caseId:'IP14',wait,code,sessionDefaultWasRR:true,installerSourceRC:true});
+    }finally{
+      await query(admin,'ROLLBACK');if(pending&&pendingFenceAttempts.has(pending)){await pending;pendingFenceAttempts.delete(pending);}await query(installer,'ROLLBACK');
+      await query(admin,'ALTER FUNCTION nevora_tenancy.guard_workspace_incarnation_counter() CALLED ON NULL INPUT');await query(installer,"SET default_transaction_isolation='read committed'");
+    }await preserveParent();
+  });
+
+  it('IP15 retains exact native base64 boundary formatting including full-triplet terminal newlines',async()=>{
+    const observations:unknown[]=[];
+    for(const length of [0,1,2,54,55,56,57,58,111,112,113,114,115]){
+      const bytes=Buffer.alloc(length,97),plain=bytes.toString('base64'),fullTripletLength=Math.floor(length/3)*4;
+      const expected=plain.slice(0,fullTripletLength).replace(/.{76}/g,'$&\n')+plain.slice(fullTripletLength);
+      const native=(await query(admin,"SELECT pg_catalog.encode($1::bytea,'base64') encoded,pg_catalog.octet_length($1::bytea)::text byte_length",[bytes])).rows[0];
+      expect(native).toEqual({encoded:expected,byte_length:String(length)});
+      expect(Buffer.from(native.encoded,'base64')).toEqual(bytes);
+      observations.push({inputByteLength:String(length),nativeEncoded:native.encoded,nativeEncodedLength:native.encoded.length,
+        terminalLF:native.encoded.endsWith('\n'),lineLengths:native.encoded.split('\n').map((line:string)=>line.length)});
+    }
+    record({caseId:'IP15',observations,claim:'OWNED_PG18_4_NATIVE_FORMAT_BOUNDARIES_NOT_PROTECTED_WIRE_AUTHENTICATION',
+      documentation:'https://www.postgresql.org/docs/18/functions-binarystring.html',
+      nativeSource:'https://raw.githubusercontent.com/postgres/postgres/REL_18_STABLE/src/backend/utils/adt/encode.c'});
   });
 
   afterAll(async () => {
