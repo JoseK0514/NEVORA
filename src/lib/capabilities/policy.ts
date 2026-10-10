@@ -41,6 +41,18 @@ const RULES = {
   'csv.preview': owner, 'csv.commit': owner, 'csv.receipt': owner, 'csv.replay': owner, 'csv.reverse': owner,
 } satisfies Record<Capability, Rule>;
 
+// Detached canonical role/grant ceiling metadata, never an installed policy,
+// current source, effective grant, operation permission or tenant proof.
+// Every real operation still passes the existing evaluateCapability contract.
+export const CANONICAL_PORTAL_CAPABILITY_RULE_OBSERVATIONS = Object.freeze(
+  CAPABILITIES.map(capability => {
+    const rule: Rule = RULES[capability];
+    return Object.freeze({ capability, roles: Object.freeze([...rule.roles]),
+      variant: rule.variant, requiresExplicitManagerGrant: rule.grant === true,
+      wholeSubject: rule.wholeSubject === true });
+  }),
+);
+
 const HISTORY = new Set<Capability>(['employee.roster.read', 'catalog.read', 'self.schedule.read', 'self.time.read',
   'timecard.read', 'report.read', 'report.export', 'payroll.read', 'payroll.export', 'audit.read', 'audit.self.read',
   'csv.receipt', 'csv.replay']);
