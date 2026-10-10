@@ -1,3 +1,4 @@
+import {compileLegacyEmployeeNumberEnrollment,compareLegacyEmployeeNumberEnrollmentTarget,isIssuedLegacyEmployeeNumberEnrollment} from './employee-number-enrollment';
 import {describe,it,expect,vi} from 'vitest';
 import {compileTypedTenantBackfill,isIssuedTypedTenantBackfillPlan,type TypedTenantBackfillPlan} from './typed-backfill';
 import {readFileSync} from 'node:fs';
@@ -169,4 +170,68 @@ describe('pure typed tenant backfill compilation',()=>{
  it('accepts explicit technical range endpoints without inventing workload policy',()=>{const f=withKeys();expect(compile(f,1).status).toBe('PLANNED');expect(compile(f,1000).status).toBe('PLANNED');expect(planned(f,1000).manifest.chunkSize).toBe(1000);});
  it('rejects hostile options proxy, accessor, prototype, extra/non-enumerable fields without reads',()=>{const f=withKeys(),get=vi.fn(()=>{throw Error('must not execute');}),options=[new Proxy({},{get,ownKeys:get,getPrototypeOf:get}),{get chunkSize(){return get();}},{chunkSize:1,extra:true},Object.create({chunkSize:1}),Object.defineProperty({chunkSize:1},'hidden',{value:1}),[],null];for(const v of options)expect(compileTypedTenantBackfill(f.snapshot,f.ownership,constraints(f),v).status).toBe('BLOCKED');expect(get).not.toHaveBeenCalled();});
  it('deeply freezes a deterministic plan without freezing/mutating input or accepting output copies',()=>{const f=withKeys(base()),before=canonicalOwnershipJson(f.snapshot),p=planned(f);expect(Object.isFrozen(p)).toBe(true);expect(Object.isFrozen(p.entries[0].wireValues)).toBe(true);expect(Object.isFrozen(p.manifest.tables)).toBe(true);expect(()=>{(p.entries[0].wireValues as (string|null)[])[0]='changed';}).toThrow();expect(canonicalOwnershipJson(f.snapshot)).toBe(before);expect(isIssuedTypedTenantBackfillPlan(p)).toBe(true);const get=vi.fn(()=>{throw Error('trap');});for(const v of [{...p},JSON.parse(canonicalOwnershipJson(p)),null,new Proxy(p,{get,ownKeys:get,getPrototypeOf:get})])expect(isIssuedTypedTenantBackfillPlan(v)).toBe(false);expect(get).not.toHaveBeenCalled();});
+});
+
+// Additive compiler regressions using the original typed-backfill fixtures.
+// Reuse its withKeys/planned/root/location/employee fixtures, which call actual
+// inspection/reference/ownership/namespace/key/constraint/compiler APIs. No
+// private issuer mock or helper test-module import. Fictional SQL observations
+// remain fictional and prove no DB/operator authority.
+// Add imports from './employee-number-enrollment': compileLegacyEmployeeNumberEnrollment,
+// compareLegacyEmployeeNumberEnrollmentTarget, isIssuedLegacyEmployeeNumberEnrollment.
+describe('complete legacy employee-number enrollment compiler',()=>{
+ it('retains complete original plan, inactive employments, raw identities and actual JS Unicode preimages',()=>{
+  const ids=['\u00a0straße-2\u00a0','e\u0301','é','00002'];
+  const p=planned(withKeys([root(),location(),...ids.map(id=>employee(id))]));
+  const outcome=compileLegacyEmployeeNumberEnrollment(p);expect(outcome.status).toBe('COMPILED');
+  if(outcome.status!=='COMPILED')throw Error('Genuine pure enrollment required');
+  const e=outcome.enrollment;expect(e.originalPlan).toBe(p);expect(e.originalPlanDigest).toBe(p.digest);
+  expect(e.originalPlan.manifest.tables).toHaveLength(68);expect(e.originalPlan.manifest.observations.constraints.keyComparators.catalogs).toHaveLength(104);
+  expect(e.rows).toHaveLength(ids.length);
+  for(const id of ids){const row=e.rows.find(r=>r.employeeId===id)!;
+   expect(row.employeeNumber).toBe(id);expect(row.normalizedNumber).toBe(id.trim().toUpperCase());
+   expect(row.originalKey).toEqual([id]);expect(row.source).toBe(p.entries.find(r=>r.table==='employees'&&r.key[0]===id)!.source);
+   expect(Object.isFrozen(row)).toBe(true);
+  }
+  expect(e.rows.find(r=>r.employeeId===ids[0])!.normalizedNumber).toBe('STRASSE-2');
+  expect(Object.isFrozen(e)).toBe(true);expect(Object.isFrozen(e.rows)).toBe(true);
+  expect(isIssuedLegacyEmployeeNumberEnrollment(e)).toBe(true);
+  expect(isIssuedLegacyEmployeeNumberEnrollment({...e})).toBe(false);
+ });
+ it('supports a complete genuinely issued empty capture without inventing empty expression namespace rows',()=>{
+  const p=planned(withKeys()),outcome=compileLegacyEmployeeNumberEnrollment(p);
+  expect(outcome.status).toBe('COMPILED');if(outcome.status!=='COMPILED')throw Error('Empty genuine source');
+  expect(outcome.enrollment.rows).toEqual([]);
+  expect(compareLegacyEmployeeNumberEnrollmentTarget(outcome.enrollment,[]).status).toBe('COMPLETE_IDENTICAL');
+ });
+ it('rejects raw format characters permitted by the older narrow selector without rewriting them',()=>{
+  const p=planned(withKeys([root(),location(),employee('ab\u200dcd')]));
+  expect(compileLegacyEmployeeNumberEnrollment(p)).toEqual({status:'BLOCKED',code:'LEGACY_NAMESPACE_PREFLIGHT_BLOCKED'});
+ });
+ it('rejects plan clones, serialization and revoked/hostile proxies before any traps',()=>{
+  const p=planned(withKeys([root(),location(),employee()])),trap=vi.fn(()=>{throw Error('trap');});
+  const revoked=Proxy.revocable(p,{});revoked.revoke();
+  for(const input of [{...p},JSON.parse(canonicalOwnershipJson(p)),null,new Proxy(p,{get:trap,ownKeys:trap,getPrototypeOf:trap}),revoked.proxy])
+   expect(compileLegacyEmployeeNumberEnrollment(input)).toEqual({status:'BLOCKED',code:'GENUINE_ORIGINAL_TYPED_PLAN_REQUIRED'});
+  expect(trap).not.toHaveBeenCalled();
+ });
+ it('distinguishes empty from exact full identical and rejects every partial/foreign/renormalized tuple',()=>{
+  const p=planned(withKeys([root(),location(),employee(' e '),employee('Ω')])),outcome=compileLegacyEmployeeNumberEnrollment(p);
+  if(outcome.status!=='COMPILED')throw Error('Genuine fixture required');const e=outcome.enrollment;
+  const tuples=e.rows.map(r=>[r.employeeId,r.workspaceId,r.employeeNumber,r.normalizedNumber]);
+  expect(compareLegacyEmployeeNumberEnrollmentTarget(e,[]).status).toBe('EMPTY');
+  expect(compareLegacyEmployeeNumberEnrollmentTarget(e,[...tuples].reverse()).status).toBe('COMPLETE_IDENTICAL');
+  for(const bad of [tuples.slice(1),[...tuples,tuples[0]],tuples.map((r,i)=>i===0?[r[0],'foreign',r[2],r[3]]:r),tuples.map((r,i)=>i===0?[r[0],r[1],r[2].trim(),r[3]]:r)])
+   expect(compareLegacyEmployeeNumberEnrollmentTarget(e,bad)).toEqual({status:'BLOCKED',code:'MAPPING_TARGET_PARTIAL_OR_CONFLICTING'});
+ });
+ it('rejects hostile target envelopes/UTF8 data without property invocation or structural reissuance',()=>{
+  const p=planned(withKeys([root(),location(),employee()])),outcome=compileLegacyEmployeeNumberEnrollment(p);
+  if(outcome.status!=='COMPILED')throw Error('Genuine fixture required');const e=outcome.enrollment,trap=vi.fn(()=>{throw Error('trap');});
+  const array=Object.defineProperty([],'0',{get:trap,enumerable:true}),sparse=new Array(1);
+  const revoked=Proxy.revocable([],{});revoked.revoke();
+  for(const value of [new Proxy([],{get:trap,ownKeys:trap,getPrototypeOf:trap}),array,sparse,revoked.proxy,[['E','A','E','\ud800']],Object.assign([],{extra:true})])
+   expect(compareLegacyEmployeeNumberEnrollmentTarget(e,value)).toEqual({status:'BLOCKED',code:'MAPPING_TARGET_SHAPE_DRIFT'});
+  expect(trap).not.toHaveBeenCalled();
+  expect(compareLegacyEmployeeNumberEnrollmentTarget({...e},[])).toEqual({status:'BLOCKED',code:'GENUINE_LEGACY_ENROLLMENT_REQUIRED'});
+ });
 });
