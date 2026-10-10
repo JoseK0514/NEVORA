@@ -1,0 +1,138 @@
+{
+  "format": "RETAINED_ROOT_NATIVE_BASE64_BOUNDARIES_V1",
+  "source": "/Users/josek0514/Documents/Codex/2026-10-08/files-pasted-by-the-user-nevora/work/f-dev/root/portal-installed-policy-observation/actual-installed-policy-green-004/incarnation-operations.jsonl",
+  "sourceSHA256": "983e79c7a083d0536fd12e14fc9e3868c25335ad0b47a820b06966e45e01f402",
+  "caseId": "IP15",
+  "sourceInput": "Root fictional ASCII a repeated inputByteLength, read-only copied observations; producer native executions zero.",
+  "observations": [
+    {
+      "inputByteLength": "0",
+      "nativeEncoded": "",
+      "nativeEncodedLength": 0,
+      "terminalLF": false,
+      "lineLengths": [
+        0
+      ]
+    },
+    {
+      "inputByteLength": "1",
+      "nativeEncoded": "YQ==",
+      "nativeEncodedLength": 4,
+      "terminalLF": false,
+      "lineLengths": [
+        4
+      ]
+    },
+    {
+      "inputByteLength": "2",
+      "nativeEncoded": "YWE=",
+      "nativeEncodedLength": 4,
+      "terminalLF": false,
+      "lineLengths": [
+        4
+      ]
+    },
+    {
+      "inputByteLength": "54",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh",
+      "nativeEncodedLength": 72,
+      "terminalLF": false,
+      "lineLengths": [
+        72
+      ]
+    },
+    {
+      "inputByteLength": "55",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYQ==",
+      "nativeEncodedLength": 76,
+      "terminalLF": false,
+      "lineLengths": [
+        76
+      ]
+    },
+    {
+      "inputByteLength": "56",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=",
+      "nativeEncodedLength": 76,
+      "terminalLF": false,
+      "lineLengths": [
+        76
+      ]
+    },
+    {
+      "inputByteLength": "57",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\n",
+      "nativeEncodedLength": 77,
+      "terminalLF": true,
+      "lineLengths": [
+        76,
+        0
+      ]
+    },
+    {
+      "inputByteLength": "58",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYQ==",
+      "nativeEncodedLength": 81,
+      "terminalLF": false,
+      "lineLengths": [
+        76,
+        4
+      ]
+    },
+    {
+      "inputByteLength": "111",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh",
+      "nativeEncodedLength": 149,
+      "terminalLF": false,
+      "lineLengths": [
+        76,
+        72
+      ]
+    },
+    {
+      "inputByteLength": "112",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYQ==",
+      "nativeEncodedLength": 153,
+      "terminalLF": false,
+      "lineLengths": [
+        76,
+        76
+      ]
+    },
+    {
+      "inputByteLength": "113",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=",
+      "nativeEncodedLength": 153,
+      "terminalLF": false,
+      "lineLengths": [
+        76,
+        76
+      ]
+    },
+    {
+      "inputByteLength": "114",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\n",
+      "nativeEncodedLength": 154,
+      "terminalLF": true,
+      "lineLengths": [
+        76,
+        76,
+        0
+      ]
+    },
+    {
+      "inputByteLength": "115",
+      "nativeEncoded": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYQ==",
+      "nativeEncodedLength": 158,
+      "terminalLF": false,
+      "lineLengths": [
+        76,
+        76,
+        4
+      ]
+    }
+  ],
+  "claim": "OWNED_PG18_4_NATIVE_FORMAT_BOUNDARIES_NOT_PROTECTED_WIRE_AUTHENTICATION",
+  "documentation": "https://www.postgresql.org/docs/18/functions-binarystring.html",
+  "nativeSource": "https://raw.githubusercontent.com/postgres/postgres/REL_18_STABLE/src/backend/utils/adt/encode.c"
+}
