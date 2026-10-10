@@ -5,6 +5,7 @@ import { getTenantRuntimeDb } from '../db';
 import { normalizeWorkspaceLocator } from './identity';
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 import { validateWorkspaceIncarnation } from './runtime/workspace-incarnation';
+import { decodeTypedMigrationWireValue } from './migrations/typed-wire';
 import type {
   CalendarReadProof, CalendarReadProofFacts, ClockerProof, ClockerProofFacts, PortalProof, PortalProofFacts,
   ProofResolution, ProvisionerEnvironment, ProvisionerOperator, ProvisionerPurpose, ProvisionerScope,
@@ -65,6 +66,14 @@ function field(row: Record<string, unknown>, key: string, check: (value: unknown
 const id = (row: Record<string, unknown>, key: string) => field(row, key, validId);
 const digest = (row: Record<string, unknown>, key: string) => field(row, key, validDigest);
 const revision = (row: Record<string, unknown>, key: string) => field(row, key, validRevision);
+// Only these Portal generations come from accepted positive native-int8 columns.
+// Decode their exact primitive wire text; other revision sources retain their
+// separate contracts. This shape check establishes no current database authority.
+const portalRevision = (row: Record<string, unknown>, key: string) => field(row, key, value => {
+  const decoded = decodeTypedMigrationWireValue('bigint', value);
+  return decoded.status === 'DECODED' && decoded.value.kind === 'SCALAR' &&
+    decoded.value.wire.text !== '0' && !decoded.value.wire.text.startsWith('-');
+});
 const incarnation = (row: Record<string, unknown>, key: string) => field(row, key, value => validateWorkspaceIncarnation(value).status === 'VALID');
 const timestamp = (row: Record<string, unknown>, key: string) => field(row, key, value => Number.isFinite(timestampMillis(value)));
 function list(row: Record<string, unknown>, key: string, check: (value: unknown) => boolean, allowEmpty = true): readonly string[] {
@@ -149,7 +158,7 @@ function parsePortal(row: Record<string, unknown>): PortalProofFacts {
   if (administrativeLocationIds.some(location => !allowedLocationIds.includes(location))) return malformed();
   if (['LEAD', 'EMPLOYEE'].includes(role) && administrativeLocationIds.length) return malformed();
   const administrativeScope = portalAdministrativeScope(row, role, administrativeLocationIds);
-  return Object.freeze({ ...shared, locator: field(row, 'locator', validLocator), employeeId: id(row, 'employeeId'), employeeVersion: timestamp(row, 'employeeVersion'), authorizationVersion: revision(row, 'authorizationVersion'), portalAccessVersion: revision(row, 'portalAccessVersion'), sessionTokenHash: digest(row, 'sessionTokenHash'), sessionExpiresAt: boundedExpiry(row, 'sessionExpiresAt', shared.expiresAt), role, capabilityPolicyRevision: revision(row, 'capabilityPolicyRevision'), capabilities: list(row, 'capabilities', value => typeof value === 'string' && /^[a-z][a-z0-9.-]{0,127}$/.test(value)), allowedLocationIds, administrativeLocationIds, administrativeScope });
+  return Object.freeze({ ...shared, locator: field(row, 'locator', validLocator), employeeId: id(row, 'employeeId'), employeeVersion: timestamp(row, 'employeeVersion'), authorizationVersion: portalRevision(row, 'authorizationVersion'), portalAccessVersion: portalRevision(row, 'portalAccessVersion'), sessionTokenHash: digest(row, 'sessionTokenHash'), sessionExpiresAt: boundedExpiry(row, 'sessionExpiresAt', shared.expiresAt), role, capabilityPolicyRevision: portalRevision(row, 'capabilityPolicyRevision'), capabilities: list(row, 'capabilities', value => typeof value === 'string' && /^[a-z][a-z0-9.-]{0,127}$/.test(value)), allowedLocationIds, administrativeLocationIds, administrativeScope });
 }
 function parseClocker(row: Record<string, unknown>): ClockerProofFacts {
   const shared = base(row, 'CLOCKER');

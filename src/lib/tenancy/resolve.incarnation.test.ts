@@ -153,8 +153,17 @@ describe.each(scopedPurposes)('%s workspace incarnation metadata', purpose => {
 });
 
 describe('incarnation validation leaves other revision namespaces intact', () => {
+  // Accepted Portal authority storage now pins these generations to positive
+  // native int8. Preserve all three former overflow cases with stricter denial;
+  // the five other tenant revisions and four operator revisions stay unchanged.
+  it.each(['authorizationVersion', 'portalAccessVersion', 'capabilityPolicyRevision'] as const)(
+    'rejects 78-digit Portal %s beyond its accepted native-int8 source', async field => {
+      const fixture = tenants[0]; respond({ ...fixture.facts(), [field]: LONG_REVISION });
+      const result = await fixture.resolve();
+      expectLookup(fixture.role, fixture.expression, fixture.values);
+      expect(result).toEqual({ status: 'UNAVAILABLE' }); expect(result).not.toHaveProperty('proof');
+    });
   const fields = [
-    [0, 'authorizationVersion'], [0, 'portalAccessVersion'], [0, 'capabilityPolicyRevision'],
     [1, 'deviceVersion'], [1, 'credentialVersion'], [1, 'pinVersion'],
     [2, 'authorizationVersion'], [3, 'workerGrantVersion'],
   ] as const;
