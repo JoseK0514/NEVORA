@@ -8,6 +8,8 @@ import { isAbsolute, join, resolve, sep } from 'node:path';
 
 const sourcePath = resolve('src/lib/tenancy/runtime/workspace-incarnation-storage.sql');
 const source = readFileSync(sourcePath, 'utf8');
+const policyStoragePath = resolve('src/lib/tenancy/runtime/capability-policy-definition-storage.sql');
+const policyStorage = readFileSync(policyStoragePath, 'utf8');
 const parentPath = resolve('db/migrations/0008_workspace_positions.sql');
 const parentSource = readFileSync(parentPath, 'utf8');
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
@@ -628,6 +630,202 @@ describe.skipIf(!leasePath && !runPath)('owned PG18 workspace incarnation storag
     expect(await identity(admin,lease.user,installerOid)).toEqual(left); expect(await identity(installer,lease.user,installerOid)).toEqual(right);
     expect(canonicalAcl(await catalog())).toEqual(canonicalAcl(before)); await preserveParent();
   });
+
+  // Same exact leased sparse parent/counter fixture; no second resource owner or
+  // issuer. Fictional source bundles below prove coherence only, not an approved
+  // installer, executing code, permissions, authenticated policy or tenant proof.
+  const definitionTable = 'nevora_tenancy.capability_policy_definition';
+  const installationTable = 'nevora_tenancy.workspace_capability_policy_installation';
+  const testPolicyId = ' fictional explicit policy '; // Preserve exact UTF8 bytes.
+  const testRevision = '9007199254740993';
+  let policyStorageInstalled = false;
+  function bundle(revision = testRevision): unknown[] {
+    const bytes = [Buffer.from('Fictional policy source ' + revision), Buffer.from('Fictional vocabulary'), Buffer.from('Fictional PRD; not an approved or executing source')];
+    const digests = bytes.map(hash);
+    return [testPolicyId, revision, { format: 'NEVORA_CAPABILITY_SOURCE_BUNDLE_V1', policyId: testPolicyId, revision,
+      canonicalPolicySource: { path: 'src/lib/capabilities/policy.ts', sha256: digests[0] },
+      vocabularySource: { path: 'src/lib/capabilities/types.ts', sha256: digests[1] },
+      approvedPRD: { path: 'F_IMPLEMENTATION_PRD.md', sha256: digests[2] } }, bytes[0],digests[0],bytes[1],digests[1],bytes[2],digests[2]];
+  }
+  const insertDefinition = 'INSERT INTO ' + definitionTable +
+    '(policy_id,revision,definition,canonical_policy_source,canonical_policy_source_sha256,vocabulary_source,vocabulary_source_sha256,approved_prd_source,approved_prd_source_sha256) VALUES($1,$2::int8,$3::jsonb,$4,$5,$6,$7,$8,$9)';
+  const insertInstallation = 'INSERT INTO ' + installationTable +
+    '(workspace_id,workspace_incarnation,installation_epoch,policy_id,policy_revision) VALUES($1,$2::int8,$3::int8,$4,$5::int8)';
+  const policyRows = async () => (await query(admin, 'SELECT workspace_id,workspace_incarnation::text incarnation,installation_epoch::text epoch,policy_id,policy_revision::text revision FROM '+installationTable)).rows;
+  async function policyReject(expected: string) {
+    const before = await catalog();
+    const code = await rejected(installer, policyStorage);
+    record({ operation: 'EXACT_WHOLE_POLICY_STORAGE_REJECTION', sourceSHA256: hash(policyStorage), code, expected });
+    try { await finishRejected(installer,code,expected); }
+    finally { await query(installer,'ROLLBACK'); }
+    expect(code).toBe(expected); expect(await catalog()).toEqual(before);
+  }
+  it('CP00 rejects missing parent key and altered guard while native PostgreSQL refuses a nondefault PK', async () => {
+    const prerequisite = policyStorage.match(/DO \$capability_policy_prerequisites\$[\s\S]*?\$capability_policy_prerequisites\$;/);
+    expect(prerequisite).not.toBeNull();
+    await inRollback(async () => {
+      await query(admin, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+      await query(admin,'ALTER FUNCTION nevora_tenancy.guard_workspace_incarnation_counter() STRICT');
+      await rejectedSavepoint(prerequisite![0],[],'55000');
+    });
+    await inRollback(async () => {
+      await query(admin, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+      await query(admin,'ALTER TABLE '+table+' DROP CONSTRAINT workspace_incarnation_counter_pkey');
+      await query(admin,'CREATE UNIQUE INDEX fictional_nondefault_policy_key ON '+table+'(workspace_id text_pattern_ops)');
+      await rejectedSavepoint('ALTER TABLE '+table+' ADD PRIMARY KEY USING INDEX fictional_nondefault_policy_key',[],'42809');
+      await rejectedSavepoint(prerequisite![0],[],'55000');
+    });
+    record({ caseId:'CP00', guards:'altered strict guard and absent operative parent key; native42809 rejects nondefault opclass PK', originalRestored:true });
+  });
+  it('CP01 installs the exact whole source as empty private controls without runtime adoption', async () => {
+    const code = await rejected(installer, policyStorage);
+    record({ caseId:'CP01', operation:'EXACT_WHOLE_POLICY_STORAGE_INSTALL', sourceSHA256:hash(policyStorage), code });
+    if (code !== 'NO_ERROR') await query(installer,'ROLLBACK');
+    expect(code).toBe('NO_ERROR'); policyStorageInstalled = true;
+    // Record in dependency order so existing exact-OID cleanup drops both tables
+    // (and their native triggers) before the referenced trigger function.
+    await remember('function','nevora_tenancy','guard_capability_policy_storage',installerOid,'()');
+    await remember('table','nevora_tenancy','capability_policy_definition',installerOid);
+    await remember('table','nevora_tenancy','workspace_capability_policy_installation',installerOid);
+    expect((await query(admin,'SELECT * FROM '+definitionTable)).rows).toEqual([]);
+    expect(await policyRows()).toEqual([]); await preserveParent();
+  });
+  it('CP02 observes native forced RLS zero policies no defaults operative keys and exact invoker guard', async () => {
+    expect(policyStorageInstalled).toBe(true); const native = await catalog();
+    const keyProfiles = (await query(admin, `SELECT c.relname,o.opcname,o.opcdefault,i.indoption[0] options,
+      i.indcollation[0]=a.attcollation collation_matches FROM pg_catalog.pg_index i
+      JOIN pg_catalog.pg_class c ON c.oid=i.indrelid JOIN pg_catalog.pg_attribute a ON a.attrelid=c.oid AND a.attnum=i.indkey[0]
+      JOIN pg_catalog.pg_opclass o ON o.oid=i.indclass[0]
+      WHERE i.indisprimary AND c.oid IN ('public.workspaces'::regclass,'nevora_tenancy.workspace_incarnation_counter'::regclass) ORDER BY c.relname`)).rows;
+    expect(keyProfiles).toEqual(['workspace_incarnation_counter','workspaces'].map(relname=>({relname,opcname:'text_ops',opcdefault:true,options:0,collation_matches:true})));
+    const owned = native.relations.filter(x=>[definitionTable,installationTable].includes(x.nspname+'.'+x.relname));
+    expect(owned).toHaveLength(2); const oids = owned.map(x=>x.oid);
+    for (const row of owned) expect(row).toMatchObject({owner:installerOid,relkind:'r',relpersistence:'p',relrowsecurity:true,relforcerowsecurity:true});
+    const columns = native.columns.filter(x=>oids.includes(x.relation_oid)); expect(columns).toHaveLength(14);
+    expect(columns.every(x=>x.attnotnull && !x.atthasdef && !x.attidentity && !x.attgenerated && x.acl===null)).toBe(true);
+    expect(native.policies.filter(x=>oids.includes(x.relation_oid))).toEqual([]);
+    const constraints = native.constraints.filter(x=>oids.includes(x.relation_oid));
+    expect(constraints.every(x=>x.convalidated && x.conenforced && !x.condeferrable && !x.condeferred)).toBe(true);
+    const triggers = native.triggers.filter(x=>oids.includes(x.relation_oid)&&!x.tgisinternal); expect(triggers).toHaveLength(4);
+    expect(triggers.every(x=>x.tgenabled==='O' && !x.tgdeferrable && !x.tginitdeferred)).toBe(true);
+    const guard = native.functions.find(x=>x.proname==='guard_capability_policy_storage');
+    expect(guard).toMatchObject({owner:installerOid,prosecdef:false,proconfig:['search_path=pg_catalog'],arg_oids:'',proretset:false,lanname:'plpgsql'});
+    expect(native.expandedAcls.filter(x=>oids.includes(x.oid)||x.oid===guard!.oid).every(x=>x.grantee===installerOid)).toBe(true);
+    record({caseId:'CP02',native,keyProfiles,sourceSHA256:hash(policyStorage),claim:'EMPTY_STORAGE_COHERENCE_ONLY_NOT_AUTHENTICATED_INSTALLATION'});
+  });
+  it('CP03 duplicate whole installer refuses adoption and preserves all native objects and data', async () => {
+    await policyReject('42P07'); expect(await policyRows()).toEqual([]); record({caseId:'CP03',empty:true});
+  });
+  it('CP04 rejects mismatched digest open manifests empty and invalid UTF8 source bytes', async () => {
+    await inRollback(async () => {
+      const badDigest = bundle();badDigest[4]='0'.repeat(64); await rejectedSavepoint(insertDefinition,badDigest,'23514');
+      const extra = bundle();extra[2]={...(extra[2] as object),authorityCurrent:true};await rejectedSavepoint(insertDefinition,extra,'23514');
+      const empty = bundle();empty[3]=Buffer.alloc(0);empty[4]=hash(Buffer.alloc(0));(empty[2] as {canonicalPolicySource:{sha256:string}}).canonicalPolicySource.sha256=empty[4] as string;await rejectedSavepoint(insertDefinition,empty,'23514');
+      const invalid = bundle();invalid[3]=Buffer.from([0xff]);invalid[4]=hash(Buffer.from([0xff]));(invalid[2] as {canonicalPolicySource:{sha256:string}}).canonicalPolicySource.sha256=invalid[4] as string;await rejectedSavepoint(insertDefinition,invalid,'22021');
+      expect((await query(admin,'SELECT * FROM '+definitionTable)).rows).toEqual([]);
+    }); record({caseId:'CP04',invalidPayloadsRejected:true});
+  });
+  it('CP05 stores explicit coherent source bytes and native int8 without treating them as authenticated policy', async () => {
+    const values=bundle();await query(admin,insertDefinition,values);
+    const rows=(await query(admin,'SELECT policy_id,revision::text revision,definition,canonical_policy_source,vocabulary_source,approved_prd_source FROM '+definitionTable)).rows;
+    expect(rows).toEqual([{policy_id:testPolicyId,revision:testRevision,definition:values[2],canonical_policy_source:values[3],vocabulary_source:values[5],approved_prd_source:values[7]}]);
+    record({caseId:'CP05',revision:testRevision,byteDigest:hash(values[3] as Buffer),claim:'FICTIONAL_COHERENT_BYTES_ACCEPTED_DO_NOT_ESTABLISH_REVIEWED_OR_EXECUTING_SOURCE'});
+  });
+  it('CP06 definitions deny noop mutation delete truncate and revision overflow without rewriting source', async () => {
+    await inRollback(async () => {
+      const before=(await query(admin,'SELECT * FROM '+definitionTable)).rows;
+      await rejectedSavepoint('UPDATE '+definitionTable+' SET revision=revision',[],'55000');
+      await rejectedSavepoint('DELETE FROM '+definitionTable,[],'55000');
+      await rejectedSavepoint('TRUNCATE '+definitionTable+' CASCADE',[],'55000');
+      const overflow=bundle('9223372036854775808');await rejectedSavepoint(insertDefinition,overflow,'22003');
+      expect((await query(admin,'SELECT * FROM '+definitionTable)).rows).toEqual(before);
+    });record({caseId:'CP06',immutable:true});
+  });
+  it('CP07 full duplicate installer waits on its first exclusive fence and sees changed guard fresh', async () => {
+    const left=await identity(admin,lease.user,installerOid),right=await identity(installer,lease.user,installerOid);
+    let pending: Promise<string>|undefined;
+    try {
+      await query(installer,"SET default_transaction_isolation='repeatable read'");
+      await query(admin,'BEGIN ISOLATION LEVEL READ COMMITTED');await query(admin,RUNTIME_CATALOG_SHARED_FENCE_SQL.text);
+      pending=rejected(installer,policyStorage);pendingFenceAttempts.add(pending);
+      await poll(async()=> (await query(admin,'SELECT pg_catalog.pg_blocking_pids($1) blockers',[right.pid])).rows[0].blockers.includes(left.pid),'policy_storage_first_fence');
+      const wait=(await query(admin,'SELECT pid,state,wait_event_type,wait_event,pg_catalog.pg_blocking_pids(pid) blockers FROM pg_catalog.pg_stat_activity WHERE pid=$1',[right.pid])).rows;
+      expect(wait).toMatchObject([{state:'active',wait_event_type:'Lock',wait_event:'advisory',blockers:[left.pid]}]);
+      await query(admin,'ALTER FUNCTION nevora_tenancy.guard_workspace_incarnation_counter() STRICT');await query(admin,'COMMIT');
+      const code=await pending;pendingFenceAttempts.delete(pending);await finishRejected(installer,code,'55000');expect(code).toBe('55000');
+      record({caseId:'CP07',wait,code,defaultWasRepeatableRead:true,sourceUsesReadCommitted:true});
+    } finally {
+      await query(admin,'ROLLBACK');
+      if(pending&&pendingFenceAttempts.has(pending)){await pending;pendingFenceAttempts.delete(pending);}
+      await query(installer,'ROLLBACK');
+      await query(admin,'ALTER FUNCTION nevora_tenancy.guard_workspace_incarnation_counter() CALLED ON NULL INPUT');
+      await query(installer,"SET default_transaction_isolation='read committed'");
+    } await preserveParent();
+  });
+  it('CP08 rejects missing or mismatched incarnation definition and implicit installation values', async () => {
+    await inRollback(async () => {
+      await rejectedSavepoint(insertInstallation,[workspaceId,'1','1',testPolicyId,testRevision],'55000');
+      await rejectedSavepoint(insertInstallation,[workspaceId,'2','1',testPolicyId,'9007199254740994'],'55000');
+      await rejectedSavepoint(insertInstallation,[workspaceId+'_missing','2','1',testPolicyId,testRevision],'55000');
+      await rejectedSavepoint('INSERT INTO '+installationTable+'(workspace_id,workspace_incarnation,policy_id,policy_revision) VALUES($1,2,$2,$3::int8)',[workspaceId,testPolicyId,testRevision],'23502');
+      expect(await policyRows()).toEqual([]);
+    });record({caseId:'CP08',noDefaults:true});
+  });
+  it('CP09 binds an explicit installation then rejects noops decreases rekeys and destructive changes', async () => {
+    await query(admin,insertInstallation,[workspaceId,'2','9007199254740993',testPolicyId,testRevision]);
+    const before=await policyRows();expect(before).toEqual([{workspace_id:workspaceId,incarnation:'2',epoch:'9007199254740993',policy_id:testPolicyId,revision:testRevision}]);
+    await inRollback(async () => {
+      for(const value of ['9007199254740993','1','0',null])await rejectedSavepoint('UPDATE '+installationTable+' SET installation_epoch=$1::int8',[value],'23514');
+      await rejectedSavepoint('UPDATE '+installationTable+' SET workspace_id=$1,installation_epoch=installation_epoch+1',[workspaceId.trim()],'55000');
+      await rejectedSavepoint('UPDATE '+installationTable+' SET policy_id=$1,installation_epoch=installation_epoch+1',[testPolicyId.trim()],'55000');
+      await rejectedSavepoint('UPDATE '+installationTable+' SET workspace_incarnation=1,installation_epoch=installation_epoch+1',[],'23514');
+      await rejectedSavepoint('UPDATE '+installationTable+' SET policy_revision=1,installation_epoch=installation_epoch+1',[],'23514');
+      await rejectedSavepoint('DELETE FROM '+installationTable,[],'55000');await rejectedSavepoint('TRUNCATE '+installationTable,[],'55000');
+      expect(await policyRows()).toEqual(before);
+    });record({caseId:'CP09',before});
+  });
+  it('CP10 native epoch exhaustion fails without wrap or reseed', async () => {
+    await inRollback(async()=>{
+      await query(admin,'UPDATE '+installationTable+' SET installation_epoch=9223372036854775807');
+      const before=await policyRows();expect(before[0].epoch).toBe('9223372036854775807');
+      await rejectedSavepoint('UPDATE '+installationTable+' SET installation_epoch=installation_epoch+1',[],'22003');
+      expect(await policyRows()).toEqual(before);record({caseId:'CP10',before,noWrap:true});
+    });
+  });
+  it('CP11 real application worker outsider lack private read and trigger-function privilege', async () => {
+    for(const [owned,client] of [[appRole,app],[workerRole,worker],[outsiderRole,outsider]] as const){
+      const before=await identity(client,owned.name,owned.oid);
+      for(const target of [definitionTable,installationTable])expect(await rejected(client,'SELECT * FROM '+target)).toBe('42501');
+      expect(await rejected(client,'SELECT nevora_tenancy.guard_capability_policy_storage()')).toBe('42501');
+      expect(await identity(client,owned.name,owned.oid)).toEqual(before);
+    }record({caseId:'CP11',nonownersNoGrants:true});
+  });
+  it('CP12 FORCE RLS hides both controls from their exact nonlogin nonbypass owner', async () => {
+    await inRollback(async()=>{
+      await query(admin,'GRANT USAGE ON SCHEMA nevora_tenancy TO '+q(forceOwner.name));
+      for(const target of [definitionTable,installationTable])await query(admin,'ALTER TABLE '+target+' OWNER TO '+q(forceOwner.name));
+      await query(admin,'SET ROLE '+q(forceOwner.name));
+      try{for(const target of [definitionTable,installationTable]){
+        expect((await query(admin,'SELECT pg_catalog.row_security_active($1::regclass) active',[target])).rows).toEqual([{active:true}]);
+        expect((await query(admin,'SELECT * FROM '+target)).rows).toEqual([]);
+      }}finally{await query(admin,'RESET ROLE');}
+    });record({caseId:'CP12',ownerRowsExcluded:true,claim:'FORCE_RLS_ROW_EXCLUSION_NOT_PRIVILEGE_ERROR'});
+  });
+  it('CP13 current counter lock serializes a waiting stale installation update and denies after commit', async () => {
+    const before=await policyRows(),left=await identity(admin,lease.user,installerOid),right=await identity(installer,lease.user,installerOid);let pending:Promise<string>|undefined;
+    try{
+      await query(admin,'BEGIN ISOLATION LEVEL READ COMMITTED');await query(installer,'BEGIN ISOLATION LEVEL READ COMMITTED');await query(admin,'UPDATE '+table+' SET incarnation=3 WHERE workspace_id=$1',[workspaceId]);
+      pending=rejected(installer,'UPDATE '+installationTable+' SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1',[workspaceId]);pendingFenceAttempts.add(pending);
+      await poll(async()=> (await query(admin,'SELECT pg_catalog.pg_blocking_pids($1) blockers',[right.pid])).rows[0].blockers.includes(left.pid),'policy_counter_wait');
+      const wait=(await query(admin,'SELECT pid,state,wait_event_type,wait_event,pg_catalog.pg_blocking_pids(pid) blockers FROM pg_catalog.pg_stat_activity WHERE pid=$1',[right.pid])).rows;
+      expect(wait).toMatchObject([{state:'active',wait_event_type:'Lock',blockers:[left.pid]}]);
+      await query(admin,'COMMIT');const code=await pending;pendingFenceAttempts.delete(pending);await finishRejected(installer,code,'55000');expect(code).toBe('55000');expect(await policyRows()).toEqual(before);
+      record({caseId:'CP13',wait,code,before,after:await policyRows(),counter:await counterRows(),claim:'FRESH_GUARD_EQUALITY_AFTER_WAIT_NOT_COMPLETE_WRITER_ORDER_OR_RECOVERY'});
+    }finally{
+      await query(admin,'ROLLBACK');if(pending&&pendingFenceAttempts.has(pending)){await pending;pendingFenceAttempts.delete(pending);}await query(installer,'ROLLBACK');
+    }
+  });
+
   afterAll(async () => {
     let cleaned = false;
     const closure: { client: string; status: string | null; closed: boolean }[] = [];
