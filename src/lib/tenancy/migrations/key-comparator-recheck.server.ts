@@ -1,3 +1,8 @@
+// CONTROLLED_INSTALLER_IMPORT_ADDITION_BEGIN
+import {isIssuedTypedTenantBackfillPlan,type TypedTenantBackfillPlan} from './typed-backfill';
+import {isControlledEnrollmentInstallerExecution,type EmployeeNumberInstallerExecutionWitness} from './employee-number-enrollment-binding.server';
+import {collectTypedKeyComparatorLockedInstallerRecheck,type TypedKeyComparatorLocalInstallerRecheck} from './key-comparator-capture.server';
+// CONTROLLED_INSTALLER_IMPORT_ADDITION_END
 import type {Client} from 'pg';
 import {types as utilTypes} from 'node:util';
 import type {TypedMigrationCaptureFacts,MigrationCaptureRequest} from './capture.server';
@@ -88,3 +93,33 @@ export async function assertTypedKeyComparatorsOnLockedSource(client:Client,fact
   fail('KEY_RECHECK_READ_FAILED');
  }
 }
+// CONTROLLED_INSTALLER_RECHECK_ADDITION_BEGIN
+/** Fixed installer successor, original plan/facts/operator remain unchanged.
+ * No protocol argument is accepted: this lane is APPLIED/null-actor enrollment.
+ * Returned immutable data are bounded recheck observations only; neither source
+ * approval, effects, metadata enrollment nor a stable RC batch snapshot follows.
+ * The root-owned admission module and controlled native QA remain prerequisites.
+ */
+export async function assertTypedKeyComparatorsOnLockedInstallerSource(client:Client,facts:TypedMigrationCaptureFacts,captureRequest:MigrationCaptureRequest,plan:TypedTenantBackfillPlan,witness:EmployeeNumberInstallerExecutionWitness):Promise<TypedKeyComparatorLocalInstallerRecheck>{
+ if(!isIssuedTypedTenantBackfillPlan(plan))fail('KEY_RECHECK_SOURCE_DRIFT');
+ if(!isControlledEnrollmentInstallerExecution(witness,client))fail('KEY_RECHECK_SOURCE_DRIFT');
+ try{
+  const f=detach(facts),r=detach(captureRequest);
+  if(!object(f)||!object(r)||!object(f.snapshot)||!object(f.fence)||!object(r.identity))fail('KEY_RECHECK_SOURCE_DRIFT');
+  const original=freeze(f as unknown as TypedMigrationCaptureFacts),request=freeze(r as unknown as MigrationCaptureRequest),observations=plan.manifest.observations.constraints.keyComparators;
+  if(!isIssuedTypedKeyComparatorObservations(observations))fail('KEY_RECHECK_UNISSUED_OBSERVATIONS');
+  const inspected=inspectTypedMigrationSnapshot(original,{sourceDigest:original.sourceDigest,currentSchemaDigest:original.currentSchemaDigest,snapshotId:original.snapshot.id,fenceGeneration:original.fence.generation,factsDigest:original.factsDigest});
+  if(inspected.status!=='INSPECTED')fail('KEY_RECHECK_SOURCE_DRIFT');
+  const originalBinding={registryDigest:original.registryDigest,sourceDigest:original.sourceDigest,currentSchemaDigest:original.currentSchemaDigest,snapshotId:original.snapshot.id,fenceGeneration:original.fence.generation,factsDigest:original.factsDigest};
+  if(!same(originalBinding,plan.manifest.boundary)||!same(originalBinding,observations.binding)||!same(original.catalog,observations.catalog)||plan.manifest.keyCaptureChecksum!==observations.captureChecksum)fail('KEY_RECHECK_SOURCE_DRIFT');
+  const current=await collectTypedKeyComparatorLockedInstallerRecheck(client,original,request,plan,witness),{captureChecksum,...body}=current;
+  if(current.format!=='TYPED_KEY_COMPARATOR_LOCAL_INSTALLER_RC_RECHECK_V1'||!same(current.originalBinding,originalBinding)||current.planDigest!==plan.digest||current.captureRequestDigest!==digest(request)||current.keyCaptureChecksum!==observations.captureChecksum||!same(current.protocol,{actor:null,manifest:plan.digest})||captureChecksum!==digest(body))fail('KEY_RECHECK_SOURCE_DRIFT');
+  if(!same(current.catalogs,observations.catalogs)||!same(current.rows,observations.rows)||!same(current.databaseCollation,observations.databaseCollation)||!same(current.catalog,observations.catalog)||current.serverVersion!==observations.serverVersion||current.serverEncoding!==observations.serverEncoding)fail('KEY_RECHECK_COMPARATOR_DRIFT');
+  return current;
+ }catch(error){
+  if(isKeyComparatorRecheckFailure(error))throw error;
+  if(isKeyComparatorCaptureFailure(error))fail(captureCode(error.code));
+  fail('KEY_RECHECK_READ_FAILED');
+ }
+}
+// CONTROLLED_INSTALLER_RECHECK_ADDITION_END

@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import { appendFileSync, existsSync, readFileSync, realpathSync, renameSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { createHash, randomBytes } from 'node:crypto';
@@ -12,7 +13,10 @@ import { getTypedReferenceColumnContract, isIssuedTypedMigrationCellReferences, 
 import { isIssuedTypedOwnershipSourceObservations, validateTypedSnapshotOwnership, type TypedOwnershipAssignments, type TypedOwnershipSourceObservations } from './typed-ownership';
 import { isIssuedTypedSourceConstraintObservations, validateTypedSourceConstraints, type TypedSourceConstraintWithKeysObservations } from './typed-constraints';
 import { compileTypedTenantBackfill, isIssuedTypedTenantBackfillPlan, type TypedTenantBackfillPlan } from './typed-backfill';
-import { executeGuardedTypedLocalBackfill, executeGuardedTypedLocalBackfillWithJournal, reconcileGuardedTypedLocalBackfillJournal } from './typed-guarded-backfill.server';
+import { compileLegacyEmployeeNumberEnrollment } from './employee-number-enrollment';
+import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from '../runtime/catalog-fence.server';
+import { EMPLOYEE_NUMBER_INSTALLATION_CAPSULE_SQL, CONTROLLED_ENROLLMENT_INSTALLER_MEMBERSHIPS_SQL } from './employee-number-enrollment-binding.server';
+import { executeGuardedTypedLocalEmployeeNumberEnrollment, executeGuardedTypedLocalBackfill, executeGuardedTypedLocalBackfillWithJournal, reconcileGuardedTypedLocalBackfillJournal } from './typed-guarded-backfill.server';
 import { describeTypedBackfillJournal, validateTypedBackfillJournalObservation, type TypedBackfillJournalDescriptor } from './typed-journal-contract';
 import type { OwnedLocalBackfillIdentity } from './guarded-backfill.server';
 
@@ -394,7 +398,221 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
         mutatedSHA256: hashText(replacement), restoredOriginalBytes: readFileSync(leasePath!, 'utf8') === before, parentAndUnrelatedRecordsPreserved: true }); }
   }
 
-  async function fixture(id: string, withJournal = false): Promise<Fixture> {
+  // ENROLLMENT_FIXTURE_ADMISSION_BEGIN
+  // UNEXECUTED root-owned fixture amendment only. No installer authority is
+  // manufactured by these records; Root's actual controller admission is separate.
+  type EnrollmentInstallerRole = { name: string; catalog: string[]; memberships: string[][]; originalLogin: {
+    sessionUser: string; currentUser: string; systemUser: string; backendRoleOid: string } };
+  type EnrollmentInstallation = { format: 'OWNED_EMPLOYEE_LOGIN_IDENTITY_INSTALLATION_V1'; sourceSHA256: string;
+    database: string; databaseOid: string; marker: string; invocation: string; installer: EnrollmentInstallerRole;
+    schemaOid: string; tableOid: string; guardOid: string; guards: { oid: string; name: string }[];
+    beforeNamedGrants: Awaited<ReturnType<typeof enrollmentNativeCatalog>>;
+    capturedNativeCatalog: Awaited<ReturnType<typeof enrollmentNativeCatalog>> };
+  type EnrollmentLedgerEntry={format:'OWNED_LOCAL_EMPLOYEE_NUMBER_INSTALLATION_V1';invocation:string;database:string;databaseOid:string;marker:string;sourceSHA256:string;sourceText:string;captureCatalogDigest:string;installer:{catalog:string[];memberships:string[][]};capsuleText:string};
+  type EnrollmentLease = Lease & { installerRole?: EnrollmentInstallerRole; employeeNumberEnrollmentInstallations?: EnrollmentLedgerEntry[] };
+  const enrollmentInstallations = new Map<string, EnrollmentInstallation>();
+  const enrollmentExpectedFinal = new Map<string, (string | null)[][]>();
+  const enrollmentMappingSourceSHA256 = '4bfb8494d4ee7407a34da9a38bebcc268a3f2ca7ba5a9309d3d441873af6a330';
+  const enrollmentTable = 'nevora_tenancy.employee_login_identity';
+  const enrollmentGuard = 'nevora_tenancy.guard_employee_login_identity()';
+  async function enrollmentInstaller(c: Client): Promise<EnrollmentInstallerRole> {
+    const parent = JSON.parse(verifiedParentLeaseBytes()) as EnrollmentLease;
+    const retained = parent.installerRole;
+    expect(retained).toBeDefined(); if (!retained) throw Error('Controller must first record actual original installer role');
+    expect(retained.name).toBe(lease.user); expect(parent.employeeNumberEnrollmentInstallations).toEqual(expect.any(Array));
+    expect(retained.name).not.toBe(lease.operatorRoles[0].name); expect(retained.name).not.toBe(lease.operatorRoles[1].name);
+    const rows = (await c.query<string[]>({ text: 'SELECT oid::text,rolname,rolsuper::text,rolinherit::text,rolcreaterole::text,rolcreatedb::text,rolcanlogin::text,rolreplication::text,rolbypassrls::text FROM pg_catalog.pg_roles WHERE rolname=session_user', rowMode: 'array', types: { getTypeParser: () => (wire: string) => wire } })).rows;
+    expect(rows).toEqual([retained.catalog]); expect(rows[0][1]).toBe(lease.user);
+    const memberships=(await c.query<string[]>({text:CONTROLLED_ENROLLMENT_INSTALLER_MEMBERSHIPS_SQL.text,rowMode:'array',types:{getTypeParser:()=>(wire:string)=>wire}})).rows;
+    expect(memberships).toEqual(retained.memberships);
+    // This is the EXISTING initdb original installer. No new bypass role/policy.
+    expect(rows[0][2]).toBe('true'); expect(rows[0][6]).toBe('true'); expect(rows[0][8]).toBe('true');
+    const login = (await c.query('SELECT session_user::text "sessionUser",current_user::text "currentUser",SYSTEM_USER::text "systemUser",(SELECT usesysid::text FROM pg_catalog.pg_stat_activity WHERE pid=pg_catalog.pg_backend_pid()) "backendRoleOid",current_setting(\'role\') role,current_setting(\'session_replication_role\') replication')).rows[0];
+    expect(login).toEqual({ ...retained.originalLogin, role: 'none', replication: 'origin' });
+    expect(retained.originalLogin).toEqual({ sessionUser: lease.user, currentUser: lease.user,
+      systemUser: 'scram-sha-256:' + lease.user, backendRoleOid: retained.catalog[0] });
+    return retained;
+  }
+  async function enrollmentNativeCatalog(c: Client) {
+    const condition = "(n.nspname='nevora_tenancy' OR (n.nspname='public' AND c.relname IN ('workspaces','employees','locations')))";
+    const schemas = (await c.query(`SELECT oid::text oid,nspname,nspowner::text owner,nspacl::text acl FROM pg_catalog.pg_namespace
+      WHERE nspname='nevora_tenancy' ORDER BY oid`)).rows;
+    const relations = (await c.query(`SELECT c.oid::text oid,n.nspname,c.relname,c.relowner::text owner,c.relkind,c.relpersistence,
+      c.relrowsecurity,c.relforcerowsecurity,c.relacl::text acl FROM pg_catalog.pg_class c
+      JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE ${condition} ORDER BY c.oid`)).rows;
+    const columns = (await c.query(`SELECT c.oid::text relation_oid,a.attnum,a.attname,a.atttypid::text type_oid,a.atttypmod,
+      a.attnotnull,a.attcollation::text collation_oid,a.attndims,a.attnotnull IS TRUE native_notnull,a.atthasdef,a.attidentity,a.attgenerated,a.attacl::text acl,pg_catalog.pg_get_expr(d.adbin,d.adrelid) default_source
+      FROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+      LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum
+      WHERE ${condition} AND a.attnum>0 AND NOT a.attisdropped ORDER BY c.oid,a.attnum`)).rows;
+    const constraints = (await c.query(`SELECT c.oid::text relation_oid,co.oid::text oid,co.conname,co.contype::text contype,co.conkey,
+      co.confrelid::text parent_oid,co.confkey,co.confupdtype::text update_action,co.confdeltype::text delete_action,
+      co.convalidated,co.conenforced,co.condeferrable,co.condeferred,co.conindid::text index_oid,pg_catalog.pg_get_constraintdef(co.oid,false) definition
+      FROM pg_catalog.pg_constraint co JOIN pg_catalog.pg_class c ON c.oid=co.conrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+      WHERE ${condition} ORDER BY c.oid,co.oid`)).rows;
+    const indexes = (await c.query(`SELECT c.oid::text relation_oid,i.indexrelid::text oid,i.indisunique,i.indisprimary,i.indisvalid,i.indisready,i.indislive,i.indimmediate,i.indclass::text opclasses,i.indcollation::text collations,i.indkey::text keys,i.indoption::text options,pg_catalog.pg_get_expr(i.indpred,i.indrelid) predicate,pg_catalog.pg_get_expr(i.indexprs,i.indrelid) expressions,(SELECT ci.reloptions FROM pg_catalog.pg_class ci WHERE ci.oid=i.indexrelid) reloptions,
+      pg_catalog.pg_get_indexdef(i.indexrelid) definition FROM pg_catalog.pg_index i JOIN pg_catalog.pg_class c ON c.oid=i.indrelid
+      JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE ${condition} ORDER BY c.oid,i.indexrelid`)).rows;
+    const functions = (await c.query(`SELECT p.oid::text oid,p.proname,p.proowner::text owner,p.prosecdef,p.proconfig,p.prorettype::text return_oid,
+      p.proargtypes::text arg_oids,p.proretset,l.lanname,p.proacl::text acl,pg_catalog.pg_get_functiondef(p.oid) definition
+      FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace JOIN pg_catalog.pg_language l ON l.oid=p.prolang
+      WHERE n.nspname='nevora_tenancy' ORDER BY p.oid`)).rows;
+    const triggers = (await c.query(`SELECT c.oid::text relation_oid,t.oid::text oid,t.tgname,t.tgfoid::text function_oid,
+      t.tgtype,t.tgenabled,t.tgisinternal,t.tgconstraint::text constraint_oid,t.tgdeferrable,t.tginitdeferred,
+      pg_catalog.pg_get_triggerdef(t.oid,false) definition FROM pg_catalog.pg_trigger t JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid
+      JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE ${condition} ORDER BY c.oid,t.oid`)).rows;
+    const policies = (await c.query(`SELECT c.oid::text relation_oid,p.oid::text oid,p.polname,p.polcmd::text command,p.polroles,p.polpermissive,
+      pg_catalog.pg_get_expr(p.polqual,p.polrelid) using_source,pg_catalog.pg_get_expr(p.polwithcheck,p.polrelid) check_source
+      FROM pg_catalog.pg_policy p JOIN pg_catalog.pg_class c ON c.oid=p.polrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+      WHERE ${condition} ORDER BY p.oid`)).rows;
+    const columnAcls = (await c.query(`SELECT c.oid::text relation_oid,a.attnum,x.grantor::text grantor,x.grantee::text grantee,x.privilege_type,x.is_grantable
+      FROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+      CROSS JOIN LATERAL pg_catalog.aclexplode(a.attacl) x WHERE ${condition} AND a.attnum>0 AND NOT a.attisdropped
+      ORDER BY c.oid,a.attnum,x.grantee,x.privilege_type`)).rows;
+    const expandedAcls = (await c.query(`SELECT 'SCHEMA' kind,n.oid::text oid,a.grantor::text grantor,a.grantee::text grantee,a.privilege_type,a.is_grantable
+      FROM pg_catalog.pg_namespace n CROSS JOIN LATERAL pg_catalog.aclexplode(COALESCE(n.nspacl,pg_catalog.acldefault('n',n.nspowner))) a WHERE n.nspname='nevora_tenancy'
+      UNION ALL SELECT 'TABLE',c.oid::text,a.grantor::text,a.grantee::text,a.privilege_type,a.is_grantable
+      FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace CROSS JOIN LATERAL pg_catalog.aclexplode(COALESCE(c.relacl,pg_catalog.acldefault('r',c.relowner))) a WHERE ${condition}
+      UNION ALL SELECT 'FUNCTION',p.oid::text,a.grantor::text,a.grantee::text,a.privilege_type,a.is_grantable
+      FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace CROSS JOIN LATERAL pg_catalog.aclexplode(COALESCE(p.proacl,pg_catalog.acldefault('f',p.proowner))) a
+      WHERE n.nspname='nevora_tenancy' ORDER BY kind,oid,grantee,privilege_type`)).rows;
+    return { schemas, relations, columns, constraints, indexes, functions, triggers, policies, columnAcls, expandedAcls };
+  }
+
+  async function enrollmentRows(c: Client): Promise<(string | null)[][]> {
+    return (await c.query<(string | null)[]>({ text: 'SELECT employee_id,workspace_id,employee_number,normalized_number FROM nevora_tenancy.employee_login_identity ORDER BY pg_catalog.convert_to(employee_id,\'UTF8\')', rowMode: 'array', types: { getTypeParser: () => (wire: string) => wire } })).rows;
+  }
+  function enrollmentOrdered(rows: readonly (readonly (string | null)[])[]): (string | null)[][] {
+    return rows.map(row => [...row]).sort((a,b) => canonicalOwnershipJson(a)<canonicalOwnershipJson(b)?-1:canonicalOwnershipJson(a)>canonicalOwnershipJson(b)?1:0);
+  }
+  function expectedEnrollment(f: Fixture): (string | null)[][] {
+    const compiled = compileLegacyEmployeeNumberEnrollment(f.chain.plan); expect(compiled.status).toBe('COMPILED');
+    if (compiled.status !== 'COMPILED') throw Error('Real original compiler required');
+    expect(compiled.enrollment.originalPlan).toBe(f.chain.plan);
+    const rows=enrollmentOrdered(compiled.enrollment.rows.map(row => [row.employeeId,row.workspaceId,row.employeeNumber,row.normalizedNumber]));
+    // Independent fictional source literals, not an expectation obtained only
+    // from the executor/normalizer under test. Padded raw identity is preserved.
+    expect(rows).toEqual(enrollmentOrdered([
+      [' typed-employee-a ','workspace-fuel',' typed-employee-a ','TYPED-EMPLOYEE-A'],
+      ['typed-employee-b','workspace-fuel','typed-employee-b','TYPED-EMPLOYEE-B'],
+    ]));
+    return rows;
+  }
+  async function installEnrollmentBeforeNamedGrants(id: string, name: string, oid: string, marker: string, observer: Client): Promise<EnrollmentInstallation> {
+    await verifyActualParentAndChild(name, oid, marker); expect(observer.getTransactionStatus()).toBe('I');
+    const installer = await enrollmentInstaller(observer), source = readFileSync(resolve('src/lib/tenancy/runtime/employee-login-identity-storage.sql'),'utf8');
+    expect(hashText(source)).toBe(enrollmentMappingSourceSHA256);
+    // New opt-in fixture only: exact native catalog rendering context before all retained observations.
+    await observer.query("SET search_path=pg_catalog");
+    const before = await observeMigrationCatalog(observer), nativeBefore = await enrollmentNativeCatalog(observer), original = await originalRows(observer);
+    expect((await observer.query('SELECT to_regclass($1)::text table_oid,to_regprocedure($2)::text guard_oid',[enrollmentTable,enrollmentGuard])).rows).toEqual([{table_oid:null,guard_oid:null}]);
+    // One unchanged whole artifact call. It installs no rows, grants or policies.
+    await observer.query(source); expect(observer.getTransactionStatus()).toBe('I');
+    const after = await observeMigrationCatalog(observer), current = await enrollmentNativeCatalog(observer);
+    expect(await originalRows(observer)).toEqual(original); expect(await enrollmentRows(observer)).toEqual([]);
+    const schema = current.schemas.find(r=>r.nspname==='nevora_tenancy'); expect(schema?.owner).toBe(installer.catalog[0]);
+    const table = current.relations.find(r=>r.nspname==='nevora_tenancy'&&r.relname==='employee_login_identity');
+    expect(table).toMatchObject({owner:installer.catalog[0],relkind:'r',relpersistence:'p',relrowsecurity:true,relforcerowsecurity:true});
+    if(!schema||!table)throw Error('Observed exact owned mapping table required');
+    const columns = current.columns.filter(r=>r.relation_oid===table.oid);
+    expect(columns.map(r=>r.attname)).toEqual(['employee_id','workspace_id','employee_number','normalized_number']);
+    expect(columns.every(r=>r.type_oid==='25'&&r.attnotnull===true&&r.atthasdef===false&&r.default_source===null&&r.attidentity===''&&r.attgenerated==='')).toBe(true);
+    const collation = (await observer.query('SELECT oid::text oid FROM pg_catalog.pg_collation WHERE collname=\'C\' AND collnamespace=\'pg_catalog\'::regnamespace')).rows;
+    expect(collation).toHaveLength(1); expect(columns[3].collation_oid).toBe(collation[0].oid);
+    expect(current.policies.filter(r=>r.relation_oid===table.oid)).toEqual([]);
+    const functionRows = current.functions.filter(r=>r.proname==='guard_employee_login_identity');
+    expect(functionRows).toHaveLength(1); const guard=functionRows[0];
+    expect(guard).toMatchObject({owner:installer.catalog[0],prosecdef:false,proconfig:['search_path=pg_catalog'],return_oid:'2279',arg_oids:'',proretset:false,lanname:'plpgsql'});
+    const prosrc = (await observer.query("SELECT encode(sha256(convert_to(prosrc,'UTF8')),'hex') source_sha,prosupport::oid::text support_oid FROM pg_catalog.pg_proc WHERE oid=$1::oid",[guard.oid])).rows[0];
+    const expectedBody=source.split('AS $employee_login_identity_guard$')[1].split('$employee_login_identity_guard$;')[0];
+    expect(prosrc).toEqual({source_sha:hashText(expectedBody),support_oid:'0'});
+    const guards = current.triggers.filter(r=>r.relation_oid===table.oid&&!r.tgisinternal);
+    expect(guards.map(r=>r.tgname).sort()).toEqual(['employee_login_identity_row_guard','employee_login_identity_truncate_guard']);
+    expect(guards.every(r=>r.function_oid===guard.oid&&r.tgenabled==='O'&&r.constraint_oid==='0'&&!r.tgdeferrable&&!r.tginitdeferred)).toBe(true);
+    const foreign = current.constraints.filter(r=>r.relation_oid===table.oid&&r.contype==='f'); expect(foreign).toHaveLength(2);
+    expect(foreign.every(r=>r.convalidated&&r.conenforced&&!r.condeferrable&&!r.condeferred&&r.update_action==='r'&&r.delete_action==='r')).toBe(true);
+    const keys=current.constraints.filter(r=>r.relation_oid===table.oid&&['p','u'].includes(r.contype));expect(keys).toHaveLength(2);
+    expect(keys.find(r=>r.contype==='p')?.conkey).toEqual([1]);expect(keys.find(r=>r.contype==='u')?.conkey).toEqual([2,4]);
+    expect(current.indexes.filter(r=>r.relation_oid===table.oid).every(r=>r.indisunique&&r.indisvalid&&r.indisready&&r.indislive&&r.indimmediate&&r.expressions===null&&r.predicate===null&&r.reloptions===null)).toBe(true);
+    const nonowner=current.expandedAcls.filter(r=>r.grantee!==installer.catalog[0]&&(['SCHEMA','TABLE','FUNCTION'].includes(r.kind)));
+    expect(nonowner).toEqual([]);expect(current.columnAcls.filter(r=>r.relation_oid===table.oid)).toEqual([]);
+    const installation: EnrollmentInstallation={format:'OWNED_EMPLOYEE_LOGIN_IDENTITY_INSTALLATION_V1',sourceSHA256:enrollmentMappingSourceSHA256,
+      database:name,databaseOid:oid,marker,invocation:lease.invocation!,installer,schemaOid:schema.oid,tableOid:table.oid,guardOid:guard.oid,
+      guards:guards.map(r=>({oid:r.oid,name:r.tgname})),beforeNamedGrants:current,capturedNativeCatalog:current};
+    receipt('case-'+id+'-mapping-installation-before-grants.json',{installation,source,sourceSHA256:hashText(source),before,after,nativeBefore,nativeAfter:current,originalBefore:original,originalAfter:await originalRows(observer),zeroPolicies:true,rows:await enrollmentRows(observer),
+      expectedNormalizerBuild:{node:process.versions.node,v8:process.versions.v8,unicode:process.versions.unicode,icu:process.versions.icu},mechanicsNotRuntimeAuthority:true});
+    return installation;
+  }
+  async function sealEnrollmentBeforeCapture(id: string, installation: EnrollmentInstallation, observer: Client) {
+    await verifyActualParentAndChild(installation.database,installation.databaseOid,installation.marker);await enrollmentInstaller(observer);
+    const current=await enrollmentNativeCatalog(observer);
+    // Preserve every OID/native property and compare complete expanded ACLs.
+    // Raw schema/table ACL spelling changes only through the already accepted
+    // named operator grants. No mapping grant, column grant or policy is added.
+    const beforeNative=installation.beforeNamedGrants;
+    const immutable=(value:typeof current)=>({...value,schemas:value.schemas.map(r=>({...r,acl:null})),
+      relations:value.relations.map(r=>({...r,acl:null})),expandedAcls:[]});
+    expect(immutable(current)).toEqual(immutable(beforeNative));
+    const owner=installation.installer.catalog[0],added:typeof current.expandedAcls=[];
+    for(const role of lease.operatorRoles){
+      added.push({kind:'SCHEMA',oid:installation.schemaOid,grantor:owner,grantee:role.catalog[0],privilege_type:'USAGE',is_grantable:false});
+      for(const relation of current.relations){
+        const privileges=relation.nspname==='public'&&['workspaces','employees','locations'].includes(relation.relname)?['SELECT','UPDATE']:
+          relation.nspname==='nevora_tenancy'&&relation.relname==='expansion_protocol'?['SELECT','UPDATE']:
+          relation.nspname==='nevora_tenancy'&&['source_migration_contract','owned_table_contract'].includes(relation.relname)?['SELECT']:[];
+        for(const privilege_type of privileges)added.push({kind:'TABLE',oid:relation.oid,grantor:owner,grantee:role.catalog[0],privilege_type,is_grantable:false});
+      }
+    }
+    const orderedAcls=(rows:typeof current.expandedAcls)=>[...rows].sort((a,b)=>canonicalOwnershipJson(a)<canonicalOwnershipJson(b)?-1:canonicalOwnershipJson(a)>canonicalOwnershipJson(b)?1:0);
+    expect(orderedAcls(current.expandedAcls)).toEqual(orderedAcls([...beforeNative.expandedAcls,...added]));
+    expect(current.columnAcls).toEqual(beforeNative.columnAcls);
+    const mappingObjects=new Set([installation.tableOid,installation.guardOid]);
+    expect(current.expandedAcls.filter(r=>mappingObjects.has(r.oid)&&r.grantee!==owner)).toEqual([]);
+    const sealed={...installation,capturedNativeCatalog:current};
+    const sourceText=readFileSync(resolve('src/lib/tenancy/runtime/employee-login-identity-storage.sql'),'utf8');expect(hashText(sourceText)).toBe(enrollmentMappingSourceSHA256);
+    const profile=await observer.query(EMPLOYEE_NUMBER_INSTALLATION_CAPSULE_SQL.text);
+    expect(profile.fields.map(r=>[r.name,r.dataTypeID])).toEqual([['capsule',25]]);expect(profile.rows).toHaveLength(1);
+    expect(Object.keys(profile.rows[0])).toEqual(['capsule']);expect(typeof profile.rows[0].capsule).toBe('string');
+    const captured=await observeMigrationCatalog(observer);
+    const entry:EnrollmentLedgerEntry={format:'OWNED_LOCAL_EMPLOYEE_NUMBER_INSTALLATION_V1',invocation:lease.invocation!,database:installation.database,
+      databaseOid:installation.databaseOid,marker:installation.marker,sourceSHA256:enrollmentMappingSourceSHA256,sourceText,captureCatalogDigest:captured.digest,
+      installer:{catalog:installation.installer.catalog,memberships:installation.installer.memberships},capsuleText:profile.rows[0].capsule};
+    const before=verifiedParentLeaseBytes(),parent=JSON.parse(before) as EnrollmentLease;
+    expect(parent.installerRole).toEqual(installation.installer);expect(parent.employeeNumberEnrollmentInstallations).toEqual(expect.any(Array));
+    expect(parent.employeeNumberEnrollmentInstallations!.some(r=>r.database===installation.database)).toBe(false);
+    parent.employeeNumberEnrollmentInstallations!.push(entry);privateAtomicLeaseReplacement(before,JSON.stringify(parent,null,2)+'\n');
+    enrollmentInstallations.set(installation.database,sealed);enrollmentExpectedFinal.set(installation.database,[]);
+    receipt('case-'+id+'-mapping-installation-before-capture.json',{installation:sealed,ledger:entry,nativeCapsuleText:profile.rows[0].capsule,fullNativeCatalog:current,fullGenericCatalog:captured,rows:await enrollmentRows(observer),recordedAfterExplicitOldGrantsBeforeWorkerConnectionsAndCapture:true,exactOldNamedGrantDelta:added,rawACLSpellingBefore:beforeNative,rawACLSpellingAfter:current});
+  }
+  async function expectEnrollmentPreserved(f: Fixture) {
+    const installation=enrollmentInstallations.get(f.name);if(!installation)return;
+    await verifyActualParentAndChild(f.name,f.oid,f.marker);await enrollmentInstaller(f.observer);
+    expect(await enrollmentNativeCatalog(f.observer)).toEqual(installation.capturedNativeCatalog);
+    const ledger=(JSON.parse(verifiedParentLeaseBytes()) as EnrollmentLease).employeeNumberEnrollmentInstallations!.filter(r=>r.database===f.name);expect(ledger).toHaveLength(1);
+    expect((await f.observer.query(EMPLOYEE_NUMBER_INSTALLATION_CAPSULE_SQL.text)).rows).toEqual([{capsule:ledger[0].capsuleText}]);
+    expect((await observeMigrationCatalog(f.observer)).digest).toBe(ledger[0].captureCatalogDigest);
+    expect(enrollmentOrdered(await enrollmentRows(f.observer))).toEqual(enrollmentExpectedFinal.get(f.name));
+    receipt('case-'+f.id+'-mapping-final-custody.json',{installation,nativeCatalog:await enrollmentNativeCatalog(f.observer),mapping:await enrollmentRows(f.observer),originalRows:await originalRows(f.observer),metadata:await metadata(f),targets:await targets(f),planDigest:f.chain.plan.digest,
+      targetRowsCauseOrPriorAtomicityClaim:false});
+  }
+  function enrollmentInstallerRequest(f: Fixture): Request {
+    if(!enrollmentInstallations.has(f.name))throw Error('Original native installation custody required');
+    // The original captured operator request/authority stays BYTE-EXACT. The
+    // distinct actual installer Client is independently admitted by Security's
+    // producer. No caller-selected role substitution or approved flag.
+    return f.request;
+  }
+  function enrollmentCase(id: string,name: string,check: (f:Fixture)=>Promise<void>) {
+    it(name,async()=>{
+      let f:Fixture|undefined,status:'PASS'|'FAIL'='FAIL';
+      try{f=await fixture(id,false,true);await check(f);expect(await originalRows(f.observer)).toEqual(f.original);expect((await metadata(f)).actor).toBeNull();status='PASS';}
+      finally{cases.push({id,name,status});receipt('case-'+id+'-enrollment-outcome.json',{id,name,status,fixturePrepared:!!f,originalPlanDigest:f?.chain.plan.digest,
+        originalNativeAdmissionNeeded:true,scope:'OWNED_LOCAL_COMPLETE_MAPPING_NOT_AUTH_CUTOVER_OR_F10'});}
+    },45000);
+  }
+  // ENROLLMENT_FIXTURE_ADMISSION_END
+
+  async function fixture(id: string, withJournal = false, withEnrollment = false): Promise<Fixture> {
     if (!admin) throw Error('Root owned base connection required');
     const name = lease.database + '_case_' + randomBytes(5).toString('hex'), marker = lease.marker + ':case:' + name;
     expect(Buffer.byteLength(name)).toBeLessThanOrEqual(63); expect((await admin.query('SELECT 1 FROM pg_database WHERE datname=$1', [name])).rowCount).toBe(0);
@@ -422,6 +640,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     const expansionSha256 = createHash('sha256').update(expansion).digest('hex');
     expect(expansionSha256).toBe('fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb');
     await observer.query(expansion);
+    const enrollmentInstallation = withEnrollment ? await installEnrollmentBeforeNamedGrants(id, name, oid, marker, observer) : undefined;
     const roles = lease.operatorRoles.map(r => quoted(r.name)).join(',');
     await observer.query('GRANT USAGE ON SCHEMA public,nevora_tenancy TO ' + roles);
     await observer.query('GRANT SELECT,UPDATE ON ' + registry.tables.map(t => 'public.' + quoted(t.table)).join(',') + ' TO ' + roles);
@@ -429,6 +648,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     await observer.query('GRANT SELECT,UPDATE ON nevora_tenancy.expansion_protocol TO ' + roles);
     await observer.query('GRANT SELECT ON nevora_tenancy.source_migration_contract,nevora_tenancy.owned_table_contract TO ' + roles);
     await observer.query('SET search_path=pg_catalog');
+    if (enrollmentInstallation) await sealEnrollmentBeforeCapture(id, enrollmentInstallation, observer);
     const journalInstallation = withJournal ? await installJournalForRootFixture(id, name, oid, marker, observer) : undefined;
     const first = await connect(name, lease.operatorRoles[0].name), second = await connect(name, lease.operatorRoles[1].name);
     expect((await first.query("SELECT has_schema_privilege(session_user,'public','CREATE') public_create,has_schema_privilege(session_user,'nevora_tenancy','CREATE') tenancy_create,has_table_privilege(session_user,'public.employees','TRIGGER') trigger_privilege,(SELECT relowner<>(SELECT oid FROM pg_roles WHERE rolname=session_user) FROM pg_class WHERE oid='public.employees'::regclass) nonowner")).rows[0])
@@ -561,6 +781,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
       try {
         if (f.observer.getTransactionStatus() !== 'I') await f.observer.query('ROLLBACK');
         expect(await originalRows(f.observer)).toEqual(f.original); expect((await metadata(f)).actor).toBeNull();
+        await expectEnrollmentPreserved(f);
         await f.observer.query('SET search_path=pg_catalog'); const finalCatalog = await observeMigrationCatalog(f.observer);
         if (!f.finalCatalogChanges) expect(finalCatalog.digest).toBe(f.request.captureRequest.catalogBaseline.catalogDigest);
         else if (f.finalCatalogChanges === '0027_VALIDATION') expect((await f.observer.query("SELECT count(*)::int n,bool_and(convalidated AND conenforced) valid FROM pg_constraint WHERE conname LIKE 'f10_scoped_%' AND contype='f'")).rows[0]).toEqual({ n: 89, valid: true });
@@ -594,6 +815,197 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
       open: ['ACTUAL_A_B_POST_CUTOVER', 'DURABLE_JOURNAL_AND_CHUNK_RESUME', 'PG17_AND_ACTUAL_NEON', 'RUNTIME_RLS_AND_FULL_F10'] });
     if (failures.length) throw Error('Owned source/cleanup unconfirmed; preserve exact custody and failure receipts');
   }, 120000);
+
+
+  // ENROLLMENT_GREEN_BEGIN
+  // UNEXECUTED Root adoption only, AFTER the distinct implementation/admission
+  // is real and pinned. Import its actual symbol, never a fake issuer/helper.
+  async function enrollmentApplied(f:Fixture){
+    expect(await executeGuardedTypedLocalBackfill(f.first,f.request)).toMatchObject({status:'APPLIED',planDigest:f.chain.plan.digest});
+    await expectApplied(f);expect(await enrollmentRows(f.observer)).toEqual([]);
+  }
+  async function enrollmentTuple(f:Fixture){return {source:await originalRows(f.observer),targets:await targets(f),metadata:await metadata(f),
+    mapping:enrollmentOrdered(await enrollmentRows(f.observer)),catalog:await observeMigrationCatalog(f.observer),native:await enrollmentNativeCatalog(f.observer)};}
+  function enrollmentRecord(c:Client,after?:(sql:string,args:unknown[],native:Client['query'],result:unknown)=>Promise<void>){
+    const native=Client.prototype.query.bind(c),commands:string[]=[];
+    const spy=vi.spyOn(c,'query').mockImplementation((async(...args:unknown[])=>{
+      const sql=queryText(args[0]);commands.push(sql);const result=await Reflect.apply(native,c,args);if(after)await after(sql,args,native,result);return result;
+    }) as Client['query']);return {commands,restore:()=>spy.mockRestore()};
+  }
+  async function enrollmentFresh<T>(f:Fixture,label:string,check:(c:Client)=>Promise<T>):Promise<T>{
+    const fresh=await connect(f.name,lease.user);let closed=false;
+    try{return await check(fresh);}finally{
+      try{if(fresh.getTransactionStatus()!=='I')await fresh.query('ROLLBACK');}finally{await fresh.end();closed=true;}
+      receipt('case-'+f.id+'-'+label+'-fresh.json',{database:f.name,oid:f.oid,role:lease.user,closed,retainedInOriginalClientMap:clients.has(fresh)});
+    }
+  }
+  function enrollmentNoSourceEffects(commands:string[]){
+    expect(commands.filter(sql=>/^(?:\/\*.*?\*\/\s*)?(?:INSERT|UPDATE|DELETE|TRUNCATE)\b/.test(sql))
+      .every(sql=>sql.includes('F10_EMPLOYEE_NUMBER_INSERT')&&sql.includes('INSERT INTO nevora_tenancy.employee_login_identity'))).toBe(true);
+    expect(commands.some(sql=>/F10_TYPED_JOURNAL_(REGISTER|START)/.test(sql))).toBe(false);
+    expect(commands.some(sql=>/^(?:\/\*.*?\*\/\s*)?(?:UPDATE|DELETE|TRUNCATE)\b/.test(sql))).toBe(false);
+  }
+  function enrollmentLockOrder(commands:string[]){
+    const begin=commands.indexOf('BEGIN ISOLATION LEVEL READ COMMITTED');expect(begin).toBeGreaterThan(-1);
+    expect(commands[begin+1]).toBe(INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+    const source=commands.findIndex((sql,i)=>i>begin&&sql.startsWith('LOCK TABLE public.'));
+    const mapping=commands.indexOf('LOCK TABLE nevora_tenancy.employee_login_identity IN SHARE ROW EXCLUSIVE MODE');
+    expect(source).toBeGreaterThan(begin+1);expect(mapping).toBeGreaterThan(source);
+    expect(commands[source].match(/public\."/g)).toHaveLength(70);
+    expect(commands.slice(begin+2,mapping).every(sql=>sql.startsWith('SET LOCAL ')||sql.startsWith('LOCK TABLE public.'))).toBe(true);
+    const firstRead=commands.findIndex((sql,i)=>i>begin+1&&/^(?:\/\*.*?\*\/\s*)?(?:SELECT|WITH)\b/.test(sql));
+    expect(firstRead).toBeGreaterThan(mapping);enrollmentNoSourceEffects(commands);
+  }
+  function enrollmentSuccess(f:Fixture,outcome:unknown,status:'ENROLLED'|'OBSERVED_IDENTICAL'){
+    expect(outcome).toMatchObject({status,planDigest:f.chain.plan.digest,verification:'CONTROLLED_LOCAL_MAPPING_OBSERVATIONS_NOT_AUTH_OR_CUTOVER'});
+  }
+  async function enrollmentComplete(f:Fixture){const expected=expectedEnrollment(f);enrollmentExpectedFinal.set(f.name,expected);
+    expect(enrollmentOrdered(await enrollmentRows(f.observer))).toEqual(expected);await expectApplied(f);}
+
+  enrollmentCase('EN01','EN01 enrolls every inactive original employee and a fresh identical observation writes nothing',async f=>{
+    await enrollmentApplied(f);const before=await enrollmentTuple(f),record=enrollmentRecord(f.observer);let outcome:unknown;
+    try{outcome=await executeGuardedTypedLocalEmployeeNumberEnrollment(f.observer,enrollmentInstallerRequest(f));}finally{record.restore();}
+    enrollmentSuccess(f,outcome,'ENROLLED');enrollmentLockOrder(record.commands);await enrollmentComplete(f);
+    expect(record.commands.filter(sql=>sql.includes('F10_EMPLOYEE_NUMBER_INSERT'))).toHaveLength(2);
+    const applied=await enrollmentTuple(f);expect(applied.source).toEqual(before.source);expect(applied.targets).toEqual(before.targets);
+    expect(applied.metadata).toEqual(before.metadata);expect(applied.catalog).toEqual(before.catalog);expect(applied.native).toEqual(before.native);
+    await enrollmentFresh(f,'identical',async fresh=>{const retry=enrollmentRecord(fresh);let observed:unknown;
+      try{observed=await executeGuardedTypedLocalEmployeeNumberEnrollment(fresh,enrollmentInstallerRequest(f));}finally{retry.restore();}
+      enrollmentSuccess(f,observed,'OBSERVED_IDENTICAL');enrollmentLockOrder(retry.commands);expect(anyDml(retry.commands)).toBe(false);
+      expect(await enrollmentTuple(f)).toEqual(applied);receipt('case-EN01-results.json',{outcome,observed,commands:record.commands,retryCommands:retry.commands,before,after:applied});});
+  });
+
+  enrollmentCase('EN02','EN02 preserves old installer denial and ordinary nonowner mapping denial and requires original APPLIED metadata',async f=>{
+    const unapplied=await enrollmentTuple(f),unarmed=enrollmentRecord(f.observer);let absent:unknown;
+    try{absent=await executeGuardedTypedLocalEmployeeNumberEnrollment(f.observer,enrollmentInstallerRequest(f));}finally{unarmed.restore();}
+    expect(absent).toEqual({status:'BLOCKED',code:'ENROLLMENT_APPLIED_REQUIRED'});expect(anyDml(unarmed.commands)).toBe(false);
+    expect(await enrollmentTuple(f)).toEqual(unapplied);await expectUnapplied(f);
+    await enrollmentApplied(f);const before=await enrollmentTuple(f),old=enrollmentRecord(f.observer);let oldOutcome:unknown;
+    try{oldOutcome=await executeGuardedTypedLocalBackfill(f.observer,enrollmentInstallerRequest(f));}finally{old.restore();}
+    expect(oldOutcome).toEqual({status:'BLOCKED',code:'CLIENT_CONNECTION_NOT_OWNED'});expect(old.commands).toEqual([]);
+    const ordinary=enrollmentRecord(f.second);let denied:unknown;
+    try{denied=await executeGuardedTypedLocalEmployeeNumberEnrollment(f.second,secondRequest(f));}finally{ordinary.restore();}
+    expect(denied).toEqual({status:'BLOCKED',code:'ENROLLMENT_INSTALLER_IDENTITY_DRIFT'});expect(anyDml(ordinary.commands)).toBe(false);
+    await expect(f.second.query('SELECT employee_id FROM nevora_tenancy.employee_login_identity')).rejects.toMatchObject({code:'42501'});
+    expect((await f.second.query('SELECT session_user::text name')).rows).toEqual([{name:lease.operatorRoles[1].name}]);
+    expect(await enrollmentTuple(f)).toEqual(before);receipt('case-EN02-results.json',{absent,oldOutcome,denied,oldCommands:old.commands,ordinaryCommands:ordinary.commands,before,after:await enrollmentTuple(f)});
+  });
+
+  enrollmentCase('EN03','EN03 rolls back a real second-insert failure and preserves uncertainty when the actual ROLLBACK acknowledgement is lost',async f=>{
+    await enrollmentApplied(f);const before=await enrollmentTuple(f),attempts:unknown[]=[];
+    for(const loseAck of [false,true]){
+      const native=Client.prototype.query.bind(f.observer),commands:string[]=[];let inserts=0,rolledBack=false;
+      const spy=vi.spyOn(f.observer,'query').mockImplementation((async(...args:unknown[])=>{
+        const sql=queryText(args[0]);commands.push(sql);
+        if(sql.includes('F10_EMPLOYEE_NUMBER_INSERT')&&++inserts===2)return native('SELECT 1/0');
+        const result=await Reflect.apply(native,f.observer,args);if(sql==='ROLLBACK'){rolledBack=true;if(loseAck)throw Error('PRIVATE_ENROLLMENT_ROLLBACK_ACK');}return result;
+      }) as Client['query']);let outcome:unknown;
+      try{outcome=await executeGuardedTypedLocalEmployeeNumberEnrollment(f.observer,enrollmentInstallerRequest(f));}finally{spy.mockRestore();}
+      expect(inserts).toBe(2);expect(rolledBack).toBe(true);expect(commands.filter(sql=>sql==='ROLLBACK')).toHaveLength(1);expect(commands).not.toContain('COMMIT');
+      expect(outcome).toEqual(loseAck?{status:'UNCERTAIN',code:'ROLLBACK_UNCONFIRMED',planDigest:f.chain.plan.digest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'}:
+        {status:'BLOCKED',code:'TYPED_GUARDED_BACKFILL_FAILED'});
+      expect(await enrollmentTuple(f)).toEqual(before);attempts.push({loseAck,outcome,commands,nativeRollbackExecuted:rolledBack});
+    }
+    await enrollmentFresh(f,'after-rollback-ack',async fresh=>{const record=enrollmentRecord(fresh);let outcome:unknown;
+      try{outcome=await executeGuardedTypedLocalEmployeeNumberEnrollment(fresh,enrollmentInstallerRequest(f));}finally{record.restore();}
+      enrollmentSuccess(f,outcome,'ENROLLED');enrollmentLockOrder(record.commands);await enrollmentComplete(f);
+      receipt('case-EN03-results.json',{before,attempts,freshOutcome:outcome,freshCommands:record.commands,after:await enrollmentTuple(f),uncertaintyWasNotACommitDisposition:true});});
+  });
+
+  enrollmentCase('EN04','EN04 suppresses a real COMMIT acknowledgement and fresh original input observes complete mappings without replay',async f=>{
+    await enrollmentApplied(f);const before=await enrollmentTuple(f);let committed=false;
+    const record=enrollmentRecord(f.observer,async sql=>{if(sql==='COMMIT'){committed=true;throw Error('PRIVATE_ENROLLMENT_COMMIT_ACK');}});let outcome:unknown;
+    try{outcome=await executeGuardedTypedLocalEmployeeNumberEnrollment(f.observer,enrollmentInstallerRequest(f));}finally{record.restore();}
+    expect(committed).toBe(true);expect(outcome).toEqual({status:'UNCERTAIN',code:'COMMIT_OUTCOME_UNKNOWN',planDigest:f.chain.plan.digest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'});
+    expect(record.commands.at(-1)).toBe('COMMIT');expect(record.commands.filter(sql=>sql==='COMMIT')).toHaveLength(1);expect(record.commands).not.toContain('ROLLBACK');
+    await enrollmentComplete(f);const applied=await enrollmentTuple(f);
+    await enrollmentFresh(f,'after-commit-ack',async fresh=>{const retry=enrollmentRecord(fresh);let observed:unknown;
+      try{observed=await executeGuardedTypedLocalEmployeeNumberEnrollment(fresh,enrollmentInstallerRequest(f));}finally{retry.restore();}
+      enrollmentSuccess(f,observed,'OBSERVED_IDENTICAL');expect(anyDml(retry.commands)).toBe(false);enrollmentLockOrder(retry.commands);
+      expect(await enrollmentTuple(f)).toEqual(applied);receipt('case-EN04-results.json',{outcome,observed,commands:record.commands,retryCommands:retry.commands,before,applied,
+        identicalObservationIsNotCausalProducerOrDurableProvenance:true});});
+  });
+
+  enrollmentCase('EN05','EN05 refuses partial and fully conflicting native mappings without repair or guard bypass',async f=>{
+    const foreign=await fixture('EN05_foreign',false,true),variants=[{fixture:f,rows:expectedEnrollment(f).slice(0,1),kind:'partial'},
+      {fixture:foreign,rows:expectedEnrollment(foreign).map((row,i)=>i===0?[row[0],row[1],row[2],'fictional-conflicting-selector']:row),kind:'complete-conflicting'}];
+    for(const variant of variants){const current=variant.fixture;await enrollmentApplied(current);
+      for(const row of variant.rows)await current.observer.query('INSERT INTO nevora_tenancy.employee_login_identity(employee_id,workspace_id,employee_number,normalized_number) VALUES($1,$2,$3,$4)',row);
+      enrollmentExpectedFinal.set(current.name,enrollmentOrdered(variant.rows));const before=await enrollmentTuple(current),record=enrollmentRecord(current.observer);let outcome:unknown;
+      try{outcome=await executeGuardedTypedLocalEmployeeNumberEnrollment(current.observer,enrollmentInstallerRequest(current));}finally{record.restore();}
+      expect(outcome).toEqual({status:'BLOCKED',code:'EMPLOYEE_NUMBER_TARGET_DRIFT'});expect(anyDml(record.commands)).toBe(false);
+      expect(await enrollmentTuple(current)).toEqual(before);await expectApplied(current);
+      receipt('case-EN05-'+variant.kind+'.json',{outcome,commands:record.commands,originalPlan:current.chain.plan,expectedCompleteMapping:expectedEnrollment(current),
+        deliberatelyRetainedNativeTuple:variant.rows,before,after:await enrollmentTuple(current),guardsDisabled:false,cleanupByExactChildDatabaseNotDeleteRepair:true});}
+  });
+
+  enrollmentCase('EN06','EN06 rejects current source catalog and retained own-child installation drift without mapping effects',async f=>{
+    await enrollmentApplied(f);const before=await enrollmentTuple(f),outcomes:unknown[]=[];
+    async function denied(code:string,label:string){const record=enrollmentRecord(f.observer);let outcome:unknown;
+      try{outcome=await executeGuardedTypedLocalEmployeeNumberEnrollment(f.observer,enrollmentInstallerRequest(f));}finally{record.restore();}
+      expect(outcome).toEqual({status:'BLOCKED',code});expect(anyDml(record.commands)).toBe(false);outcomes.push({label,outcome,commands:record.commands,mapping:await enrollmentRows(f.observer)});}
+    await f.observer.query('BEGIN');await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='EXPANDED_LEGACY',capture_manifest_sha256=NULL WHERE migration_id=26 AND phase='FENCED' AND backfill_actor IS NULL AND capture_manifest_sha256=$1",[f.chain.plan.digest]);
+    await f.observer.query('SET LOCAL search_path=pg_catalog,public');await f.observer.query("UPDATE public.employees SET first_name='Changed fictional enrollment source' WHERE id=$1",[ownedEmployee]);
+    await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='FENCED',capture_manifest_sha256=$1 WHERE migration_id=26 AND phase='EXPANDED_LEGACY' AND backfill_actor IS NULL AND capture_manifest_sha256 IS NULL",[f.chain.plan.digest]);await f.observer.query('COMMIT');
+    try{await denied('CURRENT_SOURCE_DRIFT','full original source');}finally{
+      await f.observer.query('BEGIN');await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='EXPANDED_LEGACY',capture_manifest_sha256=NULL WHERE migration_id=26 AND phase='FENCED' AND backfill_actor IS NULL AND capture_manifest_sha256=$1",[f.chain.plan.digest]);
+      await f.observer.query('SET LOCAL search_path=pg_catalog,public');await f.observer.query("UPDATE public.employees SET first_name='Fictional' WHERE id=$1",[ownedEmployee]);
+      await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='FENCED',capture_manifest_sha256=$1 WHERE migration_id=26 AND phase='EXPANDED_LEGACY' AND backfill_actor IS NULL AND capture_manifest_sha256 IS NULL",[f.chain.plan.digest]);await f.observer.query('COMMIT');}
+    await f.observer.query('CREATE INDEX enrollment_fixture_catalog_delta ON nevora_tenancy.employee_login_identity(employee_number)');
+    const index=(await f.observer.query("SELECT oid::text oid,relowner::text owner FROM pg_class WHERE oid='nevora_tenancy.enrollment_fixture_catalog_delta'::regclass")).rows[0];
+    try{await denied('ENROLLMENT_INSTALLATION_DRIFT','mapping native physical catalog before original catalog read');}finally{
+      expect((await f.observer.query('SELECT to_regclass($1)::oid::text oid',['nevora_tenancy.enrollment_fixture_catalog_delta'])).rows).toEqual([{oid:index.oid}]);
+      expect(index.owner).toBe(enrollmentInstallations.get(f.name)!.installer.catalog[0]);await f.observer.query('DROP INDEX nevora_tenancy.enrollment_fixture_catalog_delta');}
+    // Alter only this child's closed native custody source fingerprint and
+    // restore exact original bytes, preserving every unrelated child record.
+    const originalLease=verifiedParentLeaseBytes(),parent=JSON.parse(originalLease) as EnrollmentLease;
+    const records=parent.employeeNumberEnrollmentInstallations!;expect(records.filter(r=>r.database===f.name)).toHaveLength(1);
+    const changed=JSON.stringify({...parent,employeeNumberEnrollmentInstallations:records.map(r=>r.database===f.name?{...r,sourceSHA256:'0'.repeat(64)}:r)},null,2)+'\n';
+    try{privateAtomicLeaseReplacement(originalLease,changed);await denied('ENROLLMENT_INSTALLATION_DRIFT','exact own child installation custody');}
+    finally{privateAtomicLeaseReplacement(changed,originalLease);}
+    expect(await enrollmentTuple(f)).toEqual(before);receipt('case-EN06-results.json',{outcomes,before,after:await enrollmentTuple(f),sourceAndCatalogRestored:true,noPoliciesOrPrivilegeExpansion:true});
+  });
+
+  enrollmentCase('EN07','EN07 serializes two original installer requests and immutable native mapping guards refuse every rewrite delete and truncate',async f=>{
+    await enrollmentApplied(f);const before=await enrollmentTuple(f),monitor=admin;if(!monitor)throw Error('Independent owned base monitor required');
+    await enrollmentFresh(f,'concurrent',async fresh=>{
+      const pid=(await fresh.query('SELECT pg_backend_pid() pid')).rows[0].pid,holder=(await f.observer.query('SELECT pg_backend_pid() pid')).rows[0].pid;
+      let release!:()=>void,notify!:()=>void;const held=new Promise<void>(r=>{notify=r;}),released=new Promise<void>(r=>{release=r;});
+      const first=enrollmentRecord(f.observer,async sql=>{if(sql==='LOCK TABLE nevora_tenancy.employee_login_identity IN SHARE ROW EXCLUSIVE MODE'){notify();await released;}});
+      const second=enrollmentRecord(fresh),one=executeGuardedTypedLocalEmployeeNumberEnrollment(f.observer,enrollmentInstallerRequest(f));let two:ReturnType<typeof executeGuardedTypedLocalEmployeeNumberEnrollment>|undefined;
+      let waitEvidence:unknown,outcomes:unknown;
+      try{await Promise.race([held,one.then(()=>{throw Error('Original attempt must hold all sources and mapping before first MVCC read');})]);
+        two=executeGuardedTypedLocalEmployeeNumberEnrollment(fresh,enrollmentInstallerRequest(f));
+        for(let i=0;i<100;i++){
+          const rows=(await monitor.query("SELECT a.pid,a.datname,a.usename,a.query,a.wait_event_type,a.wait_event,pg_blocking_pids(a.pid) blockers,l.locktype,l.database::text database_oid,l.classid::text classid,l.objid::text objid,l.objsubid,l.mode,l.granted FROM pg_stat_activity a JOIN pg_locks l ON l.pid=a.pid WHERE a.pid=$1 AND a.datname=$2 AND a.usename=$3 AND a.wait_event_type='Lock' AND NOT l.granted AND l.locktype='advisory'",[pid,f.name,lease.user])).rows;
+          if(rows.some(r=>r.blockers.includes(holder)&&r.mode==='ExclusiveLock'&&r.query===INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text)){waitEvidence=rows;break;}
+          await new Promise(r=>setTimeout(r,10));}
+        expect(waitEvidence).toBeDefined();expect(second.commands.at(-1)).toBe(INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+        release();outcomes=await Promise.all([one,two]);expect((outcomes as {status:string}[]).map(r=>r.status).sort()).toEqual(['ENROLLED','OBSERVED_IDENTICAL']);
+      }finally{release();await Promise.allSettled(two?[one,two]:[one]);first.restore();second.restore();}
+      enrollmentLockOrder(first.commands);enrollmentLockOrder(second.commands);expect(anyDml(second.commands)).toBe(false);await enrollmentComplete(f);
+      const after=await enrollmentTuple(f);expect(after.source).toEqual(before.source);expect(after.targets).toEqual(before.targets);expect(after.metadata).toEqual(before.metadata);
+      receipt('case-EN07-concurrency.json',{outcomes,waitEvidence,holderPid:holder,waiterPid:pid,firstCommands:first.commands,secondCommands:second.commands,before,after,
+        noMultiTenantOrProductionThroughputClaim:true});
+    });
+    const beforeGuards=await enrollmentTuple(f),commands=[
+      {sql:"UPDATE nevora_tenancy.employee_login_identity SET employee_id=employee_id||'changed'",message:'employee_login_identity_immutable'},
+      {sql:"UPDATE nevora_tenancy.employee_login_identity SET workspace_id=workspace_id||'changed'",message:'employee_login_identity_immutable'},
+      {sql:"UPDATE nevora_tenancy.employee_login_identity SET employee_number=employee_number||'changed'",message:'employee_login_identity_immutable'},
+      {sql:"UPDATE nevora_tenancy.employee_login_identity SET normalized_number=normalized_number||'changed'",message:'employee_login_identity_immutable'},
+      {sql:'DELETE FROM nevora_tenancy.employee_login_identity',message:'employee_login_identity_delete_forbidden'},
+      {sql:'TRUNCATE nevora_tenancy.employee_login_identity',message:'employee_login_identity_truncate_forbidden'}];
+    const originalPid=(await f.observer.query('SELECT pg_backend_pid() pid')).rows[0].pid;
+    for(const {sql,message} of commands){await f.observer.query('BEGIN');try{await expect(f.observer.query(sql)).rejects.toMatchObject({code:'55000',message});
+      await expect(f.observer.query('SELECT 1')).rejects.toMatchObject({code:'25P02'});
+      let aborted:unknown;for(let attempt=0;attempt<100;attempt++){
+        const row=(await admin!.query("SELECT pid,datname,usename,state FROM pg_stat_activity WHERE pid=$1 AND datname=$2 AND usename=$3",[originalPid,f.name,lease.user])).rows[0];
+        if(row?.state==='idle in transaction (aborted)'&&f.observer.getTransactionStatus()==='E'){aborted=row;break;}await new Promise(r=>setTimeout(r,10));}
+      expect(aborted).toBeDefined();expect(f.observer.getTransactionStatus()).toBe('E');}
+      finally{await f.observer.query('ROLLBACK');}expect(await enrollmentTuple(f)).toEqual(beforeGuards);}
+    receipt('case-EN07-immutable-guards.json',{commands,before:beforeGuards,after:await enrollmentTuple(f),noGuardDisableOrRowRepair:true});
+  });
+  // ENROLLMENT_GREEN_END
 
   actualCase('01', 'writes only added direct ownership and both exact typed sidecars, then retries without any DML', async f => {
     const outcome = await executeGuardedTypedLocalBackfill(f.first, f.request);

@@ -1,3 +1,10 @@
+// CONTROLLED_EMPLOYEE_NUMBER_EXECUTOR_IMPORTS_BEGIN
+import {compileLegacyEmployeeNumberEnrollment,compareLegacyEmployeeNumberEnrollmentTarget,type LegacyEmployeeNumberEnrollment} from './employee-number-enrollment';
+import {assertControlledEnrollmentInstallerOriginalLogin,admitControlledEnrollmentInstallerExecution,assertControlledEnrollmentInstallerExecution,getControlledEnrollmentInstallerBinding,isEmployeeNumberEnrollmentBindingFailure,type EmployeeNumberBindingCode} from './employee-number-enrollment-binding.server';
+import {assertTypedKeyComparatorsOnLockedInstallerSource} from './key-comparator-recheck.server';
+import {INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL} from '../runtime/catalog-fence.server';
+// CONTROLLED_EMPLOYEE_NUMBER_EXECUTOR_IMPORTS_END
+
 import {readFileSync,realpathSync,statSync} from 'node:fs';
 import {join} from 'node:path';
 import {Socket} from 'node:net';
@@ -359,3 +366,129 @@ export function reconcileGuardedTypedLocalBackfillJournal(client:Client,attempt:
  if(client===original.client)return Promise.resolve({status:'BLOCKED',code:'TYPED_JOURNAL_FRESH_CLIENT_REQUIRED'});
  return execute(client,original.request,true,true);
 }
+
+// CONTROLLED_EMPLOYEE_NUMBER_EXECUTOR_ADDITION_BEGIN
+// UNUSED SOURCE PREPARATION. Root must adopt and execute the genuine original
+// controller/installer and independently pinned source before this local lane.
+// All original executor APIs and operator-only admission remain unchanged.
+export type GuardedTypedEmployeeNumberEnrollmentCode=GuardedTypedBackfillCode|EmployeeNumberBindingCode|
+ 'EMPLOYEE_NUMBER_SOURCE_DRIFT'|'EMPLOYEE_NUMBER_TARGET_DRIFT'|'EMPLOYEE_NUMBER_INSERT_NOT_EXACT';
+export type GuardedTypedEmployeeNumberEnrollmentOutcome=
+ {status:'ENROLLED'|'OBSERVED_IDENTICAL';mode:'WHOLE_PLAN_ATOMIC';planDigest:string;mappingRows:number;
+  verification:'CONTROLLED_LOCAL_MAPPING_OBSERVATIONS_NOT_AUTH_OR_CUTOVER'}|
+ {status:'BLOCKED';code:GuardedTypedEmployeeNumberEnrollmentCode}|
+ {status:'UNCERTAIN';code:'COMMIT_OUTCOME_UNKNOWN'|'ROLLBACK_UNCONFIRMED';planDigest:string;
+  reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};
+class EmployeeNumberExecutorFailure extends Error{
+ constructor(readonly code:GuardedTypedEmployeeNumberEnrollmentCode){super(code);}
+}
+function employeeNumberExecutorFail(code:GuardedTypedEmployeeNumberEnrollmentCode):never{throw new EmployeeNumberExecutorFailure(code);}
+type EmployeeMappingTuple=readonly [string,string,string,string];
+async function readLockedEmployeeNumberTarget(client:Client):Promise<EmployeeMappingTuple[]>{
+ const result=await raw(client,
+  '/* F10_EMPLOYEE_NUMBER_TARGET */ SELECT employee_id,workspace_id,employee_number,normalized_number FROM nevora_tenancy.employee_login_identity ORDER BY pg_catalog.convert_to(employee_id,\'UTF8\')');
+ checkedFields(result,[{name:'employee_id',type:'text'},{name:'workspace_id',type:'text'},
+  {name:'employee_number',type:'text'},{name:'normalized_number',type:'text'}]);
+ return result.rows.map(row=>{
+  const [employeeId,workspaceId,employeeNumber,normalizedNumber]=row;
+  if(row.length!==4||typeof employeeId!=='string'||typeof workspaceId!=='string'||typeof employeeNumber!=='string'||typeof normalizedNumber!=='string')employeeNumberExecutorFail('EMPLOYEE_NUMBER_TARGET_DRIFT');
+  return [employeeId,workspaceId,employeeNumber,normalizedNumber] as const;
+ });
+}
+function exactEmployeeNumberTarget(enrollment:LegacyEmployeeNumberEnrollment,rows:EmployeeMappingTuple[]){
+ const outcome=compareLegacyEmployeeNumberEnrollmentTarget(enrollment,rows);
+ if(outcome.status==='BLOCKED')employeeNumberExecutorFail('EMPLOYEE_NUMBER_TARGET_DRIFT');return outcome.status;
+}
+async function prepareLockedEmployeeNumberEnrollment(client:Client,enrollment:LegacyEmployeeNumberEnrollment){
+ // ALL68 original APPLIED state must already be proved. This separate exact
+ // wire read compares actual added ownership to the complete genuine plan.
+ const applied=await raw(client,
+  '/* F10_EMPLOYEE_NUMBER_APPLIED_SOURCE */ SELECT id,workspace_id FROM public.employees ORDER BY pg_catalog.convert_to(id,\'UTF8\')');
+ checkedFields(applied,[{name:'id',type:'text'},{name:'workspace_id',type:'text'}]);
+ if(applied.rows.some(row=>row.length!==2||row.some(v=>typeof v!=='string')))employeeNumberExecutorFail('EMPLOYEE_NUMBER_SOURCE_DRIFT');
+ const expected=enrollment.rows.map(r=>[r.employeeId,r.workspaceId]);
+ const sort=(rows:readonly (readonly (string|null)[])[])=>[...rows].sort((a,b)=>order(canonicalOwnershipJson(a),canonicalOwnershipJson(b)));
+ if(!same(sort(applied.rows),sort(expected)))employeeNumberExecutorFail('EMPLOYEE_NUMBER_SOURCE_DRIFT');
+ const before=await readLockedEmployeeNumberTarget(client),state=exactEmployeeNumberTarget(enrollment,before);
+ if(state==='COMPLETE_IDENTICAL')return 'MATCHING_EXISTING_OBSERVATIONS' as const;
+ for(const row of enrollment.rows){
+  const inserted=await raw(client,
+   '/* F10_EMPLOYEE_NUMBER_INSERT */ INSERT INTO nevora_tenancy.employee_login_identity (employee_id,workspace_id,employee_number,normalized_number) VALUES ($1::pg_catalog.text,$2::pg_catalog.text,$3::pg_catalog.text,$4::pg_catalog.text) RETURNING employee_id,workspace_id,employee_number,normalized_number',
+   [row.employeeId,row.workspaceId,row.employeeNumber,row.normalizedNumber]);
+  checkedFields(inserted,[{name:'employee_id',type:'text'},{name:'workspace_id',type:'text'},
+   {name:'employee_number',type:'text'},{name:'normalized_number',type:'text'}]);
+  if(inserted.rowCount!==1||!same(inserted.rows,[[row.employeeId,row.workspaceId,row.employeeNumber,row.normalizedNumber]]))employeeNumberExecutorFail('EMPLOYEE_NUMBER_INSERT_NOT_EXACT');
+ }
+ await client.query('SET CONSTRAINTS ALL IMMEDIATE');
+ if(exactEmployeeNumberTarget(enrollment,await readLockedEmployeeNumberTarget(client))!=='COMPLETE_IDENTICAL')employeeNumberExecutorFail('EMPLOYEE_NUMBER_TARGET_DRIFT');
+ return 'INSERTED_IN_THIS_TRANSACTION' as const;
+}
+
+/** Fixed local installer lane for the complete legacy employee-number mapping.
+ * A genuine original plan, approved native installation and independently
+ * authenticated existing root-controlled installer are distinct prerequisites.
+ * The original captured operator request remains unchanged. This lane never
+ * attributes original metadata, arms/clears protocol, installs objects, grants
+ * access, registers a journal or issues a tenant proof. Complete-identical rows
+ * are observations only, with no causal producer or restart-recovery claim.
+ */
+export async function executeGuardedTypedLocalEmployeeNumberEnrollment(client:Client,value:unknown):Promise<GuardedTypedEmployeeNumberEnrollmentOutcome>{
+ let began=false,committing=false,planDigest='',registered=false;
+ try{
+  // Real request/plan validation and the accepted normalizer/compiler execute
+  // synchronously before any supplied Client property or native behavior read.
+  const request=requestBinding(value),plan=request.plan;planDigest=plan.digest;
+  const compiled=compileLegacyEmployeeNumberEnrollment(plan);
+  if(compiled.status!=='COMPILED')employeeNumberExecutorFail('EMPLOYEE_NUMBER_SOURCE_DRIFT');
+  const enrollment=compiled.enrollment,binding=getControlledEnrollmentInstallerBinding(request);
+  if(typeof client!=='object'||client===null||utilTypes.isProxy(client)||!(client instanceof Client))fail('OWNED_PG_CLIENT_REQUIRED');
+  if(active.has(client))fail('CLIENT_ALREADY_IN_USE');active.add(client);registered=true;
+  requireIdle(client);ownedLease(request);
+  // Keep old localConnection/databaseIdentity operator-only. The separate
+  // producer verifies actual original installer TCP/SCRAM/native role/custody.
+  await assertControlledEnrollmentInstallerOriginalLogin(client,request);
+  await installedContracts(client);await catalog(client,request.facts);await protocol(client,request,plan,false);
+  requireIdle(client);ownedLease(request);
+  began=true;await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');
+  // This exact imported native transaction fence is the FIRST statement.
+  // No MVCC/protocol/source read precedes the entire fixed source+mapping set.
+  await client.query(INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+  await client.query("SET LOCAL search_path=pg_catalog; SET LOCAL row_security=off; SET LOCAL DateStyle='ISO, YMD'; SET LOCAL TimeZone='UTC'; SET LOCAL lock_timeout='5000ms'; SET LOCAL statement_timeout='15000ms'");
+  const registry=getOwnershipRegistry(),locks=[...new Set([...registry.tables.map(t=>t.table),...registry.tables.flatMap(t=>t.sidecar?[t.sidecar]:[])])].sort(order);
+  await client.query('LOCK TABLE '+locks.map(t=>'public.'+ident(t)).join(',')+' IN SHARE ROW EXCLUSIVE MODE');
+  await client.query('LOCK TABLE nevora_tenancy.employee_login_identity IN SHARE ROW EXCLUSIVE MODE');
+  const applied=await protocol(client,request,plan,true);
+  if(!applied)employeeNumberExecutorFail('ENROLLMENT_APPLIED_REQUIRED');
+  ownedLease(request);await installedContracts(client);await catalog(client,request.facts);
+  await originalRows(client,request.facts);await namespaceWitnesses(client,request.facts);await ownershipState(client,plan,true);
+  // Witness cannot be obtained by a caller object, hash, protocol flag, a
+  // facade Client or held locks alone. All68 APPLIED checks above are required.
+  const witness=await admitControlledEnrollmentInstallerExecution(client,request);
+  await assertTypedKeyComparatorsOnLockedInstallerSource(client,request.facts,request.captureRequest,plan,witness);
+  const effect=await prepareLockedEmployeeNumberEnrollment(client,enrollment);
+  // Make pending native constraints effective, then repeat complete source,
+  // original namespaces/key classes, private native capsule/role/lease/backend
+  // and assigned transaction continuity. Original actor stays NULL throughout.
+  await client.query('SET CONSTRAINTS ALL IMMEDIATE');
+  if(!await protocol(client,request,plan,true))employeeNumberExecutorFail('ENROLLMENT_APPLIED_REQUIRED');
+  await originalRows(client,request.facts);await ownershipState(client,plan,true);await namespaceWitnesses(client,request.facts);
+  await catalog(client,request.facts);await installedContracts(client);ownedLease(request);
+  await assertControlledEnrollmentInstallerExecution(client,witness,binding);
+  await assertTypedKeyComparatorsOnLockedInstallerSource(client,request.facts,request.captureRequest,plan,witness);
+  if(exactEmployeeNumberTarget(enrollment,await readLockedEmployeeNumberTarget(client))!=='COMPLETE_IDENTICAL')employeeNumberExecutorFail('EMPLOYEE_NUMBER_TARGET_DRIFT');
+  await assertControlledEnrollmentInstallerExecution(client,witness,binding);
+  if(!await protocol(client,request,plan,true))employeeNumberExecutorFail('ENROLLMENT_APPLIED_REQUIRED');
+  ownedLease(request);
+  committing=true;await client.query('COMMIT');began=false;
+  return {status:effect==='INSERTED_IN_THIS_TRANSACTION'?'ENROLLED':'OBSERVED_IDENTICAL',mode:'WHOLE_PLAN_ATOMIC',planDigest:plan.digest,
+   mappingRows:enrollment.rows.length,verification:'CONTROLLED_LOCAL_MAPPING_OBSERVATIONS_NOT_AUTH_OR_CUTOVER'};
+ }catch(error){
+  // A failed COMMIT acknowledgement cannot prove rollback. Send no subsequent
+  // SQL, including ROLLBACK; retain the exact original-plan/fresh-client marker.
+  if(committing)return {status:'UNCERTAIN',code:'COMMIT_OUTCOME_UNKNOWN',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};
+  if(began){try{await client.query('ROLLBACK');}catch{return {status:'UNCERTAIN',code:'ROLLBACK_UNCONFIRMED',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};}}
+  return {status:'BLOCKED',code:typeof error==='object'&&error!==null&&!utilTypes.isProxy(error)&&(error instanceof EmployeeNumberExecutorFailure||error instanceof GuardFailure)?error.code:
+   isEmployeeNumberEnrollmentBindingFailure(error)?error.code:isKeyComparatorRecheckFailure(error)?error.code:'TYPED_GUARDED_BACKFILL_FAILED'};
+ }finally{if(registered)active.delete(client);}
+}
+// CONTROLLED_EMPLOYEE_NUMBER_EXECUTOR_ADDITION_END

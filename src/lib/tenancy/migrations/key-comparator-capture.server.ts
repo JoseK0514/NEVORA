@@ -1,3 +1,8 @@
+// CONTROLLED_INSTALLER_IMPORT_ADDITION_BEGIN
+import {isIssuedTypedTenantBackfillPlan,type TypedTenantBackfillPlan} from './typed-backfill';
+import {isIssuedTypedKeyComparatorObservations} from './typed-key-comparators';
+import {isControlledEnrollmentInstallerExecution,assertControlledEnrollmentInstallerExecution,isEmployeeNumberEnrollmentBindingFailure,type EmployeeNumberInstallerExecutionWitness} from './employee-number-enrollment-binding.server';
+// CONTROLLED_INSTALLER_IMPORT_ADDITION_END
 import type {Client,QueryResult} from 'pg';
 import {types as utilTypes} from 'node:util';
 import {canonicalOwnershipJson as canonical,ownershipDigest as digest,getOwnershipRegistry,verifyOwnershipSource,OWNERSHIP_SOURCE,OWNERSHIP_SCHEMA_COMMIT,type JsonValue} from './ownership';
@@ -180,3 +185,99 @@ export async function collectTypedKeyComparatorCapture(client:Client,facts:Typed
  * fresh SQL snapshot metadata differ. No lock/transaction/resource is acquired.
  */
 export async function collectTypedKeyComparatorLockedSourceRecheck(client:Client,facts:TypedMigrationCaptureFacts,request:MigrationCaptureRequest,protocol?:Readonly<{manifestDigest:string;actor:string|null}>):Promise<TypedKeyComparatorLockedRecheck>{return await collect(client,facts,request,{protocol}) as TypedKeyComparatorLockedRecheck;}
+// CONTROLLED_INSTALLER_COLLECTOR_ADDITION_BEGIN
+export type TypedKeyComparatorLocalInstallerRecheck=Readonly<{
+ format:'TYPED_KEY_COMPARATOR_LOCAL_INSTALLER_RC_RECHECK_V1';
+ originalBinding:Readonly<TypedKeyComparatorCapture['binding']>;
+ planDigest:string;captureRequestDigest:string;keyCaptureChecksum:string;
+ installerIdentity:Readonly<Omit<Awaited<ReturnType<typeof assertControlledEnrollmentInstallerExecution>>,'snapshotId'>>;
+ snapshotObservations:readonly Readonly<{stage:'ADMISSION_INITIAL'|'IDENTITY_START'|'IDENTITY_END'|'ADMISSION_FINAL';snapshotId:string}>[];
+ snapshotCoverage:'ONLY_TAGGED_START_END_OBSERVATIONS_NOT_A_STABLE_WHOLE_BATCH_SNAPSHOT';
+ protocol:Readonly<{actor:null;manifest:string}>;
+ serverVersion:string;serverEncoding:'UTF8';databaseCollation:TypedKeyDatabaseCollationCapture;
+ catalog:JsonValue;catalogs:TypedKeyComparatorCatalog[];rows:TypedKeyComparatorCapture['rows'];captureChecksum:string;
+ verification:'LOCAL_LOCKED_READ_COMMITTED_RECHECK_NOT_CAPTURE_OR_OPERATOR_OR_EFFECT_AUTHORITY';
+}>;
+const INSTALLER_SNAPSHOT=/^(0|[1-9][0-9]*):(0|[1-9][0-9]*):(?:(0|[1-9][0-9]*)(?:,(0|[1-9][0-9]*))*)?$/;
+type InstallerIdentity=Awaited<ReturnType<typeof assertControlledEnrollmentInstallerExecution>>;
+type InstallerExpectedBinding=Readonly<{
+ originalBinding:Readonly<TypedKeyComparatorCapture['binding']>;
+ captureRequestDigest:string;keyCaptureChecksum:string;planDigest:string;
+}>;
+function withoutInstallerSnapshot(value:InstallerIdentity):Omit<InstallerIdentity,'snapshotId'>{const {snapshotId,...identity}=value;void snapshotId;return identity;}
+async function installerAdmission(client:Client,witness:EmployeeNumberInstallerExecutionWitness,expected:InstallerExpectedBinding):Promise<InstallerIdentity>{
+ try{const identity=await assertControlledEnrollmentInstallerExecution(client,witness,expected);if(!INSTALLER_SNAPSHOT.test(identity.snapshotId))fail('KEY_COMPARATOR_IDENTITY_DRIFT');return identity;}
+ catch(error){
+  // Only the independent module's private fixed failure issuer permits reads.
+  if(isEmployeeNumberEnrollmentBindingFailure(error)){
+   if(error.code==='ENROLLMENT_LOCKS_REQUIRED')fail('KEY_COMPARATOR_LOCKS_REQUIRED');
+   if(error.code==='ENROLLMENT_EXECUTION_REQUIRED')fail('KEY_COMPARATOR_TRANSACTION_REQUIRED');
+   if(error.code==='ENROLLMENT_REQUEST_DRIFT')fail('KEY_COMPARATOR_REQUEST_DRIFT');
+   if(error.code==='ENROLLMENT_INSTALLATION_DRIFT')fail('KEY_COMPARATOR_SOURCE_DRIFT');
+   if(error.code==='ENROLLMENT_NATIVE_READ_FAILED')fail('KEY_COMPARATOR_READ_FAILED');
+  }
+  fail('KEY_COMPARATOR_IDENTITY_DRIFT');
+ }
+}
+/** Separate native execution identity. Never pass the installer role to the
+ * original SERIALIZABLE identity() or mutate original captureRequest/facts. */
+async function installerIdentity(client:Client,request:MigrationCaptureRequest,admitted:InstallerIdentity):Promise<Readonly<{serverVersion:string;snapshotId:string}>>{
+ const r=one(await raw(client,`/* F10_KEY_INSTALLER_IDENTITY */ SELECT pg_catalog.current_database(),(SELECT oid::text FROM pg_catalog.pg_database WHERE datname=pg_catalog.current_database()),pg_catalog.shobj_description((SELECT oid FROM pg_catalog.pg_database WHERE datname=pg_catalog.current_database()),'pg_database'),(SELECT system_identifier::text FROM pg_catalog.pg_control_system()),pg_catalog.current_setting('data_directory'),session_user::text,current_user::text,pg_catalog.host(pg_catalog.inet_server_addr()),pg_catalog.inet_server_port()::text,pg_catalog.current_setting('server_version'),pg_catalog.current_setting('server_encoding'),pg_catalog.current_setting('session_replication_role'),pg_catalog.current_setting('search_path'),pg_catalog.current_setting('transaction_isolation'),pg_catalog.current_setting('row_security'),pg_catalog.current_setting('DateStyle'),pg_catalog.current_setting('TimeZone'),SYSTEM_USER::text,(SELECT usesysid::text FROM pg_catalog.pg_stat_activity WHERE pid=pg_catalog.pg_backend_pid()),(SELECT oid::text FROM pg_catalog.pg_roles WHERE rolname=session_user),pg_catalog.current_setting('role'),pg_catalog.pg_current_snapshot()::text`),22,'KEY_COMPARATOR_IDENTITY_DRIFT');
+ const i=request.identity;
+ if(!same([admitted.database,admitted.databaseOid,admitted.marker,admitted.systemIdentifier,admitted.dataDirectory,admitted.port],[i.database,i.databaseOid,i.marker,i.systemIdentifier,i.dataDirectory,i.port])||!same(r.slice(0,9),[i.database,i.databaseOid,i.marker,i.systemIdentifier,i.dataDirectory,admitted.role,admitted.role,'127.0.0.1',String(i.port)])||r[9]!==admitted.serverVersion||!/^18\.4(?:\s|$)/.test(r[9]!)||r[10]!=='UTF8'||!same(r.slice(11,18),['origin','pg_catalog','read committed','off','ISO, YMD','UTC','scram-sha-256:'+admitted.role])||!OID.test(admitted.roleOid)||r[18]!==admitted.roleOid||r[19]!==admitted.roleOid||r[20]!=='none'||!r[21]||!INSTALLER_SNAPSHOT.test(r[21]))fail('KEY_COMPARATOR_IDENTITY_DRIFT');
+ return Object.freeze({serverVersion:r[9]!,snapshotId:r[21]});
+}
+/** Distinct LOCAL-only read-only installer recheck. Source preparation only;
+ * native admission/lease/controller implementation and actual QA are mandatory.
+ * The genuine original compiler plan is tested before every property/client
+ * read. Admission provenance is then checked trap-free for this exact Client.
+ * Neither a plan, coherent digest, nor private witness authenticates a database:
+ * initial/final fixed admission repeats native original maintenance LOGIN,
+ * SCRAM/backend/OID/role/lease/child/mapping/source and exact own transaction
+ * custody, including the already-held exclusive catalog fence and 70 locks.
+ *
+ * All existing catalog/row/native comparator routines are reused unchanged.
+ * Original facts/request/typed cells, original operator role and snapshot remain
+ * intact. Only separately tagged native start/end snapshots are observed: SQL
+ * statements between them are NOT sampled and do NOT share an asserted snapshot.
+ * RC source/DDL stability instead requires the caller's accepted source70 locks,
+ * root-controlled exclusive catalog fence and initial/final full comparisons.
+ * Exact APPLIED protocol is original plan manifest with NULL actor. No arming,
+ * clearing, DML, resource, transaction ownership or installed authority is issued.
+ */
+export async function collectTypedKeyComparatorLockedInstallerRecheck(client:Client,input:TypedMigrationCaptureFacts,value:MigrationCaptureRequest,plan:TypedTenantBackfillPlan,witness:EmployeeNumberInstallerExecutionWitness):Promise<TypedKeyComparatorLocalInstallerRecheck>{
+ if(!isIssuedTypedTenantBackfillPlan(plan))fail('KEY_COMPARATOR_INVALID_FACTS');
+ if(!isControlledEnrollmentInstallerExecution(witness,client))fail('KEY_COMPARATOR_IDENTITY_DRIFT');
+ if(active.has(client))fail('KEY_COMPARATOR_CLIENT_IN_USE');active.add(client);
+ try{
+  // Detach ordinary inputs before await while preserving privately issued cells.
+  const facts=freeze(detach(input) as TypedMigrationCaptureFacts),r=freeze(detach(value) as MigrationCaptureRequest);
+  const inspected=inspectTypedMigrationSnapshot(facts,{sourceDigest:facts.sourceDigest,currentSchemaDigest:facts.currentSchemaDigest,snapshotId:facts.snapshot?.id,fenceGeneration:facts.fence?.generation,factsDigest:facts.factsDigest});
+  if(inspected.status!=='INSPECTED')fail('KEY_COMPARATOR_INVALID_FACTS');
+  const originalBinding={registryDigest:facts.registryDigest,sourceDigest:facts.sourceDigest,currentSchemaDigest:facts.currentSchemaDigest,snapshotId:facts.snapshot.id,fenceGeneration:facts.fence.generation,factsDigest:facts.factsDigest};
+  const observations=plan.manifest.observations.constraints.keyComparators;
+  if(!isIssuedTypedKeyComparatorObservations(observations)||!same(originalBinding,plan.manifest.boundary)||!same(originalBinding,observations.binding)||!same(facts.catalog,observations.catalog)||plan.manifest.keyCaptureChecksum!==observations.captureChecksum)fail('KEY_COMPARATOR_INVALID_FACTS');
+  const b=r.catalogBaseline,i=r.identity;
+  if(!b||!i||verifyOwnershipSource(r.migrations).length||!SHA.test(r.sourceDigest)||r.sourceDigest!==facts.sourceDigest||b.sourceDigest!==r.sourceDigest||b.registryDigest!==registry.digest||b.expansionSha256!=='fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb'||b.catalogDigest!==facts.currentSchemaDigest||!UINT.test(r.expectedFenceGeneration)||BigInt(r.expectedFenceGeneration)+BigInt(1)!==BigInt(facts.fence.generation)||typeof i.marker!=='string'||!i.marker.startsWith('f10-owned:')||!OID.test(i.databaseOid)||!Number.isSafeInteger(i.port)||i.port<1024||i.port>65535)fail('KEY_COMPARATOR_REQUEST_DRIFT');
+  const expectedBinding=freeze({originalBinding,captureRequestDigest:digest(r),keyCaptureChecksum:observations.captureChecksum,planDigest:plan.digest}),expected=Object.freeze({actor:null,manifest:plan.digest});
+  // Native admission validates current exact Client/custody and its already-held
+  // source70/mapping/exclusive fence before this module's repeated SELECTs.
+  const initial=await installerAdmission(client,witness,expectedBinding);
+  if(client.getTransactionStatus()!=='T')fail('KEY_COMPARATOR_TRANSACTION_REQUIRED');
+  await sourceLocks(client);
+  const start=await installerIdentity(client,r,initial);
+  await fence(client,facts,expected);
+  if(!same((await raw(client,'/* F10_KEY_INSTALLED_SOURCE */ SELECT path,source_sha256 FROM nevora_tenancy.source_migration_contract ORDER BY path')).rows,OWNERSHIP_SOURCE.map(s=>[s.path,s.sha256])))fail('KEY_COMPARATOR_SOURCE_DRIFT');
+  const before=await observeMigrationCatalog(client);if(before.digest!==facts.currentSchemaDigest||!same(before.catalog,facts.catalog))fail('KEY_COMPARATOR_CATALOG_DRIFT');
+  const effective=await databaseCollation(client,i.databaseOid),catalogs:TypedKeyComparatorCatalog[]=[],allRows:TypedKeyComparatorCapture['rows']=[];
+  for(const c of contracts){const observed=await catalog(client,c);catalogs.push(observed);allRows.push(...await rows(client,c,observed,facts));}
+  const after=await observeMigrationCatalog(client);if(after.digest!==before.digest||!same(after.catalog,before.catalog))fail('KEY_COMPARATOR_CATALOG_DRIFT');
+  await fence(client,facts,expected);
+  if(!same(await databaseCollation(client,i.databaseOid),effective))fail('KEY_COMPARATOR_DATABASE_COLLATION_DRIFT');
+  const end=await installerIdentity(client,r,initial),final=await installerAdmission(client,witness,expectedBinding);
+  if(end.serverVersion!==start.serverVersion||!same(withoutInstallerSnapshot(final),withoutInstallerSnapshot(initial)))fail('KEY_COMPARATOR_IDENTITY_DRIFT');
+  const body={format:'TYPED_KEY_COMPARATOR_LOCAL_INSTALLER_RC_RECHECK_V1' as const,originalBinding,planDigest:plan.digest,captureRequestDigest:expectedBinding.captureRequestDigest,keyCaptureChecksum:observations.captureChecksum,installerIdentity:withoutInstallerSnapshot(initial),snapshotObservations:[{stage:'ADMISSION_INITIAL' as const,snapshotId:initial.snapshotId},{stage:'IDENTITY_START' as const,snapshotId:start.snapshotId},{stage:'IDENTITY_END' as const,snapshotId:end.snapshotId},{stage:'ADMISSION_FINAL' as const,snapshotId:final.snapshotId}],snapshotCoverage:'ONLY_TAGGED_START_END_OBSERVATIONS_NOT_A_STABLE_WHOLE_BATCH_SNAPSHOT' as const,protocol:expected,serverVersion:start.serverVersion,serverEncoding:'UTF8' as const,databaseCollation:effective,catalog:JSON.parse(canonical(before.catalog)) as JsonValue,catalogs:catalogs.sort((a,b)=>order(a.contractId,b.contractId)),rows:allRows.sort((a,b)=>order(canonical([a.contractId,a.key]),canonical([b.contractId,b.key]))),verification:'LOCAL_LOCKED_READ_COMMITTED_RECHECK_NOT_CAPTURE_OR_OPERATOR_OR_EFFECT_AUTHORITY' as const};
+  return freeze({...body,captureChecksum:digest(body)});
+ }catch(error){if(isKeyComparatorCaptureFailure(error))throw error;fail('KEY_COMPARATOR_READ_FAILED');}finally{active.delete(client);}
+}
+// CONTROLLED_INSTALLER_COLLECTOR_ADDITION_END
