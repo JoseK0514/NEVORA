@@ -1,0 +1,60 @@
+-- UNUSED FINITE ENROLLMENT FRAGMENT, not a standalone installer or permission.
+-- Root binds exact original verifier LOGIN and distinct NOLOGIN auth owner;
+-- no arbitrary caller roles/SQL/approval DTO. Reject unresolved quoted markers.
+-- Root must independently deny existing/default/PUBLIC-derived extra rights;
+-- these grants do not revoke or normalize unknown existing rights.
+-- Private table owners/guard owners remain original installer, FORCE RLS kept.
+-- Root separately transfers only the exact three source-bound service functions
+-- to the auth owner (gate/acquire/insert), never capture, tables or schemas.
+-- Column UPDATE is solely required FOR SHARE lock authority, not surviving DML.
+-- The three private UPDATE policies have WITH CHECK(false); identity/source
+-- guards preserve public row identity. No LOGIN caller gets source SELECT.
+-- Source session UPDATE(token_hash) is required by the preserved LIVE INSERT
+-- trigger's FOR SHARE. Original0026 source_identity_guard and the exact native
+-- employee_sessions PK contract reject actual token changes; no other session
+-- UPDATE column is added. Node/root source/guard closure remains mandatory.
+-- No role creation, row/claim/credential enrollment, seeding, activation, reader
+-- grant, current-proof helper or audited graph enrollment occurs here.
+
+GRANT USAGE ON SCHEMA nevora_tenancy TO "__BOUND_VERIFIER_LOGIN__";
+GRANT USAGE ON SCHEMA public, nevora_tenancy TO "__BOUND_AUTH_OWNER__";
+
+GRANT SELECT (id, active, updated_at), UPDATE (id)
+  ON TABLE public.workspaces TO "__BOUND_AUTH_OWNER__";
+GRANT SELECT (id, workspace_id, active, updated_at), UPDATE (id)
+  ON TABLE public.employees TO "__BOUND_AUTH_OWNER__";
+GRANT SELECT (employee_id, password_hash, must_change_password, password_updated_at), UPDATE (employee_id)
+  ON TABLE public.employee_credentials TO "__BOUND_AUTH_OWNER__";
+GRANT SELECT (token_hash, employee_id, expires_at, created_at), INSERT (token_hash, employee_id, expires_at), UPDATE (token_hash)
+  ON TABLE public.employee_sessions TO "__BOUND_AUTH_OWNER__";
+GRANT SELECT (employee_id, workspace_id, employee_number, normalized_number), UPDATE (employee_id)
+  ON TABLE nevora_tenancy.employee_login_identity TO "__BOUND_AUTH_OWNER__";
+GRANT SELECT (workspace_id, locator_code)
+  ON TABLE nevora_tenancy.workspace_locator TO "__BOUND_AUTH_OWNER__";
+GRANT SELECT (workspace_id, incarnation), UPDATE (workspace_id)
+  ON TABLE nevora_tenancy.workspace_incarnation_counter TO "__BOUND_AUTH_OWNER__";
+GRANT SELECT (workspace_id, employee_id, authorization_version, portal_access_version, capability_policy_revision, portal_state, proof_provenance, provenance_reference), UPDATE (workspace_id)
+  ON TABLE nevora_tenancy.portal_authority TO "__BOUND_AUTH_OWNER__";
+GRANT INSERT (token_hash, workspace_id, employee_id, workspace_incarnation, portal_access_version, session_created_at)
+  ON TABLE nevora_tenancy.portal_session_issuance TO "__BOUND_AUTH_OWNER__";
+GRANT SELECT (singleton, verifier_role_oid, verifier_role_name, writer_owner_oid, writer_owner_name, native_capsule)
+  ON TABLE nevora_tenancy.portal_verifier_service_binding TO "__BOUND_AUTH_OWNER__";
+GRANT SELECT (role_oid, role_name)
+  ON TABLE nevora_tenancy.runtime_role_binding TO "__BOUND_AUTH_OWNER__";
+
+GRANT EXECUTE ON FUNCTION nevora_tenancy.capture_portal_verifier_native_profile(pg_catalog.oid,pg_catalog.oid)
+  TO "__BOUND_AUTH_OWNER__";
+GRANT EXECUTE ON FUNCTION nevora_tenancy.assert_original_portal_verifier_service(),
+  nevora_tenancy.acquire_portal_login_source(pg_catalog.text,pg_catalog.text),
+  nevora_tenancy.insert_portal_reviewed_session(pg_catalog.text,pg_catalog.text,pg_catalog.text,pg_catalog.jsonb)
+  TO "__BOUND_AUTH_OWNER__";
+GRANT EXECUTE ON FUNCTION nevora_tenancy.acquire_portal_login_source(pg_catalog.text,pg_catalog.text),
+  nevora_tenancy.insert_portal_reviewed_session(pg_catalog.text,pg_catalog.text,pg_catalog.text,pg_catalog.jsonb)
+  TO "__BOUND_VERIFIER_LOGIN__";
+
+-- No WITH GRANT OPTION, table-level write/SELECT, DELETE/TRUNCATE/REFERENCES,
+-- TRIGGER/MAINTAIN, sequence, schema CREATE, database CREATE/TEMP, parameter,
+-- member/SET ROLE, arbitrary custom EXECUTE or storage-guard EXECUTE is added.
+-- LIVE has INSERT only: no lock UPDATE or SELECT granted by this fragment.
+-- All eight policy/source/caller/ACL tuples need actual independent compilation
+-- and final current full capsule comparison under original root custody.
