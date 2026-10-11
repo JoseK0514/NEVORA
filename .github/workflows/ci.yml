@@ -122,6 +122,7 @@ jobs:
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
       - name: Install Chromium and WebKit
+        timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
       - name: Install PostgreSQL test runtime
         shell: bash
@@ -362,6 +363,7 @@ jobs:
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
       - name: Install Chromium and WebKit
+        timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
       - name: Install PostgreSQL test runtime
         shell: bash

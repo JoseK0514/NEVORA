@@ -3,6 +3,7 @@ import {createDisposableFoundationDatabase} from './local-postgres';
 import {randomUUID} from 'node:crypto';
 import {calendarAuthority,manageEmployeeCalendarSubscription as manage,getEmployeeCalendarSubscription as status,findCalendarOperation,readCalendarFeed,revokeEmployeeCalendarSubscription} from '../../lib/calendar/service.server';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
+import type {SqlExecutor} from '../../lib/notifications/types';
 let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
 const q=(text:string,values:unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
 beforeEach(async()=>{db=await createDisposableFoundationDatabase({mode:'current-runtime'});});
@@ -61,4 +62,77 @@ it.each([
  expect(await q('SELECT * FROM calendar_subscriptions ORDER BY id')).toEqual(subscriptions);
  expect(await q('SELECT * FROM calendar_operations ORDER BY operation_id')).toEqual(operations);
  expect((await readCalendarFeed(token,db.executor)).state).toBe('ready');
+});
+
+
+// Both commands finish their pre-reads before either write transaction begins.
+// Release those transactions in a fixed order to exercise the stale-plan guard
+// deterministically, without relying on Promise.all connection scheduling.
+const calendarRaceGate=()=>{
+ let release!:()=>void;
+ const waiting=new Promise<void>(resolve=>{release=resolve;});
+ return {waiting,release};
+};
+it.each([
+ ['REVOKE','self'],['ROTATE','self'],['REVOKE','manager'],
+] as const)('fresh calendar guard rejects the stale loser: %s first, %s revoker',async(first,revoker)=>{
+ const {created,token}=await issue();
+ const gates={ROTATE:calendarRaceGate(),REVOKE:calendarRaceGate()},both=calendarRaceGate();
+ const arrived:('ROTATE'|'REVOKE')[]=[];
+ const executor:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  const write=statements.find(statement=>statement.text.startsWith('UPDATE calendar_subscriptions SET revoked_at'));
+  if(write){
+   const kind=write.values[2]==='explicit'?'REVOKE':'ROTATE';
+   arrived.push(kind);if(arrived.length===2)both.release();await gates[kind].waiting;
+  }
+  return db.executor.transaction(statements,signal);
+ }};
+ const rotation=manage(proof,command('ROTATE',created.generation),executor);
+ const revokeCommand=command('REVOKE',created.generation);
+ const revocation=revoker==='manager'
+  ?revokeEmployeeCalendarSubscription(owner,'calendar-self',{...revokeCommand,authority:calendarAuthority(owner)},executor)
+  :manage(proof,revokeCommand,executor);
+ let timer:ReturnType<typeof setTimeout>|undefined;
+ try{
+  await Promise.race([both.waiting,new Promise<never>((_resolve,reject)=>{timer=setTimeout(()=>reject(Error('Calendar write planning barrier not reached')),3000);})]);
+  expect([...arrived].sort()).toEqual(['REVOKE','ROTATE']);
+  gates[first].release();await (first==='ROTATE'?rotation:revocation);
+  gates[first==='ROTATE'?'REVOKE':'ROTATE'].release();
+  const outcomes=await Promise.all([rotation,revocation]);
+  expect(outcomes.filter(result=>result.status==='created'||result.status==='revoked')).toHaveLength(1);
+  expect(outcomes.filter(result=>result.status==='conflict')).toHaveLength(1);
+  expect(first==='REVOKE'?outcomes[0].status:outcomes[1].status).toBe('conflict');
+  expect((await readCalendarFeed(token,db.executor)).state).toBe('unauthorized');
+  expect(await q('SELECT count(*)::integer AS n FROM calendar_subscriptions WHERE revoked_at IS NULL')).toEqual([{n:first==='REVOKE'?0:1}]);
+  if(outcomes[0].status==='created')expect((await readCalendarFeed(outcomes[0].url.split('/')[3],db.executor)).state).toBe('ready');
+ }finally{
+  if(timer!==undefined)clearTimeout(timer);
+  gates.ROTATE.release();gates.REVOKE.release();await Promise.all([rotation,revocation]);
+ }
+});
+it('a rotation captured before completed revocation cannot create a replacement afterwards',async()=>{
+ const {created,token}=await issue(),staleRotation=command('ROTATE',created.generation);
+ expect((await manage(proof,command('REVOKE',created.generation),db.executor)).status).toBe('revoked');
+ const subscriptions=await q('SELECT * FROM calendar_subscriptions ORDER BY id'),operations=await q('SELECT * FROM calendar_operations ORDER BY operation_id');
+ expect((await manage(proof,staleRotation,db.executor)).status).toBe('conflict');
+ expect(await q('SELECT * FROM calendar_subscriptions ORDER BY id')).toEqual(subscriptions);
+ expect(await q('SELECT * FROM calendar_operations ORDER BY operation_id')).toEqual(operations);
+ expect((await readCalendarFeed(token,db.executor)).state).toBe('unauthorized');
+ expect(await q('SELECT count(*)::integer AS n FROM calendar_subscriptions WHERE revoked_at IS NULL')).toEqual([{n:0}]);
+});
+it('fresh issue after revocation and immutable operation replay preserve their lifecycle',async()=>{
+ const {created,token}=await issue(),revokeCommand=command('REVOKE',created.generation);
+ const revoked=await manage(proof,revokeCommand,db.executor);expect(revoked.status).toBe('revoked');
+ const current=await status(proof,db.executor);expect(current.state).toBe('revoked');
+ if(!('generation'in current))throw Error('Revoked generation unavailable');
+ const issueCommand=command('ISSUE',current.generation),replacement=await manage(proof,issueCommand,db.executor);
+ expect(replacement.status).toBe('created');if(replacement.status!=='created')throw Error('Fresh replacement unavailable');
+ expect(await manage(proof,revokeCommand,db.executor)).toEqual(revoked);
+ const replay=await manage(proof,issueCommand,db.executor);expect(replay.status).toBe('active_url_unavailable');expect(replay).not.toHaveProperty('url');
+ expect(await findCalendarOperation(proof,revokeCommand.operationId,revokeCommand.authority,db.executor)).toEqual(revoked);
+ expect(await findCalendarOperation(proof,issueCommand.operationId,issueCommand.authority,db.executor)).toEqual(replay);
+ expect((await readCalendarFeed(token,db.executor)).state).toBe('unauthorized');
+ expect((await readCalendarFeed(replacement.url.split('/')[3],db.executor)).state).toBe('ready');
+ expect(await q('SELECT count(*)::integer AS n FROM calendar_subscriptions WHERE revoked_at IS NULL')).toEqual([{n:1}]);
+ expect(await q('SELECT count(*)::integer AS n FROM calendar_operations')).toEqual([{n:3}]);
 });

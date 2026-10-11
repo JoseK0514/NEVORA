@@ -346,10 +346,9 @@ it('all jobs checkout github.sha and acceptance depends on every required E/D jo
   expect(workflow.jobs['phase-e-evidence'].if).toBe('${{ always() }}');
   expect(workflow.jobs['phase-e-evidence'].needs).toEqual(['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']);
 });
-it('source safeguards disable the frozen E branch and unpublished release candidate', () => {
+it('source safeguards hold all Git deployments through quarantine and integration', () => {
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
-  expect(config.git.deploymentEnabled).toEqual({ 'codex/phase-e-employee-experience-20261008': false, 'codex/par-001-remediation-20261008': false });
-  for (const branch of ['development', 'main', 'codex/phase-d-audit', 'codex/phase-e-other']) {
-    expect(config.git.deploymentEnabled[branch] ?? true).toBe(true);
-  }
+  // Global false also holds development, main and future branch names.
+  // Branch maps enable unspecified branches by default.
+  expect(config.git?.deploymentEnabled).toBe(false);
 });

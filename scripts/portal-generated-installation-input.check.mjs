@@ -8,6 +8,7 @@ import {chmodSync,mkdtempSync,mkdirSync,readFileSync,realpathSync,rmSync,writeFi
 import {tmpdir} from 'node:os';
 import {dirname,join,resolve} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
+import {tsImport} from 'tsx/esm/api';
 
 const app=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const runtime='src/lib/tenancy/runtime/';
@@ -20,10 +21,14 @@ function literal(source,label){const marker='const '+label+' = ';assert.equal(so
 async function fixture(change=()=>{}){
  const root=realpathSync(mkdtempSync(join(tmpdir(),'nevora-portal-source-coherence-')));chmodSync(root,0o700);
  try{
-  const paths=['scripts/portal-generated-installation-input.mjs','src/instrumentation.ts',runtime+'portal-runtime-build-install-bootstrap.server.ts',runtime+'portal-native-installation-producer.server.ts',runtime+'portal-source-image.generated.ts',runtime+'catalog-fence.server.ts',...Object.values(slots),...Object.values(files).map(name=>runtime+name)];
+  const paths=['scripts/portal-generated-installation-input.mjs','scripts/portal-build-binding.mjs','src/lib/tenancy/migrations/lossless-json.ts','src/instrumentation.ts',runtime+'portal-runtime-build-install-bootstrap.server.ts',runtime+'portal-native-installation-producer.server.ts',runtime+'catalog-fence.server.ts',...Object.values(slots),...Object.values(files).map(name=>runtime+name)];
   // Fixed inert text preimages are never installed into application startup.
   const fixtureSources={'src/instrumentation.ts':'scripts/fixtures/portal-build-startup/instrumentation.ts.txt',[runtime+'portal-runtime-build-install-bootstrap.server.ts']:'scripts/fixtures/portal-build-startup/portal-runtime-build-install-bootstrap.server.ts.txt'};
   for(const path of new Set(paths))put(root,path,readFileSync(join(app,fixtureSources[path]??path)));
+  // Generate only in this inert fixture from its current fixed preimages. The
+  // retained application image can precede an accepted resolver checkpoint.
+  const generator=await tsImport(pathToFileURL(join(root,'scripts/portal-build-binding.mjs')).href,{parentURL:import.meta.url,tsconfig:false});
+  assert.equal(generator.generatePortalSourceImage().status,'SOURCE_IMAGE_GENERATED_NOT_BUILT');
   const producer=readFileSync(join(root,runtime+'portal-native-installation-producer.server.ts'));
   const bundle=Object.fromEntries(Object.entries(files).map(([name,path])=>[name,[...readFileSync(join(root,runtime+path))]]));
   for(const [name,label]of [['resolvePortalSource','ROOT_SOURCE'],['privatePoliciesTemplateSource','POLICIES_TEMPLATE'],['privateGrantsTemplateSource','GRANTS_TEMPLATE']])bundle[name]=[...Buffer.from(literal(producer.toString('utf8'),label))];
@@ -38,11 +43,33 @@ async function fixture(change=()=>{}){
   const installation={format:'PORTAL_NATIVE_INSTALLATION_RETAINED_V1',sourceImageSha256:hash(readFileSync(join(root,runtime+'portal-source-image.generated.ts'))),producerSourceBytes:[...producer],installationSourceBundle:bundle,catalogFenceProtocolSha256:'f433a46cf53b69cd1bac000fb702c2586efd3b76abb57d51aab3a037ce1b7819',startup,privateEnrollment:{format:'PORTAL_PRIVATE_READER_ENROLLMENT_SOURCE_V1',nativeCatalogCapsuleText:capsule,nativeCatalogCapsuleSha256:hash(Buffer.from(capsule))}};
   put(root,installationPath,JSON.stringify(installation)+'\n');
   const consumer=await import(pathToFileURL(join(root,'scripts/portal-generated-installation-input.mjs')).href);
-  return {root,consumer,close(){rmSync(root,{recursive:true,force:true});}};
+  return {root,consumer,generator,close(){rmSync(root,{recursive:true,force:true});}};
  }catch(error){rmSync(root,{recursive:true,force:true});throw error;}
 }
 test('canonical native OID text is source coherent without implying authority',async()=>{
  const f=await fixture();try{const result=f.consumer.assertPortalGeneratedInstallationBuildInput();assert.equal(result.status,'GENERATED_INSTALLATION_SOURCE_COHERENT_NOT_AUTHORITY');assert.equal(result.installationSha256,hash(readFileSync(join(f.root,installationPath))));}finally{f.close();}
+});
+test('consumer rejects a retained stale image even with its matching installation digest',async()=>{
+ const f=await fixture();try{
+  assert.equal(f.consumer.assertPortalGeneratedInstallationBuildInput().status,'GENERATED_INSTALLATION_SOURCE_COHERENT_NOT_AUTHORITY');
+  const currentResolver=readFileSync(join(f.root,slots.resolverSource));
+  put(f.root,slots.resolverSource,Buffer.concat([currentResolver,Buffer.from('\n// stale resolver preimage\n')]));
+  rmSync(join(f.root,runtime+'portal-source-image.generated.ts'));
+  f.generator.generatePortalSourceImage();
+  put(f.root,slots.resolverSource,currentResolver);
+  const stale=readFileSync(join(f.root,runtime+'portal-source-image.generated.ts'));
+  const installation=JSON.parse(readFileSync(join(f.root,installationPath),'utf8'));
+  installation.sourceImageSha256=hash(stale);
+  put(f.root,installationPath,JSON.stringify(installation)+'\n');
+  assert.throws(()=>f.consumer.assertPortalGeneratedInstallationBuildInput(),/portal_generated_installation_build_input_unavailable/);
+ }finally{f.close();}
+});
+test('consumer rejects resolver changes after fixture image generation',async()=>{
+ const f=await fixture();try{
+  assert.equal(f.consumer.assertPortalGeneratedInstallationBuildInput().status,'GENERATED_INSTALLATION_SOURCE_COHERENT_NOT_AUTHORITY');
+  put(f.root,slots.resolverSource,Buffer.concat([readFileSync(join(f.root,slots.resolverSource)),Buffer.from('\n// changed after source-image generation\n')]));
+  assert.throws(()=>f.consumer.assertPortalGeneratedInstallationBuildInput(),/portal_generated_installation_build_input_unavailable/);
+ }finally{f.close();}
 });
 for(const [label,value]of [['numeric OID',42],['zero text','0'],['leading zero text','042'],['negative text','-42'],['fractional text','42.0'],['exponent text','4.2e1'],['overflow text','4294967296'],['whitespace text',' 42'],['coerced array',['42']]])test('consumer rejects '+label,async()=>{
  const f=await fixture(catalog=>{catalog.roles[0].oid=value;});try{assert.throws(()=>f.consumer.assertPortalGeneratedInstallationBuildInput(),/portal_generated_installation_build_input_unavailable/);}finally{f.close();}

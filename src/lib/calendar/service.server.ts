@@ -62,7 +62,7 @@ async function manage(proof:SessionMutationProof,employeeId:string,command:Calen
    ?current?{status:'revoked',operationId:command.operationId,id:current.id,generation:current.generation}:{status:'blocked',reason:'no_link'}
    :{status:'active_url_unavailable',operationId:command.operationId,id,generation};
   const statements:SqlStatement[]=[...guards,
-   {text:`SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM calendar_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid) AND (SELECT generation::text FROM calendar_subscriptions WHERE workspace_id=$1 AND employee_id=$4 ORDER BY issued_at DESC,id DESC LIMIT 1) IS NOT DISTINCT FROM $5::text THEN '1' ELSE 'calendar_generation_conflict' END)::integer`,values:[workspace.id,proof.employee.id,command.operationId,employeeId,current?.generation??null]},
+   {text:`SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM calendar_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid) AND (SELECT generation::text FROM calendar_subscriptions WHERE workspace_id=$1 AND employee_id=$4 ORDER BY issued_at DESC,id DESC LIMIT 1) IS NOT DISTINCT FROM $5::text AND ($6::text<>'ROTATE' OR EXISTS(SELECT 1 FROM calendar_subscriptions WHERE workspace_id=$1 AND employee_id=$4 AND generation=$5::uuid AND revoked_at IS NULL)) THEN '1' ELSE 'calendar_generation_conflict' END)::integer`,values:[workspace.id,proof.employee.id,command.operationId,employeeId,current?.generation??null,command.kind]},
    {text:"UPDATE calendar_subscriptions SET revoked_at=clock_timestamp(),revocation_reason=$3 WHERE workspace_id=$1 AND employee_id=$2 AND revoked_at IS NULL",values:[workspace.id,employeeId,command.kind==='REVOKE'?'explicit':'rotation']},
   ];
   if(command.kind!=='REVOKE')statements.push(

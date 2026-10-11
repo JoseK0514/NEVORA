@@ -6,6 +6,7 @@ import { homedir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
+import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 
 /** Darwin's pinned wrapper launches a child whose marker macOS can inspect;
  * launch that exact packaged binary directly, with the wrapper's two DYLD vars.
@@ -114,12 +115,29 @@ async function main() {
     verifyBrowserExecutions(report.executions, suites);
     assert.equal(report.errors.length, 0, 'Browser runtime/network errors recorded');
     report.status = 'passed';
-  } catch {
+  } catch (error) {
     // Error stacks/URLs could contain raw calendar capabilities; retain only a
     // safe summary here. The suite owner records scrubbed case detail separately.
     report.errors.push('Required browser execution failed');
     console.error('Phase E browser execution failed; see the owned report');
     process.exitCode = 1;
+    // Select only scrubbed stage/location fields from existing scenario detail.
+    // Never copy its arbitrary payload, HTML, actor, URLs or error stack.
+    const execution = report.executions.at(-1);
+    let scenario;
+    const prefixes = { home: 'home-task11', communications: 'updates' };
+    if (execution && Object.hasOwn(prefixes, execution.suite)) {
+      try {
+        const detail = JSON.parse(readFileSync(join(evidence, `${prefixes[execution.suite]}-${execution.engine}-${execution.width}-failure.json`), 'utf8'));
+        scenario = { stage: detail.failedStage, location: detail.failure?.location };
+      } catch { /* A missing per-case receipt must not hide the original failure. */ }
+    }
+    try {
+      writeFileSync(join(evidence, 'browser-failure-report.json'), JSON.stringify({
+        checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: custody.sourceClean,
+        status: 'failed', failure: safeBrowserFailure(error, execution, scenario),
+      }, null, 2));
+    } catch { report.errors.push('Scrubbed browser diagnostic receipt unavailable'); }
   } finally {
     const failedTeardown = () => { report.errors.push('Source or ownership teardown validation failed'); report.status = 'failed'; process.exitCode = 1; };
     if (controller.signal.aborted) { report.errors.push('Owned browser termination signal'); report.status = 'failed'; process.exitCode = 1; }
