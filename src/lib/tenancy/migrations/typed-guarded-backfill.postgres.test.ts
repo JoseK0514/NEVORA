@@ -18,6 +18,7 @@ import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from '../runtime/catalog-fence.
 import { EMPLOYEE_NUMBER_INSTALLATION_CAPSULE_SQL, CONTROLLED_ENROLLMENT_INSTALLER_MEMBERSHIPS_SQL } from './employee-number-enrollment-binding.server';
 import { executeGuardedTypedLocalEmployeeNumberEnrollment, executeGuardedTypedLocalBackfill, executeGuardedTypedLocalBackfillWithJournal, reconcileGuardedTypedLocalBackfillJournal } from './typed-guarded-backfill.server';
 import {getControlledEnrollmentInstallerBinding} from './employee-number-enrollment-binding.server';
+import {hashPassword,verifyPassword} from '../../auth/password';
 import {executeGuardedTypedLocalPortalLegacyAccessEnrollment} from './typed-guarded-backfill.server';
 import {PORTAL_LEGACY_SOURCE_BINDINGS,PORTAL_LEGACY_ENROLLMENT_CATALOG_SQL,
  PORTAL_LEGACY_ENROLLMENT_PRIVATE_LOCK_SQL} from './portal-legacy-access-enrollment.server';
@@ -857,7 +858,275 @@ function registerPortalWholeOriginalCase(){
 // ROOT_PORTAL_WHOLE_ENROLLMENT_ADDITION_END
 registerPortalWholeOriginalCase();
 
-  async function fixture(id: string, withJournal = false, withEnrollment = false, withPortalLegacyStorage = false): Promise<Fixture> {
+// ROOT_CREDENTIALED_LEGACY_FIXTURE_BEGIN
+type CredentialedLegacyFixtureInput={caseId:string;password:string;tokenHash:string;credential:(string|null)[];session:(string|null)[]};
+const credentialedLegacyFixtureInputs=new Map<string,CredentialedLegacyFixtureInput>();
+const credentialedLegacyPasswordSourceSHA256='d7f62a0959322209f64457be0e8882ff2ce950ad64b9bb5278b1e552a79e628c';
+const credentialedLegacySessionSourceSHA256='f1cc1cd4714f1580f27ca00f038a7ecf597813dee23ffac3ed1725e303908fc0';
+const credentialedLegacyRawTypes={getTypeParser:()=>((s:string)=>s)};
+
+// Only deliberately fictional source population. This runs after original25
+// migrations and existing history inserts, but BEFORE0026/FENCED/full capture.
+// It does not call createSession/getDb/cookies or issue a Portal proof/session.
+// The original createSession algorithm determines the random bearer/digest and
+// 14-day expiry mechanics; no new TTL, password-only permission or activation.
+async function populatePreservedCredentialedLegacyBeforeFence(id:string,name:string,oid:string,marker:string,c:Client){
+ if(!['PLB02','PLB03'].includes(id))throw Error('Exact credentialed legacy fixture case required');
+ await verifyActualParentAndChild(name,oid,marker);await enrollmentInstaller(c);
+ expect(c.getTransactionStatus()).toBe('I');expect(credentialedLegacyFixtureInputs.has(name)).toBe(false);
+ expect(hashText(readFileSync(resolve('src/lib/auth/password.ts'),'utf8'))).toBe(credentialedLegacyPasswordSourceSHA256);
+ expect(hashText(readFileSync(resolve('src/lib/auth/session.ts'),'utf8'))).toBe(credentialedLegacySessionSourceSHA256);
+ const before=await originalRows(c);
+ expect(before.employee_credentials.rows).toEqual([]);expect(before.employee_sessions.rows).toEqual([]);
+ expect(before.employee_location_eligibility.rows).toEqual([]);
+ const password='fictional-preserved-'+randomBytes(24).toString('hex');
+ const encoded=await hashPassword(password);
+ expect(await verifyPassword(password,encoded)).toBe(true);expect(await verifyPassword(password+'-wrong',encoded)).toBe(false);
+ const tokenHash=createHash('sha256').update(randomBytes(32).toString('base64url')).digest('hex');
+ const expiresAt=new Date(Date.now()+14*24*60*60*1000).toISOString();
+ let began=false,committing=false;
+ try{
+  began=true;await c.query('BEGIN ISOLATION LEVEL READ COMMITTED');
+  await c.query(INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+  await c.query("SET LOCAL search_path=pg_catalog,public;SET LOCAL DateStyle='ISO, YMD';SET LOCAL TimeZone='UTC'");
+  expect((await c.query('SELECT id FROM public.employees WHERE id=$1 ORDER BY id FOR SHARE',[ownedEmployee])).rows).toEqual([{id:ownedEmployee}]);
+  expect((await c.query('SELECT employee_id FROM public.employee_credentials WHERE employee_id=$1 FOR SHARE',[ownedEmployee])).rows).toEqual([]);
+  expect((await c.query('UPDATE public.employees SET active=true WHERE id=$1 RETURNING id',[ownedEmployee])).rows).toEqual([{id:ownedEmployee}]);
+  await c.query('INSERT INTO public.employee_location_eligibility(employee_id,location_id) VALUES($1,$2)',[ownedEmployee,'loc-2']);
+  const credential=await c.query<(string|null)[]>({text:'INSERT INTO public.employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,true) RETURNING employee_id,password_hash,must_change_password::text,password_updated_at::text',
+   values:[ownedEmployee,encoded],rowMode:'array',types:credentialedLegacyRawTypes});
+  expect(credential.rows).toHaveLength(1);expect(credential.rows[0].slice(0,3)).toEqual([ownedEmployee,encoded,'true']);
+  expect(typeof credential.rows[0][3]).toBe('string');
+  // Real original schema INSERT, native created_at default retained to full
+  // microsecond precision. No source expiry/token recreation after capture.
+  const session=await c.query<(string|null)[]>({text:'INSERT INTO public.employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,$3::timestamptz) RETURNING token_hash::text,employee_id,expires_at::text,created_at::text',
+   values:[tokenHash,ownedEmployee,expiresAt],rowMode:'array',types:credentialedLegacyRawTypes});
+  expect(session.rows).toHaveLength(1);expect(session.rows[0].slice(0,2)).toEqual([tokenHash,ownedEmployee]);
+  expect(session.rows[0].slice(2).every(v=>typeof v==='string')).toBe(true);
+  expect((await c.query('SELECT count(*)::text n FROM public.employee_sessions s JOIN public.employees e ON e.id=s.employee_id WHERE s.token_hash=$1::bpchar AND s.expires_at>clock_timestamp() AND e.active',[tokenHash])).rows).toEqual([{n:'1'}]);
+  // Observe exact allowable setup delta; do not silently rewrite history.
+  const after=await originalRows(c);
+  for(const table of registry.tables.map(t=>t.table))if(!['employees','employee_credentials','employee_sessions','employee_location_eligibility'].includes(table))expect(after[table]).toEqual(before[table]);
+  expect(after.employees.columns).toEqual(before.employees.columns);expect(after.employees.rows).toHaveLength(2);
+  const activeIndex=before.employees.columns.indexOf('active'),idIndex=before.employees.columns.indexOf('id');
+  expect(after.employees.rows).toEqual(before.employees.rows.map(row=>row[idIndex]===ownedEmployee?row.map((v,i)=>i===activeIndex?'t':v):row));
+  credentialedLegacyFixtureInputs.set(name,{caseId:id,password,tokenHash,credential:credential.rows[0],session:session.rows[0]});
+  await c.query('SET CONSTRAINTS ALL IMMEDIATE');committing=true;await c.query('COMMIT');began=false;
+  // Existing receipt() is root-owned0600; only fictional original rows/hash/
+  // digest are retained. Never retain raw password or bearer in any artifact.
+  receipt('case-'+id+'-credentialed-source-before-expansion.json',{name,oid,marker,originalBefore:before,originalAfter:after,
+   credentialSourceSHA256:credentialedLegacyPasswordSourceSHA256,sessionSourceSHA256:credentialedLegacySessionSourceSHA256,
+   stage:'FICTIONAL_ORIGINAL_SOURCE_COMMITTED_BEFORE_0026_BEFORE_FULL68_CAPTURE',rawPasswordAndBearerRetained:false,
+   scope:'ORIGINAL_SINGLETON_CAPTURED_LEGACY_NOT_VERIFIED_NOT_NEW_TENANT_NOT_PORTAL_AUTHORITY'});
+ }catch(error){if(began&&!committing)await c.query('ROLLBACK');throw error;}
+}
+async function assertCredentialedLegacyInitialCounts(c:Client){
+ for(const [table,count] of [['employee_credentials','1'],['employee_sessions','1'],['notifications','0'],['push_deliveries','0'],['communications','0']] as const)
+  expect((await c.query('SELECT count(*)::text n FROM public.'+quoted(table))).rows).toEqual([{n:count}]);
+}
+function credentialedLegacyCapturedEntries(f:Fixture){
+ const source=credentialedLegacyFixtureInputs.get(f.name);if(!source)throw Error('Actual before-capture source population required');
+ const employee=f.chain.plan.entries.filter(r=>r.table==='employees'&&r.source.columns.find(c=>c.name==='id')?.wire===ownedEmployee);
+ const credential=f.chain.plan.entries.filter(r=>r.table==='employee_credentials');
+ const session=f.chain.plan.entries.filter(r=>r.table==='employee_sessions');
+ expect(employee).toHaveLength(1);expect(credential).toHaveLength(1);expect(session).toHaveLength(1);
+ const cell=(r:typeof employee[number],name:string)=>r.source.columns.find(c=>c.name===name)?.wire;
+ expect(cell(employee[0],'role')).toBe('EMPLOYEE');expect(cell(employee[0],'active')).toBe('t');expect(cell(employee[0],'primary_location_id')).toBe('loc-1');
+ expect(cell(credential[0],'employee_id')).toBe(ownedEmployee);expect(cell(credential[0],'password_hash')).toBe(source.credential[1]);
+ expect(cell(credential[0],'must_change_password')).toBe('t');expect(cell(credential[0],'password_updated_at')).toBe(source.credential[3]);
+ expect(cell(session[0],'token_hash')).toBe(source.tokenHash);expect(cell(session[0],'employee_id')).toBe(ownedEmployee);
+ expect(cell(session[0],'expires_at')).toBe(source.session[2]);expect(cell(session[0],'created_at')).toBe(source.session[3]);
+ expect(f.chain.plan.entries.filter(r=>r.table==='employee_location_eligibility').map(r=>r.key)).toEqual([[ownedEmployee,'loc-2']]);
+ return {source,employee:employee[0],credential:credential[0],session:session[0]};
+}
+function assertExplicitCredentialedLegacyCommand(f:Fixture,command:RootReviewedPortalLegacyCommand){
+ const captured=credentialedLegacyCapturedEntries(f);
+ expect(command.workspaces).toHaveLength(1);expect(command.workspaces[0].workspaceId).toBe('workspace-fuel');
+ expect(command.subjects).toHaveLength(2);
+ const preserved=command.subjects.filter(s=>s.employeeId===ownedEmployee),absent=command.subjects.filter(s=>s.employeeId===otherEmployee);
+ expect(preserved).toHaveLength(1);expect(absent).toHaveLength(1);
+ expect(preserved[0]).toMatchObject({workspaceId:'workspace-fuel',sourceRole:'EMPLOYEE',legacyAccess:'PRESERVED',
+  sourceEmployeeChecksum:captured.employee.sourceChecksum,sourceCredentialChecksum:captured.credential.sourceChecksum,administrativeCapabilities:[]});
+ expect(absent[0]).toMatchObject({workspaceId:'workspace-fuel',sourceRole:'EMPLOYEE',legacyAccess:'ABSENT',sourceCredentialChecksum:null,capabilities:[],administrativeCapabilities:[]});
+ // ROOT supplies reviewed grants and positive native generations explicitly.
+ // No ceiling observation/role/password/active bit populates that command.
+ expect(preserved[0].capabilities.length).toBeGreaterThan(0);
+ expect([...preserved[0].capabilities].sort((a,b)=>Buffer.compare(Buffer.from(a),Buffer.from(b)))).toEqual(preserved[0].capabilities);
+ return {captured,preserved:preserved[0],absent:absent[0],workspace:command.workspaces[0]};
+}
+async function assertCredentialedLegacyEnrollment(f:Fixture,command:RootReviewedPortalLegacyCommand,before:Awaited<ReturnType<typeof portalWholeTarget>>,outcome:unknown){
+ const {captured,preserved,workspace}=assertExplicitCredentialedLegacyCommand(f,command);
+ expect(outcome).toMatchObject({status:'ENROLLED_LOCAL_CAPTURED_LEGACY_ACCESS_NOT_PORTAL_PROOF',mode:'WHOLE_PLAN_ATOMIC',planDigest:f.chain.plan.digest,mappingRows:2,
+  receipt:{status:'ENROLLED_IN_OWNING_TRANSACTION_NOT_PORTAL_PROOF',subjects:2,administrativeSubjects:0,capabilityRows:0,liveRows:1}});
+ enrollmentExpectedFinal.set(f.name,expectedEnrollment(f));await expectApplied(f);const after=await portalWholeTarget(f);
+ expect(after.source).toEqual(before.source);expect(after.targets).toEqual(before.targets);expect(after.metadata).toEqual(before.metadata);
+ expect(after.fullCatalog).toEqual(before.fullCatalog);expect(after.nativeCatalog).toEqual(before.nativeCatalog);expect(after.privateCatalogText).toBe(before.privateCatalogText);
+ expect(after.metadata.actor).toBeNull();expect(after.metadata.manifest).toBe(f.chain.plan.digest);
+ const ordered=command.subjects.slice().sort((a,b)=>Buffer.compare(Buffer.from(a.employeeId),Buffer.from(b.employeeId)));
+ expect((await f.observer.query('SELECT workspace_id,employee_id,authorization_version::text,portal_access_version::text,capability_policy_revision::text,portal_state,proof_provenance,provenance_reference FROM nevora_tenancy.portal_authority ORDER BY pg_catalog.convert_to(employee_id,\'UTF8\')')).rows)
+  .toEqual(ordered.map(s=>({workspace_id:s.workspaceId,employee_id:s.employeeId,authorization_version:s.initialAuthorizationVersion,portal_access_version:s.initialPortalAccessVersion,
+   capability_policy_revision:workspace.policyRevision,portal_state:s.legacyAccess==='PRESERVED'?'ENABLED':'DISABLED',proof_provenance:'LEGACY_UNVERIFIED',
+   provenance_reference:'captured-legacy:'+f.chain.plan.digest+':'+s.sourceEmployeeChecksum})));
+ const live=await f.observer.query<(string|null)[]>({text:'SELECT token_hash::text,workspace_id,employee_id,workspace_incarnation::text,portal_access_version::text,session_created_at::text FROM nevora_tenancy.portal_session_issuance ORDER BY pg_catalog.convert_to(token_hash::text,\'UTF8\')',rowMode:'array',types:credentialedLegacyRawTypes});
+ expect(live.rows).toEqual([[captured.source.tokenHash,workspace.workspaceId,ownedEmployee,workspace.incarnation,preserved.initialPortalAccessVersion,captured.source.session[3]]]);
+ const installer=await enrollmentInstaller(f.observer);
+ const lineage=await f.observer.query('SELECT workspace_id,employee_id,workspace_incarnation::text,authorization_version::text,portal_access_version::text,policy_id,policy_revision::text,installation_epoch::text,lineage_kind,provenance_reference,capture_source,effective_grants,source_manifest_sha256 FROM nevora_tenancy.portal_access_lineage ORDER BY pg_catalog.convert_to(employee_id,\'UTF8\')');
+ expect(lineage.rows).toHaveLength(2);
+ for(const s of ordered){
+  const row=lineage.rows.find(r=>r.employee_id===s.employeeId);expect(row).toBeDefined();
+  const employee=f.chain.plan.entries.find(r=>r.table==='employees'&&r.source.columns.find(c=>c.name==='id')?.wire===s.employeeId)!;
+  expect(row).toMatchObject({workspace_id:s.workspaceId,workspace_incarnation:workspace.incarnation,authorization_version:s.initialAuthorizationVersion,
+   portal_access_version:s.initialPortalAccessVersion,policy_id:workspace.policyId,policy_revision:workspace.policyRevision,installation_epoch:workspace.installationEpoch,
+   lineage_kind:'CAPTURED_LEGACY_EXISTING_ACCESS',provenance_reference:'captured-legacy:'+f.chain.plan.digest+':'+s.sourceEmployeeChecksum,
+   source_manifest_sha256:ownershipDigest(PORTAL_LEGACY_SOURCE_BINDINGS)});
+  expect(row!.capture_source).toEqual({format:'CONTROLLED_CAPTURED_LEGACY_PORTAL_LINEAGE_V1',invocation:lease.invocation!,databaseOid:f.oid,
+   installerRoleOid:installer.catalog[0],binding:getControlledEnrollmentInstallerBinding(f.request),
+   employee:{key:employee.key,sourceChecksum:employee.sourceChecksum,wireChecksum:employee.wireChecksum,role:s.sourceRole},
+   credential:s.legacyAccess==='PRESERVED'?{key:captured.credential.key,sourceChecksum:captured.credential.sourceChecksum,wireChecksum:captured.credential.wireChecksum}:null,
+   legacyAccess:s.legacyAccess,sourceBindings:PORTAL_LEGACY_SOURCE_BINDINGS});
+  expect(row!.effective_grants).toEqual({format:'CONTROLLED_CAPTURED_LEGACY_EFFECTIVE_GRANTS_V1',role:s.sourceRole,capabilities:s.capabilities,
+   administrativeCapabilities:[],administrativeScope:null});
+ }
+ expect(after.privateRows.portal_administrative_authority).toEqual([]);expect(after.privateRows.portal_administrative_capability).toEqual([]);expect(after.privateRows.portal_administrative_location).toEqual([]);
+ expect(await verifyPassword(captured.source.password,captured.source.credential[1]!)).toBe(true);
+ expect(await verifyPassword(captured.source.password+'-wrong',captured.source.credential[1]!)).toBe(false);
+ expect((await f.observer.query('SELECT must_change_password FROM public.employee_credentials WHERE employee_id=$1',[ownedEmployee])).rows).toEqual([{must_change_password:true}]);
+ expect((await f.observer.query('SELECT count(*)::text n FROM public.employee_sessions s JOIN public.employees e ON e.id=s.employee_id WHERE s.token_hash=$1::bpchar AND s.expires_at>clock_timestamp() AND e.active',[captured.source.tokenHash])).rows).toEqual([{n:'1'}]);
+ portalExpectedFinal.set(f.name,after.privateRows);return after;
+}
+async function PLB02WholeOriginalPreservedCredentialed(f:Fixture,command:RootReviewedPortalLegacyCommand){
+ assertExplicitCredentialedLegacyCommand(f,command);await enrollmentApplied(f);
+ await installRootReviewedPortalPrerequisites(f,command);const entry=await sealPortalLegacyCommandBeforeAdmission(f,command),before=await portalWholeTarget(f);
+ const outcome=await executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.observer,f.request);
+ const after=await assertCredentialedLegacyEnrollment(f,command,before,outcome);
+ receipt('case-'+f.id+'-preserved-credentialed-enrollment.json',{outcome,entry,before,after,
+  scope:'FULL68_ORIGINAL_SINGLETON_CAPTURED_EXISTING_ACCESS_LEGACY_UNVERIFIED_NOT_VERIFIED_NOT_PORTAL_PROOF_NOT_A_B',rawPasswordOrBearer:null});
+}
+async function PLB03WholeOriginalPreservedLiveFailureRollback(f:Fixture,command:RootReviewedPortalLegacyCommand){
+ assertExplicitCredentialedLegacyCommand(f,command);await enrollmentApplied(f);await installRootReviewedPortalPrerequisites(f,command);
+ const entry=await sealPortalLegacyCommandBeforeAdmission(f,command),before=await portalWholeTarget(f);
+ const native=Client.prototype.query.bind(f.observer),commands:string[]=[];
+ const identity=(await native('SELECT pg_backend_pid()::text pid,current_database() database,session_user role')).rows[0];
+ expect(identity.database).toBe(f.name);expect(identity.role).toBe(lease.user);
+ const pid=identity.pid,captured=credentialedLegacyCapturedEntries(f),preserved=command.subjects.find(s=>s.employeeId===ownedEmployee)!;
+ const producer=readFileSync(resolve('src/lib/tenancy/migrations/portal-legacy-access-enrollment.server.ts'),'utf8');
+ const liveLiteral=producer.match(/const LIVE_INSERT_SQL=`([^`]+)`;/);expect(liveLiteral).not.toBeNull();
+ const expectedLive=[captured.source.tokenHash,'workspace-fuel',ownedEmployee,command.workspaces[0].incarnation,preserved.initialPortalAccessVersion,captured.source.session[3]];
+ expect(expectedLive.every(value=>typeof value==='string')).toBe(true);
+ type QueuedNativeQuery={text:string;values:unknown[];callback:(error:unknown,result?:{rows:unknown})=>void};
+ // This exact driver is separately source-pinned by the root's native receipt.
+ // Observe the real own-client queue; production retains its original query.
+ const driver=f.observer as unknown as {readyForQuery:boolean;pipeline:boolean;_queryQueue:QueuedNativeQuery[];_activeQuery:unknown;
+  _ending:boolean;_ended:boolean;connection:unknown;_pulseQueryQueue:()=>void};
+ expect(f.observer.getTransactionStatus()).toBe('I');expect(driver.readyForQuery).toBe(true);expect(driver.pipeline).toBe(false);
+ expect(driver._queryQueue).toEqual([]);expect(driver._activeQuery).toBeNull();expect(driver._ending).toBe(false);expect(driver._ended).toBe(false);
+ const connection=driver.connection,pulse=driver._pulseQueryQueue;
+ let liveInserts=0,aborted:unknown,insideLive:unknown,nativeFault:unknown,failedBlockFault:unknown,abortedClientStatus:unknown;
+ let probeSettlement:Promise<void>|undefined,probeFailure:unknown,callbackSettlements=0;
+ const pulseSpy=vi.spyOn(driver,'_pulseQueryQueue').mockImplementation(()=>{
+  const query=driver.readyForQuery?driver._queryQueue[0]:undefined;
+  if(query?.text===liveLiteral![1]){
+   expect(liveInserts).toBe(0);expect(driver.connection).toBe(connection);expect(query.values).toEqual(expectedLive);
+   expect(typeof query.callback).toBe('function');liveInserts++;
+   const callback=query.callback;
+   query.callback=(error,result)=>{
+    if(error){probeFailure=error;callbackSettlements++;callback(error,result);return;}
+    // ReadyForQuery has updated this real Client before this callback fires.
+    // Defer only its settlement while actual native fault probes execute.
+    probeSettlement=(async()=>{
+     expect(result?.rows).toEqual([expectedLive]);
+     insideLive=(await native({text:'SELECT token_hash::text,workspace_id,employee_id,workspace_incarnation::text,portal_access_version::text,session_created_at::text FROM nevora_tenancy.portal_session_issuance',rowMode:'array',types:credentialedLegacyRawTypes})).rows;
+     expect(insideLive).toEqual([expectedLive]);
+     try{await native('SELECT 1/0');}catch(fault){nativeFault=fault;}
+     expect(nativeFault).toMatchObject({code:'22012'});
+     try{await native('SELECT 1');}catch(fault){failedBlockFault=fault;}
+     expect(failedBlockFault).toMatchObject({code:'25P02'});
+     for(let attempt=0;attempt<100;attempt++){
+      const row=(await admin!.query('SELECT pid::text,datname database,usename role,state FROM pg_catalog.pg_stat_activity WHERE pid=$1::integer',[pid])).rows[0];
+      if(row?.state==='idle in transaction (aborted)'&&f.observer.getTransactionStatus()==='E'){aborted=row;break;}
+      await new Promise(resolve=>setTimeout(resolve,10));
+     }
+     abortedClientStatus=f.observer.getTransactionStatus();
+     expect(aborted).toEqual({...identity,state:'idle in transaction (aborted)'});expect(abortedClientStatus).toBe('E');
+    })().catch(failure=>{probeFailure=failure;}).then(()=>{
+     if(callbackSettlements!==0){probeFailure=new Error('Actual Query callback settled more than once');return;}callbackSettlements++;
+     callback(nativeFault??probeFailure,result);
+    });
+   };
+  }
+  Reflect.apply(pulse,f.observer,[]);
+ });
+ const spy=vi.spyOn(f.observer,'query').mockImplementation((async(...args:unknown[])=>{
+  commands.push(queryText(args[0]));return Reflect.apply(native,f.observer,args);
+ }) as Client['query']);let outcome:unknown;
+ try{outcome=await executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.observer,f.request);}
+ finally{if(probeSettlement)await probeSettlement;spy.mockRestore();pulseSpy.mockRestore();}
+ // Repeat measurements outside the API catch. A swallowed fixture assertion
+ // must never masquerade as the expected native failure/rollback outcome.
+ expect(probeFailure).toBeUndefined();expect(callbackSettlements).toBe(1);expect(insideLive).toEqual([expectedLive]);
+ expect(nativeFault).toMatchObject({code:'22012'});expect(failedBlockFault).toMatchObject({code:'25P02'});
+ expect(aborted).toEqual({...identity,state:'idle in transaction (aborted)'});expect(abortedClientStatus).toBe('E');
+ expect(liveInserts).toBe(1);expect(outcome).toEqual({status:'BLOCKED',code:'TYPED_GUARDED_BACKFILL_FAILED'});
+ expect(commands).not.toContain('COMMIT');expect(commands.filter(sql=>sql==='ROLLBACK')).toHaveLength(1);expect(f.observer.getTransactionStatus()).toBe('I');
+ const rolledBack=await portalWholeTarget(f);expect(rolledBack).toEqual(before);portalExpectedFinal.set(f.name,rolledBack.privateRows);
+ // An acknowledged native rollback allows a new, explicit invocation of the
+ // SAME genuine original request. No uncertain COMMIT/replay repair is inferred.
+ const committed=await executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.observer,f.request);
+ const after=await assertCredentialedLegacyEnrollment(f,command,before,committed);
+ receipt('case-'+f.id+'-preserved-live-rollback.json',{entry,before,outcome,commands,insideLive,aborted,abortedClientStatus,nativeFaultCode:'22012',failedBlockCode:'25P02',rolledBack,committed,after,
+  scope:'ACTUAL_POST_LIVE_NATIVE_ERROR_FULL_ROLLBACK_NOT_UNKNOWN_COMMIT_DISPOSITION',rawPasswordOrBearer:null});
+}
+
+// Root-owned same-module command builder only: explicit reviewed generations,
+// policy identity and exact rights, with actual captured checksums. This callback
+// is not shipped or accepted as installer/grant authority by the real producer.
+function registerPortalWholeOriginalCredentialedCases(buildReviewedCommand:(f:Fixture)=>RootReviewedPortalLegacyCommand){
+ for(const [id,title,run] of [
+  ['PLB02','PLB02 full original credentialed existing access remains LEGACY_UNVERIFIED with exact captured LIVE',PLB02WholeOriginalPreservedCredentialed],
+  ['PLB03','PLB03 actual failure after captured LIVE insertion rolls back the complete legacy enrollment',PLB03WholeOriginalPreservedLiveFailureRollback],
+ ] as const)it(title,async()=>{
+  let f:Fixture|undefined,status:'PASS'|'FAIL'='FAIL';
+  try{f=await fixture(id,false,true,true,true);await run(f,buildReviewedCommand(f));status='PASS';}
+  finally{
+   for(const [name,input] of credentialedLegacyFixtureInputs)if(input.caseId===id)credentialedLegacyFixtureInputs.delete(name); // also on partial fixture setup; no zeroization claim
+   cases.push({id,name:title,status});receipt('case-'+id+'-outcome.json',{status,fixturePrepared:!!f,originalPlanDigest:f?.chain.plan.digest,
+    scope:'UNUSED_LOCAL_CAPTURED_EXISTING_ACCESS_NOT_ACTIVATION_NOT_PORTAL_PROOF',rawPasswordOrBearer:null});
+  }
+ },60000);
+}
+// ROOT_CREDENTIALED_LEGACY_FIXTURE_END
+// ROOT_FIXED_PRESERVED_CREDENTIALED_COMMAND_BEGIN
+function rootReviewedCredentialedLegacyCommand(f:Fixture):RootReviewedPortalLegacyCommand{
+ expect(isIssuedTypedTenantBackfillPlan(f.chain.plan)).toBe(true);
+ const employees=f.chain.plan.entries.filter(row=>row.table==='employees');
+ const credentials=f.chain.plan.entries.filter(row=>row.table==='employee_credentials');
+ expect(employees).toHaveLength(2);expect(credentials).toHaveLength(1);
+ expect(f.chain.plan.entries.filter(row=>row.table==='employee_sessions')).toHaveLength(1);
+ const credential=credentials[0];
+ expect(credential.source.columns.find(column=>column.name==='employee_id')?.wire).toBe(ownedEmployee);
+ const ids=[...new Set(employees.map(row=>row.source.workspaceId))];expect(ids).toEqual(['workspace-fuel']);
+ return {
+  workspaces:[{workspaceId:'workspace-fuel',incarnation:'9007199254740993',
+   policyId:'phase-f-fictional-legacy-enrollment-policy',policyRevision:'9007199254740995',installationEpoch:'9007199254740997'}],
+  subjects:employees.map(row=>{
+   const employeeId=row.source.columns.find(column=>column.name==='id')?.wire;
+   expect([ownedEmployee,otherEmployee]).toContain(employeeId);
+   if(typeof employeeId!=='string')throw Error('Genuine captured employee identity required');
+   expect(row.source.columns.find(column=>column.name==='role')?.wire).toBe('EMPLOYEE');
+   const preserved=employeeId===ownedEmployee;
+   return {workspaceId:'workspace-fuel',employeeId,sourceEmployeeChecksum:row.sourceChecksum,
+    sourceCredentialChecksum:preserved?credential.sourceChecksum:null,sourceRole:'EMPLOYEE' as const,
+    initialAuthorizationVersion:'9007199254740999',initialPortalAccessVersion:'9007199254741001',
+    legacyAccess:preserved?'PRESERVED' as const:'ABSENT' as const,
+    capabilities:preserved?['profile.self.read','self.schedule.read'] as const:[],administrativeCapabilities:[]};
+  }),
+ };
+}
+registerPortalWholeOriginalCredentialedCases(rootReviewedCredentialedLegacyCommand);
+// ROOT_FIXED_PRESERVED_CREDENTIALED_COMMAND_END
+
+  async function fixture(id: string, withJournal = false, withEnrollment = false, withPortalLegacyStorage = false, withPreservedCredentialedLegacy = false): Promise<Fixture> {
+    if(withPreservedCredentialedLegacy&&(!withPortalLegacyStorage||!withEnrollment||withJournal||!['PLB02','PLB03'].includes(id)))throw Error('Distinct credentialed full original fixture required');
     if (!admin) throw Error('Root owned base connection required');
     const name = lease.database + '_case_' + randomBytes(5).toString('hex'), marker = lease.marker + ':case:' + name;
     expect(Buffer.byteLength(name)).toBeLessThanOrEqual(63); expect((await admin.query('SELECT 1 FROM pg_database WHERE datname=$1', [name])).rowCount).toBe(0);
@@ -881,6 +1150,7 @@ registerPortalWholeOriginalCase();
     await observer.query("INSERT INTO push_subscriptions(id,employee_id,installation_hash,environment,endpoint_fingerprint,encrypted_material,generation,session_hash,status) VALUES($1,$2,'fictional-key-installation','test','fictional-key-endpoint',NULL,'fictional-key-generation','fictional-noncredential-session-marker','detached')", [detachedPushId, ownedEmployee]);
     await observer.query("INSERT INTO public.clocker_pin_events(id,employee_id,actor_employee_id,pin_version,occurred_at) VALUES('typed-fixture-pin',$1,$1,1,'2026-10-09 01:02:03.123456+00')", [ownedEmployee]);
 
+    if(withPreservedCredentialedLegacy)await populatePreservedCredentialedLegacyBeforeFence(id,name,oid,marker,observer);
     const expansion = readFileSync(resolve('db/migrations/0026_tenant_ownership_expand.sql'), 'utf8');
     const expansionSha256 = createHash('sha256').update(expansion).digest('hex');
     expect(expansionSha256).toBe('fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb');
@@ -902,7 +1172,9 @@ registerPortalWholeOriginalCase();
       .toEqual({ public_create: false, tenancy_create: false, trigger_privilege: false, nonowner: true });
     const initial = await originalRows(observer), observed = await observeMigrationCatalog(first);
     expect(Object.keys(initial)).toHaveLength(68); expect((await observer.query('SELECT count(*)::int n FROM public.workspaces')).rows[0].n).toBe(1);
+    if(withPreservedCredentialedLegacy){await assertCredentialedLegacyInitialCounts(observer);}else{
     for (const table of ['employee_credentials', 'employee_sessions', 'notifications', 'push_deliveries', 'communications']) expect((await observer.query('SELECT count(*)::int n FROM public.' + quoted(table))).rows[0].n).toBe(0);
+    }
     const manifest = JSON.parse(readFileSync(join(runDirectory, 'pre-invocation-source.json'), 'utf8'));
     const identity: OwnedLocalBackfillIdentity = { database: name, databaseOid: oid, marker, systemIdentifier: lease.systemIdentifier, dataDirectory: lease.data,
       role: lease.operatorRoles[0].name, port: lease.port, clusterRoot: lease.root, leasePath: leasePath!, postmasterPid: lease.pid,
