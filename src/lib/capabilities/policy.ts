@@ -39,6 +39,7 @@ const RULES = {
   'audit.read': management, 'audit.self.read': self,
   'onboarding.configure': owner, 'onboarding.finish': owner,
   'csv.preview': owner, 'csv.commit': owner, 'csv.receipt': owner, 'csv.replay': owner, 'csv.reverse': owner,
+  'portal.identity.verify': wholeSubject,
 } satisfies Record<Capability, Rule>;
 
 // Detached canonical role/grant ceiling metadata, never an installed policy,
@@ -195,6 +196,7 @@ function policyFields(capability: Capability): readonly CapabilityField[] {
     case 'security.self.manage': case 'clocker.pin.support': case 'clocker.pin.self': case 'calendar.employee.revoke':
       return ['employee.identity'];
     case 'workspace.restore': return [];
+    case 'portal.identity.verify': return ['employee.identity'];
   }
 }
 
@@ -220,6 +222,27 @@ function evaluate(value: unknown): CapabilityDecision {
   const usesAdministrativeScope = actor.role === 'MANAGER' && rule.variant !== 'SELF';
   if (usesAdministrativeScope && !actor.administrativeScope) return denied('ADMIN_SCOPE_REQUIRED');
 
+  // The approved verification action requires a deliberate current grant for
+  // BOTH roles. Other Owner defaults keep their existing policy semantics.
+  // These are inert observations only: protected native admission must recheck
+  // the real proof, exact grant provenance, channel/procedure and claim rules.
+  if (capability === 'portal.identity.verify') {
+    if (value.mode !== 'MUTATE' || value.phase !== 'CURRENT') return denied('CANONICAL_DENIED');
+    if (!actor.effectiveAdministrativeCapabilities.includes(capability)) return denied('CAPABILITY_NOT_GRANTED');
+    if (!source.subject) return denied('FOOTPRINT_INCOMPLETE');
+    if (source.subject.id === actor.id) return denied('SELF_REVIEW_DENIED');
+    if (!source.subject.workforceActive) return denied('SOURCE_NOT_CURRENT');
+    if (actor.role === 'MANAGER') {
+      if (actor.administrativeScope!.origin !== 'EXPLICIT_GRANT') return denied('ADMIN_SCOPE_REQUIRED');
+      if (source.subject.role === 'OWNER') return denied('ROLE_DENIED');
+      if (source.subject.role === 'MANAGER') {
+        if (!source.subject.administrativeScope || !source.subject.effectiveAdministrativeCapabilities) return denied('ADMIN_SCOPE_REQUIRED');
+        if (!coversScope(actor.administrativeScope!, source.subject.administrativeScope) ||
+          !administrativeGrantAllowed(actor, source.subject.effectiveAdministrativeCapabilities)) return denied('GRANT_CEILING_DENIED');
+      }
+    }
+  }
+
   const locationMap = new Map(source.locations.map(l => [l.id, l]));
   if (source.subject?.locationIds.some(id => !locationMap.has(id)) ||
     source.subject?.administrativeScope?.kind === 'LOCATIONS' && source.subject.administrativeScope.locationIds.some(id => !locationMap.has(id))) return denied('LOCATION_SCOPE_DENIED');
@@ -227,6 +250,8 @@ function evaluate(value: unknown): CapabilityDecision {
   if (rule.wholeSubject) {
     if (!source.subject || source.subject.locationIds.length === 0) return denied('FOOTPRINT_INCOMPLETE');
     source.subject.locationIds.forEach(id => affected.add(id));
+    if (capability === 'portal.identity.verify' && source.subject.administrativeScope?.kind === 'LOCATIONS')
+      source.subject.administrativeScope.locationIds.forEach(id => affected.add(id));
   }
   if (rule.variant !== 'TENANT' && affected.size === 0) return denied('FOOTPRINT_INCOMPLETE');
   if ([...affected].some(id => !locationMap.has(id))) return denied('LOCATION_SCOPE_DENIED');
