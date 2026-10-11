@@ -1,3 +1,5 @@
+import { coverageRepairUrl, reportedCoverageState } from '../scheduling/coverage-repair';
+
 export type ManagerActionPriority =
   | "URGENT"
   | "REVIEW"
@@ -89,11 +91,16 @@ function coverageAction(
     href: '/app/schedule/settings', locationId: gap.locationId,
   };
   const missingPositions = (gap.positionCoverage ?? []).filter(position => position.missing > 0);
+  const repairHref = coverageRepairUrl({ version: 1, weekStart, gapKey: gap.key, locationId: gap.locationId,
+    date: gap.date, startTime: gap.startTime, endTime: gap.endTime,
+    target: missingPositions.length > 1 ? 'CHOOSE' : missingPositions.length === 1 ? 'POSITION' : gap.gap === 0 ? 'LEAD' : 'STAFFING',
+    ...(missingPositions.length === 1 ? { positionId: missingPositions[0].positionId } : {}),
+    reported: reportedCoverageState({ ...gap, requiresLead: gap.requiresLead ?? gap.gap === 0 }) });
   if (missingPositions.length) return {
     id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'URGENT',
     title: `Position coverage missing at ${gap.locationName}`,
     detail: `${gap.date} · ${gap.startTime}–${gap.endTime} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} missing`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
-    href: `/app/schedule?week=${encode(weekStart)}&locationId=${encode(gap.locationId)}&date=${encode(gap.date)}`,
+    href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`, locationId: gap.locationId,
   };
   const leadOnly = gap.gap === 0;
@@ -109,13 +116,7 @@ function coverageAction(
     detail: leadOnly
       ? `${gap.date} · ${gap.startTime}–${gap.endTime} · Designated lead required`
       : `${gap.date} · ${gap.startTime}–${gap.endTime} · Need ${people}`,
-    href:
-      `/app/schedule/coverage?week=${encode(weekStart)}` +
-      `&date=${encode(gap.date)}` +
-      `&locationId=${encode(gap.locationId)}` +
-      `&start=${encode(gap.startTime)}` +
-      `&end=${encode(gap.endTime)}` +
-      (leadOnly || gap.requiresLead ? "&lead=1" : ""),
+    href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`,
     locationId: gap.locationId,
   };

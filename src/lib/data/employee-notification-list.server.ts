@@ -1,6 +1,6 @@
 import 'server-only';
 import type {SessionMutationProof} from '../shift-changes/types';
-import type {NotificationIntent,SqlExecutor,SqlStatement} from '../notifications/types';
+import type {NotificationIntent,SqlExecutor,SqlStatement,SourceSnapshot} from '../notifications/types';
 import {parseEmployeeView,type EmployeeNotificationItem,type EmployeeViewSnapshot} from '../employee-view';
 import {safeNotificationOpenPath,safeReturnTo} from '../notifications/destinations';
 import {notificationReadSql,sqlNotificationStateRepository} from './notification-state';
@@ -12,15 +12,45 @@ import {neonNotificationExecutor,notificationWeekReadSql} from './notification-t
 import {workspaceReadSql} from './workspaces';
 import {assertEmployeeViewProof,employeeViewGuards,readEmployeeWorkspace,employeeReadLimits} from './employee-profile.server';
 import {isManagementAuthorizationError} from './management-session';
+import {attentionSourceVersion} from './employee-attention-receipts.server';
 
 const LIMIT=25,MAX_READS=64,MAX_BYTES=1_000_000,BUDGET_MS=8000;
 const supported=['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','SELF_TEST','COMMUNICATION'] as const;
 const labels:Record<typeof supported[number],string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Callout update',AVAILABILITY:'Availability update',SELF_TEST:'Device notification test',COMMUNICATION:'Team update'};
 const candidateSql=(actor='$1')=>`SELECT id FROM notifications WHERE employee_id=${actor} ORDER BY created_at DESC,id DESC LIMIT 26`;
+const ownReceiptSql=(p:string[])=>`SELECT id FROM employee_attention_receipts WHERE workspace_id=${p[0]} AND employee_id=${p[1]} AND source_kind=${p[2]} AND source_id=${p[3]} AND source_version=${p[4]}`;
+const ownCommunicationStatusSql=(p:string[])=>`SELECT r.id::text AS version,r.acknowledgement AS requirement,
+ EXISTS(SELECT 1 FROM communication_receipts cr WHERE cr.workspace_id=c.workspace_id AND cr.communication_id=c.id AND cr.revision_id=r.id AND cr.employee_id=${p[1]}) AS acknowledged
+ FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=${p[0]} AND c.id::text=${p[2]} AND c.state='PUBLISHED'`;
+// Match the canonical attention detail's explicit null/time projection before
+// its shared hash function. Notification TIME_OFF status versions are different.
+const ownTimeOffDetailSql=(p:string[])=>`SELECT jsonb_build_object('id',id,'status',status,'startDate',start_date::text,'endDate',end_date::text,
+ 'startTime',start_time::text,'endTime',end_time::text,'reason',reason) AS detail FROM time_off_requests WHERE employee_id=${p[1]} AND id=${p[2]} AND EXISTS(SELECT 1 FROM workspaces WHERE id=${p[0]} AND active)`;
+type CommunicationStatus={version:string;requirement:string;acknowledged:boolean};
+export function projectNotificationDisplayState(source:SourceSnapshot,employeeId:string,read:boolean|null,communication:CommunicationStatus|null):Pick<EmployeeNotificationItem,'reviewState'|'actionState'>{
+ const reviewState=read===null?'unavailable':read?'read':'unread';
+ if(source.kind==='SCHEDULE'){
+  const ack=source.employeePublications?.[employeeId]?.acknowledgement;
+  return !ack?{reviewState,actionState:'unavailable'}:ack.acknowledged?{reviewState:'confirmed',actionState:'complete'}:{reviewState,actionState:ack.needsAcknowledgement?'required':'none'};
+ }
+ if(source.kind==='COMMUNICATION'){
+  if(!communication||communication.version!==source.source.version||!['NONE','OPTIONAL','REQUIRED'].includes(communication.requirement))return {reviewState:'unavailable',actionState:'unavailable'};
+  return communication.acknowledged?{reviewState:'confirmed',actionState:'complete'}:{reviewState,actionState:communication.requirement==='REQUIRED'?'required':communication.requirement==='OPTIONAL'&&!read?'available':'none'};
+ }
+ if(source.kind==='EXCHANGE'){
+  const responds=source.record.status==='OPEN'&&source.record.requestedByEmployeeId!==employeeId||source.record.status==='EMPLOYEE_PENDING'&&source.record.targetEmployeeId===employeeId;
+  return {reviewState,actionState:responds&&source.record.actionable?'available':['APPROVED','DENIED','CANCELLED','EXPIRED'].includes(source.record.status)?'complete':'none'};
+ }
+ if(source.kind==='AVAILABILITY')return {reviewState,actionState:source.submissions.some(s=>s.employeeId===employeeId&&s.submitted)?'complete':'required'};
+ return {reviewState,actionState:'none'};
+}
 type Template={name:string;args:number;sql:(args:string[])=>string;clockField?:'observed_at'|'observedAt'};
 /** Finite canonical SELECT templates only. No SQL rewriting, arbitrary query
  * acceptance, mutation statements, or network/executor fallback during replay. */
 const templates:Template[]=[
+ {name:'ownReceipt',args:5,sql:ownReceiptSql},
+ {name:'ownCommunicationStatus',args:3,sql:ownCommunicationStatusSql},
+ {name:'ownTimeOffDetail',args:3,sql:ownTimeOffDetailSql},
  {name:'workspace',args:0,sql:()=>workspaceReadSql()},
  {name:'intent',args:1,sql:p=>notificationReadSql.intent(p[0])},
  {name:'recipient',args:1,sql:p=>notificationReadSql.recipient(p[0])},
@@ -98,7 +128,17 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
     if(!check.deliverable||check.effectiveVersion!==intent.effectiveVersion||Date.parse(check.expiresAt)<=now.getTime()||!safeReturnTo(check.destination))continue;
     const href=safeNotificationOpenPath(intent.id);if(!href){partial=true;continue;}
     expires=Math.min(expires,Date.parse(check.expiresAt));
-    items.push({id:intent.id,label:labels[intent.source.kind as typeof supported[number]],at:intent.dueAt,href});
+    const source=await state.readSource(intent.source);if(!source){partial=true;continue;}
+    let receiptKind:string|null=['SCHEDULE','EXCHANGE','COMMUNICATION'].includes(source.kind)?source.kind:null,receiptVersion=source.source.version;
+    if(source.kind==='TIME_OFF'){
+     const [row]=await db.query<{detail:Record<string,unknown>}>({text:ownTimeOffDetailSql(['$1','$2','$3']),values:[workspace.id,proof.employee.id,source.source.id]});
+     if(!row?.detail){partial=true;continue;}
+     receiptKind='TIME_OFF';receiptVersion=attentionSourceVersion({kind:'TIME_OFF',id:source.source.id,version:''},row.detail);
+    }
+    const read=receiptKind?(await db.query({text:ownReceiptSql(['$1','$2','$3','$4','$5']),values:[workspace.id,proof.employee.id,receiptKind,source.source.id,receiptVersion]})).length>0:null;
+    const communication=source.kind==='COMMUNICATION'?(await db.query<CommunicationStatus>({text:ownCommunicationStatusSql(['$1','$2','$3']),values:[workspace.id,proof.employee.id,source.source.id]}))[0]??null:null;
+    const display=projectNotificationDisplayState(source,proof.employee.id,read,communication);if(display.actionState==='unavailable')partial=true;
+    items.push({id:intent.id,label:labels[intent.source.kind as typeof supported[number]],at:intent.dueAt,href,...display});
    }
    return {items,coverage:partial?'partial' as const:'complete' as const,expires};
   }

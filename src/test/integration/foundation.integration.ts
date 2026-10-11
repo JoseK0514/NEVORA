@@ -222,7 +222,7 @@ it.each(['write-first','edit-first'])('timezone edit race serializes first dated
 });
 
 it('stale workspace aborts real Time Off mutation and notification intents atomically',async()=>{
- const db=await workspaceFixture();const {createTimeOffRequest}=await import('../../lib/data/requests');
+ const db=await workspaceFixture();const {createTimeOffRequest}=await import('./self-service-api');
  try{
  const executor:SqlExecutor={query:(s,signal)=>db.executor.query(s,signal),transaction:async statements=>{
  await db.executor.query({text:"UPDATE workspaces SET time_zone='Asia/Tokyo',updated_at=updated_at+interval '1 microsecond'",values:[]});
@@ -442,7 +442,8 @@ it('position publication atomicity preserves create edit clear history and rejec
 });
 it('position SQL read and template save preserve qualified and legacy positionless assignments',async()=>{
  const {insertShift,listWeekShifts,getShiftForManagement}=await import('./management-api');
- const {createTemplateFromWeek,listTemplateShifts}=await import('../../lib/data/schedule-templates');
+ const {listTemplateShifts}=await import('../../lib/data/schedule-templates');
+ const {createTemplateFromWeek}=await import('./management-api');
  const db=await workspaceFixture();const q=(text:string)=>db.executor.query({text,values:[]});
  try{
  await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'manager-normal-'||day,'manager',day,'00:00','24:00' FROM generate_series(0,6) day");
@@ -979,7 +980,8 @@ it.each([1,3,5,20])('Task 11 separate generic SQL workspace supports exactly %i 
   const {getShiftValidationContext,ensureSchedule,insertShift,listWeekShifts,updateShift}=await import('./management-api');
   const {validateShift}=await import('../../lib/scheduling/validate-shift');
   const {calculateScheduleHealth}=await import('../../lib/scheduling/schedule-health');
-  const {createTemplateFromWeek,listTemplateShifts}=await import('../../lib/data/schedule-templates');
+  const {listTemplateShifts}=await import('../../lib/data/schedule-templates');
+ const {createTemplateFromWeek}=await import('./management-api');
   const {publishScheduleWithRevision}=await import('./management-api');
   const {readNotificationWeekState}=await import('../../lib/data/notification-transactions');
   const {readAvailabilityInputs}=await import('../../lib/data/availability-inputs');

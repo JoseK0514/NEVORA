@@ -15,6 +15,7 @@ import * as workspaces from '../../lib/data/workspaces';
 import * as exclusions from '../../lib/data/generation-exclusions';
 import * as weeks from '../../lib/data/week-settings';
 import * as health from '../../lib/data/schedule-health';
+import * as templates from '../../lib/data/schedule-templates';
 type Input<F extends (...args: never[]) => unknown> = Omit<Parameters<F>[0], 'proof'>;
 export { getShiftForManagement, getShiftValidationContext, listWeekShifts } from '../../lib/data/schedules';
 export { getEmployeeManagementProfile, listEmployees } from '../../lib/data/employees';
@@ -50,14 +51,19 @@ export async function reviewTimeOffRequest(input: Input<typeof requests.reviewTi
 export async function createLocation(input: Input<typeof locations.createLocation>, executor: SqlExecutor = neonNotificationExecutor()) {
   return locations.createLocation({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
 }
-export async function updateLocation(input: Input<typeof locations.updateLocation>, executor: SqlExecutor = neonNotificationExecutor()) {
-  return locations.updateLocation({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
+export async function updateLocation(input: Omit<Input<typeof locations.updateLocation>, 'expectedUpdatedAt'> & { expectedUpdatedAt?: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  const [reviewed] = await executor.query<{ updatedAt: string }>({ text: 'SELECT updated_at::text AS "updatedAt" FROM locations WHERE id=$1', values: [input.id] });
+  return locations.updateLocation({ ...input, expectedUpdatedAt: input.expectedUpdatedAt ?? reviewed?.updatedAt ?? 'missing-review', proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
 }
 export async function createPosition(input: Input<typeof positions.createPosition>, executor: SqlExecutor = neonNotificationExecutor()) {
   return positions.createPosition({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
 }
-export async function updatePosition(input: Input<typeof positions.updatePosition>, executor: SqlExecutor = neonNotificationExecutor()) {
-  return positions.updatePosition({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
+export async function updatePosition(input: Omit<Input<typeof positions.updatePosition>, 'expectedUpdatedAt'> & { expectedUpdatedAt?: string }, executor: SqlExecutor = neonNotificationExecutor()) {
+  const [reviewed] = await executor.query<{ updatedAt: string }>({ text: 'SELECT updated_at::text AS "updatedAt" FROM positions WHERE id=$1', values: [input.id] });
+  return positions.updatePosition({ ...input, expectedUpdatedAt: input.expectedUpdatedAt ?? reviewed?.updatedAt ?? 'missing-review', proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
+}
+export async function createTemplateFromWeek(input: Input<typeof templates.createTemplateFromWeek>, executor: SqlExecutor = neonNotificationExecutor()) {
+  return templates.createTemplateFromWeek({ ...input, proof: await fixtureProof(executor, input.createdBy) }, executor);
 }
 export async function saveWorkspaceProfile(input: Input<typeof workspaces.saveWorkspaceProfile>, executor: SqlExecutor = neonNotificationExecutor()) {
   return workspaces.saveWorkspaceProfile({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);

@@ -7,6 +7,9 @@ import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
 import { createShiftAction } from "@/app/app/schedule/actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
+import { requireSessionMutationProof } from "@/lib/auth/session";
+import { decodeCoverageRepairReview, readCoverageRepairSelection } from "@/lib/data/coverage-repair.server";
+import { coverageRepairUrl, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
   addDays,
@@ -25,11 +28,37 @@ export default async function NewShiftPage({
     start?: string;
     end?: string;
     lead?: string;
+    positionId?: string;
+    review?: string;
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
-  const workspace = await getWorkspace();
   const params = await searchParams;
+  if (params.review !== undefined) {
+    const proof = await requireSessionMutationProof();
+    let selected;
+    try { selected = await readCoverageRepairSelection(params.review, proof); }
+    catch (error) {
+      if (!(error instanceof CoverageRepairConflictError)) throw error;
+      let href = '/app/schedule';
+      try { href = coverageRepairUrl(decodeCoverageRepairReview(params.review, proof).locator, true); } catch { /* No trusted locator. */ }
+      return <main className="new-shift-page"><section className="new-shift-card empty-state"><h1>Coverage changed</h1><p>Refresh the review and select a current eligible replacement before saving.</p><Link className="button primary" href={href}>Refresh coverage review</Link></section></main>;
+    }
+    const { locator } = selected;
+    return <main className="new-shift-page"><ConfigurationForm action={createShiftAction} className="new-shift-card">
+      <input type="hidden" name="coverageRepairReview" value={params.review} />
+      {Object.entries({ weekStart: locator.weekStart, employeeId: selected.employeeId, locationId: locator.locationId,
+        date: locator.date, startTime: locator.startTime, endTime: locator.endTime, positionId: locator.positionId ?? '',
+        ...(selected.isDesignatedLead ? { isDesignatedLead: 'on' } : {}) }).map(([name, value]) => <input type="hidden" name={name} value={value} key={name} />)}
+      <header className="new-shift-card-header"><span>Coverage repair</span><h1>Review replacement</h1></header>
+      <div className="new-shift-form"><p><strong>{selected.employeeName}</strong> · {selected.employeeId}</p><p>{selected.locationName} · {locator.date} · {locator.startTime}–{locator.endTime}</p>
+        <p>Position: <strong>{selected.positionName ?? 'No position required for the selected staffing or Lead requirement'}</strong></p>
+        <p>{selected.isDesignatedLead ? 'Designated Shift Lead required' : 'Designated Shift Lead not required for this repair'}</p>
+        <p>This saves one replacement for the selected requirement. Remaining requirements stay visible in the gap.</p></div>
+      <footer className="new-shift-actions"><Link className="new-shift-action secondary" href={coverageRepairUrl(locator, true)}>Refresh coverage review</Link><button className="new-shift-action primary" type="submit">Save replacement</button></footer>
+    </ConfigurationForm></main>;
+  }
+  const workspace = await getWorkspace();
   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
   const weekStart = params.week && isValidWeekStart(params.week) ? params.week : currentWeek;
   const date =
@@ -60,7 +89,7 @@ export default async function NewShiftPage({
             options={[{value:"",label:"Select location",disabled:true},...locations.map(location=>({value:location.id,label:location.shortName}))]} />
           <section className="new-shift-group">
             <p className="new-shift-section-label">ASSIGN EMPLOYEE</p>
-            <ShiftAssignmentFields employees={employees} positions={positions} employeeId={params.employeeId} newShift/>
+            <ShiftAssignmentFields employees={employees} positions={positions} employeeId={params.employeeId} positionId={params.positionId} newShift/>
           </section>
 
           <section className="new-shift-group">

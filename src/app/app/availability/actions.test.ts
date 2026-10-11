@@ -1,4 +1,6 @@
 import { beforeEach, expect, it, vi } from "vitest";
+import { managementProof } from '../../../test/fixtures/management';
+vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('E', 'EMPLOYEE') }));
 const mocks = vi.hoisted(() => ({ normal: vi.fn(), weekly: vi.fn() }));
 vi.mock("@/lib/auth/permissions", () => ({
   requireSelfService: async () => ({ id: "E", role: "EMPLOYEE" }),
@@ -46,12 +48,12 @@ it.each(["00:00", "24:00"])(
       { dayOfWeek: 0, startTime: "22:00", endTime: "24:00" },
       { dayOfWeek: 1, startTime: "00:00", endTime: "06:00" },
     ];
-    expect(mocks.normal).toHaveBeenCalledWith("E", expected);
+    expect(mocks.normal).toHaveBeenCalledWith("E", expected, managementProof('E', 'EMPLOYEE'));
     expect(mocks.weekly).toHaveBeenCalledWith(
       "E",
       "2026-10-05",
       expected,
-      [0, 1],
+      [0, 1], managementProof('E', 'EMPLOYEE'),
     );
   },
 );
@@ -63,7 +65,7 @@ it("midnight-to-midnight means a complete available calendar day", async () => {
   await expect(saveAvailabilityAction(data)).rejects.toThrow("saved=1");
   expect(mocks.normal).toHaveBeenCalledWith("E", [
     { dayOfWeek: 1, startTime: "00:00", endTime: "24:00" },
-  ]);
+  ], managementProof('E', 'EMPLOYEE'));
 });
 it.each(["25:00", "12:99"])(
   "rejects malformed available hours %s before writing",

@@ -24,11 +24,11 @@ it('status-raced and repeated decisions return false', async () => {
   expect(await reviewTimeOffRequest({proof:managementProof('M'), requestId: 'request-1', managerId: 'M', status: 'APPROVED' }, r.executor)).toBe(false); expect(r.executor.transaction).not.toHaveBeenCalled();
 });
 it('submission queues only manager summary seeds and keeps the reason out of payloads', async () => {
-  const r = fixture('TIME_OFF'); await createTimeOffRequest({ employeeId: 'E', startDate: '2030-10-11', endDate: '2030-10-11', reason: 'private reason' }, r.executor);
+  const r = fixture('TIME_OFF'); await createTimeOffRequest({ proof: managementProof('E', 'EMPLOYEE'), employeeId: 'E', startDate: '2030-10-11', endDate: '2030-10-11', reason: 'private reason' }, r.executor);
   expect(r.batches).toHaveLength(1); expect(intents(r.batches[0]).map(n => [n.employee, n.purpose])).toEqual([['M', 'SUMMARY'], ['O', 'SUMMARY']]); expect(JSON.stringify(intents(r.batches[0]))).not.toContain('private reason');
 });
 it('submission outbox failure rejects the whole transaction and has no separate notification write',async()=>{
  const r=fixture('TIME_OFF');vi.mocked(r.executor.transaction).mockRejectedValue(new Error('outbox failure'));
- await expect(createTimeOffRequest({employeeId:'E',startDate:'2030-10-11',endDate:'2030-10-11'},r.executor)).rejects.toThrow('outbox failure');
+ await expect(createTimeOffRequest({proof:managementProof('E','EMPLOYEE'),employeeId:'E',startDate:'2030-10-11',endDate:'2030-10-11'},r.executor)).rejects.toThrow('outbox failure');
  expect(r.executor.transaction).toHaveBeenCalledTimes(1);expect(vi.mocked(r.executor.query).mock.calls.every(([statement])=>!statement.text.includes('INSERT'))).toBe(true);
 });

@@ -26,6 +26,7 @@ function templateUrl(weekStart: string, suffix = "") {
 
 export async function saveTemplateAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
   const name = String(formData.get("name") ?? "").trim();
 
@@ -42,6 +43,7 @@ export async function saveTemplateAction(formData: FormData) {
       name,
       weekStart,
       createdBy: session.id,
+      proof,
     });
   } catch {
     redirect(templateUrl(weekStart, "&error=save"));
@@ -154,6 +156,7 @@ export async function applyTemplateAction(formData: FormData) {
 
 export async function archiveTemplateAction(formData: FormData) {
   await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
   const templateId = String(formData.get("templateId") ?? "");
 
@@ -161,7 +164,7 @@ export async function archiveTemplateAction(formData: FormData) {
     redirect(templateUrl(weekStart, "&error=invalid"));
   }
 
-  await archiveScheduleTemplate(templateId);
+  await archiveScheduleTemplate(templateId, proof);
   revalidatePath("/app/schedule/templates");
   redirect(templateUrl(weekStart, "&archived=1"));
 }

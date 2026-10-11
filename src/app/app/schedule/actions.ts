@@ -14,6 +14,7 @@ import { publishScheduleWithRevision } from "@/lib/data/publication-revisions";
 import { listEmployees } from "@/lib/data/employees";
 import {
   deleteShift,
+  createCoverageRepairShift,
   ensureSchedule,
   getShiftForManagement,
   getShiftValidationContext,
@@ -25,6 +26,7 @@ import { copyShiftDate } from "@/lib/scheduling/copy-week";
 import { prepareExchangeContext } from "@/lib/scheduling/exchange-validation";
 import { validateShift } from "@/lib/scheduling/validate-shift";
 import { ManualAssignmentConflictError } from "@/lib/data/manual-assignment-validation";
+import { coverageRepairUrl, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
 
 function scheduleUrl(weekStart: string, suffix = "") {
   return `/app/schedule?week=${encodeURIComponent(weekStart)}${suffix}`;
@@ -43,6 +45,19 @@ export async function createShiftAction(formData: FormData) {
   const notes = String(formData.get("notes") ?? "").trim();
   const positionId = formData.has("positionId") ? String(formData.get("positionId") ?? "").trim() || null : undefined;
   const isDesignatedLead = formData.get("isDesignatedLead") === "on";
+
+  if (formData.has('coverageRepairReview')) {
+    let saved;
+    try {
+      saved = await createCoverageRepairShift({ review: String(formData.get('coverageRepairReview') ?? ''),
+        weekStart, employeeId, locationId, date, startTime, endTime, positionId, isDesignatedLead, actorEmployeeId: session.id, proof });
+    } catch (error) {
+      if (error instanceof CoverageRepairConflictError || error instanceof ManualAssignmentConflictError) return { error: error.message, issueCode: error.code };
+      throw error;
+    }
+    revalidatePath('/app/schedule');
+    redirect(`${coverageRepairUrl(saved.locator, true)}&saved=1`);
+  }
 
   if (
     !weekStart ||

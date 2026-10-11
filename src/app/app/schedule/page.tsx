@@ -151,12 +151,12 @@ export default async function SchedulePage({
         {params.acknowledged && employeeAcknowledgement.acknowledged ? <p className="employee-notice success" role="status">Schedule confirmed.</p> : null}
         {employeeSchedule!.state!=='published'?<p className="employee-notice" role="status">{emptyScheduleLabel(employeeSchedule!.state)}{employeeSchedule!.shifts.length?' — showing your confirmed assignments only.':''}</p>:null}
 
-        {hasPublishedShifts && employeeAcknowledgement.latestRevisionId ? (
+        {employeeAcknowledgement.latestRevisionId && (hasPublishedShifts || employeeSchedule!.intent || employeeAcknowledgement.acknowledged) ? (
           <div className={`employee-schedule-ack${employeeAcknowledgement.acknowledged ? " acknowledged" : employeeAcknowledgement.needsAcknowledgement ? " needs-ack" : ""}`}>
-            <p>{employeeAcknowledgement.acknowledged ? "Schedule confirmed" : "Review this week’s schedule, then confirm it."}</p>
+            <p>{employeeAcknowledgement.acknowledged ? "Schedule confirmed" : hasPublishedShifts ? "Review this week’s schedule, then confirm it." : "No assignments remain for this published week. Review the changes, then confirm this schedule."}</p>
             {employeeAcknowledgement.needsAcknowledgement && employeeSchedule!.intent ? (
               <EmployeeWeeklyConfirmation key={employeeSchedule!.intent.operationId} weekStart={weekStart} expectedRevisionId={employeeSchedule!.displayedRevisionId!} intent={employeeSchedule!.intent}/>
-            ) : <span className="employee-quiet-status success">Confirmed</span>}
+            ) : employeeAcknowledgement.acknowledged ? <span className="employee-quiet-status success">Confirmed</span> : <span className="employee-quiet-status">Confirmation unavailable — review the current schedule again.</span>}
           </div>
         ) : null}
 
@@ -165,7 +165,7 @@ export default async function SchedulePage({
         <section className="employee-view-surface employee-schedule-agenda" aria-label="Published weekly schedule">
           {dates.map((date) => {
             const label = formatDayLabel(date);
-            const shifts = visibleShifts.filter((shift) => shift.date === date);
+            const shifts = employeeSchedule!.shifts.filter((shift) => shift.date === date);
             return (
               <article className={`employee-schedule-day${date === today ? " today" : ""}${date === params.day ? " selected" : ""}`} id={`schedule-${date}`} key={date}>
                 <time className="employee-agenda-date" dateTime={date} aria-label={label.day}>
@@ -175,7 +175,9 @@ export default async function SchedulePage({
                   {shifts.length ? shifts.map((shift) => (
                     <div className="employee-schedule-shift" key={shift.id}>
                       <strong>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</strong>
+                      {shift.endTime < shift.startTime || shift.endTime === '24:00' ? <span>Ends {formatDayLabel(addDays(shift.date,1)).day}</span> : null}
                       <span>{locations.find((location) => location.id === shift.locationId)?.shortName}</span>
+                      {shift.positionName ? <span>{shift.positionName}</span> : null}
                       {shift.isDesignatedLead || shift.isCalloutApproved ? (
                         <div className="employee-schedule-tags">
                           {shift.isDesignatedLead ? <small className="employee-designated-lead">Designated Lead</small> : null}

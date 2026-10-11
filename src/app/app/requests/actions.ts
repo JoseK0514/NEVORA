@@ -12,6 +12,7 @@ import {
 
 export async function requestTimeOffAction(formData: FormData) {
   const session = await requireSelfService("/app/requests");
+  const proof = await requireSessionMutationProof();
   const requestId = String(formData.get("requestId") ?? "");
   const startDate = String(formData.get("startDate") ?? "");
   const endDate = String(formData.get("endDate") ?? "");
@@ -39,6 +40,7 @@ export async function requestTimeOffAction(formData: FormData) {
   await createTimeOffRequest({
     requestId,
     employeeId: session.id,
+    proof,
     startDate,
     endDate,
     startTime,

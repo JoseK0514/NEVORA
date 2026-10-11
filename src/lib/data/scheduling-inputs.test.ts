@@ -15,7 +15,7 @@ vi.mock("@/lib/db", () => ({
       },
       { query: (text:string, values:unknown[]) => {
         if (text.includes('created_at::text AS "createdAt"') && text.includes('FROM workspaces')) return [{id:'northside',name:'Northside Services',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}];
-        if ((text.includes('FROM workspaces') && !text.includes('FROM shifts')) || text.includes('WITH cancelled AS')) return {text,values};
+        if ((text.includes('FROM workspaces') && !text.includes('FROM shifts')) || text.includes('WITH cancelled AS') || /FOR (?:SHARE|UPDATE)|management_authorization/.test(text)) return {text,values};
         return mocks.query(text,values);
       }, transaction: mocks.transaction },
     ),
@@ -156,7 +156,7 @@ describe("normal-based weekly submissions", () => {
       "E",
       "2026-10-05",
       [{ dayOfWeek: 1, startTime: "08:00", endTime: "16:00" }],
-      [],
+      [], managementProof('E', 'EMPLOYEE'),
     );
     expect(
       mocks.statements.some((s) => s.text.includes("uses_normal_availability")),
@@ -176,7 +176,7 @@ describe("normal-based weekly submissions", () => {
   });
   it("unavailable all week writes seven dated full-day exceptions", async () => {
     mocks.query.mockResolvedValue([]);
-    await replaceWeeklyAvailability("E", "2026-10-05", [], []);
+    await replaceWeeklyAvailability("E", "2026-10-05", [], [], managementProof('E', 'EMPLOYEE'));
     const exceptions = mocks.statements.filter((s) =>
       s.text.includes("INSERT INTO availability_exceptions"),
     );
@@ -193,7 +193,7 @@ describe("normal-based weekly submissions", () => {
       "E",
       "2026-10-05",
       [{ dayOfWeek: 1, startTime: "10:00", endTime: "14:00" }],
-      [1],
+      [1], managementProof('E', 'EMPLOYEE'),
     );
     const deletes = mocks.statements.filter((s) =>
       s.text.includes("DELETE FROM availability_exceptions"),
@@ -238,7 +238,7 @@ it("a deadline failure during the transaction propagates as a locked submission"
   mocks.query.mockResolvedValue([]);
   mocks.transaction.mockRejectedValue({ code: "22012" });
   await expect(
-    replaceWeeklyAvailability("E", "2026-10-05", [], []),
+    replaceWeeklyAvailability("E", "2026-10-05", [], [], managementProof('E', 'EMPLOYEE')),
   ).rejects.toThrow("Weekly availability is locked");
 });
 
@@ -252,7 +252,7 @@ it("health reads Sunday carry-in work by business date rather than schedule owne
 });
 it("the final deadline guard uses the current clock after the lock wait", async () => {
   mocks.query.mockResolvedValue([]);
-  await replaceWeeklyAvailability("E", "2026-10-05", [], []);
+  await replaceWeeklyAvailability("E", "2026-10-05", [], [], managementProof('E', 'EMPLOYEE'));
   expect(
     mocks.statements.find((statement) =>
       statement.text.includes("deadline_guard"),
@@ -317,7 +317,7 @@ it("retries a stale legacy conversion after locking and preserves another saved 
   mocks.transaction
     .mockImplementationOnce(async () => {
       converted = true;
-      throw { code: "22P02" };
+      throw Object.assign(new Error('invalid input syntax for type integer: "availability_version_conflict"'), { code: "22P02" });
     })
     .mockResolvedValueOnce([]);
   await replaceWeeklyAvailability(
@@ -327,7 +327,7 @@ it("retries a stale legacy conversion after locking and preserves another saved 
       { dayOfWeek: 1, startTime: "06:00", endTime: "18:00" },
       { dayOfWeek: 2, startTime: "10:00", endTime: "12:00" },
     ],
-    [2],
+    [2], managementProof('E', 'EMPLOYEE'),
   );
   expect(mocks.transaction).toHaveBeenCalledTimes(2);
   const retryQueries = mocks.transaction.mock.calls[1][0] as Array<{
@@ -357,9 +357,9 @@ it("retries a stale legacy conversion after locking and preserves another saved 
 
 it("repeated concurrent availability changes stop after bounded retries", async () => {
   mocks.query.mockResolvedValue([]);
-  mocks.transaction.mockRejectedValue({ code: "22P02" });
+  mocks.transaction.mockRejectedValue(Object.assign(new Error('invalid input syntax for type integer: "availability_version_conflict"'), { code: "22P02" }));
   await expect(
-    replaceWeeklyAvailability("E", "2026-10-05", [], []),
+    replaceWeeklyAvailability("E", "2026-10-05", [], [], managementProof('E', 'EMPLOYEE')),
   ).rejects.toThrow("Availability changed while saving");
   expect(mocks.transaction).toHaveBeenCalledTimes(3);
 });
@@ -375,7 +375,7 @@ describe('notification cancellation joins availability transactions', () => {
  });
  it('zero-hour submission cancels its reminder in the same transaction', async()=>{
    mocks.query.mockImplementation((text:string,values:unknown[]) => text.includes('WITH cancelled AS') ? {text,values} : []);
-   await replaceWeeklyAvailability('E','2026-10-05',[],[]);
+   await replaceWeeklyAvailability('E','2026-10-05',[],[], managementProof('E', 'EMPLOYEE'));
    const batch = mocks.transaction.mock.calls[0][0];
    expect(batch).toEqual(expect.arrayContaining([expect.objectContaining({text:expect.stringContaining('UPDATE push_deliveries'),values:['2026-10-05','E',null]})]));
  });

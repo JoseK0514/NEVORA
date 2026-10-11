@@ -25,7 +25,7 @@ export default async function EditLocationPage({
         description="Name changes preserve the Clocker link."
       />
       <section className="panel form-panel">
-        <ConfigurationForm action={updateLocationAction}>
+        <ConfigurationForm action={updateLocationAction} reviewedUpdatedAt={location.updatedAt}>
           <LocationConfigurationFields location={location} />
           <p>
             Clocker:{" "}

@@ -3,12 +3,13 @@ import { revalidatePath } from "next/cache";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { requireRoles } from "@/lib/auth/permissions";
 import { getWorkspace, saveWorkspaceProfile } from "@/lib/data/workspaces";
-import { createLocation, updateLocation } from "@/lib/data/locations";
-import { createPosition, updatePosition } from "@/lib/data/positions";
+import { createLocation, updateLocation, LocationConcurrencyError } from "@/lib/data/locations";
+import { createPosition, updatePosition, PositionConcurrencyError } from "@/lib/data/positions";
 import type { ConfigurationResult } from "@/components/configuration-form";
 const value = (data: FormData, key: string) =>
   String(data.get(key) ?? "").trim();
 function failure(error: unknown): ConfigurationResult {
+  if (error instanceof LocationConcurrencyError || error instanceof PositionConcurrencyError) return { error: error.message };
   const message = error instanceof Error ? error.message : "";
   const safe =
     /^(?:Location name|Short name|Position name|Clocker key|Workspace name|A valid|Time zone|Changing the business timezone|Choose|Only an active|Workspace configuration|Position not found|Location not found)/;
@@ -67,16 +68,17 @@ export async function updateLocationAction(
   const actor = await requireRoles(["OWNER"]);
   const proof = await requireSessionMutationProof();
   try {
-    await updateLocation({
+    const location = await updateLocation({
       id: value(data, "id"),
       name: value(data, "name"),
       shortName: value(data, "shortName"),
       active: data.get("active") === "on",
+      expectedUpdatedAt: value(data, "expectedUpdatedAt"),
       actorEmployeeId: actor.id,
       proof,
     });
     revalidatePath("/app", "layout");
-    return { success: "Location updated. Its Clocker link is unchanged." };
+    return { success: "Location updated. Its Clocker link is unchanged.", updatedAt: location.updatedAt };
   } catch (error) {
     return failure(error);
   }
@@ -104,15 +106,17 @@ export async function updatePositionAction(
   const actor = await requireRoles(["OWNER"]);
   const proof = await requireSessionMutationProof();
   try {
-    await updatePosition({
+    const position = await updatePosition({
       id: value(data, "id"),
       name: value(data, "name"),
       active: data.get("active") === "on",
+      expectedUpdatedAt: value(data, "expectedUpdatedAt"),
       actorEmployeeId: actor.id,
       proof,
     });
     revalidatePath("/app", "layout");
     return {
+      updatedAt: position.updatedAt,
       success:
         "Position updated. Existing memberships and history are retained.",
     };

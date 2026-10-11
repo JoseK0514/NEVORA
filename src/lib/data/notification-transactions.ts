@@ -23,6 +23,8 @@ import type { SessionMutationProof } from '../shift-changes/types';
 import { assertManagementProof, managementSessionStatements } from './management-session';
 import { generationSourceSql, generationMutationGuards, type GenerationSource } from './generation-guards';
 import { ManualAssignmentConflictError, validateManualAssignments } from './manual-assignment-validation';
+import { assertCoverageRepairReview } from './coverage-repair.server';
+import { CoverageRepairConflictError } from '../scheduling/coverage-repair';
 import type { EmployeePublicationProjection, RecipientAccess, ScheduleSourceSnapshot } from '../notifications/types';
 /** Neon HTTP transactions are ordered, non-interactive batches. Never await
  * individual query promises before passing the batch to sql.transaction. */
@@ -201,13 +203,14 @@ function supersedePersonalStatements(week: string, employeeId: string, environme
     WHERE notification_id IN (SELECT id FROM cancelled) AND status IN ('queued','retry_pending','processing')`, values: [week, environment, employeeId]
         }];
 }
-/** The only publication/write protocol. A stale pre-read aborts the WHOLE Neon
- * batch and is rebuilt, never patched or reused, at most three times. */
+/** The only publication/write protocol. Ordinary callers rebuild a conflicted
+ * whole batch at most three times; gap repairs require an explicit fresh review. */
 type ManagementWeekAuthority = { sourceType: 'MANAGER_MUTATION' | 'PUBLISH'; proof: SessionMutationProof } | { sourceType: 'EXCHANGE' | 'CALLOUT'; proof?: never };
 export async function commitPublishedWeekChange(input: ManagementWeekAuthority & {
     weekStarts: readonly string[];
     actorEmployeeId: string;
     sourceId?: string;
+    coverageRepairReview?: string;
     build: (snapshot: GuardedWeekState, config: NotificationConfig) => WeekMutationBatch;
 }, executor: SqlExecutor = neonNotificationExecutor()): Promise<WeekMutationResult> {
     if (input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') assertManagementProof(input.proof, input.actorEmployeeId);
@@ -228,6 +231,12 @@ export async function commitPublishedWeekChange(input: ManagementWeekAuthority &
         if (!read)
             throw new Error('Schedule snapshot could not be read.');
         const state = read.state;
+        // A repair retains its ORIGINAL reviewed source on every retry. Ordinary
+        // callers still rebuild against a fresh source after a version conflict.
+        if (input.coverageRepairReview !== undefined) {
+            if (input.sourceType !== 'MANAGER_MUTATION') throw new CoverageRepairConflictError();
+            assertCoverageRepairReview(read.source, input.coverageRepairReview, input.proof);
+        }
         // Builders receive an isolated value so accidental mutation cannot weaken the guard.
         const batch = input.build(structuredClone(state),config);
         if (!batch.statements.length)
@@ -244,6 +253,8 @@ export async function commitPublishedWeekChange(input: ManagementWeekAuthority &
         catch (error) {
             const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
             const conflict = code === '22P02' && error instanceof Error && /schedule_week_version_conflict|generation_source_conflict/.test(error.message);
+            if (input.coverageRepairReview !== undefined && (conflict || code === '40001' || code === '40P01' || code === '55P03' || code === '57014'))
+                throw new CoverageRepairConflictError();
             if (attempt === 2 || !(conflict || code === '40001' || code === '40P01'))
                 throw error;
         }

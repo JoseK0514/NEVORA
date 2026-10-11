@@ -5,7 +5,7 @@ import type { NotificationConfig, RecipientAccess, SourceSnapshot, SqlExecutor, 
 import { cancelNotificationStatements, notificationIntentStatements } from './notifications';
 
 import type { SessionMutationProof } from "../shift-changes/types";
-import { managementSessionStatements } from "./management-session";
+import { assertManagementProof, managementSessionStatements } from "./management-session";
 
 export type RequestSnapshot = Extract<SourceSnapshot, { kind: 'TIME_OFF' | 'EXCHANGE' | 'CALLOUT' }>;
 /** Time off retains status versions. Shift changes use monotonic revisions;
@@ -42,8 +42,13 @@ const recipientSql = `SELECT e.id AS "employeeId", e.role, e.active,
   FROM employees e ORDER BY e.id`;
 /** Non-schedule Time Off writes still guard current recipient access, then commit
  * the mutation, cancellation and intents together. No provider dependency. */
-export async function commitRequestTransition(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId: string; mutation: SqlStatement; managementProof?: SessionMutationProof }, executor: SqlExecutor): Promise<boolean> {
+export async function commitRequestTransition(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId: string; mutation: SqlStatement; managementProof?: SessionMutationProof; selfServiceProof?: SessionMutationProof }, executor: SqlExecutor): Promise<boolean> {
   if (input.after.kind === 'TIME_OFF' && input.after.record.status !== 'PENDING' && !input.managementProof) throw new Error('management_authorization');
+  const submission = input.after.kind === 'TIME_OFF' && input.after.record.status === 'PENDING';
+  const proof = submission ? input.selfServiceProof : input.managementProof;
+  if (input.after.kind === 'TIME_OFF' && input.after.record.status === 'PENDING' && (!proof || input.after.record.employeeId !== input.actorEmployeeId)) throw new Error('management_authorization');
+  if (proof) assertManagementProof(proof, input.actorEmployeeId);
+  const authority = () => proof ? managementSessionStatements(proof, input.actorEmployeeId, submission ? ['EMPLOYEE', 'LEAD'] : ['OWNER', 'MANAGER']) : [];
   const workspace = await getWorkspace(executor);
   const recipients = await executor.query<RecipientAccess>({ text: recipientSql, values: [] });
   try {
@@ -54,12 +59,12 @@ export async function commitRequestTransition(input: { before?: RequestSnapshot;
       { text: 'LOCK TABLE employee_location_eligibility IN SHARE MODE', values: [] },
       // A competing decision can hold this row after recipient locks. Acquire
       // it before the wall-clock session check so expiry during that wait fails.
-      ...(input.managementProof && input.after.kind === 'TIME_OFF' ? [{ text: 'SELECT id FROM time_off_requests WHERE id=$1 ORDER BY id FOR UPDATE', values: [input.after.record.id] }] : []),
-      ...(input.managementProof ? managementSessionStatements(input.managementProof, input.actorEmployeeId) : []),
+      ...(proof && input.after.kind === 'TIME_OFF' ? [{ text: 'SELECT id FROM time_off_requests WHERE id=$1 ORDER BY id FOR UPDATE', values: [input.after.record.id] }] : []),
+      ...authority(),
       { text: `SELECT (CASE WHEN COALESCE((SELECT jsonb_agg(r ORDER BY r."employeeId") FROM (${recipientSql}) r),'[]'::jsonb)=$1::jsonb THEN '1' ELSE 'request_transition_conflict' END)::integer AS access_guarded`, values: [JSON.stringify(recipients)] },
       guardedRequestMutation(input.mutation),
-      ...requestNotificationStatements({ ...input, recipients,config:bindWorkspaceNotificationConfig(readNotificationConfig(process.env),workspace) }),
-      ...(input.managementProof ? managementSessionStatements(input.managementProof, input.actorEmployeeId) : []),
+      ...requestNotificationStatements({ before: input.before, after: input.after, actorEmployeeId: input.actorEmployeeId, recipients,config:bindWorkspaceNotificationConfig(readNotificationConfig(process.env),workspace) }),
+      ...authority(),
     ]);
     return true;
   } catch (error) {

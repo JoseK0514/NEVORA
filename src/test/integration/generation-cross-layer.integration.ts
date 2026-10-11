@@ -14,7 +14,7 @@ import { listCapturedShiftPositions } from '../../lib/data/publication-revisions
 import { acknowledgeScheduleWeek } from '../../lib/data/acknowledgements';
 import { personalProjections, readNotificationWeekState } from '../../lib/data/notification-transactions';
 
-import { replaceWeeklyAvailability } from '../../lib/data/week-settings';
+import { replaceWeeklyAvailability } from './self-service-api';
 
 import { sqlNotificationStateRepository } from '../../lib/data/notification-state';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';

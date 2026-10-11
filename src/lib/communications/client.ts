@@ -2,6 +2,8 @@
 import {useEffect,useRef,useState} from 'react';
 import {createPrivateSnapshotController,type PrivatePanelState} from '../private-snapshot-client';
 import type {CommunicationRead,CommunicationListRead,CommunicationContext,CommandResult} from './types';
+import {createCommunicationRecovery,type CommunicationRecoveryState} from './recovery';
+export type {CommunicationNotice} from './recovery';
 export type CommunicationMode='employee'|'manager';
 export type CommunicationResource=CommunicationRead|CommunicationListRead|CommunicationContext;
 export type CommunicationLifetime={state:'ready';observedAt:string;validForMs:number;value:CommunicationResource}|{state:'unavailable';reason:string};
@@ -19,12 +21,12 @@ export function parseCommunicationLifetime(value:unknown,authority:string):Commu
  if(JSON.stringify(v).length>1_000_000)throw Error('Update unavailable');
  return {state:'ready',observedAt:v.observedAt,validForMs:v.validForMs,value:v};
 }
-export function useCommunicationResource(mode:CommunicationMode,authority:string,path:string,request?:(signal:AbortSignal)=>Promise<unknown>){
+export function useCommunicationResource(mode:CommunicationMode,authority:string,path:string,request?:(signal:AbortSignal)=>Promise<unknown>,onPause?:()=>void){
  const [state,setState]=useState<PrivatePanelState<CommunicationLifetime>>({snapshot:null,paused:false,refreshing:true});
  const ref=useRef<ReturnType<typeof createPrivateSnapshotController<CommunicationLifetime>>|null>(null);
- const requestRef=useRef(request);useEffect(()=>{requestRef.current=request;},[request]);
+ const requestRef=useRef(request),pauseRef=useRef(onPause);useEffect(()=>{requestRef.current=request;pauseRef.current=onPause;},[request,onPause]);
  useEffect(()=>{
-  const controller=createPrivateSnapshotController<CommunicationLifetime>(setState,signal=>requestRef.current?requestRef.current(signal):communicationRequest(mode,authority,path,undefined,signal),value=>parseCommunicationLifetime(value,authority),reason=>({state:'unavailable',reason}),()=> 'read_failed');
+  const controller=createPrivateSnapshotController<CommunicationLifetime>(next=>{if(next.paused||!next.snapshot||next.snapshot.state==='unavailable')pauseRef.current?.();setState(next);},signal=>requestRef.current?requestRef.current(signal):communicationRequest(mode,authority,path,undefined,signal),value=>parseCommunicationLifetime(value,authority),reason=>({state:'unavailable',reason}),()=> 'read_failed');
   ref.current=controller;let mounted=true;
   const pause=()=>controller.pause(),sync=()=>{controller.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)controller.start();};
   document.addEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,sync);
@@ -33,25 +35,17 @@ export function useCommunicationResource(mode:CommunicationMode,authority:string
  },[mode,authority,path]);
  return {state,value:!state.paused&&state.snapshot?.state==='ready'?state.snapshot.value:null,refresh:()=>ref.current?.refresh()};
 }
-export type CommunicationNotice='conflict'|'unknown'|'blocked'|'unavailable'|'committed'|null;
-/** Mutation completion is fenced to this mounted private view. No storage retry,
- * optimistic acknowledgement or new operation ID after an ambiguous response. */
-export function useCommunicationAction(mode:CommunicationMode,authority:string,onCommit:(result:Extract<CommandResult,{status:'committed'}>)=>void){
- const [pending,setPending]=useState(false),[notice,setNotice]=useState<CommunicationNotice>(null);
- const op=useRef<string|null>(null),generation=useRef(0),abort=useRef<AbortController|null>(null);
- useEffect(()=>()=>{generation.current++;abort.current?.abort();},[]);
- async function run(body?:unknown){
-  if(pending)return;const sequence=++generation.current;setPending(true);setNotice(null);const controller=new AbortController();abort.current=controller;
-  if(body&&typeof body==='object'&&'operationId'in body)op.current=String(body.operationId);
-  try{
-   const result=await communicationRequest(mode,authority,body===undefined?'/operations/'+op.current:'',body,controller.signal) as CommandResult;
-   if(sequence!==generation.current)return;
-   if(result.status==='committed'){op.current=null;setNotice('committed');onCommit(result);}
-   else if(result.status==='conflict'||result.status==='blocked'){op.current=null;setNotice(result.status);}
-   else if('state'in result&&result.state==='unauthorized'){op.current=null;setNotice('blocked');}
-   else setNotice(op.current?'unknown':'unavailable');
-  }catch{if(sequence===generation.current)setNotice(op.current?'unknown':'unavailable');}
-  finally{if(sequence===generation.current){setPending(false);abort.current=null;}}
- }
- return {pending,notice,setNotice,send:run,lookup:()=>run(),hasUnknown:notice==='unknown'};
+/** The controller survives temporary removal of private form content. */
+export function useCommunicationAction(mode:CommunicationMode,authority:string,onCommit:(result:Extract<CommandResult,{status:'committed'}>)=>void,authorized=true,onBlocked?:()=>void){
+ const [state,setState]=useState<CommunicationRecoveryState>({pending:false,notice:null,hasUnknown:false,canRetry:false});
+ const commit=useRef(onCommit),blocked=useRef(onBlocked),currentAuthorization=useRef(authorized);useEffect(()=>{commit.current=onCommit;blocked.current=onBlocked;},[onCommit,onBlocked]);
+ useEffect(()=>{currentAuthorization.current=authorized;},[authorized]);
+ const control=useRef<ReturnType<typeof createCommunicationRecovery>|null>(null);
+ useEffect(()=>{
+  const controller=createCommunicationRecovery((path,body,signal)=>communicationRequest(mode,authority,path,body,signal),setState,result=>commit.current(result),()=>blocked.current?.());
+  control.current=controller;controller.authorize(currentAuthorization.current);
+  return ()=>{controller.stop();if(control.current===controller)control.current=null;};
+ },[mode,authority]);
+ useEffect(()=>{control.current?.authorize(authorized);},[authorized]);
+ return {...state,setNotice:(notice:import('./recovery').CommunicationNotice)=>control.current?.setNotice(notice),send:(body:unknown)=>control.current?.send(body)??Promise.resolve(),lookup:()=>control.current?.lookup()??Promise.resolve(),retry:()=>control.current?.retry()??Promise.resolve(),clear:()=>control.current?.clear(),pause:()=>control.current?.authorize(false)};
 }

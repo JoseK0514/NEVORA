@@ -19,4 +19,4 @@ export type CommunicationListRead=
  | {state:'complete'|'partial';observedAt:string;items:CommunicationRead[];reason:string|null;validForMs:number;authority:string;timeZone:string}
  | {state:'unauthorized'|'unavailable';reason:string};
 
-export type CommunicationContext={state:'ready';authority:string;observedAt:string;validForMs:number;management:boolean;businessDate:string;timeZone:string;locations:{id:string;label:string}[];shifts:{id:string;locationId:string;date:string;startTime:string;endTime:string;assignmentEpisodeId:string;termsFingerprint:string}[]}|{state:'unavailable'|'unauthorized';reason:string};
+export type CommunicationContext={state:'ready';authority:string;observedAt:string;validForMs:number;management:boolean;businessDate:string;timeZone:string;locations:{id:string;label:string}[];shifts:{id:string;locationId:string;date:string;startTime:string;endTime:string;assignmentEpisodeId:string;termsFingerprint:string;assigneeLabel:string;positionLabel:string|null}[]}|{state:'unavailable'|'unauthorized';reason:string};

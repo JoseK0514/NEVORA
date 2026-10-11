@@ -2,7 +2,10 @@
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
 import {createPrivateSnapshotController,type PrivatePanelState} from '../lib/private-snapshot-client';
-import {parseEmployeeView,type EmployeeViewKind,type EmployeeViewSnapshot} from '../lib/employee-view';
+import {parseEmployeeView,type EmployeeViewKind,type EmployeeViewSnapshot,type NotificationReviewState,type NotificationActionState} from '../lib/employee-view';
+
+const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};
+const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
 
 export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=false}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled?:boolean}){
  const ready=!state.paused&&state.snapshot?.state==='ready'?state.snapshot:null;
@@ -18,7 +21,7 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
     </div>
    </>:<>
     {ready.coverage==='partial'?<p role="status">Some notifications are unavailable or outside this bounded view. Retry to check current access.</p>:null}
-    {ready.items.length?<ul className="employee-notification-list">{ready.items.map(item=><li key={item.id}><Link href={item.href}><strong>{item.label}</strong><time dateTime={item.at}>{new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short'}).format(new Date(item.at))}</time><span>Open current record <span aria-hidden="true">→</span></span></Link></li>)}</ul>:ready.coverage==='complete'?<p>No notifications in this current view.</p>:null}
+    {ready.items.length?<ul className="employee-notification-list">{ready.items.map(item=><li key={item.id}><Link href={item.href}><strong>{item.label}</strong><time dateTime={item.at}>{new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short'}).format(new Date(item.at))}</time><span>{reviewLabels[item.reviewState??'unavailable']} · {actionLabels[item.actionState??'unavailable']}</span><span>Open current record <span aria-hidden="true">→</span></span></Link></li>)}</ul>:ready.coverage==='complete'?<p>No notifications in this current view.</p>:null}
     <p className="employee-account-note">This inbox shows supported source updates. Check Requests and Schedule for their current status.</p>
    </>}
   <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button type="button" className="button secondary" disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':unavailable||(ready?.kind==='notifications'&&ready.coverage==='partial')?'Retry':'Refresh'}</button>}</footer>

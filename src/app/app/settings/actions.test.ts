@@ -17,11 +17,13 @@ vi.mock("@/lib/data/workspaces", () => ({
   getWorkspace: async () => ({ timeZone: "America/New_York" }),
   saveWorkspaceProfile: mocks.workspace,
 }));
-vi.mock("@/lib/data/locations", () => ({
+vi.mock("@/lib/data/locations", async original => ({
+  ...await original<Record<string, unknown>>(),
   createLocation: mocks.location,
   updateLocation: mocks.location,
 }));
-vi.mock("@/lib/data/positions", () => ({
+vi.mock("@/lib/data/positions", async original => ({
+  ...await original<Record<string, unknown>>(),
   createPosition: mocks.position,
   updatePosition: mocks.position,
 }));
@@ -42,6 +44,8 @@ const actions = [
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.role = "OWNER";
+  mocks.location.mockResolvedValue({ updatedAt: 'own.123457' });
+  mocks.position.mockResolvedValue({ updatedAt: 'own.123457' });
 });
 it.each(["MANAGER", "LEAD", "EMPLOYEE"])(
   "%s cannot mutate structure",
@@ -106,12 +110,14 @@ it("location update never accepts a replacement Clocker key", async () => {
   data.set("shortName", "West");
   data.set("clockerKey", "forged");
   data.set("active", "on");
+  data.set("expectedUpdatedAt", "reviewed.123456");
   await updateLocationAction(data);
   expect(mocks.location).toHaveBeenCalledWith({
     id: "west",
     name: "Renamed",
     shortName: "West",
     active: true,
+    expectedUpdatedAt: "reviewed.123456",
     actorEmployeeId: "trusted-owner",
     proof: { employee: {id:"trusted-owner",role:"OWNER"},sessionTokenHash:"a".repeat(64) },
   });

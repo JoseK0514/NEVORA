@@ -37,7 +37,7 @@ export default async function PositionsPage() {
         {positions.length ? (
           positions.map((position) => (
             <div key={position.id}>
-              <ConfigurationForm action={updatePositionAction}>
+              <ConfigurationForm action={updatePositionAction} reviewedUpdatedAt={position.updatedAt}>
                 <input type="hidden" name="id" value={position.id} />
                 <label>
                   Position name

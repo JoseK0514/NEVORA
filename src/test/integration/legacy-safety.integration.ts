@@ -1,7 +1,7 @@
 import { beforeAll, afterAll, beforeEach, expect, it } from 'vitest';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { reviewTimeOffRequest } from './management-api';
-import { createTimeOffRequest } from '../../lib/data/requests';
+import { createTimeOffRequest } from './self-service-api';
 import { listTemplateShifts } from '../../lib/data/schedule-templates';
 let database: Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
 const q=(text:string,values:readonly unknown[]=[])=>database.executor.query<Record<string,unknown>>({text,values});

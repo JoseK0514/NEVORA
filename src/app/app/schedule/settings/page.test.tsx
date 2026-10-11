@@ -46,7 +46,7 @@ vi.mock("next/link", () => ({
 }));
 
 beforeEach(() => {
-  vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations);
+  vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(location => ({ ...location, updatedAt: '2030-10-01 00:00:00+00' })));
   vi.mocked(listLocationStaffingSettings).mockResolvedValue(
     fuelRuleStaffing.map((s, i) => ({ ...s, locationName: `Fuel ${i + 1}` })),
   );
@@ -209,7 +209,7 @@ it("keeps FUEL – 2 staff isolated from FUEL – 110 during the confirmed weeke
 it('unconfigured staffing displays a blank explicit required Lead choice',async()=>{vi.mocked(listLocationStaffingSettings).mockResolvedValue([{locationId:'new',locationName:'New',minimumStaffPerShift:null,requiresDesignatedLead:null}]);const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toMatch(/select[^>]*name="lead-choice-new"[^>]*required/);expect(html).toContain('Choose a Lead rule');expect(html).not.toMatch(/name="staffing-new"[^>]*value="[0-9]/);});
 
 it("preserves configured customer location names without Fuel-specific normalization", async () => {
-  vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(l => ({...l, shortName: l.id === "loc-1" ? "FUEL - 2" : "Northside West"})));
+  vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(l => ({...l, updatedAt: '2030-10-01 00:00:00+00', shortName: l.id === "loc-1" ? "FUEL - 2" : "Northside West"})));
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));
   expect(html).toContain("FUEL - 2");
   expect(html).toContain("Northside West");

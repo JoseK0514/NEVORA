@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireSelfService } from "@/lib/auth/permissions";
+import { requireSessionMutationProof } from "@/lib/auth/session";
 import { replaceAvailability } from "@/lib/data/availability";
 import {
   AvailabilityDeadlineError,
@@ -15,6 +16,7 @@ import { isValidWeekStart } from "@/lib/date-utils";
 
 export async function saveAvailabilityAction(formData: FormData) {
   const session = await requireSelfService("/app/availability");
+  const proof = await requireSessionMutationProof();
   const windows: Array<{ dayOfWeek: number; startTime: string; endTime: string }> = [];
 
   for (let day = 0; day < 7; day += 1) {
@@ -33,7 +35,7 @@ export async function saveAvailabilityAction(formData: FormData) {
     windows.push({ dayOfWeek: day, startTime, endTime });
   }
 
-  await replaceAvailability(session.id, windows);
+  await replaceAvailability(session.id, windows, proof);
   revalidatePath("/app/availability");
   redirect("/app/availability?saved=1");
 }
@@ -41,6 +43,7 @@ export async function saveAvailabilityAction(formData: FormData) {
 
 export async function saveWeeklyAvailabilityAction(formData: FormData) {
   const session = await requireSelfService("/app/availability");
+  const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
 
   try { businessDateStart(weekStart); } catch { redirect("/app/availability?error=invalid_week"); }
@@ -94,7 +97,7 @@ export async function saveWeeklyAvailabilityAction(formData: FormData) {
   const changedRaw = formData.get("changedDays");
   const changedDays = changedRaw === null ? undefined : String(changedRaw) === "" ? [] : String(changedRaw).split(",").map(Number);
   if (changedDays?.some(day => !Number.isInteger(day) || day < 0 || day > 6)) redirect(`/app/availability?week=${weekStart}&error=invalid`);
-  try { await replaceWeeklyAvailability(session.id, weekStart, windows, changedDays); }
+  try { await replaceWeeklyAvailability(session.id, weekStart, windows, changedDays, proof); }
   catch (error) { if (error instanceof AvailabilityDeadlineError) redirect(`/app/availability?week=${weekStart}&error=locked`); if (error instanceof AvailabilityConcurrencyError) redirect(`/app/availability?week=${weekStart}&error=concurrent`); throw error; }
   revalidatePath("/app/availability");
   revalidatePath("/app/schedule");

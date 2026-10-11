@@ -130,19 +130,32 @@ it('own same-status time-off rows identify distinct canonical dates and ranges w
  expect(r.snapshot.attention.find(i=>i.ref.id==='home-other-period')?.label).toBe('Time off approved · Dec 2, 2030 – Dec 4, 2030');
  expect(JSON.stringify(r)).not.toContain('PRIVATE OTHER PERIOD');
 });
-it('acknowledged last own shift removal remains explicitly unavailable rather than complete-empty weekly coverage',async()=>{
+it('acknowledged last own shift removal has exact current review and preserves another authorized week',async()=>{
  const review=await readEmployeeWeeklyReview(proof,fixture.week,db.executor);
  if(!review.intent||!review.displayedRevisionId)throw Error('Missing actual reviewed intent');
  expect(await acknowledgeScheduleWeek({proof,weekStart:fixture.week,expectedRevisionId:review.displayedRevisionId,...review.intent},db.executor)).toMatchObject({status:'committed'});
  await q('DELETE FROM shifts WHERE id=$1',[fixture.sourceId]);
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:fixture.week,managerId:'QAOWNER'},db.executor);
  const removal=await readEmployeeWeeklyReview(proof,fixture.week,db.executor);
- expect(removal.shifts).toEqual([]);expect(removal.acknowledgement.needsAcknowledgement).toBe(true);expect(removal.publicationChanges.length).toBeGreaterThan(0);expect(removal.intent).toBeNull();
- const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{acknowledgements:{state:'unavailable',reason:'review_unavailable'},timeOff:{state:'complete'}}}});
+ expect(removal.shifts).toEqual([]);expect(removal.acknowledgement.needsAcknowledgement).toBe(true);expect(removal.publicationChanges.length).toBeGreaterThan(0);
+ if(!removal.intent||!removal.displayedRevisionId)throw Error('Missing current relevant empty-week intent');
+ const {addDays}=await import('../../lib/date-utils'),otherWeek=addDays(fixture.week,7);
+ await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('empty-review-other','loc-1',$1,'DRAFT','QAOWNER')",[otherWeek]);
+ await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('empty-review-other-shift','empty-review-other',$1,$2,'08:00','16:00')",[proof.employee.id,otherWeek]);
+ await publishScheduleWithRevision({locationId:'loc-1',weekStart:otherWeek,managerId:'QAOWNER'},db.executor);
+ await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('empty-review-other-location','loc-2',$1,'DRAFT','QAOWNER')",[otherWeek]);
+ await publishScheduleWithRevision({locationId:'loc-2',weekStart:otherWeek,managerId:'QAOWNER'},db.executor);
+ const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{acknowledgements:{state:'complete'},timeOff:{state:'complete'}}}});
  if(!('snapshot' in r))throw Error('Expected independently authorized source');
  expect(r.snapshot.attention.some(row=>row.ref.id==='home-leave')).toBe(true);
- expect(r.snapshot.attention.some(row=>row.ref.kind==='SCHEDULE')).toBe(false);
+ expect(r.snapshot.attention).toEqual(expect.arrayContaining([expect.objectContaining({href:'/app/schedule?week='+fixture.week,required:true,actionable:true}),expect.objectContaining({href:'/app/schedule?week='+otherWeek,required:true,actionable:true})]));
+ const command={proof,weekStart:fixture.week,expectedRevisionId:removal.displayedRevisionId,...removal.intent};
+ const committed=await acknowledgeScheduleWeek(command,db.executor);expect(committed).toMatchObject({status:'committed'});expect(await acknowledgeScheduleWeek(command,db.executor)).toEqual(committed);
+ expect(await readEmployeeWeeklyReview(proof,fixture.week,db.executor)).toMatchObject({shifts:[],acknowledgement:{acknowledged:true,needsAcknowledgement:false},intent:null});
+ const after=await home();if(!('snapshot'in after))throw Error('No current Home');
+ expect(after.snapshot.attention.filter(row=>row.ref.kind==='SCHEDULE').map(row=>row.href)).toEqual(['/app/schedule?week='+otherWeek]);
 });
+
 it('actual actionable coverage expiring between source reads and final SQL observation requires source revalidation',async()=>{
  const {createCoverageOffer}=await import('./shift-change-api');
  const id=await createCoverageOffer({sourceShiftId:fixture.targetId,requestedByEmployeeId:fixture.actors[1]},db.executor);

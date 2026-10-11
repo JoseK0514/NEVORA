@@ -11,6 +11,9 @@ const fields = 'id, workspace_id AS "workspaceId", name, active, created_at::tex
 export class PositionPermissionError extends Error {
   constructor() { super('An active Owner is required for catalog edits; an active Manager or Owner is required for employee positions.'); }
 }
+export class PositionConcurrencyError extends Error {
+  constructor() { super('Position changed while you were editing. Your entries are preserved; reload and review the latest details before saving.'); }
+}
 function positionName(value: string): string {
   const name = value.trim();
   if (!name || [...name].length > 80) throw new Error('Position name must contain 1–80 characters.');
@@ -22,6 +25,7 @@ function permission(actorEmployeeId: string, catalog: boolean): SqlStatement {
 async function transaction(statements: SqlStatement[], sql: SqlExecutor): Promise<unknown[][]> {
   try { return await sql.transaction(statements); }
   catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === '22P02' && error.message === 'invalid input syntax for type integer: "position_version_conflict"') throw new PositionConcurrencyError();
     if (error instanceof Error && error.message.includes('position_permission_denied')) throw new PositionPermissionError();
     if (error instanceof Error && error.message.includes('position_membership_invalid')) throw new Error('Choose configured active positions; only existing inactive memberships may be retained.');
     if (error instanceof Error && error.message.includes('position_employee_missing')) throw new Error('Employee not found.');
@@ -47,8 +51,9 @@ export async function createPosition(input: { name: string; actorEmployeeId: str
   const result = await transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId, ['OWNER'])], sql);
   return result[statements.length - 1]![0] as Position;
 }
-export async function updatePosition(input: { id: string; name: string; active: boolean; actorEmployeeId: string; proof: SessionMutationProof }, executor?: SqlExecutor): Promise<Position> {
+export async function updatePosition(input: { id: string; name: string; active: boolean; expectedUpdatedAt: string; actorEmployeeId: string; proof: SessionMutationProof }, executor?: SqlExecutor): Promise<Position> {
   assertManagementProof(input.proof,input.actorEmployeeId);
+  if (!input.expectedUpdatedAt) throw new PositionConcurrencyError();
   const name = positionName(input.name);
   if (typeof input.active !== 'boolean') throw new Error('Choose an active state.');
   const sql = executor ?? neonNotificationExecutor(), workspace = await getWorkspace(sql);
@@ -58,6 +63,7 @@ export async function updatePosition(input: { id: string; name: string; active: 
     permission(input.actorEmployeeId, true),
     { text: 'SELECT id FROM positions WHERE id=$1 AND workspace_id=$2 ORDER BY id FOR UPDATE', values: [input.id, workspace.id] },
     ...managementSessionStatements(input.proof,input.actorEmployeeId,['OWNER']),
+    { text: `SELECT (CASE WHEN EXISTS(SELECT 1 FROM positions WHERE id=$1 AND workspace_id=$2 AND updated_at::text=$3) THEN '1' ELSE 'position_version_conflict' END)::integer`, values: [input.id, workspace.id, input.expectedUpdatedAt] },
     { text: `UPDATE positions SET name=$1,active=$2,updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=$3 AND workspace_id=$4 RETURNING ${fields}`, values: [name, input.active, input.id, workspace.id] },
   ];
   const result = await transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId, ['OWNER'])], sql);

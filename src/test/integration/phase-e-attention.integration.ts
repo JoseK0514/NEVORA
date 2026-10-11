@@ -131,3 +131,41 @@ it('own TIME_CORRECTION detail uses append-only event revision; new decision res
  expect(await readEmployeeAttentionDetail(other,correctionRef,db.executor)).toEqual({state:'unavailable'});expect(await readEmployeeAttentionDetail(other,ref,db.executor)).toEqual({state:'unavailable'});
  expect(await recordEmployeeAttentionReceipt(other,{kind:'MARK_READ',ref:read.ref,...read.intent},db.executor)).toEqual({status:'blocked',reason:'review_authority'});
 });
+
+async function removeOwnAssignments(n=2){
+ await q("DELETE FROM shifts WHERE id='attention-shift'");
+ await publish(n);
+}
+it('a relevant removal-to-empty week confirms the displayed current revision and replays one receipt',async()=>{
+ expect((await acknowledgeScheduleWeek(await reviewed(),db.executor)).status).toBe('committed');
+ const history=await q('SELECT * FROM schedule_publication_revision_shifts ORDER BY id');
+ await removeOwnAssignments();const review=await readEmployeeWeeklyReview(proof,week,db.executor);
+ expect(review.shifts).toEqual([]);expect(review.acknowledgement.needsAcknowledgement).toBe(true);expect(review.intent).not.toBeNull();
+ const command=await reviewed();const results=await Promise.all([acknowledgeScheduleWeek(command,db.executor),acknowledgeScheduleWeek(command,db.executor)]);
+ expect(results[0]).toMatchObject({status:'committed',version:'revision-2'});expect(results[1]).toEqual(results[0]);
+ expect(await q('SELECT * FROM schedule_publication_revision_shifts ORDER BY id')).toEqual(history);
+ expect(await q('SELECT publication_revision_id FROM schedule_acknowledgements')).toEqual([{publication_revision_id:'revision-2'}]);
+ expect((await q('SELECT * FROM employee_attention_operations')).length).toBe(2);
+ const confirmed=await readEmployeeWeeklyReview(proof,week,db.executor);expect(confirmed.acknowledgement).toMatchObject({acknowledged:true,needsAcknowledgement:false});
+ expect(confirmed.readIntent).not.toBeNull();
+});
+it('an unrelated empty published week grants neither confirmation nor informational read authority',async()=>{
+ await q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('unrelated-empty','2030-10-14',1,'PUBLISH','QAOWNER')");
+ const review=await readEmployeeWeeklyReview(proof,'2030-10-14',db.executor);expect(review.intent).toBeNull();expect(review.readIntent).toBeNull();expect(review.acknowledgement.needsAcknowledgement).toBe(false);
+ const workspace=(await q('SELECT id FROM workspaces'))[0] as {id:string};const unrelated={kind:'SCHEDULE' as const,id:'2030-10-14',version:'unrelated-empty'};
+ expect(await acknowledgeScheduleWeek({proof,weekStart:unrelated.id,expectedRevisionId:unrelated.version,...attentionIntent(proof,workspace.id,'CONFIRM_WEEK',unrelated)},db.executor)).toMatchObject({status:'unavailable'});
+ expect(await q('SELECT * FROM schedule_acknowledgements')).toEqual([]);
+});
+it('removal-to-empty review still conflicts after a newer empty publication',async()=>{
+ await removeOwnAssignments();const input=await reviewed();await publish(3);
+ expect(await acknowledgeScheduleWeek(input,db.executor)).toMatchObject({status:'conflict'});expect(await q('SELECT * FROM schedule_acknowledgements')).toEqual([]);
+});
+it('removal-to-empty review denies a revoked session and commits no acknowledgement',async()=>{
+ await removeOwnAssignments();const input=await reviewed();await q("DELETE FROM employee_sessions WHERE employee_id='QAEMP'");
+ expect(await acknowledgeScheduleWeek(input,db.executor)).toMatchObject({status:'blocked'});expect(await q('SELECT * FROM schedule_acknowledgements')).toEqual([]);
+});
+it('weekly employee detail retains the captured position after the catalog name changes',async()=>{
+ await q("INSERT INTO positions(id,workspace_id,name) VALUES('historical-position','workspace-fuel','New catalog label')");
+ await q("UPDATE schedule_publication_revision_shifts SET position_id='historical-position',position_name='Barista at publication' WHERE revision_id='revision-1'");
+ const review=await readEmployeeWeeklyReview(proof,week,db.executor);expect(review.shifts[0]).toMatchObject({positionId:'historical-position',positionName:'Barista at publication'});
+});

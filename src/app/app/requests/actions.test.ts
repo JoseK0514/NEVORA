@@ -2,15 +2,18 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { requestTimeOffAction, reviewTimeOffAction } from './actions';
 import { requireRoles, requireSelfService } from '@/lib/auth/permissions';
 import { createTimeOffRequest, reviewTimeOffRequest } from '@/lib/data/requests';
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'M',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+import { requireSessionMutationProof } from '@/lib/auth/session';
+import { managementProof } from '../../../test/fixtures/management';
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:vi.fn(async()=>({employee:{id:'M',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)}))}));
 vi.mock('@/lib/auth/permissions',()=>({ TIME_OFF_REVIEW_ROLES:['OWNER','MANAGER'],requireRoles:vi.fn(),requireSelfService:vi.fn() }));
 vi.mock('@/lib/data/requests',()=>({ createTimeOffRequest:vi.fn(), reviewTimeOffRequest:vi.fn() }));
 vi.mock('next/navigation',()=>({ redirect:(path:string)=>{throw new Error(`redirect:${path}`);} }));
 vi.mock('next/cache',()=>({ revalidatePath:vi.fn() }));
 beforeEach(()=>{vi.clearAllMocks();vi.mocked(requireRoles).mockResolvedValue({id:'M',role:'MANAGER',firstName:'Manager',lastName:'Test',primaryLocationId:'L'});vi.mocked(requireSelfService).mockResolvedValue({id:'E',role:'EMPLOYEE',firstName:'Employee',lastName:'Test',primaryLocationId:'L'});});
 it('submits using session ownership, ignoring body identities',async()=>{
+ vi.mocked(requireSessionMutationProof).mockResolvedValueOnce(managementProof('E','EMPLOYEE'));
  const data=new FormData();data.set('requestId','b032d773-4569-4c8e-b263-b47d2be62e65');data.set('employeeId','other');data.set('startDate','2030-10-11');data.set('endDate','2030-10-11');
- await expect(requestTimeOffAction(data)).rejects.toThrow('submitted=1');expect(createTimeOffRequest).toHaveBeenCalledWith(expect.objectContaining({employeeId:'E'}));
+ await expect(requestTimeOffAction(data)).rejects.toThrow('submitted=1');expect(createTimeOffRequest).toHaveBeenCalledWith(expect.objectContaining({employeeId:'E',proof:managementProof('E','EMPLOYEE')}));
 });
 it('time_off_decision_returns_without_provider_contact using session manager identity',async()=>{
  const provider=vi.fn(()=>new Promise(()=>{}));vi.stubGlobal('fetch',provider);vi.mocked(reviewTimeOffRequest).mockResolvedValue(true);

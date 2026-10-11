@@ -23,7 +23,8 @@ import { activateEmployeeCredential, findEmployeeCredential, getEmployeeManageme
 import { createSession, getSession } from '../../lib/auth/session';
 import { deleteShift, insertShift, updateShift } from '../../lib/data/schedules';
 import { publishScheduleWithRevision } from '../../lib/data/publication-revisions';
-import { createTimeOffRequest, reviewTimeOffRequest } from '../../lib/data/requests';
+import { reviewTimeOffRequest } from '../../lib/data/requests';
+import { createTimeOffRequest } from './self-service-api';
 import { saveEmployeeCoreProfileAction, saveEmployeeSchedulingProfileAction, createEmployeeFormAction } from '../../app/app/employees/actions';
 import { createShiftAction, updateShiftAction } from '../../app/app/schedule/actions';
 

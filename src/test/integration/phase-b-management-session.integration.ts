@@ -33,12 +33,18 @@ it.each(cases)('actual $key action rejects a session revoked after entry authori
     const token = 'owned-phase-b-owner-session', hash = createHash('sha256').update(token).digest('hex');
     await db.executor.query({ text: "INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'owner',clock_timestamp()+interval '1 day')", values: [hash] });
     context.cookies.set('fuel_session', token);
+    const reviewedVersion = test.key === 'updateLocation'
+      ? (await db.executor.query<{ updatedAt: string }>({ text: "SELECT updated_at::text AS \"updatedAt\" FROM locations WHERE id='loc-1'", values: [] }))[0].updatedAt
+      : test.key === 'updatePosition'
+        ? (await db.executor.query<{ updatedAt: string }>({ text: "SELECT updated_at::text AS \"updatedAt\" FROM positions WHERE id='p1'", values: [] }))[0].updatedAt
+        : undefined;
     let revoked = false;
     context.executor = { query: db.executor.query, transaction: async (statements, signal) => {
       if (!revoked) { revoked = true; await db.executor.query({ text: 'DELETE FROM employee_sessions WHERE token_hash=$1', values: [hash] }); }
       return db.executor.transaction(statements, signal);
     } };
     const data = new FormData(); for (const [key, value] of Object.entries(test.form)) data.set(key, String(value));
+    if (reviewedVersion) data.set('expectedUpdatedAt', reviewedVersion);
     data.set('actorEmployeeId', 'FORGED'); data.set('sessionTokenHash', 'FORGED');
     let result: unknown; try { result = await test.action(data); } catch (error) { result = error; }
     expect(revoked).toBe(true);

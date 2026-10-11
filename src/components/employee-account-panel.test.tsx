@@ -18,3 +18,8 @@ it('renders safe-open links without read/ack or consent actions',()=>{
  const html=renderToStaticMarkup(<EmployeeAccountView kind="notifications" state={{snapshot:inbox,paused:false,refreshing:false}} onRetry={()=>{}}/>);
  expect(html).toContain('/app/notifications/open?notificationId=own');expect(html).not.toContain('Mark read');expect(html).not.toContain('Acknowledge');
 });
+it('shows required action independently from own read state and completed acknowledgement',()=>{
+ const snapshot={...inbox,items:[{...inbox.items[0],reviewState:'read' as const,actionState:'required' as const},{...inbox.items[0],id:'done',href:'/app/notifications/open?notificationId=done',reviewState:'confirmed' as const,actionState:'complete' as const}]};
+ const html=renderToStaticMarkup(<EmployeeAccountView kind="notifications" state={{snapshot,paused:false,refreshing:false}} onRetry={()=>{}}/>);
+ expect(html).toContain('Read');expect(html).toContain('Action required');expect(html).toContain('Confirmed');expect(html).toContain('Action complete');expect(html).not.toContain('Mark read');
+});

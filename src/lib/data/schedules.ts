@@ -15,6 +15,8 @@ import type { ScheduleStatus, UserRole, Position } from "@/lib/domain";
 
 import type { SessionMutationProof } from '../shift-changes/types';
 import { assertManagementProof } from './management-session';
+import { decodeCoverageRepairReview } from './coverage-repair.server';
+import { CoverageRepairConflictError } from '../scheduling/coverage-repair';
 
 export type ScheduleShiftRow = {
   assignmentOrigin?: AssignmentOrigin;
@@ -297,6 +299,40 @@ export async function insertShift(input: {
   }},executor);
   if(!result.committed) throw new Error('Schedule no longer exists.');
   return id;
+}
+
+/** Ensure the exact location/week and insert the reviewed replacement atomically. */
+export async function createCoverageRepairShift(input: {
+  review: string; employeeId: string; locationId: string; weekStart: string; date: string;
+  startTime: string; endTime: string; positionId?: string | null; isDesignatedLead: boolean;
+  actorEmployeeId: string; proof: SessionMutationProof;
+}, executor: SqlExecutor = neonNotificationExecutor()) {
+  assertManagementProof(input.proof, input.actorEmployeeId);
+  const review = decodeCoverageRepairReview(input.review, input.proof);
+  const locator = review.locator;
+  let actualPeriod, reviewedPeriod;
+  try { actualPeriod = shiftPeriod(input); reviewedPeriod = shiftPeriod(locator); }
+  catch { throw new CoverageRepairConflictError(); }
+  if (input.employeeId !== review.employeeId || input.locationId !== locator.locationId || input.weekStart !== locator.weekStart
+    || input.date !== locator.date || actualPeriod.start !== reviewedPeriod.start || actualPeriod.end !== reviewedPeriod.end
+    || (input.positionId || undefined) !== locator.positionId || input.isDesignatedLead !== (locator.reported.requiresLead || locator.target === 'LEAD')) throw new CoverageRepairConflictError();
+  const id = randomUUID(), newScheduleId = randomUUID();
+  const result = await commitPublishedWeekChange({ weekStarts: [locator.weekStart], actorEmployeeId: input.actorEmployeeId, proof: input.proof,
+    sourceType: 'MANAGER_MUTATION', sourceId: id, coverageRepairReview: input.review, build: state => {
+      const existing = state.schedules.find(s => s.locationId === locator.locationId && s.weekStart === locator.weekStart);
+      if (existing?.status === 'ARCHIVED') throw new CoverageRepairConflictError();
+      const scheduleId = existing?.id ?? newScheduleId;
+      const afterSchedules = existing ? state.schedules : [...state.schedules, { id: scheduleId, locationId: locator.locationId, weekStart: locator.weekStart, status: 'DRAFT' as const, updatedAt: '' }];
+      return { statements: [
+        ...(!existing ? [{ text: 'INSERT INTO schedules (id,location_id,week_start,created_by) VALUES ($1,$2,$3,$4)', values: [scheduleId, locator.locationId, locator.weekStart, input.actorEmployeeId] }] : []),
+        { text: 'INSERT INTO shifts (id,schedule_id,employee_id,date,start_time,end_time,is_designated_lead,position_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+          values: [id, scheduleId, review.employeeId, locator.date, locator.startTime, locator.endTime, input.isDesignatedLead, locator.positionId ?? null] },
+      ], afterSchedules, afterShifts: [...state.shifts, { sourceShiftId: id, scheduleId, weekStart: locator.weekStart, locationId: locator.locationId,
+        employeeId: review.employeeId, date: locator.date, startTime: locator.startTime, endTime: locator.endTime, positionId: locator.positionId,
+        isDesignatedLead: input.isDesignatedLead, isCalloutApproved: false, hasExchangeHistory: false }] };
+    } }, executor);
+  if (!result.committed) throw new CoverageRepairConflictError();
+  return { id, locator };
 }
 
 export function roleCanManageSchedule(role: UserRole) {

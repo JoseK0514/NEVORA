@@ -1,5 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
+import type { SessionMutationProof } from "../shift-changes/types";
+import type { SqlExecutor, SqlStatement } from "../notifications/types";
+import { neonNotificationExecutor } from "./notification-transactions";
+import { getWorkspace, workspaceReadGuard } from "./workspaces";
+import { assertManagementProof, managementSessionStatements } from "./management-session";
 
 import { readTeamAvailabilityInputs } from "./availability-inputs";
 import { resolveAvailabilityWeek } from "../scheduling/availability";
@@ -41,26 +46,22 @@ export async function listAvailability(employeeId: string): Promise<Availability
 export async function replaceAvailability(
   employeeId: string,
   windows: Array<{ dayOfWeek: number; startTime: string; endTime: string }>,
+  proof: SessionMutationProof,
+  executor: SqlExecutor = neonNotificationExecutor(),
 ) {
-  const sql = getDb();
-
-  const queries = [
-    sql`DELETE FROM availability_windows WHERE employee_id = ${employeeId}`,
-    ...windows.map(
-      (window) =>
-        sql`INSERT INTO availability_windows (
-          id, employee_id, day_of_week, start_time, end_time
-        ) VALUES (
-          ${randomUUID()},
-          ${employeeId},
-          ${window.dayOfWeek},
-          ${window.startTime},
-          ${window.endTime}
-        )`,
-    ),
+  assertManagementProof(proof, employeeId);
+  const workspace = await getWorkspace(executor);
+  const authority = () => managementSessionStatements(proof, employeeId, ['EMPLOYEE', 'LEAD']);
+  const statements: SqlStatement[] = [
+    ...workspaceReadGuard(workspace),
+    { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [employeeId] },
+    { text: 'SELECT id FROM availability_windows WHERE employee_id=$1 ORDER BY id FOR UPDATE', values: [employeeId] },
+    ...authority(),
+    { text: 'DELETE FROM availability_windows WHERE employee_id=$1', values: [employeeId] },
+    ...windows.map(window => ({ text: 'INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) VALUES($1,$2,$3,$4,$5)', values: [randomUUID(), employeeId, window.dayOfWeek, window.startTime, window.endTime] })),
+    ...authority(),
   ];
-
-  await sql.transaction(queries);
+  await executor.transaction(statements);
 }
 
 export async function listTeamAvailabilityWindows(weekStart?: string): Promise<Array<AvailabilityRecord & { employeeId: string }>> {

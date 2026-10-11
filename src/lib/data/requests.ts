@@ -6,6 +6,8 @@ import type { SqlExecutor } from "../notifications/types";
 import type { RequestStatus } from "@/lib/domain";
 
 import type { SessionMutationProof } from "../shift-changes/types";
+import { assertManagementProof, managementSessionStatements } from "./management-session";
+import { getWorkspace, workspaceReadGuard } from "./workspaces";
 
 export type TimeOffListItem = {
   id: string;
@@ -125,17 +127,20 @@ export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "
 export async function createTimeOffRequest(input: {
   requestId?: string;
   employeeId: string;
+  proof: SessionMutationProof;
   startDate: string;
   endDate: string;
   startTime?: string;
   endTime?: string;
   reason?: string;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
+  assertManagementProof(input.proof, input.employeeId);
   const id = input.requestId ?? randomUUID();
   const createdAt = new Date().toISOString();
   const committed = await commitRequestTransition({
     actorEmployeeId: input.employeeId,
-    after: requestSnapshot('TIME_OFF', { ...input, id, employeeName: '', status: 'PENDING', createdAt }),
+    selfServiceProof: input.proof,
+    after: requestSnapshot('TIME_OFF', { id, employeeId: input.employeeId, employeeName: '', startDate: input.startDate, endDate: input.endDate, startTime: input.startTime, endTime: input.endTime, reason: input.reason, status: 'PENDING', createdAt }),
     mutation: {
       text: `INSERT INTO time_off_requests (id, employee_id, start_date, end_date, start_time, end_time, reason, created_at)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (id) DO NOTHING RETURNING id`,
@@ -145,14 +150,24 @@ export async function createTimeOffRequest(input: {
   if (!committed) {
     // A retry may acknowledge only the same actor's exact original payload.
     // The conflicting insert rolled back its entire outbox batch.
-    const [receipt] = await executor.query({
+    const workspace = await getWorkspace(executor);
+    const authority = () => managementSessionStatements(input.proof, input.employeeId, ['EMPLOYEE', 'LEAD']);
+    const statements = [
+      ...workspaceReadGuard(workspace),
+      { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.employeeId] },
+      { text: 'SELECT id FROM time_off_requests WHERE id=$1 ORDER BY id FOR SHARE', values: [id] },
+      ...authority(),
+      {
       text: `SELECT id FROM time_off_requests WHERE id=$1 AND employee_id=$2
         AND start_date=$3::date AND end_date=$4::date
         AND start_time IS NOT DISTINCT FROM $5::time
         AND end_time IS NOT DISTINCT FROM $6::time
         AND reason IS NOT DISTINCT FROM $7::text`,
       values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null],
-    });
+      },
+    ];
+    const receipts = await executor.transaction([...statements, ...authority()]);
+    const receipt = receipts[statements.length - 1]?.[0];
     if (!receipt) throw new Error('Time off request changed. Please try again.');
   }
 }

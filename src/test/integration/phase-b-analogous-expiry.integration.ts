@@ -31,6 +31,8 @@ for (const scenario of scenarios) for (const expires of [false, true]) {
       await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'fr-owner',clock_timestamp()+interval '1 day')", [proof.sessionTokenHash]);
       const self = scenario.startsWith('self-'), target = self ? 'fr-owner' : 'fr-worker';
       const [reviewed] = await q<{ updatedAt: string }>('SELECT updated_at::text AS "updatedAt" FROM employees WHERE id=$1', [target]);
+      const [positionReview] = await q<{ updatedAt: string }>('SELECT updated_at::text AS "updatedAt" FROM positions WHERE id=$1', ['fr-position']);
+      const [locationReview] = await q<{ updatedAt: string }>('SELECT updated_at::text AS "updatedAt" FROM locations WHERE id=$1', ['loc-2']);
       const table = scenario === 'position-update' ? 'positions' : scenario === 'location-update' ? 'locations'
         : scenario === 'workspace-update' ? 'workspaces' : scenario === 'employee-scheduling' ? 'employee_positions' : 'employees';
       const expectedQuery = scenario === 'employee-create' ? 'insert into employees' : scenario === 'employee-scheduling' ? 'delete from employee_positions' : `update ${table}`;
@@ -56,8 +58,8 @@ for (const scenario of scenarios) for (const expires of [false, true]) {
       if (expires) await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '1500 milliseconds' WHERE token_hash=$1", [proof.sessionTokenHash]);
       const action = () => {
         const actor = { actorEmployeeId: proof.employee.id, proof };
-        if (scenario === 'position-update') return updatePosition({ ...actor, id: 'fr-position', name: 'Changed position', active: false }, executor);
-        if (scenario === 'location-update') return updateLocation({ ...actor, id: 'loc-2', name: 'Changed location', shortName: 'Changed', active: false }, executor);
+        if (scenario === 'position-update') return updatePosition({ ...actor, id: 'fr-position', name: 'Changed position', active: false, expectedUpdatedAt: positionReview.updatedAt }, executor);
+        if (scenario === 'location-update') return updateLocation({ ...actor, id: 'loc-2', name: 'Changed location', shortName: 'Changed', active: false, expectedUpdatedAt: locationReview.updatedAt }, executor);
         if (scenario === 'workspace-update') return saveWorkspaceProfile({ ...actor, name: 'Changed workspace', timeZone: 'America/Puerto_Rico' }, executor);
         if (scenario === 'employee-create') return insertEmployee({ ...actor, id: 'fr-new', firstName: 'Created', lastName: 'Worker', phone: '5550000004', role: 'EMPLOYEE', primaryLocationId: 'loc-1', eligibleLocationIds: ['loc-1'], positionIds: ['fr-position'] }, executor);
         if (scenario === 'employee-scheduling') return saveEmployeeSchedulingProfile({ ...actor, employeeId: target, expectedUpdatedAt: reviewed.updatedAt, eligibleLocationIds: ['loc-1','loc-2'], positionIds: ['fr-position'] }, executor);

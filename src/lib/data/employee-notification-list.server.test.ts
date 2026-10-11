@@ -25,3 +25,16 @@ it('applies owned SQL/abort budgets before the initial workspace read',async()=>
  expect(query).not.toHaveBeenCalled();
  expect(transaction).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({text:"SET LOCAL statement_timeout='2500ms'"})]),expect.any(AbortSignal));
 });
+it('projects current schedule confirmation independently from read receipts',async()=>{
+ const m=await import('./employee-notification-list.server');expect(m.projectNotificationDisplayState).toBeTypeOf('function');
+ const source={kind:'SCHEDULE',source:{kind:'SCHEDULE',id:'2030-10-07',version:'new'},employeePublications:{self:{acknowledgement:{acknowledged:false,needsAcknowledgement:true}}}};
+ expect(m.projectNotificationDisplayState(source as never,'self',true,null)).toEqual({reviewState:'read',actionState:'required'});
+ expect(m.projectNotificationDisplayState({...source,employeePublications:{self:{acknowledgement:{acknowledged:true,needsAcknowledgement:false}}}} as never,'self',false,null)).toEqual({reviewState:'confirmed',actionState:'complete'});
+});
+it('communication read cannot complete required acknowledgement and old acknowledgement cannot confirm a new version',async()=>{
+ const m=await import('./employee-notification-list.server');expect(m.projectNotificationDisplayState).toBeTypeOf('function');
+ const source={kind:'COMMUNICATION',source:{kind:'COMMUNICATION',id:'update',version:'new'}};
+ expect(m.projectNotificationDisplayState(source as never,'self',true,{version:'new',requirement:'REQUIRED',acknowledged:false})).toEqual({reviewState:'read',actionState:'required'});
+ expect(m.projectNotificationDisplayState(source as never,'self',false,{version:'old',requirement:'REQUIRED',acknowledged:true})).toEqual({reviewState:'unavailable',actionState:'unavailable'});
+ expect(m.projectNotificationDisplayState(source as never,'self',false,{version:'new',requirement:'REQUIRED',acknowledged:true})).toEqual({reviewState:'confirmed',actionState:'complete'});
+});

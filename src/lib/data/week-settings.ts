@@ -176,9 +176,12 @@ export async function replaceWeeklyAvailability(
   employeeId: string,
   weekStart: string,
   windows: AvailabilityHours[],
-  changedDays?: number[],
+  changedDays: number[] | undefined,
+  proof: SessionMutationProof,
 ) {
+  assertManagementProof(proof, employeeId);
   const sql = getDb();
+  const authority = () => managementSessionStatements(proof, employeeId, ['EMPLOYEE', 'LEAD']).map(statement => sql.query(statement.text, [...statement.values]));
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const workspace = await getWorkspace();
     const inputs = await readAvailabilityInputs(employeeId, weekStart);
@@ -194,6 +197,9 @@ export async function replaceWeeklyAvailability(
     const queries = [
       ...workspaceReadGuard(workspace).map(statement => sql.query(statement.text, [...statement.values])),
       sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + weekStart}, 0))`,
+      sql.query('SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', [employeeId]),
+      sql.query('SELECT employee_id FROM weekly_availability_submissions WHERE employee_id=$1 AND week_start=$2 ORDER BY employee_id FOR UPDATE', [employeeId, weekStart]),
+      ...authority(),
       // Abort the whole transaction if the deadline passed after the action's check.
       // The deadline writer shares this lock; recheck wall time after waiting.
       sql`SELECT 1 / CASE WHEN EXISTS (SELECT 1 FROM schedule_week_settings WHERE week_start = ${weekStart} AND availability_deadline < clock_timestamp()) THEN 0 ELSE 1 END AS deadline_guard`,
@@ -215,11 +221,12 @@ export async function replaceWeeklyAvailability(
     ];
     const cancellation = availabilityCancellation(weekStart, employeeId, null);
     queries.push(sql.query(cancellation.text, cancellation.values));
+    queries.push(...authority());
     try {
       await sql.transaction(queries);
       return;
     } catch (error) {
-      if ((error as { code?: string }).code === "22P02") continue;
+      if ((error as { code?: string }).code === "22P02" && error instanceof Error && error.message === 'invalid input syntax for type integer: "availability_version_conflict"') continue;
       if ((error as { code?: string }).code === "22012")
         throw new AvailabilityDeadlineError("Weekly availability is locked");
       throw error;

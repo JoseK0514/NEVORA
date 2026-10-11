@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildManagerActionItems } from "./manager-actions";
+import { parseCoverageRepairLocator } from '../scheduling/coverage-repair';
 
 describe("buildManagerActionItems", () => {
   it("prioritizes an upcoming coverage gap ahead of missing setup", () => {
@@ -88,9 +89,11 @@ describe("buildManagerActionItems", () => {
       coverageRulesConfigured: true,
     });
 
-    expect(items.find((item) => item.type === "COVERAGE_GAP")?.href).toBe(
-      "/app/schedule/coverage?week=2026-09-28&date=2026-09-30&locationId=loc-2&start=09%3A00&end=17%3A00",
-    );
+    const href = items.find((item) => item.type === "COVERAGE_GAP")!.href;
+    const url = new URL(href, 'http://localhost');
+    expect(url.pathname).toBe('/app/schedule/coverage');
+    expect(Object.fromEntries(url.searchParams)).toMatchObject({ week: '2026-09-28', date: '2026-09-30', locationId: 'loc-2', start: '09:00', end: '17:00' });
+    expect(parseCoverageRepairLocator(url.searchParams.get('repair'))).toMatchObject({ target: 'STAFFING', reported: { missingStaff: 2, requiresLead: false, positions: [] } });
     expect(items.find((item) => item.type === "TIME_OFF")?.href).toBe(
       "/app/requests?tab=team&requestId=request-7",
     );
@@ -199,6 +202,9 @@ it('position-only shortage names the required position without claiming a missin
  const [item]=buildManagerActionItems({weekStart:'2026-10-05',coverageGaps:[{key:'position',locationId:'l',locationName:'Shop',date:'2026-10-05',startTime:'08:00',endTime:'12:00',gap:0,requiresLead:false,positionCoverage:[{positionId:'b',positionName:'Barista',missing:1}]}],availabilityDeadlineSet:true,coverageRulesConfigured:true});
  expect(item.title).toBe('Position coverage missing at Shop');
  expect(item.detail).toContain('Barista: 1 missing');
- expect(item.href).toBe('/app/schedule?week=2026-10-05&locationId=l&date=2026-10-05');
+ const url = new URL(item.href, 'http://localhost');
+ expect(url.pathname).toBe('/app/schedule/coverage');
+ expect(Object.fromEntries(url.searchParams)).toMatchObject({ week: '2026-10-05', locationId: 'l', date: '2026-10-05', start: '08:00', end: '12:00', positionId: 'b' });
+ expect(parseCoverageRepairLocator(url.searchParams.get('repair'))).toMatchObject({ target: 'POSITION', positionId: 'b', reported: { missingStaff: 0, requiresLead: false, positions: [{positionId:'b',missing:1}] } });
  expect(item.detail).not.toContain('Designated lead');
 });

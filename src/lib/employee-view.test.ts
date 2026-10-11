@@ -12,3 +12,10 @@ it('accepts only minimized profile/current-source DTOs and honest bounded covera
 it('unavailable never contains a retained profile or list',()=>{
  expect(parseEmployeeView({state:'unavailable',reason:'read_failed',profile:base.profile},'profile')).toEqual({state:'unavailable',reason:'read_failed'});
 });
+it('retains validated own review and action state without leaking source rows or defaulting malformed states',()=>{
+ const row={id:'notice',label:'Team update',at:base.observedAt,href:'/app/notifications/open?notificationId=notice',reviewState:'unread',actionState:'required'};
+ const inbox={state:'ready',kind:'notifications',observedAt:base.observedAt,validForMs:45000,coverage:'complete',items:[{...row,rawRecipient:'private'}]};
+ expect(parseEmployeeView(inbox,'notifications')).toMatchObject({items:[row]});
+ expect(JSON.stringify(parseEmployeeView(inbox,'notifications'))).not.toContain('rawRecipient');
+ expect(()=>parseEmployeeView({...inbox,items:[{...row,actionState:'dismissed'}]},'notifications')).toThrow();
+});

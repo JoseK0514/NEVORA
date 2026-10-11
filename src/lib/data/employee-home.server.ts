@@ -107,7 +107,7 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
   async function section(source:'acknowledgements'|'timeOff'|'exchanges'|'ownTime'):Promise<Section>{
    try{
     const statement=indexStatement(source,workspace.id,proof.employee.id),rows=await protectedExecutor.query<IndexRow>(statement),items:AttentionItem[]=[];
-    let partial=rows.length>CAP;
+    let partial=rows.length>CAP,reviewUnavailable=false;
     const refs=source==='timeOff'||source==='ownTime'?await readReceipts(source==='timeOff'?'TIME_OFF':'TIME_CORRECTION'):null;
     for(const row of rows.slice(0,CAP)){
      if(!row.id||!Number.isFinite(Date.parse(row.changedAt)))throw Error('Invalid source');
@@ -117,10 +117,10 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
       if(review.state==='unpublished')partial=true;
       const required=review.acknowledgement.needsAcknowledgement;
       if(!review.shifts.length){
-       // Prior own relevance can include a removal. The canonical empty-week
-       // reader cannot issue an intent; do not silently call that review clear.
-       // Resolved/equivalent empty states still follow canonical acknowledgement.
-       if(required)return {observation:observation('unavailable','review_unavailable',null),items:[]};
+       // Prior own relevance can include a removal. Preserve this exact week's
+       // current confirmation intent, and keep missing authority visibly partial.
+       // Resolved/equivalent empty states follow canonical acknowledgement.
+       if(required){const ref={kind:'SCHEDULE' as const,id:row.id,version:row.version!};const actionable=!!review.intent;if(!actionable){partial=true;reviewUnavailable=true;}items.push({ref,label:actionable?'Schedule removed — review required':'Schedule removed — review unavailable',href:homeDestination(ref)!,required:true,actionable,deadlineAt:null,changedAt:row.changedAt});}
        continue;
       }
       // Weekly confirmation is canonical; receipts cannot resolve it.
@@ -158,7 +158,7 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
     // Reject an index that changed while its canonical details were awaited.
     if(hash(await protectedExecutor.query<IndexRow>(statement))!==hash(rows))return {observation:observation('unavailable','source_changed',null),items:[]};
     indexes.set(source,{statement,rows});
-    return {observation:observation(partial?'partial':'complete',partial?(rows.length>CAP?'source_cap':'unknown_source'):null,hash(rows)),items};
+    return {observation:observation(partial?'partial':'complete',partial?(reviewUnavailable?'review_unavailable':rows.length>CAP?'source_cap':'unknown_source'):null,hash(rows)),items};
    }catch{return failed();}
   }
   const [acknowledgements,exchanges,timeOff,ownTime]=await Promise.all([section('acknowledgements'),section('exchanges'),section('timeOff'),section('ownTime')]);
