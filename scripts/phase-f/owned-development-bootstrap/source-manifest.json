@@ -1,0 +1,103 @@
+{
+  "format": "CURRENT_NEON_ORIGINAL_OWNER_BOOTSTRAP_SOURCE_V1",
+  "sourceRevisionOnly": true,
+  "originalParentCommit": "4e852e35960f8cdc285ad6a6f90bef5bdaaac6b5",
+  "originalSourcePins": {
+    "src/lib/tenancy/runtime/controlled-new-tenant-storage.sql": "8393274a0f9b855663bf91994b2946f3e8e02957815f932723aed13f57b6a4ed",
+    "src/lib/tenancy/runtime/owner-control-plane-storage.sql": "9dff4c5bb280064c33bc0a3c0a061598c1c4b3baba1dfb904b2226e3a891e040",
+    "src/lib/tenancy/control-plane/owner-control-plane-enrollment.sql": "ac5ecd3a76db20903ce8fe888ebd7555dc2390f404e28f6223afd5b4ec4eedde"
+  },
+  "outputPins": [
+    {
+      "path": "controlled-new-tenant.current-neon.sql",
+      "sha256": "7d2cd5183bec23bb30e8b38fe769393ed2f0bf39d62843dc6e17a0f841a8ea62",
+      "bytes": 52526
+    },
+    {
+      "path": "current-bootstrap-calendar-cause.sql",
+      "sha256": "9ded6c84753aeb1fdcee1b590d8211adb508a2573274ba90dcbdb367048662cd",
+      "bytes": 6936
+    },
+    {
+      "path": "owner-control-plane-storage.current-neon.sql",
+      "sha256": "b8fc19fb7aae4e4c9242bf4576a3dde94bfdb5ab9e976179e59d0510cae3dc95",
+      "bytes": 25133
+    },
+    {
+      "path": "owner-control-plane-enrollment.current-neon.sql",
+      "sha256": "ac5ecd3a76db20903ce8fe888ebd7555dc2390f404e28f6223afd5b4ec4eedde",
+      "bytes": 23684
+    }
+  ],
+  "parentOwnerSource": {
+    "sha256": "9aa269e38d34f5e1b97517dda133c873da1e8ad9ed682067ce59136e949aac68",
+    "sourceSuccessorSHA256": "1be3c60c9fb9a9b5fbb5912a5924af32a835d8a116b91758e3275253536bc379",
+    "sourceTransformationTests": 6
+  },
+  "fixedDevelopmentTarget": {
+    "project": "rough-fire-63258908",
+    "branch": "br-spring-frost-b8wzl2qi",
+    "endpoint": "ep-hidden-tooth-b8jdkwxt",
+    "database": "nevora_f10_current_20261011",
+    "databaseOid": "73728",
+    "originalLogin": "fuel_scheduler_owner",
+    "originalLoginOid": "16391",
+    "serverVersionNum": "170011",
+    "originalNonSuperuserBYPASSRLSMaintenanceOwner": true,
+    "nativeSystemUser": "md5:fuel_scheduler_owner",
+    "directServerOrigin": "169.254.254.254",
+    "parentCustodyNotReexecutedHere": true,
+    "proxyReadback": {
+      "nativeSystemUser": null,
+      "backendSSL": false
+    },
+    "secureTransport": "Neon proxy does not expose edge authentication or TLS as backend SYSTEM_USER/pg_stat_ssl. Actual original direct TLS Client with rejectUnauthorized:true and native encrypted/authorized stream must be retained by the parent-owned producer; these backend fields cannot prove or waive that transport."
+  },
+  "requiredOrder": [
+    "Parent exact full68/key104 genuine typed APPLIED plan and locked semantic source/role/RLS/ACL intent first",
+    "Install controlled-new-tenant.current-neon empty controls/functions",
+    "Apply parent source-declared0030 composite tenant clock preserving all existing rows",
+    "Install current-bootstrap-calendar-cause closed-preimage successor before cutover",
+    "Original owning exclusive transaction apply_controlled_new_tenant_cutover(epoch,actual original typed manifest), unchanged0026 guard prefixes/suffix; phase stays FENCED",
+    "Install Owner storage/enrollment successors; explicit approved policy/vocabulary/PRD definition must already exist",
+    "Through original owning RC/exclusive transaction call produce_controlled_initial_owner_basis(uuid,uuid,text,31-key original command), verify typed predeclared delta/new tenant clock/native cause, then actual own COMMIT ACK",
+    "Only genuine purpose/registered channel admission, finite claims and atomic reviewed Owner consume can issue VERIFIED credentials/session lineage",
+    "Retire/rebind bootstrap route and install declared runtime guard/NOLOGIN ownership, final F3/F7/F8 functions and full graph before APP release"
+  ],
+  "graphAdditions": {
+    "relations": [
+      "current_bootstrap_calendar_cause"
+    ],
+    "functions": [
+      "guard_current_bootstrap_calendar_cause()",
+      "sample_current_bootstrap_calendar_clock(text,int4,timestamptz)"
+    ],
+    "triggers": 2,
+    "additionalRuntimeGrants": 0
+  },
+  "nativeVerification": {
+    "leaseOrdinal": 232,
+    "passed": 6,
+    "failed": 0,
+    "sourceCompilation": {
+      "functions": 18,
+      "tables": 7,
+      "triggers": 14,
+      "preservedControlledTables": 3,
+      "preservedControlledTriggers": 5
+    },
+    "postgres": "18.4 original local fixture",
+    "resultsSHA256": "90b511b9730bbf0f7277576058af52e90a3954fc734d8305554be8a2d9f2199a",
+    "compilationReceiptSHA256": "9e254b83b7ce98039d56774cad5e30da9a030a6cadf7d1ee5aed6993f3e57ef4",
+    "exactAcknowledgedRollbackAndFullRestoration": true,
+    "sevenRolesAndPIDPortDataPrivateFilesClosed": true,
+    "admittedPG17OriginalTLSOwnerExecution": false,
+    "hostedBootstrapCOMMIT": false,
+    "currentIssuer": false,
+    "currentProof": false,
+    "APPAcceptance": false
+  },
+  "installedOrExecutedByThisBranch": false,
+  "productionAuthorized": false,
+  "F10Acceptance": false
+}
