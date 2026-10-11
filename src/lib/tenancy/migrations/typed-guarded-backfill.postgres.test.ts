@@ -17,6 +17,15 @@ import { compileLegacyEmployeeNumberEnrollment } from './employee-number-enrollm
 import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from '../runtime/catalog-fence.server';
 import { EMPLOYEE_NUMBER_INSTALLATION_CAPSULE_SQL, CONTROLLED_ENROLLMENT_INSTALLER_MEMBERSHIPS_SQL } from './employee-number-enrollment-binding.server';
 import { executeGuardedTypedLocalEmployeeNumberEnrollment, executeGuardedTypedLocalBackfill, executeGuardedTypedLocalBackfillWithJournal, reconcileGuardedTypedLocalBackfillJournal } from './typed-guarded-backfill.server';
+import {getControlledEnrollmentInstallerBinding} from './employee-number-enrollment-binding.server';
+import {executeGuardedTypedLocalPortalLegacyAccessEnrollment} from './typed-guarded-backfill.server';
+import {PORTAL_LEGACY_SOURCE_BINDINGS,PORTAL_LEGACY_ENROLLMENT_CATALOG_SQL,
+ PORTAL_LEGACY_ENROLLMENT_PRIVATE_LOCK_SQL} from './portal-legacy-access-enrollment.server';
+import {PORTAL_SOURCE_IMAGE_BYTES} from '../runtime/portal-source-image.generated';
+import {decodeTypedMigrationWireValue} from './typed-wire';
+import type {Capability} from '../../capabilities/types';
+import type {UserRole} from '../../domain';
+
 import { describeTypedBackfillJournal, validateTypedBackfillJournalObservation, type TypedBackfillJournalDescriptor } from './typed-journal-contract';
 import type { OwnedLocalBackfillIdentity } from './guarded-backfill.server';
 
@@ -612,7 +621,243 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
   }
   // ENROLLMENT_FIXTURE_ADMISSION_END
 
-  async function fixture(id: string, withJournal = false, withEnrollment = false): Promise<Fixture> {
+// ROOT_PORTAL_WHOLE_ENROLLMENT_ADDITION_BEGIN
+// No new connection, database, role, runner or process constructor.
+type PortalWorkspaceCommand=Readonly<{workspaceId:string;incarnation:string;policyId:string;policyRevision:string;installationEpoch:string}>;
+type PortalSubjectCommand=Readonly<{workspaceId:string;employeeId:string;sourceEmployeeChecksum:string;sourceCredentialChecksum:string|null;
+ sourceRole:UserRole;initialAuthorizationVersion:string;initialPortalAccessVersion:string;legacyAccess:'PRESERVED'|'ABSENT';
+ capabilities:readonly Capability[];administrativeCapabilities:readonly Capability[]}>;
+type RootReviewedPortalLegacyCommand=Readonly<{workspaces:readonly PortalWorkspaceCommand[];subjects:readonly PortalSubjectCommand[]}>;
+type PortalLedgerEntry={format:'CONTROLLED_LOCAL_CAPTURED_LEGACY_PORTAL_ACCESS_V1';invocation:string;database:string;databaseOid:string;
+ marker:string;installerRole:string;installerRoleOid:string;binding:ReturnType<typeof getControlledEnrollmentInstallerBinding>;
+ sourceBindings:typeof PORTAL_LEGACY_SOURCE_BINDINGS;currentPrivateCatalogText:string;
+ workspaces:readonly PortalWorkspaceCommand[];subjects:readonly PortalSubjectCommand[]};
+type PortalEnrollmentLease=EnrollmentLease&{portalLegacyAccessEnrollments:PortalLedgerEntry[]};
+const portalPrivateNames=['workspace_incarnation_counter','capability_policy_definition','workspace_capability_policy_installation',
+ 'portal_authority','portal_session_issuance','portal_administrative_authority','portal_administrative_capability',
+ 'portal_administrative_location','portal_access_lineage'] as const;
+const portalEmptySourcePaths=[
+ 'src/lib/tenancy/runtime/workspace-incarnation-storage.sql',
+ 'src/lib/tenancy/runtime/capability-policy-definition-storage.sql',
+ 'src/lib/tenancy/runtime/portal-authority-storage.sql',
+ 'src/lib/tenancy/runtime/portal-administrative-authority-storage.sql',
+ 'src/lib/tenancy/runtime/portal-session-issuance-storage.sql',
+ 'src/lib/tenancy/runtime/portal-access-lineage-storage.sql',
+] as const;
+const portalInstallations=new Map<string,{nativeCatalog:Awaited<ReturnType<typeof enrollmentNativeCatalog>>;privateCatalogText:string}>();
+const portalExpectedFinal=new Map<string,unknown>();
+async function portalPrivateCatalog(c:Client):Promise<string>{
+ const r=await c.query<(string|null)[]>({...PORTAL_LEGACY_ENROLLMENT_CATALOG_SQL,rowMode:'array',
+  values:[...PORTAL_LEGACY_ENROLLMENT_CATALOG_SQL.values],types:{getTypeParser:()=>((s:string)=>s)}});
+ expect(r.fields.map(f=>[f.name,f.dataTypeID])).toEqual([['jsonb_build_object',25]]);
+ expect(r.rows).toHaveLength(1);expect(r.rows[0]).toHaveLength(1);
+ if(typeof r.rows[0][0]!=='string')throw Error('Actual private catalog text required');return r.rows[0][0];
+}
+async function installEmptyPortalBeforeMapping(id:string,name:string,oid:string,marker:string,observer:Client){
+ await verifyActualParentAndChild(name,oid,marker);expect(observer.getTransactionStatus()).toBe('I');
+ // Match the exact original installer binding and later native deparser context.
+ // Establish it before either capsule capture; never normalize away a delta.
+ await observer.query('SET search_path=pg_catalog');
+ const installer=await enrollmentInstaller(observer),original=await originalRows(observer),before=await enrollmentNativeCatalog(observer);
+ const artifacts:{path:string;sha256:string}[]=[];
+ for(const path of portalEmptySourcePaths){
+  const sql=readFileSync(resolve(path),'utf8');
+  const key=path.endsWith('/portal-access-lineage-storage.sql')?'NEW:'+path:path;
+  expect(hashText(sql)).toBe(PORTAL_LEGACY_SOURCE_BINDINGS[key as keyof typeof PORTAL_LEGACY_SOURCE_BINDINGS]);
+  // Each unchanged artifact owns its own RC BEGIN/exclusive-FIRST/COMMIT.
+  // Never place these whole installers inside another BEGIN.
+  expect(observer.getTransactionStatus()).toBe('I');await observer.query(sql);
+  expect(observer.getTransactionStatus()).toBe('I');artifacts.push({path,sha256:hashText(sql)});
+ }
+ const after=await enrollmentNativeCatalog(observer),catalogText=await portalPrivateCatalog(observer),capsule=JSON.parse(catalogText);
+ expect(await originalRows(observer)).toEqual(original);await enrollmentInstaller(observer);
+ expect(capsule.relations.map((r:{name:string})=>r.name).sort()).toEqual([...portalPrivateNames].sort());
+ expect(capsule.relations.every((r:{owner:string;kind:string;persistence:string;rls:boolean;forceRls:boolean})=>
+  r.owner===installer.catalog[0]&&r.kind==='r'&&r.persistence==='p'&&r.rls===true&&r.forceRls===true)).toBe(true);
+ expect(capsule.policies).toEqual([]);expect(capsule.rules).toEqual([]);
+ expect(capsule.acls.every((a:{grantee:string})=>a.grantee===installer.catalog[0])).toBe(true);
+ for(const table of portalPrivateNames)expect((await observer.query('SELECT count(*)::text n FROM nevora_tenancy.'+quoted(table))).rows).toEqual([{n:'0'}]);
+ portalInstallations.set(name,{nativeCatalog:after,privateCatalogText:catalogText});
+ receipt('case-'+id+'-portal-empty-before-mapping.json',{name,oid,marker,installer,artifacts,before,after,privateCatalogText:catalogText,
+  originalBefore:original,originalAfter:await originalRows(observer),allEmpty:true,installedBeforeMappingBeforeGrantsBeforeFullCapture:true,
+  sourceEqualityNotInstallerAuthentication:true});
+}
+
+// The original named operator schema-USAGE grants occur after empty installation.
+// Seal their exact already-verified delta before full capture. Private relation/
+// column/function ACLs, policies and every non-schema capsule byte stay unchanged.
+async function sealEmptyPortalAfterOriginalGrantsBeforeCapture(id:string,name:string,observer:Client){
+ const installation=portalInstallations.get(name);if(!installation)throw Error('Empty original Portal installation required');
+ const mapping=enrollmentInstallations.get(name);if(!mapping)throw Error('Mapping before-capture seal required');
+ const currentNative=await enrollmentNativeCatalog(observer);expect(currentNative).toEqual(mapping.capturedNativeCatalog);
+ const privateCatalogText=await portalPrivateCatalog(observer),before=JSON.parse(installation.privateCatalogText),after=JSON.parse(privateCatalogText);
+ const schemaAcl=(c:typeof before)=>({...c,schema:{...c.schema,nspacl:null}});
+ expect(schemaAcl(after)).toEqual(schemaAcl(before));
+ expect(after.acls).toEqual(before.acls);expect(after.policies).toEqual([]);
+ expect(after.schema.oid).toBe(before.schema.oid);expect(after.schema.nspowner).toBe(before.schema.nspowner);
+ portalInstallations.set(name,{nativeCatalog:currentNative,privateCatalogText});
+ receipt('case-'+id+'-portal-private-seal-before-capture.json',{beforePrivateCatalogText:installation.privateCatalogText,
+  currentPrivateCatalogText:privateCatalogText,currentNative,onlyAlreadyAssertedOriginalSchemaUsageDelta:true,
+  noPrivateNamedGrantOrPolicy:true,recordedBeforeWorkerConnectionsAndFullCapture:true});
+}
+
+// Fixture-only initial technical definitions. Explicit values are ROOT-reviewed
+// command inputs: no revision/epoch/incarnation defaults or inferred grants.
+// It writes no original source, mapping, Portal, admin, LIVE or lineage rows.
+// Catalog was installed BEFORE genuine capture; these data rows do not substitute
+// a catalog successor or original plan. Same maintenance Client, own native RC.
+async function installRootReviewedPortalPrerequisites(f:Fixture,command:RootReviewedPortalLegacyCommand){
+ await verifyActualParentAndChild(f.name,f.oid,f.marker);await enrollmentInstaller(f.observer);
+ expect(portalInstallations.has(f.name)).toBe(true);expect(f.observer.getTransactionStatus()).toBe('I');await expectApplied(f);
+ expect(isIssuedTypedTenantBackfillPlan(f.chain.plan)).toBe(true);
+ const compiled=compileLegacyEmployeeNumberEnrollment(f.chain.plan);if(compiled.status!=='COMPILED')throw Error('Genuine whole compiler required');
+ expect([...command.workspaces.map(w=>w.workspaceId)].sort()).toEqual([...new Set(compiled.enrollment.rows.map(r=>r.workspaceId))].sort());
+ for(const w of command.workspaces)for(const v of [w.incarnation,w.policyRevision,w.installationEpoch]){
+  expect(decodeTypedMigrationWireValue('bigint',v).status).toBe('DECODED');expect(v[0]).not.toBe('-');expect(v).not.toBe('0');
+ }
+ const retained=(name:keyof typeof PORTAL_SOURCE_IMAGE_BYTES)=>Buffer.from(PORTAL_SOURCE_IMAGE_BYTES[name]);
+ const policy=retained('canonicalPolicySource'),vocabulary=retained('vocabularySource'),prd=retained('approvedPRDSource');
+ expect(createHash('sha256').update(policy).digest('hex')).toBe(PORTAL_LEGACY_SOURCE_BINDINGS['src/lib/capabilities/policy.ts']);
+ expect(createHash('sha256').update(vocabulary).digest('hex')).toBe(PORTAL_LEGACY_SOURCE_BINDINGS['src/lib/capabilities/types.ts']);
+ expect(createHash('sha256').update(prd).digest('hex')).toBe('35e4084c2c365777c78f0d1e2e65533b06758c1f3062cf1b10feb539af8bf7a7');
+ const original=await originalRows(f.observer);let committing=false,began=false;
+ try{
+  began=true;await f.observer.query('BEGIN ISOLATION LEVEL READ COMMITTED');await f.observer.query(INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+  await f.observer.query("SET LOCAL search_path=pg_catalog; SET LOCAL DateStyle='ISO, YMD'; SET LOCAL TimeZone='UTC'");
+  const locks=[...new Set([...registry.tables.map(t=>t.table),...registry.tables.flatMap(t=>t.sidecar?[t.sidecar]:[])])].sort();
+  expect(locks).toHaveLength(70);await f.observer.query('LOCK TABLE '+locks.map(t=>'public.'+quoted(t)).join(',')+' IN SHARE ROW EXCLUSIVE MODE');
+  await f.observer.query(PORTAL_LEGACY_ENROLLMENT_PRIVATE_LOCK_SQL.text);
+  expect(await originalRows(f.observer)).toEqual(original);
+  for(const table of ['workspace_incarnation_counter','capability_policy_definition','workspace_capability_policy_installation'])
+   expect((await f.observer.query('SELECT count(*)::text n FROM nevora_tenancy.'+quoted(table))).rows).toEqual([{n:'0'}]);
+  const definitions=new Set<string>();
+  for(const w of [...command.workspaces].sort((a,b)=>Buffer.compare(Buffer.from(a.workspaceId),Buffer.from(b.workspaceId)))){
+   expect((await f.observer.query('SELECT id FROM public.workspaces WHERE convert_to(id,\'UTF8\')=convert_to($1::text,\'UTF8\') FOR SHARE',[w.workspaceId])).rows).toEqual([{id:w.workspaceId}]);
+   await f.observer.query('INSERT INTO nevora_tenancy.workspace_incarnation_counter(workspace_id,incarnation) VALUES($1::text,$2::bigint)',[w.workspaceId,w.incarnation]);
+   const key=canonicalOwnershipJson([w.policyId,w.policyRevision]);
+   if(!definitions.has(key)){
+    await f.observer.query(`INSERT INTO nevora_tenancy.capability_policy_definition
+     (policy_id,revision,definition,canonical_policy_source,canonical_policy_source_sha256,vocabulary_source,vocabulary_source_sha256,approved_prd_source,approved_prd_source_sha256)
+     SELECT $1::text,$2::bigint,pg_catalog.jsonb_build_object('format','NEVORA_CAPABILITY_SOURCE_BUNDLE_V1','policyId',$1::text,'revision',$2::text,
+      'canonicalPolicySource',pg_catalog.jsonb_build_object('path','src/lib/capabilities/policy.ts','sha256',pg_catalog.encode(pg_catalog.sha256($3::bytea),'hex')),
+      'vocabularySource',pg_catalog.jsonb_build_object('path','src/lib/capabilities/types.ts','sha256',pg_catalog.encode(pg_catalog.sha256($4::bytea),'hex')),
+      'approvedPRD',pg_catalog.jsonb_build_object('path','F_IMPLEMENTATION_PRD.md','sha256',pg_catalog.encode(pg_catalog.sha256($5::bytea),'hex'))),
+      $3::bytea,pg_catalog.encode(pg_catalog.sha256($3::bytea),'hex'),$4::bytea,pg_catalog.encode(pg_catalog.sha256($4::bytea),'hex'),$5::bytea,pg_catalog.encode(pg_catalog.sha256($5::bytea),'hex')`,
+     [w.policyId,w.policyRevision,policy,vocabulary,prd]);definitions.add(key);
+   }
+   await f.observer.query('INSERT INTO nevora_tenancy.workspace_capability_policy_installation(workspace_id,workspace_incarnation,installation_epoch,policy_id,policy_revision) VALUES($1::text,$2::bigint,$3::bigint,$4::text,$5::bigint)',[w.workspaceId,w.incarnation,w.installationEpoch,w.policyId,w.policyRevision]);
+  }
+  await f.observer.query('SET CONSTRAINTS ALL IMMEDIATE');expect(await originalRows(f.observer)).toEqual(original);
+  expect(await portalPrivateCatalog(f.observer)).toBe(portalInstallations.get(f.name)!.privateCatalogText);
+  committing=true;await f.observer.query('COMMIT');began=false;
+ }catch(error){
+  // Actual uncertain ACK is not repaired/replayed here. Root retains the stage,
+  // closes the owning Client, then reads the full prerequisite tuple separately.
+  if(!committing&&began)await f.observer.query('ROLLBACK');throw error;
+ }
+ receipt('case-'+f.id+'-portal-root-prerequisite-data.json',{commandWorkspaces:command.workspaces,privateCatalogText:await portalPrivateCatalog(f.observer),
+  originalBefore:original,originalAfter:await originalRows(f.observer),notAuthenticationOrPermissionApproval:true});
+}
+async function sealPortalLegacyCommandBeforeAdmission(f:Fixture,command:RootReviewedPortalLegacyCommand){
+ expect(isIssuedTypedTenantBackfillPlan(f.chain.plan)).toBe(true);expect(f.request.plan).toBe(f.chain.plan);
+ await verifyActualParentAndChild(f.name,f.oid,f.marker);const installer=await enrollmentInstaller(f.observer);
+ expect(f.observer.getTransactionStatus()).toBe('I');await expectApplied(f);expect(await enrollmentRows(f.observer)).toEqual([]);
+ const rows=f.chain.plan.entries.filter(r=>r.table==='employees'),credentials=f.chain.plan.entries.filter(r=>r.table==='employee_credentials');
+ expect(command.subjects).toHaveLength(rows.length);
+ // Completeness/checksums are derived from genuine original plan. Rights and
+ // generations stay the deliberate independently reviewed ROOT command.
+ for(const s of command.subjects){
+  const employee=rows.filter(r=>r.source.columns.find(c=>c.name==='id')?.wire===s.employeeId),credential=credentials.filter(r=>r.source.columns.find(c=>c.name==='employee_id')?.wire===s.employeeId);
+  expect(employee).toHaveLength(1);expect(credential.length).toBeLessThanOrEqual(1);
+  expect(employee[0].source.workspaceId).toBe(s.workspaceId);expect(employee[0].sourceChecksum).toBe(s.sourceEmployeeChecksum);
+  expect(employee[0].source.columns.find(c=>c.name==='role')?.wire).toBe(s.sourceRole);
+  expect(s.sourceCredentialChecksum).toBe(credential[0]?.sourceChecksum??null);
+ }
+ const currentPrivateCatalogText=await portalPrivateCatalog(f.observer),before=verifiedParentLeaseBytes(),parent=JSON.parse(before) as PortalEnrollmentLease;
+ expect(parent.installerRole).toEqual(installer);expect(parent.portalLegacyAccessEnrollments).toEqual(expect.any(Array));
+ expect(parent.portalLegacyAccessEnrollments.some(r=>r.database===f.name)).toBe(false);
+ const entry:PortalLedgerEntry={format:'CONTROLLED_LOCAL_CAPTURED_LEGACY_PORTAL_ACCESS_V1',invocation:lease.invocation!,database:f.name,databaseOid:f.oid,
+  marker:f.marker,installerRole:installer.name,installerRoleOid:installer.catalog[0],binding:getControlledEnrollmentInstallerBinding(f.request),
+  sourceBindings:PORTAL_LEGACY_SOURCE_BINDINGS,currentPrivateCatalogText,workspaces:command.workspaces,subjects:command.subjects};
+ parent.portalLegacyAccessEnrollments.push(entry);privateAtomicLeaseReplacement(before,JSON.stringify(parent,null,2)+'\n');
+ receipt('case-'+f.id+'-portal-ledger-before-admission.json',{entry,sourceSuccessorManifest:JSON.parse(readFileSync(join(runDirectory,'pre-invocation-source.json'),'utf8')),
+  installedSourcesIndependentlyReviewedByRootRequired:true,notAnOrdinaryDataCertification:true});
+ // Do not replace the lease again while the owning witness/transaction is live.
+ return entry;
+}
+async function portalWholeTarget(f:Fixture){
+ const read=async(table:string)=>(await f.observer.query<(string|null)[]>({text:'SELECT * FROM nevora_tenancy.'+quoted(table),
+  rowMode:'array',types:{getTypeParser:()=>((s:string)=>s)}})).rows.sort((a,b)=>Buffer.compare(Buffer.from(canonicalOwnershipJson(a)),Buffer.from(canonicalOwnershipJson(b))));
+ const privateRows:Record<string,(string|null)[][]>={};for(const table of portalPrivateNames)privateRows[table]=await read(table);
+ return {source:await originalRows(f.observer),targets:await targets(f),metadata:await metadata(f),mapping:enrollmentOrdered(await enrollmentRows(f.observer)),
+  privateRows,privateCatalogText:await portalPrivateCatalog(f.observer),fullCatalog:await observeMigrationCatalog(f.observer),nativeCatalog:await enrollmentNativeCatalog(f.observer)};
+}
+// Callable finite native case; Root registers it only after reviewing the exact
+// command in its existing controller source/custody. No success/default stub.
+async function PLB01WholeOriginalAbsentDisabled(f:Fixture,command:RootReviewedPortalLegacyCommand){
+ await enrollmentApplied(f);expect(command.subjects.every(s=>s.legacyAccess==='ABSENT'&&s.sourceCredentialChecksum===null&&s.capabilities.length===0&&s.administrativeCapabilities.length===0)).toBe(true);
+ expect(command.subjects).toHaveLength(2);expect(f.chain.plan.entries.filter(r=>r.table==='employee_credentials'||r.table==='employee_sessions')).toEqual([]);
+ await installRootReviewedPortalPrerequisites(f,command);const entry=await sealPortalLegacyCommandBeforeAdmission(f,command),before=await portalWholeTarget(f);
+ const outcome=await executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.observer,f.request);
+ expect(outcome).toMatchObject({status:'ENROLLED_LOCAL_CAPTURED_LEGACY_ACCESS_NOT_PORTAL_PROOF',mode:'WHOLE_PLAN_ATOMIC',planDigest:f.chain.plan.digest,mappingRows:2,
+  receipt:{status:'ENROLLED_IN_OWNING_TRANSACTION_NOT_PORTAL_PROOF',subjects:2,administrativeSubjects:0,capabilityRows:0,liveRows:0}});
+ enrollmentExpectedFinal.set(f.name,expectedEnrollment(f));await expectApplied(f);const after=await portalWholeTarget(f);
+ expect(after.source).toEqual(before.source);expect(after.targets).toEqual(before.targets);expect(after.metadata).toEqual(before.metadata);
+ expect(after.fullCatalog).toEqual(before.fullCatalog);expect(after.nativeCatalog).toEqual(before.nativeCatalog);expect(after.privateCatalogText).toBe(before.privateCatalogText);
+ expect((await f.observer.query('SELECT workspace_id,employee_id,portal_state,proof_provenance FROM nevora_tenancy.portal_authority ORDER BY pg_catalog.convert_to(employee_id,\'UTF8\')')).rows)
+  .toEqual(command.subjects.slice().sort((a,b)=>Buffer.compare(Buffer.from(a.employeeId),Buffer.from(b.employeeId))).map(s=>({workspace_id:s.workspaceId,employee_id:s.employeeId,portal_state:'DISABLED',proof_provenance:'LEGACY_UNVERIFIED'})));
+ expect(after.privateRows.portal_access_lineage).toHaveLength(2);expect(after.privateRows.portal_session_issuance).toEqual([]);
+ expect(after.privateRows.portal_administrative_authority).toEqual([]);expect(after.privateRows.portal_administrative_capability).toEqual([]);expect(after.privateRows.portal_administrative_location).toEqual([]);
+ portalExpectedFinal.set(f.name,after.privateRows);receipt('case-'+f.id+'-portal-whole-enrollment.json',{outcome,entry,before,after,
+  scope:'ABSENT_DISABLED_WHOLE_ENROLLMENT_NOT_CREDENTIALED_PORTAL_NOT_SAME_APP_A_B',allOriginalAssertionsRetained:true});
+}
+async function expectPortalEnrollmentFinalPreserved(f:Fixture){
+ if(!portalInstallations.has(f.name))return;
+ await verifyActualParentAndChild(f.name,f.oid,f.marker);await enrollmentInstaller(f.observer);
+ const entry=(JSON.parse(verifiedParentLeaseBytes()) as PortalEnrollmentLease).portalLegacyAccessEnrollments.filter(r=>r.database===f.name);
+ expect(entry).toHaveLength(1);const current=await portalWholeTarget(f);expect(current.privateCatalogText).toBe(entry[0].currentPrivateCatalogText);
+ expect(current.privateRows).toEqual(portalExpectedFinal.get(f.name));expect(current.source).toEqual(f.original);expect(current.metadata.actor).toBeNull();
+ receipt('case-'+f.id+'-portal-final-custody.json',{database:f.name,oid:f.oid,marker:f.marker,current,ledgerEntry:entry[0],notRuntimeAuthority:true});
+}
+// Root-only additive registration seam; NOT invoked in the default source.
+// ROOT supplies the physical independently reviewed command before invocation,
+// never a generic environment/role/source/approval switch.
+function rootReviewedAbsentPortalCommand(f:Fixture):RootReviewedPortalLegacyCommand{
+ // ROOT-fixed fictional technical initialization; no business permission is
+ // inferred from captured active/password metadata. Original issued-plan
+ // source identities/checksums are data inputs, never admission authority.
+ expect(isIssuedTypedTenantBackfillPlan(f.chain.plan)).toBe(true);
+ const rows=f.chain.plan.entries.filter(row=>row.table==='employees');
+ expect(rows).toHaveLength(2);
+ expect(f.chain.plan.entries.filter(row=>row.table==='employee_credentials'||row.table==='employee_sessions')).toEqual([]);
+ const workspaces=[...new Set(rows.map(row=>row.source.workspaceId))];
+ expect(workspaces).toHaveLength(1);
+ if(typeof workspaces[0]!=='string')throw Error('Genuine original workspace source required');
+ return {workspaces:[{workspaceId:workspaces[0],incarnation:'9007199254740993',
+  policyId:'phase-f-fictional-legacy-enrollment-policy',policyRevision:'9007199254740995',installationEpoch:'9007199254740997'}],
+  subjects:rows.map(row=>{
+   const employeeId=row.source.columns.find(column=>column.name==='id')?.wire;
+   expect(row.source.columns.find(column=>column.name==='role')?.wire).toBe('EMPLOYEE');
+   if(typeof employeeId!=='string'||typeof row.source.workspaceId!=='string')throw Error('Genuine original employment source required');
+   return {workspaceId:row.source.workspaceId,employeeId,sourceEmployeeChecksum:row.sourceChecksum,sourceCredentialChecksum:null,
+    sourceRole:'EMPLOYEE',initialAuthorizationVersion:'9007199254740999',initialPortalAccessVersion:'9007199254741001',
+    legacyAccess:'ABSENT',capabilities:[],administrativeCapabilities:[]};
+  })};
+}
+function registerPortalWholeOriginalCase(){
+ it('PLB01 whole original ABSENT access enrolls atomically as DISABLED without runtime authority',async()=>{
+  let f:Fixture|undefined,status:'PASS'|'FAIL'='FAIL';
+  try{f=await fixture('PLB01',false,true,true);await PLB01WholeOriginalAbsentDisabled(f,rootReviewedAbsentPortalCommand(f));status='PASS';}
+  finally{cases.push({id:'PLB01',name:'whole original ABSENT/DISABLED enrollment',status});
+   receipt('case-PLB01-outcome.json',{status,fixturePrepared:!!f,originalPlanDigest:f?.chain.plan.digest,
+    scope:'LOCAL_ABSENT_DISABLED_ENROLLMENT_NOT_PORTAL_REQUEST_OR_A_B',executionReceiptNotAuthority:true});}
+ },60000);
+}
+
+// ROOT_PORTAL_WHOLE_ENROLLMENT_ADDITION_END
+registerPortalWholeOriginalCase();
+
+  async function fixture(id: string, withJournal = false, withEnrollment = false, withPortalLegacyStorage = false): Promise<Fixture> {
     if (!admin) throw Error('Root owned base connection required');
     const name = lease.database + '_case_' + randomBytes(5).toString('hex'), marker = lease.marker + ':case:' + name;
     expect(Buffer.byteLength(name)).toBeLessThanOrEqual(63); expect((await admin.query('SELECT 1 FROM pg_database WHERE datname=$1', [name])).rowCount).toBe(0);
@@ -640,6 +885,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     const expansionSha256 = createHash('sha256').update(expansion).digest('hex');
     expect(expansionSha256).toBe('fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb');
     await observer.query(expansion);
+    if(withPortalLegacyStorage){if(!withEnrollment||withJournal)throw Error('Distinct mapping/Portal fixture only');await installEmptyPortalBeforeMapping(id,name,oid,marker,observer);}
     const enrollmentInstallation = withEnrollment ? await installEnrollmentBeforeNamedGrants(id, name, oid, marker, observer) : undefined;
     const roles = lease.operatorRoles.map(r => quoted(r.name)).join(',');
     await observer.query('GRANT USAGE ON SCHEMA public,nevora_tenancy TO ' + roles);
@@ -649,6 +895,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
     await observer.query('GRANT SELECT ON nevora_tenancy.source_migration_contract,nevora_tenancy.owned_table_contract TO ' + roles);
     await observer.query('SET search_path=pg_catalog');
     if (enrollmentInstallation) await sealEnrollmentBeforeCapture(id, enrollmentInstallation, observer);
+    if(withPortalLegacyStorage)await sealEmptyPortalAfterOriginalGrantsBeforeCapture(id,name,observer);
     const journalInstallation = withJournal ? await installJournalForRootFixture(id, name, oid, marker, observer) : undefined;
     const first = await connect(name, lease.operatorRoles[0].name), second = await connect(name, lease.operatorRoles[1].name);
     expect((await first.query("SELECT has_schema_privilege(session_user,'public','CREATE') public_create,has_schema_privilege(session_user,'nevora_tenancy','CREATE') tenancy_create,has_table_privilege(session_user,'public.employees','TRIGGER') trigger_privilege,(SELECT relowner<>(SELECT oid FROM pg_roles WHERE rolname=session_user) FROM pg_class WHERE oid='public.employees'::regclass) nonowner")).rows[0])
@@ -782,6 +1029,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed whole-plan atomic backfill
         if (f.observer.getTransactionStatus() !== 'I') await f.observer.query('ROLLBACK');
         expect(await originalRows(f.observer)).toEqual(f.original); expect((await metadata(f)).actor).toBeNull();
         await expectEnrollmentPreserved(f);
+        await expectPortalEnrollmentFinalPreserved(f);
         await f.observer.query('SET search_path=pg_catalog'); const finalCatalog = await observeMigrationCatalog(f.observer);
         if (!f.finalCatalogChanges) expect(finalCatalog.digest).toBe(f.request.captureRequest.catalogBaseline.catalogDigest);
         else if (f.finalCatalogChanges === '0027_VALIDATION') expect((await f.observer.query("SELECT count(*)::int n,bool_and(convalidated AND conenforced) valid FROM pg_constraint WHERE conname LIKE 'f10_scoped_%' AND contype='f'")).rows[0]).toEqual({ n: 89, valid: true });
