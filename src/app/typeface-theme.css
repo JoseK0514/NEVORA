@@ -1,4 +1,5 @@
 /* DESIGN.MD visual system. Preserve established workflow and motion behavior. */
+.sidebar-nav .nav-link[href="/app/updates"] { min-height: 44px; }
 .mobile-header .manager-updates-link {
   width: 44px;
   min-height: 44px;
