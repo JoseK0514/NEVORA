@@ -463,7 +463,7 @@ CREATE TABLE nevora_tenancy.portal_administrative_capability (
   'communication.own-receipt.read', 'communication.sent-summary.read',
   'calendar.self.issue', 'calendar.self.rotate', 'calendar.self.revoke', 'calendar.self.read', 'calendar.employee.revoke',
   'clocker.device.manage', 'clocker.pin.support', 'clocker.pin.self', 'audit.read', 'audit.self.read',
-  'onboarding.configure', 'onboarding.finish', 'csv.preview', 'csv.commit', 'csv.receipt', 'csv.replay', 'csv.reverse'
+  'onboarding.configure', 'onboarding.finish', 'csv.preview', 'csv.commit', 'csv.receipt', 'csv.replay', 'csv.reverse', 'portal.identity.verify'
   )),
   PRIMARY KEY (workspace_id, employee_id, capability),
   FOREIGN KEY (workspace_id, employee_id) REFERENCES nevora_tenancy.portal_administrative_authority(workspace_id, employee_id) ON UPDATE RESTRICT ON DELETE RESTRICT
