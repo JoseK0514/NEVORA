@@ -3,6 +3,7 @@
 // No native guard/current-source/tenant authorization or hosted PASS is proved.
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 vi.mock('server-only', () => ({}));
 const request = vi.hoisted(() => ({ cookies: vi.fn(), headers: vi.fn() }));
@@ -27,13 +28,64 @@ function subject(locator: string) {
   return { locator, workspaceId: `workspace-${side}`, employeeId: `employee-${side}`,
     sessionTokenHash: digest(side === 'a' ? bearerA : bearerB) };
 }
+function fictionalRequestCurrentSource(facts: Record<string, unknown>) {
+  const retained = JSON.parse(readFileSync(new URL('../tenancy/runtime/fixtures/installed-policy-native-observation.json', import.meta.url), 'utf8'));
+  const installed = retained.raw;
+  installed.workspaceId = facts.workspaceId; installed.workspaceIncarnation = facts.workspaceIncarnation;
+  installed.installation.workspaceId = facts.workspaceId; installed.installation.workspaceIncarnation = facts.workspaceIncarnation;
+  installed.installation.policyRevision = facts.capabilityPolicyRevision;
+  installed.definition.revision = facts.capabilityPolicyRevision;
+  installed.definition.sourceBundle.revision = facts.capabilityPolicyRevision;
+  // Only this fictional bundle's explicit revision/identity changes. Retained
+  // three full source wires remain unchanged; exact native-text reconstruction
+  // is test-data construction, not a native deparser/custody claim.
+  const nativeText = (value: unknown): string => {
+    if (typeof value === 'string') return JSON.stringify(value);
+    const row = value as Record<string, unknown>;
+    const keys = Object.keys(row).sort((a,b) => Buffer.byteLength(a) - Buffer.byteLength(b) || Buffer.compare(Buffer.from(a), Buffer.from(b)));
+    return '{' + keys.map(key => JSON.stringify(key) + ': ' + nativeText(row[key])).join(', ') + '}';
+  };
+  const bundleText = nativeText(installed.definition.sourceBundle), bytes = Buffer.from(bundleText, 'utf8');
+  const encoded = bytes.toString('base64'), triplet = Math.floor(bytes.length / 3) * 4;
+  let base64 = '';
+  for (let offset = 0; offset < triplet; offset += 76) {
+    const group = encoded.slice(offset, Math.min(offset + 76, triplet));
+    base64 += group + (group.length === 76 ? '\n' : '');
+  }
+  base64 += encoded.slice(triplet);
+  installed.definition.sourceBundleWire = { encoding: 'UTF8', text: bundleText, bytesBase64: base64,
+    byteLength: String(bytes.length), sha256: createHash('sha256').update(bytes).digest('hex') };
+  const nativeCurrentSource = { format: 'PORTAL_REQUEST_NATIVE_SOURCE_COMPARISON_V1',
+    locator: facts.locator, sessionTokenHash: facts.sessionTokenHash, workspaceId: facts.workspaceId,
+    employeeId: facts.employeeId, resolvedAt: facts.resolvedAt, expiresAt: facts.expiresAt,
+    sources: { kind: 'PORTAL_POLICY_SOURCE_OBSERVATION_V1',
+      portalSource: { kind: 'PORTAL_SOURCE_OBSERVATION_V1',
+        workspace: { id: facts.workspaceId, active: true, version: facts.workspaceVersion },
+        employee: { id: facts.employeeId, workspaceId: facts.workspaceId, active: true, role: facts.role, version: facts.employeeVersion },
+        credential: { employeeId: facts.employeeId, version: facts.employeeVersion, mustChangePassword: false },
+        incarnation: { workspaceId: facts.workspaceId, version: facts.workspaceIncarnation },
+        portal: { workspaceId: facts.workspaceId, employeeId: facts.employeeId,
+          authorizationVersion: facts.authorizationVersion, portalAccessVersion: facts.portalAccessVersion,
+          capabilityPolicyRevision: facts.capabilityPolicyRevision, state: 'ENABLED',
+          proofProvenance: 'LEGACY_UNVERIFIED', provenanceReference: 'fictional unit source only' },
+        session: { tokenHash: facts.sessionTokenHash, employeeId: facts.employeeId, createdAt: facts.employeeVersion, expiresAt: facts.sessionExpiresAt },
+        issuance: { tokenHash: facts.sessionTokenHash, workspaceId: facts.workspaceId, employeeId: facts.employeeId,
+          workspaceIncarnation: facts.workspaceIncarnation, portalAccessVersion: facts.portalAccessVersion, sessionCreatedAt: facts.employeeVersion },
+        administrative: null },
+      installedPolicy: installed, verification: 'SOURCE_OBSERVATION_NOT_PROOF_OR_EXECUTING_SOURCE_AUTHENTICATION' },
+    locationSource: { workspaceId: facts.workspaceId, employeeId: facts.employeeId, primaryLocationId: 'fictional-location',
+      locations: [{ id: 'fictional-location', workspaceId: facts.workspaceId, active: true, version: facts.employeeVersion }], eligibility: [] },
+  };
+  return { ...facts, format: 'PORTAL_REQUEST_AUTHORITY_V1', nativeCurrentSource };
+}
+
 function fictionalFacts(locator: string) {
-  return { ...subject(locator), authorityCurrent: true, kind: 'PORTAL',
+  return fictionalRequestCurrentSource({ ...subject(locator), authorityCurrent: true, kind: 'PORTAL',
     workspaceVersion: '2026-10-08 10:00:00.123456+00', workspaceIncarnation: '9007199254740993',
     employeeVersion: '2026-10-08 11:00:00.654321+00', authorizationVersion: '4', portalAccessVersion: '2',
     resolvedAt: '2026-10-09 12:00:00+00', expiresAt: '2026-10-09 12:01:00+00',
     sessionExpiresAt: '2026-10-09 12:01:00+00', role: 'EMPLOYEE', capabilityPolicyRevision: '3',
-    capabilities: [], allowedLocationIds: [], administrativeLocationIds: [], administrativeScope: null };
+    capabilities: [], allowedLocationIds: [], administrativeLocationIds: [], administrativeScope: null });
 }
 const fenced = (facts: unknown) => [[{ catalog_fence: '' }], [{ facts }], [{ guard: 1 }]];
 function guarded(queries: Query[]) {

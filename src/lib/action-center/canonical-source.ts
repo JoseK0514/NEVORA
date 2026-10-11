@@ -259,7 +259,9 @@ export function prepareSchedulingActionRows(input: SchedulingActionCapture): Pre
     const employeeId = 'requestedByEmployeeId' in original ? original.requestedByEmployeeId : original.employeeId;
     const locationIds = 'sourceShift' in original ? [original.sourceShift.locationId,...(original.targetShift?[original.targetShift.locationId]:[])] :
       'locationId' in original ? [original.locationId] : [];
-    const subjects = 'sourceShift' in original ? [employeeId,original.sourceShift.employeeId,...(original.targetShift?[original.targetShift.employeeId]:[])] : [employeeId];
+    const subjects = 'sourceShift' in original ? [employeeId,original.sourceShift.employeeId,
+      ...(original.targetEmployeeId === undefined ? [] : [original.targetEmployeeId]),
+      ...(original.targetShift?[original.targetShift.employeeId]:[])] : [employeeId];
     const version = 'requestRevision' in original && integer(original.requestRevision,1) ? String(original.requestRevision) : null;
     result.push(action({kind:'REQUEST',payload:{id:p.id,kind:p.kind,employeeName:p.employeeName,createdAt:p.createdAt,employeeId}},
       s.workspaceId,p.kind+':'+p.id,version,locationIds,subjects,['request','employee.identity'],'request.review',p.createdAt,

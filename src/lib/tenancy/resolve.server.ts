@@ -4,6 +4,8 @@ import { types as nodeTypes } from 'node:util';
 import { getTenantRuntimeDb } from '../db';
 import { normalizeWorkspaceLocator } from './identity';
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
+import { readPortalNativeCurrentSource } from './runtime/portal-proof-current-source.server';
+import type { PortalNativeCurrentSource } from './runtime/portal-proof-current-source.server';
 import { validateWorkspaceIncarnation } from './runtime/workspace-incarnation';
 import { decodeTypedMigrationWireValue } from './migrations/typed-wire';
 import type {
@@ -15,11 +17,13 @@ import type {
 export type { TenantProofFacts, ProvisionerScopeFacts } from './types';
 
 const tenantFacts = new WeakMap<object, TenantProofFacts>();
+const portalCurrentSources = new WeakMap<object, PortalNativeCurrentSource>();
 const provisionerFacts = new WeakMap<object, ProvisionerScopeFacts>();
 const DENY = Object.freeze({ status: 'DENY' as const });
 const UNAVAILABLE = Object.freeze({ status: 'UNAVAILABLE' as const });
 const seams = {
   portal: 'nevora_tenancy.resolve_portal($1::text,$2::text)',
+  portalRequest: 'nevora_tenancy.resolve_portal_request($1::text,$2::text)',
   clocker: 'nevora_tenancy.resolve_clocker($1::text,$2::text)',
   calendar: 'nevora_tenancy.resolve_calendar($1::text)',
   worker: 'nevora_tenancy.resolve_worker($1::text,$2::text,$3::text,$4::text,$5::text,$6::text)',
@@ -280,6 +284,45 @@ export async function resolvePortalProof(locator: string, sessionTokenHash: stri
   const normalizedLocator = normalizeWorkspaceLocator(locator);
   if (!normalizedLocator || !validDigest(sessionTokenHash)) return DENY;
   return resolve('portal', [normalizedLocator, sessionTokenHash], parsePortal, facts => facts.kind === 'PORTAL' && facts.locator === normalizedLocator && facts.sessionTokenHash === sessionTokenHash);
+}
+// Distinct versioned native authority lane. No caller-selectable flag, legacy
+// result fallback or raw observer promotion. The native root must authenticate
+// provenance/effective grants/current source; this parser cannot supply them.
+export async function resolvePortalRequestProof(locator: string, sessionTokenHash: string): Promise<ProofResolution<PortalProof>> {
+  const normalizedLocator = normalizeWorkspaceLocator(locator);
+  if (!normalizedLocator || !validDigest(sessionTokenHash)) return DENY;
+  try {
+    const row = await lookup('portalRequest', [normalizedLocator, sessionTokenHash]);
+    if (!row) return DENY;
+    const keys = ['format', 'authorityCurrent', 'kind', 'workspaceId', 'workspaceVersion', 'workspaceIncarnation',
+      'resolvedAt', 'expiresAt', 'locator', 'employeeId', 'employeeVersion', 'authorizationVersion',
+      'portalAccessVersion', 'sessionTokenHash', 'sessionExpiresAt', 'role', 'capabilityPolicyRevision',
+      'capabilities', 'allowedLocationIds', 'administrativeLocationIds', 'administrativeScope', 'nativeCurrentSource'];
+    const descriptors = Object.getOwnPropertyDescriptors(row), actual = Reflect.ownKeys(descriptors);
+    if (actual.length !== keys.length || actual.some(key => typeof key !== 'string' || !keys.includes(key)) ||
+      keys.some(key => !Object.hasOwn(descriptors, key) || !Object.hasOwn(descriptors[key], 'value') || !descriptors[key].enumerable) ||
+      row.format !== 'PORTAL_REQUEST_AUTHORITY_V1') return malformed();
+    const facts = parsePortal(row);
+    if (facts.locator !== normalizedLocator || facts.sessionTokenHash !== sessionTokenHash) return DENY;
+    const source = readPortalNativeCurrentSource(row.nativeCurrentSource, facts);
+    const issued = issue<PortalProof>(facts);
+    if (issued.status !== 'ALLOW') return malformed();
+    portalCurrentSources.set(issued.proof, source);
+    return issued;
+  } catch (error) { return error instanceof Denied ? DENY : UNAVAILABLE; }
+}
+/** Internal executor transport only. No public facts/raw-snapshot argument can
+ * issue a proof. Portal snapshots are retained by original private proof identity
+ * and deliberately excluded from getTenantProofFacts and proof serialization. */
+export function compileTenantProofExecutionPayload(proof: TenantProof): string {
+  const facts = getTenantProofFacts(proof);
+  if (facts.kind !== 'PORTAL') return JSON.stringify(facts);
+  const nativeCurrentSource = portalCurrentSources.get(proof);
+  // Preserve the legacy private issuer's existing transport contract. Genuine
+  // native current-proof helpers must reject this capsule-less Portal payload;
+  // the new request boundary never selects this legacy issuer.
+  if (!nativeCurrentSource) return JSON.stringify(facts);
+  return JSON.stringify({ ...facts, format: 'PORTAL_REQUEST_CURRENT_PROOF_PAYLOAD_V1', nativeCurrentSource });
 }
 export async function resolveClockerProof(deviceCredential: string, pinSessionToken: string): Promise<ProofResolution<ClockerProof>> {
   if (typeof deviceCredential !== 'string' || !/^nev_dev_[a-f0-9]{64}$/.test(deviceCredential) || typeof pinSessionToken !== 'string' || !/^nev_pin_[a-f0-9]{64}$/.test(pinSessionToken)) return DENY;

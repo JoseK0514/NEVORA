@@ -1,7 +1,7 @@
 import 'server-only';
 import { types as nodeTypes } from 'node:util';
 import { getTenantRuntimeDb } from '../db';
-import { getTenantProofFacts } from './resolve.server';
+import { getTenantProofFacts, compileTenantProofExecutionPayload } from './resolve.server';
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 import { compileTenantStatement, compileTenantBatch } from './query-contract';
 import type { CompiledTenantStatement, TenantStatement, TenantBatch } from './query-contract';
@@ -59,10 +59,10 @@ export function createTenantExecutor(proof: TenantProof): TenantExecutor {
     const role = facts.kind === 'WORKER' ? 'WORKER' : 'APP';
     let results: unknown;
     try {
+      const factsJson = compileTenantProofExecutionPayload(proof);
       const sql = getTenantRuntimeDb(role);
       checkAbort(signal);
       getTenantProofFacts(proof);
-      const factsJson = JSON.stringify(facts);
       // Keep NeonQueryPromises unawaited: awaiting a query here would execute
       // context/guards/business separately and lose the transaction boundary.
       // Shared catalog fencing precedes every helper and is retained by this

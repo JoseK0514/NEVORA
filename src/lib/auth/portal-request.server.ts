@@ -5,7 +5,7 @@ import { cookies, headers } from 'next/headers';
 import { createHash } from 'node:crypto';
 import { types as nodeTypes } from 'node:util';
 import { normalizeWorkspaceLocator } from '../tenancy/identity';
-import { resolvePortalProof } from '../tenancy/resolve.server';
+import { resolvePortalRequestProof } from '../tenancy/resolve.server';
 import { createTenantExecutor } from '../tenancy/executor.server';
 import { tenantBatch, workspaceSnapshot, portalEmploymentSnapshot } from '../tenancy/query-contract';
 import type { WorkspaceSnapshot, PortalEmploymentSnapshot } from '../tenancy/query-contract';
@@ -73,7 +73,7 @@ export async function resolveSelectedPortalRequest(selectedLocator: unknown): Pr
     const bearer = sessionBearer(store.getAll('fuel_session'));
     if (bearer === null) return DENY;
     const digest = createHash('sha256').update(bearer, 'utf8').digest('hex');
-    const resolution = await resolvePortalProof(locator, digest);
+    const resolution = await resolvePortalRequestProof(locator, digest);
     if (resolution.status !== 'ALLOW') return resolution;
     const proof = resolution.proof;
     // Both closed statements and their bindings originate in that exact private
