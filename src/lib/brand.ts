@@ -2,6 +2,7 @@ export const NUVORA_BRAND = {
   platform: "NEVORA",
   platformLabel: "NEVORA",
   module: "Workforce",
+  slogan: "Brighter work ahead",
   parentCompany: "VELANI LLC",
   copyright: "© 2026 VELANI LLC. All rights reserved.",
   ownership: "NEVORA is a product of VELANI LLC.",

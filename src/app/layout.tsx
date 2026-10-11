@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { NUVORA_BRAND } from "../lib/brand";
 import "./globals.css";
+import "./typeface-theme.css";
 
 export const metadata: Metadata = {
   title: NUVORA_BRAND.metadataTitle,

@@ -5,6 +5,7 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime } from "@/lib/date-utils";
+import { ManagerIssueFocus } from './manager-issue-focus';
 
 const tabs = [
   { id: "pending", label: "Pending", status: "PENDING" },
@@ -27,6 +28,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId }: {
 
   return (
     <div className="timeoff-page manager-workflow-page manager-timeoff">
+      <ManagerIssueFocus prefix="request-" />
       <PageHeader eyebrow="Team requests" title="Time Off" description="Review time away and track team decisions." />
       {error ? <p className="form-error" role="alert">The request could not be reviewed. It may have changed; review it again.</p> : null}
       {reviewed ? <p className="form-success" role="status">The request was reviewed.</p> : null}
@@ -36,7 +38,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId }: {
       <section className="panel manager-workflow-panel" aria-label={`${selected.label} time off`}>
         <div className="manager-workflow-heading"><h2>{selected.label}</h2><span className="muted">{requests.length} request{requests.length === 1 ? "" : "s"}</span></div>
         {requests.length ? requests.map(request => (
-          <article className={requestId === request.id ? "manager-workflow-row selected" : "manager-workflow-row"} id={`request-${request.id}`} key={request.id}>
+          <article className={`${requestId === request.id ? "manager-workflow-row selected" : "manager-workflow-row"} manager-issue-target`} tabIndex={-1} id={`request-${request.id}`} key={request.id}>
             <div className="manager-workflow-copy">
               <h3>{request.employeeName}</h3>
               <span>{dateLabel(request.startDate)}{request.endDate !== request.startDate ? ` – ${dateLabel(request.endDate)}` : ""}</span>

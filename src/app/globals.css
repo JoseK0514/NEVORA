@@ -4,6 +4,9 @@
   --nevora-blue-hover: #003AAE;
   --nevora-cyan: #43CCFB;
   --nevora-soft: #F0FBFF;
+  --nevora-accent-rgb: 7, 86, 217;
+  --nevora-highlight-rgb: 67, 204, 251;
+  --nevora-soft-rgb: 240, 251, 255;
   --nuvora-midnight: #20232D;
   --nuvora-indigo: var(--nevora-blue);
   --nuvora-indigo-hover: var(--nevora-blue-hover);
@@ -516,7 +519,7 @@ button { cursor: pointer; }
   display: grid;
   place-items: center;
   padding: 24px;
-  background: radial-gradient(circle at 15% 10%, rgba(7, 86, 217,.18), transparent 28%), var(--canvas);
+  background: radial-gradient(circle at 15% 10%, rgba(var(--nevora-accent-rgb),.18), transparent 28%), var(--canvas);
 }
 
 .auth-card {
@@ -545,7 +548,7 @@ button { cursor: pointer; }
   font-size: 16px;
 }
 
-.form-stack input:focus { border-color: var(--caramel); box-shadow: 0 0 0 3px rgba(7, 86, 217,.12); }
+.form-stack input:focus { border-color: var(--caramel); box-shadow: 0 0 0 3px rgba(var(--nevora-accent-rgb),.12); }
 .auth-note { margin-top: 18px; font-size: 12px; }
 
 @media (max-width: 1040px) {
@@ -684,7 +687,7 @@ button { cursor: pointer; }
 .employee-form input:focus,
 .employee-form select:focus {
   border-color: var(--caramel);
-  box-shadow: 0 0 0 3px rgba(7, 86, 217,.12);
+  box-shadow: 0 0 0 3px rgba(var(--nevora-accent-rgb),.12);
 }
 .employee-form small { color: var(--muted); font-weight: 500; }
 .form-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -1545,7 +1548,7 @@ button { cursor: pointer; }
 
 .timeoff-form textarea:focus {
   border-color: var(--caramel);
-  box-shadow: 0 0 0 3px rgba(7, 86, 217, .12);
+  box-shadow: 0 0 0 3px rgba(var(--nevora-accent-rgb), .12);
 }
 
 .request-type-fieldset {
@@ -1982,7 +1985,7 @@ button { cursor: pointer; }
 }
 
 .availability-day-row.is-available {
-  background: rgba(240, 251, 255, .42);
+  background: rgba(var(--nevora-soft-rgb), .42);
 }
 
 .availability-day-name {
@@ -2050,7 +2053,7 @@ button { cursor: pointer; }
 }
 
 .availability-switch > input:focus-visible + .availability-switch-track {
-  box-shadow: 0 0 0 3px rgba(7, 86, 217, .22);
+  box-shadow: 0 0 0 3px rgba(var(--nevora-accent-rgb), .22);
 }
 
 .availability-switch-label {
@@ -2099,7 +2102,7 @@ button { cursor: pointer; }
 
 .availability-time-range input:focus {
   border-color: var(--caramel);
-  box-shadow: 0 0 0 3px rgba(7, 86, 217, .12);
+  box-shadow: 0 0 0 3px rgba(var(--nevora-accent-rgb), .12);
 }
 
 .availability-time-separator {
@@ -3182,7 +3185,7 @@ button { cursor: pointer; }
 
 .employee-form textarea:focus {
   border-color: var(--caramel);
-  box-shadow: 0 0 0 3px rgba(7, 86, 217, .12);
+  box-shadow: 0 0 0 3px rgba(var(--nevora-accent-rgb), .12);
 }
 
 .exchange-shift-actions.three-actions {
@@ -4041,7 +4044,7 @@ button { cursor: pointer; }
 }
 
 .schedule-today-cell {
-  background: rgba(7, 86, 217, .055);
+  background: rgba(var(--nevora-accent-rgb), .055);
 }
 
 .add-cell {
@@ -4059,7 +4062,7 @@ button { cursor: pointer; }
 
 .day-card.today {
   border-color: var(--nevora-blue);
-  box-shadow: 0 0 0 2px rgba(7, 86, 217, .08);
+  box-shadow: 0 0 0 2px rgba(var(--nevora-accent-rgb), .08);
 }
 
 .schedule-setup-note {
@@ -7098,20 +7101,20 @@ small,
   background: var(--nuvora-surface);
 }
 .manager-schedule-page .schedule-cell.schedule-today-cell {
-  background: rgba(240, 251, 255, .38);
+  background: rgba(var(--nevora-soft-rgb), .38);
 }
 .manager-schedule-page .shift-block {
   position: relative;
   min-height: 58px;
   padding: 8px 9px 8px 10px;
-  border: 1px solid rgba(7, 86, 217, .34);
+  border: 1px solid rgba(var(--nevora-accent-rgb), .34);
   border-left: 3px solid var(--caramel);
   border-radius: 10px;
   background: var(--nevora-soft);
   color: var(--coffee-dark);
 }
 .manager-schedule-page .shift-block:hover {
-  border-color: rgba(7, 86, 217, .7);
+  border-color: rgba(var(--nevora-accent-rgb), .7);
   background: var(--nevora-soft);
 }
 .manager-schedule-page .shift-block strong {
@@ -7143,7 +7146,7 @@ small,
 }
 .manager-schedule-page .schedule-cell:hover .add-cell,
 .manager-schedule-page .add-cell:focus-visible {
-  border-color: rgba(7, 86, 217, .34);
+  border-color: rgba(var(--nevora-accent-rgb), .34);
   background: var(--nuvora-bg);
   color: var(--coffee);
   opacity: 1;
@@ -7214,7 +7217,7 @@ small,
     font-size: 12px;
   }
   .mobile-day-tabs a.selected {
-    border-color: rgba(7, 86, 217, .38);
+    border-color: rgba(var(--nevora-accent-rgb), .38);
     background: var(--nuvora-bg);
     color: var(--coffee);
   }
@@ -7292,7 +7295,7 @@ small,
     padding: 9px 10px;
   }
   .mobile-shift-card {
-    border: 1px solid rgba(7, 86, 217, .34);
+    border: 1px solid rgba(var(--nevora-accent-rgb), .34);
     border-left: 3px solid var(--caramel);
     background: var(--nevora-soft);
   }
@@ -7362,7 +7365,7 @@ small,
   z-index: -1;
   inset: 0;
   background:
-    radial-gradient(circle at 78% 18%, rgba(67, 204, 251, .22), transparent 32%),
+    radial-gradient(circle at 78% 18%, rgba(var(--nevora-highlight-rgb), .22), transparent 32%),
     linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(24, 25, 31, .18));
 }
 .employee-login-shell {
@@ -7442,7 +7445,7 @@ small,
 .employee-login-form input:focus {
   border-color: var(--caramel);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(7, 86, 217, .13);
+  box-shadow: 0 0 0 3px rgba(var(--nevora-accent-rgb), .13);
 }
 .employee-login-submit {
   min-height: 48px;
@@ -7494,7 +7497,7 @@ small,
   color: var(--color-bg-surface);
   text-shadow:
     0 4px 24px rgba(24, 25, 31, .58),
-    0 0 18px rgba(7, 86, 217, .24);
+    0 0 18px rgba(var(--nevora-accent-rgb), .24);
 }
 .employee-login-scene-copy span {
   font-size: clamp(13px, 1.3vw, 18px);
@@ -7639,7 +7642,7 @@ body {
 }
 
 .sidebar-brand-copy small {
-  color: rgba(240, 251, 255, .72);
+  color: rgba(var(--nevora-soft-rgb), .72);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: .04em;
@@ -7884,7 +7887,7 @@ body {
 }
 
 .dashboard-metric-card:hover {
-  border-color: rgba(7, 86, 217, .35);
+  border-color: rgba(var(--nevora-accent-rgb), .35);
   box-shadow: 0 14px 32px rgba(24, 25, 31, .1);
 }
 
@@ -7984,7 +7987,7 @@ body {
 
 .dashboard-panel-heading > a {
   color: var(--nevora-blue);
-  text-decoration-color: rgba(7, 86, 217, .48);
+  text-decoration-color: rgba(var(--nevora-accent-rgb), .48);
 }
 
 .dashboard-panel-title-with-count > span {
@@ -8058,7 +8061,7 @@ body {
   flex: 0 0 58px;
   background: var(--nevora-soft);
   color: var(--nevora-blue);
-  box-shadow: inset 0 0 0 1px rgba(7, 86, 217, .16);
+  box-shadow: inset 0 0 0 1px rgba(var(--nevora-accent-rgb), .16);
 }
 
 .dashboard-quote-card > div {
@@ -12252,7 +12255,7 @@ body {
 }
 .employee-login-overlay {
   background:
-    radial-gradient(circle at 78% 18%, rgba(7, 86, 217, .2), transparent 32%),
+    radial-gradient(circle at 78% 18%, rgba(var(--nevora-accent-rgb), .2), transparent 32%),
     linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(32, 35, 45, .18));
 }
 .employee-login-brand .brand-mark.brand-mark-logo {
@@ -12267,7 +12270,7 @@ body {
 .employee-login-form input { border-color: #D9DAE1; }
 .employee-login-form input:focus {
   border-color: var(--nuvora-indigo);
-  box-shadow: 0 0 0 3px rgba(7, 86, 217, .13);
+  box-shadow: 0 0 0 3px rgba(var(--nevora-accent-rgb), .13);
 }
 .auth-workspace { margin: 4px 0 0; color: var(--nuvora-muted); font-size: 12px; }
 
@@ -12284,18 +12287,18 @@ body {
 .hours-progress > span { background: var(--nuvora-indigo); }
 .manager-schedule-page .schedule-cell,
 .schedule-employee-cell { background: var(--nuvora-surface); }
-.manager-schedule-page .schedule-cell.schedule-today-cell { background: rgba(240, 251, 255, .5); }
+.manager-schedule-page .schedule-cell.schedule-today-cell { background: rgba(var(--nevora-soft-rgb), .5); }
 .manager-schedule-page .shift-block,
 .mobile-shift-card {
-  border-color: rgba(7, 86, 217, .25);
+  border-color: rgba(var(--nevora-accent-rgb), .25);
   border-left-color: var(--nuvora-indigo);
-  background: #F6FAFE;
+  background: var(--nevora-soft);
   color: var(--nuvora-text);
 }
-.manager-schedule-page .shift-block:hover { border-color: rgba(7, 86, 217, .48); background: var(--nuvora-indigo-soft); }
+.manager-schedule-page .shift-block:hover { border-color: rgba(var(--nevora-accent-rgb), .48); background: var(--nuvora-indigo-soft); }
 .manager-schedule-page .schedule-cell:hover .add-cell,
-.manager-schedule-page .add-cell:focus-visible { border-color: rgba(7, 86, 217, .28); background: #F6FAFE; color: var(--nuvora-indigo); }
-.mobile-day-tabs a.selected { border-color: rgba(7, 86, 217, .3); background: var(--nuvora-indigo-soft); color: var(--nuvora-indigo); }
+.manager-schedule-page .add-cell:focus-visible { border-color: rgba(var(--nevora-accent-rgb), .28); background: var(--nevora-soft); color: var(--nuvora-indigo); }
+.mobile-day-tabs a.selected { border-color: rgba(var(--nevora-accent-rgb), .3); background: var(--nuvora-indigo-soft); color: var(--nuvora-indigo); }
 .mobile-empty-shift > span { background: var(--nuvora-indigo-soft); color: var(--nuvora-indigo); }
 .manager-approvals-card .manager-home-action,
 .schedule-settings-save-btn { background: var(--nuvora-indigo); color: white; }
@@ -12445,10 +12448,10 @@ body {
 .employee-login-footer { color: rgba(255, 255, 255, .9); }
 .employee-login-footer small { color: rgba(255, 255, 255, .8); }
 .auth-card .button.primary:is(:hover, :active) { background: var(--nevora-blue-hover); opacity: 1; }
-.auth-card .form-stack input:focus { border-color: var(--nevora-blue); box-shadow: 0 0 0 3px rgba(7, 86, 217, .13); }
+.auth-card .form-stack input:focus { border-color: var(--nevora-blue); box-shadow: 0 0 0 3px rgba(var(--nevora-accent-rgb), .13); }
 
 /* Keep the module label legible on the dark structural rail. */
-.sidebar .sidebar-brand-copy small { color: rgba(240, 251, 255, .72); }
+.sidebar .sidebar-brand-copy small { color: rgba(var(--nevora-soft-rgb), .72); }
 
 /* One optical brand lockup. The raster remains unchanged; SVG masks remove
    its white field and trim to the visible glyph bounds. */
@@ -12489,7 +12492,7 @@ body {
   text-transform: none;
 }
 .brand-lockup[data-tone="dark"] { color: #F8F8FB; }
-.brand-lockup[data-tone="dark"] .brand-lockup-module { color: rgba(240, 251, 255, .72); }
+.brand-lockup[data-tone="dark"] .brand-lockup-module { color: rgba(var(--nevora-soft-rgb), .72); }
 .sidebar-brand, .employee-shell .sidebar-brand { padding-inline: 8px; }
 .employee-login-brand { padding: 0; text-shadow: none; }
 .employee-login-page { place-items: center; background: var(--color-bg-main); }
@@ -13162,7 +13165,7 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 }
 
 .attendance-review-refresh:hover:not(:disabled) {
-  border-color: rgba(7, 86, 217, .35);
+  border-color: rgba(var(--nevora-accent-rgb), .35);
   background: var(--nevora-soft);
 }
 

@@ -10,6 +10,9 @@ import { StatusPill } from "@/components/status-pill";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
 import { formatDayLabel, formatTime } from "@/lib/date-utils";
 import type { UserRole } from "@/lib/domain";
+import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react/ssr';
+import { ManagerWeekOverview } from './manager-week-overview';
+import './manager-home.css';
 
 export type ManagerDashboardView =
   | "overview"
@@ -417,7 +420,7 @@ export function ManagerDashboard(props: Props) {
     <div
       className={
         props.view === "overview"
-          ? "manager-dashboard-v3 dashboard-overview-active"
+          ? "manager-dashboard-v3 dashboard-overview-active manager-portal-home"
           : props.view === "attendance"
             ? "manager-dashboard-v3 dashboard-attendance-active"
             : "manager-dashboard-v3"
@@ -425,7 +428,7 @@ export function ManagerDashboard(props: Props) {
     >
       <section className="dashboard-hero">
         <div className="dashboard-hero-copy">
-          <p>{props.view === "attendance" ? "Attendance intelligence" : "Manager dashboard"}</p>
+          {props.view !== 'overview' ? <p>{props.view === "attendance" ? "Attendance intelligence" : "Manager dashboard"}</p> : null}
           <h1>{props.view === "attendance" ? "Recorded-time review" : `Welcome back, ${props.firstName}.`}</h1>
           <span>
             {props.view === "attendance"
@@ -441,7 +444,7 @@ export function ManagerDashboard(props: Props) {
                 href={dashboardHref(props.previousWeek, props.view)}
                 aria-label="Previous week"
               >
-                ‹
+                <CaretLeftIcon size={18} aria-hidden="true" />
               </Link>
               <span className="dashboard-week-label">
                 <NavIcon name="calendar" size={16} />
@@ -451,7 +454,7 @@ export function ManagerDashboard(props: Props) {
                 href={dashboardHref(props.nextWeek, props.view)}
                 aria-label="Next week"
               >
-                ›
+                <CaretRightIcon size={18} aria-hidden="true" />
               </Link>
             </div>
             <Link className="button primary" href={`/app/schedule?week=${props.weekStart}`}>
@@ -468,6 +471,7 @@ export function ManagerDashboard(props: Props) {
             className={props.view === tab.id ? "active" : ""}
             href={dashboardHref(props.weekStart, tab.id)}
             key={tab.id}
+            aria-current={props.view === tab.id ? 'page' : undefined}
           >
             {tab.label}
           </Link>
@@ -475,10 +479,16 @@ export function ManagerDashboard(props: Props) {
       </nav>
 
       {props.view === "overview" ? (
-        <div className="manager-home-grid">
-          <ManagerActionCenter key={`${props.actorId}:${props.weekStart}`} weekStart={props.weekStart} actorId={props.actorId??''}/>
-          <ManagerClockMonitor />
-        </div>
+        <>
+          <div className="manager-home-grid">
+            <ManagerActionCenter key={`${props.actorId}:${props.weekStart}`} weekStart={props.weekStart} actorId={props.actorId??''} timeZone={props.timeZone}/>
+            <div className="manager-monitor-block">
+              <ManagerClockMonitor />
+              <Link className="manager-attendance-link" href={dashboardHref(props.weekStart, 'attendance')}><NavIcon name="clock" size={18} />Review attendance</Link>
+            </div>
+          </div>
+          <ManagerWeekOverview days={props.days} locations={props.locations} weekStart={props.weekStart} weekLabel={props.weekLabel} coverageConfigured={props.coverageConfigured}/>
+        </>
       ) : props.view === "attendance" ? (
         <div className="manager-attendance-stack">
           <ManagerAttendanceReview />

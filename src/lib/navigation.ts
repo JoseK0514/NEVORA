@@ -13,6 +13,7 @@ const managementNavigation: NavigationItem[] = [
   { href: "/app/availability", label: "Availability", icon: "availability" },
   { href: "/app/requests", label: "Time off", icon: "timeOff" },
   { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
+  { href: "/app/updates", label: "Updates", icon: "updates" },
   { href: "/app/employees", label: "Employees", icon: "employees" },
   { href: "/app/timecards", label: "Timecards", icon: "clock" },
   { href: "/app/reports", label: "Reports", icon: "clock" },

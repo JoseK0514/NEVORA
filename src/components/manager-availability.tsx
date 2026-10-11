@@ -8,6 +8,7 @@ import { listTeamAvailabilityWindows } from "@/lib/data/availability";
 import { listAvailabilitySubmissionStatuses } from "@/lib/data/availability-submissions";
 import { getUpcomingAvailabilityWeek, getWeekSettings } from "@/lib/data/week-settings";
 import { addDays,  formatTime, formatWeekRange, weekStartFor } from "@/lib/date-utils";
+import {ManagerIssueFocus} from './manager-issue-focus';
 
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -31,6 +32,7 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
 
   return (
     <div className="availability-page manager-workflow-page manager-team-availability">
+      <ManagerIssueFocus prefix="employee-" />
       <PageHeader eyebrow="Team review" title="Availability" description="Review submissions and available hours for the selected week." />
       {invalidWeek ? <p className="form-error" role="alert">That schedule week is not valid. Showing the upcoming week.</p> : null}
       <div className="dashboard-week-nav manager-availability-week" aria-label="Availability week">
@@ -46,7 +48,7 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
         <div className="availability-team-list">
           {ordered.map(status => {
             const submittedWindows = status.submitted ? windows.filter(window => window.employeeId === status.employeeId) : [];
-            return <article className={employeeId === status.employeeId ? "availability-team-row selected" : "availability-team-row"} id={`employee-${status.employeeId}`} key={status.employeeId}>
+            return <article className={`${employeeId === status.employeeId ? "availability-team-row selected" : "availability-team-row"} manager-issue-target`} tabIndex={-1} id={`employee-${status.employeeId}`} key={status.employeeId}>
               <div className="manager-availability-person"><strong>{status.employeeName}</strong><span>{employeeLocations.get(status.employeeId) ?? "Primary location unavailable"}</span>
                 <div className="manager-availability-status"><StatusPill tone={!status.submitted || status.windowCount === 0 ? "neutral" : "success"}>{!status.submitted ? "Not submitted" : status.windowCount === 0 ? "Unavailable all week" : "Submitted"}</StatusPill>{status.updatedAt ? <small>Updated {formatBusinessDateTime(status.updatedAt, timeZone)}</small> : null}</div>
               </div>

@@ -15,6 +15,7 @@ import { listPendingCallouts, listTeamCalloutHistory } from "@/lib/data/callouts
 
 
 import {  formatDayLabel, formatTime } from "@/lib/date-utils";
+import {ManagerIssueFocus} from './manager-issue-focus';
 
 const tabs = [{ id: "pending", label: "Pending" }, { id: "coverage", label: "Open Coverage" }, { id: "activity", label: "Team Activity" }] as const;
 const reasons: Record<string, string> = { ILLNESS: "Illness / sick", FAMILY_EMERGENCY: "Family emergency", TRANSPORTATION: "Transportation issue", SCHOOL: "School conflict", PERSONAL_EMERGENCY: "Personal emergency", OTHER: "Other" };
@@ -64,14 +65,15 @@ export async function ManagerShiftRequests({ tab, error, approved, reviewed, cal
     <PageHeader eyebrow="Team requests" title="Shift Requests" description="Review exceptions, open coverage and recent team outcomes." />
     {error ? <p className="form-error" role="alert">{errors[error] ?? "The request could not be reviewed. It may have changed; review it again."}</p> : null}
 
+    <ManagerIssueFocus prefix="request-" />
     <nav className="timeoff-tabs manager-workflow-tabs" aria-label="Shift request sections">{tabs.map(item => <Link key={item.id} href={`/app/exchange?tab=${item.id}`} className={selected.id === item.id ? "selected" : ""} aria-current={selected.id === item.id ? "page" : undefined}>{item.label}</Link>)}</nav>
     <section className="panel manager-workflow-panel" aria-label={selected.label}>
       <div className="manager-workflow-heading"><h2>{selected.label}</h2><span className="muted">{count} {selected.id === "coverage" ? "shift" : "request"}{count === 1 ? "" : "s"}</span></div>
-      {livePending.map(exchange => <article className={requestId === exchange.id ? "manager-workflow-row selected" : "manager-workflow-row"} id={`request-${exchange.id}`} key={exchange.id}>
+      {livePending.map(exchange => <article className={`${requestId === exchange.id ? "manager-workflow-row selected" : "manager-workflow-row"} manager-issue-target`} tabIndex={-1} id={`request-${exchange.id}`} key={exchange.id}>
         <div className="manager-workflow-copy"><ExchangeCopy exchange={exchange} />{approvals.get(exchange.id)?.notice?<span className="shift-change-unavailable">{approvals.get(exchange.id)?.notice}</span>:null}</div>
         <div className="manager-workflow-review"><StatusPill tone="warning">Needs review</StatusPill>{exchange.requestRevision?<ShiftChangeForm fields={{requestId:exchange.id,expectedRevision:exchange.requestRevision}} className="request-actions shift-change-form"><button className="button secondary" name="kind" value="MANAGER_DECLINE" type="submit">Decline</button>{approvals.get(exchange.id)?.allowed?<button className="button primary" name="kind" value="MANAGER_APPROVE" type="submit">Approve</button>:null}</ShiftChangeForm>:<span className="shift-change-unavailable">Reload the current request revision.</span>}</div>
       </article>)}
-      {callouts.map(callout => <article className={requestId === callout.id ? "manager-workflow-row selected" : "manager-workflow-row"} id={`request-${callout.id}`} key={callout.id}>
+      {callouts.map(callout => <article className={`${requestId === callout.id ? "manager-workflow-row selected" : "manager-workflow-row"} manager-issue-target`} tabIndex={-1} id={`request-${callout.id}`} key={callout.id}>
         <div className="manager-workflow-copy"><h3>Call-out · {callout.employeeName}</h3><span>{shiftLabel(callout)}</span><span>{reasons[callout.reasonCode] ?? callout.reasonCode}</span>{callout.status==='APPROVED'&&!callout.releaseApplies?<span>Historical approval does not release the current assignment. Review the current assignment.</span>:null}{callout.reasonNote ? <p>{callout.reasonNote}</p> : null}</div>
         <div className="manager-workflow-review"><StatusPill tone="warning">Pending</StatusPill>{callout.requestRevision?<ShiftChangeForm fields={{requestId:callout.id,expectedRevision:callout.requestRevision}} className="request-actions shift-change-form"><button className="button secondary" name="kind" value="DECLINE_CALLOUT" type="submit">Decline</button>{approvals.get(callout.id)?.allowed?<button className="button primary" name="kind" value="APPROVE_CALLOUT" type="submit">Approve</button>:<span className="shift-change-unavailable">{approvals.get(callout.id)?.notice}</span>}</ShiftChangeForm>:<span className="shift-change-unavailable">Reload the current request revision.</span>}</div>
       </article>)}

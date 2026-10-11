@@ -3,7 +3,7 @@
 .panel h1:focus { outline: none; }
 .detail { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.65; overflow-wrap: anywhere; }
 .detail time { font-variant-numeric: tabular-nums; white-space: normal; color: var(--color-brand-primary); }
-.state { justify-self: center; display: inline-flex; align-items: center; min-height: 28px; padding: 6px 14px; border-radius: 99px; color: #575b65; background: var(--color-bg-main); font-size: 13px; font-weight: 600; }
+.state { justify-self: center; display: inline-flex; align-items: center; min-height: 28px; padding: 6px 14px; border-radius: 99px; color: var(--text-secondary, #575b65); background: var(--color-bg-main); font-size: 13px; font-weight: 600; }
 .active { color: var(--nevora-blue); background: var(--nevora-soft); }
 .actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-top: 8px; }
 .actions > :only-child { grid-column: 1 / -1; }
@@ -13,7 +13,7 @@
 .panel button:focus-visible { outline: 3px solid var(--nevora-blue); outline-offset: 3px; }
 .panel button:disabled { cursor: not-allowed; opacity: .45; }
 .panel .quiet { justify-self: center; min-width: 120px; min-height: 44px; font-size: 13px; }
-.notice { margin: 0; padding: 16px 20px; border-radius: 16px; background: var(--color-bg-main); color: #414651; font-size: 14px; text-align: left; line-height: 1.65; overflow-wrap: anywhere; }
+.notice { margin: 0; padding: 16px 20px; border-radius: 16px; background: var(--color-bg-main); color: var(--text-secondary, #414651); font-size: 14px; text-align: left; line-height: 1.65; overflow-wrap: anywhere; }
 .successMark { display: grid; place-items: center; width: 64px; height: 64px; margin: 8px auto 0; border-radius: 50%; background: var(--color-state-success-bg); color: var(--color-state-success); font-size: 32px; }
 @media(max-width:480px) { .panel { gap: 18px; } .actions { grid-template-columns: 1fr; } .notice { padding: 16px; } }
 @media(prefers-reduced-motion:reduce) { .panel * { transition: none !important; animation: none !important; } .panel button:active { transform: none; } }

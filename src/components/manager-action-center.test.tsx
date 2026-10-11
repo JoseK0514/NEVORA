@@ -155,3 +155,41 @@ it('F1 renderer never restores names or destinations removed by the accepted who
   const html = display(result); expect(html).not.toContain('Fictional Alex'); expect(html).not.toContain('request-00');
   expect(html).toContain('No actions need review in this authorized view');
 });
+
+it('category filtering finds a request beyond the first twenty mixed actions',()=>{
+ const snapshot:Extract<ActionCenter,{state:'ready'}>={...ready,counts:{total:26,scheduling:25,requests:1,timekeeping:0},items:[...ready.items,{id:'TIME_OFF:request-26',type:'TIME_OFF',category:'requests',priority:'REVIEW',title:'Time off for Avery',detail:'Two days requested',href:'/app/requests?tab=team&requestId=request-26'}]};
+ const html=renderToStaticMarkup(<ActionCenterSurface snapshot={snapshot} connection="ready" category="requests"/>);
+ expect(html.match(/data-action-id=/g)).toHaveLength(1);
+ expect(html).toContain('Time off for Avery');
+ expect(html).not.toContain('Fictional employee 0');
+ expect(html).toContain('aria-pressed="true"');
+ expect(html).toContain('Review time off');
+  expect(html).toContain('Showing 1 of 1 request');
+ expect(html).toContain('href="/app/requests?tab=team&amp;requestId=request-26#request-request-26"');
+});
+it('a verified empty category keeps an All actions reset without claiming all sources are empty',()=>{
+ const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="ready" category="requests"/>);
+ expect(html).toContain('No requests to review in the checked sources.');
+ expect(html).toContain('All actions');
+ expect(html).not.toContain('No actions found in the checked sources.');
+ expect(html.match(/data-action-id=/g)).toBeNull();
+});
+it('unavailable data removes category controls even with a previous selection',()=>{
+ const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="offline" category="scheduling"/>);
+ expect(html).not.toContain('aria-pressed');
+ expect(html).not.toContain('Fictional employee');
+});
+it('issue actions carry their own labels and exact record destinations',()=>{
+ const samples=[
+  {type:'AVAILABILITY_MISSING',href:'/app/availability?week=2026-10-05&employeeId=E-9',label:'View availability',destination:'/app/availability?week=2026-10-05&amp;employeeId=E-9#employee-E-9'},
+  {type:'EXCHANGE',href:'/app/exchange?tab=requests&requestId=R-2',label:'Review shift request',destination:'/app/exchange?tab=requests&amp;requestId=R-2#request-R-2'},
+  {type:'TARGET_MISSING',href:'/app/schedule/settings?employeeId=E-9',label:'Set hour target',destination:'/app/schedule/settings?employeeId=E-9#target-E-9'},
+  {type:'HOURS_REVIEW',href:'/app/schedule?week=2026-10-05&employeeId=E-9',label:'Review weekly hours',destination:'/app/schedule?week=2026-10-05&amp;employeeId=E-9#schedule-employee-E-9'},
+  {type:'DEADLINE_MISSING',href:'/app/schedule?week=2026-10-05',label:'Set deadline',destination:'/app/schedule?week=2026-10-05#schedule-deadline'},
+ ] as const;
+ for(const sample of samples){
+  const snapshot:Extract<ActionCenter,{state:'ready'}>={...ready,counts:{total:1,scheduling:1,requests:0,timekeeping:0},items:[{...ready.items[0],type:sample.type,href:sample.href}]};
+  const html=renderToStaticMarkup(<ActionCenterSurface snapshot={snapshot} connection="ready"/>);
+  expect(html).toContain(sample.label);expect(html).toContain(`href="${sample.destination}"`);
+ }
+});

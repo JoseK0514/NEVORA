@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "generator": "Built-in image_gen",
+  "generatedOn": "2026-10-10",
+  "style": "Orange editorial illustrations for operational pages; sculptural blue/cyan workday artwork for the authorized authentication variant",
+  "brandAssets": "Official logos, wordmark and PWA icons remain in existing locations.",
+  "assets": [
+    {
+      "id": "workday",
+      "path": "illustrations/workday.png",
+      "sourceFilename": "exec-c1e4a64d-226b-40a3-a09b-48014c404657.png",
+      "width": 1536,
+      "height": 1024,
+      "transparent": true,
+      "alt": "",
+      "usage": "Decorative artwork beside the Today heading on Employee Home",
+      "prompt": "Generate a single original decorative illustration for NEVORA's employee workforce dashboard. Usage: small artwork beside today's schedule header, must be legible at about 96px. Flat editorial vector-like illustration, precise geometric shapes, quiet premium Apple-like restraint. A small cream tabletop analog clock beside a simple upright desk calendar with an orange top binding and one abstract orange rectangle on the paper. No letters, no digits, no checkmarks, no logo, no interface screenshot, no hands/people, no extra floating badges. Three-quarter front view, centered compact composition, abundant transparent margin. Restrained palette only orange #ED724C, burnt orange #D8613C, charcoal #111827, very light neutral #FAFAFA and #E5E7EB. Subtle muted neutral grounded shadow, rounded forms, clean crisp edges, no gradients, no photorealism, no 3D glossy effects. Transparent background, isolated objects; all parts fully visible.",
+      "sha256": "d23546abaaf5cc877dc35f733d1d7e0bb7c9f7d0e1a025a71fe9ffd197641089",
+      "bytes": 1130167,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "refinementPrompt": "Edit this illustration while retaining its exact objects and orange/charcoal/neutral palette. Convert it to a STRICTLY FLAT two-dimensional editorial illustration: opaque solid color fills inside objects, crisp simple geometric outlines, no glow/halo, no gradients, no ambient lighting, no rendered material texture, no dimensional shadows and no glossy or 3D shading. Remove all haze outside the object outlines. Keep the same compact composition and generous margins, fully isolated on genuinely transparent pixels. Keep all existing objects fully visible. No text, no numbers, no new symbols, no checkmarks. It must read clearly at 80–120px on a white employee dashboard. Preserve transparency."
+    },
+    {
+      "id": "schedule",
+      "path": "illustrations/schedule.png",
+      "sourceFilename": "exec-fca5f99b-4fda-4c72-9dda-95bb0c0d7c33.png",
+      "width": 1536,
+      "height": 1024,
+      "transparent": true,
+      "alt": "",
+      "usage": "Decorative planner beside upcoming schedule empty-state copy",
+      "prompt": "Generate a single original decorative illustration for NEVORA's employee upcoming schedule empty state. Usage: compact 88px editorial artwork next to a message about a schedule that has not been published, no semantic claim of confirmation or success. Flat editorial vector-like illustration matching a calm workforce dashboard. A small blank open paper planner with an orange spine, one charcoal pencil resting beside it and a softly outlined neutral desk tray. Centered simple geometric composition, rounded paper corners and precise crisp edges. No letters, no digits, no ticks/checkmarks, no people, no logos, no UI screenshot, no extra floating badges. Restrained palette only orange #ED724C, burnt orange #D8613C, charcoal #111827, very light neutral #FAFAFA and #E5E7EB. Sparse detail, abundant transparent margin, minimal muted neutral grounded shadow, no gradients, no photorealism, no glossy 3D. Transparent background, isolated objects, all parts fully visible.",
+      "sha256": "324f6863dc30edfd7e771e96f23c4fc8d5584c13f29bcae2ed0d997649691f3d",
+      "bytes": 1132284,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "refinementPrompt": "Edit this illustration while retaining its exact objects and orange/charcoal/neutral palette. Convert it to a STRICTLY FLAT two-dimensional editorial illustration: opaque solid color fills inside objects, crisp simple geometric outlines, no glow/halo, no gradients, no ambient lighting, no rendered material texture, no dimensional shadows and no glossy or 3D shading. Remove all haze outside the object outlines. Keep the same compact composition and generous margins, fully isolated on genuinely transparent pixels. Keep all existing objects fully visible. No text, no numbers, no new symbols, no checkmarks. It must read clearly at 80–120px on a white employee dashboard. Preserve transparency."
+    },
+    {
+      "id": "login-workday-blue",
+      "path": "illustrations/login-workday-blue.png",
+      "sourceFilename": "exec-e2afe7b8-e14d-4bd6-b85d-433ca7fc73f6.png",
+      "width": 1536,
+      "height": 1024,
+      "transparent": true,
+      "alt": "",
+      "usage": "Decorative sculptural workday illustration on Employee Login; blue/cyan variant explicitly selected by Jose",
+      "prompt": "Create an original premium editorial illustration for the NEVORA employee sign-in screen. Subject: \"Brighter work ahead\", a sculptural workday still life. A sweeping folded-paper arch in vivid cobalt blue #0756D9 rises behind a beautifully formed off-white blank weekly planner standing at a slight perspective angle. A large frosted cyan #43CCFB rising-sun disc is partially visible through the arch; a small elegant white analog clock with cobalt hands rests at the lower right of the planner. The planner uses sparse shallow embossed divisions only, no letters, numbers, dates, symbols or checkmarks. Every object is beautifully proportioned with crisp silhouettes, smooth matte ceramic and finely folded paper materials, soft precise ambient occlusion and subtle directional studio lighting. The clock is supportive, the rising paper arch is the memorable focal gesture. Understated high-end product-launch art direction, tactile and architectural, clean rather than childish, no neon glow, no glassmorphism UI, no floating interface cards, no sparkles, no confetti, no people, no photographic backgrounds, no gradients in the backdrop, no stock imagery, no logo or text. Use a restrained palette of cobalt, cyan, ice blue, warm white and tiny midnight details. Clearly separated shapes and subtle shading, polished illustration-quality rendering with excellent small-size legibility. Compose as one cohesive balanced object cluster centered, fill about 82 percent of a wide 3:2 canvas, leave transparent breathing room all around; nothing cropped. True transparent background, only restrained contact shadows immediately beneath objects; it must look excellent when placed on a deep cobalt website panel. This is decorative art, no verified work status is implied.",
+      "sha256": "1662d58c990216f66d23edb5c919f05cf642484e6d40fb8b8bbdbed5d574416c",
+      "bytes": 1774284
+    },
+    {
+      "id": "recovery-access-blue",
+      "path": "illustrations/recovery-access-blue.png",
+      "sourceFilename": "exec-cc62a97b-d15f-49e6-9fa6-3000b1b8c76c.png",
+      "width": 1536,
+      "height": 1024,
+      "transparent": true,
+      "alt": "",
+      "usage": "Decorative folded-paper doorway, envelope and key on Forgot access; no delivery or access success is implied",
+      "prompt": "Use case: stylized-concept. Create an original premium illustration for NEVORA employee account recovery, matching a calm sculptural blue/cyan authentication visual system. Subject: a beautiful sculptural folded-paper doorway/arch in vivid cobalt #0756D9, opening onto a frosted cyan #43CCFB sunrise disc. In front rests one off-white blank envelope, closed, and one small matte cyan key with a clean geometric silhouette, arranged as a single balanced still life. The doorway and sunrise communicate a welcoming path back to work; no successful delivery or verified access is implied. Tactile finely folded paper and smooth matte ceramic, crisp silhouettes, restrained ambient occlusion, precise soft studio lighting. High-end product art direction, architectural and reassuring, not childish. Cobalt, cyan, ice blue, warm white and tiny midnight details only. No words, numbers, logo, checkmarks, interface cards, security badges, padlocks, sparkles, confetti, people, photographic background or neon glow. Compose centered on a wide 3:2 canvas, fill about 82 percent with transparent breathing room around the complete object cluster, nothing cropped. Genuinely transparent background and subtle contact shadow only. Excellent legibility when displayed at 150px on mobile or 470px on desktop against a solid cobalt panel. The key is decorative artwork, not a navigation icon.",
+      "sha256": "4dd3d9001e2499b8c949710e8c9faf325f24aa795dddce373c3c7b62d00e8fcf",
+      "bytes": 1540164
+    },
+    {
+      "id": "activation-welcome-blue",
+      "path": "illustrations/activation-welcome-blue.png",
+      "sourceFilename": "exec-1e5e9176-f618-4710-bab1-fe0024b08986.png",
+      "width": 1536,
+      "height": 1024,
+      "transparent": true,
+      "alt": "",
+      "usage": "Decorative sculptural doorway, employee badge and notebook on account activation; no successful activation is implied",
+      "prompt": "Create an original premium 3D folded-paper onboarding illustration for NEVORA workforce account activation, matching a sophisticated Apple-inspired blue and cyan authentication interface. A sculptural folded royal-blue doorway or open arch curves gently toward a luminous cyan sunrise. In front, an elegant blank ivory employee ID badge on a short blue lanyard and a small open blank ivory notebook suggest a welcoming first workday. The badge has only an abstract debossed circle and two very subtle unlabelled horizontal grooves, no personal information or portrait. Limited palette: cobalt #0756D9, deep blue #003AAE, cyan #43CCFB, pale ice #F0FBFF and warm white. Matte paper and satin ceramic materials, beautifully crafted folded edges, delicate bevels, soft studio light, crisp elegant silhouettes, subtle contact shadows, no photographic people. Compact balanced single still-life with generous clear margin on all sides, landscape 1536x1024. Isolate the entire still-life on a genuinely transparent background with clean alpha, including transparent holes inside the arch; no ground plane, no opaque rectangle or gradient background. No text, lettering, logo, numbers, screen UI, check marks, shield, floating badges, or confetti. The sunrise is a stylized cyan paper disc, visually secondary. Suitable for placement on a solid royal-blue panel, full artwork visible using object-fit contain, with ivory foreground elements staying legible. Purpose: a calm, optimistic introduction to setting up an employee account.",
+      "sha256": "26f962ecad03d759962291c68c6b6744ca61af4a9bb8c51d437f8be283baf813",
+      "bytes": 1708956
+    }
+  ]
+}

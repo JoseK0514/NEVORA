@@ -20,6 +20,7 @@ import {
   saveScheduleHealthSettingsFormAction,
 } from "@/app/app/schedule/settings/actions";
 import { formatTime } from "@/lib/date-utils";
+import {ManagerIssueFocus} from '@/components/manager-issue-focus';
 
 export default async function ScheduleSettingsPage({
   searchParams,
@@ -60,6 +61,7 @@ export default async function ScheduleSettingsPage({
 
   return (
     <div className="schedule-settings-page">
+      <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" />
       <PageHeader
         eyebrow="Schedule health"
         title="Staffing & hour targets"
@@ -99,7 +101,7 @@ export default async function ScheduleSettingsPage({
           action={saveScheduleHealthSettingsFormAction}
           className="schedule-settings-core-form"
         >
-          <section className="panel schedule-rule-panel">
+          <section className="panel schedule-rule-panel manager-issue-target" id="coverage-staffing" tabIndex={-1}>
             <div className="schedule-rule-heading">
               <div>
                 <p className="eyebrow">Coverage</p>
@@ -115,7 +117,8 @@ export default async function ScheduleSettingsPage({
             <div className="staffing-settings-grid">
               {staffing.map((location) => (
                 <label
-                  className="staffing-setting-card"
+                  className="staffing-setting-card manager-issue-target"
+                  id={`staffing-${location.locationId}`} tabIndex={-1}
                   key={location.locationId}
                 >
                   <span>{locationLabel(location.locationId, location.locationName)}</span>
@@ -166,7 +169,7 @@ export default async function ScheduleSettingsPage({
             <div className="hour-target-list">
               {employees.map((employee) => {
                 return (
-                  <div className="hour-target-row" key={employee.employeeId}>
+                  <div className="hour-target-row manager-issue-target" id={`target-${employee.employeeId}`} tabIndex={-1} key={employee.employeeId}>
                     <span className="hour-target-employee">
                       <strong>{employee.employeeName}</strong>
                       <small>
@@ -205,7 +208,7 @@ export default async function ScheduleSettingsPage({
           </div>
         </ConfigurationForm>
 
-        <section className="panel schedule-rule-panel">
+        <section className="panel schedule-rule-panel manager-issue-target" id="coverage-windows" tabIndex={-1}>
           <div className="schedule-rule-heading">
             <div>
               <p className="eyebrow">Coverage windows</p>

@@ -49,3 +49,17 @@ rewrite, or self-close independent findings.
 For material changes, report: changed scope, applicable director positions,
 controls/risks, evidence run, open exceptions/blockers, release impact, owner,
 next gate, and any Jose decision actually required.
+
+## Visual system and page assets
+Read [DESIGN.MD](DESIGN.MD) before visual work. Use the defined palette, local
+Inter/JetBrains Mono fonts, Phosphor icon family, and established motion.
+Employee home may receive bounded responsive layout improvements; preserve real
+data semantics, navigation, and workflow behavior.
+
+Page illustrations and their generation instructions live in
+[public/assets/README.md](public/assets/README.md), with provenance and prompts in
+[public/assets/manifest.json](public/assets/manifest.json). Generate original
+content-specific illustrations with the built-in image model, save final files
+there, and update the manifest before referencing them. Keep decorative artwork
+secondary, reserve image dimensions, and use correct alt text. Retain the
+official NEVORA logo, wordmark, and PWA icons.

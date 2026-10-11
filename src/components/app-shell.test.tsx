@@ -93,3 +93,20 @@ it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reac
 it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessible shell affordances for %s',role=>{
  const {html}=render(role);expect(html).toContain('href="/app/profile"');expect(html).toContain('href="/app/notifications"');expect(html).not.toContain('portal-device-settings');
 });
+
+it.each(['MANAGER','OWNER'] as const)('lets %s open Updates directly on mobile and keeps its nested routes selected',role=>{
+ const {html}=render(role,'/app/updates/compose');
+ const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
+ const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
+ const direct=header.split('id="manager-more-navigation"')[0];
+ expect(direct).toMatch(/href="\/app\/updates"[^>]*aria-label="Updates"[^>]*aria-current="page"/);
+ expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
+ expect(sidebar.match(/href="\/app\/updates"/g)).toHaveLength(1);
+});
+
+it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination within the existing employee More navigation',role=>{
+ const {html}=render(role,'/app/updates/own-update');
+ const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
+ expect(header).not.toContain('href="/app/updates"');
+ expect(html).toContain('href="/app/updates" class="employee-more-link active" aria-current="page"');
+});

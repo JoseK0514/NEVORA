@@ -1,0 +1,498 @@
+/* DESIGN.MD visual system. Preserve established workflow and motion behavior. */
+.mobile-header .manager-updates-link {
+  width: 44px;
+  min-height: 44px;
+  flex: 0 0 44px;
+  padding: 0;
+  border-radius: 12px;
+}
+.mobile-header .manager-updates-link[aria-current="page"] {
+  background: var(--nevora-soft);
+  color: var(--design-accent-ink);
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/typeface/inter/variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/typeface/jetbrains-mono/variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+}
+
+:root {
+  --design-primary: #ED724C;
+  --design-secondary: #FAFAFA;
+  --design-accent: #D8613C;
+  --design-background: #FAFAFA;
+  --design-surface: #E5E7EB;
+  --design-surface-elevated: #FFFFFF;
+  --design-surface-inset: color-mix(in srgb, var(--design-surface) 28%, var(--design-background));
+  --design-text-primary: #111827;
+  --design-text-secondary: #4B5563;
+  --design-border: #D1D5DB;
+  --design-accent-ink: #9F3821;
+  --design-accent-ink-hover: #7D2D1B;
+  --design-radius-card: 18px;
+  --design-radius-control: 17px;
+  --design-radius-pill: 9999px;
+  --design-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --design-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Compatibility names remain stable for the existing components. */
+  --nevora-blue: var(--design-accent-ink);
+  --nevora-blue-hover: var(--design-accent-ink-hover);
+  --nevora-cyan: var(--design-primary);
+  --nevora-soft: color-mix(in srgb, var(--design-primary) 12%, var(--design-background));
+  --nevora-accent-rgb: 159, 56, 33;
+  --nevora-highlight-rgb: 237, 114, 76;
+  --nevora-soft-rgb: 248, 234, 229;
+  --nuvora-midnight: var(--design-text-primary);
+  --nuvora-bg: var(--design-background);
+  --nuvora-surface: var(--design-surface-elevated);
+  --nuvora-text: var(--design-text-primary);
+  --nuvora-muted: var(--design-text-secondary);
+  --color-border-subtle: var(--design-border);
+  --radius-premium: var(--design-radius-card);
+  --font-family-apple: var(--design-font-body);
+  --font-ui: var(--design-font-body);
+  --fuel-line: var(--design-border);
+  --surface-strong: var(--design-secondary);
+  --text-primary: var(--design-text-primary);
+  --text-secondary: var(--design-text-secondary);
+  --border-color: var(--design-border);
+}
+
+body {
+  font-family: var(--design-font-body);
+}
+
+.employee-shell {
+  --color-bg-main: var(--design-background);
+}
+
+.page-header h1,
+.auth-card h1 {
+  font-weight: 500;
+}
+
+/* Metadata adopts the mono face without changing its current size or rhythm. */
+.eyebrow,
+.employee-home-eyebrow,
+.employee-more-label,
+.employee-time-section-heading > time {
+  font-family: var(--design-font-mono);
+}
+
+/* Preserve the dark rail, its dimensions, and the original logo artwork. */
+.sidebar {
+  background: var(--design-text-primary);
+  color: var(--design-secondary);
+}
+
+.sidebar .nav-link,
+.sidebar .sidebar-profile small,
+.sidebar .sidebar-platform-footer {
+  color: var(--design-border);
+}
+
+.sidebar .nav-link:is(:hover, .active) {
+  color: var(--design-secondary);
+  background: color-mix(in srgb, var(--design-primary) 16%, transparent);
+}
+
+.employee-shell .sidebar .nav-link.active .nav-icon {
+  color: var(--design-primary);
+}
+
+/* Orange fills use charcoal labels; small accent text uses the darker ink token. */
+html body :is(
+  .button.primary,
+  .manager-home-action,
+  .time-clock-button.clock-in,
+  .schedule-builder-add,
+  .new-shift-action.primary,
+  .marketplace-claim,
+  .marketplace-primary-action,
+  .availability-preferences-button.primary,
+  .manager-subtab-action,
+  .employee-profile-view,
+  .timeoff-settings-submit,
+  .schedule-settings-save-btn,
+  .employee-action.primary,
+  .portal-device-settings .portal-device-button.primary,
+  .manager-schedule-page .schedule-generation-action.primary,
+  .employee-time-correction-submit,
+  .manager-correction-actions button.primary,
+  .employee-shell .employee-availability-view .availability-deadline-banner .button
+) {
+  background: var(--design-primary);
+  border-color: var(--design-primary);
+  color: var(--design-text-primary);
+}
+
+html body :is(
+  .button.primary,
+  .manager-home-action,
+  .time-clock-button.clock-in,
+  .schedule-builder-add,
+  .new-shift-action.primary,
+  .marketplace-claim,
+  .marketplace-primary-action,
+  .availability-preferences-button.primary,
+  .manager-subtab-action,
+  .employee-profile-view,
+  .timeoff-settings-submit,
+  .schedule-settings-save-btn,
+  .employee-action.primary,
+  .portal-device-settings .portal-device-button.primary,
+  .manager-schedule-page .schedule-generation-action.primary,
+  .employee-time-correction-submit,
+  .manager-correction-actions button.primary,
+  .employee-shell .employee-availability-view .availability-deadline-banner .button
+):is(:hover, :active):not(:disabled) {
+  background: var(--design-accent);
+  border-color: var(--design-accent);
+  color: var(--design-text-primary);
+}
+
+/* Corner changes do not alter padding, borders, dimensions, or responsive grids. */
+.card,
+.stat-card,
+.auth-card,
+.dashboard-panel,
+.dashboard-metric-card,
+.manager-live-card,
+.manager-approvals-card,
+.employee-profile-card {
+  border-radius: var(--design-radius-card);
+}
+
+body .employee-login-card,
+body .employee-activation-card {
+  background: var(--design-surface-elevated);
+  border-color: var(--design-border);
+  border-radius: var(--design-radius-card);
+}
+
+body .employee-login-form input,
+body .employee-activation-form input,
+body .employee-login-submit,
+body .nevora-select {
+  border-radius: var(--design-radius-control);
+}
+
+.employee-action,
+.manager-home-action,
+.manager-subtab-action,
+.marketplace-primary-action,
+.schedule-generation-action,
+.employee-time-refresh,
+.employee-time-link {
+  border-radius: var(--design-radius-pill);
+}
+
+/* Employee Home: established order, clearer surfaces, compact responsive detail. */
+.employee-home-heading h1 {
+  font-size: clamp(28px, 2.5vw, 36px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.045em;
+}
+
+.employee-home-week {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--design-text-secondary);
+}
+
+.employee-home-week svg,
+.employee-home-location svg,
+.employee-home .employee-time-current-heading h2 svg {
+  flex: 0 0 auto;
+}
+
+.employee-home-layout {
+  gap: 20px;
+}
+
+.employee-home-surface {
+  border-color: var(--design-surface);
+  background: var(--design-surface-elevated);
+}
+
+.employee-home-today {
+  padding: 24px;
+  box-shadow: var(--shadow-premium);
+}
+
+.employee-home-today-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.employee-home-today-heading > div {
+  min-width: 0;
+}
+
+.employee-home-today .employee-home-eyebrow {
+  color: var(--design-accent-ink);
+}
+
+.employee-home-today-heading h2 {
+  color: var(--design-text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.employee-home-workday-art {
+  display: block;
+  width: 120px;
+  height: 80px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.employee-home-shift-time {
+  margin-top: 16px;
+  font-size: clamp(25px, 2.3vw, 30px);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.employee-home-no-shift {
+  margin-top: 16px;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.employee-home-location {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.employee-home-location svg {
+  margin-top: 2px;
+}
+
+.employee-home .employee-clock-compact {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid var(--design-surface);
+  border-radius: 14px;
+  background: var(--design-surface-inset);
+}
+
+.employee-home .employee-time-current-heading h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.employee-home .employee-time-badge {
+  background: var(--design-surface-elevated);
+}
+
+.employee-home .employee-time-badge.on-break {
+  color: var(--color-state-warning);
+  background: var(--color-state-warning-bg);
+}
+
+.employee-home .employee-time-footer {
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  border-color: var(--design-surface);
+}
+
+.employee-home .employee-time-footer > small {
+  flex-basis: 100%;
+  font-size: 11px;
+}
+
+.employee-home .employee-time-controls {
+  width: 100%;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.employee-home .employee-time-refresh {
+  background: var(--design-surface-elevated);
+  font-weight: 500;
+}
+
+.employee-home .employee-time-link {
+  border-color: var(--design-primary);
+  background: var(--design-primary);
+  color: var(--design-text-primary);
+  font-weight: 600;
+}
+
+.employee-home .employee-time-link:is(:hover, :active) {
+  background: var(--design-accent);
+  border-color: var(--design-accent);
+}
+
+.employee-home-upcoming {
+  padding: 20px 24px 0;
+}
+
+.employee-home-section-heading {
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.employee-home-section-heading > a {
+  gap: 8px;
+  color: var(--design-accent-ink);
+}
+
+.employee-home :is(.employee-home-section-heading, .employee-home-summary) h2 {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.employee-home-agenda-row {
+  grid-template-columns: 48px minmax(0, 1fr) 18px;
+  gap: 12px;
+  border-color: var(--design-surface);
+}
+
+.employee-home-date {
+  width: 48px;
+  min-height: 56px;
+  gap: 5px;
+  background: var(--nevora-soft);
+  border-radius: 12px;
+}
+
+.employee-home-date > span {
+  font-family: var(--design-font-mono);
+  font-size: 10px;
+  color: var(--design-accent-ink);
+}
+
+.employee-home-date > strong {
+  font-size: 23px;
+  color: var(--design-text-primary);
+}
+
+.employee-home-shift-copy > strong {
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.employee-home-shift-copy > .employee-home-lead {
+  justify-self: start;
+  padding: 3px 6px;
+  background: var(--design-surface-inset);
+  border-radius: 4px;
+  color: var(--design-text-secondary);
+  font-size: 10px;
+}
+
+.employee-home-row-arrow {
+  opacity: 1;
+  color: var(--design-text-secondary);
+}
+
+.employee-home-empty-state {
+  padding: 18px 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.employee-home-empty-state > div {
+  min-width: 0;
+}
+
+.employee-home-empty-state strong {
+  display: block;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.employee-home-planner-art {
+  display: block;
+  flex: 0 0 80px;
+  width: 80px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.employee-home-empty-state p {
+  line-height: 1.6;
+}
+
+.employee-home-summary {
+  padding: 24px;
+  border-color: var(--design-surface);
+}
+
+.employee-home-metrics {
+  gap: 16px;
+  margin: 20px 0 16px;
+}
+
+.employee-home-metrics > div + div {
+  padding-left: 16px;
+  border-color: var(--design-surface);
+}
+
+.employee-home-metrics dt {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.employee-home-metrics dd {
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.employee-home-metrics .employee-home-metric-unavailable {
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: -.025em;
+}
+
+.employee-home-disclaimer {
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .employee-home-heading { margin-bottom: 20px; }
+  .employee-home-today,
+  .employee-home-summary { padding: 20px; }
+  .employee-home-upcoming { padding-inline: 20px; }
+  .employee-home-layout { gap: 16px; }
+  .employee-home-workday-art { width: 96px; height: 64px; }
+  .employee-home-empty-state { gap: 12px; }
+}
+
+@media (max-width: 374px) {
+  .employee-home-today,
+  .employee-home-summary { padding: 16px; }
+  .employee-home-upcoming { padding-inline: 16px; }
+  .employee-home-workday-art { width: 72px; height: 48px; }
+  .employee-home-empty-state { align-items: flex-start; }
+  .employee-home-planner-art { flex-basis: 56px; width: 56px; height: 38px; }
+  .employee-home-metrics { gap: 12px; }
+  .employee-home-metrics > div + div { padding-left: 12px; }
+  .employee-home-metrics .employee-home-metric-unavailable { font-size: 16px; }
+}

@@ -4,22 +4,51 @@ import {useEffect,useRef,useState} from 'react';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import {parseActionCenter,type ActionCenter} from '../lib/action-center/project';
 import styles from './manager-action-center.module.css';
+import {ArrowRightIcon, ArrowsClockwiseIcon, CalendarBlankIcon, ClockIcon, KeyIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
+import {formatBusinessTimestamp} from '../lib/business-time';
+import {actionCenterNavigation} from './action-center-navigation';
 type Connection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
-export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=false,onExpand}:{snapshot:ActionCenter|null;connection:Connection;onRefresh?:()=>void;expanded?:boolean;onExpand?:()=>void}){
+type Category='all'|'scheduling'|'requests'|'timekeeping';
+const categoryLabels={scheduling:'Scheduling',requests:'Requests',timekeeping:'Timekeeping'};
+export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=false,onExpand,timeZone='UTC',category='all',onCategoryChange}:{snapshot:ActionCenter|null;connection:Connection;onRefresh?:()=>void;expanded?:boolean;onExpand?:()=>void;timeZone?:string;category?:Category;onCategoryChange?:(category:Category)=>void}){
  const ready=connection==='ready'&&snapshot?.state==='ready'?snapshot:null;
  const status=connection==='ready'&&!ready?'unavailable':connection;
- return <section className={styles.root} aria-label="Manager Action Center"><header><div><p>What needs my attention?</p><h2>Action Center</h2></div>{ready?<strong aria-label="Total actions">{ready.counts.total}</strong>:null}<button className="button secondary" type="button" onClick={onRefresh}>Refresh actions</button></header>
-  {ready?<><dl className={styles.counts}>{(['scheduling','requests','timekeeping'] as const).map(category=><div key={category}><dt>{category==='scheduling'?'Scheduling':category==='requests'?'Requests':'Timekeeping'}</dt><dd>{ready.counts[category]}</dd></div>)}</dl>
-   {ready.items.length?<div className={styles.list}>{ready.items.slice(0,expanded?1000:20).map(item=><article key={item.id} data-action-id={item.id}><div><small>{item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'} · {item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</small><h3>{item.title}</h3><p>{item.detail}</p></div><Link className="button secondary" href={item.href}>Review</Link></article>)}</div>:<p role="status">No actions found in the checked sources.</p>}
-   {ready.items.length>20&&!expanded?<button className="button secondary" onClick={onExpand}>Show all {ready.items.length} actions</button>:null}
-   {ready.limitedAttendance?<p>Some attendance comparisons are unavailable. Check the attendance view for source limitations.</p>:null}
-   <p className={styles.note}>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p>
-  </>:<p role="status">{({loading:'Loading actions',ready:'Actions unavailable',offline:'Actions unavailable offline',reconnecting:'Reconnecting to actions',unavailable:'Actions unavailable',access_lost:'Action Center access ended',paused:'Action updates paused'})[status]}. {status==='access_lost'?'Sign in with a currently authorized management account.':'The action list is unconfirmed. Refresh a current protected read before reviewing.'}</p>}
-  <footer><Link href="/app/clocker-recovery">Clocker Recovery</Link><Link href="/app/account-recovery">Assisted Account Recovery</Link></footer>
+ const matching=ready?.items.filter(item=>category==='all'||item.category===category)??[];
+ const visible=matching.slice(0,expanded?1000:20);
+ const noun=category==='requests'?'request':category==='all'?'action':`${category} action`;
+ return <section className={styles.root} aria-label="Manager Action Center">
+  <header><div><h2>Action Center</h2><p>What needs my attention?</p></div>{ready?<strong className={styles.total} aria-label="Total actions">{ready.counts.total}</strong>:null}<button className="button secondary" type="button" onClick={onRefresh}><ArrowsClockwiseIcon size={18} aria-hidden="true"/><span>Refresh actions</span></button></header>
+  {ready?<>
+   <div className={styles.counts} role="group" aria-label="Filter actions by category">{(['scheduling','requests','timekeeping'] as const).map(value=><button type="button" key={value} data-action-category={value} aria-label={`${categoryLabels[value]}: ${ready.counts[value]} actions`} aria-pressed={category===value} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.(value)}><span>{categoryLabels[value]}</span><strong>{ready.counts[value]}</strong></button>)}</div>
+   <div className={styles.filterBar}><button type="button" data-action-category="all" aria-pressed={category==='all'} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.('all')}>All actions</button><p role="status" aria-live="polite">Showing {visible.length} of {matching.length} {noun}{matching.length===1?'':'s'}</p></div>
+   {matching.length?<div id="manager-action-list" className={styles.list}>{visible.map(item=>{
+    const Icon=item.category==='timekeeping'?ClockIcon:item.category==='requests'?UserCheckIcon:CalendarBlankIcon;
+    const action=actionCenterNavigation(item);
+    return <article key={item.id} data-action-id={item.id} data-action-kind={item.category}>
+     <span className={styles.icon} aria-hidden="true"><Icon size={20}/></span>
+     <div className={styles.copy}><small className={item.priority==='URGENT'?styles.priority:undefined}>{item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'} · {item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</small><h3>{item.title}</h3><p>{item.detail}</p></div>
+     <Link className={styles.review} href={action.href} aria-label={`${action.label}: ${item.title}`}>{action.label} <ArrowRightIcon size={16} aria-hidden="true"/></Link>
+    </article>;
+   })}</div>:<p id="manager-action-list" className={styles.status} role="status">{category==='all'?'No actions found in the checked sources.':`No ${category==='requests'?'requests':`${category} actions`} to review in the checked sources.`}</p>}
+   {matching.length>20&&!expanded?<button className="button secondary" onClick={onExpand}>Show all {matching.length} actions</button>:null}
+   {ready.limitedAttendance?<p className={styles.status}>Some attendance comparisons are unavailable. Check the attendance view for source limitations.</p>:null}
+   <div className={styles.provenance}><p>Checked <time dateTime={ready.observedAt}>{formatBusinessTimestamp(ready.observedAt,timeZone)}</time></p><details className={styles.note}><summary>About these actions</summary><p>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p></details></div>
+  </>:<p className={styles.status} role="status">{({loading:'Loading actions',ready:'Actions unavailable',offline:'Actions unavailable offline',reconnecting:'Reconnecting to actions',unavailable:'Actions unavailable',access_lost:'Action Center access ended',paused:'Action updates paused'})[status]}. {status==='access_lost'?'Sign in with a currently authorized management account.':'The action list is unconfirmed. Refresh a current protected read before reviewing.'}</p>}
+  <footer><Link href="/app/clocker-recovery"><ClockIcon size={18} aria-hidden="true"/>Clocker Recovery<ArrowRightIcon size={16} aria-hidden="true"/></Link><Link href="/app/account-recovery"><KeyIcon size={18} aria-hidden="true"/>Assisted Account Recovery<ArrowRightIcon size={16} aria-hidden="true"/></Link></footer>
  </section>;
 }
-export function ManagerActionCenter({weekStart,actorId}:{weekStart:string;actorId:string}){
+export function ManagerActionCenter({weekStart,actorId,timeZone}:{weekStart:string;actorId:string;timeZone?:string}){
  const [snapshot,setSnapshot]=useState<ActionCenter|null>(null),[connection,setConnection]=useState<Connection>('loading'),[expanded,setExpanded]=useState(false);
+ const [category,setCategory]=useState<Category>('all');
+ useEffect(()=>{
+  const restore=()=>{const value=new URL(window.location.href).searchParams.get('actionCategory');setCategory(value==='scheduling'||value==='requests'||value==='timekeeping'?value:'all');setExpanded(false);};
+  restore();window.addEventListener('popstate',restore);return()=>window.removeEventListener('popstate',restore);
+ },[]);
+ const selectCategory=(value:Category)=>{
+  setCategory(value);setExpanded(false);
+  const url=new URL(window.location.href);if(value==='all')url.searchParams.delete('actionCategory');else url.searchParams.set('actionCategory',value);
+  window.history.replaceState(window.history.state,'',url);
+ };
  const controller=useRef<ReturnType<typeof createPrivateSnapshotController<ActionCenter>>|null>(null);
  useEffect(()=>{
   const c=createPrivateSnapshotController<ActionCenter>(value=>{setSnapshot(value.refreshing?null:value.snapshot);if(value.paused)setConnection(navigator.onLine?'paused':'offline');else if(value.refreshing)setConnection(previous=>previous==='reconnecting'?'reconnecting':'loading');else if(value.snapshot?.state==='ready')setConnection('ready');else setConnection(value.snapshot?.state==='unavailable'&&value.snapshot.reason==='access_denied'?'access_lost':'unavailable');},async signal=>{
@@ -31,7 +60,7 @@ export function ManagerActionCenter({weekStart,actorId}:{weekStart:string;actorI
   for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.addEventListener(name,current);for(const name of ['blur','pagehide','offline'])window.addEventListener(name,pause);window.addEventListener('online',online);document.addEventListener('visibilitychange',current);current();
   return()=>{c.stop();controller.current=null;for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.removeEventListener(name,current);for(const name of ['blur','pagehide','offline'])window.removeEventListener(name,pause);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',current);};
  },[weekStart,actorId]);
- return <ActionCenterSurface snapshot={snapshot} connection={connection} expanded={expanded} onExpand={()=>setExpanded(true)} onRefresh={()=>controller.current?.refresh()}/>;
+ return <ActionCenterSurface snapshot={snapshot} connection={connection} timeZone={timeZone} category={category} onCategoryChange={selectCategory} expanded={expanded} onExpand={()=>setExpanded(true)} onRefresh={()=>controller.current?.refresh()}/>;
 }
 
 import { Temporal } from '@js-temporal/polyfill';

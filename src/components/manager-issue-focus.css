@@ -1,0 +1,6 @@
+.manager-issue-target {scroll-margin:96px 0 100px;}
+.manager-issue-target:target,.manager-issue-target:focus-visible {outline:2px solid var(--design-accent-ink);outline-offset:4px;}
+.manager-issue-notice {padding:16px;background:var(--design-surface-inset);border-radius:var(--design-radius-card);font-size:14px;line-height:1.6;color:var(--design-text-primary);}
+.manager-schedule-context {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px;margin-bottom:16px;background:var(--design-surface-inset);border-radius:var(--design-radius-card);}
+.manager-schedule-context p {margin:0;font-size:14px;}
+.manager-schedule-context a {display:inline-flex;align-items:center;min-height:44px;color:var(--design-accent-ink);text-decoration:underline;text-underline-offset:3px;}

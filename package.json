@@ -32,8 +32,11 @@
     "test:release-engineering": "node --test scripts/release-ci-contract.check.mjs scripts/release-postgres-cleanup.check.mjs scripts/release-browser-diagnostics.check.mjs"
   },
   "dependencies": {
+    "@gsap/react": "2.1.2",
     "@js-temporal/polyfill": "0.5.1",
     "@neondatabase/serverless": "1.1.0",
+    "@phosphor-icons/react": "2.1.10",
+    "gsap": "3.15.0",
     "next": "16.3.8",
     "nodemailer": "10.0.16",
     "react": "19.3.0",

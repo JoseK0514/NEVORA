@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {NavIcon} from './nav-icon';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {createEmployeeTimeController,fetchEmployeeTime,type EmployeeTimePanelState} from '../lib/employee-time-client';
 import {formatRecordedDuration,type EmployeeTimeEntry} from '../lib/employee-time';
@@ -29,11 +30,11 @@ export function EmployeeTimeView({state,compact=false,onRefresh}:{state:Employee
  const current=ready?.current??null;
  const title=paused?'Updates paused':denied?'Sign in again':time?.state==='unavailable'?'Recorded time unavailable':'Loading recorded time';
  const controls=<div className="employee-time-controls">
-  {denied?<Link className="employee-time-refresh" href="/login">Sign In</Link>:<button className="employee-time-refresh" type="button" aria-label="Refresh recorded time" onClick={onRefresh} disabled={paused||refreshing}>{refreshing?'Refreshing…':'Refresh'}</button>}
-  {compact?<Link className="employee-time-link" href="/app/my-time">My Time <span aria-hidden="true">→</span></Link>:null}
+  {denied?<Link className="employee-time-refresh" href="/login">Sign In</Link>:<button className="employee-time-refresh" type="button" aria-label="Refresh recorded time" onClick={onRefresh} disabled={paused||refreshing}><NavIcon name="refresh" size={16}/>{refreshing?'Refreshing…':'Refresh'}</button>}
+  {compact?<Link className="employee-time-link" href="/app/my-time">My Time <NavIcon name="arrowRight" size={16}/></Link>:null}
  </div>;
  const content=<>
-  <div className="employee-time-current-heading"><h2>{compact?'Clock Status':'Current Status'}</h2>{ready?<span className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:null}</div>
+  <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:null}{compact?'Clock Status':'Current Status'}</h2>{ready?<span className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:null}</div>
   {ready?<>
    {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p><time dateTime={current.clockInAt}>{stamp(current.clockInAt,ready.timeZone)}</time> · Clock In</p><p><b>{formatRecordedDuration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<> · <b>{formatRecordedDuration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
   </>:<div className="employee-time-message" role="status"><strong>{title}</strong><p>{paused?'Return online to check your latest records.':denied?'Your current employee session is required.':time?.state==='unavailable'?'Your latest clock records could not be confirmed. Try refreshing.':'Checking your actual punches and breaks.'}</p></div>}

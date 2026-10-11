@@ -1,4 +1,5 @@
 import { ActionMenu } from "@/components/action-menu";
+import {ManagerIssueFocus} from '@/components/manager-issue-focus';
 import { ScheduleLocationControl } from "@/components/schedule-location-control";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
@@ -125,6 +126,8 @@ export default async function SchedulePage({
     selectedLocation === "all"
       ? allShifts
       : allShifts.filter((shift) => shift.locationId === selectedLocation);
+  const reviewDay=manager&&dates.includes(params.day??'')?params.day:undefined;
+  const contextualShifts=reviewDay?visibleShifts.filter(shift=>shift.date===reviewDay):visibleShifts;
   const locationQuery =
     selectedLocation === "all" ? "" : `&location=${selectedLocation}`;
 
@@ -340,7 +343,7 @@ export default async function SchedulePage({
 
               <form
                 action={setAvailabilityDeadlineAction}
-                className="schedule-menu-deadline"
+                className="schedule-menu-deadline manager-issue-target" id="schedule-deadline" tabIndex={-1}
               >
                 <input type="hidden" name="weekStart" value={weekStart} />
                 <label>
@@ -370,15 +373,17 @@ export default async function SchedulePage({
         <SchedulePublicationControls weekStart={weekStart} locations={selectedLocation === "all" ? locations : locations.filter(location => location.id === selectedLocation)} review={publicationReview}/>
       </section>
 
-      <section className="schedule-builder-roster">
+      <ManagerIssueFocus prefix="schedule-" />
+      {reviewDay?<div className="manager-schedule-context manager-issue-target" id="schedule-review" tabIndex={-1}><p>Reviewing {formatDayLabel(reviewDay).weekday} {formatDayLabel(reviewDay).day} · {selectedLocation==='all'?'All locations':locations.find(location=>location.id===selectedLocation)?.shortName}</p><Link href={`/app/schedule?week=${weekStart}${locationQuery}`}>Show full week</Link></div>:null}
+      <section className="schedule-builder-roster manager-issue-target" id={reviewDay?undefined:'schedule-review'} tabIndex={-1}>
         {activeEmployees.map((employee) => {
-            const employeeShifts = visibleShifts.filter(
+            const employeeShifts = contextualShifts.filter(
               (shift) =>
                 shift.employeeId === employee.id && !shift.isCalloutApproved,
             );
 
             return (
-              <div className="schedule-builder-row" key={employee.id}>
+              <div className="schedule-builder-row manager-issue-target" id={`schedule-employee-${employee.id}`} tabIndex={-1} key={employee.id}>
                 <div className="schedule-builder-employee">
                   <strong>
                     {employee.firstName} {employee.lastName}

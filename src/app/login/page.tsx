@@ -5,6 +5,12 @@ import { BrandLockup } from "@/components/brand-lockup";
 import { BrandLegal } from "@/components/brand-legal";
 import { login } from "@/app/login/actions";
 import { NUVORA_BRAND } from "../../lib/brand";
+import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
+import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
+import { UserPlusIcon } from "@phosphor-icons/react/dist/ssr/UserPlus";
+import { LoginVisual } from "./login-visual";
+import { LoginSubmit } from "./login-submit";
+import "./login.css";
 
 export default async function LoginPage({
   searchParams,
@@ -21,11 +27,13 @@ export default async function LoginPage({
       <div className="employee-login-shell">
         <header className="employee-login-brand">
           <BrandLockup variant="large" />
+          <span className="login-workspace">{workspaceName ?? "Workspace unavailable"}</span>
         </header>
 
+        <div className="employee-login-composition">
+        <LoginVisual />
         <section className="auth-card employee-login-card">
           <div className="employee-login-heading">
-            <p className="eyebrow">{workspaceName ?? "Workspace unavailable"}</p>
             <h1>Employee Login</h1>
             <p>
               Access your schedule, availability, requests, time, and profile.
@@ -33,10 +41,10 @@ export default async function LoginPage({
           </div>
 
           {params.error ? (
-            <p className="form-error">Employee ID or password is incorrect.</p>
+            <p className="form-error" id="login-error" role="alert">Employee ID or password is incorrect.</p>
           ) : null}
           {params.activated ? (
-            <p className="form-success">Account activated. You can sign in now.</p>
+            <p className="form-success" role="status">Account activated. You can sign in now.</p>
           ) : null}
 
           <form action={login} className="form-stack employee-login-form">
@@ -47,6 +55,9 @@ export default async function LoginPage({
                 name="employeeId"
                 placeholder="Enter your employee ID"
                 autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
+                aria-describedby={params.error ? "login-error" : undefined}
                 required
               />
             </label>
@@ -57,23 +68,29 @@ export default async function LoginPage({
                 type="password"
                 placeholder="Enter your password"
                 autoComplete="current-password"
+                aria-describedby={params.error ? "login-error" : undefined}
                 required
               />
             </label>
-            <button type="submit" className="button primary full employee-login-submit">
-              Sign In
-            </button>
+            <LoginSubmit />
           </form>
 
           <div className="auth-secondary employee-login-secondary">
-            <Link href="/forgot-access">Forgot access?</Link>
-            <span>New employee?</span>
-            <Link href={`/activate${returnQuery}`}>Activate your account</Link>
+            <Link href="/forgot-access" className="login-access-link">
+              <KeyIcon size={20} weight="regular" aria-hidden="true" focusable="false" />
+              <span>Forgot access?</span>
+              <ArrowUpRightIcon size={16} weight="regular" aria-hidden="true" focusable="false" />
+            </Link>
+            <Link href={`/activate${returnQuery}`} className="login-access-link">
+              <UserPlusIcon size={20} weight="regular" aria-hidden="true" focusable="false" />
+              <span><small>New employee?</small>Activate your account</span>
+              <ArrowUpRightIcon size={16} weight="regular" aria-hidden="true" focusable="false" />
+            </Link>
           </div>
         </section>
+        </div>
 
         <footer className="employee-login-footer">
-          <span>{workspaceName ?? "Workspace unavailable"}</span>
           <small>{NUVORA_BRAND.poweredBy}</small>
           <BrandLegal />
         </footer>

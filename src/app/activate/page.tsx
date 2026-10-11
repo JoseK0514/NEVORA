@@ -4,82 +4,73 @@ import { safeReturnTo } from "@/lib/notifications/destinations";
 import { BrandLockup } from "@/components/brand-lockup";
 import { BrandLegal } from "@/components/brand-legal";
 import { PhoneInput } from "@/components/phone-input";
-import { activateAccountAction } from "@/app/activate/actions";
+import { NUVORA_BRAND } from "@/lib/brand";
+import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { activateAccountAction } from "./actions";
+import { ActivationVisual } from "./activation-visual";
+import { ActivationPasswords } from "./activation-passwords";
+import { ActivationSubmit } from "./activation-submit";
+import "../login/login.css";
+import "./activation.css";
 
-export default async function ActivatePage({
-  searchParams,
-}: {
+export default async function ActivatePage({ searchParams }: {
   searchParams: Promise<{ error?: string; employeeId?: string; returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
   const workspaceName = await getPublicWorkspaceName();
   const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
   const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
+  const errorId = params.error ? "activation-error" : undefined;
 
-  return (
-    <main className="auth-page">
-      <div className="auth-activation-shell">
-        <section className="auth-card">
-          <BrandLockup variant="large" />
-          <div className="auth-activation-heading">
-            <h1>Activate Account</h1>
-            <p className="auth-workspace">{workspaceName ?? "Workspace unavailable"}</p>
+  return <main className="auth-page employee-login-page activation-page">
+    <div className="employee-login-shell">
+      <header className="employee-login-brand">
+        <BrandLockup variant="large" />
+        <span className="login-workspace">{workspaceName ?? "Workspace unavailable"}</span>
+      </header>
+      <div className="employee-login-composition">
+        <ActivationVisual />
+        <section className="auth-card employee-login-card activation-card">
+          <div className="employee-login-heading">
+            <h1>Activate account</h1>
+            <p>Use your employee details to get started. Then choose a password.</p>
           </div>
-
-          {params.error ? (
-            <p className="form-error">
-              {params.error === "not_found"
-                ? "We could not activate that account. Check the Employee ID and phone number, or the account may already be activated."
-                : "Enter your Employee ID and phone number, and choose a matching password of at least 8 characters."}
-            </p>
-          ) : null}
-
-          <form action={activateAccountAction} className="form-stack">
+          {params.error ? <p className="form-error" id={errorId} role="alert">
+            {params.error === "not_found"
+              ? "We could not activate that account. Check the Employee ID and phone number, or the account may already be activated."
+              : "Enter your Employee ID and phone number, and choose a matching password of at least 8 characters."}
+          </p> : null}
+          <form action={activateAccountAction} className="form-stack employee-login-form activation-form">
             {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
-            <label>
-              Employee ID
-              <input
-                name="employeeId"
-                placeholder="JN-001"
-                defaultValue={params.employeeId ?? ""}
-                autoComplete="username"
-                required
-              />
+            <label htmlFor="activation-employee-id">Employee ID
+              <input id="activation-employee-id" name="employeeId" placeholder="Enter your employee ID"
+                defaultValue={params.employeeId ?? ""} autoComplete="username" autoCapitalize="none"
+                spellCheck={false} required aria-describedby={errorId} />
             </label>
-            <label>
-              Phone Number
-              <PhoneInput name="phone" autoComplete="tel" required />
-            </label>
-            <label>
-              Create Password
-              <input
-                name="password"
-                type="password"
-                minLength={8}
-                autoComplete="new-password"
-                required
-              />
-            </label>
-            <label>
-              Confirm Password
-              <input
-                name="confirmPassword"
-                type="password"
-                minLength={8}
-                autoComplete="new-password"
-                required
-              />
-            </label>
-            <button type="submit" className="button primary full">Activate Account</button>
+            <div className="activation-phone-field">
+              <label htmlFor="activation-phone">Phone number
+                <PhoneInput id="activation-phone" name="phone" autoComplete="tel" required
+                  aria-describedby={["activation-phone-hint", errorId].filter(Boolean).join(" ")} />
+              </label>
+              <p className="activation-hint" id="activation-phone-hint">Use the number your workplace has on file.</p>
+            </div>
+            <ActivationPasswords errorId={errorId} />
+            <ActivationSubmit />
           </form>
-
-          <div className="auth-secondary">
-            <span>Already activated?</span>
-            <Link href={`/login${returnQuery}`}>Back to Sign In</Link>
+          <div className="activation-secondary">
+            <details className="activation-help">
+              <summary>Need your employee details?<CaretDownIcon size={18} weight="regular" aria-hidden="true" focusable="false" /></summary>
+              <p>Your workplace sets up your employee record first. Ask your manager or Owner for your Employee ID and to confirm the phone number on file.</p>
+            </details>
+            <Link href={`/login${returnQuery}`} className="activation-back">
+              <ArrowLeftIcon size={18} weight="regular" aria-hidden="true" focusable="false" />
+              <span>Already activated? Sign in</span>
+            </Link>
           </div>
         </section>
-        <footer className="auth-legal"><BrandLegal /></footer>
       </div>
-    </main>
-  );
+      <footer className="employee-login-footer"><small>{NUVORA_BRAND.poweredBy}</small><BrandLegal /></footer>
+    </div>
+  </main>;
 }

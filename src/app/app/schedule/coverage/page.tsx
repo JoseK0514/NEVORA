@@ -17,6 +17,7 @@ import {
   isValidWeekStart,
 } from "@/lib/date-utils";
 import { rankCoverageCandidates } from "@/lib/scheduling/coverage-ranking";
+import {ManagerIssueFocus} from '@/components/manager-issue-focus';
 import { businessDateStart, shiftPeriod } from "@/lib/scheduling/periods";
 
 export default async function CoverageSuggestionsPage({
@@ -139,6 +140,8 @@ export default async function CoverageSuggestionsPage({
 
   return (
     <div className="coverage-suggestions-page">
+      <ManagerIssueFocus prefix="coverage-" />
+      <div className="manager-issue-target" id="coverage-issue" tabIndex={-1}>
       <PageHeader
         eyebrow="Coverage assistant"
         title="Suggested employees"
@@ -149,6 +152,7 @@ export default async function CoverageSuggestionsPage({
           </Link>
         }
       />
+      </div>
 
       <section className="panel suggestion-explainer">
         <div>

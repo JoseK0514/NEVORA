@@ -146,8 +146,15 @@ export function AppShell({
           <div className="mobile-header-actions">
           {notificationsEnabled && !employee ? <button type="button" className="role-chip portal-role-trigger" popoverTarget="portal-device-settings" aria-label="Profile and device settings">{user.role[0]}{user.role.slice(1).toLowerCase()}</button> : <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>}
           {!employee ? (
+            <Link href="/app/updates" className="button secondary manager-updates-link"
+              aria-label="Updates" aria-current={activeHref === '/app/updates' ? 'page' : undefined}
+              title="Updates">
+              <NavIcon name="updates" size={20} />
+            </Link>
+          ) : null}
+          {!employee ? (
             <ActionMenu id="manager-more-navigation" label="Menu" ariaLabel="More navigation">
-              {navigation.slice(5).map(item => (
+              {navigation.slice(5).filter(item => item.href !== '/app/updates').map(item => (
                 <Link key={item.href} href={item.href} className="nevora-action-menu-item"
                   aria-current={item.href === activeHref ? 'page' : undefined}
                   onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
