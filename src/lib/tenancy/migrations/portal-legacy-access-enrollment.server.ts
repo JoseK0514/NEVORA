@@ -1,3 +1,6 @@
+// PORTAL_LEGACY_RECONCILIATION_IMPORT_BEGIN
+import {compareLegacyEmployeeNumberEnrollmentTarget} from './employee-number-enrollment';
+// PORTAL_LEGACY_RECONCILIATION_IMPORT_END
 // UNUSED LOCAL whole-plan enrollment producer. Root authenticates the existing
 // leased maintenance controller/build and independently retains its ledger.
 // No runtime caller, reviewed DTO, hash equality or ordinary parser issues it.
@@ -325,3 +328,136 @@ const APPROVED_PRD_SHA256='35e4084c2c365777c78f0d1e2e65533b06758c1f3062cf1b10feb
 function imageHex(name:string):string{const bytes=(PORTAL_SOURCE_IMAGE_BYTES as Readonly<Record<string,unknown>>)[name];
  if(!Array.isArray(bytes)||bytes.some(b=>typeof b!=='number'||!Number.isInteger(b)||b<0||b>255))fail('SOURCE_OR_GRANT_COMMAND_DRIFT');return Buffer.from(bytes).toString('hex');}
 
+
+// PORTAL_LEGACY_RECONCILIATION_EXPECTATION_BEGIN
+// SOURCE PREPARATION ONLY / UNEXECUTED. This addition lives in the original
+// producer module, reusing its exact native SQL, source cells and command rules.
+// It exposes no source/credential/lineage rows and issues no proof or recovery
+// authority. Only the actual owning API retains the private expectation handle.
+declare const portalExpectationBrand:unique symbol;
+export type PortalLegacyReconciliationExpectation=Readonly<{[portalExpectationBrand]:true}>;
+export type PortalLegacyReconciliationCode='PORTAL_ENROLLMENT_EXPECTATION_REQUIRED'|
+ 'PORTAL_ENROLLMENT_FRESH_CLIENT_REQUIRED'|'PORTAL_ENROLLMENT_TARGET_DRIFT'|
+ 'PORTAL_ENROLLMENT_POLICY_SOURCE_DRIFT';
+const reconciliationErrors=new WeakSet<object>();
+class PortalReconciliationFailure extends Error{
+ constructor(readonly code:PortalLegacyReconciliationCode){super(code);reconciliationErrors.add(this);Object.freeze(this);}
+}
+function reconciliationFail(code:PortalLegacyReconciliationCode):never{throw new PortalReconciliationFailure(code);}
+export function isPortalLegacyReconciliationFailure(value:unknown):value is PortalReconciliationFailure{
+ return typeof value==='object'&&value!==null&&reconciliationErrors.has(value);
+}
+type PortalTarget={portal:unknown[][];admin:unknown[][];capabilities:unknown[][];locations:unknown[][];live:unknown[][];lineage:unknown[][]};
+type CompletePortalTarget=Readonly<{mapping:readonly (readonly string[])[];portal:unknown}>;
+type PortalExpectationState=Readonly<{originalClient:Client;request:GuardedTypedBackfillRequest;
+ binding:ControlledEnrollmentInstallerBinding;ledger:Ledger;policyText:string;
+ baseline:CompletePortalTarget;expected:CompletePortalTarget;counts:Readonly<{
+ mappingRows:number;subjects:number;administrativeSubjects:number;capabilityRows:number;locationRows:number;liveRows:number;lineageRows:number}>;baselineCounts:Readonly<{
+ mappingRows:number;subjects:number;administrativeSubjects:number;capabilityRows:number;locationRows:number;liveRows:number;lineageRows:number}>}>;
+const portalExpectations=new WeakMap<object,PortalExpectationState>();
+const MAPPING_TARGET_SQL="/* PORTAL_ENROLLMENT_RECONCILIATION_MAPPING */ SELECT employee_id,workspace_id,employee_number,normalized_number FROM nevora_tenancy.employee_login_identity ORDER BY pg_catalog.convert_to(employee_id,'UTF8')";
+// Every counter/definition/head row is retained, including unreferenced append-
+// only definitions. All int8 values are native strings; no rounding or defaults.
+const POLICY_STATE_SQL=`SELECT pg_catalog.jsonb_build_object(
+ 'counter',COALESCE((SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_array(workspace_id,incarnation::text) ORDER BY pg_catalog.convert_to(workspace_id,'UTF8')) FROM nevora_tenancy.workspace_incarnation_counter),'[]'::jsonb),
+ 'definition',COALESCE((SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_array(policy_id,revision::text,definition,pg_catalog.encode(canonical_policy_source,'hex'),canonical_policy_source_sha256,pg_catalog.encode(vocabulary_source,'hex'),vocabulary_source_sha256,pg_catalog.encode(approved_prd_source,'hex'),approved_prd_source_sha256) ORDER BY pg_catalog.convert_to(policy_id,'UTF8'),revision) FROM nevora_tenancy.capability_policy_definition),'[]'::jsonb),
+ 'head',COALESCE((SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_array(workspace_id,workspace_incarnation::text,installation_epoch::text,policy_id,policy_revision::text) ORDER BY pg_catalog.convert_to(workspace_id,'UTF8')) FROM nevora_tenancy.workspace_capability_policy_installation),'[]'::jsonb)
+)::text;`;
+async function nativeJsonText(client:Client,sql:string):Promise<string>{
+ const rows=await raw(client,sql);
+ if(rows.length!==1||rows[0].length!==1||typeof rows[0][0]!=='string')reconciliationFail('PORTAL_ENROLLMENT_TARGET_DRIFT');
+ // Parse/detach only native JSON text; never enumerate caller-supplied values.
+ try{detach(JSON.parse(rows[0][0]));}catch{reconciliationFail('PORTAL_ENROLLMENT_TARGET_DRIFT');}
+ return rows[0][0];
+}
+async function completeTarget(client:Client):Promise<CompletePortalTarget>{
+ const mapping=await raw(client,MAPPING_TARGET_SQL);
+ if(mapping.some(row=>row.length!==4||row.some(value=>typeof value!=='string')))reconciliationFail('PORTAL_ENROLLMENT_TARGET_DRIFT');
+ return detach({mapping,portal:JSON.parse(await nativeJsonText(client,TARGET_SQL))}) as CompletePortalTarget;
+}
+function expectation(value:unknown):PortalExpectationState{
+ if(typeof value!=='object'||value===null||!portalExpectations.has(value))reconciliationFail('PORTAL_ENROLLMENT_EXPECTATION_REQUIRED');
+ return portalExpectations.get(value)!;
+}
+/** Called before ANY mapping or Portal DML, after original ALL68 APPLIED proof
+ * and opaque same-backend/assigned-xid installer admission. Original producer
+ * remains unchanged. Its exact canonical ceiling is reused only for rejection;
+ * approved explicit sets still come from the authenticated controller ledger.
+ */
+export async function preparePortalLegacyReconciliationExpectation(client:Client,value:unknown,witness:EmployeeNumberInstallerExecutionWitness):Promise<PortalLegacyReconciliationExpectation>{
+ if(typeof value!=='object'||value===null||utilTypes.isProxy(value))fail('GENUINE_WHOLE_PLAN_REQUIRED');
+ const p=Object.getOwnPropertyDescriptor(value,'plan');if(!p||!Object.hasOwn(p,'value')||!isIssuedTypedTenantBackfillPlan(p.value))fail('GENUINE_WHOLE_PLAN_REQUIRED');
+ const binding=getControlledEnrollmentInstallerBinding(value),request=detach(value) as GuardedTypedBackfillRequest,plan=p.value;
+ if(!isControlledEnrollmentInstallerExecution(witness,client))fail('OWNED_INSTALLER_REQUIRED');
+ const compiled=compileLegacyEmployeeNumberEnrollment(plan);if(compiled.status!=='COMPILED')fail('SOURCE_OR_GRANT_COMMAND_DRIFT');
+ const identity=await assertControlledEnrollmentInstallerExecution(client,witness,binding),ledger=loadLedger(identity,binding),e=ledger.entry;
+ await raw(client,PORTAL_LEGACY_ENROLLMENT_PRIVATE_LOCK_SQL.text);await catalog(client,ledger,identity);repeatLedger(ledger);
+ await assertTypedKeyComparatorsOnLockedInstallerSource(client,request.facts,request.captureRequest,plan,witness);
+ if(!same(await raw(client,EMPTY_TARGET_SQL),[['0','0','0','0','0','0']]))fail('NONEMPTY_TARGET');
+ const baseline=await completeTarget(client);
+ const compared=compareLegacyEmployeeNumberEnrollmentTarget(compiled.enrollment,baseline.mapping);
+ if(compared.status==='BLOCKED')reconciliationFail('PORTAL_ENROLLMENT_TARGET_DRIFT');
+ const employees=plan.entries.filter(r=>r.table==='employees'),credentials=plan.entries.filter(r=>r.table==='employee_credentials'),sessions=plan.entries.filter(r=>r.table==='employee_sessions');
+ const byIdentity=(pairs:readonly (readonly string[])[])=>[...pairs].sort((a,b)=>order(canonicalOwnershipJson(a),canonicalOwnershipJson(b)));
+ if(e.subjects.length!==employees.length||!same(byIdentity(e.subjects.map(s=>[s.workspaceId,s.employeeId])),byIdentity(compiled.enrollment.rows.map(r=>[r.workspaceId,r.employeeId]))))fail('SOURCE_OR_GRANT_COMMAND_DRIFT');
+ if(!same(e.workspaces.map(w=>w.workspaceId).sort(order),[...new Set(compiled.enrollment.rows.map(r=>r.workspaceId))].sort(order)))fail('SOURCE_OR_GRANT_COMMAND_DRIFT');
+ for(const w of e.workspaces){const rows=await raw(client,POLICY_SQL,[w.workspaceId]);
+  if(rows.length!==1||rows[0].length!==11||!same(rows[0].slice(0,5),[w.workspaceId,w.incarnation,w.policyId,w.policyRevision,w.installationEpoch])||
+   rows[0][6]!==PORTAL_LEGACY_SOURCE_BINDINGS['src/lib/capabilities/policy.ts']||rows[0][8]!==PORTAL_LEGACY_SOURCE_BINDINGS['src/lib/capabilities/types.ts']||rows[0][10]!==APPROVED_PRD_SHA256||
+   rows[0][5]!==imageHex('canonicalPolicySource')||rows[0][7]!==imageHex('vocabularySource')||rows[0][9]!==imageHex('approvedPRDSource'))fail('SOURCE_OR_GRANT_COMMAND_DRIFT');
+ }
+ const policyText=await nativeJsonText(client,POLICY_STATE_SQL),target:PortalTarget={portal:[],admin:[],capabilities:[],locations:[],live:[],lineage:[]};
+ for(const s of [...e.subjects].sort((a,b)=>order(a.workspaceId,b.workspaceId)||order(a.employeeId,b.employeeId))){
+  const source=employees.filter(r=>sourceText(r,'id')===s.employeeId),cred=credentials.filter(r=>sourceText(r,'employee_id')===s.employeeId);
+  if(source.length!==1||cred.length>1||source[0].source.workspaceId!==s.workspaceId||source[0].sourceChecksum!==s.sourceEmployeeChecksum||sourceText(source[0],'role')!==s.sourceRole||
+   (cred[0]?.sourceChecksum??null)!==s.sourceCredentialChecksum||s.legacyAccess==='PRESERVED'&&cred.length!==1||s.legacyAccess==='ABSENT'&&cred.length!==0)fail('SOURCE_OR_GRANT_COMMAND_DRIFT');
+  const w=e.workspaces.find(w=>w.workspaceId===s.workspaceId)!;
+  const grants=commandGrants(s,s.sourceRole),reference='captured-legacy:'+plan.digest+':'+s.sourceEmployeeChecksum;
+  const capture={format:'CONTROLLED_CAPTURED_LEGACY_PORTAL_LINEAGE_V1',invocation:e.invocation,databaseOid:e.databaseOid,installerRoleOid:e.installerRoleOid,binding,
+   employee:{key:source[0].key,sourceChecksum:source[0].sourceChecksum,wireChecksum:source[0].wireChecksum,role:s.sourceRole},
+   credential:cred.length?{key:cred[0].key,sourceChecksum:cred[0].sourceChecksum,wireChecksum:cred[0].wireChecksum}:null,legacyAccess:s.legacyAccess,sourceBindings:e.sourceBindings};
+  target.portal.push([s.workspaceId,s.employeeId,s.initialAuthorizationVersion,s.initialPortalAccessVersion,w.policyRevision,s.legacyAccess==='PRESERVED'?'ENABLED':'DISABLED','LEGACY_UNVERIFIED',reference]);
+  if(s.legacyAccess==='PRESERVED'&&(s.sourceRole==='OWNER'||s.sourceRole==='MANAGER')){
+   target.admin.push([s.workspaceId,s.employeeId,'ALL_TENANT','LEGACY_COMPATIBILITY',reference,w.policyRevision]);
+   for(const cap of s.administrativeCapabilities)target.capabilities.push([s.workspaceId,s.employeeId,cap]);
+  }
+  target.lineage.push([s.workspaceId,s.employeeId,w.incarnation,s.initialAuthorizationVersion,s.initialPortalAccessVersion,w.policyId,w.policyRevision,w.installationEpoch,
+   'CAPTURED_LEGACY_EXISTING_ACCESS',reference,capture,grants,ownershipDigest(e.sourceBindings)]);
+  if(s.legacyAccess==='PRESERVED')for(const session of sessions.filter(r=>sourceText(r,'employee_id')===s.employeeId))target.live.push([
+   sourceText(session,'token_hash','char(64)'),s.workspaceId,s.employeeId,w.incarnation,s.initialPortalAccessVersion,sourceText(session,'created_at','timestamptz')]);
+ }
+ target.live.sort((a,b)=>order(a[0] as string,b[0] as string));
+ const mapping=compiled.enrollment.rows.map(row=>[row.employeeId,row.workspaceId,row.employeeNumber,row.normalizedNumber]).sort((a,b)=>order(a[0],b[0]));
+ const expected=detach({mapping,portal:target}) as CompletePortalTarget;
+ const counts=Object.freeze({mappingRows:mapping.length,subjects:target.portal.length,administrativeSubjects:target.admin.length,capabilityRows:target.capabilities.length,
+  locationRows:target.locations.length,liveRows:target.live.length,lineageRows:target.lineage.length});
+ await catalog(client,ledger,identity);repeatLedger(ledger);await assertControlledEnrollmentInstallerExecution(client,witness,binding);
+ const baselineCounts=Object.freeze({mappingRows:baseline.mapping.length,subjects:0,administrativeSubjects:0,capabilityRows:0,locationRows:0,liveRows:0,lineageRows:0});
+ const handle=Object.freeze({});portalExpectations.set(handle,Object.freeze({originalClient:client,request,binding,ledger,policyText,baseline,expected,counts,baselineCounts}));
+ return handle as PortalLegacyReconciliationExpectation;
+}
+async function compareRetainedCompleteTarget(client:Client,state:PortalExpectationState,witness:EmployeeNumberInstallerExecutionWitness){
+ const identity=await assertControlledEnrollmentInstallerExecution(client,witness,state.binding);
+ repeatLedger(state.ledger);await raw(client,PORTAL_LEGACY_ENROLLMENT_PRIVATE_LOCK_SQL.text);await catalog(client,state.ledger,identity);
+ await assertTypedKeyComparatorsOnLockedInstallerSource(client,state.request.facts,state.request.captureRequest,state.request.plan,witness);
+ if(await nativeJsonText(client,POLICY_STATE_SQL)!==state.policyText)reconciliationFail('PORTAL_ENROLLMENT_POLICY_SOURCE_DRIFT');
+ const current=await completeTarget(client);
+ // When an empty plan makes both states identical, report only the baseline.
+ // Equality never establishes that a mutation/commit occurred.
+ const observed=same(current,state.baseline)?'ORIGINAL_ENROLLMENT_BASELINE_PRESENT':same(current,state.expected)?'COMPLETE_ENROLLMENT_PRESENT':undefined;
+ if(!observed)reconciliationFail('PORTAL_ENROLLMENT_TARGET_DRIFT');
+ await catalog(client,state.ledger,identity);repeatLedger(state.ledger);await assertControlledEnrollmentInstallerExecution(client,witness,state.binding);
+ return observed;
+}
+/** Exact before-COMMIT consistency with the privately retained intended target. */
+export async function assertPortalLegacyEnrollmentCompleteTarget(client:Client,value:unknown,witness:EmployeeNumberInstallerExecutionWitness):Promise<void>{
+ const state=expectation(value);if(client!==state.originalClient)fail('OWNED_INSTALLER_REQUIRED');
+ if(await compareRetainedCompleteTarget(client,state,witness)!=='COMPLETE_ENROLLMENT_PRESENT'&&!same(state.baseline,state.expected))reconciliationFail('PORTAL_ENROLLMENT_TARGET_DRIFT');
+}
+/** Fresh same-custody installer observation only; never invokes the writer. */
+export async function observePortalLegacyEnrollmentCompleteTarget(client:Client,value:unknown,witness:EmployeeNumberInstallerExecutionWitness){
+ const state=expectation(value);if(client===state.originalClient)reconciliationFail('PORTAL_ENROLLMENT_FRESH_CLIENT_REQUIRED');
+ const target=await compareRetainedCompleteTarget(client,state,witness);
+ return Object.freeze({target,counts:target==='COMPLETE_ENROLLMENT_PRESENT'?state.counts:state.baselineCounts});
+}
+// PORTAL_LEGACY_RECONCILIATION_EXPECTATION_END

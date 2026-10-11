@@ -1,3 +1,7 @@
+// CONTROLLED_PORTAL_RECONCILIATION_IMPORT_BEGIN
+import {preparePortalLegacyReconciliationExpectation,assertPortalLegacyEnrollmentCompleteTarget,observePortalLegacyEnrollmentCompleteTarget,
+ isPortalLegacyReconciliationFailure,PORTAL_LEGACY_ENROLLMENT_PRIVATE_LOCK_SQL,type PortalLegacyReconciliationExpectation} from './portal-legacy-access-enrollment.server';
+// CONTROLLED_PORTAL_RECONCILIATION_IMPORT_END
 // CONTROLLED_PORTAL_LEGACY_EXECUTOR_IMPORTS_BEGIN
 import {enrollCapturedLegacyPortalAccessOnOwnedInstaller,isPortalLegacyEnrollmentFailure,
  type PortalLegacyEnrollmentOutcome} from './portal-legacy-access-enrollment.server';
@@ -508,10 +512,16 @@ export type GuardedTypedPortalLegacyAccessEnrollmentOutcome=
 // No partial plan, stale witness, source guard bypass or post-COMMIT query.
 export async function executeGuardedTypedLocalPortalLegacyAccessEnrollment(client:Client,value:unknown):Promise<GuardedTypedPortalLegacyAccessEnrollmentOutcome>{
  let began=false,committing=false,planDigest='',registered=false;
+ // PORTAL_RECONCILIATION_ORIGINAL_REQUEST_BEGIN
+ let originalPortalRequest:GuardedTypedBackfillRequest|undefined,portalExpectation:PortalLegacyReconciliationExpectation|undefined;
+ // PORTAL_RECONCILIATION_ORIGINAL_REQUEST_END
  try{
   // Real request/plan validation and the accepted normalizer/compiler execute
   // synchronously before any supplied Client property or native behavior read.
   const request=requestBinding(value),plan=request.plan;planDigest=plan.digest;
+ // PORTAL_RECONCILIATION_REQUEST_RETAIN_BEGIN
+  originalPortalRequest=request;
+ // PORTAL_RECONCILIATION_REQUEST_RETAIN_END
   const compiled=compileLegacyEmployeeNumberEnrollment(plan);
   if(compiled.status!=='COMPILED')employeeNumberExecutorFail('EMPLOYEE_NUMBER_SOURCE_DRIFT');
   const enrollment=compiled.enrollment,binding=getControlledEnrollmentInstallerBinding(request);
@@ -531,6 +541,9 @@ export async function executeGuardedTypedLocalPortalLegacyAccessEnrollment(clien
   const registry=getOwnershipRegistry(),locks=[...new Set([...registry.tables.map(t=>t.table),...registry.tables.flatMap(t=>t.sidecar?[t.sidecar]:[])])].sort(order);
   await client.query('LOCK TABLE '+locks.map(t=>'public.'+ident(t)).join(',')+' IN SHARE ROW EXCLUSIVE MODE');
   await client.query('LOCK TABLE nevora_tenancy.employee_login_identity IN SHARE ROW EXCLUSIVE MODE');
+ // PORTAL_RECONCILIATION_PRIVATE_LOCK_BEGIN
+  await client.query(PORTAL_LEGACY_ENROLLMENT_PRIVATE_LOCK_SQL.text);
+ // PORTAL_RECONCILIATION_PRIVATE_LOCK_END
   const applied=await protocol(client,request,plan,true);
   if(!applied)employeeNumberExecutorFail('ENROLLMENT_APPLIED_REQUIRED');
   ownedLease(request);await installedContracts(client);await catalog(client,request.facts);
@@ -539,6 +552,9 @@ export async function executeGuardedTypedLocalPortalLegacyAccessEnrollment(clien
   // facade Client or held locks alone. All68 APPLIED checks above are required.
   const witness=await admitControlledEnrollmentInstallerExecution(client,request);
   await assertTypedKeyComparatorsOnLockedInstallerSource(client,request.facts,request.captureRequest,plan,witness);
+ // PORTAL_RECONCILIATION_EXPECTATION_CAPTURE_BEGIN
+  portalExpectation=await preparePortalLegacyReconciliationExpectation(client,request,witness);
+ // PORTAL_RECONCILIATION_EXPECTATION_CAPTURE_END
   await prepareLockedEmployeeNumberEnrollment(client,enrollment);
   const produced=await enrollCapturedLegacyPortalAccessOnOwnedInstaller(client,request,witness);
   // Make pending native constraints effective, then repeat complete source,
@@ -554,16 +570,111 @@ export async function executeGuardedTypedLocalPortalLegacyAccessEnrollment(clien
   await assertControlledEnrollmentInstallerExecution(client,witness,binding);
   if(!await protocol(client,request,plan,true))employeeNumberExecutorFail('ENROLLMENT_APPLIED_REQUIRED');
   ownedLease(request);
+ // PORTAL_RECONCILIATION_PRECOMMIT_COMPLETE_BEGIN
+  await assertPortalLegacyEnrollmentCompleteTarget(client,portalExpectation,witness);
+  ownedLease(request);
+ // PORTAL_RECONCILIATION_PRECOMMIT_COMPLETE_END
   committing=true;await client.query('COMMIT');began=false;
   return {status:'ENROLLED_LOCAL_CAPTURED_LEGACY_ACCESS_NOT_PORTAL_PROOF',mode:'WHOLE_PLAN_ATOMIC',planDigest:plan.digest,
    mappingRows:enrollment.rows.length,receipt:produced};
  }catch(error){
   // A failed COMMIT acknowledgement cannot prove rollback. Send no subsequent
   // SQL, including ROLLBACK; retain the exact original-plan/fresh-client marker.
-  if(committing)return {status:'UNCERTAIN',code:'COMMIT_OUTCOME_UNKNOWN',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};
-  if(began){try{await client.query('ROLLBACK');}catch{return {status:'UNCERTAIN',code:'ROLLBACK_UNCONFIRMED',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};}}
-  return {status:'BLOCKED',code:isPortalLegacyEnrollmentFailure(error)?error.code:typeof error==='object'&&error!==null&&!utilTypes.isProxy(error)&&(error instanceof EmployeeNumberExecutorFailure||error instanceof GuardFailure)?error.code:
+  // PORTAL_RECONCILIATION_UNCERTAIN_COMMIT_BEGIN
+  if(committing)return portalOriginalUncertain(client,originalPortalRequest,portalExpectation,'COMMIT_OUTCOME_UNKNOWN',planDigest);
+  // PORTAL_RECONCILIATION_UNCERTAIN_COMMIT_END
+  // PORTAL_RECONCILIATION_UNCERTAIN_ROLLBACK_BEGIN
+  if(began){try{await client.query('ROLLBACK');}catch{return portalOriginalUncertain(client,originalPortalRequest,portalExpectation,'ROLLBACK_UNCONFIRMED',planDigest);}}
+  // PORTAL_RECONCILIATION_UNCERTAIN_ROLLBACK_END
+  return {status:'BLOCKED',code:isPortalLegacyReconciliationFailure(error)?error.code:isPortalLegacyEnrollmentFailure(error)?error.code:typeof error==='object'&&error!==null&&!utilTypes.isProxy(error)&&(error instanceof EmployeeNumberExecutorFailure||error instanceof GuardFailure)?error.code:
    isEmployeeNumberEnrollmentBindingFailure(error)?error.code:isKeyComparatorRecheckFailure(error)?error.code:'TYPED_GUARDED_BACKFILL_FAILED'};
  }finally{if(registered)active.delete(client);}
 }
 // CONTROLLED_PORTAL_LEGACY_EXECUTOR_BODY_END
+
+// CONTROLLED_PORTAL_LEGACY_RECONCILIATION_BEGIN
+export type GuardedTypedPortalLegacyReconciliationOutcome=
+ Readonly<{status:'OBSERVED';mode:'WHOLE_PLAN_ATOMIC';planDigest:string;sourceRows:number;
+ target:'COMPLETE_ENROLLMENT_PRESENT'|'ORIGINAL_ENROLLMENT_BASELINE_PRESENT';
+ counts:Readonly<{mappingRows:number;subjects:number;administrativeSubjects:number;capabilityRows:number;locationRows:number;liveRows:number;lineageRows:number}>;
+ effectsVerified:false;verification:'OWNED_LOCAL_ORIGINAL_PORTAL_ATTEMPT_OBSERVATION_NOT_COMMIT_DISPOSITION'}>|
+ Readonly<{status:'BLOCKED';code:string}>|
+ Readonly<{status:'UNCERTAIN';code:'RECONCILIATION_COMMIT_OUTCOME_UNKNOWN'|'ROLLBACK_UNCONFIRMED';planDigest:string;
+ reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'}>;
+type PortalOriginalUncertainAttempt=Readonly<{client:Client;request:GuardedTypedBackfillRequest;
+ expectation:PortalLegacyReconciliationExpectation|undefined}>;
+// Separate namespace: original journal receipts and mapping-only attempts cannot
+// enter this lane. The public uncertainty shape stays byte-for-byte equivalent.
+const portalUncertainAttempts=new WeakMap<object,PortalOriginalUncertainAttempt>();
+function portalOriginalUncertain(client:Client,request:GuardedTypedBackfillRequest|undefined,expectation:PortalLegacyReconciliationExpectation|undefined,
+ code:'COMMIT_OUTCOME_UNKNOWN'|'ROLLBACK_UNCONFIRMED',planDigest:string):GuardedTypedPortalLegacyAccessEnrollmentOutcome{
+ const result={status:'UNCERTAIN' as const,code,planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED' as const};
+ if(request)portalUncertainAttempts.set(result,Object.freeze({client,request,expectation}));return result;
+}
+/** Observe the complete original Portal enrollment on a different owned native
+ * installer Client. This is process-local original-attempt provenance only;
+ * serializing the handle, copying its shape, or supplying a new request cannot
+ * authorize durable restart recovery. No effect/journal/receipt repair or replay.
+ */
+export function reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client:Client,attempt:unknown):Promise<GuardedTypedPortalLegacyReconciliationOutcome>{
+ // WeakMap membership and strict identity comparison perform no caller property
+ // reads/reflection, including revoked Proxy and hostile Client controls.
+ if(typeof attempt!=='object'||attempt===null||!portalUncertainAttempts.has(attempt))return Promise.resolve({status:'BLOCKED',code:'PORTAL_ENROLLMENT_ORIGINAL_UNCERTAIN_ATTEMPT_REQUIRED'});
+ const original=portalUncertainAttempts.get(attempt)!;
+ if(client===original.client)return Promise.resolve({status:'BLOCKED',code:'PORTAL_ENROLLMENT_FRESH_CLIENT_REQUIRED'});
+ // Uncertainty before expectation issuance remains real but has no authenticated
+ // complete baseline/intent. Never reconstruct it from a later DTO/ledger.
+ if(!original.expectation)return Promise.resolve({status:'BLOCKED',code:'PORTAL_ENROLLMENT_EXPECTATION_REQUIRED'});
+ return observeOriginalPortalEnrollment(client,original);
+}
+async function observeOriginalPortalEnrollment(client:Client,original:PortalOriginalUncertainAttempt):Promise<GuardedTypedPortalLegacyReconciliationOutcome>{
+ let began=false,committing=false,registered=false,planDigest='';
+ try{
+  const request=requestBinding(original.request),plan=request.plan;planDigest=plan.digest;
+  const compiled=compileLegacyEmployeeNumberEnrollment(plan);
+  if(compiled.status!=='COMPILED')employeeNumberExecutorFail('EMPLOYEE_NUMBER_SOURCE_DRIFT');
+  const binding=getControlledEnrollmentInstallerBinding(request);
+  if(typeof client!=='object'||client===null||utilTypes.isProxy(client)||!(client instanceof Client))fail('OWNED_PG_CLIENT_REQUIRED');
+  if(active.has(client))fail('CLIENT_ALREADY_IN_USE');active.add(client);registered=true;
+  requireIdle(client);ownedLease(request);await assertControlledEnrollmentInstallerOriginalLogin(client,request);
+  await installedContracts(client);await catalog(client,request.facts);await protocol(client,request,plan,false);
+  requireIdle(client);ownedLease(request);
+  began=true;await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');
+  await client.query(INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text); // EXACT first after BEGIN.
+  await client.query("SET LOCAL search_path=pg_catalog; SET LOCAL row_security=off; SET LOCAL DateStyle='ISO, YMD'; SET LOCAL TimeZone='UTC'; SET LOCAL lock_timeout='5000ms'; SET LOCAL statement_timeout='15000ms'");
+  const registry=getOwnershipRegistry(),locks=[...new Set([...registry.tables.map(t=>t.table),...registry.tables.flatMap(t=>t.sidecar?[t.sidecar]:[])])].sort(order);
+  await client.query('LOCK TABLE '+locks.map(t=>'public.'+ident(t)).join(',')+' IN SHARE ROW EXCLUSIVE MODE');
+  await client.query('LOCK TABLE nevora_tenancy.employee_login_identity IN SHARE ROW EXCLUSIVE MODE');
+  await client.query(PORTAL_LEGACY_ENROLLMENT_PRIVATE_LOCK_SQL.text);
+  // Entire source70/mapping/private9 lock set precedes first in-TX SELECT.
+  if(!await protocol(client,request,plan,true))employeeNumberExecutorFail('ENROLLMENT_APPLIED_REQUIRED');
+  ownedLease(request);await installedContracts(client);await catalog(client,request.facts);
+  await originalRows(client,request.facts);await namespaceWitnesses(client,request.facts);await ownershipState(client,plan,true);
+  const witness=await admitControlledEnrollmentInstallerExecution(client,request);
+  await assertTypedKeyComparatorsOnLockedInstallerSource(client,request.facts,request.captureRequest,plan,witness);
+  const observed=await observePortalLegacyEnrollmentCompleteTarget(client,original.expectation,witness);
+  // Repeat original source, namespace/key classes, APPLIED metadata with NULL
+  // actor, complete target+policy, exact role/backend/xid/capsule/catalog/lease.
+  if(!await protocol(client,request,plan,true))employeeNumberExecutorFail('ENROLLMENT_APPLIED_REQUIRED');
+  await originalRows(client,request.facts);await ownershipState(client,plan,true);await namespaceWitnesses(client,request.facts);
+  await catalog(client,request.facts);await installedContracts(client);ownedLease(request);
+  await assertControlledEnrollmentInstallerExecution(client,witness,binding);
+  await assertTypedKeyComparatorsOnLockedInstallerSource(client,request.facts,request.captureRequest,plan,witness);
+  const final=await observePortalLegacyEnrollmentCompleteTarget(client,original.expectation,witness);
+  if(!same(observed,final))throw new Error('Complete observation changed');
+  if(!await protocol(client,request,plan,true))employeeNumberExecutorFail('ENROLLMENT_APPLIED_REQUIRED');
+  await assertControlledEnrollmentInstallerExecution(client,witness,binding);ownedLease(request);
+  committing=true;await client.query('COMMIT');began=false;
+  return Object.freeze({status:'OBSERVED',mode:'WHOLE_PLAN_ATOMIC',planDigest,sourceRows:plan.entries.length,target:observed.target,counts:observed.counts,
+   effectsVerified:false,verification:'OWNED_LOCAL_ORIGINAL_PORTAL_ATTEMPT_OBSERVATION_NOT_COMMIT_DISPOSITION'});
+ }catch(error){
+  // No further SQL after attempted COMMIT, even if frontend status appears E/I.
+  // New observation uncertainty is NOT enrolled in portalUncertainAttempts.
+  if(committing)return {status:'UNCERTAIN',code:'RECONCILIATION_COMMIT_OUTCOME_UNKNOWN',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};
+  if(began){try{await client.query('ROLLBACK');}catch{return {status:'UNCERTAIN',code:'ROLLBACK_UNCONFIRMED',planDigest,reconciliation:'FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED'};}}
+  return {status:'BLOCKED',code:isPortalLegacyReconciliationFailure(error)?error.code:isPortalLegacyEnrollmentFailure(error)?error.code:
+   typeof error==='object'&&error!==null&&!utilTypes.isProxy(error)&&(error instanceof EmployeeNumberExecutorFailure||error instanceof GuardFailure)?error.code:
+   isEmployeeNumberEnrollmentBindingFailure(error)?error.code:isKeyComparatorRecheckFailure(error)?error.code:'PORTAL_ENROLLMENT_RECONCILIATION_FAILED'};
+ }finally{if(registered)active.delete(client);}
+}
+// CONTROLLED_PORTAL_LEGACY_RECONCILIATION_END

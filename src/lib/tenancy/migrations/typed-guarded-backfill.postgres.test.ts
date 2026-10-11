@@ -1,3 +1,7 @@
+// PRC_NATIVE_REBASE_IMPORT_BEGIN
+import {reconcileGuardedTypedLocalPortalLegacyAccessEnrollment} from './typed-guarded-backfill.server';
+import type {GuardedTypedBackfillRequest,GuardedTypedPortalLegacyAccessEnrollmentOutcome,GuardedTypedPortalLegacyReconciliationOutcome} from './typed-guarded-backfill.server';
+// PRC_NATIVE_REBASE_IMPORT_END
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
 import { appendFileSync, existsSync, readFileSync, realpathSync, renameSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
@@ -662,7 +666,12 @@ async function installEmptyPortalBeforeMapping(id:string,name:string,oid:string,
  const installer=await enrollmentInstaller(observer),original=await originalRows(observer),before=await enrollmentNativeCatalog(observer);
  const artifacts:{path:string;sha256:string}[]=[];
  for(const path of portalEmptySourcePaths){
-  const sql=readFileSync(resolve(path),'utf8');
+  // This lane observes immutable captured LEGACY access, whose private schema
+  // is retained explicitly. Current approved verifier storage is a separate
+  // installation; it cannot replace the source named by captured lineage.
+  const fixturePath=path==='src/lib/tenancy/runtime/portal-administrative-authority-storage.sql'
+   ? 'src/test/fixtures/portal-legacy-administrative-authority-storage.sql' : path;
+  const sql=readFileSync(resolve(fixturePath),'utf8');
   const key=path.endsWith('/portal-access-lineage-storage.sql')?'NEW:'+path:path;
   expect(hashText(sql)).toBe(PORTAL_LEGACY_SOURCE_BINDINGS[key as keyof typeof PORTAL_LEGACY_SOURCE_BINDINGS]);
   // Each unchanged artifact owns its own RC BEGIN/exclusive-FIRST/COMMIT.
@@ -1125,7 +1134,10 @@ function rootReviewedCredentialedLegacyCommand(f:Fixture):RootReviewedPortalLega
 registerPortalWholeOriginalCredentialedCases(rootReviewedCredentialedLegacyCommand);
 // ROOT_FIXED_PRESERVED_CREDENTIALED_COMMAND_END
 
-  async function fixture(id: string, withJournal = false, withEnrollment = false, withPortalLegacyStorage = false, withPreservedCredentialedLegacy = false): Promise<Fixture> {
+  async function fixture(id: string, withJournal = false, withEnrollment = false, withPortalLegacyStorage = false, withPreservedCredentialedLegacy = false, withPortalReconciliationCredentialed = false): Promise<Fixture> {
+    // PRC_ONLY_FIXTURE_OPTION_BEGIN
+    if(withPortalReconciliationCredentialed&&(!prcCredentialedIds.includes(id)||!withPortalLegacyStorage||!withEnrollment||withJournal||withPreservedCredentialedLegacy))throw Error('Closed PRC original credentialed fixture only');
+    // PRC_ONLY_FIXTURE_OPTION_END
     if(withPreservedCredentialedLegacy&&(!withPortalLegacyStorage||!withEnrollment||withJournal||!['PLB02','PLB03'].includes(id)))throw Error('Distinct credentialed full original fixture required');
     if (!admin) throw Error('Root owned base connection required');
     const name = lease.database + '_case_' + randomBytes(5).toString('hex'), marker = lease.marker + ':case:' + name;
@@ -1150,6 +1162,9 @@ registerPortalWholeOriginalCredentialedCases(rootReviewedCredentialedLegacyComma
     await observer.query("INSERT INTO push_subscriptions(id,employee_id,installation_hash,environment,endpoint_fingerprint,encrypted_material,generation,session_hash,status) VALUES($1,$2,'fictional-key-installation','test','fictional-key-endpoint',NULL,'fictional-key-generation','fictional-noncredential-session-marker','detached')", [detachedPushId, ownedEmployee]);
     await observer.query("INSERT INTO public.clocker_pin_events(id,employee_id,actor_employee_id,pin_version,occurred_at) VALUES('typed-fixture-pin',$1,$1,1,'2026-10-09 01:02:03.123456+00')", [ownedEmployee]);
 
+    // PRC_ONLY_PRECAPTURE_SOURCE_BEGIN
+    if(withPortalReconciliationCredentialed)await prcPopulatePreservedBeforeFence(id,name,oid,marker,observer);
+    // PRC_ONLY_PRECAPTURE_SOURCE_END
     if(withPreservedCredentialedLegacy)await populatePreservedCredentialedLegacyBeforeFence(id,name,oid,marker,observer);
     const expansion = readFileSync(resolve('db/migrations/0026_tenant_ownership_expand.sql'), 'utf8');
     const expansionSha256 = createHash('sha256').update(expansion).digest('hex');
@@ -1172,6 +1187,9 @@ registerPortalWholeOriginalCredentialedCases(rootReviewedCredentialedLegacyComma
       .toEqual({ public_create: false, tenancy_create: false, trigger_privilege: false, nonowner: true });
     const initial = await originalRows(observer), observed = await observeMigrationCatalog(first);
     expect(Object.keys(initial)).toHaveLength(68); expect((await observer.query('SELECT count(*)::int n FROM public.workspaces')).rows[0].n).toBe(1);
+    // PRC_ONLY_INITIAL_COUNTS_BEGIN
+    if(withPortalReconciliationCredentialed){await assertCredentialedLegacyInitialCounts(observer);}else
+    // PRC_ONLY_INITIAL_COUNTS_END
     if(withPreservedCredentialedLegacy){await assertCredentialedLegacyInitialCounts(observer);}else{
     for (const table of ['employee_credentials', 'employee_sessions', 'notifications', 'push_deliveries', 'communications']) expect((await observer.query('SELECT count(*)::int n FROM public.' + quoted(table))).rows[0].n).toBe(0);
     }
@@ -1294,6 +1312,488 @@ registerPortalWholeOriginalCredentialedCases(rootReviewedCredentialedLegacyComma
     }
     receipt('base-custody.json', { database: lease.database, oid: base.oid, marker: base.marker, systemIdentifier: base.system_identifier, roleCatalogs: lease.operatorRoles, rootInvocation: true });
   }, 15000);
+
+// PRC_CREDENTIALED_PREPARATION_BEGIN
+// Source-identical copy of accepted original preparation; only name and closed ID
+// predicate differ. The original PLB02/PLB03 helper body is wholly unchanged.
+const prcCredentialedIds:readonly string[]=Object.freeze(['PRC01','PRC04_PARTIAL_PORTAL','PRC04_FOREIGN_LINEAGE','PRC04_MISSING_LIVE','PRC04_CHANGED_GRANTS']);
+async function prcPopulatePreservedBeforeFence(id:string,name:string,oid:string,marker:string,c:Client){
+ if(!prcCredentialedIds.includes(id))throw Error('Exact PRC credentialed fixture required');
+ await verifyActualParentAndChild(name,oid,marker);await enrollmentInstaller(c);
+ expect(c.getTransactionStatus()).toBe('I');expect(credentialedLegacyFixtureInputs.has(name)).toBe(false);
+ expect(hashText(readFileSync(resolve('src/lib/auth/password.ts'),'utf8'))).toBe(credentialedLegacyPasswordSourceSHA256);
+ expect(hashText(readFileSync(resolve('src/lib/auth/session.ts'),'utf8'))).toBe(credentialedLegacySessionSourceSHA256);
+ const before=await originalRows(c);
+ expect(before.employee_credentials.rows).toEqual([]);expect(before.employee_sessions.rows).toEqual([]);
+ expect(before.employee_location_eligibility.rows).toEqual([]);
+ const password='fictional-preserved-'+randomBytes(24).toString('hex');
+ const encoded=await hashPassword(password);
+ expect(await verifyPassword(password,encoded)).toBe(true);expect(await verifyPassword(password+'-wrong',encoded)).toBe(false);
+ const tokenHash=createHash('sha256').update(randomBytes(32).toString('base64url')).digest('hex');
+ const expiresAt=new Date(Date.now()+14*24*60*60*1000).toISOString();
+ let began=false,committing=false;
+ try{
+  began=true;await c.query('BEGIN ISOLATION LEVEL READ COMMITTED');
+  await c.query(INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+  await c.query("SET LOCAL search_path=pg_catalog,public;SET LOCAL DateStyle='ISO, YMD';SET LOCAL TimeZone='UTC'");
+  expect((await c.query('SELECT id FROM public.employees WHERE id=$1 ORDER BY id FOR SHARE',[ownedEmployee])).rows).toEqual([{id:ownedEmployee}]);
+  expect((await c.query('SELECT employee_id FROM public.employee_credentials WHERE employee_id=$1 FOR SHARE',[ownedEmployee])).rows).toEqual([]);
+  expect((await c.query('UPDATE public.employees SET active=true WHERE id=$1 RETURNING id',[ownedEmployee])).rows).toEqual([{id:ownedEmployee}]);
+  await c.query('INSERT INTO public.employee_location_eligibility(employee_id,location_id) VALUES($1,$2)',[ownedEmployee,'loc-2']);
+  const credential=await c.query<(string|null)[]>({text:'INSERT INTO public.employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,true) RETURNING employee_id,password_hash,must_change_password::text,password_updated_at::text',
+   values:[ownedEmployee,encoded],rowMode:'array',types:credentialedLegacyRawTypes});
+  expect(credential.rows).toHaveLength(1);expect(credential.rows[0].slice(0,3)).toEqual([ownedEmployee,encoded,'true']);
+  expect(typeof credential.rows[0][3]).toBe('string');
+  // Real original schema INSERT, native created_at default retained to full
+  // microsecond precision. No source expiry/token recreation after capture.
+  const session=await c.query<(string|null)[]>({text:'INSERT INTO public.employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,$3::timestamptz) RETURNING token_hash::text,employee_id,expires_at::text,created_at::text',
+   values:[tokenHash,ownedEmployee,expiresAt],rowMode:'array',types:credentialedLegacyRawTypes});
+  expect(session.rows).toHaveLength(1);expect(session.rows[0].slice(0,2)).toEqual([tokenHash,ownedEmployee]);
+  expect(session.rows[0].slice(2).every(v=>typeof v==='string')).toBe(true);
+  expect((await c.query('SELECT count(*)::text n FROM public.employee_sessions s JOIN public.employees e ON e.id=s.employee_id WHERE s.token_hash=$1::bpchar AND s.expires_at>clock_timestamp() AND e.active',[tokenHash])).rows).toEqual([{n:'1'}]);
+  // Observe exact allowable setup delta; do not silently rewrite history.
+  const after=await originalRows(c);
+  for(const table of registry.tables.map(t=>t.table))if(!['employees','employee_credentials','employee_sessions','employee_location_eligibility'].includes(table))expect(after[table]).toEqual(before[table]);
+  expect(after.employees.columns).toEqual(before.employees.columns);expect(after.employees.rows).toHaveLength(2);
+  const activeIndex=before.employees.columns.indexOf('active'),idIndex=before.employees.columns.indexOf('id');
+  expect(after.employees.rows).toEqual(before.employees.rows.map(row=>row[idIndex]===ownedEmployee?row.map((v,i)=>i===activeIndex?'t':v):row));
+  credentialedLegacyFixtureInputs.set(name,{caseId:id,password,tokenHash,credential:credential.rows[0],session:session.rows[0]});
+  await c.query('SET CONSTRAINTS ALL IMMEDIATE');committing=true;await c.query('COMMIT');began=false;
+  // Existing receipt() is root-owned0600; only fictional original rows/hash/
+  // digest are retained. Never retain raw password or bearer in any artifact.
+  receipt('case-'+id+'-credentialed-source-before-expansion.json',{name,oid,marker,originalBefore:before,originalAfter:after,
+   credentialSourceSHA256:credentialedLegacyPasswordSourceSHA256,sessionSourceSHA256:credentialedLegacySessionSourceSHA256,
+   stage:'FICTIONAL_ORIGINAL_SOURCE_COMMITTED_BEFORE_0026_BEFORE_FULL68_CAPTURE',rawPasswordAndBearerRetained:false,
+   scope:'ORIGINAL_SINGLETON_CAPTURED_LEGACY_NOT_VERIFIED_NOT_NEW_TENANT_NOT_PORTAL_AUTHORITY'});
+ }catch(error){if(began&&!committing)await c.query('ROLLBACK');throw error;}
+}
+// PRC_CREDENTIALED_PREPARATION_END
+
+// PRC_NATIVE_REBASE_ADAPTER_BEGIN
+// UNEXECUTED. Same existing exact-owned controller, real original25+0026/full68
+// capture, private enrollment ledger and original installer Client. No new
+// runtime grant, helper TRUE, proof, credential service or fixture controller.
+type PRCWhole=Awaited<ReturnType<typeof portalWholeTarget>>;
+type PRCQueued={text:string;values?:unknown[];callback:(error:unknown,result?:{rows:unknown})=>void};
+type PRCDriver={readyForQuery:boolean;pipeline:boolean;_queryQueue:PRCQueued[];_activeQuery:unknown;
+ _ending:boolean;_ended:boolean;connection:unknown;_pulseQueryQueue:()=>void};
+type PRCHook={commands:string[];ack?:'COMMIT'|'ROLLBACK';lostAck:number;failWrite?:string;writeFaults:number;
+ probeFailure?:unknown;nativeFault?:unknown;failedBlock?:unknown;aborted?:unknown;settlements:number;pending?:Promise<void>;restore:()=>void};
+const prcHooks=new Map<Client,PRCHook>();
+const prcOriginalWriters=new Map<string,Client>();
+const prcFixtures=new Map<string,{f:Fixture;command:RootReviewedPortalLegacyCommand;before:PRCWhole;intended:PRCWhole;holder?:Client}>();
+const prcExpectedCounts=(rows:PRCWhole)=>Object.freeze({mappingRows:rows.mapping.length,subjects:rows.privateRows.portal_authority.length,
+ administrativeSubjects:rows.privateRows.portal_administrative_authority.length,capabilityRows:rows.privateRows.portal_administrative_capability.length,
+ locationRows:rows.privateRows.portal_administrative_location.length,liveRows:rows.privateRows.portal_session_issuance.length,lineageRows:rows.privateRows.portal_access_lineage.length});
+function prcRegisterNative(title:string,check:()=>Promise<void>,timeout:number){
+ it(title,async()=>{let status:'PASS'|'FAIL'='FAIL';const id=title.match(/^PRC0[1-7](?:_[A-Z_]+)?/)?.[0];if(!id)throw Error('Closed PRC case name required');
+  try{await check();status='PASS';}finally{
+   cases.push({id,name:title,status});receipt('case-'+id+'-reconciliation-case.json',{id,title,status,scope:'FRESH_ORIGINAL_ATTEMPT_COMPLETE_TARGET_OBSERVATION_NOT_COMMIT_DISPOSITION_NOT_PORTAL_AUTHORITY'});
+   for(const [name,input] of credentialedLegacyFixtureInputs)if(input.caseId.startsWith(id))credentialedLegacyFixtureInputs.delete(name);
+   for(const [name,client] of prcOriginalWriters){const entry=[...prcFixtures.values()].find(v=>v.f.name===name);if(entry?.f.id.startsWith(id)){prcHooks.get(client)?.restore();await client.end();prcOriginalWriters.delete(name);}}
+  }
+ },timeout);
+}
+async function prcAttach(c:Client,name:string){
+ if(prcHooks.has(c))throw Error('One native hook per exact Client required');
+ const native=Client.prototype.query.bind(c),driver=c as unknown as PRCDriver;
+ expect(c.getTransactionStatus()).toBe('I');expect(driver.readyForQuery).toBe(true);expect(driver.pipeline).toBe(false);
+ expect(driver._queryQueue).toEqual([]);expect(driver._activeQuery).toBeNull();expect(driver._ending).toBe(false);expect(driver._ended).toBe(false);
+ const identity=(await native('SELECT pg_backend_pid()::text pid,current_database() database,session_user role')).rows[0];
+ expect(identity.database).toBe(name);expect(identity.role).toBe(lease.user);
+ const pulse=driver._pulseQueryQueue,connection=driver.connection,seen=new WeakSet<object>();
+ const state:PRCHook={commands:[],lostAck:0,writeFaults:0,settlements:0,restore:()=>{}};
+ const spy=vi.spyOn(driver,'_pulseQueryQueue').mockImplementation(()=>{
+  const query=driver.readyForQuery?driver._queryQueue[0]:undefined;
+  if(query&&!seen.has(query)){
+   seen.add(query);expect(driver.connection).toBe(connection);state.commands.push(query.text);
+   const original=query.callback,fail=state.failWrite===query.text&&state.writeFaults===0;
+   const ack=state.ack===query.text;expect(typeof original).toBe('function');
+   if(fail){state.writeFaults++;
+    query.callback=(error,result)=>{
+     if(error){state.probeFailure=error;original(error,result);return;}
+     state.pending=(async()=>{
+      // Actual INSERT completed in the original owning transaction. Its native
+      // result is retained only as measurements; no result row is manufactured.
+      expect(result?.rows).toBeDefined();
+      try{await native('SELECT 1/0');}catch(fault){state.nativeFault=fault;}
+      expect(state.nativeFault).toMatchObject({code:'22012'});
+      try{await native('SELECT 1');}catch(fault){state.failedBlock=fault;}
+      expect(state.failedBlock).toMatchObject({code:'25P02'});
+      if(!admin)throw Error('Independent exact root monitor required');
+      for(let i=0;i<100;i++){
+       const row=(await admin.query('SELECT pid::text,datname database,usename role,state FROM pg_catalog.pg_stat_activity WHERE pid=$1::integer',[identity.pid])).rows[0];
+       if(row?.state==='idle in transaction (aborted)'&&c.getTransactionStatus()==='E'){state.aborted=row;break;}
+       await new Promise(resolve=>setTimeout(resolve,10));
+      }
+      expect(state.aborted).toEqual({...identity,state:'idle in transaction (aborted)'});expect(c.getTransactionStatus()).toBe('E');
+     })().catch(error=>{state.probeFailure=error;}).then(()=>{state.settlements++;original(state.nativeFault??state.probeFailure,result);});
+    };
+   }else if(ack){query.callback=(error,result)=>{
+    if(error){original(error,result);return;}
+    // Real ReadyForQuery completion precedes this actual Query callback, as in
+    // accepted PLB03. Lose only the private application acknowledgement.
+    expect(c.getTransactionStatus()).toBe('I');state.lostAck++;
+    original(new Error('PRIVATE_FICTIONAL_PRC_'+query.text+'_ACK'),result);
+   };}
+  }
+  Reflect.apply(pulse,c,[]);
+ });state.restore=()=>{spy.mockRestore();prcHooks.delete(c);};prcHooks.set(c,state);return state;
+}
+async function prcWithAck<T>(c:Client,kind:'COMMIT'|'ROLLBACK',call:()=>Promise<T>):Promise<T>{
+ const state=prcHooks.get(c);if(!state||state.ack)throw Error('Exact existing native hook required');
+ const count=state.lostAck;state.ack=kind;
+ try{const result=await call();if(state.pending)await state.pending;
+  expect(state.lostAck-count).toBe(1);expect(state.probeFailure).toBeUndefined();
+  if([...prcOriginalWriters.values()].includes(c)){
+   await c.end(); // No SQL on the original uncertain writer after native ACK loss.
+   const entry=[...prcFixtures.values()].find(v=>prcOriginalWriters.get(v.f.name)===c);if(!entry)throw Error('Exact original fixture required');
+   // Existing afterAll maps must describe the real final tuple even when the
+   // callback next tests pre-SQL rejection or installs a deliberate drift.
+   // This independent observation cannot mint the original private expectation.
+   const measured=await portalWholeTarget(entry.f),expected=kind==='COMMIT'?entry.intended:entry.before;
+   expect(measured).toEqual(expected);enrollmentExpectedFinal.set(entry.f.name,measured.mapping);portalExpectedFinal.set(entry.f.name,measured.privateRows);
+   receipt('case-'+entry.f.id+'-original-'+clients.size+'-unknown-client-close.json',{closed:true,SQLAfterUnknownAcknowledgement:false,retainedInOriginalClientMap:clients.has(c),ackKind:kind,independentOriginalTargetObservation:measured,independentlyExpectedBeforeOriginalAttempt:expected});
+  }
+  return result;
+ }finally{state.ack=undefined;}
+}
+async function prcFailWrite<T>(f:Fixture,call:()=>Promise<T>):Promise<T>{
+ const writer=prcOriginalWriters.get(f.name)!;const state=prcHooks.get(writer);if(!state||state.failWrite)throw Error('Original hook required');
+ const producer=readFileSync(resolve('src/lib/tenancy/migrations/portal-legacy-access-enrollment.server.ts'),'utf8');
+ const key=credentialedLegacyFixtureInputs.has(f.name)?'LIVE_INSERT_SQL':'PORTAL_INSERT_SQL';
+ const matched=producer.match(new RegExp('const '+key+'=`([^`]+)`;'));expect(matched).not.toBeNull();
+ const before=state.writeFaults;state.failWrite=matched![1];
+ try{const result=await call();if(state.pending)await state.pending;
+  expect(state.writeFaults-before).toBe(1);expect(state.settlements).toBe(1);expect(state.probeFailure).toBeUndefined();return result;
+ }finally{state.failWrite=undefined;}
+}
+const prcSort=(rows:(string|null)[][])=>rows.sort((a,b)=>Buffer.compare(Buffer.from(canonicalOwnershipJson(a)),Buffer.from(canonicalOwnershipJson(b))));
+async function prcIntended(f:Fixture,command:RootReviewedPortalLegacyCommand,before:PRCWhole):Promise<PRCWhole>{
+ // Construct complete expectation BEFORE the original writer, from genuine
+ // whole68 captured rows plus the exact root-reviewed command. Native jsonb
+ // text conversion is type encoding, never adoption of observed target rows.
+ const result=JSON.parse(JSON.stringify(before)) as PRCWhole;
+ result.mapping=enrollmentOrdered(expectedEnrollment(f));
+ const target=result.privateRows;
+ for(const n of ['portal_authority','portal_administrative_authority','portal_administrative_capability','portal_administrative_location','portal_session_issuance','portal_access_lineage'])target[n]=[];
+ const owner=await enrollmentInstaller(f.observer),sessions=f.chain.plan.entries.filter(row=>row.table==='employee_sessions');
+ for(const subject of command.subjects){
+  expect(subject.sourceRole).toBe('EMPLOYEE');expect(subject.administrativeCapabilities).toEqual([]);
+  const workspace=command.workspaces.find(row=>row.workspaceId===subject.workspaceId)!;
+  const employee=f.chain.plan.entries.find(row=>row.table==='employees'&&row.source.columns.find(c=>c.name==='id')?.wire===subject.employeeId)!;
+  const credential=f.chain.plan.entries.find(row=>row.table==='employee_credentials'&&row.source.columns.find(c=>c.name==='employee_id')?.wire===subject.employeeId);
+  const reference='captured-legacy:'+f.chain.plan.digest+':'+subject.sourceEmployeeChecksum;
+  target.portal_authority.push([subject.workspaceId,subject.employeeId,subject.initialAuthorizationVersion,subject.initialPortalAccessVersion,workspace.policyRevision,subject.legacyAccess==='PRESERVED'?'ENABLED':'DISABLED','LEGACY_UNVERIFIED',reference]);
+  const capture={format:'CONTROLLED_CAPTURED_LEGACY_PORTAL_LINEAGE_V1',invocation:lease.invocation!,databaseOid:f.oid,installerRoleOid:owner.catalog[0],binding:getControlledEnrollmentInstallerBinding(f.request),
+   employee:{key:employee.key,sourceChecksum:employee.sourceChecksum,wireChecksum:employee.wireChecksum,role:subject.sourceRole},
+   credential:credential?{key:credential.key,sourceChecksum:credential.sourceChecksum,wireChecksum:credential.wireChecksum}:null,legacyAccess:subject.legacyAccess,sourceBindings:PORTAL_LEGACY_SOURCE_BINDINGS};
+  const grants={format:'CONTROLLED_CAPTURED_LEGACY_EFFECTIVE_GRANTS_V1',role:subject.sourceRole,capabilities:subject.capabilities,administrativeCapabilities:[],administrativeScope:null};
+  const json=(await f.observer.query<string[]>({text:'SELECT $1::jsonb::text,$2::jsonb::text',values:[canonicalOwnershipJson(capture),canonicalOwnershipJson(grants)],rowMode:'array',types:credentialedLegacyRawTypes})).rows;
+  expect(json).toHaveLength(1);expect(json[0].every(v=>typeof v==='string')).toBe(true);
+  target.portal_access_lineage.push([subject.workspaceId,subject.employeeId,workspace.incarnation,subject.initialAuthorizationVersion,subject.initialPortalAccessVersion,workspace.policyId,workspace.policyRevision,workspace.installationEpoch,
+   'CAPTURED_LEGACY_EXISTING_ACCESS',reference,json[0][0],json[0][1],ownershipDigest(PORTAL_LEGACY_SOURCE_BINDINGS)]);
+  if(subject.legacyAccess==='PRESERVED')for(const session of sessions.filter(row=>row.source.columns.find(c=>c.name==='employee_id')?.wire===subject.employeeId)){
+   const text=(name:string)=>session.source.columns.find(c=>c.name===name)?.wire;
+   const values=[text('token_hash'),subject.workspaceId,subject.employeeId,workspace.incarnation,subject.initialPortalAccessVersion,text('created_at')];
+   expect(values.every(value=>typeof value==='string')).toBe(true);target.portal_session_issuance.push(values as string[]);
+  }
+ }
+ for(const name of Object.keys(target))prcSort(target[name]);return result;
+}
+function prcTuple(value:PRCWhole,rolesAndLease:unknown):PortalReconciliationNativeTuple{
+ return {source:value.source,originalOwnership:value.targets,protocol:value.metadata,mapping:value.mapping,
+  portal:value.privateRows.portal_authority,admin:value.privateRows.portal_administrative_authority,capabilities:value.privateRows.portal_administrative_capability,
+  locations:value.privateRows.portal_administrative_location,live:value.privateRows.portal_session_issuance,lineage:value.privateRows.portal_access_lineage,
+  counterPolicyHead:{counter:value.privateRows.workspace_incarnation_counter,definitions:value.privateRows.capability_policy_definition,head:value.privateRows.workspace_capability_policy_installation},
+  sourceCatalog:value.fullCatalog,privateCatalog:{text:value.privateCatalogText,native:value.nativeCatalog},rolesAndLease};
+}
+async function prcClose(f:Fixture,c:Client,label:string){
+ const state=prcHooks.get(c);if(state?.pending)await state.pending;state?.restore();let closed=false;
+ try{if(c.getTransactionStatus()!=='I')await c.query('ROLLBACK');}finally{await c.end();closed=true;}
+ receipt('case-'+f.id+'-'+label+'-client-close.json',{name:f.name,oid:f.oid,marker:f.marker,role:lease.user,closed,retainedInOriginalClientMap:clients.has(c)});
+}
+async function prcNativeRows(c:Client,table:string){return (await c.query<(string|null)[]>({text:'SELECT * FROM nevora_tenancy.'+quoted(table),rowMode:'array',types:credentialedLegacyRawTypes})).rows;}
+async function prcSeedPartial(f:Fixture,intended:PRCWhole,kind:'PARTIAL_PORTAL'|'FOREIGN_LINEAGE'|'MISSING_LIVE'|'CHANGED_GRANTS'){
+ // Root-only negative initialization from the independent intended tuples AFTER
+ // actual rollback. No guard/constraint disablement, UPDATE, DELETE or authority.
+ const before=await portalWholeTarget(f);expect(before.mapping).toEqual([]);
+ for(const n of ['portal_authority','portal_access_lineage','portal_session_issuance'])expect(before.privateRows[n]).toEqual([]);
+ const rows=JSON.parse(JSON.stringify(intended.privateRows)) as Record<string,(string|null)[][]>;
+ if(kind==='PARTIAL_PORTAL'){rows.portal_authority=rows.portal_authority.slice(0,1);rows.portal_access_lineage=[];rows.portal_session_issuance=[];}
+ if(kind==='MISSING_LIVE')rows.portal_session_issuance=[];
+ if(kind==='FOREIGN_LINEAGE')rows.portal_access_lineage[0][9]='fictional-foreign:'+rows.portal_access_lineage[0][9];
+ if(kind==='CHANGED_GRANTS'){const grant=JSON.parse(rows.portal_access_lineage.find(row=>row[1]===ownedEmployee)![11]!);grant.capabilities=['profile.self.read'];
+  rows.portal_access_lineage.find(row=>row[1]===ownedEmployee)![11]=(await f.observer.query('SELECT $1::jsonb::text value',[canonicalOwnershipJson(grant)])).rows[0].value;}
+ let began=false,committing=false;
+ try{began=true;await f.observer.query('BEGIN ISOLATION LEVEL READ COMMITTED');await f.observer.query(INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+  await f.observer.query("SET LOCAL search_path=pg_catalog;SET LOCAL DateStyle='ISO, YMD';SET LOCAL TimeZone='UTC'");
+  for(const row of intended.mapping)await f.observer.query('INSERT INTO nevora_tenancy.employee_login_identity(employee_id,workspace_id,employee_number,normalized_number) VALUES($1,$2,$3,$4)',row);
+  for(const name of ['portal_authority','portal_access_lineage','portal_session_issuance'])for(const row of rows[name])
+   await f.observer.query('INSERT INTO nevora_tenancy.'+quoted(name)+' VALUES('+row.map((_,i)=>'$'+(i+1)).join(',')+')',row);
+  await f.observer.query('SET CONSTRAINTS ALL IMMEDIATE');committing=true;await f.observer.query('COMMIT');began=false;
+ }catch(error){if(began&&!committing)await f.observer.query('ROLLBACK');throw error;}
+ const after=await portalWholeTarget(f);expect(after.source).toEqual(before.source);expect(after.metadata).toEqual(before.metadata);
+ expect(after.fullCatalog).toEqual(before.fullCatalog);expect(after.privateCatalogText).toBe(before.privateCatalogText);
+ for(const name of ['portal_authority','portal_access_lineage','portal_session_issuance'])expect(after.privateRows[name]).toEqual(prcSort(rows[name]));
+ enrollmentExpectedFinal.set(f.name,after.mapping);portalExpectedFinal.set(f.name,after.privateRows);
+ receipt('case-'+f.id+'-deliberate-negative-initialization.json',{kind,before,after,derivedBeforeOriginalAttempt:intended,guardDisablement:false,authority:false});
+}
+async function prcObserveWait(f:Fixture,client:Client,holder:Client){
+ if(!admin)throw Error('Independent controller required');
+ const native=Client.prototype.query.bind(client),pid=(await native('SELECT pg_backend_pid()::text pid')).rows[0].pid;
+ const holderPid=(await holder.query('SELECT pg_backend_pid()::int pid')).rows[0].pid;
+ return async()=>{let observed:unknown;
+  for(let i=0;i<100;i++){
+   const rows=(await admin!.query("SELECT a.pid::text pid,a.datname database,a.usename role,a.query,a.wait_event_type,a.wait_event,pg_blocking_pids(a.pid) blockers,l.relation::text relation_oid,l.mode,l.granted FROM pg_stat_activity a JOIN pg_locks l ON l.pid=a.pid WHERE a.pid=$1::integer AND a.datname=$2 AND a.usename=$3 AND a.wait_event_type='Lock' AND NOT l.granted AND l.locktype='relation'",[pid,f.name,lease.user])).rows;
+   if(rows.some(r=>r.blockers.includes(holderPid)&&r.mode==='ShareRowExclusiveLock'&&r.query.startsWith('LOCK TABLE public.'))){observed={pid,holderPid,rows};break;}
+   await new Promise(resolve=>setTimeout(resolve,10));
+  }
+  expect(observed).toBeDefined();return observed;
+ };
+}
+async function prcGetFixture(id:string,variant:PortalReconciliationVariant):Promise<PortalReconciliationNativeFixture>{
+ const credentialed=variant==='PRESERVED_CREDENTIALED';
+ const f=await fixture(id,false,true,true,false,credentialed),command=credentialed?rootReviewedCredentialedLegacyCommand(f):rootReviewedAbsentPortalCommand(f);
+ if(credentialed)assertExplicitCredentialedLegacyCommand(f,command);
+ await enrollmentApplied(f);await installRootReviewedPortalPrerequisites(f,command);await sealPortalLegacyCommandBeforeAdmission(f,command);
+ const before=await portalWholeTarget(f),intended=await prcIntended(f,command,before),roleCustody=await prcRoleCustody(f);
+ enrollmentExpectedFinal.set(f.name,before.mapping);portalExpectedFinal.set(f.name,before.privateRows);
+ const data={f,command,before,intended} as {f:Fixture;command:RootReviewedPortalLegacyCommand;before:PRCWhole;intended:PRCWhole;holder?:Client};prcFixtures.set(id,data);
+ const originalWriter=await connect(f.name,lease.user);await enrollmentInstaller(originalWriter);prcOriginalWriters.set(f.name,originalWriter);await prcAttach(originalWriter,f.name);receipt('case-'+id+'-independent-original-expectation.json',{before,intended,command,sourcePlan:f.chain.plan,derivedBeforeWriter:true,rawPasswordOrBearer:null,administrativePositive:false});
+ return {
+  request:f.request,installer:originalWriter,variant,baseline:prcTuple(before,roleCustody),intended:prcTuple(intended,roleCustody),intendedCounts:prcExpectedCounts(intended),baselineCounts:prcExpectedCounts(before),
+  snapshot:async()=>{
+   const observed=await portalWholeTarget(f);
+   // Bookkeeping admits only exact independently expected baseline/intended.
+   // Deliberate partial initialization sets its separate exact final receipt.
+   if(same(observed,intended)){enrollmentExpectedFinal.set(f.name,observed.mapping);portalExpectedFinal.set(f.name,observed.privateRows);}
+   return prcTuple(observed,await prcRoleCustody(f));
+  },
+  freshOwnedInstaller:async<T>(check:(client:Client)=>Promise<T>)=>{
+   const c=await connect(f.name,lease.user);
+   // Do not preempt the actual reconciliation with a fixture profile assertion:
+   // role/ledger drift must reach the real binder and produce its own denial.
+   try{await verifyActualParentAndChild(f.name,f.oid,f.marker);await prcAttach(c,f.name);
+    expect(c).not.toBe(originalWriter);expect(c).not.toBe(f.observer);return await check(c);
+   }finally{await prcClose(f,c,'observer-'+clients.size);}
+  },
+  commands:c=>prcHooks.get(c)?.commands??[],loseNativeAck:prcWithAck,failBeforeCommitAtNativeWrite:call=>prcFailWrite(f,call),
+  holdOriginalSource:async<T>(client:Client,check:(evidence:()=>Promise<unknown>)=>Promise<T>)=>{
+   const holder=await connect(f.name,lease.user);data.holder=holder;
+   try{await holder.query('BEGIN');await holder.query('LOCK TABLE public.employees IN SHARE ROW EXCLUSIVE MODE');
+    const evidence=await prcObserveWait(f,client,holder);return await check(evidence);
+   }finally{if(holder.getTransactionStatus()!=='I')await holder.query('ROLLBACK');await holder.end();data.holder=undefined;
+    receipt('case-'+f.id+'-holder-'+clients.size+'-close.json',{database:f.name,oid:f.oid,closed:true,retainedInOriginalClientMap:clients.has(holder)});}
+  },
+  releaseSourceHolder:async()=>{if(data.holder&&data.holder.getTransactionStatus()!=='I')await data.holder.query('ROLLBACK');},
+  assertNativeWait:evidence=>{expect(evidence).toMatchObject({rows:expect.any(Array)});},
+  assertSourceMappingPrivateLockOrder:commands=>{
+   const begin=commands.indexOf('BEGIN ISOLATION LEVEL READ COMMITTED');expect(begin).toBeGreaterThan(-1);expect(commands[begin+1]).toBe(INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL.text);
+   const source=commands.findIndex((s,i)=>i>begin&&s.startsWith('LOCK TABLE public.')),mapping=commands.indexOf('LOCK TABLE nevora_tenancy.employee_login_identity IN SHARE ROW EXCLUSIVE MODE');
+   const privacy=commands.indexOf(PORTAL_LEGACY_ENROLLMENT_PRIVATE_LOCK_SQL.text),read=commands.findIndex((s,i)=>i>begin+1&&/^(?:\/\*.*?\*\/\s*)?(?:SELECT|WITH)\b/.test(s));
+   expect(source).toBeGreaterThan(begin+1);expect(commands[source].match(/public\."/g)).toHaveLength(70);expect(mapping).toBeGreaterThan(source);expect(privacy).toBeGreaterThan(mapping);expect(read).toBeGreaterThan(privacy);
+  },
+  driftTarget:async kind=>{if(kind==='ADDED_LOCATION')throw Error('NONEMPTY_ADMIN_FIXTURE_REQUIRED_NOT_AUTHORIZED_BY_THIS_EMPLOYEE_SOURCE');await prcSeedPartial(f,intended,kind);},
+  driftNativeSource:async kind=>{await prcInstallDrift(data,kind);},restoreRollbackScopedDrift:async()=>{await prcRestoreDrift(data);},
+  retain:(label,value)=>receipt('case-'+id+'-'+label+'-observation.json',value),
+ };
+}
+// PRC_NATIVE_REBASE_ADAPTER_END
+
+// PRC_NATIVE_DRIFT_BEGIN
+async function prcRoleCustody(f:Fixture){
+ const catalog=(await f.observer.query<string[]>({text:'SELECT oid::text,rolname,rolsuper::text,rolinherit::text,rolcreaterole::text,rolcreatedb::text,rolcanlogin::text,rolreplication::text,rolbypassrls::text FROM pg_catalog.pg_roles WHERE rolname=ANY($1::text[]) ORDER BY oid',values:[ [lease.user,...lease.operatorRoles.map(r=>r.name)] ],rowMode:'array',types:credentialedLegacyRawTypes})).rows;
+ const memberships=(await f.observer.query<string[]>({text:'SELECT m.member::text,m.roleid::text,r.rolname,m.admin_option::text,m.inherit_option::text,m.set_option::text FROM pg_catalog.pg_auth_members m JOIN pg_catalog.pg_roles r ON r.oid=m.roleid WHERE m.member=ANY($1::oid[]) ORDER BY m.member,m.roleid',values:[catalog.map(r=>r[0])],rowMode:'array',types:credentialedLegacyRawTypes})).rows;
+ const bytes=verifiedParentLeaseBytes(),stat=statSync(leasePath!);
+ return {catalog,memberships,parentBytesSHA256:hashText(bytes),parentDev:String(stat.dev),parentIno:String(stat.ino)};
+}
+type PRCDrift={kind:string;sourceName?:string;index?:{oid:string;owner:string;table_oid:string};leaseBefore?:string;leaseChanged?:string;roleInherit?:boolean};
+const prcDrifts=new Map<string,PRCDrift>();
+async function prcSourceChange(f:Fixture,name:string){
+ expect(f.observer.getTransactionStatus()).toBe('I');let began=false,committing=false;
+ try{began=true;await f.observer.query('BEGIN');
+  // Preserve expansion_protocol_check: APPLIED manifest cannot coexist with
+  // EXPANDED_LEGACY. Clear/set phase+manifest together, NULL actor throughout.
+  await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='EXPANDED_LEGACY',capture_manifest_sha256=NULL WHERE migration_id=26 AND backfill_actor IS NULL");
+  await f.observer.query('SET LOCAL search_path=pg_catalog,public');
+  expect((await f.observer.query('UPDATE public.employees SET first_name=$1 WHERE id=$2 RETURNING id',[name,ownedEmployee])).rows).toEqual([{id:ownedEmployee}]);
+  await f.observer.query("UPDATE nevora_tenancy.expansion_protocol SET phase='FENCED',capture_manifest_sha256=$1 WHERE migration_id=26 AND backfill_actor IS NULL",[f.chain.plan.digest]);
+  committing=true;await f.observer.query('COMMIT');began=false;
+ }catch(error){if(began&&!committing)await f.observer.query('ROLLBACK');throw error;}
+ expect((await metadata(f)).actor).toBeNull();expect((await metadata(f)).manifest).toBe(f.chain.plan.digest);
+}
+async function prcInstallDrift(data:{f:Fixture;intended:PRCWhole},kind:string){
+ const f=data.f;if(prcDrifts.has(f.name))throw Error('One exact owned drift at a time');
+ const state:PRCDrift={kind};prcDrifts.set(f.name,state);const before=await portalWholeTarget(f);
+ if(kind==='SOURCE_CELL'){
+  const row=f.original.employees.rows.find(r=>r[f.original.employees.columns.indexOf('id')]===ownedEmployee)!;
+  state.sourceName=row[f.original.employees.columns.indexOf('first_name')]!;await prcSourceChange(f,'PRC fictional source drift');
+ }else if(kind==='CATALOG'){
+  expect((await f.observer.query("SELECT to_regclass('public.prc_fixture_drift') oid")).rows[0].oid).toBeNull();
+  await f.observer.query('CREATE INDEX prc_fixture_drift ON public.employees(first_name)');
+  state.index=(await f.observer.query("SELECT c.oid::text oid,c.relowner::text owner,i.indrelid::text table_oid FROM pg_class c JOIN pg_index i ON i.indexrelid=c.oid WHERE c.oid=to_regclass('public.prc_fixture_drift') AND c.relowner=(SELECT oid FROM pg_roles WHERE rolname=session_user) AND i.indrelid=to_regclass('public.employees')")).rows[0];expect(state.index).toBeDefined();
+ }else if(kind==='INSTALLER_ROLE'){
+  if(!admin)throw Error('Original root role controller required');
+  const row=(await admin.query('SELECT rolinherit FROM pg_roles WHERE rolname=$1',[lease.user])).rows[0];expect(row.rolinherit).toBe(true);state.roleInherit=row.rolinherit;
+  await admin.query('ALTER ROLE '+quoted(lease.user)+' NOINHERIT');
+ }else if(kind==='LEASE'){
+  state.leaseBefore=verifiedParentLeaseBytes();const parent=JSON.parse(state.leaseBefore) as PortalEnrollmentLease;
+  const records=parent.portalLegacyAccessEnrollments.filter(r=>r.database!==f.name);expect(records.length).toBe(parent.portalLegacyAccessEnrollments.length-1);
+  parent.portalLegacyAccessEnrollments=records;state.leaseChanged=JSON.stringify(parent,null,2)+'\n';privateAtomicLeaseReplacement(state.leaseBefore,state.leaseChanged);
+ }else if(kind==='COUNTER_POLICY_HEAD'){
+  const row=(await f.observer.query('SELECT installation_epoch::text epoch FROM nevora_tenancy.workspace_capability_policy_installation WHERE workspace_id=$1',['workspace-fuel'])).rows[0];
+  const result=await f.observer.query('UPDATE nevora_tenancy.workspace_capability_policy_installation SET installation_epoch=installation_epoch+1 WHERE workspace_id=$1 RETURNING installation_epoch::text epoch',['workspace-fuel']);
+  expect(result.rows).toEqual([{epoch:(BigInt(row.epoch)+BigInt(1)).toString()}]);
+  const current=await portalWholeTarget(f);portalExpectedFinal.set(f.name,current.privateRows); // exact deliberate fresh child monotonic successor, never rewind.
+ }else throw Error('Closed drift kind required');
+ receipt('case-'+f.id+'-owned-drift.json',{kind,before,after:await portalWholeTarget(f),state,originalGuardsOrConstraintsDisabled:false});
+}
+async function prcRestoreDrift(data:{f:Fixture}){
+ const f=data.f,state=prcDrifts.get(f.name);if(!state)return;
+ try{
+  if(state.kind==='SOURCE_CELL')await prcSourceChange(f,state.sourceName!);
+  if(state.kind==='CATALOG'){
+   const rows=(await f.observer.query("SELECT c.oid::text oid,c.relowner::text owner,i.indrelid::text table_oid FROM pg_class c JOIN pg_index i ON i.indexrelid=c.oid WHERE c.oid=to_regclass('public.prc_fixture_drift') AND c.relowner=(SELECT oid FROM pg_roles WHERE rolname=session_user) AND i.indrelid=to_regclass('public.employees')")).rows;
+   expect(rows).toEqual([state.index]);await f.observer.query('DROP INDEX public.prc_fixture_drift');expect((await f.observer.query("SELECT to_regclass('public.prc_fixture_drift') oid")).rows[0].oid).toBeNull();
+  }
+  if(state.kind==='INSTALLER_ROLE'){if(!admin||state.roleInherit!==true)throw Error('Exact original role restoration required');await admin.query('ALTER ROLE '+quoted(lease.user)+' INHERIT');}
+  if(state.kind==='LEASE')privateAtomicLeaseReplacement(state.leaseChanged!,state.leaseBefore!);
+  // COUNTER_POLICY_HEAD remains the exact observed monotonic fictional final
+  // state. It is not restored by reversing epoch or altering guard semantics.
+  receipt('case-'+f.id+'-owned-drift-final.json',{state,final:await portalWholeTarget(f),catalogRestoreRequired:state.kind==='CATALOG',counterRewind:false});
+ }finally{prcDrifts.delete(f.name);}
+}
+// PRC_NATIVE_DRIFT_END
+
+// PRC_NATIVE_REBASE_CASES_BEGIN
+// Prepared seven callbacks, UNEXECUTED. ADDED_LOCATION is expressly HELD: no
+// genuine administrative header/grants in the accepted EMPLOYEE fixture. No
+// test skip or fake admin row is used to conceal that missing native positive.
+type PortalReconciliationNativeTuple=Readonly<{
+ source:unknown;originalOwnership:unknown;protocol:unknown;mapping:unknown;
+ portal:unknown;admin:unknown;capabilities:unknown;locations:unknown;live:unknown;lineage:unknown;
+ counterPolicyHead:unknown;sourceCatalog:unknown;privateCatalog:unknown;rolesAndLease:unknown;
+}>;
+type PortalReconciliationVariant='ABSENT_DISABLED'|'PRESERVED_CREDENTIALED';
+interface PortalReconciliationNativeFixture{
+ readonly request:GuardedTypedBackfillRequest;
+ readonly installer:Client;
+ readonly variant:PortalReconciliationVariant;
+ readonly baseline:PortalReconciliationNativeTuple;
+ // Actual independently derived whole expected tuples from genuine captured
+ // source + reviewed root command, not generated from the observed outcome.
+ readonly intended:PortalReconciliationNativeTuple;
+ readonly intendedCounts:Extract<GuardedTypedPortalLegacyReconciliationOutcome,{status:'OBSERVED'}>['counts'];
+ readonly baselineCounts:Extract<GuardedTypedPortalLegacyReconciliationOutcome,{status:'OBSERVED'}>['counts'];
+ snapshot():Promise<PortalReconciliationNativeTuple>;
+ freshOwnedInstaller<T>(check:(client:Client)=>Promise<T>):Promise<T>; // finally closes and accounts every attempted client.
+ commands(client:Client):readonly string[]; // BOTH native prototype and instance queries, no duplicate accounting.
+ loseNativeAck<T>(client:Client,kind:'COMMIT'|'ROLLBACK',call:()=>Promise<T>):Promise<T>;
+ failBeforeCommitAtNativeWrite<T>(call:()=>Promise<T>):Promise<T>; // actual native fixed write/constraint failure; no synthetic issuer/rows.
+ holdOriginalSource<T>(client:Client,check:(evidence:()=>Promise<unknown>)=>Promise<T>):Promise<T>; // actual self-conflicting SRE source lock, real pg_locks/activity.
+ releaseSourceHolder():Promise<void>;
+ assertNativeWait(evidence:unknown):void;
+ assertSourceMappingPrivateLockOrder(commands:readonly string[]):void;
+ driftTarget(kind:'PARTIAL_PORTAL'|'FOREIGN_LINEAGE'|'MISSING_LIVE'|'ADDED_LOCATION'|'CHANGED_GRANTS'):Promise<void>;
+ driftNativeSource(kind:'SOURCE_CELL'|'CATALOG'|'INSTALLER_ROLE'|'LEASE'|'COUNTER_POLICY_HEAD'):Promise<void>;
+ // Restore only rollback-scoped catalog/role/lease seams. Do not reverse counters
+ // or security lifecycle changes; fresh owned child per committed variation.
+ restoreRollbackScopedDrift():Promise<void>;
+ retain(label:string,value:unknown):void;
+}
+type GetPortalReconciliationFixture=(id:string,variant:PortalReconciliationVariant)=>Promise<PortalReconciliationNativeFixture>;
+const uncertain=(value:GuardedTypedPortalLegacyAccessEnrollmentOutcome)=>{
+ expect(value.status).toBe('UNCERTAIN');if(value.status!=='UNCERTAIN')throw Error('Original real uncertainty required');return value;
+};
+function noMutation(commands:readonly string[]){
+ for(const sql of commands)expect(sql).not.toMatch(/\b(?:INSERT|UPDATE|DELETE|TRUNCATE|CREATE|ALTER|DROP|GRANT|REVOKE)\s+(?:INTO\s+|FROM\s+|TABLE\s+|FUNCTION\s+|SCHEMA\s+)?(?:public\.|nevora_tenancy\.)|\b(?:register_typed_backfill_journal|observe_typed_backfill_journal|enrollCapturedLegacyPortalAccess)\b/i);
+}
+function noSqlAfterCommit(commands:readonly string[]){
+ const i=commands.findIndex(s=>s.trim()==='COMMIT');expect(i).toBeGreaterThanOrEqual(0);expect(commands.slice(i+1)).toEqual([]);
+}
+function originalPreserved(after:PortalReconciliationNativeTuple,before:PortalReconciliationNativeTuple){
+ for(const k of ['source','originalOwnership','protocol','sourceCatalog','privateCatalog','rolesAndLease','counterPolicyHead'] as const)expect(after[k]).toEqual(before[k]);
+}
+function observed(result:GuardedTypedPortalLegacyReconciliationOutcome,f:PortalReconciliationNativeFixture,target:'COMPLETE_ENROLLMENT_PRESENT'|'ORIGINAL_ENROLLMENT_BASELINE_PRESENT'){
+ expect(result).toMatchObject({status:'OBSERVED',mode:'WHOLE_PLAN_ATOMIC',planDigest:f.request.plan.digest,target,effectsVerified:false,
+  verification:'OWNED_LOCAL_ORIGINAL_PORTAL_ATTEMPT_OBSERVATION_NOT_COMMIT_DISPOSITION',counts:target==='COMPLETE_ENROLLMENT_PRESENT'?f.intendedCounts:f.baselineCounts});
+ expect(result).not.toHaveProperty('receipt');expect(result).not.toHaveProperty('bearer');expect(result).not.toHaveProperty('proof');
+}
+function definePortalLegacyReconciliationNativeCases(getFixture:GetPortalReconciliationFixture){
+ const it=prcRegisterNative;
+ it('PRC01 complete mapping Portal admin LIVE lineage after real COMMIT ACK loss is observed without replay and after genuine source wait',async()=>{
+  const f=await getFixture('PRC01','PRESERVED_CREDENTIALED');
+  const attempt=uncertain(await f.loseNativeAck(f.installer,'COMMIT',()=>executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.installer,f.request)));
+  expect(attempt.code).toBe('COMMIT_OUTCOME_UNKNOWN');noSqlAfterCommit(f.commands(f.installer));const committed=await f.snapshot();expect(committed).toEqual(f.intended);originalPreserved(committed,f.baseline);
+  await f.freshOwnedInstaller(async client=>f.holdOriginalSource(client,async(evidence)=>{
+   const boundary=f.commands(client).length,pending=reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,attempt);
+   try{const waits=await evidence();f.assertNativeWait(waits);await f.releaseSourceHolder();const result=await pending;observed(result,f,'COMPLETE_ENROLLMENT_PRESENT');
+    const commands=f.commands(client).slice(boundary);f.assertSourceMappingPrivateLockOrder(commands);noMutation(commands);expect(await f.snapshot()).toEqual(committed);
+    f.retain('PRC01',{attempt,result,waits,commands,before:f.baseline,after:committed});
+   }finally{await f.releaseSourceHolder();await pending.catch(()=>undefined);}
+  }));
+ },60000);
+ it('PRC02 actual ROLLBACK ACK loss observes exact original whole target baseline without mapping or Portal reapplication',async()=>{
+  const f=await getFixture('PRC02','ABSENT_DISABLED');const attempt=uncertain(await f.loseNativeAck(f.installer,'ROLLBACK',()=>f.failBeforeCommitAtNativeWrite(()=>executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.installer,f.request))));
+  expect(attempt.code).toBe('ROLLBACK_UNCONFIRMED');expect(await f.snapshot()).toEqual(f.baseline);
+  await f.freshOwnedInstaller(async client=>{const n=f.commands(client).length,result=await reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,attempt);observed(result,f,'ORIGINAL_ENROLLMENT_BASELINE_PRESENT');
+   noMutation(f.commands(client).slice(n));expect(await f.snapshot()).toEqual(f.baseline);f.retain('PRC02',{attempt,result,baseline:f.baseline});});
+ },60000);
+ it('PRC03 copied Proxy accessor serialized foreign attempts and originating Client refuse before SQL',async()=>{
+  const f=await getFixture('PRC03','ABSENT_DISABLED'),attempt=uncertain(await f.loseNativeAck(f.installer,'COMMIT',()=>executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.installer,f.request)));
+  let effects=0;const accessor={get status(){effects++;return 'UNCERTAIN';}},proxy=new Proxy(attempt,{get(){effects++;throw Error('trap');},ownKeys(){effects++;throw Error('trap');}});
+  await f.freshOwnedInstaller(async client=>{for(const copy of [{...attempt},JSON.parse(JSON.stringify(attempt)),accessor,proxy,{status:'UNCERTAIN',journal:{}}]){
+   const n=f.commands(client).length;expect(await reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,copy)).toEqual({status:'BLOCKED',code:'PORTAL_ENROLLMENT_ORIGINAL_UNCERTAIN_ATTEMPT_REQUIRED'});expect(f.commands(client).slice(n)).toEqual([]);}
+  });
+  const n=f.commands(f.installer).length;expect(await reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(f.installer,attempt)).toEqual({status:'BLOCKED',code:'PORTAL_ENROLLMENT_FRESH_CLIENT_REQUIRED'});
+  expect(f.commands(f.installer).slice(n)).toEqual([]);expect(effects).toBe(0);
+ },60000);
+ for(const kind of ['PARTIAL_PORTAL','FOREIGN_LINEAGE','MISSING_LIVE','CHANGED_GRANTS'] as const){
+  it('PRC04_'+kind+' partial foreign missing LIVE and changed full grants are denied without repairing immutable lineage',async()=>{
+   const f=await getFixture('PRC04_'+kind,'PRESERVED_CREDENTIALED'),attempt=uncertain(await f.loseNativeAck(f.installer,'ROLLBACK',()=>f.failBeforeCommitAtNativeWrite(()=>executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.installer,f.request))));
+   await f.driftTarget(kind);const drift=await f.snapshot();
+   await f.freshOwnedInstaller(async client=>{const n=f.commands(client).length,result=await reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,attempt);
+    expect(result).toEqual({status:'BLOCKED',code:'PORTAL_ENROLLMENT_TARGET_DRIFT'});noMutation(f.commands(client).slice(n));expect(await f.snapshot()).toEqual(drift);f.retain('PRC04_'+kind,{attempt,result,drift});});
+  },60000);
+ }
+ for(const kind of ['SOURCE_CELL','CATALOG','INSTALLER_ROLE','LEASE','COUNTER_POLICY_HEAD'] as const){
+  it('PRC05_'+kind+' original source native catalog installer lease and full counter policy head drift deny observation',async()=>{
+   const f=await getFixture('PRC05_'+kind,'ABSENT_DISABLED'),attempt=uncertain(await f.loseNativeAck(f.installer,'COMMIT',()=>executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.installer,f.request)));
+   await f.driftNativeSource(kind);const drift=await f.snapshot();try{await f.freshOwnedInstaller(async client=>{const n=f.commands(client).length,result=await reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,attempt);
+    expect(result.status).toBe('BLOCKED');noMutation(f.commands(client).slice(n));expect(await f.snapshot()).toEqual(drift);f.retain('PRC05_'+kind,{attempt,result,drift});});}
+   finally{await f.restoreRollbackScopedDrift();}
+  },60000);
+ }
+ it('PRC06 lost observer COMMIT acknowledgement stays uncertain and only the original attempt may be observed again',async()=>{
+  const f=await getFixture('PRC06','ABSENT_DISABLED'),attempt=uncertain(await f.loseNativeAck(f.installer,'COMMIT',()=>executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.installer,f.request))),before=await f.snapshot();
+  let secondary:GuardedTypedPortalLegacyReconciliationOutcome|undefined;
+  await f.freshOwnedInstaller(async client=>{const n=f.commands(client).length;secondary=await f.loseNativeAck(client,'COMMIT',()=>reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,attempt));
+   expect(secondary).toMatchObject({status:'UNCERTAIN',code:'RECONCILIATION_COMMIT_OUTCOME_UNKNOWN'});const commands=f.commands(client).slice(n);noMutation(commands);noSqlAfterCommit(commands);f.retain('PRC06',{attempt,secondary,commands});});
+  expect(secondary).toBeDefined();
+  await f.freshOwnedInstaller(async client=>{const n=f.commands(client).length;expect(await reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,secondary)).toEqual({status:'BLOCKED',code:'PORTAL_ENROLLMENT_ORIGINAL_UNCERTAIN_ATTEMPT_REQUIRED'});
+   expect(f.commands(client).slice(n)).toEqual([]);observed(await reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,attempt),f,'COMPLETE_ENROLLMENT_PRESENT');});expect(await f.snapshot()).toEqual(before);
+ },60000);
+ it('PRC07 lost observer rollback acknowledgement stays uncertain after real waited source-lock timeout and never repairs original lineage',async()=>{
+  const f=await getFixture('PRC07','ABSENT_DISABLED'),attempt=uncertain(await f.loseNativeAck(f.installer,'COMMIT',()=>executeGuardedTypedLocalPortalLegacyAccessEnrollment(f.installer,f.request))),before=await f.snapshot();
+  await f.freshOwnedInstaller(async client=>f.holdOriginalSource(client,async evidence=>{
+   const n=f.commands(client).length,pending=f.loseNativeAck(client,'ROLLBACK',()=>reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,attempt));
+   try{const waits=await evidence();f.assertNativeWait(waits);
+    // Keep holder intact until the existing fixed native lock_timeout actually
+    // aborts the observer transaction. Do not synthesize an Error or row result.
+    const result=await pending;expect(result).toMatchObject({status:'UNCERTAIN',code:'ROLLBACK_UNCONFIRMED'});
+    noMutation(f.commands(client).slice(n));f.retain('PRC07',{attempt,result,waits,commands:f.commands(client).slice(n)});
+   }finally{await f.releaseSourceHolder();await pending.catch(()=>undefined);}
+  }));
+  expect(await f.snapshot()).toEqual(before);
+  await f.freshOwnedInstaller(async client=>{observed(await reconcileGuardedTypedLocalPortalLegacyAccessEnrollment(client,attempt),f,'COMPLETE_ENROLLMENT_PRESENT');noMutation(f.commands(client));});
+ },60000);
+}
+
+// PRC_NATIVE_REBASE_CASES_END
+
+definePortalLegacyReconciliationNativeCases(prcGetFixture);
+
   afterAll(async () => {
     const failures: string[] = [], closedClients: string[] = [], drops: unknown[] = [];
     for (const f of fixtures) {
