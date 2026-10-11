@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 import { neonNotificationExecutor } from "./notification-transactions";
-import { commitRequestTransition, requestSnapshot } from "./request-notifications";
-import type { SqlExecutor } from "../notifications/types";
+import { commitRequestTransition, requestSnapshot, requestRecipientSql, timeOffTransitionLocks, isRequestTransitionConflict } from "./request-notifications";
+import type { RecipientAccess, SqlExecutor } from "../notifications/types";
 import type { RequestStatus } from "@/lib/domain";
 
 import type { SessionMutationProof } from "../shift-changes/types";
@@ -193,4 +193,44 @@ export async function reviewTimeOffRequest(input: {
       values: [input.requestId,input.managerId,input.status,before.employeeId],
     },
   }, executor);
+}
+
+
+import { parseWithdrawalCommand, type WithdrawalCommand, type WithdrawalReceipt } from '../time-off-withdrawal';
+import { cancelNotificationStatements } from './notifications';
+
+/** Separate own-only command; the generic terminal writer remains manager-only.
+ * The immutable request has one withdrawal identity and one first terminal fact. */
+export async function withdrawTimeOffRequest(input: WithdrawalCommand & {employeeId:string;proof:SessionMutationProof}, executor:SqlExecutor=neonNotificationExecutor()):Promise<WithdrawalReceipt|null> {
+  const {employeeId,proof,...payload}=input;
+  const command=parseWithdrawalCommand(payload);
+  assertManagementProof(proof,employeeId);
+  const workspace=await getWorkspace(executor);
+  const recipients=await executor.query<RecipientAccess>({text:requestRecipientSql,values:[]});
+  const authority=()=>managementSessionStatements(proof,employeeId,['EMPLOYEE','LEAD']);
+  const statements=[
+    ...workspaceReadGuard(workspace),
+    ...timeOffTransitionLocks(command.requestId,employeeId,recipients),
+    ...authority(),
+    {text:`SELECT (CASE WHEN EXISTS (SELECT 1 FROM time_off_requests WHERE id=$1 AND employee_id=$2
+      AND ((status='PENDING' AND reviewed_by IS NULL AND reviewed_at IS NULL)
+        OR (status='CANCELLED' AND reviewed_by=$2 AND reviewed_at IS NOT NULL)))
+      THEN '1' ELSE 'request_transition_conflict' END)::integer`,values:[command.requestId,employeeId]},
+    {text:`UPDATE time_off_requests SET status='CANCELLED',reviewed_by=$2,reviewed_at=clock_timestamp()
+      WHERE id=$1 AND employee_id=$2 AND status='PENDING' AND reviewed_by IS NULL AND reviewed_at IS NULL RETURNING id`,values:[command.requestId,employeeId]},
+    // A suppressed conditional UPDATE must roll back the entire batch. The
+    // same post-state is also valid for a replay of the first own cancellation.
+    {text:`SELECT (CASE WHEN EXISTS (SELECT 1 FROM time_off_requests WHERE id=$1 AND employee_id=$2
+      AND status='CANCELLED' AND reviewed_by=$2 AND reviewed_at IS NOT NULL)
+      THEN '1' ELSE 'request_transition_conflict' END)::integer`,values:[command.requestId,employeeId]},
+    ...cancelNotificationStatements({kind:'TIME_OFF',id:command.requestId,version:'PENDING'}),
+    {text:`SELECT id AS "requestId", reviewed_by AS "reviewedBy", reviewed_at::text AS "reviewedAt"
+      FROM time_off_requests WHERE id=$1 AND employee_id=$2 AND status='CANCELLED' AND reviewed_by=$2 AND reviewed_at IS NOT NULL`,values:[command.requestId,employeeId]},
+  ];
+  try{
+    const results=await executor.transaction([...statements,...authority()]);
+    const row=results[statements.length-1]?.[0] as {requestId:string;reviewedBy:string;reviewedAt:string}|undefined;
+    if(!row)throw new Error('withdrawal_receipt_unavailable');
+    return {...command,status:'CANCELLED',reviewedBy:row.reviewedBy,reviewedAt:row.reviewedAt};
+  }catch(error){if(isRequestTransitionConflict(error))return null;throw error;}
 }

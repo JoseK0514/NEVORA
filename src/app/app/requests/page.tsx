@@ -1,3 +1,4 @@
+import { TimeOffWithdrawal } from "@/components/time-off-withdrawal";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { ManagerTimeOff } from "@/components/manager-time-off";
@@ -108,6 +109,7 @@ export default async function RequestsPage({
                         <span>{request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : "Full day"}</span>
                         {request.reason ? <span>{request.reason}</span> : null}
                       </>
+                      {request.employeeId === session.id && request.status === "PENDING" ? <TimeOffWithdrawal requestId={request.id} dateLabel={request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`} /> : null}
                     </div>
                     <StatusPill tone={statusTone(request.status)}>
                       {request.status === "DENIED" ? "Declined" : statusLabel(request.status)}

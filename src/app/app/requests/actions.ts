@@ -8,6 +8,7 @@ import { TIME_OFF_REVIEW_ROLES, requireRoles, requireSelfService } from "@/lib/a
 import {
   createTimeOffRequest,
   reviewTimeOffRequest,
+  withdrawTimeOffRequest,
 } from "@/lib/data/requests";
 
 export async function requestTimeOffAction(formData: FormData) {
@@ -73,4 +74,27 @@ export async function reviewTimeOffAction(formData: FormData) {
 
   revalidatePath("/app/requests");
   redirect("/app/requests?tab=team&reviewed=1");
+}
+
+
+import { parseWithdrawalCommand, type WithdrawalActionState } from '@/lib/time-off-withdrawal';
+import { isManagementAuthorizationError } from '@/lib/data/management-session';
+
+export async function withdrawTimeOffAction(_previous:WithdrawalActionState, formData:FormData):Promise<WithdrawalActionState> {
+  const session=await requireSelfService('/app/requests');
+  const proof=await requireSessionMutationProof();
+  let command;
+  try{
+    const fields=[...formData.keys()].filter(key=>!key.startsWith('$ACTION_'));
+    if(fields.sort().join(',')!=='confirmed,operationId,requestId'||formData.get('confirmed')!=='yes')return {outcome:'invalid'};
+    command=parseWithdrawalCommand({requestId:formData.get('requestId'),operationId:formData.get('operationId')});
+  }catch{return {outcome:'invalid'};}
+  let receipt;
+  try{receipt=await withdrawTimeOffRequest({...command,employeeId:session.id,proof});}
+  catch(error){return {outcome:isManagementAuthorizationError(error)?'denied':'unavailable'};}
+  // Revalidation happens only after a known transaction result. A transport
+  // failure remains unknown and retains the exact command for protected retry.
+  revalidatePath('/app/requests');
+  if(!receipt)return {outcome:'conflict'};
+  return {outcome:'withdrawn',receipt};
 }

@@ -37,9 +37,18 @@ export function requestNotificationStatements(input: { before?: RequestSnapshot;
 export function isRequestTransitionConflict(error: unknown): boolean {
   return error instanceof Error && 'code' in error && error.code === '22P02' && error.message.includes('request_transition_conflict');
 }
-const recipientSql = `SELECT e.id AS "employeeId", e.role, e.active,
+export const requestRecipientSql = `SELECT e.id AS "employeeId", e.role, e.active,
   COALESCE((SELECT jsonb_agg(location_id ORDER BY location_id) FROM employee_location_eligibility elig JOIN locations l ON l.id=elig.location_id AND l.active=true WHERE employee_id=e.id),'[]'::jsonb) AS "allowedLocationIds"
   FROM employees e ORDER BY e.id`;
+/** Shared lock order for submission, manager decision and own withdrawal. */
+export function timeOffTransitionLocks(id: string | undefined, actorEmployeeId: string, recipients: readonly RecipientAccess[]): SqlStatement[] {
+  return [
+    { text: 'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE', values: [[...new Set([...recipients.map(r => r.employeeId), actorEmployeeId])].sort()] },
+    { text: 'SELECT id FROM locations ORDER BY id FOR SHARE', values: [] },
+    { text: 'LOCK TABLE employee_location_eligibility IN SHARE MODE', values: [] },
+    ...(id ? [{ text: 'SELECT id FROM time_off_requests WHERE id=$1 ORDER BY id FOR UPDATE', values: [id] }] : []),
+  ];
+}
 /** Non-schedule Time Off writes still guard current recipient access, then commit
  * the mutation, cancellation and intents together. No provider dependency. */
 export async function commitRequestTransition(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId: string; mutation: SqlStatement; managementProof?: SessionMutationProof; selfServiceProof?: SessionMutationProof }, executor: SqlExecutor): Promise<boolean> {
@@ -50,18 +59,13 @@ export async function commitRequestTransition(input: { before?: RequestSnapshot;
   if (proof) assertManagementProof(proof, input.actorEmployeeId);
   const authority = () => proof ? managementSessionStatements(proof, input.actorEmployeeId, submission ? ['EMPLOYEE', 'LEAD'] : ['OWNER', 'MANAGER']) : [];
   const workspace = await getWorkspace(executor);
-  const recipients = await executor.query<RecipientAccess>({ text: recipientSql, values: [] });
+  const recipients = await executor.query<RecipientAccess>({ text: requestRecipientSql, values: [] });
   try {
     await executor.transaction([
       ...workspaceReadGuard(workspace),
-      { text: 'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE', values: [[...new Set([...recipients.map(r => r.employeeId), input.actorEmployeeId])].sort()] },
-      { text: 'SELECT id FROM locations ORDER BY id FOR SHARE', values: [] },
-      { text: 'LOCK TABLE employee_location_eligibility IN SHARE MODE', values: [] },
-      // A competing decision can hold this row after recipient locks. Acquire
-      // it before the wall-clock session check so expiry during that wait fails.
-      ...(proof && input.after.kind === 'TIME_OFF' ? [{ text: 'SELECT id FROM time_off_requests WHERE id=$1 ORDER BY id FOR UPDATE', values: [input.after.record.id] }] : []),
+      ...timeOffTransitionLocks(proof && input.after.kind === 'TIME_OFF' ? input.after.record.id : undefined, input.actorEmployeeId, recipients),
       ...authority(),
-      { text: `SELECT (CASE WHEN COALESCE((SELECT jsonb_agg(r ORDER BY r."employeeId") FROM (${recipientSql}) r),'[]'::jsonb)=$1::jsonb THEN '1' ELSE 'request_transition_conflict' END)::integer AS access_guarded`, values: [JSON.stringify(recipients)] },
+      { text: `SELECT (CASE WHEN COALESCE((SELECT jsonb_agg(r ORDER BY r."employeeId") FROM (${requestRecipientSql}) r),'[]'::jsonb)=$1::jsonb THEN '1' ELSE 'request_transition_conflict' END)::integer AS access_guarded`, values: [JSON.stringify(recipients)] },
       guardedRequestMutation(input.mutation),
       ...requestNotificationStatements({ before: input.before, after: input.after, actorEmployeeId: input.actorEmployeeId, recipients,config:bindWorkspaceNotificationConfig(readNotificationConfig(process.env),workspace) }),
       ...authority(),

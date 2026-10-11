@@ -1,3 +1,4 @@
+import {parseCoverageRepairLocator,coverageRepairUrl} from '../scheduling/coverage-repair';
 import type { SourceSnapshot, RecipientAccess } from './types';
 import { diffPublishedShifts, type PublishedShiftSnapshot } from '../assistance/publication-diff';
 export function isReviewRole(recipient: RecipientAccess): boolean {
@@ -12,9 +13,10 @@ export function canAccessPublishedAssignment(recipient: RecipientAccess, shift: 
 const ROUTE_PARAMS: Record<string, readonly string[]> = {
   '/app': [], '/app/schedule': ['week','employeeId'], '/app/availability': ['week','employeeId'],
   '/app/requests': ['tab','requestId'], '/app/exchange': ['tab','requestId'],
-  '/app/schedule/coverage': ['week','date','locationId','start','end','lead'],
+  '/app/schedule/coverage': ['week','date','locationId','start','end','lead','repair','positionId','refresh'],
   '/app/notifications/open': ['notificationId'],
 };
+const orderedJson=(value:unknown)=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
 function safeId(value: string): boolean {
   return /^[A-Za-z0-9_ :.-]{1,128}$/.test(value) && !value.includes('..');
 }
@@ -39,11 +41,28 @@ export function safeReturnTo(candidate: string | undefined): string | null {
     if (seen.has(key) || !allowed.includes(key)) return null;
     seen.add(key);
     if (key === 'week' || key === 'date') { if (!validDate(value)) return null; }
-    else if (key === 'start' || key === 'end') { if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) return null; }
+    else if (key === 'start' || key === 'end') { if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value) && !(rawPath === '/app/schedule/coverage' && key === 'end' && value === '24:00' && url.searchParams.has('repair'))) return null; }
+    else if (key === 'repair') { /* Validated as a bounded canonical locator below. */ }
+    else if (key === 'refresh') { if (value !== '1') return null; }
     else if (key === 'lead') { if (value !== '1') return null; }
     else if (key === 'tab') {
       if (!(rawPath === '/app/requests' ? ['new','my','team','pending','approved','declined'] : ['available','requests','my','history','pending','coverage','activity']).includes(value)) return null;
     } else if (!safeId(value)) return null;
+  }
+  if (rawPath === '/app/schedule/coverage') {
+    const raw = url.searchParams.get('repair');
+    if (raw !== null) {
+      try {
+        const locator = parseCoverageRepairLocator(raw);
+        // Reject ignored JSON properties, duplicate keys, alternate encodings and
+        // mismatched route hints. This admits navigation, never assignment authority.
+        if (orderedJson(JSON.parse(raw)) !== orderedJson(locator) || raw !== JSON.stringify(JSON.parse(raw))
+          || locator.gapKey !== [locator.locationId,locator.date,locator.startTime,locator.endTime].join('|')) return null;
+        const canonical = new URL(coverageRepairUrl(locator,seen.has('refresh')), 'https://fuel.invalid');
+        if ([...url.searchParams].length !== [...canonical.searchParams].length
+          || [...canonical.searchParams].some(([key,value]) => key !== 'repair' && url.searchParams.get(key) !== value)) return null;
+      } catch { return null; }
+    } else if (seen.has('positionId') || seen.has('refresh')) return null;
   }
   if (rawPath === '/app/notifications/open' && !seen.has('notificationId')) return null;
   return candidate;
