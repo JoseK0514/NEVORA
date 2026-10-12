@@ -46,7 +46,7 @@ function PrivateLaborReview({settings,scope,timeZone,open=false}:{settings:Compa
   const location=(id:string|null)=>id?`Location ${id}`:"Whole company";
   return <details className="policy-private-review" open={open}>
     <summary>Private labor settings <span>Owner only · preserved in this draft</span></summary>
-    <p>Review these existing values before saving. This screen does not change rates, budgets, compensation references, or calculation methods.</p>
+    <p>Review the private labor values in this snapshot. Attendance edits preserve them; a replacement draft includes them in full.</p>
     <dl><div><dt>Compensation reference</dt><dd>{absent(labor?.compensation)??<>{labor!.compensation!.ruleReference}<br/>{labor!.compensation!.breakTreatment==="INCLUDE_ALL_RECORDED_BREAKS"?"Include all recorded breaks":`Exclude break types: ${labor!.compensation!.excludedBreakTypeIds.join(", ")||"None"}`}<br/>Effective {formatBusinessTimestamp(labor!.compensation!.effectiveFrom,timeZone)}</>}</dd></div>
     <div><dt>Employee rates</dt><dd>{absent(labor?.rates)??(labor!.rates!.length?<ul>{labor!.rates!.map(rate=><li key={rate.id}><strong>{rate.rate} {rate.currency}</strong> · {rate.rateUnit==="HOUR"?"per hour":rate.rateUnit==="SHIFT"?"per shift":"per salary period"}<br/>Employee {rate.employeeId} · {location(rate.locationId)} · Reference {rate.id}<br/>{formatBusinessTimestamp(rate.validFrom,timeZone)} — {rate.validUntil?formatBusinessTimestamp(rate.validUntil,timeZone):"No end date"}</li>)}</ul>:"Empty rate override — no explicit rates")}</dd></div>
     <div><dt>Labor budgets</dt><dd>{absent(labor?.budgets)??(labor!.budgets!.length?<ul>{labor!.budgets!.map(budget=><li key={budget.id}><strong>{budget.amount} {budget.currency}</strong> · {location(budget.locationId)} · Reference {budget.id}<br/>{formatBusinessTimestamp(budget.startAt,timeZone)} — {formatBusinessTimestamp(budget.endAt,timeZone)}</li>)}</ul>:"Empty budget override — no explicit budgets")}</dd></div>
@@ -58,6 +58,7 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
   const [history,setHistory]=useState(initialHistory),[scope,setScope]=useState("");
   const [draft,setDraft]=useState<Draft|null>(()=>currentDraft(initialHistory,null));
   const [draftEpoch,setDraftEpoch]=useState(0),[modes,setModes]=useState<Record<string,string>>({});
+  const [rawFields,setRawFields]=useState<Record<string,string>>({});
   const [notice,setNotice]=useState(""),[busy,setBusy]=useState(false),[readState,setReadState]=useState<ReadState>("ready");
   const [pending,setPending]=useState<CompanyPolicyCommand|null>(null),[conflict,setConflict]=useState(false),[reviewed,setReviewed]=useState(false);
   const current=selectedScope(history,scope||null),company=selectedScope(history,null);
@@ -66,14 +67,14 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
   const previousValid=history.revisions.filter((item):item is ValidRevision=>item.locationId===(scope||null)&&item.state==="valid"&&item.revision<current.expectedRevision).sort((a,b)=>b.revision-a.revision)[0];
   const scopeOptions=[...locations,...history.scopes.filter(item=>item.locationId&&!locations.some(location=>location.id===item.locationId)).map(item=>({id:item.locationId!,name:`Historical location · ${item.locationId}`,active:false}))];
   function announce(message:string){setNotice(message);requestAnimationFrame(()=>noticeRef.current?.focus({preventScroll:false}));}
-  function adoptCurrent(next:CompanyPolicyHistory){setDraft(currentDraft(next,scope||null));setDraftEpoch(value=>value+1);setModes({});setReviewed(false);setConflict(false);}
-  function denyAccess(){setPending(null);setDraft(null);setHistory({revisions:[],scopes:[]});setReadState("unauthorized");announce("Your access ended. Sign in again to view or edit company policies.");}
+  function adoptCurrent(next:CompanyPolicyHistory){setDraft(currentDraft(next,scope||null));setDraftEpoch(value=>value+1);setModes({});setRawFields({});setReviewed(false);setConflict(false);}
+  function denyAccess(){setPending(null);setDraft(null);setRawFields({});setHistory({revisions:[],scopes:[]});setReadState("unauthorized");announce("Your access ended. Sign in again to view or edit company policies.");}
   useEffect(()=>{
     if(!pending)return;
     const protect=(event:BeforeUnloadEvent)=>{event.preventDefault();event.returnValue="";};
     window.addEventListener("beforeunload",protect);return()=>window.removeEventListener("beforeunload",protect);
   },[pending]);
-  async function refresh({receipt,replaceDraft=false,retained=pending}:{receipt?:number;replaceDraft?:boolean;retained?:CompanyPolicyCommand|null}={}){
+  async function refresh({receipt,replaceDraft=false,retained=pending,conflicted=conflict}:{receipt?:number;replaceDraft?:boolean;retained?:CompanyPolicyCommand|null;conflicted?:boolean}={}){
     if(readGate.current)return;
     readGate.current=true;setReadState("loading");
     try{
@@ -87,9 +88,9 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
       const reconciled=retained?next.revisions.find(item=>item.operationId===retained.operationId):undefined;
       if(reconciled){setPending(null);adoptCurrent(next);announce(`Retained request saved as revision ${reconciled.revision}. Current selected revision ${latest.expectedRevision}.`);}
       else if(receipt!==undefined){adoptCurrent(next);announce(`Revision ${receipt} saved. Current selected revision ${latest.expectedRevision}.`);}
-      else if(replaceDraft){adoptCurrent(next);announce(`Current revision ${latest.expectedRevision} loaded. Review before saving.`);}
       else if(retained){announce(`Current revision ${latest.expectedRevision} loaded. The original request is still unconfirmed; retry that retained request safely.`);}
-      else if(conflict){announce(`Your draft was not saved. Current revision ${latest.expectedRevision} loaded for comparison. Use the current revision before making another change.`);}
+      else if(conflicted||(draft&&latest.expectedRevision!==draft.expectedRevision)){setConflict(true);announce(`Your draft was not saved. Current revision ${latest.expectedRevision} loaded for comparison. Use the current revision before making another change.`);}
+      else if(replaceDraft||!draft){adoptCurrent(next);announce(`Current revision ${latest.expectedRevision} loaded. Review before saving.`);}
       else{announce(`Policy history refreshed. Current selected revision ${latest.expectedRevision}.`);}
     }catch{setReadState("unavailable");announce(receipt!==undefined?`Revision ${receipt} was saved, but current policies could not be read. Retry the read before editing.`:"Policies could not be read. Your draft is retained; editing is paused. Retry the read.");}
     finally{readGate.current=false;}
@@ -102,7 +103,7 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
       const response=await fetch("/api/company-policies",{method:"POST",cache:"no-store",credentials:"same-origin",headers:{"content-type":"application/json","x-nevora-company-policies":"1"},body:JSON.stringify(command)});
       if(response.status===401||response.status===403){denyAccess();return;}
       if(response.status===400){setPending(null);announce("Check the thresholds and effective dates. Your draft is retained; correct it before saving again.");return;}
-      if(response.status===409){setPending(null);setConflict(true);announce("Policies changed. Your draft is retained for comparison; refresh before editing again.");await refresh();return;}
+      if(response.status===409){setPending(null);setConflict(true);announce("Policies changed. Your draft is retained for comparison; refresh before editing again.");await refresh({retained:null,conflicted:true});return;}
       if(!response.ok)throw Error();
       const body=await response.json() as {state?:string;result?:{revision?:number}};
       if(body.state!=="saved"||!Number.isSafeInteger(body.result?.revision)||body.result!.revision!<1)throw Error();
@@ -110,9 +111,9 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
     }catch{announce("We could not confirm whether your changes were saved. Values and scope are locked. Retry the retained save safely, or refresh policy history to check the original request.");}
     finally{submitGate.current=false;setBusy(false);}
   }
-  function startRecovery(){if(!previousValid||!writable||pending||busy||readState!=="ready")return;setDraft({settings:previousValid.settings,expectedRevision:current.expectedRevision,recoveryFrom:previousValid});setDraftEpoch(value=>value+1);setModes({});setReviewed(false);setConflict(false);announce(`Replacement draft from revision ${previousValid.revision}. The current revision ${current.expectedRevision} remains unavailable until a valid correction is saved.`);}
+  function startRecovery(){if(!previousValid||!writable||pending||busy||readState!=="ready")return;setDraft({settings:previousValid.settings,expectedRevision:current.expectedRevision,recoveryFrom:previousValid});setDraftEpoch(value=>value+1);setModes({});setRawFields({});setReviewed(false);setConflict(false);announce(`Replacement draft from revision ${previousValid.revision}. The current revision ${current.expectedRevision} remains unavailable until a valid correction is saved.`);}
   return <div className="company-policy-editor">
-    <div className="policy-scope-panel"><label>Policy scope <select value={scope} disabled={busy||pending!==null||conflict||readState!=="ready"} onChange={event=>{const next=event.target.value;setScope(next);setDraft(currentDraft(history,next||null));setDraftEpoch(value=>value+1);setModes({});setReviewed(false);setNotice("");}}><option value="">Company default</option>{scopeOptions.map(item=><option key={item.id} value={item.id}>{item.name}{item.active?"":" · inactive"}</option>)}</select></label>
+    <div className="policy-scope-panel"><label>Policy scope <select value={scope} disabled={busy||pending!==null||conflict||readState!=="ready"} onChange={event=>{const next=event.target.value;setScope(next);setDraft(currentDraft(history,next||null));setDraftEpoch(value=>value+1);setModes({});setRawFields({});setReviewed(false);setNotice("");}}><option value="">Company default</option>{scopeOptions.map(item=><option key={item.id} value={item.id}>{item.name}{item.active?"":" · inactive"}</option>)}</select></label>
       <p>{scope?"Location rules use company defaults unless you set an override. Choose Disabled to turn a rule off at this location.":"Set company defaults for attendance and recorded-time review. Disabled rules do not produce comparisons."}</p>
       <small>{readState!=="ready"?"Current policies not verified":current.state==="not_configured"?"No saved revision":current.state==="unavailable"?`Unavailable revision ${current.expectedRevision}`:`Saved revision ${current.expectedRevision}`} · Company time: {timeZone.split("/").at(-1)?.replaceAll("_"," ")}</small>
     </div>
@@ -159,14 +160,16 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                   type="number"
                   min="0"
                   max="525600"
-                  defaultValue={rule ? String(rule.thresholdMinutes) : ""}
+                  value={rawFields[`${key}.threshold`] ?? (rule ? String(rule.thresholdMinutes) : "")}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                 />
               </label>
               <label>
                 Comparison{" "}
                 <select
                   name={`${key}.comparison`}
-                  defaultValue={String(rule?.comparison ?? "GT")}
+                  value={rawFields[`${key}.comparison`] ?? (String(rule?.comparison ?? "GT"))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                 >
                   <option value="GT">Greater than</option>
                   <option value="GTE">Greater than or equal</option>
@@ -177,7 +180,8 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                 <input
                   name={`${key}.effective`}
                   type="datetime-local"
-                  defaultValue={formatBusinessDateTimeInput(rule?.effectiveFrom ? String(rule.effectiveFrom) : undefined,timeZone)}
+                  value={rawFields[`${key}.effective`] ?? (formatBusinessDateTimeInput(rule?.effectiveFrom ? String(rule.effectiveFrom) : undefined,timeZone))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                 />
               </label>
               {key === "longEntry" && (
@@ -186,7 +190,8 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     Time basis{" "}
                     <select
                       name={`${key}.basis`}
-                      defaultValue={String(rule?.basis ?? "RECORDED_ELAPSED")}
+                      value={rawFields[`${key}.basis`] ?? (String(rule?.basis ?? "RECORDED_ELAPSED"))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >
                       <option value="RECORDED_ELAPSED">Recorded elapsed</option>
                       <option value="EFFECTIVE_ELAPSED">
@@ -198,7 +203,8 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     Entries{" "}
                     <select
                       name={`${key}.appliesTo`}
-                      defaultValue={String(rule?.appliesTo ?? "BOTH")}
+                      value={rawFields[`${key}.appliesTo`] ?? (String(rule?.appliesTo ?? "BOTH"))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >
                       <option value="OPEN">Currently open</option>
                       <option value="CLOSED">Completed</option>
@@ -212,7 +218,8 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                   Observation cutoff{" "}
                   <select
                     name={`${key}.cutoff`}
-                    defaultValue={String(rule?.cutoff ?? "AFTER_SCHEDULE_END")}
+                    value={rawFields[`${key}.cutoff`] ?? (String(rule?.cutoff ?? "AFTER_SCHEDULE_END"))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                   >
                     <option value="AFTER_SCHEDULE_START">
                       After published start
@@ -229,9 +236,10 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     Time basis{" "}
                     <select
                       name={`${key}.basis`}
-                      defaultValue={String(
+                      value={rawFields[`${key}.basis`] ?? (String(
                         rule?.basis ?? "EFFECTIVE_ELAPSED_INCLUDING_BREAKS",
-                      )}
+                      ))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >
                       <option value="RECORDED_ELAPSED_INCLUDING_BREAKS">
                         Recorded elapsed including breaks
@@ -245,7 +253,8 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     Window{" "}
                     <select
                       name={`${key}.window`}
-                      defaultValue={String(rule?.window ?? "BUSINESS_WEEK")}
+                      value={rawFields[`${key}.window`] ?? (String(rule?.window ?? "BUSINESS_WEEK"))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >
                       <option value="BUSINESS_DAY">Business day</option>
                       <option value="BUSINESS_WEEK">Business week</option>
@@ -255,7 +264,8 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     Aggregation{" "}
                     <select
                       name={`${key}.aggregation`}
-                      defaultValue={String(rule?.aggregation ?? "COMPANY")}
+                      value={rawFields[`${key}.aggregation`] ?? (String(rule?.aggregation ?? "COMPANY"))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >
                       <option value="COMPANY">Across the company</option>
                       <option value="LOCATION">At this location</option>
@@ -266,14 +276,16 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     <input
                       type="time"
                       name={`${key}.boundary`}
-                      defaultValue={String(rule?.dayBoundaryTime ?? "00:00")}
+                      value={rawFields[`${key}.boundary`] ?? (String(rule?.dayBoundaryTime ?? "00:00"))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     />
                   </label>
                   <label>
                     Week starts on{" "}
                     <select
                       name={`${key}.weekStart`}
-                      defaultValue={String(rule?.weekStartsOn ?? 1)}
+                      value={rawFields[`${key}.weekStart`] ?? (String(rule?.weekStartsOn ?? 1))}
+                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >{["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map((day,i)=><option key={day} value={i}>{day}</option>)}</select>
                   </label>
                 </>

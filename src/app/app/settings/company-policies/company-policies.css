@@ -16,7 +16,7 @@
 .policy-actions { grid-column:1/-1; display:flex; align-items:center; flex-wrap:wrap; gap:12px; }
 .policy-notice { grid-column:1/-1; margin:0; line-height:1.6; color:var(--design-text-secondary); }
 .policy-notice:empty { display:none; }
-.policy-notice:focus-visible { outline:2px solid var(--portal-focus-color,var(--design-primary)); outline-offset:6px; border-radius:8px; }
+.policy-notice:focus-visible { outline:2px solid var(--color-brand-accent); outline-offset:6px; border-radius:8px; }
 .policy-state,.policy-replacement-review,.policy-private-review { min-width:0; padding:24px; border:1px solid var(--design-border); border-radius:var(--design-radius-card); background:var(--design-surface-elevated); }
 .policy-state h2,.policy-replacement-review h2 { margin:0; font-size:var(--portal-section-title-size,20px); line-height:1.3; letter-spacing:-.02em; }
 .policy-state p,.policy-replacement-review p,.policy-private-review p { color:var(--design-text-secondary); line-height:1.6; max-width:75ch; }
@@ -33,7 +33,7 @@
 .policy-current-comparison { margin-block:20px; }
 .policy-current-comparison ul { padding-inline-start:20px; line-height:1.7; }
 .policy-form .policy-replacement-confirm { grid-column:1/-1; display:flex; align-items:flex-start; gap:12px; padding:20px; border:1px solid var(--design-border); border-radius:var(--design-radius-card); line-height:1.6; }
-.policy-form .policy-replacement-confirm input { flex-shrink:0; width:22px; height:22px; padding:0; margin-block-start:2px; accent-color:var(--portal-action-background,var(--design-primary)); }
+.policy-form .policy-replacement-confirm input { flex-shrink:0; width:22px; height:22px; padding:0; margin-block-start:2px; accent-color:var(--color-brand-accent); }
 .policy-history li { margin-block:16px; overflow-wrap:anywhere; }
 .policy-history-unavailable { color:var(--color-state-warning); }
 .policy-history ul { margin:16px 0 0; padding-inline-start:20px; color:var(--design-text-secondary); font-size:14px; line-height:1.7; }

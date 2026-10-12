@@ -10,15 +10,11 @@ export const dynamic = "force-dynamic";
 export default async function CompanyPoliciesPage() {
   await requireRoles(["OWNER"]);
   const proof = await requireSessionMutationProof();
-  let content;
-  try {
-    const [history,workspace,locations] = await Promise.all([
-      readCompanyPolicyHistory(proof),getWorkspace(),listLocations({includeInactive:true}),
-    ]);
-    content=<CompanyPolicyEditor history={history} timeZone={workspace.timeZone} locations={locations}/>;
-  } catch {
-    content=<section className="policy-state" role="status"><h2>Policies unavailable</h2><p>Current policies could not be read. Editing is paused; try again to verify your current Owner access and policy history.</p><a className="button secondary" href="/app/settings/company-policies">Retry read</a></section>;
-  }
+  const data=await Promise.all([
+    readCompanyPolicyHistory(proof),getWorkspace(),listLocations({includeInactive:true}),
+  ]).catch(()=>null);
+  const content=data?<CompanyPolicyEditor history={data[0]} timeZone={data[1].timeZone} locations={data[2]}/>:
+    <section className="policy-state" role="status"><h2>Policies unavailable</h2><p>Current policies could not be read. Editing is paused; try again to verify your current Owner access and policy history.</p><a className="button secondary" href="/app/settings/company-policies">Retry read</a></section>;
   return (
     <div className="company-policies-page">
       <header className="page-header"><div><h1>Company policies</h1>
