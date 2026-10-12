@@ -9,7 +9,7 @@ export function noticeReadiness(capabilities: PayrollCapabilities) {
 export function noticeOutcome(outcome: PayrollJob['outcome']) {
   switch (outcome) {
     case 'QUEUED': return 'Notice queued. Sending and receipt are not confirmed.';
-    case 'QUEUED_DELIVERY_DISABLED': return 'Notice queued · delivery disabled. This queued request will not send from this environment.';
+    case 'QUEUED_DELIVERY_DISABLED': return 'Notice queued while delivery was disabled. Sending and receipt are not confirmed.';
     case 'NO_CURRENT_RECIPIENTS': return 'No currently eligible recipients. No notice was queued.';
     case 'NOT_SENT_STUB': return 'Legacy preparation only. No notice was sent.';
     default: return 'No queue result recorded yet. Sending and receipt are not confirmed.';

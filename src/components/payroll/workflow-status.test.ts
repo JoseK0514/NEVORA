@@ -17,10 +17,17 @@ describe('payroll operational status', () => {
   });
   it('distinguishes durable queue results, disabled transport and ineligible recipients without claiming receipt', () => {
     expect(noticeOutcome('QUEUED')).toContain('not confirmed');
-    expect(noticeOutcome('QUEUED_DELIVERY_DISABLED')).toContain('will not send');
+    expect(noticeOutcome('QUEUED_DELIVERY_DISABLED')).toContain('delivery was disabled');
     expect(noticeOutcome('NO_CURRENT_RECIPIENTS')).toContain('No notice was queued');
     expect(noticeOutcome('NOT_SENT_STUB')).toContain('No notice was sent');
     expect(noticeOutcome(null)).toContain('No queue result');
+  });
+  it('keeps disabled-at-queue history truthful when current transport becomes enabled', () => {
+    const display = [noticeReadiness({ ...capabilities, noticeDelivery: 'ENABLED' }), noticeOutcome('QUEUED_DELIVERY_DISABLED')].join(' ');
+    expect(display).toContain('transport is enabled');
+    expect(display).toContain('delivery was disabled');
+    expect(display).toContain('Sending and receipt are not confirmed');
+    expect(display).not.toContain('will not send');
   });
   it('projects a legacy lead array to its one effective window, preserving payday zero', () => {
     expect(reminderWindow([1, 7, 3])).toBe(7);

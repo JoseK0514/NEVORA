@@ -377,7 +377,7 @@ try {
       await schedulePayroll(app.database.executor); await schedulePayroll(app.database.executor);
       for (let attempt = 0; attempt < 3; attempt++) await workerOnce(app.database.executor);
       await page.getByRole('button', { name: 'Refresh', exact: true }).click();
-      await page.getByText('Notice queued · delivery disabled. This queued request will not send from this environment.', { exact: true }).waitFor();
+      await page.getByText('Notice queued while delivery was disabled. Sending and receipt are not confirmed.', { exact: true }).waitFor();
       const noticeResponse = await context.request.get(app.url + '/api/payroll/runs', { headers: apiHeaders() }); const noticed = await noticeResponse.json();
       assert.equal(noticed.capabilities.noticeDelivery, 'DISABLED'); assert.equal(noticed.jobs.filter(job => job.kind === 'REMINDER' && job.outcome === 'QUEUED_DELIVERY_DISABLED').length, 1);
       pass('Actual repeated scheduler and private worker produce one durable notice queue result with delivery disabled');
