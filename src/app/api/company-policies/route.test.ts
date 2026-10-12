@@ -6,7 +6,7 @@ vi.mock("@/lib/auth/session", () => ({ getSession: mocks.session, requireSession
 // Only DB transport and server session are replaced. Route, parsers, workspace
 // validation, current-role guard construction and save service remain real.
 vi.mock("@/lib/data/notification-transactions", () => ({ neonNotificationExecutor: () => ({ query: mocks.query, transaction: mocks.transaction }) }));
-import { POST } from "./route";
+import { GET, POST } from "./route";
 const owner = { id: "owner", firstName: "Fictional", lastName: "Owner", role: "OWNER", primaryLocationId: "loc-1" };
 const rule = { thresholdMinutes: 7, comparison: "GT", effectiveFrom: "2030-10-07T00:00:00Z" };
 const command = { operationId: "11111111-1111-4111-8111-111111111111", expectedRevision: 0, locationId: null, settings: { version: 1, attendance: { lateness: rule } } };
@@ -58,4 +58,44 @@ it("requires a session and returns private saved state for valid scalar Owner in
   expect(response.headers.get("cache-control")).toBe("no-store, private");
   const statements: SqlStatement[] = mocks.transaction.mock.calls[0][0];
   expect(JSON.parse(statements.find((s) => s.text.includes("nevora_set_company_policy"))!.values[5] as string)).toEqual(command.settings);
+});
+
+const readRequest = (headers: Record<string, string> = { "x-nevora-company-policies": "1" }, suffix = "") => new Request("https://nevora.invalid/api/company-policies" + suffix, { headers });
+const savedRow = { operationId: command.operationId, revision: 2, locationId: null, changedKeys: ["attendance.longEntry"], changedAt: rule.effectiveFrom, settings: { version: 1, attendance: { longEntry: { ...rule, basis: ["RECORDED_ELAPSED"], appliesTo: "BOTH" } } } };
+it("GET exposes private typed Owner recovery history without trusting malformed settings", async () => {
+  mocks.transaction.mockImplementation(async (statements: SqlStatement[]) => statements.map((s) => s.text.includes("FROM nevora_company_policy_revisions") ? [savedRow] : []));
+  const response = await GET(readRequest());
+  expect(response.status).toBe(200);
+  expect(response.headers.get("cache-control")).toBe("no-store, private");
+  expect(response.headers.get("vary")).toBe("Cookie");
+  const body = await response.json();
+  expect(body).toMatchObject({ state: "ready", history: { revisions: [{ state: "unavailable", reason: "invalid_settings", revision: 2 }], scopes: [{ locationId: null, expectedRevision: 2, state: "unavailable" }] } });
+  expect(body.history.revisions[0]).not.toHaveProperty("settings");
+  expect(JSON.stringify(body)).not.toContain("RECORDED_ELAPSED");
+});
+it.each(["MANAGER", "EMPLOYEE", "LEAD"])("GET denies %s before private policy history reads", async (role) => {
+  mocks.session.mockResolvedValue({ ...owner, role });
+  const response = await GET(readRequest());
+  expect(response.status).toBe(403);
+  expect(response.headers.get("cache-control")).toBe("no-store, private");
+  expect(await response.json()).toEqual({ state: "unavailable" });
+  expect(mocks.transaction).not.toHaveBeenCalled();
+});
+it("GET denies absent/currently invalid Owner authority and hides transport diagnostics", async () => {
+  mocks.session.mockResolvedValueOnce(null);
+  const absent = await GET(readRequest());
+  expect(absent.status).toBe(401);
+  expect(await absent.json()).toEqual({ state: "unavailable" });
+  mocks.transaction.mockRejectedValueOnce(new Error("private SQL role/session diagnostic"));
+  const failed = await GET(readRequest());
+  expect(failed.status).toBe(503);
+  expect(failed.headers.get("cache-control")).toBe("no-store, private");
+  expect(await failed.json()).toEqual({ state: "unavailable" });
+});
+it("GET rejects missing/suspicious boundary headers and query parameters before reading history", async () => {
+  expect((await GET(readRequest({}))).status).toBe(403);
+  expect((await GET(readRequest({ "x-nevora-company-policies": "1", "sec-fetch-site": "cross-site" }))).status).toBe(403);
+  expect((await GET(readRequest({ "x-nevora-company-policies": "1" }, "?scope=private"))).status).toBe(400);
+  expect(mocks.query).not.toHaveBeenCalled();
+  expect(mocks.transaction).not.toHaveBeenCalled();
 });

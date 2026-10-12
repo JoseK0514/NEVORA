@@ -13,6 +13,11 @@ import {
   effectiveCompanyPolicies,
   type CompanyPolicySettings,
 } from "./model";
+import {
+  projectCompanyPolicyHistory,
+  type CompanyPolicyHistory,
+  type StoredPolicyRevision,
+} from "./history";
 export type PolicyRevision = {
   operationId: string;
   revision: number;
@@ -21,10 +26,10 @@ export type PolicyRevision = {
   changedKeys: string[];
   settings: CompanyPolicySettings;
 };
-export async function readCompanyPolicies(
+async function readPolicyRows(
   proof: SessionMutationProof,
-  executor: SqlExecutor = neonNotificationExecutor(),
-): Promise<PolicyRevision[]> {
+  executor: SqlExecutor,
+): Promise<StoredPolicyRevision[]> {
   assertManagementProof(proof, proof.employee.id);
   const workspace = await getWorkspace(executor);
   const guards = [
@@ -43,10 +48,26 @@ export async function readCompanyPolicies(
     },
     ...managementSessionStatements(proof, proof.employee.id, ["OWNER"]),
   ]);
-  return (result[guards.length] as PolicyRevision[]).map((row) => ({
+  return result[guards.length] as StoredPolicyRevision[];
+}
+/** Strict consumers retain rejection of any malformed saved settings. */
+export async function readCompanyPolicies(
+  proof: SessionMutationProof,
+  executor: SqlExecutor = neonNotificationExecutor(),
+): Promise<PolicyRevision[]> {
+  return (await readPolicyRows(proof, executor)).map((row) => ({
     ...row,
+    changedKeys: row.changedKeys as string[],
     settings: parseCompanyPolicySettings(row.settings),
   }));
+}
+/** Explicit recovery display for a currently authorized Owner. Invalid history
+ * is unavailable evidence; only validated revisions carry trusted settings. */
+export async function readCompanyPolicyHistory(
+  proof: SessionMutationProof,
+  executor: SqlExecutor = neonNotificationExecutor(),
+): Promise<CompanyPolicyHistory> {
+  return projectCompanyPolicyHistory(await readPolicyRows(proof, executor));
 }
 export async function saveCompanyPolicy(
   proof: SessionMutationProof,
