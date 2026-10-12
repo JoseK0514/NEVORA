@@ -227,10 +227,10 @@ try {
       const staffPage = await staff.newPage();
       await staffPage.goto(`${app.url}/activate`);
       await staffPage.getByLabel('Employee ID', { exact: true }).fill(employeeId);
-      await staffPage.getByLabel('Phone Number', { exact: true }).fill('2025550142');
-      await staffPage.getByLabel('Create Password', { exact: true }).fill(staffPassword);
-      await staffPage.getByLabel('Confirm Password', { exact: true }).fill(staffPassword);
-      await staffPage.getByRole('button', { name: 'Activate Account', exact: true }).click();
+      await staffPage.getByLabel('Phone number', { exact: true }).fill('2025550142');
+      await staffPage.getByLabel('Create password', { exact: true }).fill(staffPassword);
+      await staffPage.getByLabel('Confirm password', { exact: true }).fill(staffPassword);
+      await staffPage.getByRole('button', { name: 'Activate account', exact: true }).click();
       await staffPage.waitForURL('**/login?activated=1');
       const staffHash = (await client.query('SELECT password_hash FROM employee_credentials WHERE employee_id=$1', [employeeId])).rows[0].password_hash;
       assert(await verifyPassword(staffPassword, staffHash)); assert.notEqual(staffHash, staffPassword);
