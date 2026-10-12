@@ -1,3 +1,4 @@
+import { validateNativeMinimumWage } from "./minimum-wage";
 import { Temporal } from "@js-temporal/polyfill";
 import { stableExportJson } from "../../payroll-export/json";
 import type { NativePayrollInput, NativeRecordedEntry, NativeWageProfile } from "./contracts";
@@ -40,9 +41,9 @@ export function classifyRecordedTime(input: NativePayrollInput) {
             fail("OVERTIME_POLICY_CONFLICT", wage.id);
         if (wage.workweekStartTime !== "00:00" || wage.overtimeBasis !== "WEIGHTED_WEEKLY")
             fail("UNSUPPORTED_WORKWEEK_BASIS", wage.id);
-        if (wage.wageCentRounding !== "HALF_UP")
+        if (wage.wageCentRounding !== "HALF_UP" && wage.wageCentRounding !== "UNVERIFIED")
             fail("WAGE_CENT_RULE_UNVERIFIED", wage.id);
-        hourlyRate(wage.hourlyRateMinor);
+        validateNativeMinimumWage(wage);
     }
     const entries = new Map<string, NativeRecordedEntry>();
     for (const card of timecards) {

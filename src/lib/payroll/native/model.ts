@@ -1,3 +1,4 @@
+import { validateNativeMinimumWage } from "./minimum-wage";
 import { Temporal } from "@js-temporal/polyfill";
 import type { NativeConfiguration, NativeProfileCommand, NativeWageProfile, NativeTaxProfile, NativeYtd, NativeAuthorizedDeduction } from "./contracts";
 import { PayrollError, uuid } from "../model";
@@ -5,33 +6,45 @@ import { hourlyRate, minor } from "./money";
 import { validateEmployerCoverage } from "./obligations";
 import { prIncomeWithholding } from "./rules/pr-2026";
 const invalid = (): never => { throw new PayrollError("INVALID_NATIVE_PROFILE", 400); };
-const check = (v: unknown) => { if (!v)
-    invalid(); };
+const check = (v: unknown) => {
+    if (!v)
+        invalid();
+};
 function object(v: unknown, keys: string[]): Record<string, unknown> { check(v !== null && typeof v === "object" && !Array.isArray(v)); const o = v as Record<string, unknown>; check(Object.keys(o).every(k => keys.includes(k)) && keys.every(k => Object.hasOwn(o, k))); return o; }
 function text(v: unknown, max = 300): v is string { return typeof v === "string" && v.length > 0 && v.length <= max && v.trim() === v && !/[\u0000-\u001f\u007f]/.test(v); }
 function revision(v: unknown, zero = false) { check(typeof v === "number" && Number.isSafeInteger(v) && v >= (zero ? 0 : 1) && v <= 2147483646); }
-function date(v: unknown): v is string { try {
-    return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) && Temporal.PlainDate.from(v, { overflow: "reject" }).toString() === v;
+function date(v: unknown): v is string {
+    try {
+        return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) && Temporal.PlainDate.from(v, { overflow: "reject" }).toString() === v;
+    }
+    catch {
+        return false;
+    }
 }
-catch {
-    return false;
-} }
-function instant(v: unknown): v is string { try {
-    return typeof v === "string" && v.length <= 40 && /T/.test(v) && !!Temporal.Instant.from(v);
+function instant(v: unknown): v is string {
+    try {
+        return typeof v === "string" && v.length <= 40 && /T/.test(v) && !!Temporal.Instant.from(v);
+    }
+    catch {
+        return false;
+    }
 }
-catch {
-    return false;
-} }
 const code = (v: unknown): v is string => typeof v === "string" && /^[A-Z][A-Z0-9_]{0,79}$/.test(v);
 function strings(v: unknown, empty = false): string[] { check(Array.isArray(v) && v.length <= 300 && (empty || v.length > 0) && v.every(x => text(x, 200) && x !== "*") && new Set(v).size === v.length); return v as string[]; }
-function moneyMap(v: unknown) { check(v !== null && typeof v === "object" && !Array.isArray(v)); const o = v as Record<string, unknown>; check(Object.keys(o).length <= 100 && Object.keys(o).every(code)); for (const value of Object.values(o))
-    minor(value); }
+function moneyMap(v: unknown) {
+    check(v !== null && typeof v === "object" && !Array.isArray(v));
+    const o = v as Record<string, unknown>;
+    check(Object.keys(o).length <= 100 && Object.keys(o).every(code));
+    for (const value of Object.values(o))
+        minor(value);
+}
 export function parseWage(v: unknown): NativeWageProfile {
-    const w = object(v, ["id", "revision", "effectiveFrom", "effectiveTo", "locationIds", "hourlyRateMinor", "compensation", "employment", "overtime", "dailyBasis", "workweekAnchorDate", "workweekStartTime", "overtimeBasis", "wageCentRounding", "breakRules", "standardContextAttested", "evidenceReference"]);
+    const w = object(v, ["id", "revision", "effectiveFrom", "effectiveTo", "locationIds", "hourlyRateMinor", "compensation", "employment", "minimumWageCoverage", "overtime", "dailyBasis", "workweekAnchorDate", "workweekStartTime", "overtimeBasis", "wageCentRounding", "breakRules", "standardContextAttested", "evidenceReference"]);
     check(text(w.id, 200) && text(w.evidenceReference));
     revision(w.revision);
     strings(w.locationIds);
     hourlyRate(w.hourlyRateMinor);
+    validateNativeMinimumWage(w as NativeWageProfile);
     check(instant(w.effectiveFrom) && (w.effectiveTo === null || (instant(w.effectiveTo) && Temporal.Instant.compare(w.effectiveTo, w.effectiveFrom) > 0)));
     check(w.compensation === "HOURLY" && w.employment === "PR_PRIVATE_NONEXEMPT" && w.dailyBasis === "CALENDAR_DAY" && (w.overtime === "TIME_AND_HALF" || w.overtime === "DOUBLE_PRESERVED") && date(w.workweekAnchorDate) && w.workweekStartTime === "00:00" && w.overtimeBasis === "WEIGHTED_WEEKLY" && (w.wageCentRounding === "HALF_UP" || w.wageCentRounding === "UNVERIFIED") && w.standardContextAttested === true);
     check(Array.isArray(w.breakRules) && w.breakRules.length <= 100);
@@ -45,7 +58,7 @@ export function parseWage(v: unknown): NativeWageProfile {
 }
 export function parseTax(v: unknown): NativeTaxProfile {
     const t = object(v, ["id", "revision", "effectiveFrom", "effectiveTo", "coverage", "certificate", "certificateReference", "ficaCoverage", "sinotCoverage", "sinotEmployeeBasisPoints", "prCentRounding", "ruleEvidenceReference", "employerContributions", "employerCoverageAttested"]);
-    check(text(t.id, 200) && text(t.certificateReference) && text(t.ruleEvidenceReference));
+    check(text(t.id, 200) && text(t.certificateReference) && (t.prCentRounding === "UNVERIFIED" ? t.ruleEvidenceReference === null || text(t.ruleEvidenceReference) : text(t.ruleEvidenceReference)));
     revision(t.revision);
     check(date(t.effectiveFrom) && (t.effectiveTo === null || (date(t.effectiveTo) && t.effectiveTo > t.effectiveFrom)));
     check(t.coverage === "PR_REGULAR_TAXABLE_RESIDENT" && t.ficaCoverage === "STANDARD" && t.sinotCoverage === "STANDARD" && typeof t.sinotEmployeeBasisPoints === "number" && Number.isSafeInteger(t.sinotEmployeeBasisPoints) && t.sinotEmployeeBasisPoints >= 0 && t.sinotEmployeeBasisPoints <= 30 && ["HALF_UP", "TRUNCATE", "UNVERIFIED"].some(x => x === t.prCentRounding));
@@ -81,6 +94,7 @@ export function parseYtd(v: unknown): NativeYtd {
     strings(y.locationIds, true);
     check(y.grossMinor === "0" || (y.locationIds as string[]).length > 0);
     moneyMap(y.deductions);
+    check(minor(y.grossMinor) - Object.values(y.deductions as Record<string, string>).reduce((sum, v) => sum + minor(v), BigInt(0)) === minor(y.netMinor));
     moneyMap(y.employerContributions);
     moneyMap(y.employerWagesMinor);
     return structuredClone(v) as NativeYtd;

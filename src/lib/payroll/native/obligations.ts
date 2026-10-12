@@ -1,5 +1,5 @@
 import type { NativeAuthorizedDeduction, NativePayrollInput, NativeTaxProfile } from "./contracts";
-import { halfUp, minor, ratio } from "./money";
+import { exactMinor, halfUp, minor, ratio, type NativeExactnessOperation } from "./money";
 import { fail } from "./time";
 const STANDARD_EMPLOYER_CODES = ["FUTA", "PR_UI", "CFSE"];
 const validText = (value: unknown) => typeof value === "string" && value.trim() === value && value.length > 0 && value.length <= 300 && !/[\u0000-\u001f\u007f]/.test(value);
@@ -32,17 +32,17 @@ export function validateEmployerCoverage(tax: NativeTaxProfile) {
     if (STANDARD_EMPLOYER_CODES.some(code => !codes.has(code)))
         fail("EMPLOYER_COVERAGE_REQUIRED");
 }
-export function employerAmounts(tax: NativeTaxProfile, gross: bigint) {
+export function employerAmounts(tax: NativeTaxProfile, gross: bigint, exactnessOperations?: NativeExactnessOperation[]) {
     return tax.employerContributions.filter(item => item.applicability === "APPLICABLE").map(item => {
         const left = item.capMinor === null ? gross : minor(item.capMinor) - minor(item.wagesBeforeMinor);
         const taxable = left < BigInt(0) ? BigInt(0) : left > gross ? gross : left;
-        return { code: item.code, label: item.label, amountMinor: halfUp(ratio(taxable * BigInt(item.basisPoints!), BigInt(10000))).toString() };
+        return { code: item.code, label: item.label, amountMinor: (exactnessOperations ? exactMinor(ratio(taxable * BigInt(item.basisPoints!), BigInt(10000)), exactnessOperations, "EMPLOYER_ASSESSMENT", item.code) : halfUp(ratio(taxable * BigInt(item.basisPoints!), BigInt(10000)))).toString() };
     });
 }
 export function authorizedAmounts(input: NativePayrollInput, gross: bigint, statutoryCodes: string[], employer: {
     code: string;
     amountMinor: string;
-}[]) {
+}[], exactnessOperations?: NativeExactnessOperation[]) {
     const codes = new Set(statutoryCodes), ids = new Set<string>();
     const output: {
         code: string;
@@ -62,7 +62,7 @@ export function authorizedAmounts(input: NativePayrollInput, gross: bigint, stat
         if (d.method === "FIXED" && d.basisPoints === null)
             amount = minor(d.amountMinor);
         else if (d.method === "PERCENTAGE" && d.amountMinor === null && typeof d.basisPoints === "number" && Number.isSafeInteger(d.basisPoints) && d.basisPoints >= 0 && d.basisPoints <= 10000)
-            amount = halfUp(ratio(gross * BigInt(d.basisPoints), BigInt(10000)));
+            amount = exactnessOperations ? exactMinor(ratio(gross * BigInt(d.basisPoints), BigInt(10000)), exactnessOperations, "AUTHORIZED_DEDUCTION", d.id) : halfUp(ratio(gross * BigInt(d.basisPoints), BigInt(10000)));
         else
             fail("UNSUPPORTED_DEDUCTION", d.id);
         const before = minor(d.deductedBeforeMinor);

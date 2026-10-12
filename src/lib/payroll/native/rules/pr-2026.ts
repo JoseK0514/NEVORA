@@ -1,3 +1,4 @@
+import { exactMinor, ratio, type NativeExactnessOperation } from "../money";
 import { Temporal } from "@js-temporal/polyfill";
 export type NativeFrequency = "WEEKLY" | "BIWEEKLY" | "SEMIMONTHLY" | "MONTHLY";
 export type PrCertificate = {
@@ -59,11 +60,14 @@ const brackets: Record<NativeFrequency, readonly (readonly [
     MONTHLY: [[75000, 0, 0], [208330, 700, 5250], [345830, 1400, 19830], [512500, 2500, 57870], [null, 3300, 98870]],
 };
 export function prIncomeWithholding(input: unknown) {
-    if (!record(input) || typeof input.frequency !== "string" || !Object.hasOwn(exemptions, input.frequency) || !record(input.certificate) || (input.rounding !== "HALF_UP" && input.rounding !== "TRUNCATE"))
+    if (!record(input) || typeof input.frequency !== "string" || !Object.hasOwn(exemptions, input.frequency) || !record(input.certificate) || (input.rounding !== "HALF_UP" && input.rounding !== "TRUNCATE" && input.rounding !== "UNVERIFIED"))
         return invalid();
     const c = input.certificate, paidGross = minor(input.grossMinor);
     if (c.wageDollarRounding !== "NONE" && c.wageDollarRounding !== "NEAREST_DOLLAR")
         return invalid();
+    const exactnessOperations: NativeExactnessOperation[] = [];
+    if (input.rounding === "UNVERIFIED" && c.wageDollarRounding === "NEAREST_DOLLAR" && paidGross % BigInt(100) !== BigInt(0))
+        throw Error("WAGE_DOLLAR_CENT_RULE_UNVERIFIED");
     const gross = c.wageDollarRounding === "NEAREST_DOLLAR" ? rounded(paidGross, BigInt(100), "HALF_UP") * BigInt(100) : paidGross;
     let additionalNumerator: bigint;
     if (c.additionalMethod === "FIXED" && c.additionalBasisPoints === null)
@@ -83,8 +87,12 @@ export function prIncomeWithholding(input: unknown) {
         + BigInt(c.veteran ? veteran : 0) + BigInt(dependent) * BigInt(full) + BigInt(shared) * BigInt(half) + BigInt(allowance) * BigInt(allowances);
     const taxable = max(BigInt(0), gross - exemption);
     const [, bp, subtract] = brackets[f].find(([upper]) => upper === null || taxable <= BigInt(upper))!;
+    if (input.rounding === "UNVERIFIED") {
+        exactMinor(ratio(taxable * BigInt(bp), BigInt(10000)), exactnessOperations, "PR_BASE_PERCENTAGE");
+        exactMinor(ratio(additionalNumerator, BigInt(10000)), exactnessOperations, c.additionalMethod === "PERCENTAGE" ? "PR_EXTRA_PERCENTAGE" : "PR_FIXED_EXTRA");
+    }
     const numerator = max(BigInt(0), taxable * BigInt(bp) - BigInt(subtract) * BigInt(10000)) + additionalNumerator;
-    return { amountMinor: rounded(numerator, BigInt(10000), input.rounding).toString(), exemptionMinor: exemption.toString(), taxableMinor: taxable.toString(), exactTax: { numerator: numerator.toString(), denominator: "10000" }, rounding: input.rounding };
+    return { amountMinor: (input.rounding === "UNVERIFIED" ? numerator / BigInt(10000) : rounded(numerator, BigInt(10000), input.rounding)).toString(), exemptionMinor: exemption.toString(), taxableMinor: taxable.toString(), exactTax: { numerator: numerator.toString(), denominator: "10000" }, rounding: input.rounding === "UNVERIFIED" ? "EXACT_CENT_NO_ROUNDING_REQUIRED" as const : input.rounding as NativeCentRounding, exactnessOperations };
 }
 function applicable2026(payday: unknown) {
     try {
@@ -110,6 +118,10 @@ export function sinotContribution(input: unknown) {
         return invalid();
     const gross = minor(input.grossMinor), before = minor(input.wagesBeforeMinor), employeeRate = count(input.employeeBasisPoints, 30);
     const taxable = min(gross, max(BigInt(0), BigInt(900000) - before));
-    const employee = rounded(taxable * BigInt(employeeRate), BigInt(10000), "HALF_UP"), employer = rounded(taxable * BigInt(60 - employeeRate), BigInt(10000), "HALF_UP");
-    return { taxableMinor: taxable.toString(), employeeMinor: employee.toString(), employerMinor: employer.toString() };
+    if (input.rounding !== undefined && input.rounding !== "HALF_UP" && input.rounding !== "UNVERIFIED")
+        return invalid();
+    const exactnessOperations: NativeExactnessOperation[] = [];
+    const employee = input.rounding === "UNVERIFIED" ? exactMinor(ratio(taxable * BigInt(employeeRate), BigInt(10000)), exactnessOperations, "SINOT_EMPLOYEE") : rounded(taxable * BigInt(employeeRate), BigInt(10000), "HALF_UP");
+    const employer = input.rounding === "UNVERIFIED" ? exactMinor(ratio(taxable * BigInt(60 - employeeRate), BigInt(10000)), exactnessOperations, "SINOT_EMPLOYER") : rounded(taxable * BigInt(60 - employeeRate), BigInt(10000), "HALF_UP");
+    return { taxableMinor: taxable.toString(), employeeMinor: employee.toString(), employerMinor: employer.toString(), ...(input.rounding === "UNVERIFIED" ? { exactnessOperations } : {}) };
 }

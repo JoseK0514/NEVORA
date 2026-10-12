@@ -40,8 +40,8 @@ describe("published PR payroll-period tables, not annual tax brackets", () => {
     it.each([undefined, null, ["INDIVIDUAL_FULL"], new String("NONE"), "EXEMPT"])("rejects unknown or coerced certificate personal election %j", personal => {
         expect(() => prIncomeWithholding({ grossMinor: "55000", frequency: "WEEKLY", certificate: { ...certificate(), personal }, rounding: "HALF_UP" } as never)).toThrow("INVALID_NATIVE_RULE_INPUT");
     });
-    it.each([undefined, null, ["HALF_UP"], "UNVERIFIED"])("requires an explicit cent rounding decision %j", rounding => {
-        expect(() => prIncomeWithholding({ grossMinor: "55000", frequency: "WEEKLY", certificate: certificate(), rounding } as never)).toThrow("INVALID_NATIVE_RULE_INPUT");
+    it.each([undefined, null, ["HALF_UP"], "UNVERIFIED"])("rejects malformed policy or fractional unverified operation %j", rounding => {
+        expect(() => prIncomeWithholding({ grossMinor: "55001", frequency: "WEEKLY", certificate: certificate(), rounding } as never)).toThrow(rounding === "UNVERIFIED" ? "PR_BASE_PERCENTAGE_CENT_RULE_UNVERIFIED" : "INVALID_NATIVE_RULE_INPUT");
     });
     it.each([1, "01", "-1", "1.00", ["1"], null])("rejects malformed cents %j", grossMinor => {
         expect(() => prIncomeWithholding({ grossMinor, frequency: "WEEKLY", certificate: certificate(), rounding: "HALF_UP" } as never)).toThrow("INVALID_NATIVE_RULE_INPUT");

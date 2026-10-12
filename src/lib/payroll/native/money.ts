@@ -36,3 +36,19 @@ export function hourlyRate(v: unknown): Rational {
     return r;
 }
 export const serialized = (r: Rational) => ({ numerator: r.numerator.toString(), denominator: r.denominator.toString() });
+export type NativeExactnessOperation = {
+    operation: string;
+    reference: string | null;
+    numerator: string;
+    denominator: string;
+    amountMinor: string;
+};
+export function exactMinor(amount: Rational, operations: NativeExactnessOperation[], operation: string, reference: string | null = null): bigint {
+    if (amount.numerator < BigInt(0) || amount.numerator % amount.denominator !== BigInt(0))
+        throw Object.assign(Error(`${operation}_CENT_RULE_UNVERIFIED`), { reference });
+    if (operations.length >= 20000)
+        throw Error("EXACTNESS_EVIDENCE_LIMIT");
+    const value = amount.numerator / amount.denominator;
+    operations.push({ operation, reference, ...serialized(amount), amountMinor: value.toString() });
+    return value;
+}

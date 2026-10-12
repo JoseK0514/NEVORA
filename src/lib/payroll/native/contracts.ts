@@ -35,6 +35,7 @@ export type NativeWageProfile = {
     hourlyRateMinor: string;
     compensation: "HOURLY";
     employment: "PR_PRIVATE_NONEXEMPT";
+    minimumWageCoverage: "PR_ACT_47_STANDARD_2026";
     overtime: "TIME_AND_HALF" | "DOUBLE_PRESERVED";
     dailyBasis: "CALENDAR_DAY";
     workweekAnchorDate: string;
@@ -79,7 +80,7 @@ export type NativeTaxProfile = {
     sinotEmployeeBasisPoints: number;
     /** UNVERIFIED prevents ready payroll until a supported cent rule is supplied. */
     prCentRounding: NativeCentRounding | "UNVERIFIED";
-    ruleEvidenceReference: string;
+    ruleEvidenceReference: string | null;
     employerContributions: {
         code: string;
         label: string;
@@ -171,8 +172,9 @@ export type NativePayrollReady = {
         inputSha256: string;
         rulesetId: "PR_STANDARD_2026_V1";
         rulesSha256: string;
-        rounding: "EARNING_GROUP_HALF_UP";
-        taxRounding: NativeCentRounding;
+        rounding: "EARNING_GROUP_HALF_UP" | "EXACT_CENT_NO_ROUNDING_REQUIRED";
+        taxRounding: NativeCentRounding | "EXACT_CENT_NO_ROUNDING_REQUIRED";
+        exactnessOperations: import("./money").NativeExactnessOperation[];
     };
 };
 export type NativePayrollBlocked = {
