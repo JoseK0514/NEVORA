@@ -42,7 +42,7 @@ const source = async () => (await readGenerationSource(database.executor)).sourc
 const rows = () => q('SELECT to_jsonb(t) row FROM shifts t ORDER BY id');
 const schedules = () => q('SELECT to_jsonb(t) row FROM schedules t ORDER BY id');
 beforeEach(async () => {
-  await q('TRUNCATE employees,schedules,positions,location_coverage_windows,schedule_week_settings RESTART IDENTITY CASCADE');
+  await database.dispose(); database=await createDisposableGenerationDatabase();
   await q("UPDATE workspaces SET active=true,time_zone='America/Puerto_Rico'; UPDATE locations SET active=true; UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false");
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('manager','Private','Manager','NONE','MANAGER','loc-1'),('worker','Fictional','Worker','NONE','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('worker','loc-1'),('worker','loc-2'); INSERT INTO availability_windows VALUES('normal','worker',1,'08:00','12:00'); INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('window','loc-1',1,'08:00','12:00')");
   await fixtureProof(database.executor, 'manager');

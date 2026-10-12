@@ -39,7 +39,7 @@ afterAll(async () => { await database?.dispose(); });
 beforeEach(async () => {
   context.executor = database.executor;
   context.token = 'owned-generation-current-session';
-  await q('TRUNCATE employees,schedules,positions,location_coverage_windows,schedule_week_settings RESTART IDENTITY CASCADE');
+  await database.dispose(); database=await createDisposableGenerationDatabase(); context.executor=database.executor;
   await q("UPDATE workspaces SET active=true,time_zone='America/Puerto_Rico'; UPDATE locations SET active=true; UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false");
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','NONE','OWNER','loc-1'),('other','Fictional','Manager','NONE','MANAGER','loc-1'),('worker','Fictional','Worker','NONE','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('worker','loc-1'); INSERT INTO availability_windows VALUES('normal','worker',1,'08:00','12:00'); INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('window','loc-1',1,'08:00','12:00')");
   await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'owner',clock_timestamp()+interval '1 day')", [hash]);

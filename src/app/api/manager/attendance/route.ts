@@ -1,4 +1,4 @@
-import { getSession } from '@/lib/auth/session';
+import { getSession, requireSessionMutationProof } from '@/lib/auth/session';
 import { getAttendanceReview } from '@/lib/data/attendance-review';
 
 export const runtime = 'nodejs';
@@ -22,7 +22,8 @@ export async function GET(request: Request): Promise<Response> {
     return json({ state: 'unavailable', reason: 'access_denied' }, 403);
   }
 
-  if (new URL(request.url).search) {
+  const policyRequest=new URL(request.url).search==='?policies=1';
+  if (new URL(request.url).search && !policyRequest) {
     return json({ state: 'unavailable', reason: 'access_denied' }, 400);
   }
 
@@ -35,6 +36,7 @@ export async function GET(request: Request): Promise<Response> {
       return json({ state: 'unavailable', reason: 'access_denied' }, 403);
     }
 
+    if(policyRequest){const {readAttendancePolicies}=await import('@/lib/business-improvements/attendance-policy/service');const result=await readAttendancePolicies(await requireSessionMutationProof());return json(result,result.state==='ready'?200:503);}
     const result = await getAttendanceReview();
     if (result.state === 'ready') return json(result);
     return json(
