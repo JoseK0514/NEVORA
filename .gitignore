@@ -16,3 +16,4 @@ coverage
 # Per-worktree execution notes and verification artifacts
 .superpowers/sdd/
 .omo/evidence/
+.impeccable/

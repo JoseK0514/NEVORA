@@ -80,7 +80,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
 
 
   return <ExchangeReviewShell view={selected.id} className="exchange-page marketplace-page manager-workflow-page manager-shift-requests">
-    <div className="exchange-page-heading"><PageHeader eyebrow="Team scheduling" title="Shift Requests" description="Help your team adjust their schedule. Review the details, then decide." actions={<Link className="button secondary" href="/app/requests/hub"><NavIcon name="requests" />All requests<NavIcon name="arrowRight" size={16} /></Link>} /></div>
+    <div className="exchange-page-heading"><PageHeader eyebrow="Team scheduling" title="Shift Requests" description="Help your team adjust their schedule. Review the details, then decide." actions={<Link className="button secondary" href="/app?view=requests"><NavIcon name="requests" />All requests<NavIcon name="arrowRight" size={16} /></Link>} /></div>
     {error ? <p className="form-error" role="alert">{errors[error] ?? "The request could not be reviewed. It may have changed; review it again."}</p> : null}
 
     <ManagerIssueFocus prefix="request-" />

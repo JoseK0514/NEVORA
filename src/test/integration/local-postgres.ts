@@ -35,6 +35,7 @@ const CURRENT_MIGRATIONS = [
   '0025_company_policies.sql',
   '0026_attendance_observations.sql',
   '0027_payroll_period_custody.sql', '0028_configurable_payroll.sql', '0029_payroll_private_notices.sql',
+  '0030_notification_source_kinds.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

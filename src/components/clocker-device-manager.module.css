@@ -6,10 +6,10 @@
 .manager button, .manager input, .manager textarea, .manager select { min-height: 44px; }
 .manager button { white-space: normal; }
 .summary { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; }
-.summary > div { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; padding: 22px 24px; background: var(--cd-surface); border: 1px solid var(--cd-border); border-radius: var(--cd-card-radius); }
+.summary > div { position: relative; display: grid; gap: 8px; padding: 22px 24px; background: var(--cd-surface); border: 1px solid var(--cd-border); border-radius: var(--cd-card-radius); }
 .summary dt { font-size: 13px; font-weight: 600; align-self: center; }
 .summary dd { margin: 0; font-size: 30px; font-weight: 500; line-height: 1.2; font-variant-numeric: tabular-nums; }
-.summary p { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.summary p { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .layout { display: grid; grid-template-columns: minmax(0, 1fr) 292px; gap: 24px; align-items: start; }
 .deviceList { background: var(--cd-surface); border: 1px solid var(--cd-border); border-radius: var(--cd-card-radius); min-width: 0; overflow: visible; }
 .listHeader { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px; }

@@ -31,7 +31,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId }: {
   return (
     <TimeOffMotion><div className="timeoff-page manager-workflow-page manager-timeoff nto-page">
       <ManagerIssueFocus prefix="request-" />
-      <header className="nto-header" data-timeoff-intro><div><h1>Time off</h1><p>Review time away and keep your team informed.</p></div><Link href="/app/requests/hub" className="nto-back-link">All requests <NavIcon name="arrowRight" /></Link></header>
+      <header className="nto-header" data-timeoff-intro><div><h1>Time off</h1><p>Review time away and keep your team informed.</p></div><Link href="/app?view=requests" className="nto-back-link">All requests <NavIcon name="arrowRight" /></Link></header>
       {error ? <p className="form-error" role="alert">The request could not be reviewed. It may have changed; review it again.</p> : null}
       {reviewed ? <p className="form-success" role="status">The request was reviewed.</p> : null}
       <nav className="nto-tabs nto-manager-tabs" aria-label="Time off sections">

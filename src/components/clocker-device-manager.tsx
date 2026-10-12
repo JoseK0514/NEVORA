@@ -129,9 +129,9 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     </div>
     {!activeLocations.length ? <p className={styles.locationNotice}>Add or reactivate a location in <Link href="/app/settings/locations">Locations</Link> before registering a tablet.</p> : null}
     <dl className={styles.summary} aria-label="Device overview">
-      <div><dt>Registered</dt><dd>{registered}</dd><p>Tablet setup completed</p></div>
-      <div><dt>Needs setup</dt><dd>{waiting}</dd><p>Waiting for a tablet</p></div>
-      <div><dt>Revoked</dt><dd>{revoked}</dd><p>Tablet access disabled</p></div>
+      <div><dt>Registered</dt><dd>{registered}<p>Tablet setup completed</p></dd></div>
+      <div><dt>Needs setup</dt><dd>{waiting}<p>Waiting for a tablet</p></dd></div>
+      <div><dt>Revoked</dt><dd>{revoked}<p>Tablet access disabled</p></dd></div>
     </dl>
     {notice ? <p className={styles.notice} role="status">{notice}</p> : null}
     {setup && locationForSetup ? <section className={styles.setupCode} aria-labelledby="clocker-code-title">
