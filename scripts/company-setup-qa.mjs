@@ -173,10 +173,10 @@ try {
     if (width === 390) {
       await page.goto(`${app.url}/app/employees/new`);
       const creation = page.locator('form.employee-form');
-      await creation.getByLabel('Employee ID', { exact: true }).fill(employeeId);
+      await creation.getByRole('textbox', { name: /^Employee ID\b/ }).fill(employeeId);
       await creation.getByLabel('First Name', { exact: true }).fill('Sam');
       await creation.getByLabel('Last Name', { exact: true }).fill('Rivera');
-      await creation.getByLabel('Phone Number', { exact: true }).fill('2025550142');
+      await creation.getByRole('textbox', { name: /^Phone Number\b/ }).fill('2025550142');
       await creation.locator('[name=email]').fill('sam@example.invalid');
       await creation.locator('[name=primaryLocationId]').selectOption(locations[0].id);
       await creation.getByLabel('Studio Assistant', { exact: true }).check();
