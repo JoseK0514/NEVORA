@@ -53,8 +53,44 @@ function PrivateLaborReview({settings,scope,timeZone,open=false}:{settings:Compa
     <div><dt>Calculation method reference</dt><dd>{absent(labor?.calculationMethod)??<>{labor!.calculationMethod!.id} · revision {labor!.calculationMethod!.revision}</>}</dd></div></dl>
   </details>;
 }
+export function CurrentPolicyRules({settings,scope,timeZone}: {settings:CompanyPolicySettings;scope:string;timeZone:string}) {
+  return <ul className="policy-current-rules">{fields.map(([key,label])=>{
+    const rule=key==="overtimeRisk"?settings.labor?.overtimeRisk:settings.attendance?.[key];
+    if(rule===undefined||rule===null) {
+      return <li key={key}><strong>{label}</strong><p>{rule===null?"Disabled":scope?"Inherit company default":"Disabled by default"}</p></li>;
+    }
+    const details:Array<[string,string]>=[
+      ["Threshold minutes",String(rule.thresholdMinutes)],
+      ["Comparison",rule.comparison==="GT"?"Greater than":"Greater than or equal"],
+      ["Effective from",formatBusinessTimestamp(rule.effectiveFrom,timeZone)],
+    ];
+    const longEntry=key==="longEntry"?settings.attendance?.longEntry:null;
+    if(longEntry) {
+      details.push(["Time basis",longEntry.basis==="RECORDED_ELAPSED"?"Recorded elapsed":"Effective elapsed after corrections"]);
+      details.push(["Entries",longEntry.appliesTo==="OPEN"?"Currently open":longEntry.appliesTo==="CLOSED"?"Completed":"Open and completed"]);
+    }
+    const missing=key==="missingClockIn"?settings.attendance?.missingClockIn:key==="missingClockOut"?settings.attendance?.missingClockOut:null;
+    if(missing) {
+      details.push(["Schedule association","Captured published shift"]);
+      details.push(["Observation cutoff",missing.cutoff==="AFTER_SCHEDULE_START"?"After published start":"After published end"]);
+    }
+    const overtime=key==="overtimeRisk"?settings.labor?.overtimeRisk:null;
+    if(overtime) {
+      details.push(["Time basis",overtime.basis==="RECORDED_ELAPSED_INCLUDING_BREAKS"?"Recorded elapsed including breaks":"Effective elapsed including breaks"]);
+      details.push(["Window",overtime.window==="BUSINESS_DAY"?"Business day":"Business week"]);
+      details.push(["Aggregation",overtime.aggregation==="COMPANY"?"Across the company":"At this location"]);
+      details.push(["Business day starts",overtime.dayBoundaryTime]);
+      if(overtime.window==="BUSINESS_WEEK") {
+        const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        details.push(["Week starts on",overtime.weekStartsOn===undefined?"Not set":days[overtime.weekStartsOn]]);
+      }
+    }
+    return <li key={key}><strong>{label}</strong><dl>{details.map(([name,value])=><div key={name}><dt>{name}</dt><dd>{value}</dd></div>)}</dl></li>;
+  })}</ul>;
+}
 export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:{history:CompanyPolicyHistory;locations:{id:string;name:string;active:boolean}[];timeZone:string}) {
   const submitGate=useRef(false),readGate=useRef(false),noticeRef=useRef<HTMLDivElement>(null);
+  const confirmedReceipt=useRef<number|null>(null);
   const [history,setHistory]=useState(initialHistory),[scope,setScope]=useState("");
   const [draft,setDraft]=useState<Draft|null>(()=>currentDraft(initialHistory,null));
   const [draftEpoch,setDraftEpoch]=useState(0),[modes,setModes]=useState<Record<string,string>>({});
@@ -67,14 +103,14 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
   const previousValid=history.revisions.filter((item):item is ValidRevision=>item.locationId===(scope||null)&&item.state==="valid"&&item.revision<current.expectedRevision).sort((a,b)=>b.revision-a.revision)[0];
   const scopeOptions=[...locations,...history.scopes.filter(item=>item.locationId&&!locations.some(location=>location.id===item.locationId)).map(item=>({id:item.locationId!,name:`Historical location · ${item.locationId}`,active:false}))];
   function announce(message:string){setNotice(message);requestAnimationFrame(()=>noticeRef.current?.focus({preventScroll:false}));}
-  function adoptCurrent(next:CompanyPolicyHistory){setDraft(currentDraft(next,scope||null));setDraftEpoch(value=>value+1);setModes({});setRawFields({});setReviewed(false);setConflict(false);}
-  function denyAccess(){setPending(null);setDraft(null);setRawFields({});setHistory({revisions:[],scopes:[]});setReadState("unauthorized");announce("Your access ended. Sign in again to view or edit company policies.");}
+  function adoptCurrent(next:CompanyPolicyHistory){confirmedReceipt.current=null;setDraft(currentDraft(next,scope||null));setDraftEpoch(value=>value+1);setModes({});setRawFields({});setReviewed(false);setConflict(false);}
+  function denyAccess(){confirmedReceipt.current=null;setPending(null);setDraft(null);setRawFields({});setHistory({revisions:[],scopes:[]});setReadState("unauthorized");announce("Your access ended. Sign in again to view or edit company policies.");}
   useEffect(()=>{
     if(!pending)return;
     const protect=(event:BeforeUnloadEvent)=>{event.preventDefault();event.returnValue="";};
     window.addEventListener("beforeunload",protect);return()=>window.removeEventListener("beforeunload",protect);
   },[pending]);
-  async function refresh({receipt,replaceDraft=false,retained=pending,conflicted=conflict}:{receipt?:number;replaceDraft?:boolean;retained?:CompanyPolicyCommand|null;conflicted?:boolean}={}){
+  async function refresh({receipt=confirmedReceipt.current??undefined,replaceDraft=false,retained=pending,conflicted=conflict}:{receipt?:number;replaceDraft?:boolean;retained?:CompanyPolicyCommand|null;conflicted?:boolean}={}){
     if(readGate.current)return;
     readGate.current=true;setReadState("loading");
     try{
@@ -107,7 +143,8 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
       if(!response.ok)throw Error();
       const body=await response.json() as {state?:string;result?:{revision?:number}};
       if(body.state!=="saved"||!Number.isSafeInteger(body.result?.revision)||body.result!.revision!<1)throw Error();
-      setPending(null);await refresh({receipt:body.result!.revision!,retained:null});
+      confirmedReceipt.current=body.result!.revision!;
+      setPending(null);await refresh({receipt:confirmedReceipt.current,retained:null});
     }catch{announce("We could not confirm whether your changes were saved. Values and scope are locked. Retry the retained save safely, or refresh policy history to check the original request.");}
     finally{submitGate.current=false;setBusy(false);}
   }
@@ -122,7 +159,7 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
       {scope&&company.state==="unavailable"?<section className="policy-state policy-warning"><h2>Company defaults need a correction</h2><p>Company revision {company.expectedRevision} is unavailable. A valid location revision does not confirm that inherited attendance rules are available. Review the company default separately.</p></section>:null}
       {!writable?<section className="policy-state"><h2>Historical location</h2><p>This location is inactive or no longer in the current catalog. Its original policy history remains available; changes are unavailable.</p></section>:null}
       {current.state==="unavailable"?<section className="policy-state policy-warning"><div className="policy-state-heading"><ShieldWarningIcon size={24} aria-hidden="true"/><h2>Current revision {current.expectedRevision} unavailable</h2></div><p>Attendance rules remain unavailable until a valid correction is saved. Original history is retained; earlier policies have not been activated.</p>{previousValid&&writable?<><p>Revision {previousValid.revision} from {formatBusinessTimestamp(previousValid.changedAt,timeZone)} can be reviewed as a complete replacement draft.</p><button className="button secondary" type="button" disabled={busy||pending!==null} onClick={startRecovery}>Review revision {previousValid.revision} as a replacement draft</button></>:<p>Correction is held until a complete replacement can be reviewed, including attendance and private labor settings.</p>}</section>:null}
-      {conflict?<section className="policy-state policy-warning"><h2>Your draft needs a fresh review</h2><p>The retained draft below was not saved. Current selected revision: {current.expectedRevision}. No changes have been automatically combined or overwritten.</p>{current.state==="valid"?<details className="policy-current-comparison"><summary>Compare current saved rules</summary><ul>{fields.map(([key,label])=>{const rule=key==="overtimeRisk"?current.selected.settings.labor?.overtimeRisk:current.selected.settings.attendance?.[key];return<li key={key}>{label}: {rule===undefined?(scope?"Inherit company default":"Disabled by default"):rule===null?"Disabled":`${rule.comparison==="GT"?"Greater than":"At least"} ${rule.thresholdMinutes} minutes · Effective ${formatBusinessTimestamp(rule.effectiveFrom,timeZone)}`}</li>;})}</ul><PrivateLaborReview settings={current.selected.settings} scope={scope} timeZone={timeZone}/></details>:null}<button className="button secondary" type="button" disabled={busy||pending!==null} onClick={()=>{adoptCurrent(history);announce(`Retained draft discarded. Current revision ${current.expectedRevision} loaded.`);}}>Discard draft and use current revision</button></section>:null}
+      {conflict?<section className="policy-state policy-warning"><h2>Your draft needs a fresh review</h2><p>The retained draft below was not saved. Current selected revision: {current.expectedRevision}. No changes have been automatically combined or overwritten.</p>{current.state==="valid"?<details className="policy-current-comparison"><summary>Compare current saved rules</summary><CurrentPolicyRules settings={current.selected.settings} scope={scope} timeZone={timeZone}/><PrivateLaborReview settings={current.selected.settings} scope={scope} timeZone={timeZone}/></details>:null}<button className="button secondary" type="button" disabled={busy||pending!==null} onClick={()=>{adoptCurrent(history);announce(`Retained draft discarded. Current revision ${current.expectedRevision} loaded.`);}}>Discard draft and use current revision</button></section>:null}
       {draft?<>
         {draft.recoveryFrom?<section className="policy-replacement-review"><h2>Review the complete replacement</h2><p>Draft source: revision {draft.recoveryFrom.revision} · {formatBusinessTimestamp(draft.recoveryFrom.changedAt,timeZone)}. This draft replaces revision {draft.expectedRevision} in full. Intervening values in the unavailable revision cannot be checked.</p><p>Review every attendance rule and the private labor settings below before saving. Saving appends a new revision and retains the original history.</p></section>:null}
         <PrivateLaborReview settings={draft.settings} scope={scope} timeZone={timeZone} open={draft.recoveryFrom!==null}/>

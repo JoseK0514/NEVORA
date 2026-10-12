@@ -2,7 +2,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {describe,it,expect,vi} from 'vitest';
 import {projectCompanyPolicyHistory} from '../lib/business-improvements/company-policies/history';
 import {policyUIRows,policyUISettings} from '../test/fixtures/company-policy-history-ui';
-import {CompanyPolicyEditor,buildPolicySettings} from './company-policy-editor';
+import {CompanyPolicyEditor,buildPolicySettings,CurrentPolicyRules} from './company-policy-editor';
 vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
 const locations=[{id:'loc-1',name:'Northside',active:true}];
 const render=(rows=policyUIRows())=>renderToStaticMarkup(<CompanyPolicyEditor history={projectCompanyPolicyHistory(rows)} locations={locations} timeZone="America/Puerto_Rico"/>);
@@ -37,5 +37,23 @@ describe('complete reviewed policy command settings',()=>{
  });
  it('does not silently turn an empty custom threshold into zero',()=>{
   const data=form();data.set('lateness.mode','configured');data.set('lateness.threshold','');expect(()=>buildPolicySettings(data,policyUISettings,'America/Puerto_Rico')).toThrow(/Choose threshold minutes/);
+ });
+});
+
+describe('current rule comparison',()=>{
+ it('shows semantic fields when the saved thresholds are unchanged',()=>{
+  const threshold={thresholdMinutes:600,comparison:'GT' as const,effectiveFrom:'2030-10-01T00:00:00Z'};
+  const settings={version:1 as const,attendance:{
+   longEntry:{...threshold,basis:'EFFECTIVE_ELAPSED' as const,appliesTo:'OPEN' as const},
+   missingClockIn:{...threshold,association:'CAPTURED_PUBLISHED_SHIFT' as const,cutoff:'AFTER_SCHEDULE_END' as const},
+   missingClockOut:{...threshold,association:'CAPTURED_PUBLISHED_SHIFT' as const,cutoff:'AFTER_SCHEDULE_END' as const},
+  },labor:{overtimeRisk:{...threshold,basis:'EFFECTIVE_ELAPSED_INCLUDING_BREAKS' as const,window:'BUSINESS_WEEK' as const,aggregation:'LOCATION' as const,dayBoundaryTime:'04:30',weekStartsOn:3}}};
+  const html=renderToStaticMarkup(<CurrentPolicyRules settings={settings} scope="" timeZone="America/Puerto_Rico"/>);
+  for(const text of ['Time basis','Effective elapsed after corrections','Currently open','Schedule association','Captured published shift','Observation cutoff','After published end','Effective elapsed including breaks','Business week','At this location','Business day starts','04:30','Week starts on','Wednesday'])expect(html).toContain(text);
+  expect(html).not.toContain('EFFECTIVE_ELAPSED');
+ });
+ it('distinguishes inherited and disabled values without inventing custom details',()=>{
+  const html=renderToStaticMarkup(<CurrentPolicyRules settings={{version:1,attendance:{earlyDeparture:null}}} scope="loc-1" timeZone="America/Puerto_Rico"/>);
+  expect(html).toContain('Inherit company default');expect(html).toContain('Disabled');expect(html).not.toContain('Threshold minutes');
  });
 });

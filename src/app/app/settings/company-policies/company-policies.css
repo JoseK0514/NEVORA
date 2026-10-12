@@ -40,3 +40,10 @@
 @media(max-width:1100px) { .company-policy-editor .policy-form { grid-template-columns:minmax(0,1fr); } }
 @media(max-width:520px) { .policy-scope-panel,.policy-history { padding:20px; } .policy-rule-fields { grid-template-columns:minmax(0,1fr); } .policy-actions { display:grid; } }
 @media(max-width:520px) { .policy-state,.policy-replacement-review,.policy-private-review { padding:20px; } .policy-private-review dl > div { grid-template-columns:minmax(0,1fr); gap:8px; } .policy-state .button { width:100%; white-space:normal; text-align:center; } }
+
+.policy-current-rules { display:grid; gap:20px; }
+.policy-current-rules dl { display:grid; gap:8px; margin-block:12px; }
+.policy-current-rules dl > div { display:grid; grid-template-columns:minmax(140px,1fr) minmax(0,3fr); gap:16px; }
+.policy-current-rules dt { color:var(--design-text-secondary); font-size:14px; }
+.policy-current-rules dd { margin:0; overflow-wrap:anywhere; font-size:14px; }
+@media(max-width:520px) { .policy-current-rules dl > div { grid-template-columns:minmax(0,1fr); gap:2px; } }
