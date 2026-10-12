@@ -15,6 +15,14 @@ const render = (devices: ClockerDeviceView[], available = locations) => renderTo
   initialDevices: devices, locations: available, timeZone: 'America/Puerto_Rico', action: vi.fn(),
 }));
 
+it('keeps overview explanations inside their definition descriptions', () => {
+  const summary = render([]).split('aria-label="Device overview">')[1].split('</dl>')[0];
+  expect(summary).toContain('<dd>0<p>Tablet setup completed</p></dd>');
+  expect(summary).toContain('<dd>0<p>Waiting for a tablet</p></dd>');
+  expect(summary).toContain('<dd>0<p>Tablet access disabled</p></dd>');
+  expect(summary).not.toMatch(/<\/dd><p>/);
+});
+
 it('retains device identity, search and every management operation across states', () => {
   const html = render([device('active', 'ACTIVE'), device('pending', 'PENDING'), device('expired', 'EXPIRED'), device('revoked', 'REVOKED')]);
   for (const id of ['active', 'pending', 'expired', 'revoked']) expect(html).toContain(`data-clocker-device="${id}"`);
