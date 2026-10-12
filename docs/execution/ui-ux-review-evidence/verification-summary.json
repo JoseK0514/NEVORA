@@ -1,0 +1,97 @@
+{
+  "branch": "codex/nevora-ui-ux-refinement-20261012",
+  "baseline": "027b5f008df08367b0de942a923c5f3d4105ada0",
+  "verifiedApplicationCheckpoint": "a2e3571735ed5c17e959df9ea46ddc3673607f22",
+  "broadTests": {
+    "checkpoint": "ca5195948f3c079095face19e530bfb179873754",
+    "passed": 7030,
+    "skipped": 801,
+    "filesPassed": 404,
+    "filesSkipped": 27,
+    "log": "implementation-full-tests-04.log"
+  },
+  "ownedIntegration": {
+    "checkpoint": "e0452801e196a076c2daac4e5b9a5d006d4619da",
+    "phaseE": 209,
+    "foundation": 275,
+    "clocker": 515,
+    "payroll": 36,
+    "results": "passed",
+    "note": "Separate suites, counts may overlap the broad suite; not a distinct total."
+  },
+  "companyAdministration": {
+    "checkpoint": "a2e3571735ed5c17e959df9ea46ddc3673607f22",
+    "checks": 19,
+    "result": "passed",
+    "artifact": "implementation-company-setup-08/verification.json"
+  },
+  "browsers": {
+    "fullMatrix": {
+      "checkpoint": "dbd798c245c321de008d060b32a85c6e25b47c71",
+      "captures": 828,
+      "routeRoleConfigurations": 69
+    },
+    "affectedNavigationRecheck": {
+      "checkpoint": "a2e3571735ed5c17e959df9ea46ddc3673607f22",
+      "captures": 132,
+      "routeRoleConfigurations": 11
+    },
+    "consolidatedConfigurations": 852,
+    "routeRoleConfigurations": 71,
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "widths": [
+      320,
+      390,
+      768,
+      820,
+      1024,
+      1440
+    ],
+    "captureFailures": 0,
+    "axeViolations": 0,
+    "documentOverflow": 0,
+    "undersizedMeasuredVisibleControls": 0,
+    "clientErrors": 0,
+    "custodyVerified": true,
+    "ownedResourcesClosed": true
+  },
+  "interactions": {
+    "checkpoint": "a2e3571735ed5c17e959df9ea46ddc3673607f22",
+    "checks": 40,
+    "failures": 0,
+    "artifact": "implementation-browser-run-005/interactions/report.json"
+  },
+  "typecheck": {
+    "checkpoint": "a2e3571735ed5c17e959df9ea46ddc3673607f22",
+    "result": "passed",
+    "log": "implementation-typecheck-14.log"
+  },
+  "lint": {
+    "checkpoint": "a2e3571735ed5c17e959df9ea46ddc3673607f22",
+    "errors": 0,
+    "warnings": 1,
+    "warning": "Pre-existing employee-weekly-confirmation ref cleanup warning",
+    "log": "implementation-lint-06.log"
+  },
+  "independentCodeReview": {
+    "checkpoint": "a2e3571735ed5c17e959df9ea46ddc3673607f22",
+    "result": "CLEAR / APPROVE",
+    "blockers": [],
+    "narrowTests": 24
+  },
+  "limitations": [
+    "Physical devices, native browser zoom and manual screen-reader audit pending.",
+    "Real external notification delivery and hosted deployment not tested.",
+    "Separate business-feature integration and final integrated polish pending.",
+    "Independent QA/UI finding acceptance and production release gates are separate."
+  ],
+  "releaseState": {
+    "pushed": false,
+    "merged": false,
+    "deployed": false,
+    "productionReadyClaim": false
+  }
+}

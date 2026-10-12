@@ -30,8 +30,13 @@ Every confirmed defect requires a reproduced failure and passing relevant regres
 
 ## Progress
 
-- Baseline identified; all audit findings are still applicable at the exact audited commit. Baseline automated suite running; no application edits yet.
-- Discovery: manager/owner inbox requires an authorization-aware extension of existing notification access rather than the employee-only view.
+- F01–F17 and E01–E08 bounded implementation completed on the isolated branch; integration-dependent future features are documented rather than reimplemented.
+- Verified application checkpoint: `a2e3571735ed5c17e959df9ea46ddc3673607f22`. Final report: [2026-10-12-ui-ux-refinement-report.md](2026-10-12-ui-ux-refinement-report.md).
+- Broad suite: 7,030 passed / 801 existing integration-skipped. Owned Phase E 209, foundation 275, Clocker 515, payroll 36 passed; final company QA 19 checks passed.
+- Full browser matrix: 828 captures at `dbd798c2`; final affected-route recheck: 132 at `a2e35717`. Combined index contains 852 configurations including added Lead routes, each labeled with its actual source. Both Chromium/WebKit, all six widths; no capture failures. Final interaction scenarios: 40 passed.
+- TypeScript and lint passed (one pre-existing lint warning). Independent local code review CLEAR / APPROVE, no blockers, with durable receipts in `ui-ux-review-evidence/`.
+- Notification management access reuses the canonical infrastructure with finite fresh source observations and bounded cancellation/query/data reads. Read remains separate from announcement acknowledgement. Original independent findings are preserved, not self-closed.
+- No push, merge, deployment, release, or production-data mutation. Physical-device, manual screen-reader/native zoom, hosted/provider verification, separate business-feature integration, and independent QA/UI release acceptance remain pending.
 
 ## Delivery dependencies
 
