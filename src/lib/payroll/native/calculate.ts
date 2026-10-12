@@ -9,7 +9,7 @@ import { classifyRecordedTime, fail, HOUR } from "./time";
 import { fica2026, prIncomeWithholding, sinotContribution, PR_2026_RULE_SOURCES } from "./rules/pr-2026";
 import { authorizedAmounts, employerAmounts, validateEmployerCoverage } from "./obligations";
 const hash = (value: unknown) => createHash("sha256").update(stableExportJson(value)).digest("hex");
-export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V3_EXACT_CENT";
+export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V4_EXACT_CENT_YTD_BASES";
 export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
 export function calculateNativePayroll(input: NativePayrollInput): NativePayrollResult {
     try {

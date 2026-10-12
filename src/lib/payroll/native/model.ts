@@ -97,6 +97,10 @@ export function parseYtd(v: unknown): NativeYtd {
     check(minor(y.grossMinor) - Object.values(y.deductions as Record<string, string>).reduce((sum, v) => sum + minor(v), BigInt(0)) === minor(y.netMinor));
     moneyMap(y.employerContributions);
     moneyMap(y.employerWagesMinor);
+    // These are same-employer cumulative wage bases before caps. Each supported
+    // base may differ, but cannot exceed the documented cumulative gross.
+    const bases=[y.socialSecurityWagesMinor,y.medicareWagesMinor,y.sinotWagesMinor,...Object.values(y.employerWagesMinor as Record<string,string>)];
+    if(bases.some(base=>minor(base)>minor(y.grossMinor)))throw new PayrollError("YTD_TAXABLE_BASE_CONFLICT",400);
     return structuredClone(v) as NativeYtd;
 }
 export function parseConfiguration(v: unknown): NativeConfiguration {
