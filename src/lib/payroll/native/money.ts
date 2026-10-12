@@ -2,8 +2,11 @@ export type Rational = {
     numerator: bigint;
     denominator: bigint;
 };
-function gcd(a: bigint, b: bigint): bigint { while (b !== BigInt(0))
-    [a, b] = [b, a % b]; return a < BigInt(0) ? -a : a; }
+function gcd(a: bigint, b: bigint): bigint {
+    while (b !== BigInt(0))
+        [a, b] = [b, a % b];
+    return a < BigInt(0) ? -a : a;
+}
 export function ratio(numerator: bigint, denominator = BigInt(1)): Rational {
     if (denominator <= BigInt(0))
         throw Error("INVALID_NATIVE_MONEY");

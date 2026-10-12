@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { prIncomeWithholding, fica2026, sinotContribution } from "./pr-2026";
-const certificate = () => ({ personal: "INDIVIDUAL_FULL" as const, fullDependents: 0, halfDependents: 0, deductionAllowances: 0, veteran: false, additionalMinor: "0" });
+const certificate = () => ({ personal: "INDIVIDUAL_FULL" as const, fullDependents: 0, halfDependents: 0, deductionAllowances: 0, veteran: false, additionalMethod: "FIXED" as const, additionalBasisPoints: null, wageDollarRounding: "NONE" as const, additionalMinor: "0" });
 describe("published PR payroll-period tables, not annual tax brackets", () => {
     it.each([
         ["WEEKLY", "55000", "2182"],
@@ -78,3 +78,6 @@ describe("SINOT attested employee allocation", () => {
         expect(() => sinotContribution({ grossMinor: "100000", wagesBeforeMinor: "0", employeeBasisPoints } as never)).toThrow("INVALID_NATIVE_RULE_INPUT");
     });
 });
+it("matches independent P12 percentage certificate additional withholding", () => { expect(prIncomeWithholding({ grossMinor: "100000", frequency: "WEEKLY", certificate: { ...certificate(), additionalMethod: "PERCENTAGE", additionalMinor: null, additionalBasisPoints: 100, wageDollarRounding: "NONE" }, rounding: "HALF_UP" }).amountMinor).toBe("10965"); });
+it("separates optional wage-dollar rounding from tax-cent quantization", () => { const c = { ...certificate(), wageDollarRounding: "NEAREST_DOLLAR" }; expect(prIncomeWithholding({ grossMinor: "55049", frequency: "WEEKLY", certificate: c, rounding: "HALF_UP" }).amountMinor).toBe("2182"); expect(prIncomeWithholding({ grossMinor: "55050", frequency: "WEEKLY", certificate: c, rounding: "HALF_UP" }).amountMinor).toBe("2196"); });
+it("blocks a malformed percentage certificate without defaulting a fixed amount", () => { expect(() => prIncomeWithholding({ grossMinor: "100000", frequency: "WEEKLY", certificate: { ...certificate(), additionalMethod: "PERCENTAGE", additionalMinor: "0", additionalBasisPoints: "100", wageDollarRounding: "NONE" }, rounding: "HALF_UP" })).toThrow("INVALID_NATIVE_RULE_INPUT"); });

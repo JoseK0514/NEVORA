@@ -38,6 +38,9 @@ export type NativeWageProfile = {
     overtime: "TIME_AND_HALF" | "DOUBLE_PRESERVED";
     dailyBasis: "CALENDAR_DAY";
     workweekAnchorDate: string;
+    workweekStartTime: "00:00";
+    overtimeBasis: "WEIGHTED_WEEKLY";
+    wageCentRounding: "HALF_UP" | "UNVERIFIED";
     breakRules: {
         typeId: string;
         treatment: "PAID_REST" | "UNPAID_RELIEVED_MEAL";
@@ -61,7 +64,7 @@ export type NativeYtd = {
     /** Current same-employer projection; approved correction heads replace their originals. */
     ledgerFingerprint: string;
     locationIds: string[];
-    employerWagesMinor: Record<string,string>;
+    employerWagesMinor: Record<string, string>;
 };
 export type NativeTaxProfile = {
     id: string;
@@ -127,6 +130,10 @@ export type NativeEarning = {
     wageProfileId: string;
     wageRevision: number;
     rateMinorPerHour: string;
+    premiumBasisMinorPerHour: {
+        numerator: string;
+        denominator: string;
+    } | null;
     nanoseconds: string;
     amountMinor: string;
     exactAmount: {
@@ -178,13 +185,56 @@ export type NativePayrollBlocked = {
     }[];
 };
 export type NativePayrollResult = NativePayrollReady | NativePayrollBlocked;
-
-export type NativeConfiguration = { schema:"NEVORA_NATIVE_CONFIGURATION_V1"; employeeId:string; wages:NativeWageProfile[]; tax:NativeTaxProfile|null; deductions:NativeAuthorizedDeduction[] };
-export type NativeConfigurationRevision = NativeConfiguration & { revision:number; actorId:string; reason:string; createdAt:string };
-export type NativeProfileCommand = {operationId:string; reason:string;expectedRevision:number} & (
- | { action:"SAVE_NATIVE_PROFILE"; configuration:NativeConfiguration }
- | { action:"ATTEST_OPENING_YTD"; employeeId:string;ytd:NativeYtd }
- | { action:"SET_MANAGER_SCOPE";employeeId:string;review:boolean;approve:boolean;locationIds:string[] }
-);
-export type NativeProfileReceipt = {operationId:string;action:NativeProfileCommand["action"];employeeId:string;revision:number};
-export type NativeProfilesResponse = { version:"PAYROLL_NATIVE_PROFILES_V1";configurations:NativeConfigurationRevision[];openingYtd:{employeeId:string;ytd:NativeYtd}[];managerScopes:{employeeId:string;revision:number;review:boolean;approve:boolean;locationIds:string[];subjectEmployeeVersion:string}[] };
+export type NativeConfiguration = {
+    schema: "NEVORA_NATIVE_CONFIGURATION_V1";
+    employeeId: string;
+    wages: NativeWageProfile[];
+    tax: NativeTaxProfile | null;
+    deductions: NativeAuthorizedDeduction[];
+};
+export type NativeConfigurationRevision = NativeConfiguration & {
+    revision: number;
+    actorId: string;
+    reason: string;
+    createdAt: string;
+};
+export type NativeProfileCommand = {
+    operationId: string;
+    reason: string;
+    expectedRevision: number;
+} & ({
+    action: "SAVE_NATIVE_PROFILE";
+    configuration: NativeConfiguration;
+} | {
+    action: "ATTEST_OPENING_YTD";
+    employeeId: string;
+    ytd: NativeYtd;
+} | {
+    action: "SET_MANAGER_SCOPE";
+    employeeId: string;
+    review: boolean;
+    approve: boolean;
+    locationIds: string[];
+});
+export type NativeProfileReceipt = {
+    operationId: string;
+    action: NativeProfileCommand["action"];
+    employeeId: string;
+    revision: number;
+};
+export type NativeProfilesResponse = {
+    version: "PAYROLL_NATIVE_PROFILES_V1";
+    configurations: NativeConfigurationRevision[];
+    openingYtd: {
+        employeeId: string;
+        ytd: NativeYtd;
+    }[];
+    managerScopes: {
+        employeeId: string;
+        revision: number;
+        review: boolean;
+        approve: boolean;
+        locationIds: string[];
+        subjectEmployeeVersion: string;
+    }[];
+};

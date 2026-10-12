@@ -23,9 +23,11 @@ export const locks = () => [
   ),
   statement("LOCK TABLE employees IN SHARE ROW EXCLUSIVE MODE"),
   statement("SELECT id FROM employees ORDER BY id FOR UPDATE"),
+  statement("LOCK TABLE locations IN SHARE MODE"),
   statement(
     "LOCK TABLE time_entries,break_entries,time_correction_adjustments,time_correction_requests,time_correction_events,timecard_revisions,payroll_export_receipts,payroll_export_profile_revisions,payroll_period_populations,payroll_period_manifests,payroll_setting_revisions,payroll_exception_revisions,payroll_grant_revisions,payroll_runs,payroll_run_revisions IN SHARE MODE",
   ),
+  statement("DO $$ BEGIN IF to_regclass('native_payroll_ledger') IS NOT NULL THEN LOCK TABLE native_payroll_profile_revisions,native_payroll_opening_ytd_revisions,native_payroll_manager_scope_revisions,native_payroll_ledger IN SHARE MODE; END IF; END $$"),
 ];
 export function authority(
   proof: SessionMutationProof,

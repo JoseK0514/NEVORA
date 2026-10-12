@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { Temporal } from "@js-temporal/polyfill";
 import { stableExportJson } from "../../payroll-export/json";
 import type { NativePayrollInput, NativePayrollResult, NativeEarning } from "./contracts";
-import { add, halfUp, minor, multiply, ratio, serialized, subtract, type Rational } from "./money";
+import { add, halfUp, minor, multiply, ratio, serialized, type Rational } from "./money";
 import { classifyRecordedTime, fail, HOUR } from "./time";
 import { fica2026, prIncomeWithholding, sinotContribution, PR_2026_RULE_SOURCES } from "./rules/pr-2026";
 import { authorizedAmounts, employerAmounts, validateEmployerCoverage } from "./obligations";
@@ -38,36 +38,29 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
             const previous = groups.get(key);
             groups.set(key, { prototype, amount: add(previous?.amount ?? ratio(BigInt(0)), amount), time: (previous?.time ?? BigInt(0)) + duration });
         };
+        const weeklyRates = new Map<string, Rational>();
+        for (const week of new Set(classified.pieces.map(p => p.week))) {
+            const pieces = classified.pieces.filter(p => p.week === week);
+            const duration = pieces.reduce((sum, p) => sum + p.end - p.start, BigInt(0));
+            const straight = pieces.reduce((sum, p) => add(sum, multiply(p.rate, ratio(p.end - p.start, HOUR))), ratio(BigInt(0)));
+            weeklyRates.set(week, multiply(straight, ratio(HOUR, duration)));
+        }
         for (const p of classified.pieces) {
             if (p.start < classified.payLeft || p.end > classified.payRight)
                 continue;
-            const duration = p.end - p.start, kind = p.overtime ? "OVERTIME" : "REGULAR", multiplier = p.overtime ? p.wage.overtime === "DOUBLE_PRESERVED" ? ratio(BigInt(2)) : ratio(BigInt(3), BigInt(2)) : ratio(BigInt(1));
-            const amount = multiply(multiply(p.rate, ratio(duration, HOUR)), multiplier);
-            put(`${kind}:${p.locationId}:${p.wage.id}:${p.wage.revision}`, { code: "", kind, locationId: p.locationId, wageProfileId: p.wage.id, wageRevision: p.wage.revision, rateMinorPerHour: p.wage.hourlyRateMinor, nanoseconds: "0", amountMinor: "0", exactAmount: serialized(amount) }, amount, duration);
+            const duration = p.end - p.start, kind = p.overtime ? "OVERTIME" : "REGULAR";
+            const basis = weeklyRates.get(p.week)!;
+            const premium = p.overtime ? multiply(basis, p.wage.overtime === "DOUBLE_PRESERVED" ? ratio(BigInt(1)) : ratio(BigInt(1), BigInt(2))) : ratio(BigInt(0));
+            const amount = multiply(add(p.rate, premium), ratio(duration, HOUR));
+            put(`${kind}:${p.week}:${p.locationId}:${p.wage.id}:${p.wage.revision}`, { code: "", kind, locationId: p.locationId, wageProfileId: p.wage.id, wageRevision: p.wage.revision, rateMinorPerHour: p.wage.hourlyRateMinor, premiumBasisMinorPerHour: p.overtime ? serialized(basis) : null, nanoseconds: "0", amountMinor: "0", exactAmount: serialized(amount) }, amount, duration);
             if (p.overtime)
                 overtime += duration;
             else
                 regular += duration;
         }
-        // Federal weighted regular-rate minimum, after qualifying daily/seventh-day
-        // premiums. Complete week context is used even when this period splits it.
-        for (const week of new Set(classified.pieces.map(p => p.week))) {
-            const ps = classified.pieces.filter(p => p.week === week), duration = ps.reduce((sum, p) => sum + p.end - p.start, BigInt(0));
-            if (duration <= HOUR * BigInt(40))
-                continue;
-            const straight = ps.reduce((sum, p) => add(sum, multiply(p.rate, ratio(p.end - p.start, HOUR))), ratio(BigInt(0)));
-            const weeklyMinimum = multiply(multiply(straight, ratio(HOUR, duration)), ratio(duration - HOUR * BigInt(40), HOUR * BigInt(2)));
-            const premiums = ps.filter(p => p.overtime).reduce((sum, p) => add(sum, multiply(multiply(p.rate, ratio(p.end - p.start, HOUR)), p.wage.overtime === "DOUBLE_PRESERVED" ? ratio(BigInt(1)) : ratio(BigInt(1), BigInt(2)))), ratio(BigInt(0)));
-            const deficit = subtract(weeklyMinimum, premiums);
-            if (deficit.numerator <= BigInt(0))
-                continue;
-            const overtimeTime = ps.filter(p => p.overtime).reduce((sum, p) => sum + p.end - p.start, BigInt(0));
-            for (const p of ps.filter(p => p.overtime && p.start >= classified.payLeft && p.end <= classified.payRight)) {
-                const amount = multiply(deficit, ratio(p.end - p.start, overtimeTime));
-                put(`FLSA_TRUE_UP:${week}:${p.locationId}:${p.wage.id}:${p.wage.revision}`, { code: "", kind: "FLSA_TRUE_UP", locationId: p.locationId, wageProfileId: p.wage.id, wageRevision: p.wage.revision, rateMinorPerHour: p.wage.hourlyRateMinor, nanoseconds: "0", amountMinor: "0", exactAmount: serialized(amount) }, amount, BigInt(0));
-            }
-        }
         const earnings = [...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, group], index) => ({ ...group.prototype, code: `NATIVE_EARNING_${index + 1}`, nanoseconds: group.time.toString(), amountMinor: halfUp(group.amount).toString(), exactAmount: serialized(group.amount) }));
+        if (earnings.length > 100)
+            fail("NATIVE_EARNINGS_LIMIT");
         const gross = earnings.reduce((sum, e) => sum + minor(e.amountMinor), BigInt(0));
         const fica = fica2026({ grossMinor: gross.toString(), socialSecurityWagesBeforeMinor: input.ytd.socialSecurityWagesMinor, medicareWagesBeforeMinor: input.ytd.medicareWagesMinor, payday: input.payday });
         const sinot = sinotContribution({ grossMinor: gross.toString(), wagesBeforeMinor: input.ytd.sinotWagesMinor, employeeBasisPoints: tax.sinotEmployeeBasisPoints });
@@ -79,7 +72,7 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
         const deducted = employeeDeductions.reduce((sum, d) => sum + minor(d.amountMinor), BigInt(0)), net = gross - deducted;
         if (net < BigInt(0))
             fail("DEDUCTIONS_EXCEED_GROSS");
-        const before = input.ytd, after = { ...before, grossMinor: (minor(before.grossMinor) + gross).toString(), netMinor: (minor(before.netMinor) + net).toString(), socialSecurityWagesMinor: (minor(before.socialSecurityWagesMinor) + gross).toString(), medicareWagesMinor: (minor(before.medicareWagesMinor) + gross).toString(), sinotWagesMinor: (minor(before.sinotWagesMinor) + gross).toString(), deductions: { ...before.deductions }, employerContributions: { ...before.employerContributions } };
+        const before = input.ytd, after = { ...before, grossMinor: (minor(before.grossMinor) + gross).toString(), netMinor: (minor(before.netMinor) + net).toString(), socialSecurityWagesMinor: (minor(before.socialSecurityWagesMinor) + gross).toString(), medicareWagesMinor: (minor(before.medicareWagesMinor) + gross).toString(), sinotWagesMinor: (minor(before.sinotWagesMinor) + gross).toString(), deductions: { ...before.deductions }, employerContributions: { ...before.employerContributions }, employerWagesMinor: Object.fromEntries(Object.entries(before.employerWagesMinor).map(([code, value]) => [code, (minor(value) + gross).toString()])), locationIds: [...new Set([...before.locationIds, ...classified.pieces.map(p => p.locationId)])].sort() };
         for (const deduction of employeeDeductions)
             after.deductions[deduction.code] = (minor(before.deductions[deduction.code] ?? "0") + minor(deduction.amountMinor)).toString();
         for (const contribution of employerContributions)

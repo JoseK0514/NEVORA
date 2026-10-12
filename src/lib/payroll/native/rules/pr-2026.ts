@@ -6,7 +6,10 @@ export type PrCertificate = {
     halfDependents: number;
     deductionAllowances: number;
     veteran: boolean;
-    additionalMinor: string;
+    additionalMethod: "FIXED" | "PERCENTAGE";
+    additionalMinor: string | null;
+    additionalBasisPoints: number | null;
+    wageDollarRounding: "NONE" | "NEAREST_DOLLAR";
 };
 export type NativeCentRounding = "HALF_UP" | "TRUNCATE";
 /** Pinned official documents are retained in the author's rule evidence packet.
@@ -58,7 +61,20 @@ const brackets: Record<NativeFrequency, readonly (readonly [
 export function prIncomeWithholding(input: unknown) {
     if (!record(input) || typeof input.frequency !== "string" || !Object.hasOwn(exemptions, input.frequency) || !record(input.certificate) || (input.rounding !== "HALF_UP" && input.rounding !== "TRUNCATE"))
         return invalid();
-    const c = input.certificate, gross = minor(input.grossMinor), additional = minor(c.additionalMinor);
+    const c = input.certificate, paidGross = minor(input.grossMinor);
+    if (c.wageDollarRounding !== "NONE" && c.wageDollarRounding !== "NEAREST_DOLLAR")
+        return invalid();
+    const gross = c.wageDollarRounding === "NEAREST_DOLLAR" ? rounded(paidGross, BigInt(100), "HALF_UP") * BigInt(100) : paidGross;
+    let additionalNumerator: bigint;
+    if (c.additionalMethod === "FIXED" && c.additionalBasisPoints === null)
+        additionalNumerator = minor(c.additionalMinor) * BigInt(10000);
+    else if (c.additionalMethod === "PERCENTAGE" && c.additionalMinor === null) {
+        if (c.wageDollarRounding !== "NONE")
+            throw Error("UNSUPPORTED_CERTIFICATE_COMBINATION");
+        additionalNumerator = paidGross * BigInt(count(c.additionalBasisPoints, 10000));
+    }
+    else
+        return invalid();
     if (typeof c.personal !== "string" || !["INDIVIDUAL_FULL", "MARRIED_JOINT_FULL", "MARRIED_HALF_OR_OPTIONAL_FULL", "NONE"].includes(c.personal) || typeof c.veteran !== "boolean")
         return invalid();
     const full = count(c.fullDependents), half = count(c.halfDependents), allowances = count(c.deductionAllowances, 1000);
@@ -67,7 +83,7 @@ export function prIncomeWithholding(input: unknown) {
         + BigInt(c.veteran ? veteran : 0) + BigInt(dependent) * BigInt(full) + BigInt(shared) * BigInt(half) + BigInt(allowance) * BigInt(allowances);
     const taxable = max(BigInt(0), gross - exemption);
     const [, bp, subtract] = brackets[f].find(([upper]) => upper === null || taxable <= BigInt(upper))!;
-    const numerator = max(BigInt(0), taxable * BigInt(bp) - BigInt(subtract) * BigInt(10000)) + additional * BigInt(10000);
+    const numerator = max(BigInt(0), taxable * BigInt(bp) - BigInt(subtract) * BigInt(10000)) + additionalNumerator;
     return { amountMinor: rounded(numerator, BigInt(10000), input.rounding).toString(), exemptionMinor: exemption.toString(), taxableMinor: taxable.toString(), exactTax: { numerator: numerator.toString(), denominator: "10000" }, rounding: input.rounding };
 }
 function applicable2026(payday: unknown) {

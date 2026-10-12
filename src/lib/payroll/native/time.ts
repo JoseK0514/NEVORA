@@ -36,6 +36,10 @@ export function classifyRecordedTime(input: NativePayrollInput) {
             fail("WAGE_CONTEXT_ATTESTATION_REQUIRED", wage.id);
         if (Temporal.PlainDate.from(wage.workweekAnchorDate).dayOfWeek !== anchor.dayOfWeek || wage.overtime !== wages[0].overtime)
             fail("OVERTIME_POLICY_CONFLICT", wage.id);
+        if (wage.workweekStartTime !== "00:00" || wage.overtimeBasis !== "WEIGHTED_WEEKLY")
+            fail("UNSUPPORTED_WORKWEEK_BASIS", wage.id);
+        if (wage.wageCentRounding !== "HALF_UP")
+            fail("WAGE_CENT_RULE_UNVERIFIED", wage.id);
         hourlyRate(wage.hourlyRateMinor);
     }
     const entries = new Map<string, NativeRecordedEntry>();

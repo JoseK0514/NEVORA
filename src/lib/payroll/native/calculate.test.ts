@@ -2,8 +2,13 @@ import { describe, expect, it } from "vitest";
 import { calculateNativePayroll } from "./calculate";
 import type { NativePayrollInput, NativePayrollReady, NativeRecordedEntry } from "./contracts";
 import { input, entry } from "./fixtures.test-support";
-function ready(i: NativePayrollInput): NativePayrollReady { const result = calculateNativePayroll(i); expect(result.state, JSON.stringify(result)).toBe("ready"); if (result.state !== "ready")
-    throw Error("Expected ready"); return result; }
+function ready(i: NativePayrollInput): NativePayrollReady {
+    const result = calculateNativePayroll(i);
+    expect(result.state, JSON.stringify(result)).toBe("ready");
+    if (result.state !== "ready")
+        throw Error("Expected ready");
+    return result;
+}
 describe("actual finalized recorded-time payroll", () => {
     it("pays recorded eight hours without schedule or planning-rate input", () => { const r = ready(input()); expect(r.row).toMatchObject({ grossMinor: "16000", netMinor: "14728" }); expect(r.breakdown).toMatchObject({ regularNanoseconds: "28800000000000", overtimeNanoseconds: "0", locationIds: ["L1"] }); });
     it("cannot change wages when extraneous schedule estimates change", () => { const i = input(); const a = ready({ ...i, scheduledHours: 40, planningRate: 999 } as NativePayrollInput); const b = ready({ ...i, scheduledHours: 1, planningRate: 1 } as NativePayrollInput); expect(a.row).toEqual(b.row); expect(a.row.grossMinor).toBe("16000"); });

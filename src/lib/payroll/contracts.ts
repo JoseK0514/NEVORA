@@ -236,7 +236,7 @@ export type PayrollRunCommand = { operationId: string } & (
 );
 export type PayrollReceipt = {
   operationId: string;
-  action: PayrollSettingsCommand["action"] | PayrollRunCommand["action"];
+  action: PayrollSettingsCommand["action"] | PayrollRunCommand["action"] | import("./native/contracts").NativeProfileCommand["action"];
   runId?: string;
   revision?: number;
   jobId?: string;
