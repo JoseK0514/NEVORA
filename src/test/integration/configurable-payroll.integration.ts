@@ -1045,9 +1045,13 @@ it("private open denies another employee, disabled flag, inactive account and ch
     `https://example.invalid/app/notifications/open?notificationId=${a.id}`,
   );
   expect((await handler("c34-b")(request)).status).toBe(404);
-  expect((await handler("c34-a")(request)).headers.get("location")).toBe(
-    "https://example.invalid/app/my-pay",
-  );
+  const currentOwner = await handler("c34-a")(request);
+  expect(currentOwner.status).toBe(303);
+  expect(currentOwner.headers.get("location")).toBe("/app/my-pay");
+  expect(currentOwner.headers.get("cache-control")).toBe("no-store");
+  expect(
+    new URL(currentOwner.headers.get("location")!, "https://portal.example").href,
+  ).toBe("https://portal.example/app/my-pay");
   process.env.NEVORA_PAYROLL_ENABLED = "false";
   expect((await handler("c34-a")(request)).status).toBe(404);
   process.env.NEVORA_PAYROLL_ENABLED = "true";
