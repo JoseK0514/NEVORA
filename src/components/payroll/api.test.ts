@@ -27,4 +27,13 @@ describe('payroll UI contract boundary', () => {
     expect(readReceipt({ receipt: { operationId: 'fictional-id', action: 'PREPARE' } })).toEqual({ operationId: 'fictional-id', action: 'PREPARE' });
     expect(() => readReceipt({})).toThrow();
   });
+  it('preserves unknown backlog counts and rejects malformed additive history or readiness', () => {
+    const capabilities = { enabled: true, canConfigure: true, canReview: true, canApprove: true, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED', noticeDelivery: 'DISABLED' };
+    const backlog = { asOfDate: '2026-10-12', rangeStart: null, rangeEnd: '2026-10-12', missingCount: null, remainingCount: null, returnedCount: 0, ambiguousCount: null, overflow: true };
+    const envelope = { version: 'PAYROLL_API_V1', capabilities, runs: [], jobs: [], missingPeriods: [], backlog };
+    expect(readRuns(envelope).backlog?.missingCount).toBeNull();
+    expect(() => readRuns({ ...envelope, backlog: { ...backlog, missingCount: '0' } })).toThrow();
+    expect(() => readRuns({ ...envelope, capabilities: { ...capabilities, noticeDelivery: 'DELIVERED' } })).toThrow();
+    expect(() => readRuns({ ...envelope, missingPeriods: [{ period: amounts.period, payday: amounts.payday, settingsRevision: 1, state: ['MISSING'], issues: [] }] })).toThrow();
+  });
 });

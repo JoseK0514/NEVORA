@@ -1,7 +1,7 @@
 import type { PayrollReceipt, PayrollRunsResponse, PayrollSettingsResponse, PayrollStatementsResponse, PayrollImport, PayrollAmountLine, PayrollImportRow } from '@/lib/payroll/contracts';
 
 export class PayrollRequestError extends Error {
-  constructor(message: string, readonly status: number) { super(message); }
+  constructor(message: string, readonly status: number, readonly code = '') { super(message); }
 }
 export function record(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);
@@ -9,8 +9,12 @@ export function record(value: unknown): value is Record<string, unknown> {
 function envelope(value: unknown): asserts value is Record<string, unknown> {
   if (!record(value) || value.version !== 'PAYROLL_API_V1') throw new Error('The payroll response could not be read. Refresh to try again.');
 }
+function validDate(value: unknown): value is string {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
+}
 function capabilities(value: unknown) {
   if (!record(value) || !['enabled', 'canConfigure', 'canReview', 'canApprove'].every(key => typeof value[key] === 'boolean') || value.internalCalculatorAvailable !== false || value.bankCompatibility !== 'UNVERIFIED') throw new Error('The payroll access response could not be read.');
+  if (value.noticeDelivery !== undefined && value.noticeDelivery !== 'ENABLED' && value.noticeDelivery !== 'DISABLED') throw new Error('The payroll notice readiness response could not be read.');
 }
 export function readSettings(value: unknown): PayrollSettingsResponse {
   envelope(value); capabilities(value.capabilities);
@@ -20,6 +24,11 @@ export function readSettings(value: unknown): PayrollSettingsResponse {
 export function readRuns(value: unknown): PayrollRunsResponse {
   envelope(value); capabilities(value.capabilities);
   if (!Array.isArray(value.runs) || !Array.isArray(value.jobs)) throw new Error('The payroll review response is incomplete.');
+  if (value.missingPeriods !== undefined && (!Array.isArray(value.missingPeriods) || value.missingPeriods.some(item => !record(item) || !record(item.period) || !validDate(item.period.startDate) || !validDate(item.period.endDate) || !validDate(item.payday) || !Number.isInteger(item.settingsRevision) || Number(item.settingsRevision) < 1 || (item.state !== 'MISSING' && item.state !== 'AMBIGUOUS_TRANSITION') || !Array.isArray(item.issues) || item.issues.some(issue => typeof issue !== 'string')))) throw new Error('The missing-period review response could not be read.');
+  if (value.backlog !== undefined) {
+    const backlog = value.backlog;
+    if (!record(backlog) || !validDate(backlog.asOfDate) || !validDate(backlog.rangeEnd) || (backlog.rangeStart !== null && !validDate(backlog.rangeStart)) || typeof backlog.overflow !== 'boolean' || !Number.isInteger(backlog.returnedCount) || Number(backlog.returnedCount) < 0 || ['missingCount', 'remainingCount', 'ambiguousCount'].some(key => backlog[key] !== null && (!Number.isInteger(backlog[key]) || Number(backlog[key]) < 0))) throw new Error('The payroll history summary could not be read.');
+  }
   return value as PayrollRunsResponse;
 }
 export function readStatements(value: unknown): PayrollStatementsResponse {
@@ -53,7 +62,7 @@ export async function payrollRequest(path: string, command?: object): Promise<un
     };
     const message = messages[code] ?? (record(value) && typeof value.message === 'string' ? value.message : 'Payroll could not complete this request.');
     const issues = record(value) && Array.isArray(value.issues) ? value.issues.filter(record).filter(issue => typeof issue.path === 'string' && typeof issue.message === 'string').map(issue => `${issue.path}: ${issue.message}`).join(' ') : '';
-    throw new PayrollRequestError(`${message}${issues ? ` ${issues}` : ''}`, response.status);
+    throw new PayrollRequestError(`${message}${issues ? ` ${issues}` : ''}`, response.status, code);
   }
   return value;
 }
@@ -68,7 +77,7 @@ export function parsePayrollImport(text: string): PayrollImport {
   let value: unknown;
   try { value = JSON.parse(text); } catch { throw new Error('Choose a valid JSON payroll import.'); }
   if (!record(value) || value.schema !== 'NEVORA_PAYROLL_IMPORT_V1' || value.currency !== 'USD' || typeof value.sourceName !== 'string' || !value.sourceName.trim() || typeof value.sourceReference !== 'string' || !value.sourceReference.trim() || !record(value.period) || typeof value.period.startDate !== 'string' || typeof value.period.endDate !== 'string' || typeof value.payday !== 'string' || !rows(value.rows)) throw new Error('Use NEVORA_PAYROLL_IMPORT_V1 with USD, a source reference, dates and complete employee amounts. Amounts must be nonnegative whole cents as strings.');
-  if (![value.period.startDate, value.period.endDate, value.payday].every(date => /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(date)) && new Date(date).toISOString().slice(0, 10) === date)) throw new Error('Import dates must be valid dates in YYYY-MM-DD format.');
+  if (![value.period.startDate, value.period.endDate, value.payday].every(validDate)) throw new Error('Import dates must be valid dates in YYYY-MM-DD format.');
   if (value.period.startDate > value.period.endDate || (Date.parse(value.period.endDate) - Date.parse(value.period.startDate)) / 86400000 > 30 || value.payday < value.period.endDate) throw new Error('Choose a period of 1 to 31 days and a payday on or after the period ends.');
   if (new Set(value.rows.map(row => row.employeeId)).size !== value.rows.length) throw new Error('Each employee must appear once in the import.');
   return value as PayrollImport;

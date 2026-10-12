@@ -111,6 +111,12 @@
 .payroll-workflow .pw-history strong { font-size: 13px; font-weight: 550; }
 .payroll-workflow .pw-history p { font-size: 13px; line-height: 1.6; color: var(--design-text-secondary); margin: 7px 0; }
 .payroll-workflow .pw-statements { display: grid; gap: 22px; }
+.payroll-workflow .pw-backlog-list { display: grid; gap: 12px; margin: 18px 0; }
+.payroll-workflow .pw-backlog-period { min-width: 0; border: 1px solid var(--design-surface); border-radius: 13px; padding: 16px; }
+.payroll-workflow .pw-backlog-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.payroll-workflow .pw-backlog-heading strong { display: block; font-size: 13px; font-weight: 550; }
+.payroll-workflow .pw-backlog-heading small { display: block; margin-top: 6px; }
+.payroll-workflow .pw-backlog-confirm { border-top: 1px solid var(--design-surface); margin-top: 16px; padding-top: 10px; }
 .payroll-workflow .pw-statements header p { font-size: 12px; color: var(--design-text-secondary); margin: 6px 0 15px; }
 @media (max-width: 1199px) { .payroll-workflow .pw-review-layout { grid-template-columns: 1fr; } .payroll-workflow .pw-run-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); } }
 @media (max-width: 600px) {
@@ -129,6 +135,7 @@
   .payroll-workflow .pw-subheading { align-items: flex-start; flex-direction: column; }
   .payroll-workflow .pw-search { width: 100%; max-width: none; }
   .payroll-workflow .pw-job { align-items: flex-start; flex-direction: column; }
+  .payroll-workflow .pw-backlog-heading { align-items: flex-start; flex-direction: column; }
   .payroll-workflow .pw-tabs { width: 100%; gap: 1px; }
   .payroll-workflow .pw-tabs a { flex: 1; justify-content: center; padding-inline: 9px; font-size: 12px; }
   .payroll-workflow .pw-employee-amount summary { gap: 10px; }

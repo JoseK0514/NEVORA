@@ -1,6 +1,6 @@
 # Payroll workflow UI lane
 
-Status: P1 workflow UI implemented and verified against the published backend. P2 missing-period review and queued-notice contract adoption follows this checkpoint.
+Status: P1 checkpoint `02249f5` verified. P2 missing-period review, queued-notice presentation and the frozen review's correction/recovery follow-ups implemented; final matching verification and checkpoint are recorded below when complete.
 
 Integration owner: **Check findings resolution status**, chat `01a12fbf-5174-7e22-8d66-3aa154492b71`.
 UI owner: **Redesign payroll exports**, chat `01a13031-8ae8-7401-bf2c-c5e50fb7347b`.
@@ -33,9 +33,15 @@ Definitive `src/lib/payroll/contracts.ts` was published as `4272655` and adopted
 
 The integration owner established server helpers `payrollFeatureEnabled` and `readPayrollCapabilities` in `src/lib/payroll/service.ts`, with an actual server-derived session proof. Published backend `f1da5a0` was adopted as `b5bdd94`. Disabled navigation preserves the existing shell. Current finance capabilities, rather than Manager role alone, control financial entry points; every current active employee may use self statements.
 
-The UI stores only one opaque operation UUID for recovery. It retains a retry payload only in page memory. A lost response can retrieve the actor-scoped receipt after reload; a missing receipt remains explicitly unconfirmed. Approval includes the exact run revision and review token. A source conflict requires reimport/review; the UI does not compute taxes or net pay. USD display and dollar-form parsing use integer/decimal strings and BigInt, including values beyond the safe Number range.
+The UI stores only an opaque operation UUID under an opaque actor/workspace scope. No employee identity, credential, money, bank data or request payload is persisted. The current server identity derives the scope; pages remount on scope change. The original actor retains recovery across a legitimate session renewal, while another actor is not locked by that reference. Each API call checks its current server session and authority. Retry payloads remain only in page memory. A lost committed response can retrieve the actor-scoped receipt after reload. If no receipt exists and the payload was lost, explicit original-action re-entry unlocks forms and reuses the same UUID. It never clears an ambiguous reference to generate a replacement. A raced recorded UUID rejects changed details, retains the reference and allows receipt recovery. Legacy unscoped keys are not inherited by a different actor; this pre-release P1 format was not deployed.
 
-Provider and bank-channel selectors record preferences only. They claim no connected account, native provider format, bank enrollment, submission or processing. Neutral JSON remains the amount input. Reminder jobs explicitly say delivery is disabled and no reminder was sent, even if stub preparation succeeded. Any future real delivery contract must be separately adopted.
+Approval includes the exact run revision and review token. A source conflict requires reimport/review; the UI does not compute taxes or net pay. USD display and dollar-form parsing use integer/decimal strings and BigInt, including values beyond the safe Number range. `CORRECTION_REASON:` is informational metadata; it remains visible separately from real import/custody failures. A valid linked correction can proceed through review, approval and publication without an extra import. Unknown failures remain blocking and visible. Known draft/time/population codes explain the next action in plain language.
+
+Provider and bank-channel selectors record preferences only. They claim no connected account, native provider format, bank enrollment, submission or processing. Neutral JSON remains the amount input. Published P2 contract `4392463`, backend `ed7d2c2` and schedule-transition fix `76610d7` were adopted as `360d47d`, `945ab78` and `7d289e7`.
+
+Missing periods are server-authoritative, oldest first and bounded to 50. The page shows three initially, with every returned period available. Manual period review precedes PREPARE; ambiguous transitions require explicit acknowledgment. Drafts never finalize time or approve amounts. Overflow/null counts remain unknown and expose no invented periods. Existing current runs remain available alongside older gaps.
+
+Notice job outcomes distinguish QUEUED, QUEUED_DELIVERY_DISABLED, NO_CURRENT_RECIPIENTS and legacy NOT_SENT_STUB. Runtime readiness never implies consent, sending or receipt. Settings use one 0–31-day preparation window, projecting legacy arrays to their maximum effective threshold and saving one value when enabled. Turning notices off saves an empty lead array. The toggle explains that it also gates private statement-availability notices after publication. Actual transport remains disabled in all owned QA.
 
 The initial interface inventory/reference/acceptance proposal is saved in the previous UI checkout at `docs/handoffs/2026-10-12-payroll-ui-contract.md`, committed as `558109f`. The integration plan now supplies the common base; that earlier proposal does not override the shared domain contract.
 
@@ -61,3 +67,17 @@ WebKit at 320px initially painted the long native bank-profile selection beyond 
 Keep approved DESIGN.MD tokens, local typefaces, Phosphor icons and restrained motion. Desktop uses compact panels and aligned values; mobile uses a natural single column, 16px fields, 44px targets and visible focus. Preserve every original mapping/retry/download/population action while exposing new workflow states only when supported.
 
 No production deployment, notification, bank submission, statutory calculation or independent acceptance is authorized by this preparation.
+
+## Final P2 acceptance scope
+
+The frozen P1 engineering review at the integration owner's `.omo/evidence/payroll-ui-code-review.md` requested changes for UI-H1 (absent-receipt recovery and actor isolation) and UI-M1 (correction reason blocking approval). This UI lane supplies fixes and direct browser evidence. Final finding disposition and combined-candidate acceptance belong to the review/integration owner.
+
+Final owned browser scenarios include actual correction create/review/approve/publish; abort-before-server and reload with an absent receipt; explicit same-reference reconstruction; Owner/reviewer/Owner same-browser isolation and renewed-session recovery; a concurrently recorded UUID rejecting changed reconstruction while preserving its reference; oldest missing periods with a latest original run already present; PREPARE exact replay with one draft and no approval; a real repeated scheduler/private worker creating one QUEUED_DELIVERY_DISABLED result; and real historical schedule transitions requiring acknowledgment. Empty/error/loading and overflow presentation fixtures are explicitly injected UI states. Overflow testing does not claim an oversized live history was generated. No external sender is invoked.
+
+Final evidence roots in the parent chat:
+
+- `work/payroll-workflow-p2-browser-evidence/report.json`, matching owned app manifest/ownership/browser report and `work/payroll-workflow-p2-browser.log`.
+- `work/payroll-exports-final-evidence/report.json`, matching owned app manifest/ownership/browser report and `work/payroll-exports-final-browser.log`.
+- `work/payroll-workflow-final-unit-tests.log` and `work/payroll-workflow-final-build-checks.log`.
+
+The final source checkpoint, actual check counts, source-hash comparison and copied user-facing evidence are recorded in the parent chat's `outputs/payroll-workflow-ui.md`. Earlier failed runs remain retained with their failure reports; they do not count as successful final evidence. This lane is local and unpushed, with no main merge or deployment. Master assembly must adopt the UI-only checkpoints on the matching backend lineage and preserve its newer shell/styles/session changes during reconciliation.

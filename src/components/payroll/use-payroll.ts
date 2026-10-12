@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PayrollRunCommand, PayrollSettingsCommand } from '@/lib/payroll/contracts';
 import { PayrollRequestError, payrollRequest, readReceipt } from './api';
 
-const referenceKey = 'nevora-payroll-operation';
 type Command = PayrollRunCommand | PayrollSettingsCommand;
 type WithoutOperation<T> = T extends unknown ? Omit<T, 'operationId'> : never;
 
@@ -45,30 +44,36 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   return { data, loading, error, reload };
 }
 
-export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payroll/runs', reload: () => Promise<void>) {
+export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payroll/runs', reload: () => Promise<void>, recoveryScope: string) {
+  const referenceKey = `nevora-payroll-operation:${recoveryScope}`;
   const [pending, setPending] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [retryAvailable, setRetryAvailable] = useState(false);
   const [revisionConflict, setRevisionConflict] = useState(false);
+  const [unconfirmed, setUnconfirmed] = useState(false);
+  const [resuming, setResuming] = useState(false);
   const reference = useRef<string | null>(null);
   const command = useRef<Command | null>(null);
+  const reconstructedCommand = useRef(false);
   const inFlight = useRef(false);
 
   const finish = useCallback((id: string) => {
     if (localStorage.getItem(referenceKey) === id) localStorage.removeItem(referenceKey);
-    reference.current = null; command.current = null;
-    setPending(null); setRetryAvailable(false);
-  }, []);
+    reference.current = null; command.current = null; reconstructedCommand.current = false;
+    setPending(null); setRetryAvailable(false); setUnconfirmed(false); setResuming(false);
+  }, [referenceKey]);
   const check = useCallback(async (id = reference.current) => {
     if (!id || inFlight.current) return;
     inFlight.current = true; setBusy(true); setError('');
     try {
       const receipt = readReceipt(await payrollRequest(`/api/payroll/receipts?operationId=${encodeURIComponent(id)}`));
+      if (receipt && receipt.operationId !== id) throw new Error('The returned receipt does not match this action reference. Check the same reference again.');
       if (receipt && receipt.operationId === id) {
         finish(id); setMessage('Action recorded. Review the current status below.'); await reload();
       } else {
+        setUnconfirmed(true);
         setMessage('No receipt is available yet. Check this same reference again; the action has not been confirmed.');
       }
     } catch (failure) {
@@ -85,36 +90,46 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
       if (stored) { reference.current = stored; setPending(stored); void check(stored); }
     });
     return () => { active = false; };
-  }, [check]);
+  }, [check, referenceKey]);
 
-  const dispatch = async (next: Command) => {
+  const dispatch = async (next: Command, reconstructed = false) => {
     if (inFlight.current) return;
-    inFlight.current = true; setBusy(true); setError(''); setMessage(''); setRevisionConflict(false);
+    inFlight.current = true; setBusy(true); setError(''); setMessage(''); setRevisionConflict(false); setResuming(false); setUnconfirmed(false);
     try {
       const receipt = readReceipt(await payrollRequest(path, next));
       if (!receipt || receipt.operationId !== next.operationId) throw new Error('The action response is unconfirmed. Check its saved reference.');
       finish(next.operationId); setMessage('Action recorded. Review the current status below.'); await reload();
     } catch (failure) {
-      if (failure instanceof PayrollRequestError && [400, 401, 403, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
+      if (failure instanceof PayrollRequestError && (failure.code === 'OPERATION_CONFLICT' || (reconstructed && [400, 409].includes(failure.status)))) {
+        command.current = null; setRetryAvailable(false);
+        setMessage('This reference remains unconfirmed. Check the original action before reconstructing it again; a recorded reference cannot accept changed details.');
+        await reload();
+      }
+      else if (failure instanceof PayrollRequestError && [400, 401, 403, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
       else setRetryAvailable(true);
       setError(failure instanceof Error ? failure.message : 'The action response was interrupted. Check its reference.');
     } finally { inFlight.current = false; setBusy(false); }
   };
   const submit = async (input: WithoutOperation<Command>) => {
-    if (reference.current || inFlight.current) return;
+    if ((reference.current && !resuming) || inFlight.current) return;
     if ('reason' in input && (!input.reason || input.reason.length > 300 || /[\u0000-\u001f\u007f]/.test(input.reason))) {
       setError('Enter a single-line reason of 1 to 300 characters.'); return;
     }
-    const operationId = crypto.randomUUID();
+    const reconstructed = resuming && !!reference.current;
+    const operationId = reconstructed ? reference.current! : crypto.randomUUID();
     try {
       const previous = localStorage.getItem(referenceKey);
-      if (previous) { reference.current = previous; setPending(previous); await check(previous); return; }
+      if (previous && (!reconstructed || previous !== operationId)) { reference.current = previous; setPending(previous); setResuming(false); await check(previous); return; }
       localStorage.setItem(referenceKey, operationId);
     }
     catch { setError('The browser could not save a recovery reference. Enable browser storage before recording this action.'); return; }
     const next = { ...input, operationId } as Command;
-    reference.current = operationId; command.current = next; setPending(operationId);
-    await dispatch(next);
+    reference.current = operationId; command.current = next; reconstructedCommand.current = reconstructed; setPending(operationId);
+    await dispatch(next, reconstructed);
   };
-  return { pending, busy, message, error, retryAvailable, revisionConflict, submit, check: () => check(), retry: () => command.current ? dispatch(command.current) : check() };
+  return { pending, busy, message, error, retryAvailable, revisionConflict, resuming, locked: busy || (!!pending && !resuming),
+    resumeAvailable: unconfirmed && !retryAvailable && !busy && !resuming,
+    resume: () => { if (unconfirmed && !command.current && !inFlight.current) { setResuming(true); setError(''); setMessage('Re-enter the original action and details below. Submission will reuse this exact reference; changed details cannot replace a recorded action.'); } },
+    pauseResume: () => setResuming(false),
+    submit, check: () => check(), retry: () => command.current ? dispatch(command.current, reconstructedCommand.current) : check() };
 }

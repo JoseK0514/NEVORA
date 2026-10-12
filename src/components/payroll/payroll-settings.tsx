@@ -7,6 +7,7 @@ import { readSettings } from './api';
 import { dollarsToMinor, minorToDollars } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import { OperationFeedback, PayrollFrame, PayrollPanel, PayrollState, PrivacyNote } from './payroll-ui';
+import { noticeReadiness, reminderWindow } from './workflow-status';
 
 function today() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
 const defaults: PayrollPreferences = {
@@ -36,9 +37,9 @@ function rulesFromForm(values: FormData, rules: PayrollRule[]): PayrollRule[] {
   });
 }
 
-export function PayrollSettings() {
+export function PayrollSettings({ recoveryScope }: { recoveryScope: string }) {
   const resource = usePayrollResource('/api/payroll/settings', readSettings);
-  const operation = usePayrollOperation('/api/payroll/settings', resource.reload);
+  const operation = usePayrollOperation('/api/payroll/settings', resource.reload, recoveryScope);
   const revision = resource.data?.revisions.reduce((latest, item) => item.revision > (latest?.revision ?? 0) ? item : latest, resource.data.revisions[0]);
   return <PayrollFrame title="Payroll settings" description="Set company defaults, effective dates and authorized employee exceptions." settings>
     <OperationFeedback operation={operation} />
@@ -48,7 +49,7 @@ export function PayrollSettings() {
       <EmployeeException data={resource.data} preferences={revision?.preferences ?? defaults} operation={operation} />
       <PayrollAccess data={resource.data} operation={operation} />
       <PayrollPanel title="Settings history" description="Saved revisions record their effective date and reason.">{resource.data.revisions.length ? <div className="pw-history">{[...resource.data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {item.effectiveFrom}</strong><p>{item.reason}</p><small>Recorded {new Date(item.createdAt).toLocaleString()}</small></div>)}</div> : <p className="pw-small">No settings revisions have been saved.</p>}</PayrollPanel>
-      <PrivacyNote>Only the owner can configure payroll and access grants. Provider imports supply actual payroll amounts. Reminder delivery is disabled; saved reminder preferences currently prepare private references only.</PrivacyNote>
+      <PrivacyNote>Only the owner can configure payroll and access grants. Provider imports supply actual payroll amounts. {noticeReadiness(resource.data.capabilities)}</PrivacyNote>
     </>}
   </PayrollFrame>;
 }
@@ -56,14 +57,12 @@ export function PayrollSettings() {
 function CompanyPreferences({ preferences, revision, data, operation }: { preferences: PayrollPreferences; revision: number; data: PayrollSettingsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const [rules, setRules] = useState(preferences.rules);
   const [error, setError] = useState('');
-  const locked = operation.busy || !!operation.pending;
+  const [noticesEnabled, setNoticesEnabled] = useState(preferences.automation.reminders);
+  const locked = operation.locked;
   const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
     try {
-      const reminderText = String(values.get('reminderDays') ?? '').trim();
-      const reminderLeadDays = reminderText ? reminderText.split(',').map(value => integer(value.trim(), 'Reminder days', 0, 31)) : [];
-      if (reminderLeadDays.length > 10) throw new Error('Choose up to ten reminder days.');
-      if (values.has('reminders') && reminderLeadDays.length === 0) throw new Error('Choose at least one reminder day before enabling reminders.');
+      const reminderLeadDays = values.has('reminders') ? [integer(values.get('reminderDays'), 'Preparation reminder window', 0, 31)] : [];
       const next: PayrollPreferences = {
         companyName: String(values.get('companyName')).trim(), currency: 'USD', language: values.get('language') === 'es' ? 'es' : 'en',
         schedule: { frequency: preferences.schedule.frequency, anchorDate: String(values.get('anchorDate')), paydayOffsetDays: integer(values.get('paydayOffset'), 'Payday offset', 0, 31) },
@@ -90,7 +89,7 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       <label>Payday after period end<input type="number" name="paydayOffset" min={0} max={31} required defaultValue={preferences.schedule.paydayOffsetDays} /><small>Days after the period ends.</small></label>
     </div><p className="pw-small">Weekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days 1–15 and 16–month end; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.</p></section>
     <section className="pw-section"><h3>Deductions and contributions</h3><p className="pw-small">These rules record company policy and employee elections. Actual amounts must come from the provider import. Missing configuration is not a zero tax or an exemption.</p><RuleEditor rules={rules} onChange={setRules} /><button className="pw-button pw-secondary" type="button" onClick={() => setRules(items => [...items, newRule()])}><PlusIcon size={18} aria-hidden />Add rule</button></section>
-    <section className="pw-section"><h3>Automation</h3><p className="pw-small">Preparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.</p><label className="pw-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>Prepare scheduled drafts</span></label><label className="pw-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>Publish statements after an authorized approval</span></label><label className="pw-check"><input name="reminders" type="checkbox" defaultChecked={preferences.automation.reminders} /><span>Enable preparation reminders</span></label><label>Reminder days before payday<input name="reminderDays" inputMode="numeric" placeholder="For example: 3, 1" defaultValue={preferences.automation.reminderLeadDays.join(', ')} /><small>Separate days with commas; 0 is payday.</small></label></section>
+    <section className="pw-section"><h3>Automation</h3><p className="pw-small">Preparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.</p><label className="pw-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>Prepare scheduled drafts</span></label><label className="pw-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>Publish statements after an authorized approval</span></label><label className="pw-check"><input name="reminders" type="checkbox" checked={noticesEnabled} onChange={event => setNoticesEnabled(event.target.checked)} /><span>Queue private payroll notices</span></label><label>Preparation reminder window<input aria-label="Preparation reminder window" aria-describedby="payroll-notice-window-help" name="reminderDays" type="number" min={0} max={31} required={noticesEnabled} disabled={!noticesEnabled} defaultValue={reminderWindow(preferences.automation.reminderLeadDays)} /><small id="payroll-notice-window-help">Remind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.</small></label><p className="pw-small">The notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.</p><p className="pw-small">{noticeReadiness(data.capabilities)}</p></section>
     <section className="pw-section"><h3>Payment instructions</h3><div className="pw-fields">
       <label>Output profile<select aria-label="Output profile" name="bankProfile" defaultValue={preferences.bankProfile ?? ''}><option value="">No payment output configured</option><option value="NEUTRAL_UNVERIFIED">Neutral instructions · compatibility unverified</option></select></label>
       <label>Desired bank channel<select aria-label="Desired bank channel" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No channel preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or channel</option></select></label>
@@ -127,7 +126,7 @@ function ImpactPreview({ data }: { data: PayrollSettingsResponse }) {
 function EmployeeException({ data, preferences, operation }: { data: PayrollSettingsResponse; preferences: PayrollPreferences; operation: ReturnType<typeof usePayrollOperation> }) {
   const [employeeId, setEmployeeId] = useState(data.employees.find(employee => employee.active)?.id ?? '');
   const exception = data.exceptions.filter(item => item.exception.employeeId === employeeId).sort((a, b) => b.revision - a.revision)[0];
-  return <PayrollPanel title="Employee exceptions" description="Employees inherit company defaults unless an authorized exception takes effect."><label>Employee<select aria-label="Employee" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.busy || !!operation.pending}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option value={employee.id} key={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <ExceptionForm key={`${employeeId}:${exception?.revision ?? 0}`} employeeId={employeeId} revision={exception?.revision ?? 0} language={exception?.exception.language ?? null} initialRules={exception?.exception.rules ?? null} preferences={preferences} data={data} operation={operation} />}</PayrollPanel>;
+  return <PayrollPanel title="Employee exceptions" description="Employees inherit company defaults unless an authorized exception takes effect."><label>Employee<select aria-label="Employee" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option value={employee.id} key={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <ExceptionForm key={`${employeeId}:${exception?.revision ?? 0}`} employeeId={employeeId} revision={exception?.revision ?? 0} language={exception?.exception.language ?? null} initialRules={exception?.exception.rules ?? null} preferences={preferences} data={data} operation={operation} />}</PayrollPanel>;
 }
 function ExceptionForm({ employeeId, revision, language, initialRules, preferences, data, operation }: { employeeId: string; revision: number; language: 'en' | 'es' | null; initialRules: PayrollRule[] | null; preferences: PayrollPreferences; data: PayrollSettingsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const [inherit, setInherit] = useState(initialRules === null);
@@ -137,7 +136,7 @@ function ExceptionForm({ employeeId, revision, language, initialRules, preferenc
     event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
     try { const chosen = values.get('exceptionLanguage'); void operation.submit({ action: 'SAVE_EXCEPTION', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), exception: { employeeId, language: chosen === 'en' || chosen === 'es' ? chosen : null, rules: inherit ? null : rulesFromForm(values, rules) } }); }
     catch (failure) { setError(failure instanceof Error ? failure.message : 'Check this employee exception.'); }
-  }}><fieldset disabled={operation.busy || !!operation.pending}>
+  }}><fieldset disabled={operation.locked}>
     <p className="pw-small">Exception revision {revision} · Provider imports continue to determine actual gross and net pay.</p>
     <label>Statement language<select aria-label="Statement language" name="exceptionLanguage" defaultValue={language ?? ''}><option value="">Inherit company language</option><option value="en">English</option><option value="es">Español</option></select></label>
     <label className="pw-check"><input type="checkbox" checked={inherit} onChange={event => setInherit(event.target.checked)} /><span>Inherit company deduction and contribution rules</span></label>
@@ -151,7 +150,7 @@ function ExceptionForm({ employeeId, revision, language, initialRules, preferenc
 function PayrollAccess({ data, operation }: { data: PayrollSettingsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const [employeeId, setEmployeeId] = useState('');
   const grant = data.grants.find(item => item.employeeId === employeeId);
-  return <PayrollPanel title="Payroll access" description="Manager time-review permission does not grant access to financial records."><label>Grant recipient<select aria-label="Grant recipient" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.busy || !!operation.pending}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option key={employee.id} value={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <GrantForm key={`${employeeId}:${grant?.revision ?? 0}`} employeeId={employeeId} revision={grant?.revision ?? 0} review={grant?.review ?? false} approve={grant?.approve ?? false} operation={operation} />}</PayrollPanel>;
+  return <PayrollPanel title="Payroll access" description="Manager time-review permission does not grant access to financial records."><label>Grant recipient<select aria-label="Grant recipient" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option key={employee.id} value={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <GrantForm key={`${employeeId}:${grant?.revision ?? 0}`} employeeId={employeeId} revision={grant?.revision ?? 0} review={grant?.review ?? false} approve={grant?.approve ?? false} operation={operation} />}</PayrollPanel>;
 }
 function GrantForm({ employeeId, revision, review, approve, operation }: { employeeId: string; revision: number; review: boolean; approve: boolean; operation: ReturnType<typeof usePayrollOperation> }) {
   const [canReview, setReview] = useState(review);
@@ -159,7 +158,7 @@ function GrantForm({ employeeId, revision, review, approve, operation }: { emplo
   return <form className="pw-form" onSubmit={event => {
     event.preventDefault(); const values = new FormData(event.currentTarget);
     void operation.submit({ action: 'SET_GRANT', expectedRevision: revision, reason: String(values.get('reason')).trim(), grant: { employeeId, review: canReview, approve: canApprove } });
-  }}><fieldset disabled={operation.busy || !!operation.pending}>
+  }}><fieldset disabled={operation.locked}>
     <label className="pw-check"><input type="checkbox" checked={canReview} onChange={event => { setReview(event.target.checked); if (!event.target.checked) setApprove(false); }} /><span>Review payroll amounts and documents</span></label>
     <label className="pw-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>Approve an exact reviewed payroll revision</span></label>
     <label>Access change reason<textarea name="reason" required maxLength={300} rows={3} /></label>
