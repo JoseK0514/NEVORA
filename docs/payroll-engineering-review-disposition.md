@@ -17,11 +17,22 @@ separate.
   regression first reproduced the incorrect MISSING result. All effective
   schedule changes inside the period are now considered. Six focused tests and
   36 real disposable PostgreSQL payroll scenarios passed, including an ambiguous
-  period producing zero automatic jobs. Reviewer recheck remains pending.
+  period producing zero automatic jobs. The frozen recheck approved this repair
+  with no blockers; `.omo/evidence/payroll-transition-recheck.md` retains the verdict.
+- UI H1, unconfirmed action recovery: the frozen `68c1887` UI can lock mutations
+  after a pre-commit interruption and reload. A global reference can also strand a
+  different signed-in actor. The UI owner is implementing same-reference re-entry
+  and actor/session isolation, with actual browser regressions. Acceptance remains
+  pending.
+- UI M1, correction approval: informational `CORRECTION_REASON` entries currently
+  disable approval in the frozen UI. The UI owner is separating informational
+  notes from blocking failures and testing correction approval/publication.
+  Acceptance remains pending.
 
 Review artifacts are retained under `.omo/evidence/payroll-p1-code-review.md`
-and `.omo/evidence/payroll-p2-code-review.md`. Their original REQUEST_CHANGES
-verdicts are preserved; this document does not rewrite either report.
+and `.omo/evidence/payroll-p2-code-review.md`, plus the frozen UI report at
+`.omo/evidence/payroll-ui-code-review.md`. Their original REQUEST_CHANGES verdicts
+are preserved; this document does not rewrite those reports.
 
 ## Bounded maintenance exception: P1 M3
 
