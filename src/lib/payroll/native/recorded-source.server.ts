@@ -258,9 +258,11 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
           const k = record(b.classification);
           const keys = ['id', 'version', 'name', 'category', 'targetMinutes'];
           if (Object.keys(k).length !== keys.length || !keys.every(key => Object.hasOwn(k, key))) fail();
+          const name = text(k.name, 160);
+          if ([...name].length > 80) fail(); // Match retained break types and PostgreSQL char_length; preserve the original string.
           const targetMinutes = k.targetMinutes === null ? null : integer(k.targetMinutes, 1);
           if (targetMinutes !== null && targetMinutes > 1440) fail();
-          classification = { id: text(k.id), version: integer(k.version, 1), name: text(k.name, 80),
+          classification = { id: text(k.id), version: integer(k.version, 1), name,
             category: enumeration(k.category, ['REST', 'MEAL', 'OTHER']), targetMinutes };
         }
         return { ...parsed, recordedVersion: integer(b.recordedVersion, 1), classification };

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { validateBreakType } from '../../clocker/break-types';
 import { buildRecordedSourceCapture, projectRecordedSourceCapture, type RecordedSourceRequest } from './recorded-source.server';
 vi.mock('server-only', () => ({}));
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, '0')}`;
@@ -204,4 +205,15 @@ it('rejects a missing-entry ancestor that changes the same-location supersession
   const l = f.capture.lineage as unknown as { requests: Array<Record<string, unknown>>; adjustments: Array<Record<string, unknown>> };
   for (const r of [l.requests[3], l.adjustments[3]]) { r.locationId = 'loc-1'; r.sourceSnapshot = { locationId: 'loc-1' }; }
   expect(projectRecordedSourceCapture(request(), f)).toEqual({ state: 'blocked', reason: 'inconsistent_lineage' });
+});
+
+it.each(['R'.repeat(79) + '😀', '😀'.repeat(41)])('preserves valid retained Unicode classification name %#', name => {
+  expect(validateBreakType({ name, category: 'REST', targetMinutes: 15, active: true }).name).toBe(name);
+  const f = fixture(); f.capture.entries[0].breaks[0].classification.name = name;
+  for (const b of [f.capture.entries[0].breaks[0], f.capture.cards[0].snapshot.entries[0].breaks[0], f.capture.cards[0].currentSource.entries[0].breaks[0]]) b.name = name;
+  expect(ready(request(), f).entries[0].breaks[0].classification?.name).toBe(name);
+});
+it.each(['R'.repeat(80) + '😀', '😀'.repeat(81)])('rejects classification names beyond the existing 80-code-point boundary %#', name => {
+  const f = fixture(); f.capture.entries[0].breaks[0].classification.name = name;
+  expect(projectRecordedSourceCapture(request(), f)).toEqual({ state: 'blocked', reason: 'invalid_source' });
 });

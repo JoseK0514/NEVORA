@@ -3,6 +3,7 @@ import { afterEach, beforeEach, expect, it } from 'vitest';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { readTimecards, mutateTimecard } from '../../lib/timecards/service';
 import { submitTimeCorrection, reviewTimeCorrection } from '../../lib/time-corrections/service';
+import { saveBreakType } from '../../lib/clocker/break-types.server';
 import { managementSessionStatements } from '../../lib/data/management-session';
 import { buildRecordedSourceCapture, projectRecordedSourceCapture, type RecordedSourceRequest, type RecordedSourceCapture } from '../../lib/payroll/native/recorded-source.server';
 import type { SessionMutationProof } from '../../lib/shift-changes/types';
@@ -129,4 +130,14 @@ it('uses an actual limit-plus-one sentinel and refuses a truncated entry capture
     SELECT 'RS-limit-'||n,'c34-a','loc-1',$1,'2026-09-22T12:00:00Z'::timestamptz+n*interval '2 seconds',
       '2026-09-22T12:00:00Z'::timestamptz+n*interval '2 seconds'+interval '1 second','CLOCKED_OUT',1 FROM generate_series(1,2049) n`, [fixture().devices[0].device.id]);
   await finalize(); expect(await capture()).toEqual({ state: 'blocked', reason: 'source_limit' });
+});
+
+it('accepts the existing valid 80-code-point Unicode name in an actual immutable break snapshot', async () => {
+  const name = 'R'.repeat(79) + '😀';
+  const b = await saveBreakType(fixture().owner, { name, category: 'REST', targetMinutes: 15, active: true, expectedVersion: 0 }, fixture().db.executor);
+  await seed(); await fixture().q(`INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at,version,break_type_id,break_type_snapshot)
+    VALUES('RS-unicode','RS-entry','2026-09-22T16:00:00Z','2026-09-22T16:15:00Z',1,$1,$2::jsonb)`,
+  [b.id, JSON.stringify({ id: b.id, version: b.version, name: b.name, category: b.category, targetMinutes: b.targetMinutes })]);
+  await finalize(); const c = ready(await capture()); expect(c.entries[0].breaks[0].classification?.name).toBe(name);
+  expect(c.coverage[0].snapshot.entries[0].breaks[0].name).toBe(name);
 });
