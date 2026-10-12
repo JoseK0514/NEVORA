@@ -50,7 +50,6 @@
 
 .app-shell:has(.add-location-page) .app-main { background: var(--design-background); }
 .app-shell:has(.add-location-page) .page-frame { max-width: 1184px; padding: 36px 32px 100px; margin-inline: auto; }
-.app-shell:has(.add-location-page) .sidebar { background: #20232D; }
 .add-location-page { width: 100%; max-width: 1120px; min-width: 0; color: var(--design-text-primary); }
 .add-location-breadcrumb { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--design-text-secondary); }
 .add-location-breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: 4px; }

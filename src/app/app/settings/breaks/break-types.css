@@ -42,8 +42,6 @@ body:has(.break-types-page) {
   font-family: var(--font-ui);
   background: var(--canvas);
 }
-.app-shell:has(.break-types-page) .sidebar :is(.nav-link, .sidebar-logout-row) { min-height: 44px; }
-.app-shell:has(.break-types-page) .sidebar .nav-link.active { background: color-mix(in srgb, var(--design-primary) 16%, transparent); }
 .app-shell:has(.break-types-page) .page-frame { max-width: 1180px; margin-inline: auto; padding: 24px 36px 80px; }
 .break-types-page { min-width: 0; width: 100%; }
 .break-types-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-bottom: 24px; color: var(--muted); font-size: 13px; font-weight: 500; }

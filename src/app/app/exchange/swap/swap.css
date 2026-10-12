@@ -36,7 +36,6 @@
   background:var(--design-background);
   font-family:var(--design-font-body);
 }
-.app-shell:has(.swap-page) .sidebar-platform-footer { color:var(--design-border); }
 .app-shell:has(.swap-page) .app-main { background:var(--design-background); }
 .swap-page { --swap-accent:var(--design-primary); --swap-ink:var(--design-text-primary); --swap-muted:var(--design-text-secondary); --swap-canvas:var(--design-background); --swap-surface:var(--design-surface-elevated); --swap-line:color-mix(in srgb,var(--design-border) 62%,var(--swap-surface)); --swap-soft:color-mix(in srgb,var(--swap-accent) 9%,var(--swap-surface)); width:min(1100px,100%); color:var(--swap-ink); font:400 14px/1.6 var(--design-font-body); }
 .swap-page :is(h1,h2,p) { margin:0; }

@@ -13,9 +13,6 @@
   --color-border-subtle: var(--cd-border);
   background: var(--cd-canvas); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
-.app-shell:has(.clocker-devices-page) .sidebar { background: #111827; }
-.app-shell:has(.clocker-devices-page) .sidebar .nav-link.active { background: #ED724C24; color: #FAFAFA; }
-.app-shell:has(.clocker-devices-page) .sidebar .nav-link.active .nav-icon { color: var(--cd-primary); }
 .clocker-devices-page { min-width: 0; max-width: 1280px; margin-inline: auto; gap: 0; }
 .clocker-devices-page .page-header { align-items: flex-start; gap: 24px; margin-bottom: 28px; }
 .clocker-devices-page .page-header h1 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 500; line-height: 1.2; letter-spacing: -.04em; max-width: 100%; }

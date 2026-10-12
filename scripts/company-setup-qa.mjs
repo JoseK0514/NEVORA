@@ -119,6 +119,17 @@ try {
   const staffPassword = 'Fictional-staff-only!';
   const positionId = randomUUID();
   await client.query('INSERT INTO positions(id,workspace_id,name) VALUES($1,$2,$3)', [positionId, workspace[0].id, 'Studio Assistant']);
+  // Fixture transitions follow the application's workspace/employee lock order.
+  // UPDATE alone takes a table write lock before waiting on a live Home reader.
+  const setFixtureEmployeeRole = async role => {
+    await client.query('BEGIN');
+    try {
+      await client.query('SELECT id FROM workspaces WHERE singleton=true ORDER BY id FOR SHARE');
+      await client.query('SELECT id FROM employees WHERE id=$1 ORDER BY id FOR UPDATE', [employeeId]);
+      await client.query('UPDATE employees SET role=$1 WHERE id=$2', [role, employeeId]);
+      await client.query('COMMIT');
+    } catch (error) { await client.query('ROLLBACK'); throw error; }
+  };
   const readEmployee = async (id = employeeId) => (await client.query(
     'SELECT id,first_name,last_name,phone,email,role,primary_location_id,active,updated_at::text FROM employees WHERE id=$1', [id])).rows[0];
   const signIn = async (page, id, password) => {
@@ -237,7 +248,7 @@ try {
       await signIn(staffPage, employeeId, staffPassword);
       checked('created employee activates and signs in with a hashed password');
       for (const role of ['EMPLOYEE', 'LEAD']) {
-        await client.query('UPDATE employees SET role=$1 WHERE id=$2', [role, employeeId]);
+        await setFixtureEmployeeRole(role);
         const before = await readEmployee();
         for (const path of ['/app/employees', '/app/employees/new', `/app/employees/${config.BOOTSTRAP_EMPLOYEE_ID}`, '/app/settings/workspace']) {
           await staffPage.goto(app.url + path);
@@ -255,12 +266,15 @@ try {
         checked(`${role} cannot access management routes, replay an Owner write or select another employee's private time`);
       }
 
-      await client.query("UPDATE employees SET role='MANAGER' WHERE id=$1", [employeeId]);
+      await setFixtureEmployeeRole('MANAGER');
       await staffPage.goto(`${app.url}/app/employees/${config.BOOTSTRAP_EMPLOYEE_ID}`);
       assert.equal(await staffPage.locator('.employee-core-profile-form').count(), 0);
       await staffPage.getByText(/Only an Owner can change another Owner/).waitFor();
       assert(await staffPage.getByText(/Only an Owner can change another Owner/).isVisible());
       await staffPage.goto(`${app.url}/app/employees/${employeeId}`);
+      // Wait for the enhanced profile before injecting an adversarial option.
+      await staffPage.getByRole('tab', { name: 'Details', exact: true }).click();
+      await staffPage.waitForLoadState('networkidle');
       const managerCore = staffPage.locator('.employee-core-profile-form');
       assert.equal(await managerCore.locator('select[name=role] option[value=OWNER]').count(), 0);
       await managerCore.locator('select[name=role]').evaluate(select => select.add(new Option('Forged Owner', 'OWNER')));
@@ -269,6 +283,7 @@ try {
       await managerCore.getByRole('alert').filter({ hasText: 'permission' }).waitFor();
       assert.equal((await readEmployee()).role, 'MANAGER');
       await staffPage.goto(`${app.url}/app/employees/new`);
+      await staffPage.waitForLoadState('networkidle');
       const forgedCreate = staffPage.locator('form.employee-form');
       await forgedCreate.locator('[name=id]').fill('CEDAR-FORGED-OWNER');
       await forgedCreate.locator('[name=firstName]').fill('Forged');

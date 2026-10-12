@@ -41,7 +41,6 @@
   font-family: var(--font-ui);
 }
 .app-shell:has(.edit-location-page) .app-main { background: var(--edit-canvas); }
-.app-shell:has(.edit-location-page) .sidebar { background: #20232D; }
 .app-shell:has(.edit-location-page) .page-frame { max-width: 1184px; padding: 32px 32px 100px; margin-inline: auto; }
 .edit-location-page { width: 100%; min-width: 0; max-width: 1120px; color: var(--edit-ink); }
 .edit-location-breadcrumb { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--edit-muted); }
