@@ -138,8 +138,9 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
             <fieldset key={key} disabled={busy || pending !== null || conflict || !writable}>
               <legend>{label}</legend>
               <label>
-                Rule setting{" "}
+                <span id={`${key}.mode-label`}> Rule setting </span>
                 <select
+                  aria-labelledby={`${key}.mode-label`}
                   name={`${key}.mode`}
                   value={mode}
                   onChange={event=>setModes(value=>({...value,[key]:event.target.value}))}
@@ -165,8 +166,9 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                 />
               </label>
               <label>
-                Comparison{" "}
+                <span id={`${key}.comparison-label`}> Comparison </span>
                 <select
+                  aria-labelledby={`${key}.comparison-label`}
                   name={`${key}.comparison`}
                   value={rawFields[`${key}.comparison`] ?? (String(rule?.comparison ?? "GT"))}
                   onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
@@ -187,9 +189,10 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
               {key === "longEntry" && (
                 <>
                   <label>
-                    Time basis{" "}
-                    <select
-                      name={`${key}.basis`}
+                <span id={`${key}.basis-label`}> Time basis </span>
+                <select
+                      aria-labelledby={`${key}.basis-label`}
+                  name={`${key}.basis`}
                       value={rawFields[`${key}.basis`] ?? (String(rule?.basis ?? "RECORDED_ELAPSED"))}
                   onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >
@@ -200,9 +203,10 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     </select>
                   </label>
                   <label>
-                    Entries{" "}
-                    <select
-                      name={`${key}.appliesTo`}
+                <span id={`${key}.appliesTo-label`}> Entries </span>
+                <select
+                      aria-labelledby={`${key}.appliesTo-label`}
+                  name={`${key}.appliesTo`}
                       value={rawFields[`${key}.appliesTo`] ?? (String(rule?.appliesTo ?? "BOTH"))}
                   onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >
@@ -215,9 +219,10 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
               )}
               {key === "missingClockIn" && (
                 <label>
-                  Observation cutoff{" "}
-                  <select
-                    name={`${key}.cutoff`}
+                <span id={`${key}.cutoff-label`}> Observation cutoff </span>
+                <select
+                    aria-labelledby={`${key}.cutoff-label`}
+                  name={`${key}.cutoff`}
                     value={rawFields[`${key}.cutoff`] ?? (String(rule?.cutoff ?? "AFTER_SCHEDULE_END"))}
                   onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                   >
@@ -233,9 +238,10 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
               {key === "overtimeRisk" && (
                 <>
                   <label>
-                    Time basis{" "}
-                    <select
-                      name={`${key}.basis`}
+                <span id={`${key}.basis-label`}> Time basis </span>
+                <select
+                      aria-labelledby={`${key}.basis-label`}
+                  name={`${key}.basis`}
                       value={rawFields[`${key}.basis`] ?? (String(
                         rule?.basis ?? "EFFECTIVE_ELAPSED_INCLUDING_BREAKS",
                       ))}
@@ -250,9 +256,10 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     </select>
                   </label>
                   <label>
-                    Window{" "}
-                    <select
-                      name={`${key}.window`}
+                <span id={`${key}.window-label`}> Window </span>
+                <select
+                      aria-labelledby={`${key}.window-label`}
+                  name={`${key}.window`}
                       value={rawFields[`${key}.window`] ?? (String(rule?.window ?? "BUSINESS_WEEK"))}
                   onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >
@@ -261,9 +268,10 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     </select>
                   </label>
                   <label>
-                    Aggregation{" "}
-                    <select
-                      name={`${key}.aggregation`}
+                <span id={`${key}.aggregation-label`}> Aggregation </span>
+                <select
+                      aria-labelledby={`${key}.aggregation-label`}
+                  name={`${key}.aggregation`}
                       value={rawFields[`${key}.aggregation`] ?? (String(rule?.aggregation ?? "COMPANY"))}
                   onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >
@@ -281,9 +289,10 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                     />
                   </label>
                   <label>
-                    Week starts on{" "}
-                    <select
-                      name={`${key}.weekStart`}
+                <span id={`${key}.weekStart-label`}> Week starts on </span>
+                <select
+                      aria-labelledby={`${key}.weekStart-label`}
+                  name={`${key}.weekStart`}
                       value={rawFields[`${key}.weekStart`] ?? (String(rule?.weekStartsOn ?? 1))}
                   onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                     >{["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map((day,i)=><option key={day} value={i}>{day}</option>)}</select>
