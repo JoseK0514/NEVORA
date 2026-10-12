@@ -1,5 +1,6 @@
 import type { UserRole } from "@/lib/domain";
 import type { NavIconName } from "@/components/nav-icon";
+import type { PayrollCapabilities } from './payroll/contracts';
 
 export type NavigationItem = {
   href: string;
@@ -35,27 +36,33 @@ const employeeNavigation: NavigationItem[] = [
 
 /** Canonical workflows keep their URLs, queries and commands. Only their
  * employee navigation owner is the Requests group. Manager owners are unchanged. */
-export function activeNavigationHref(role: UserRole, path: string): string | undefined {
+export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities): string | undefined {
   const pathname = path.split(/[?#]/, 1)[0];
   const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   if ((role === "EMPLOYEE" || role === "LEAD") &&
       (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
-  return navigationForRole(role)
+  return navigationForRole(role, payroll)
     .filter(item => item.href === "/app" ? pathname === "/app" : matches(item.href))
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 }
 
-export function navigationForRole(role: UserRole) {
+export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities) {
+  const finance: NavigationItem[] = payroll?.enabled ? [
+    ...(payroll.canReview ? [{ href: '/app/payroll', label: 'Payroll', icon: 'payroll' as const }] : []),
+    { href: '/app/my-pay', label: 'My pay', icon: 'statement' },
+  ] : [];
+  const management = [...managementNavigation];
+  if (finance.length) management.splice(management.findIndex(item => item.href === '/app/payroll-export') + 1, 0, ...finance);
   if (role === "OWNER") {
     return [
-      ...managementNavigation,
+      ...management,
       { href: "/app/settings", label: "Settings", icon: "settings" as const },
     ];
   }
 
   if (role === "MANAGER") {
-    return [...managementNavigation];
+    return management;
   }
 
-  return [...employeeNavigation];
+  return [...employeeNavigation, ...finance];
 }

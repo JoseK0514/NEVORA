@@ -12,6 +12,7 @@ import { PortalDeviceSetup } from "./portal-device-setup";
 import type { UserRole } from "@/lib/domain";
 import { activeNavigationHref, navigationForRole } from "@/lib/navigation";
 import { NUVORA_BRAND } from "../lib/brand";
+import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 
 const employeePrimary = ["/app", "/app/schedule", "/app/my-time"];
 
@@ -27,9 +28,11 @@ export function AppShell({
   workspaceName,
   user,
   notificationsEnabled = false,
+  payrollCapabilities,
 }: {
   workspaceName: string;
   notificationsEnabled?: boolean;
+  payrollCapabilities?: PayrollCapabilities;
   children: ReactNode;
   user: {
     firstName: string;
@@ -40,11 +43,11 @@ export function AppShell({
   const pathname = usePathname();
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
-  const navigation = navigationForRole(user.role);
+  const navigation = navigationForRole(user.role, payrollCapabilities);
   const mobilePrimary = navigation.filter((item) => employeePrimary.includes(item.href));
   const mobileMore = navigation.filter((item) => !employeePrimary.includes(item.href));
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
-  const activeHref = activeNavigationHref(user.role, pathname);
+  const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities);
 
   useEffect(() => {
     for (const id of ['employee-more-navigation', 'manager-more-navigation']) {

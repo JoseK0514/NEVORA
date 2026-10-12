@@ -92,6 +92,29 @@ it("enumerates leap month, semimonthly and biweekly boundaries", () => {
     ).missingPeriods.map((x) => x.period.endDate),
   ).toEqual(["2024-02-14", "2024-02-28"]);
 });
+it("flags a later schedule change even when the next revision keeps the schedule", () => {
+  const result = missingPayrollPeriods(
+    [
+      revision(1, "2026-09-01", "WEEKLY", "2026-09-07"),
+      revision(2, "2026-09-08", "WEEKLY", "2026-09-07"),
+      revision(3, "2026-09-10", "MONTHLY", "2026-10-01"),
+    ],
+    [],
+    "2026-09-14",
+  );
+  expect(result.missingPeriods).toEqual([
+    {
+      period: { startDate: "2026-09-07", endDate: "2026-09-13" },
+      payday: "2026-09-15",
+      settingsRevision: 1,
+      state: "AMBIGUOUS_TRANSITION",
+      issues: [
+        "Schedule changes inside this period; review the transition before preparation.",
+      ],
+    },
+  ]);
+  expect(result.backlog.ambiguousCount).toBe(1);
+});
 it("bounds results and reports exact remaining count or explicit history overflow", () => {
   const r = missingPayrollPeriods(
     [revision(1, "2024-01-01")],

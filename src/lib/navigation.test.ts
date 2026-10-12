@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { navigationForRole } from "./navigation";
+import { activeNavigationHref, navigationForRole } from "./navigation";
+import type { PayrollCapabilities } from './payroll/contracts';
+
+const payroll: PayrollCapabilities = { enabled: true, canConfigure: false, canReview: false, canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' };
 
 describe("role navigation", () => {
   it("keeps owner controls restricted to owners", () => {
@@ -15,6 +18,24 @@ describe("role navigation", () => {
     expect(lead).toEqual(employee);
     expect(employee).not.toContain("/app/employees");
     expect(employee).not.toContain("/app/settings");
+  });
+  it('keeps the feature-off navigation unchanged for every role', () => {
+    for (const role of ['OWNER', 'MANAGER', 'LEAD', 'EMPLOYEE'] as const) expect(navigationForRole(role, { ...payroll, enabled: false, canReview: true })).toEqual(navigationForRole(role));
+  });
+  it('uses current finance capabilities instead of Manager role', () => {
+    expect(navigationForRole('MANAGER', payroll).map(item => item.href)).not.toContain('/app/payroll');
+    expect(navigationForRole('MANAGER', { ...payroll, canReview: true }).map(item => item.href)).toContain('/app/payroll');
+    expect(navigationForRole('OWNER', payroll).map(item => item.href)).not.toContain('/app/payroll');
+  });
+  it('makes self statements available without a finance grant', () => {
+    for (const role of ['OWNER', 'MANAGER', 'LEAD', 'EMPLOYEE'] as const) expect(navigationForRole(role, payroll).map(item => item.href)).toContain('/app/my-pay');
+  });
+  it('marks only authorized payroll destinations active without changing request ownership', () => {
+    expect(activeNavigationHref('MANAGER','/app/payroll',payroll)).toBeUndefined();
+    expect(activeNavigationHref('MANAGER','/app/payroll',{...payroll,canReview:true})).toBe('/app/payroll');
+    expect(activeNavigationHref('EMPLOYEE','/app/my-pay',payroll)).toBe('/app/my-pay');
+    expect(activeNavigationHref('EMPLOYEE','/app/my-pay',{...payroll,enabled:false})).toBeUndefined();
+    expect(activeNavigationHref('EMPLOYEE','/app/exchange?tab=mine',payroll)).toBe('/app/requests/hub');
   });
 });
 

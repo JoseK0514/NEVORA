@@ -1,3 +1,4 @@
+import { WalletIcon } from "@phosphor-icons/react/dist/ssr/Wallet";
 import Link from "next/link";
 import { BuildingsIcon } from "@phosphor-icons/react/dist/ssr/Buildings";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
@@ -10,6 +11,8 @@ import { ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ClockC
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { requireRoles } from "@/lib/auth/permissions";
+import { requireSessionMutationProof } from '@/lib/auth/session';
+import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/service';
 import { SettingsHubMotion } from "./settings-hub-motion";
 import "./settings-hub.css";
 
@@ -48,6 +51,10 @@ const groups = [
 
 export default async function SettingsPage() {
   await requireRoles(["OWNER"]);
+  const payroll = payrollFeatureEnabled() ? await readPayrollCapabilities(await requireSessionMutationProof()) : undefined;
+  const visibleGroups = groups.map(group => group.id === "work-rules" && payroll?.canConfigure ? {
+    ...group, items: [...group.items, { id: "payroll", title: "Payroll", description: "Company preferences, effective-dated employee exceptions, and financial access.", href: "/app/settings/payroll", icon: WalletIcon }],
+  } : group);
   return (
     <SettingsHubMotion>
       <header className="settings-hub-heading">
@@ -55,7 +62,7 @@ export default async function SettingsPage() {
         <p>Set up your workspace and the way your team works.</p>
       </header>
       <div className="settings-hub-groups">
-        {groups.map((group) => (
+        {visibleGroups.map((group) => (
           <section key={group.id} className="settings-hub-group" aria-labelledby={`settings-${group.id}`}>
             <div className="settings-hub-group-heading">
               <h2 id={`settings-${group.id}`}>{group.title}</h2>

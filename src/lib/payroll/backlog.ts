@@ -78,7 +78,12 @@ export function missingPayrollPeriods(
       const issues =
         next &&
         next.effectiveFrom <= due.period.endDate &&
-        shape(next) !== shape(r)
+        effective.some(
+          (change) =>
+            change.effectiveFrom > r.effectiveFrom &&
+            change.effectiveFrom <= due.period.endDate &&
+            shape(change) !== shape(r),
+        )
           ? [
               "Schedule changes inside this period; review the transition before preparation.",
             ]

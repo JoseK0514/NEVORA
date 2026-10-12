@@ -3,7 +3,8 @@
 Owner: payroll_backend executor; integration/release owner: root. Candidate branch:
 `codex/configurable-payroll-20261012`. P1 backend baseline: `f1da5a03`. Contract
 checkpoints: `4272655`, `283f57f`, and additive P2 contract `43924638`. The P2
-implementation is uncommitted in the authorized candidate checkout. No production deployment, bank submission,
+implementation is committed as `ed7d2c2`, with the schedule-transition correction
+in `76610d7`. No production deployment, bank submission,
 real notification delivery, or independent finding closure.
 
 ## Runtime and adapter boundary

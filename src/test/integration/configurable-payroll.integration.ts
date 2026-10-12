@@ -1338,6 +1338,55 @@ it("P1-M2 document read excludes the run beyond the 300-run page at the SQL boun
   expect(response.runs.some((r) => r.id === oldest)).toBe(false);
   expect(loaded).toBe(0);
 });
+it("multiple effective revisions inside a period require review and never queue an automatic reminder", async () => {
+  const [clock] = await f.q<{ today: string }>(
+    "SELECT to_char(clock_timestamp() AT TIME ZONE 'America/Puerto_Rico','YYYY-MM-DD') AS today",
+  );
+  const today = new Date(`${clock.today}T00:00:00Z`);
+  const add = (days: number) =>
+    new Date(today.getTime() + days * 86400000).toISOString().slice(0, 10);
+  const laterAnchor = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 1),
+  ).toISOString().slice(0, 10);
+  for (const [index, days] of [-13, -6, -4].entries()) {
+    await saveSettings(
+      proof,
+      {
+        action: "SAVE_SETTINGS",
+        operationId: randomUUID(),
+        reason: "Fictional multi-revision transition",
+        expectedRevision: index,
+        effectiveFrom: add(days),
+        preferences: {
+          ...preferences,
+          schedule: {
+            frequency: index === 2 ? "MONTHLY" : "WEEKLY",
+            anchorDate: index === 2 ? laterAnchor : add(-7),
+            paydayOffsetDays: 2,
+          },
+          automation: {
+            prepare: false,
+            publish: false,
+            reminders: true,
+            reminderLeadDays: [1],
+          },
+        },
+      },
+      f.db.executor,
+    );
+  }
+  const response = await runs(proof, f.db.executor);
+  expect(response.missingPeriods).toMatchObject([
+    {
+      period: { startDate: add(-7), endDate: add(-1) },
+      state: "AMBIGUOUS_TRANSITION",
+    },
+  ]);
+  expect(await schedulePayroll(f.db.executor)).toEqual({ queued: 0 });
+  expect(await f.q("SELECT count(*)::int AS n FROM payroll_jobs")).toEqual([
+    { n: 0 },
+  ]);
+});
 it("history extraction returns bounded rows and explicit unknown counts on overflow", async () => {
   await f.q(
     "INSERT INTO payroll_setting_revisions(workspace_id,revision,effective_from,payload) SELECT w.id,g,'2026-01-01',jsonb_build_object('revision',g,'effectiveFrom','2026-01-01','preferences',$1::jsonb) FROM workspaces w CROSS JOIN generate_series(1,1002) g WHERE w.singleton",

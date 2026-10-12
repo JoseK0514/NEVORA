@@ -3,7 +3,8 @@ import type { ReactNode } from "react";
 import { AppShell } from "@/components/app-shell";
 import { readNotificationConfig } from "@/lib/notifications/config";
 import { getWorkspace } from "@/lib/data/workspaces";
-import { requireSession } from "@/lib/auth/session";
+import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
+import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/service';
 
 export const metadata: Metadata = {
   manifest: "/fuel-portal.webmanifest",
@@ -16,12 +17,14 @@ export const viewport: Viewport = { themeColor: "#20232D" };
 export default async function PlatformLayout({ children }: { children: ReactNode }) {
   const session = await requireSession();
   const workspace = await getWorkspace();
+  const payrollCapabilities = payrollFeatureEnabled() ? await readPayrollCapabilities(await requireSessionMutationProof()) : undefined;
 
   return (
     <AppShell
       key={session.id}
       workspaceName={workspace.name}
       notificationsEnabled={readNotificationConfig(process.env).featureEnabled}
+      payrollCapabilities={payrollCapabilities}
       user={{
         firstName: session.firstName,
         lastName: session.lastName,

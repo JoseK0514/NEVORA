@@ -3,11 +3,11 @@
 import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { FileCsvIcon } from '@phosphor-icons/react/ssr';
+import { FileCsvIcon, WalletIcon, FileTextIcon, SlidersHorizontalIcon } from '@phosphor-icons/react/ssr';
 
 gsap.registerPlugin(useGSAP);
 
-export function PayrollExportMotion() {
+export function PayrollExportMotion({ kind = 'export' }: { kind?: 'export' | 'payroll' | 'statement' | 'settings' }) {
   const scope = useRef<HTMLSpanElement>(null);
   useGSAP(() => {
     const media = gsap.matchMedia();
@@ -17,5 +17,6 @@ export function PayrollExportMotion() {
     });
     return () => media.revert();
   }, { scope });
-  return <span ref={scope} aria-hidden="true"><FileCsvIcon size={28} weight="duotone" /></span>;
+  const Icon = kind === 'payroll' ? WalletIcon : kind === 'statement' ? FileTextIcon : kind === 'settings' ? SlidersHorizontalIcon : FileCsvIcon;
+  return <span ref={scope} aria-hidden="true"><Icon size={28} weight="duotone" /></span>;
 }
