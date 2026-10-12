@@ -1,3 +1,5 @@
+import {ScheduleCopyForm} from '@/components/schedule-copy-form';
+import { randomUUID } from "node:crypto";
 import { ActionMenu } from "@/components/action-menu";
 import {ManagerIssueFocus} from '@/components/manager-issue-focus';
 import { ScheduleLocationControl } from "@/components/schedule-location-control";
@@ -28,7 +30,6 @@ import {
   isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 import {
-  copyPreviousWeekAction,
   setAvailabilityDeadlineAction,
 } from "@/app/app/schedule/actions";
 import { getWeekSettings } from "@/lib/data/week-settings";
@@ -323,13 +324,7 @@ export default async function SchedulePage({
               label="More"
               ariaLabel="More schedule actions"
             >
-              <form action={copyPreviousWeekAction}>
-                <input type="hidden" name="weekStart" value={weekStart} />
-                <button className="nevora-action-menu-item" type="submit">
-                  <strong>Copy previous week</strong>
-                  <span>Bring last week’s shifts into this week.</span>
-                </button>
-              </form>
+              <ScheduleCopyForm actorId={session.id} command={{operationId:randomUUID(),kind:'PREVIOUS_WEEK',weekStart}} />
 
               <Link
                 className="nevora-action-menu-item"

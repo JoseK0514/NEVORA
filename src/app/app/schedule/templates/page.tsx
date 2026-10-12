@@ -1,3 +1,6 @@
+import {ScheduleCopyForm} from '@/components/schedule-copy-form';
+import { randomUUID } from "node:crypto";
+import { requireSessionMutationProof } from "@/lib/auth/session";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
@@ -6,7 +9,6 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {  formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
 import { listScheduleTemplates } from "@/lib/data/schedule-templates";
 import {
-  applyTemplateAction,
   archiveTemplateAction,
   saveTemplateAction,
 } from "@/app/app/schedule/templates/actions";
@@ -30,12 +32,12 @@ export default async function ScheduleTemplatesPage({
     archived?: string;
   }>;
 }) {
-  await requireRoles(MANAGER_ROLES);
+  const session=await requireRoles(MANAGER_ROLES);
   const workspace = await getWorkspace();
   const params = await searchParams;
   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
-  const templates = await listScheduleTemplates();
+  const templates = await listScheduleTemplates(await requireSessionMutationProof());
 
   return (
     <div className="template-page">
@@ -118,13 +120,7 @@ export default async function ScheduleTemplatesPage({
                     </span>
                   </div>
                   <div className="template-actions">
-                    <form action={applyTemplateAction}>
-                      <input type="hidden" name="weekStart" value={weekStart} />
-                      <input type="hidden" name="templateId" value={template.id} />
-                      <button className="button primary" type="submit">
-                        Apply
-                      </button>
-                    </form>
+                    <ScheduleCopyForm actorId={session.id} label='Apply' command={{operationId:randomUUID(),kind:'TEMPLATE',weekStart,templateId:template.id}} />
                     <form action={archiveTemplateAction}>
                       <input type="hidden" name="weekStart" value={weekStart} />
                       <input type="hidden" name="templateId" value={template.id} />

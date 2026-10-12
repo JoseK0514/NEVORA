@@ -38,7 +38,7 @@ const request = {proof:managementProof('owner','OWNER'),workspaceId:'atelier',ac
 beforeAll(async()=>{database=await createDisposableGenerationDatabase();transport.executor=database.executor;});
 afterAll(async()=>{await database?.dispose();});
 beforeEach(async()=>{
-  await q('TRUNCATE employees,schedules,positions,location_coverage_windows,schedule_week_settings RESTART IDENTITY CASCADE');
+  await database.dispose(); database=await createDisposableGenerationDatabase(); transport.executor=database.executor;
   await q("DELETE FROM location_staffing_settings; DELETE FROM locations; DELETE FROM workspaces; INSERT INTO workspaces(id,name,time_zone) VALUES('atelier','Fictional Northern Atelier','America/New_York'); INSERT INTO locations(id,workspace_id,clocker_key,name,short_name) VALUES('quay','atelier','north-quay','Quai Étoile','Quai'); INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','NONE','OWNER','quay')");
   await fixtureProof(database.executor,'owner');
 });

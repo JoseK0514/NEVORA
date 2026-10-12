@@ -8,7 +8,7 @@ import { localDateTimeToInstant, shiftBoundaryInstants } from "@/lib/business-ti
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { addDays, isDateInWeek, isValidWeekStart } from "@/lib/date-utils";
+import { isDateInWeek, isValidWeekStart } from "@/lib/date-utils";
 import { setAvailabilityDeadline } from "@/lib/data/week-settings";
 import { publishScheduleWithRevision } from "@/lib/data/publication-revisions";
 import { listEmployees } from "@/lib/data/employees";
@@ -22,7 +22,7 @@ import {
   listWeekShifts,
   updateShift,
 } from "@/lib/data/schedules";
-import { copyShiftDate } from "@/lib/scheduling/copy-week";
+import { executeScheduleCopy } from "@/lib/data/schedule-copy";
 import { prepareExchangeContext } from "@/lib/scheduling/exchange-validation";
 import { validateShift } from "@/lib/scheduling/validate-shift";
 import { ManualAssignmentConflictError } from "@/lib/data/manual-assignment-validation";
@@ -306,104 +306,12 @@ export async function deleteShiftAction(formData: FormData) {
 }
 
 export async function copyPreviousWeekAction(formData: FormData) {
-  const session = await requireRoles(MANAGER_ROLES);
-  const proof = await requireSessionMutationProof();
-  const targetWeekStart = String(formData.get("weekStart") ?? "");
-
-  if (!isValidWeekStart(targetWeekStart)) {
-    redirect("/app/schedule?error=INVALID_SHIFT");
-  }
-
-  const workspace = await getWorkspace();
-  const sourceWeekStart = addDays(targetWeekStart, -7);
-  const sourceShifts = await listWeekShifts({ weekStart: sourceWeekStart });
-
-  let copied = 0;
-  let skipped = 0;
-  let warnings = 0;
-
-  for (const shift of sourceShifts) {
-    const date = copyShiftDate(
-      sourceWeekStart,
-      shift.date,
-      targetWeekStart,
-    );
-
-    try { shiftBoundaryInstants({ ...shift, date }, workspace.timeZone); }
-    catch { skipped += 1; continue; }
-
-    const context = await getShiftValidationContext({
-      employeeId: shift.employeeId,
-      locationId: shift.locationId,
-      positionId: shift.positionId,
-      date,
-      weekStart: targetWeekStart,
-    });
-
-    if (!context) {
-      skipped += 1;
-      continue;
-    }
-
-    const validation = validateShift({
-      candidate: {
-        employeeId: shift.employeeId,
-        locationId: shift.locationId,
-        positionId: shift.positionId,
-        date,
-        startTime: shift.startTime,
-        endTime: shift.endTime,
-        isDesignatedLead: shift.isDesignatedLead,
-      },
-      ...context,
-      mode: "MANAGER_SCHEDULE",
-    });
-
-    if (validation.issues.some((issue) => issue.severity === "error")) {
-      skipped += 1;
-      continue;
-    }
-
-    try {
-      const scheduleId = await ensureSchedule({
-        locationId: shift.locationId,
-        weekStart: targetWeekStart,
-        createdBy: session.id,
-        proof,
-      });
-      await insertShift({
-        actorEmployeeId: session.id,
-        proof,
-        scheduleId,
-        employeeId: shift.employeeId,
-        date,
-        startTime: shift.startTime,
-        endTime: shift.endTime,
-        notes: shift.notes,
-        positionId: shift.positionId,
-        isDesignatedLead: shift.isDesignatedLead,
-      });
-    } catch (error) {
-      if (error instanceof ManualAssignmentConflictError) { skipped += 1; continue; }
-      throw error;
-    }
-
-    copied += 1;
-
-    if (validation.issues.some((issue) => issue.severity === "warning")) {
-      warnings += 1;
-    }
-  }
-
-  revalidatePath("/app/schedule");
-  redirect(
-    scheduleUrl(
-      targetWeekStart,
-      `&copied=${copied}&skipped=${skipped}&copyWarnings=${warnings}`,
-    ),
-  );
+ await requireRoles(MANAGER_ROLES);
+ const proof=await requireSessionMutationProof();
+ const receipt=await executeScheduleCopy(proof,{operationId:String(formData.get('operationId')??''),kind:'PREVIOUS_WEEK',weekStart:String(formData.get('weekStart')??'')});
+ revalidatePath('/app/schedule');
+ redirect(`/app/schedule/copy-receipt?operation=${receipt.operationId}`);
 }
-
 
 export async function setAvailabilityDeadlineAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);

@@ -72,7 +72,7 @@ function onceBeforeTransaction(action: () => Promise<unknown>): SqlExecutor {
 beforeAll(async () => { database = await createDisposableNotificationDatabase(); db = database.executor; transport.executor = db; }, 30000);
 afterAll(async () => { await database?.dispose(); });
 beforeEach(async () => {
-  await sql('TRUNCATE employees, schedules, notifications, schedule_week_settings RESTART IDENTITY CASCADE');
+  await database.dispose(); database=await createDisposableNotificationDatabase(); db=database.executor; transport.executor=db;
   await sql(`INSERT INTO employees (id,first_name,last_name,phone,role,primary_location_id) VALUES
     ('QA-E','QA-Avery','Rivera','QA-NO-PHONE','EMPLOYEE','loc-1'),('QA-F','QA-Blair','Rivera','QA-NO-PHONE','LEAD','loc-2'),
     ('QA-M','QA-Morgan','Manager','QA-NO-PHONE','MANAGER','loc-1'),('QA-O','QA-Owen','Owner','QA-NO-PHONE','OWNER','loc-1')`);

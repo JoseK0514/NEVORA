@@ -41,7 +41,7 @@ export default async function NewEmployeePage({
         <ConfigurationForm action={createEmployeeFormAction} className="employee-form">
           <label>
             Employee ID
-            <input name="id" placeholder="FC-0021" required maxLength={128} />
+            <input name="id" placeholder="Enter an employee ID" required maxLength={128} />
           </label>
 
           <div className="form-columns">

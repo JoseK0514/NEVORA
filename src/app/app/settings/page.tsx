@@ -12,6 +12,7 @@ export default async function SettingsPage() {
       />
       <section className="panel settings-list">
         {[
+          ["Company policies", "Configured attendance thresholds, effective dates and revision history.", "/app/settings/company-policies"],
           ["Account Recovery", "Verify identity and assist with lost portal access.", "/app/account-recovery"],
           ["Clocker Recovery", "Review an employee’s saved action reference.", "/app/clocker-recovery"],
           [

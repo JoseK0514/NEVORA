@@ -40,6 +40,8 @@ Phase 3 keeps exact registration/manifest scope `/app`, including root and desce
 
 ## Upgrade, generic proof and deferred Productization
 
+The [2026-10-12 single-company direction](../execution/single-company-20261012.md) adds a bounded operator setup command and generic owner bootstrap on the development line. It supersedes the historical deferral of those two commands below. SaaS, tenant provisioning and schema-distribution tooling remain deferred. Existing customer upgrade migrations retain their original bytes.
+
 Owned disposable PostgreSQL tests apply the canonical sequence and compare original-column Fuel rows/history before/after 0008. A separate test-only generic fixture removes isolated seeded customer rows and inserts Cedar Atelier – Fictional (`cooperative-cedar`) data; actual repositories/engine are tested with one, three, five and twenty locations. Northside Services is the separate browser/pure-domain fixture. PostgreSQL catalog equivalence covers the Fuel and Cedar SQL fixture paths. This proves additive upgrade and generic behavior in test-owned databases, **not production onboarding**.
 
 The approved Productization architecture remains deferred:

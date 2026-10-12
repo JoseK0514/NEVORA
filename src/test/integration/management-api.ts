@@ -16,6 +16,7 @@ import * as exclusions from '../../lib/data/generation-exclusions';
 import * as weeks from '../../lib/data/week-settings';
 import * as health from '../../lib/data/schedule-health';
 import * as templates from '../../lib/data/schedule-templates';
+import type { SessionMutationProof } from '../../lib/shift-changes/types';
 type Input<F extends (...args: never[]) => unknown> = Omit<Parameters<F>[0], 'proof'>;
 export { getShiftForManagement, getShiftValidationContext, listWeekShifts } from '../../lib/data/schedules';
 export { getEmployeeManagementProfile, listEmployees } from '../../lib/data/employees';
@@ -62,8 +63,8 @@ export async function updatePosition(input: Omit<Input<typeof positions.updatePo
   const [reviewed] = await executor.query<{ updatedAt: string }>({ text: 'SELECT updated_at::text AS "updatedAt" FROM positions WHERE id=$1', values: [input.id] });
   return positions.updatePosition({ ...input, expectedUpdatedAt: input.expectedUpdatedAt ?? reviewed?.updatedAt ?? 'missing-review', proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);
 }
-export async function createTemplateFromWeek(input: Input<typeof templates.createTemplateFromWeek>, executor: SqlExecutor = neonNotificationExecutor()) {
-  return templates.createTemplateFromWeek({ ...input, proof: await fixtureProof(executor, input.createdBy) }, executor);
+export async function createTemplateFromWeek(input: Input<typeof templates.createTemplateFromWeek> & { proof?: SessionMutationProof }, executor: SqlExecutor = neonNotificationExecutor()) {
+  return templates.createTemplateFromWeek({ ...input, proof: input.proof ?? await fixtureProof(executor, input.createdBy) }, executor);
 }
 export async function saveWorkspaceProfile(input: Input<typeof workspaces.saveWorkspaceProfile>, executor: SqlExecutor = neonNotificationExecutor()) {
   return workspaces.saveWorkspaceProfile({ ...input, proof: await fixtureProof(executor, input.actorEmployeeId) }, executor);

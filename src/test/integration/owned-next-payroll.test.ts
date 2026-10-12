@@ -1,0 +1,3 @@
+import {it,expect} from 'vitest';
+import {ownedPayrollEnvironment} from './owned-next-app';
+it('owned runtime ignores inherited payroll activation and enables only an explicit true fixture option',()=>{const prior=process.env.NEVORA_PAYROLL_ENABLED;process.env.NEVORA_PAYROLL_ENABLED='true';try{expect(ownedPayrollEnvironment()).toEqual({NEVORA_PAYROLL_ENABLED:'false'});expect(ownedPayrollEnvironment({payrollEnabled:false})).toEqual({NEVORA_PAYROLL_ENABLED:'false'});expect(ownedPayrollEnvironment({payrollEnabled:true})).toEqual({NEVORA_PAYROLL_ENABLED:'true'});}finally{if(prior===undefined)delete process.env.NEVORA_PAYROLL_ENABLED;else process.env.NEVORA_PAYROLL_ENABLED=prior;}});

@@ -30,6 +30,11 @@ const CURRENT_MIGRATIONS = [
   '0023_employee_attention_receipts.sql',
   '0024_contextual_communications.sql',
   '0025_calendar_subscriptions.sql',
+  '0023_template_ownership.sql',
+  '0024_schedule_copy_receipts.sql',
+  '0025_company_policies.sql',
+  '0026_attendance_observations.sql',
+  '0027_payroll_period_custody.sql', '0028_configurable_payroll.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every
@@ -137,6 +142,6 @@ export function createDisposableGenerationDatabase({mode = 'current-runtime'}: {
   return createOwnedDatabase('nevora_generation_test_', mode === 'historical-8' ? 8 : CURRENT_MIGRATIONS.length);
 }
 
-export function createDisposableExchangeDatabase({mode}: {mode: 'historical-9' | 'current-runtime'}) {
-  return createOwnedDatabase('nevora_exchange_test_', mode === 'historical-9' ? 9 : CURRENT_MIGRATIONS.length);
+export function createDisposableExchangeDatabase({mode}: {mode: 'empty' | 'historical-9' | 'current-runtime'}) {
+  return createOwnedDatabase('nevora_exchange_test_', mode === 'empty' ? 0 : mode === 'historical-9' ? 9 : CURRENT_MIGRATIONS.length);
 }

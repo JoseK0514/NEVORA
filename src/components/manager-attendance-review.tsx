@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {ConfiguredAttendancePolicies} from './configured-attendance-policies';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -106,6 +107,7 @@ export function AttendanceReviewSurface({
 
   return (
     <section className="attendance-review" aria-labelledby="attendance-review-title">
+      <ConfiguredAttendancePolicies />
       <header className="attendance-review-header">
         <div>
           <p>Today · recorded punches</p>

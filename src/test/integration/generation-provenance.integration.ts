@@ -6,7 +6,7 @@ beforeAll(async()=>{database=await createDisposableGenerationDatabase();});
 afterAll(async()=>{await database?.dispose();});
 const q=(text:string,values:readonly unknown[]=[])=>(database.executor.query<Record<string,unknown>>({text,values}));
 beforeEach(async()=>{
- await q('TRUNCATE employees,schedules,positions,location_coverage_windows RESTART IDENTITY CASCADE');
+ await database.dispose(); database=await createDisposableGenerationDatabase();
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES ('manager','Fictional','Manager','NONE','MANAGER','loc-1'),('employee','Fictional','Employee','NONE','EMPLOYEE','loc-1')");
  await q("INSERT INTO schedules(id,location_id,week_start,created_by) VALUES ('draft','loc-1','2030-10-07','manager')");
  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES ('legacy','draft','employee','2030-10-07','08:00','12:00')");

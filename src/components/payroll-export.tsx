@@ -1,4 +1,5 @@
 'use client';
+import {PayrollPeriodClose} from './payroll-period-close';
 import {useEffect,useRef,useState} from 'react';
 import {adpRunColumns,mappingSources,neutralProfile,parseExportProfile,type ExportProfile} from '@/lib/payroll-export/model';
 import {type TimecardItem} from '@/lib/timecards/read-model';
@@ -10,6 +11,7 @@ import {stableExportJson} from '@/lib/payroll-export/json';
 import {selectVisibleFinalized,changeExportSelection} from '@/lib/payroll-export/selection';
 import styles from './payroll-export.module.css';
 const sourceNames:Record<string,string>={employeeId:'NEVORA employee ID',employeeName:'Employee name',providerEmployeeId:'Mapped provider employee ID',periodStart:'Period first day',periodEnd:'Period last day',recordedHours:'Recorded elapsed hours (includes breaks)',breakHours:'Break hours (separate)',recordedNanoseconds:'Exact recorded nanoseconds',breakNanoseconds:'Exact break nanoseconds',revision:'Finalized revision',sourceHash:'Source fingerprint',constant:'Fixed value'};
+const dateLabel=(value:string)=>new Intl.DateTimeFormat('en',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).format(new Date(`${value}T00:00:00Z`));
 function download(text:string,type:string,name:string){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 type ProfileCommand={operationId:string;id:string;expectedRevision:number;profile:ExportProfile};
 function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedExportProfile[]){
@@ -104,5 +106,6 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
  <h3>Import columns in file order</h3>{draft.columns.map((column,i)=><div className={styles.column} key={i}><label><span>Column {i+1} heading</span><input value={column.header} maxLength={80} onChange={e=>setDraft({...draft,columns:draft.columns.map((c,n)=>n===i?{...c,header:e.target.value}:c)})}/></label><label><span>Value source</span><span className={styles.selectFrame}><select value={column.source} onChange={e=>setDraft({...draft,columns:draft.columns.map((c,n)=>n===i?{header:c.header,source:e.target.value as typeof c.source,...(e.target.value==='constant'?{constant:''}:{})}:c)})}>{mappingSources.map(source=><option key={source} value={source}>{sourceNames[source]}</option>)}</select></span></label>{column.source==='constant'&&<label><span>Fixed value</span><input value={column.constant??''} maxLength={100} onChange={e=>setDraft({...draft,columns:draft.columns.map((c,n)=>n===i?{...c,constant:e.target.value}:c)})}/></label>}<button type="button" className="button secondary" disabled={draft.format==='ADP_RUN_GENERIC_V1'||draft.columns.length===1} onClick={()=>setDraft({...draft,columns:draft.columns.filter((_,n)=>n!==i)})}>Remove column {i+1}</button></div>)}<button type="button" className="button secondary" disabled={draft.format==='ADP_RUN_GENERIC_V1'||draft.columns.length>=20} onClick={()=>setDraft({...draft,columns:[...draft.columns,{header:`Column ${draft.columns.length+1}`,source:'constant',constant:''}]})}>Add column</button>
  <h3>Provider employee identifiers</h3>{cards?.map(c=><label key={c.card.employeeId}>{c.card.employeeName}<input value={draft.employeeMappings.find(m=>m.employeeId===c.card.employeeId)?.providerEmployeeId??''} maxLength={100} onChange={e=>setDraft({...draft,employeeMappings:[...draft.employeeMappings.filter(m=>m.employeeId!==c.card.employeeId),...(e.target.value?[{employeeId:c.card.employeeId,providerEmployeeId:e.target.value}]:[])]})}/></label>)}<label className={styles.employee}><input type="checkbox" checked={reviewed} onChange={e=>setReviewed(e.target.checked)}/><span>I verified the required fields and employee identifiers. I reviewed the recorded-time basis, including breaks, and any selected rounding against my import requirements.</span></label><button type="button" className="button primary" disabled={busy||!reviewed} onClick={()=>void save()}>Save mapping profile</button>
  </details></>}
+ <PayrollPeriodClose period={period} actorId={actorId}/>
  </div>;
 }

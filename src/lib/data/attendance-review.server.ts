@@ -19,7 +19,7 @@ import {
 import { neonNotificationExecutor } from './notification-transactions';
 import { getWorkspace, workspaceReadGuard } from './workspaces';
 
-const sourceSql = `WITH observed AS MATERIALIZED (
+export const sourceSql = `WITH observed AS MATERIALIZED (
   SELECT clock_timestamp() AS at
 ), day AS MATERIALIZED (
   SELECT o.at,

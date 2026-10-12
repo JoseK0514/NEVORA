@@ -4,7 +4,8 @@ import { ManualAssignmentConflictError, validateManualAssignments } from '../../
 import type { GuardedWeekState } from '../../../lib/data/notification-transactions';
 import { schedulingSourceFixture, managementProof } from '../../../test/fixtures/management';
 
-const writes = vi.hoisted(() => ({ insert: vi.fn(async () => 'new'), update: vi.fn(async () => true), ensure: vi.fn(async () => 'a') }));
+const writes = vi.hoisted(() => ({ copy:vi.fn(async()=>({operationId:'11111111-1111-4111-8111-111111111111',rows:[]})),insert: vi.fn(async () => 'new'), update: vi.fn(async () => true), ensure: vi.fn(async () => 'a') }));
+vi.mock('@/lib/data/schedule-copy',()=>({executeScheduleCopy:writes.copy}));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], requireRoles: async () => ({ id: 'M', role: 'MANAGER' }) }));
@@ -41,10 +42,10 @@ function conflict() {
 }
 function form() {
   const data = new FormData();
-  Object.entries({ shiftId: 'old', employeeId: 'E', locationId: 'loc-1', weekStart: '2030-10-07', date: '2030-10-07', startTime: '10:00', endTime: '12:00', positionId: '', notes: 'Private retained draft', templateId: 't' }).forEach(([key, value]) => data.set(key, value));
+  Object.entries({ operationId:'11111111-1111-4111-8111-111111111111', shiftId: 'old', employeeId: 'E', locationId: 'loc-1', weekStart: '2030-10-07', date: '2030-10-07', startTime: '10:00', endTime: '12:00', positionId: '', notes: 'Private retained draft', templateId: 't' }).forEach(([key, value]) => data.set(key, value));
   return data;
 }
-beforeEach(() => { vi.resetAllMocks(); writes.insert.mockResolvedValue('new'); writes.update.mockResolvedValue(true); writes.ensure.mockResolvedValue('a'); });
+beforeEach(() => { vi.resetAllMocks(); writes.copy.mockResolvedValue({operationId:'11111111-1111-4111-8111-111111111111',rows:[]}); writes.insert.mockResolvedValue('new'); writes.update.mockResolvedValue(true); writes.ensure.mockResolvedValue('a'); });
 it('canonical rule conflicts carry the existing stable issue code', () => {
   expect(conflict()).toMatchObject({ name: 'ManualAssignmentConflictError', code: 'SHIFT_OVERLAP', message: 'Employee already has an overlapping shift.' });
 });
@@ -56,24 +57,25 @@ it.each([createShiftAction, updateShiftAction])('manual final conflict returns l
 });
 it.each([createShiftAction, updateShiftAction, copyPreviousWeekAction, applyTemplateAction])('unexpected writer failure remains distinguishable from expected scheduling conflicts', async action => {
   const failure = new Error('Owned transport unavailable');
-  (action === updateShiftAction ? writes.update : writes.insert).mockRejectedValueOnce(failure);
+  (action === updateShiftAction ? writes.update : action===createShiftAction?writes.insert:writes.copy).mockRejectedValueOnce(failure);
   await expect(action(form())).rejects.toBe(failure);
 });
 it.each([
-  [copyPreviousWeekAction, '/app/schedule?week=2030-10-07&copied=1&skipped=1&copyWarnings=0'],
-  [applyTemplateAction, '/app/schedule/templates?week=2030-10-07&applied=1&skipped=1&warnings=0'],
-] as const)('a final conflict retains existing partial-copy/application summary semantics', async (action, destination) => {
-  writes.insert.mockRejectedValueOnce(conflict());
+  [copyPreviousWeekAction, '/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'],
+  [applyTemplateAction, '/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'],
+] as const)('copy wrapper uses the authoritative receipt for partial-copy outcomes', async (action, destination) => {
   await expect(action(form())).rejects.toMatchObject({ destination });
-  expect(writes.insert).toHaveBeenCalledTimes(2);
+  expect(writes.copy).toHaveBeenCalledWith(managementProof('M'),expect.objectContaining({operationId:'11111111-1111-4111-8111-111111111111'}));
+  expect(writes.insert).not.toHaveBeenCalled();
 });
 it.each([
   [createShiftAction, undefined],
-  [copyPreviousWeekAction, '/app/schedule?week=2030-10-07&copied=1&skipped=1&copyWarnings=0'],
-  [applyTemplateAction, '/app/schedule/templates?week=2030-10-07&applied=1&skipped=1&warnings=0'],
-] as const)('a final location rule conflict creating the schedule parent has the same recoverable outcome', async (action, destination) => {
+  [copyPreviousWeekAction, '/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'],
+  [applyTemplateAction, '/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'],
+] as const)('manual parent conflicts recover locally while copy outcomes navigate to the authoritative receipt', async (action, destination) => {
   writes.ensure.mockRejectedValueOnce(new ManualAssignmentConflictError('LOCATION_INACTIVE', 'The location or workspace is inactive or unavailable.'));
   if (destination) await expect(action(form())).rejects.toMatchObject({ destination });
   else await expect(action(form())).resolves.toMatchObject({ issueCode: 'LOCATION_INACTIVE', error: 'The location or workspace is inactive or unavailable.' });
-  expect(writes.insert).toHaveBeenCalledTimes(destination ? 1 : 0);
+  expect(writes.insert).not.toHaveBeenCalled();
+  if(destination)expect(writes.copy).toHaveBeenCalledTimes(1);
 });

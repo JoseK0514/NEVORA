@@ -1,3 +1,4 @@
+import {fixtureProof} from './shift-change-api';
 import { saveWorkspaceProfile, createLocation, updateLocation, insertEmployee, createPosition, updatePosition, updateEmployeeProfile } from './management-api';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
@@ -453,8 +454,8 @@ it('position SQL read and template save preserve qualified and legacy positionle
  await insertShift({...base,date:'2030-10-12'},db.executor);
  expect((await listWeekShifts({weekStart:'2030-10-07'},db.executor)).map(s=>s.positionId)).toEqual(['barista',undefined]);
  expect((await getShiftForManagement(id,db.executor))?.positionId).toBe('barista');
- const templateId=await createTemplateFromWeek({name:'Saved',weekStart:'2030-10-07',createdBy:'owner'},db.executor);
- const templateShifts=await listTemplateShifts(templateId,db.executor);
+ const templateId=await createTemplateFromWeek({name:'Saved',weekStart:'2030-10-07',createdBy:'owner',proof:await fixtureProof(db.executor,'owner')},db.executor);
+ const templateShifts=await listTemplateShifts(templateId,db.executor,await fixtureProof(db.executor,'owner'));
  expect(templateShifts).not.toBeNull();
  if(templateShifts===null)throw new Error('Newly created template must be active');
  expect(templateShifts.map(s=>s.positionId)).toEqual(['barista',undefined]);
@@ -1045,8 +1046,8 @@ it.each([1,3,5,20])('Task 11 separate generic SQL workspace supports exactly %i 
     expect(validateShift({...ledgerContext!,candidate:{...candidate,locationId:locations.at(-1)!.id,date:'2030-10-08',startTime:'08:00',endTime:'09:00'}}).blockers.map(i=>i.code)).toContain('MAX_WEEKLY_HOURS');
     const health=calculateScheduleHealth({workspace,positions,shifts,locations:[{id:harbor.id,name:harbor.name,minimumStaffPerShift:staffing.minimumStaffPerShift,requiresDesignatedLead:staffing.requiresDesignatedLead}],employees:employees.map(e=>({...e,name:e.firstName})),coverageWindows:windows.map(w=>({...w,positionRequirements:w.positionRequirements??[]})),weekDates:['2030-10-07']});
     expect(health.coverageBlocks).toEqual([expect.objectContaining({assignedStaff:1,leadCovered:true,staffCovered:true,positionsCovered:false,positionCoverage:expect.arrayContaining([{positionId:finishing.id,positionName:'Finishing',assigned:1,required:1,missing:0},{positionId:inspection.id,positionName:'Inspection',assigned:0,required:1,missing:1}])})]);
-    const template=await createTemplateFromWeek({name:'Cedar workweek',weekStart:'2030-10-07',createdBy:'cedar-owner'},db.executor);
-    expect(await listTemplateShifts(template,db.executor)).toEqual([expect.objectContaining({locationId:harbor.id,positionId:finishing.id,employeeId:'cedar-worker',isDesignatedLead:true})]);
+    const template=await createTemplateFromWeek({name:'Cedar workweek',weekStart:'2030-10-07',createdBy:'cedar-owner',proof:await fixtureProof(db.executor,'cedar-owner')},db.executor);
+    expect(await listTemplateShifts(template,db.executor,await fixtureProof(db.executor,'cedar-owner'))).toEqual([expect.objectContaining({locationId:harbor.id,positionId:finishing.id,employeeId:'cedar-worker',isDesignatedLead:true})]);
     await publishScheduleWithRevision({locationId:harbor.id,weekStart:'2030-10-07',managerId:'cedar-owner'},db.executor);
     expect((await readNotificationWeekState(['2030-10-07'],db.executor)).revisions[0].shifts).toEqual([expect.objectContaining({positionId:finishing.id,positionName:'Finishing',locationId:harbor.id})]);
     expect((await q('SELECT count(*)::integer AS count FROM notifications'))[0].count).toBeGreaterThan(0);
@@ -1075,7 +1076,7 @@ it('Task 11 generic fixture replacement preserves the upgraded schema catalog', 
     await upgrade.executor.query({text:await readFile('db/migrations/0008_workspace_positions.sql','utf8'),values:[]});
     await upgrade.executor.query({text:await readFile('db/migrations/0009_schedule_generation.sql','utf8'),values:[]});
     await upgrade.executor.query({text:await readFile('db/migrations/0010_shift_coverage_automation.sql','utf8'),values:[]});
-    for (const file of ['0011_clocker_devices.sql','0012_clocker_pins.sql','0013_clocker_punches.sql','0014_clocker_breaks.sql','0015_clocker_schedule_context.sql','0016_time_corrections.sql','0017_missing_time_supersession.sql','0018_timecards.sql','0019_payroll_export_mappings.sql','0020_account_recovery.sql','0021_timecard_reassignment_interlock.sql','0022_timecard_reopen_revision_authority.sql','0023_employee_attention_receipts.sql','0024_contextual_communications.sql','0025_calendar_subscriptions.sql']) {
+    for (const file of ['0011_clocker_devices.sql','0012_clocker_pins.sql','0013_clocker_punches.sql','0014_clocker_breaks.sql','0015_clocker_schedule_context.sql','0016_time_corrections.sql','0017_missing_time_supersession.sql','0018_timecards.sql','0019_payroll_export_mappings.sql','0020_account_recovery.sql','0021_timecard_reassignment_interlock.sql','0022_timecard_reopen_revision_authority.sql','0023_employee_attention_receipts.sql','0024_contextual_communications.sql','0025_calendar_subscriptions.sql','0023_template_ownership.sql','0024_schedule_copy_receipts.sql','0025_company_policies.sql','0026_attendance_observations.sql','0027_payroll_period_custody.sql','0028_configurable_payroll.sql']) {
       await upgrade.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
     }
     const generic=await createGenericWorkspaceDatabase();

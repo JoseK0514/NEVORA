@@ -3,9 +3,11 @@ import { readFileSync } from 'node:fs';
 import { beforeEach, expect, it, vi } from 'vitest';
 const m=vi.hoisted(()=>({
   insert:vi.fn(async (_input: unknown)=> 'new'), update:vi.fn(async()=>true), remove:vi.fn(async()=>true), publish:vi.fn(async()=>({published:true})),
+  copy:vi.fn(async()=>({operationId:'11111111-1111-4111-8111-111111111111',rows:[]})),
   clear:vi.fn(), send:vi.fn(()=>new Promise<never>(()=>{})), provider:vi.fn(), role:'MANAGER', existingWeek:'2030-10-07', templateStart:'09:00',
   shifts:[{id:'s',employeeId:'E',locationId:'loc-1',date:'2030-09-30',startTime:'09:00',endTime:'17:00',isDesignatedLead:false}],
 }));
+vi.mock('@/lib/data/schedule-copy',()=>({executeScheduleCopy:m.copy}));
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>managementProof('M',m.role as 'MANAGER')}));
 vi.mock('@/lib/notifications/provider',()=>({createPushSender:m.provider.mockImplementation(()=>({send:m.send}))}));
 vi.mock('next/cache',()=>({revalidatePath:vi.fn()}));
@@ -27,7 +29,7 @@ vi.mock('@/lib/data/schedules',()=>({insertShift:m.insert,updateShift:m.update,d
 vi.mock('@/lib/data/schedule-templates',()=>({listTemplateShifts:async()=>[{employeeId:'E',locationId:'loc-1',positionId:'barista',dayOffset:6,startTime:m.templateStart,endTime:'17:00'},{employeeId:'BLOCKED',locationId:'loc-1',dayOffset:1,startTime:'09:00',endTime:'17:00'}],archiveScheduleTemplate:vi.fn(),createTemplateFromWeek:vi.fn()}));
 import { applyTemplateAction } from './templates/actions';
 import { createShiftAction,updateShiftAction,deleteShiftAction,publishScheduleAction,copyPreviousWeekAction,setAvailabilityDeadlineAction } from './actions';
-function form(){const data=new FormData();Object.entries({shiftId:'s',employeeId:'E',locationId:'loc-1',weekStart:'2030-10-07',date:'2030-10-07',startTime:'09:00',endTime:'17:00',confirmWarnings:'yes'}).forEach(([k,v])=>data.set(k,v));return data;}
+function form(){const data=new FormData();Object.entries({operationId:'11111111-1111-4111-8111-111111111111',shiftId:'s',employeeId:'E',locationId:'loc-1',weekStart:'2030-10-07',date:'2030-10-07',startTime:'09:00',endTime:'17:00',confirmWarnings:'yes'}).forEach(([k,v])=>data.set(k,v));return data;}
 beforeEach(()=>{vi.clearAllMocks();m.role='MANAGER';m.existingWeek='2030-10-07';m.templateStart='09:00';});
 it.each([['publish',publishScheduleAction,'&location=loc-1&published=loc-1'],['create',createShiftAction,'&location=loc-1'],['update',updateShiftAction,'&updated=1'],['delete',deleteShiftAction,'&deleted=1']] as const)('%s returns without provider contact or blanket acknowledgement invalidation',async(_,action,suffix)=>{
   await expect(action(form())).rejects.toMatchObject({destination:`/app/schedule?week=2030-10-07${suffix}`});
@@ -39,9 +41,9 @@ it('create update delete and copy use only server actor identity',async()=>{
   expect(m.insert.mock.calls.every(call=>(call[0] as unknown as {actorEmployeeId:string}).actorEmployeeId==='M')).toBe(true);
   expect(m.update).toHaveBeenCalledWith(expect.objectContaining({actorEmployeeId:'M'}));expect(m.remove).toHaveBeenCalledWith('s',managementProof('M'));
 });
-it('copy retains per-shift eligibility and partial success counts',async()=>{
+it('copy sends the server-authorized command and navigates to its durable per-row receipt',async()=>{
   const original=m.shifts;m.shifts=[...original,{...original[0],id:'blocked',employeeId:'BLOCKED'}];
-  try{await expect(copyPreviousWeekAction(form())).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&copied=1&skipped=1&copyWarnings=0'});expect(m.insert).toHaveBeenCalledTimes(1);expect(m.clear).not.toHaveBeenCalled();}finally{m.shifts=original;}
+  try{await expect(copyPreviousWeekAction(form())).rejects.toMatchObject({destination:'/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'});expect(m.copy).toHaveBeenCalledWith(managementProof('M'),expect.objectContaining({kind:'PREVIOUS_WEEK',weekStart:'2030-10-07'}));expect(m.clear).not.toHaveBeenCalled();}finally{m.shifts=original;}
 });
 it('actual schedule/action import boundary contains no delivery provider or kick and no second action revision',()=>{
   for(const file of ['src/app/app/schedule/actions.ts','src/app/app/schedule/templates/actions.ts','src/lib/data/schedules.ts','src/lib/data/publication-revisions.ts','src/lib/data/notification-transactions.ts']){
@@ -49,10 +51,10 @@ it('actual schedule/action import boundary contains no delivery provider or kick
   }
 });
 
-it('templates retain partial eligibility and pass server actor through the ordinary insertion boundary',async()=>{
+it('template application passes server actor and selected source to the durable writer',async()=>{
   const data=form();data.set('templateId','t');
-  await expect(applyTemplateAction(data)).rejects.toMatchObject({destination:'/app/schedule/templates?week=2030-10-07&applied=1&skipped=1&warnings=0'});
-  expect(m.insert).toHaveBeenCalledTimes(1);expect(m.insert).toHaveBeenCalledWith(expect.objectContaining({actorEmployeeId:'M'}));expect(m.clear).not.toHaveBeenCalled();expect(m.provider).not.toHaveBeenCalled();
+  await expect(applyTemplateAction(data)).rejects.toMatchObject({destination:'/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'});
+  expect(m.copy).toHaveBeenCalledWith(managementProof('M'),{operationId:'11111111-1111-4111-8111-111111111111',kind:'TEMPLATE',weekStart:'2030-10-07',templateId:'t'});expect(m.clear).not.toHaveBeenCalled();expect(m.provider).not.toHaveBeenCalled();
 });
 it.each(['EMPLOYEE','LEAD'])('%s cannot mutate schedules',async role=>{
  m.role=role;await expect(createShiftAction(form())).rejects.toMatchObject({destination:'/app'});expect(m.insert).not.toHaveBeenCalled();
@@ -66,8 +68,8 @@ it.each([[createShiftAction,'/app/schedule?week=2026-10-26&error=INVALID_SHIFT']
 
 vi.mock("@/lib/business-time",()=>import("../../../lib/business-time"));
 
-it('copy skips ambiguous boundaries on the new date',async()=>{const original=m.shifts;m.shifts=[{...original[0],date:'2026-10-25',startTime:'01:30'}];const data=form();data.set('weekStart','2026-10-26');try {await expect(copyPreviousWeekAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-26&copied=0&skipped=1&copyWarnings=0'});expect(m.insert).not.toHaveBeenCalled();}finally{m.shifts=original;}});
-it('template application skips ambiguous assignment boundaries',async()=>{m.templateStart='01:30';const data=form();data.set('weekStart','2026-10-26');data.set('templateId','t');await expect(applyTemplateAction(data)).rejects.toMatchObject({destination:'/app/schedule/templates?week=2026-10-26&applied=0&skipped=2&warnings=0'});expect(m.insert).not.toHaveBeenCalled();});
+it('copy passes the exact requested target week to the authoritative boundary validator',async()=>{const original=m.shifts;m.shifts=[{...original[0],date:'2026-10-25',startTime:'01:30'}];const data=form();data.set('weekStart','2026-10-26');try {await expect(copyPreviousWeekAction(data)).rejects.toMatchObject({destination:'/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'});expect(m.insert).not.toHaveBeenCalled();}finally{m.shifts=original;}});
+it('template application preserves requested target and source for authoritative boundary validation',async()=>{m.templateStart='01:30';const data=form();data.set('weekStart','2026-10-26');data.set('templateId','t');await expect(applyTemplateAction(data)).rejects.toMatchObject({destination:'/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'});expect(m.insert).not.toHaveBeenCalled();});
 
 it('publication warning health retains the assigned position and qualification facts',async()=>{
  const {calculateScheduleHealth}=await import('@/lib/scheduling/schedule-health');
@@ -99,12 +101,12 @@ it('edit distinguishes omitted from explicitly cleared position',async()=>{
  expect(m.update).toHaveBeenLastCalledWith(expect.objectContaining({positionId:null}));
 });
 
-it('copy and template application carry the source position to each new assignment',async()=>{
+it('copy and template wrappers never substitute client assignment fields for the saved source',async()=>{
  const original=m.shifts;m.shifts=[{...original[0],positionId:'cashier'} as typeof m.shifts[number]];
  try{await copyPreviousWeekAction(form());}catch{}finally{m.shifts=original;}
- expect(m.insert).toHaveBeenLastCalledWith(expect.objectContaining({positionId:'cashier'}));
+ expect(m.copy).toHaveBeenLastCalledWith(managementProof('M'),expect.objectContaining({kind:'PREVIOUS_WEEK'}));
  const data=form();data.set('templateId','t');try{await applyTemplateAction(data);}catch{}
- expect(m.insert).toHaveBeenLastCalledWith(expect.objectContaining({positionId:'barista'}));
+ expect(m.copy).toHaveBeenLastCalledWith(managementProof('M'),expect.objectContaining({kind:'TEMPLATE',templateId:'t'}));
 });
 
 
