@@ -31,7 +31,7 @@
     "test:phase-e:sql": "node scripts/phase-e-owned.mjs sql --suite all",
     "test:phase-e:ui": "node scripts/phase-e-owned.mjs browser --suite all",
     "test:phase-e:evidence": "node scripts/phase-e-owned.mjs verify-ci",
-    "test:release-engineering": "node --test scripts/release-ci-contract.check.mjs scripts/release-postgres-cleanup.check.mjs scripts/release-browser-diagnostics.check.mjs",
+    "test:release-engineering": "node --test scripts/release-ci-contract.check.mjs scripts/release-postgres-cleanup.check.mjs scripts/release-browser-diagnostics.check.mjs scripts/release-lint-chain.check.mjs",
     "payroll:worker": "tsx scripts/payroll-worker.ts",
     "test:payroll:owned": "node scripts/payroll-postgres.mjs"
   },
@@ -56,10 +56,10 @@
     "@types/react-dom": "^19.0.0",
     "@types/web-push": "3.6.4",
     "eslint": "^9.0.0",
-    "eslint-config-next": "16.3.8",
     "pg": "8.23.1",
     "tsx": "4.23.15",
     "typescript": "^5.9.0",
-    "vitest": "5.0.2"
+    "vitest": "5.0.2",
+    "@nevora/eslint-config-next": "file:tools/eslint-config-next"
   }
 }

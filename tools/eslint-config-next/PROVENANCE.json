@@ -1,0 +1,51 @@
+{
+  "upstream": {
+    "originalPackage": "eslint-config-next",
+    "version": "16.3.8",
+    "metadataUrl": "https://registry.npmjs.org/eslint-config-next/16.3.8",
+    "tarball": "https://registry.npmjs.org/eslint-config-next/-/eslint-config-next-16.3.8.tgz",
+    "tarballIntegrity": "sha512-81vovwMe6NGnoFsl0KUJWzlS+y239i3fdsxs49gSEX3pDQW2cuKy+fxUPXNkQqqx6OCPheYPtBlSufc9aZ0k+w==",
+    "tarballSHA256": "7c56bb144a853c3b2b9011a753f8a390c68ccf1157176e21a3193b8a0399d799",
+    "retainedFiles": [
+      {
+        "path": "dist/core-web-vitals.js",
+        "sha256": "c50f0df37eff59ea77f29060bb104a789c0e776d610aff2ceaeb0b83fcf0a27e"
+      },
+      {
+        "path": "dist/index.js",
+        "sha256": "b74a083bb67a558c32b5dba2925d1d2cbf806a11b5a034af17962d74d38a435d"
+      },
+      {
+        "path": "dist/parser.js",
+        "sha256": "bf9861fcd2318c860f1aeaef6cd0e5af3922213fe95429eadab607acb56a89db"
+      },
+      {
+        "path": "dist/typescript.js",
+        "sha256": "2ef66aece60b064a2111e1015d1ceddfc4503e3178cd9af49bf5043c821cf70e"
+      },
+      {
+        "path": "dist/core-web-vitals.d.ts",
+        "sha256": "1e36d150c6ffb15c8817050f6992fea733a342e7a36ba43d45ee0be27a0a7e97"
+      },
+      {
+        "path": "dist/index.d.ts",
+        "sha256": "1e36d150c6ffb15c8817050f6992fea733a342e7a36ba43d45ee0be27a0a7e97"
+      },
+      {
+        "path": "dist/parser.d.ts",
+        "sha256": "6ae17df9cb004f10999fdc8b8d7f66b99541ff991e6f7f014b978e86e1c0e318"
+      },
+      {
+        "path": "dist/typescript.d.ts",
+        "sha256": "1e36d150c6ffb15c8817050f6992fea733a342e7a36ba43d45ee0be27a0a7e97"
+      }
+    ]
+  },
+  "localFork": "16.3.8-nevora.1",
+  "modifications": [
+    "Local package identity/dependency declarations",
+    "Config plugin import identity only"
+  ],
+  "advisory": "GHSA-vfj7-8cjw-p6xm",
+  "noOfficialPatchedReleaseClaim": true
+}

@@ -1,0 +1,110 @@
+{
+  "bugs": {
+    "url": "https://github.com/vercel/next.js/issues"
+  },
+  "dist": {
+    "shasum": "83f8366dbf97f02b87aecb573372ca643f83250d",
+    "tarball": "https://registry.npmjs.org/eslint-config-next/-/eslint-config-next-16.3.8.tgz",
+    "fileCount": 9,
+    "integrity": "sha512-81vovwMe6NGnoFsl0KUJWzlS+y239i3fdsxs49gSEX3pDQW2cuKy+fxUPXNkQqqx6OCPheYPtBlSufc9aZ0k+w==",
+    "signatures": [
+      {
+        "sig": "MEUCIQCSESj9p26Mx+/T8yfTNeD1tO4eGQCvllX3s6r65ZDNEQIgWODD2KwZQq6LzxW0glF2oMe3oWBOpfenoyHfDdpe6Ng=",
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+      },
+      {
+        "sig": "MEUCIA8GSyEbEz85FygJA4ORT8csMLtsbOAHHkSFR4/LNnH0AiEA63cql9hAwjktlebiGqe4AGJ4g9bwOfnXCUvcCxry9oI=",
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+      }
+    ],
+    "attestations": {
+      "url": "https://registry.npmjs.org/-/npm/v1/attestations/eslint-config-next@16.3.8",
+      "provenance": {
+        "predicateType": "https://slsa.dev/provenance/v1"
+      }
+    },
+    "unpackedSize": 14190
+  },
+  "name": "@nevora/eslint-config-next",
+  "_from": "file:eslint-config-next-16.3.8.tgz",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./parser": {
+      "types": "./dist/parser.d.ts",
+      "default": "./dist/parser.js"
+    },
+    "./typescript": {
+      "types": "./dist/typescript.d.ts",
+      "default": "./dist/typescript.js"
+    },
+    "./core-web-vitals": {
+      "types": "./dist/core-web-vitals.d.ts",
+      "default": "./dist/core-web-vitals.js"
+    }
+  },
+  "license": "MIT",
+  "_npmUser": {
+    "name": "GitHub Actions",
+    "email": "npm-oidc-no-reply@github.com",
+    "trustedPublisher": {
+      "id": "github",
+      "oidcConfigId": "a3966413-6aca-4040-ac27-b72adf886919"
+    }
+  },
+  "homepage": "https://nextjs.org/docs/app/api-reference/config/eslint",
+  "_resolved": "/tmp/37798eb8b1d48ec429130cf937f878b7/eslint-config-next-16.3.8.tgz",
+  "_integrity": "sha512-81vovwMe6NGnoFsl0KUJWzlS+y239i3fdsxs49gSEX3pDQW2cuKy+fxUPXNkQqqx6OCPheYPtBlSufc9aZ0k+w==",
+  "repository": {
+    "url": "git+https://github.com/vercel/next.js.git",
+    "directory": "packages/eslint-config-next"
+  },
+  "_npmVersion": "11.19.0",
+  "description": "ESLint configuration used by Next.js.",
+  "directories": {},
+  "maintainers": [
+    {
+      "name": "timneutkens",
+      "email": "tim@vercel.com"
+    },
+    {
+      "name": "timer",
+      "email": "timer150@gmail.com"
+    },
+    {
+      "name": "vercel-release-bot",
+      "email": "infra+release@vercel.com"
+    }
+  ],
+  "_nodeVersion": "24.21.0",
+  "dependencies": {
+    "globals": "16.4.0",
+    "typescript-eslint": "^8.46.0",
+    "eslint-plugin-react": "^7.37.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "eslint-import-resolver-node": "^0.3.6",
+    "eslint-import-resolver-typescript": "^3.5.2",
+    "@nevora/eslint-plugin-next": "file:../eslint-plugin-next"
+  },
+  "_hasShrinkwrap": false,
+  "peerDependencies": {
+    "eslint": ">=9.0.0",
+    "typescript": ">=3.3.1"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "_npmOperationalInternal": {
+    "tmp": "tmp/eslint-config-next_16.3.8_1790783979307_0.28235636834080347",
+    "host": "s3://npm-registry-packages-npm-production"
+  },
+  "_id": "eslint-config-next@16.3.8",
+  "version": "16.3.8-nevora.1",
+  "private": true
+}
