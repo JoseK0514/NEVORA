@@ -14,7 +14,7 @@ export function ShiftChangePolicyFields({
     <details className="shift-policy-disclosure">
       <summary>Shift trade &amp; coverage policy</summary>
       <p>
-        Only an Owner can review these settings. Unknown values keep automatic
+        Owners can edit these settings; managers can view them. Unknown values keep automatic
         completion unavailable. Each workflow saves independently.
       </p>
       {(["swap", "coverage"] as const).map((scope) => {

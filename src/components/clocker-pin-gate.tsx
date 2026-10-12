@@ -2,6 +2,8 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import styles from './clocker-pin.module.css';
 import { ClockerPunchPanel } from './clocker-punch-panel';
+import { ClockerIcon } from './clocker-icon';
+import { useClockerMotion } from './clocker-motion';
 type Verified={state:'verified';firstName:string;expiresAt:string};
 type Reply=Verified|{state:'idle'};
 class PinRequestError extends Error { constructor(message:string,readonly recover:boolean){super(message);} }
@@ -23,6 +25,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  const [count,setCount]=useState(0),[pending,setPending]=useState(true);
  const [identity,setIdentity]=useState<Verified|null>(null);
  const [error,setError]=useState<string|null>(null),[blocked,setBlocked]=useState(false);
+ const motion=useClockerMotion(identity?'verified':'pin');
  const clearQueue=useRef<Promise<unknown>|null>(null);
  const advanceEpoch=useCallback(()=>++epoch.current,[]);
  const clearServer=useCallback(()=>{
@@ -55,6 +58,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   const timeout=window.setTimeout(()=>void reset(),30000);
   return()=>clearTimeout(timeout);
  },[identity,reset]);
+ useEffect(()=>{if(!pending&&!identity&&!blocked)input.current?.focus({preventScroll:true});},[pending,identity,blocked]);
  function key(value:string){
   if(busy.current||blocked||!input.current)return;
   const current=input.current.value;
@@ -77,21 +81,27 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   }catch(reason){if(generation===epoch.current){setError(reason instanceof Error?reason.message:'Verification could not be confirmed. Please try again.');setBlocked(!(reason instanceof PinRequestError)||reason.recover);}}
   finally{if(generation===epoch.current){busy.current=false;setPending(false);}}
  }
- return <div className={styles.terminal} aria-busy={pending}>
+ return <div ref={motion} className={styles.terminal} aria-busy={pending}>
   {identity&&punchEnabled?<ClockerPunchPanel locationKey={locationKey} timeZone={timeZone} onDone={reset}/>:identity?<>
+   <div className={styles.pinIcon}><ClockerIcon name="check" size={28}/></div>
    <h1>Hi, {identity.firstName}.</h1><p>Your PIN is verified for this tablet.</p>
    <div className={styles.previewNotice}><strong>Time punches are not enabled yet.</strong><span>No worked time has been recorded.</span></div>
    <button className="button primary" type="button" onClick={()=>void reset()}>Done</button>
    <p className={styles.note}>This screen clears automatically after 30 seconds.</p>
   </>:<>
-   <h1>Enter Your PIN</h1><p>Use your four-digit employee PIN.</p>
+   <div className={styles.pinIcon}><ClockerIcon name="lock" size={28}/></div>
+   <h1>Enter your PIN</h1><p>Use your four-digit employee PIN.</p>
    <form onSubmit={submit}>
     <fieldset disabled={pending||blocked}>
-     <label className={styles.pinLabel}>Employee PIN<input ref={input} name="pin" type="password" inputMode="none" autoComplete="off" maxLength={4} minLength={4} required pattern="[0-9]{4}" onChange={e=>setCount(e.currentTarget.value.length)} aria-describedby="clocker-pin-help"/></label>
-     <div className={styles.keypad} aria-label="PIN keypad">
-      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" onClick={()=>key(value)} aria-label={value==='clear'?'Clear PIN':value==='delete'?'Delete digit':`Number ${value}`}>{value==='clear'?'Clear':value==='delete'?'⌫':value}</button>)}
+     <label className={styles.pinLabel} htmlFor="clocker-pin">Employee PIN</label>
+     <div className={styles.pinEntry}>
+      <input id="clocker-pin" ref={input} name="pin" type="password" inputMode="none" autoComplete="off" maxLength={4} minLength={4} required pattern="[0-9]{4}" onChange={e=>setCount(e.currentTarget.value.length)} aria-describedby="clocker-pin-help" aria-invalid={error&&!blocked?true:undefined}/>
+      <div className={styles.pinSlots} aria-hidden="true">{[0,1,2,3].map(index=><span key={index} data-filled={index<count}/>)}</div>
      </div>
-     <button className="button primary" type="submit" disabled={count!==4}>Continue</button>
+     <div className={styles.keypad} aria-label="PIN keypad">
+      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" onClick={()=>key(value)} aria-label={value==='clear'?'Clear PIN':value==='delete'?'Delete digit':`Number ${value}`}>{value==='clear'?'Clear':value==='delete'?<ClockerIcon name="delete" size={23}/>:value}</button>)}
+     </div>
+     <button className="button primary" type="submit" disabled={count!==4}>Continue<ClockerIcon name="arrow" size={20}/></button>
     </fieldset>
    </form>
    <p id="clocker-pin-help" className={styles.note}>Your PIN is separate from your portal password.</p>

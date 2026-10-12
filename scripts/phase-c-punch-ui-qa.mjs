@@ -30,7 +30,7 @@ async function enroll(owner,p,name){
  await goto(owner,'/app/settings/clocker');await owner.getByRole('button',{name:'Add Device',exact:true}).click();
  const d=owner.getByRole('dialog');await d.getByLabel('Device name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Create Setup Code',exact:true}).click();await d.waitFor({state:'hidden'});
  const code=await owner.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
- await goto(p,'/clocker/2');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect Tablet',exact:true}).click();await idle(p);
+ await goto(p,'/clocker/2');await p.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);await shot(p,name.includes('Second')?'second-tablet-setup':name.split(' ')[0]+'-setup');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(p);
 }
 async function editBreak(owner,name,category,minutes){
  await goto(owner,'/app/settings/breaks');const row=owner.locator('[data-break-type="ui-rest"]');
@@ -42,7 +42,7 @@ async function archiveBreak(owner,operation){
  const row=owner.locator('[data-break-type="ui-rest"]');await row.getByRole('button',{name:/^Manage /}).click();await owner.getByRole('button',{name:operation,exact:true}).click();
  const d=owner.getByRole('dialog');await d.getByRole('button',{name:operation+' Break Type',exact:true}).click();await d.waitFor({state:'hidden'});
 }
-async function idle(p){await p.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
+async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
 async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}
 async function startBreak(p){await p.getByRole('button',{name:'Start Break',exact:true}).click();await p.getByRole('heading',{name:'Choose a Break',exact:true}).waitFor();await p.getByRole('button',{name:'Start Fixture rest',exact:true}).click();}
 async function done(p){await p.getByRole('button',{name:'Done',exact:true}).click();await idle(p);}
@@ -54,7 +54,7 @@ async function geometry(p,label){const v=await p.evaluate(()=>{
  return {width:innerWidth,doc:document.documentElement.scrollWidth,small:controls.filter(e=>e.getBoundingClientRect().height<43.5).length,
   outside:controls.filter(e=>{const r=e.getBoundingClientRect();return r.left<-2||r.right>innerWidth+2;}).length};
  });assert(v.doc<=v.width+2,label+' overflow');assert.equal(v.small,0,label+' touch sizes');assert.equal(v.outside,0,label+' clipped controls');checked(label);}
-async function shot(p,name){const file=join(evidence,name+'.png');await p.screenshot({path:file,fullPage:true});report.screenshots.push(file);}
+async function shot(p,name){const file=join(evidence,name+'.png');await p.evaluate(()=>document.fonts.ready);await p.waitForFunction(()=>[...document.querySelectorAll('main [style]')].every(element=>Number(getComputedStyle(element).opacity)===1));await p.screenshot({path:file,fullPage:true,style:'nextjs-portal { display: none; }'});report.screenshots.push(file);}
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
  await seedOwnedApp(app.database.executor);
@@ -67,6 +67,24 @@ try{
   const tablet=await context(browser),t=await tablet.newPage();currentPage=t;t.setDefaultTimeout(15000);
   let stage='active-flow';const errors=[];const capture=(source,e)=>errors.push({source,stage,lastCheck:report.checks.at(-1),message:e.message,stack:e.stack});t.on('pageerror',e=>capture('primary',e));
   await enroll(ownerPage,t,engine+' Clocking Tablet');
+  for(const width of [320,375,390,430,768,1024,1440]){
+   await t.setViewportSize({width,height:width<500?844:width===768?1024:width===1024?768:900});await t.evaluate(()=>document.fonts.ready);
+   await geometry(t,engine+': redesigned PIN screen '+width);
+   const layout=await t.evaluate(()=>{const h=document.querySelector('main h1'),main=document.querySelector('main');return {lines:h.getBoundingClientRect().height/parseFloat(getComputedStyle(h).lineHeight),font:getComputedStyle(main).fontFamily,loaded:document.fonts.check('16px "Nevora Clocker"'),password:document.querySelector('input[name=pin]').type};});
+   assert(layout.lines<=2.1);assert(layout.font.includes('Nevora Clocker'));assert(layout.loaded);assert.equal(layout.password,'password');
+   if(width===390||width===1024)assert(await t.getByRole('button',{name:'Continue',exact:true}).evaluate(element=>element.getBoundingClientRect().bottom<=innerHeight),'Continue fits the common mobile/tablet viewport');
+   if([390,768,1024,1440].includes(width))await shot(t,engine+'-pin-'+width);
+  }
+  await t.getByRole('button',{name:'Number 2',exact:true}).click();await t.getByRole('button',{name:'Number 4',exact:true}).click();
+  assert.equal(await t.locator('[data-filled=true]').count(),2);await t.getByRole('button',{name:'Delete digit',exact:true}).click();assert.equal(await t.locator('[data-filled=true]').count(),1);
+  await t.getByRole('button',{name:'Clear PIN',exact:true}).click();assert.equal(await t.getByLabel('Employee PIN',{exact:true}).inputValue(),'');assert(await t.getByRole('button',{name:'Continue',exact:true}).isDisabled());
+  checked(engine+': masked PIN progress, delete and clear preserve native input behavior');
+  await t.getByLabel('Employee PIN',{exact:true}).fill('9999');await t.getByRole('button',{name:'Continue',exact:true}).click();await t.getByRole('alert').waitFor();assert.equal(await t.getByLabel('Employee PIN',{exact:true}).inputValue(),'');assert.equal(await t.getByRole('button',{name:'Clock In',exact:true}).count(),0);
+  checked(engine+': invalid PIN remains private and clears the input');
+  await t.emulateMedia({reducedMotion:'reduce'});await t.getByLabel('Employee PIN',{exact:true}).fill('2468');await t.getByLabel('Employee PIN',{exact:true}).press('Enter');await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
+  assert(await t.locator('[data-clocker-state=ready]').evaluate(element=>getComputedStyle(element).opacity==='1'&&getComputedStyle(element).transform==='none'));
+  checked(engine+': physical keyboard submits PIN; reduced motion keeps the task static');await done(t);await t.emulateMedia({reducedMotion:'no-preference'});
+  await t.setViewportSize({width:1024,height:768});
   await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
   assert.equal(await t.getByText('Time punches are not enabled yet.',{exact:true}).count(),0);
   await geometry(t,engine+': actual off-clock view');await shot(t,engine+'-off-clock-1024');

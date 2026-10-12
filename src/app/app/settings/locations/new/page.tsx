@@ -1,31 +1,23 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
-import { ConfigurationForm } from "@/components/configuration-form";
-import { LocationConfigurationFields } from "@/components/location-configuration-fields";
+import { NewLocationForm } from "@/components/new-location-form";
 import { requireRoles } from "@/lib/auth/permissions";
 import { createLocationAction } from "../../actions";
+import "./new-location.css";
+
 export default async function NewLocationPage() {
   await requireRoles(["OWNER"]);
   return (
-    <div className="configuration-page">
-      <PageHeader
-        title="Add Location"
-        eyebrow="Owner controls"
-        description="New locations need staffing rules, coverage periods and eligible employees."
-      />
-      <section className="panel form-panel">
-        <ConfigurationForm action={createLocationAction}>
-          <LocationConfigurationFields />
-          <div className="form-footer">
-            <Link className="button secondary" href="/app/settings/locations">
-              Locations
-            </Link>
-            <button className="button primary" type="submit">
-              Add Location
-            </button>
-          </div>
-        </ConfigurationForm>
-      </section>
+    <div className="add-location-page">
+      <nav className="add-location-breadcrumb" aria-label="Breadcrumb">
+        <Link href="/app/settings">Settings</Link>
+        <span aria-hidden="true">/</span>
+        <Link href="/app/settings/locations">Locations</Link>
+      </nav>
+      <header className="add-location-heading">
+        <h1>Add location</h1>
+        <p>Give your team a new place to work.</p>
+      </header>
+      <NewLocationForm action={createLocationAction} />
     </div>
   );
 }

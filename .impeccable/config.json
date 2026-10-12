@@ -1,0 +1,28 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "files": [
+          "src/components/callout-view.module.css",
+          "src/components/employee-directory.module.css",
+          "src/app/app/settings/workspace/workspace-settings.css",
+          "src/app/app/settings/clocker/clocker-devices.css"
+        ],
+        "reason": "Retained finished UI handoffs record Jose's approved DESIGN.MD typography: locally bundled Inter. Assembly narrows the two previously unscoped exceptions to their originating page stylesheets and preserves the existing directory and Clocker scopes."
+      },
+      {
+        "rule": "design-system-font",
+        "value": "nevora employee inter",
+        "files": [
+          "src/app/app/employees/new/new-employee.css"
+        ],
+        "createdAt": "2026-10-12T15:22:26.970Z",
+        "reason": "Assembly review: this local alias loads the existing fonts/typeface/inter/variable.ttf required by DESIGN.MD; preserve the supplied page design."
+      }
+    ]
+  }
+}

@@ -1,323 +1,156 @@
-import {ShiftChangePolicyFields} from '@/components/shift-change-policy-fields';
-import {readShiftChangePolicy} from '@/lib/data/shift-change-policy';
-import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
-import {ConfigurationForm} from "@/components/configuration-form";
-import {PositionQuotaFields} from "@/components/position-quota-fields";
-import {listPositions} from "@/lib/data/positions";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { NavIcon, type NavIconName } from "@/components/nav-icon";
+import { ConfigurationForm } from "@/components/configuration-form";
+import { PositionQuotaFields } from "@/components/position-quota-fields";
+import { ShiftChangePolicyFields } from "@/components/shift-change-policy-fields";
+import { ManagerIssueFocus } from "@/components/manager-issue-focus";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
-import {
-  listCoverageWindows,
-  listEmployeeHourTargets,
-  listLocationStaffingSettings,
-} from "@/lib/data/schedule-health";
-import {
-  addCoverageWindowFormAction,
-  replaceCoverageWindowPositionRequirementsAction,
-  deleteCoverageWindowAction,
-  saveScheduleHealthSettingsFormAction,
-} from "@/app/app/schedule/settings/actions";
+import { listPositions } from "@/lib/data/positions";
+import { readShiftChangePolicy } from "@/lib/data/shift-change-policy";
+import { neonNotificationExecutor } from "@/lib/data/notification-transactions";
+import { listCoverageWindows, listEmployeeHourTargets, listLocationStaffingSettings } from "@/lib/data/schedule-health";
+import { addCoverageWindowFormAction, replaceCoverageWindowPositionRequirementsAction, deleteCoverageWindowAction, saveScheduleHealthSettingsFormAction } from "./actions";
 import { formatTime } from "@/lib/date-utils";
-import {ManagerIssueFocus} from '@/components/manager-issue-focus';
+import "./scheduling-rules.css";
 
-export default async function ScheduleSettingsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    error?: string;
-    saved?: string;
-    windowSaved?: string;
-    windowDeleted?: string;
-  }>;
+const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+function RuleHeading({ icon, title, description }: { icon: NavIconName; title: string; description: string }) {
+  return <header className="rules-heading"><span className="rules-icon"><NavIcon name={icon} size={22} /></span><div><h2>{title}</h2><p>{description}</p></div></header>;
+}
+
+export default async function ScheduleSettingsPage({ searchParams }: {
+  searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string }>;
 }) {
-  const session=await requireRoles(MANAGER_ROLES);
-  let policy=null,policyUnavailable=false;try{policy=await readShiftChangePolicy(neonNotificationExecutor());}catch{policyUnavailable=true;}
+  const session = await requireRoles(MANAGER_ROLES);
+  let policy = null;
+  let policyUnavailable = false;
+  try { policy = await readShiftChangePolicy(neonNotificationExecutor()); } catch { policyUnavailable = true; }
   const params = await searchParams;
-
   const [staffing, employees, locations, coverageWindows, positions] = await Promise.all([
-    listLocationStaffingSettings(),
-    listEmployeeHourTargets(),
-    listLocations(),
-    listCoverageWindows(),
-    listPositions({includeInactive:true}),
+    listLocationStaffingSettings(), listEmployeeHourTargets(), listLocations(),
+    listCoverageWindows(), listPositions({ includeInactive: true }),
   ]);
-
   function locationLabel(locationId: string, fallback: string) {
-    return locations.find((location) => location.id === locationId)?.shortName ??
-      fallback;
+    return locations.find(location => location.id === locationId)?.shortName ?? fallback;
   }
 
-  const dayNames = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-
   return (
-    <div className="schedule-settings-page">
+    <div className="scheduling-rules-page">
       <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" />
       <PageHeader
-        eyebrow="Schedule health"
-        title="Staffing & hour targets"
-        description="Define what a complete schedule looks like so NEVORA Workforce can point out coverage gaps and employees who may be short on hours."
-        actions={
-          <Link className="button secondary" href="/app/schedule">
-            Back to Schedule
-          </Link>
-        }
+        title="Scheduling rules"
+        description="Set staffing, weekly hours, and recurring coverage so your team knows what a complete schedule needs."
+        actions={<Link className="button secondary rules-back" href="/app/schedule"><NavIcon name="schedule" />Back to schedule</Link>}
       />
+      {params.error ? <p className="form-error" role="alert">{
+        params.error === "invalid_staffing"
+          ? "Staffing requirements must be whole numbers between 1 and 100. Choose whether a designated Lead is required for each unconfigured location."
+          : params.error === "invalid_hours"
+            ? "Targets and maximums must be between 0 and 168 hours."
+            : params.error === "duplicate_window"
+              ? "That coverage window already exists."
+              : "Enter a valid day, time range, and optional staffing override."
+      }</p> : null}
+      {params.saved ? <p className="form-success" role="status">Schedule health settings updated.</p> : null}
+      {params.windowSaved ? <p className="form-success" role="status">Coverage window added.</p> : null}
+      {params.windowDeleted ? <p className="form-success" role="status">Coverage window removed.</p> : null}
 
-      {params.error ? (
-        <p className="form-error">
-          {params.error === "invalid_staffing"
-            ? "Staffing requirements must be whole numbers between 1 and 100. Choose whether a designated Lead is required for each unconfigured location."
-            : params.error === "invalid_hours"
-              ? "Targets and maximums must be between 0 and 168 hours."
-              : params.error === "duplicate_window"
-                ? "That coverage window already exists."
-                : "Enter a valid day, time range, and optional staffing override."}
-        </p>
-      ) : null}
+      <div className="rules-layout">
+        <aside className="rules-navigation">
+          <p>On this page</p>
+          <nav aria-label="Scheduling rule sections">
+            <a href="#coverage-staffing"><NavIcon name="location" />Location staffing</a>
+            <a href="#target-hours"><NavIcon name="hours" />Weekly hours</a>
+            <a href="#coverage-windows"><NavIcon name="calendar" />Recurring coverage</a>
+            <a href="#rules-policy"><NavIcon name="exchange" />Trade &amp; coverage</a>
+          </nav>
+          <div className="rules-navigation-note"><NavIcon name="rules" /><p>Staffing and hours save together. Coverage periods and policies save separately.</p></div>
+        </aside>
 
-      {params.saved ? (
-        <p className="form-success">Schedule health settings updated.</p>
-      ) : null}
-      {params.windowSaved ? (
-        <p className="form-success">Coverage window added.</p>
-      ) : null}
-      {params.windowDeleted ? (
-        <p className="form-success">Coverage window removed.</p>
-      ) : null}
-
-      {policyUnavailable?<p className="form-error" role="alert">Shift change policy is unavailable. Reconnect and reload before editing.</p>:<ShiftChangePolicyFields policy={policy} canEdit={session.role==='OWNER'}/>}
-      <div className="schedule-settings-form">
-        <ConfigurationForm
-          action={saveScheduleHealthSettingsFormAction}
-          className="schedule-settings-core-form"
-        >
-          <section className="panel schedule-rule-panel manager-issue-target" id="coverage-staffing" tabIndex={-1}>
-            <div className="schedule-rule-heading">
-              <div>
-                <p className="eyebrow">Coverage</p>
-                <h2>Staff required per shift</h2>
-                <p>
-                  Coverage is calculated across actual overlapping shift times.
-                  You can also require a designated lead to be present during
-                  covered periods.
-                </p>
+        <div className="rules-content">
+          <ConfigurationForm action={saveScheduleHealthSettingsFormAction} className="rules-core-form">
+            <section className="rules-panel manager-issue-target" id="coverage-staffing" tabIndex={-1}>
+              <RuleHeading icon="employees" title="Location staffing" description="Choose the minimum staff needed during overlapping shift times, and whether a designated Lead must be present." />
+              <div className="rules-staffing-list">
+                {staffing.map(location => {
+                  const name = locationLabel(location.locationId, location.locationName);
+                  return (
+                    <div className="rules-staffing-row manager-issue-target" id={"staffing-" + location.locationId} tabIndex={-1} key={location.locationId}>
+                      <div className="rules-location-name"><strong>{name}</strong><span>{location.minimumStaffPerShift === null || location.requiresDesignatedLead === null ? "Needs setup" : "Staffing per shift"}</span></div>
+                      <label className="rules-staff-count"><span>Minimum staff</span><span className="rules-number-input"><input type="number" name={"staffing-" + location.locationId} aria-label={name + " minimum staff per shift"} defaultValue={location.minimumStaffPerShift ?? undefined} min={1} max={100} step={1} required /><small>people</small></span></label>
+                      {location.requiresDesignatedLead === null ? (
+                        <label className="rules-lead-choice"><span>Designated Lead</span><select className="nevora-select nevora-select-native" name={"lead-choice-" + location.locationId} defaultValue="" required aria-label={name + " designated Lead rule"}><option value="" disabled>Choose a Lead rule</option><option value="true">Designated Lead required</option><option value="false">Designated Lead not required</option></select></label>
+                      ) : (
+                        <label className="rules-lead-toggle"><input type="hidden" name={"lead-configured-" + location.locationId} value="true" /><input type="checkbox" name={"lead-" + location.locationId} defaultChecked={location.requiresDesignatedLead} aria-label={name + " designated Lead required"} /><span>Designated Lead required</span></label>
+                      )}
+                    </div>
+                  );
+                })}
+                {!staffing.length ? <div className="rules-empty"><NavIcon name="location" size={24} /><div><strong>Add your first location</strong><p>Set up a location, then choose its staffing and Lead requirements.</p><Link className="button secondary" href="/app/settings/locations">Manage locations<NavIcon name="arrowRight" /></Link></div></div> : null}
               </div>
-            </div>
+            </section>
 
-            <div className="staffing-settings-grid">
-              {staffing.map((location) => (
-                <label
-                  className="staffing-setting-card manager-issue-target"
-                  id={`staffing-${location.locationId}`} tabIndex={-1}
-                  key={location.locationId}
-                >
-                  <span>{locationLabel(location.locationId, location.locationName)}</span>
-                  <strong>
-                    <input
-                      type="number"
-                      name={`staffing-${location.locationId}`}
-                      defaultValue={location.minimumStaffPerShift ?? undefined}
-                      min={1}
-                      max={100}
-                      step={1}
-                      required
-                    />
-                    <small>employees</small>
-                  </strong>
-                  {location.requiresDesignatedLead === null ? <span className="staffing-lead-toggle">
-                    <select className="nevora-select nevora-select-native" name={`lead-choice-${location.locationId}`} defaultValue="" required aria-label="Designated Lead rule">
-                      <option value="" disabled>Choose a Lead rule</option>
-                      <option value="true">Designated Lead required</option>
-                      <option value="false">Designated Lead not required</option>
-                    </select>
-                  </span> : <span className="staffing-lead-toggle">
-                    <input type="hidden" name={`lead-configured-${location.locationId}`} value="true" />
-                    <input
-                      type="checkbox"
-                      name={`lead-${location.locationId}`}
-                      defaultChecked={location.requiresDesignatedLead ?? undefined}
-                    />
-                    <span>Designated lead required</span>
-                  </span>}
-                </label>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel schedule-rule-panel">
-            <div className="schedule-rule-heading">
-              <div>
-                <p className="eyebrow">Hours balance</p>
-                <h2>Employee weekly hours</h2>
-                <p>
-                  Targets guide hours balance. Maximums limit scheduled hours.
-                  Leave a target blank to exclude it from the hours review.
-                </p>
-              </div>
-            </div>
-
-            <div className="hour-target-list">
-              {employees.map((employee) => {
-                return (
-                  <div className="hour-target-row manager-issue-target" id={`target-${employee.employeeId}`} tabIndex={-1} key={employee.employeeId}>
-                    <span className="hour-target-employee">
-                      <strong>{employee.employeeName}</strong>
-                      <small>
-                        {employee.employeeId} · {employee.role[0]}
-                        {employee.role.slice(1).toLowerCase()} ·{" "}
-                        {locationLabel(employee.primaryLocationId, "—")}
-                      </small>
-                    </span>
-
-                    <div className="employee-hour-inputs">
-                      <label className="employee-hour-field">
-                        <span>Target</span>
-                        <span className="hour-target-input"><input type="number" name={`target-${employee.employeeId}`} aria-label={`${employee.employeeName} target weekly hours`} defaultValue={employee.targetWeeklyHours ?? ""} min={0} max={168} step={0.25} placeholder="Not set" /><small>hrs / week</small></span>
-                      </label>
-                      <label className="employee-hour-field">
-                        <span>Maximum</span>
-                        <span className="hour-target-input"><input type="number" name={`maximum-${employee.employeeId}`} aria-label={`${employee.employeeName} maximum weekly hours`} defaultValue={employee.maximumWeeklyHours ?? 40} min={0} max={168} step={0.25} required /><small>hrs / week</small></span>
-                      </label>
+            <section className="rules-panel manager-issue-target" id="target-hours" tabIndex={-1}>
+              <RuleHeading icon="hours" title="Weekly hours" description="Targets guide balanced schedules. Maximums flag excess scheduled hours. Leave a target blank to leave it out of the hours review." />
+              <div className="rules-hours-list">
+                {employees.map(employee => (
+                  <div className="rules-hours-row manager-issue-target" id={"target-" + employee.employeeId} tabIndex={-1} key={employee.employeeId}>
+                    <div className="rules-employee"><strong>{employee.employeeName}</strong><span>{employee.employeeId} · {employee.role[0]}{employee.role.slice(1).toLowerCase()} · {locationLabel(employee.primaryLocationId, "—")}</span></div>
+                    <div className="rules-hour-fields">
+                      <label><span>Target</span><span className="rules-number-input"><input type="number" name={"target-" + employee.employeeId} aria-label={employee.employeeName + " target weekly hours"} defaultValue={employee.targetWeeklyHours ?? ""} min={0} max={168} step={0.25} placeholder="Not set" /><small>hrs</small></span></label>
+                      <label><span>Maximum</span><span className="rules-number-input"><input type="number" name={"maximum-" + employee.employeeId} aria-label={employee.employeeName + " maximum weekly hours"} defaultValue={employee.maximumWeeklyHours ?? 40} min={0} max={168} step={0.25} required /><small>hrs</small></span></label>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </section>
-
-          <div className="schedule-settings-savebar">
-            <div>
-              <strong>Schedule health rules</strong>
-              <span>
-                Changes apply to the weekly management view immediately.
-              </span>
-            </div>
-            <button className="schedule-settings-save-btn" type="submit">
-              Save Settings
-            </button>
-          </div>
-        </ConfigurationForm>
-
-        <section className="panel schedule-rule-panel manager-issue-target" id="coverage-windows" tabIndex={-1}>
-          <div className="schedule-rule-heading">
-            <div>
-              <p className="eyebrow">Coverage windows</p>
-              <h2>Expected shift periods</h2>
-              <p>
-                These recurring windows let Schedule Health detect a completely
-                missing shift, including periods with zero employees scheduled.
-              </p>
-            </div>
-          </div>
-
-          <ConfigurationForm
-            action={addCoverageWindowFormAction}
-            className="coverage-window-form expected-shift-periods"
-          >
-            <label>
-              Location
-              <select
-                className="nevora-select nevora-select-native"
-                name="locationId"
-                required
-                defaultValue={locations[0]?.id}
-              >
-                {locations.map((location) => (
-                  <option key={location.id} value={location.id}>
-                    {locationLabel(location.id, location.shortName)}
-                  </option>
                 ))}
-              </select>
-            </label>
-            <label>
-              Day
-              <select className="nevora-select nevora-select-native" name="dayOfWeek" defaultValue="1" required>
-                <option value="1">Monday</option>
-                <option value="2">Tuesday</option>
-                <option value="3">Wednesday</option>
-                <option value="4">Thursday</option>
-                <option value="5">Friday</option>
-                <option value="6">Saturday</option>
-                <option value="0">Sunday</option>
-              </select>
-            </label>
-            <label>
-              Start
-              <input type="time" name="startTime" required />
-            </label>
-            <label>
-              End
-              <input type="time" name="endTime" required />
-            </label>
-            <label>
-              Staff override <span>Optional</span>
-              <input
-                type="number"
-                name="minimumStaff"
-                min={1}
-                max={100}
-                step={1}
-                placeholder="Use location default"
-              />
-            </label>
-            <PositionQuotaFields positions={positions.filter(p=>p.active)}/>
-            <button className="schedule-settings-add-window-btn" type="submit">
-              Add Window
-            </button>
+                {!employees.length ? <div className="rules-empty"><NavIcon name="employees" size={24} /><div><strong>No employees to configure</strong><p>Add active employees to set their weekly hour targets.</p><Link className="button secondary" href="/app/employees">Manage employees<NavIcon name="arrowRight" /></Link></div></div> : null}
+              </div>
+            </section>
+            {staffing.length || employees.length ? <div className="rules-savebar"><div><strong>Staffing &amp; weekly hours</strong><p>Saved changes apply to Schedule Health immediately.</p></div><button className="button primary" type="submit">Save staffing &amp; hours</button></div> : null}
           </ConfigurationForm>
 
-          <div className="coverage-window-list">
-            {coverageWindows.length ? (
-              coverageWindows.map((window) => {
-                return (
-                  <div className="coverage-window-row" key={window.id}>
-                    <div>
-                      <strong>
-                        {locationLabel(window.locationId, window.locationId)} ·{" "}
-                        {dayNames[window.dayOfWeek]}
-                      </strong>
-                      <span>
-                        {formatTime(window.startTime)} –{" "}
-                        {formatTime(window.endTime)}
-                        {window.minimumStaff
-                          ? ` · ${window.minimumStaff} staff`
-                          : " · location default"}
-                      </span>
-                    </div>
-                    <ConfigurationForm action={replaceCoverageWindowPositionRequirementsAction} className="position-quota-form"><input type="hidden" name="windowId" value={window.id}/><PositionQuotaFields positions={positions} requirements={window.positionRequirements}/><button className="button secondary" type="submit">Save Position Quantities</button></ConfigurationForm>
-                    <form action={deleteCoverageWindowAction}>
-                      <input
-                        type="hidden"
-                        name="windowId"
-                        value={window.id}
-                      />
-                      <button className="text-button danger" type="submit">
-                        Remove
-                      </button>
-                    </form>
+          <section className="rules-panel manager-issue-target" id="coverage-windows" tabIndex={-1}>
+            <RuleHeading icon="calendar" title="Recurring coverage" description="Add the periods you expect every week. Schedule Health can then flag missing coverage, even when no shift has been scheduled." />
+            {locations.length ? <details className="rules-add-period" open={!coverageWindows.length}>
+              <summary><NavIcon name="calendar" />Add coverage period<NavIcon name="chevronRight" /></summary>
+              <ConfigurationForm action={addCoverageWindowFormAction} className="rules-period-form">
+                <div className="rules-period-fields">
+                  <label className="rules-period-location"><span>Location</span><select className="nevora-select nevora-select-native" name="locationId" required defaultValue={locations[0]?.id}>{locations.map(location => <option key={location.id} value={location.id}>{locationLabel(location.id, location.shortName)}</option>)}</select></label>
+                  <label><span>Day</span><select className="nevora-select nevora-select-native" name="dayOfWeek" defaultValue="1" required>{[1, 2, 3, 4, 5, 6, 0].map(day => <option key={day} value={day}>{dayNames[day]}</option>)}</select></label>
+                  <label><span>Start</span><input type="time" name="startTime" required /></label>
+                  <label><span>End</span><input type="time" name="endTime" required /><small>Use midnight for the end of the day.</small></label>
+                  <label className="rules-staff-override"><span>Minimum staff <small>Optional</small></span><input type="number" name="minimumStaff" min={1} max={100} step={1} placeholder="Location default" /><small>Leave blank to use the location requirement.</small></label>
+                </div>
+                <PositionQuotaFields positions={positions.filter(position => position.active)} />
+                <button className="button primary" type="submit">Add coverage period</button>
+              </ConfigurationForm>
+            </details> : <div className="rules-empty"><NavIcon name="calendar" size={24} /><div><strong>Add a location before creating a coverage period.</strong><Link className="button secondary" href="/app/settings/locations">Manage locations<NavIcon name="arrowRight" /></Link></div></div>}
+
+            <div className="rules-period-list">
+              {coverageWindows.map(window => (
+                <article className="rules-period-card manager-issue-target" id={"coverage-" + window.id} tabIndex={-1} key={window.id}>
+                  <div className="rules-period-header">
+                    <div className="rules-day-tile" aria-hidden="true">{dayNames[window.dayOfWeek].slice(0, 3)}</div>
+                    <div className="rules-period-copy"><h3>{locationLabel(window.locationId, window.locationId)} · {dayNames[window.dayOfWeek]}</h3><p>{formatTime(window.startTime)} – {formatTime(window.endTime)}</p><span>{window.minimumStaff ? window.minimumStaff + " staff required" : "Uses location staffing requirement"}</span></div>
+                    <form action={deleteCoverageWindowAction}><input type="hidden" name="windowId" value={window.id} /><button className="rules-remove" type="submit" aria-label={"Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTime(window.startTime) + " coverage period"}>Remove</button></form>
                   </div>
-                );
-              })
-            ) : (
-              <div className="empty-state compact-rule-empty">
-                <strong>No coverage windows yet.</strong>
-                <span>
-                  Add the recurring shift periods management expects each week.
-                </span>
-              </div>
-            )}
-          </div>
-        </section>
+                  <details className="rules-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
+                    <summary>Position quantities<span>{window.positionRequirements.length ? window.positionRequirements.length + " configured" : "Optional"}</span><NavIcon name="chevronRight" /></summary>
+                    <ConfigurationForm action={replaceCoverageWindowPositionRequirementsAction} className="rules-quota-form"><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields positions={positions} requirements={window.positionRequirements} /><button className="button secondary" type="submit">Save position quantities</button></ConfigurationForm>
+                  </details>
+                </article>
+              ))}
+              {!coverageWindows.length ? <div className="rules-empty"><NavIcon name="calendar" size={24} /><div><strong>No coverage periods yet</strong><p>Add the recurring shift periods your team expects each week.</p></div></div> : null}
+            </div>
+          </section>
+
+          <section className="rules-panel" id="rules-policy" tabIndex={-1}>
+            <RuleHeading icon="exchange" title="Trade & coverage policy" description="Review how shift trades and coverage requests are approved, and how far in advance they must be submitted and completed." />
+            {policyUnavailable ? <p className="form-error rules-policy-error" role="alert">Shift change policy is unavailable. Reconnect and reload before editing.</p> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}
+          </section>
+        </div>
       </div>
     </div>
   );

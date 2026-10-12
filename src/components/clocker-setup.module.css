@@ -78,3 +78,14 @@
 .pinCard { padding: 28px 40px; }
 .pinCard .footnote { margin-top: 16px !important; text-align: center; }
 @media(max-width:480px){ .pinCard { padding: 24px; } }
+
+.kioskBody { text-align: center; }
+.kioskBody h1 { margin: 22px 0 12px; }
+.kioskIcon { width: 58px; height: 58px; border-radius: 18px; margin: 0 auto; display: grid; place-items: center; background: var(--clocker-soft); color: var(--clocker-focus); }
+.kioskLead { margin: 0; font-size: 15px; line-height: 1.65; color: var(--muted); }
+.kioskBody .tabletForm { margin-top: 28px; text-align: left; }
+.kioskBody .field textarea { background: #fafafa; border-radius: 17px; min-height: 110px; }
+.kioskBody .tabletNotice { text-align: left; font-size: 14px; }
+.kioskBody .connectedMark { margin: 0 auto; }
+.kioskBody .footnote { margin: 20px 0 !important; font-size: 13px; }
+.kioskStatus { margin: 16px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }

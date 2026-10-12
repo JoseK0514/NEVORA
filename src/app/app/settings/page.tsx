@@ -1,60 +1,90 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import { BuildingsIcon } from "@phosphor-icons/react/dist/ssr/Buildings";
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
+import { DeviceTabletIcon } from "@phosphor-icons/react/dist/ssr/DeviceTablet";
+import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
+import { CoffeeIcon } from "@phosphor-icons/react/dist/ssr/Coffee";
+import { BriefcaseIcon } from "@phosphor-icons/react/dist/ssr/Briefcase";
+import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
+import { ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ClockCounterClockwise";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { requireRoles } from "@/lib/auth/permissions";
+import { SettingsHubMotion } from "./settings-hub-motion";
+import "./settings-hub.css";
+
+const groups = [
+  {
+    id: "workspace",
+    title: "Workspace",
+    description: "The essentials for your business.",
+    items: [
+      { id: "profile", title: "Workspace profile", description: "Business name and timezone.", href: "/app/settings/workspace", icon: BuildingsIcon },
+      { id: "locations", title: "Locations", description: "Location details, status, and Clocker links.", href: "/app/settings/locations", icon: MapPinIcon },
+      { id: "devices", title: "Clocker devices", description: "Register shared tablets and manage their access.", href: "/app/settings/clocker", icon: DeviceTabletIcon },
+    ],
+  },
+  {
+    id: "work-rules",
+    title: "Work rules",
+    description: "How your team is scheduled and works.",
+    items: [
+      { id: "company-policies", title: "Company policies", description: "Attendance thresholds, effective dates, and revision history.", href: "/app/settings/company-policies", icon: ShieldCheckIcon },
+      { id: "scheduling", title: "Scheduling rules", description: "Staffing, coverage periods, and weekly hour goals.", href: "/app/schedule/settings", icon: SlidersHorizontalIcon },
+      { id: "breaks", title: "Break types", description: "Break classifications and optional reference durations.", href: "/app/settings/breaks", icon: CoffeeIcon },
+      { id: "positions", title: "Positions", description: "Job qualifications, separate from access roles.", href: "/app/settings/positions", icon: BriefcaseIcon },
+    ],
+  },
+  {
+    id: "access-recovery",
+    title: "Access & recovery",
+    description: "Help your team get back to work.",
+    items: [
+      { id: "account-recovery", title: "Account recovery", description: "Verify identity and help restore portal access.", href: "/app/account-recovery", icon: KeyIcon },
+      { id: "clocker-recovery", title: "Clocker recovery", description: "Review an employee's saved Clocker action reference.", href: "/app/clocker-recovery", icon: ClockCounterClockwiseIcon },
+    ],
+  },
+];
+
 export default async function SettingsPage() {
   await requireRoles(["OWNER"]);
   return (
-    <>
-      <PageHeader
-        eyebrow="Owner controls"
-        title="Settings"
-        description="Configure your workspace and operational catalogs."
-      />
-      <section className="panel settings-list">
-        {[
-          ["Company policies", "Configured attendance thresholds, effective dates and revision history.", "/app/settings/company-policies"],
-          ["Account Recovery", "Verify identity and assist with lost portal access.", "/app/account-recovery"],
-          ["Clocker Recovery", "Review an employee’s saved action reference.", "/app/clocker-recovery"],
-          [
-            "Workspace",
-            "Business name and timezone.",
-            "/app/settings/workspace",
-          ],
-          [
-            "Locations",
-            "Location names, status, Clocker links and setup.",
-            "/app/settings/locations",
-          ],
-          [
-            "Clocker Devices",
-            "Register shared tablets and manage their access.",
-            "/app/settings/clocker",
-          ],
-          [
-            "Break Types",
-            "Break classifications and optional reference durations.",
-            "/app/settings/breaks",
-          ],
-          [
-            "Positions",
-            "Job qualifications, separate from access roles.",
-            "/app/settings/positions",
-          ],
-          [
-            "Scheduling Rules",
-            "Staffing, coverage periods and weekly hour goals.",
-            "/app/schedule/settings",
-          ],
-        ].map(([name, description, href]) => (
-          <div key={href}>
-            <strong>{name}</strong>
-            <span>{description}</span>
-            <Link className="button ghost" href={href}>
-              Manage {name}
-            </Link>
-          </div>
+    <SettingsHubMotion>
+      <header className="settings-hub-heading">
+        <h1>Settings</h1>
+        <p>Set up your workspace and the way your team works.</p>
+      </header>
+      <div className="settings-hub-groups">
+        {groups.map((group) => (
+          <section key={group.id} className="settings-hub-group" aria-labelledby={`settings-${group.id}`}>
+            <div className="settings-hub-group-heading">
+              <h2 id={`settings-${group.id}`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <ul className="settings-hub-list">
+              {group.items.map(({ id, title, description, href, icon: Icon }) => (
+                <li key={href}>
+                  <Link className="settings-hub-row" href={href} prefetch={false}
+                    aria-labelledby={`setting-${id}-title`} aria-describedby={`setting-${id}-description`}>
+                    <span className="settings-hub-icon" aria-hidden="true">
+                      <Icon size={22} weight="regular" focusable="false" />
+                    </span>
+                    <span className="settings-hub-row-copy">
+                      <span id={`setting-${id}-title`} className="settings-hub-row-title">{title}</span>
+                      <span id={`setting-${id}-description`} className="settings-hub-row-description">{description}</span>
+                    </span>
+                    <CaretRightIcon className="settings-hub-chevron" size={18} weight="regular" aria-hidden="true" focusable="false" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
         ))}
-      </section>
-    </>
+      </div>
+      <p className="settings-hub-note">
+        <ShieldCheckIcon size={18} weight="regular" aria-hidden="true" focusable="false" />
+        <span>Available to Owners. Review and save changes on each settings page.</span>
+      </p>
+    </SettingsHubMotion>
   );
 }

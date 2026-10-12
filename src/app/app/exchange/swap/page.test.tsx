@@ -24,5 +24,17 @@ it('unchanged displayed assignments are bound to reviewed source and target with
 it.each([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('source material change refuses the undisplayed assignment: %j',async sourceChange=>{state.sourceChange=sourceChange;await expect(render()).rejects.toThrow('error=EXCHANGE_CHANGED');});
 it.each([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('target material change excludes that undisplayed replacement: %j',async targetChange=>{state.targetChange=targetChange;const result=await render();expect(result).not.toContain('<form');expect(result).not.toContain('Fictional Partner');expect(result).toContain('No shifts to trade');});
 it('source fingerprint changing while target is reviewed withholds the mixed-snapshot builder',async()=>{state.sourceFingerprintChange=true;expect(await render()).not.toContain('<form');});
+it('keeps explicit selection and a safe coverage path when there are no targets', async()=>{
+  const html=await render();
+  expect(html).toContain('type="radio"');
+  expect(html).not.toContain('checked=""');
+  expect(html).toContain('disabled=""');
+  expect(html).toContain('Review your trade');
+  state.target=null;
+  const empty=await render();
+  expect(empty).not.toContain('<form');
+  expect(empty).toContain('/app/exchange/callout?sourceShiftId=source');
+  expect(empty).toContain('Offer for coverage');
+});
 
 vi.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:async()=>({allowed:true,notice:null})}));

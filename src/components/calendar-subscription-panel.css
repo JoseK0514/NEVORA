@@ -1,8 +1,40 @@
-.employee-calendar { margin-top: 24px; padding: 20px; }
-.employee-calendar h2 { font-size: 17px; margin: 0 0 12px; }
-.employee-calendar p { font-size: 13px; line-height: 1.55; margin: 12px 0; }
-.employee-calendar-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-.employee-calendar-state { font-weight: 600; }
-.employee-calendar-secret label { display: block; font-size: 13px; margin: 16px 0 8px; }
-.employee-calendar-secret textarea { display: block; box-sizing: border-box; width: 100%; max-width: 100%; font: 16px/1.5 monospace; padding: 12px; resize: vertical; overflow-wrap: anywhere; border: 1px solid var(--color-border-subtle); border-radius: 8px; }
-.employee-calendar summary { min-height: 44px; display: flex; align-items: center; font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.employee-calendar { padding: 28px; min-width: 0; color: var(--design-text-primary); }
+.employee-calendar h2 { font-size: 18px; margin: 0; }
+.employee-calendar p { font-size: 14px; line-height: 1.6; margin: 16px 0; }
+.employee-calendar-status-box { background: var(--design-surface-inset); border-radius: 14px; padding: 20px; margin: 20px 0 16px; }
+.employee-calendar-status-box > p { margin-top: 0; }
+.employee-calendar-status-box > p:last-child { margin-bottom: 0; }
+.employee-calendar-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+.employee-calendar-state { display: inline-flex; gap: 8px; align-items: center; color: var(--design-text-secondary); font-size: 14px; font-weight: 600; line-height: 1.5; }
+.employee-calendar-state::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.employee-calendar-state.is-active { color: var(--design-accent-ink); }
+.employee-calendar-secret label { display: block; font-size: 14px; font-weight: 500; margin: 16px 0 8px; }
+.employee-calendar-secret textarea { display: block; box-sizing: border-box; width: 100%; max-width: 100%; font: 14px/1.6 var(--design-font-mono); padding: 12px; resize: vertical; overflow-wrap: anywhere; background: var(--design-surface-elevated); color: var(--design-text-primary); border: 1px solid var(--design-border); border-radius: 12px; }
+.employee-calendar-secret p:last-child { margin-bottom: 0; }
+.employee-calendar-privacy { display: flex; align-items: flex-start; gap: 8px; color: var(--design-text-secondary); }
+.employee-calendar-privacy svg { flex-shrink: 0; margin-top: 3px; }
+.employee-calendar-providers { margin-top: 24px; }
+.employee-calendar-providers h3 { font-size: 14px; font-weight: 600; line-height: 1.5; margin: 0 0 12px; }
+.employee-calendar details { border-top: 1px solid var(--design-surface); }
+.employee-calendar summary { min-height: 64px; padding: 12px 0; display: flex; gap: 12px; align-items: center; font-size: 14px; line-height: 1.5; font-weight: 500; cursor: pointer; list-style: none; }
+.employee-calendar summary::-webkit-details-marker { display: none; }
+.employee-calendar summary > svg { flex-shrink: 0; }
+.employee-calendar summary > span { flex: 1; }
+.employee-calendar summary small { display: block; font-size: 14px; color: var(--design-text-secondary); font-weight: 400; margin-top: 2px; }
+.employee-calendar .provider-caret { margin-left: auto; transition: transform .18s ease; }
+.employee-calendar details[open] > summary .provider-caret { transform: rotate(180deg); }
+.calendar-provider-steps { padding: 0 0 16px; font-size: 14px; line-height: 1.7; }
+.calendar-provider-steps ol { margin: 0; padding-left: 24px; }
+.calendar-provider-steps li { padding: 0 0 8px 4px; }
+.calendar-provider-steps a { display: inline-flex; align-items: center; min-height: 44px; color: var(--design-accent-ink); text-underline-offset: 3px; }
+.employee-calendar .employee-calendar-management { margin-top: 20px; }
+.employee-calendar-management summary { min-height: 48px; }
+.employee-calendar-management p { margin-top: 0; color: var(--design-text-secondary); }
+.employee-calendar .calendar-revoke { color: var(--color-danger, #b42318); }
+.employee-calendar .employee-notice { background: var(--nevora-soft); padding: 12px 16px; border-radius: 12px; color: var(--design-text-primary); }
+@media (max-width: 600px) {
+  .employee-calendar { padding: 20px; }
+  .employee-calendar-status-box { padding: 16px; }
+  .employee-calendar-secret textarea { font-size: 16px; }
+  .employee-calendar-actions .button { flex: 1 1 auto; justify-content: center; }
+}

@@ -1,15 +1,21 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { CopyCommand } from "@/lib/data/schedule-copy";
 export function ScheduleCopyForm({
   command,
   actorId,
   label = "Copy previous week",
+  className = "button secondary",
+  ariaLabel,
+  children,
 }: {
   command: CopyCommand;
   actorId: string;
   label?: string;
+  className?: string;
+  ariaLabel?: string;
+  children?: ReactNode;
 }) {
   const router = useRouter();
   const key = `nevora-copy-pending:${actorId}`;
@@ -93,12 +99,14 @@ export function ScheduleCopyForm({
   return (
     <div>
       <button
-        className="button secondary"
+        className={className}
+        aria-label={pending ? "Check / retry original copy" : ariaLabel}
         type="button"
         disabled={!ready || busy}
         onClick={() => void send()}
       >
         {pending ? "Check / retry original copy" : label}
+        {!pending && children}
       </button>
       {pending && (
         <p>

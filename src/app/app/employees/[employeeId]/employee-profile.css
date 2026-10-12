@@ -1,0 +1,301 @@
+@font-face {
+  font-family: "NEVORA Profile Inter";
+  src: url("/fonts/typeface/inter/variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NEVORA Profile Mono";
+  src: url("/fonts/typeface/jetbrains-mono/variable.ttf") format("truetype");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+body:has(.employee-profile-page) {
+  --design-primary: #ed724c;
+  --design-accent: #d8613c;
+  --design-background: #fafafa;
+  --design-surface: #e5e7eb;
+  --design-surface-elevated: #ffffff;
+  --design-text-primary: #111827;
+  --design-text-secondary: #4b5563;
+  --design-border: #d1d5db;
+  --design-accent-ink: #9f3821;
+  --design-accent-ink-hover: #7d2d1b;
+  --design-radius-card: 18px;
+  --design-radius-control: 17px;
+  --nevora-blue: var(--design-accent-ink);
+  --nevora-blue-hover: var(--design-accent-ink-hover);
+  --nevora-cyan: var(--design-primary);
+  --nevora-soft: color-mix(in srgb, var(--design-primary) 12%, var(--design-background));
+  --nevora-accent-rgb: 159, 56, 33;
+  --nevora-highlight-rgb: 237, 114, 76;
+  --nevora-soft-rgb: 248, 234, 229;
+  --nuvora-midnight: var(--design-text-primary);
+  --nuvora-indigo: var(--design-accent-ink);
+  --nuvora-indigo-hover: var(--design-accent-ink-hover);
+  --nuvora-indigo-soft: var(--nevora-soft);
+  --nuvora-bg: var(--design-background);
+  --nuvora-surface: var(--design-surface-elevated);
+  --nuvora-text: var(--design-text-primary);
+  --nuvora-muted: var(--design-text-secondary);
+  --color-brand-primary: var(--design-text-primary);
+  --color-brand-accent: var(--design-accent-ink);
+  --color-bg-main: var(--design-background);
+  --color-border-subtle: var(--design-border);
+  --font-family-apple: "NEVORA Profile Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-ui: var(--font-family-apple);
+  background: var(--design-background);
+  font-family: var(--font-family-apple);
+}
+body:has(.employee-profile-page) .sidebar { background: var(--design-text-primary); color: var(--design-background); }
+body:has(.employee-profile-page) .sidebar .nav-link,
+body:has(.employee-profile-page) .sidebar .sidebar-profile small,
+body:has(.employee-profile-page) .sidebar .sidebar-platform-footer { color: var(--design-border); }
+body:has(.employee-profile-page) .sidebar .nav-link:is(:hover, .active) { color: var(--design-background); background: color-mix(in srgb, var(--design-primary) 16%, transparent); }
+body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: var(--design-primary); }
+.employee-profile-page {
+  --profile-accent: var(--design-primary, #ed724c);
+  --profile-accent-hover: var(--design-accent, #d8613c);
+  --profile-ink: var(--design-text-primary, #111827);
+  --profile-muted: var(--design-text-secondary, #4b5563);
+  --profile-line: var(--design-border, #d1d5db);
+  --profile-canvas: var(--design-background, #fafafa);
+  --profile-surface: var(--design-surface-elevated, #ffffff);
+  --profile-inset: var(--design-surface, #e5e7eb);
+  --profile-radius: var(--design-radius-card, 18px);
+  --profile-control: var(--design-radius-control, 17px);
+  --muted: var(--profile-muted);
+  --ink: var(--profile-ink);
+  --line: var(--profile-line);
+  --surface-strong: var(--profile-canvas);
+  --nevora-blue: var(--design-accent-ink, #9f3821);
+  display: grid;
+  gap: 24px;
+  width: min(960px, 100%);
+  min-width: 0;
+  margin: 0 auto;
+  color: var(--profile-ink);
+  font-family: "NEVORA Profile Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.employee-profile-page * { box-sizing: border-box; }
+.employee-profile-page .profile-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+  min-height: 44px;
+  padding: 0 4px;
+  color: var(--profile-muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.employee-profile-page .profile-back:hover { color: var(--profile-ink); }
+.employee-profile-page :is(a, button, summary, input, select):focus-visible,
+.employee-profile-page .profile-tab-panel:focus-visible {
+  outline: 2px solid var(--nevora-blue);
+  outline-offset: 3px;
+}
+.profile-overview,
+.employee-profile-page .profile-editor,
+.profile-pin {
+  background: var(--profile-surface);
+  border: 1px solid var(--profile-line);
+  border-radius: var(--profile-radius);
+  box-shadow: 0 2px 5px rgb(17 24 39 / 3%);
+}
+.profile-overview { padding: 28px 32px 24px; }
+.profile-identity { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--profile-accent) 12%, var(--profile-surface));
+  color: var(--design-accent-ink, #9f3821);
+  font-size: 21px;
+  font-weight: 500;
+}
+.profile-identity-copy { flex: 1; min-width: 0; }
+.profile-context { margin: 0 0 5px; color: var(--profile-muted); font-size: 12px; font-weight: 500; }
+.employee-profile-page h1 { margin: 0; max-width: 100%; font-size: clamp(26px, 2.7vw, 36px); line-height: 1.2; font-weight: 500; letter-spacing: -.035em; overflow-wrap: anywhere; }
+.profile-intro { margin: 8px 0 0; color: var(--profile-muted); font-size: 13px; line-height: 1.5; }
+.profile-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.profile-status.active { color: var(--color-state-success); background: var(--color-state-success-bg); }
+.profile-status.inactive { color: var(--profile-muted); background: var(--profile-inset); }
+.profile-status::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.profile-summary { display: grid; grid-template-columns: 1fr 1.5fr 1.25fr 1fr; gap: 24px; margin: 24px 0 0; padding-top: 20px; border-top: 1px solid var(--profile-inset); }
+.profile-summary > div { min-width: 0; }
+.profile-summary dt { margin-bottom: 6px; color: var(--profile-muted); font-size: 12px; }
+.profile-summary dd { margin: 0; font-size: 13px; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.profile-workspace { display: grid; gap: 20px; min-width: 0; }
+.profile-segments {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  isolation: isolate;
+  width: min(360px, 100%);
+  padding: 4px;
+  border: 1px solid var(--profile-inset);
+  border-radius: var(--profile-control);
+  background: var(--profile-inset);
+}
+.profile-segment-thumb {
+  position: absolute;
+  z-index: -1;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 2);
+  background: var(--profile-surface);
+  border-radius: 13px;
+  box-shadow: 0 1px 3px rgb(17 24 39 / 8%);
+  transition: transform 180ms cubic-bezier(.2, .8, .2, 1);
+}
+.profile-segments[data-selected="1"] .profile-segment-thumb { transform: translateX(100%); }
+.employee-profile-page .profile-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--profile-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 140ms ease;
+}
+.employee-profile-page .profile-segment:hover,
+.employee-profile-page .profile-segment[aria-selected="true"] { color: var(--profile-ink); }
+.profile-tab-panel { display: grid; gap: 16px; min-width: 0; border-radius: var(--profile-radius); scroll-margin-top: 24px; }
+.profile-tab-panel[hidden] { display: none; }
+.employee-profile-page .profile-editor { width: 100%; min-width: 0; padding: 28px 32px; }
+.employee-profile-page .employee-profile-section-heading { margin-bottom: 24px; }
+.employee-profile-page .employee-profile-section-heading h2 { color: var(--profile-ink); font-size: 22px; font-weight: 500; line-height: 1.3; }
+.employee-profile-page .employee-profile-section-heading p { font-size: 13px; line-height: 1.6; margin-top: 8px; }
+.employee-profile-page .employee-form { gap: 24px; min-width: 0; }
+.employee-profile-page .employee-form label { min-width: 0; color: var(--profile-ink); font-size: 13px; font-weight: 500; line-height: 1.5; }
+.employee-profile-page .employee-form label > span { font-weight: 400; }
+.employee-profile-page .employee-form .employee-email-label { display: flex; align-items: baseline; gap: 8px; color: var(--profile-ink); font-weight: 500; }
+.employee-profile-page .employee-email-label small { font-size: 12px; font-weight: 400; }
+.employee-profile-page .employee-form input:not([type="checkbox"]):not([type="hidden"]),
+.employee-profile-page .employee-form select {
+  min-width: 0;
+  min-height: 50px;
+  border: 1px solid var(--profile-line);
+  border-radius: var(--profile-control);
+  background: var(--profile-canvas);
+  color: var(--profile-ink);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+}
+.employee-profile-page .employee-form :is(input, select):focus { border-color: var(--nevora-blue); box-shadow: 0 0 0 3px rgb(159 56 33 / 10%); }
+.employee-profile-page .nevora-field-hint { font-size: 12px; line-height: 1.6; }
+.employee-profile-page .form-columns { gap: 20px; }
+.employee-profile-page .employee-core-id { grid-template-columns: auto minmax(0, 1fr); gap: 5px 12px; padding-bottom: 20px; border-bottom: 1px solid var(--profile-inset); }
+.employee-profile-page .employee-core-id > span { font-size: 12px; font-weight: 500; }
+.employee-profile-page .employee-core-id > strong { color: var(--profile-ink); font-family: "NEVORA Profile Mono", ui-monospace, monospace; font-size: 13px; font-weight: 500; }
+.employee-profile-page .employee-core-id > small { font-size: 12px; }
+.employee-profile-page .employee-form .configuration-fields { display: contents; padding: 0; border: 0; }
+.employee-profile-page .employee-form fieldset:not(.configuration-fields) { min-width: 0; margin: 0; padding: 20px; border: 1px solid var(--profile-line); border-radius: var(--profile-radius); }
+.employee-profile-page .employee-form legend { padding: 0 8px; color: var(--profile-ink); font-size: 15px; font-weight: 500; }
+.employee-profile-page .employee-form fieldset p { font-size: 13px; line-height: 1.6; }
+.employee-profile-page .checkbox-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; }
+.employee-profile-page .employee-scheduling-choice { padding: 8px 0; }
+.employee-profile-page .employee-scheduling-choice > span { color: var(--profile-ink); font-size: 14px; }
+.employee-profile-page .employee-scheduling-choice input { accent-color: var(--nevora-blue); box-shadow: none; }
+.employee-profile-page .employee-choice-disclosure > summary { font-size: 14px; color: var(--profile-ink); }
+.employee-profile-page .employee-choice-disclosure > summary small { font-size: 12px; white-space: normal; }
+html body .app-shell .employee-profile-page .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  max-width: 100%;
+  border-radius: var(--profile-control);
+  padding: 12px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+html body .employee-profile-page .button.primary { color: var(--profile-ink); background: var(--profile-accent); border: 1px solid var(--profile-accent); }
+html body .employee-profile-page .button.primary:is(:hover, :active):not(:disabled) { color: var(--profile-ink); background: var(--profile-accent-hover); border-color: var(--profile-accent-hover); opacity: 1; }
+.employee-profile-page .button.secondary { color: var(--profile-ink); background: var(--profile-canvas); border: 1px solid var(--profile-line); }
+.employee-profile-page .button.secondary:hover { background: var(--profile-inset); }
+.employee-profile-page .button svg { flex: 0 0 auto; }
+html body .app-shell .employee-profile-page .employee-core-profile-form .form-footer { display: flex; justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--profile-inset); }
+.employee-profile-page .employee-core-profile-form .form-footer .button { width: auto; }
+.employee-profile-page .scheduling-profile-form > .button,
+.employee-profile-page .scheduling-profile-form > .configuration-fields > .button { justify-self: end; }
+.profile-pin { display: flex; align-items: center; gap: 16px; padding: 20px 24px; }
+.profile-pin-icon { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; background: var(--profile-inset); border-radius: 14px; color: var(--profile-muted); }
+.profile-pin > div { flex: 1; min-width: 0; }
+.profile-pin h2 { margin: 0; color: var(--profile-ink); font-size: 15px; line-height: 1.4; font-weight: 500; }
+.profile-pin p { margin: 5px 0 0; color: var(--profile-muted); font-size: 12px; line-height: 1.5; }
+.employee-profile-page .shift-policy-disclosure { margin: 24px 0 0; padding-top: 16px; border-color: var(--profile-inset); }
+.employee-profile-page .shift-policy-disclosure > summary { color: var(--profile-ink); font-size: 14px; font-weight: 500; }
+.employee-profile-page .shift-policy-disclosure p { color: var(--profile-muted); }
+.employee-profile-page .employee-management-notice { padding: 16px; background: var(--profile-canvas); border-radius: 12px; font-size: 14px; line-height: 1.6; }
+.employee-profile-page .employee-form > :is(.form-error, .form-success, [role="status"]) { margin: 0; font-size: 13px; line-height: 1.6; }
+@media (max-width: 760px) {
+  .profile-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .profile-pin { flex-wrap: wrap; }
+  .profile-pin .button { width: 100%; }
+  .employee-profile-page .checkbox-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .employee-profile-page { gap: 16px; }
+  .profile-overview { padding: 20px; }
+  .profile-identity { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: start; gap: 12px; }
+  .profile-avatar { width: 48px; height: 48px; border-radius: 17px; font-size: 17px; }
+  .profile-status { grid-column: 2; justify-self: start; }
+  .profile-context { font-size: 11px; }
+  .employee-profile-page h1 { font-size: 26px; }
+  .profile-intro { font-size: 12px; }
+  .profile-summary { grid-template-columns: 1fr; gap: 12px; margin-top: 20px; padding-top: 16px; }
+  .profile-summary > div { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px; }
+  .profile-summary dt { margin: 0; line-height: 1.6; }
+  .profile-segments { width: 100%; }
+  .profile-workspace { gap: 16px; }
+  .employee-profile-page .profile-editor { padding: 22px 20px; }
+  .employee-profile-page .employee-profile-section-heading h2 { font-size: 20px; }
+  .employee-profile-page .employee-form { gap: 20px; }
+  .employee-profile-page .form-columns { gap: 16px; }
+  .employee-profile-page .employee-form fieldset:not(.configuration-fields) { padding: 16px; }
+  .employee-profile-page .employee-core-profile-form .form-footer .button,
+  .employee-profile-page .scheduling-profile-form > .configuration-fields > .button,
+  .employee-profile-page .policy-save-form .button { width: 100%; }
+  .profile-pin { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .employee-profile-page .profile-segment-thumb,
+  .employee-profile-page .profile-segment,
+  html body .app-shell .employee-profile-page .button { transition: none; }
+}

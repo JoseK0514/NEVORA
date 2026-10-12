@@ -49,12 +49,14 @@ export function ShiftAssignmentFields({
   employeeId = "",
   positionId = "",
   newShift = false,
+  onSelectionChange,
 }: {
   employees: Employee[];
   positions: Position[];
   employeeId?: string;
   positionId?: string;
   newShift?: boolean;
+  onSelectionChange?: (selection: { employeeId: string; positionId: string }) => void;
 }) {
   const [selectedEmployee, setEmployee] = useState(employeeId);
   const [selectedPosition, setPosition] = useState(positionId);
@@ -76,15 +78,12 @@ export function ShiftAssignmentFields({
         required
         onChange={(event) => {
           const nextEmployeeId = event.target.value;
+          const nextPositionId = positionAfterEmployeeChange({
+            positionId: selectedPosition, nextEmployeeId, employees, positions,
+          });
           setEmployee(nextEmployeeId);
-          setPosition((current) =>
-            positionAfterEmployeeChange({
-              positionId: current,
-              nextEmployeeId,
-              employees,
-              positions,
-            }),
-          );
+          setPosition(nextPositionId);
+          onSelectionChange?.({ employeeId: nextEmployeeId, positionId: nextPositionId });
           const leadField =
             event.currentTarget.form?.elements.namedItem("isDesignatedLead");
           if (leadField instanceof HTMLInputElement) {
@@ -114,7 +113,10 @@ export function ShiftAssignmentFields({
           </>
         }
         value={selectedPosition}
-        onChange={(event) => setPosition(event.target.value)}
+        onChange={(event) => {
+          setPosition(event.target.value);
+          onSelectionChange?.({ employeeId: selectedEmployee, positionId: event.target.value });
+        }}
         options={[
           { value: "", label: "No position" },
           ...choices.map((position) => ({

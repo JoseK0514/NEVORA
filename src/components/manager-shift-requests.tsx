@@ -2,7 +2,9 @@ import {randomUUID} from 'node:crypto';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
 import {ShiftChangeForm} from './shift-change-form';
-import {ShiftSlot} from './shift-slot';
+import {ExchangeAssignment} from './exchange-assignment';
+import {ExchangeReviewShell} from './exchange-review-shell';
+import {NavIcon} from './nav-icon';
 import {ShiftChangeHistory} from './shift-change-history';
 import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
 import { businessDate } from "@/lib/business-time";
@@ -11,7 +13,7 @@ import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord, type ExchangeShift } from "@/lib/data/exchanges";
-import { listPendingCallouts, listTeamCalloutHistory } from "@/lib/data/callouts";
+import { listPendingCallouts, listTeamCalloutHistory, type CalloutRecord } from "@/lib/data/callouts";
 
 
 import {  formatDayLabel, formatTime } from "@/lib/date-utils";
@@ -37,10 +39,26 @@ function statusLabel(status: string) {
   return status.toLowerCase().replaceAll("_", " ").replace(/^./, first => first.toUpperCase());
 }
 function ExchangeCopy({ exchange }: { exchange: ExchangeRecord }) {
-  return <div className="manager-workflow-copy"><h3>{exchange.kind === "SWAP" ? "Trade" : "Coverage"} · {exchange.requestedByName}</h3><ShiftSlot shift={exchange.sourceShift}/>{exchange.targetEmployeeName ? <span>{exchange.kind === "SWAP" ? "Trading with" : "Claimed by"} {exchange.targetEmployeeName}</span> : null}{exchange.kind === "SWAP" && exchange.targetShift ? <ShiftSlot shift={exchange.targetShift} label="Other assignment"/> : null}</div>;
+  const historical = ["APPROVED", "DENIED", "CANCELLED", "EXPIRED"].includes(exchange.status);
+  return <div className="manager-workflow-copy exchange-request-copy">
+    <div className="exchange-request-identity"><span className="exchange-kind-icon"><NavIcon name={exchange.kind === "SWAP" ? "exchange" : "coverage"} size={22} /></span><div><h3>{exchange.kind === "SWAP" ? "Trade" : "Coverage"} · {exchange.requestedByName}</h3><p>{exchange.targetEmployeeName ? `${exchange.kind === "SWAP" ? "Trading with" : "Claimed by"} ${exchange.targetEmployeeName}` : exchange.kind === "SWAP" ? "Other employee details unavailable" : "Coverage has not been claimed"}</p></div></div>
+    <div className={`exchange-assignments${exchange.kind === "SWAP" && exchange.targetShift ? " paired" : ""}`}>
+      <ExchangeAssignment shift={exchange.sourceShift} label={`${exchange.sourceShift.employeeName}’s ${historical ? "original assignment" : "current shift"}`} />
+      {exchange.kind === "SWAP" && exchange.targetShift ? <><span className="exchange-pair-connector"><NavIcon name="exchange" size={20} /></span><ExchangeAssignment shift={exchange.targetShift} label={`${exchange.targetShift.employeeName}’s ${historical ? "original assignment" : "current shift"}`} /></> : null}
+    </div>
+  </div>;
 }
 
-export async function ManagerShiftRequests({ tab, error, approved, reviewed, calloutApproved, calloutDenied, requestId, timeZone }: {
+function CalloutCopy({ callout }: { callout: CalloutRecord }) {
+  return <div className="manager-workflow-copy exchange-request-copy">
+    <div className="exchange-request-identity"><span className="exchange-kind-icon"><NavIcon name="alert" size={22} /></span><div><h3>Call-out · {callout.employeeName}</h3><p>Unable to work an assigned shift</p></div></div>
+    <div className="exchange-callout-shift"><NavIcon name="schedule" size={20} /><span>{shiftLabel(callout)}</span></div>
+    <div className="exchange-request-note"><strong>{reasons[callout.reasonCode] ?? callout.reasonCode}</strong>{callout.reasonNote ? <p>{callout.reasonNote}</p> : null}</div>
+    {callout.status === "APPROVED" && !callout.releaseApplies ? <span className="shift-change-unavailable">Historical approval does not release the current assignment. Review the current assignment.</span> : null}
+  </div>;
+}
+
+export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: {
   timeZone: string; tab?: string; error?: string; approved?: string; reviewed?: string; calloutApproved?: string; calloutDenied?: string; requestId?: string;
 }) {
   await requireRoles(MANAGER_ROLES);
@@ -57,29 +75,33 @@ export async function ManagerShiftRequests({ tab, error, approved, reviewed, cal
   const liveCoverage=coverage.filter(e=>e.status==='OPEN');
   const approvals=new Map(await Promise.all([...livePending.map(e=>({id:e.id,revision:e.requestRevision,kind:'MANAGER_APPROVE' as const})),...callouts.map(e=>({id:e.id,revision:e.requestRevision,kind:'APPROVE_CALLOUT' as const}))].map(async e=>[e.id,e.revision?await readShiftChangeAvailability(proof,{kind:e.kind,requestId:e.id,expectedRevision:e.revision,operationId:randomUUID()}).catch(()=>({allowed:false,notice:'Current review is unavailable. Reconnect and reload.'})):{allowed:false,notice:'Reload the current request revision.'}] as const)));
   const historyViews=new Map(await Promise.all([...exchanges,...history].map(async e=>[e.id,await readShiftChangeHistoryView(proof,e.id).catch(()=>null)] as const)));
-  const activity = [...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, copy: <><ExchangeCopy exchange={exchange} /><ShiftChangeHistory events={historyViews.get(exchange.id)??null}/></> })), ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, copy: <div className="manager-workflow-copy"><h3>Call-out · {callout.employeeName}</h3><span>{shiftLabel(callout)}</span><span>{reasons[callout.reasonCode] ?? callout.reasonCode}</span>{callout.status==='APPROVED'&&!callout.releaseApplies?<span>Historical approval does not release the current assignment. Review the current assignment.</span>:null}{callout.reasonNote ? <p>{callout.reasonNote}</p> : null}</div> }))].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 30);
+  const activity = [...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, copy: <><ExchangeCopy exchange={exchange} /><ShiftChangeHistory events={historyViews.get(exchange.id)??null}/></> })), ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, copy: <><CalloutCopy callout={callout} /><ShiftChangeHistory events={historyViews.get(callout.id)??null}/></> }))].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 30);
   const count = selected.id === "pending" ? livePending.length + callouts.length : selected.id === "coverage" ? liveCoverage.length : activity.length;
 
 
-  return <div className="exchange-page marketplace-page manager-workflow-page manager-shift-requests">
-    <PageHeader eyebrow="Team requests" title="Shift Requests" description="Review exceptions, open coverage and recent team outcomes." />
+  return <ExchangeReviewShell view={selected.id} className="exchange-page marketplace-page manager-workflow-page manager-shift-requests">
+    <div className="exchange-page-heading"><PageHeader eyebrow="Team scheduling" title="Shift Requests" description="Help your team adjust their schedule. Review the details, then decide." actions={<Link className="button secondary" href="/app/requests/hub"><NavIcon name="requests" />All requests<NavIcon name="arrowRight" size={16} /></Link>} /></div>
     {error ? <p className="form-error" role="alert">{errors[error] ?? "The request could not be reviewed. It may have changed; review it again."}</p> : null}
 
     <ManagerIssueFocus prefix="request-" />
-    <nav className="timeoff-tabs manager-workflow-tabs" aria-label="Shift request sections">{tabs.map(item => <Link key={item.id} href={`/app/exchange?tab=${item.id}`} className={selected.id === item.id ? "selected" : ""} aria-current={selected.id === item.id ? "page" : undefined}>{item.label}</Link>)}</nav>
+    <nav className="timeoff-tabs manager-workflow-tabs exchange-view-tabs" aria-label="Shift request sections">{tabs.map(item => <Link key={item.id} href={`/app/exchange?tab=${item.id}`} className={selected.id === item.id ? "selected" : ""} aria-current={selected.id === item.id ? "page" : undefined}>{item.label}</Link>)}</nav>
     <section className="panel manager-workflow-panel" aria-label={selected.label}>
-      <div className="manager-workflow-heading"><h2>{selected.label}</h2><span className="muted">{count} {selected.id === "coverage" ? "shift" : "request"}{count === 1 ? "" : "s"}</span></div>
+      <div className="manager-workflow-heading exchange-section-heading"><div><h2>{selected.id === "pending" ? "Needs your review" : selected.label}</h2><p>{selected.id === "pending" ? "Check each assignment and the review reason before approving." : selected.id === "coverage" ? "These shifts are still unfilled. Closing a request stops new claims." : "Recent outcomes and original request history."}</p></div><span className="exchange-count">{count} {selected.id === "coverage" ? "shift" : "request"}{count === 1 ? "" : "s"}</span></div>
       {livePending.map(exchange => <article className={`${requestId === exchange.id ? "manager-workflow-row selected" : "manager-workflow-row"} manager-issue-target`} tabIndex={-1} id={`request-${exchange.id}`} key={exchange.id}>
-        <div className="manager-workflow-copy"><ExchangeCopy exchange={exchange} />{approvals.get(exchange.id)?.notice?<span className="shift-change-unavailable">{approvals.get(exchange.id)?.notice}</span>:null}</div>
-        <div className="manager-workflow-review"><StatusPill tone="warning">Needs review</StatusPill>{exchange.requestRevision?<ShiftChangeForm fields={{requestId:exchange.id,expectedRevision:exchange.requestRevision}} className="request-actions shift-change-form"><button className="button secondary" name="kind" value="MANAGER_DECLINE" type="submit">Decline</button>{approvals.get(exchange.id)?.allowed?<button className="button primary" name="kind" value="MANAGER_APPROVE" type="submit">Approve</button>:null}</ShiftChangeForm>:<span className="shift-change-unavailable">Reload the current request revision.</span>}</div>
+        <ExchangeCopy exchange={exchange} />
+        {approvals.get(exchange.id)?.notice ? <p className="shift-change-unavailable exchange-review-reason"><NavIcon name="alert" />{approvals.get(exchange.id)?.notice}</p> : null}
+        <p className="exchange-decision-effect">{exchange.kind === "SWAP" ? "Approving trades the two assignments shown above." : "Approving assigns this shift to the employee who claimed it."}</p>
+        <div className="manager-workflow-review"><StatusPill tone="warning">Needs review</StatusPill>{exchange.requestRevision?<ShiftChangeForm fields={{requestId:exchange.id,expectedRevision:exchange.requestRevision}} className="request-actions shift-change-form"><button className="button secondary" name="kind" value="MANAGER_DECLINE" type="submit" aria-label={`Decline ${exchange.kind === "SWAP" ? "trade" : "coverage"} request from ${exchange.requestedByName}`}><span>Decline</span></button>{approvals.get(exchange.id)?.allowed?<button className="button primary" name="kind" value="MANAGER_APPROVE" type="submit" aria-label={`Approve ${exchange.kind === "SWAP" ? "trade" : "coverage"} request from ${exchange.requestedByName}`}><span>Approve</span><NavIcon name="arrowRight" size={16} /></button>:null}</ShiftChangeForm>:<span className="shift-change-unavailable">Reload the current request revision.</span>}</div>
       </article>)}
       {callouts.map(callout => <article className={`${requestId === callout.id ? "manager-workflow-row selected" : "manager-workflow-row"} manager-issue-target`} tabIndex={-1} id={`request-${callout.id}`} key={callout.id}>
-        <div className="manager-workflow-copy"><h3>Call-out · {callout.employeeName}</h3><span>{shiftLabel(callout)}</span><span>{reasons[callout.reasonCode] ?? callout.reasonCode}</span>{callout.status==='APPROVED'&&!callout.releaseApplies?<span>Historical approval does not release the current assignment. Review the current assignment.</span>:null}{callout.reasonNote ? <p>{callout.reasonNote}</p> : null}</div>
-        <div className="manager-workflow-review"><StatusPill tone="warning">Pending</StatusPill>{callout.requestRevision?<ShiftChangeForm fields={{requestId:callout.id,expectedRevision:callout.requestRevision}} className="request-actions shift-change-form"><button className="button secondary" name="kind" value="DECLINE_CALLOUT" type="submit">Decline</button>{approvals.get(callout.id)?.allowed?<button className="button primary" name="kind" value="APPROVE_CALLOUT" type="submit">Approve</button>:<span className="shift-change-unavailable">{approvals.get(callout.id)?.notice}</span>}</ShiftChangeForm>:<span className="shift-change-unavailable">Reload the current request revision.</span>}</div>
+        <CalloutCopy callout={callout} />
+        {approvals.get(callout.id)?.notice ? <p className="shift-change-unavailable exchange-review-reason"><NavIcon name="alert" />{approvals.get(callout.id)?.notice}</p> : null}
+        <p className="exchange-decision-effect">Approving releases the current assignment. The shift still needs coverage.</p>
+        <div className="manager-workflow-review"><StatusPill tone="warning">Pending</StatusPill>{callout.requestRevision?<ShiftChangeForm fields={{requestId:callout.id,expectedRevision:callout.requestRevision}} className="request-actions shift-change-form"><button className="button secondary" name="kind" value="DECLINE_CALLOUT" type="submit" aria-label={`Decline call-out from ${callout.employeeName}`}><span>Decline</span></button>{approvals.get(callout.id)?.allowed?<button className="button primary" name="kind" value="APPROVE_CALLOUT" type="submit" aria-label={`Approve call-out from ${callout.employeeName}`}><span>Approve</span><NavIcon name="arrowRight" size={16} /></button>:null}</ShiftChangeForm>:<span className="shift-change-unavailable">Reload the current request revision.</span>}</div>
       </article>)}
       {liveCoverage.map(exchange => <article className="manager-workflow-row" key={exchange.id}><ExchangeCopy exchange={exchange} /><div className="manager-workflow-review"><StatusPill tone="warning">Released / offered — unfilled</StatusPill>{exchange.requestRevision?<ShiftChangeForm fields={{kind:"MANAGER_CLOSE",requestId:exchange.id,expectedRevision:exchange.requestRevision}}><button className="button secondary" type="submit">Close request</button></ShiftChangeForm>:null}</div></article>)}
       {activity.map(item => <article className="manager-workflow-row" key={item.id}>{item.copy}<StatusPill tone={item.status === "APPROVED" ? "success" : "neutral"}>{statusLabel(item.status)}</StatusPill></article>)}
-      {!count ? <div className="timeoff-empty-state"><strong>{selected.id === "pending" ? "You’re all caught up" : selected.id === "coverage" ? "No open coverage" : "No recent outcomes"}</strong><span>{selected.id === "pending" ? "Requests needing a management decision will appear here." : selected.id === "coverage" ? "Unclaimed published shifts will appear here." : "Completed and declined requests will appear here."}</span></div> : null}
+      {!count ? <div className="timeoff-empty-state exchange-empty"><span className="exchange-kind-icon"><NavIcon name={selected.id === "pending" ? "coverage" : "exchange"} size={28} /></span><strong>{selected.id === "pending" ? "You’re all caught up" : selected.id === "coverage" ? "No open coverage" : "No recent outcomes"}</strong><span>{selected.id === "pending" ? "Requests needing a management decision will appear here." : selected.id === "coverage" ? "Unclaimed published shifts will appear here." : "Completed and declined requests will appear here."}</span></div> : null}
     </section>
-  </div>;
+  </ExchangeReviewShell>;
 }

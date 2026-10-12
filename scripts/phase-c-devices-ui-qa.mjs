@@ -47,10 +47,10 @@ async function action(page,name,button){
  return page.getByRole('dialog');
 }
 async function connect(page,code){
- await page.getByRole('heading',{name:'Set Up This Tablet',exact:true}).waitFor();
+ await page.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();
  await page.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);
- await page.getByRole('button',{name:'Connect Tablet',exact:true}).click();
- await page.getByRole('heading',{name:'Tablet Connected',exact:true}).waitFor();
+ await page.getByRole('button',{name:'Connect tablet',exact:true}).click();
+ await page.getByRole('heading',{name:'Tablet connected',exact:true}).waitFor();
 }
 async function geometry(page,label){
  const result=await page.evaluate(()=>{
@@ -100,7 +100,7 @@ try{
   assert.equal((await q('SELECT active FROM clocker_devices WHERE name=$1',[name+' renamed']))[0].active,true);
   checked(`${engine}: stale Owner view cannot revoke a newer device`);await stale.close();
   dialog=await action(ownerPage,name+' renamed','Revoke Access');await dialog.getByRole('button',{name:'Revoke Device',exact:true}).click();await dialog.waitFor({state:'hidden'});
-  await tabletPage.reload();await tabletPage.getByRole('heading',{name:'Set Up This Tablet',exact:true}).waitFor();
+  await tabletPage.reload();await tabletPage.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();
   checked(`${engine}: revocation is reflected on the actual tablet`);
   dialog=await action(ownerPage,name+' renamed','Reconnect Tablet');await dialog.getByRole('button',{name:'Create New Code',exact:true}).click();await dialog.waitFor({state:'hidden'});
   const replacementCode=await ownerPage.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
@@ -116,22 +116,22 @@ try{
     }else await route.continue();
   });
   await recoveryPage.getByRole('textbox',{name:'Setup code',exact:true}).fill(recoveryCode);
-  await recoveryPage.getByRole('button',{name:'Connect Tablet',exact:true}).click();
+  await recoveryPage.getByRole('button',{name:'Connect tablet',exact:true}).click();
   await recoveryPage.locator('main').getByRole('alert').filter({hasText:'could not confirm'}).waitFor();
   assert(dropped,'the owned enrollment response must have been deliberately lost');
   await recoveryPage.unroute('**/api/clocker/2/setup');
   await recoveryPage.getByRole('button',{name:'Check Setup',exact:true}).click();
-  await recoveryPage.getByRole('heading',{name:'Tablet Connected',exact:true}).waitFor();
+  await recoveryPage.getByRole('heading',{name:'Tablet connected',exact:true}).waitFor();
   checked(`${engine}: browser recovers a lost committed enrollment response`);
   await recoveryPage.route('**/api/clocker/2/setup',route=>route.abort('failed'));
   await recoveryPage.getByRole('button',{name:'Check Connection',exact:true}).click();
   await recoveryPage.locator('main').getByRole('alert').filter({hasText:'could not confirm'}).waitFor();
-  assert.equal(await recoveryPage.getByRole('heading',{name:'Tablet Connected',exact:true}).count(),0,'Failed status check must not keep a connected headline');
+  assert.equal(await recoveryPage.getByRole('heading',{name:'Tablet connected',exact:true}).count(),0,'Failed status check must not keep a connected headline');
   await geometry(recoveryPage,`${engine}: tablet recovery screen`);
   const recoveryImage=join(evidence,`${engine}-tablet-recovery.png`);await recoveryPage.screenshot({path:recoveryImage,fullPage:true});report.screenshots.push(recoveryImage);
   await recoveryPage.unroute('**/api/clocker/2/setup');
   await recoveryPage.getByRole('button',{name:'Check Setup',exact:true}).click();
-  await recoveryPage.getByRole('heading',{name:'Tablet Connected',exact:true}).waitFor();
+  await recoveryPage.getByRole('heading',{name:'Tablet connected',exact:true}).waitFor();
   checked(`${engine}: outage is distinct from connected and recovers without reenrollment`);
   await recovery.close();
   // Request-security probes use only this owned application and synthetic records.
@@ -160,7 +160,7 @@ try{
    if([390,1440].includes(width)){const file=join(evidence,`${engine}-devices-${width}.png`);await reviewPage.screenshot({path:file,fullPage:true});report.screenshots.push(file);}
   }
   for(const viewport of [{width:1024,height:768},{width:768,height:1024},{width:320,height:740}]){
-   await tabletPage.setViewportSize(viewport);await goto(tabletPage,'/clocker/2');await tabletPage.getByRole('heading',{name:'Tablet Connected',exact:true}).waitFor();
+   await tabletPage.setViewportSize(viewport);await goto(tabletPage,'/clocker/2');await tabletPage.getByRole('heading',{name:'Tablet connected',exact:true}).waitFor();
    await geometry(tabletPage,`${engine}: connected tablet ${viewport.width}x${viewport.height}`);
    const file=join(evidence,`${engine}-tablet-${viewport.width}x${viewport.height}.png`);await tabletPage.screenshot({path:file,fullPage:true});report.screenshots.push(file);
   }

@@ -2,7 +2,12 @@ import { EmployeeCoreProfileForm } from "@/components/employee-core-profile-form
 import { EmployeeSchedulingFields } from "@/components/employee-scheduling-fields";
 import { ConfigurationForm } from "@/components/configuration-form";
 import { OperationalRuleFields } from "@/components/operational-rule-fields";
-import { PageHeader } from "@/components/page-header";
+import { EmployeeProfileTabs } from "@/components/employee-profile-tabs";
+import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
+import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
+import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import "./employee-profile.css";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
@@ -52,126 +57,144 @@ export default async function EmployeeProfilePage({
 
   return (
     <div className="employee-profile-page">
-      <PageHeader
-        eyebrow="Employee Profile"
-        title={`${employee.firstName} ${employee.lastName}`}
-        description="Contact, access and scheduling information."
-        actions={
-          <Link className="button secondary" href="/app/employees">
-            Back to Employees
-          </Link>
-        }
-      />
-
-      <section className="employee-profile-card">
-        <div className="employee-profile-card-heading">
-          <span className="employee-profile-card-avatar" aria-hidden="true">
+      <Link className="profile-back" href="/app/employees">
+        <ArrowLeftIcon size={18} aria-hidden="true" focusable="false" />
+        Back to Employees
+      </Link>
+      <header className="profile-overview">
+        <div className="profile-identity">
+          <span className="profile-avatar" aria-hidden="true">
             {employeeInitials(employee.firstName, employee.lastName)}
           </span>
-          <div>
-            <h2>
+          <div className="profile-identity-copy">
+            <p className="profile-context">Employee profile</p>
+            <h1>
               {employee.firstName} {employee.lastName}
-            </h2>
-            <span className="employee-role-badge">
-              Access role: {employeeRoleLabel(employee.role)}
-            </span>
-          </div>
-        </div>
-
-        <div className="employee-profile-details">
-          <div>
-            <span>Phone</span>
-            <strong>{formatPhoneNumber(employee.phone)}</strong>
-          </div>
-          <div>
-            <span>Email</span>
-            <strong>{employee.email ?? "Not provided"}</strong>
-          </div>
-          <div>
-            <span>Primary Location</span>
-            <strong>{primaryLocation?.shortName ?? "Not assigned"}</strong>
-          </div>
-          <div>
-            <span>Status</span>
-            <strong>{employee.active ? "Active" : "Inactive"}</strong>
-          </div>
-        </div>
-      </section>
-
-      <section className="panel form-panel employee-core-management">
-        <div className="employee-profile-section-heading">
-          <div>
-            <h2>Employee details</h2>
-            <p>
-              Update contact information, access role, primary location and
-              status without changing historical records.
+            </h1>
+            <p className="profile-intro">
+              Contact, access and scheduling information.
             </p>
           </div>
+          <span className={`profile-status ${employee.active ? "active" : "inactive"}`}>
+            {employee.active ? "Active" : "Inactive"}
+          </span>
         </div>
-        {canManageCore ? (
-          <EmployeeCoreProfileForm
-            employee={employee}
-            locations={locations}
-            actorRole={actor.role}
-            action={saveEmployeeCoreProfileAction}
-          />
-        ) : (
-          <p className="employee-management-notice">
-            Only an Owner can change another Owner. Scheduling information
-            remains available below.
-          </p>
-        )}
-      </section>
-
-      {canManageCore && employee.active ? <section className="panel">
-        <h2>Clocker PIN</h2>
-        <p>Manage this employee’s shared-tablet PIN separately from portal access.</p>
-        <Link className="button secondary" href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`}>Manage Clocker PIN</Link>
-      </section> : null}
-
-      <section className="panel form-panel employee-scheduling-management">
-        <div className="employee-profile-section-heading">
+        <dl className="profile-summary">
           <div>
-            <h2>Scheduling profile</h2>
-            <p>
-              Positions and eligible locations control where this employee can
-              be considered for scheduling.
-            </p>
+            <dt>Phone</dt>
+            <dd>{formatPhoneNumber(employee.phone)}</dd>
           </div>
-        </div>
-        <ConfigurationForm
-          action={saveEmployeeSchedulingProfileAction}
-          className="employee-form scheduling-profile-form"
-          reviewedUpdatedAt={employee.updatedAt}
-        >
-          <input type="hidden" name="employeeId" value={employee.id} />
-          <EmployeeSchedulingFields
-            employee={employee}
-            locations={locations}
-            positions={positions}
-          />
-          <button className="button primary" type="submit">
-            Save Scheduling Profile
-          </button>
-        </ConfigurationForm>
-        {profileUnavailable ? (
-          <p role="alert" className="form-error">
-            Operational review is unavailable. Reconnect and reload.
-          </p>
-        ) : operational ? (
-          <OperationalRuleFields
-            employeeId={employee.id}
-            profile={operational}
-            canEdit={actor.role === "OWNER"}
-          />
-        ) : (
-          <p>
-            Operational review is unavailable until scheduling hour settings
-            have been explicitly established. No maximum is created by this
-            review.
-          </p>
-        )}
-      </section>
+          <div>
+            <dt>Email</dt>
+            <dd>{employee.email ?? "Not provided"}</dd>
+          </div>
+          <div>
+            <dt>Primary location</dt>
+            <dd>
+              {primaryLocation?.shortName ?? "Not assigned"}
+              {primaryLocation && !primaryLocation.active ? " (Inactive)" : ""}
+            </dd>
+          </div>
+          <div>
+            <dt>Access role</dt>
+            <dd>{employeeRoleLabel(employee.role)}</dd>
+          </div>
+        </dl>
+      </header>
+      <EmployeeProfileTabs
+        details={
+          <>
+            <section className="profile-editor employee-core-management">
+              <div className="employee-profile-section-heading">
+                <div>
+                  <h2>Employee details</h2>
+                  <p>
+                    Manage contact information and workplace access. Historical
+                    records stay intact.
+                  </p>
+                </div>
+              </div>
+              {canManageCore ? (
+                <EmployeeCoreProfileForm
+                  employee={employee}
+                  locations={locations}
+                  actorRole={actor.role}
+                  action={saveEmployeeCoreProfileAction}
+                />
+              ) : (
+                <p className="employee-management-notice">
+                  Only an Owner can change another Owner. Scheduling information
+                  remains available in Scheduling.
+                </p>
+              )}
+            </section>
+            {canManageCore && employee.active ? (
+              <section className="profile-pin">
+                <span className="profile-pin-icon" aria-hidden="true">
+                  <KeyIcon size={22} />
+                </span>
+                <div>
+                  <h2>Clocker PIN</h2>
+                  <p>Shared-tablet access, separate from portal sign-in.</p>
+                </div>
+                <Link
+                  className="button secondary"
+                  href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`}
+                >
+                  Manage Clocker PIN
+                  <ArrowUpRightIcon size={18} aria-hidden="true" focusable="false" />
+                </Link>
+              </section>
+            ) : null}
+          </>
+        }
+        scheduling={
+          <section className="profile-editor employee-scheduling-management">
+            <div className="employee-profile-section-heading">
+              <div>
+                <h2>Scheduling profile</h2>
+                <p>
+                  Positions and eligible locations control where this employee
+                  can be considered for scheduling.
+                </p>
+              </div>
+            </div>
+            <ConfigurationForm
+              action={saveEmployeeSchedulingProfileAction}
+              className="employee-form scheduling-profile-form"
+              reviewedUpdatedAt={employee.updatedAt}
+            >
+              <input type="hidden" name="employeeId" value={employee.id} />
+              <EmployeeSchedulingFields
+                employee={employee}
+                locations={locations}
+                positions={positions}
+              />
+              <button className="button primary" type="submit">
+                <CheckIcon size={18} aria-hidden="true" focusable="false" />
+                Save Scheduling Profile
+              </button>
+            </ConfigurationForm>
+            {profileUnavailable ? (
+              <p role="alert" className="form-error">
+                Operational review is unavailable. Reconnect and reload.
+              </p>
+            ) : operational ? (
+              <OperationalRuleFields
+                employeeId={employee.id}
+                profile={operational}
+                canEdit={actor.role === "OWNER"}
+              />
+            ) : (
+              <p>
+                Operational review is unavailable until scheduling hour settings
+                have been explicitly established. No maximum is created by this
+                review.
+              </p>
+            )}
+          </section>
+        }
+      />
     </div>
   );
 }

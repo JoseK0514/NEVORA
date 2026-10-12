@@ -8,6 +8,7 @@ import { clockerDeviceView, type ClockerDeviceView, type ClockerLocationView } f
 import { listLocations } from '@/lib/data/locations';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { manageClockerDeviceAction } from './actions';
+import './clocker-devices.css';
 
 export const dynamic = 'force-dynamic';
 export default async function ClockerDevicesPage() {
@@ -24,8 +25,8 @@ export default async function ClockerDevicesPage() {
       locations: locations.map(({ id, name, clockerKey, active }) => ({ id, name, clockerKey, active })),
     };
   } catch { data = null; }
-  return <div className="configuration-page">
-    <PageHeader eyebrow="Owner controls" title="Clocker Devices" description="Connect shared tablets. Keep access under your control."
+  return <div className="configuration-page clocker-devices-page">
+    <PageHeader title="Clocker Devices" description="A dedicated tablet for every location. Access you control."
       actions={<Link className="button secondary" href="/app/settings">Back to Settings</Link>} />
     {data ? <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone}
       locations={data.locations} action={manageClockerDeviceAction} />

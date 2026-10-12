@@ -1,36 +1,46 @@
 'use client';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus} from '@/lib/calendar/types';
+import Link from 'next/link';
+import {AppleLogoIcon} from '@phosphor-icons/react/dist/ssr/AppleLogo';
+import {GoogleLogoIcon} from '@phosphor-icons/react/dist/ssr/GoogleLogo';
+import {MicrosoftOutlookLogoIcon} from '@phosphor-icons/react/dist/ssr/MicrosoftOutlookLogo';
+import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
+import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
+import {NavIcon} from './nav-icon';
 import './calendar-subscription-panel.css';
 type ViewProps={status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;onCommand:(kind:'ISSUE'|'ROTATE'|'REVOKE')=>void;onCopy:()=>void;onRetry:()=>void};
 export function CalendarSubscriptionView({status,url,paused,busy,notice,onCommand,onCopy,onRetry}:ViewProps){
  const link=useRef<HTMLTextAreaElement>(null),unknown=notice.includes('unknown');
+ const active=status?.state==='active',available=status&&'generation' in status;
+ const currentUrl=active&&!paused?url:null;
  return <section className="employee-view-surface employee-calendar" aria-labelledby="employee-calendar-title" data-calendar-setting>
-  <h2 id="employee-calendar-title">Calendar subscription</h2>
-  {paused?<p>Calendar settings paused. Return to this window to check the link.</p>:<>
-   <p>View your published shifts in a calendar app. This private link includes your shift times and location labels. Anyone with the link can view these details.</p>
-   <p>Calendar apps refresh on their own schedule. Check NEVORA for the latest schedule. Revoking this link stops future access; it cannot remove information already copied by a calendar app.</p>
-   {!status?<p role="status">Checking calendar link…</p>:status.state==='unavailable'||status.state==='unauthorized'?<p role="alert">Calendar settings unavailable. {status.state==='unauthorized'?'Sign in again.':'Retry to check the current link.'}</p>:<>
-    <p className="employee-calendar-state">{status.state==='active'?'Link active':status.state==='revoked'?'Link revoked':'No calendar link'}</p>
-    <div className="employee-calendar-actions">
-     <button className="button secondary" disabled={busy||unknown} onClick={()=>onCommand(status.state==='active'?'ROTATE':'ISSUE')}>{busy?'Saving…':status.state==='active'?'Replace link':'Create link'}</button>
-     {status.state==='active'?<button className="button secondary" disabled={busy||unknown} onClick={()=>onCommand('REVOKE')}>Revoke link</button>:null}
-    </div>
-    {status.state==='active'&&!url?<p>The link is stored securely and cannot be retrieved. Replace link to create a new URL; the previous link will stop working.</p>:null}
-   </>}
-   {url?<div className="employee-calendar-secret">
-    <label htmlFor="employee-calendar-link">Your private calendar link</label><textarea ref={link} id="employee-calendar-link" value={url} readOnly spellCheck={false} autoComplete="off" rows={3}/>
-    <div className="employee-calendar-actions"><button className="button secondary" onClick={onCopy} disabled={busy}>Copy link</button><button className="button secondary" onClick={()=>{link.current?.focus();link.current?.select();}}>Select link</button></div>
-    <p>This URL is shown once. Copy it now, or replace it later.</p>
-   </div>:null}
-   <details><summary>Subscribe in your calendar app</summary>
-    <p><strong>Apple Calendar:</strong> On iPhone or iPad, open Calendar → Calendars → Add Calendar → Add Subscription Calendar, then enter the URL. On Mac, use File → New Calendar Subscription.</p>
-    <p><strong>Google Calendar:</strong> On a computer, open Other calendars → Add other calendars → From URL, then paste the link.</p>
-    <p><strong>Outlook:</strong> In Outlook on the web, use Add calendar → Subscribe from web, then paste the link.</p>
-    <p>Use a calendar app you trust. Subscription support and refresh timing depend on the client; creating or copying a link does not confirm a calendar connection.</p>
-   </details>
+  <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="calendar" size={24}/></span><div><h2 id="employee-calendar-title">Calendar subscription</h2><p>Your shifts, alongside your plans.</p></div></header>
+  {paused?<p role="status">Calendar settings paused. Return to this window to check the link.</p>:<>
+   <p>View your published shifts in Apple Calendar, Google Calendar, or Outlook.</p>
+   <div className="employee-calendar-status-box">
+    {!status?<p role="status">Checking calendar link…</p>:!available?<p role="alert">Calendar settings unavailable. {status.state==='unauthorized'?'Sign in again.':'Retry to check the current link.'}</p>:<>
+     <span className={`employee-calendar-state${active?' is-active':''}`}>{active?'Link active':status.state==='revoked'?'Link revoked':'No calendar link'}</span>
+     {!active?<><p>Create a private link, then add it to your calendar app.</p><button type="button" className="button calendar-primary" disabled={busy||unknown} onClick={()=>onCommand('ISSUE')}>{busy?'Saving…':'Create link'}</button></>:null}
+     {active&&!currentUrl?<><p>The link is stored securely and cannot be retrieved. Replace link to create a new URL; the previous link will stop working.</p><button type="button" className="button calendar-primary" disabled={busy||unknown} onClick={()=>onCommand('ROTATE')}>{busy?'Saving…':'Replace link'}</button></>:null}
+    </>}
+    {currentUrl?<div className="employee-calendar-secret">
+     <label htmlFor="employee-calendar-link">Your private calendar link</label><textarea ref={link} id="employee-calendar-link" value={currentUrl} readOnly spellCheck={false} autoComplete="off" rows={3} aria-describedby="employee-calendar-link-hint"/>
+     <div className="employee-calendar-actions"><button type="button" className="button calendar-primary" onClick={onCopy} disabled={busy}>Copy link</button><button type="button" className="button secondary" onClick={()=>{link.current?.focus();link.current?.select();}} disabled={busy}>Select link</button></div>
+     <p id="employee-calendar-link-hint" className="profile-supporting-copy">This URL is shown once. Copy it now, or replace it later.</p>
+    </div>:null}
+   </div>
+   <p className="employee-calendar-privacy"><LockKeyIcon size={18} aria-hidden="true"/><span>This private link includes your shift times and location labels. Anyone with the link can view these details.</span></p>
+   <section className="employee-calendar-providers" aria-labelledby="calendar-provider-title">
+    <h3 id="calendar-provider-title">Subscribe in your calendar app</h3>
+    <details><summary><AppleLogoIcon size={22} aria-hidden="true"/><span>Apple Calendar<small>iPhone, iPad, and Mac</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>On iPhone or iPad, open Calendar, then Calendars and Add Calendar. Choose Add Subscription Calendar.</li><li>Paste the link and follow the prompts. On Mac, choose File, then New Calendar Subscription.</li></ol><a href="https://support.apple.com/en-la/102301" target="_blank" rel="noreferrer">Apple subscription guide</a></div></details>
+    <details><summary><GoogleLogoIcon size={22} aria-hidden="true"/><span>Google Calendar<small>Set up on a computer</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>On a computer, open Google Calendar. Next to Other calendars, choose Add other calendars, then From URL.</li><li>Paste the link and choose Add calendar.</li></ol><a href="https://support.google.com/calendar/answer/37100?hl=en" target="_blank" rel="noreferrer">Google subscription guide</a></div></details>
+    <details><summary><MicrosoftOutlookLogoIcon size={22} aria-hidden="true"/><span>Outlook<small>Set up on the web</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>In Outlook on the web, open Calendar. Choose Add calendar, then Subscribe from web.</li><li>Paste the link and complete the import.</li></ol><a href="https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web" target="_blank" rel="noreferrer">Outlook subscription guide</a></div></details>
+   </section>
+   <p className="profile-supporting-copy">Calendar apps refresh on their own schedule. <Link href="/app/schedule">Check NEVORA</Link> for the latest schedule. Creating or copying a link does not confirm a calendar connection.</p>
+   {active?<details className="employee-calendar-management"><summary>Manage private link<CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><p>Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.</p><div className="employee-calendar-actions">{currentUrl?<button type="button" className="button secondary" disabled={busy||unknown} onClick={()=>onCommand('ROTATE')}>{busy?'Saving…':'Replace link'}</button>:null}<button type="button" className="button secondary calendar-revoke" disabled={busy||unknown} onClick={()=>onCommand('REVOKE')}>Revoke link</button></div></details>:null}
    {notice?<p role="status" className="employee-notice">{notice}</p>:null}
-   {(status?.state==='unavailable'||notice.includes('unknown'))?<button className="button secondary" disabled={busy} onClick={onRetry}>Retry</button>:null}
+   {status?.state==='unauthorized'?<Link className="button secondary" href="/login">Sign in</Link>:(status?.state==='unavailable'||unknown)?<button type="button" className="button secondary" disabled={busy} onClick={onRetry}>Retry</button>:null}
   </>}
  </section>;
 }

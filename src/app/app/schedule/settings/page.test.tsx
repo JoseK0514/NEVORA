@@ -4,6 +4,8 @@ import { beforeEach, expect, it, vi } from "vitest";
 import ScheduleSettingsPage from "./page";
 import { listLocations } from "@/lib/data/employees";
 import { listLocationStaffingSettings } from "@/lib/data/schedule-health";
+import { listEmployeeHourTargets, listCoverageWindows } from "@/lib/data/schedule-health";
+import { requireRoles } from "@/lib/auth/permissions";
 import {
   fuelRuleLocations,
   fuelRuleStaffing,
@@ -12,6 +14,8 @@ import {
 import { calculateScheduleHealth } from "../../../../lib/scheduling/schedule-health";
 
 vi.mock("@/lib/data/positions",()=>({listPositions:async()=>[]}));
+vi.mock("@/lib/data/shift-change-policy",()=>({readShiftChangePolicy:async()=>null}));
+vi.mock("@/lib/data/notification-transactions",()=>({neonNotificationExecutor:()=>({})}));
 vi.mock("@/components/configuration-form",()=>import("../../../../components/configuration-form"));
 vi.mock("@/components/position-quota-fields",()=>import("../../../../components/position-quota-fields"));
 vi.mock("@/lib/auth/permissions", () => ({
@@ -28,8 +32,8 @@ vi.mock("@/lib/data/employees", () => ({
 }));
 vi.mock("@/lib/data/schedule-health", () => ({
   listLocationStaffingSettings: vi.fn(),
-  listEmployeeHourTargets: async () => [],
-  listCoverageWindows: async () => fuelRuleCoverageWindows,
+  listEmployeeHourTargets: vi.fn(async () => []),
+  listCoverageWindows: vi.fn(async () => fuelRuleCoverageWindows),
 }));
 vi.mock("@/app/app/schedule/settings/actions", () => ({
   saveScheduleHealthSettingsAction: vi.fn(),
@@ -46,10 +50,75 @@ vi.mock("next/link", () => ({
 }));
 
 beforeEach(() => {
+  vi.mocked(requireRoles).mockResolvedValue({id:"reviewer",role:"MANAGER",firstName:"QA",lastName:"Reviewer",primaryLocationId:"loc-1"});
+  vi.mocked(listEmployeeHourTargets).mockResolvedValue([]);
+  vi.mocked(listCoverageWindows).mockResolvedValue(fuelRuleCoverageWindows);
   vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(location => ({ ...location, updatedAt: '2030-10-01 00:00:00+00' })));
   vi.mocked(listLocationStaffingSettings).mockResolvedValue(
     fuelRuleStaffing.map((s, i) => ({ ...s, locationName: `Fuel ${i + 1}` })),
   );
+});
+
+it("keeps every rule group and native fragment destination available from section navigation", async () => {
+  const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
+  expect(html).toContain('<h1>Scheduling rules</h1>');
+  expect(html).toContain('aria-label="Scheduling rule sections"');
+  for (const id of ["coverage-staffing", "target-hours", "coverage-windows", "rules-policy"]) {
+    expect(html).toContain(`href="#${id}"`);
+    expect(html).toContain(`id="${id}"`);
+  }
+  expect(html).toContain('id="staffing-loc-1"');
+  expect(html).toContain('Save staffing &amp; hours');
+  expect(html).toContain('href="/app/schedule"');
+});
+
+it("labels staffing and Lead controls separately while retaining submitted field names", async () => {
+  const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
+  expect(html).toContain('aria-label="FUEL – 2 minimum staff per shift"');
+  expect(html).toContain('aria-label="FUEL – 2 designated Lead required"');
+  expect(html).toContain('name="lead-configured-loc-1"');
+  expect(html).not.toMatch(/<label[^>]*class="[^"]*rules-staffing-row/);
+});
+
+it("gives empty staffing and employee groups actionable setup paths without creating defaults", async () => {
+  vi.mocked(listLocations).mockResolvedValue([]);
+  vi.mocked(listLocationStaffingSettings).mockResolvedValue([]);
+  vi.mocked(listCoverageWindows).mockResolvedValue([]);
+  const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
+  expect(html).toContain('href="/app/settings/locations"');
+  expect(html).toContain('href="/app/employees"');
+  expect(html).toContain('Add a location before creating a coverage period.');
+  expect(html).not.toContain('name="locationId"');
+});
+
+it("retains editable zero and blank hour values and an employee fragment destination", async () => {
+  vi.mocked(listEmployeeHourTargets).mockResolvedValue([{
+    employeeId: "TEAM-1", employeeName: "Avery Chen", role: "EMPLOYEE",
+    primaryLocationId: "loc-1", targetWeeklyHours: undefined, maximumWeeklyHours: 0,
+    eligibleLocationIds: ["loc-1"], positionIds: [],
+  }]);
+  const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
+  expect(html).toContain('id="target-TEAM-1"');
+  expect(html).toMatch(/name="target-TEAM-1"[^>]*value=""/);
+  expect(html).toMatch(/name="maximum-TEAM-1"[^>]*value="0"/);
+  expect(html).toContain('step="0.25"');
+});
+
+it("exposes route validation and success feedback with alert/status semantics", async () => {
+  const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({error: "duplicate_window", windowDeleted: "1"})}));
+  expect(html).toMatch(/role="alert"[^>]*>That coverage window already exists/);
+  expect(html).toMatch(/role="status"[^>]*>Coverage window removed/);
+});
+
+it("retains Owner policy editing and Manager read-only policy access", async () => {
+  const manager = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
+  expect(manager).toContain('Shift trade &amp; coverage policy');
+  expect(manager).not.toContain('Save trade policy');
+  vi.mocked(requireRoles).mockResolvedValue({id:"reviewer",role:"OWNER",firstName:"QA",lastName:"Reviewer",primaryLocationId:"loc-1"});
+  const owner = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
+  expect(owner).toContain('Save trade policy');
+  expect(owner).toContain('Save coverage policy');
+  expect(owner.match(/name="expectedRevision" value="0"/g)).toHaveLength(2);
 });
 
 it("resolves staffing, selector and expected-period labels from the same canonical location identity", async () => {

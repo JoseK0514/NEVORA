@@ -6,6 +6,8 @@ import Link from "next/link";
 import { SelectField } from "./select-field";
 import { ShiftChangeForm } from "./shift-change-form";
 import { calloutReasonNoteError } from "../lib/shift-changes/command-parser";
+import { NavIcon } from "./nav-icon";
+import styles from "./callout-view.module.css";
 
 const reasons = [
   ["ILLNESS", "Illness / sick"],
@@ -32,11 +34,12 @@ export function ReviewedCalloutForm({
   return (
     <ShiftChangeForm
       fields={fields ?? {}}
-      className="employee-form shift-change-form"
+      className={`shift-change-form ${styles.form}`}
     >
       <SelectField
         name="reasonCode"
-        label="Reason"
+        label="Reason (required)"
+        hint="Choose the closest match."
         value={reason}
         required
         onChange={(event) => {
@@ -50,10 +53,9 @@ export function ReviewedCalloutForm({
           ...reasons.map(([value, label]) => ({ value, label })),
         ]}
       />
-      <label>
-        Additional details{" "}
-        <span id={detailsId}>
-          Required when selecting Other: at least 3 characters of detail.
+      <label className={styles.notes}>
+        <span className={styles.notesTitle}>
+          Additional details <small>{reason === "OTHER" ? "Required" : "Optional"}</small>
         </span>
         <textarea
           ref={noteInput}
@@ -70,36 +72,45 @@ export function ReviewedCalloutForm({
               calloutReasonNoteError(reason, event.target.value) ?? "",
             );
           }}
-          placeholder="Add any details management should know..."
+          placeholder="What should management know?"
         />
+        <span className={styles.notesHelp}>
+          <span id={detailsId}>
+            {reason === "OTHER"
+              ? "For Other, add at least 3 characters of detail."
+              : "Add context if it would help management review your report."}
+          </span>
+          <span aria-label={`${note.length} of 300 characters`}>{note.length}/300</span>
+        </span>
       </label>
+      <p className={styles.privacy}><NavIcon name="requests" size={16} />Share only the details management needs to review your report.</p>
       {!fields ? (
-        <p role="alert">
+        <p className={styles.stale} role="alert">
           The assignment changed. Your reason is preserved. Refresh and review
           before submitting.
         </p>
       ) : null}
       {!fields ? (
         <button
-          className="button secondary"
+          className={styles.refresh}
           type="button"
           onClick={() => router.refresh()}
         >
           Refresh and review assignment
         </button>
       ) : null}
-      <div className="form-footer">
-        <Link className="button secondary" href="/app/exchange?tab=my">
+      <div className={styles.actions}>
+        <Link href="/app/exchange?tab=my">
           Cancel
         </Link>
         <button
-          className="employee-action primary"
           type="submit"
           disabled={!fields}
         >
-          Submit Call-out
+          Submit callout <NavIcon name="arrowRight" size={18} />
         </button>
       </div>
+      <p className={styles.receipt}>Submitting sends your report for management review. If approved, the shift opens for coverage. <Link href="/app/exchange?tab=requests">View my requests <NavIcon name="arrowRight" size={16} /></Link></p>
     </ShiftChangeForm>
   );
 }

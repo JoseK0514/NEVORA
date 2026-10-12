@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import {NavIcon} from './nav-icon';
+import { ClockIcon, CoffeeIcon, MapPinIcon, MinusIcon, PlusIcon, ReceiptIcon } from '@phosphor-icons/react';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {createEmployeeTimeController,fetchEmployeeTime,type EmployeeTimePanelState} from '../lib/employee-time-client';
 import {formatRecordedDuration,type EmployeeTimeEntry} from '../lib/employee-time';
@@ -10,9 +11,22 @@ import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off Clock':entry.state==='ON_BREAK'?'On Break':'Clocked In';
 function stamp(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date(at));}
+function entryDate(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short',month:'short',day:'numeric'}).format(new Date(at));}
+function entryRange(entry:EmployeeTimeEntry,zone:string){
+ const clock=new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit',hour12:true});
+ const day=new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'});
+ const end=entry.clockOutAt;
+ const endLabel=end&&day.format(new Date(end))!==day.format(new Date(entry.clockInAt))?entryDate(end,zone)+', '+clock.format(new Date(end)):end?clock.format(new Date(end)):'In progress';
+ return clock.format(new Date(entry.clockInAt))+' – '+endLabel;
+}
 function EntryDetails({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
  return <details className="employee-time-entry">
-  <summary><span><strong>{stamp(entry.clockInAt,zone)}</strong><small>{entry.locationName}</small></span><span className="employee-time-entry-total">{formatRecordedDuration(entry.elapsedSeconds)}<small>{entry.clockOutAt?'Completed':'In progress'}</small></span></summary>
+  <summary>
+   <span className="employee-time-entry-date" aria-hidden="true"><span>{new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short'}).format(new Date(entry.clockInAt))}</span><b>{new Intl.DateTimeFormat('en-US',{timeZone:zone,day:'numeric'}).format(new Date(entry.clockInAt))}</b></span>
+   <span className="employee-time-entry-label"><strong><time dateTime={entry.clockInAt}>{entryDate(entry.clockInAt,zone)}</time></strong><small className="employee-time-entry-range">{entryRange(entry,zone)}</small><small className="employee-time-entry-location"><MapPinIcon size={14} aria-hidden="true" />{entry.locationName}</small></span>
+   <span className="employee-time-entry-total">{formatRecordedDuration(entry.elapsedSeconds)}<small>{entry.clockOutAt?'Completed':'In progress'}</small></span>
+   <span className="employee-time-disclosure" aria-hidden="true"><PlusIcon className="entry-expand" size={18}/><MinusIcon className="entry-collapse" size={18}/></span>
+  </summary>
   <div className="employee-time-punches">
    <dl><div><dt>Clock In</dt><dd><time dateTime={entry.clockInAt}>{stamp(entry.clockInAt,zone)}</time></dd></div>
    {entry.breaks.map(b=><div className="employee-time-break" key={b.id}><dt>{b.name??'Break'}</dt><dd><time dateTime={b.startAt}>{stamp(b.startAt,zone)}</time><span> → {b.endAt?<time dateTime={b.endAt}>{stamp(b.endAt,zone)}</time>:'In progress'}</span><small>{formatRecordedDuration(b.elapsedSeconds)} recorded break</small></dd></div>)}
@@ -34,7 +48,7 @@ export function EmployeeTimeView({state,compact=false,onRefresh}:{state:Employee
   {compact?<Link className="employee-time-link" href="/app/my-time">My Time <NavIcon name="arrowRight" size={16}/></Link>:null}
  </div>;
  const content=<>
-  <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:null}{compact?'Clock Status':'Current Status'}</h2>{ready?<span className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:null}</div>
+  <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock Status':'Current Status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:null}</div>
   {ready?<>
    {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p><time dateTime={current.clockInAt}>{stamp(current.clockInAt,ready.timeZone)}</time> · Clock In</p><p><b>{formatRecordedDuration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<> · <b>{formatRecordedDuration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
   </>:<div className="employee-time-message" role="status"><strong>{title}</strong><p>{paused?'Return online to check your latest records.':denied?'Your current employee session is required.':time?.state==='unavailable'?'Your latest clock records could not be confirmed. Try refreshing.':'Checking your actual punches and breaks.'}</p></div>}
@@ -47,12 +61,12 @@ export function EmployeeTimeView({state,compact=false,onRefresh}:{state:Employee
   {ready?<>
    <section className="employee-view-surface employee-time-today" aria-labelledby="employee-time-today-title">
     <header className="employee-time-section-heading"><h2 id="employee-time-today-title">Today</h2><time dateTime={ready.date}>{new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',day:'numeric',year:'numeric'}).format(new Date(ready.date+'T12:00:00Z'))}</time></header>
-    <dl className="employee-time-metrics"><div><dt>Recorded time</dt><dd>{formatRecordedDuration(ready.today.recordedSeconds)}</dd></div><div><dt>Break time</dt><dd>{formatRecordedDuration(ready.today.breakSeconds)}</dd></div></dl>
+    <dl className="employee-time-metrics"><div><dt><ClockIcon size={16} aria-hidden="true"/>Recorded time</dt><dd>{formatRecordedDuration(ready.today.recordedSeconds)}</dd></div><div><dt><CoffeeIcon size={16} aria-hidden="true"/>Break time</dt><dd>{formatRecordedDuration(ready.today.breakSeconds)}</dd></div></dl>
     <p className="employee-time-note">Totals cover this business day. Recorded time includes breaks. Not payroll hours.</p>
     {ready.today.entries.length?<div className="employee-time-entries">{ready.today.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div>:<p className="employee-time-empty">No recorded punches today.</p>}
    </section>
    <section className="employee-view-surface employee-time-recent" aria-labelledby="employee-time-recent-title">
-    <header className="employee-time-section-heading"><h2 id="employee-time-recent-title">Recent Entries</h2></header>
+    <header className="employee-time-section-heading"><h2 id="employee-time-recent-title"><span className="my-time-section-icon"><ReceiptIcon size={20} weight="duotone" aria-hidden="true"/></span>Recent Entries</h2><span className="my-time-history-count">{ready.recent.total} {ready.recent.total===1?'entry':'entries'}</span></header>
     {ready.recent.entries.length?<><p className="employee-time-note">Showing {ready.recent.entries.length} of {ready.recent.total} earlier entries · most recent first.</p><div className="employee-time-entries">{ready.recent.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div></>:<p className="employee-time-empty">No earlier entries.</p>}
    </section>
    <EmployeeCorrectionCenter zone={ready.timeZone}/>

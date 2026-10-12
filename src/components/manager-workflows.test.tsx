@@ -42,7 +42,7 @@ vi.mock("@/app/app/requests/actions", () => ({ reviewTimeOffAction: vi.fn() }));
 vi.mock("@/app/app/exchange/actions", () => ({ reviewExchangeAction: vi.fn(),shiftChangeAction:vi.fn(),reconcileShiftChangeAction:async()=>null }));
 vi.mock("@/app/app/exchange/callout/actions", () => ({ reviewCalloutAction: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter:()=>({refresh:()=>{}}), redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
-vi.mock("next/link", () => ({ default: ({href,children,...props}: ComponentProps<"a">) => createElement("a",{href,...props},children) }));
+vi.mock("next/link", () => ({ useLinkStatus: () => ({ pending: false }), default: ({href,children,prefetch,...props}: ComponentProps<"a"> & { prefetch?: boolean }) => { void prefetch; return createElement("a",{href,...props},children); } }));
 
 beforeEach(() => { vi.clearAllMocks(); vi.mocked(requireSession).mockResolvedValue({id:"reviewer",firstName:"Alex",lastName:"Rivera",role:"MANAGER",primaryLocationId:"loc"}); });
 
@@ -62,9 +62,11 @@ it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and r
 });
 it("distinguishes missing, intentionally unavailable and submitted windows without treating seeded hours as a submission", async () => {
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"}));
-  expect(html).toContain("1 missing"); expect(html).toContain("Unavailable all week"); expect(html).toContain("Not submitted"); expect(html).toContain("FUEL – 2"); expect(html).toContain("6:00 AM – 2:00 PM"); expect(html).not.toContain("7:00 AM"); expect(html).not.toContain("<form"); expect(html).not.toContain("checkbox");
+  expect(html).toContain('<dt>Missing</dt><dd>1</dd>'); expect(html).toContain("Unavailable all week"); expect(html).toContain("Not submitted"); expect(html).toContain("FUEL – 2"); expect(html).toContain("6:00 AM – 2:00 PM"); expect(html).not.toContain("7:00 AM"); expect(html).not.toContain("<form"); expect(html).not.toContain("checkbox");
   expect(html).toContain('class="status-pill neutral">Not submitted');
-  expect(html).toContain('class="status-pill warning">1 missing');
+  expect(html).toContain('<dt>Submitted</dt><dd>2<span> / 3</span>');
+  expect(html).toContain('<dt>Unavailable all week</dt><dd>1</dd>');
+  expect(html).toContain('class="status-pill neutral">Unavailable all week');
   expect(html).toContain('class="status-pill success">Submitted');
 });
 it("keeps management pending, coverage and outcome data separate", async () => {

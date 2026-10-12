@@ -1,6 +1,7 @@
 import {randomUUID} from 'node:crypto';
 import {ShiftChangeForm} from '@/components/shift-change-form';
-import {ShiftSlot} from '@/components/shift-slot';
+import {ExchangeAssignment as ShiftSlot} from '@/components/exchange-assignment';
+import {ExchangeReviewShell} from '@/components/exchange-review-shell';
 import {ShiftChangeHistory} from '@/components/shift-change-history';
 import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
 import {readShiftChangeTerms} from '@/lib/data/shift-change-snapshot';
@@ -176,14 +177,14 @@ export default async function ExchangePage({
 
   if (!manager) {
     return (
-      <div className="employee-view employee-shift-requests-view">
-        <header className="employee-view-heading"><div><p className="employee-view-eyebrow">Schedule flexibility</p><h1>Shift Requests</h1></div></header>
+      <ExchangeReviewShell view={activeView} className="employee-view employee-shift-requests-view">
+        <div className="exchange-page-heading"><header className="employee-view-heading"><div><p className="employee-view-eyebrow">Schedule flexibility</p><h1>Shift Requests</h1></div></header><p>Pick up a shift, review a trade, or manage your requests.</p></div>
         {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The exchange could not be processed."}</p> : null}
         {operation ? <p className="employee-notice" role="status">{shiftChangeFeedback(operation)}</p> : null}
 
-        <nav className="employee-view-tabs" aria-label="Shift marketplace views">
+        <nav className="employee-view-tabs exchange-view-tabs" aria-label="Shift marketplace views">
           <Link className={activeView === "available" ? "selected" : ""} href="/app/exchange?tab=available" aria-current={activeView === "available" ? "page" : undefined}>Available Shifts</Link>
-          <Link className={activeView === "requests" ? "selected" : ""} href="/app/exchange?tab=requests" aria-current={activeView === "requests" ? "page" : undefined}>Your Trade Requests</Link>
+          <Link className={activeView === "requests" ? "selected" : ""} href="/app/exchange?tab=requests" aria-current={activeView === "requests" ? "page" : undefined}>Your Requests</Link>
         </nav>
 
         <div className="employee-view-surface employee-exchange-feed">
@@ -191,7 +192,7 @@ export default async function ExchangePage({
             available.length ? available.map((exchange) => (
               <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                 <div className="employee-shift-entry-copy">
-                  <ShiftSlot shift={exchange.sourceShift}/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}
+                  <div className={`exchange-assignments${exchange.targetShift ? " paired" : ""}`}><ShiftSlot shift={exchange.sourceShift} label="Offered shift"/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}</div>
                   <small>{marketplaceDisplayName(exchange.requestedByName)} · {marketplaceRoleLabel(exchange.requestedByRole)}</small>
                   {!acceptViews.get(exchange.id)?.allowed?<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>:null}
                 </div>
@@ -224,7 +225,8 @@ export default async function ExchangePage({
                     <div className="employee-shift-entry-copy">
                       <strong>{marketplaceDisplayName(exchange.requestedByName)} wants to trade</strong>
                       {!requestFields(exchange.id,exchange.requestRevision)?<span className="shift-change-unavailable">Reload the current request revision.</span>:!acceptViews.get(exchange.id)?.allowed?<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>:null}
-                      <ShiftSlot shift={exchange.sourceShift}/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}<ShiftChangeHistory events={histories.get(exchange.id)??null}/>
+                      <div className={`exchange-assignments${exchange.targetShift ? " paired" : ""}`}><ShiftSlot shift={exchange.sourceShift} label="Their shift"/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Your shift"/>:null}</div><ShiftChangeHistory events={histories.get(exchange.id)??null}/>
+                      <span>Accepting sends this trade for schedule checks. Review the result before changing your plans.</span>
                     </div>
                     <div className="employee-shift-entry-actions">{requestFields(exchange.id,exchange.requestRevision)?<ShiftChangeForm fields={requestFields(exchange.id,exchange.requestRevision)!}><button className="employee-action" name="kind" value="DECLINE" type="submit">Decline</button>{acceptViews.get(exchange.id)?.allowed?<button className="employee-action primary" name="kind" value="ACCEPT" type="submit">Accept</button>:null}</ShiftChangeForm>:null}</div>
                   </div>
@@ -237,7 +239,7 @@ export default async function ExchangePage({
                   <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                     <div className="employee-shift-entry-copy">
                       <strong>{exchange.kind === "COVERAGE" ? "Coverage" : "Trade"}</strong>
-                      <ShiftSlot shift={exchange.sourceShift}/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}<ShiftChangeHistory events={histories.get(exchange.id)??null}/>
+                      <div className={`exchange-assignments${exchange.targetShift ? " paired" : ""}`}><ShiftSlot shift={exchange.sourceShift} label="Requested assignment"/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}</div><ShiftChangeHistory events={histories.get(exchange.id)??null}/>
                       {exchange.actionable===false&&['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(exchange.status)?<span className="shift-change-unavailable">Stale or unverified. Reload the current assignment or ask management to review.</span>:null}
                     </div>
                     <div className="employee-shift-entry-actions" data-status={exchange.status}>
@@ -270,7 +272,7 @@ export default async function ExchangePage({
             </>
           ) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>No trade requests yet</strong><p>Your offers, swaps, and coverage requests will appear here.</p></div>}
         </div>
-      </div>
+      </ExchangeReviewShell>
     );
   }
 

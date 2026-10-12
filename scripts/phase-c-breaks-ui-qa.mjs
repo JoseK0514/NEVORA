@@ -35,8 +35,8 @@ try{
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_break_types WHERE name=$1',[name]))[0].n,1);
   const stale=await owner.newPage();await goto(stale,'/app/settings/breaks');
   let d=await action(p,name,'Edit');await d.getByLabel('Reference minutes',{exact:true}).fill('20');await d.getByRole('button',{name:'Save Changes',exact:true}).click();await d.waitFor({state:'hidden'});
-  await row(p,name).getByText('20 min reference',{exact:true}).waitFor();checked(engine+': edited settings persist with the new version');
-  d=await action(stale,name,'Edit');await d.getByLabel('Reference minutes',{exact:true}).fill('25');await d.getByRole('button',{name:'Save Changes',exact:true}).click();await d.getByRole('alert').filter({hasText:'changed'}).waitFor();assert(await d.getByRole('button',{name:'Save Changes',exact:true}).isDisabled());
+  await row(p,name).getByText('20',{exact:true}).waitFor();checked(engine+': edited settings persist with the new version');
+  d=await action(stale,name,'Edit');await d.getByLabel('Reference minutes',{exact:true}).fill('25');await d.getByRole('button',{name:'Save Changes',exact:true}).click();await d.getByRole('alert').filter({hasText:'changed'}).waitFor();assert(await d.getByLabel('Break name',{exact:true}).isDisabled());assert.equal(await d.getByRole('button',{name:'Save Changes',exact:true}).count(),0);assert(await d.getByRole('button',{name:'Reload Break Types',exact:true}).isVisible());
   assert.equal((await q('SELECT target_minutes FROM clocker_break_types WHERE name=$1',[name]))[0].target_minutes,20);checked(engine+': stale tab cannot overwrite a newer configuration');await stale.close();
   d=await action(p,name,'Archive');await d.getByRole('heading',{name:'Archive Break Type?',exact:true}).waitFor();await d.getByRole('button',{name:'Archive Break Type',exact:true}).click();await d.waitFor({state:'hidden'});await row(p,name).getByText('Archived',{exact:true}).waitFor();checked(engine+': archive is confirmed and the record remains visible');
   d=await action(p,name,'Reactivate');await d.getByRole('button',{name:'Reactivate Break Type',exact:true}).click();await d.waitFor({state:'hidden'});await row(p,name).getByText('Active',{exact:true}).waitFor();checked(engine+': reactivation restores the same type rather than duplicating it');
@@ -53,7 +53,7 @@ try{
   });
   const priorConsole=consoleErrors.length;
   await d.getByRole('button',{name:'Create Break Type',exact:true}).click();await d.getByRole('alert').filter({hasText:'could not be confirmed'}).waitFor();
-  assert(dropped);assert(await d.getByRole('button',{name:'Create Break Type',exact:true}).isDisabled());
+  assert(dropped);assert(await d.getByLabel('Break name',{exact:true}).isDisabled());assert.equal(await d.getByRole('button',{name:'Create Break Type',exact:true}).count(),0);assert(await d.getByRole('button',{name:'Reload Break Types',exact:true}).isVisible());
   const injected=consoleErrors.splice(priorConsole);assert(injected.every(message=>/Failed to load resource|Fetch API cannot load|Load failed|Failed to fetch/.test(message)),'Only the injected network failure is expected');
   await p.unroute('**/app/settings/breaks');await d.getByRole('button',{name:'Reload Break Types',exact:true}).click();await row(p,uncertainName).waitFor();
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_break_types WHERE name=$1',[uncertainName]))[0].n,1);checked(engine+': lost save response requires reload and does not create a duplicate');

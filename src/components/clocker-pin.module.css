@@ -1,30 +1,134 @@
-.management { display: grid; gap: 24px; max-width: 720px; border: 0; border-radius: 22px; box-shadow: none; padding: 28px; }
-.management h2 { margin: 14px 0 8px; font-size: 24px; line-height: 1.2; letter-spacing: -.03em; }
-.management p { margin: 0; color: var(--muted); line-height: 1.6; }
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/typeface/inter/variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+.page {
+  --pin-primary: #ED724C;
+  --pin-primary-hover: #D8613C;
+  --pin-ink: #111827;
+  --pin-muted: #4B5563;
+  --pin-line: #D1D5DB;
+  --pin-canvas: #FAFAFA;
+  --pin-surface: #FFFFFF;
+  --pin-inset: #F4F5F6;
+  --pin-accent-ink: #9F3821;
+  width: 100%;
+  max-width: 1100px;
+  color: var(--pin-ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; font-weight: 550; color: var(--pin-muted); margin: -8px 0 20px; }
+.back:hover { color: var(--pin-accent-ink); }
+.pageHeading { margin-bottom: 28px; }
+.pageHeading h1 { margin: 0 0 10px; font-size: clamp(30px, 3vw, 38px); line-height: 1.15; font-weight: 550; letter-spacing: -.04em; }
+.pageHeading p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--pin-muted); }
+.employeeSummary { display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--pin-line); padding: 0 0 24px; margin-bottom: 28px; }
+.avatar { display: grid; place-items: center; flex: 0 0 48px; width: 48px; height: 48px; background: #F8EAE5; color: var(--pin-accent-ink); border-radius: 16px; font-weight: 600; font-size: 16px; }
+.employeeName { display: grid; gap: 4px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.employeeName strong { font-size: 16px; font-weight: 600; line-height: 1.4; }
+.employeeName span { font-size: 13px; color: var(--pin-muted); line-height: 1.5; }
+.badge { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border: 1px solid var(--pin-line); border-radius: 99px; font-size: 12px; font-weight: 550; color: var(--pin-muted); background: var(--pin-surface); white-space: nowrap; }
+.configured::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--color-state-success); }
+.layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(250px, 1fr); grid-auto-flow: dense; gap: 32px; align-items: start; }
+.management { background: var(--pin-surface); border: 1px solid var(--pin-line); border-radius: 18px; padding: 32px; min-width: 0; }
+.formHeading { display: flex; gap: 14px; align-items: center; margin-bottom: 30px; }
+.iconTile { display: grid; place-items: center; width: 48px; height: 48px; flex: 0 0 48px; border-radius: 16px; background: var(--pin-inset); color: var(--pin-ink); }
+.management h2 { margin: 0 0 6px; font-size: 23px; line-height: 1.25; font-weight: 550; letter-spacing: -.025em; }
+.management p { margin: 0; color: var(--pin-muted); font-size: 14px; line-height: 1.65; }
 .management fieldset, .terminal fieldset { display: grid; gap: 18px; border: 0; padding: 0; margin: 0; min-width: 0; }
-.management label { display: grid; gap: 8px; font-size: 14px; font-weight: 600; }
-.management input:not([type=hidden]) { width: 100%; min-width: 0; min-height: 48px; padding: 12px 16px; font-size: 18px; border: 1px solid var(--border-color, #d6d8de); border-radius: 12px; background: var(--color-bg-surface); color: var(--color-brand-primary); }
-.management input:focus-visible, .terminal input:focus-visible { outline: 3px solid var(--nevora-blue); outline-offset: 3px; }
-.management button, .management a.button { min-height: 48px; }
-.badge { display: inline-block; padding: 6px 12px; border-radius: 99px; background: var(--nevora-soft); color: var(--nevora-blue); font-size: 12px; font-weight: 600; }
-.management .success { color: #24533c; }
+.fields { display: grid; gap: 24px; }
+.management label { display: grid; gap: 10px; font-size: 14px; font-weight: 600; }
+.labelRow { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.labelRow > span { font-size: 12px; font-weight: 400; color: var(--pin-muted); }
+.management input:not([type=hidden]) { width: 100%; min-width: 0; height: 58px; padding: 12px 20px; font-size: 23px; letter-spacing: .6em; border: 1px solid transparent; border-radius: 17px; background: var(--pin-inset); color: var(--pin-ink); caret-color: var(--pin-accent-ink); transition: background-color 150ms ease, border-color 150ms ease; }
+.management input:hover { background: #ECEEF0; }
+.management input:focus-visible { background: var(--pin-surface); border-color: var(--pin-accent-ink); outline: 2px solid var(--pin-accent-ink); outline-offset: 3px; }
+.management input:disabled { opacity: .65; }
+.management .fieldHelp { font-size: 13px; }
+.resetNotice { display: flex; align-items: flex-start; gap: 10px; padding: 16px; border-radius: 14px; background: var(--pin-canvas); }
+.resetNotice > svg { flex: 0 0 auto; margin-top: 2px; color: var(--pin-accent-ink); }
+.resetNotice p { font-size: 13px; line-height: 1.6; }
+.formActions { display: flex; align-items: center; gap: 12px; padding-top: 8px; }
+.primary, .secondary { min-height: 48px; border: 1px solid transparent; border-radius: 17px; padding: 0 20px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-family: inherit; font-weight: 600; font-size: 14px; line-height: 1.4; transition: background-color 160ms ease, transform 160ms ease; }
+.primary { background: var(--pin-primary); color: var(--pin-ink); flex: 1; }
+.primary:hover { background: var(--pin-primary-hover); }
+.primary:active, .secondary:active { transform: scale(.98); }
+.primary:disabled { background: #E5E7EB; color: var(--pin-muted); cursor: not-allowed; transform: none; }
+.secondary { background: var(--pin-surface); color: var(--pin-muted); border-color: var(--pin-line); }
+.secondary:hover { background: var(--pin-inset); }
+.page :is(a, button):focus-visible, .feedback:focus { outline: 2px solid var(--pin-accent-ink); outline-offset: 4px; }
+.management .pending { margin-top: 18px; font-size: 13px; }
+.feedback { display: flex; align-items: flex-start; gap: 12px; margin-top: 24px; padding: 18px; border-radius: 14px; }
+.feedback > svg { flex: 0 0 auto; margin-top: 2px; }
+.feedback strong { display: block; font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px; }
+.feedback p { font-size: 13px; color: inherit; }
+.saved { color: var(--color-state-success); background: var(--color-state-success-bg); }
+.failed { color: var(--color-state-danger); background: var(--color-state-danger-bg); }
+.feedbackLink { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; margin-top: 4px; }
+.guide { padding: 14px 0; }
+.guide h2 { margin: 0 0 10px; font-size: 22px; font-weight: 500; line-height: 1.3; letter-spacing: -.025em; }
+.guideIntro { margin: 0 0 32px; color: var(--pin-muted); font-size: 14px; line-height: 1.7; max-width: 33ch; }
+.guideRow { display: flex; gap: 14px; margin-top: 26px; }
+.guideRow > svg { flex: 0 0 auto; color: var(--pin-muted); margin-top: 2px; }
+.guideRow h3 { font-size: 14px; font-weight: 600; line-height: 1.5; margin: 0 0 5px; }
+.guideRow p { font-size: 13px; line-height: 1.7; margin: 0; color: var(--pin-muted); max-width: 34ch; }
+.unavailable { background: var(--pin-surface); border: 1px solid var(--pin-line); border-radius: 18px; padding: 32px; max-width: 650px; }
+.unavailable > svg { color: var(--pin-accent-ink); }
+.unavailable h2 { font-size: 23px; font-weight: 550; line-height: 1.3; margin: 18px 0 10px; }
+.unavailable p { margin: 0 0 24px; color: var(--pin-muted); font-size: 15px; line-height: 1.65; }
+.terminal input:focus-visible { outline: 3px solid var(--nevora-blue); outline-offset: 3px; }
 .error { color: #97302f !important; line-height: 1.6; margin: 12px 0 !important; }
 .note { font-size: 12px !important; color: var(--muted); line-height: 1.6; }
+.terminal .note { font-size: 13px !important; }
 .terminal { text-align: center; }
 .terminal h1 { margin: 20px 0 8px; overflow-wrap: anywhere; }
 .terminal > p { color: var(--muted); margin: 0 0 20px; line-height: 1.5; }
 .terminal form { margin: 18px auto 16px; max-width: 348px; }
 .terminal fieldset { gap: 12px; }
-.pinLabel { display: grid; gap: 8px; text-align: left; font-size: 13px; color: var(--muted); }
-.pinLabel input { min-width: 0; width: 100%; height: 52px; border: 1px solid var(--border-color, #d6d8de); border-radius: 14px; text-align: center; font-size: 24px; letter-spacing: 10px; padding-left: 10px; background: var(--color-bg-surface); color: var(--color-brand-primary); }
+.pinIcon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto; border-radius: 18px; background: var(--clocker-soft); color: var(--clocker-focus); }
+.pinLabel { text-align: left; font-size: 13px; color: var(--muted); }
+.pinEntry { position: relative; height: 56px; border: 1px solid #d1d5db; border-radius: 17px; background: #fafafa; }
+.pinEntry:focus-within { outline: 3px solid var(--clocker-focus); outline-offset: 3px; }
+.pinEntry input { position: absolute; inset: 0; min-width: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; color: transparent; caret-color: transparent; font-size: 24px; border-radius: inherit; outline: none !important; }
+.pinSlots { height: 100%; display: flex; align-items: center; justify-content: center; gap: 24px; pointer-events: none; }
+.pinSlots > span { width: 11px; height: 11px; background: #d1d5db; border-radius: 50%; transition: background-color .12s ease, transform .12s ease; }
+.pinSlots > span[data-filled=true] { background: var(--clocker-ink); transform: scale(1.05); }
 .keypad { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
-.keypad button { min-height: 52px; border: 0; background: var(--color-bg-main); border-radius: 14px; font-size: 20px; color: var(--color-brand-primary); font-family: inherit; cursor: pointer; }
-.keypad button:hover { background: var(--design-surface, #eaedf2); }
+.keypad button { min-height: 62px; border: 1px solid #ededf0; background: #f5f5f6; border-radius: 17px; font-size: 24px; font-weight: 450; color: var(--color-brand-primary); font-family: inherit; cursor: pointer; display: grid; place-items: center; transition: background-color .16s ease, transform .16s ease; }
+.keypad button:hover { background: #e9e9ec; }
 .keypad button:focus-visible { outline: 3px solid var(--nevora-blue); outline-offset: 2px; }
-.keypad button:nth-child(10), .keypad button:nth-child(12) { font-size: 14px; }
+.keypad button:nth-child(10), .keypad button:nth-child(12) { font-size: 13px; color: var(--muted); background: transparent; border-color: transparent; }
+.keypad button:nth-child(10):hover, .keypad button:nth-child(12):hover { background: #f5f5f6; }
 .terminal button:disabled { opacity: .45; cursor: not-allowed; }
 .terminal .button { min-height: 48px; }
 .previewNotice { background: var(--color-bg-main); padding: 20px; border-radius: 16px; display: grid; gap: 8px; text-align: left; margin: 24px 0; line-height: 1.6; }
 .terminal > button { width: min(100%,348px); min-height: 52px; margin-bottom: 16px; }
-@media (max-width:480px) { .management { padding: 24px 20px; } .keypad button { min-height: 48px; } .terminal form { margin-top: 16px; } }
+@media (max-width:480px) { .management { padding: 24px 20px; } }
+@media (min-width:701px) and (max-height:820px) {
+  .pinIcon { width: 44px; height: 44px; border-radius: 14px; }
+  .terminal h1 { margin-top: 12px; }
+  .terminal > p { margin-bottom: 12px; }
+  .terminal form { margin: 12px auto; }
+  .terminal fieldset { gap: 8px; }
+  .pinEntry { height: 48px; }
+  .keypad button { min-height: 52px; }
+  .terminal > .note:last-child { margin-bottom: 0; }
+}
+@media (max-width:480px) {
+  .pinIcon { width: 42px; height: 42px; border-radius: 14px; }
+  .terminal h1 { margin-top: 12px; }
+  .terminal > p { margin-bottom: 12px; }
+  .terminal form { margin: 12px auto 8px; }
+  .terminal fieldset { gap: 8px; }
+  .pinEntry { height: 52px; }
+  .keypad button { min-height: 52px; }
+  .terminal > .note:last-child { margin-bottom: 8px; }
+}
+@media (max-width: 1000px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 28px; } .guide { padding: 4px 8px; } .guideIntro, .guideRow p { max-width: none; } .guideIntro { margin-bottom: 24px; } .guideRow { margin-top: 22px; } }
+@media (max-width:480px) { .management, .unavailable { padding: 24px 20px; } .back { margin-bottom: 12px; } .pageHeading { margin-bottom: 20px; } .employeeSummary { flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding-bottom: 20px; } .formHeading { align-items: flex-start; gap: 12px; margin-bottom: 20px; } .formHeading h2 { font-size: 21px; } .fields { gap: 18px; } .management label { gap: 8px; } .management fieldset { gap: 16px; } .management input:not([type=hidden]) { height: 52px; } .keypad button { min-height: 48px; } .terminal form { margin-top: 16px; } }
+@media (max-width:360px) { .employeeName { flex-basis: calc(100% - 60px); } .badge { margin-left: 60px; } .formActions { flex-direction: column; } .primary, .formActions .secondary { width: 100%; } }
 @media (prefers-reduced-motion:reduce) { .management *, .terminal * { animation: none !important; transition: none !important; } }

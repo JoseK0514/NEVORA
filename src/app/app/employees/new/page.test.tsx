@@ -1,8 +1,9 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 
-const m = vi.hoisted(() => ({ role: "MANAGER" }));
+const m = vi.hoisted(() => ({ role: "MANAGER", noLocations: false }));
+beforeEach(() => { m.role = "MANAGER"; m.noLocations = false; });
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
@@ -14,7 +15,7 @@ vi.mock("@/lib/auth/permissions", () => ({
 }));
 vi.mock("@/lib/data/employees", () => ({
   listLocations: async () => [
-    { id:"loc",workspaceId:"w",clockerKey:"loc",name:"Main Office",shortName:"Main",active:true },
+    { id:"loc",workspaceId:"w",clockerKey:"loc",name:"Main Office",shortName:"Main",active: !m.noLocations },
   ],
 }));
 vi.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
@@ -56,4 +57,36 @@ it("uses canonical native-authoritative selects while preserving Owner-only Owne
   );
   expect(owner.match(/class="nevora-select"/g)).toHaveLength(2);
   expect(owner).toContain('value="OWNER"');
+});
+
+it("preserves submitted field names, required contact fields and optional email", async () => {
+  const html = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({}) }));
+  for (const name of ["id", "firstName", "lastName", "phone", "email", "role", "primaryLocationId"]) {
+    expect(html).toContain(`name="${name}"`);
+  }
+  const fields = html.match(/<input[^>]+>/g) ?? [];
+  expect(fields.filter(field => /name="(?:id|firstName|lastName|phone)"/.test(field)).every(field => field.includes('required=""'))).toBe(true);
+  expect(fields.find(field => field.includes('name="email"'))).not.toContain('required=""');
+  expect(html).toContain('value="EMPLOYEE" selected=""');
+  expect(html.match(/href="\/app\/employees"/g)).toHaveLength(3);
+});
+
+it("blocks creation when no active location exists and supplies the Owner setup route", async () => {
+  m.noLocations = true;
+  m.role = "OWNER";
+  const owner = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({}) }));
+  expect(owner).not.toContain('value="loc"');
+  expect(owner).toMatch(/<button[^>]*type="submit"[^>]*disabled=""/);
+  expect(owner).toContain('href="/app/settings/locations"');
+  m.role = "MANAGER";
+  const manager = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({}) }));
+  expect(manager).not.toContain('href="/app/settings/locations"');
+  expect(manager).toMatch(/<button[^>]*type="submit"[^>]*disabled=""/);
+});
+
+it("announces a server validation error without rendering untrusted error codes", async () => {
+  const html = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({ error: '<script>invalid</script>' }) }));
+  expect(html).toContain('role="alert"');
+  expect(html).not.toContain("&lt;script&gt;");
+  expect(html).not.toContain("<script>invalid</script>");
 });

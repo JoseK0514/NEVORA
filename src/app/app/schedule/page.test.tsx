@@ -44,6 +44,30 @@ it('push feature off retains canonical review while protected access loss disclo
  f.active=false;expect(await html()).not.toContain('What changed');
 });
 
+it('a forged success query cannot manufacture a schedule receipt', async () => {
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',acknowledged:'1'})}));
+ expect(output).not.toContain('Schedule acknowledged.');
+ expect(output).not.toContain('Schedule confirmed.');
+});
+
+it('the employee agenda gives overnight assignments an explicit next-day label and a safe location fallback', async () => {
+ f.shifts=[{id:'night',employeeId:'self',locationId:'unknown',date:'2026-10-11',startTime:'22:00',endTime:'06:00',scheduleStatus:'PUBLISHED'}];
+ const output=await html();
+ expect(output).toContain('Ends Mon, Oct 12');
+ expect(output).toContain('Location unavailable');
+});
+
+it('keeps all seven dates, multiple assignments and directly bound future shift request links',async()=>{
+ f.shifts=[{id:'shift a&b',employeeId:'self',locationId:'2',date:'2099-10-06',startTime:'08:00',endTime:'12:00',scheduleStatus:'PUBLISHED'},
+ {id:'second',employeeId:'self',locationId:'2',date:'2099-10-06',startTime:'14:00',endTime:'18:00',scheduleStatus:'PUBLISHED'}];
+ f.locations=[{id:'2',shortName:'Main Office'}];
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2099-10-05'})}));
+ expect(output.match(/class="employee-schedule-day[\s"]/g)).toHaveLength(7);
+ expect(output).toContain('/app/exchange/swap?sourceShiftId=shift%20a%26b');
+ expect(output).toContain('/app/exchange/callout?shiftId=shift%20a%26b');
+ expect(output).toContain('8:00 AM'); expect(output).toContain('2:00 PM');
+});
+
 vi.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));
 
 vi.mock("@/lib/business-time",()=>import("../../../lib/business-time"));

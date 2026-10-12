@@ -17,3 +17,13 @@ it('compact Home mode retains navigation but does not duplicate the full history
 it('labels the earlier history limit and its actual available total',()=>{const rows=Array.from({length:20},(_,n)=>raw({id:'old'+n,clock_in_at:`2030-09-${String(n+1).padStart(2,'0')}T12:00Z`,clock_out_at:`2030-09-${String(n+1).padStart(2,'0')}T16:00Z`,status:'CLOCKED_OUT'}));const html=render(ready(rows,25));expect(html).toContain('20 of 25');expect(html).toContain('most recent');});
 it('offers a correction request for completed recorded entries but never edits the live Clocker entry',()=>{const closed=render(ready([raw({clock_out_at:'2030-10-07T15:00:00Z',status:'CLOCKED_OUT'})]));expect(closed).toContain('Request correction');const open=render(ready([raw()]));expect(open).not.toContain('Request correction');expect(open).not.toMatch(/Confirm Clock|Save Correction|Pay stub/);});
 it('escapes stored labels rather than rendering them as markup',()=>{const html=render(ready([raw({location_name:'<script>alert(1)</script>'})]));expect(html).not.toContain('<script>');expect(html).toContain('&lt;script&gt;');});
+
+it('makes an overnight entry end date explicit in the business timezone while retaining exact punches',()=>{
+ const html=render(ready([raw({clock_in_at:'2030-10-05T23:30:12Z',clock_out_at:'2030-10-06T05:00:34Z',status:'CLOCKED_OUT'})],1));
+ expect(html).toContain('7:30 PM');
+ expect(html).toContain('Oct 6, 1:00 AM');
+ expect(html).toContain('dateTime="2030-10-05T23:30:12Z"');
+ expect(html).toContain('dateTime="2030-10-06T05:00:34Z"');
+ expect(html).toContain('7:30:12 PM');
+ expect(html).toContain('1:00:34 AM');
+});

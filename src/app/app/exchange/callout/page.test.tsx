@@ -6,7 +6,7 @@ vi.mock('@/lib/date-utils',()=>import('../../../../lib/date-utils'));vi.mock('@/
 vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:async()=>({status:'unavailable'}),reconcileShiftChangeAction:async()=>null}));
 import CalloutPage from './page';
 const clock=vi.hoisted(()=>({observedAt:'2026-10-04T09:00:00Z'}));
-it('genuine ongoing overnight absence remains reportable from the previous business date',async()=>{vi.useFakeTimers();vi.setSystemTime(new Date('2026-10-04T09:00:00Z'));try{const h=renderToStaticMarkup(await CalloutPage({searchParams:Promise.resolve({shiftId:'shift'})}));expect(h).toContain('Unable to Work');expect(h).toContain('Service coordinator');expect(h).toContain('Designated Lead');expect(h).toContain('name="reasonCode"');}finally{vi.useRealTimers();}});
+it('genuine ongoing overnight absence remains reportable from the previous business date',async()=>{vi.useFakeTimers();vi.setSystemTime(new Date('2026-10-04T09:00:00Z'));try{const h=renderToStaticMarkup(await CalloutPage({searchParams:Promise.resolve({shiftId:'shift'})}));expect(h).toContain('Unable to work');expect(h).toContain('Service coordinator');expect(h).toContain('Designated Lead');expect(h).toContain('name="reasonCode"');}finally{vi.useRealTimers();}});
 vi.mock('@/components/employee-submit-button',()=>({EmployeeSubmitButton:({children,...p}:React.ComponentProps<'button'>)=>createElement('button',p,children)}));
 vi.mock('@/app/app/exchange/callout/actions',()=>({submitCalloutAction:async()=>{}}));
 

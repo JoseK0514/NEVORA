@@ -1,6 +1,11 @@
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTime } from "@/lib/business-time";
 import Link from "next/link";
+import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
+import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { AvailabilityFeedback } from "@/components/availability-feedback";
+import "./availability.css";
 import { ManagerAvailability } from "@/components/manager-availability";
 import { AvailabilityEditor } from "@/components/availability-editor";
 import { requireSession } from "@/lib/auth/session";
@@ -144,17 +149,23 @@ export default async function AvailabilityPage({
 
   return (
     <div className="availability-page employee-view employee-availability-view">
-        <header className="employee-view-heading">
-          <div><p className="employee-view-eyebrow">Work preferences</p><h1>Availability</h1>
-            <p className="employee-view-description">{selectedWeek ? formatWeekRange(selectedWeek) : "Set the hours you’re available to work."}</p>
+        <header className="av-page-heading">
+          <div><h1>Availability</h1>
+            <p>Let your team know when you can work.</p>
           </div>
-          {selectedWeek ? <Link className="employee-action" href="/app/availability">Normal availability</Link> : null}
+          {selectedWeek ? <Link className="av-button secondary" href="/app/availability">Normal availability</Link> : null}
         </header>
 
+      <section className="av-week-panel" aria-label={selectedWeek ? "Weekly availability context" : "Normal availability context"}>
+        <div className="av-week-context"><span className="av-icon-tile"><CalendarBlankIcon size={24} aria-hidden="true" /></span><div><p>{selectedWeek ? "Weekly submission" : "Normal availability"}</p><strong>{selectedWeek ? formatWeekRange(selectedWeek) : "Your usual week"}</strong><span>{selectedWeek ? "These hours apply to this schedule week." : "Your regular hours. Submit separately for a specific week."}</span></div></div>
+        {selectedWeek ? <div className={`av-deadline${locked ? " locked" : ""}`}><ClockIcon size={20} aria-hidden="true" /><div><strong>{locked ? "Submissions closed" : "Availability deadline"}</strong><p>{settings?.availabilityDeadline ? formatBusinessDateTime(settings.availabilityDeadline, workspace.timeZone) : "No deadline set"}</p><span>{locked ? "This week's submitted hours are locked." : settings?.availabilityDeadline ? "You can update your submission until the cutoff." : "No cutoff has been set for this week."}</span></div></div> : null}
+        {selectedWeek && submissionStatus && submissionCopy ? <div className={`av-submission-detail${submissionStatus.submitted ? " submitted" : ""}`}><strong>{submissionCopy.label}</strong><p>{submissionCopy.detail}</p>{submissionStatus.updatedAt ? <small>Last updated {formatBusinessDateTime(submissionStatus.updatedAt, workspace.timeZone)}</small> : null}</div> : null}
+      </section>
+
       {!selectedWeek && upcomingWeek?.availabilityDeadline ? (
-        <section className="availability-deadline-banner">
+        <section className="av-upcoming-banner">
           <div>
-            <p className="eyebrow">Upcoming schedule</p>
+            <p>Upcoming schedule</p>
             <strong>{formatWeekRange(upcomingWeek.weekStart)}</strong>
             <span>
               Availability closes{" "}
@@ -162,50 +173,16 @@ export default async function AvailabilityPage({
             </span>
           </div>
           <Link
-            className="button primary"
+            className="av-button primary"
             href={`/app/availability?week=${upcomingWeek.weekStart}`}
           >
-            Submit for this week
+            Submit for this week<ArrowRightIcon size={18} aria-hidden="true" />
           </Link>
         </section>
       ) : null}
 
-      {selectedWeek && settings?.availabilityDeadline ? (
-        <section className={locked ? "availability-deadline-banner locked" : "availability-deadline-banner"}>
-          <div>
-            <p className="eyebrow">{locked ? "Closed" : "Deadline"}</p>
-            <strong>
-              {locked ? "Weekly availability is locked" : "Submit before the cutoff"}
-            </strong>
-            <span>
-              {formatBusinessDateTime(settings.availabilityDeadline, workspace.timeZone)}
-            </span>
-          </div>
-        </section>
-      ) : null}
-
-      {selectedWeek && submissionStatus && submissionCopy ? (
-        <section
-          className={
-            submissionStatus.submitted
-              ? "availability-submission-status submitted"
-              : "availability-submission-status pending"
-          }
-        >
-          <div>
-            <strong>{submissionCopy.label}</strong>
-          </div>
-          {submissionStatus.updatedAt ? (
-            <small>
-              Last updated{" "}
-              {formatBusinessDateTime(submissionStatus.updatedAt, workspace.timeZone)}
-            </small>
-          ) : null}
-        </section>
-      ) : null}
-
       {params.error ? (
-        <p className="form-error">
+        <AvailabilityFeedback error>
           {params.error === "locked"
             ? "The availability deadline for this week has passed."
             : params.error === "concurrent"
@@ -213,18 +190,19 @@ export default async function AvailabilityPage({
               : params.error === "invalid_week"
               ? "That schedule week is not valid."
               : "Every available day needs a valid start and end time."}
-        </p>
+        </AvailabilityFeedback>
       ) : null}
 
       {params.saved ? (
-        <p className="form-success">
+        <AvailabilityFeedback>
           {selectedWeek
             ? "Your availability for this schedule week has been updated."
             : "Your normal weekly availability has been updated."}
-        </p>
+        </AvailabilityFeedback>
       ) : null}
 
       <AvailabilityEditor
+        key={selectedWeek ?? "normal"}
         initialAvailability={initialAvailability}
         weekStart={selectedWeek}
         locked={locked}

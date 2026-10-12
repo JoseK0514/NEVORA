@@ -24,9 +24,10 @@ Real schedule, punch, and pay information must remain accessible HTML.
 Forgot access extends the same approved blue/cyan authentication art direction
 with `illustrations/recovery-access-blue.png`: a folded-paper doorway, cyan
 sunrise, blank closed envelope and small decorative key. Employee Login, Forgot
-access and New user account activation are the only surfaces using this shared
+access, New user account activation and Reset access are the only surfaces using this shared
 authentication variant;
-the portal, Reset access and assisted-recovery presentation remain unchanged.
+the portal and assisted-recovery presentation remain unchanged. Jose added Reset
+access to this variant on 2026-10-11.
 The image supports focused assistance and suggests a welcoming route back to
 work; it does not confirm email delivery, account existence or recovered access.
 It remains decorative with empty alt text, reserved dimensions and responsive
@@ -52,6 +53,13 @@ reduced-motion static rendering and visibility gates; keep the four-field native
 form stationary and immediately usable. See [the activation review and handoff](../../docs/ui/2026-10-10-nevora-new-user-review.md).
 
 ## Adding assets
+
+Reset access at `/reset-access` uses `illustrations/reset-access-blue.png`, a
+cobalt paper doorway, cyan sunrise and ivory key. It follows the same transparent
+tactile artwork system, stays decorative, reserves 1536x1024 dimensions and reuses
+the existing motion controller. It never asserts recovered access. The exact
+built-in imagegen prompt, SHA-256 and alpha range are in the manifest; generation
+was on 2026-10-11. See [the reset review](../../docs/ui/2026-10-11-nevora-reset-access-review.md).
 
 1. Read the page's real content and states before drafting a subject-specific prompt.
 2. Generate one image per subject with the built-in image tool; request transparency.

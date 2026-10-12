@@ -1,16 +1,17 @@
 import { formatBusinessDateTime } from "@/lib/business-time";
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
-import { StatusPill } from "@/components/status-pill";
+import { AvailabilityTeamList } from "@/components/availability-team-list";
+import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import { listTeamAvailabilityWindows } from "@/lib/data/availability";
 import { listAvailabilitySubmissionStatuses } from "@/lib/data/availability-submissions";
 import { getUpcomingAvailabilityWeek, getWeekSettings } from "@/lib/data/week-settings";
-import { addDays,  formatTime, formatWeekRange, weekStartFor } from "@/lib/date-utils";
+import { addDays, formatWeekRange, weekStartFor } from "@/lib/date-utils";
 import {ManagerIssueFocus} from './manager-issue-focus';
-
-const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export async function ManagerAvailability({ week, currentWeek, employeeId, timeZone }: {
   timeZone: string; week?: string; currentWeek: string; employeeId?: string;
@@ -29,37 +30,24 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   const employeeLocations = new Map(employees.map(employee => [employee.id, locationNames.get(employee.primaryLocationId)]));
   const ordered = [...statuses].sort((a, b) => Number(a.submitted) - Number(b.submitted) || a.windowCount - b.windowCount || a.employeeName.localeCompare(b.employeeName));
   const locked = Boolean(settings?.availabilityDeadline && new Date(settings.availabilityDeadline).getTime() < new Date().getTime());
+  const reviewEmployees = ordered.map(status => ({
+    ...status,
+    locationName: employeeLocations.get(status.employeeId) ?? "Primary location unavailable",
+    windows: status.submitted ? windows.filter(window => window.employeeId === status.employeeId) : [],
+    updatedLabel: status.updatedAt ? formatBusinessDateTime(status.updatedAt, timeZone) : undefined,
+  }));
 
   return (
     <div className="availability-page manager-workflow-page manager-team-availability">
       <ManagerIssueFocus prefix="employee-" />
-      <PageHeader eyebrow="Team review" title="Availability" description="Review submissions and available hours for the selected week." />
+      <header className="av-page-heading"><div><h1>Team availability</h1><p>Review submissions and available hours for the week.</p></div><Link className="av-button secondary" href={`/app/schedule?week=${selectedWeek}`}>View schedule<CaretRightIcon size={18} aria-hidden="true" /></Link></header>
       {invalidWeek ? <p className="form-error" role="alert">That schedule week is not valid. Showing the upcoming week.</p> : null}
-      <div className="dashboard-week-nav manager-availability-week" aria-label="Availability week">
-        <Link href={`/app/availability?week=${addDays(selectedWeek, -7)}`} aria-label="Previous week">‹</Link>
-        <strong>{formatWeekRange(selectedWeek)}</strong>
-        <Link href={`/app/availability?week=${addDays(selectedWeek, 7)}`} aria-label="Next week">›</Link>
-      </div>
-      <section className={locked ? "availability-deadline-banner locked" : "availability-deadline-banner"}>
-        <div><p className="eyebrow">Availability deadline</p><strong>{settings?.availabilityDeadline ? formatBusinessDateTime(settings.availabilityDeadline, timeZone) : "No deadline set"}</strong><span>{locked ? "Submissions are closed for this week." : settings?.availabilityDeadline ? "Employees can submit until the cutoff." : "Set a cutoff in the schedule to collect weekly submissions."}</span></div>
+      <section className="av-week-panel" aria-label="Selected week and submission deadline">
+        <div className="av-week-context"><span className="av-icon-tile"><CalendarBlankIcon size={24} aria-hidden="true" /></span><div><p>Schedule week</p><nav className="av-week-nav" aria-label="Availability week"><Link href={`/app/availability?week=${addDays(selectedWeek, -7)}`} aria-label="Previous week"><CaretLeftIcon size={18} aria-hidden="true" /></Link><strong>{formatWeekRange(selectedWeek)}</strong><Link href={`/app/availability?week=${addDays(selectedWeek, 7)}`} aria-label="Next week"><CaretRightIcon size={18} aria-hidden="true" /></Link></nav></div></div>
+        <div className={`av-deadline${locked ? " locked" : ""}`}><ClockIcon size={20} aria-hidden="true" /><div><strong>{locked ? "Submissions closed" : "Availability deadline"}</strong><p>{settings?.availabilityDeadline ? formatBusinessDateTime(settings.availabilityDeadline, timeZone) : "No deadline set"}</p><span>{locked ? "Submitted hours remain available to review." : settings?.availabilityDeadline ? "Employees can submit until this cutoff." : "Set a cutoff in the schedule to collect submissions."}</span></div></div>
       </section>
-      <section className="panel availability-team-panel">
-        <div className="availability-team-heading"><div><h2>Team availability</h2><p>{statuses.length - missing}/{statuses.length} employees submitted · {statuses.filter(item => item.submitted && item.windowCount === 0).length} unavailable all week</p></div><StatusPill tone={missing ? "warning" : "success"}>{missing} missing</StatusPill></div>
-        <div className="availability-team-list">
-          {ordered.map(status => {
-            const submittedWindows = status.submitted ? windows.filter(window => window.employeeId === status.employeeId) : [];
-            return <article className={`${employeeId === status.employeeId ? "availability-team-row selected" : "availability-team-row"} manager-issue-target`} tabIndex={-1} id={`employee-${status.employeeId}`} key={status.employeeId}>
-              <div className="manager-availability-person"><strong>{status.employeeName}</strong><span>{employeeLocations.get(status.employeeId) ?? "Primary location unavailable"}</span>
-                <div className="manager-availability-status"><StatusPill tone={!status.submitted || status.windowCount === 0 ? "neutral" : "success"}>{!status.submitted ? "Not submitted" : status.windowCount === 0 ? "Unavailable all week" : "Submitted"}</StatusPill>{status.updatedAt ? <small>Updated {formatBusinessDateTime(status.updatedAt, timeZone)}</small> : null}</div>
-              </div>
-              <div className="manager-availability-hours">
-                {submittedWindows.length ? <ul className="manager-availability-windows" aria-label={`${status.employeeName} available hours`}>{submittedWindows.map(window => <li key={window.id}><strong>{days[window.dayOfWeek]}</strong><span>{formatTime(window.startTime)} – {formatTime(window.endTime)}</span></li>)}</ul> : <span>{status.submitted ? "No available hours this week." : "No submission for this week."}</span>}
-              </div>
-            </article>;
-          })}
-          {!statuses.length ? <div className="timeoff-empty-state"><strong>No active employees</strong><span>Employee and Lead submissions will appear here.</span></div> : null}
-        </div>
-      </section>
+      <dl className="av-review-summary"><div><dt>Submitted</dt><dd>{statuses.length - missing}<span> / {statuses.length}</span></dd></div><div><dt>Missing</dt><dd>{missing}</dd></div><div><dt>Unavailable all week</dt><dd>{statuses.filter(item => item.submitted && item.windowCount === 0).length}</dd></div></dl>
+      <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} />
     </div>
   );
 }

@@ -1,0 +1,40 @@
+@font-face { font-family: 'Inter'; src: url('/fonts/typeface/inter/variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'JetBrains Mono'; src: url('/fonts/typeface/jetbrains-mono/variable.ttf') format('truetype'); font-style: normal; font-weight: 100 800; font-display: swap; }
+.app-shell:has(.clocker-devices-page) {
+  --cd-primary: #ED724C; --cd-accent: #D8613C; --cd-link: #9F3821;
+  --cd-canvas: #FAFAFA; --cd-surface: #FFFFFF; --cd-inset: #F0F1F3;
+  --cd-border: #E5E7EB; --cd-accent-soft: #FBEFEA;
+  --cd-card-radius: 18px; --cd-control-radius: 17px;
+  --nuvora-text: #111827; --nuvora-muted: #4B5563;
+  --nuvora-bg: var(--cd-canvas); --nuvora-midnight: #111827;
+  --nevora-blue: var(--cd-link); --nevora-blue-hover: #7D2D1B;
+  --nevora-soft: var(--cd-accent-soft); --nevora-cyan: var(--cd-primary);
+  --coffee: var(--cd-link); --coffee-dark: #111827;
+  --color-border-subtle: var(--cd-border);
+  background: var(--cd-canvas); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.app-shell:has(.clocker-devices-page) .sidebar { background: #111827; }
+.app-shell:has(.clocker-devices-page) .sidebar .nav-link.active { background: #ED724C24; color: #FAFAFA; }
+.app-shell:has(.clocker-devices-page) .sidebar .nav-link.active .nav-icon { color: var(--cd-primary); }
+.clocker-devices-page { min-width: 0; max-width: 1280px; margin-inline: auto; gap: 0; }
+.clocker-devices-page .page-header { align-items: flex-start; gap: 24px; margin-bottom: 28px; }
+.clocker-devices-page .page-header h1 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 500; line-height: 1.2; letter-spacing: -.04em; max-width: 100%; }
+.clocker-devices-page .page-description { font-size: 14px; line-height: 1.7; margin-top: 12px; }
+.clocker-devices-page .button { min-height: 44px; border-radius: var(--cd-control-radius); font-size: 13px; font-weight: 600; padding: 11px 17px; gap: 9px; transition: background 140ms ease, transform 140ms ease; }
+.clocker-devices-page .button svg { flex-shrink: 0; }
+.clocker-devices-page .button.primary { background: var(--cd-primary); color: #111827; border: 1px solid transparent; }
+.clocker-devices-page .button.primary:hover { background: var(--cd-accent); color: #111827; }
+.clocker-devices-page .button.secondary { background: var(--cd-surface); color: #111827; border: 1px solid #D1D5DB; }
+.clocker-devices-page .button.secondary:hover { background: var(--cd-inset); }
+.clocker-devices-page .button.ghost { color: var(--cd-link); background: transparent; }
+.clocker-devices-page .button:active:not(:disabled) { transform: translateY(1px); }
+.clocker-devices-page :is(button, a, input, textarea, select, summary):focus-visible { outline: 3px solid var(--cd-link); outline-offset: 3px; }
+.clocker-devices-page :is(input, textarea, select) { font-family: inherit; }
+.clocker-devices-page .nevora-action-menu-trigger { border-radius: 12px; background: var(--cd-surface); border-color: #D1D5DB; color: #111827; }
+.clocker-devices-page .nevora-action-menu-panel { border-color: var(--cd-border); background: var(--cd-surface); }
+.clocker-devices-page .nevora-action-menu-item { display: flex; align-items: center; gap: 8px; }
+.clocker-devices-page .nevora-select { border-radius: 13px; background: var(--cd-surface); border-color: #D1D5DB; min-height: 48px; font-size: 16px; }
+.clocker-devices-page .nevora-field-hint { font-size: 12px; line-height: 1.6; }
+.clocker-devices-page > .panel { border: 1px solid var(--cd-border); border-radius: var(--cd-card-radius); background: var(--cd-surface); box-shadow: none; }
+@media (max-width: 700px) { .clocker-devices-page .page-header { flex-direction: column; gap: 16px; margin-bottom: 24px; } .clocker-devices-page .page-actions { width: auto; } .clocker-devices-page .page-header h1 { font-size: 30px; } .clocker-devices-page .page-description { font-size: 13px; } }
+@media (prefers-reduced-motion: reduce) { .clocker-devices-page *, .clocker-devices-page *::before, .clocker-devices-page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

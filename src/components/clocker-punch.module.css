@@ -7,7 +7,7 @@
 .active { color: var(--nevora-blue); background: var(--nevora-soft); }
 .actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-top: 8px; }
 .actions > :only-child { grid-column: 1 / -1; }
-.panel button { min-height: 52px; border-radius: 26px; font-family: inherit; font-size: 15px; font-weight: 600; white-space: normal; line-height: 1.35; }
+.panel button { min-height: 56px; border-radius: 17px; font-family: inherit; font-size: 15px; font-weight: 600; white-space: normal; line-height: 1.35; }
 .panel button:hover, .panel button:active { opacity: 1; }
 .panel button:active { transform: scale(.98); }
 .panel button:focus-visible { outline: 3px solid var(--nevora-blue); outline-offset: 3px; }
@@ -15,11 +15,15 @@
 .panel .quiet { justify-self: center; min-width: 120px; min-height: 44px; font-size: 13px; }
 .notice { margin: 0; padding: 16px 20px; border-radius: 16px; background: var(--color-bg-main); color: var(--text-secondary, #414651); font-size: 14px; text-align: left; line-height: 1.65; overflow-wrap: anywhere; }
 .successMark { display: grid; place-items: center; width: 64px; height: 64px; margin: 8px auto 0; border-radius: 50%; background: var(--color-state-success-bg); color: var(--color-state-success); font-size: 32px; }
+.taskIcon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto; border-radius: 18px; background: var(--clocker-soft); color: var(--clocker-focus); }
 @media(max-width:480px) { .panel { gap: 18px; } .actions { grid-template-columns: 1fr; } .notice { padding: 16px; } }
 @media(prefers-reduced-motion:reduce) { .panel * { transition: none !important; animation: none !important; } .panel button:active { transform: none; } }
 
 .breakOptions { display: grid; gap: 12px; margin: 24px 0; max-height: 44dvh; overflow: auto; padding: 4px; }
-.panel .breakOption { display: grid; gap: 6px; width: 100%; min-height: 68px; height: auto; padding: 16px 20px; border-radius: 16px; text-align: left; justify-items: start; white-space: normal; overflow-wrap: anywhere; }
+.panel .breakOption { display: grid; grid-template-columns: 28px minmax(0,1fr) 20px; gap: 6px 12px; width: 100%; min-height: 80px; height: auto; padding: 16px 20px; border-radius: 17px; text-align: left; justify-items: start; white-space: normal; overflow-wrap: anywhere; }
+.breakOption > svg:first-child { grid-column: 1; grid-row: 1 / span 2; align-self: center; color: var(--clocker-focus); }
+.breakOption strong, .breakOption span { grid-column: 2; }
+.breakOption > svg:last-child { grid-column: 3; grid-row: 1 / span 2; align-self: center; color: var(--muted); }
 .breakOption strong { font-size: 16px; line-height: 1.35; }
 .breakOption span, .breakContext { color: var(--muted); font-size: 13px; line-height: 1.5; }
 .breakContext { margin: -8px 0 24px; overflow-wrap: anywhere; }

@@ -3,6 +3,7 @@ import { PhoneInput } from "@/components/phone-input";
 import { SelectField } from "@/components/select-field";
 import type { EmployeeManagementProfile } from "@/lib/data/employees";
 import type { Location, UserRole } from "@/lib/domain";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 
 export function EmployeeCoreProfileForm({
   employee,
@@ -64,7 +65,7 @@ export function EmployeeCoreProfileForm({
           />
         </label>
         <label>
-          Email <span>Optional</span>
+          <span className="employee-email-label">Email <small>Optional</small></span>
           <input
             name="email"
             type="email"
@@ -112,7 +113,7 @@ export function EmployeeCoreProfileForm({
 
       <div className="form-footer">
         <button className="button primary" type="submit">
-          Save Employee Details
+          <CheckIcon size={18} aria-hidden="true" focusable="false" /> Save Employee Details
         </button>
       </div>
     </ConfigurationForm>

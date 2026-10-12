@@ -34,7 +34,7 @@ let focused=true;
 let details:{open:boolean}[],media:EventTarget&{matches:boolean},downloaded:{name:string;blob:Blob}[],urls:Blob[];
 function html(){const root=tree(),view=nodes(root).find(node=>node.type===ReportsView)!;host.scope='view';host.frames.view.cursor=0;host.content=view.props.report?{querySelectorAll:()=>details}:null;const output=renderToStaticMarkup(root);commit('view');return output;}
 function control(predicate:(node:ReactElement<Record<string,unknown>>)=>boolean){const node=nodes(tree()).find(predicate);if(!node)throw Error('Missing actual rendered control');return node.props;}
-function button(label:string){return control(node=>node.type==='button'&&node.props.children===label);}
+function button(label:string){return control(node=>node.type==='button'&&(node.props['aria-label']===label||node.props.children===label));}
 function click(label:string){(button(label).onClick as ()=>void)();}
 async function flush(){await vi.advanceTimersByTimeAsync(0);return html();}
 async function mount(){html();commit('reports');await flush();}
@@ -44,7 +44,7 @@ function printMedia(matches:boolean){media.matches=matches;media.dispatchEvent(n
 function retire(kind:string){if(kind==='hidden'){Object.assign(document,{visibilityState:'hidden'});document.dispatchEvent(new Event('visibilitychange'));}else{if(kind==='offline')Object.assign(navigator,{onLine:false});event(kind);}}
 function choosePeriod(p:typeof period){for(const [index,date]of [p.startDate,p.endDate].entries()){const input=nodes(tree()).filter(node=>node.type==='input'&&node.props.type==='date')[index];(input.props.onChange as (value:unknown)=>void)({target:{value:date}});}const form=control(node=>node.type==='form');(form.onSubmit as (value:unknown)=>void)({preventDefault(){}});html();commit('reports');}
 function reads(name=originalName,validForMs=15000){const requested:{path:string;body:unknown;signal:AbortSignal|null|undefined}[]=[];vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{requested.push({path,body:init?.body?JSON.parse(String(init.body)):null,signal:init?.signal});if(path!=='/api/reports')throw Error('Unexpected transport path');return Response.json(ready(name,validForMs));});return requested;}
-function assertProtectedAbsent(){const output=html();expect(output).not.toContain('PRIVATE');expect(output).not.toContain('<h2>Period summary</h2>');expect(button('Download CSV').disabled).toBe(true);expect(button('Print / Save PDF').disabled).toBe(true);}
+function assertProtectedAbsent(){const output=html();expect(output).not.toContain('PRIVATE');expect(output).not.toContain('Period summary');expect(button('Download CSV').disabled).toBe(true);expect(button('Print / Save PDF').disabled).toBe(true);}
 
 beforeEach(()=>{focused=true;host.scope='reports';host.frames={reports:{cursor:0,slots:[]},view:{cursor:0,slots:[]}};host.writes=[];host.content=null;details=[{open:false},{open:true}];media=Object.assign(new EventTarget(),{matches:false});downloaded=[];urls=[];vi.useFakeTimers({toFake:['setTimeout','clearTimeout','Date','performance']});vi.stubGlobal('window',Object.assign(new EventTarget(),{matchMedia:()=>media,print:()=>{}}));vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible',hasFocus:()=>focused,createElement:()=>({href:'',download:'',click(){downloaded.push({name:this.download,blob:urls.at(-1)!});}})}));vi.stubGlobal('navigator',{onLine:true});vi.spyOn(URL,'createObjectURL').mockImplementation(blob=>{urls.push(blob as Blob);return 'blob:fictional-report';});vi.spyOn(URL,'revokeObjectURL').mockImplementation(()=>{});});
 afterEach(()=>{unmount();vi.restoreAllMocks();vi.unstubAllGlobals();vi.useRealTimers();});
@@ -75,3 +75,44 @@ it('R13 a current export downloads the verified literal CSV with the committed p
 
 it('R12 account storage during print retires protected content before a fresh authorized body',async()=>{const initial=reads();await mount();event('beforeprint');const body=deferred<unknown>(),requests:unknown[]=[];vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{expect(path).toBe('/api/reports');requests.push(JSON.parse(String(init?.body)));return bodyResponse(body.promise);});event('storage');await flush();assertProtectedAbsent();expect(initial[0].signal?.aborted).toBe(true);expect(requests).toEqual([period]);event('afterprint');assertProtectedAbsent();body.resolve({state:'unavailable'});await flush();assertProtectedAbsent();vi.stubGlobal('fetch',async()=>new Response(null,{status:403}));click('Refresh');await flush();assertProtectedAbsent();expect(html()).toContain('Reports access ended');});
 it('R13 an export body beyond the monotonic deadline cannot download before the expiry timer dispatches',async()=>{reads(originalName,1000);await mount();const body=deferred<Blob>();vi.stubGlobal('fetch',async()=>({status:200,ok:true,headers:new Headers({'content-type':'text/csv;charset=utf-8'}),blob:()=>body.promise}) as Response);click('Download CSV');await flush();expect(vi.getTimerCount()).toBe(1);vi.spyOn(performance,'now').mockReturnValue(1001);expect(performance.now()).toBe(1001);body.resolve(new Blob(['"private","expired export"\r\n'],{type:'text/csv'}));await flush();expect(urls).toHaveLength(0);expect(downloaded).toHaveLength(0);});
+
+it('R14 section shortcuts resolve to visible report groups while every report section stays rendered',async()=>{
+ reads();await mount();const output=html();
+ for(const section of sections)expect(output).toContain(section);
+ for(const target of ['hours','attendance','changes','approvals']){
+  expect(output).toContain(`href="#report-${target}"`);
+  expect(output).toContain(`id="report-${target}" tabindex="-1"`);
+ }
+ expect(output.match(/role="table"/g)).toHaveLength(4);
+ expect(output).toContain('role="rowheader"');
+ expect(output).toContain('aria-hidden="true">Published plan</span>');
+ expect(output).toContain('href="/app/timecards?start=2026-09-21&amp;end=2026-09-27"');
+});
+
+it('R14 section shortcuts and report groups retire with protected content on window blur',async()=>{
+ reads();await mount();event('blur');assertProtectedAbsent();const output=html();
+ expect(output).not.toContain('aria-label="Report sections"');
+ expect(output).not.toContain('id="report-hours"');
+ expect(output).toContain('Applied period');
+});
+
+it('R15 draft dates show explicit unapplied guidance and do not silently change the CSV period',async()=>{
+ const requests=reads();await mount();
+ const input=control(node=>node.type==='input'&&node.props.value===period.startDate);
+ (input.onChange as (event:unknown)=>void)({target:{value:nextPeriod.startDate}});
+ const output=html();expect(output).toContain('Dates changed. Select View period to apply.');
+ expect(output).toContain('Applied period</span>2026-09-21 through 2026-09-27');
+ expect(requests).toHaveLength(1);
+ vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{
+  expect(path).toBe('/api/reports/export');expect(JSON.parse(String(init?.body))).toEqual(period);
+  return new Response('"fictional","8"',{headers:{'content-type':'text/csv'}});
+ });
+ click('Download CSV');await flush();expect(downloaded[0].name).toBe('nevora-reports-2026-09-21-2026-09-27.csv');
+});
+
+it('R15 invalid period submission preserves the applied range and does not issue another report request',async()=>{
+ const requests=reads();await mount();choosePeriod({startDate:'2026-09-21',endDate:'2026-11-07'});
+ const output=html();expect(output).toContain('Choose a valid period of 1 to 31 days.');
+ expect(output).toContain('Applied period</span>2026-09-21 through 2026-09-27');
+ expect(requests).toHaveLength(1);expect(output).toContain(originalName);
+});

@@ -8,7 +8,7 @@ import type { GenerationSource } from '../../../../lib/data/generation-guards';
 import { buildManagerActionItems } from '../../../../lib/assistance/manager-actions';
 import type { CoverageRepairLocator } from '../../../../lib/scheduling/coverage-repair';
 const m = vi.hoisted(() => ({ source: undefined as GenerationSource | undefined, role: 'MANAGER', calls: [] as Record<string, unknown>[] }));
-vi.mock('next/link', () => ({ default: ({ children, ...props }: ComponentProps<'a'>) => createElement('a', props, children) }));
+vi.mock('next/link', () => ({ default: ({ children, ...props }: ComponentProps<'a'>) => createElement('a', props, children), useLinkStatus:()=>({pending:false}) }));
 vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw { destination }; } }));
 vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['MANAGER','OWNER'], requireRoles: async () => { if (m.role !== 'MANAGER') throw { destination: '/app' }; return { id: 'M' }; } }));
 vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('M') }));
@@ -55,7 +55,7 @@ it('actual manager position/Lead action opens the matching location/interval and
   expect(html).toContain('Fictional South'); expect(html).toContain('barista'); expect(html).toContain('Designated Lead required');
   expect(html).toContain('Fictional Qualified'); expect(html).not.toContain('Fictional Unqualified'); expect(html).toContain('1 eligible'); expect(html).toContain('No target set');
   expect(html).toContain('location=loc-1'); expect(html).toContain('Prior weeks short are context only');
-  const link = html.match(/href="([^"]+)"[^>]*>Review replacement/)![1]; const p = params(link.replaceAll('&amp;', '&'));
+  const link = html.match(/href="([^"]*\/app\/schedule\/new\?review=[^"]+)"/)![1]; const p = params(link.replaceAll('&amp;', '&'));
   const selected = assertCoverageRepairReview(m.source, p.review, managementProof('M'));
   expect(selected.locator).toMatchObject({ locationId: 'loc-1', startTime: '08:00', endTime: '12:00', positionId: 'barista' });
   const form = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve(p) }));

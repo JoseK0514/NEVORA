@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import styles from './clocker-setup.module.css';
 import { ClockerPinGate } from './clocker-pin-gate';
+import { ClockerShell } from './clocker-shell';
+import { ClockerIcon } from './clocker-icon';
+import { useClockerMotion } from './clocker-motion';
 
 type SetupState = { state: 'prepared' | 'unregistered' } | { state: 'connected'; deviceName: string };
 class SetupFailure extends Error {
@@ -27,6 +30,7 @@ export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled 
   const [feedback, setFeedback] = useState<{ message: string; uncertain: boolean } | null>(null);
   const busy = useRef(false);
   const input = useRef<HTMLTextAreaElement>(null);
+  const motion = useClockerMotion(feedback?.uncertain ? 'unconfirmed' : state.state);
   const failed = (error: unknown) => setFeedback(error instanceof SetupFailure ? { message: error.message, uncertain: error.uncertain }
     : { message: 'We could not confirm tablet setup. Check the connection, then choose Check Setup before trying again.', uncertain: true });
 
@@ -69,34 +73,35 @@ export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled 
     finally { busy.current = false; setPending(false); }
   }
 
-  return <main className={styles.tabletPage}>
-    <section className={`${styles.tabletCard} ${pinEnabled && state.state === 'connected' ? styles.pinCard : ''}`} aria-busy={pending}>
-      <p className={styles.eyebrow}>NEVORA Workforce · Clocker</p>
-      <div className={styles.tabletLocation}>{locationLabel}</div>
+  return <ClockerShell locationLabel={locationLabel} timeZone={timeZone}
+    deviceName={state.state === 'connected' ? state.deviceName : undefined}
+    status={feedback?.uncertain ? 'unconfirmed' : pending ? 'checking' : state.state === 'connected' ? 'connected' : 'setup'}>
+    <div ref={motion} className={styles.kioskBody} aria-busy={pending}>
       {feedback?.uncertain ? <>
-        <h1>Check Tablet Setup</h1>
+        <div className={styles.kioskIcon}><ClockerIcon name="refresh" size={28}/></div>
+        <h1>Check tablet setup</h1>
       </> : state.state === 'connected' && pinEnabled ? <ClockerPinGate locationKey={locationKey} timeZone={timeZone} punchEnabled={punchEnabled} /> : state.state === 'connected' ? <>
-        <div className={styles.connectedMark} aria-hidden="true">✓</div>
-        <h1>Tablet Connected</h1>
-        <p>{state.deviceName} is registered for this location.</p>
+        <div className={styles.connectedMark}><ClockerIcon name="check" size={28}/></div>
+        <h1>Tablet connected</h1>
+        <p className={styles.kioskLead}>{state.deviceName} is registered for this location.</p>
         <div className={styles.tabletNotice}><strong>Timekeeping is not available yet.</strong>Employee PINs and real time punches are being connected. Do not use this tablet to record worked time yet.</div>
         <p className={styles.footnote}>Owner access has been signed out on this tablet.</p>
         <button className="button secondary" type="button" disabled={pending} onClick={check}>Check Connection</button>
       </> : <>
-        <h1>Set Up This Tablet</h1>
-        <p>Ask your Owner to add this device in Settings → Clocker Devices. Paste the one-use code below to connect this shared tablet.</p>
+        <div className={styles.kioskIcon}><ClockerIcon name="shield" size={28}/></div>
+        <h1>Set up this tablet</h1>
+        <p className={styles.kioskLead}>Ask your Owner to add this device in Settings &rarr; Clocker Devices. Then paste the one-use setup code.</p>
         <form onSubmit={connect} className={styles.tabletForm}>
           <fieldset disabled={pending || Boolean(feedback?.uncertain)}>
             <label className={styles.field}>Setup code<textarea ref={input} name="enrollmentToken" rows={3} required maxLength={72} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby="clocker-setup-help" /></label>
             <p id="clocker-setup-help" className={styles.hint}>This is the tablet setup code, not an employee PIN. Cookies must be allowed.</p>
-            <button className="button primary" type="submit">{pending ? 'Checking Setup…' : 'Connect Tablet'}</button>
+            <button className="button primary" type="submit">{pending ? 'Checking setup...' : 'Connect tablet'}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
           </fieldset>
         </form>
       </>}
-      {pending ? <p role="status">Checking this tablet…</p> : null}
+      {pending ? <p role="status" className={styles.kioskStatus}>Checking this tablet...</p> : null}
       {feedback ? <div><p role="alert" className={styles.error}>{feedback.message}</p>
         <button className="button secondary" type="button" disabled={pending} onClick={check}>Check Setup</button></div> : null}
-      <p className={styles.footnote}>NEVORA · Powered by VELANI LLC</p>
-    </section>
-  </main>;
+    </div>
+  </ClockerShell>;
 }

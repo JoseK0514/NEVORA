@@ -8,14 +8,17 @@ vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('rea
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
 import {PayrollExport} from './payroll-export';
+import {PayrollExportMapping} from './payroll-export-mapping';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 function card(id:string,finalized=true){const source={...period,employeeId:id,employeeName:`PRIVATE ${id}`,timeZone:'America/Puerto_Rico',pendingCorrections:0,entries:[],corrections:[]};return {source,state:finalized?'FINALIZED':'DRAFT',revision:finalized?1:0,sourceHash:'a'.repeat(32),history:finalized?[{operationId:'22222222-2222-4222-8222-222222222222',revision:1,action:'FINALIZE',occurredAt:'2026-09-28T12:00:00Z',actorName:'Fictional Reviewer',note:null,sourceHash:'a'.repeat(32),snapshot:source}]:[]};}
 let cleanup:void|(()=>void);
 function render(){host.cursor=0;return PayrollExport({initialPeriod:period,actorId:'OWNER'});}
 const html=()=>renderToStaticMarkup(render());
-function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode)];}
+function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;if(n.type===PayrollExportMapping){const mapping=n as ReactElement<Parameters<typeof PayrollExportMapping>[0]>;return [n,...nodes(PayrollExportMapping(mapping.props))];}return [n,...nodes(n.props.children as ReactNode)];}
+function labelText(value:ReactNode):string{if(typeof value==='string'||typeof value==='number')return String(value);if(Array.isArray(value))return value.map(labelText).join('');if(value&&typeof value==='object'&&'props'in value)return labelText((value as ReactElement<{children?:ReactNode}>).props.children);return '';}
+const controlName=(node:ReactElement<Record<string,unknown>>)=>typeof node.props['aria-label']==='string'?node.props['aria-label']:labelText(node.props.children as ReactNode);
 function control(test:(n:ReactElement<Record<string,unknown>>)=>boolean){const n=nodes(render()).find(test);if(!n)throw Error('Missing rendered control');return n.props;}
-const click=(label:string)=>(control(n=>n.type==='button'&&n.props.children===label).onClick as ()=>unknown)();
+const click=(label:string)=>(control(n=>n.type==='button'&&controlName(n)===label).onClick as ()=>unknown)();
 const flush=()=>vi.advanceTimersByTimeAsync(0);
 async function mount(cards=[card('E1'),card('DRAFT',false)],validForMs=45000){vi.stubGlobal('fetch',async(path:string)=>path==='/api/timecards'?Response.json({state:'ready',observedAt:'2026-09-29T12:00:00Z',validForMs,cards}):Response.json({state:'ready',profiles:[]}));render();host.mounted=true;cleanup=host.effects[0]();await flush();}
 beforeEach(()=>{host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});});

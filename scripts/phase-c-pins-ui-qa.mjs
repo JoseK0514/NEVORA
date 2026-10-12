@@ -39,19 +39,19 @@ try{
   const d=p.getByRole('dialog');await d.getByLabel('Device name',{exact:true}).fill(engine+' PIN tablet');await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Create Setup Code',exact:true}).click();await d.waitFor({state:'hidden'});
   const code=await p.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
   const tablet=await context(browser,{width:1024,height:768});const t=await tablet.newPage();await t.clock.install();t.setDefaultTimeout(15000);t.on('pageerror',e=>errors.push(e.message));
-  await goto(t,'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect Tablet',exact:true}).click();await t.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor();
+  await goto(t,'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect tablet',exact:true}).click();await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
   await verify(t,'9999');await t.locator('main [role=alert]').filter({hasText:'PIN not recognized'}).waitFor();checked(engine+': wrong PIN does not reveal identity');
   await verify(t,'0246');await t.getByRole('heading',{name:'Hi, Avery.',exact:true}).waitFor();
   assert.equal(await t.getByRole('button',{name:'Clock In',exact:true}).count(),0);
   const meta=(await tablet.cookies()).filter(c=>c.name==='nevora_clocker_identity').map(({httpOnly,sameSite})=>({httpOnly,sameSite}));assert.deepEqual(meta,[{httpOnly:true,sameSite:'Strict'}]);
   checked(engine+': actual PIN verification uses protected cookie and exposes no fake punch action');
-  await t.getByRole('button',{name:'Done',exact:true}).click();await t.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor();
+  await t.getByRole('button',{name:'Done',exact:true}).click();await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
   await t.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_pin_sessions'))[0].n,0);checked(engine+': Done clears shared-tablet identity');
   await goto(p,'/app/employees/C2-EMPLOYEE/clocker-pin');await save(p,'1357');
   await verify(t,'0246');await t.locator('main [role=alert]').filter({hasText:'PIN not recognized'}).waitFor();
   await verify(t,'1357');await t.getByRole('heading',{name:'Hi, Avery.',exact:true}).waitFor();checked(engine+': reset rejects old PIN and accepts the new one');
-  await t.keyboard.press('Escape');await t.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor();checked(engine+': Escape clears identity');
+  await t.keyboard.press('Escape');await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();checked(engine+': Escape clears identity');
   await t.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});
   let dropped=false;
   await t.route('**/api/clocker/2/pin',async route=>{
@@ -79,19 +79,19 @@ try{
 
   // Exercise the actual privacy timeout, not a source-text assertion or a mocked reset.
   await verify(t,'1357');await t.getByRole('heading',{name:'Hi, Avery.',exact:true}).waitFor();
-  await t.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor({timeout:35000});
+  await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor({timeout:35000});
   await t.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_pin_sessions'))[0].n,0);
   checked(engine+': thirty-second privacy timeout clears both UI and server identity');
   await verify(t,'1357');await t.getByRole('heading',{name:'Hi, Avery.',exact:true}).waitFor();
   await t.clock.fastForward(31000);
-  await t.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor();
+  await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
   await t.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_pin_sessions'))[0].n,0);
   checked(engine+': automatic privacy timeout clears the display and server identity');
   await verify(t,'1357');await t.getByRole('heading',{name:'Hi, Avery.',exact:true}).waitFor();
   await t.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
-  await t.getByRole('heading',{name:'Enter Your PIN',exact:true}).waitFor({timeout:4000});
+  await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor({timeout:4000});
   await t.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_pin_sessions'))[0].n,0);
   checked(engine+': restored-page event cannot resurrect a prior employee identity');

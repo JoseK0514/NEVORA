@@ -2,29 +2,22 @@
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
 import {createPrivateSnapshotController,type PrivatePanelState} from '../lib/private-snapshot-client';
-import {parseEmployeeView,type EmployeeViewKind,type EmployeeViewSnapshot,type NotificationReviewState,type NotificationActionState} from '../lib/employee-view';
-
-const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};
-const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
+import {parseEmployeeView,type EmployeeViewKind,type EmployeeViewSnapshot} from '../lib/employee-view';
+import {NotificationInbox} from './notification-inbox';
+import {EmployeeProfileDetails} from './employee-profile-details';
+import {NavIcon} from './nav-icon';
 
 export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=false}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled?:boolean}){
- const ready=!state.paused&&state.snapshot?.state==='ready'?state.snapshot:null;
+ if(kind==='notifications')return <NotificationInbox state={state} onRetry={onRetry}/>;
+ const ready=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.kind==='profile'?state.snapshot:null;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const unavailable=state.snapshot?.state==='unavailable';
- const name=kind==='profile'?'Profile':'Notifications';
- return <section className="employee-view-surface employee-account-panel" aria-label={name} data-private-view={kind}>
+ const name='Profile';
+ return <section className="employee-view-surface employee-account-panel employee-profile-panel" aria-label={name} data-private-view={kind}>
+  <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="employee" size={24}/></span><div><h2>Personal details</h2><p>Your information at work.</p></div></header>
   {!ready?<div role="status"><h2>{state.paused?'Updates paused':denied?'Sign in again':unavailable?`${name} unavailable`:`Loading ${name.toLowerCase()}…`}</h2><p>{state.paused?'Return to this window while online to check current information.':denied?'Your current employee session is required.':unavailable?'We could not confirm your current information. Try again.':'Checking your current access.'}</p></div>:
-   ready.kind==='profile'?<>
-    <dl className="employee-profile-details"><div><dt>Name</dt><dd>{ready.profile.name}</dd></div><div><dt>Role</dt><dd>{ready.profile.role}</dd></div><div><dt>Workspace</dt><dd>{ready.profile.workspace}</dd></div><div><dt>Work locations</dt><dd>{ready.profile.locations.join(' · ')}</dd></div><div><dt>Time zone</dt><dd>{ready.profile.timeZone}</dd></div></dl>
-    <div className="employee-account-settings"><h2>Notification settings</h2><Link className="button secondary" href="/app/notifications">View notifications</Link>
-     {notificationsEnabled?<button type="button" className="button secondary" popoverTarget="portal-device-settings">Device notification settings</button>:<p>Device notification setup is unavailable. Your in-app notifications are still accessible.</p>}
-    </div>
-   </>:<>
-    {ready.coverage==='partial'?<p role="status">Some notifications are unavailable or outside this bounded view. Retry to check current access.</p>:null}
-    {ready.items.length?<ul className="employee-notification-list">{ready.items.map(item=><li key={item.id}><Link href={item.href}><strong>{item.label}</strong><time dateTime={item.at}>{new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short'}).format(new Date(item.at))}</time><span>{reviewLabels[item.reviewState??'unavailable']} · {actionLabels[item.actionState??'unavailable']}</span><span>Open current record <span aria-hidden="true">→</span></span></Link></li>)}</ul>:ready.coverage==='complete'?<p>No notifications in this current view.</p>:null}
-    <p className="employee-account-note">This inbox shows supported source updates. Check Requests and Schedule for their current status.</p>
-   </>}
-  <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button type="button" className="button secondary" disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':unavailable||(ready?.kind==='notifications'&&ready.coverage==='partial')?'Retry':'Refresh'}</button>}</footer>
+   <EmployeeProfileDetails profile={ready.profile} notificationsEnabled={notificationsEnabled}/>}
+  <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button type="button" className="button secondary" disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':unavailable?'Retry':'Refresh'}</button>}</footer>
  </section>;
 }
 export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean}){

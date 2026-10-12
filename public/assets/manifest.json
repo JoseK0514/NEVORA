@@ -79,6 +79,21 @@
       "prompt": "Create an original premium 3D folded-paper onboarding illustration for NEVORA workforce account activation, matching a sophisticated Apple-inspired blue and cyan authentication interface. A sculptural folded royal-blue doorway or open arch curves gently toward a luminous cyan sunrise. In front, an elegant blank ivory employee ID badge on a short blue lanyard and a small open blank ivory notebook suggest a welcoming first workday. The badge has only an abstract debossed circle and two very subtle unlabelled horizontal grooves, no personal information or portrait. Limited palette: cobalt #0756D9, deep blue #003AAE, cyan #43CCFB, pale ice #F0FBFF and warm white. Matte paper and satin ceramic materials, beautifully crafted folded edges, delicate bevels, soft studio light, crisp elegant silhouettes, subtle contact shadows, no photographic people. Compact balanced single still-life with generous clear margin on all sides, landscape 1536x1024. Isolate the entire still-life on a genuinely transparent background with clean alpha, including transparent holes inside the arch; no ground plane, no opaque rectangle or gradient background. No text, lettering, logo, numbers, screen UI, check marks, shield, floating badges, or confetti. The sunrise is a stylized cyan paper disc, visually secondary. Suitable for placement on a solid royal-blue panel, full artwork visible using object-fit contain, with ivory foreground elements staying legible. Purpose: a calm, optimistic introduction to setting up an employee account.",
       "sha256": "26f962ecad03d759962291c68c6b6744ca61af4a9bb8c51d437f8be283baf813",
       "bytes": 1708956
+    },
+    {
+      "id": "reset-access-blue",
+      "path": "illustrations/reset-access-blue.png",
+      "sourceFilename": "exec-b1be5082-1df2-4015-b4ff-1b85088bc69a.png",
+      "generatedOn": "2026-10-11",
+      "width": 1536,
+      "height": 1024,
+      "transparent": true,
+      "alt": "",
+      "usage": "Decorative cobalt doorway, cyan sunrise and ivory key on Reset access; no successful reset is implied",
+      "prompt": "Use case: stylized-concept. Asset type: original decorative NEVORA Reset Access / New Password illustration. Primary request: a premium, restrained sculptural folded-paper still life matching NEVORA's approved authentication artwork. Subject: one cobalt-blue folded-paper arched doorway, a luminous cyan sunrise inside it, and one small off-white sculptural key resting naturally in the foreground. Composition: horizontal 3:2, balanced central still life, generous transparent margins; doorway is the dominant silhouette, key is secondary and has a blank simple round bow. Style: precise rounded geometric forms, tactile fine paper texture, subtle soft studio shading, elegant Apple-inspired product-art finish. Color palette: cobalt #0756D9, cyan #43CCFB, ice #F0FBFF, ivory white only. Background: genuinely transparent alpha, no opaque backdrop or floor plane. Constraints: no text, numbers, letters, logos, interface, checkmarks, people, chrome, shields, padlocks, confetti, status signals or excessive particles. Artwork is decorative and does not imply that access has already been reset. Output 1536x1024 if supported.",
+      "sha256": "1d185be707913b1d0549c338e211791b6a55141f4e424f95e7743f2f64ca40de",
+      "bytes": 1801599,
+      "alphaRange": [0, 254]
     }
   ]
 }

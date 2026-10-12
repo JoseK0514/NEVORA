@@ -6,8 +6,11 @@ import { canRetirePendingPunch, forgetSubjectPendingPunch, makePunchCommand, par
 import type { PunchAction, PunchReceipt } from '../lib/clocker/punch-types';
 import type { BreakSelection } from '../lib/clocker/break-types';
 import styles from './clocker-punch.module.css';
+import { ClockerIcon, type ClockerIconName } from './clocker-icon';
+import { useClockerMotion } from './clocker-motion';
 const labels:Record<PunchAction,string>={CLOCK_IN:'Clock In',START_BREAK:'Start Break',END_BREAK:'End Break',CLOCK_OUT:'Clock Out'};
 const receipts:Record<PunchAction,string>={CLOCK_IN:'Clock In Recorded',START_BREAK:'Break Start Recorded',END_BREAK:'Break End Recorded',CLOCK_OUT:'Clock Out Recorded'};
+const actionIcons:Record<PunchAction,ClockerIconName>={CLOCK_IN:'clock-in',START_BREAK:'break',END_BREAK:'resume',CLOCK_OUT:'clock-out'};
 type Mode='select-break'|'loading'|'ready'|'confirm-out'|'sending'|'recovery'|'retry'|'other-person'|'auth'|'unavailable'|'storage'|'success';
 function clockTime(value:string,timeZone:string):string {
  const parts=new Intl.DateTimeFormat('en-US',{timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).formatToParts(new Date(value));
@@ -17,6 +20,7 @@ function clockTime(value:string,timeZone:string):string {
 export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:string;timeZone:string;onDone:()=>void}) {
  const [view,setView]=useState<ClockView|null>(null),[pending,setPending]=useState<PendingPunch|null>(null);
  const [mode,setMode]=useState<Mode>('loading'),[message,setMessage]=useState<string|null>(null);
+ const motion=useClockerMotion(mode);
  const [receipt,setReceipt]=useState<PunchReceipt|null>(null);
  const [references,setReferences]=useState<ReturnType<typeof pendingPunchReferences>>([]),[showReferences,setShowReferences]=useState(false);
  const busy=useRef(false),alive=useRef(false),heading=useRef<HTMLHeadingElement>(null);
@@ -103,8 +107,8 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
   :mode==='auth'?'Verify Your PIN Again':mode==='loading'?'Checking Your Clock…':mode==='storage'?'Browser Storage Needed'
   :mode==='unavailable'?'Clock State Unavailable':`Hi, ${view?.firstName??''}.`;
  const waiting=mode==='loading'||mode==='sending';
- return <div className={styles.panel} aria-busy={waiting}>
-  {mode==='success'?<div className={styles.successMark} aria-hidden="true">✓</div>:null}
+ return <div ref={motion} className={styles.panel} aria-busy={waiting} data-clocker-state={mode}>
+  {mode==='success'?<div className={styles.successMark}><ClockerIcon name="check" size={32}/></div>:mode==='ready'?<div className={styles.taskIcon}><ClockerIcon name={entry?.status==='ON_BREAK'?'break':entry?'clock-out':'clock-in'} size={28}/></div>:null}
   <h1 ref={heading} tabIndex={-1}>{title}</h1>
   {mode==='ready'&&view?<>
    <span className={`${styles.state} ${entry?styles.active:''}`}>{status}</span>
@@ -112,13 +116,13 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
    {pause?.type?<p className={styles.breakContext}><strong>{pause.type.name}</strong>{pause.type.targetMinutes!==null?` · Reference: ${pause.type.targetMinutes} min`:''}</p>:null}
    {entry?.status==='CLOCKED_IN'&&!view.breakTypes.length&&!view.atOtherLocation?<p className={styles.notice}>No break types are configured. Ask your Owner to add one.</p>:null}
    {!actions.length?<p className={styles.notice}>This shift was started at another location. Use that location’s registered Clocker to continue.</p>:null}
-   <div className={styles.actions}>{actions.map((action,i)=><button tabIndex={0} key={action} type="button" className={`button ${i===0?'primary':'secondary'}`} onClick={()=>action==='CLOCK_OUT'?setMode('confirm-out'):action==='START_BREAK'?setMode('select-break'):act(action)}>{labels[action]}</button>)}</div>
+   <div className={styles.actions}>{actions.map((action,i)=><button tabIndex={0} key={action} type="button" className={`button ${i===0?'primary':'secondary'}`} onClick={()=>action==='CLOCK_OUT'?setMode('confirm-out'):action==='START_BREAK'?setMode('select-break'):act(action)}><ClockerIcon name={actionIcons[action]} size={22}/>{labels[action]}</button>)}</div>
    <button tabIndex={0} className={`button ghost ${styles.quiet}`} type="button" onClick={()=>void refresh()}>Refresh Clock State</button>
   </>:null}
   {mode==='select-break'&&view?<>
    <p className={styles.detail}>Choose the break you are starting. Reference durations do not end a break automatically.</p>
    <div className={styles.breakOptions}>{view.breakTypes.map(type=><button tabIndex={0} key={type.id} className={`button secondary ${styles.breakOption}`} type="button" aria-label={`Start ${type.name}`} onClick={()=>act('START_BREAK',type)}>
-    <strong>{type.name}</strong><span>{type.category==='REST'?'Rest':type.category==='MEAL'?'Meal':'Other'}{type.targetMinutes!==null?` · Reference: ${type.targetMinutes} min`:''}</span>
+    <ClockerIcon name="break" size={24}/><strong>{type.name}</strong><span>{type.category==='REST'?'Rest':type.category==='MEAL'?'Meal':'Other'}{type.targetMinutes!==null?` · Reference: ${type.targetMinutes} min`:''}</span><ClockerIcon name="arrow" size={20}/>
    </button>)}</div>
    <button tabIndex={0} type="button" className="button secondary" onClick={()=>setMode('ready')}>Back</button>
   </>:null}

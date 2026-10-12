@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageHeader } from "@/components/page-header";
-import { ConfigurationForm } from "@/components/configuration-form";
-import { LocationConfigurationFields } from "@/components/location-configuration-fields";
+import { EditLocationForm } from "@/components/edit-location-form";
 import { requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/locations";
 import { updateLocationAction } from "../../actions";
+import "./edit-location.css";
 export default async function EditLocationPage({
   params,
 }: {
@@ -18,33 +17,19 @@ export default async function EditLocationPage({
   );
   if (!location) notFound();
   return (
-    <div className="configuration-page">
-      <PageHeader
-        title="Edit Location"
-        eyebrow="Owner controls"
-        description="Name changes preserve the Clocker link."
-      />
-      <section className="panel form-panel">
-        <ConfigurationForm action={updateLocationAction} reviewedUpdatedAt={location.updatedAt}>
-          <LocationConfigurationFields location={location} />
-          <p>
-            Clocker:{" "}
-            <Link href={`/clocker/${location.clockerKey}`}>
-              /clocker/{location.clockerKey}
-            </Link>
-            {!location.active ? " (unavailable while inactive)" : ""}
-          </p>
-          <Link href="/app/schedule/settings">Scheduling Rules</Link>
-          <div className="form-footer">
-            <Link className="button secondary" href="/app/settings/locations">
-              Locations
-            </Link>
-            <button className="button primary" type="submit">
-              Save Location
-            </button>
-          </div>
-        </ConfigurationForm>
-      </section>
+    <div className="edit-location-page">
+      <nav className="edit-location-breadcrumb" aria-label="Breadcrumb">
+        <Link href="/app/settings">Settings</Link>
+        <span aria-hidden="true">/</span>
+        <Link href="/app/settings/locations">Locations</Link>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Edit</span>
+      </nav>
+      <header className="edit-location-heading">
+        <h1>Edit location</h1>
+        <p>Keep your location details up to date for your team.</p>
+      </header>
+      <EditLocationForm key={`${location.id}:${location.updatedAt ?? ''}`} location={location} action={updateLocationAction} />
     </div>
   );
 }

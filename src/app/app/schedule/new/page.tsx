@@ -1,7 +1,16 @@
 import {listPositions} from "@/lib/data/positions";
-import {ShiftAssignmentFields} from "@/components/shift-assignment-fields";
+import { CreateShiftForm } from "@/components/create-shift-form";
+import { ShiftWorkspace } from "@/components/shift-workspace";
 import { ConfigurationForm } from "@/components/configuration-form";
-import { SelectField } from "@/components/select-field";
+import { UserCircleIcon } from "@phosphor-icons/react/dist/ssr/UserCircle";
+import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
+import { BriefcaseIcon } from "@phosphor-icons/react/dist/ssr/Briefcase";
+import { MedalIcon } from "@phosphor-icons/react/dist/ssr/Medal";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import Link from "next/link";
@@ -13,9 +22,11 @@ import { coverageRepairUrl, CoverageRepairConflictError } from "@/lib/scheduling
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
   addDays,
+  formatDayLabel, formatTime, formatWeekRange,
   isDateInWeek,
   isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
+import "./shift-workspace.css";
 
 export default async function NewShiftPage({
   searchParams,
@@ -42,21 +53,34 @@ export default async function NewShiftPage({
       if (!(error instanceof CoverageRepairConflictError)) throw error;
       let href = '/app/schedule';
       try { href = coverageRepairUrl(decodeCoverageRepairReview(params.review, proof).locator, true); } catch { /* No trusted locator. */ }
-      return <main className="new-shift-page"><section className="new-shift-card empty-state"><h1>Coverage changed</h1><p>Refresh the review and select a current eligible replacement before saving.</p><Link className="button primary" href={href}>Refresh coverage review</Link></section></main>;
+      return <ShiftWorkspace compact title="Coverage changed" description="Review the current gap before choosing a replacement." backHref="/app/schedule" backLabel="Back to schedule">
+        <section className="shift-conflict-panel"><WarningCircleIcon size={36} aria-hidden="true" /><h2>This review is no longer current</h2><p>Refresh the review and select a current eligible replacement before saving.</p><Link className="shift-action primary" href={href}>Refresh coverage review</Link></section>
+      </ShiftWorkspace>;
     }
     const { locator } = selected;
-    return <main className="new-shift-page"><ConfigurationForm action={createShiftAction} className="new-shift-card">
+    const day = formatDayLabel(locator.date);
+    const overnight = locator.endTime === "24:00" || locator.endTime < locator.startTime;
+    const nextDay = overnight ? formatDayLabel(addDays(locator.date, 1)) : null;
+    const refreshHref = coverageRepairUrl(locator, true);
+    return <ShiftWorkspace compact title="Review replacement" description="Check the assignment details before saving." backHref={refreshHref} backLabel="Back to coverage review" context={formatWeekRange(locator.weekStart)}>
+      <ConfigurationForm action={createShiftAction} className="shift-editor-form shift-replacement-form">
       <input type="hidden" name="coverageRepairReview" value={params.review} />
       {Object.entries({ weekStart: locator.weekStart, employeeId: selected.employeeId, locationId: locator.locationId,
         date: locator.date, startTime: locator.startTime, endTime: locator.endTime, positionId: locator.positionId ?? '',
         ...(selected.isDesignatedLead ? { isDesignatedLead: 'on' } : {}) }).map(([name, value]) => <input type="hidden" name={name} value={value} key={name} />)}
-      <header className="new-shift-card-header"><span>Coverage repair</span><h1>Review replacement</h1></header>
-      <div className="new-shift-form"><p><strong>{selected.employeeName}</strong> · {selected.employeeId}</p><p>{selected.locationName} · {locator.date} · {locator.startTime}–{locator.endTime}</p>
-        <p>Position: <strong>{selected.positionName ?? 'No position required for the selected staffing or Lead requirement'}</strong></p>
-        <p>{selected.isDesignatedLead ? 'Designated Shift Lead required' : 'Designated Shift Lead not required for this repair'}</p>
-        <p>This saves one replacement for the selected requirement. Remaining requirements stay visible in the gap.</p></div>
-      <footer className="new-shift-actions"><Link className="new-shift-action secondary" href={coverageRepairUrl(locator, true)}>Refresh coverage review</Link><button className="new-shift-action primary" type="submit">Save replacement</button></footer>
-    </ConfigurationForm></main>;
+      <div className="shift-review-summary">
+        <div className="shift-selected-person"><span className="shift-person-icon"><UserCircleIcon size={32} weight="duotone" aria-hidden="true" /></span><div><span className="shift-preview-label">Selected replacement</span><h2>{selected.employeeName}</h2><span className="shift-employee-id">{selected.employeeId}</span></div></div>
+        <dl className="shift-review-terms">
+          <div><dt><CalendarBlankIcon size={20} aria-hidden="true" />Date</dt><dd>{day.weekday}, {day.day}<small>{locator.date.slice(0, 4)}</small></dd></div>
+          <div><dt><ClockIcon size={20} aria-hidden="true" />Time</dt><dd>{formatTime(locator.startTime)} – {formatTime(locator.endTime)}{nextDay ? <small>Ends {nextDay.weekday}, {nextDay.day}</small> : null}</dd></div>
+          <div><dt><MapPinIcon size={20} aria-hidden="true" />Location</dt><dd>{selected.locationName}</dd></div>
+          <div><dt><BriefcaseIcon size={20} aria-hidden="true" />Position</dt><dd>{selected.positionName ?? "No position required"}</dd></div>
+          <div className="shift-review-lead"><dt><MedalIcon size={20} aria-hidden="true" />Shift Lead</dt><dd>{selected.isDesignatedLead ? "Designated Shift Lead required" : "Not required for this repair"}</dd></div>
+        </dl>
+        <div className="shift-review-notice"><InfoIcon size={22} aria-hidden="true" /><div><strong>{locator.target === "POSITION" ? "Fill this position requirement" : locator.target === "LEAD" ? "Fill the Lead requirement" : "Fill this staffing requirement"}</strong><p>This saves one replacement for the selected requirement. Remaining requirements stay visible in the gap.</p></div></div>
+      </div>
+      <footer className="shift-editor-footer"><p>The current coverage is checked again when you save.</p><div className="shift-editor-actions"><Link className="shift-action secondary" href={refreshHref}>Refresh coverage review</Link><button className="shift-action primary" type="submit"><CheckIcon size={18} aria-hidden="true" />Save replacement</button></div></footer>
+    </ConfigurationForm></ShiftWorkspace>;
   }
   const workspace = await getWorkspace();
   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
@@ -73,79 +97,10 @@ export default async function NewShiftPage({
     listPositions(),
   ]);
   const locationId = locations.some(location => location.id === params.locationId) ? params.locationId! : "";
-
+  const cancelHref = `/app/schedule?week=${weekStart}${locationId ? `&location=${encodeURIComponent(locationId)}` : ""}`;
   return (
-    <main className="new-shift-page">
-      <ConfigurationForm action={createShiftAction} className="new-shift-card">
-        <input type="hidden" name="weekStart" value={weekStart} />
-
-        <header className="new-shift-card-header">
-          <span>Schedule</span>
-          <h1>Create New Shift</h1>
-        </header>
-
-        <div className="new-shift-form">
-          <SelectField className="new-shift-field" name="locationId" label="Location" defaultValue={locationId} required
-            options={[{value:"",label:"Select location",disabled:true},...locations.map(location=>({value:location.id,label:location.shortName}))]} />
-          <section className="new-shift-group">
-            <p className="new-shift-section-label">ASSIGN EMPLOYEE</p>
-            <ShiftAssignmentFields employees={employees} positions={positions} employeeId={params.employeeId} positionId={params.positionId} newShift/>
-          </section>
-
-          <section className="new-shift-group">
-            <p className="new-shift-section-label">SHIFT TIMING</p>
-            <label className="new-shift-field">
-              <span>Date</span>
-              <input
-                type="date"
-                name="date"
-                defaultValue={date}
-                min={weekStart}
-                max={weekEnd}
-                required
-              />
-            </label>
-
-            <div className="new-shift-time-fields">
-              <label className="new-shift-field">
-                <span>Start Time</span>
-                <input
-                  type="time"
-                  name="startTime"
-                  defaultValue={params.start ?? ""}
-                  required
-                />
-              </label>
-              <label className="new-shift-field">
-                <span>End Time</span>
-                <input
-                  type="time"
-                  name="endTime"
-                  defaultValue={params.end === "24:00" ? "00:00" : params.end ?? ""}
-                  required
-                />
-              </label>
-            </div>
-          </section>
-
-          <label className="new-shift-lead-toggle">
-            <input type="checkbox" name="isDesignatedLead" defaultChecked={params.lead === "1"} />
-            <span>Designated Shift Lead</span>
-          </label>
-        </div>
-
-        <footer className="new-shift-actions">
-          <Link
-            className="new-shift-action secondary"
-            href={`/app/schedule?week=${weekStart}${locationId ? `&location=${encodeURIComponent(locationId)}` : ""}`}
-          >
-            Cancel
-          </Link>
-          <button className="new-shift-action primary" type="submit">
-            Save Shift
-          </button>
-        </footer>
-      </ConfigurationForm>
-    </main>
+    <ShiftWorkspace title="Create New Shift" description="Choose who’s working, where, and when." backHref={cancelHref} backLabel="Back to schedule" context={formatWeekRange(weekStart)}>
+      <CreateShiftForm action={createShiftAction} employees={employees} locations={locations} positions={positions} weekStart={weekStart} weekEnd={weekEnd} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId} startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} cancelHref={cancelHref} />
+    </ShiftWorkspace>
   );
 }

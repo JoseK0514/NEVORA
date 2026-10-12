@@ -15,6 +15,7 @@ vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('rea
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
 import {PayrollExport} from './payroll-export';
+import {PayrollExportMapping} from './payroll-export-mapping';
 
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 const source={employeeId:'PRIVATE-E1',employeeName:'PRIVATE Payroll Employee',timeZone:'America/Puerto_Rico',...period,pendingCorrections:0,entries:[],corrections:[]};
@@ -26,9 +27,11 @@ const mappings=()=>({state:'ready',profiles:[{id:'33333333-3333-4333-8333-333333
 let cleanup:void|(()=>void),actorId:string;
 function render(){host.cursor=0;return PayrollExport({initialPeriod:period,actorId});}
 const html=()=>renderToStaticMarkup(render());
-function nodes(value:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object'||!('props'in value))return [];const node=value as ReactElement<Record<string,unknown>>;return [node,...nodes(node.props.children as ReactNode)];}
+function nodes(value:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object'||!('props'in value))return [];const node=value as ReactElement<Record<string,unknown>>;if(node.type===PayrollExportMapping){const mapping=node as ReactElement<Parameters<typeof PayrollExportMapping>[0]>;return [node,...nodes(PayrollExportMapping(mapping.props))];}return [node,...nodes(node.props.children as ReactNode)];}
+function labelText(value:ReactNode):string{if(typeof value==='string'||typeof value==='number')return String(value);if(Array.isArray(value))return value.map(labelText).join('');if(value&&typeof value==='object'&&'props'in value)return labelText((value as ReactElement<{children?:ReactNode}>).props.children);return '';}
+const controlName=(node:ReactElement<Record<string,unknown>>)=>typeof node.props['aria-label']==='string'?node.props['aria-label']:labelText(node.props.children as ReactNode);
 function control(test:(node:ReactElement<Record<string,unknown>>)=>boolean){const node=nodes(render()).find(test);if(!node)throw Error('Missing rendered control');return node.props;}
-const click=(label:string)=>(control(n=>n.type==='button'&&n.props.children===label).onClick as ()=>unknown)();
+const click=(label:string)=>(control(n=>n.type==='button'&&controlName(n)===label).onClick as ()=>unknown)();
 const flush=()=>vi.advanceTimersByTimeAsync(0);
 function deferred<T>(){let resolve!:(v:T)=>void;const promise=new Promise<T>(r=>{resolve=r;});return {promise,resolve};}
 function reads(...args:unknown[]){const validForMs=args.length?args[0]:45000;vi.stubGlobal('fetch',vi.fn(async(path:string)=>path==='/api/timecards'?Response.json({...ready(),validForMs}):Response.json(mappings())));}
@@ -132,7 +135,7 @@ it('a confirmed save does not extend the original authority deadline',async()=>{
 const nextPeriod={startDate:'2026-09-28',endDate:'2026-10-04'};
 function typeNextPeriod(){for(const [index,value]of Object.values(nextPeriod).entries()){const input=nodes(render()).filter(n=>n.type==='input'&&n.props.type==='date')[index];(input.props.onChange as (e:unknown)=>void)({target:{value}});}}
 function submitActualPeriod(){const form=control(n=>n.type==='form');(form.onSubmit as (e:unknown)=>void)({preventDefault(){}});expect(host.slots[0].value).toEqual(nextPeriod);}
-const actionNode=(label:string)=>nodes(render()).find(n=>n.type==='button'&&n.props.children===label);
+const actionNode=(label:string)=>nodes(render()).find(n=>n.type==='button'&&controlName(n)===label);
 async function proof(label:string,data:unknown){const {writeFile,mkdir}=await import('node:fs/promises');const out=process.env.PERIOD_PROBE_OUT;if(!out)return;await mkdir(out,{recursive:true});await writeFile(out+'/'+label+'.json',JSON.stringify({evidenceClassification:'Actual production PayrollExport with existing mocked lifetime hook host; effects deferred for pre-effect render; NOT native browser/SQL/hosted evidence',activePeriod:host.slots[0].value,draftPeriod:host.slots[1].value,actualRenderedHtml:html(),...data as object},null,2));}
 it('period authority typing-only preserves the old committed period',async()=>{const commands:ExportCommand[]=[];generatedReads(45000);const original=fetch;vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/payroll-export')commands.push(JSON.parse(String(init?.body)));return original(path,init);});await mount();selectEmployee();typeNextPeriod();expect(host.slots[0].value).toEqual(period);expect(html()).toContain('PRIVATE Payroll Employee');click('Generate reviewed export');await vi.waitFor(()=>expect(html()).toContain('Download mapped CSV'),{interval:1});await proof('typing-positive',{commands});expect(commands[0]).toMatchObject(period);});
 it('period authority actual submit hides protected state before effects',async()=>{reads();await mount();editMapping();typeNextPeriod();submitActualPeriod();await proof('render-pre-effect',{privateCardsVisible:html().includes('PRIVATE'),privateDraftVisible:html().includes('Work in progress mapping'),generateEnabled:actionNode('Generate reviewed export')?.props.disabled===false,savePresent:!!actionNode('Save mapping profile')});expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Work in progress mapping');expect(html()).not.toContain('Generate reviewed export');});

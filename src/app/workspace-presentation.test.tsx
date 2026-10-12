@@ -16,7 +16,7 @@ vi.mock('@/components/status-pill', () => import('../components/status-pill'));
 vi.mock('@/components/nav-icon', () => import('../components/nav-icon'));
 vi.mock('@/lib/date-utils', () => import('../lib/date-utils'));
 vi.mock('next/link', () => ({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
-vi.mock('next/navigation', () => ({usePathname:()=>'/app',redirect:()=>{throw Error('REDIRECT');}}));
+vi.mock('next/navigation', () => ({usePathname:()=>'/app',useRouter:()=>({push:vi.fn(),refresh:vi.fn()}),redirect:()=>{throw Error('REDIRECT');}}));
 it('uses generic customer copy in the directory and unconnected timekeeping page', async () => {
   const directory=renderToStaticMarkup(await EmployeesPage());
   expect(directory).not.toContain('across Fuel');
