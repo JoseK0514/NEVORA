@@ -1,8 +1,8 @@
 import {renderToStaticMarkup} from 'react-dom/server';
 import {describe,it,expect,vi} from 'vitest';
 import {projectCompanyPolicyHistory} from '../lib/business-improvements/company-policies/history';
-import {policyUIRows} from '../test/fixtures/company-policy-history-ui';
-import {CompanyPolicyEditor} from './company-policy-editor';
+import {policyUIRows,policyUISettings} from '../test/fixtures/company-policy-history-ui';
+import {CompanyPolicyEditor,buildPolicySettings} from './company-policy-editor';
 vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
 const locations=[{id:'loc-1',name:'Northside',active:true}];
 const render=(rows=policyUIRows())=>renderToStaticMarkup(<CompanyPolicyEditor history={projectCompanyPolicyHistory(rows)} locations={locations} timeZone="America/Puerto_Rico"/>);
@@ -24,5 +24,18 @@ describe('Owner policy history display',()=>{
  });
  it('keeps persisted inactive scope history reachable without offering its correction',()=>{
   const html=render(policyUIRows(false,'retired-location'));expect(html).toContain('retired-location');expect(html).toContain('Historical location');
+ });
+});
+describe('complete reviewed policy command settings',()=>{
+ const form=()=>{const data=new FormData();for(const key of ['lateness','earlyDeparture','longEntry','missingClockIn','missingClockOut','overtimeRisk'])data.set(key+'.mode','inherit');return data;};
+ it('preserves private labor while editing one scalar and explicit disabled attendance',()=>{
+  const data=form();data.set('lateness.mode','configured');data.set('lateness.threshold','12');data.set('lateness.comparison','GT');data.set('lateness.effective','2030-09-30T20:00');data.set('earlyDeparture.mode','none');
+  const result=buildPolicySettings(data,policyUISettings,'America/Puerto_Rico');expect(result.attendance).toEqual({lateness:{thresholdMinutes:12,comparison:'GT',effectiveFrom:'2030-10-01T00:00:00Z'},earlyDeparture:null});expect(result.labor).toEqual(policyUISettings.labor);expect(policyUISettings.attendance!.lateness!.thresholdMinutes).toBe(7);
+ });
+ it('preserves absent sections, explicit null and empty private overrides',()=>{
+  expect(buildPolicySettings(form(),{version:1,labor:{rates:null,budgets:[]}},'America/Puerto_Rico')).toEqual({version:1,labor:{rates:null,budgets:[]}});
+ });
+ it('does not silently turn an empty custom threshold into zero',()=>{
+  const data=form();data.set('lateness.mode','configured');data.set('lateness.threshold','');expect(()=>buildPolicySettings(data,policyUISettings,'America/Puerto_Rico')).toThrow(/Choose threshold minutes/);
  });
 });
