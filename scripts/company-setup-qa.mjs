@@ -57,6 +57,10 @@ try {
   assert(await verifyPassword(config.BOOTSTRAP_PASSWORD, credential.password_hash));
   assert.notEqual(credential.password_hash, config.BOOTSTRAP_PASSWORD);
   checked('real CLI installs generic schema, company, one location and hashed owner');
+  for (const table of ['schedule_copy_operations', 'schedule_copy_receipts', 'nevora_company_policy_revisions', 'attendance_policy_observations', 'payroll_period_populations', 'payroll_period_manifests', 'payroll_period_events']) {
+    assert.equal((await client.query(`SELECT count(*)::int AS count FROM ${table}`)).rows[0].count, 0);
+  }
+  checked('fresh generic setup includes all five remediation migrations with no invented policies or custody records');
   assert.equal(cli('scripts/setup-company.mts').status, 1);
   assert.equal((await client.query('SELECT count(*)::int AS count FROM employees')).rows[0].count, 1);
   await assert.rejects(client.query('INSERT INTO workspaces(id,name,time_zone) VALUES($1,$2,$3)', [randomUUID(), 'Second Company', 'Europe/Paris']));
@@ -139,6 +143,20 @@ try {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     assert.equal(overflow, false);
     await page.screenshot({ path: resolve(evidence, `company-settings-${width}.png`), fullPage: true });
+    if (width === 1440) {
+      await page.goto(`${app.url}/app/settings/company-policies`);
+      const lateness = page.getByRole('group', { name: 'Lateness', exact: true });
+      await lateness.getByLabel('Configuration').selectOption('configured');
+      await lateness.getByLabel('Threshold minutes').fill('5');
+      await lateness.getByLabel('Effective from (ISO timestamp with timezone)').fill('2020-01-01T00:00:00Z');
+      await page.getByRole('button', { name: 'Save policy revision', exact: true }).click();
+      await page.getByRole('status').filter({ hasText: 'Saved.' }).waitFor();
+      await page.reload();
+      await page.getByRole('heading', { name: 'Policy history' }).waitFor();
+      const revisions = (await client.query('SELECT workspace_id,revision FROM nevora_company_policy_revisions')).rows;
+      assert.deepEqual(revisions, [{ workspace_id: workspace[0].id, revision: 1 }]);
+      checked('Owner policy UI persists revisions under the configured generic company identity');
+    }
     assert.deepEqual(errors, []);
     await context.close();
     checked(`real login, wrong-password rejection and configured settings at ${width}px`);

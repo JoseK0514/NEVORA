@@ -277,6 +277,7 @@ try {
     managerPage = await manager.newPage();
   managerPage.on("pageerror", (e) => report.pageErrors.push(e.message));
   await login(managerPage, "QA-MANAGER");
+  await managerPage.goto(app.url + "/app?view=attendance");
   await managerPage
     .getByText("Configured attendance comparisons", { exact: true })
     .click();

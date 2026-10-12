@@ -137,6 +137,8 @@ export async function setupCompany(client: Client, input: CompanyInput) {
     '0013_clocker_punches', '0014_clocker_breaks', '0015_clocker_schedule_context', '0016_time_corrections',
     '0017_missing_time_supersession', '0018_timecards', '0019_payroll_export_mappings', '0020_account_recovery',
     '0021_timecard_reassignment_interlock', '0022_timecard_reopen_revision_authority',
+    '0023_template_ownership', '0024_schedule_copy_receipts', '0025_company_policies',
+    '0026_attendance_observations', '0027_payroll_period_custody',
   ].map(async name => migrationBody(await readFile(new URL(`../db/migrations/${name}.sql`, import.meta.url), 'utf8'))));
   const passwordHash = await hashPassword(input.owner.password);
   const workspaceId = randomUUID(), locationId = randomUUID();
