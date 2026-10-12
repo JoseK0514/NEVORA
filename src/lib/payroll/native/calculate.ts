@@ -2,11 +2,13 @@ import { createHash } from "node:crypto";
 import { Temporal } from "@js-temporal/polyfill";
 import { stableExportJson } from "../../payroll-export/json";
 import type { NativePayrollInput, NativePayrollResult, NativeEarning } from "./contracts";
-import { add, halfUp, minor, multiply, ratio, serialized, type Rational } from "./money";
+import { add, halfUp, minor, multiply, ratio, serialized, subtract, type Rational } from "./money";
 import { classifyRecordedTime, fail, HOUR } from "./time";
 import { fica2026, prIncomeWithholding, sinotContribution, PR_2026_RULE_SOURCES } from "./rules/pr-2026";
 import { authorizedAmounts, employerAmounts, validateEmployerCoverage } from "./obligations";
 const hash = (value: unknown) => createHash("sha256").update(stableExportJson(value)).digest("hex");
+export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V2_MONEY_CREDIT";
+export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES });
 export function calculateNativePayroll(input: NativePayrollInput): NativePayrollResult {
     try {
         if (!input || input.schema !== "NEVORA_NATIVE_PAYROLL_INPUT_V1" || typeof input.employeeId !== "string" || !input.employeeId || input.timeZone !== "America/Puerto_Rico")
@@ -39,20 +41,37 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
             groups.set(key, { prototype, amount: add(previous?.amount ?? ratio(BigInt(0)), amount), time: (previous?.time ?? BigInt(0)) + duration });
         };
         const weeklyRates = new Map<string, Rational>();
+        const weeklyTrueUps = new Map<string, {
+            amount: Rational;
+            duration: bigint;
+        }>();
+        const premiumBasis = (p: (typeof classified.pieces)[number]) => p.premiumReason === "WEEKLY" && p.wage.overtime !== "DOUBLE_PRESERVED" ? weeklyRates.get(p.week)! : p.rate;
+        const premiumRate = (p: (typeof classified.pieces)[number]) => p.overtime ? multiply(premiumBasis(p), p.wage.overtime === "DOUBLE_PRESERVED" ? ratio(BigInt(1)) : ratio(BigInt(1), BigInt(2))) : ratio(BigInt(0));
         for (const week of new Set(classified.pieces.map(p => p.week))) {
             const pieces = classified.pieces.filter(p => p.week === week);
             const duration = pieces.reduce((sum, p) => sum + p.end - p.start, BigInt(0));
             const straight = pieces.reduce((sum, p) => add(sum, multiply(p.rate, ratio(p.end - p.start, HOUR))), ratio(BigInt(0)));
-            weeklyRates.set(week, multiply(straight, ratio(HOUR, duration)));
+            const weighted = multiply(straight, ratio(HOUR, duration));
+            weeklyRates.set(week, weighted);
+            const federalDuration = pieces.filter(p => p.federalOvertime).reduce((sum, p) => sum + p.end - p.start, BigInt(0));
+            const floor = multiply(weighted, ratio(federalDuration, HOUR * BigInt(2)));
+            const credit = pieces.reduce((sum, p) => add(sum, multiply(premiumRate(p), ratio(p.end - p.start, HOUR))), ratio(BigInt(0)));
+            const deficit = subtract(floor, credit);
+            weeklyTrueUps.set(week, { amount: deficit.numerator > BigInt(0) ? deficit : ratio(BigInt(0)), duration: federalDuration });
         }
         for (const p of classified.pieces) {
             if (p.start < classified.payLeft || p.end > classified.payRight)
                 continue;
             const duration = p.end - p.start, kind = p.overtime ? "OVERTIME" : "REGULAR";
-            const basis = weeklyRates.get(p.week)!;
-            const premium = p.overtime ? multiply(basis, p.wage.overtime === "DOUBLE_PRESERVED" ? ratio(BigInt(1)) : ratio(BigInt(1), BigInt(2))) : ratio(BigInt(0));
-            const amount = multiply(add(p.rate, premium), ratio(duration, HOUR));
-            put(`${kind}:${p.week}:${p.locationId}:${p.wage.id}:${p.wage.revision}`, { code: "", kind, locationId: p.locationId, wageProfileId: p.wage.id, wageRevision: p.wage.revision, rateMinorPerHour: p.wage.hourlyRateMinor, premiumBasisMinorPerHour: p.overtime ? serialized(basis) : null, nanoseconds: "0", amountMinor: "0", exactAmount: serialized(amount) }, amount, duration);
+            const basis = premiumBasis(p);
+            const amount = multiply(add(p.rate, premiumRate(p)), ratio(duration, HOUR));
+            put(`${kind}:${p.week}:${p.locationId}:${p.wage.id}:${p.wage.revision}:${p.premiumReason}`, { code: "", kind, locationId: p.locationId, wageProfileId: p.wage.id, wageRevision: p.wage.revision, rateMinorPerHour: p.wage.hourlyRateMinor, premiumBasisMinorPerHour: p.overtime ? serialized(basis) : null, nanoseconds: "0", amountMinor: "0", exactAmount: serialized(amount) }, amount, duration);
+            const trueUp = weeklyTrueUps.get(p.week)!;
+            if (p.federalOvertime && trueUp.amount.numerator > BigInt(0)) {
+                const extra = multiply(trueUp.amount, ratio(duration, trueUp.duration));
+                // Additional money only: these hours already appear in straight-time earnings.
+                put(`FLSA_TRUE_UP:${p.week}:${p.locationId}:${p.wage.id}:${p.wage.revision}`, { code: "", kind: "FLSA_TRUE_UP", locationId: p.locationId, wageProfileId: p.wage.id, wageRevision: p.wage.revision, rateMinorPerHour: p.wage.hourlyRateMinor, premiumBasisMinorPerHour: serialized(weeklyRates.get(p.week)!), nanoseconds: "0", amountMinor: "0", exactAmount: serialized(extra) }, extra, BigInt(0));
+            }
             if (p.overtime)
                 overtime += duration;
             else
@@ -78,7 +97,7 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
         for (const contribution of employerContributions)
             after.employerContributions[contribution.code] = (minor(before.employerContributions[contribution.code] ?? "0") + minor(contribution.amountMinor)).toString();
         const canonical = { schema: input.schema, employeeId: input.employeeId, period: input.period, payday: input.payday, frequency: input.frequency, timeZone: input.timeZone, timecards: input.timecards, wages: input.wages, tax: input.tax, ytd: input.ytd, deductions: input.deductions };
-        return { state: "ready", schema: "NEVORA_NATIVE_PAYROLL_RESULT_V1", employeeId: input.employeeId, sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", row: { employeeId: input.employeeId, grossMinor: gross.toString(), employeeDeductions, employerContributions, netMinor: net.toString(), earnings: earnings.map(e => ({ code: e.code, label: e.kind.replaceAll("_", " "), amountMinor: e.amountMinor })) }, breakdown: { earnings, regularNanoseconds: regular.toString(), overtimeNanoseconds: overtime.toString(), unpaidBreakNanoseconds: classified.unpaidBreakNanoseconds.toString(), locationIds: [...new Set(earnings.map(e => e.locationId))].sort(), taxYear: payday.year, ytdBefore: before, ytdAfter: after, taxes }, provenance: { inputSha256: hash(canonical), rulesetId: "PR_STANDARD_2026_V1", rulesSha256: hash(PR_2026_RULE_SOURCES), rounding: "EARNING_GROUP_HALF_UP", taxRounding: tax.prCentRounding } };
+        return { state: "ready", schema: "NEVORA_NATIVE_PAYROLL_RESULT_V1", employeeId: input.employeeId, sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", row: { employeeId: input.employeeId, grossMinor: gross.toString(), employeeDeductions, employerContributions, netMinor: net.toString(), earnings: earnings.map(e => ({ code: e.code, label: e.kind.replaceAll("_", " "), amountMinor: e.amountMinor })) }, breakdown: { earnings, regularNanoseconds: regular.toString(), overtimeNanoseconds: overtime.toString(), unpaidBreakNanoseconds: classified.unpaidBreakNanoseconds.toString(), locationIds: [...new Set(earnings.map(e => e.locationId))].sort(), taxYear: payday.year, ytdBefore: before, ytdAfter: after, taxes }, provenance: { inputSha256: hash(canonical), rulesetId: "PR_STANDARD_2026_V1", rulesSha256: NATIVE_RULES_SHA256, rounding: "EARNING_GROUP_HALF_UP", taxRounding: tax.prCentRounding } };
     }
     catch (error) {
         const e = error as Error & {

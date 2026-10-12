@@ -18,6 +18,8 @@ export type WorkedPiece = {
     wage: NativeWageProfile;
     rate: Rational;
     overtime: boolean;
+    premiumReason: "DAILY" | "REST_DAY" | "WEEKLY" | null;
+    federalOvertime: boolean;
 };
 export function classifyRecordedTime(input: NativePayrollInput) {
     const { period, wages, timecards } = input;
@@ -62,7 +64,7 @@ export function classifyRecordedTime(input: NativePayrollInput) {
             fail("COMPLETE_CONTEXT_REQUIRED", date);
     }
     const left = midnight(contextStart), right = midnight(end), payLeft = midnight(period.startDate), payRight = midnight(dateAdd(period.endDate, 1));
-    const rawPieces: Omit<WorkedPiece, "overtime">[] = [];
+    const rawPieces: Omit<WorkedPiece, "overtime" | "premiumReason" | "federalOvertime">[] = [];
     let previousEnd: bigint | null = null, unpaid = BigInt(0);
     const sorted = [...entries.values()].sort((a, b) => Temporal.Instant.compare(a.startAt, b.startAt) || a.id.localeCompare(b.id));
     for (const e of sorted) {
@@ -133,7 +135,7 @@ export function classifyRecordedTime(input: NativePayrollInput) {
         }
     }
     const pieces: WorkedPiece[] = [];
-    let streak = 0, weeklyRegular = BigInt(0), currentWeek = "";
+    let streak = 0, weeklyRegular = BigInt(0), weeklyWorked = BigInt(0), currentWeek = "";
     for (let date = contextStart; date < end; date = dateAdd(date, 1)) {
         const today = rawPieces.filter(p => p.date === date);
         streak = today.length ? streak + 1 : 0;
@@ -145,22 +147,23 @@ export function classifyRecordedTime(input: NativePayrollInput) {
         if (week !== currentWeek) {
             currentWeek = week;
             weeklyRegular = BigInt(0);
+            weeklyWorked = BigInt(0);
         }
         let daily = BigInt(0);
         for (const raw of today) {
             let a = raw.start;
             while (a < raw.end) {
-                const overtime = streak === 7 || daily >= HOUR * BigInt(8) || weeklyRegular >= HOUR * BigInt(40);
+                const premiumReason = streak === 7 ? "REST_DAY" as const : daily >= HOUR * BigInt(8) ? "DAILY" as const : weeklyRegular >= HOUR * BigInt(40) ? "WEEKLY" as const : null;
+                const overtime = premiumReason !== null;
+                const federalOvertime = weeklyWorked >= HOUR * BigInt(40);
                 let length = raw.end - a;
-                if (!overtime) {
-                    const dayLeft = HOUR * BigInt(8) - daily, weekLeft = HOUR * BigInt(40) - weeklyRegular;
-                    if (length > dayLeft)
-                        length = dayLeft;
-                    if (length > weekLeft)
-                        length = weekLeft;
-                }
-                pieces.push({ ...raw, start: a, end: a + length, overtime });
+                // Preserve separate daily/rest entitlement and full FLSA hours. Credit is money.
+                for (const remaining of [HOUR * BigInt(8) - daily, HOUR * BigInt(40) - weeklyRegular, HOUR * BigInt(40) - weeklyWorked])
+                    if (remaining > BigInt(0) && length > remaining)
+                        length = remaining;
+                pieces.push({ ...raw, start: a, end: a + length, overtime, premiumReason, federalOvertime });
                 daily += length;
+                weeklyWorked += length;
                 if (!overtime)
                     weeklyRegular += length;
                 a += length;

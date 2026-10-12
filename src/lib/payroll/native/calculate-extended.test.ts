@@ -13,7 +13,7 @@ const deduction = (): NativeAuthorizedDeduction => ({ id: "D1", revision: 1, cod
 describe("native payroll exact money and explicit obligations", () => {
     it("retains fractional seconds and rounds the earnings group once", () => { const i = input(); i.wages[0].hourlyRateMinor = "1500.125"; i.timecards[0].entries = [entry("A", "2026-10-05T08:00:00-04:00", "2026-10-05T08:00:30.5-04:00"), entry("B", "2026-10-05T09:00:00-04:00", "2026-10-05T09:00:30.5-04:00")]; const r = ready(i); expect(r.row.grossMinor).toBe("25"); expect(r.breakdown.regularNanoseconds).toBe("61000000000"); expect(r.breakdown.earnings[0].exactAmount).toEqual({ numerator: "732061", denominator: "28800" }); });
     it("splits an effective wage change inside a recorded entry", () => { const i = input(); i.wages[0].effectiveTo = "2026-10-05T12:00:00-04:00"; i.wages.push({ ...i.wages[0], id: "W2", effectiveFrom: i.wages[0].effectiveTo, effectiveTo: null, hourlyRateMinor: "2500" }); expect(ready(i).row.grossMinor).toBe("18000"); });
-    it("uses the weighted weekly minimum when overtime falls on the lower rate", () => { const i = input(); i.wages[0].hourlyRateMinor = "3000"; i.wages.push({ ...i.wages[0], id: "W2", locationIds: ["L2"], hourlyRateMinor: "1500" }); i.timecards[0].entries = [5, 6, 7, 8, 9, 10].map(d => entry("T" + d, `2026-10-${d < 10 ? "0" : ""}${d}T08:00:00-04:00`, `2026-10-${d < 10 ? "0" : ""}${d}T16:00:00-04:00`, d === 10 ? "L2" : "L1")); const r = ready(i); /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ expect(r.row.grossMinor).toBe("143000"); expect(r.breakdown.earnings.find(e => e.kind === "OVERTIME")?.amountMinor).toBe("23000"); });
+    it("uses the weighted weekly minimum when overtime falls on the lower rate", () => { const i = input(); i.wages[0].hourlyRateMinor = "3000"; i.wages.push({ ...i.wages[0], id: "W2", locationIds: ["L2"], hourlyRateMinor: "1500" }); i.timecards[0].entries = [5, 6, 7, 8, 9, 10].map(d => entry("T" + d, `2026-10-${d < 10 ? "0" : ""}${d}T08:00:00-04:00`, `2026-10-${d < 10 ? "0" : ""}${d}T16:00:00-04:00`, d === 10 ? "L2" : "L1")); const r = ready(i); /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ /* 40*$30+8*$15 + .5*($1320/48)*8 = $1430 */ expect(r.row.grossMinor).toBe("143000"); expect(r.breakdown.earnings.find(e => e.kind === "OVERTIME")?.amountMinor).toBe("23000"); });
     it("does not add a true-up when existing daily premium satisfies the federal minimum", () => { const i = input(); i.timecards[0].entries = [5, 6, 7, 8, 9].map(d => entry("T" + d, `2026-10-0${d}T08:00:00-04:00`, `2026-10-0${d}T17:00:00-04:00`)); const r = ready(i); expect(r.row.grossMinor).toBe("95000"); expect(r.breakdown.earnings.some(e => e.kind === "FLSA_TRUE_UP")).toBe(false); });
     it("pays an approved adjustment once with retained provenance", () => { const i = input(); i.timecards[0].entries[0] = { ...i.timecards[0].entries[0], sourceKind: "ADJUSTMENT", recordedVersion: null, adjustmentId: "A1" }; expect(ready(i).row.grossMinor).toBe("16000"); });
     it.each([["OPEN_RECORDED_TIME", (i: NativePayrollInput) => { i.timecards[0].entries[0].endAt = null; }], ["PENDING_CORRECTIONS", (i: NativePayrollInput) => { i.timecards[0].pendingCorrections = 1; }], ["BREAK_PAY_BASIS_REQUIRED", (i: NativePayrollInput) => { i.timecards[0].entries[0].breaks = [{ id: "B1", typeId: null, startAt: "2026-10-05T12:00:00-04:00", endAt: "2026-10-05T12:30:00-04:00" }]; }], ["CONFLICTING_WAGE_PROFILE", (i: NativePayrollInput) => { i.wages.push({ ...i.wages[0], id: "W2" }); }]] as const)("blocks %s", (code, change) => { const i = input(); change(i); expect(calculateNativePayroll(i)).toMatchObject({ state: "blocked", issues: [{ code }] }); });
@@ -36,4 +36,33 @@ it("matches independent W11 weighted weekly premium when overtime uses the highe
     i.timecards[0].entries.push(entry("T8a", "2026-10-08T08:00:00-04:00", "2026-10-08T14:00:00-04:00"), entry("T8b", "2026-10-08T14:00:00-04:00", "2026-10-08T16:00:00-04:00", "L2"), entry("T9", "2026-10-09T08:00:00-04:00", "2026-10-09T16:00:00-04:00", "L2"), entry("T10", "2026-10-10T08:00:00-04:00", "2026-10-10T13:00:00-04:00", "L2"));
     const r = ready(i);
     expect(r.row.grossMinor).toBe("63333");
+});
+// Independent QA supplemental MC01/MC02; literal money expectations retained unchanged.
+it.each([[[2100, 1050, 1050, 1050, 1050], "56700", "2100", "0"], [[1050, 2100, 2100, 2100, 2100], "79550", "1050", "800"]] as const)("retains applicable daily premium and credits money against the weighted weekly floor: %j", (rates, gross, dailyPremium, trueUp) => {
+    const i = input();
+    i.wages = rates.map((rate, index) => ({ ...i.wages[0], id: `MC-W${index}`, locationIds: [`MC-L${index}`], hourlyRateMinor: String(rate) }));
+    i.timecards[0].entries = [10, 8, 8, 8, 8].map((hours, index) => entry(`MC-E${index}`, `2026-10-0${index + 5}T08:00:00-04:00`, `2026-10-0${index + 5}T${8 + hours}:00:00-04:00`, `MC-L${index}`));
+    const r = ready(i);
+    expect(r.row.grossMinor).toBe(gross);
+    const daily = r.breakdown.earnings.filter(e => e.kind === "OVERTIME");
+    expect(daily.reduce((sum, e) => sum + BigInt(e.amountMinor), BigInt(0)) - BigInt(rates[0] * 2)).toBe(BigInt(dailyPremium));
+    expect(r.breakdown.earnings.filter(e => e.kind === "FLSA_TRUE_UP").reduce((sum, e) => sum + BigInt(e.amountMinor), BigInt(0))).toBe(BigInt(trueUp));
+});
+it.each([[[2100, 1050, 1050, 1050, 1050], "58800"], [[1050, 2100, 2100, 2100, 2100], "79800"]] as const)("preserves superior double-time daily rights across mixed rates: %j", (rates, gross) => {
+    const i = input();
+    i.wages = rates.map((rate, index) => ({ ...i.wages[0], id: `DOUBLE-W${index}`, locationIds: [`DOUBLE-L${index}`], hourlyRateMinor: String(rate), overtime: "DOUBLE_PRESERVED" }));
+    i.timecards[0].entries = [10, 8, 8, 8, 8].map((hours, index) => entry(`DOUBLE-E${index}`, `2026-10-0${index + 5}T08:00:00-04:00`, `2026-10-0${index + 5}T${8 + hours}:00:00-04:00`, `DOUBLE-L${index}`));
+    expect(ready(i).row.grossMinor).toBe(gross);
+});
+it("allocates the MC02 remaining weekly true-up without paying full context twice", () => {
+    const i = input(), rates = [1050, 2100, 2100, 2100, 2100];
+    i.wages = rates.map((rate, index) => ({ ...i.wages[0], id: `SPLIT-W${index}`, locationIds: [`SPLIT-L${index}`], hourlyRateMinor: String(rate) }));
+    i.timecards[0].entries = [10, 8, 8, 8, 8].map((hours, index) => entry(`SPLIT-E${index}`, `2026-10-0${index + 5}T08:00:00-04:00`, `2026-10-0${index + 5}T${8 + hours}:00:00-04:00`, `SPLIT-L${index}`));
+    i.period = { startDate: "2026-10-05", endDate: "2026-10-08" };
+    const left = ready(i);
+    expect(left.row.grossMinor).toBe("61950");
+    i.period = { startDate: "2026-10-09", endDate: "2026-10-11" };
+    const right = ready(i);
+    expect(right.row.grossMinor).toBe("17600");
+    expect(BigInt(left.row.grossMinor) + BigInt(right.row.grossMinor)).toBe(BigInt("79550"));
 });
