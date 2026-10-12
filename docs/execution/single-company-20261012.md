@@ -15,6 +15,18 @@ The development architecture already enforces one singleton workspace per databa
 - First location requires Owner configuration for staffing, coverage and any positions. No staffing/qualification values are guessed during setup.
 - `scripts/company-setup.test.ts` and `scripts/company-setup-qa.mjs`: input validation, real PostgreSQL setup, rerun refusal, rollback, concurrency, explicit owner location access and real application login/settings with fictional data.
 
+## Employee essentials
+
+The follow-up request keeps this bounded: save employees and enforce the established single-company role rules. Existing employee repositories already commit contact details, access role, primary location, eligibility and qualifications atomically in PostgreSQL. No new identity or SaaS layer is needed. Employee creation and activation now use generic ID prompts without a customer prefix.
+
+| Role | Employee and company authority |
+| --- | --- |
+| Employee / Lead | Self-service only; cannot open the employee directory or management forms, write employee profiles, or select another employee's private time records. Lead qualifications do not grant Manager access. |
+| Manager | Manage non-Owner employee contact/access details and operational scheduling profiles. Cannot grant Owner access, edit an Owner's core profile, or change Owner-only company configuration. |
+| Owner | Manage company configuration and employee access, including other Owners. The last active Owner cannot be deactivated or demoted. |
+
+Mutations derive the actor from the session cookie and recheck current active role/session authority in the SQL transaction. Browser role options are supplemented by server checks. Duplicate IDs/emails are rejected, stale profile versions cannot overwrite newer edits, and concurrent Owner demotions retain an active Owner. Deactivation removes existing sessions while keeping employee history; reactivation requires a fresh login. Current role changes apply to existing sessions on their next request, and expired sessions lose access.
+
 ## Operator use
 
 Use existing approved stores or a private ignored `.env.local`. Company fields: `COMPANY_NAME`, `COMPANY_TIME_ZONE`, `COMPANY_LOCATION_NAME`, `COMPANY_LOCATION_SHORT_NAME`, `COMPANY_LOCATION_KEY`. Owner fields: `BOOTSTRAP_EMPLOYEE_ID`, `BOOTSTRAP_FIRST_NAME`, `BOOTSTRAP_LAST_NAME`, `BOOTSTRAP_PHONE`, `BOOTSTRAP_PASSWORD`, optional `BOOTSTRAP_EMAIL`.
@@ -39,6 +51,15 @@ Local implementation and verification are complete:
 - `git diff --check`: passed.
 
 Browser/SQL evidence: `/Users/josek0514/.codex/visualizations/2026/10/12/01a12fb9-799d-71f3-add3-07ac8e708d53/single-company/verification.json`, `company-settings-390.png`, `company-settings-1440.png`, and the owned-app source/transport manifest. The browser ran the real Next application and canonical PostgreSQL schema with the established test-only PostgreSQL transport. Hosted Neon HTTP transport and production deployment were not tested. Test data is fictional and local; no existing customer data, production credentials, messages, orders or deployments were used.
+
+Employee follow-up verification also completed:
+
+- Owned PostgreSQL foundation suite: 9 files / 275 tests passed, including persisted employee lifecycle, role guards, last-Owner concurrency, rollback and session expiry/revocation races.
+- Focused employee action/profile and authentication unit suites: 4 files / 29 tests passed.
+- Current `typecheck`, `lint`, `build` and `git diff --check`: passed. The build retained the previously documented unrelated parent-lockfile warning.
+- Extended company browser/SQL runner: 17 checks passed. Real employee create/edit/reload with contact/access/position/eligibility persistence; duplicate rejection; stale-tab protection; actual employee activation/login and password hash verification; Employee and Lead management-route denial and direct replay of a captured Owner server-action POST; private-time employee-selector rejection; Manager self-promotion and forged Owner creation rejection; deactivation/revocation, fresh login after reactivation, and expiry denial. Mobile/desktop profile screenshots, keyboard focus and overflow were checked. The initial runs exposed two mistakes in the new QA expectations (exact select-field label and unformatted phone); those were corrected to match the existing component and phone contract before the complete successful rerun.
+
+Follow-up evidence: `/Users/josek0514/.codex/visualizations/2026/10/12/01a12fb9-799d-71f3-add3-07ac8e708d53/single-company-employees/verification.json`, `employee-profile-390.png`, `employee-profile-1440.png`, configured company settings screenshots and owned-app manifest/logs. Both disposable PostgreSQL clusters were stopped and removed. This verifies the local single-company application, not a deployed instance.
 
 The branch is local and has not been pushed, merged into development/main, or deployed. Next operational step: select the actual company configuration and approved target environment, then initialize and verify that hosted instance through the operator instructions above. Production activation remains a separate authorization.
 

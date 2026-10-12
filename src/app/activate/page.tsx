@@ -40,7 +40,7 @@ export default async function ActivatePage({
               Employee ID
               <input
                 name="employeeId"
-                placeholder="JN-001"
+                placeholder="Enter your employee ID"
                 defaultValue={params.employeeId ?? ""}
                 autoComplete="username"
                 required

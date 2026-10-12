@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
@@ -115,6 +115,19 @@ try {
   }
 
   browser = await playwright.chromium.launch({ headless: true });
+  const employeeId = 'CEDAR-STAFF';
+  const staffPassword = 'Fictional-staff-only!';
+  const positionId = randomUUID();
+  await client.query('INSERT INTO positions(id,workspace_id,name) VALUES($1,$2,$3)', [positionId, workspace[0].id, 'Studio Assistant']);
+  const readEmployee = async (id = employeeId) => (await client.query(
+    'SELECT id,first_name,last_name,phone,email,role,primary_location_id,active,updated_at::text FROM employees WHERE id=$1', [id])).rows[0];
+  const signIn = async (page, id, password) => {
+    await page.goto(`${app.url}/login`);
+    await page.getByLabel('Employee ID', { exact: true }).fill(id);
+    await page.getByLabel('Password', { exact: true }).fill(password);
+    await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+    await page.waitForURL('**/app');
+  };
   for (const width of [390, 1440]) {
     const context = await browser.newContext({ viewport: { width, height: 1000 } });
     await context.route('**/*', (route) => {
@@ -156,6 +169,139 @@ try {
       const revisions = (await client.query('SELECT workspace_id,revision FROM nevora_company_policy_revisions')).rows;
       assert.deepEqual(revisions, [{ workspace_id: workspace[0].id, revision: 1 }]);
       checked('Owner policy UI persists revisions under the configured generic company identity');
+    }
+    if (width === 390) {
+      await page.goto(`${app.url}/app/employees/new`);
+      const creation = page.locator('form.employee-form');
+      await creation.getByLabel('Employee ID', { exact: true }).fill(employeeId);
+      await creation.getByLabel('First Name', { exact: true }).fill('Sam');
+      await creation.getByLabel('Last Name', { exact: true }).fill('Rivera');
+      await creation.getByLabel('Phone Number', { exact: true }).fill('2025550142');
+      await creation.locator('[name=email]').fill('sam@example.invalid');
+      await creation.locator('[name=primaryLocationId]').selectOption(locations[0].id);
+      await creation.getByLabel('Studio Assistant', { exact: true }).check();
+      await creation.getByRole('button', { name: 'Create Employee', exact: true }).click();
+      await creation.getByRole('status').filter({ hasText: 'Employee created.' }).waitFor();
+      assert.deepEqual(await readEmployee(), {
+        id: employeeId, first_name: 'Sam', last_name: 'Rivera', phone: '202-555-0142', email: 'sam@example.invalid',
+        role: 'EMPLOYEE', primary_location_id: locations[0].id, active: true, updated_at: (await readEmployee()).updated_at,
+      });
+      assert.deepEqual((await client.query('SELECT position_id FROM employee_positions WHERE employee_id=$1', [employeeId])).rows, [{ position_id: positionId }]);
+      assert.deepEqual((await client.query('SELECT location_id FROM employee_location_eligibility WHERE employee_id=$1', [employeeId])).rows, [{ location_id: locations[0].id }]);
+      checked('employee creation persists contact, role, position and primary eligibility atomically');
+      await creation.getByRole('button', { name: 'Create Employee', exact: true }).click();
+      await creation.getByRole('alert').waitFor();
+      assert.equal((await client.query('SELECT count(*)::int AS count FROM employees WHERE id=$1', [employeeId])).rows[0].count, 1);
+      checked('duplicate employee submission preserves the existing record');
+
+      await page.goto(`${app.url}/app/employees/${employeeId}`);
+      const core = page.locator('.employee-core-profile-form');
+      const stalePage = await context.newPage();
+      await stalePage.goto(page.url());
+      await core.getByLabel('First name', { exact: true }).fill('Samuel');
+      await core.locator('[name=email]').fill('samuel@example.invalid');
+      const submitted = page.waitForRequest(request => request.method() === 'POST' && !!request.headers()['next-action']);
+      await core.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      const actionRequest = await submitted;
+      await core.getByRole('status').filter({ hasText: 'Employee details updated.' }).waitFor();
+      const saved = await readEmployee();
+      assert.equal(saved.first_name, 'Samuel'); assert.equal(saved.email, 'samuel@example.invalid');
+      await stalePage.locator('.employee-core-profile-form [name=firstName]').fill('Stale');
+      await stalePage.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      await stalePage.getByRole('alert').filter({ hasText: 'changed since you opened' }).waitFor();
+      assert.deepEqual(await readEmployee(), saved);
+      await stalePage.close();
+      await page.reload();
+      assert.equal(await core.getByLabel('First name', { exact: true }).inputValue(), 'Samuel');
+      for (const employeeWidth of [390, 1440]) {
+        await page.setViewportSize({ width: employeeWidth, height: 1000 });
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false);
+        await page.keyboard.press('Tab');
+        assert(await page.evaluate(() => document.activeElement !== document.body));
+        await page.screenshot({ path: resolve(evidence, `employee-profile-${employeeWidth}.png`), fullPage: true });
+      }
+      checked('employee edit survives reload; stale tabs cannot overwrite newer details; mobile and desktop forms fit');
+
+      const staff = await browser.newContext({ viewport: { width: 390, height: 1000 } });
+      await staff.route('**/*', route => new URL(route.request().url()).origin === app.url ? route.continue() : route.abort());
+      const staffPage = await staff.newPage();
+      await staffPage.goto(`${app.url}/activate`);
+      await staffPage.getByLabel('Employee ID', { exact: true }).fill(employeeId);
+      await staffPage.getByLabel('Phone Number', { exact: true }).fill('2025550142');
+      await staffPage.getByLabel('Create Password', { exact: true }).fill(staffPassword);
+      await staffPage.getByLabel('Confirm Password', { exact: true }).fill(staffPassword);
+      await staffPage.getByRole('button', { name: 'Activate Account', exact: true }).click();
+      await staffPage.waitForURL('**/login?activated=1');
+      const staffHash = (await client.query('SELECT password_hash FROM employee_credentials WHERE employee_id=$1', [employeeId])).rows[0].password_hash;
+      assert(await verifyPassword(staffPassword, staffHash)); assert.notEqual(staffHash, staffPassword);
+      await signIn(staffPage, employeeId, staffPassword);
+      checked('created employee activates and signs in with a hashed password');
+      for (const role of ['EMPLOYEE', 'LEAD']) {
+        await client.query('UPDATE employees SET role=$1 WHERE id=$2', [role, employeeId]);
+        const before = await readEmployee();
+        for (const path of ['/app/employees', '/app/employees/new', `/app/employees/${config.BOOTSTRAP_EMPLOYEE_ID}`, '/app/settings/workspace']) {
+          await staffPage.goto(app.url + path);
+          assert.equal(new URL(staffPage.url()).pathname, '/app');
+        }
+        const rejected = await staff.request.post(actionRequest.url(), {
+          headers: { 'next-action': actionRequest.headers()['next-action'], 'content-type': actionRequest.headers()['content-type'], origin: app.url },
+          data: actionRequest.postDataBuffer(),
+        });
+        assert(rejected.status() < 500);
+        assert.deepEqual(await readEmployee(), before);
+        const time = await staff.request.get(`${app.url}/api/employee/my-time?employeeId=${config.BOOTSTRAP_EMPLOYEE_ID}`, { headers: { 'x-nevora-my-time': '1' } });
+        assert.equal(time.status(), 400);
+        checked(`${role} cannot access management routes, replay an Owner write or select another employee's private time`);
+      }
+
+      await client.query("UPDATE employees SET role='MANAGER' WHERE id=$1", [employeeId]);
+      await staffPage.goto(`${app.url}/app/employees/${config.BOOTSTRAP_EMPLOYEE_ID}`);
+      assert.equal(await staffPage.locator('.employee-core-profile-form').count(), 0);
+      assert(await staffPage.getByText(/Only an Owner can change another Owner/).isVisible());
+      await staffPage.goto(`${app.url}/app/employees/${employeeId}`);
+      const managerCore = staffPage.locator('.employee-core-profile-form');
+      assert.equal(await managerCore.locator('select[name=role] option[value=OWNER]').count(), 0);
+      await managerCore.locator('select[name=role]').evaluate(select => select.add(new Option('Forged Owner', 'OWNER')));
+      await managerCore.locator('select[name=role]').selectOption('OWNER');
+      await managerCore.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      await managerCore.getByRole('alert').filter({ hasText: 'permission' }).waitFor();
+      assert.equal((await readEmployee()).role, 'MANAGER');
+      await staffPage.goto(`${app.url}/app/employees/new`);
+      const forgedCreate = staffPage.locator('form.employee-form');
+      await forgedCreate.locator('[name=id]').fill('CEDAR-FORGED-OWNER');
+      await forgedCreate.locator('[name=firstName]').fill('Forged');
+      await forgedCreate.locator('[name=lastName]').fill('Owner');
+      await forgedCreate.locator('[name=phone]').fill('2025550199');
+      await forgedCreate.locator('[name=primaryLocationId]').selectOption(locations[0].id);
+      await forgedCreate.locator('select[name=role]').evaluate(select => select.add(new Option('Forged Owner', 'OWNER')));
+      await forgedCreate.locator('select[name=role]').selectOption('OWNER');
+      await forgedCreate.getByRole('button', { name: 'Create Employee', exact: true }).click();
+      await forgedCreate.getByRole('alert').filter({ hasText: 'Only an owner' }).waitFor();
+      assert.equal(await readEmployee('CEDAR-FORGED-OWNER'), undefined);
+      checked('Manager cannot edit Owner access, promote themselves or create an Owner with a forged form');
+
+      await page.goto(`${app.url}/app/employees/${employeeId}`);
+      await core.locator('[name=active]').selectOption('false');
+      await core.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      await core.getByRole('status').filter({ hasText: 'Employee details updated.' }).waitFor();
+      assert.equal((await readEmployee()).active, false);
+      assert.equal((await client.query('SELECT count(*)::int AS count FROM employee_sessions WHERE employee_id=$1', [employeeId])).rows[0].count, 0);
+      await staffPage.goto(`${app.url}/app/employees`);
+      assert.equal(new URL(staffPage.url()).pathname, '/login');
+      await core.locator('[name=active]').selectOption('true');
+      await core.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      await core.getByRole('status').filter({ hasText: 'Employee details updated.' }).waitFor();
+      assert.equal((await readEmployee()).active, true);
+      await staffPage.goto(`${app.url}/app`);
+      assert.equal(new URL(staffPage.url()).pathname, '/login');
+      await signIn(staffPage, employeeId, staffPassword);
+      const cookie = (await staff.cookies()).find(item => item.name === 'fuel_session');
+      assert(cookie);
+      await client.query('UPDATE employee_sessions SET expires_at=clock_timestamp()-interval \'1 second\' WHERE token_hash=$1', [createHash('sha256').update(cookie.value).digest('hex')]);
+      await staffPage.goto(`${app.url}/app/employees`);
+      assert.equal(new URL(staffPage.url()).pathname, '/login');
+      await staff.close();
+      checked('deactivation revokes sessions; reactivation needs fresh login; expired sessions lose access');
     }
     assert.deepEqual(errors, []);
     await context.close();
