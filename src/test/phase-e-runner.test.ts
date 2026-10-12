@@ -206,15 +206,13 @@ it('a skipped required E or D job fails CI evidence acceptance on the exact cand
     expect(evaluate(runner, `api.verifyRequiredJobs(${JSON.stringify(skipped)});`).status).not.toBe(0);
   }
 });
-it('evidence acceptance rejects modified source manifests and removed ownership receipts', () => {
-  for (const mutation of ['manifest', 'ownership']) {
-    const f = fixture(); expect(invoke(['sql', '--suite', 'all'], f.env, f.root).status).toBe(0);
-    const report = JSON.parse(readFileSync(join(f.evidence, 'sql-report.json'), 'utf8'));
-    if (mutation === 'manifest') writeFileSync(join(f.evidence, 'source-manifest.json'), '{}');
-    else rmSync(report.ownershipFile);
-    const result = invoke(['verify-evidence', '--suite', 'sql'], f.env, f.root);
-    expect(result.status).not.toBe(0);
-  }
+it.each(['manifest', 'ownership'])('evidence acceptance rejects modified %s custody', mutation => {
+  const f = fixture(); expect(invoke(['sql', '--suite', 'all'], f.env, f.root).status).toBe(0);
+  const report = JSON.parse(readFileSync(join(f.evidence, 'sql-report.json'), 'utf8'));
+  if (mutation === 'manifest') writeFileSync(join(f.evidence, 'source-manifest.json'), '{}');
+  else rmSync(report.ownershipFile);
+  const result = invoke(['verify-evidence', '--suite', 'sql'], f.env, f.root);
+  expect(result.status).not.toBe(0);
 });
 it('rejects a successful unrelated SQL fixture during execution', () => {
   const f = fixture();
