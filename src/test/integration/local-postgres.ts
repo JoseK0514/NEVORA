@@ -139,6 +139,6 @@ export function createDisposableGenerationDatabase({mode = 'current-runtime'}: {
   return createOwnedDatabase('nevora_generation_test_', mode === 'historical-8' ? 8 : CURRENT_MIGRATIONS.length);
 }
 
-export function createDisposableExchangeDatabase({mode}: {mode: 'historical-9' | 'current-runtime'}) {
-  return createOwnedDatabase('nevora_exchange_test_', mode === 'historical-9' ? 9 : CURRENT_MIGRATIONS.length);
+export function createDisposableExchangeDatabase({mode}: {mode: 'empty' | 'historical-9' | 'current-runtime'}) {
+  return createOwnedDatabase('nevora_exchange_test_', mode === 'empty' ? 0 : mode === 'historical-9' ? 9 : CURRENT_MIGRATIONS.length);
 }

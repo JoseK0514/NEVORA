@@ -47,7 +47,7 @@ export async function assertExternalEvidencePath(source:string,evidenceDirectory
  * SQL. Only the scratch copy of src/lib/db.ts is replaced. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string; clockerPunchEnabled?: boolean; recoverySmtpPort?:number } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string; clockerPunchEnabled?: boolean; recoverySmtpPort?:number; emptyDatabase?:boolean } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   if(options.recoverySmtpPort!==undefined&&(!Number.isInteger(options.recoverySmtpPort)||options.recoverySmtpPort<1||options.recoverySmtpPort>65535))throw Error('Owned SMTP port must be explicit.');
   const source = resolve(process.cwd());
@@ -59,7 +59,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
   const barriers = join(root, 'barriers');
   await mkdir(mirror); await mkdir(barriers);
   const ownerId = randomUUID();
-  const database = await createDisposableExchangeDatabase({ mode: 'current-runtime' });
+  const database = await createDisposableExchangeDatabase({ mode: options.emptyDatabase ? 'empty' : 'current-runtime' });
   let child: ChildProcess | undefined;
   let closed = false;
   const manifestPath = join(root, 'ownership.json');

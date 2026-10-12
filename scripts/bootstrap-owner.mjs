@@ -1,65 +1,28 @@
-import { neon } from "@neondatabase/serverless";
-import { randomBytes, scrypt } from "node:crypto";
-import { promisify } from "node:util";
+import { Client } from 'pg';
+import { bootstrapOwner, readOwnerInput, readOwnerLocations, readSetupTarget } from './company-setup.ts';
 
-const scryptAsync = promisify(scrypt);
-
-const required = [
-  "DATABASE_URL",
-  "BOOTSTRAP_EMPLOYEE_ID",
-  "BOOTSTRAP_FIRST_NAME",
-  "BOOTSTRAP_LAST_NAME",
-  "BOOTSTRAP_PHONE",
-  "BOOTSTRAP_PASSWORD",
-];
-
-for (const key of required) {
-  if (!process.env[key]) {
-    throw new Error(`${key} is required.`);
+if (process.argv.includes('--help')) {
+  console.log(`Create an owner in the configured single-company database.
+Requires NEVORA_SETUP_ENVIRONMENT, NEVORA_SETUP_DATABASE_URL, NEVORA_SETUP_DATABASE_NAME,
+BOOTSTRAP_EMPLOYEE_ID, BOOTSTRAP_FIRST_NAME, BOOTSTRAP_LAST_NAME, BOOTSTRAP_PHONE,
+BOOTSTRAP_PASSWORD, BOOTSTRAP_PRIMARY_LOCATION_ID, BOOTSTRAP_ELIGIBLE_LOCATION_IDS.
+Eligibility is a comma-separated list of active location IDs including the primary location.
+Optional: BOOTSTRAP_EMAIL. Existing employee IDs are refused.
+Usage: npm run bootstrap:owner -- --help`);
+} else {
+  let client;
+  try {
+    const connectionString = readSetupTarget(process.env);
+    const owner = readOwnerInput(process.env);
+    const locations = readOwnerLocations(process.env);
+    client = new Client({ connectionString, connectionTimeoutMillis: 10000 });
+    await client.connect();
+    await bootstrapOwner(client, owner, locations);
+    console.log('Owner created with the explicitly selected location access.');
+  } catch (error) {
+    console.error(error instanceof Error && !('code' in error) ? error.message : 'Owner setup failed; no partial owner was committed.');
+    process.exitCode = 1;
+  } finally {
+    await client?.end();
   }
 }
-
-if (process.env.BOOTSTRAP_PASSWORD.length < 8) {
-  throw new Error("BOOTSTRAP_PASSWORD must contain at least 8 characters.");
-}
-
-const sql = neon(process.env.DATABASE_URL);
-const employeeId = process.env.BOOTSTRAP_EMPLOYEE_ID.trim().toUpperCase();
-const salt = randomBytes(16);
-const passwordHashBuffer = await scryptAsync(
-  process.env.BOOTSTRAP_PASSWORD,
-  salt,
-  64,
-);
-const passwordHash = `scrypt$${salt.toString("hex")}$${passwordHashBuffer.toString("hex")}`;
-
-const existing = await sql.query(
-  "SELECT id FROM employees WHERE upper(id) = upper($1) LIMIT 1",
-  [employeeId],
-);
-
-if (existing.length) {
-  throw new Error(`Employee ${employeeId} already exists.`);
-}
-
-await sql.transaction([
-  sql`INSERT INTO employees (
-    id, first_name, last_name, phone, email, role, primary_location_id
-  ) VALUES (
-    ${employeeId},
-    ${process.env.BOOTSTRAP_FIRST_NAME},
-    ${process.env.BOOTSTRAP_LAST_NAME},
-    ${process.env.BOOTSTRAP_PHONE},
-    ${process.env.BOOTSTRAP_EMAIL || null},
-    'OWNER',
-    'loc-1'
-  )`,
-  sql`INSERT INTO employee_location_eligibility (employee_id, location_id)
-      VALUES (${employeeId}, 'loc-1')`,
-  sql`INSERT INTO employee_location_eligibility (employee_id, location_id)
-      VALUES (${employeeId}, 'loc-2')`,
-  sql`INSERT INTO employee_credentials (employee_id, password_hash, must_change_password)
-      VALUES (${employeeId}, ${passwordHash}, false)`,
-]);
-
-console.log(`Created owner ${employeeId}.`);
