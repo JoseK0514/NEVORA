@@ -8,6 +8,7 @@ import { getWorkspace, workspaceReadGuard } from "../../data/workspaces";
 import { neonNotificationExecutor } from "../../data/notification-transactions";
 import {
   parseCompanyPolicyCommand,
+  parseCompanyPolicySettings,
   companyPolicyCommandHash,
   effectiveCompanyPolicies,
   type CompanyPolicySettings,
@@ -42,7 +43,10 @@ export async function readCompanyPolicies(
     },
     ...managementSessionStatements(proof, proof.employee.id, ["OWNER"]),
   ]);
-  return result[guards.length] as PolicyRevision[];
+  return (result[guards.length] as PolicyRevision[]).map((row) => ({
+    ...row,
+    settings: parseCompanyPolicySettings(row.settings),
+  }));
 }
 export async function saveCompanyPolicy(
   proof: SessionMutationProof,

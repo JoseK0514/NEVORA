@@ -241,3 +241,88 @@ it("missing clock-out requires explicit scheduled-end association and has no def
     m.effectiveCompanyPolicies(null, null).attendance.missingClockOut,
   ).toBeNull();
 });
+
+// Every enum boundary must reject non-primitive values, even when String(value)
+// would name a valid policy. The rule itself may be null to disable inheritance.
+const thresholdRule = {
+  thresholdMinutes: 7,
+  comparison: "GT",
+  effectiveFrom: "2030-10-07T00:00:00Z",
+};
+const enumRules = [
+  { section: "attendance", rule: "lateness", base: thresholdRule, field: "comparison", values: ["GT", "GTE"] },
+  { section: "attendance", rule: "earlyDeparture", base: thresholdRule, field: "comparison", values: ["GT", "GTE"] },
+  ...["comparison", "basis", "appliesTo"].map((field) => ({
+    section: "attendance", rule: "longEntry",
+    base: { ...thresholdRule, basis: "RECORDED_ELAPSED", appliesTo: "BOTH" }, field,
+    values: field === "comparison" ? ["GT", "GTE"] : field === "basis" ? ["RECORDED_ELAPSED", "EFFECTIVE_ELAPSED"] : ["OPEN", "CLOSED", "BOTH"],
+  })),
+  ...["missingClockIn", "missingClockOut"].flatMap((rule) =>
+    ["comparison", "association", "cutoff"].map((field) => ({
+      section: "attendance", rule,
+      base: { ...thresholdRule, association: "CAPTURED_PUBLISHED_SHIFT", cutoff: "AFTER_SCHEDULE_END" }, field,
+      values: field === "comparison" ? ["GT", "GTE"] : field === "association" ? ["CAPTURED_PUBLISHED_SHIFT"] : rule === "missingClockIn" ? ["AFTER_SCHEDULE_START", "AFTER_SCHEDULE_END"] : ["AFTER_SCHEDULE_END"],
+    })),
+  ),
+  ...["comparison", "basis", "window", "aggregation"].map((field) => ({
+    section: "labor", rule: "overtimeRisk",
+    base: { ...thresholdRule, basis: "RECORDED_ELAPSED_INCLUDING_BREAKS", window: "BUSINESS_DAY", aggregation: "COMPANY", dayBoundaryTime: "04:00" }, field,
+    values: field === "comparison" ? ["GT", "GTE"] : field === "basis" ? ["RECORDED_ELAPSED_INCLUDING_BREAKS", "EFFECTIVE_ELAPSED_INCLUDING_BREAKS"] : field === "window" ? ["BUSINESS_DAY", "BUSINESS_WEEK"] : ["COMPANY", "LOCATION"],
+  })),
+  { section: "labor", rule: "compensation", base: { effectiveFrom: thresholdRule.effectiveFrom, ruleReference: "owner-reference", breakTreatment: "INCLUDE_ALL_RECORDED_BREAKS", excludedBreakTypeIds: [] }, field: "breakTreatment", values: ["INCLUDE_ALL_RECORDED_BREAKS", "EXCLUDE_SELECTED_BREAK_TYPES"] },
+];
+function enumSettings(test: (typeof enumRules)[number], value: unknown) {
+  return {
+    version: 1,
+    [test.section]: {
+      [test.rule]: {
+        ...test.base, [test.field]: value,
+        ...(test.field === "window" && value === "BUSINESS_WEEK" ? { weekStartsOn: 0 } : {}),
+      },
+    },
+  };
+}
+for (const test of enumRules) {
+  it.each(test.values)(`preserves scalar ${test.rule}.${test.field} = %s`, async (value) => {
+    const m = await get();
+    const settings = enumSettings(test, value);
+    expect(m.parseCompanyPolicySettings(settings)).toEqual(settings);
+    expect(m.parseCompanyPolicyCommand({ ...command, settings }).settings).toEqual(settings);
+  });
+  for (const valid of test.values) {
+    it.each([
+      ["singleton array", [valid]],
+      ["nested array", [[valid]]],
+      ["coercing object", { toString: () => valid }],
+      ["boxed string", new String(valid)],
+      ["plain object", {}],
+      ["number", 1],
+      ["boolean", true],
+      ["null", null],
+    ])(`rejects ${test.rule}.${test.field} coercing to ${valid} from %s`, async (_label, value) => {
+      const m = await get();
+      const settings = enumSettings(test, value);
+      expect(() => m.parseCompanyPolicySettings(settings)).toThrow();
+      expect(() => m.parseCompanyPolicyCommand({ ...command, settings })).toThrow();
+    });
+  }
+  it(`preserves explicit null for ${test.rule} and omission inheritance`, async () => {
+    const m = await get();
+    const company = m.parseCompanyPolicySettings(enumSettings(test, test.values[0]));
+    const omitted = m.parseCompanyPolicySettings({ version: 1, [test.section]: {} });
+    const disabled = m.parseCompanyPolicySettings({ version: 1, [test.section]: { [test.rule]: null } });
+    const inherited = m.effectiveCompanyPolicies(company, omitted);
+    expect((inherited[test.section as "attendance" | "labor"] as unknown as Record<string, unknown>)[test.rule]).toEqual({ ...test.base, [test.field]: test.values[0] });
+    const effective = m.effectiveCompanyPolicies(company, disabled);
+    expect((effective[test.section as "attendance" | "labor"] as unknown as Record<string, unknown>)[test.rule]).toBeNull();
+  });
+  it(`rejects a malformed saved ${test.rule}.${test.field} before effective selection`, async () => {
+    const m = await get();
+    const settings = enumSettings(test, [test.values[0]]);
+    const before = JSON.stringify(settings);
+    for (const [company, location] of [[settings, null], [null, settings], [settings, { version: 1, [test.section]: { [test.rule]: null } }]]) {
+      expect(() => m.effectiveCompanyPolicies(company as Parameters<typeof m.effectiveCompanyPolicies>[0], location as Parameters<typeof m.effectiveCompanyPolicies>[1])).toThrow();
+    }
+    expect(JSON.stringify(settings)).toBe(before);
+  });
+}

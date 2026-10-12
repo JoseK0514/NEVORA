@@ -106,7 +106,8 @@ export function parseLaborPlanningInputs(v: unknown): LaborPlanningInputs {
             !location(r.locationId) ||
             !decimal(r.rate) ||
             !currency(r.currency) ||
-            !["HOUR", "SHIFT", "SALARY_PERIOD"].includes(String(r.rateUnit)) ||
+            typeof r.rateUnit !== "string" ||
+            !["HOUR", "SHIFT", "SALARY_PERIOD"].includes(r.rateUnit) ||
             !instant(r.validFrom) ||
             !(
               r.validUntil === null ||
