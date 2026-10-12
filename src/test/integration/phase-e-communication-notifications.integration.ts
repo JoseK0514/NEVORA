@@ -114,7 +114,7 @@ it('management inbox preserves recipient authority, idempotent read status and s
 
 it('management inbox suppresses a source revoked before its final observation',async()=>{
  const id=await managementTestNotification();let revoked=false;
- const revoke=async()=>{revoked=true;await q("UPDATE push_subscriptions SET status='detached' WHERE employee_id=$1",[owner.employee.id]);};
+ const revoke=async()=>{revoked=true;await q("UPDATE push_subscriptions SET status='detached',encrypted_material=NULL WHERE employee_id=$1",[owner.employee.id]);};
  const racing:typeof db.executor={
   query:async<T>(statement,signal)=>{if(statement.text.startsWith('SELECT (SELECT expires_at'))await revoke();return db.executor.query<T>(statement,signal);},
   transaction:async(statements,signal)=>{if(statements.some(statement=>statement.text.startsWith('WITH facts AS MATERIALIZED')))await revoke();return db.executor.transaction(statements,signal);},
