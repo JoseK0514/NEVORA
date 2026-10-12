@@ -25,6 +25,10 @@ export function notificationPresentation(label:string){
   case 'Team update':return {icon:'update' as const,destination:'Read the current team update'};
   case 'Availability update':return {icon:'availability' as const,destination:'Review your availability'};
   case 'Callout update':return {icon:'callout' as const,destination:'Review your callout'};
+  case 'Operations need review':return {icon:'operations' as const,destination:'Review current operational actions'};
+  case 'Payroll preparation update':return {icon:'payroll' as const,destination:'Review the current payroll period'};
+  case 'Pay statement update':return {icon:'statement' as const,destination:'Open your current pay statement'};
+  case 'Device notification test':return {icon:'device' as const,destination:'Review this device notification test'};
   default:return {icon:'device' as const,destination:'Open the current record'};
  }
 }

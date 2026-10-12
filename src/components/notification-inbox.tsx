@@ -14,13 +14,17 @@ import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import {ArrowUpRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import {MagnifyingGlassIcon} from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
+import {ListChecksIcon} from '@phosphor-icons/react/dist/ssr/ListChecks';
+import {WalletIcon} from '@phosphor-icons/react/dist/ssr/Wallet';
+import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
+import {DeviceMobileIcon} from '@phosphor-icons/react/dist/ssr/DeviceMobile';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import type {PrivatePanelState} from '../lib/private-snapshot-client';
 import type {EmployeeViewSnapshot,NotificationReviewState,NotificationActionState} from '../lib/employee-view';
 import {filterNotifications,groupNotifications,notificationPresentation,type NotificationFilter} from '../lib/notification-inbox-view';
 import styles from './notification-inbox.module.css';
 
-const icons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:WarningCircleIcon,device:BellIcon};
+const icons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:WarningCircleIcon,device:DeviceMobileIcon,operations:ListChecksIcon,payroll:WalletIcon,statement:ReceiptIcon};
 const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};
 const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
 const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All'},{value:'unread',label:'Unread'},{value:'required',label:'Needs action'}];

@@ -34,7 +34,7 @@ export function AccountRecovery({kind,actorId}:{kind:'request'|'reset'|'assisted
    if(kind==='request'&&response.status===202&&data.state==='accepted'){setMessage(data.message);setDone(true);}
    else if(kind==='reset'&&response.ok&&data.state==='reset'){setMessage('Password reset. All portal sessions have ended. Sign in with your new password.');setDone(true);}
    else if(kind==='assisted'&&response.ok&&data.state==='issued'&&/^[A-Za-z0-9_-]{43}$/.test(data.proof)&&Number.isFinite(Date.parse(data.expiresAt))&&data.employeeId===(body as {employeeId:string}).employeeId){setIssued(data);}
-   else setMessage(kind==='reset'&&data.state==='invalid'?'This recovery code has expired, was already used, or cannot be verified. Request a new proof or contact your manager.':response.status===401||response.status===403?'Your access ended. Sign in again.':'Recovery could not be confirmed. Keep your current access and try again.');
+   else setMessage(kind==='reset'&&data.state==='invalid'?'This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.':response.status===401||response.status===403?'Your access ended. Sign in again.':'Recovery could not be confirmed. Keep your current access and try again.');
   }catch{if(current===generation.current)setMessage(kind==='reset'?'The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.':'Recovery is unavailable. Try again or contact your manager for assisted recovery.');}
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
  }

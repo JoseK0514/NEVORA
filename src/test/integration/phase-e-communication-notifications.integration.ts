@@ -7,6 +7,7 @@ import {businessTime} from '../../lib/business-time';
 import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
 import {sqlSubscriptionRepository} from '../../lib/data/push-subscriptions';
 import {sqlDeliveryRepository} from '../../lib/data/push-deliveries';
+import type {SqlStatement} from '../../lib/notifications/types';
 import {readPortalNotificationList,markManagementNotificationRead} from '../../lib/data/portal-notification-list.server';
 import {readEmployeeNotificationList} from '../../lib/data/employee-notification-list.server';
 import {createNotificationOpenHandler} from '../../lib/notifications/open';
@@ -116,7 +117,7 @@ it('management inbox suppresses a source revoked before its final observation',a
  const id=await managementTestNotification();let revoked=false;
  const revoke=async()=>{revoked=true;await q("UPDATE push_subscriptions SET status='detached',encrypted_material=NULL WHERE employee_id=$1",[owner.employee.id]);};
  const racing:typeof db.executor={
-  query:async<T>(statement,signal)=>{if(statement.text.startsWith('SELECT (SELECT expires_at'))await revoke();return db.executor.query<T>(statement,signal);},
+  query:async<T>(statement:SqlStatement,signal?:AbortSignal)=>{if(statement.text.startsWith('SELECT (SELECT expires_at'))await revoke();return db.executor.query<T>(statement,signal);},
   transaction:async(statements,signal)=>{if(statements.some(statement=>statement.text.startsWith('WITH facts AS MATERIALIZED')))await revoke();return db.executor.transaction(statements,signal);},
  };
  expect(await readPortalNotificationList(owner,'test',racing)).toMatchObject({state:'ready',coverage:'complete',items:[]});

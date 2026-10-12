@@ -48,7 +48,7 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   expect(html).not.toContain('Password updated');
  });
  it('explains an invalid proof without claiming account or password state',()=>{
-  const message='This recovery code has expired, was already used, or cannot be verified. Request a new proof or contact your manager.';
+  const message='This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.';
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done={false} message={message} onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(html).toContain('Use a new recovery code');expect(html).toContain(message);
   expect(html).toContain('Request a new recovery code');expect(html).not.toContain('Password updated');

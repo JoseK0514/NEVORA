@@ -143,3 +143,6 @@
   .payroll-workflow .pw-rule .pw-fields { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .payroll-workflow .pw-button { transition: none; } }
+
+.payroll-workflow .pw-review-current { min-width:0; display:grid; gap:16px; }
+.payroll-workflow .pw-workflow-guidance { margin:0; font-size:13px; line-height:1.6; color:var(--design-text-secondary); }

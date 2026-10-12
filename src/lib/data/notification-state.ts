@@ -23,6 +23,11 @@ import { canAccessPublishedAssignment, destinationForSource, isReviewRole, isSel
 import { nextRoutineTime } from '../notifications/policy';
 import { buildAcknowledgementState } from '../assistance/acknowledgement-state';
 export const notificationReadSql = {
+    summarySeeds: (environment='$1', employee='$2', source='$3', version='$4') => `SELECT event_key,urgency FROM notifications WHERE environment=${environment} AND employee_id=${employee} AND source_kind='EXCHANGE' AND source_id=${source} AND source_version=${version} AND purpose='SUMMARY' AND push_state='materialized' AND cancelled_at IS NULL`,
+    coverageLocations: () => `SELECT l.id,l.short_name AS name,s.minimum_staff_per_shift AS "minimumStaffPerShift",s.requires_designated_lead AS "requiresDesignatedLead" FROM locations l LEFT JOIN location_staffing_settings s ON s.location_id=l.id WHERE l.active=true`,
+    coverageWindows: () => `SELECT location_id AS "locationId",day_of_week AS "dayOfWeek",left(start_time::text,5) AS "startTime",left(end_time::text,5) AS "endTime",minimum_staff AS "minimumStaff", COALESCE((SELECT jsonb_agg(jsonb_build_object('positionId',r.position_id,'quantity',r.quantity)) FROM coverage_window_position_requirements r WHERE r.coverage_window_id=location_coverage_windows.id),'[]'::jsonb) AS "positionRequirements" FROM location_coverage_windows`,
+    coverageEmployees: () => `SELECT e.id,e.first_name AS name,e.role,e.active,ARRAY(SELECT location_id FROM employee_location_eligibility WHERE employee_id=e.id) AS "eligibleLocationIds",ARRAY(SELECT ep.position_id FROM employee_positions ep JOIN positions p ON p.id=ep.position_id WHERE ep.employee_id=e.id AND p.active=true) AS "positionIds" FROM employees e`,
+    coveragePositions: () => `SELECT id,workspace_id AS "workspaceId",name,active,created_at::text AS "createdAt",updated_at::text AS "updatedAt" FROM positions`,
     communication: (id='$1') => `SELECT r.id::text AS version,to_jsonb(r.published_at) AS updated_at,to_jsonb(r.expires_at) AS expires_at,
       ARRAY(SELECT candidate.id FROM employees candidate WHERE ${communicationRecipientAllowedSql('candidate.id')} ORDER BY candidate.id) AS recipient_ids
       FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id JOIN workspaces w ON w.id=c.workspace_id AND w.singleton AND w.active
@@ -137,7 +142,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                         // Compatibility for already queued revision-keyed coverage groups:
                         // only their own consumed semantic seed can prove the unchanged need.
                         if(current.kind!=='EXCHANGE' || current.record.status!=='OPEN' || !current.semanticNeedKey)continue;
-                        const seeds=await executor.query<{event_key:string;urgency:NotificationIntent['urgency']}>({text:`SELECT event_key,urgency FROM notifications WHERE environment=$1 AND employee_id=$2 AND source_kind='EXCHANGE' AND source_id=$3 AND source_version=$4 AND purpose='SUMMARY' AND push_state='materialized' AND cancelled_at IS NULL`,values:[intent.environment,intent.employeeId,member.source.id,member.source.version]});
+                        const seeds=await executor.query<{event_key:string;urgency:NotificationIntent['urgency']}>({text:notificationReadSql.summarySeeds(),values:[intent.environment,intent.employeeId,member.source.id,member.source.version]});
                         if(!seeds.some(seed=>isCurrentCoverageAttentionSeed({...intent,source:member.source,effectiveVersion:member.source.version,eventKey:seed.event_key,urgency:seed.urgency},current)))continue;
                     }
                     items.push(...summarySourceItems(current).filter(item=>item.id===member.itemId));
@@ -333,10 +338,10 @@ async function readAvailabilitySource(week: string, executor: SqlExecutor): Prom
 async function readCoverageSource(week: string, executor: SqlExecutor,timeZone:string): Promise<SourceSnapshot> {
     const [state,locations,coverageWindows,employees,positions] = await Promise.all([
         readNotificationWeekState([addDays(week,-7),week],executor),
-        executor.query<HealthLocation>({text:`SELECT l.id,l.short_name AS name,s.minimum_staff_per_shift AS "minimumStaffPerShift",s.requires_designated_lead AS "requiresDesignatedLead" FROM locations l LEFT JOIN location_staffing_settings s ON s.location_id=l.id WHERE l.active=true`,values:[]}),
-        executor.query<HealthCoverageWindow>({text:`SELECT location_id AS "locationId",day_of_week AS "dayOfWeek",left(start_time::text,5) AS "startTime",left(end_time::text,5) AS "endTime",minimum_staff AS "minimumStaff", COALESCE((SELECT jsonb_agg(jsonb_build_object('positionId',r.position_id,'quantity',r.quantity)) FROM coverage_window_position_requirements r WHERE r.coverage_window_id=location_coverage_windows.id),'[]'::jsonb) AS "positionRequirements" FROM location_coverage_windows`,values:[]}),
-        executor.query<HealthEmployee>({text:`SELECT e.id,e.first_name AS name,e.role,e.active,ARRAY(SELECT location_id FROM employee_location_eligibility WHERE employee_id=e.id) AS "eligibleLocationIds",ARRAY(SELECT ep.position_id FROM employee_positions ep JOIN positions p ON p.id=ep.position_id WHERE ep.employee_id=e.id AND p.active=true) AS "positionIds" FROM employees e`,values:[]}),
-        executor.query<Position>({text:`SELECT id,workspace_id AS "workspaceId",name,active,created_at::text AS "createdAt",updated_at::text AS "updatedAt" FROM positions`,values:[]}),
+        executor.query<HealthLocation>({text:notificationReadSql.coverageLocations(),values:[]}),
+        executor.query<HealthCoverageWindow>({text:notificationReadSql.coverageWindows(),values:[]}),
+        executor.query<HealthEmployee>({text:notificationReadSql.coverageEmployees(),values:[]}),
+        executor.query<Position>({text:notificationReadSql.coveragePositions(),values:[]}),
     ]);
     const health = calculateScheduleHealth({locations,coverageWindows,positions,weekDates:weekDates(week),employees,
         shifts:state.shifts.filter(s=>!s.isCalloutApproved && state.schedules.some(schedule=>schedule.id===s.scheduleId && schedule.status!=='ARCHIVED')).map(s=>({...s,positionId:s.positionId || undefined,id:s.sourceShiftId}))});

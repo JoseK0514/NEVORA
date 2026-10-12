@@ -23,11 +23,11 @@ export function payrollNoticeDelivery(
     : "DISABLED";
 }
 /** This query reads metadata and current rights only, never approved financial snapshots. */
-const authorized = `SELECT n.version,n.kind FROM payroll_notice_sources n
+export const payrollNoticeReadSql = (id='$1',recipient='$2') => `SELECT n.version,n.kind FROM payroll_notice_sources n
  JOIN workspaces w ON w.id=n.workspace_id AND w.singleton AND w.active
- JOIN employees e ON e.id=$2 AND e.active
+ JOIN employees e ON e.id=${recipient} AND e.active
  JOIN locations l ON l.id=e.primary_location_id AND l.workspace_id=w.id
- WHERE n.id=$1::text::uuid AND n.payload->>'workspaceVersion'=w.updated_at::text AND (
+ WHERE n.id=${id}::text::uuid AND n.payload->>'workspaceVersion'=w.updated_at::text AND (
  (n.kind='PAYROLL_PREPARATION'
  AND (e.role='OWNER' OR EXISTS(SELECT 1 FROM payroll_grants_current g WHERE g.workspace_id=w.id AND g.employee_id=e.id AND g.payload->>'review'='true'))
  AND EXISTS(SELECT 1 FROM payroll_setting_revisions s WHERE s.workspace_id=w.id AND s.revision=(n.payload->>'settingsRevision')::integer AND s.payload->'preferences'->'automation'->>'reminders'='true' AND s.revision=(SELECT revision FROM payroll_setting_revisions WHERE workspace_id=w.id AND effective_from<=(clock_timestamp() AT TIME ZONE w.time_zone)::date ORDER BY effective_from DESC,revision DESC LIMIT 1))
@@ -66,7 +66,7 @@ export async function checkPayrollNotice(
     )
       return no("workspace_changed");
     const [r] = await ex.query<{ version: string; kind: string }>(
-      q(authorized, intent.source.id, recipientId),
+      q(payrollNoticeReadSql(), intent.source.id, recipientId),
     );
     if (
       !r ||
@@ -163,7 +163,7 @@ export async function payrollNoticeStatements(
         ...base,
         text: base.text.replace(
           "VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending')",
-          `SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending' WHERE EXISTS(${authorized.replaceAll("$1", "$10")})`,
+          `SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending' WHERE EXISTS(${payrollNoticeReadSql('$10')})`,
         ),
       });
     }

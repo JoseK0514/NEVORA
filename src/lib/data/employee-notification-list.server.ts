@@ -12,6 +12,7 @@ import {neonNotificationExecutor,notificationWeekReadSql} from './notification-t
 import {workspaceReadSql} from './workspaces';
 import {assertEmployeeViewProof,employeeViewGuards,readEmployeeWorkspace,employeeReadLimits} from './employee-profile.server';
 import {isManagementAuthorizationError} from './management-session';
+import {payrollNoticeReadSql} from '../payroll/notices';
 import {attentionSourceVersion} from './employee-attention-receipts.server';
 
 const LIMIT=25,MAX_READS=64,MAX_BYTES=1_000_000,BUDGET_MS=8000;
@@ -68,10 +69,16 @@ const templates:Template[]=[
  {name:'selfTest',args:2,sql:p=>notificationReadSql.selfTest(p[0],p[1])},
 ];
 type Entry={key:string;template:Template;values:readonly unknown[]};
-export function notificationReadManifest(){
+const managementTemplates:Template[]=[
+ {name:'summarySeeds',args:4,sql:p=>notificationReadSql.summarySeeds(p[0],p[1],p[2],p[3])},
+ ...(['coverageLocations','coverageWindows','coverageEmployees','coveragePositions'] as const).map(name=>({name,args:0,sql:()=>notificationReadSql[name]()})),
+ {name:'payrollNotice',args:2,sql:p=>payrollNoticeReadSql(p[0],p[1])},
+];
+export function notificationReadManifest(includeManagement=false){
+ const allowed=includeManagement?[...templates,...managementTemplates]:templates;
  const entries=new Map<string,Entry>();
  return {entries,identify(statement:SqlStatement){
-  const template=templates.find(t=>statement.text===t.sql(Array.from({length:t.args},(_,i)=>`$${i+1}`)));
+  const template=allowed.find(t=>statement.text===t.sql(Array.from({length:t.args},(_,i)=>`$${i+1}`)));
   if(!template||statement.values.length!==template.args)throw Error('Unsupported notification read');
   const values=structuredClone(statement.values);
   for(const value of values){
