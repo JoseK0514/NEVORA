@@ -56,6 +56,8 @@ export type PayrollCapabilities = {
   canApprove: boolean;
   internalCalculatorAvailable: false;
   bankCompatibility: "UNVERIFIED";
+  /** Runtime transport readiness only; consent and source access are checked per delivery. */
+  noticeDelivery?: "ENABLED" | "DISABLED";
 };
 export type PayrollSettingsRevision = {
   revision: number;
@@ -169,7 +171,7 @@ export type PayrollRun = {
   createdAt: string;
 };
 export type PayrollJob = {
-  outcome?: "NOT_SENT_STUB" | null;
+  outcome?: "NOT_SENT_STUB" | "QUEUED" | "QUEUED_DELIVERY_DISABLED" | "NO_CURRENT_RECIPIENTS" | null;
   id: string;
   runId: string | null;
   kind: "PREPARE" | "PDF" | "PUBLISH" | "REMINDER";
@@ -177,11 +179,32 @@ export type PayrollJob = {
   attempts: number;
   error: string | null;
 };
+export type PayrollMissingPeriod = {
+  period: PayrollPeriod;
+  payday: string;
+  settingsRevision: number;
+  state: "MISSING" | "AMBIGUOUS_TRANSITION";
+  issues: string[];
+};
+export type PayrollBacklogSummary = {
+  asOfDate: string;
+  rangeStart: string | null;
+  rangeEnd: string;
+  /** Null counts mean the bounded history scan overflowed; never interpret as zero. */
+  missingCount: number | null;
+  remainingCount: number | null;
+  returnedCount: number;
+  ambiguousCount: number | null;
+  overflow: boolean;
+};
 export type PayrollRunsResponse = {
   version: "PAYROLL_API_V1";
   capabilities: PayrollCapabilities;
   runs: PayrollRun[];
   jobs: PayrollJob[];
+  /** Oldest first, at most 50, from effective settings history and original runs. */
+  missingPeriods?: PayrollMissingPeriod[];
+  backlog?: PayrollBacklogSummary;
 };
 export type PayrollRunCommand = { operationId: string } & (
   | { action: "PREPARE"; period: PayrollPeriod; payday: string }
