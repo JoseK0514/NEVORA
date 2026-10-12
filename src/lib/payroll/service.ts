@@ -1,3 +1,6 @@
+import { payrollHistorySql } from "./history";
+import { missingPayrollPeriods } from "./backlog";
+import { payrollNoticeDelivery } from "./notices";
 import { randomUUID } from "node:crypto";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import type { SessionMutationProof } from "../shift-changes/types";
@@ -107,6 +110,7 @@ async function capabilities(
     canApprove: r.owner || r.approve,
     internalCalculatorAvailable: false,
     bankCompatibility: "UNVERIFIED",
+    noticeDelivery: payrollNoticeDelivery(),
   };
 }
 export async function receipt(
@@ -337,7 +341,8 @@ export async function runs(
     proof,
     "REVIEW",
     q(
-      `SELECT d.id::text,d.run_id::text,d.kind,d.employee_id,d.filename,d.sha256,EXISTS(SELECT 1 FROM payroll_publications p WHERE p.workspace_id=d.workspace_id AND p.run_id=d.run_id) AS published FROM payroll_documents d WHERE workspace_id=${ws}`,
+      `SELECT d.id::text,d.run_id::text,d.kind,d.employee_id,d.filename,d.sha256,EXISTS(SELECT 1 FROM payroll_publications p WHERE p.workspace_id=d.workspace_id AND p.run_id=d.run_id) AS published FROM payroll_documents d WHERE workspace_id=${ws} AND d.run_id=ANY($1::uuid[])`,
+      rows.map((r) => r.payload.id),
     ),
     ex,
   );
@@ -345,10 +350,32 @@ export async function runs(
     proof,
     "REVIEW",
     q(
-      `SELECT id::text,run_id::text AS "runId",kind,status,attempts,error,CASE WHEN kind='REMINDER' AND status='SUCCEEDED' THEN 'NOT_SENT_STUB' ELSE NULL END AS outcome FROM payroll_jobs WHERE workspace_id=${ws} ORDER BY available_at DESC LIMIT 300`,
+      `SELECT id::text,run_id::text AS "runId",kind,status,attempts,error,CASE WHEN kind='REMINDER' AND status='SUCCEEDED' THEN (SELECT CASE WHEN n.payload->>'delivery'='NOT_SENT' THEN 'NOT_SENT_STUB' ELSE n.payload->>'delivery' END FROM payroll_notice_receipts n WHERE n.workspace_id=payroll_jobs.workspace_id AND n.business_key=payroll_jobs.business_key) ELSE NULL END AS outcome FROM payroll_jobs WHERE workspace_id=${ws} ORDER BY available_at DESC LIMIT 300`,
     ),
     ex,
   );
+  const [history] = await guarded<{
+    today: string;
+    history: PayrollSettingsRevision[];
+    originals: { startDate: string; endDate: string }[];
+    overflow: boolean;
+  }>(proof, "REVIEW", q(payrollHistorySql), ex);
+  const backlog = missingPayrollPeriods(
+    history.history,
+    history.originals,
+    history.today,
+  );
+  if (history.overflow) {
+    backlog.missingPeriods = [];
+    backlog.backlog = {
+      ...backlog.backlog,
+      missingCount: null,
+      remainingCount: null,
+      ambiguousCount: null,
+      returnedCount: 0,
+      overflow: true,
+    };
+  }
   return {
     version: "PAYROLL_API_V1",
     capabilities: await capabilities(proof, ex),
@@ -359,6 +386,7 @@ export async function runs(
         .map(documentProjection),
     })),
     jobs,
+    ...backlog,
   };
 }
 export async function readRun(
@@ -721,8 +749,8 @@ export async function command(
     const s = await source(proof, r.period, ex);
     if (hash(s.source) !== hash(snapshot.source))
       throw new PayrollError("SOURCE_CONFLICT", 409);
-    const {preflightDocumentGlyphs}=await import('./documents');
-    await preflightDocumentGlyphs(r,snapshot);
+    const { preflightDocumentGlyphs } = await import("./documents");
+    await preflightDocumentGlyphs(r, snapshot);
     const checked = importSnapshot(s, snapshot.amounts);
     if (checked.failures.length)
       throw new PayrollError("FINALIZED_TIME_REQUIRED", 409);

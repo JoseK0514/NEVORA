@@ -11,7 +11,9 @@ export function canAccessPublishedAssignment(recipient: RecipientAccess, shift: 
   return shift.employeeId === recipient.employeeId && (isReviewRole(recipient) || recipient.allowedLocationIds.includes(shift.locationId));
 }
 const ROUTE_PARAMS: Record<string, readonly string[]> = {
-  '/app': [], '/app/schedule': ['week','employeeId'], '/app/availability': ['week','employeeId'],
+  '/app': [],
+  '/app/payroll': [],
+  '/app/my-pay': [], '/app/schedule': ['week','employeeId'], '/app/availability': ['week','employeeId'],
   '/app/requests': ['tab','requestId'], '/app/exchange': ['tab','requestId'],
   '/app/schedule/coverage': ['week','date','locationId','start','end','lead','repair','positionId','refresh'],
   '/app/notifications/open': ['notificationId'],

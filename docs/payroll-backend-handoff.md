@@ -1,9 +1,9 @@
 # Configurable payroll backend handoff
 
 Owner: payroll_backend executor; integration/release owner: root. Candidate branch:
-`codex/configurable-payroll-20261012`. Contract checkpoints: `4272655` and `283f57f` (additive optional provider/channel
-metadata and explicit NOT_SENT_STUB outcome); uncommitted implementation remains
-in the authorized candidate checkout. No production deployment, bank submission,
+`codex/configurable-payroll-20261012`. P1 backend baseline: `f1da5a03`. Contract
+checkpoints: `4272655`, `283f57f`, and additive P2 contract `43924638`. The P2
+implementation is uncommitted in the authorized candidate checkout. No production deployment, bank submission,
 real notification delivery, or independent finding closure.
 
 ## Runtime and adapter boundary
@@ -56,17 +56,49 @@ never reduce net, and saved rules never recalculate provider amounts.
 Monthly periods are calendar months; semimonthly periods are days 1–15 and 16–end.
 Their anchor date is a rollout boundary. Weekly/biweekly periods start on the
 anchor date. The scheduler prepares only the most recent completed period;
-historical catch-up is an explicit reviewed action. Payday is period end plus
+historical catch-up is an explicit reviewed action using the oldest missing-period
+preview. That preview uses immutable effective settings history, original runs,
+and exact calendar boundaries. Overlapping schedules or a schedule change inside
+a period are flagged AMBIGUOUS_TRANSITION for human resolution. Corrections do not
+replace original-period presence. At most 50 oldest gaps are returned with exact
+remaining counts. History exceeding 1,000 setting revisions, 10,000 original runs
+in the scanned range, or 3,660 days returns explicit overflow and unknown counts.
+SQL limits apply before JSON aggregation; no silently truncated success count. Payday is period end plus
 saved offset. Preparation never finalizes time or supplies invented amounts.
 
 Durable jobs have unique business keys, expiring claim tokens, bounded retries,
 explicit manual retry, and transactional end fencing. PDF generation renews its
 lease between documents and stores a complete immutable set atomically; a crash
 before commit leaves no partial set. Publication and reminder jobs are separate.
-Completed reminder jobs expose outcome NOT_SENT_STUB. The notification transport
-is deliberately NOT IMPLEMENTED/disabled: synthetic
-private-link receipts say PRIVATE_LINK_STUB and NOT_SENT. A successful stub job
-never means a real notice was sent. No actual external transport is configured.
+Reminder jobs now atomically write private source metadata and generic intents via
+`notificationIntentStatements` inside the same fenced transaction. The existing
+push dispatcher owns subscription consent, activation, retry and provider delivery;
+payroll never creates or invokes a sender. Old PRIVATE_LINK_STUB/NOT_SENT receipts
+remain immutable and project NOT_SENT_STUB. New receipts record actual intent
+counts and QUEUED, QUEUED_DELIVERY_DISABLED, or NO_CURRENT_RECIPIENTS. A queued job
+never means a delivered notification; capability noticeDelivery reports current
+runtime readiness only. Queue environment is fixed when the intent is created.
+Actual external delivery remains disabled/unverified; no live sender was tested.
+
+Preparation sources authorize only an active Owner or current explicit review
+grant. Statement sources authorize only the active employee owning the exact
+published approved statement. Delivery and protected notification-open recheck
+payroll enablement, current workspace identity/version, current authority and
+current effective reminder enablement using metadata-only queries. Financial
+snapshots and document bytes are not loaded. Private copy and external push
+envelopes contain no employee name, money, period, source ID or document URL.
+The external envelope retains the existing opaque notification ID and generic
+message. Protected open routes to /app/payroll or /app/my-pay; there is no inbox UI.
+
+Reminder lead values are eligibility thresholds, collapsed to one notice per
+period/settings revision. Each scheduler invocation considers historical completed
+periods, including older periods with long payday offsets, and selects only the
+most recent period whose payday has entered a configured threshold. If its original
+run is approved, no older burst is generated. A restart after a missed lead date
+can queue this one current actionable notice. Repeated invocations reuse the same
+business key. All other gaps remain visible for explicit manual preparation.
+Automatic preparation still handles only the latest completed period, and never
+approves money or finalizes time. Overflow/ambiguous history does not auto-notify.
 
 PDF generation uses the PDF-standard Helvetica WinAnsi repertoire (including
 English/Spanish accents), validates glyph support, wraps
@@ -88,7 +120,7 @@ fixture database. It creates fictional Owner, explicitly granted Manager reviewe
 ungranted Manager, and employees A/B; returns IDs, fictional password, server proof,
 period, exact amounts, preferences and run ID. It includes nonzero finalized time
 and a complete reviewed roster. `published:false` leaves imported review state;
-`published:true` uses the real approval/PDF/publication/stub-worker path.
+`published:true` uses the real approval/PDF/publication/private-outbox path.
 
 `createOwnedNextApp(evidenceDirectory,{payrollEnabled:true})` enables payroll only
 in its owned scratch runtime. Default is false; parent flags are not inherited.
@@ -107,5 +139,15 @@ and accepted format, and accountant-validated internal tax cases remain blocked
 on external evidence; neutral import/settings/PDF work does not imply those states.
 
 Validation matrix and exact local invocations are recorded under
-`.omo/evidence/payroll-backend/README.md`. Earlier failed logs are retained and
+`.omo/evidence/payroll-backend/README.md` (P1) and
+`.omo/evidence/payroll-p2/README.md` (P2). Earlier failed logs are retained and
 identified; only fresh successful runs count as observed evidence.
+
+## P1 review follow-ups included in P2
+
+P1-enum-coercion: all enum validators now require an actual string; singleton
+JSON arrays, objects, booleans and numbers are rejected instead of coerced.
+P1-M2: document metadata reads are constrained to the selected 300 run IDs;
+an empty selection fetches no documents and older immutable history is not loaded.
+These fixes have focused regression scenarios; independent finding closure belongs
+to the review owner. Broad module restructuring was excluded from this bounded round.

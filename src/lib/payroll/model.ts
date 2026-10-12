@@ -1,3 +1,5 @@
+const enumValue = (value: unknown, allowed: string[]) =>
+  typeof value === "string" && allowed.includes(value);
 import type {
   PayrollImport,
   PayrollPreferences,
@@ -98,12 +100,10 @@ function rules(v: unknown): PayrollRule[] {
     insist(text(r.id, 80) && text(r.name) && !ids.has(r.id), "rules.id");
     ids.add(r.id);
     insist(
-      ["EMPLOYEE_DEDUCTION", "EMPLOYER_CONTRIBUTION"].includes(
-        String(r.kind),
-      ) &&
+      enumValue(r.kind, ["EMPLOYEE_DEDUCTION", "EMPLOYER_CONTRIBUTION"]) &&
         r.base === "GROSS" &&
-        ["ALL", "EMPLOYEE_ELECTION"].includes(String(r.applicability)) &&
-        ["EMPLOYER", "PROVIDER"].includes(String(r.remittance)),
+        enumValue(r.applicability, ["ALL", "EMPLOYEE_ELECTION"]) &&
+        enumValue(r.remittance, ["EMPLOYER", "PROVIDER"]),
       "rules",
     );
     insist(
@@ -141,15 +141,13 @@ export function parsePreferences(v: unknown): PayrollPreferences {
   ]);
   insist(
     text(p.companyName) &&
-      ["en", "es"].includes(String(p.language)) &&
+      enumValue(p.language, ["en", "es"]) &&
       p.currency === "USD",
     "preferences",
   );
   const s = record(p.schedule, ["frequency", "anchorDate", "paydayOffsetDays"]);
   insist(
-    ["WEEKLY", "BIWEEKLY", "SEMIMONTHLY", "MONTHLY"].includes(
-      String(s.frequency),
-    ) &&
+    enumValue(s.frequency, ["WEEKLY", "BIWEEKLY", "SEMIMONTHLY", "MONTHLY"]) &&
       date(s.anchorDate) &&
       Number.isInteger(s.paydayOffsetDays) &&
       Number(s.paydayOffsetDays) >= 0 &&
@@ -180,19 +178,23 @@ export function parsePreferences(v: unknown): PayrollPreferences {
   );
   insist(
     p.sourceProvider === undefined ||
-      ["ADP_RUN", "QUICKBOOKS_PAYROLL", "PAYCHEX", "GUSTO", "OTHER"].includes(
-        String(p.sourceProvider),
-      ),
+      enumValue(p.sourceProvider, [
+        "ADP_RUN",
+        "QUICKBOOKS_PAYROLL",
+        "PAYCHEX",
+        "GUSTO",
+        "OTHER",
+      ]),
     "sourceProvider",
   );
   insist(
     p.bankChannel === undefined ||
-      [
+      enumValue(p.bankChannel, [
         "POPULAR_WCM_TEXT",
         "POPULAR_WCM_NACHA",
         "POPULAR_COMMERCIAL_MANUAL",
         "OTHER",
-      ].includes(String(p.bankChannel)),
+      ]),
     "bankChannel",
   );
   rules(p.rules);
@@ -326,7 +328,7 @@ export function parseSettingsCommand(v: unknown): PayrollSettingsCommand {
     const e = record(c.exception, ["employeeId", "language", "rules"]);
     insist(
       text(e.employeeId, 200) &&
-        (e.language === null || ["en", "es"].includes(String(e.language))),
+        (e.language === null || enumValue(e.language, ["en", "es"])),
       "exception",
     );
     if (e.rules !== null) rules(e.rules);

@@ -138,3 +138,95 @@ it("rejects periods longer than existing custody accepts and unsafe revisions", 
     }),
   ).toThrow();
 });
+
+it("P1-enum-coercion rejects JSON arrays, objects, numbers and booleans in enum fields", () => {
+  const base = {
+    companyName: "Fixture",
+    language: "es",
+    currency: "USD",
+    schedule: {
+      frequency: "WEEKLY",
+      anchorDate: "2026-01-01",
+      paydayOffsetDays: 1,
+    },
+    rules: [],
+    automation: {
+      prepare: true,
+      publish: false,
+      reminders: false,
+      reminderLeadDays: [],
+    },
+    bankProfile: null,
+    sourceProvider: "GUSTO",
+    bankChannel: "OTHER",
+  };
+  for (const [field, value] of [
+    ["language", "es"],
+    ["sourceProvider", "GUSTO"],
+    ["bankChannel", "OTHER"],
+  ] as const) {
+    for (const invalid of [[value], {}, 1, true])
+      expect(() => parsePreferences({ ...base, [field]: invalid })).toThrow();
+  }
+  expect(parsePreferences(base)).toEqual(base);
+  for (const invalid of [["WEEKLY"], {}, 1, true])
+    expect(() =>
+      parsePreferences({
+        ...base,
+        schedule: { ...base.schedule, frequency: invalid },
+      }),
+    ).toThrow();
+});
+it("P1-enum-coercion rejects nonstrings for each rule enum and employee exception language", async () => {
+  const { parseSettingsCommand } = await import("./model");
+  const p = {
+    companyName: "Fixture",
+    language: "en",
+    currency: "USD",
+    schedule: {
+      frequency: "WEEKLY",
+      anchorDate: "2026-01-01",
+      paydayOffsetDays: 1,
+    },
+    automation: {
+      prepare: false,
+      publish: false,
+      reminders: false,
+      reminderLeadDays: [],
+    },
+    bankProfile: null,
+  };
+  const rule = {
+    id: "x",
+    name: "Rule",
+    kind: "EMPLOYEE_DEDUCTION",
+    method: "FIXED",
+    amountMinor: "50",
+    basisPoints: null,
+    base: "GROSS",
+    applicability: "ALL",
+    effectiveFrom: "2026-01-01",
+    effectiveTo: null,
+    capMinor: null,
+    remittance: "PROVIDER",
+  };
+  expect(parsePreferences({ ...p, rules: [rule] }).rules[0]).toEqual(rule);
+  for (const field of ["kind", "applicability", "remittance"] as const)
+    for (const value of [[rule[field]], {}, 1, true])
+      expect(() =>
+        parsePreferences({ ...p, rules: [{ ...rule, [field]: value }] }),
+      ).toThrow();
+  const c = {
+    action: "SAVE_EXCEPTION",
+    operationId: crypto.randomUUID(),
+    reason: "Fixture",
+    expectedRevision: 0,
+    effectiveFrom: "2026-01-01",
+    exception: { employeeId: "a", language: "es", rules: null },
+  };
+  expect(parseSettingsCommand(c)).toEqual(c);
+  for (const language of [["es"], {}, 1, true])
+    expect(() =>
+      parseSettingsCommand({ ...c, exception: { ...c.exception, language } }),
+    ).toThrow();
+});

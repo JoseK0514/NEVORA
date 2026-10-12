@@ -152,7 +152,7 @@ function validEnvelope(value) {
     title = 'Your NEVORA Schedule Changed'; body = 'Open NEVORA to review your schedule.';
   } else if (value.kind === 'COVERAGE_ATTENTION') {
     title = 'Coverage Needs Attention'; body = 'Open NEVORA to review coverage.';
-  } else if (['TIME_OFF_APPROVED', 'TIME_OFF_DENIED', 'CALLOUT_APPROVED', 'CALLOUT_DENIED', 'SWAP_RESPONSE_REQUIRED', 'SWAP_APPROVED', 'SWAP_DENIED', 'COVERAGE_APPROVED', 'COVERAGE_DENIED', 'AVAILABILITY_REMINDER', 'AVAILABILITY_SUMMARY', 'MANAGER_REVIEW', 'SELF_TEST'].includes(value.kind)) {
+  } else if (['TIME_OFF_APPROVED', 'TIME_OFF_DENIED', 'CALLOUT_APPROVED', 'CALLOUT_DENIED', 'SWAP_RESPONSE_REQUIRED', 'SWAP_APPROVED', 'SWAP_DENIED', 'COVERAGE_APPROVED', 'COVERAGE_DENIED', 'AVAILABILITY_REMINDER', 'AVAILABILITY_SUMMARY', 'PAYROLL_PREPARATION','PAYROLL_STATEMENT','MANAGER_REVIEW', 'SELF_TEST'].includes(value.kind)) {
     title = 'NEVORA Request Update'; body = 'Open NEVORA to review your pending task.';
   } else return false;
   return value.title === title && value.body === body;

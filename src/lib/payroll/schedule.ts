@@ -1,74 +1,32 @@
-import type { PayrollPreferences, PayrollSettingsRevision } from "./contracts";
+import { payrollHistorySql } from "./history";
+import { missingPayrollPeriods } from "./backlog";
+import type { PayrollSettingsRevision } from "./contracts";
 import type { SqlExecutor } from "../notifications/types";
 import { neonNotificationExecutor } from "../data/notification-transactions";
 import { enabled, locks, statement as q, workspaceSql as ws } from "./store";
 import { enqueue } from "./service";
-const day = (s: string) => new Date(`${s}T00:00:00Z`),
-  iso = (d: Date) => d.toISOString().slice(0, 10),
-  add = (s: string, n: number) => {
-    const d = day(s);
-    d.setUTCDate(d.getUTCDate() + n);
-    return iso(d);
-  };
-/** Most recent completed period only. Historical catch-up is an explicit review action. */
-export function duePeriod(
-  schedule: PayrollPreferences["schedule"],
-  today: string,
-) {
-  const anchor = schedule.anchorDate;
-  let start: string, end: string;
-  if (schedule.frequency === "WEEKLY" || schedule.frequency === "BIWEEKLY") {
-    const length = schedule.frequency === "WEEKLY" ? 7 : 14;
-    const elapsed = Math.floor(
-      (day(today).getTime() - day(anchor).getTime()) / 86400000,
-    );
-    if (elapsed < length) return null;
-    start = add(anchor, (Math.floor(elapsed / length) - 1) * length);
-    end = add(start, length - 1);
-  } else {
-    const now = day(today);
-    if (schedule.frequency === "MONTHLY") {
-      start = iso(
-        new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)),
-      );
-      end = iso(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0)));
-    } else if (now.getUTCDate() >= 16) {
-      start = iso(
-        new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)),
-      );
-      end = iso(
-        new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 15)),
-      );
-    } else {
-      start = iso(
-        new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 16)),
-      );
-      end = iso(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0)));
-    }
-    if (start < anchor) return null;
-  }
-  return {
-    period: { startDate: start, endDate: end },
-    payday: add(end, schedule.paydayOffsetDays),
-  };
-}
+import { duePeriod, day } from "./calendar";
+export { duePeriod } from "./calendar";
 export async function schedulePayroll(
   ex: SqlExecutor = neonNotificationExecutor(),
 ) {
   enabled();
   const [state] = await ex.query<{
     today: string;
+    overflow: boolean;
     settings: PayrollSettingsRevision | null;
-  }>(
-    q(
-      `SELECT to_char(clock_timestamp() AT TIME ZONE time_zone,'YYYY-MM-DD') AS today,(SELECT payload FROM payroll_setting_revisions WHERE workspace_id=w.id AND effective_from<=(clock_timestamp() AT TIME ZONE w.time_zone)::date ORDER BY effective_from DESC,revision DESC LIMIT 1) AS settings FROM workspaces w WHERE singleton AND active`,
-    ),
-  );
+    history: PayrollSettingsRevision[];
+    approved: { startDate: string; endDate: string }[];
+  }>(q(payrollHistorySql));
   if (!state?.settings) return { queued: 0 };
   const due = duePeriod(state.settings.preferences.schedule, state.today);
-  if (!due) return { queued: 0 };
+
   const statements = [];
-  if (state.settings.preferences.automation.prepare)
+  if (
+    due &&
+    due.period.startDate >= state.settings.effectiveFrom &&
+    state.settings.preferences.automation.prepare
+  )
     statements.push(
       enqueue(
         null,
@@ -77,20 +35,43 @@ export async function schedulePayroll(
         { ...due, settingsRevision: state.settings.revision },
       ),
     );
-  if (state.settings.preferences.automation.reminders) {
-    const lead = Math.round(
-      (day(due.payday).getTime() - day(state.today).getTime()) / 86400000,
+  if (!state.overflow && state.settings.preferences.automation.reminders) {
+    const candidates = missingPayrollPeriods(
+      state.history,
+      [],
+      state.today,
+      600,
     );
-    if (state.settings.preferences.automation.reminderLeadDays.includes(lead))
+    const actionable = candidates.missingPeriods.filter(
+      (candidate) =>
+        candidate.state === "MISSING" &&
+        state.settings!.preferences.automation.reminderLeadDays.some(
+          (n) =>
+            (day(candidate.payday).getTime() - day(state.today).getTime()) /
+              86400000 <=
+            n,
+        ),
+    );
+    // One most recent actionable cycle per invocation, including long payday offsets.
+    // Lead values are eligibility thresholds, collapsed to one notice per period/revision.
+    const target = actionable.at(-1);
+    if (
+      target &&
+      !state.approved.some(
+        (p) =>
+          p.startDate === target.period.startDate &&
+          p.endDate === target.period.endDate,
+      )
+    )
       statements.push(
         enqueue(
           null,
           "REMINDER",
-          `preparation-reminder:${due.period.startDate}:${lead}:${state.settings.revision}`,
+          `preparation-reminder:${target.period.startDate}:${target.period.endDate}:${state.settings.revision}`,
           {
             phase: "PREPARATION",
             settingsRevision: state.settings.revision,
-            period: due.period,
+            period: target.period,
             privatePath: "/app/payroll",
           },
         ),

@@ -130,7 +130,7 @@ ACCEPTED. Local verification never closes independent findings or approves relea
 |---|---|---|---|
 | P0 base/contract | Integration owner | LOCALLY VERIFIED | APIv1 4272655, additive contract 283f57f; UI handoff issued |
 | P1 preferences/import/runs/PDF | Backend + UI owners | IN PROGRESS | Backend SQL/import/document evidence: .omo/evidence/payroll-backend/README.md; integrated UI and review pending |
-| P2 preparation/publication/reminders | Backend + UI owners | IN PROGRESS | Durable prepare/PDF/publication and fenced retries locally tested; notice transport disabled NOT_SENT_STUB; missed-period automatic catch-up open |
+| P2 preparation/publication/reminders | Backend + UI owners | IN PROGRESS | Durable prepare/PDF/publication and fenced retries locally tested; P2 adds historical missing-period review and existing private push outbox adapter, 35 SQL scenarios and2199 unit tests passed with fake senders; real delivery activation and integrated acceptance remain open |
 | P3 bank-neutral adapter | Integration owner | LOCALLY VERIFIED | Synthetic neutral JSON exact totals/count/hash/replay; native bank acceptance and account mappings BLOCKED |
 | P4 internal calculator | Integration owner | NOT STARTED | accountant-validated cases/statutory scope BLOCKED; engine disabled |
 | Integrated review | Root QA + code reviewer | NOT STARTED | unit/SQL/auth/worker/browser/lint/typecheck/build on exact source |

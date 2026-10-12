@@ -1,4 +1,5 @@
 import {communicationDevelopmentAllowedSql,communicationRecipientAllowedSql} from '../communications/sql';
+import {checkPayrollNotice} from '../payroll/notices';
 import {readShiftChangeMaintenanceSnapshot,maintenanceExchangeSource} from './shift-change-maintenance';
 import {currentShiftTermsSql} from './shift-change-release';
 import { getWorkspace } from './workspaces';
@@ -50,7 +51,7 @@ export const notificationReadSql = {
       FROM schedule_week_settings WHERE week_start=${week}`,
 };
 
-const SOURCE_KINDS: readonly SourceKind[] = ['SCHEDULE', 'TIME_OFF', 'EXCHANGE', 'CALLOUT', 'AVAILABILITY', 'MANAGER_SUMMARY', 'SELF_TEST','COMMUNICATION'];
+const SOURCE_KINDS: readonly SourceKind[] = ['SCHEDULE', 'TIME_OFF', 'EXCHANGE', 'CALLOUT', 'AVAILABILITY', 'MANAGER_SUMMARY', 'SELF_TEST', 'COMMUNICATION', 'PAYROLL_PREPARATION', 'PAYROLL_STATEMENT'];
 function instant(value: unknown): string | null {
     const time = value instanceof Date ? value.getTime() : Date.parse(String(value));
     return Number.isFinite(time) ? new Date(time).toISOString() : null;
@@ -80,6 +81,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
             return { employeeId: row.id, role: row.role, active: row.active, allowedLocationIds: row.allowed_location_ids } satisfies RecipientAccess;
         },
         async readSource(source) {
+            if(source.kind==='PAYROLL_PREPARATION'||source.kind==='PAYROLL_STATEMENT')return null; // Payroll checks use metadata-only authority queries.
             if (source.kind === 'TIME_OFF') {
                 const record = await getTimeOffRequest(source.id, executor);
                 return record ? requestSnapshot('TIME_OFF', record) : null;
@@ -151,6 +153,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
         },
         async check(intent, recipientId, now, use = 'delivery') {
             if (intent.employeeId !== recipientId) return rejected(intent,'recipient_mismatch');
+            if(intent.source.kind==='PAYROLL_PREPARATION'||intent.source.kind==='PAYROLL_STATEMENT')return checkPayrollNotice(intent,recipientId,now,executor,workspace);
             let [recipient, source] = await Promise.all([repository.recipientAccess(recipientId),repository.readSource(intent.source)]);
             if(source?.kind==='EXCHANGE' && source.record.status==='OPEN'){const current=await readShiftChangeMaintenanceSnapshot(intent.source.id,'EXCHANGE',executor,now);if(current?.lifecycle.source)source=maintenanceExchangeSource(current,source.record);}
             try {

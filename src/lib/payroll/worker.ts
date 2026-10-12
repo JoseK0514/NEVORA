@@ -1,3 +1,4 @@
+import { payrollNoticeStatements } from "./notices";
 import { randomUUID } from "node:crypto";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import { neonNotificationExecutor } from "../data/notification-transactions";
@@ -65,31 +66,14 @@ export async function finishJob(
     ),
   ]);
 }
-/** Private-link transport is deliberately absent. Stub receipts assert no delivery. */
 export async function processJob(
   job: ClaimedJob,
   ex: SqlExecutor = neonNotificationExecutor(),
 ) {
   enabled();
   try {
-    if (job.kind === "REMINDER" && job.payload.phase === "PREPARATION") {
-      await finishJob(
-        job,
-        [
-          q(
-            "INSERT INTO payroll_notice_receipts(workspace_id,business_key,payload) VALUES($1,$2,$3::jsonb) ON CONFLICT DO NOTHING",
-            job.workspace_id,
-            job.business_key,
-            JSON.stringify({
-              path: "/app/payroll",
-              transport: "PRIVATE_LINK_STUB",
-              delivery: "NOT_SENT",
-              phase: "PREPARATION",
-            }),
-          ),
-        ],
-        ex,
-      );
+    if (job.kind === "REMINDER") {
+      await finishJob(job, await payrollNoticeStatements(job, ex), ex);
       return;
     }
     if (job.kind === "PREPARE") {
@@ -169,25 +153,6 @@ export async function processJob(
             delivery: "DISABLED",
           }),
         );
-    } else {
-      stmts = [
-        q(
-          `SELECT (CASE WHEN EXISTS(SELECT 1 FROM payroll_publications WHERE workspace_id=$1 AND run_id=$2::uuid) THEN '1' ELSE 'PUBLICATION_REQUIRED' END)::integer`,
-          job.workspace_id,
-          run.id,
-        ),
-        q(
-          "INSERT INTO payroll_notice_receipts(workspace_id,business_key,payload) VALUES($1,$2,$3::jsonb) ON CONFLICT DO NOTHING",
-          job.workspace_id,
-          job.business_key,
-          JSON.stringify({
-            runId: run.id,
-            path: "/app/my-pay",
-            transport: "PRIVATE_LINK_STUB",
-            delivery: "NOT_SENT",
-          }),
-        ),
-      ];
     }
     await finishJob(job, stmts, ex);
   } catch (error) {
@@ -196,14 +161,18 @@ export async function processJob(
         `UPDATE payroll_jobs SET status=CASE WHEN attempts>=5 OR $3 IN('SCHEDULE_CHANGED','PAYDAY_CONFLICT','UNSUPPORTED_DOCUMENT_GLYPH') THEN 'FAILED' ELSE 'PENDING' END,error=$3,available_at=clock_timestamp()+make_interval(secs=>LEAST(3600,30*attempts)),lease_token=NULL,lease_until=NULL WHERE id=$1::uuid AND lease_token=$2::uuid AND status='RUNNING'`,
         job.id,
         job.lease_token,
-        error instanceof Error && error.message.includes("UNSUPPORTED_DOCUMENT_GLYPH") ? "UNSUPPORTED_DOCUMENT_GLYPH" : error instanceof Error && error.message.includes("SCHEDULE_CHANGED")
-          ? "SCHEDULE_CHANGED"
-          : error instanceof Error && error.message.includes("PAYDAY_CONFLICT")
-            ? "PAYDAY_CONFLICT"
+        error instanceof Error &&
+          error.message.includes("UNSUPPORTED_DOCUMENT_GLYPH")
+          ? "UNSUPPORTED_DOCUMENT_GLYPH"
+          : error instanceof Error && error.message.includes("SCHEDULE_CHANGED")
+            ? "SCHEDULE_CHANGED"
             : error instanceof Error &&
-                error.message.includes("PAYROLL_LEASE_LOST")
-              ? "LEASE_LOST"
-              : "JOB_FAILED",
+                error.message.includes("PAYDAY_CONFLICT")
+              ? "PAYDAY_CONFLICT"
+              : error instanceof Error &&
+                  error.message.includes("PAYROLL_LEASE_LOST")
+                ? "LEASE_LOST"
+                : "JOB_FAILED",
       ),
     );
     throw error;

@@ -11,7 +11,7 @@ import type { WeekSettings } from '../data/week-settings';
 import type { AvailabilitySubmissionListItem } from '../data/availability-submissions';
 
 export type PushEnvironment = 'test' | 'production';
-export type SourceKind = 'SCHEDULE' | 'TIME_OFF' | 'EXCHANGE' | 'CALLOUT' | 'AVAILABILITY' | 'MANAGER_SUMMARY' | 'SELF_TEST' | 'COMMUNICATION';
+export type SourceKind = 'SCHEDULE' | 'TIME_OFF' | 'EXCHANGE' | 'CALLOUT' | 'AVAILABILITY' | 'MANAGER_SUMMARY' | 'SELF_TEST' | 'COMMUNICATION' | 'PAYROLL_PREPARATION' | 'PAYROLL_STATEMENT';
 /** SELF_TEST id = internal subscription id, version = verified ownership generation. */
 export type SourceRef = { kind: SourceKind; id: string; version: string };
 export type NotificationIntent = NotificationEvent & {
