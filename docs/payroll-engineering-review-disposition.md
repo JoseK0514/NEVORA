@@ -19,20 +19,26 @@ separate.
   36 real disposable PostgreSQL payroll scenarios passed, including an ambiguous
   period producing zero automatic jobs. The frozen recheck approved this repair
   with no blockers; `.omo/evidence/payroll-transition-recheck.md` retains the verdict.
-- UI H1, unconfirmed action recovery: the frozen `68c1887` UI can lock mutations
-  after a pre-commit interruption and reload. A global reference can also strand a
-  different signed-in actor. The UI owner is implementing same-reference re-entry
-  and actor/session isolation, with actual browser regressions. Acceptance remains
-  pending.
-- UI M1, correction approval: informational `CORRECTION_REASON` entries currently
-  disable approval in the frozen UI. The UI owner is separating informational
-  notes from blocking failures and testing correction approval/publication.
-  Acceptance remains pending.
+- UI H1, unconfirmed action recovery: repaired by UI `a5886d2`, adopted as
+  `166f5c7`. Explicit re-entry reuses the same UUID; actor/workspace namespaces
+  isolate recovery state. The frozen reviewer verified actual browser interruption,
+  same-browser actor switching, exact retry and changed-payload conflict recovery.
+- UI M1, correction approval: repaired by the same UI checkpoint. Informational
+  `CORRECTION_REASON:` notes stay visible while real failures remain blocking.
+  The reviewer verified actual linked correction review/approval/publication,
+  without an extra import workaround.
+- UI F1, historical notice readiness: repaired in `ea2d8ec`. The queue-time disabled
+  outcome no longer promises permanent non-delivery after transport activation.
+  The new regression first failed against the earlier wording, then 25 focused
+  tests passed with historical wording. Final root checks passed 2224 unit tests
+  and 63 matching browser checks. The bounded frozen recheck approved the repair
+  with no blockers at `.omo/evidence/payroll-final-recheck.md`.
 
 Review artifacts are retained under `.omo/evidence/payroll-p1-code-review.md`
 and `.omo/evidence/payroll-p2-code-review.md`, plus the frozen UI report at
-`.omo/evidence/payroll-ui-code-review.md`. Their original REQUEST_CHANGES verdicts
-are preserved; this document does not rewrite those reports.
+`.omo/evidence/payroll-ui-code-review.md` and
+`.omo/evidence/payroll-final-code-review.md`. Their original REQUEST_CHANGES
+verdicts are preserved; this document does not rewrite those reports.
 
 ## Bounded maintenance exception: P1 M3
 
@@ -53,8 +59,17 @@ tests, authorization shortcut or production-risk waiver.
 
 ## Integrated acceptance
 
-UI integration, final browser/build/unit checks and reviewer disposition on the
-combined candidate remain pending. Runtime notification delivery stays disabled;
-fake dispatch evidence establishes retry/privacy behavior only. Native provider
-formats, enrolled bank acceptance and internal statutory calculations require
-external authoritative evidence.
+The combined application at `ea2d8ec` is LOCALLY VERIFIED. Final unit tests,
+typecheck, full lint, production build and owned browser checks passed. All 705
+browser-source hashes match that committed code. Final review is APPROVE with no
+behavioral blockers; WATCH carries only M3 above. Exact source, artifact hashes and
+command exits are indexed in the parent chat's
+`outputs/payroll-verification/EVIDENCE_INDEX.json` and repository evidence receipt
+`.omo/evidence/payroll-integrated/final-command-receipts.md`.
+
+Runtime notification delivery stays disabled; fake dispatch evidence establishes
+retry/privacy behavior only. Native provider formats, enrolled bank acceptance,
+internal statutory calculations, hosted assurance and independent acceptance
+remain separate gates. The existing Independent Review Board is inactive awaiting
+Jose's authorization. No independent finding was closed and no review request,
+transport activation or production action was sent.

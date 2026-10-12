@@ -128,12 +128,12 @@ ACCEPTED. Local verification never closes independent findings or approves relea
 
 | Stage | Owner | State | Evidence / next gate |
 |---|---|---|---|
-| P0 base/contract | Integration owner | LOCALLY VERIFIED | APIv1 4272655, additive contract 283f57f; UI handoff issued |
-| P1 preferences/import/runs/PDF | Backend + UI owners | IN PROGRESS | Backend SQL/import/document evidence: .omo/evidence/payroll-backend/README.md; integrated UI and review pending |
-| P2 preparation/publication/reminders | Backend + UI owners | IN PROGRESS | Durable prepare/PDF/publication and fenced retries locally tested; P2 adds historical missing-period review and existing private push outbox adapter, 35 SQL scenarios and2199 unit tests passed with fake senders; real delivery activation and integrated acceptance remain open |
+| P0 base/contract | Integration owner | LOCALLY VERIFIED | APIv1 4272655; additive 283f57f and 4392463 contracts |
+| P1 preferences/import/runs/PDF | Backend + UI owners | LOCALLY VERIFIED | Backend f1da5a0, fixes ed7d2c2; P1 UI 68c1887 and final UI 166f5c7; real PDF raster/download, reconciliation, permission and correction/recovery scenarios |
+| P2 preparation/publication/reminders | Backend + UI owners | LOCALLY VERIFIED | Backend ed7d2c2 plus transition fix 76610d7; final UI 166f5c7. 36 owned payroll SQL scenarios, fake dispatch/privacy/retry controls and real browser missing-period/notice-queue flow; external delivery remains disabled |
 | P3 bank-neutral adapter | Integration owner | LOCALLY VERIFIED | Synthetic neutral JSON exact totals/count/hash/replay; native bank acceptance and account mappings BLOCKED |
 | P4 internal calculator | Integration owner | NOT STARTED | accountant-validated cases/statutory scope BLOCKED; engine disabled |
-| Integrated review | Root QA + code reviewer | NOT STARTED | unit/SQL/auth/worker/browser/lint/typecheck/build on exact source |
+| Integrated review | Root QA + code reviewer | LOCALLY VERIFIED | Final code ea2d8ec; 2224 unit tests, 63 matching workflow browser checks, typecheck/lint/build exit 0. 737 shared SQL and corrected 36 payroll SQL retained with unchanged backend scope. Final engineering APPROVE/no blockers; M3 maintenance exception retained |
 | Hosted/independent/release | Jose + independent reviewers | NOT STARTED | hosted evidence and independent verdict; production authorization |
 
 Minimum cases follow directive cases 1-15: settings reload/endpoint bypass,
@@ -158,8 +158,42 @@ drop custody tables or reverse published financial records as a routine rollback
 Hosted backup/privileges and any production write pause require a separate
 authorized release procedure. Original six independent findings remain OPEN.
 
-External blockers: accountant/provider sample or accepted neutral mapping;
-validated statutory calculation cases; Banco Popular enrolled channel and exact
-accepted format. They do not block neutral import/settings/PDF implementation.
-At initial handoff the app's local thread host could not read the UI chat;
-file-based contract remains available and messaging will be retried when available.
+External blockers: account-specific provider sample/mapping; validated statutory
+calculation cases; enrolled bank channel and exact accepted format. They do not
+block neutral import/settings/PDF implementation. Jose selected a flexible common-
+provider setup rather than one known provider: ADP RUN, QuickBooks Payroll, Paychex,
+Gusto and OTHER are saved preferences, with the same canonical import boundary.
+One company remains configurable per deployment; SaaS is paused.
+
+Both implementation lanes completed their local source handoffs. The integration
+owner adopted only UI-owned commits and verified all 705 final browser-source
+hashes plus all 15 final UI files. Tested UI a5886d2 and integrated 166f5c7 differ
+only in two handoff/review documents, with all tracked application, tests, scripts
+and configuration identical. The already-running full unit rerun completed before
+its evidence was consumed; a duplicate rerun was unnecessary. The retained 47
+time-export checks predate only the last payroll-run/status-message helper change;
+the export, default-off and shared navigation source is unchanged. Exact scope is
+recorded in .omo/evidence/payroll-integrated/final-source-equivalence.json.
+
+Final review identified a queue-time copy error after the UI adoption. Root's
+`ea2d8ec` corrects only the notice status helper, its regression and the browser
+copy assertion. Final root verification on that commit passed 2224 tests / 216
+files, 25 focused tests, full lint/typecheck/build, and 63 Chromium/WebKit checks.
+All 705 final runtime hashes match. Existing time-export/default-off/shared source
+remains unchanged; its earlier 47-check evidence retains its disclosed scope.
+
+## Independent acceptance handoff
+
+New scope record: NEVORA-PAYROLL-LOCAL-20261012. Local engineering evidence is
+prepared at the parent chat's `outputs/CONFIGURABLE_PAYROLL_STATUS.md` and
+`outputs/payroll-verification/EVIDENCE_INDEX.json`, with source-linked reports and
+the command receipt above. It is handed to the existing COO and master assembly
+owners; it is not an independent review execution or closure record.
+
+Existing independent owner: Independent Review Board reporting directly to Jose,
+chat **Independent reviewers report**, `6ac821c3-9ca4-8333-8f2f-f076bdfaa519`.
+Its current published status is INACTIVE — AWAITING JOSE'S AUTHORIZATION, with
+IR-2026-10-11-001 suspended and all six findings preserved. New payroll acceptance
+is NOT STARTED. The board was read only and was not messaged/reactivated. Jose's
+authorization to resume that owner is the next independent-review gate; operating
+engineering and management cannot substitute their approval for its verdict.
