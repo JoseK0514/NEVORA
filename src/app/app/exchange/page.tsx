@@ -178,7 +178,7 @@ export default async function ExchangePage({
   if (!manager) {
     return (
       <ExchangeReviewShell view={activeView} className="employee-view employee-shift-requests-view">
-        <div className="exchange-page-heading"><header className="employee-view-heading"><div><p className="employee-view-eyebrow">Schedule flexibility</p><h1>Shift Requests</h1></div></header><p>Pick up a shift, review a trade, or manage your requests.</p></div>
+        <div className="exchange-page-heading"><header className="employee-view-heading"><div><p className="employee-view-eyebrow">Schedule flexibility</p><h1>Shift requests</h1></div></header><p>Pick up a shift, review a trade, or manage your requests.</p></div>
         {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The exchange could not be processed."}</p> : null}
         {operation ? <p className="employee-notice" role="status">{shiftChangeFeedback(operation)}</p> : null}
 

@@ -45,7 +45,7 @@ export function EmployeeTimeView({state,compact=false,onRefresh}:{state:Employee
  const title=paused?'Updates paused':denied?'Sign in again':time?.state==='unavailable'?'Recorded time unavailable':'Loading recorded time';
  const controls=<div className="employee-time-controls">
   {denied?<Link className="employee-time-refresh" href="/login">Sign In</Link>:<button className="employee-time-refresh" type="button" aria-label="Refresh recorded time" onClick={onRefresh} disabled={paused||refreshing}><NavIcon name="refresh" size={16}/>{refreshing?'Refreshing…':'Refresh'}</button>}
-  {compact?<Link className="employee-time-link" href="/app/my-time">My Time <NavIcon name="arrowRight" size={16}/></Link>:null}
+  {compact?<Link className="employee-time-link" href="/app/my-time">My time <NavIcon name="arrowRight" size={16}/></Link>:null}
  </div>;
  const content=<>
   <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock Status':'Current Status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:null}</div>

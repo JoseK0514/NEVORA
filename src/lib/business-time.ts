@@ -40,7 +40,11 @@ export function policyEffectiveInstant(local: string, original: string | undefin
   return localDateTimeToInstant(local, timeZone);
 }
 export function formatBusinessDateTime(iso: string, timeZone: string): string {
-  return new Intl.DateTimeFormat('en-US', { timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
+  // Browser ICU versions differ in their literal punctuation ("," vs "at").
+  // Compose the same readable timestamp during server rendering and hydration.
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).formatToParts(new Date(iso));
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find(part => part.type === type)?.value;
+  return `${value('month')} ${value('day')}, ${value('hour')}:${value('minute')} ${value('dayPeriod')}`;
 }
 
 export function formatBusinessClock(now: Date, timeZone: string): string {

@@ -17,13 +17,6 @@ import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 
 const employeePrimary = ["/app", "/app/schedule", "/app/my-time"];
 
-function employeeNavigationLabel(label: string) {
-  if (label === "My schedule") return "My Schedule";
-  if (label === "Time off") return "Time Off";
-  if (label === "Shift requests") return "Shift Requests";
-  return label;
-}
-
 export function AppShell({
   children,
   workspaceName,
@@ -246,7 +239,7 @@ export function AppShell({
                     onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}
                     aria-current={item.href === activeHref ? "page" : undefined}>
                     <NavIcon name={item.icon} employee size={22} />
-                    <span>{employeeNavigationLabel(item.label)}</span>
+                    <span>{item.label}</span>
                   </Link>
                 ))}
                 <div className="employee-more-profile">

@@ -20,7 +20,7 @@ export default async function MyTimePage() {
     <div className="employee-view employee-my-time-view">
       <header className="employee-view-heading">
         <div>
-          <h1>My Time</h1>
+          <h1>My time</h1>
           <p className="my-time-introduction">Review your punches, breaks, and correction requests.</p>
         </div>
         <Link className="my-time-period-link" href="/app/timecards">

@@ -153,7 +153,7 @@ export function Timecards({initialPeriod,manager,actorId}:{initialPeriod:Period;
     <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}</p>
     </div>
     {manager&&currentActor&&data?.state==='ready'&&cards.length?<dl className={styles.overview} aria-label="Period overview"><div><dt>Timecards</dt><dd>{cards.length}</dd></div><div><dt>Need attention</dt><dd>{cards.filter(item=>item.card.issues.length>0).length}</dd></div><div><dt>Finalized</dt><dd>{cards.filter(item=>item.state==='FINALIZED').length}</dd></div></dl>:null}
-    {!manager?<Link href="/app/my-time" className={styles.link}><NavIcon name="clock" size={18}/>Request a correction in My Time →</Link>:null}
+    {!manager?<Link href="/app/my-time" className={styles.link}><NavIcon name="clock" size={18}/>Request a correction in My time →</Link>:null}
     {manager&&currentActor&&data?.state==='ready'?<section className={styles.batch} aria-label="Selected timecard review">
       <details open={selected.length>0||!!review||!!outcomes||!!pending}>
       <summary className={styles.batchHeading}>

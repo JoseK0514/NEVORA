@@ -41,3 +41,10 @@ it('formats publication timestamps in the configured zone', () => {
  expect(formatBusinessTimestamp('2026-10-01T16:14:05Z', 'America/Puerto_Rico')).toBe('Oct 1, 12:14 PM');
  expect(formatBusinessTimestamp('2026-10-01T16:14:05Z', 'Asia/Tokyo')).toBe('Oct 2, 1:14 AM');
 });
+it('keeps server and browser timestamps identical when ICU punctuation differs', () => {
+ const original = Object.getOwnPropertyDescriptor(Intl.DateTimeFormat.prototype, 'format')!;
+ Object.defineProperty(Intl.DateTimeFormat.prototype, 'format', { configurable: true, get: () => () => 'Oct 1 at 12:14 PM' });
+ try {
+  expect(formatBusinessTimestamp('2026-10-01T16:14:05Z', 'America/Puerto_Rico')).toBe('Oct 1, 12:14 PM');
+ } finally { Object.defineProperty(Intl.DateTimeFormat.prototype, 'format', original); }
+});

@@ -62,7 +62,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
   return <EmployeeScheduleMotion weekStart={weekStart}>
     <div className="employee-view employee-schedule-view my-schedule">
       <header className="my-schedule-heading my-schedule-enter">
-        <div><h1>My Schedule</h1><p>Review your week and manage your shifts.</p></div>
+        <div><h1>My schedule</h1><p>Review your week and manage your shifts.</p></div>
         <Link href="/app/exchange?tab=my" className="my-schedule-link my-schedule-requests"><ArrowsLeftRightIcon size={18} aria-hidden="true" />Shift requests</Link>
       </header>
 

@@ -159,11 +159,11 @@ try {
     if (width === 1440) {
       await page.goto(`${app.url}/app/settings/company-policies`);
       const lateness = page.getByRole('group', { name: 'Lateness', exact: true });
-      await lateness.getByLabel('Configuration').selectOption('configured');
+      await lateness.getByLabel('Rule setting').selectOption('configured');
       await lateness.getByLabel('Threshold minutes').fill('5');
-      await lateness.getByLabel('Effective from (ISO timestamp with timezone)').fill('2020-01-01T00:00:00Z');
-      await page.getByRole('button', { name: 'Save policy revision', exact: true }).click();
-      await page.getByRole('status').filter({ hasText: 'Saved.' }).waitFor();
+      await lateness.getByLabel('Effective from', {exact:true}).fill('2019-12-31T14:00');
+      await page.getByRole('button', { name: 'Save policies', exact: true }).click();
+      await page.getByRole('status').filter({ hasText: 'Policies saved.' }).waitFor();
       await page.reload();
       await page.getByRole('heading', { name: 'Policy history' }).waitFor();
       const revisions = (await client.query('SELECT workspace_id,revision FROM nevora_company_policy_revisions')).rows;
@@ -241,6 +241,7 @@ try {
         const before = await readEmployee();
         for (const path of ['/app/employees', '/app/employees/new', `/app/employees/${config.BOOTSTRAP_EMPLOYEE_ID}`, '/app/settings/workspace']) {
           await staffPage.goto(app.url + path);
+          await staffPage.waitForURL(u=>u.pathname==='/app');
           assert.equal(new URL(staffPage.url()).pathname, '/app');
         }
         const rejected = await staff.request.post(actionRequest.url(), {
@@ -257,6 +258,7 @@ try {
       await client.query("UPDATE employees SET role='MANAGER' WHERE id=$1", [employeeId]);
       await staffPage.goto(`${app.url}/app/employees/${config.BOOTSTRAP_EMPLOYEE_ID}`);
       assert.equal(await staffPage.locator('.employee-core-profile-form').count(), 0);
+      await staffPage.getByText(/Only an Owner can change another Owner/).waitFor();
       assert(await staffPage.getByText(/Only an Owner can change another Owner/).isVisible());
       await staffPage.goto(`${app.url}/app/employees/${employeeId}`);
       const managerCore = staffPage.locator('.employee-core-profile-form');

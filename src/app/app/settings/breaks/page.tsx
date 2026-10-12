@@ -18,7 +18,7 @@ export default async function BreakTypesPage(){
  catch{/* Show unavailable rather than a false empty catalog. */}
  return <div className="configuration-page break-types-page">
   <Link href="/app/settings" className="break-types-back"><ArrowLeftIcon size={18} aria-hidden="true"/>Back to Settings</Link>
-  <PageHeader title="Break Types" description="A clear set of break options for your team."/>
+  <PageHeader title="Break types" description="A clear set of break options for your team."/>
   {types?<ClockerBreakTypes initialTypes={types} action={saveBreakTypeAction}/>:<section className="panel break-types-unavailable" role="alert">
    <WarningCircleIcon size={28} aria-hidden="true"/>
    <h2>Break settings are unavailable</h2><p>The configuration could not be loaded. Existing break records have not changed.</p>

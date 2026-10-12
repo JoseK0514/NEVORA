@@ -104,3 +104,5 @@ html body .app-shell.nevora-portal :is(.button.primary,.ncc-button.primary,.pw-b
 }
 
 @media(max-width:760px){.app-shell.nevora-portal .page-frame :is(input,select,textarea):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]){font-size:16px;}}
+
+.app-shell.nevora-portal .shift-workspace-header { text-align:left; }

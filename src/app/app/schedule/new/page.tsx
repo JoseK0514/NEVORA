@@ -99,7 +99,7 @@ export default async function NewShiftPage({
   const locationId = locations.some(location => location.id === params.locationId) ? params.locationId! : "";
   const cancelHref = `/app/schedule?week=${weekStart}${locationId ? `&location=${encodeURIComponent(locationId)}` : ""}`;
   return (
-    <ShiftWorkspace title="Create New Shift" description="Choose who’s working, where, and when." backHref={cancelHref} backLabel="Back to schedule" context={formatWeekRange(weekStart)}>
+    <ShiftWorkspace title="Create shift" description="Choose who’s working, where, and when." backHref={cancelHref} backLabel="Back to schedule" context={formatWeekRange(weekStart)}>
       <CreateShiftForm action={createShiftAction} employees={employees} locations={locations} positions={positions} weekStart={weekStart} weekEnd={weekEnd} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId} startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} cancelHref={cancelHref} />
     </ShiftWorkspace>
   );

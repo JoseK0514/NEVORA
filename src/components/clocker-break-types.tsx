@@ -121,7 +121,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
       busy.current = false;
       close();
     } catch {
-      setError({ message: 'The update could not be confirmed. Reload Break Types before trying again.', refresh: true });
+      setError({ message: 'The update could not be confirmed. Reload break types before trying again.', refresh: true });
     } finally { busy.current = false; setPending(false); }
   }
 
@@ -142,7 +142,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
       <div><h2>Your break types</h2><p>Choose what employees can start at the Clocker.</p></div>
       <div className={styles.actions}>
         <button className="button secondary" type="button" onClick={() => window.location.reload()}>
-          <ArrowClockwiseIcon size={18} aria-hidden="true" />Reload Break Types
+          <ArrowClockwiseIcon size={18} aria-hidden="true" />Reload break types
         </button>
         <button className="button primary" type="button" onClick={event => open({ operation: 'CREATE' }, event)}>
           <PlusIcon size={18} aria-hidden="true" />Add Break Type
@@ -208,7 +208,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
         {pending ? <p role="status" className={styles.pending}>Saving your changes…</p> : null}
         <div className={styles.dialogFooter}>
           <button className="button secondary" type="button" disabled={pending} onClick={close}>Cancel</button>
-          {error?.refresh ? <button type="button" className="button primary" onClick={() => window.location.reload()}><ArrowClockwiseIcon size={18} aria-hidden="true" />Reload Break Types</button>
+          {error?.refresh ? <button type="button" className="button primary" onClick={() => window.location.reload()}><ArrowClockwiseIcon size={18} aria-hidden="true" />Reload break types</button>
             : <button className={'button primary' + (selection.operation === 'ARCHIVE' ? ' ' + styles.archiveButton : '')} type="submit" disabled={pending}>{pending ? 'Saving…' : saveLabel}</button>}
         </div>
       </form> : null}

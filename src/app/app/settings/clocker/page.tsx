@@ -26,7 +26,7 @@ export default async function ClockerDevicesPage() {
     };
   } catch { data = null; }
   return <div className="configuration-page clocker-devices-page">
-    <PageHeader title="Clocker Devices" description="A dedicated tablet for every location. Access you control."
+    <PageHeader title="Clocker devices" description="A dedicated tablet for every location. Access you control."
       actions={<Link className="button secondary" href="/app/settings">Back to Settings</Link>} />
     {data ? <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone}
       locations={data.locations} action={manageClockerDeviceAction} />

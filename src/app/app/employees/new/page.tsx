@@ -36,7 +36,7 @@ export default async function NewEmployeePage({
         <Link className="new-employee-back" href="/app/employees">
           <ArrowLeft size={16} aria-hidden="true" /> Employees
         </Link>
-        <h1>Add Employee</h1>
+        <h1>Add employee</h1>
         <p>Add contact, access and scheduling details. Email remains optional.</p>
       </header>
 

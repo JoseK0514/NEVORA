@@ -417,6 +417,11 @@ function ActivityTab(props: Props) {
 }
 
 export function ManagerDashboard(props: Props) {
+  const actions = <ManagerActionCenter key={`${props.actorId}:${props.weekStart}`} weekStart={props.weekStart} actorId={props.actorId??''} timeZone={props.timeZone}/>;
+  const activity = <div className="manager-monitor-block" key="recorded-activity">
+    <ManagerClockMonitor />
+    <Link className="manager-attendance-link" href={dashboardHref(props.weekStart, 'attendance')}><NavIcon name="clock" size={18} />Review attendance</Link>
+  </div>;
   return (
     <div
       className={
@@ -483,11 +488,7 @@ export function ManagerDashboard(props: Props) {
       {props.view === "overview" ? (
         <>
           <div className="manager-home-grid">
-            <ManagerActionCenter key={`${props.actorId}:${props.weekStart}`} weekStart={props.weekStart} actorId={props.actorId??''} timeZone={props.timeZone}/>
-            <div className="manager-monitor-block">
-              <ManagerClockMonitor />
-              <Link className="manager-attendance-link" href={dashboardHref(props.weekStart, 'attendance')}><NavIcon name="clock" size={18} />Review attendance</Link>
-            </div>
+            {props.role === 'MANAGER' ? <>{activity}{actions}</> : <>{actions}{activity}</>}
           </div>
           <ManagerWeekOverview days={props.days} locations={props.locations} weekStart={props.weekStart} weekLabel={props.weekLabel} coverageConfigured={props.coverageConfigured}/>
         </>

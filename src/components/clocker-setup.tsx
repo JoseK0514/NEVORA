@@ -90,7 +90,7 @@ export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled 
       </> : <>
         <div className={styles.kioskIcon}><ClockerIcon name="shield" size={28}/></div>
         <h1>Set up this tablet</h1>
-        <p className={styles.kioskLead}>Ask your Owner to add this device in Settings &rarr; Clocker Devices. Then paste the one-use setup code.</p>
+        <p className={styles.kioskLead}>Ask your Owner to add this device in Settings &rarr; Clocker devices. Then paste the one-use setup code.</p>
         <form onSubmit={connect} className={styles.tabletForm}>
           <fieldset disabled={pending || Boolean(feedback?.uncertain)}>
             <label className={styles.field}>Setup code<textarea ref={input} name="enrollmentToken" rows={3} required maxLength={72} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby="clocker-setup-help" /></label>
