@@ -24,3 +24,19 @@ function createViewGet(kind:EmployeeView,read:(proof:SessionMutationProof)=>Prom
   }catch{return json({state:'unavailable',reason:'read_failed'},503);}
  };
 }
+
+export function createManagementNotificationReadPost(mark:(proof:SessionMutationProof,id:string)=>Promise<boolean>){
+ return async(request:Request):Promise<Response>=>{
+  const url=new URL(request.url);
+  if(url.search||request.headers.get('origin')!==url.origin||request.headers.get('sec-fetch-site')==='cross-site')return json({state:'unavailable',reason:'access_denied'},403);
+  try{
+   const session=await getSession();if(!session)return json({state:'unavailable',reason:'access_denied'},401);
+   if(!['OWNER','MANAGER'].includes(session.role))return json({state:'unavailable',reason:'access_denied'},403);
+   const proof=await requireSessionMutationProof();
+   if(proof.employee.id!==session.id||proof.employee.role!==session.role||request.headers.get('x-nevora-employee-view')!==employeeViewAuthority(proof,'notifications'))return json({state:'unavailable',reason:'access_denied'},403);
+   const value:unknown=await request.json();
+   if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==1||!('notificationId' in value)||typeof value.notificationId!=='string'||!value.notificationId||value.notificationId.length>100)return json({state:'unavailable',reason:'invalid_request'},400);
+   return await mark(proof,value.notificationId)?json({state:'read'}):json({state:'unavailable',reason:'access_denied'},403);
+  }catch{return json({state:'unavailable',reason:'read_failed'},503);}
+ };
+}

@@ -25,7 +25,10 @@ const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:
 const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
 const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All'},{value:'unread',label:'Unread'},{value:'required',label:'Needs action'}];
 
-export function NotificationInbox({state,onRetry}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void}){
+export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>}){
+ const [pendingRead,setPendingRead]=useState<string|null>(null),[readNotice,setReadNotice]=useState('');
+ const readGate=useRef(false);
+ const markRead=async(id:string)=>{if(!onMarkRead||readGate.current)return;readGate.current=true;setPendingRead(id);setReadNotice('');try{await onMarkRead(id);setReadNotice('Marked read. Announcement acknowledgement and request actions are unchanged.');}catch{setReadNotice('We could not confirm the read status. Refresh to check it, or safely retry marking it read.');}finally{readGate.current=false;setPendingRead(null);}};
  const [filter,setFilter]=useState<NotificationFilter>('all');
  const [search,setSearch]=useState('');
  const root=useRef<HTMLElement>(null);
@@ -51,6 +54,7 @@ export function NotificationInbox({state,onRetry}:{state:PrivatePanelState<Emplo
    <div className={styles.inboxTitle}><BellIcon size={22} aria-hidden="true"/><div><h2>Your inbox</h2><p>Review an update. Take the next step.</p></div></div>
    {denied?<Link className={styles.refresh} href="/login">Sign in</Link>:<button className={styles.refresh} type="button" disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} aria-hidden="true"/><span>{state.refreshing?'Checking…':unavailable||ready?.coverage==='partial'?'Retry':'Refresh'}</span></button>}
   </header>
+  {readNotice?<p className={styles.notice} role="status">{readNotice}</p>:null}
   {ready?<>
    {ready.coverage==='partial'?<div className={styles.notice} role="status"><WarningCircleIcon size={20} aria-hidden="true"/><p><strong>Some updates could not be checked.</strong> Some notifications are unavailable or outside this bounded view. Retry to check current access.</p></div>:null}
    <div className={styles.controls}>
@@ -70,14 +74,14 @@ export function NotificationInbox({state,onRetry}:{state:PrivatePanelState<Emplo
        <span className={styles.destination}>{presentation.destination}</span>
       </div>
       <span className={styles.open}>Open record<ArrowUpRightIcon size={18} aria-hidden="true"/></span>
-     </Link></li>;
+     </Link>{onMarkRead&&review==='unread'?<button type="button" className={styles.markRead} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={`Mark ${item.label} read`}>{pendingRead===item.id?'Marking read…':'Mark read'}</button>:null}</li>;
     })}</ul>
    </section>)}</div>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="regular" aria-hidden="true"/></span>
     <h3>{search?'No matching notifications':filter==='unread'?'No unread notifications in this view':filter==='required'?'No notifications requiring action in this view':ready.coverage==='complete'?'No notifications in this current view.':'No available notifications to show'}</h3>
     <p>{search?'Try another search, or clear it to see your updates.':ready.coverage==='partial'?'This view is incomplete. Retry to check what is available.':'Check Requests and Schedule for their current status.'}</p>
     {search?<button type="button" className={styles.secondary} onClick={()=>setSearch('')}>Clear search</button>:filter!=='all'?<button type="button" className={styles.secondary} onClick={()=>setFilter('all')}>View all notifications</button>:null}
    </div>}
-   <footer className={styles.footer}><p>This inbox shows supported source updates. Reading an update and completing its action are separate.</p><div><Link href="/app/requests">Requests<ArrowUpRightIcon size={16} aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<ArrowUpRightIcon size={16} aria-hidden="true"/></Link></div></footer>
+   <footer className={styles.footer}><p>This inbox shows supported source updates. Reading an update and completing its action are separate.</p><div><Link href={onMarkRead?"/app?view=requests":"/app/requests"}>Requests<ArrowUpRightIcon size={16} aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<ArrowUpRightIcon size={16} aria-hidden="true"/></Link></div></footer>
   </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} aria-hidden="true"/></span><h3>{state.paused?'Updates paused':denied?'Sign in again':unavailable?'Notifications unavailable':'Loading notifications…'}</h3><p>{state.paused?'Return to this window while online to check current information.':denied?'Your current employee session is required.':unavailable?'We could not confirm your current information. Try again.':'Checking your current access.'}</p></div>}
  </section>;
 }

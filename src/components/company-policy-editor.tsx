@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState,useRef } from "react";
 import {useRouter} from "next/navigation";
 import {formatBusinessDateTimeInput,formatBusinessTimestamp,policyEffectiveInstant} from "@/lib/business-time";
 import type { PolicyRevision } from "@/lib/business-improvements/company-policies/service";
@@ -22,6 +22,7 @@ export function CompanyPolicyEditor({
   locations: { id: string; name: string }[];
 }) {
   const router=useRouter();
+  const submitGate=useRef(false);
   const [scope, setScope] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
@@ -29,6 +30,7 @@ export function CompanyPolicyEditor({
   const [modes,setModes] = useState<Record<string,string>>({});
   const current = history.find((h) => h.locationId === (scope || null));
   async function submit(form: HTMLFormElement) {
+    if(submitGate.current)return;
     const data = new FormData(form),
       attendance: Record<string, unknown> = {},
       labor: Record<string, unknown> = { ...(current?.settings.labor ?? {}) };
@@ -82,6 +84,7 @@ export function CompanyPolicyEditor({
       settings,
     };
     setRetry(command);
+    submitGate.current=true;
     setBusy(true);
     setNotice("Saving…");
     try {
@@ -115,6 +118,7 @@ export function CompanyPolicyEditor({
         "We could not confirm whether your changes were saved. Retry safely using the retained request, or refresh to check the current policies.",
       );
     } finally {
+      submitGate.current=false;
       setBusy(false);
     }
   }

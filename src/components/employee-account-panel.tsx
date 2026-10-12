@@ -7,8 +7,8 @@ import {NotificationInbox} from './notification-inbox';
 import {EmployeeProfileDetails} from './employee-profile-details';
 import {NavIcon} from './nav-icon';
 
-export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=false}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled?:boolean}){
- if(kind==='notifications')return <NotificationInbox state={state} onRetry={onRetry}/>;
+export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=false,onMarkRead}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled?:boolean;onMarkRead?:(id:string)=>Promise<void>}){
+ if(kind==='notifications')return <NotificationInbox state={state} onRetry={onRetry} onMarkRead={onMarkRead}/>;
  const ready=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.kind==='profile'?state.snapshot:null;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const unavailable=state.snapshot?.state==='unavailable';
@@ -20,7 +20,7 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
   <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button type="button" className="button secondary" disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':unavailable?'Retry':'Refresh'}</button>}</footer>
  </section>;
 }
-export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string}){
+export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint,markReadAllowed=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string;markReadAllowed?:boolean}){
  const [state,setState]=useState<PrivatePanelState<EmployeeViewSnapshot>>({snapshot:null,paused:false,refreshing:true});
  const control=useRef<ReturnType<typeof createPrivateSnapshotController<EmployeeViewSnapshot>>|null>(null);
  useEffect(()=>{
@@ -42,5 +42,8 @@ export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,kind,endpoint]);
- return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled}/>;
+ return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled} onMarkRead={markReadAllowed?async id=>{
+ const response=await fetch('/api/notifications/read',{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000),headers:{'Content-Type':'application/json','X-Nevora-Employee-View':authority},body:JSON.stringify({notificationId:id})});
+ if(!response.ok)throw Error('Read not confirmed');control.current?.refresh();window.dispatchEvent(new Event('nevora:notifications-changed'));
+ }:undefined}/>;
 }

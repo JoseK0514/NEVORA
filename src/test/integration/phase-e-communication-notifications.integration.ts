@@ -7,6 +7,7 @@ import {businessTime} from '../../lib/business-time';
 import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
 import {sqlSubscriptionRepository} from '../../lib/data/push-subscriptions';
 import {sqlDeliveryRepository} from '../../lib/data/push-deliveries';
+import {readPortalNotificationList,markManagementNotificationRead} from '../../lib/data/portal-notification-list.server';
 import {readEmployeeNotificationList} from '../../lib/data/employee-notification-list.server';
 import {createNotificationOpenHandler} from '../../lib/notifications/open';
 import {notificationPolicyFor} from '../../lib/notifications/policy';
@@ -85,4 +86,23 @@ it('upgrade retains historical communication notifications through payroll and f
  const [constraint]=await q("SELECT pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE conname='notifications_source_kind_check'");
  for(const kind of ['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','MANAGER_SUMMARY','SELF_TEST','COMMUNICATION','PAYROLL_PREPARATION','PAYROLL_STATEMENT'])expect(constraint.definition).toContain(kind);
  expect(await q('SELECT * FROM communication_receipts')).toEqual([]);
+});
+
+it('management inbox preserves recipient authority, idempotent read status and separate acknowledgement',async()=>{
+ const subscriptions=sqlSubscriptionRepository(db.executor),generation=randomUUID(),installationHash='d'.repeat(64);
+ expect(await subscriptions.enroll({employeeId:owner.employee.id,installationHash,endpointFingerprint:'fictional-owner-device',encryptedMaterial:'fixture',sessionHash:owner.sessionTokenHash,generation,expectedGeneration:null,environment:'test',expiresAt:null})).toMatchObject({state:'active'});
+ const [device]=await q('SELECT id FROM push_subscriptions WHERE employee_id=$1',[owner.employee.id]);const id=randomUUID(),now=new Date();
+ expect(await subscriptions.queueSelfTest({proof:{installationHash,environment:'test',generation},employeeId:owner.employee.id,sessionHash:owner.sessionTokenHash,intent:{id,employeeId:owner.employee.id,type:'SELF_TEST',title:'NEVORA update',body:'Open NEVORA to review an update.',eventKey:'fictional-read:'+id,environment:'test',source:{kind:'SELF_TEST',id:String(device.id),version:generation},effectiveVersion:generation,purpose:'TEST',urgency:'normal',dueAt:now.toISOString(),expiresAt:new Date(now.getTime()+3600000).toISOString()}})).toBe(true);
+ expect(await readPortalNotificationList(owner,'test',db.executor)).toMatchObject({state:'ready',items:[{id,reviewState:'unread'}]});
+ expect(await markManagementNotificationRead(owner,id,'test',db.executor)).toBe(true);
+ const [first]=await q('SELECT read_at::text AS read FROM notifications WHERE id=$1',[id]);
+ expect(await markManagementNotificationRead(owner,id,'test',db.executor)).toBe(true);
+ expect(await q('SELECT read_at::text AS read FROM notifications WHERE id=$1',[id])).toEqual([first]);
+ expect(await readPortalNotificationList(owner,'test',db.executor)).toMatchObject({state:'ready',items:[{id,reviewState:'read'}]});
+ expect(await markManagementNotificationRead(employee,id,'test',db.executor)).toBe(false);
+ await expect(markManagementNotificationRead({...owner,sessionTokenHash:'f'.repeat(64)},id,'test',db.executor)).rejects.toThrow();
+ expect(await markManagementNotificationRead(owner,id,'production',db.executor)).toBe(false);
+ expect(await q('SELECT * FROM communication_receipts')).toEqual([]);
+ await q('DELETE FROM employee_sessions WHERE employee_id=$1',[owner.employee.id]);
+ expect(await readPortalNotificationList(owner,'test',db.executor)).toMatchObject({state:'unavailable'});
 });
