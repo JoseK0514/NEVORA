@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { expect, it, vi } from 'vitest';
 
+vi.mock('server-only',()=>({}));
 vi.mock('@/components/app-shell', () => ({ AppShell: () => null }));
 vi.mock('@/lib/notifications/config', () => import('./config'));
 vi.mock('@/lib/auth/session', () => ({ requireSession: vi.fn() }));

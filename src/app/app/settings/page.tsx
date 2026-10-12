@@ -1,3 +1,4 @@
+import {UsersThreeIcon,MegaphoneIcon} from "@phosphor-icons/react/ssr";
 import { WalletIcon } from "@phosphor-icons/react/dist/ssr/Wallet";
 import Link from "next/link";
 import { BuildingsIcon } from "@phosphor-icons/react/dist/ssr/Buildings";
@@ -42,8 +43,8 @@ const groups = [
     title: "Team & communications",
     description: "People, access roles, and company announcements.",
     items: [
-      {id:"employees",title:"Employees & access",description:"Employee information, access roles, and scheduling eligibility.",href:"/app/employees",icon:BriefcaseIcon},
-      {id:"updates",title:"Company updates",description:"Announcements, audiences, and review requirements.",href:"/app/updates",icon:ShieldCheckIcon},
+      {id:"employees",title:"Employees & access",description:"Employee information, access roles, and scheduling eligibility.",href:"/app/employees",icon:UsersThreeIcon},
+      {id:"updates",title:"Company updates",description:"Announcements, audiences, and review requirements.",href:"/app/updates",icon:MegaphoneIcon},
     ],
   },
   {

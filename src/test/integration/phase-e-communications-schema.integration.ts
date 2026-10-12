@@ -90,10 +90,10 @@ it('revision content hash normalized text role and scope constraints reject forg
  await expect(db.executor.query(communicationRevisionInsert({...input,revisionId:'20000000-0000-4000-8000-000000000003',version:3,actorId:'employee'}))).rejects.toThrow(/author_role/);
  await q("UPDATE employees SET active=false WHERE id='other'");await expect(grant(cid,rid,'other')).rejects.toThrow(/recipient_role/);
 });
-it('only COMMUNICATION expands existing notification source constraint',async()=>{
+it('complete chain retains communication and payroll sources and rejects unknown kinds',async()=>{
  await start();
  const [constraint]=await db.executor.query<{definition:string}>({text:"SELECT pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE conname='notifications_source_kind_check'",values:[]});
- expect([...constraint.definition.matchAll(/'([^']+)'/g)].map(m=>m[1])).toEqual(['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','MANAGER_SUMMARY','SELF_TEST','COMMUNICATION']);
+ expect([...constraint.definition.matchAll(/'([^']+)'/g)].map(m=>m[1])).toEqual(['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','MANAGER_SUMMARY','SELF_TEST','COMMUNICATION','PAYROLL_PREPARATION','PAYROLL_STATEMENT']);
  await expect(q("INSERT INTO notifications(id,employee_id,type,title,body,source_kind) VALUES('unknown','employee','SCHEDULE_PUBLISHED','Title','Body','UNKNOWN')")).rejects.toThrow(/notifications_source_kind_check/);
 });
 async function evidence():Promise<Record<string,unknown[]>>{

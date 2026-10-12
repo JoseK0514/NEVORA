@@ -130,7 +130,7 @@ export function ClockerRecoveryReview({actorId, timeZone}: {actorId: string; tim
       <section className={styles.lookup} aria-labelledby="recovery-lookup-heading" data-review-enter>
         <div className={styles.sectionHeading}>
           <span className={styles.iconWell}><ReceiptIcon size={24} aria-hidden="true"/></span>
-          <div><h2 id="recovery-lookup-heading">Check a saved action</h2><p>Start with the reference on the employee’s tablet.</p></div>
+          <div><h2 id="recovery-lookup-heading">Check a saved action</h2><p>Paste the saved action reference from the employee’s tablet.</p></div>
         </div>
         <form onSubmit={event => {
           event.preventDefault();
@@ -151,7 +151,7 @@ export function ClockerRecoveryReview({actorId, timeZone}: {actorId: string; tim
               pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
               maxLength={36} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby={helpId}
               placeholder="Paste the saved reference"/>
-            <p id={helpId} className={styles.hint}>Copy all 36 characters, including the dashes.</p>
+            <p id={helpId} className={styles.hint}>Example format: 12345678-1234-1234-1234-123456789abc. Include every character and dash.</p>
             <button className={styles.primary} type="submit" disabled={!hydrated || pending}>
               {pending ? <SpinnerGapIcon {...iconProps} className={styles.spinner}/> : <MagnifyingGlassIcon {...iconProps}/>}
               {pending ? 'Checking receipt…' : 'Check receipt'}

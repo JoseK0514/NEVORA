@@ -55,3 +55,5 @@
 .groupCount::after { content:""; width:7px; height:7px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:rotate(45deg); }
 .actionGroup[open] .groupCount::after { transform:rotate(225deg); }
 .actionGroup>div { margin:16px 0; padding-left:12px; border-left:2px solid var(--design-surface); }
+
+.groupPreview{margin:12px 0;color:var(--design-text-secondary);font-size:12px;line-height:1.6;}

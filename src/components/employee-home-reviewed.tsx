@@ -191,7 +191,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
         </aside>
       </div>
       {snapshot ? <div className={styles.secondary}>
-        {partial ? <p className={styles.notice} role="status">Some Home sections could not be fully checked. Counts show known items.</p> : null}
+        {partial ? <p className={styles.notice} role="status">Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.</p> : null}
         {allSet ? <p className={styles.allSet} role="status">You&apos;re all set.</p> : null}
         <AttentionGroup kind="actions" items={actions} partial={partial} zone={snapshot.timeZone}/>
         <AttentionGroup kind="updates" items={updates} partial={partial} zone={snapshot.timeZone}/>

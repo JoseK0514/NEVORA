@@ -21,27 +21,27 @@ describe('Assisted recovery workflow presentation',()=>{
  it('disables submission before hydration and explains no-JavaScript behavior',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER"/>);
   expect(html).toContain('<fieldset disabled=""');
-  expect(html).toContain('Enable JavaScript to issue a recovery proof.');
+  expect(html).toContain('Enable JavaScript to issue a recovery code.');
   expect(html).toContain('href="/app?view=team"');
  });
  it('announces pending issuance while all mutation fields are disabled',()=>{
   const html=renderToStaticMarkup(<AssistedRecovery {...props} busy/>);
   expect(html).toContain('aria-busy="true"');expect(html).toContain('<fieldset disabled=""');
-  expect(html).toContain('Issuing recovery proof');expect(html).toContain('role="status"');
-  expect(html).not.toContain('Recovery proof ready');
+  expect(html).toContain('Issuing recovery code');expect(html).toContain('role="status"');
+  expect(html).not.toContain('Recovery code ready');
  });
  it('shows the issued employee and real expiry without claiming a password reset',()=>{
   const html=renderToStaticMarkup(<AssistedRecovery {...props} issued={{proof:'A'.repeat(43),employeeId:'QAEMPLOYEE',expiresAt:'2026-10-12T16:30:00Z'}}/>);
-  expect(html).toContain('Recovery proof ready');expect(html).toContain('QAEMPLOYEE');
+  expect(html).toContain('Recovery code ready');expect(html).toContain('QAEMPLOYEE');
   expect(html).toContain('dateTime="2026-10-12T16:30:00Z"');expect(html).toContain('readOnly=""');
   expect(html).toContain('Single use');expect(html).toContain('href="/reset-access"');
-  expect(html).toContain('switch apps');expect(html).toContain('unused earlier proof');
+  expect(html).toContain('switch apps');expect(html).toContain('unused earlier code');
   expect(html).not.toContain('<form');expect(html).not.toContain('Password updated');
  });
  it('gives ended-access feedback an explicit sign-in path',()=>{
   const html=renderToStaticMarkup(<AssistedRecovery {...props} message="Your access ended. Sign in again."/>);
   expect(html).toContain('role="alert"');expect(html).toContain('tabindex="-1"');
-  expect(html).toContain('href="/login"');expect(html).not.toContain('Recovery proof ready');
+  expect(html).toContain('href="/login"');expect(html).not.toContain('Recovery code ready');
  });
  it('keeps request and reset field contracts available',()=>{
   const request=renderToStaticMarkup(<AccountRecovery kind="request"/>),reset=renderToStaticMarkup(<AccountRecovery kind="reset"/>);

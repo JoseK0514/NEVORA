@@ -97,6 +97,7 @@ export function CompanyPolicyEditor({
         },
         body: JSON.stringify(command),
       });
+      if(response.status===401||response.status===403){setRetry(null);setNotice("Your access ended. Sign in again to edit policies.");return;}
       if (response.status === 400) {
         setRetry(null);
         setNotice(
@@ -139,7 +140,7 @@ export function CompanyPolicyEditor({
           ))}
         </select>
       </label>
-      <p>{scope ? "Location rules use company defaults unless you set an override. Choose Disabled to turn a rule off at this location." : "Set company defaults for attendance and recorded-time review. Disabled rules do not produce comparisons."}</p><small>Version {current?.revision ?? 0} · Dates use {timeZone.replaceAll("_"," ")}</small></div>
+      <p>{scope ? "Location rules use company defaults unless you set an override. Choose Disabled to turn a rule off at this location." : "Set company defaults for attendance and recorded-time review. Disabled rules do not produce comparisons."}</p><small>{current ? `Saved version ${current.revision}` : "No saved changes yet"} · Company time: {timeZone.split("/").at(-1)?.replaceAll("_"," ")}</small></div>
       <form
         key={scope + ":" + (current?.revision ?? 0)}
         className="employee-form policy-form"

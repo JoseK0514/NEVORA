@@ -41,17 +41,17 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   expect(html).not.toContain('<form');expect(html).not.toContain('name="proof"');
  });
  it('keeps an uncertain outcome distinct from success and points to sign-in first',()=>{
-  const message='The reset outcome could not be confirmed. Try signing in with your new password before requesting another proof.';
+  const message='The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.';
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done={false} message={message} onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(html).toContain('Check your sign-in first');expect(html).toContain('Try signing in');
   expect(html).toContain('role="alert"');expect(html).toContain('<form');
   expect(html).not.toContain('Password updated');
  });
  it('explains an invalid proof without claiming account or password state',()=>{
-  const message='This recovery proof has expired, was already used, or cannot be verified. Request a new proof or contact your manager.';
+  const message='This recovery code has expired, was already used, or cannot be verified. Request a new proof or contact your manager.';
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done={false} message={message} onSubmit={()=>{}} proofRef={()=>{}}/>);
-  expect(html).toContain('Use a new recovery proof');expect(html).toContain(message);
-  expect(html).toContain('Request a new recovery proof');expect(html).not.toContain('Password updated');
+  expect(html).toContain('Use a new recovery code');expect(html).toContain(message);
+  expect(html).toContain('Request a new recovery code');expect(html).not.toContain('Password updated');
  });
  it('marks the confirmation field for mismatch and makes pending status explicit',()=>{
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done={false} message="Passwords do not match." onSubmit={()=>{}} proofRef={()=>{}}/>);

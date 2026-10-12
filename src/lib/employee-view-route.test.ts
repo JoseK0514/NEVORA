@@ -39,7 +39,7 @@ it('keeps read failures unavailable and denies source proof loss',async()=>{
 it('management marking read requires an exact own-session binding and same-origin write',async()=>{
  const factory=Reflect.get(routes,'createManagementNotificationReadPost');expect(factory).toBeTypeOf('function');
  m.session={id:'self',role:'MANAGER'};m.read.mockResolvedValue(true);const POST=factory(m.read);
- const req=(patch:Record<string,string>={},body:object={notificationId:'own-intent'})=>new Request('http://localhost/api/notifications/read',{method:'POST',headers:{Origin:'http://localhost','Content-Type':'application/json','X-Nevora-Employee-View':binding('notifications'),...patch},body:JSON.stringify(body)});
+ const req=(patch:Record<string,string>={},body:object={notificationId:'own-intent'})=>new Request('http://localhost/api/notifications/read',{method:'POST',headers:{Origin:'http://localhost','Content-Type':'application/json','X-Nevora-Notification-Read':'1','X-Nevora-Employee-View':binding('notifications'),...patch},body:JSON.stringify(body)});
  expect((await POST(req({Origin:'https://foreign.invalid'}))).status).toBe(403);
  expect((await POST(req({'X-Nevora-Employee-View':'wrong'}))).status).toBe(403);
  expect((await POST(req({}, {notificationId:'own-intent',employeeId:'foreign'}))).status).toBe(400);
@@ -47,4 +47,13 @@ it('management marking read requires an exact own-session binding and same-origi
  expect(m.read).not.toHaveBeenCalled();m.session={id:'self',role:'MANAGER'};
  expect((await POST(req())).status).toBe(200);expect(m.read).toHaveBeenCalledTimes(1);
  m.read.mockRejectedValue(Error('private database detail'));const failed=await POST(req());expect(failed.status).toBe(503);expect(await failed.text()).not.toContain('private database');
+});
+
+it('validates the configured portal origin when the server request URL differs behind a host proxy',async()=>{
+ m.session={id:'self',role:'MANAGER'};m.read.mockResolvedValue(true);vi.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1:43210');
+ try{
+ const factory=Reflect.get(routes,'createManagementNotificationReadPost');
+ const response=await factory(m.read)(new Request('http://localhost:43210/api/notifications/read',{method:'POST',headers:{Origin:'http://127.0.0.1:43210',Host:'127.0.0.1:43210','sec-fetch-site':'same-origin','Content-Type':'application/json','X-Nevora-Notification-Read':'1','X-Nevora-Employee-View':binding('notifications')},body:JSON.stringify({notificationId:'own-intent'})}));
+ expect(response.status).toBe(200);
+ }finally{vi.unstubAllEnvs();}
 });

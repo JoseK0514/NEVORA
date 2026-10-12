@@ -40,9 +40,9 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit}:{
   </>}
   <div className="auth-secondary employee-login-secondary recovery-secondary">
    <Link href="/reset-access" className="login-access-link"><KeyIcon size={20} weight="regular" aria-hidden="true" focusable="false"/>
-    <span>I already have a recovery proof</span><ArrowUpRightIcon size={16} weight="regular" aria-hidden="true" focusable="false"/></Link>
+    <span>I already have a recovery code</span><ArrowUpRightIcon size={16} weight="regular" aria-hidden="true" focusable="false"/></Link>
    <details className="recovery-help"><summary><span>Can’t use your recovery email?</span><CaretDownIcon size={18} weight="regular" aria-hidden="true" focusable="false"/></summary>
-    <p>Contact your manager or Owner for assisted recovery. They must verify your identity before issuing a recovery proof.</p>
+    <p>Contact your manager or Owner for assisted recovery. They must verify your identity before issuing a recovery code.</p>
    </details>
   </div>
   <Link href="/login" className="recovery-back"><ArrowLeftIcon size={18} weight="regular" aria-hidden="true" focusable="false"/>Back to sign in</Link>

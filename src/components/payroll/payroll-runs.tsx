@@ -33,6 +33,7 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
         <PayrollPanel title="Pay periods" description="Each approval belongs to one exact revision."><div className="pw-run-list">{resource.data.runs.map(item => <button key={item.id} type="button" className={`pw-run-option${item.id === run?.id ? ' selected' : ''}`} aria-pressed={item.id === run?.id} onClick={() => setSelectedId(item.id)} disabled={locked}>
           <span><strong>{item.period.startDate} – {item.period.endDate}</strong><small>Payday {item.payday} · Revision {item.revision}</small></span><span className={`pw-badge ${item.status === 'APPROVED' ? 'pw-badge-success' : ''}`}>{statusLabels[item.status]}</span>
         </button>)}</div></PayrollPanel>
+        {run && <p className="pw-workflow-guidance" role="status"><strong>Next step:</strong> {run.status==='WAITING_FOR_AMOUNTS'?'Import amounts from your payroll provider or accountant.':run.status==='REVIEW_REQUIRED'?'Review discrepancies and employee amounts before approving.':'Generate and review the approved documents, then publish statements when ready.'}</p>}
         {run && <RunReview key={`${run.id}:${run.revision}:${run.reviewToken}`} run={run} capabilities={resource.data.capabilities} operation={operation} />}
       </div>}
       {resource.data.jobs.length > 0 && <PayrollPanel title="Preparation and delivery" description="Document generation, publication and notice queues have separate results.">

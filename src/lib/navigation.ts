@@ -42,7 +42,7 @@ export function managementNavigationGroups(items: NavigationItem[]) {
     {label:'Time & Pay', hrefs:['/app/timecards','/app/payroll','/app/payroll-export','/app/reports','/app/my-pay']},
     {label:'Workspace', hrefs:['/app/settings','/app/schedule/settings']},
   ];
-  return definitions.map(group=>({...group,items:items.filter(item=>group.hrefs.includes(item.href))})).filter(group=>group.items.length);
+  return definitions.map(group=>({...group,items:group.hrefs.flatMap(href=>items.filter(item=>item.href===href))})).filter(group=>group.items.length);
 }
 
 /** Canonical workflows keep their URLs, queries and commands. Only their

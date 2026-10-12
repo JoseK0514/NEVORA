@@ -20,14 +20,14 @@ it('makes registered Clocker device setup discoverable from Settings',async()=>{
 
 it('makes operational break configuration discoverable',async()=>{expect(renderToStaticMarkup(await SettingsPage())).toContain('href="/app/settings/breaks"');});
 
-it('retains all nine company destinations as directly named links with descriptions',async()=>{
+it('retains all eleven company and team destinations as directly named links with descriptions',async()=>{
  const html=renderToStaticMarkup(await SettingsPage());
  for(const path of [
   '/app/settings/workspace','/app/settings/locations','/app/settings/clocker',
   '/app/schedule/settings','/app/settings/breaks','/app/settings/positions',
-  '/app/account-recovery','/app/clocker-recovery','/app/settings/company-policies',
+  '/app/account-recovery','/app/clocker-recovery','/app/settings/company-policies','/app/employees','/app/updates',
  ])expect(html.match(new RegExp(`href="${path}"`,'g'))).toHaveLength(1);
- expect(html.match(/<a[^>]*aria-labelledby="setting-[^"]+-title"[^>]*aria-describedby="setting-[^"]+-description"/g)).toHaveLength(9);
+ expect(html.match(/<a[^>]*aria-labelledby="setting-[^"]+-title"[^>]*aria-describedby="setting-[^"]+-description"/g)).toHaveLength(11);
  expect(html).toContain('Job qualifications, separate from access roles.');
  expect(html).toContain('Break classifications and optional reference durations.');
 });
