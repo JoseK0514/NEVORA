@@ -26,7 +26,9 @@
     "test:clocker:owned": "node scripts/phase-c-clocker-postgres.mjs",
     "test:release:postgres": "node scripts/phase-c-release-postgres.mjs",
     "test:phase-d:attendance-ui": "node scripts/phase-d-attendance-postgres.mjs",
-    "test:phase-d2:corrections-ui": "node scripts/phase-d2-corrections-postgres.mjs"
+    "test:phase-d2:corrections-ui": "node scripts/phase-d2-corrections-postgres.mjs",
+    "payroll:worker": "tsx scripts/payroll-worker.ts",
+    "test:payroll:owned": "node scripts/payroll-postgres.mjs"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",
@@ -36,6 +38,7 @@
     "gsap": "3.15.0",
     "next": "16.3.8",
     "nodemailer": "10.0.16",
+    "pdf-lib": "1.17.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "web-push": "3.6.7"

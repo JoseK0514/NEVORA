@@ -31,7 +31,7 @@ const CURRENT_MIGRATIONS = [
   '0024_schedule_copy_receipts.sql',
   '0025_company_policies.sql',
   '0026_attendance_observations.sql',
-  '0027_payroll_period_custody.sql',
+  '0027_payroll_period_custody.sql', '0028_configurable_payroll.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

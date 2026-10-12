@@ -128,10 +128,10 @@ ACCEPTED. Local verification never closes independent findings or approves relea
 
 | Stage | Owner | State | Evidence / next gate |
 |---|---|---|---|
-| P0 base/contract | Integration owner | IN PROGRESS | eea9a8a source; this contract; publish exact field types and UI handoff |
-| P1 preferences/import/runs/PDF | Backend + UI owners | NOT STARTED | SQL authority/immutability, exact-money import, actual PDF and browser scenarios |
-| P2 preparation/publication/reminders | Backend + UI owners | NOT STARTED | worker concurrency/retry/crash recovery and exception workflow |
-| P3 bank-neutral adapter | Integration owner | NOT STARTED | synthetic artifact totals/replay; actual bank channel acceptance BLOCKED |
+| P0 base/contract | Integration owner | LOCALLY VERIFIED | APIv1 4272655, additive contract 283f57f; UI handoff issued |
+| P1 preferences/import/runs/PDF | Backend + UI owners | IN PROGRESS | Backend SQL/import/document evidence: .omo/evidence/payroll-backend/README.md; integrated UI and review pending |
+| P2 preparation/publication/reminders | Backend + UI owners | IN PROGRESS | Durable prepare/PDF/publication and fenced retries locally tested; notice transport disabled NOT_SENT_STUB; missed-period automatic catch-up open |
+| P3 bank-neutral adapter | Integration owner | LOCALLY VERIFIED | Synthetic neutral JSON exact totals/count/hash/replay; native bank acceptance and account mappings BLOCKED |
 | P4 internal calculator | Integration owner | NOT STARTED | accountant-validated cases/statutory scope BLOCKED; engine disabled |
 | Integrated review | Root QA + code reviewer | NOT STARTED | unit/SQL/auth/worker/browser/lint/typecheck/build on exact source |
 | Hosted/independent/release | Jose + independent reviewers | NOT STARTED | hosted evidence and independent verdict; production authorization |
