@@ -17,8 +17,8 @@ const managementNavigation: NavigationItem[] = [
   { href: "/app/updates", label: "Updates", icon: "updates" },
   { href: "/app/employees", label: "Employees", icon: "employees" },
   { href: "/app/timecards", label: "Timecards", icon: "clock" },
-  { href: "/app/reports", label: "Reports", icon: "clock" },
-  { href: "/app/payroll-export", label: "Payroll export", icon: "clock" },
+  { href: "/app/reports", label: "Reports", icon: "reports" },
+  { href: "/app/payroll-export", label: "Payroll export", icon: "export" },
   { href: "/app/schedule/templates", label: "Templates", icon: "templates" },
   { href: "/app/schedule/settings", label: "Scheduling rules", icon: "rules" },
 ];
@@ -29,10 +29,21 @@ const employeeNavigation: NavigationItem[] = [
   { href: "/app/my-time", label: "My Time", icon: "clock" },
   { href: "/app/requests/hub", label: "Requests", icon: "requests" },
   { href: "/app/availability", label: "Availability", icon: "availability" },
-  { href: "/app/updates", label: "Updates", icon: "alert" },
-  { href: "/app/notifications", label: "Notifications", icon: "alert" },
+  { href: "/app/updates", label: "Updates", icon: "updates" },
+  { href: "/app/notifications", label: "Notifications", icon: "notifications" },
   { href: "/app/profile", label: "Profile", icon: "employee" },
 ];
+
+/** Presentation groups consume only already-authorized navigation entries. */
+export function managementNavigationGroups(items: NavigationItem[]) {
+  const definitions = [
+    {label:'Plan', hrefs:['/app','/app/schedule','/app/availability','/app/exchange','/app/schedule/templates']},
+    {label:'Team', hrefs:['/app/employees','/app/requests','/app/updates']},
+    {label:'Time & Pay', hrefs:['/app/timecards','/app/payroll','/app/payroll-export','/app/reports','/app/my-pay']},
+    {label:'Workspace', hrefs:['/app/settings','/app/schedule/settings']},
+  ];
+  return definitions.map(group=>({...group,items:items.filter(item=>group.hrefs.includes(item.href))})).filter(group=>group.items.length);
+}
 
 /** Canonical workflows keep their URLs, queries and commands. Only their
  * employee navigation owner is the Requests group. Manager owners are unchanged. */

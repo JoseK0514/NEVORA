@@ -59,6 +59,7 @@ export default async function DashboardPage({
 
   return (
     <ManagerDashboard
+      role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}
       correctionAuthority={correctionAuthority(await requireSessionMutationProof())}
       workspaceName={workspace.name}

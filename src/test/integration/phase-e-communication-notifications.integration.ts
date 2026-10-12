@@ -1,3 +1,4 @@
+import {readFile} from 'node:fs/promises';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import {createECDH,randomUUID} from 'node:crypto';
 import {createDisposableNotificationDatabase} from './local-postgres';
@@ -36,7 +37,8 @@ async function worker(){
  const deps:WorkerDeps={config,clock:()=>new Date(),executor:db.executor,subscriptions,deliveries:sqlDeliveryRepository('test',db.executor),state:sqlNotificationStateRepository(db.executor),sender:{send}};
  return {deps,send};
 }
-beforeEach(async()=>{db=await createDisposableNotificationDatabase();fixtureTimeZone=fixtureZoneForHour(12);await q('UPDATE workspaces SET time_zone=$1 WHERE singleton=true',[fixtureTimeZone]);const hour=Number(businessTime(new Date(),fixtureTimeZone).slice(0,2));expect(hour).toBeGreaterThanOrEqual(7);expect(hour).toBeLessThan(21);await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','QA-NO-PHONE','OWNER','loc-1'),('employee','Fictional','Self','QA-NO-PHONE','EMPLOYEE','loc-1'),('foreign','Fictional','Other','QA-NO-PHONE','EMPLOYEE','loc-2')");for(const p of [owner,employee])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);});
+async function seedActors(){fixtureTimeZone=fixtureZoneForHour(12);await q('UPDATE workspaces SET time_zone=$1 WHERE singleton=true',[fixtureTimeZone]);const hour=Number(businessTime(new Date(),fixtureTimeZone).slice(0,2));expect(hour).toBeGreaterThanOrEqual(7);expect(hour).toBeLessThan(21);await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','QA-NO-PHONE','OWNER','loc-1'),('employee','Fictional','Self','QA-NO-PHONE','EMPLOYEE','loc-1'),('foreign','Fictional','Other','QA-NO-PHONE','EMPLOYEE','loc-2')");for(const p of [owner,employee])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);}
+beforeEach(async()=>{db=await createDisposableNotificationDatabase();await seedActors();});
 afterEach(async()=>{await db?.dispose();});
 it('duplicate intent one event per version recipient; inbox and safe open work without push',async()=>{
  const {c,r,state,intent}=await publish();expect(intent).not.toBeNull();if(!intent)throw Error('missing current communication source');
@@ -71,4 +73,16 @@ it('provider ambiguous retry may repeat generic payload but never creates acknow
 it('outbox fault leaves no partial publication and unmarked database activation is held',async()=>{
  await q("ALTER TABLE notifications ADD CONSTRAINT fixture_outbox_fault CHECK(type<>'COMMUNICATION')");const p=await previewCommunicationAudience(owner,draft,db.executor);if(p.state!=='ready')throw Error('preview');expect((await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:p.authority,draft,audienceFingerprint:p.fingerprint},db.executor)).status).not.toBe('committed');expect(await q('SELECT * FROM communications')).toEqual([]);await q('ALTER TABLE notifications DROP CONSTRAINT fixture_outbox_fault');
  const {intent,state}=await publish();if(!intent)throw Error('source');const [meta]=await q("SELECT current_database() AS name,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()");try{await q('COMMENT ON DATABASE '+meta.name+' IS NULL');expect(await state.readSource(intent.source)).toBeNull();}finally{await q("COMMENT ON DATABASE "+meta.name+" IS '"+meta.marker+"'");}
+});
+
+it('upgrade retains historical communication notifications through payroll and forward repair',async()=>{
+ await db.dispose();db=await createDisposableNotificationDatabase({beforePayrollNotices:true});await seedActors();
+ const {c,r}=await publish();const history=await q('SELECT id,source_id,source_kind FROM notifications ORDER BY id');
+ for(const file of ['0029_payroll_private_notices.sql','0030_notification_source_kinds.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
+ expect(await q('SELECT id,source_id,source_kind FROM notifications ORDER BY id')).toEqual(history);
+ expect(await executeCommunicationCommand(owner,c,db.executor)).toEqual(r);
+ expect(await q('SELECT * FROM notifications')).toHaveLength(1);
+ const [constraint]=await q("SELECT pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE conname='notifications_source_kind_check'");
+ for(const kind of ['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','MANAGER_SUMMARY','SELF_TEST','COMMUNICATION','PAYROLL_PREPARATION','PAYROLL_STATEMENT'])expect(constraint.definition).toContain(kind);
+ expect(await q('SELECT * FROM communication_receipts')).toEqual([]);
 });

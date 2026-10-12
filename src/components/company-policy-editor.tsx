@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import {useRouter} from "next/navigation";
+import {formatBusinessDateTimeInput,formatBusinessTimestamp,policyEffectiveInstant} from "@/lib/business-time";
 import type { PolicyRevision } from "@/lib/business-improvements/company-policies/service";
 import type { CompanyPolicySettings } from "@/lib/business-improvements/company-policies/model";
 const fields = [
@@ -13,20 +15,25 @@ const fields = [
 export function CompanyPolicyEditor({
   history,
   locations,
+  timeZone,
 }: {
+  timeZone: string;
   history: PolicyRevision[];
   locations: { id: string; name: string }[];
 }) {
+  const router=useRouter();
   const [scope, setScope] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [retry, setRetry] = useState<object | null>(null);
+  const [modes,setModes] = useState<Record<string,string>>({});
   const current = history.find((h) => h.locationId === (scope || null));
   async function submit(form: HTMLFormElement) {
     const data = new FormData(form),
       attendance: Record<string, unknown> = {},
       labor: Record<string, unknown> = { ...(current?.settings.labor ?? {}) };
     for (const [key] of fields) {
+      if (retry) break;
       const mode = data.get(`${key}.mode`),
         section = key === "overtimeRisk" ? labor : attendance;
       if (mode === "inherit") {
@@ -40,7 +47,7 @@ export function CompanyPolicyEditor({
       const rule: Record<string, unknown> = {
         thresholdMinutes: Number(data.get(`${key}.threshold`)),
         comparison: data.get(`${key}.comparison`),
-        effectiveFrom: data.get(`${key}.effective`),
+        effectiveFrom: policyEffectiveInstant(String(data.get(`${key}.effective`) ?? ""), (key === "overtimeRisk" ? current?.settings.labor?.overtimeRisk : current?.settings.attendance?.[key])?.effectiveFrom, timeZone),
       };
       if (key === "longEntry")
         Object.assign(rule, {
@@ -90,7 +97,7 @@ export function CompanyPolicyEditor({
       if (response.status === 400) {
         setRetry(null);
         setNotice(
-          "Review thresholds and ISO effective timestamps, including timezone. Correct the fields and save again.",
+          "Check the thresholds and effective dates, then save again.",
         );
         return;
       }
@@ -101,23 +108,24 @@ export function CompanyPolicyEditor({
       }
       if (!response.ok) throw Error();
       setRetry(null);
-      setNotice("Saved. Reload to see the current revision.");
+      setNotice("Policies saved.");
+      router.refresh();
     } catch {
       setNotice(
-        "Outcome unconfirmed. Retry the same command. Your original values and operation reference are retained.",
+        "We could not confirm whether your changes were saved. Retry safely using the retained request, or refresh to check the current policies.",
       );
     } finally {
       setBusy(false);
     }
   }
   return (
-    <>
-      <label>
+    <div className="company-policy-editor">
+      <div className="policy-scope-panel"><label>
         Policy scope{" "}
         <select
           value={scope}
           disabled={busy || retry !== null}
-          onChange={(e) => setScope(e.target.value)}
+          onChange={(e) => {setScope(e.target.value);setModes({});setNotice("");}}
         >
           <option value="">Company default</option>
           {locations.map((l) => (
@@ -127,16 +135,14 @@ export function CompanyPolicyEditor({
           ))}
         </select>
       </label>
-      <p>
-        Revision {current?.revision ?? 0}. Missing location fields inherit
-        company values; Not Configured explicitly disables a rule.
-      </p>
+      <p>{scope ? "Location rules use company defaults unless you set an override. Choose Disabled to turn a rule off at this location." : "Set company defaults for attendance and recorded-time review. Disabled rules do not produce comparisons."}</p><small>Version {current?.revision ?? 0} · Dates use {timeZone.replaceAll("_"," ")}</small></div>
       <form
         key={scope + ":" + (current?.revision ?? 0)}
-        className="employee-form"
+        className="employee-form policy-form"
+        aria-busy={busy}
         onSubmit={(e) => {
           e.preventDefault();
-          void submit(e.currentTarget);
+          void submit(e.currentTarget).catch(() => setNotice("Choose a valid effective date and time in your company timezone. Times skipped or repeated by daylight saving time need a different selection."));
         }}
       >
         {fields.map(([key, label]) => {
@@ -145,31 +151,27 @@ export function CompanyPolicyEditor({
               ? current?.settings.labor?.overtimeRisk
               : current?.settings.attendance?.[key]
           ) as Record<string, unknown> | null | undefined;
+          const mode=modes[key] ?? (rule === undefined ? "inherit" : rule === null ? "none" : "configured");
           return (
             <fieldset key={key} disabled={busy || retry !== null}>
               <legend>{label}</legend>
               <label>
-                Configuration{" "}
+                Rule setting{" "}
                 <select
                   name={`${key}.mode`}
-                  defaultValue={
-                    rule === undefined
-                      ? "inherit"
-                      : rule === null
-                        ? "none"
-                        : "configured"
-                  }
+                  value={mode}
+                  onChange={event=>setModes(value=>({...value,[key]:event.target.value}))}
                 >
                   <option value="inherit">
                     {scope
                       ? "Inherit company default"
-                      : "Not Configured (absent)"}
+                      : "Disabled by default"}
                   </option>
-                  <option value="none">Not Configured (explicit)</option>
-                  <option value="configured">Configured</option>
+                  <option value="none">Disabled</option>
+                  <option value="configured">Custom threshold</option>
                 </select>
               </label>
-              <label>
+              <div className="policy-rule-fields" hidden={mode !== "configured"}><label>
                 Threshold minutes{" "}
                 <input
                   name={`${key}.threshold`}
@@ -190,11 +192,11 @@ export function CompanyPolicyEditor({
                 </select>
               </label>
               <label>
-                Effective from (ISO timestamp with timezone){" "}
+                Effective from{" "}
                 <input
                   name={`${key}.effective`}
-                  placeholder="2030-01-01T00:00:00Z"
-                  defaultValue={String(rule?.effectiveFrom ?? "")}
+                  type="datetime-local"
+                  defaultValue={formatBusinessDateTimeInput(rule?.effectiveFrom ? String(rule.effectiveFrom) : undefined,timeZone)}
                 />
               </label>
               {key === "longEntry" && (
@@ -217,9 +219,9 @@ export function CompanyPolicyEditor({
                       name={`${key}.appliesTo`}
                       defaultValue={String(rule?.appliesTo ?? "BOTH")}
                     >
-                      <option>OPEN</option>
-                      <option>CLOSED</option>
-                      <option>BOTH</option>
+                      <option value="OPEN">Currently open</option>
+                      <option value="CLOSED">Completed</option>
+                      <option value="BOTH">Open and completed</option>
                     </select>
                   </label>
                 </>
@@ -264,8 +266,8 @@ export function CompanyPolicyEditor({
                       name={`${key}.window`}
                       defaultValue={String(rule?.window ?? "BUSINESS_WEEK")}
                     >
-                      <option>BUSINESS_DAY</option>
-                      <option>BUSINESS_WEEK</option>
+                      <option value="BUSINESS_DAY">Business day</option>
+                      <option value="BUSINESS_WEEK">Business week</option>
                     </select>
                   </label>
                   <label>
@@ -274,8 +276,8 @@ export function CompanyPolicyEditor({
                       name={`${key}.aggregation`}
                       defaultValue={String(rule?.aggregation ?? "COMPANY")}
                     >
-                      <option>COMPANY</option>
-                      <option>LOCATION</option>
+                      <option value="COMPANY">Across the company</option>
+                      <option value="LOCATION">At this location</option>
                     </select>
                   </label>
                   <label>
@@ -287,47 +289,42 @@ export function CompanyPolicyEditor({
                     />
                   </label>
                   <label>
-                    Week starts (0 Sunday–6 Saturday){" "}
-                    <input
-                      type="number"
-                      min="0"
-                      max="6"
+                    Week starts on{" "}
+                    <select
                       name={`${key}.weekStart`}
                       defaultValue={String(rule?.weekStartsOn ?? 1)}
-                    />
+                    >{["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map((day,i)=><option key={day} value={i}>{day}</option>)}</select>
                   </label>
                 </>
               )}
-            </fieldset>
+            </div></fieldset>
           );
         })}
-        <button className="button primary" disabled={busy} type="submit">
-          {retry ? "Retry original policy command" : "Save policy revision"}
+        <div className="policy-actions"><button className="button primary" disabled={busy} type="submit">
+          {busy ? "Saving…" : retry ? "Retry retained save" : "Save policies"}
         </button>
         <button
           className="button secondary"
           type="button"
+          disabled={busy}
           onClick={() => window.location.reload()}
         >
           Reload policies
         </button>
-        <p role="status">{notice}</p>
+        </div><p className="policy-notice" role="status" aria-live="polite">{notice}</p>
       </form>
-      <h2>Policy history</h2>
+      <section className="policy-history"><h2>Policy history</h2>
       <ul>
         {history
           .filter((h) => h.locationId === (scope || null))
           .map((h) => (
             <li key={h.operationId}>
-              Revision {h.revision} · {h.changedAt} ·{" "}
-              {h.changedKeys.join(", ") || "No configured field changes"}
+              Version {h.revision} · {formatBusinessTimestamp(h.changedAt,timeZone)} ·{" "}
+              {h.changedKeys.map(key=>fields.find(([name])=>key.includes(name))?.[1] ?? "Policy setting").join(", ") || "No rule changes"}
             </li>
           ))}
       </ul>
-      <p>
-        Finance calculations: unavailable until trusted calculation methods and
-        required customer inputs are supplied.
-      </p>
-    </>
+      {!history.some(h=>h.locationId === (scope || null)) ? <p>No saved policy changes for this scope yet.</p> : null}</section>
+    </div>
   );
 }

@@ -19,17 +19,16 @@ import "./settings-hub.css";
 const groups = [
   {
     id: "workspace",
-    title: "Workspace",
+    title: "Company & locations",
     description: "The essentials for your business.",
     items: [
-      { id: "profile", title: "Workspace profile", description: "Business name and timezone.", href: "/app/settings/workspace", icon: BuildingsIcon },
+      { id: "profile", title: "Company profile", description: "Business name and timezone.", href: "/app/settings/workspace", icon: BuildingsIcon },
       { id: "locations", title: "Locations", description: "Location details, status, and Clocker links.", href: "/app/settings/locations", icon: MapPinIcon },
-      { id: "devices", title: "Clocker devices", description: "Register shared tablets and manage their access.", href: "/app/settings/clocker", icon: DeviceTabletIcon },
     ],
   },
   {
     id: "work-rules",
-    title: "Work rules",
+    title: "Scheduling & attendance",
     description: "How your team is scheduled and works.",
     items: [
       { id: "company-policies", title: "Company policies", description: "Attendance thresholds, effective dates, and revision history.", href: "/app/settings/company-policies", icon: ShieldCheckIcon },
@@ -37,6 +36,21 @@ const groups = [
       { id: "breaks", title: "Break types", description: "Break classifications and optional reference durations.", href: "/app/settings/breaks", icon: CoffeeIcon },
       { id: "positions", title: "Positions", description: "Job qualifications, separate from access roles.", href: "/app/settings/positions", icon: BriefcaseIcon },
     ],
+  },
+  {
+    id: "team-communications",
+    title: "Team & communications",
+    description: "People, access roles, and company announcements.",
+    items: [
+      {id:"employees",title:"Employees & access",description:"Employee information, access roles, and scheduling eligibility.",href:"/app/employees",icon:BriefcaseIcon},
+      {id:"updates",title:"Company updates",description:"Announcements, audiences, and review requirements.",href:"/app/updates",icon:ShieldCheckIcon},
+    ],
+  },
+  {
+    id: "clocker",
+    title: "Clocker & devices",
+    description: "Shared tablets and their workspace access.",
+    items: [{ id: "devices", title: "Clocker devices", description: "Register shared tablets and manage their access.", href: "/app/settings/clocker", icon: DeviceTabletIcon }],
   },
   {
     id: "access-recovery",
@@ -52,9 +66,7 @@ const groups = [
 export default async function SettingsPage() {
   await requireRoles(["OWNER"]);
   const payroll = payrollFeatureEnabled() ? await readPayrollCapabilities(await requireSessionMutationProof()) : undefined;
-  const visibleGroups = groups.map(group => group.id === "work-rules" && payroll?.canConfigure ? {
-    ...group, items: [...group.items, { id: "payroll", title: "Payroll", description: "Company preferences, effective-dated employee exceptions, and financial access.", href: "/app/settings/payroll", icon: WalletIcon }],
-  } : group);
+  const visibleGroups = [...groups, ...(payroll?.canConfigure ? [{id:"payroll",title:"Payroll",description:"Financial settings and authorized payroll access.",items:[{id:"payroll",title:"Payroll settings",description:"Company preferences, employee exceptions, and financial access.",href:"/app/settings/payroll",icon:WalletIcon}]}] : [])];
   return (
     <SettingsHubMotion>
       <header className="settings-hub-heading">

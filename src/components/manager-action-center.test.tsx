@@ -11,6 +11,20 @@ it('D7 only a verified empty source can show no actions; missing ready data rema
 it('D7 rejects count mismatch, duplicates, foreign destinations and unbounded lifetime',()=>{for(const bad of [{...ready,counts:{...ready.counts,total:0}},{...ready,items:[ready.items[0],ready.items[0]]},{...ready,items:[{...ready.items[0],href:'https://other.test'}]},{...ready,validForMs:45001}])expect(()=>parseActionCenter(bad,ready.weekStart)).toThrow();});
 
 import * as managerSurfaces from './manager-action-center';
+import type {ActionItem} from '../lib/action-center/project';
+
+it('keeps a pending request discoverable when many coverage gaps occupy the queue',()=>{
+ const gaps:ActionItem[]=Array.from({length:37},(_,i)=>({id:'gap-'+i,type:'COVERAGE_GAP',category:'scheduling',priority:'URGENT',title:'Coverage gap',detail:'Fictional uncovered shift',locationId:'location-a',href:'/app/schedule'}));
+ const request:ActionItem={id:'leave',type:'TIME_OFF',category:'requests',priority:'REVIEW',title:'Leave request waiting',detail:'Fictional request',href:'/app/requests'};
+ const snapshot:ActionCenter={state:'ready',weekStart:'2026-10-05',observedAt:'2026-10-05T12:00:00Z',validForMs:30000,counts:{total:38,scheduling:37,requests:1,timekeeping:0},limitedAttendance:false,items:[...gaps,request]};
+ const html=renderToStaticMarkup(createElement(managerSurfaces.ActionCenterSurface,{snapshot,connection:'ready'}));
+ expect(html).toContain('Leave request waiting');
+ expect(html).toContain('aria-label="Total actions">38');
+ expect(html).toContain('Show all 38 actions');
+ const expanded=renderToStaticMarkup(createElement(managerSurfaces.ActionCenterSurface,{snapshot,connection:'ready',expanded:true}));
+ expect(expanded).toContain('data-action-id="gap-36"');
+ expect(expanded.match(/data-action-id=/g)).toHaveLength(38);
+});
 import type { ActionIntelligenceSurfaceProps } from './manager-action-center';
 import { buildActionIntelligence } from '../lib/action-center/intelligence';
 import type { ActionFact, ActionIntelligenceInput, ActionIntelligenceResult, SourceKey } from '../lib/action-center/intelligence';

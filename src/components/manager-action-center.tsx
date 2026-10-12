@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
-import {parseActionCenter,type ActionCenter} from '../lib/action-center/project';
+import {parseActionCenter,type ActionCenter,type ActionItem} from '../lib/action-center/project';
 import styles from './manager-action-center.module.css';
 import {ArrowRightIcon, ArrowsClockwiseIcon, CalendarBlankIcon, ClockIcon, KeyIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
 import {formatBusinessTimestamp} from '../lib/business-time';
@@ -14,14 +14,18 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
  const ready=connection==='ready'&&snapshot?.state==='ready'?snapshot:null;
  const status=connection==='ready'&&!ready?'unavailable':connection;
  const matching=ready?.items.filter(item=>category==='all'||item.category===category)??[];
- const visible=matching.slice(0,expanded?1000:20);
+ const grouped=new Map<string,ActionItem[]>();
+ for(const item of matching){const key=JSON.stringify([item.priority,item.type,item.locationId??null]);const group=grouped.get(key)??[];group.push(item);grouped.set(key,group);}
+ const groups=[...grouped.values()].sort((a,b)=>({URGENT:0,REVIEW:1,MISSING_INPUT:2}[a[0].priority]-{URGENT:0,REVIEW:1,MISSING_INPUT:2}[b[0].priority]));
+ // Reserve a place for each group before filling the bounded preview. A large
+ // coverage group must not crowd a pending request out of the first view.
+ const sizes=groups.map(()=>expanded?1000:1);
+ let remaining=20-Math.min(20,groups.length);
+ if(!expanded)for(let i=0;i<Math.min(20,groups.length);i++){const extra=Math.min(remaining,groups[i].length-1);sizes[i]+=extra;remaining-=extra;}
+ const visibleGroups=groups.slice(0,expanded?1000:20).map((group,index)=>group.slice(0,sizes[index]));
+ const visible=visibleGroups.flat();
  const noun=category==='requests'?'request':category==='all'?'action':`${category} action`;
- return <section className={styles.root} aria-label="Manager Action Center">
-  <header><div><h2>Action Center</h2><p>What needs my attention?</p></div>{ready?<strong className={styles.total} aria-label="Total actions">{ready.counts.total}</strong>:null}<button className="button secondary" type="button" onClick={onRefresh}><ArrowsClockwiseIcon size={18} aria-hidden="true"/><span>Refresh actions</span></button></header>
-  {ready?<>
-   <div className={styles.counts} role="group" aria-label="Filter actions by category">{(['scheduling','requests','timekeeping'] as const).map(value=><button type="button" key={value} data-action-category={value} aria-label={`${categoryLabels[value]}: ${ready.counts[value]} actions`} aria-pressed={category===value} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.(value)}><span>{categoryLabels[value]}</span><strong>{ready.counts[value]}</strong></button>)}</div>
-   <div className={styles.filterBar}><button type="button" data-action-category="all" aria-pressed={category==='all'} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.('all')}>All actions</button><p role="status" aria-live="polite">Showing {visible.length} of {matching.length} {noun}{matching.length===1?'':'s'}</p></div>
-   {matching.length?<div id="manager-action-list" className={styles.list}>{visible.map(item=>{
+ const renderItem=(item:ActionItem)=>{
     const Icon=item.category==='timekeeping'?ClockIcon:item.category==='requests'?UserCheckIcon:CalendarBlankIcon;
     const action=actionCenterNavigation(item);
     return <article key={item.id} data-action-id={item.id} data-action-kind={item.category}>
@@ -29,8 +33,14 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
      <div className={styles.copy}><small className={item.priority==='URGENT'?styles.priority:undefined}>{item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'} · {item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</small><h3>{item.title}</h3><p>{item.detail}</p></div>
      <Link className={styles.review} href={action.href} aria-label={`${action.label}: ${item.title}`}>{action.label} <ArrowRightIcon size={16} aria-hidden="true"/></Link>
     </article>;
-   })}</div>:<p id="manager-action-list" className={styles.status} role="status">{category==='all'?'No actions found in the checked sources.':`No ${category==='requests'?'requests':`${category} actions`} to review in the checked sources.`}</p>}
-   {matching.length>20&&!expanded?<button className="button secondary" onClick={onExpand}>Show all {matching.length} actions</button>:null}
+   };
+ return <section className={styles.root} aria-label="Manager Action Center">
+  <header><div><h2>Action Center</h2><p>What needs my attention?</p></div>{ready?<strong className={styles.total} aria-label="Total actions">{ready.counts.total}</strong>:null}<button className="button secondary" type="button" onClick={onRefresh}><ArrowsClockwiseIcon size={18} aria-hidden="true"/><span>Refresh actions</span></button></header>
+  {ready?<>
+   <div className={styles.counts} role="group" aria-label="Filter actions by category">{(['scheduling','requests','timekeeping'] as const).map(value=><button type="button" key={value} data-action-category={value} aria-label={`${categoryLabels[value]}: ${ready.counts[value]} actions`} aria-pressed={category===value} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.(value)}><span>{categoryLabels[value]}</span><strong>{ready.counts[value]}</strong></button>)}</div>
+   <div className={styles.filterBar}><button type="button" data-action-category="all" aria-pressed={category==='all'} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.('all')}>All actions</button><p role="status" aria-live="polite">Showing {visible.length} of {matching.length} {noun}{matching.length===1?'':'s'}</p></div>
+   {matching.length?<div id="manager-action-list" className={styles.list}>{visibleGroups.map(group=>group.length===1?renderItem(group[0]):<details className={styles.actionGroup} key={group[0].id}><summary><span><small>{group[0].priority==='URGENT'?'Urgent':'Review'} · {group.length} actions</small><strong>{group[0].type==='COVERAGE_GAP'?'Coverage gaps':group[0].title}</strong></span><span className={styles.groupCount}>{group.length}</span></summary><div>{group.map(renderItem)}</div></details>)}</div>:<p id="manager-action-list" className={styles.status} role="status">{category==='all'?'No actions found in the checked sources.':`No ${category==='requests'?'requests':`${category} actions`} to review in the checked sources.`}</p>}
+   {matching.length>visible.length&&!expanded?<button className="button secondary" onClick={onExpand}>Show all {matching.length} actions</button>:null}
    {ready.limitedAttendance?<p className={styles.status}>Some attendance comparisons are unavailable. Check the attendance view for source limitations.</p>:null}
    <div className={styles.provenance}><p>Checked <time dateTime={ready.observedAt}>{formatBusinessTimestamp(ready.observedAt,timeZone)}</time></p><details className={styles.note}><summary>About these actions</summary><p>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p></details></div>
   </>:<p className={styles.status} role="status">{({loading:'Loading actions',ready:'Actions unavailable',offline:'Actions unavailable offline',reconnecting:'Reconnecting to actions',unavailable:'Actions unavailable',access_lost:'Action Center access ended',paused:'Action updates paused'})[status]}. {status==='access_lost'?'Sign in with a currently authorized management account.':'The action list is unconfirmed. Refresh a current protected read before reviewing.'}</p>}

@@ -1,0 +1,19 @@
+.company-policies-page { max-width:1120px; margin-inline:auto; }
+.company-policy-editor { display:grid; gap:24px; }
+.policy-scope-panel,.policy-history { background:var(--design-surface-elevated); border:1px solid var(--design-surface); padding:24px; border-radius:var(--design-radius-card); }
+.policy-scope-panel label { display:grid; gap:8px; max-width:400px; font-size:14px; font-weight:550; }
+.policy-scope-panel select { padding:12px 16px; border:1px solid var(--design-border); background:var(--design-surface-elevated); }
+.policy-scope-panel p { color:var(--design-text-secondary); font-size:14px; line-height:1.6; max-width:70ch; }
+.policy-scope-panel small { color:var(--design-text-secondary); font-size:12px; }
+.company-policy-editor .policy-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+.policy-form > fieldset { margin:0; min-width:0; padding:20px; border:1px solid var(--design-surface); border-radius:var(--design-radius-card); background:var(--design-surface-elevated); }
+.policy-form legend { padding:0 8px; font-size:16px; font-weight:550; }
+.policy-form label { display:grid; gap:8px; min-width:0; font-size:13px; font-weight:500; }
+.policy-form :is(input,select) { width:100%; padding:12px 14px; color:var(--design-text-primary); background:var(--design-surface-elevated); border:1px solid var(--design-border); }
+.policy-rule-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:20px; }
+.policy-rule-fields[hidden] { display:none; }
+.policy-actions { grid-column:1/-1; display:flex; align-items:center; flex-wrap:wrap; gap:12px; }
+.policy-notice { grid-column:1/-1; margin:0; line-height:1.6; color:var(--design-text-secondary); }
+.policy-history ul { margin:16px 0 0; padding-inline-start:20px; color:var(--design-text-secondary); font-size:14px; line-height:1.7; }
+@media(max-width:1100px) { .company-policy-editor .policy-form { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:520px) { .policy-scope-panel,.policy-history { padding:20px; } .policy-rule-fields { grid-template-columns:minmax(0,1fr); } .policy-actions { display:grid; } }

@@ -20,14 +20,14 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
   <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button type="button" className="button secondary" disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':unavailable?'Retry':'Refresh'}</button>}</footer>
  </section>;
 }
-export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean}){
+export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string}){
  const [state,setState]=useState<PrivatePanelState<EmployeeViewSnapshot>>({snapshot:null,paused:false,refreshing:true});
  const control=useRef<ReturnType<typeof createPrivateSnapshotController<EmployeeViewSnapshot>>|null>(null);
  useEffect(()=>{
   // A short snapshot may reflect a source deadline, not lost session access.
   // Clear it and permit current revalidation; only a server refusal denies.
   const controller=createPrivateSnapshotController<EmployeeViewSnapshot>(setState,async signal=>{
-   const response=await fetch(`/api/employee/${kind}`,{cache:'no-store',credentials:'same-origin',redirect:'error',signal,headers:{Accept:'application/json','X-Nevora-Employee-View':authority}});
+   const response=await fetch(endpoint ?? `/api/employee/${kind}`,{cache:'no-store',credentials:'same-origin',redirect:'error',signal,headers:{Accept:'application/json','X-Nevora-Employee-View':authority}});
    if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};
    if(!response.ok)throw Error('View unavailable');return response.json();
   },value=>parseEmployeeView(value,kind),reason=>({state:'unavailable',reason}),()=> 'read_failed');
@@ -41,6 +41,6 @@ export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false}
   for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,sync);
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
- },[authority,kind]);
+ },[authority,kind,endpoint]);
  return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled}/>;
 }

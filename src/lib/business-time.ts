@@ -34,6 +34,11 @@ export function formatBusinessDateTimeInput(iso: string | undefined, timeZone: s
   const value = Temporal.Instant.from(iso).toZonedDateTimeISO(timeZone);
   return value.toPlainDateTime().toString({ smallestUnit: 'minute' });
 }
+/** Preserve the exact stored instant when a minute-resolution form is unchanged. */
+export function policyEffectiveInstant(local: string, original: string | undefined, timeZone: string): string {
+  if (original && local === formatBusinessDateTimeInput(original, timeZone)) return original;
+  return localDateTimeToInstant(local, timeZone);
+}
 export function formatBusinessDateTime(iso: string, timeZone: string): string {
   return new Intl.DateTimeFormat('en-US', { timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
 }

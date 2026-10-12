@@ -80,6 +80,14 @@ it("preserves configured Fuel customer identity in the sidebar", () => {
   expect(html).toContain("Fuel Coffee Drive");
 });
 
+it('groups authorized owner destinations and provides an accessible sidebar control', () => {
+ const {html}=render('OWNER','/app/schedule');
+ const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
+ for(const label of ['Plan','Team','Time &amp; Pay','Workspace']) expect(sidebar).toContain(label);
+ expect(html).toContain('aria-label="Collapse sidebar"');
+ expect(html).toContain('aria-expanded="true"');
+});
+
 it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reachable from the mobile header', role=>{
  const {html}=render(role);
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];

@@ -22,29 +22,28 @@ export default async function CopyReceiptPage({
       <section className="panel">
         <h1>Copy outcome not confirmed</h1>
         <p>
-          No completed receipt is available. Retry the original form with its
-          original operation reference. Do not start a new copy while the
-          original outcome is uncertain.
+          We could not confirm whether the shifts were copied. Inspect the schedule before continuing. Do not start a new copy while the original outcome is uncertain. If saved details are available below, retrying them uses the same request.
         </p>
-        <code>{operation}</code>
+        <Link className="button secondary" href={command ? `/app/schedule?week=${command.weekStart}` : "/app/schedule"}>Back to schedule</Link>
+        <details><summary>Saved request reference</summary><code>{operation}</code></details>
         {command && (
           <ScheduleCopyForm
             actorId={proof.employee.id}
             command={command}
-            label="Retry saved operation"
+            label="Retry saved copy"
           />
         )}
       </section>
     );
   return (
     <section className="panel">
-      <h1>Schedule copy receipt</h1>
+      <h1>Schedule copy result</h1>
       {receipt.reason && <p>No shifts were copied: {receipt.reason === "TEMPLATE_UNAVAILABLE" ? "the selected template was unavailable." : "the original source changed."} You can return to the schedule and start a new copy.</p>}
       <p>
-        {receipt.rows.filter((r) => r.status === "COMMITTED").length} committed;{" "}
+        {receipt.rows.filter((r) => r.status === "COMMITTED").length} shifts copied;{" "}
         {receipt.rows.filter((r) => r.status === "SKIPPED").length} skipped.
       </p>
-      <p>Operation: {receipt.operationId}</p>
+      <details><summary>Copy details and request reference</summary><p>Request: {receipt.operationId}</p>
       <ul>
         {receipt.rows.map((row, i) => (
           <li key={i}>
@@ -55,8 +54,8 @@ export default async function CopyReceiptPage({
             ))}
           </li>
         ))}
-      </ul>
-      <Link href={`/app/schedule?week=${receipt.command.weekStart}`}>
+      </ul></details>
+      <Link className="button secondary" href={`/app/schedule?week=${receipt.command.weekStart}`}>
         Back to schedule
       </Link>
     </section>

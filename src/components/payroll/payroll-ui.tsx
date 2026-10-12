@@ -13,6 +13,7 @@ export function PayrollFrame({ title, description, settings = false, personal = 
   return <div className="employee-view payroll-page payroll-workflow">
     <header className="payroll-page-heading"><div className="payroll-page-mark"><PayrollExportMotion kind={personal ? 'statement' : pathname === '/app/settings/payroll' ? 'settings' : 'payroll'} /></div><div><h1>{title}</h1><p>{description}</p></div></header>
     {!personal && <nav className="pw-tabs" aria-label="Payroll pages">
+      <Link href="/app/timecards">Timecards</Link>
       <Link href="/app/payroll" aria-current={pathname === '/app/payroll' ? 'page' : undefined}>Payroll runs</Link>
       <Link href="/app/payroll-export">Time exports</Link>
       {settings && <Link href="/app/settings/payroll" aria-current={pathname === '/app/settings/payroll' ? 'page' : undefined}>Payroll settings</Link>}

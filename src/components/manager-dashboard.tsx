@@ -70,6 +70,7 @@ export type DashboardScheduleEmployeeItem = {
 };
 
 type Props = {
+  role?: "OWNER" | "MANAGER";
   actorId?: string;
   correctionAuthority?:string;
   workspaceName: string;
@@ -428,6 +429,7 @@ export function ManagerDashboard(props: Props) {
     >
       <section className="dashboard-hero">
         <div className="dashboard-hero-copy">
+          {props.view === "overview" ? <p className="dashboard-role-context">{props.role === "OWNER" ? "Company overview" : "Team operations"}</p> : null}
           {props.view !== 'overview' ? <p>{props.view === "attendance" ? "Attendance intelligence" : "Manager dashboard"}</p> : null}
           <h1>{props.view === "attendance" ? "Recorded-time review" : `Welcome back, ${props.firstName}.`}</h1>
           <span>

@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { NotificationBell } from "./notification-bell";
 import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname } from "next/navigation";
 import { BrandLockup } from "./brand-lockup";
 import { NavIcon } from "@/components/nav-icon";
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import type { UserRole } from "@/lib/domain";
-import { activeNavigationHref, navigationForRole } from "@/lib/navigation";
+import { activeNavigationHref, managementNavigationGroups, navigationForRole } from "@/lib/navigation";
 import { NUVORA_BRAND } from "../lib/brand";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 
@@ -29,8 +30,14 @@ export function AppShell({
   user,
   notificationsEnabled = false,
   payrollCapabilities,
+  initialCollapsed = false,
+  preferenceCookie = "nevora_sidebar",
+  notificationAuthority,
 }: {
   workspaceName: string;
+  initialCollapsed?: boolean;
+  preferenceCookie?: string;
+  notificationAuthority?: string;
   notificationsEnabled?: boolean;
   payrollCapabilities?: PayrollCapabilities;
   children: ReactNode;
@@ -41,6 +48,11 @@ export function AppShell({
   };
 }) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(initialCollapsed);
+  function toggleSidebar() {
+    const next = !collapsed; setCollapsed(next);
+    if (/^[a-z0-9_]+$/i.test(preferenceCookie)) document.cookie = `${preferenceCookie}=${next ? "collapsed" : "expanded"}; Path=/app; Max-Age=31536000; SameSite=Lax`;
+  }
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
   const navigation = navigationForRole(user.role, payrollCapabilities);
@@ -89,14 +101,19 @@ export function AppShell({
 
   const Profile = notificationsEnabled ? "button" : "div";
   return (
-    <div className={employee ? "app-shell employee-shell" : "app-shell"}>
-      <aside className="sidebar">
+    <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}>
+      <aside className="sidebar" data-collapsed={collapsed}>
+        <div className="sidebar-heading">
         <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
           <BrandLockup tone="dark" />
         </Link>
 
-        <nav className="sidebar-nav" aria-label="Primary navigation">
-          {navigation.map((item) => {
+        <button className="sidebar-toggle" type="button" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={22} /></button>
+        </div>
+        <nav id="desktop-primary-navigation" className="sidebar-nav" aria-label="Primary navigation">
+          {(employee ? [{label:"",items:navigation}] : managementNavigationGroups(navigation)).map(group => <div className="sidebar-nav-group" key={group.label}>
+          {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}
+          {group.items.map((item) => {
             const active = item.href === activeHref;
 
             return (
@@ -105,14 +122,16 @@ export function AppShell({
                 href={item.href}
                 className={active ? "nav-link active" : "nav-link"}
                 aria-current={active ? "page" : undefined}
+                aria-label={item.label}
+                title={collapsed ? item.label : undefined}
               >
                 <span className="nav-icon">
                   <NavIcon name={item.icon} employee={employee} size={employee ? 20 : 18} />
                 </span>
-                <span>{employee ? employeeNavigationLabel(item.label) : item.label}</span>
+                <span className="nav-label">{item.label}</span>
               </Link>
             );
-          })}
+          })}</div>)}
         </nav>
 
         {employee ? <Link href="/app/profile" className="sidebar-profile portal-profile-trigger" aria-label="Your profile">
@@ -143,10 +162,12 @@ export function AppShell({
 
       <main className="app-main">
         <header className="mobile-header">
+          <span className="portal-workspace-name" title={workspaceName}>{workspaceName}</span>
           <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
             <BrandLockup variant="compact" />
           </Link>
           <div className="mobile-header-actions">
+          {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
           {notificationsEnabled && !employee ? <button type="button" className="role-chip portal-role-trigger" popoverTarget="portal-device-settings" aria-label="Profile and device settings">{user.role[0]}{user.role.slice(1).toLowerCase()}</button> : <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>}
           {!employee ? (
             <Link href="/app/updates" className="button secondary manager-updates-link"
@@ -246,13 +267,14 @@ export function AppShell({
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
                     aria-current={active ? "page" : undefined}
                   >
-                    {item.label === "Dashboard"
+                    <NavIcon name={item.icon} size={22} />
+                    <span>{item.label === "Dashboard"
                       ? "Home"
                       : item.label === "Shift requests"
                         ? "Shifts"
                         : item.label === "My schedule"
                           ? "Schedule"
-                          : item.label}
+                          : item.label}</span>
                   </Link>
                 );
               })}

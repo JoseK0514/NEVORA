@@ -25,6 +25,10 @@ import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { MegaphoneIcon } from "@phosphor-icons/react/dist/ssr/Megaphone";
+import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
+import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
+import { ExportIcon } from "@phosphor-icons/react/dist/ssr/Export";
+import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/ssr/SidebarSimple";
 
 const icons = {
   payroll: WalletIcon,
@@ -55,6 +59,10 @@ const icons = {
   refresh: ArrowClockwiseIcon,
   chevronRight: CaretRightIcon,
   updates: MegaphoneIcon,
+  notifications: BellIcon,
+  reports: ChartBarIcon,
+  export: ExportIcon,
+  sidebar: SidebarSimpleIcon,
 };
 
 export type NavIconName = keyof typeof icons;

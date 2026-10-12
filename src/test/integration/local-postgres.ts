@@ -135,8 +135,8 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
 export function createDisposableFoundationDatabase({ mode }: { mode: 'upgrade' | 'empty' | 'phase-c-base' | 'phase-d2-base' | 'current-runtime' }) {
   return createOwnedDatabase('nevora_foundation_test_', mode === 'current-runtime' ? CURRENT_MIGRATIONS.length : mode === 'phase-c-base' ? 10 : mode === 'phase-d2-base' ? 17 : mode === 'upgrade' ? 7 : 0);
 }
-export function createDisposableNotificationDatabase() {
-  return createOwnedDatabase('fuel_phase3_test_', CURRENT_MIGRATIONS.length);
+export function createDisposableNotificationDatabase({beforePayrollNotices=false}: {beforePayrollNotices?:boolean}={}) {
+  return createOwnedDatabase('fuel_phase3_test_', beforePayrollNotices ? CURRENT_MIGRATIONS.indexOf('0029_payroll_private_notices.sql') : CURRENT_MIGRATIONS.length);
 }
 
 export function createDisposableGenerationDatabase({mode = 'current-runtime'}: {mode?: 'current-runtime' | 'historical-8'} = {}) {
