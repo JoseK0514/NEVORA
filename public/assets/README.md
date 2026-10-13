@@ -74,3 +74,7 @@ was on 2026-10-11. See [the reset review](../../docs/ui/2026-10-11-nevora-reset-
 Keep official logos, wordmarks, and PWA icons in their existing locations.
 The current page inventory contains branding rather than stock content photos;
 do not replace official identity with generated artwork.
+
+## Login still refinement — 2026-10-12
+
+Employee Login now uses `illustrations/login-daylight-blue-v2.png`, a static original photographic study of daylight through cobalt workplace glass. It replaces the login planner artwork only. Empty alt text, reserved 1024×1536 intrinsic dimensions, responsive cover cropping and a cobalt fallback keep the image decorative. The exact generation prompt and SHA-256 are recorded in the manifest. Other authentication illustrations and the shared motion controller remain available for their existing pages.

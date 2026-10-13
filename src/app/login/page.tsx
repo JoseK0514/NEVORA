@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
-import { BrandLockup } from "@/components/brand-lockup";
+import { BrandWordmark } from "@/components/brand-mark";
 import { BrandLegal } from "@/components/brand-legal";
 import { login } from "@/app/login/actions";
 import { NUVORA_BRAND } from "../../lib/brand";
-import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
-import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
-import { UserPlusIcon } from "@phosphor-icons/react/dist/ssr/UserPlus";
+import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr/LockKey";
+import { IdentificationBadgeIcon } from "@phosphor-icons/react/dist/ssr/IdentificationBadge";
 import { LoginVisual } from "./login-visual";
 import { LoginSubmit } from "./login-submit";
 import "./login.css";
+import "./login-refinement.css";
 
 export default async function LoginPage({
   searchParams,
@@ -23,10 +23,13 @@ export default async function LoginPage({
   const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
 
   return (
-    <main className="auth-page employee-login-page">
+    <main className="auth-page employee-login-page login-refinement-page">
       <div className="employee-login-shell">
         <header className="employee-login-brand">
-          <BrandLockup variant="large" />
+          <span className="login-brand-lockup">
+            <BrandWordmark />
+            <span className="login-brand-module">{NUVORA_BRAND.module}</span>
+          </span>
           <span className="login-workspace">{workspaceName ?? "Workspace unavailable"}</span>
         </header>
 
@@ -35,9 +38,6 @@ export default async function LoginPage({
         <section className="auth-card employee-login-card">
           <div className="employee-login-heading">
             <h1>Employee Login</h1>
-            <p>
-              Access your schedule, availability, requests, time, and profile.
-            </p>
           </div>
 
           {params.error ? (
@@ -77,14 +77,16 @@ export default async function LoginPage({
 
           <div className="auth-secondary employee-login-secondary">
             <Link href="/forgot-access" className="login-access-link">
-              <KeyIcon size={20} weight="regular" aria-hidden="true" focusable="false" />
+              <span className="login-access-symbol" aria-hidden="true">
+                <LockKeyIcon size={24} weight="duotone" focusable="false" />
+              </span>
               <span>Forgot access?</span>
-              <ArrowUpRightIcon size={16} weight="regular" aria-hidden="true" focusable="false" />
             </Link>
             <Link href={`/activate${returnQuery}`} className="login-access-link">
-              <UserPlusIcon size={20} weight="regular" aria-hidden="true" focusable="false" />
+              <span className="login-access-symbol" aria-hidden="true">
+                <IdentificationBadgeIcon size={24} weight="duotone" focusable="false" />
+              </span>
               <span><small>New employee?</small>Activate your account</span>
-              <ArrowUpRightIcon size={16} weight="regular" aria-hidden="true" focusable="false" />
             </Link>
           </div>
         </section>

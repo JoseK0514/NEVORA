@@ -21,7 +21,7 @@
         0,
         254
       ],
-      "refinementPrompt": "Edit this illustration while retaining its exact objects and orange/charcoal/neutral palette. Convert it to a STRICTLY FLAT two-dimensional editorial illustration: opaque solid color fills inside objects, crisp simple geometric outlines, no glow/halo, no gradients, no ambient lighting, no rendered material texture, no dimensional shadows and no glossy or 3D shading. Remove all haze outside the object outlines. Keep the same compact composition and generous margins, fully isolated on genuinely transparent pixels. Keep all existing objects fully visible. No text, no numbers, no new symbols, no checkmarks. It must read clearly at 80–120px on a white employee dashboard. Preserve transparency."
+      "refinementPrompt": "Edit this illustration while retaining its exact objects and orange/charcoal/neutral palette. Convert it to a STRICTLY FLAT two-dimensional editorial illustration: opaque solid color fills inside objects, crisp simple geometric outlines, no glow/halo, no gradients, no ambient lighting, no rendered material texture, no dimensional shadows and no glossy or 3D shading. Remove all haze outside the object outlines. Keep the same compact composition and generous margins, fully isolated on genuinely transparent pixels. Keep all existing objects fully visible. No text, no numbers, no new symbols, no checkmarks. It must read clearly at 80\u2013120px on a white employee dashboard. Preserve transparency."
     },
     {
       "id": "schedule",
@@ -39,7 +39,7 @@
         0,
         254
       ],
-      "refinementPrompt": "Edit this illustration while retaining its exact objects and orange/charcoal/neutral palette. Convert it to a STRICTLY FLAT two-dimensional editorial illustration: opaque solid color fills inside objects, crisp simple geometric outlines, no glow/halo, no gradients, no ambient lighting, no rendered material texture, no dimensional shadows and no glossy or 3D shading. Remove all haze outside the object outlines. Keep the same compact composition and generous margins, fully isolated on genuinely transparent pixels. Keep all existing objects fully visible. No text, no numbers, no new symbols, no checkmarks. It must read clearly at 80–120px on a white employee dashboard. Preserve transparency."
+      "refinementPrompt": "Edit this illustration while retaining its exact objects and orange/charcoal/neutral palette. Convert it to a STRICTLY FLAT two-dimensional editorial illustration: opaque solid color fills inside objects, crisp simple geometric outlines, no glow/halo, no gradients, no ambient lighting, no rendered material texture, no dimensional shadows and no glossy or 3D shading. Remove all haze outside the object outlines. Keep the same compact composition and generous margins, fully isolated on genuinely transparent pixels. Keep all existing objects fully visible. No text, no numbers, no new symbols, no checkmarks. It must read clearly at 80\u2013120px on a white employee dashboard. Preserve transparency."
     },
     {
       "id": "login-workday-blue",
@@ -93,7 +93,24 @@
       "prompt": "Use case: stylized-concept. Asset type: original decorative NEVORA Reset Access / New Password illustration. Primary request: a premium, restrained sculptural folded-paper still life matching NEVORA's approved authentication artwork. Subject: one cobalt-blue folded-paper arched doorway, a luminous cyan sunrise inside it, and one small off-white sculptural key resting naturally in the foreground. Composition: horizontal 3:2, balanced central still life, generous transparent margins; doorway is the dominant silhouette, key is secondary and has a blank simple round bow. Style: precise rounded geometric forms, tactile fine paper texture, subtle soft studio shading, elegant Apple-inspired product-art finish. Color palette: cobalt #0756D9, cyan #43CCFB, ice #F0FBFF, ivory white only. Background: genuinely transparent alpha, no opaque backdrop or floor plane. Constraints: no text, numbers, letters, logos, interface, checkmarks, people, chrome, shields, padlocks, confetti, status signals or excessive particles. Artwork is decorative and does not imply that access has already been reset. Output 1536x1024 if supported.",
       "sha256": "1d185be707913b1d0549c338e211791b6a55141f4e424f95e7743f2f64ca40de",
       "bytes": 1801599,
-      "alphaRange": [0, 254]
+      "alphaRange": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "login-daylight-blue-v2",
+      "path": "illustrations/login-daylight-blue-v2.png",
+      "sourceFilename": "exec-f2e7aeab-c63d-4b4b-b93a-3dda12b2aa9b.png",
+      "generatedOn": "2026-10-12",
+      "width": 1024,
+      "height": 1536,
+      "transparent": false,
+      "alt": "",
+      "usage": "Static decorative photographic light study on Employee Login only; authentic workspace name and login controls stay in HTML.",
+      "prompt": "Create a final website hero photograph for NEVORA Workforce, an employee scheduling and time management product. This is an architectural editorial photograph, a quiet study of the beginning of a workday, with the precision and restraint of Apple product photography. Portrait 1024 by 1536 composition. A close, oblique view across a real contemporary workplace: five tall translucent cobalt-blue fluted glass partitions aligned in a steady rhythm, a single pale frosted glass plane in the foreground at lower right, clean blue-grey floor, clear early daylight entering from the upper right and casting long crisp diagonal lines on the floor. Color palette rich cobalt #0756D9, icy blue #F0FBFF, subtle pale cyan #43CCFB, and natural white daylight. Glass should look physically real with restrained reflections, tangible thickness and tiny natural imperfections. The architecture fills the frame with strong straight geometry and a subtle depth perspective, no magical floating objects. Camera eye-level, 70mm architectural lens, carefully corrected verticals, calm premium magazine photo, credible materials and believable light. Upper left third should be a quiet deep cobalt area with little detail, to leave space for real HTML white headline later. All important detail in the lower two thirds. The mood is calm, ordered, human and optimistic; visual metaphor of distinct workdays working together. Absolutely no text, letters, logos, people, clocks, calendars, desktop computers, UI screens, badges, cards, sunrise disks, paper sculptures, gradients posing as an image, spheres, icons, decorative plants or clutter. Do not create a website mockup; render only the photographic scene. Background fully opaque.",
+      "sha256": "ce0a68f3218b902ae19494a014e83fed532c255947acfe6eb8b0a1546438363a",
+      "bytes": 2050619
     }
   ]
 }

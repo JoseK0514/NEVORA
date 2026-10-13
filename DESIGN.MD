@@ -17,6 +17,10 @@ colors:
   login-cyan: "#43CCFB"
   login-ice: "#F0FBFF"
   login-form-surface: "#FFFFFF"
+  login-refined-canvas: "#F7F8FA"
+  login-refined-field: "#F6F7F9"
+  login-refined-divider: "#E7EBF0"
+  login-refined-hero-ink: "#062959"
 typography:
   display-lg:
     fontFamily: "Inter"
@@ -103,6 +107,8 @@ spacing:
   login-form-gap-mobile: "18px"
   login-form-padding: "48px"
   login-form-padding-mobile: "28px 24px 24px"
+  login-refined-form-padding: "48px 56px"
+  login-refined-form-padding-mobile: "32px 28px 28px"
   activation-password-inset: "4px"
   activation-password-clearance: "64px"
   activation-secondary-gap: "28px"
@@ -112,8 +118,37 @@ rounded:
   control: "17px"
   pill: "9999px"
   login-access-link: "4px"
+  login-refined-composition: "24px"
+  login-refined-control: "14px"
+  login-refined-symbol: "12px"
   activation-password-toggle: "13px"
 components:
+  login-refined-composition:
+    backgroundColor: "{colors.login-form-surface}"
+    rounded: "{rounded.login-refined-composition}"
+    width: "100%"
+  login-refined-action:
+    backgroundColor: "{colors.login-blue}"
+    textColor: "{colors.login-form-surface}"
+    typography: "{typography.login-action}"
+    rounded: "{rounded.login-refined-control}"
+    padding: "14px 18px"
+    height: "54px"
+    width: "100%"
+  login-refined-field:
+    backgroundColor: "{colors.login-refined-field}"
+    textColor: "{colors.text-primary}"
+    typography: "{typography.login-field}"
+    rounded: "{rounded.login-refined-control}"
+    padding: "12px 16px"
+    height: "54px"
+    width: "100%"
+  login-refined-access-link:
+    textColor: "{colors.login-blue}"
+    typography: "{typography.login-label}"
+    padding: "4px 0"
+    height: "56px"
+    width: "100%"
   card:
     background: "Use the surface token with subtle borders and HTML-matched shadow depth"
     radius: "Match the declared card radius token"
@@ -309,6 +344,16 @@ Login references:
 - [21st Nav List Card](https://21st.dev/@arihantcodes_1f7b8c4d/components/nav-list-card): icon and action link rows.
 
 These are visual references, not imported authentication implementations. The 21st dashboard options remain relevant to the wider portal.
+
+### Employee login refinement — 2026-10-12
+
+Jose requested a quieter premium login and authorized updating the existing synthetic preview. These login-only rules supersede the prior Employee Login illustration, motion, form copy and accessory treatments above; recovery, reset and activation retain their existing design.
+
+Use the original NEVORA wordmark with Workforce centered beneath it and no flame or boxed icon. Keep Inter and the approved cobalt/cyan identity. A static original architectural light study (`public/assets/illustrations/login-daylight-blue-v2.png`) replaces the floating paper planner; its portrait dimensions are 1024×1536, its prompt and hash are in the asset manifest. Reserve the art panel; the cobalt fallback and contrast scrim keep the exact Brighter work ahead slogan legible when imagery is unavailable. On mobile crop the still to a 144px strip. Do not apply the old motion controller to login; other authentication pages keep theirs.
+
+Employee Login leads directly into Employee ID, Password and the centered Sign In action, with no explanatory paragraph or arrow. Recovery and activation keep their real links and accessible text. Use individually imported Phosphor LockKey and IdentificationBadge duotone icons in coordinated 40px ice tiles; link targets are at least 56px high. White form surfaces, subtle neutral fields, 24px composition corners and 14px controls define the local variant. Preserve error/activation feedback, pending state, native submission, password autocomplete and safe return handling. Scope all refinements to `.login-refinement-page` in `src/app/login/login-refinement.css`.
+
+Reference: [Gusto sign-in on Mobbin](https://mobbin.com/screens/faab7a02-dc26-462b-b0f9-0a4a5245a65e) for focused authentication hierarchy and separated illustration; [21st Nav List Card](https://21st.dev/@arihantcodes_1f7b8c4d/components/nav-list-card) for a coordinated icon/link rhythm. No external auth component is imported. The 21st MCP server was unavailable in this session; its public reference was inspected instead.
 
 ## Forgot access
 
