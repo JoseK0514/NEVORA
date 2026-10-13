@@ -5,7 +5,7 @@ import { minorToDollars } from './money';
 export type FieldEntries = [string,string][] | null;
 const DraftContext=createContext<FieldEntries>(null);
 export function DraftFields({entries,children}:{entries:FieldEntries;children:ReactNode}){return <DraftContext value={entries}>{children}</DraftContext>;}
-export function savedValue(entries:FieldEntries,name:string,fallback=''){return entries===null?fallback:entries.find(([k])=>k===name)?.[1]??'';}
+export function savedValue(entries:FieldEntries,name:string,fallback=''){return entries===null?fallback:entries.find(([k])=>k===name)?.[1]??fallback;}
 export function Input({name,label,value='',type='text',required=true,help,min,max,step,maxLength=300}:{name:string;label:string;value?:string|number;type?:string;required?:boolean;help?:string;min?:number;max?:number;step?:string;maxLength?:number}){
  const entries=useContext(DraftContext),id=useId();return <label><span id={id}>{label}</span><input aria-labelledby={id} aria-describedby={help?`${id}-help`:undefined} name={name} type={type} defaultValue={savedValue(entries,name,String(value))} required={required} min={min} max={max} step={step} maxLength={maxLength}/>{help&&<small id={`${id}-help`}>{help}</small>}</label>;
 }

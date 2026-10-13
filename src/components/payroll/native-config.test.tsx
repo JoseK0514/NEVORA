@@ -41,3 +41,12 @@ it('names controls from their visible label and keeps helper text as a separate 
  for(const control of[input,select]){const id=control.match(/aria-labelledby="([^"]+)"/)?.[1];expect(id).toBeTruthy();expect(html).toContain(`id="${id}"`);}
  expect(input).toMatch(/aria-describedby="[^"]+"/);
 });
+
+import { NativeTaxFields } from './native-tax-fields';
+import { DraftFields } from './native-config-fields';
+it('initializes newly opened obligation identifiers without filling any factual balance or exemption',()=>{
+ const d={...draft,profileFields:[['taxEnabled','on']] as [string,string][]};
+ const html=renderToStaticMarkup(<DraftFields entries={d.profileFields}><NativeTaxFields draft={d} change={()=>{}}/></DraftFields>);
+ expect(html).toMatch(/name="employer\.0\.code"[^>]*value="FUTA"/);expect(html).toMatch(/name="employer\.1\.code"[^>]*value="PR_UI"/);expect(html).toMatch(/name="employer\.2\.code"[^>]*value="CFSE"/);
+ expect(html).not.toContain('value="0.00"');expect(html).not.toContain('checked=""');
+});
