@@ -11,7 +11,7 @@ export function nativeDocumentManifestStatements(run: PayrollRun, documents: Doc
     const expectedIds = run.nativeCalculation.employees.map(e => e.employeeId).sort(), actualIds = documents.filter(d => d.kind === 'EMPLOYEE_STATEMENT').map(d => d.employeeId).sort();
     if (hash(expectedIds) !== hash(actualIds) || documents.filter(d => d.kind === 'COMPANY_SUMMARY').length !== 1 || documents.length !== expectedIds.length + 1)
         throw new PayrollError('NATIVE_DOCUMENT_SET_CONFLICT', 409);
-    const expected = documents.map(d => ({ id: d.id, employeeId: d.employeeId, kind: d.kind, sha256: d.sha256, metadata: JSON.parse(String(d.statement.values[7])) })).sort((a, b) => a.id.localeCompare(b.id));
+    const expected = documents.map(d => ({ id: d.id, employeeId: d.employeeId, kind: d.kind, sha256: d.sha256, metadata: d.metadata })).sort((a, b) => a.id.localeCompare(b.id));
     const payload = { version: 'NATIVE_DOCUMENT_MANIFEST_V1', runRevision: run.revision, calculationSha256: hash(run.nativeCalculation), documents: expected };
     return [
         ...documents.map(d => q(`SELECT (CASE WHEN EXISTS(SELECT 1 FROM payroll_documents WHERE workspace_id=${ws} AND id=$1::uuid AND content=decode($2,'hex')) THEN '1' ELSE 'NATIVE_DOCUMENT_BYTES_CONFLICT' END)::integer`, d.id, d.bytes.toString('hex'))),

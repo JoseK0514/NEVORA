@@ -19,7 +19,35 @@ export function money(v: string) {
     const n = BigInt(v);
     return `USD ${n / BigInt(100)}.${(n % BigInt(100)).toString().padStart(2, "0")}`;
 }
-function stored(run: PayrollRun, kind: PayrollDocument["kind"], employeeId: string | null, bytes: Buffer, metadata: unknown = { period: run.period, payday: run.payday }) {
+export type PayrollDocumentMetadata = {
+    period: PayrollRun["period"];
+    payday: string;
+    coverage?: PayrollRun["coverage"];
+    nativeDocument?: {
+        templateVersion: typeof NATIVE_PAYSTUB_TEMPLATE_VERSION;
+        runRevision: number;
+        inputSha256: string;
+        rulesSha256: string;
+        presentationSha256: string;
+        sourceFingerprint: string;
+    } | {
+        templateVersion: "NEVORA_NATIVE_COMPANY_SUMMARY_V1";
+        runRevision: number;
+        calculationSha256: string;
+        sourceFingerprint: string;
+    };
+};
+export type GeneratedDocument = {
+    id: string;
+    filename: string;
+    sha256: string;
+    bytes: Buffer;
+    kind: PayrollDocument["kind"];
+    employeeId: string | null;
+    metadata: PayrollDocumentMetadata;
+    statement: ReturnType<typeof q>;
+};
+function stored(run: PayrollRun, kind: PayrollDocument["kind"], employeeId: string | null, bytes: Buffer, metadata: PayrollDocumentMetadata = { period: run.period, payday: run.payday }): GeneratedDocument {
     const id = idFor(run.id, kind, employeeId), filename = `payroll-${run.period.startDate}-${id}.${kind === "PAYMENT_INSTRUCTIONS" ? "json" : "pdf"}`, sha256 = sha(bytes);
     return {
         id,
@@ -28,6 +56,7 @@ function stored(run: PayrollRun, kind: PayrollDocument["kind"], employeeId: stri
         bytes,
         kind,
         employeeId,
+        metadata,
         statement: q(`INSERT INTO payroll_documents(workspace_id,id,run_id,employee_id,kind,filename,sha256,content,payload) VALUES(${ws},$1::uuid,$2::uuid,$3,$4,$5,$6,decode($7,'hex'),$8::jsonb) ON CONFLICT DO NOTHING`, id, run.id, employeeId, kind, filename, sha256, bytes.toString("hex"), JSON.stringify(metadata)),
     };
 }
@@ -147,7 +176,7 @@ export async function generatePdfs(run: PayrollRun, snapshot: Snapshot, progress
         `${es ? "Fuente" : "Source"}: ${snapshot.amounts.sourceName} / ${snapshot.amounts.sourceReference}`,
         `${es ? "Nómina" : "Run"}: ${run.id} / ${run.revision}`,
     ];
-    const result = [];
+    const result: GeneratedDocument[] = [];
     for (const row of run.rows) {
         if (run.sourceAuthority === "NATIVE_RECORDED_TIME") {
             if (!snapshot.native || run.nativeCalculation?.state !== "ready")
@@ -157,7 +186,7 @@ export async function generatePdfs(run: PayrollRun, snapshot: Snapshot, progress
             const presentation = nativeEmployeePresentation(run, snapshot, row.employeeId);
             const rendered = await renderNativeEmployeePaystub(presentation, { progress });
             const approved = run.nativeCalculation.employees.find(e => e.employeeId === row.employeeId)!;
-            const metadata = { period: run.period, payday: run.payday, coverage: snapshot.native.employeeCoverage[row.employeeId], nativeDocument: { templateVersion: NATIVE_PAYSTUB_TEMPLATE_VERSION, runRevision: run.revision, inputSha256: approved.provenance.inputSha256, rulesSha256: approved.provenance.rulesSha256, presentationSha256: hash(presentation), sourceFingerprint: snapshot.native.facts.sourceFingerprint } };
+            const metadata: PayrollDocumentMetadata = { period: run.period, payday: run.payday, coverage: snapshot.native.employeeCoverage[row.employeeId], nativeDocument: { templateVersion: NATIVE_PAYSTUB_TEMPLATE_VERSION, runRevision: run.revision, inputSha256: approved.provenance.inputSha256, rulesSha256: approved.provenance.rulesSha256, presentationSha256: hash(presentation), sourceFingerprint: snapshot.native.facts.sourceFingerprint } };
             const document = stored(run, "EMPLOYEE_STATEMENT", row.employeeId, Buffer.from(rendered.bytes), metadata);
             if (document.sha256 !== rendered.sha256)
                 throw new PayrollError("NATIVE_DOCUMENT_HASH_CONFLICT", 409);
