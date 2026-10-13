@@ -87,3 +87,28 @@ it('rejects inconsistent overlapping finalized snapshots rather than resolving t
     older.snapshot.entries[0].recordedVersion = 2;older.currentSource.entries[0].recordedVersion = 2;
     expect(projectRecordedSourceCapture(request, row)).toEqual({ state: 'blocked', reason: 'stale_source' });
 });
+
+
+function outsideCurrentLocation() {
+    const { request, row } = replacement();
+    const entry = structuredClone(row.capture.cards[0].currentSource.entries[0]);
+    Object.assign(entry, { id: 'outside-current', locationId: 'loc-2', locationName: 'Fictional outside location',
+        startAt: '2026-09-10T12:00:00Z', endAt: '2026-09-10T20:00:00Z', rawStartAt: '2026-09-10T12:00:00Z', rawEndAt: '2026-09-10T20:00:00Z' });
+    row.capture.cards[0].currentSource.entries.unshift(entry);
+    return { request, row };
+}
+it('requires the whole retained current-source location footprint outside the required window', () => {
+    const { request, row } = outsideCurrentLocation();
+    row.capture.lineage.locations.push({ id: 'loc-2', workspaceId: request.workspaceId });
+    const result = projectRecordedSourceCapture(request, row);
+    expect(result.state).toBe('ready');
+    if (result.state !== 'ready') throw Error('Verified current-source locations required');
+    expect(result.locationIds).toEqual(['loc-1', 'loc-2']);
+    expect(result.supersededCoverage[0].snapshot.entries.some(e => e.locationId === 'loc-2')).toBe(false);
+    expect(result.supersededCoverage[0].currentSource.entries[0].locationId).toBe('loc-2');
+});
+it.each(['missing', 'foreign'])('blocks retained outside-window current source with %s location metadata', defect => {
+    const { request, row } = outsideCurrentLocation();
+    if (defect === 'foreign') row.capture.lineage.locations.push({ id: 'loc-2', workspaceId: 'foreign-workspace' });
+    expect(projectRecordedSourceCapture(request, row)).toEqual({ state: 'blocked', reason: 'identity_mismatch' });
+});

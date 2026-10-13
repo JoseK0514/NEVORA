@@ -134,3 +134,56 @@ it('accepts adjacent current finalized authority with complete corrections creat
     expect(projectRecordedSourceCapture(request, duplicate).state).toBe('blocked');
 
 });
+
+
+it('verifies outside-window retained current-entry locations through SQL and denies a limited Manager the run and document', async () => {
+    const i = await setup();
+    await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('outside-current-loc2',$1,'loc-2',$2,'2026-09-10T12:00:00Z','2026-09-10T20:00:00Z','CLOCKED_OUT',1)", [employeeId, f.devices[2].device.id]);
+    const run = newRun(randomUUID(), period, payday);
+    const [facts] = await f.db.executor.query<{ coverage: { employeeId: string; startDate: string; endDate: string }[] }>(nativeDatabaseFactsQuery('workspace-fuel', run, [employeeId]));
+    const request = nativeSourceRequest('workspace-fuel', run, employeeId, i.wages, facts.coverage);
+    const [row] = await f.db.executor.query<{ capture: { lineage: { locations: { id: string; workspaceId: string }[] } } }>(buildRecordedSourceCapture(request));
+    expect(row.capture.lineage.locations).toEqual([{ id: 'loc-1', workspaceId: 'workspace-fuel' }, { id: 'loc-2', workspaceId: 'workspace-fuel' }]);
+    const projected = projectRecordedSourceCapture(request, row);
+    expect(projected.state).toBe('ready');if (projected.state !== 'ready') throw Error('Verified retained source required');
+    expect(projected.locationIds).toEqual(['loc-1', 'loc-2']);
+    expect(projected.entries.some(e => e.id === 'outside-current-loc2')).toBe(false);
+    const old = projected.supersededCoverage[0];expect(old.action).toBe('REOPEN');expect(old.revision).toBe(3);
+    expect(old.snapshot.entries.some(e => e.id === 'outside-current-loc2')).toBe(false);
+    expect(old.currentSource.entries.find(e => e.id === 'outside-current-loc2')?.locationId).toBe('loc-2');
+    const missing = structuredClone(row);missing.capture.lineage.locations = missing.capture.lineage.locations.filter(l => l.id !== 'loc-2');
+    expect(projectRecordedSourceCapture(request, missing)).toEqual({ state: 'blocked', reason: 'identity_mismatch' });
+    const foreign = structuredClone(row);foreign.capture.lineage.locations.find(l => l.id === 'loc-2')!.workspaceId = 'foreign-workspace';
+    expect(projectRecordedSourceCapture(request, foreign)).toEqual({ state: 'blocked', reason: 'identity_mismatch' });
+    const first = await prepared();expect(first.payload.status).toBe('REVIEW_REQUIRED');expect(first.payload.totals?.grossMinor).toBe('20000');
+    expect(first.payload.coverage).toEqual({ complete: true, locationIds: ['loc-1', 'loc-2'] });
+    await command(owner, { action: 'APPROVE', operationId: randomUUID(), runId: first.payload.id, expectedRevision: first.payload.revision, reviewToken: first.payload.reviewToken }, f.db.executor);await workerOnce(f.db.executor);await workerOnce(f.db.executor);
+    await f.q("UPDATE employees SET role='MANAGER',updated_at=clock_timestamp() WHERE id='c34-b'");await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'c34-b',clock_timestamp()+interval '1 day')");
+    await saveNativeProfile(owner, { action: 'SET_MANAGER_SCOPE', operationId: randomUUID(), reason: 'Only required-window location', expectedRevision: 0, employeeId: 'c34-b', review: true, approve: true, locationIds: ['loc-1'] }, f.db.executor);
+    const manager: SessionMutationProof = { ...owner, employee: { ...owner.employee, id: 'c34-b', role: 'MANAGER' }, sessionTokenHash: 'b'.repeat(64) };
+    expect((await runs(manager, f.db.executor)).runs).toEqual([]);await expect(readRun(manager, first.payload.id, f.db.executor)).rejects.toThrow('RUN_UNAVAILABLE');
+    const [d] = await f.q<{ id: string }>("SELECT id::text FROM payroll_documents WHERE employee_id=$1", [employeeId]);await expect(document(manager, d.id, f.db.executor)).rejects.toThrow('DOCUMENT_UNAVAILABLE');
+    await mkdir('outputs/nqaf001', { recursive: true });await writeFile('outputs/nqaf001/ACTUAL_RETAINED_CURRENT_LOCATION_REPLAY.json', JSON.stringify({ request, raw: row, projected, limitedManagerRunList: [], limitedManagerRunAndDocumentDenied: true, missingMetadataBlocked: true, foreignMetadataBlocked: true, metadataControlsUseModifiedActualSQLDto: true }, null, 2));
+});
+it('verifies location and lineage for outside-window current corrections that retain no time entry', async () => {
+    const i = await setup();
+    await f.q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES($1,'loc-2')", [employeeId]);
+    await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),$1,clock_timestamp()+interval '1 day')", [employeeId]);
+    const employee: SessionMutationProof = { ...owner, employee: { ...owner.employee, id: employeeId, role: 'EMPLOYEE' }, sessionTokenHash: 'd'.repeat(64) };
+    const pending = await submitTimeCorrection(employee, { operationId: randomUUID(), kind: 'MISSING_ENTRY', locationId: 'loc-2', proposedStartAt: '2026-09-10T12:00:00Z', proposedEndAt: '2026-09-10T20:00:00Z', reason: 'Fictional retained outside-window correction' }, f.db.executor);
+    expect(pending.status).toBe('pending');if (pending.status !== 'pending') throw Error('Pending correction required');
+    expect((await reviewTimeCorrection(owner, { operationId: randomUUID(), requestId: pending.requestId, expectedRevision: 1, decision: 'REJECT' }, f.db.executor)).status).toBe('rejected');
+    const run = newRun(randomUUID(), period, payday);
+    const [facts] = await f.db.executor.query<{ coverage: { employeeId: string; startDate: string; endDate: string }[] }>(nativeDatabaseFactsQuery('workspace-fuel', run, [employeeId]));
+    const request = nativeSourceRequest('workspace-fuel', run, employeeId, i.wages, facts.coverage);
+    const [row] = await f.db.executor.query<{ capture: { cards: { action: string; currentSource: { corrections: { reason: string }[] } }[]; lineage: { requests: { locationId: string }[]; events: unknown[]; locations: { id: string; workspaceId: string }[] } } }>(buildRecordedSourceCapture(request));
+    expect(row.capture.lineage.requests.map(r => r.locationId)).toEqual(['loc-2']);
+    expect(row.capture.lineage.locations).toEqual([{ id: 'loc-1', workspaceId: 'workspace-fuel' }, { id: 'loc-2', workspaceId: 'workspace-fuel' }]);
+    const projected = projectRecordedSourceCapture(request, row);expect(projected.state).toBe('ready');if (projected.state !== 'ready') throw Error('Verified retained correction required');
+    expect(projected.locationIds).toEqual(['loc-1', 'loc-2']);expect(projected.supersededCoverage[0].currentSource.corrections).toHaveLength(1);expect(projected.supersededCoverage[0].snapshot.corrections).toHaveLength(0);expect(projected.lineage.events).toHaveLength(2);
+    const missing = structuredClone(row);missing.capture.lineage.locations = missing.capture.lineage.locations.filter(l => l.id !== 'loc-2');expect(projectRecordedSourceCapture(request, missing)).toEqual({ state: 'blocked', reason: 'identity_mismatch' });
+    const foreign = structuredClone(row);foreign.capture.lineage.locations.find(l => l.id === 'loc-2')!.workspaceId = 'foreign-workspace';expect(projectRecordedSourceCapture(request, foreign)).toEqual({ state: 'blocked', reason: 'identity_mismatch' });
+    const inconsistent = structuredClone(row);inconsistent.capture.lineage.requests = [];inconsistent.capture.lineage.events = [];expect(projectRecordedSourceCapture(request, inconsistent)).toEqual({ state: 'blocked', reason: 'inconsistent_lineage' });
+    const tampered = structuredClone(row);tampered.capture.cards.find(c => c.action === 'REOPEN')!.currentSource.corrections[0].reason = 'Tampered retained outside-window reason';expect(projectRecordedSourceCapture(request, tampered)).toEqual({ state: 'blocked', reason: 'inconsistent_lineage' });
+    const c = await capture();expect(c.run.status).toBe('REVIEW_REQUIRED');expect(c.run.totals?.grossMinor).toBe('20000');expect(c.run.coverage).toEqual({ complete: true, locationIds: ['loc-1', 'loc-2'] });
+});

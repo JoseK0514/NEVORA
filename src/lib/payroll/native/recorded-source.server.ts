@@ -279,7 +279,7 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
     }
     if (!req.contexts.every(i => covers(coverage.map(p => periodInstants(p, req.timeZone)), i))) fail('coverage_missing');
     const lineage = parseLineage(c.lineage, req), chain = validateLineage(lineage, req);
-    for (const correction of sourceCorrections.values()) {
+    for (const correction of [...sourceCorrections.values(), ...supersededCoverage.flatMap(c => c.currentSource.corrections)]) {
       const r = chain.requests.get(correction.id), events = lineage.events.filter(e => e.requestId === correction.id), last = events.at(-1);
       if (!r || !last || r.kind !== correction.kind || last.kind !== correction.status || last.revision !== correction.revision ||
           r.reason !== correction.reason || !same(r.proposal, { startAt: correction.startAt, endAt: correction.endAt })) fail('inconsistent_lineage');
@@ -339,6 +339,7 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
     entries.sort((a, b) => Temporal.Instant.compare(a.startAt, b.startAt) || a.logicalId.localeCompare(b.logicalId));
     for (let i = 1; i < entries.length; i++) if (ns(entries[i].startAt) < ns(entries[i - 1].endAt!)) fail('unresolved_time');
     const locationIds = new Set([...coverage, ...supersededCoverage].flatMap(c => c.snapshot.entries.map(e => e.locationId)));
+    for (const c of supersededCoverage) for (const e of c.currentSource.entries) locationIds.add(e.locationId);
     for (const e of entries) locationIds.add(e.locationId);
     for (const r of [...lineage.requests, ...lineage.adjustments]) {
       locationIds.add(r.locationId);
@@ -392,6 +393,7 @@ seed_requests AS MATERIALIZED (
   WHERE r.employee_id=$2 AND (
     r.time_entry_id IN(SELECT time_entry_id FROM selected_entries) OR r.break_entry_id IN(SELECT break_entry_id FROM selected_breaks)
     OR EXISTS(SELECT 1 FROM cards c CROSS JOIN LATERAL jsonb_array_elements(COALESCE(c.snapshot->'corrections','[]'::jsonb)) item WHERE item->>'id'=r.id::text)
+    OR EXISTS(SELECT 1 FROM cards c CROSS JOIN LATERAL jsonb_array_elements(COALESCE(c.current_source->'corrections','[]'::jsonb)) item WHERE item->>'id'=r.id::text)
     OR EXISTS(SELECT 1 FROM contexts c WHERE
       ((r.proposal->>'startAt')::timestamptz<c."endAt" AND (r.proposal->>'endAt')::timestamptz>c."startAt")
       OR (t.clock_in_at<c."endAt" AND (t.clock_out_at IS NULL OR t.clock_out_at>c."startAt"))
@@ -426,6 +428,7 @@ location_ids AS (
   UNION SELECT source_snapshot->>'locationId' FROM adjustments WHERE source_snapshot ? 'locationId'
   UNION SELECT t.location_id FROM requests r JOIN time_entries t ON t.id=r.time_entry_id
   UNION SELECT item->>'locationId' FROM cards c CROSS JOIN LATERAL jsonb_array_elements(COALESCE(c.snapshot->'entries','[]'::jsonb)) item
+  UNION SELECT item->>'locationId' FROM cards c CROSS JOIN LATERAL jsonb_array_elements(COALESCE(c.current_source->'entries','[]'::jsonb)) item
 ),
 locations_capture AS MATERIALIZED (
   SELECT i.id,l.workspace_id FROM location_ids i LEFT JOIN locations l ON l.id=i.id ORDER BY i.id LIMIT ${limits.locations + 1}
