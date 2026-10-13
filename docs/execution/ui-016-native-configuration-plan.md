@@ -1,6 +1,6 @@
 # UI-016: evidenced Owner payroll configuration
 
-Spec: ../../../../ui016-native-evidence/ASSIGNMENT.md and frozen-contract packets therein. Jose approved implementation; no release approval. Inline execution, no implementer agents. One fresh whole-branch review after verification.
+Spec: ../../../ui016-native-evidence/ASSIGNMENT.md and frozen-contract packets therein. Jose approved implementation; no release approval. Inline execution, no implementer agents. One fresh whole-branch review after verification.
 
 Baseline: isolated codex/nevora-native-payroll-config-ui-20261012; b49cef54 preserves all UI010/011 and UI017/015 adopted work. 6a0ccb5a adopts only the unique frozen e764 Finance increment; root coupled equivalent 29e8f74bae7dd36b9196d0bd018215fcac61cbb5. 17 workweek source files/133 artifacts and 10 federal source files/143 artifacts verified, later federal overrides explicitly accounted for. Existing 119 UI tests pass.
 
