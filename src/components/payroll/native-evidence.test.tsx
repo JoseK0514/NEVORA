@@ -38,3 +38,9 @@ describe('saved native evidence presentation', () => {
     ['EMPLOYER_YTD_BASE_CONFLICT:FUTA', /opening.*basis/],
   ])('provides a truthful next step for %s', (code, message) => expect(payrollExceptionMessage(code)).toMatch(message));
 });
+
+it('preserves a supported fractional hourly rate in review without cent-rounding the wage',()=>{
+ const run=nativeRun(); const r=run.nativeCalculation!.employees[0];r.breakdown.earnings[0].rateMinorPerHour='2500.1234';
+ expect(readRuns({version:'PAYROLL_API_V1',capabilities:nativeCapabilities,runs:[run],jobs:[]}).runs[0].nativeCalculation!.employees[0].breakdown.earnings[0].rateMinorPerHour).toBe('2500.1234');
+ expect(renderToStaticMarkup(<NativeReview result={r}/>)).toContain('$25.001234');
+});

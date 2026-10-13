@@ -1,5 +1,5 @@
 import type { NativePayrollReady, NativeYtd } from '@/lib/payroll/native/contracts';
-import { formatPayrollMoney } from './money';
+import { formatPayrollMoney, formatPayrollRate } from './money';
 
 const taxLabels: Record<string, string> = { PR_INCOME_TAX: 'Puerto Rico income tax', SOCIAL_SECURITY: 'Social Security', MEDICARE: 'Medicare', ADDITIONAL_MEDICARE: 'Additional Medicare', SINOT: 'SINOT' };
 const earningLabels = { REGULAR: 'Regular pay', OVERTIME: 'Overtime pay', FLSA_TRUE_UP: 'Overtime adjustment' };
@@ -25,7 +25,7 @@ export function NativeReview({ result }: { result: NativePayrollReady }) {
   return <div className="pw-native-review">
     <dl className="pw-lines pw-time-breakdown"><div><dt>Regular time</dt><dd>{duration(b.regularNanoseconds)}</dd></div><div><dt>Overtime</dt><dd>{duration(b.overtimeNanoseconds)}</dd></div><div><dt>Unpaid breaks</dt><dd>{duration(b.unpaidBreakNanoseconds)}</dd></div></dl>
     <h4>Earnings from recorded time</h4>
-    <div className="pw-native-earnings">{b.earnings.map((line, index) => <div key={index}><div><strong>{earningLabels[line.kind]}</strong><p>{duration(line.nanoseconds)} · Base wage {formatPayrollMoney(line.rateMinorPerHour)}/h</p><small>Location reference <code>{line.locationId}</code> · Wage revision {line.wageRevision}</small></div><strong className="pw-money">{formatPayrollMoney(line.amountMinor)}</strong></div>)}</div>
+    <div className="pw-native-earnings">{b.earnings.map((line, index) => <div key={index}><div><strong>{earningLabels[line.kind]}</strong><p>{duration(line.nanoseconds)} · Base wage {formatPayrollRate(line.rateMinorPerHour)}/h</p><small>Location reference <code>{line.locationId}</code> · Wage revision {line.wageRevision}</small></div><strong className="pw-money">{formatPayrollMoney(line.amountMinor)}</strong></div>)}</div>
     <h4>Taxes &amp; deductions</h4>
     <div className="pw-tax-list">{b.taxes.map((tax, index) => <div key={index}><span><strong>{taxLabels[tax.code] ?? tax.code}</strong><small>Taxable pay {formatPayrollMoney(tax.taxableMinor)}</small></span><strong className="pw-money">{formatPayrollMoney(tax.amountMinor)}</strong></div>)}</div>
     <YtdRows before={b.ytdBefore} after={b.ytdAfter} />

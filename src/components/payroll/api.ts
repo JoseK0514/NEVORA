@@ -99,7 +99,7 @@ function validNativeEmployee(value: unknown) {
   if (!record(value) || value.state !== 'ready' || value.schema !== 'NEVORA_NATIVE_PAYROLL_RESULT_V1' || value.sourceAuthority !== 'NATIVE_RECORDED_TIME' || typeof value.employeeId !== 'string' || !rows([value.row]) || !record(value.breakdown) || !record(value.provenance)) return false;
   const b = value.breakdown, p = value.provenance;
   return ['regularNanoseconds', 'overtimeNanoseconds', 'unpaidBreakNanoseconds'].every(key => unsigned(b[key])) && validYtd(b.ytdBefore) && validYtd(b.ytdAfter) && strings(b.locationIds) &&
-    Array.isArray(b.earnings) && b.earnings.every(line => record(line) && ['REGULAR', 'OVERTIME', 'FLSA_TRUE_UP'].includes(String(line.kind)) && typeof line.locationId === 'string' && minor(line.rateMinorPerHour) && unsigned(line.nanoseconds) && minor(line.amountMinor)) &&
+    Array.isArray(b.earnings) && b.earnings.every(line => record(line) && ['REGULAR', 'OVERTIME', 'FLSA_TRUE_UP'].includes(String(line.kind)) && typeof line.locationId === 'string' && typeof line.rateMinorPerHour === 'string' && /^(0|[1-9]\d{0,8})(\.[0-9]{1,4})?$/.test(line.rateMinorPerHour) && unsigned(line.nanoseconds) && minor(line.amountMinor)) &&
     Array.isArray(b.taxes) && b.taxes.every(line => record(line) && typeof line.code === 'string' && minor(line.amountMinor) && minor(line.taxableMinor)) &&
     ['inputSha256', 'rulesSha256', 'rulesetId', 'rounding', 'taxRounding'].every(key => typeof p[key] === 'string') && Array.isArray(p.exactnessOperations) && validNativeEvidence(p);
 }

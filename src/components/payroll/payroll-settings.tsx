@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { PlusIcon, TrashIcon } from '@phosphor-icons/react/ssr';
 import type { PayrollPreferences, PayrollRule, PayrollSettingsResponse } from '@/lib/payroll/contracts';
+import { NativePayrollConfig, type NativeConfigurationSources } from './native-payroll-config';
 import { readSettings } from './api';
 import { dollarsToMinor, minorToDollars } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
@@ -37,7 +38,7 @@ function rulesFromForm(values: FormData, rules: PayrollRule[]): PayrollRule[] {
   });
 }
 
-export function PayrollSettings({ recoveryScope }: { recoveryScope: string }) {
+export function PayrollSettings({ recoveryScope, nativeSources = null }: { recoveryScope: string; nativeSources?: NativeConfigurationSources|null }) {
   const resource = usePayrollResource('/api/payroll/settings', readSettings);
   const operation = usePayrollOperation('/api/payroll/settings', resource.reload, recoveryScope);
   const data = !resource.loading && resource.data?.capabilities.canConfigure ? resource.data : null;
@@ -48,7 +49,7 @@ export function PayrollSettings({ recoveryScope }: { recoveryScope: string }) {
       {!revision && <PayrollState title="Configure payroll before preparing runs">These are unsaved starting preferences. Choose your company settings and an effective date. {data.capabilities.internalCalculatorAvailable ? 'Native payroll uses verified recorded time and employee payroll facts.' : 'imported provider amounts remain the authority.'}</PayrollState>}
       <CompanyPreferences key={revision?.revision ?? 0} preferences={revision?.preferences ?? defaults} revision={revision?.revision ?? 0} data={data} operation={operation} />
       <EmployeeException data={data} preferences={revision?.preferences ?? defaults} operation={operation} />
-      <PayrollAccess data={data} operation={operation} />
+      {data.capabilities.internalCalculatorAvailable ? <NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/> : <PayrollAccess data={data} operation={operation} />}
       <PayrollPanel title="Settings history" description="Saved revisions record their effective date and reason.">{data.revisions.length ? <div className="pw-history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {item.effectiveFrom}</strong><p>{item.reason}</p><small>Recorded {new Date(item.createdAt).toLocaleString()}</small></div>)}</div> : <p className="pw-small">No settings revisions have been saved.</p>}</PayrollPanel>
       <PrivacyNote>Only the owner can configure payroll and access grants. {data.capabilities.internalCalculatorAvailable ? 'Native payroll requires verified recorded time, employee facts and a separate human approval.' : 'Provider imports supply actual payroll amounts.'} {noticeReadiness(data.capabilities)}</PrivacyNote>
     </>}
