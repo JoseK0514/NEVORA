@@ -146,3 +146,17 @@
 
 .payroll-workflow .pw-review-current { min-width:0; display:grid; gap:16px; }
 .payroll-workflow .pw-workflow-guidance { margin:0; font-size:13px; line-height:1.6; color:var(--design-text-secondary); }
+.payroll-workflow .pw-native-review { min-width:0; margin-top:20px; }
+.payroll-workflow .pw-native-review h4 { font-size:13px; line-height:1.6; font-weight:550; margin:22px 0 10px; }
+.payroll-workflow :is(.pw-native-earnings,.pw-tax-list) > div { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding:12px 0; border-bottom:1px solid var(--design-surface); font-size:12px; line-height:1.6; }
+.payroll-workflow :is(.pw-native-earnings,.pw-tax-list) > div > :first-child { min-width:0; flex:1; }
+.payroll-workflow :is(.pw-native-earnings,.pw-tax-list) strong { font-weight:550; overflow-wrap:anywhere; }
+.payroll-workflow :is(.pw-native-earnings,.pw-tax-list) small { display:block; }
+.payroll-workflow .pw-native-earnings p { color:var(--design-text-secondary); margin:5px 0; }
+.payroll-workflow .pw-ytd { margin:24px 0; font-size:12px; line-height:1.6; }
+.payroll-workflow .pw-ytd-row { display:grid; grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr)); gap:12px; padding:10px 0; border-bottom:1px solid var(--design-surface); }
+.payroll-workflow .pw-ytd-row > span { min-width:0; overflow-wrap:anywhere; }
+.payroll-workflow .pw-ytd-row > span:not(:first-child) { text-align:right; font-variant-numeric:tabular-nums; }
+.payroll-workflow .pw-ytd-heading { font-weight:550; }
+.payroll-workflow .pw-source-details summary { min-height:44px; padding:12px 0; font-size:12px; font-weight:550; cursor:pointer; }
+.payroll-workflow .pw-source-details .pw-lines dd { min-width:0; max-width:60%; text-align:right; }
