@@ -63,12 +63,17 @@ it.each(["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const)("renders the NEVORA p
   expect(html).not.toContain("Fuel Coffee Drive");
   expect(html).toContain("Powered by VELANI LLC");
   expect(html).not.toContain("Fuel Scheduler");
+  expect(html).toContain('login-brand-lockup');
+  expect(html).not.toContain('brand-mark-logo');
+  expect(html).not.toContain('role-chip');
+  expect(html).not.toContain('sidebar-profile-chevron');
 });
 
 it.each(['MANAGER','OWNER'] as const)('places %s device settings only in existing profile affordances when enabled',role=>{
  const html=renderToStaticMarkup(<AppShell workspaceName="Northside Services" notificationsEnabled user={{firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
  expect(html.match(/id="portal-device-settings"/g)).toHaveLength(1);
  expect(html.match(/popoverTarget="portal-device-settings"/g)?.length).toBeGreaterThanOrEqual(2);
+ expect(html).toContain('sidebar-profile-chevron');
  expect(html).not.toContain('href="/app/notifications"');
 });
 it('feature off retains the ordinary profile and does not mount setup',()=>{
@@ -94,7 +99,7 @@ it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reac
  expect(header).toContain('popoverTarget="manager-more-navigation"');
  const menu=header.split('id="manager-more-navigation"')[1]?.split('</div>')[0] ?? '';
  expect([...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual([
-  '/app/employees','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),
+  '/app/updates','/app/employees','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),
  ]);
 });
 
@@ -102,14 +107,28 @@ it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessibl
  const {html}=render(role);expect(html).toContain('href="/app/profile"');expect(html).toContain('href="/app/notifications"');expect(html).not.toContain('portal-device-settings');
 });
 
-it.each(['MANAGER','OWNER'] as const)('lets %s open Updates directly on mobile and keeps its nested routes selected',role=>{
+it.each(['MANAGER','OWNER'] as const)('keeps %s Updates in the mobile menu with nested routes selected',role=>{
  const {html}=render(role,'/app/updates/compose');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
  const direct=header.split('id="manager-more-navigation"')[0];
- expect(direct).toMatch(/href="\/app\/updates"[^>]*aria-label="Updates"[^>]*aria-current="page"/);
+ const menu=header.split('id="manager-more-navigation"')[1];
+ expect(direct).not.toContain('href="/app/updates"');
+ expect(header).not.toContain('manager-updates-link');
+ expect(menu).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
+ expect(menu.match(/href="\/app\/updates"/g)).toHaveLength(1);
  expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
  expect(sidebar.match(/href="\/app\/updates"/g)).toHaveLength(1);
+});
+
+it.each(['MANAGER','OWNER'] as const)('gives %s one icon-only mobile menu and preserves the authorized notification destination',role=>{
+ const html=renderToStaticMarkup(<AppShell workspaceName="QA" notificationAuthority="fictional-view-authority" user={{firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
+ const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
+ expect(header.match(/href="\/app\/notifications"/g)).toHaveLength(1);
+ expect(header).toContain('aria-label="More navigation"');
+ expect(header).toContain('<span class="sr-only">Menu</span>');
+ expect(header).not.toContain('nevora-action-menu-chevron');
+ expect(header).not.toContain('role-chip');
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination within the existing employee More navigation',role=>{

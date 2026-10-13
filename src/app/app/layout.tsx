@@ -1,4 +1,5 @@
 import "./portal-design-system.css";
+import "./portal-refinement.css";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";

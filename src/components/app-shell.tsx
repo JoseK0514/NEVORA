@@ -5,7 +5,8 @@ import { NotificationBell } from "./notification-bell";
 import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname } from "next/navigation";
-import { BrandLockup } from "./brand-lockup";
+import { AuthBrand } from "./auth-brand";
+import { ListIcon } from "@phosphor-icons/react/dist/ssr/List";
 import { NavIcon } from "@/components/nav-icon";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
@@ -98,7 +99,7 @@ export function AppShell({
       <aside className="sidebar" data-collapsed={collapsed}>
         <div className="sidebar-heading">
         <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
-          <BrandLockup tone="dark" />
+          <AuthBrand />
         </Link>
 
         <button className="sidebar-toggle" type="button" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={22} /></button>
@@ -129,14 +130,13 @@ export function AppShell({
 
         {employee ? <Link href="/app/profile" className="sidebar-profile portal-profile-trigger" aria-label="Your profile">
           <div className="avatar">{initials}</div>
-          <div className="sidebar-profile-copy"><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "LEAD" ? "Lead" : "Employee"}</small></div>
+          <div className="sidebar-profile-copy"><strong>{user.firstName} {user.lastName}</strong></div>
         </Link> : <>        <Profile className={`sidebar-profile${notificationsEnabled ? " portal-profile-trigger" : ""}`} {...(notificationsEnabled ? { type: "button" as const, popoverTarget: "portal-device-settings", "aria-label": "Profile and device settings" } : {})}>
           <div className="avatar">{initials}</div>
           <div className="sidebar-profile-copy">
             <strong>{user.firstName} {user.lastName}</strong>
-            <small>{user.role[0]}{user.role.slice(1).toLowerCase()}</small>
           </div>
-          {employee ? null : <span className="sidebar-profile-chevron" aria-hidden="true">⌄</span>}
+          {notificationsEnabled ? <span className="sidebar-profile-chevron" aria-hidden="true">⌄</span> : null}
         </Profile></>}
 
 
@@ -157,27 +157,21 @@ export function AppShell({
         <header className="mobile-header">
           <span className="portal-workspace-name" title={workspaceName}>{workspaceName}</span>
           <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
-            <BrandLockup variant="compact" />
+            <AuthBrand />
           </Link>
           <div className="mobile-header-actions">
           {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
-          {notificationsEnabled && !employee ? <button type="button" className="role-chip portal-role-trigger" popoverTarget="portal-device-settings" aria-label="Profile and device settings">{user.role[0]}{user.role.slice(1).toLowerCase()}</button> : <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>}
           {!employee ? (
-            <Link href="/app/updates" className="button secondary manager-updates-link"
-              aria-label="Updates" aria-current={activeHref === '/app/updates' ? 'page' : undefined}
-              title="Updates">
-              <NavIcon name="updates" size={20} />
-            </Link>
-          ) : null}
-          {!employee ? (
-            <ActionMenu id="manager-more-navigation" label="Menu" ariaLabel="More navigation">
-              {navigation.slice(5).filter(item => item.href !== '/app/updates').map(item => (
+            <ActionMenu id="manager-more-navigation" label="Menu" ariaLabel="More navigation"
+              triggerIcon={<ListIcon size={22} weight="regular" aria-hidden="true" focusable="false"/>} iconOnly>
+              {navigation.slice(5).map(item => (
                 <Link key={item.href} href={item.href} className="nevora-action-menu-item"
                   aria-current={item.href === activeHref ? 'page' : undefined}
                   onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
                   {item.label}
                 </Link>
               ))}
+              {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings" aria-label="Profile and device settings">Profile and device settings</button> : null}
               <div className="nevora-action-menu-divider" />
               <PortalSignout><button className="nevora-action-menu-item" type="submit">Sign out</button></PortalSignout>
             </ActionMenu>
@@ -243,7 +237,7 @@ export function AppShell({
                   </Link>
                 ))}
                 <div className="employee-more-profile">
-                  <div><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "LEAD" ? "Lead" : "Employee"}</small></div>
+                  <div><strong>{user.firstName} {user.lastName}</strong></div>
                   <PortalSignout><button type="submit"><NavIcon name="logout" employee size={18} /><span>Sign out</span></button></PortalSignout>
                 </div>
               </div>

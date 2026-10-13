@@ -9,6 +9,8 @@ type ActionMenuProps = {
   ariaLabel?: string;
   children: ReactNode;
   align?: "start" | "end";
+  triggerIcon?: ReactNode;
+  iconOnly?: boolean;
 };
 
 export function ActionMenu({
@@ -17,6 +19,8 @@ export function ActionMenu({
   ariaLabel,
   children,
   align = "end",
+  triggerIcon,
+  iconOnly = false,
 }: ActionMenuProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -114,8 +118,9 @@ export function ActionMenu({
           keyboardOpenRef.current = false;
         }}
       >
-        <span>{label}</span>
-        <svg
+        {triggerIcon}
+        <span className={iconOnly ? "sr-only" : undefined}>{label}</span>
+        {!iconOnly ? <svg
           className="nevora-action-menu-chevron"
           aria-hidden="true"
           viewBox="0 0 16 16"
@@ -130,7 +135,7 @@ export function ActionMenu({
             strokeLinejoin="round"
             strokeWidth="1.6"
           />
-        </svg>
+        </svg> : null}
       </button>
       <div
         ref={menuRef}

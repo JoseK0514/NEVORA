@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import {ArrowUpRightIcon, MapPinIcon} from '@phosphor-icons/react/ssr';
+import {MapPinIcon} from '@phosphor-icons/react/ssr';
 import type {DashboardDayItem, DashboardLocationItem} from './manager-dashboard';
 
 const locationLabels = {NOT_STARTED: 'Not started', NEEDS_ATTENTION: 'Needs attention', READY: 'Ready to publish', PUBLISHED: 'Published'};
@@ -15,7 +15,7 @@ export function ManagerWeekOverview({days, locations, weekStart, weekLabel, cove
   const total = days.reduce((sum, day) => sum + day.shiftCount, 0);
   const maximum = Math.max(1, ...days.map(day => day.shiftCount));
   return <section className="manager-week-overview" aria-labelledby="manager-week-title">
-    <header><div><h2 id="manager-week-title">The week at a glance</h2><p>{weekLabel} · Planned shifts, including drafts</p></div><Link href={`/app/schedule?week=${encodeURIComponent(weekStart)}`}>View schedule <ArrowUpRightIcon size={18} aria-hidden="true"/></Link></header>
+    <header><div><h2 id="manager-week-title">The week at a glance</h2><p>{weekLabel} · Planned shifts, including drafts</p></div><Link href={`/app/schedule?week=${encodeURIComponent(weekStart)}`}>View schedule</Link></header>
     <div className="manager-week-content">
       <div className="manager-week-chart">
         <p className="manager-chart-total"><strong>{total}</strong> scheduled {total === 1 ? 'shift' : 'shifts'}</p>

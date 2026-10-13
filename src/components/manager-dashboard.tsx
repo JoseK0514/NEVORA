@@ -434,13 +434,12 @@ export function ManagerDashboard(props: Props) {
     >
       <section className="dashboard-hero">
         <div className="dashboard-hero-copy">
-          {props.view === "overview" ? <p className="dashboard-role-context">{props.role === "OWNER" ? "Company overview" : "Team operations"}</p> : null}
           {props.view !== 'overview' ? <p>{props.view === "attendance" ? "Attendance intelligence" : "Manager dashboard"}</p> : null}
           <h1>{props.view === "attendance" ? "Recorded-time review" : `Welcome back, ${props.firstName}.`}</h1>
           <span>
             {props.view === "attendance"
               ? `Today’s verified attendance signals at ${props.workspaceName}.`
-              : `Here’s what’s happening this week at ${props.workspaceName}.`}
+              : props.view === 'overview' ? props.workspaceName : `Here’s what’s happening this week at ${props.workspaceName}.`}
           </span>
         </div>
 
@@ -465,7 +464,6 @@ export function ManagerDashboard(props: Props) {
               </Link>
             </div>
             <Link className="button primary" href={`/app/schedule?week=${props.weekStart}`}>
-              <NavIcon name="calendar" size={17} />
               Open schedule
             </Link>
           </div>
@@ -487,10 +485,18 @@ export function ManagerDashboard(props: Props) {
 
       {props.view === "overview" ? (
         <>
+          <dl className="manager-planning-summary" aria-label="Selected-week planning summary">
+            <div><dt>Planned shifts</dt><dd>{props.days.reduce((total,day)=>total+day.shiftCount,0)}<small>Includes draft shifts</small></dd></div>
+            <div><dt>Availability received</dt><dd>{props.availabilitySubmitted}<span> / {props.activeEmployees}</span><small>Active employees for this week</small></dd></div>
+            <div><dt>Published locations</dt><dd>{props.locations.filter(location=>location.scheduleStatus==='PUBLISHED').length}<span> / {props.locations.length}</span><small>Selected week</small></dd></div>
+          </dl>
           <div className="manager-home-grid">
-            {props.role === 'MANAGER' ? <>{activity}{actions}</> : <>{actions}{activity}</>}
+            {actions}
+            <div className="manager-overview-rail">
+              {activity}
+              <ManagerWeekOverview days={props.days} locations={props.locations} weekStart={props.weekStart} weekLabel={props.weekLabel} coverageConfigured={props.coverageConfigured}/>
+            </div>
           </div>
-          <ManagerWeekOverview days={props.days} locations={props.locations} weekStart={props.weekStart} weekLabel={props.weekLabel} coverageConfigured={props.coverageConfigured}/>
         </>
       ) : props.view === "attendance" ? (
         <div className="manager-attendance-stack">

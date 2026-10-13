@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { renderToStaticMarkup } from "react-dom/server";
+import Link from "next/link";
 import { expect, it } from "vitest";
 
 const componentPath = fileURLToPath(new URL("./action-menu.tsx", import.meta.url));
@@ -35,4 +36,15 @@ it("uses the canonical 44px action floor and fixed viewport-safe menu layer", ()
   expect(css).toMatch(/\.button\s*\{[\s\S]*?min-height:\s*44px/);
   expect(css).toMatch(/\.nevora-action-menu-popover\s*\{[\s\S]*?position:\s*fixed/);
   expect(css).toMatch(/\.nevora-action-menu-trigger\s*\{[\s\S]*?min-height:\s*44px/);
+});
+
+it('keeps the same native labelled popover when its trigger uses an icon',async()=>{
+ const {ActionMenu}=await import('./action-menu');
+ const html=renderToStaticMarkup(<ActionMenu id="icon-actions" label="Menu" ariaLabel="More navigation" triggerIcon={<svg aria-hidden="true"/>} iconOnly><Link href="/app/updates">Updates</Link></ActionMenu>);
+ expect(html).toContain('popoverTarget="icon-actions"');
+ expect(html).toContain('aria-label="More navigation"');
+ expect(html).toContain('<span class="sr-only">Menu</span>');
+ expect(html).toContain('popover="auto"');
+ expect(html).toContain('href="/app/updates"');
+ expect(html).not.toContain('nevora-action-menu-chevron');
 });

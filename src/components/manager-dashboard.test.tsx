@@ -6,6 +6,10 @@ vi.mock("next/link", () => ({ default: ({href,children,...props}: ComponentProps
 vi.mock("@/components/nav-icon", () => import("./nav-icon"));
 vi.mock("@/components/status-pill", () => import("./status-pill"));
 vi.mock("@/lib/date-utils", () => import("../lib/date-utils"));
+const dashboardProps: ComponentProps<typeof ManagerDashboard> = {
+    workspaceName:"Northside Services",timeZone:"America/Puerto_Rico",firstName:"Alex",weekStart:"2026-09-28",weekLabel:"Sep 28 – Oct 4",previousWeek:"2026-09-21",nextWeek:"2026-10-05",view:"overview",readyLocationCount:0,totalLocations:2,availabilitySubmitted:2,activeEmployees:3,unavailableAllWeek:0,coverageIssueCount:0,coverageConfigured:true,pendingRequestCount:7,managerActions:[],scheduleRoster:[],locations:[],days:[],hours:[],requestCounts:{timeOff:7,exchange:0,callout:0},latestRevision:null,
+};
+
 it("loads the current Action Center without exposing unverified server-provided request names or counts", () => {
   const props: ComponentProps<typeof ManagerDashboard> = {
     workspaceName: "Northside Services", timeZone: "America/Puerto_Rico", firstName:"Alex",weekStart:"2026-09-28",weekLabel:"Sep 28 – Oct 4",previousWeek:"2026-09-21",nextWeek:"2026-10-05",view:"overview",readyLocationCount:0,totalLocations:2,availabilitySubmitted:2,activeEmployees:3,unavailableAllWeek:0,coverageIssueCount:0,coverageConfigured:true,pendingRequestCount:7,
@@ -13,7 +17,10 @@ it("loads the current Action Center without exposing unverified server-provided 
     scheduleRoster:[{employeeId:"sam",employeeName:"Sam Cruz",role:"EMPLOYEE",shifts:[]}],locations:[],days:[],hours:[],requestCounts:{timeOff:7,exchange:0,callout:0},latestRevision:null,
   };
   const html = renderToStaticMarkup(<ManagerDashboard {...props}/>);
-  expect(html).toContain("this week at Northside Services.");
+  expect(html).toContain("Northside Services");
+  expect(html).toContain('aria-label="Selected-week planning summary"');
+  expect(html).toContain('Includes draft shifts');
+  expect(html).toContain('Published locations');
   expect(html).not.toContain("at Fuel.");
   const rosterHtml = renderToStaticMarkup(<ManagerDashboard {...props} view="schedule"/>);
   expect(rosterHtml).toContain("Employee");
@@ -23,3 +30,23 @@ it("loads the current Action Center without exposing unverified server-provided 
 });
 
 vi.mock("@/lib/business-time",()=>import("../lib/business-time"));
+
+it("summarizes the selected planning week and counts only explicitly published schedules", () => {
+  const html = renderToStaticMarkup(<ManagerDashboard {...dashboardProps}
+    readyLocationCount={3}
+    days={[
+      {date:"2026-09-28",weekday:"Mon",day:"28",shiftCount:3,gapCount:0},
+      {date:"2026-09-29",weekday:"Tue",day:"29",shiftCount:4,gapCount:0},
+    ]}
+    locations={[
+      {locationId:"published",locationName:"North",state:"PUBLISHED",scheduleStatus:"PUBLISHED",totalBlocks:1,coveredBlocks:1,uncoveredBlocks:0},
+      {locationId:"draft",locationName:"South",state:"READY",scheduleStatus:"DRAFT",totalBlocks:1,coveredBlocks:1,uncoveredBlocks:0},
+      {locationId:"unspecified",locationName:"West",state:"PUBLISHED",totalBlocks:1,coveredBlocks:1,uncoveredBlocks:0},
+    ]}
+  />);
+  const summary = html.split('aria-label="Selected-week planning summary"')[1]?.split('</dl>')[0];
+  expect(summary).toContain('<dt>Planned shifts</dt><dd>7<small>Includes draft shifts</small></dd>');
+  expect(summary).toContain('<dt>Availability received</dt><dd>2<span> / 3</span>');
+  expect(summary).toContain('<dt>Published locations</dt><dd>1<span> / 3</span>');
+  expect(summary).toContain('Includes draft shifts');
+});

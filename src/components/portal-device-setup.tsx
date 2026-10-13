@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
-import { BrandLockup } from './brand-lockup';
+import { AuthBrand } from './auth-brand';
 import type { UserRole } from '../lib/domain';
 import type { DeviceSetupState } from '../lib/notifications/device-state';
 import { browserRuntime, DeviceController, observeController, type DeviceSnapshot } from '../lib/notifications/device-client';
@@ -21,7 +21,7 @@ const descriptions: Record<DeviceSetupState, string> = {
 export function DeviceSetupContent(props: ContentProps) {
   const pending = props.state === 'loading' || props.state === 'pending';
   return <div className="portal-device-content" aria-busy={pending}>
-    <BrandLockup variant="compact" />
+    <AuthBrand />
     <h2 id="portal-device-title">Keep NEVORA Handy</h2>
     <p>Add NEVORA to your Home Screen for quick access to your schedule.</p>
     {props.standalone === true ? <p>Opened as a standalone app.</p> : <>

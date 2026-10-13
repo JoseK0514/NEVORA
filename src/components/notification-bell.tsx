@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useEffect,useRef,useState} from 'react';
-import {NavIcon} from './nav-icon';
+import {BellSimpleIcon} from '@phosphor-icons/react/dist/ssr/BellSimple';
 import {createPrivateSnapshotController,type PrivatePanelState} from '../lib/private-snapshot-client';
 import {parseEmployeeView,type EmployeeViewSnapshot} from '../lib/employee-view';
 
@@ -31,7 +31,7 @@ export function NotificationBell({authority}:{authority:string}) {
  const partial=ready?.coverage==='partial';
  const label=ready?`Notifications, ${partial?'at least ':''}${count} unread in your recent inbox`:state.refreshing?'Notifications, checking updates':'Notifications, current count unavailable';
  return <Link href="/app/notifications" className="portal-notification-bell" aria-current={pathname==='/app/notifications'?'page':undefined} aria-label={label} title={label} data-state={ready?'ready':state.refreshing?'loading':'unavailable'}>
-  <NavIcon name="notifications" size={22}/>
+  <BellSimpleIcon size={22} weight="regular" aria-hidden="true" focusable="false"/>
   {typeof count==='number'&&count>0?<span className="portal-notification-count" aria-hidden="true">{count}{partial?'+':''}</span>:!ready&&!state.refreshing?<span className="portal-notification-unavailable" aria-hidden="true">—</span>:null}
  </Link>;
 }
