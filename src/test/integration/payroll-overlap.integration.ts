@@ -57,7 +57,7 @@ it('keeps stale review separate and rejects private actors before revealing whet
             const response = failure(await captureFailure(() => command(f.actors[name].proof, { action: 'APPROVE', operationId: randomUUID(), runId, expectedRevision: fresh.payload.revision, reviewToken: fresh.payload.reviewToken }, db.executor)));
             results.push({ status: response.status, body: await response.json() });
         }
-        expect(results[0]).toEqual(results[1]);expect([403, 404]).toContain(results[0].status);
+        expect(results[0]).toEqual(results[1]);expect(results[0].status).toBe(name === 'partial' ? 404 : 403);
         expect(JSON.stringify(results[0])).not.toMatch(/OVERLAPPING_NATIVE_PAYROLL|PAYROLL_CONFLICT|2026-09/);
     }
     const full = failure(await captureFailure(() => command(f.actors.full.proof, { action: 'APPROVE', operationId: randomUUID(), runId: fresh.payload.id, expectedRevision: fresh.payload.revision, reviewToken: fresh.payload.reviewToken }, db.executor)));
