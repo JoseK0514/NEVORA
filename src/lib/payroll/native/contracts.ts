@@ -178,6 +178,7 @@ export type NativePayrollReady = {
         }[];
     };
     provenance: {
+        federalEmployeeTax: { version: 'NATIVE_FEDERAL_EMPLOYEE_COLLECTION_V1'; ruleId: '26_CFR_31_3102_1_D'; operations: import('./federal-employee-tax').NativeFederalEmployeeTaxOperation[] };
         boundaryEvidence: import("./workweek-policy").NativeBoundaryEvidence;
         inputSha256: string;
         rulesetId: "PR_STANDARD_2026_V1";

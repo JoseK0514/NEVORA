@@ -16,5 +16,10 @@ export type NativeSnapshot = {
     ruleEvidence: {
         status: 'EXACT_CENT_NO_ROUNDING_REQUIRED';
         assessmentSha256: string;
+    } | {
+        status: 'FEDERAL_EMPLOYEE_STATUTORY_CENTS_OTHER_OPERATIONS_EXACT';
+        otherOperationsExactnessAssessmentSha256: string;
+        federalEmployeeRuleId: '26_CFR_31_3102_1_D';
+        federalEmployeeCollectionSourceSha256: string;
     };
 };

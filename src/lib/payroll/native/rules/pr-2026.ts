@@ -1,3 +1,4 @@
+import { collectFederalEmployeeTax } from '../federal-employee-tax';
 import { exactMinor, ratio, type NativeExactnessOperation } from "../money";
 import { Temporal } from "@js-temporal/polyfill";
 export type NativeFrequency = "WEEKLY" | "BIWEEKLY" | "SEMIMONTHLY" | "MONTHLY";
@@ -110,8 +111,9 @@ export function fica2026(input: unknown) {
     const gross = minor(input.grossMinor), ssBefore = minor(input.socialSecurityWagesBeforeMinor), medicareBefore = minor(input.medicareWagesBeforeMinor);
     const ssTaxable = min(gross, max(BigInt(0), BigInt(18450000) - ssBefore));
     const additionalTaxable = max(BigInt(0), medicareBefore + gross - BigInt(20000000)) - max(BigInt(0), medicareBefore - BigInt(20000000));
-    const ss = rounded(ssTaxable * BigInt(620), BigInt(10000), "HALF_UP").toString(), medicare = rounded(gross * BigInt(145), BigInt(10000), "HALF_UP").toString();
-    return { socialSecurityMinor: ss, medicareMinor: medicare, additionalMedicareMinor: rounded(additionalTaxable * BigInt(90), BigInt(10000), "HALF_UP").toString(), employerSocialSecurityMinor: ss, employerMedicareMinor: medicare, socialSecurityTaxableMinor: ssTaxable.toString(), medicareTaxableMinor: gross.toString(), additionalMedicareTaxableMinor: additionalTaxable.toString() };
+    const employeeTaxOperations = [collectFederalEmployeeTax('SOCIAL_SECURITY', ssTaxable.toString()), collectFederalEmployeeTax('MEDICARE', gross.toString()), collectFederalEmployeeTax('ADDITIONAL_MEDICARE', additionalTaxable.toString())];
+    // Employer fractional figures retain their prior conditional formula; the live consumer independently requires exact cents.
+    return { socialSecurityMinor: employeeTaxOperations[0].collectedMinor, medicareMinor: employeeTaxOperations[1].collectedMinor, additionalMedicareMinor: employeeTaxOperations[2].collectedMinor, employerSocialSecurityMinor: rounded(ssTaxable * BigInt(620), BigInt(10000), "HALF_UP").toString(), employerMedicareMinor: rounded(gross * BigInt(145), BigInt(10000), "HALF_UP").toString(), socialSecurityTaxableMinor: ssTaxable.toString(), medicareTaxableMinor: gross.toString(), additionalMedicareTaxableMinor: additionalTaxable.toString(), employeeTaxOperations };
 }
 export function sinotContribution(input: unknown) {
     if (!record(input))

@@ -52,7 +52,11 @@ describe("published PR payroll-period tables, not annual tax brackets", () => {
 });
 describe("2026 FICA employer-year facts", () => {
     it("caps social security independently from unlimited Medicare", () => {
-        expect(fica2026({ grossMinor: "200000", socialSecurityWagesBeforeMinor: "18400000", medicareWagesBeforeMinor: "19900000", payday: "2026-10-16" })).toEqual({ socialSecurityMinor: "3100", medicareMinor: "2900", additionalMedicareMinor: "900", employerSocialSecurityMinor: "3100", employerMedicareMinor: "2900", socialSecurityTaxableMinor: "50000", medicareTaxableMinor: "200000", additionalMedicareTaxableMinor: "100000" });
+        expect(fica2026({ grossMinor: "200000", socialSecurityWagesBeforeMinor: "18400000", medicareWagesBeforeMinor: "19900000", payday: "2026-10-16" })).toEqual({ socialSecurityMinor: "3100", medicareMinor: "2900", additionalMedicareMinor: "900", employerSocialSecurityMinor: "3100", employerMedicareMinor: "2900", socialSecurityTaxableMinor: "50000", medicareTaxableMinor: "200000", additionalMedicareTaxableMinor: "100000", employeeTaxOperations: [
+            { code: 'SOCIAL_SECURITY', taxableMinor: '50000', basisPoints: 620, exactAmount: { numerator: '3100', denominator: '1' }, collectedMinor: '3100', roundingDifference: { numerator: '0', denominator: '1' }, ruleId: '26_CFR_31_3102_1_D' },
+            { code: 'MEDICARE', taxableMinor: '200000', basisPoints: 145, exactAmount: { numerator: '2900', denominator: '1' }, collectedMinor: '2900', roundingDifference: { numerator: '0', denominator: '1' }, ruleId: '26_CFR_31_3102_1_D' },
+            { code: 'ADDITIONAL_MEDICARE', taxableMinor: '100000', basisPoints: 90, exactAmount: { numerator: '900', denominator: '1' }, collectedMinor: '900', roundingDifference: { numerator: '0', denominator: '1' }, ruleId: '26_CFR_31_3102_1_D' }
+        ] });
     });
     it("does not match employee-only Additional Medicare", () => {
         expect(fica2026({ grossMinor: "100000", socialSecurityWagesBeforeMinor: "20000000", medicareWagesBeforeMinor: "20000000", payday: "2026-12-31" })).toMatchObject({ socialSecurityMinor: "0", medicareMinor: "1450", additionalMedicareMinor: "900", employerMedicareMinor: "1450" });

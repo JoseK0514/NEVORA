@@ -1,3 +1,4 @@
+import { FEDERAL_EMPLOYEE_CENT_RULE_SOURCE } from './federal-employee-tax';
 import 'server-only';
 import { resolveNativeWorkweek } from './workweek-policy';
 import type { SqlExecutor, SqlStatement } from '../../notifications/types';
@@ -132,7 +133,7 @@ export async function captureNativePayroll(seed: {
             if (!revision)
                 throw Error('WAGE_PROFILE_REQUIRED');
             const configuration = parseConfiguration({ schema: revision.schema, employeeId: revision.employeeId, wages: revision.wages, tax: revision.tax, deductions: revision.deductions });
-            // An Owner-entered label/mode cannot attest unresolved cent rules. The live path is exact-only.
+            // PR/wage modes remain UNVERIFIED; statutory employee federal collection is separately sourced.
             if (configuration.wages.some(w => w.wageCentRounding !== 'UNVERIFIED') || configuration.tax?.prCentRounding !== 'UNVERIFIED')
                 issues.push(`ROUNDING_POLICY_ACCEPTANCE_REQUIRED:${member.employeeId}`);
             const opening = database.openings.find(e => e.employeeId === member.employeeId);
@@ -178,6 +179,6 @@ export async function captureNativePayroll(seed: {
         return { run: next, snapshot: null, guards };
     if (next.nativeCalculation.employees.some(e => e.provenance.rounding !== 'EXACT_CENT_NO_ROUNDING_REQUIRED' || e.provenance.taxRounding !== 'EXACT_CENT_NO_ROUNDING_REQUIRED'))
         throw new PayrollError('ROUNDING_POLICY_ACCEPTANCE_REQUIRED', 409);
-    const snapshot: Snapshot = { source: seed.source, settings, exceptions, amounts: { schema: 'NEVORA_PAYROLL_IMPORT_V1', currency: 'USD', sourceName: next.sourceName!, sourceReference: next.sourceReference!, period: next.period, payday: next.payday, rows: next.rows!.map(({ employeeName: _name, ...r }) => r) }, native: { version: 'NATIVE_SNAPSHOT_V1', facts, openingRevisions: Object.fromEntries(database.openings.map(o => [o.employeeId, o.revision])), employeeCoverage: Object.fromEntries(Object.entries(employeeLocations).map(([id, locationIds]) => [id, { complete: !unknownCoverageEmployeeIds.includes(id), locationIds }])), recordedSources: captures, originalRunId, ...(run.nativeCorrection ? { correctionReason: run.nativeCorrection.reason } : {}), calculationVersion: NATIVE_CALCULATOR_VERSION, ruleEvidence: { status: 'EXACT_CENT_NO_ROUNDING_REQUIRED', assessmentSha256: EXACT_CENT_ASSESSMENT_SHA256 } } };
+    const snapshot: Snapshot = { source: seed.source, settings, exceptions, amounts: { schema: 'NEVORA_PAYROLL_IMPORT_V1', currency: 'USD', sourceName: next.sourceName!, sourceReference: next.sourceReference!, period: next.period, payday: next.payday, rows: next.rows!.map(({ employeeName: _name, ...r }) => r) }, native: { version: 'NATIVE_SNAPSHOT_V1', facts, openingRevisions: Object.fromEntries(database.openings.map(o => [o.employeeId, o.revision])), employeeCoverage: Object.fromEntries(Object.entries(employeeLocations).map(([id, locationIds]) => [id, { complete: !unknownCoverageEmployeeIds.includes(id), locationIds }])), recordedSources: captures, originalRunId, ...(run.nativeCorrection ? { correctionReason: run.nativeCorrection.reason } : {}), calculationVersion: NATIVE_CALCULATOR_VERSION, ruleEvidence: { status: 'FEDERAL_EMPLOYEE_STATUTORY_CENTS_OTHER_OPERATIONS_EXACT', otherOperationsExactnessAssessmentSha256: EXACT_CENT_ASSESSMENT_SHA256, federalEmployeeRuleId: FEDERAL_EMPLOYEE_CENT_RULE_SOURCE.id, federalEmployeeCollectionSourceSha256: FEDERAL_EMPLOYEE_CENT_RULE_SOURCE.sha256 } } };
     return { run: next, snapshot, guards };
 }

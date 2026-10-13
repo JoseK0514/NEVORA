@@ -392,3 +392,43 @@ it('invalidates human review after only notice provenance changes while the mone
     await expect(command(proof, { action: 'APPROVE', operationId: randomUUID(), runId: first.payload.id, expectedRevision: first.payload.revision, reviewToken: first.payload.reviewToken! }, f.db.executor)).rejects.toThrow('NATIVE_REVIEW_STALE');
     expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{ n: 0 }]);
 });
+
+async function fractionalEmployeeOpening(socialSecurityWagesMinor = '18450000') {
+    const ytd = { ...input().ytd!, revision: 2, grossMinor: '19900500', netMinor: '19900500', socialSecurityWagesMinor, medicareWagesMinor: '19900500', sinotWagesMinor: '900000', locationIds: ['loc-1'] };
+    await saveNativeProfile(proof, { action: 'ATTEST_OPENING_YTD', operationId: randomUUID(), reason: 'Fictional separately attested same-employer capped wage bases', expectedRevision: 1, employeeId: 'c34-a', ytd }, f.db.executor);
+}
+it('freezes statutory employee fractions across actual approval retries and linked replacement without duplicating YTD or changing old PDF bytes', async () => {
+    await nativeFixture({ workweek: 'DEFAULT' }); await fractionalEmployeeOpening();
+    const first = await preparedNative();
+    expect(first.payload.totals).toMatchObject({ grossMinor: '100000', netMinor: '88580' });
+    expect(first.snapshot!.native!.ruleEvidence).toMatchObject({ status: 'FEDERAL_EMPLOYEE_STATUTORY_CENTS_OTHER_OPERATIONS_EXACT', federalEmployeeRuleId: '26_CFR_31_3102_1_D', federalEmployeeCollectionSourceSha256: '6aa9dc7b2f966a46c726d4bc4658b4a90804f3cfc9d69abb862f2ad3f5786980' });
+    expect(first.payload.nativeCalculation!.employees[0].provenance.federalEmployeeTax.operations).toContainEqual({ code: 'ADDITIONAL_MEDICARE', taxableMinor: '500', basisPoints: 90, exactAmount: { numerator: '9', denominator: '2' }, collectedMinor: '5', roundingDifference: { numerator: '1', denominator: '2' }, ruleId: '26_CFR_31_3102_1_D' });
+    const approve = { action: 'APPROVE', operationId: randomUUID(), runId: first.payload.id, expectedRevision: first.payload.revision, reviewToken: first.payload.reviewToken };
+    const receipt = await command(proof, approve, f.db.executor); expect(await command(proof, approve, f.db.executor)).toEqual(receipt);
+    const original = await readRun(proof, receipt.runId!, f.db.executor);
+    expect(await f.q("SELECT count(*)::int n,payload#>>'{result,breakdown,ytdAfter,deductions,ADDITIONAL_MEDICARE}' AS withheld FROM native_payroll_ledger GROUP BY payload")).toEqual([{ n: 1, withheld: '5' }]);
+    await workerOnce(f.db.executor); await workerOnce(f.db.executor);
+    const oldBytes = await f.q("SELECT id::text,sha256,encode(content,'hex') AS hex FROM payroll_documents ORDER BY id");
+    const current = (await nativeProfiles(proof, f.db.executor)).configurations.find(c => c.employeeId === 'c34-a')!;
+    await saveNativeProfile(proof, { action: 'SAVE_NATIVE_PROFILE', operationId: randomUUID(), reason: 'Fictional documented correction to effective actual wage', expectedRevision: current.revision, configuration: { schema: current.schema, employeeId: current.employeeId, wages: current.wages.map(w => ({ ...w, revision: w.revision + 1, hourlyRateMinor: '2000' })), tax: current.tax, deductions: current.deductions } }, f.db.executor);
+    const correction = { action: 'CORRECT_NATIVE', operationId: randomUUID(), runId: original.payload.id, expectedRevision: original.payload.revision, reason: 'Fictional corrected wage with independently calculated federal threshold' };
+    const correctedReceipt = await command(proof, correction, f.db.executor); expect(await command(proof, correction, f.db.executor)).toEqual(correctedReceipt);
+    const corrected = await readRun(proof, correctedReceipt.runId!, f.db.executor);
+    expect(corrected.payload.totals).toMatchObject({ grossMinor: '80000', netMinor: '73158' });
+    expect(corrected.payload.nativeCalculation!.employees[0].breakdown.ytdBefore).toMatchObject({ grossMinor: '19900500', medicareWagesMinor: '19900500' });
+    expect(corrected.payload.nativeCalculation!.employees[0].provenance.federalEmployeeTax.operations).toContainEqual({ code: 'ADDITIONAL_MEDICARE', taxableMinor: '0', basisPoints: 90, exactAmount: { numerator: '0', denominator: '1' }, collectedMinor: '0', roundingDifference: { numerator: '0', denominator: '1' }, ruleId: '26_CFR_31_3102_1_D' });
+    const correctedApprove = { action: 'APPROVE', operationId: randomUUID(), runId: corrected.payload.id, expectedRevision: corrected.payload.revision, reviewToken: corrected.payload.reviewToken };
+    const approved = await command(proof, correctedApprove, f.db.executor); expect(await command(proof, correctedApprove, f.db.executor)).toEqual(approved);
+    expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{ n: 2 }]);
+    expect(await f.q('SELECT run_id::text id FROM native_payroll_ledger_heads')).toEqual([{ id: corrected.payload.id }]);
+    expect(await f.q("SELECT l.payload#>>'{result,breakdown,ytdAfter,grossMinor}' AS gross,l.payload#>>'{result,breakdown,ytdAfter,deductions,ADDITIONAL_MEDICARE}' AS withheld FROM native_payroll_ledger_heads h JOIN native_payroll_ledger l ON l.run_id=h.run_id")).toEqual([{ gross: '19980500', withheld: '0' }]);
+    expect((await readRun(proof, original.payload.id, f.db.executor)).payload).toEqual(original.payload);
+    expect(await f.q("SELECT id::text,sha256,encode(content,'hex') AS hex FROM payroll_documents ORDER BY id")).toEqual(oldBytes);
+});
+it('keeps null live money when employer federal rounding remains unsupported after employee collection gains its statutory rule', async () => {
+    await nativeFixture({ workweek: 'DEFAULT' }); await fractionalEmployeeOpening('18449995');
+    const c = await nativeCapture();
+    expect(c.run.status).toBe('BLOCKED'); expect(c.run.rows).toBeNull(); expect(c.run.totals).toBeNull();
+    expect(c.run.exceptions).toContain('EMPLOYER_FICA_SOCIAL_SECURITY_CENT_RULE_UNVERIFIED:c34-a');
+    expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{ n: 0 }]);
+});

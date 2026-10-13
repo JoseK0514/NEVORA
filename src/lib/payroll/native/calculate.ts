@@ -1,3 +1,4 @@
+import { FEDERAL_EMPLOYEE_CENT_RULE_SOURCE } from "./federal-employee-tax";
 import { NATIVE_BOUNDARY_RULE_SOURCES } from "./workweek-policy";
 import {parseYtd} from "./model";
 import {ORDINARY_PR_MINIMUM_2026} from "./minimum-wage";
@@ -10,8 +11,8 @@ import { classifyRecordedTime, fail, HOUR } from "./time";
 import { fica2026, prIncomeWithholding, sinotContribution, PR_2026_RULE_SOURCES } from "./rules/pr-2026";
 import { authorizedAmounts, employerAmounts, validateEmployerCoverage, validateEmployerYtdCounters } from "./obligations";
 const hash = (value: unknown) => createHash("sha256").update(stableExportJson(value)).digest("hex");
-export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V7_EXPLICIT_POLICY_COORDINATES";
-export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, boundarySources: NATIVE_BOUNDARY_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
+export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V8_FEDERAL_EMPLOYEE_COLLECTION";
+export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, federalEmployeeCents: FEDERAL_EMPLOYEE_CENT_RULE_SOURCE, boundarySources: NATIVE_BOUNDARY_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
 export function calculateNativePayroll(input: NativePayrollInput): NativePayrollResult {
     try {
         if (!input || input.schema !== "NEVORA_NATIVE_PAYROLL_INPUT_V1" || typeof input.employeeId !== "string" || !input.employeeId || input.timeZone !== "America/Puerto_Rico")
@@ -103,14 +104,14 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
         const gross = earnings.reduce((sum, e) => sum + minor(e.amountMinor), BigInt(0));
         const fica = fica2026({ grossMinor: gross.toString(), socialSecurityWagesBeforeMinor: input.ytd.socialSecurityWagesMinor, medicareWagesBeforeMinor: input.ytd.medicareWagesMinor, payday: input.payday });
         if (exactOnly) {
-            for (const [operation, taxable, bp] of [["FICA_SOCIAL_SECURITY", fica.socialSecurityTaxableMinor, 620], ["FICA_MEDICARE", fica.medicareTaxableMinor, 145], ["FICA_ADDITIONAL_MEDICARE", fica.additionalMedicareTaxableMinor, 90]] as const)
+            for (const [operation, taxable, bp] of [["EMPLOYER_FICA_SOCIAL_SECURITY", fica.socialSecurityTaxableMinor, 620], ["EMPLOYER_FICA_MEDICARE", fica.medicareTaxableMinor, 145]] as const)
                 exactMinor(ratio(minor(taxable) * BigInt(bp), BigInt(10000)), exactnessOperations, operation);
         }
         const sinot = sinotContribution({ grossMinor: gross.toString(), wagesBeforeMinor: input.ytd.sinotWagesMinor, employeeBasisPoints: tax.sinotEmployeeBasisPoints, rounding: exactOnly ? "UNVERIFIED" : "HALF_UP" });
         exactnessOperations.push(...(sinot.exactnessOperations ?? []));
         const income = prIncomeWithholding({ grossMinor: gross.toString(), frequency: input.frequency, certificate: tax.certificate, rounding: tax.prCentRounding });
         exactnessOperations.push(...income.exactnessOperations);
-        const taxes = [{ code: "PR_INCOME_TAX", amountMinor: income.amountMinor, taxableMinor: income.taxableMinor, exactAmount: income.exactTax }, { code: "SOCIAL_SECURITY", amountMinor: fica.socialSecurityMinor, taxableMinor: fica.socialSecurityTaxableMinor, exactAmount: null }, { code: "MEDICARE", amountMinor: fica.medicareMinor, taxableMinor: fica.medicareTaxableMinor, exactAmount: null }, { code: "ADDITIONAL_MEDICARE", amountMinor: fica.additionalMedicareMinor, taxableMinor: fica.additionalMedicareTaxableMinor, exactAmount: null }, { code: "SINOT", amountMinor: sinot.employeeMinor, taxableMinor: sinot.taxableMinor, exactAmount: null }];
+        const taxes = [{ code: "PR_INCOME_TAX", amountMinor: income.amountMinor, taxableMinor: income.taxableMinor, exactAmount: income.exactTax }, { code: "SOCIAL_SECURITY", amountMinor: fica.socialSecurityMinor, taxableMinor: fica.socialSecurityTaxableMinor, exactAmount: fica.employeeTaxOperations[0].exactAmount }, { code: "MEDICARE", amountMinor: fica.medicareMinor, taxableMinor: fica.medicareTaxableMinor, exactAmount: fica.employeeTaxOperations[1].exactAmount }, { code: "ADDITIONAL_MEDICARE", amountMinor: fica.additionalMedicareMinor, taxableMinor: fica.additionalMedicareTaxableMinor, exactAmount: fica.employeeTaxOperations[2].exactAmount }, { code: "SINOT", amountMinor: sinot.employeeMinor, taxableMinor: sinot.taxableMinor, exactAmount: null }];
         const employeeDeductions = taxes.map(t => ({ code: t.code, label: t.code.replaceAll("_", " "), amountMinor: t.amountMinor }));
         const employerContributions = [{ code: "SOCIAL_SECURITY", label: "Employer Social Security", amountMinor: fica.employerSocialSecurityMinor }, { code: "MEDICARE", label: "Employer Medicare", amountMinor: fica.employerMedicareMinor }, { code: "SINOT", label: "Employer SINOT", amountMinor: sinot.employerMinor }, ...employerAmounts(tax, gross, exactOnly ? exactnessOperations : undefined)];
         employeeDeductions.push(...authorizedAmounts(input, gross, taxes.map(t => t.code), employerContributions, exactOnly ? exactnessOperations : undefined));
@@ -123,7 +124,7 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
         for (const contribution of employerContributions)
             after.employerContributions[contribution.code] = (minor(before.employerContributions[contribution.code] ?? "0") + minor(contribution.amountMinor)).toString();
         const canonical = { schema: input.schema, employeeId: input.employeeId, period: input.period, payday: input.payday, frequency: input.frequency, timeZone: input.timeZone, timecards: input.timecards, wages: input.wages, tax: input.tax, ytd: input.ytd, deductions: input.deductions };
-        return { state: "ready", schema: "NEVORA_NATIVE_PAYROLL_RESULT_V1", employeeId: input.employeeId, sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", row: { employeeId: input.employeeId, grossMinor: gross.toString(), employeeDeductions, employerContributions, netMinor: net.toString(), earnings: earnings.map(e => ({ code: e.code, label: e.kind.replaceAll("_", " "), amountMinor: e.amountMinor })) }, breakdown: { earnings, regularNanoseconds: regular.toString(), overtimeNanoseconds: overtime.toString(), unpaidBreakNanoseconds: classified.unpaidBreakNanoseconds.toString(), locationIds: [...new Set(earnings.map(e => e.locationId))].sort(), taxYear: payday.year, ytdBefore: before, ytdAfter: after, taxes }, provenance: { boundaryEvidence: classified.boundaryEvidence, inputSha256: hash(canonical), rulesetId: "PR_STANDARD_2026_V1", rulesSha256: NATIVE_RULES_SHA256, rounding: input.wages.every(w => w.wageCentRounding === "UNVERIFIED") ? "EXACT_CENT_NO_ROUNDING_REQUIRED" : "EARNING_GROUP_HALF_UP", taxRounding: income.rounding, exactnessOperations } };
+        return { state: "ready", schema: "NEVORA_NATIVE_PAYROLL_RESULT_V1", employeeId: input.employeeId, sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", row: { employeeId: input.employeeId, grossMinor: gross.toString(), employeeDeductions, employerContributions, netMinor: net.toString(), earnings: earnings.map(e => ({ code: e.code, label: e.kind.replaceAll("_", " "), amountMinor: e.amountMinor })) }, breakdown: { earnings, regularNanoseconds: regular.toString(), overtimeNanoseconds: overtime.toString(), unpaidBreakNanoseconds: classified.unpaidBreakNanoseconds.toString(), locationIds: [...new Set(earnings.map(e => e.locationId))].sort(), taxYear: payday.year, ytdBefore: before, ytdAfter: after, taxes }, provenance: { federalEmployeeTax: { version: "NATIVE_FEDERAL_EMPLOYEE_COLLECTION_V1", ruleId: "26_CFR_31_3102_1_D", operations: fica.employeeTaxOperations }, boundaryEvidence: classified.boundaryEvidence, inputSha256: hash(canonical), rulesetId: "PR_STANDARD_2026_V1", rulesSha256: NATIVE_RULES_SHA256, rounding: input.wages.every(w => w.wageCentRounding === "UNVERIFIED") ? "EXACT_CENT_NO_ROUNDING_REQUIRED" : "EARNING_GROUP_HALF_UP", taxRounding: income.rounding, exactnessOperations } };
     }
     catch (error) {
         const e = error as Error & {

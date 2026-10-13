@@ -1,0 +1,18 @@
+{
+ "schema":1,
+ "scope":"Future separately sourced standard federal employee collection rule. Pure existing FICA arithmetic only; no full payroll release, employer-cost rule, PR/wage/SINOT rule, Owner election or current-CFR-edition attestation.",
+ "sources":["26 CFR 31.3102-1(d), official 2025 annual edition","IRS Publication 15 (2026), sections 9 and 13","26 CFR 31.3102-4, official 2025 annual edition"],
+ "cases":[
+  {"id":"FE01","grossMinor":"10008","socialSecurityWagesBeforeMinor":"0","medicareWagesBeforeMinor":"0","field":"socialSecurityMinor","rawCents":"620496/1000","expected":"620","boundary":"below half"},
+  {"id":"FE02","grossMinor":"10250","socialSecurityWagesBeforeMinor":"0","medicareWagesBeforeMinor":"0","field":"socialSecurityMinor","rawCents":"1271/2","expected":"636","boundary":"exact half"},
+  {"id":"FE03","grossMinor":"10009","socialSecurityWagesBeforeMinor":"0","medicareWagesBeforeMinor":"0","field":"socialSecurityMinor","rawCents":"620558/1000","expected":"621","boundary":"above half"},
+  {"id":"FE04","grossMinor":"10034","socialSecurityWagesBeforeMinor":"0","medicareWagesBeforeMinor":"0","field":"medicareMinor","rawCents":"145493/1000","expected":"145","boundary":"below half"},
+  {"id":"FE05","grossMinor":"11000","socialSecurityWagesBeforeMinor":"0","medicareWagesBeforeMinor":"0","field":"medicareMinor","rawCents":"319/2","expected":"160","boundary":"exact half"},
+  {"id":"FE06","grossMinor":"10035","socialSecurityWagesBeforeMinor":"0","medicareWagesBeforeMinor":"0","field":"medicareMinor","rawCents":"58203/400","expected":"146","boundary":"above half"},
+  {"id":"FE07","grossMinor":"499","socialSecurityWagesBeforeMinor":"18450000","medicareWagesBeforeMinor":"20000000","field":"additionalMedicareMinor","rawCents":"4491/1000","expected":"4","boundary":"below half"},
+  {"id":"FE08","grossMinor":"500","socialSecurityWagesBeforeMinor":"18450000","medicareWagesBeforeMinor":"20000000","field":"additionalMedicareMinor","rawCents":"9/2","expected":"5","boundary":"exact half"},
+  {"id":"FE09","grossMinor":"501","socialSecurityWagesBeforeMinor":"18450000","medicareWagesBeforeMinor":"20000000","field":"additionalMedicareMinor","rawCents":"4509/1000","expected":"5","boundary":"above half"}
+ ],
+ "releaseAccepted":false,
+ "currentExactCentFixtureExpectationsChanged":false
+}
