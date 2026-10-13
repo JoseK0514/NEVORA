@@ -18,10 +18,6 @@
  color: var(--design-text-primary); font-size: 14px; font-weight: 500;
 }
 .reset-page .reset-help summary::-webkit-details-marker { display: none; }
-.reset-page .reset-disclosure-icon { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; border: 1px solid var(--design-border); border-radius: var(--design-radius-pill); color: var(--design-text-secondary); }
-.reset-page .reset-help-minus { display: none; }
-.reset-page .reset-help[open] .reset-help-plus { display: none; }
-.reset-page .reset-help[open] .reset-help-minus { display: block; }
 .reset-page .reset-help p { margin: 0 0 8px; color: var(--design-text-secondary); font-size: 13px; line-height: 1.6; }
 .reset-page :is(.reset-back,.reset-help-link,.reset-error a) {
  display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px;

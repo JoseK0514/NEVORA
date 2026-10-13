@@ -141,6 +141,21 @@
       "prompt": "Edit target: the attached NEVORA activation illustration. Preserve only the blank ivory employee badge with a narrow cobalt blue fabric lanyard and the elegant open blank ivory notebook. Remove the entire large blue folded doorway, sunrise, glowing halo and surrounding structures. Recompose badge and notebook together as a quiet, realistic studio still life on the same invisible ground plane. Badge leans gently with lanyard resting naturally; notebook opens at a restrained angle, its thin cobalt cover only a small accent. Sophisticated Apple-like product photography with matte paper and fabric texture, subtle crisp edges, soft neutral daylight and a very delicate contact shadow. No floating objects, no toy-like plastic sheen, no dramatic glow. Minimal balanced horizontal composition, generous empty transparent margin around the objects. Transparent background and no floor rectangle. All objects fully in frame. No text, letters, logo, UI, filled identity data or confirmation checkmarks. Intended for the neutral pale-gray hero of a workforce account-activation page. Output 1536x1024 if possible.",
       "sha256": "f2ac9390c8649405b3b3f2b62917bded76a8c181f17f6d232bbf9b2b0caa6e0a",
       "bytes": 1473349
+    },
+    {
+      "id": "reset-key-still-v2",
+      "path": "illustrations/reset-key-still-v2.png",
+      "sourceFilename": "exec-514b9f7c-5669-48c7-9931-c2e94194ea87.png",
+      "generatedOn": "2026-10-12",
+      "generator": "Built-in imagegen edit",
+      "width": 1536,
+      "height": 1024,
+      "transparent": true,
+      "alt": "",
+      "usage": "Decorative stationary key on Set a New Password; it does not imply verified identity or a successful password reset.",
+      "prompt": "Edit this NEVORA workforce password-reset illustration into a quiet premium still life. REMOVE the entire blue doorway, door panels, arch, sunrise fan, floating specks and background. Retain only the physical key from the foreground, re-rendered as a single sculptural key in matte deep cobalt blue with subtle bevels and realistic material, positioned diagonally from lower left to upper right. Do not add any symbols, letters, text, logos, badges, interfaces, circles or surrounding decoration. Center the single key with generous empty space around it in a 1536x1024 landscape composition. Soft natural studio lighting, very restrained contact shadow immediately under the key, physically believable proportions. This belongs to a minimal workforce authentication interface, coordinated with ivory stationery and cobalt access objects. Transparent alpha background; the key must remain crisp and legible over a very pale gray surface. No animation, no portal, no gradients in the background.",
+      "sha256": "27ebff2ac968f87519af2f12abe4c85fba660c7c7c8a0a8df9d08565cdcc1bcb",
+      "bytes": 1485492
     }
   ]
 }

@@ -1,4 +1,4 @@
-/* Recovery and activation extend the approved login geometry with neutral still artwork. */
+/* Recovery, activation and reset extend the approved login geometry with neutral still artwork. */
 .employee-login-page.auth-support-page {
   --auth-still-surface: #F1F4F8;
   --auth-popover-radius: 14px;
@@ -29,13 +29,13 @@
 }
 
 .employee-login-page.auth-support-page .employee-login-card { justify-content: center; }
-.employee-login-page.auth-support-page :is(.recovery-secondary, .activation-secondary) {
+.employee-login-page.auth-support-page :is(.recovery-secondary, .activation-secondary, .reset-secondary) {
   margin-top: 28px;
   padding-top: 16px;
   border-color: var(--login-divider);
 }
-.employee-login-page.auth-support-page :is(.recovery-help, .activation-help) { border: 0; }
-.employee-login-page.auth-support-page :is(.recovery-help, .activation-help) summary {
+.employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) { border: 0; }
+.employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -65,14 +65,14 @@
 .employee-login-page.auth-support-page .auth-disclosure-open { display: none; }
 .employee-login-page.auth-support-page details[open] > summary .auth-disclosure-open { display: block; }
 .employee-login-page.auth-support-page details[open] > summary .auth-disclosure-closed { display: none; }
-.employee-login-page.auth-support-page :is(.recovery-help, .activation-help) summary:hover { color: var(--login-blue); }
-.employee-login-page.auth-support-page :is(.recovery-help, .activation-help) p {
+.employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) summary:hover { color: var(--login-blue); }
+.employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) p {
   margin: 4px 0 16px;
   font-size: 13px;
   line-height: 1.6;
   color: var(--design-text-secondary);
 }
-.employee-login-page.auth-support-page :is(.recovery-back, .activation-back) {
+.employee-login-page.auth-support-page :is(.recovery-back, .activation-back, .reset-back) {
   display: flex;
   align-items: center;
   min-height: 44px;
@@ -116,12 +116,12 @@
   font-size: 13px;
   line-height: 1.6;
 }
-.employee-login-page.auth-support-page :is(summary, .recovery-receipt, .recovery-error):focus-visible {
+.employee-login-page.auth-support-page :is(summary, .recovery-receipt, .recovery-error, .reset-receipt, .reset-error):focus-visible {
   outline: 2px solid var(--login-blue);
   outline-offset: 4px;
 }
-.employee-login-page.auth-support-page .recovery-receipt { border-radius: var(--login-control-radius); }
-.employee-login-page.auth-support-page .activation-password-toggle { top: 5px; border-radius: 9px; }
+.employee-login-page.auth-support-page :is(.recovery-receipt, .reset-receipt, .reset-error) { border-radius: var(--login-control-radius); }
+.employee-login-page.auth-support-page :is(.activation-password-toggle, .reset-password-toggle) { top: 5px; border-radius: 9px; }
 
 @media (max-width: 799px) {
   .employee-login-page.auth-support-page .login-visual {
@@ -133,10 +133,10 @@
   .employee-login-page.auth-support-page .login-visual-copy { padding: 24px 0 24px 28px; }
   .employee-login-page.auth-support-page .login-visual h2 { max-width: 8.5ch; font-size: 28px; }
   .employee-login-page.auth-support-page .auth-still-stage { padding: 0 8px 0 0; }
-  .employee-login-page.auth-support-page :is(.recovery-secondary, .activation-secondary) { margin-top: 24px; padding-top: 16px; }
+  .employee-login-page.auth-support-page :is(.recovery-secondary, .activation-secondary, .reset-secondary) { margin-top: 24px; padding-top: 16px; }
 }
 @media (max-width: 360px) {
   .employee-login-page.auth-support-page .login-visual-copy { padding-left: 22px; }
   .employee-login-page.auth-support-page .login-visual h2 { font-size: 24px; }
-  .employee-login-page.auth-support-page :is(.recovery-help, .activation-help) summary { font-size: 13px; }
+  .employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) summary { font-size: 13px; }
 }
