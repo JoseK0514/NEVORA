@@ -37,6 +37,7 @@ export function payrollExceptionMessage(exception: string) {
   const [code, reference] = exception.split(':');
   const native: Record<string, string> = {
     ATTESTED_YTD_REQUIRED: 'Ask the Owner to verify and attest the opening year-to-date balances.', ROUNDING_POLICY_ACCEPTANCE_REQUIRED: 'The payroll rounding rules need verification before approval.',
+    RECORDED_SOURCE_COVERAGE_MISSING: 'Review and finalize the employee timecards, including confirmed zero-hour periods, before recalculating.',
     RECORDED_SOURCE_STALE: 'Refresh and review the recorded timecards, then recalculate.', RECORDED_SOURCE_UNAVAILABLE: 'Recorded timecards are unavailable. Reload their current status before recalculating.', OPEN_RECORDED_TIME: 'Complete and review the open recorded time or break before recalculating.',
     POPULATION_REVIEW_REQUIRED: 'Review the employee population for this period before recalculating.', NATIVE_RULE_MAPPING_REQUIRED: 'Ask the Owner to review unsupported payroll rule mappings.',
     YTD_LOCATION_COVERAGE_REQUIRED: 'Verify location coverage for the prior payroll balances.', BACKDATED_YTD_RECALCULATION_REQUIRED: 'Later payroll has already been approved. Ask your payroll administrator to review the year-to-date sequence.', EMPLOYER_YTD_BASE_REQUIRED: 'Ask the Owner to verify the employer contribution opening wage bases.',
