@@ -272,9 +272,9 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
       const currentEntries = unique(currentSource.entries.filter(e => requiredContexts.some(i => overlaps(i, e as RecordedSourceInterval))), e => e.id);
       const authoritativeEntries = [...frozen.values()].filter(e => requiredContexts.some(i => overlaps(i, e as RecordedSourceInterval)));
       if (currentEntries.size !== authoritativeEntries.length || authoritativeEntries.some(e => !currentEntries.has(e.id) || !same(semantics(currentEntries.get(e.id)!), semantics(e)))) fail('stale_source');
-      const currentCorrections = currentSource.corrections.filter(c => requiredContexts.some(i => overlaps(i, c)));
+      const currentCorrections = unique(currentSource.corrections.filter(c => requiredContexts.some(i => overlaps(i, c))), c => c.id);
       const authoritativeCorrections = [...sourceCorrections.values()].filter(c => requiredContexts.some(i => overlaps(i, c)));
-      if (!same(currentCorrections, authoritativeCorrections)) fail('stale_source');
+      if (currentCorrections.size !== authoritativeCorrections.length || authoritativeCorrections.some(c => !currentCorrections.has(c.id) || !same(currentCorrections.get(c.id)!, c))) fail('stale_source');
       supersededCoverage.push({ ...p, operationId, revision, action, sourceHash, currentSourceHash, occurredAt, snapshot, currentSource, requiredContexts, replacedBy });
     }
     if (!req.contexts.every(i => covers(coverage.map(p => periodInstants(p, req.timeZone)), i))) fail('coverage_missing');

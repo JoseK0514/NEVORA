@@ -30,11 +30,12 @@ async function timeAction(action: 'APPROVE' | 'FINALIZE' | 'REOPEN', p: Period) 
     expect(result.status).toBe(action === 'APPROVE' ? 'approved' : action === 'FINALIZE' ? 'finalized' : 'reopened');
 }
 async function finalize(p: Period) { await timeAction('APPROVE', p); await timeAction('FINALIZE', p); }
-async function setup(mode: 'FINALIZE' | 'APPROVE' | 'MISSING' | 'PARTIAL' = 'FINALIZE', historicalLocation = false, correctedContext = false) {
+async function setup(mode: 'FINALIZE' | 'APPROVE' | 'MISSING' | 'PARTIAL' = 'FINALIZE', historicalLocation = false, correctedContext = false, reverseRejected = false) {
     await saveSettings(owner, { action: 'SAVE_SETTINGS', operationId: randomUUID(), expectedRevision: 0, effectiveFrom: '2026-01-01', reason: 'Fictional replacement-context facts', preferences: { companyName: 'Fictional replacement company', language: 'en', currency: 'USD', schedule: { frequency: 'WEEKLY', anchorDate: period.startDate, paydayOffsetDays: 9 }, rules: [], automation: { prepare: true, publish: false, reminders: false, reminderLeadDays: [] }, bankProfile: null } }, f.db.executor);
     for (const [id, day] of [['r2-current', '2026-09-23'], ['cap-policy-oct1', '2026-10-01']]) await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES($1,$2,'loc-1',$3,$4::timestamptz,$5::timestamptz,'CLOCKED_OUT',1)", [id, employeeId, f.devices[0].device.id, day + 'T12:00:00Z', day + 'T20:00:00Z']);
     if (historicalLocation) await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('historical-loc2',$1,'loc-2',$2,'2026-09-10T12:00:00Z','2026-09-10T20:00:00Z','CLOCKED_OUT',1)", [employeeId, f.devices[2].device.id]);
-    await finalize(oldPeriod); await timeAction('REOPEN', oldPeriod);
+    const historicalPeriod = reverseRejected ? { ...oldPeriod, endDate: period.endDate } : oldPeriod;
+    await finalize(historicalPeriod); await timeAction('REOPEN', historicalPeriod);
     if (correctedContext) {
         await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),$1,clock_timestamp()+interval '1 day')", [employeeId]);
         const employee: SessionMutationProof = { ...owner, employee: { ...owner.employee, id: employeeId, role: 'EMPLOYEE' }, sessionTokenHash: 'd'.repeat(64) };
@@ -43,7 +44,19 @@ async function setup(mode: 'FINALIZE' | 'APPROVE' | 'MISSING' | 'PARTIAL' = 'FIN
         expect((await reviewTimeCorrection(owner, { operationId: randomUUID(), requestId: pending.requestId, expectedRevision: 1, decision: 'APPROVE' }, f.db.executor)).status).toBe('approved');
     }
 
+    if (reverseRejected) {
+        await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),$1,clock_timestamp()+interval '1 day')", [employeeId]);
+        const employee: SessionMutationProof = { ...owner, employee: { ...owner.employee, id: employeeId, role: 'EMPLOYEE' }, sessionTokenHash: 'd'.repeat(64) };
+        for (const [id, day] of [['cap-policy-oct1', '2026-10-01'], ['r2-current', '2026-09-23']]) {
+            const pending = await submitTimeCorrection(employee, { operationId: randomUUID(), kind: 'ENTRY_BOUNDARY', timeEntryId: id, proposedStartAt: day + 'T11:00:00Z', proposedEndAt: day + 'T20:00:00Z', reason: 'Fictional reverse-created request ' + day }, f.db.executor);
+            expect(pending.status).toBe('pending');if (pending.status !== 'pending') throw Error('Pending request required');
+            expect((await reviewTimeCorrection(owner, { operationId: randomUUID(), requestId: pending.requestId, expectedRevision: 1, decision: 'REJECT' }, f.db.executor)).status).toBe('rejected');
+        }
+        await finalize({ startDate: covering.startDate, endDate: oldPeriod.endDate });
+        await finalize({ startDate: '2026-09-29', endDate: covering.endDate });
+    } else {
     if (mode !== 'MISSING') { const p = mode === 'PARTIAL' ? { ...covering, endDate: '2026-10-04' } : covering; await timeAction('APPROVE', p); if (mode !== 'APPROVE') await timeAction('FINALIZE', p); }
+    }
     const i = input(); i.wages[0].hourlyRateMinor = '2500'; i.wages[0].locationIds = historicalLocation ? ['loc-1', 'loc-2'] : ['loc-1']; i.wages[0].workweekAnchorDate = null; i.wages[0].workweekStartTime = null; i.wages[0].workweekPolicy = fictionalWorkweekPolicy(employeeId, { weekday: 1, startTime: '00:01', timeZone: 'America/Puerto_Rico' }, true); i.wages[0].wageCentRounding = 'UNVERIFIED'; i.tax!.prCentRounding = 'UNVERIFIED'; i.tax!.ruleEvidenceReference = null;
     await saveNativeProfile(owner, { action: 'SAVE_NATIVE_PROFILE', operationId: randomUUID(), reason: 'Fictional actual wage and withholding facts', expectedRevision: 0, configuration: { schema: 'NEVORA_NATIVE_CONFIGURATION_V1', employeeId, wages: i.wages, tax: i.tax, deductions: i.deductions } }, f.db.executor);
     await saveNativeProfile(owner, { action: 'ATTEST_OPENING_YTD', operationId: randomUUID(), reason: 'Fictional attested opening zero', expectedRevision: 0, employeeId, ytd: i.ytd }, f.db.executor);
@@ -104,4 +117,20 @@ it('preserves approved correction lineage and historical raw timing under the la
     const entry = recorded.entries.find(e => e.id === 'r2-current')!;expect(entry.startAt).toBe('2026-09-23T11:00:00Z');expect(entry.rawStartAt).toBe('2026-09-23T12:00:00Z');
     expect(recorded.supersededCoverage[0].snapshot.entries.find(e => e.id === 'r2-current')!.startAt).toBe('2026-09-23T12:00:00Z');
     expect(recorded.coverage[0].snapshot.entries.find(e => e.id === 'r2-current')!.startAt).toBe('2026-09-23T11:00:00Z');
+});
+
+it('accepts adjacent current finalized authority with complete corrections created in reverse work-date order', async () => {
+    const i = await setup('FINALIZE', false, false, true);
+    const c = await capture();expect(c.run.status).toBe('REVIEW_REQUIRED');expect(c.run.totals?.grossMinor).toBe('20000');
+    const retained = c.snapshot!.native!.recordedSources![0];expect(retained.coverage).toHaveLength(2);expect(retained.supersededCoverage).toHaveLength(1);expect(retained.lineage.requests).toHaveLength(2);expect(retained.lineage.events).toHaveLength(4);expect(retained.lineage.adjustments).toHaveLength(0);
+    expect(retained.supersededCoverage[0].currentSource.corrections.map(r => r.startAt)).toEqual(['2026-10-01T11:00:00Z', '2026-09-23T11:00:00Z']);
+    expect(retained.coverage.map(c => c.snapshot.corrections[0].startAt)).toEqual(['2026-09-23T11:00:00Z', '2026-10-01T11:00:00Z']);
+    const run = newRun(randomUUID(), period, payday);const [facts] = await f.db.executor.query<{ coverage: { employeeId: string; startDate: string; endDate: string }[] }>(nativeDatabaseFactsQuery('workspace-fuel', run, [employeeId]));
+    const request = nativeSourceRequest('workspace-fuel', run, employeeId, i.wages, facts.coverage);
+    const [row] = await f.db.executor.query<{ capture: { cards: { action: string; currentSource: { corrections: { reason: string }[] } }[] } }>(buildRecordedSourceCapture(request));
+    const inconsistent = structuredClone(row);inconsistent.capture.cards.find(c => c.action === 'REOPEN')!.currentSource.corrections[0].reason = 'Tampered semantic reason';
+    expect(projectRecordedSourceCapture(request, inconsistent)).toEqual({ state: 'blocked', reason: 'stale_source' });
+    const duplicate = structuredClone(row);const historical = duplicate.capture.cards.find(c => c.action === 'REOPEN')!;historical.currentSource.corrections.push(structuredClone(historical.currentSource.corrections[0]));
+    expect(projectRecordedSourceCapture(request, duplicate).state).toBe('blocked');
+
 });
