@@ -3,10 +3,13 @@ import { calculateNativePayroll } from './calculate';
 import { parseYtd } from './model';
 import type { NativePayrollInput } from './contracts';
 import fixtures from './employer-counter-fixtures.test-support.json';
+import { fictionalWorkweekPolicy } from './workweek-fixtures.test-support';
 import { projectEmployerYtdCounters } from './obligations';
 for (const fixture of fixtures.cases) {
     it(`retains literal independent employer-counter oracle ${fixture.id}`, () => {
         const input = structuredClone(fixture.input) as NativePayrollInput;
+        // Original custodied inputs/oracles stay unchanged. The later consumer requires additional explicit fictional notice facts.
+        input.wages.forEach(w => { w.workweekPolicy = fictionalWorkweekPolicy(input.employeeId); });
         const before = structuredClone(input);
         expect(parseYtd(input.ytd)).toEqual(input.ytd);
         const result = calculateNativePayroll(input);

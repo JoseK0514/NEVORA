@@ -1,3 +1,6 @@
+import { createHash } from 'node:crypto';
+import { resolveNativeWorkweek, type NativeBoundaryEvidence } from './workweek-policy';
+import { internalWorkweekCuts, weekContainingInstant } from './workweek-boundaries';
 import { validateNativeMinimumWage } from "./minimum-wage";
 import { Temporal } from "@js-temporal/polyfill";
 import { stableExportJson } from "../../payroll-export/json";
@@ -26,25 +29,26 @@ export function classifyRecordedTime(input: NativePayrollInput) {
     const { period, wages, timecards } = input;
     if (!wages.length)
         fail("WAGE_PROFILE_REQUIRED");
-    const anchor = Temporal.PlainDate.from(wages[0].workweekAnchorDate);
-    const weekOf = (date: string) => {
-        const current = Temporal.PlainDate.from(date), days = ((current.dayOfWeek - anchor.dayOfWeek) + 7) % 7;
-        return current.subtract({ days }).toString();
-    };
-    const firstWeek = weekOf(period.startDate), end = dateAdd(weekOf(period.endDate), 7), contextStart = dateAdd(firstWeek, -6);
     for (const wage of wages) {
         if (wage.compensation !== "HOURLY" || wage.employment !== "PR_PRIVATE_NONEXEMPT" || wage.dailyBasis !== "CALENDAR_DAY" || !["TIME_AND_HALF", "DOUBLE_PRESERVED"].includes(wage.overtime))
             fail("UNSUPPORTED_WAGE_PROFILE", wage.id);
         if (wage.standardContextAttested !== true)
             fail("WAGE_CONTEXT_ATTESTATION_REQUIRED", wage.id);
-        if (Temporal.PlainDate.from(wage.workweekAnchorDate).dayOfWeek !== anchor.dayOfWeek || wage.overtime !== wages[0].overtime)
+        if (wage.overtime !== wages[0].overtime)
             fail("OVERTIME_POLICY_CONFLICT", wage.id);
-        if (wage.workweekStartTime !== "00:00" || wage.overtimeBasis !== "WEIGHTED_WEEKLY")
+        if (wage.overtimeBasis !== "WEIGHTED_WEEKLY")
             fail("UNSUPPORTED_WORKWEEK_BASIS", wage.id);
         if (wage.wageCentRounding !== "HALF_UP" && wage.wageCentRounding !== "UNVERIFIED")
             fail("WAGE_CENT_RULE_UNVERIFIED", wage.id);
         validateNativeMinimumWage(wage);
     }
+    const resolved = resolveNativeWorkweek(input.employeeId, wages, period);
+    const contextStart = resolved.coveragePeriod.startDate, end = dateAdd(resolved.coveragePeriod.endDate, 1);
+    const firstWeek = ns(resolved.fullWeekWindow.startAt);
+    const left = ns(resolved.sourceWindow.startAt), right = ns(resolved.sourceWindow.endAt), payLeft = ns(resolved.payWindow.startAt), payRight = ns(resolved.payWindow.endAt);
+    if (timecards.length > 64)
+        fail('NATIVE_SOURCE_LIMIT');
+    let boundarySensitive = false;
     const entries = new Map<string, NativeRecordedEntry>();
     for (const card of timecards) {
         if (card.employeeId !== input.employeeId || card.state !== "FINALIZED" || card.revision < 1)
@@ -60,11 +64,24 @@ export function classifyRecordedTime(input: NativePayrollInput) {
             entries.set(e.id, e);
         }
     }
+    if (entries.size > 2048 || [...entries.values()].reduce((n, e) => n + e.breaks.length, 0) > 4096)
+        fail('NATIVE_SOURCE_LIMIT');
     for (let date = contextStart; date < end; date = dateAdd(date, 1)) {
         if (!timecards.some(card => card.period.startDate <= date && card.period.endDate >= date))
             fail("COMPLETE_CONTEXT_REQUIRED", date);
     }
-    const left = midnight(contextStart), right = midnight(end), payLeft = midnight(period.startDate), payRight = midnight(dateAdd(period.endDate, 1));
+    const dailyCuts: bigint[] = [], ambiguityMinutes: {
+        start: bigint;
+        end: bigint;
+    }[] = [];
+    for (let date = contextStart; date <= end; date = dateAdd(date, 1)) {
+        const point = midnight(date);
+        dailyCuts.push(point);
+        const minuteLeft = point > left ? point : left, minuteRight = point + BigInt(60000000000) < right ? point + BigInt(60000000000) : right;
+        if (minuteRight > minuteLeft)
+            ambiguityMinutes.push({ start: minuteLeft, end: minuteRight });
+    }
+    const weeklyCuts = internalWorkweekCuts(resolved.policy.boundary, resolved.sourceWindow).map(ns);
     const rawPieces: Omit<WorkedPiece, "overtime" | "premiumReason" | "federalOvertime">[] = [];
     let previousEnd: bigint | null = null, unpaid = BigInt(0);
     const sorted = [...entries.values()].sort((a, b) => Temporal.Instant.compare(a.startAt, b.startAt) || a.id.localeCompare(b.id));
@@ -77,6 +94,9 @@ export function classifyRecordedTime(input: NativePayrollInput) {
         if (finish <= start || (previousEnd !== null && start < previousEnd))
             fail("OVERLAPPING_RECORDED_TIME", e.id);
         previousEnd = finish;
+        // Conservative proof examines whole effective entries before any break subtraction.
+        if (ambiguityMinutes.some(minute => start < minute.end && finish > minute.start))
+            boundarySensitive = true;
         let lastBreak = start;
         for (const b of [...e.breaks].sort((a, b) => Temporal.Instant.compare(a.startAt, b.startAt))) {
             if (!b.endAt)
@@ -88,11 +108,12 @@ export function classifyRecordedTime(input: NativePayrollInput) {
         const cut = new Set<bigint>([start < left ? left : start, finish > right ? right : finish]);
         if (finish <= left || start >= right)
             continue;
-        for (let date = contextStart; date <= end; date = dateAdd(date, 1)) {
-            const point = midnight(date);
+        for (const point of dailyCuts)
             if (point > start && point < finish)
                 cut.add(point);
-        }
+        for (const boundary of [payLeft, payRight, ...weeklyCuts])
+            if (boundary > start && boundary < finish && boundary > left && boundary < right)
+                cut.add(boundary);
         for (const wage of wages)
             for (const boundary of [wage.effectiveFrom, wage.effectiveTo])
                 if (boundary) {
@@ -132,7 +153,7 @@ export function classifyRecordedTime(input: NativePayrollInput) {
                     fail("UNSUPPORTED_PAID_BREAK_BASIS", activeBreak.id);
             }
             const date = dateAt(a);
-            rawPieces.push({ start: a, end: b, date, week: weekOf(date), locationId: e.locationId, wage, rate: hourlyRate(wage.hourlyRateMinor) });
+            rawPieces.push({ start: a, end: b, date, week: weekContainingInstant(resolved.policy.boundary, Temporal.Instant.fromEpochNanoseconds(a).toString()).startAt, locationId: e.locationId, wage, rate: hourlyRate(wage.hourlyRateMinor) });
         }
     }
     const pieces: WorkedPiece[] = [];
@@ -140,18 +161,19 @@ export function classifyRecordedTime(input: NativePayrollInput) {
     for (let date = contextStart; date < end; date = dateAdd(date, 1)) {
         const today = rawPieces.filter(p => p.date === date);
         streak = today.length ? streak + 1 : 0;
-        if (date < firstWeek)
-            continue;
-        if (streak > 7)
-            fail("UNSUPPORTED_CONTINUOUS_REST_SEQUENCE", date);
-        const week = weekOf(date);
-        if (week !== currentWeek) {
-            currentWeek = week;
-            weeklyRegular = BigInt(0);
-            weeklyWorked = BigInt(0);
-        }
         let daily = BigInt(0);
         for (const raw of today) {
+            if (raw.end <= firstWeek) {
+                daily += raw.end - raw.start;
+                continue;
+            }
+            if (streak > 7)
+                fail("UNSUPPORTED_CONTINUOUS_REST_SEQUENCE", date);
+            if (raw.week !== currentWeek) {
+                currentWeek = raw.week;
+                weeklyRegular = BigInt(0);
+                weeklyWorked = BigInt(0);
+            }
             let a = raw.start;
             while (a < raw.end) {
                 const premiumReason = streak === 7 ? "REST_DAY" as const : daily >= HOUR * BigInt(8) ? "DAILY" as const : weeklyRegular >= HOUR * BigInt(40) ? "WEEKLY" as const : null;
@@ -171,5 +193,6 @@ export function classifyRecordedTime(input: NativePayrollInput) {
             }
         }
     }
-    return { pieces, unpaidBreakNanoseconds: unpaid, payLeft, payRight };
+    const boundaryEvidence: NativeBoundaryEvidence = { version: 'NATIVE_BOUNDARY_EVIDENCE_V1', workweekPolicy: resolved.policy, workweekPolicySha256: resolved.policySha256, sourceWindow: resolved.sourceWindow, fullWeekWindow: resolved.fullWeekWindow, dailyInterpretation: 'UNRESOLVED', dailyInputDisposition: boundarySensitive ? 'BOUNDARY_SENSITIVE' : 'INVARIANT_NO_FIRST_MINUTE_ENTRIES', dailyModels: ['CIVIL_MIDNIGHT_24H', 'CIVIL_00_01_24H'], sourceSha256: createHash('sha256').update(stableExportJson({ employeeId: input.employeeId, sourceWindow: resolved.sourceWindow, timecards })).digest('hex') };
+    return { pieces, unpaidBreakNanoseconds: unpaid, payLeft, payRight, boundaryEvidence };
 }

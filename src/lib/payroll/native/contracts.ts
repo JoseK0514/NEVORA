@@ -42,7 +42,9 @@ export type NativeWageProfile = {
     overtime: "TIME_AND_HALF" | "DOUBLE_PRESERVED";
     dailyBasis: "CALENDAR_DAY";
     workweekAnchorDate: string;
-    workweekStartTime: "00:00";
+    workweekStartTime: string;
+    /** Absent/null preserves an incomplete saved profile; native calculation must block. */
+    workweekPolicy?: import("./workweek-policy").NativeWorkweekPolicy | null;
     overtimeBasis: "WEIGHTED_WEEKLY";
     wageCentRounding: "HALF_UP" | "UNVERIFIED";
     breakRules: {
@@ -175,6 +177,7 @@ export type NativePayrollReady = {
         }[];
     };
     provenance: {
+        boundaryEvidence: import("./workweek-policy").NativeBoundaryEvidence;
         inputSha256: string;
         rulesetId: "PR_STANDARD_2026_V1";
         rulesSha256: string;

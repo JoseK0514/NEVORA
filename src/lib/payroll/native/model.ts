@@ -1,3 +1,4 @@
+import { parseNativeWorkweekPolicy } from "./workweek-policy";
 import { validateNativeMinimumWage } from "./minimum-wage";
 import { Temporal } from "@js-temporal/polyfill";
 import type { NativeConfiguration, NativeProfileCommand, NativeWageProfile, NativeTaxProfile, NativeYtd, NativeAuthorizedDeduction } from "./contracts";
@@ -10,7 +11,7 @@ const check = (v: unknown) => {
     if (!v)
         invalid();
 };
-function object(v: unknown, keys: string[]): Record<string, unknown> { check(v !== null && typeof v === "object" && !Array.isArray(v)); const o = v as Record<string, unknown>; check(Object.keys(o).every(k => keys.includes(k)) && keys.every(k => Object.hasOwn(o, k))); return o; }
+function object(v: unknown, keys: string[], optional: string[] = []): Record<string, unknown> { check(v !== null && typeof v === "object" && !Array.isArray(v)); const o = v as Record<string, unknown>; check(Object.keys(o).every(k => keys.includes(k) || optional.includes(k)) && keys.every(k => Object.hasOwn(o, k))); return o; }
 function text(v: unknown, max = 300): v is string { return typeof v === "string" && v.length > 0 && v.length <= max && v.trim() === v && !/[\u0000-\u001f\u007f]/.test(v); }
 function revision(v: unknown, zero = false) { check(typeof v === "number" && Number.isSafeInteger(v) && v >= (zero ? 0 : 1) && v <= 2147483646); }
 function date(v: unknown): v is string {
@@ -39,14 +40,16 @@ function moneyMap(v: unknown) {
         minor(value);
 }
 export function parseWage(v: unknown): NativeWageProfile {
-    const w = object(v, ["id", "revision", "effectiveFrom", "effectiveTo", "locationIds", "hourlyRateMinor", "compensation", "employment", "minimumWageCoverage", "overtime", "dailyBasis", "workweekAnchorDate", "workweekStartTime", "overtimeBasis", "wageCentRounding", "breakRules", "standardContextAttested", "evidenceReference"]);
+    const w = object(v, ["id", "revision", "effectiveFrom", "effectiveTo", "locationIds", "hourlyRateMinor", "compensation", "employment", "minimumWageCoverage", "overtime", "dailyBasis", "workweekAnchorDate", "workweekStartTime", "overtimeBasis", "wageCentRounding", "breakRules", "standardContextAttested", "evidenceReference"], ["workweekPolicy"]);
     check(text(w.id, 200) && text(w.evidenceReference));
     revision(w.revision);
     strings(w.locationIds);
     hourlyRate(w.hourlyRateMinor);
     validateNativeMinimumWage(w as NativeWageProfile);
     check(instant(w.effectiveFrom) && (w.effectiveTo === null || (instant(w.effectiveTo) && Temporal.Instant.compare(w.effectiveTo, w.effectiveFrom) > 0)));
-    check(w.compensation === "HOURLY" && w.employment === "PR_PRIVATE_NONEXEMPT" && w.dailyBasis === "CALENDAR_DAY" && (w.overtime === "TIME_AND_HALF" || w.overtime === "DOUBLE_PRESERVED") && date(w.workweekAnchorDate) && w.workweekStartTime === "00:00" && w.overtimeBasis === "WEIGHTED_WEEKLY" && (w.wageCentRounding === "HALF_UP" || w.wageCentRounding === "UNVERIFIED") && w.standardContextAttested === true);
+    check(w.compensation === "HOURLY" && w.employment === "PR_PRIVATE_NONEXEMPT" && w.dailyBasis === "CALENDAR_DAY" && (w.overtime === "TIME_AND_HALF" || w.overtime === "DOUBLE_PRESERVED") && date(w.workweekAnchorDate) && typeof w.workweekStartTime === "string" && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(w.workweekStartTime) && w.overtimeBasis === "WEIGHTED_WEEKLY" && (w.wageCentRounding === "HALF_UP" || w.wageCentRounding === "UNVERIFIED") && w.standardContextAttested === true);
+    if (w.workweekPolicy !== undefined && w.workweekPolicy !== null)
+        parseNativeWorkweekPolicy(w.workweekPolicy);
     check(Array.isArray(w.breakRules) && w.breakRules.length <= 100);
     const ids = new Set();
     for (const raw of w.breakRules as unknown[]) {
@@ -99,8 +102,9 @@ export function parseYtd(v: unknown): NativeYtd {
     moneyMap(y.employerWagesMinor);
     // These are same-employer cumulative wage bases before caps. Each supported
     // base may differ, but cannot exceed the documented cumulative gross.
-    const bases=[y.socialSecurityWagesMinor,y.medicareWagesMinor,y.sinotWagesMinor,...Object.values(y.employerWagesMinor as Record<string,string>)];
-    if(bases.some(base=>minor(base)>minor(y.grossMinor)))throw new PayrollError("YTD_TAXABLE_BASE_CONFLICT",400);
+    const bases = [y.socialSecurityWagesMinor, y.medicareWagesMinor, y.sinotWagesMinor, ...Object.values(y.employerWagesMinor as Record<string, string>)];
+    if (bases.some(base => minor(base) > minor(y.grossMinor)))
+        throw new PayrollError("YTD_TAXABLE_BASE_CONFLICT", 400);
     return structuredClone(v) as NativeYtd;
 }
 export function parseConfiguration(v: unknown): NativeConfiguration {
@@ -109,6 +113,7 @@ export function parseConfiguration(v: unknown): NativeConfiguration {
     check(Array.isArray(c.wages) && c.wages.length > 0 && c.wages.length <= 100 && Array.isArray(c.deductions) && c.deductions.length <= 90);
     const wages = (c.wages as unknown[]).map(parseWage);
     check(new Set(wages.map(w => w.id)).size === wages.length);
+    check(wages.every(w => !w.workweekPolicy || w.workweekPolicy.employeeId === c.employeeId));
     for (let i = 0; i < wages.length; i++)
         for (let j = i + 1; j < wages.length; j++) {
             const a = wages[i], b = wages[j];

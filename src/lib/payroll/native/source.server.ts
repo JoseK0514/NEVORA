@@ -1,5 +1,5 @@
 import 'server-only';
-import { Temporal } from '@js-temporal/polyfill';
+import { resolveNativeWorkweek } from './workweek-policy';
 import type { SqlExecutor, SqlStatement } from '../../notifications/types';
 import type { PayrollRun } from '../contracts';
 import type { Source, Snapshot } from '../service';
@@ -14,17 +14,25 @@ import { buildNativeRunCandidate, type NativePreparationFacts } from './preparat
 import { NATIVE_CALCULATOR_VERSION } from './calculate';
 import { buildRecordedSourceCapture, projectRecordedSourceCapture, type RecordedSourceRequest, type RecordedSourceCapture } from './recorded-source.server';
 export const EXACT_CENT_ASSESSMENT_SHA256 = 'c731b2e9afaa8771e14491b3a187edc49f4cc0539ec87ed53a1e9dd1020f075c';
-export async function nativeSchemaAvailable(ex: SqlExecutor) { const rows = await ex.query<{
-    available: boolean;
-}>(q("SELECT to_regclass('native_payroll_ledger') IS NOT NULL AS available")); if (rows.length !== 1)
-    throw new PayrollError('NATIVE_SOURCE_UNAVAILABLE', 503); return rows[0].available === true; }
+export async function nativeSchemaAvailable(ex: SqlExecutor) {
+    const rows = await ex.query<{
+        available: boolean;
+    }>(q("SELECT to_regclass('native_payroll_ledger') IS NOT NULL AS available"));
+    if (rows.length !== 1)
+        throw new PayrollError('NATIVE_SOURCE_UNAVAILABLE', 503);
+    return rows[0].available === true;
+}
 export function exactReadFence(query: SqlStatement, rows: unknown[]): SqlStatement {
-    const retained = rows.map(row => { const copy = structuredClone(row) as {
-        capture?: {
-            observedAt?: string;
+    const retained = rows.map(row => {
+        const copy = structuredClone(row) as {
+            capture?: {
+                observedAt?: string;
+            };
         };
-    }; if (copy?.capture)
-        delete copy.capture.observedAt; return copy; });
+        if (copy?.capture)
+            delete copy.capture.observedAt;
+        return copy;
+    });
     // Observation time changes per read; every actual source value remains fenced.
     return q(`SELECT (CASE WHEN COALESCE((SELECT jsonb_agg(to_jsonb(captured)#-'{capture,observedAt}') FROM (${query.text}) captured),'[]'::jsonb)=$${query.values.length + 1}::jsonb THEN '1' ELSE 'NATIVE_SOURCE_CONFLICT' END)::integer`, ...query.values, JSON.stringify(retained));
 }
@@ -48,16 +56,13 @@ export function nativeDatabaseFactsQuery(workspaceId: string, run: PayrollRun, i
  COALESCE((SELECT jsonb_agg(payload ORDER BY employee_id) FROM native_payroll_profiles_current WHERE workspace_id=$1 AND employee_id=ANY($2::text[])),'[]'::jsonb) AS profiles,
  COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',employee_id,'revision',revision,'ytd',payload) ORDER BY employee_id) FROM native_payroll_opening_ytd_current WHERE workspace_id=$1 AND employee_id=ANY($2::text[]) AND tax_year=EXTRACT(YEAR FROM $3::date)),'[]'::jsonb) AS openings,
  COALESCE((SELECT jsonb_agg(value ORDER BY sequence) FROM (SELECT sequence,jsonb_build_object('runId',run_id::text,'correctionOf',correction_of::text,'employeeId',employee_id,'period',jsonb_build_object('startDate',start_date::text,'endDate',end_date::text),'payday',payday::text,'sequence',sequence,'result',payload->'result','locationCoverage',(SELECT approved.snapshot#>ARRAY['native','employeeCoverage',native_payroll_ledger.employee_id] FROM payroll_runs_current approved WHERE approved.workspace_id=native_payroll_ledger.workspace_id AND approved.run_id=native_payroll_ledger.run_id),'deductionSources',COALESCE((SELECT item->'deductions' FROM payroll_runs_current approved CROSS JOIN LATERAL jsonb_array_elements(approved.snapshot#>'{native,facts,inputs}') item WHERE approved.workspace_id=native_payroll_ledger.workspace_id AND approved.run_id=native_payroll_ledger.run_id AND item->>'employeeId'=native_payroll_ledger.employee_id),'[]'::jsonb)) AS value FROM native_payroll_ledger WHERE workspace_id=$1 AND employee_id=ANY($2::text[]) AND tax_year=EXTRACT(YEAR FROM $3::date) ORDER BY sequence LIMIT 5001) selected),'[]'::jsonb) AS ledger,
- COALESCE((SELECT jsonb_agg(value ORDER BY employee_id,start_date,end_date) FROM (SELECT employee_id,start_date,end_date,jsonb_build_object('employeeId',employee_id,'startDate',start_date::text,'endDate',end_date::text) AS value FROM nevora_timecard_latest WHERE workspace_id=$1 AND employee_id=ANY($2::text[]) AND start_date<=$5::date+6 AND end_date>=$4::date-12 ORDER BY employee_id,start_date,end_date LIMIT 19201) selected),'[]'::jsonb) AS coverage`, workspaceId, ids, run.payday, run.period.startDate, run.period.endDate);
+ COALESCE((SELECT jsonb_agg(value ORDER BY employee_id,start_date,end_date) FROM (SELECT employee_id,start_date,end_date,jsonb_build_object('employeeId',employee_id,'startDate',start_date::text,'endDate',end_date::text) AS value FROM nevora_timecard_latest WHERE workspace_id=$1 AND employee_id=ANY($2::text[]) AND start_date<=$5::date+8 AND end_date>=$4::date-14 ORDER BY employee_id,start_date,end_date LIMIT 19201) selected),'[]'::jsonb) AS coverage`, workspaceId, ids, run.payday, run.period.startDate, run.period.endDate);
 }
 export function nativeSourceRequest(workspaceId: string, run: PayrollRun, employeeId: string, wages: NativePayrollInput['wages'], coverage: DatabaseFacts['coverage']): RecordedSourceRequest {
     if (!wages.length)
         throw new PayrollError('WAGE_PROFILE_REQUIRED', 409);
-    const anchor = Temporal.PlainDate.from(wages[0].workweekAnchorDate);
-    const week = (d: string) => { const current = Temporal.PlainDate.from(d); return current.subtract({ days: (current.dayOfWeek - anchor.dayOfWeek + 7) % 7 }); };
-    const first = week(run.period.startDate).subtract({ days: 6 }), last = week(run.period.endDate).add({ days: 6 });
-    const context = { startAt: first.toZonedDateTime('America/Puerto_Rico').toInstant().toString(), endAt: last.add({ days: 1 }).toZonedDateTime('America/Puerto_Rico').toInstant().toString() };
-    return { workspaceId, employeeId, timeZone: 'America/Puerto_Rico', period: run.period, contexts: [context], coverage: coverage.filter(c => c.employeeId === employeeId && c.startDate <= last.toString() && c.endDate >= first.toString()).map(c => ({ startDate: c.startDate, endDate: c.endDate })) };
+    const resolved = resolveNativeWorkweek(employeeId, wages, run.period);
+    return { workspaceId, employeeId, timeZone: 'America/Puerto_Rico', period: run.period, contexts: [resolved.sourceWindow], coverage: coverage.filter(c => c.employeeId === employeeId && c.startDate <= resolved.coveragePeriod.endDate && c.endDate >= resolved.coveragePeriod.startDate).map(c => ({ startDate: c.startDate, endDate: c.endDate })) };
 }
 function deductionInputs(configuration: NativeConfigurationRevision | ReturnType<typeof parseConfiguration>, opening: NativeYtd, heads: NativeLedgerEntry[], run: PayrollRun) {
     return configuration.deductions.map(d => {

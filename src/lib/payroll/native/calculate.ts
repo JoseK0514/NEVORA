@@ -1,3 +1,4 @@
+import { NATIVE_BOUNDARY_RULE_SOURCES } from "./workweek-policy";
 import {parseYtd} from "./model";
 import {ORDINARY_PR_MINIMUM_2026} from "./minimum-wage";
 import { createHash } from "node:crypto";
@@ -9,8 +10,8 @@ import { classifyRecordedTime, fail, HOUR } from "./time";
 import { fica2026, prIncomeWithholding, sinotContribution, PR_2026_RULE_SOURCES } from "./rules/pr-2026";
 import { authorizedAmounts, employerAmounts, validateEmployerCoverage, validateEmployerYtdCounters } from "./obligations";
 const hash = (value: unknown) => createHash("sha256").update(stableExportJson(value)).digest("hex");
-export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V5_EMPLOYER_YTD_COUNTERS";
-export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
+export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V6_WORKWEEK_DAILY_INVARIANT";
+export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, boundarySources: NATIVE_BOUNDARY_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
 export function calculateNativePayroll(input: NativePayrollInput): NativePayrollResult {
     try {
         if (!input || input.schema !== "NEVORA_NATIVE_PAYROLL_INPUT_V1" || typeof input.employeeId !== "string" || !input.employeeId || input.timeZone !== "America/Puerto_Rico")
@@ -34,6 +35,8 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
         if (tax.effectiveFrom > input.payday || (tax.effectiveTo !== null && tax.effectiveTo <= input.payday))
             fail("TAX_PROFILE_REQUIRED");
         const classified = classifyRecordedTime(input);
+        if (classified.boundaryEvidence.dailyInputDisposition !== "INVARIANT_NO_FIRST_MINUTE_ENTRIES")
+            fail("DAILY_BOUNDARY_SENSITIVE");
         const exactnessOperations: NativeExactnessOperation[] = [];
         const exactOnly = tax.prCentRounding === "UNVERIFIED" || input.wages.some(w => w.wageCentRounding === "UNVERIFIED");
         const groups = new Map<string, {
@@ -120,7 +123,7 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
         for (const contribution of employerContributions)
             after.employerContributions[contribution.code] = (minor(before.employerContributions[contribution.code] ?? "0") + minor(contribution.amountMinor)).toString();
         const canonical = { schema: input.schema, employeeId: input.employeeId, period: input.period, payday: input.payday, frequency: input.frequency, timeZone: input.timeZone, timecards: input.timecards, wages: input.wages, tax: input.tax, ytd: input.ytd, deductions: input.deductions };
-        return { state: "ready", schema: "NEVORA_NATIVE_PAYROLL_RESULT_V1", employeeId: input.employeeId, sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", row: { employeeId: input.employeeId, grossMinor: gross.toString(), employeeDeductions, employerContributions, netMinor: net.toString(), earnings: earnings.map(e => ({ code: e.code, label: e.kind.replaceAll("_", " "), amountMinor: e.amountMinor })) }, breakdown: { earnings, regularNanoseconds: regular.toString(), overtimeNanoseconds: overtime.toString(), unpaidBreakNanoseconds: classified.unpaidBreakNanoseconds.toString(), locationIds: [...new Set(earnings.map(e => e.locationId))].sort(), taxYear: payday.year, ytdBefore: before, ytdAfter: after, taxes }, provenance: { inputSha256: hash(canonical), rulesetId: "PR_STANDARD_2026_V1", rulesSha256: NATIVE_RULES_SHA256, rounding: input.wages.every(w => w.wageCentRounding === "UNVERIFIED") ? "EXACT_CENT_NO_ROUNDING_REQUIRED" : "EARNING_GROUP_HALF_UP", taxRounding: income.rounding, exactnessOperations } };
+        return { state: "ready", schema: "NEVORA_NATIVE_PAYROLL_RESULT_V1", employeeId: input.employeeId, sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", row: { employeeId: input.employeeId, grossMinor: gross.toString(), employeeDeductions, employerContributions, netMinor: net.toString(), earnings: earnings.map(e => ({ code: e.code, label: e.kind.replaceAll("_", " "), amountMinor: e.amountMinor })) }, breakdown: { earnings, regularNanoseconds: regular.toString(), overtimeNanoseconds: overtime.toString(), unpaidBreakNanoseconds: classified.unpaidBreakNanoseconds.toString(), locationIds: [...new Set(earnings.map(e => e.locationId))].sort(), taxYear: payday.year, ytdBefore: before, ytdAfter: after, taxes }, provenance: { boundaryEvidence: classified.boundaryEvidence, inputSha256: hash(canonical), rulesetId: "PR_STANDARD_2026_V1", rulesSha256: NATIVE_RULES_SHA256, rounding: input.wages.every(w => w.wageCentRounding === "UNVERIFIED") ? "EXACT_CENT_NO_ROUNDING_REQUIRED" : "EARNING_GROUP_HALF_UP", taxRounding: income.rounding, exactnessOperations } };
     }
     catch (error) {
         const e = error as Error & {

@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { describe, it, expect } from "vitest";
 import { parseNativeProfileCommand } from "./model";
 import { input } from "./fixtures.test-support";
+import { fictionalWorkweekPolicy } from "./workweek-fixtures.test-support";
 const command = () => { const i = input(); return { action: "SAVE_NATIVE_PROFILE", operationId: randomUUID(), reason: "Verified fictional actual payroll elections", expectedRevision: 0, configuration: { schema: "NEVORA_NATIVE_CONFIGURATION_V1", employeeId: i.employeeId, wages: i.wages, tax: i.tax, deductions: i.deductions } }; };
 describe("Owner native configuration boundary", () => {
     it("accepts explicit versioned facts without importing planning rates", () => expect(parseNativeProfileCommand(command())).toEqual(expect.objectContaining({ action: "SAVE_NATIVE_PROFILE" })));
@@ -20,4 +21,16 @@ describe("Owner native configuration boundary", () => {
             expect(() => parseNativeProfileCommand({ ...c, locationIds: value })).toThrow("INVALID_NATIVE_PROFILE");
         expect(() => parseNativeProfileCommand({ ...c, review: false, approve: true })).toThrow("INVALID_NATIVE_PROFILE");
     });
+});
+
+it('accepts explicit employee-covered default facts and saves unknown policy without inventing a notice', () => {
+    const c = command(); c.configuration.wages[0].workweekStartTime = '00:01';
+    c.configuration.wages[0].workweekPolicy = fictionalWorkweekPolicy('E1', { weekday:1,startTime:'00:01',timeZone:'America/Puerto_Rico' }, true);
+    expect(parseNativeProfileCommand(c)).toEqual(c);
+    c.configuration.wages[0].workweekStartTime = '00:00'; c.configuration.wages[0].workweekPolicy = null;
+    expect(parseNativeProfileCommand(c)).toEqual(c);
+});
+it('does not accept a provided workweek notice belonging to another employee', () => {
+    const c=command();c.configuration.wages[0].workweekPolicy=fictionalWorkweekPolicy('OTHER');
+    expect(()=>parseNativeProfileCommand(c)).toThrow('INVALID_NATIVE_PROFILE');
 });
