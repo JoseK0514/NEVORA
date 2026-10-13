@@ -1,0 +1,18 @@
+# SDD ledger — plan: docs/execution/ui-017-own-pay-notices.md
+Pre-flight: one task; unchanged Finance query interface, final Finance predicate pending. No other task interface conflict.
+Task 1: started at 4d25ee9abd4829ab3e8dd41bf3f90bd19de9cc08; whole increment base a44fce7c. RED: 8 failed/8 passing transport-contract tests; common manifest and Employee/Lead positives fail for omitted source.
+Ruling: independent clone from UI-015 delivery tip — protects frozen policy source and original preview — cost: separate local integration increment and disk.
+Ruling: prepare against unchanged Finance query interface while final predicate is pending — no Finance authority is reconstructed or modified — cost: final assembled privacy acceptance remains open.
+Ruling: preserve existing explicit read/acknowledgement controls — adapter uses observed read_at for pay-statement display and introduces no write capability — cost: this increment does not add Employee/Lead generic Mark read controls.
+Task 1: complete (commits 4d25ee9..bf91d40, tests: npm test -- src/lib/data/employee-notification-list src/lib/data/portal-notification-list src/lib/notification-inbox-view.test.ts src/lib/employee-view-route.test.ts src/app/app/notifications/open/route.test.ts --maxWorkers=2 →    Duration  853ms (tests 38%, transform 37%, import 24%, worker 1%))
+Task 1: current source bf91d405; affected 73/73; full 7421 pass/801 console-skipped plus 55 held; actual baseline missing own notice reproduced. Final48 role/engine/width surfaces passed; two wrong negative harness assumptions retained (immutable ledger and legitimate Employee→Lead self-access). Corrected negative02 5/5 with actual generation/publication and deactivation. Source/mirror custody and owned teardown verified.
+Ruling: use normal generation/publication and account deactivation for negatives — preserve immutable ledgers and legitimate self-access, correct harness contract shape — cost: additional fictional fixture work; no application weakening.
+Final review: fresh whole-branch reviewer completed at bf91d405; WATCH/APPROVE for independent combined QA, no blockers; independently 73/73 affected tests passed. Raw report preserved without edits.
+Final: minor (deferred): assert final canonical SQL rebasing and exact recipient/document values in the transport fixture; inspected production and real local SQL evidence are correct, final Finance gate remains mandatory.
+Final: minor (deferred): remove the unnecessary test-only as never cast; no demonstrated production impact.
+Final: Ruling: final assembled Finance predicate — local source is the older Finance interface and cannot certify final authorization; mandatory exact-backend independent gate stands — cost: assembled privacy acceptance remains open.
+Final: Ruling: full native generation matrix — actual local generation/publication covers one bounded path, not all native variants — cost: coupled acceptance still required.
+Final: Ruling: generic Employee/Lead Mark read — preserve observed metadata and existing controls without new mutation capability — cost: no new generic read control.
+Final: Ruling: hosted/production readiness — source stays local with no merge or deployment authorization — cost: physical/manual/hosted gates remain open.
+Final: Ruling: pixel fidelity — existing UI is unchanged and browser evidence passes, but reviewer did not visually certify every image — cost: independent UI/physical accessibility acceptance remains open.
+Final: Ruling: integration choice — preserve the local branch because the Owner explicitly withheld merge/deployment authorization — cost: integration requires a later authorized step.
