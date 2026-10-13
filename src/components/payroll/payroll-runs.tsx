@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowRightIcon, CalendarDotsIcon, CheckCircleIcon, FileArrowUpIcon } from '@phosphor-icons/react/ssr';
 import type { PayrollCapabilities, PayrollRun } from '@/lib/payroll/contracts';
 import { parsePayrollImport, readRuns } from './api';
@@ -20,6 +20,13 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
   const operation = usePayrollOperation('/api/payroll/runs', resource.reload, recoveryScope);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [prepareOpen, setPrepareOpen] = useState(false);
+  useEffect(() => {
+    const runId = operation.receipt?.runId;
+    if (!runId) return;
+    let active = true;
+    queueMicrotask(() => { if (active) setSelectedId(runId); });
+    return () => { active = false; };
+  }, [operation.receipt]);
   const data = !resource.loading && resource.data?.capabilities.canReview ? resource.data : null;
   const run = data?.runs.find(item => item.id === selectedId) ?? data?.runs[0];
   const locked = resource.loading || operation.busy || (!!operation.pending && !operation.resuming);

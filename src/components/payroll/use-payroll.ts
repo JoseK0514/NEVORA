@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { PayrollRunCommand, PayrollSettingsCommand } from '@/lib/payroll/contracts';
+import type { PayrollReceipt, PayrollRunCommand, PayrollSettingsCommand } from '@/lib/payroll/contracts';
 import { PayrollRequestError, payrollRequest, readReceipt } from './api';
 
 type Command = PayrollRunCommand | PayrollSettingsCommand;
@@ -49,6 +49,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
   const [pending, setPending] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [receipt, setReceipt] = useState<PayrollReceipt | null>(null);
   const [error, setError] = useState('');
   const [retryAvailable, setRetryAvailable] = useState(false);
   const [revisionConflict, setRevisionConflict] = useState(false);
@@ -71,13 +72,13 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
       const receipt = readReceipt(await payrollRequest(`/api/payroll/receipts?operationId=${encodeURIComponent(id)}`));
       if (receipt && receipt.operationId !== id) throw new Error('The returned receipt does not match this action reference. Check the same reference again.');
       if (receipt && receipt.operationId === id) {
-        finish(id); setMessage('Action recorded. Review the current status below.'); await reload();
+        setReceipt(receipt); finish(id); setMessage('Action recorded. Review the current status below.'); await reload();
       } else {
         setUnconfirmed(true);
         setMessage('No receipt is available yet. Check this same reference again; the action has not been confirmed.');
       }
     } catch (failure) {
-      if (failure instanceof PayrollRequestError && failure.status === 403) { finish(id); await reload(); }
+      if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setReceipt(null); finish(id); await reload(); }
       setError(failure instanceof Error ? failure.message : 'The action reference could not be checked.');
     } finally { inFlight.current = false; setBusy(false); }
   }, [finish, reload]);
@@ -94,11 +95,11 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
 
   const dispatch = async (next: Command, reconstructed = false) => {
     if (inFlight.current) return;
-    inFlight.current = true; setBusy(true); setError(''); setMessage(''); setRevisionConflict(false); setResuming(false); setUnconfirmed(false);
+    inFlight.current = true; setBusy(true); setError(''); setMessage(''); setReceipt(null); setRevisionConflict(false); setResuming(false); setUnconfirmed(false);
     try {
       const receipt = readReceipt(await payrollRequest(path, next));
       if (!receipt || receipt.operationId !== next.operationId) throw new Error('The action response is unconfirmed. Check its saved reference.');
-      finish(next.operationId); setMessage('Action recorded. Review the current status below.'); await reload();
+      setReceipt(receipt); finish(next.operationId); setMessage('Action recorded. Review the current status below.'); await reload();
     } catch (failure) {
       if (failure instanceof PayrollRequestError && (failure.code === 'OPERATION_CONFLICT' || (reconstructed && [400, 409].includes(failure.status)))) {
         command.current = null; setRetryAvailable(false);
@@ -127,7 +128,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
     reference.current = operationId; command.current = next; reconstructedCommand.current = reconstructed; setPending(operationId);
     await dispatch(next, reconstructed);
   };
-  return { pending, busy, message, error, retryAvailable, revisionConflict, resuming, locked: busy || (!!pending && !resuming),
+  return { pending, busy, message, receipt, error, retryAvailable, revisionConflict, resuming, locked: busy || (!!pending && !resuming),
     resumeAvailable: unconfirmed && !retryAvailable && !busy && !resuming,
     resume: () => { if (unconfirmed && !command.current && !inFlight.current) { setResuming(true); setError(''); setMessage('Re-enter the original action and details below. Submission will reuse this exact reference; changed details cannot replace a recorded action.'); } },
     pauseResume: () => setResuming(false),
