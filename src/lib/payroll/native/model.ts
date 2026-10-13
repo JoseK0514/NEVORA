@@ -47,7 +47,7 @@ export function parseWage(v: unknown): NativeWageProfile {
     hourlyRate(w.hourlyRateMinor);
     validateNativeMinimumWage(w as NativeWageProfile);
     check(instant(w.effectiveFrom) && (w.effectiveTo === null || (instant(w.effectiveTo) && Temporal.Instant.compare(w.effectiveTo, w.effectiveFrom) > 0)));
-    check(w.compensation === "HOURLY" && w.employment === "PR_PRIVATE_NONEXEMPT" && w.dailyBasis === "CALENDAR_DAY" && (w.overtime === "TIME_AND_HALF" || w.overtime === "DOUBLE_PRESERVED") && date(w.workweekAnchorDate) && typeof w.workweekStartTime === "string" && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(w.workweekStartTime) && w.overtimeBasis === "WEIGHTED_WEEKLY" && (w.wageCentRounding === "HALF_UP" || w.wageCentRounding === "UNVERIFIED") && w.standardContextAttested === true);
+    check(w.compensation === "HOURLY" && w.employment === "PR_PRIVATE_NONEXEMPT" && w.dailyBasis === "CALENDAR_DAY" && (w.overtime === "TIME_AND_HALF" || w.overtime === "DOUBLE_PRESERVED") && ((w.workweekAnchorDate === null && w.workweekStartTime === null) || (date(w.workweekAnchorDate) && typeof w.workweekStartTime === "string" && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(w.workweekStartTime))) && w.overtimeBasis === "WEIGHTED_WEEKLY" && (w.wageCentRounding === "HALF_UP" || w.wageCentRounding === "UNVERIFIED") && w.standardContextAttested === true);
     if (w.workweekPolicy !== undefined && w.workweekPolicy !== null)
         parseNativeWorkweekPolicy(w.workweekPolicy);
     check(Array.isArray(w.breakRules) && w.breakRules.length <= 100);

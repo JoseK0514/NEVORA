@@ -221,11 +221,15 @@ async function nativeFixture(options: {
     if (options.profile !== false) {
         const c = configuration();
         if (options.workweek === 'DEFAULT') {
-            c.wages[0].workweekStartTime = '00:01';
+            c.wages[0].workweekAnchorDate = null;
+            c.wages[0].workweekStartTime = null;
             c.wages[0].workweekPolicy = fictionalWorkweekPolicy('c34-a', { weekday: 1, startTime: '00:01', timeZone: 'America/Puerto_Rico' }, true);
         }
-        else if (options.workweek === 'UNKNOWN')
+        else if (options.workweek === 'UNKNOWN') {
+            c.wages[0].workweekAnchorDate = null;
+            c.wages[0].workweekStartTime = null;
             c.wages[0].workweekPolicy = null;
+        }
         c.wages[0].locationIds = [...new Set(['loc-1', ...(options.contextEntries ?? []).map(e => e.locationId)])];
         c.wages[0].hourlyRateMinor = '2500';
         c.wages[0].wageCentRounding = 'UNVERIFIED';
@@ -348,6 +352,7 @@ it('blocks actual missing terminal-date coverage instead of inventing finalized 
 });
 it('saves actual unknown workweek facts without normalizing them into a company notice', async () => {
     await nativeFixture({ workweek: 'UNKNOWN' });
+    expect(await f.q("SELECT payload#>'{wages,0,workweekPolicy}' AS policy,payload#>'{wages,0,workweekAnchorDate}' AS anchor,payload#>'{wages,0,workweekStartTime}' AS clock FROM native_payroll_profiles_current WHERE employee_id='c34-a'")).toEqual([{ policy: null, anchor: null, clock: null }]);
     const c = await nativeCapture();
     expect(c.run.status).toBe('BLOCKED');
     expect(c.run.totals).toBeNull();

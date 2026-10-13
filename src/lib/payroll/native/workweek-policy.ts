@@ -144,8 +144,13 @@ export function resolveNativeWorkweek(employeeId: string, wages: NativeWageProfi
             return fail('WORKWEEK_EMPLOYEE_COVERAGE_REQUIRED');
         if (stableExportJson(candidate) !== stableExportJson(policy))
             return fail('WORKWEEK_POLICY_TRANSITION_UNSUPPORTED');
-        if (Temporal.PlainDate.from(wage.workweekAnchorDate).dayOfWeek !== candidate.boundary.weekday || wage.workweekStartTime !== candidate.boundary.startTime)
-            return fail('WORKWEEK_PROFILE_CONFLICT');
+        // Explicit policy owns the recurring boundary; legacy coordinates are optional corroboration.
+        if (wage.workweekAnchorDate !== null || wage.workweekStartTime !== null) {
+            if (wage.workweekAnchorDate === null || wage.workweekStartTime === null)
+                return fail('WORKWEEK_PROFILE_CONFLICT');
+            if (Temporal.PlainDate.from(wage.workweekAnchorDate).dayOfWeek !== candidate.boundary.weekday || wage.workweekStartTime !== candidate.boundary.startTime)
+                return fail('WORKWEEK_PROFILE_CONFLICT');
+        }
     }
     if (policy.employeeId !== employeeId)
         return fail('WORKWEEK_EMPLOYEE_COVERAGE_REQUIRED');

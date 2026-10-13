@@ -1,9 +1,10 @@
 import { it, expect } from 'vitest';
 import { input } from './fixtures.test-support';
+import type { NativeWageProfile } from './contracts';
 import { parseNativeWorkweekPolicy, resolveNativeWorkweek, type NativeWorkweekPolicy } from './workweek-policy';
 const period = { startDate: '2026-09-21', endDate: '2026-09-27' };
 export const policy = (): NativeWorkweekPolicy => ({ version: 'PR_WORKWEEK_POLICY_V1', id: 'Fictional-WP1', revision: 1, employeeId: 'E1', effectiveFrom: '2026-01-01T00:00:00-04:00', effectiveTo: null, boundary: { weekday: 1, startTime: '00:01', timeZone: 'America/Puerto_Rico' }, federalWorkweek: 'SAME_VERIFIED_BOUNDARY', federalEvidenceReference: 'Fictional documented matching FLSA week', origin: { kind: 'STATUTORY_DEFAULT', noticeAbsenceConfirmed: true, evidenceReference: 'Fictional reviewed absence of employer notice for this employee and period' } });
-const wages = () => input().wages.map(w => ({ ...w, workweekStartTime: '00:01', workweekPolicy: policy() }));
+const wages = (): NativeWageProfile[] => input().wages.map(w => ({ ...w, workweekStartTime: '00:01', workweekPolicy: policy() }));
 it('resolves documented statutory fallback with complete weekly and both daily/rest dependency envelopes', () => {
     const result = resolveNativeWorkweek('E1', wages(), period);
     expect(result.policy.origin.kind).toBe('STATUTORY_DEFAULT');
@@ -37,3 +38,18 @@ it.each(['2026-01-02T00:00:00-04:00', '2025-12-29T00:00:00-04:00'])('rejects lat
 it('accepts a documented change delivered five calendar days in advance', () => { const p = policy(); p.origin = { kind: 'EMPLOYER_NOTICE', noticeReference: 'Fictional timely change', deliveredAt: '2025-12-27T23:59:00-04:00', deliveryMethod: 'WRITTEN_EMPLOYEE', employeeCoverageConfirmed: true, noticeKind: 'CHANGE', previousPolicyReference: 'Fictional prior policy' }; expect(parseNativeWorkweekPolicy(p)).toEqual(p); });
 it.each([new String('PR_WORKWEEK_POLICY_V1'), 1])('rejects coerced policy identity %j', version => { const p = policy(); p.version = version as never; expect(() => parseNativeWorkweekPolicy(p)).toThrow('INVALID_WORKWEEK_POLICY'); });
 it('rejects extra policy fields, getters and unverified different federal workweeks', () => { const p = policy(); expect(() => parseNativeWorkweekPolicy({ ...p, approved: true })).toThrow('INVALID_WORKWEEK_POLICY'); expect(() => parseNativeWorkweekPolicy({ ...p, get id() { return 'W'; } })).toThrow('INVALID_WORKWEEK_POLICY'); expect(() => parseNativeWorkweekPolicy({ ...p, federalWorkweek: 'UNVERIFIED' })).toThrow('INVALID_WORKWEEK_POLICY'); });
+
+it('resolves explicit policy as clock authority when both legacy coordinates are null', () => {
+    const list = wages(); list[0].workweekAnchorDate = null; list[0].workweekStartTime = null;
+    const resolved = resolveNativeWorkweek('E1', list, period);
+    expect(resolved.fullWeekWindow).toEqual({ startAt: '2026-09-14T04:01:00Z', endAt: '2026-09-28T04:01:00Z' });
+    expect(resolved.sourceWindow).toEqual({ startAt: '2026-09-08T04:00:00Z', endAt: '2026-09-28T04:01:00Z' });
+});
+it.each(['workweekAnchorDate', 'workweekStartTime'] as const)('blocks incomplete legacy coordinate pair %s in direct calculation', field => {
+    const list = wages(); list[0][field] = null;
+    expect(() => resolveNativeWorkweek('E1', list, period)).toThrow('WORKWEEK_PROFILE_CONFLICT');
+});
+it('blocks wholly unknown clock facts instead of selecting the statutory default from uncertainty', () => {
+    const list = wages(); list[0].workweekAnchorDate = null; list[0].workweekStartTime = null; list[0].workweekPolicy = null;
+    expect(() => resolveNativeWorkweek('E1', list, period)).toThrow('WORKWEEK_EVIDENCE_REQUIRED');
+});

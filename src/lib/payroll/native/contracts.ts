@@ -41,8 +41,9 @@ export type NativeWageProfile = {
     minimumWageCoverage: "PR_ACT_47_STANDARD_2026";
     overtime: "TIME_AND_HALF" | "DOUBLE_PRESERVED";
     dailyBasis: "CALENDAR_DAY";
-    workweekAnchorDate: string;
-    workweekStartTime: string;
+    /** Legacy weekday encoding and clock; both null when absent, never an effective policy date. */
+    workweekAnchorDate: string | null;
+    workweekStartTime: string | null;
     /** Absent/null preserves an incomplete saved profile; native calculation must block. */
     workweekPolicy?: import("./workweek-policy").NativeWorkweekPolicy | null;
     overtimeBasis: "WEIGHTED_WEEKLY";

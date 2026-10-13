@@ -34,3 +34,21 @@ it('does not accept a provided workweek notice belonging to another employee', (
     const c=command();c.configuration.wages[0].workweekPolicy=fictionalWorkweekPolicy('OTHER');
     expect(()=>parseNativeProfileCommand(c)).toThrow('INVALID_NATIVE_PROFILE');
 });
+
+it('saves an unknown workweek with both legacy coordinates null without inventing clock facts', () => {
+    const c = command();
+    c.configuration.wages[0].workweekAnchorDate = null;
+    c.configuration.wages[0].workweekStartTime = null;
+    c.configuration.wages[0].workweekPolicy = null;
+    expect(parseNativeProfileCommand(c)).toEqual(c);
+});
+it('saves an explicit employee-covered workweek without redundant legacy coordinates', () => {
+    const c = command();
+    c.configuration.wages[0].workweekAnchorDate = null;
+    c.configuration.wages[0].workweekStartTime = null;
+    expect(parseNativeProfileCommand(c)).toEqual(c);
+});
+it.each(['workweekAnchorDate', 'workweekStartTime'] as const)('rejects incomplete legacy coordinate pair %s', field => {
+    const c = command(); c.configuration.wages[0][field] = null;
+    expect(() => parseNativeProfileCommand(c)).toThrow('INVALID_NATIVE_PROFILE');
+});
