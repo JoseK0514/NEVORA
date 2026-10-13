@@ -63,6 +63,7 @@ export function nativeSourceRequest(workspaceId: string, run: PayrollRun, employ
     if (!wages.length)
         throw new PayrollError('WAGE_PROFILE_REQUIRED', 409);
     const resolved = resolveNativeWorkweek(employeeId, wages, run.period);
+    // Retain all overlapping observations; capture proves which current finalized authority covers required time.
     return { workspaceId, employeeId, timeZone: 'America/Puerto_Rico', period: run.period, contexts: [resolved.sourceWindow], coverage: coverage.filter(c => c.employeeId === employeeId && c.startDate <= resolved.coveragePeriod.endDate && c.endDate >= resolved.coveragePeriod.startDate).map(c => ({ startDate: c.startDate, endDate: c.endDate })) };
 }
 function deductionInputs(configuration: NativeConfigurationRevision | ReturnType<typeof parseConfiguration>, opening: NativeYtd, heads: NativeLedgerEntry[], run: PayrollRun) {

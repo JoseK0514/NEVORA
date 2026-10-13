@@ -18,6 +18,12 @@ export type RecordedSourceEntry = Omit<TimecardEntry, 'breaks'> & { logicalId: s
 export type RecordedSourceCoverage = Period & {
   operationId: string; revision: number; sourceHash: string; currentSourceHash: string; snapshot: TimecardSource;
 };
+/** Historical nonfinal custody replaced only within requiredContexts, never rewritten. */
+export type RecordedSourceSupersededCoverage = RecordedSourceCoverage & {
+  action: 'APPROVE' | 'REOPEN'; occurredAt: string; currentSource: TimecardSource;
+  requiredContexts: RecordedSourceInterval[];
+  replacedBy: (Period & { operationId: string; approvalOccurredAt: string; occurredAt: string })[];
+};
 export type RecordedSourceJson = null | boolean | number | string | RecordedSourceJson[] | { [key: string]: RecordedSourceJson };
 type JsonObject = { [key: string]: RecordedSourceJson };
 type CorrectionKind = 'ENTRY_BOUNDARY' | 'BREAK_BOUNDARY' | 'MISSING_ENTRY';
@@ -43,7 +49,7 @@ export type RecordedSourceLineage = {
 };
 export type RecordedSourceCapture = { state: 'blocked'; reason: RecordedSourceBlock } | {
   state: 'ready'; workspaceId: string; employeeId: string; timeZone: string; period: Period;
-  contexts: RecordedSourceInterval[]; coverage: RecordedSourceCoverage[]; entries: RecordedSourceEntry[];
+  contexts: RecordedSourceInterval[]; coverage: RecordedSourceCoverage[]; supersededCoverage: RecordedSourceSupersededCoverage[]; entries: RecordedSourceEntry[];
   lineage: RecordedSourceLineage; locationIds: string[]; emptyFinalizedCoverage: Period[]; sourceFence: string;
 };
 
@@ -215,17 +221,21 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
     const frozen = new Map<string, TimecardEntry>();
     const sourceCorrections = new Map<string, TimecardSource['corrections'][number]>();
     const cards = array(c.cards, limits.cards), wanted = new Set(req.coverage.map(p => `${p.startDate}/${p.endDate}`));
+    const historical: { card: Record<string, unknown>; period: Period; action: 'APPROVE' | 'REOPEN' }[] = [];
+    const authority = new Map<string, Record<string, unknown>>();
+    const supersededCoverage: RecordedSourceSupersededCoverage[] = [];
     for (const raw of cards) {
       const card = record(raw), p = period(card.period), key = `${p.startDate}/${p.endDate}`;
       if (!wanted.delete(key)) fail('invalid_source');
       if (card.action === null) fail('coverage_missing');
-      if (enumeration(card.action, ['APPROVE', 'FINALIZE', 'REOPEN']) !== 'FINALIZE') fail('not_finalized');
+      const action = enumeration(card.action, ['APPROVE', 'FINALIZE', 'REOPEN']);
+      if (action !== 'FINALIZE') { historical.push({ card, period: p, action }); continue; }
       const revision = integer(card.revision, 2), sourceHash = hash(card.sourceHash, 32), currentSourceHash = hash(card.currentSourceHash, 32);
       const operationId = uuid(card.operationId);
       if (integer(card.approvalRevision, 1) !== revision - 1 || hash(card.approvalSourceHash, 32) !== sourceHash ||
           uuid(card.approvalOperationId) === operationId || text(card.actorEmployeeId) === req.employeeId || text(card.approvalActorEmployeeId) === req.employeeId) fail('inconsistent_lineage');
       const snapshot = source(card.snapshot, observedAt), current = source(card.currentSource, observedAt);
-      for (const s of [snapshot, current]) if (s.employeeId !== req.employeeId || s.timeZone !== req.timeZone || !same(p, { startDate: s.startDate, endDate: s.endDate })) fail('identity_mismatch');
+      for (const source of [snapshot, current]) if (source.employeeId !== req.employeeId || source.timeZone !== req.timeZone || !same(p, { startDate: source.startDate, endDate: source.endDate })) fail('identity_mismatch');
       if (!same(snapshot.entries.map(semantics), current.entries.map(semantics)) || !same(snapshot.corrections, current.corrections)) fail('stale_source');
       for (const entry of snapshot.entries) {
         if (!req.contexts.some(i => overlaps(i, entry as RecordedSourceInterval))) continue;
@@ -235,8 +245,39 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
         const prior = sourceCorrections.get(correction.id); if (prior && !same(prior, correction)) fail('stale_source'); sourceCorrections.set(correction.id, correction);
       }
       coverage.push({ ...p, operationId, revision, sourceHash, currentSourceHash, snapshot });
+      authority.set(operationId, card);
     }
-    if (wanted.size || !req.contexts.every(i => covers(coverage.map(p => periodInstants(p, req.timeZone)), i))) fail('coverage_missing');
+    if (wanted.size) fail('coverage_missing');
+    if (historical.length && !coverage.length) fail('not_finalized');
+    for (const { card, period: p, action } of historical) {
+      const occurredAt = instant(card.occurredAt), revision = integer(card.revision, action === 'REOPEN' ? 3 : 1);
+      const operationId = uuid(card.operationId), sourceHash = hash(card.sourceHash, 32), currentSourceHash = hash(card.currentSourceHash, 32);
+      if (text(card.actorEmployeeId) === req.employeeId || ns(occurredAt) > ns(observedAt)) fail('inconsistent_lineage');
+      const snapshot = source(card.snapshot, observedAt), currentSource = source(card.currentSource, observedAt);
+      for (const source of [snapshot, currentSource]) if (source.employeeId !== req.employeeId || source.timeZone !== req.timeZone || !same(p, { startDate: source.startDate, endDate: source.endDate })) fail('identity_mismatch');
+      const bounds = periodInstants(p, req.timeZone);
+      const requiredContexts = req.contexts.filter(i => overlaps(i, bounds)).map(i => ({
+        startAt: ns(i.startAt) > ns(bounds.startAt) ? i.startAt : bounds.startAt,
+        endAt: ns(i.endAt) < ns(bounds.endAt) ? i.endAt : bounds.endAt,
+      }));
+      if (!requiredContexts.length) fail('invalid_source');
+      const replacedBy = coverage.map(c => {
+        const raw = authority.get(c.operationId)!;
+        const approvalOccurredAt = instant(raw.approvalOccurredAt), finalizedAt = instant(raw.occurredAt);
+        if (ns(approvalOccurredAt) >= ns(finalizedAt) || ns(finalizedAt) > ns(observedAt)) fail('inconsistent_lineage');
+        return { startDate: c.startDate, endDate: c.endDate, operationId: c.operationId, approvalOccurredAt, occurredAt: finalizedAt };
+      }).filter(c => ns(c.approvalOccurredAt) > ns(occurredAt) && requiredContexts.some(i => overlaps(i, periodInstants(c, req.timeZone))));
+      if (!requiredContexts.every(i => covers(replacedBy.map(c => periodInstants(c, req.timeZone)), i))) fail('not_finalized');
+      // Superseded snapshots remain history. Their current required time must still equal complete current authority.
+      const currentEntries = unique(currentSource.entries.filter(e => requiredContexts.some(i => overlaps(i, e as RecordedSourceInterval))), e => e.id);
+      const authoritativeEntries = [...frozen.values()].filter(e => requiredContexts.some(i => overlaps(i, e as RecordedSourceInterval)));
+      if (currentEntries.size !== authoritativeEntries.length || authoritativeEntries.some(e => !currentEntries.has(e.id) || !same(semantics(currentEntries.get(e.id)!), semantics(e)))) fail('stale_source');
+      const currentCorrections = currentSource.corrections.filter(c => requiredContexts.some(i => overlaps(i, c)));
+      const authoritativeCorrections = [...sourceCorrections.values()].filter(c => requiredContexts.some(i => overlaps(i, c)));
+      if (!same(currentCorrections, authoritativeCorrections)) fail('stale_source');
+      supersededCoverage.push({ ...p, operationId, revision, action, sourceHash, currentSourceHash, occurredAt, snapshot, currentSource, requiredContexts, replacedBy });
+    }
+    if (!req.contexts.every(i => covers(coverage.map(p => periodInstants(p, req.timeZone)), i))) fail('coverage_missing');
     const lineage = parseLineage(c.lineage, req), chain = validateLineage(lineage, req);
     for (const correction of sourceCorrections.values()) {
       const r = chain.requests.get(correction.id), events = lineage.events.filter(e => e.requestId === correction.id), last = events.at(-1);
@@ -297,7 +338,7 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
     unique(entries, e => e.logicalId);
     entries.sort((a, b) => Temporal.Instant.compare(a.startAt, b.startAt) || a.logicalId.localeCompare(b.logicalId));
     for (let i = 1; i < entries.length; i++) if (ns(entries[i].startAt) < ns(entries[i - 1].endAt!)) fail('unresolved_time');
-    const locationIds = new Set(coverage.flatMap(c => c.snapshot.entries.map(e => e.locationId)));
+    const locationIds = new Set([...coverage, ...supersededCoverage].flatMap(c => c.snapshot.entries.map(e => e.locationId)));
     for (const e of entries) locationIds.add(e.locationId);
     for (const r of [...lineage.requests, ...lineage.adjustments]) {
       locationIds.add(r.locationId);
@@ -309,7 +350,7 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
     for (const id of locations) locationIds.add(id);
     coverage.sort((a, b) => a.startDate.localeCompare(b.startDate) || a.endDate.localeCompare(b.endDate));
     const captured = { workspaceId: req.workspaceId, employeeId: req.employeeId, timeZone: req.timeZone, period: req.period,
-      contexts: [...req.contexts], coverage, entries, lineage, locationIds: [...locationIds].sort(),
+      contexts: [...req.contexts], coverage, supersededCoverage, entries, lineage, locationIds: [...locationIds].sort(),
       emptyFinalizedCoverage: coverage.filter(c => c.snapshot.entries.length === 0).map(c => ({ startDate: c.startDate, endDate: c.endDate })) };
     return { state: 'ready', ...captured, sourceFence: createHash('sha256').update(stableExportJson(captured)).digest('hex') };
   } catch (error) { return { state: 'blocked', reason: error instanceof Block ? error.reason : 'invalid_source' }; }
@@ -325,7 +366,7 @@ periods AS (SELECT * FROM jsonb_to_recordset($5::jsonb) AS x("startDate" date,"e
 identity AS (SELECT e.id,l.workspace_id,$3::text AS requested_zone FROM employees e LEFT JOIN locations l ON l.id=e.primary_location_id WHERE e.id=$2),
 cards AS MATERIALIZED (
   SELECT p.*,t.operation_id,t.revision,t.action,t.actor_employee_id,t.source_hash,t.snapshot,
-    a.revision AS approval_revision,a.operation_id AS approval_operation_id,a.source_hash AS approval_source_hash,a.actor_employee_id AS approval_actor,
+    t.occurred_at,a.occurred_at AS approval_occurred_at,a.revision AS approval_revision,a.operation_id AS approval_operation_id,a.source_hash AS approval_source_hash,a.actor_employee_id AS approval_actor,
     CASE WHEN EXISTS(SELECT 1 FROM identity i JOIN workspaces w ON w.id=i.workspace_id WHERE i.workspace_id=$1 AND w.active)
       THEN nevora_timecard_source($1,$2,p."startDate",p."endDate") ELSE NULL END AS current_source
   FROM periods p LEFT JOIN nevora_timecard_latest t ON t.workspace_id=$1 AND t.employee_id=$2 AND t.start_date=p."startDate" AND t.end_date=p."endDate"
@@ -397,7 +438,7 @@ SELECT jsonb_build_object(
   'workspace',(SELECT jsonb_build_object('id',id,'timeZone',time_zone,'active',active) FROM workspaces WHERE id=$1),
   'employee',(SELECT jsonb_build_object('id',id,'workspaceId',workspace_id) FROM identity),
   'cards',COALESCE((SELECT jsonb_agg(jsonb_build_object('period',jsonb_build_object('startDate',"startDate"::text,'endDate',"endDate"::text),
-    'operationId',operation_id,'revision',revision,'action',action,'actorEmployeeId',actor_employee_id,'sourceHash',source_hash,
+    'operationId',operation_id,'revision',revision,'action',action,'occurredAt',occurred_at::text,'approvalOccurredAt',approval_occurred_at::text,'actorEmployeeId',actor_employee_id,'sourceHash',source_hash,
     'approvalRevision',approval_revision,'approvalOperationId',approval_operation_id,'approvalSourceHash',approval_source_hash,'approvalActorEmployeeId',approval_actor,
     'snapshot',snapshot,'currentSource',current_source,'currentSourceHash',md5(current_source::text)) ORDER BY "startDate","endDate") FROM cards),'[]'::jsonb),
   'entries',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',COALESCE(v.time_entry_id,v.adjustment_id::text),'employeeId',v.employee_id,
