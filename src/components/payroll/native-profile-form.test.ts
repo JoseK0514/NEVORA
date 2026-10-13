@@ -59,3 +59,12 @@ describe('private configuration shape guards',()=>{
 });
 
 it('does not infer that no employee deductions exist from an untouched empty editor',()=>{const f=wage();f.delete('deductionsReviewed');expect(()=>form.profileFromForm(f,'E1',null)).toThrow(/deduction/i);});
+
+import { resolveNativeWorkweek } from '@/lib/payroll/native/workweek-policy';
+it.each(['STATUTORY_DEFAULT','EMPLOYER_NOTICE'])('lets a fully evidenced %s replace contradictory hidden legacy coordinates',kind=>{
+ const original=input();const previous={schema:'NEVORA_NATIVE_CONFIGURATION_V1' as const,employeeId:'E1',wages:original.wages,tax:null,deductions:[]};const f=wage();
+ for(const [k,v] of Object.entries({policyKind:kind,policyId:'P1',policyFrom:'2026-01-01T00:00',noticeAbsence:'on',policyEvidence:'Fictional complete actual notice search',federalMatch:'on',federalEvidence:'Fictional matching federal evidence',policyWeekday:'1',policyClock:'00:01',noticeReference:'Fictional actual employee notice',noticeDelivered:'2025-12-20T00:00',noticeMethod:'WRITTEN_EMPLOYEE',noticeCoverage:'on',noticeKind:'INITIAL'}))f.set(k,v);
+ const c=form.profileFromForm(f,'E1',previous);expect(c.wages[0].workweekAnchorDate).toBeNull();expect(c.wages[0].workweekStartTime).toBeNull();expect(c.wages[0].wageCentRounding).toBe('HALF_UP');
+ expect(resolveNativeWorkweek('E1',c.wages,{startDate:'2026-10-05',endDate:'2026-10-11'}).policy.boundary.startTime).toBe('00:01');
+ expect(previous.wages[0].workweekStartTime).toBe('00:00');expect(previous.wages[0].workweekAnchorDate).toBe('2026-01-05');
+});
