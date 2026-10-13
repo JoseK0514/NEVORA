@@ -1,6 +1,6 @@
 # UI-016 native payroll configuration — verification and handoff
 
-Status: application implementation locally verified; fresh whole-branch code review pending. No merge, deployment or release authorization. This report supplements the original NEVORA F01–F17 report and frozen UI015/017/010–011 candidates; it does not replace or reopen them.
+Status: local implementation and review corrections verified; independent QA/UI/statutory/security and release gates remain open. No merge, deployment or release authorization. This report supplements the original NEVORA F01–F17 report and frozen UI015/017/010–011 candidates; it does not replace or reopen them.
 
 ## Source identity
 
@@ -27,11 +27,11 @@ Puerto Rico withholding rounding is labeled separately from saved federal employ
 
 | Evidence | Actual result and scope |
 |---|---|
-| `FULL-unit-final.log` | 8,035 passed,801 skipped,55 held;436 passing files/27 skipped. All8875 dispositions remain distinct. Existing mock-render prefetch warnings retained. |
-| `TASK4-ready-ui.log` | 149 affected payroll UI tests pass; RED/GREEN receipts retained for all implementation corrections. |
-| `TYPECHECK-final.log`, `LINT-final.log` | TypeScript and affected ESLint exit0. |
+| `review-fix/FULL-unit-GREEN.log` | 8,035 passed,801 skipped,55 held;437 passing files/27 skipped. All8891 dispositions remain distinct. Existing mock-render prefetch warnings retained. Earlier FULL-unit-final.log remains8019pass atda17, not relabeled. |
+| `review-fix/unit-GREEN.log`, Task4 completion log | 165 affected payroll UI tests pass; earlier TASK4-ready-ui.log remains149pass atda17. RED/GREEN receipts retained. |
+| `review-fix/typecheck.log`, `review-fix/lint.log` | TypeScript and affected ESLint exit0 on corrected source; earlier final logs retained. |
 | `NATIVE-SQL-01.log`, `LEGACY-SQL-01.log` | 42 native and36 legacy SQL checks pass, new owned loopback clusters stopped. These ran at0f95; final Finance/backend bytes are unchanged and custody-verified. SQL-generated fictional private statement/receipt preserved under native-sql-artifacts-01. |
-| Chromium review-final-01 / WebKit review-final-01 | 29/29 scenarios per engine,0 errors;19 screenshots each. Exact0b2c production-mode source; distinct retained harness hashes, owned source/mirror verified and PostgreSQL stopped. |
+| Chromium review-final-01 / WebKit review-final-01 | 29/29 scenarios per engine,0 errors;19 screenshots each. Exact0b2c production-mode source; identical final harness hashes (earlier different versions retained), owned source/mirror verified and PostgreSQL stopped. |
 | Responsive | Owner configuration collapsed/expanded at320/390/768/820/1024/1440 in both engines; Employee/Lead/Manager own-pay/direct denial390; additional actual empty/blocked/ready/fractional820 surfaces. Automated WCAG2a/aa/21aa/22aa and no horizontal overflow asserted. |
 | Keyboard/privacy | Real disclosure Enter, next-control Tab/Option-Tab; Owner access loss,403 non-Owner profile denial and direct settings redirect; failed current reads hide all certificate/balance inputs; recovery retains actual unsaved draft. |
 | Actual workflow | Incomplete forms persist unknown/null -> BLOCKED null money -> fully documented fictional forms -> finalized actual recorded context -> REVIEW_REQUIRED -> explicit human approval -> worker private PDFs/automatic publication. Actual missing terminal-day zero evidence blocks until independently reviewed and finalized. Policy-only revision rejects old approval, commits no ledger until fresh review. Lost successful POST retries identical operation/body with one revision. Invalid advance/coverage cannot save; prior opening/doc bytes remain immutable. |
@@ -112,6 +112,8 @@ The isolated first GREEN interaction probe encountered crypto.randomUUID unavail
 - Final: Ruling: roster/role choices do not gain live push updates — source snapshot is honest and server verifies current active Manager authority on every mutation — cost if wrong: stale option visible until reload but server denies unauthorized action; future live update integration needed if desired.
 - Final: Ruling: earlier candidates, old preview and separate mobile Home work remain preserved — exact UI016-only branch range is the handoff — cost if wrong: user sees older preview without the new configuration; disclose version and supply exact-source artifacts.
 - Final: Ruling: unrelated style/toolchain/abstraction cleanup and exhaustive semantic/legal malformed-response checking remain outside this correction — directly consumed crash-producing fields are validated — cost if wrong: less maintainable dense code or other malformed semantics; backend validation and separate future cleanup remain applicable.
+
+- Final: Ruling: keep the branch/checkouts as-is under the owner's explicit isolation/no-merge/no-deployment directive — finishing-a-development-branch's integration menu does not override already supplied release boundaries — cost if wrong: assembled integration waits for its authorized owner; no preview or release candidate source replacement.
 
 ## Deferred minors
 
