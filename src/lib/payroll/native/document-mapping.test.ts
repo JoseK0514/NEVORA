@@ -12,18 +12,18 @@ it('does not produce any completed batch when the lease callback fails midway', 
 it('localizes standard employer contributions in the statement language while retaining the amounts', () => {
     const { run, snapshot } = nativeDocumentFixture();
     const es = nativeEmployeePresentation(run, snapshot, 'E1');
-    expect(es.employerContributions.lines.map(line => line.label)).toEqual(['Medicare', 'Seguro por incapacidad (SINOT)', 'Seguro Social']);
+    expect(es.employerContributions!.lines.map(line => line.label)).toEqual(['Medicare', 'Seguro por incapacidad (SINOT)', 'Seguro Social']);
     snapshot.settings.preferences.language = 'en';
     const en = nativeEmployeePresentation(run, snapshot, 'E1');
-    expect(en.employerContributions.lines.map(line => line.label)).toEqual(['Medicare', 'Disability insurance (SINOT)', 'Social Security']);
-    expect(en.employerContributions.lines.map(line => line.amount)).toEqual(es.employerContributions.lines.map(line => line.amount));
+    expect(en.employerContributions!.lines.map(line => line.label)).toEqual(['Medicare', 'Disability insurance (SINOT)', 'Social Security']);
+    expect(en.employerContributions!.lines.map(line => line.amount)).toEqual(es.employerContributions!.lines.map(line => line.amount));
 });
 it('retains actual custom employer labels rather than replacing them with generic code text', () => {
     const { run, snapshot } = nativeDocumentFixture();
     for (const row of [run.rows![0], run.nativeCalculation!.employees[0].row]) {
         row.employerContributions.find(line => line.code === 'MEDICARE')!.label = 'Aportación patronal acordada';
     }
-    expect(nativeEmployeePresentation(run, snapshot, 'E1').employerContributions.lines.find(line => line.label === 'Aportación patronal acordada')).toBeTruthy();
+    expect(nativeEmployeePresentation(run, snapshot, 'E1').employerContributions!.lines.find(line => line.label === 'Aportación patronal acordada')).toBeTruthy();
 });
 it('provides a human approved-run reference while keeping full proof hashes in private document metadata', async () => {
     const { run, snapshot } = nativeDocumentFixture();
