@@ -2,11 +2,9 @@
 
 import Link from 'next/link';
 import {useEffect,useRef,type FormEventHandler} from 'react';
-import {ArrowLeftIcon} from '@phosphor-icons/react/dist/ssr/ArrowLeft';
-import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import {ArrowUpRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
-import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
-import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
+import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
+import {AuthAccessSymbol} from './auth-access-symbol';
+import {AuthDisclosureSymbol} from './auth-disclosure-symbol';
 
 /** Presentation only: AccountRecovery owns the existing request and privacy contract. */
 export function RecoveryRequest({hydrated,busy,done,message,onSubmit}:{
@@ -16,8 +14,7 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit}:{
  useEffect(()=>{if(message)feedback.current?.focus();},[message,done]);
  return <section className="auth-card employee-login-card recovery-card">
   <div className="employee-login-heading">
-   <h1>Forgot access</h1>
-   <p>Let’s get you back to work. Enter the details registered with your account.</p>
+   <h1>Forgot Access</h1>
   </div>
   {done?<div className="recovery-receipt" ref={feedback} role="status" tabIndex={-1}>
    <h2>Request received</h2><p>{message}</p>
@@ -27,11 +24,19 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit}:{
     <fieldset disabled={!hydrated||busy}>
      <label>Employee ID<input name="employeeId" placeholder="Enter your employee ID" required maxLength={200}
       autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-error':undefined}/></label>
-     <label>Registered recovery email<input name="email" type="email" placeholder="you@example.com" required maxLength={254}
-      autoComplete="email" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-email-hint recovery-error':'recovery-email-hint'}/></label>
-     <p id="recovery-email-hint" className="recovery-hint">Use the email registered with your account.</p>
+     <div className="recovery-email-field">
+      <div className="auth-label-row">
+       <label htmlFor="recovery-email">Recovery email</label>
+       <details className="auth-field-help">
+        <summary aria-label="About your recovery email"><InfoIcon size={18} weight="regular" aria-hidden="true" focusable="false"/></summary>
+        <p id="recovery-email-hint">Use the email registered with your account.</p>
+       </details>
+      </div>
+      <input id="recovery-email" name="email" type="email" placeholder="you@example.com" required maxLength={254}
+       autoComplete="email" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-email-hint recovery-error':'recovery-email-hint'}/>
+     </div>
      <button className="button primary employee-login-submit recovery-submit" type="submit" disabled={!hydrated||busy} aria-busy={busy}>
-      <span>{busy?'Requesting recovery…':'Request recovery'}</span><ArrowRightIcon size={20} weight="regular" aria-hidden="true" focusable="false"/>
+      <span>{busy?'Requesting recovery…':'Request recovery'}</span>
      </button>
     </fieldset>
    </form>
@@ -39,12 +44,12 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit}:{
    <span className="login-submit-status" role="status">{busy?'Requesting recovery. Please wait.':''}</span>
   </>}
   <div className="auth-secondary employee-login-secondary recovery-secondary">
-   <Link href="/reset-access" className="login-access-link"><KeyIcon size={20} weight="regular" aria-hidden="true" focusable="false"/>
-    <span>I already have a recovery code</span><ArrowUpRightIcon size={16} weight="regular" aria-hidden="true" focusable="false"/></Link>
-   <details className="recovery-help"><summary><span>Can’t use your recovery email?</span><CaretDownIcon size={18} weight="regular" aria-hidden="true" focusable="false"/></summary>
+   <Link href="/reset-access" className="login-access-link"><AuthAccessSymbol kind="recovery"/>
+    <span>I already have a recovery code</span></Link>
+   <details className="recovery-help"><summary><span>Can’t use your recovery email?</span><AuthDisclosureSymbol/></summary>
     <p>Contact your manager or Owner for assisted recovery. They must verify your identity before issuing a recovery code.</p>
    </details>
   </div>
-  <Link href="/login" className="recovery-back"><ArrowLeftIcon size={18} weight="regular" aria-hidden="true" focusable="false"/>Back to sign in</Link>
+  <Link href="/login" className="recovery-back">Back to sign in</Link>
  </section>;
 }

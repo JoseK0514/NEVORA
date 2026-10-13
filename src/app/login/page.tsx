@@ -1,16 +1,15 @@
 import Link from "next/link";
 import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
-import { BrandWordmark } from "@/components/brand-mark";
+import { AuthBrand } from "@/components/auth-brand";
+import { AuthAccessSymbol } from "@/components/auth-access-symbol";
 import { BrandLegal } from "@/components/brand-legal";
 import { login } from "@/app/login/actions";
 import { NUVORA_BRAND } from "../../lib/brand";
-import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr/LockKey";
-import { IdentificationBadgeIcon } from "@phosphor-icons/react/dist/ssr/IdentificationBadge";
 import { LoginVisual } from "./login-visual";
 import { LoginSubmit } from "./login-submit";
 import "./login.css";
-import "./login-refinement.css";
+import "./auth-refinement.css";
 
 export default async function LoginPage({
   searchParams,
@@ -23,13 +22,10 @@ export default async function LoginPage({
   const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
 
   return (
-    <main className="auth-page employee-login-page login-refinement-page">
+    <main className="auth-page employee-login-page auth-refinement-page login-refinement-page">
       <div className="employee-login-shell">
         <header className="employee-login-brand">
-          <span className="login-brand-lockup">
-            <BrandWordmark />
-            <span className="login-brand-module">{NUVORA_BRAND.module}</span>
-          </span>
+          <AuthBrand />
           <span className="login-workspace">{workspaceName ?? "Workspace unavailable"}</span>
         </header>
 
@@ -77,15 +73,11 @@ export default async function LoginPage({
 
           <div className="auth-secondary employee-login-secondary">
             <Link href="/forgot-access" className="login-access-link">
-              <span className="login-access-symbol" aria-hidden="true">
-                <LockKeyIcon size={24} weight="duotone" focusable="false" />
-              </span>
+              <AuthAccessSymbol kind="recovery" />
               <span>Forgot access?</span>
             </Link>
             <Link href={`/activate${returnQuery}`} className="login-access-link">
-              <span className="login-access-symbol" aria-hidden="true">
-                <IdentificationBadgeIcon size={24} weight="duotone" focusable="false" />
-              </span>
+              <AuthAccessSymbol kind="activation" />
               <span><small>New employee?</small>Activate your account</span>
             </Link>
           </div>

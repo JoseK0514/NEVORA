@@ -1,0 +1,142 @@
+/* Recovery and activation extend the approved login geometry with neutral still artwork. */
+.employee-login-page.auth-support-page {
+  --auth-still-surface: #F1F4F8;
+  --auth-popover-radius: 14px;
+}
+
+.employee-login-page.auth-support-page .login-visual {
+  display: flex;
+  flex-direction: column;
+  background: var(--auth-still-surface);
+  color: var(--design-text-primary);
+}
+.employee-login-page.auth-support-page .login-visual::after { display: none; }
+.employee-login-page.auth-support-page .login-visual-copy { flex: none; }
+.employee-login-page.auth-support-page .auth-still-stage {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0 24px 64px;
+}
+.employee-login-page.auth-support-page .login-visual-art {
+  position: static;
+  z-index: auto;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transform: none;
+}
+
+.employee-login-page.auth-support-page .employee-login-card { justify-content: center; }
+.employee-login-page.auth-support-page :is(.recovery-secondary, .activation-secondary) {
+  margin-top: 28px;
+  padding-top: 16px;
+  border-color: var(--login-divider);
+}
+.employee-login-page.auth-support-page :is(.recovery-help, .activation-help) { border: 0; }
+.employee-login-page.auth-support-page :is(.recovery-help, .activation-help) summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 0;
+  border-radius: 8px;
+  list-style: none;
+  color: var(--design-text-secondary);
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+}
+.employee-login-page.auth-support-page summary::-webkit-details-marker { display: none; }
+.employee-login-page.auth-support-page .auth-disclosure-symbol {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--login-divider);
+  border-radius: 50%;
+  color: var(--design-text-secondary);
+  background: var(--design-surface-elevated);
+}
+.employee-login-page.auth-support-page .auth-disclosure-symbol svg { grid-area: 1 / 1; transform: none; transition: none; }
+.employee-login-page.auth-support-page .auth-disclosure-open { display: none; }
+.employee-login-page.auth-support-page details[open] > summary .auth-disclosure-open { display: block; }
+.employee-login-page.auth-support-page details[open] > summary .auth-disclosure-closed { display: none; }
+.employee-login-page.auth-support-page :is(.recovery-help, .activation-help) summary:hover { color: var(--login-blue); }
+.employee-login-page.auth-support-page :is(.recovery-help, .activation-help) p {
+  margin: 4px 0 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--design-text-secondary);
+}
+.employee-login-page.auth-support-page :is(.recovery-back, .activation-back) {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 12px;
+  width: fit-content;
+  padding: 4px 0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.employee-login-page.auth-support-page .recovery-email-field { display: grid; gap: 9px; min-width: 0; }
+.employee-login-page.auth-support-page .auth-label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.employee-login-page.auth-support-page .auth-field-help { position: relative; flex: none; width: 44px; }
+.employee-login-page.auth-support-page .auth-field-help summary {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-block: -11px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--design-text-secondary);
+  list-style: none;
+  cursor: pointer;
+}
+.employee-login-page.auth-support-page .auth-field-help summary:hover { color: var(--login-blue); background: var(--login-field); }
+.employee-login-page.auth-support-page .auth-field-help p {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 14px);
+  right: 0;
+  width: min(280px, calc(100vw - 104px));
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--login-divider);
+  border-radius: var(--auth-popover-radius);
+  background: var(--design-surface-elevated);
+  color: var(--design-text-secondary);
+  box-shadow: 0 6px 24px #11182710;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.employee-login-page.auth-support-page :is(summary, .recovery-receipt, .recovery-error):focus-visible {
+  outline: 2px solid var(--login-blue);
+  outline-offset: 4px;
+}
+.employee-login-page.auth-support-page .recovery-receipt { border-radius: var(--login-control-radius); }
+.employee-login-page.auth-support-page .activation-password-toggle { top: 5px; border-radius: 9px; }
+
+@media (max-width: 799px) {
+  .employee-login-page.auth-support-page .login-visual {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 40%;
+    align-items: center;
+    min-height: 144px;
+  }
+  .employee-login-page.auth-support-page .login-visual-copy { padding: 24px 0 24px 28px; }
+  .employee-login-page.auth-support-page .login-visual h2 { max-width: 8.5ch; font-size: 28px; }
+  .employee-login-page.auth-support-page .auth-still-stage { padding: 0 8px 0 0; }
+  .employee-login-page.auth-support-page :is(.recovery-secondary, .activation-secondary) { margin-top: 24px; padding-top: 16px; }
+}
+@media (max-width: 360px) {
+  .employee-login-page.auth-support-page .login-visual-copy { padding-left: 22px; }
+  .employee-login-page.auth-support-page .login-visual h2 { font-size: 24px; }
+  .employee-login-page.auth-support-page :is(.recovery-help, .activation-help) summary { font-size: 13px; }
+}

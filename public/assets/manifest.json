@@ -111,6 +111,36 @@
       "prompt": "Create a final website hero photograph for NEVORA Workforce, an employee scheduling and time management product. This is an architectural editorial photograph, a quiet study of the beginning of a workday, with the precision and restraint of Apple product photography. Portrait 1024 by 1536 composition. A close, oblique view across a real contemporary workplace: five tall translucent cobalt-blue fluted glass partitions aligned in a steady rhythm, a single pale frosted glass plane in the foreground at lower right, clean blue-grey floor, clear early daylight entering from the upper right and casting long crisp diagonal lines on the floor. Color palette rich cobalt #0756D9, icy blue #F0FBFF, subtle pale cyan #43CCFB, and natural white daylight. Glass should look physically real with restrained reflections, tangible thickness and tiny natural imperfections. The architecture fills the frame with strong straight geometry and a subtle depth perspective, no magical floating objects. Camera eye-level, 70mm architectural lens, carefully corrected verticals, calm premium magazine photo, credible materials and believable light. Upper left third should be a quiet deep cobalt area with little detail, to leave space for real HTML white headline later. All important detail in the lower two thirds. The mood is calm, ordered, human and optimistic; visual metaphor of distinct workdays working together. Absolutely no text, letters, logos, people, clocks, calendars, desktop computers, UI screens, badges, cards, sunrise disks, paper sculptures, gradients posing as an image, spheres, icons, decorative plants or clutter. Do not create a website mockup; render only the photographic scene. Background fully opaque.",
       "sha256": "ce0a68f3218b902ae19494a014e83fed532c255947acfe6eb8b0a1546438363a",
       "bytes": 2050619
+    },
+    {
+      "id": "recovery-still-v2",
+      "path": "illustrations/recovery-still-v2.png",
+      "sourceFilename": "exec-8d37c7ec-093c-4797-bfcd-7fa38276a860.png",
+      "generatedOn": "2026-10-12",
+      "generator": "Built-in imagegen edit",
+      "width": 1536,
+      "height": 1024,
+      "transparent": true,
+      "alt": "",
+      "usage": "Decorative static studio still life on recovery only; no implied delivery, identity verification or activated access.",
+      "prompt": "Edit target: the attached NEVORA recovery illustration. Preserve only the beautifully crafted closed ivory envelope and the small cyan key as a quiet, realistic studio still life. Remove the entire large blue folded doorway, staircase, sunrise, glowing halo and all surrounding structures. Recompose the two objects together, envelope leaning very slightly upright and key resting naturally in the foreground on the same invisible ground plane. Make the key a restrained cobalt blue (#0756D9), not neon cyan. Sophisticated Apple-like product photography with genuine matte paper texture, subtle crisp edges, soft neutral daylight and a very delicate contact shadow, no floating objects, no toy-like plastic sheen, no dramatic glow. Minimal balanced horizontal composition, generous empty transparent margin around the objects. Transparent background and no floor rectangle. All objects fully in frame. No text, letters, logo, UI, symbols of success or delivery. Intended for the neutral pale-gray hero of a workforce account-recovery page. Output 1536x1024 if possible.",
+      "sha256": "7a9268cfbcd04205b9c3dc2ee53c890d5147e026c0a0809266ed9be255803299",
+      "bytes": 1417739
+    },
+    {
+      "id": "activation-still-v2",
+      "path": "illustrations/activation-still-v2.png",
+      "sourceFilename": "exec-c36bc887-da33-4150-ad43-be1d1fc431d0.png",
+      "generatedOn": "2026-10-12",
+      "generator": "Built-in imagegen edit",
+      "width": 1536,
+      "height": 1024,
+      "transparent": true,
+      "alt": "",
+      "usage": "Decorative static studio still life on activation only; no implied delivery, identity verification or activated access.",
+      "prompt": "Edit target: the attached NEVORA activation illustration. Preserve only the blank ivory employee badge with a narrow cobalt blue fabric lanyard and the elegant open blank ivory notebook. Remove the entire large blue folded doorway, sunrise, glowing halo and surrounding structures. Recompose badge and notebook together as a quiet, realistic studio still life on the same invisible ground plane. Badge leans gently with lanyard resting naturally; notebook opens at a restrained angle, its thin cobalt cover only a small accent. Sophisticated Apple-like product photography with matte paper and fabric texture, subtle crisp edges, soft neutral daylight and a very delicate contact shadow. No floating objects, no toy-like plastic sheen, no dramatic glow. Minimal balanced horizontal composition, generous empty transparent margin around the objects. Transparent background and no floor rectangle. All objects fully in frame. No text, letters, logo, UI, filled identity data or confirmation checkmarks. Intended for the neutral pale-gray hero of a workforce account-activation page. Output 1536x1024 if possible.",
+      "sha256": "f2ac9390c8649405b3b3f2b62917bded76a8c181f17f6d232bbf9b2b0caa6e0a",
+      "bytes": 1473349
     }
   ]
 }

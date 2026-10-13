@@ -21,6 +21,7 @@ colors:
   login-refined-field: "#F6F7F9"
   login-refined-divider: "#E7EBF0"
   login-refined-hero-ink: "#062959"
+  auth-still-surface: "#F1F4F8"
 typography:
   display-lg:
     fontFamily: "Inter"
@@ -121,6 +122,7 @@ rounded:
   login-refined-composition: "24px"
   login-refined-control: "14px"
   login-refined-symbol: "12px"
+  auth-popover: "14px"
   activation-password-toggle: "13px"
 components:
   login-refined-composition:
@@ -442,3 +444,18 @@ These are visual references, not imported authentication implementations or appr
 - [21st Coach Scheduling Card](https://21st.dev/@isaiahbjork/components/coach-scheduling-card): date/time treatment option.
 
 These are references, not new product workflows. No paid component code or external AI generation was retrieved. Preserve NEVORA's schedule authorization, clock polling, refresh behavior, safe navigation, and unavailable-state messaging.
+
+
+## Authentication family refinement — 2026-10-12
+
+Jose approved the still Employee Login and requested the same considered treatment for Forgot Access and Activate Account. These current rules supersede the older recovery/activation artwork, motion, introductory copy, arrows and geometry above. Login keeps its approved photographic hero and rendered geometry. Reset access and the operational portal retain their presentation pending their own page review.
+
+AuthBrand is the reusable authentication identity: original NEVORA wordmark, no boxed flame, Workforce centered below. Treat this as the standard for subsequent page refinements; retain the configured workspace and Velani ownership. AuthAccessSymbol supplies the exact same Phosphor LockKey/IdentificationBadge duotone icons used on login. The refined 54px controls, 14px control corners, 24px composition corners and neutral fields are shared through `src/app/login/auth-refinement.css`, requiring `.auth-refinement-page`. The earlier `login-refinement.css` was promoted without changing login's style declarations.
+
+Forgot Access and Activate Account use neutral #F1F4F8 still-art panels with dark HTML Brighter work ahead headings. Original transparent studio edits show only envelope/key and employee badge/notebook respectively. Their fixed dimensions are 1536×1024; use contain, empty alt text and reserved space, with no animation or Pause control. Mobile keeps a 144px compact panel with the title beside the still. Prompts and SHA-256 are in the asset manifest. The shared motion controller remains available for reset's existing animation.
+
+Both form headings use title case and lead directly into their fields. Recovery email has a properly associated label and a native details Info disclosure for the registered-email explanation; keep it closed by default and usable by keyboard/touch without JavaScript. The summary is 44px, the anchored explanation is 13px/1.6 on a white 14px-corner surface and fits small viewports. Its explanatory ID remains available to assistive technology. Recovery code navigation reuses AuthAccessSymbol with no trailing arrow.
+
+Assisted recovery and employee-detail guidance use native details with a thin circular Plus/Minus indicator rather than a caret. Their summaries remain at least 56px high; open/closed status is real browser state, not a cosmetic fake. Plain text sign-in return links have 44px targets and visible keyboard focus. The four activation fields, phone-on-file hint, eight-character password hint, shared password visibility control, native submit/pending state, generic errors and safe return destination remain intact. AccountRecovery still owns request handling, aborts, disabled hydration state, privacy-safe accepted feedback and focus on outcomes. Never imply email delivery or account existence.
+
+[ZARA recovery on Mobbin](https://mobbin.com/screens/7cc092e3-8d52-4843-b98b-a278bd55cdf3) and [H&M recovery on Mobbin](https://mobbin.com/screens/fff66ab1-7532-4fac-83dc-5ad237fd7348) informed concise form hierarchy. The public [21st Forgot Password Form](https://21st.dev/@cnippet-dev/components/v-form-11) was inspected as a state/hierarchy reference; the 21st MCP is not exposed. Keep NEVORA's own authentication implementation and form contracts.

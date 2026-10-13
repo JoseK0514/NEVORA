@@ -78,3 +78,8 @@ do not replace official identity with generated artwork.
 ## Login still refinement — 2026-10-12
 
 Employee Login now uses `illustrations/login-daylight-blue-v2.png`, a static original photographic study of daylight through cobalt workplace glass. It replaces the login planner artwork only. Empty alt text, reserved 1024×1536 intrinsic dimensions, responsive cover cropping and a cobalt fallback keep the image decorative. The exact generation prompt and SHA-256 are recorded in the manifest. Other authentication illustrations and the shared motion controller remain available for their existing pages.
+
+
+## Recovery and activation still refinement — 2026-10-12
+
+Jose requested removal of the large blue doorway and animated treatment after approving the quieter login. `illustrations/recovery-still-v2.png` retains only the closed envelope and blue key; `illustrations/activation-still-v2.png` retains only the blank badge/lanyard and notebook. Both are original built-in imagegen edits of the earlier assets, transparent 1536×1024 PNGs, displayed as stationary contain images on a neutral panel. Keep title and all status information in HTML. Preserve the original assets for rollback, and retain reset's existing artwork/motion until its review. The complete edit prompts, source filenames and SHA-256 are recorded in the manifest.

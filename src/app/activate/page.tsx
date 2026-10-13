@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
-import { BrandLockup } from "@/components/brand-lockup";
+import { AuthBrand } from "@/components/auth-brand";
+import { AuthDisclosureSymbol } from "@/components/auth-disclosure-symbol";
 import { BrandLegal } from "@/components/brand-legal";
 import { PhoneInput } from "@/components/phone-input";
 import { NUVORA_BRAND } from "@/lib/brand";
-import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
-import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { activateAccountAction } from "./actions";
 import { ActivationVisual } from "./activation-visual";
 import { ActivationPasswords } from "./activation-passwords";
 import { ActivationSubmit } from "./activation-submit";
 import "../login/login.css";
 import "./activation.css";
+import "../login/auth-refinement.css";
+import "../login/auth-support.css";
 
 export default async function ActivatePage({ searchParams }: {
   searchParams: Promise<{ error?: string; employeeId?: string; returnTo?: string | string[] }>;
@@ -23,18 +24,17 @@ export default async function ActivatePage({ searchParams }: {
   const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
   const errorId = params.error ? "activation-error" : undefined;
 
-  return <main className="auth-page employee-login-page activation-page">
+  return <main className="auth-page employee-login-page auth-refinement-page auth-support-page activation-page">
     <div className="employee-login-shell">
       <header className="employee-login-brand">
-        <BrandLockup variant="large" />
+        <AuthBrand />
         <span className="login-workspace">{workspaceName ?? "Workspace unavailable"}</span>
       </header>
       <div className="employee-login-composition">
         <ActivationVisual />
         <section className="auth-card employee-login-card activation-card">
           <div className="employee-login-heading">
-            <h1>Activate account</h1>
-            <p>Use your employee details to get started. Then choose a password.</p>
+            <h1>Activate Account</h1>
           </div>
           {params.error ? <p className="form-error" id={errorId} role="alert">
             {params.error === "not_found"
@@ -60,11 +60,10 @@ export default async function ActivatePage({ searchParams }: {
           </form>
           <div className="activation-secondary">
             <details className="activation-help">
-              <summary>Need your employee details?<CaretDownIcon size={18} weight="regular" aria-hidden="true" focusable="false" /></summary>
+              <summary><span>Need your employee details?</span><AuthDisclosureSymbol /></summary>
               <p>Your workplace sets up your employee record first. Ask your manager or Owner for your Employee ID and to confirm the phone number on file.</p>
             </details>
             <Link href={`/login${returnQuery}`} className="activation-back">
-              <ArrowLeftIcon size={18} weight="regular" aria-hidden="true" focusable="false" />
               <span>Already activated? Sign in</span>
             </Link>
           </div>
