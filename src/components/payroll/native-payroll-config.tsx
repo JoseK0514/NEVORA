@@ -14,13 +14,13 @@ import type { FieldEntries } from './native-config-fields';
 export type NativeConfigurationSources={employees:{id:string;name:string;role:string;active:boolean}[];locations:{id:string;name:string;active:boolean}[];breakTypes:{id:string;name:string;active:boolean}[]};
 export type NativeDraft={employeeId:string;configuration:NativeConfigurationRevision|null;opening:NativeYtd|null;scope:NativeProfilesResponse['managerScopes'][number]|null;profileFields:FieldEntries;openingFields:FieldEntries;scopeFields:FieldEntries;wageIds:string[];employerIds:string[];deductionIds:string[];policyId:string;taxId:string};
 function draftFor(employeeId:string,data:NativeProfilesResponse):NativeDraft {const configuration=data.configurations.find(c=>c.employeeId===employeeId)??null;return {employeeId,configuration,opening:data.openingYtd.filter(o=>o.employeeId===employeeId).sort((a,b)=>b.ytd.year-a.ytd.year)[0]?.ytd??null,scope:data.managerScopes.find(s=>s.employeeId===employeeId)??null,profileFields:null,openingFields:null,scopeFields:null,wageIds:configuration?.wages.map(w=>w.id)??[crypto.randomUUID()],employerIds:configuration?.tax?.employerContributions.map((_,i)=>String(i))??['0','1','2'],deductionIds:configuration?.deductions.map(d=>d.id)??[],policyId:configuration?.wages.find(w=>w.workweekPolicy)?.workweekPolicy?.id??crypto.randomUUID(),taxId:configuration?.tax?.id??crypto.randomUUID()};}
-export function NativePayrollConfig({settings,sources,recoveryScope}:{settings:PayrollSettingsResponse;sources:NativeConfigurationSources|null;recoveryScope:string}) {
+export function NativePayrollConfig({settings,sources,recoveryScope}:{settings:PayrollSettingsResponse|null;sources:NativeConfigurationSources|null;recoveryScope:string}) {
  const resource=usePayrollResource('/api/payroll/native-profiles',readNativeProfiles);
  const history=usePayrollResource('/api/payroll/runs',readRuns);
  const operation=usePayrollOperation('/api/payroll/native-profiles',resource.reload,`${recoveryScope}:native-profiles`);
  const [draft,setDraft]=useState<NativeDraft|null>(null);const [reset,setReset]=useState(0);const [resetConfirm,setResetConfirm]=useState(false);const [openingReset,setOpeningReset]=useState(0);const [openingChoice,setOpeningChoice]=useState<string|null>(null);
- const data=!resource.loading&&!resource.error&&settings.capabilities.canConfigure?resource.data:null;
- if(!settings.capabilities.canConfigure)return null;
+ const data=!resource.loading&&!resource.error&&settings?.capabilities.canConfigure?resource.data:null;
+ if(!settings?.capabilities.canConfigure)return null;
  const change=(patch:Partial<NativeDraft>)=>setDraft(d=>d?{...d,...patch}:d);
  const select=(employeeId:string)=>{if(data)setDraft(employeeId?draftFor(employeeId,data):null);setResetConfirm(false);setReset(n=>n+1);};
  const frozen=!!draft?.opening&&!!history.data?.runs?.some(r=>r.sourceAuthority==='NATIVE_RECORDED_TIME'&&r.status==='APPROVED'&&r.nativeCalculation?.employees.some(e=>e.employeeId===draft.employeeId&&e.breakdown.ytdBefore.year===draft.opening?.year));

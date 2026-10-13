@@ -55,3 +55,14 @@ it('keeps a positively referenced approved opening read-only instead of submitti
  const html=renderToStaticMarkup(<NativeOpeningForm draft={draft} sources={sources} operation={operation} change={()=>{}} frozen/>);
  expect(html).toContain('Opening balances are frozen');expect(html).toMatch(/<button[^>]*disabled[^>]*>Attest opening balances/);
 });
+
+it('hides all private configuration while the parent is checking current Owner access',()=>{
+ const html=renderToStaticMarkup(<NativePayrollConfig settings={null} sources={sources} recoveryScope="fictional-owner"/>);
+ expect(html).not.toContain('Choose an employee');expect(html).not.toContain('Fictional Employee');
+});
+
+import { input } from '@/lib/payroll/native/fixtures.test-support';
+it('keeps an existing opening year tied to its actual revision; another year uses the record picker',()=>{
+ const d={...draft,opening:input().ytd};const html=renderToStaticMarkup(<NativeOpeningForm draft={d} sources={sources} operation={operation} change={()=>{}}/>);
+ const year=html.match(/<input[^>]*name="year"[^>]*>/)![0];expect(year).toMatch(/readonly/i);
+});

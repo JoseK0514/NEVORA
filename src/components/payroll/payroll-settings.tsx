@@ -49,7 +49,10 @@ export function PayrollSettings({ recoveryScope, nativeSources = null }: { recov
       {!revision && <PayrollState title="Configure payroll before preparing runs">These are unsaved starting preferences. Choose your company settings and an effective date. {data.capabilities.internalCalculatorAvailable ? 'Native payroll uses verified recorded time and employee payroll facts.' : 'imported provider amounts remain the authority.'}</PayrollState>}
       <CompanyPreferences key={revision?.revision ?? 0} preferences={revision?.preferences ?? defaults} revision={revision?.revision ?? 0} data={data} operation={operation} />
       <EmployeeException data={data} preferences={revision?.preferences ?? defaults} operation={operation} />
-      {data.capabilities.internalCalculatorAvailable ? <NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/> : <PayrollAccess data={data} operation={operation} />}
+      {!data.capabilities.internalCalculatorAvailable && <PayrollAccess data={data} operation={operation} />}
+    </>}
+    {(nativeSources !== null || data?.capabilities.internalCalculatorAvailable) && <NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/>}
+    {data && <>
       <PayrollPanel title="Settings history" description="Saved revisions record their effective date and reason.">{data.revisions.length ? <div className="pw-history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {item.effectiveFrom}</strong><p>{item.reason}</p><small>Recorded {new Date(item.createdAt).toLocaleString()}</small></div>)}</div> : <p className="pw-small">No settings revisions have been saved.</p>}</PayrollPanel>
       <PrivacyNote>Only the owner can configure payroll and access grants. {data.capabilities.internalCalculatorAvailable ? 'Native payroll requires verified recorded time, employee facts and a separate human approval.' : 'Provider imports supply actual payroll amounts.'} {noticeReadiness(data.capabilities)}</PrivacyNote>
     </>}
