@@ -33,3 +33,11 @@ it('collects separate documented opening bases and requires explicit attestation
  const html=renderToStaticMarkup(<NativeOpeningForm draft={draft} sources={sources} operation={operation} change={()=>{}}/>);
  expect(html).toContain('Opening Social Security wages');expect(html).toContain('Opening Medicare wages');expect(html).toContain('Opening SINOT wages');expect(html).toContain('Opening record SHA-256');expect(html).not.toContain('checked=""');expect(html).not.toContain('value="0"');
 });
+
+import { Input, Select } from './native-config-fields';
+it('names controls from their visible label and keeps helper text as a separate description',()=>{
+ const html=renderToStaticMarkup(<><Input name="rate" label="Hourly wage" help="Exact documented precision"/><Select name="scope" label="Coverage" options={[[ 'ACTUAL','Documented standard scope']]}/></>);
+ const input=html.match(/<input[^>]+>/)![0];const select=html.match(/<select[^>]+>/)![0];
+ for(const control of[input,select]){const id=control.match(/aria-labelledby="([^"]+)"/)?.[1];expect(id).toBeTruthy();expect(html).toContain(`id="${id}"`);}
+ expect(input).toMatch(/aria-describedby="[^"]+"/);
+});
