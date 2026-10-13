@@ -31,7 +31,13 @@ const runtimeSql = `/* attendance_policy_runtime */ WITH observed AS MATERIALIZE
  (SELECT count(*)<=10000 FROM raw) AND (SELECT count(*)<=10000 FROM effective) AND (SELECT count(*)<=10000 FROM census) AS complete,
  NOT EXISTS(SELECT 1 FROM schedules s JOIN locations l ON l.id=s.location_id WHERE l.workspace_id=$1 AND s.status='PUBLISHED' AND s.week_start=date_trunc('week',o.at AT TIME ZONE $3)::date AND NOT EXISTS(SELECT 1 FROM latest r WHERE r.week_start=s.week_start)) AS "censusComplete" FROM observed o`;
 
-const policySql = `SELECT DISTINCT ON(COALESCE(location_id,'')) location_id AS "locationId",revision,jsonb_build_object('version',1,'attendance',COALESCE(settings->'attendance','{}'::jsonb),'labor',jsonb_build_object('overtimeRisk',settings#>'{labor,overtimeRisk}')) AS settings FROM nevora_company_policy_revisions WHERE workspace_id=$1 ORDER BY COALESCE(location_id,''),revision DESC`;
+// Preserve absent (inherit) versus stored JSON null (unconfigure) while
+// projecting only the management-authorized overtime rule from private Labor.
+const policySql = `SELECT DISTINCT ON(COALESCE(location_id,'')) location_id AS "locationId",revision,
+ jsonb_build_object('version',1,'attendance',COALESCE(settings->'attendance','{}'::jsonb),'labor',
+  CASE WHEN (settings->'labor') ? 'overtimeRisk'
+   THEN jsonb_build_object('overtimeRisk',settings#>'{labor,overtimeRisk}') ELSE '{}'::jsonb END) AS settings
+ FROM nevora_company_policy_revisions WHERE workspace_id=$1 ORDER BY COALESCE(location_id,''),revision DESC`;
 const hash = (v: unknown) =>
   createHash("sha256").update(stableExportJson(v)).digest("hex");
 function normalizedSource(value: Record<string, unknown>) {
