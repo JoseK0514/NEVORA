@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { DownloadSimpleIcon, FileTextIcon, FileCodeIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
+import { DownloadSimpleIcon, EyeIcon, FileTextIcon, FileCodeIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import type { ReactNode } from 'react';
 import type { PayrollDocument } from '@/lib/payroll/contracts';
 import type { usePayrollOperation } from './use-payroll';
@@ -38,11 +38,15 @@ export function OperationFeedback({ operation }: { operation: ReturnType<typeof 
   </div>;
 }
 export function DocumentLink({ document }: { document: PayrollDocument }) {
-  return <a className="pw-document" href={`/api/payroll/documents/${encodeURIComponent(document.id)}`}>
+  const path = `/api/payroll/documents/${encodeURIComponent(document.id)}`;
+  return <div className="pw-document">
     <span className="pw-document-icon">{document.kind === 'PAYMENT_INSTRUCTIONS' ? <FileCodeIcon size={23} weight="duotone" aria-hidden /> : <FileTextIcon size={23} weight="duotone" aria-hidden />}</span>
     <span><strong>{document.filename}</strong><small>{document.kind === 'EMPLOYEE_STATEMENT' ? (document.published ? 'Published to employee' : 'Private · not published') : 'Private company file'} · {document.kind === 'PAYMENT_INSTRUCTIONS' ? 'Neutral JSON · compatibility unverified · not submitted' : 'PDF document'}</small></span>
-    <DownloadSimpleIcon size={20} aria-hidden /><span className="sr-only">Download</span>
-  </a>;
+    <div className="pw-document-actions">
+      {document.kind !== 'PAYMENT_INSTRUCTIONS' && document.viewUrl && <a className="pw-button pw-secondary" href={`${path}/view`} aria-label={`View ${document.filename}`}><EyeIcon size={18} aria-hidden />View</a>}
+      <a className="pw-button pw-secondary" href={path} aria-label={`Download ${document.filename}`}><DownloadSimpleIcon size={18} aria-hidden />Download</a>
+    </div>
+  </div>;
 }
 export function PrivacyNote({ children }: { children: ReactNode }) {
   return <p className="pw-privacy"><LockKeyIcon size={17} aria-hidden />{children}</p>;

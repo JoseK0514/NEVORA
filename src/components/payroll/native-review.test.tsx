@@ -8,7 +8,7 @@ const boundary = vi.hoisted(() => ({ data: null as PayrollRunsResponse | null, l
 // Only the HTTP/lifecycle boundary is substituted for static render tests.
 // Actual operations and lifecycle are exercised in the owned browser harness.
 vi.mock('./use-payroll', () => ({
-  usePayrollResource: () => ({ ...boundary, reload: async () => {} }),
+  usePayrollResource: (path: string) => ({ ...boundary, data: path === '/api/payroll/portal-statements' ? { version: 'PAYROLL_PORTAL_STATEMENTS_V1', statements: [] } : boundary.data, reload: async () => {} }),
   usePayrollOperation: () => ({ busy: false, pending: null, resuming: false, message: '', error: '', revisionConflict: false, submit: async () => {}, receipt: null }),
 }));
 vi.mock('next/navigation', () => ({ usePathname: () => '/app/payroll' }));
@@ -25,6 +25,7 @@ describe('source-aware payroll review presentation', () => {
     expect(html).not.toContain('Import provider amounts');
     expect(html).not.toContain('$0.00');
     expect(html).not.toContain('Approve revision');
+    expect(html).not.toContain('Finalized recorded time');
   });
   it('shows saved recorded-time hours, wage rates, tax bases and YTD for the ready revision', () => {
     const html = render();

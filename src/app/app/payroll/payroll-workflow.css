@@ -160,3 +160,10 @@
 .payroll-workflow .pw-ytd-heading { font-weight:550; }
 .payroll-workflow .pw-source-details summary { min-height:44px; padding:12px 0; font-size:12px; font-weight:550; cursor:pointer; }
 .payroll-workflow .pw-source-details .pw-lines dd { min-width:0; max-width:60%; text-align:right; }
+.payroll-workflow .pw-document-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.payroll-workflow .pw-document-actions a { text-decoration:none; }
+@media (max-width:600px) {
+  .payroll-workflow .pw-document { flex-wrap:wrap; }
+  .payroll-workflow .pw-document-actions { width:100%; }
+  .payroll-workflow .pw-document-actions a { flex:1; }
+}
