@@ -101,7 +101,22 @@ function validNativeEmployee(value: unknown) {
   return ['regularNanoseconds', 'overtimeNanoseconds', 'unpaidBreakNanoseconds'].every(key => unsigned(b[key])) && validYtd(b.ytdBefore) && validYtd(b.ytdAfter) && strings(b.locationIds) &&
     Array.isArray(b.earnings) && b.earnings.every(line => record(line) && ['REGULAR', 'OVERTIME', 'FLSA_TRUE_UP'].includes(String(line.kind)) && typeof line.locationId === 'string' && minor(line.rateMinorPerHour) && unsigned(line.nanoseconds) && minor(line.amountMinor)) &&
     Array.isArray(b.taxes) && b.taxes.every(line => record(line) && typeof line.code === 'string' && minor(line.amountMinor) && minor(line.taxableMinor)) &&
-    ['inputSha256', 'rulesSha256', 'rulesetId', 'rounding', 'taxRounding'].every(key => typeof p[key] === 'string') && Array.isArray(p.exactnessOperations);
+    ['inputSha256', 'rulesSha256', 'rulesetId', 'rounding', 'taxRounding'].every(key => typeof p[key] === 'string') && Array.isArray(p.exactnessOperations) && validNativeEvidence(p);
+}
+function validNativeEvidence(p: Record<string, unknown>) {
+  const rational = (value: unknown, signed = false) => record(value) && typeof value.numerator === 'string' && (signed ? /^-?(0|[1-9]\d*)$/ : /^(0|[1-9]\d*)$/).test(value.numerator) && typeof value.denominator === 'string' && /^[1-9]\d*$/.test(value.denominator);
+  if (p.federalEmployeeTax !== undefined) {
+    const f = p.federalEmployeeTax;
+    if (!record(f) || f.version !== 'NATIVE_FEDERAL_EMPLOYEE_COLLECTION_V1' || f.ruleId !== '26_CFR_31_3102_1_D' || !Array.isArray(f.operations) || f.operations.length > 3 || new Set(f.operations.map(t => record(t) ? t.code : null)).size !== f.operations.length || !f.operations.every(t => record(t) && ['SOCIAL_SECURITY', 'MEDICARE', 'ADDITIONAL_MEDICARE'].includes(String(t.code)) && minor(t.taxableMinor) && minor(t.collectedMinor) && Number.isInteger(t.basisPoints) && Number(t.basisPoints) >= 0 && Number(t.basisPoints) <= 10000 && rational(t.exactAmount) && rational(t.roundingDifference, true) && t.ruleId === f.ruleId)) return false;
+  }
+  if (p.boundaryEvidence !== undefined) {
+    const e = p.boundaryEvidence;
+    const window = (v: unknown) => record(v) && typeof v.startAt === 'string' && typeof v.endAt === 'string' && Number.isFinite(Date.parse(v.startAt)) && Number.isFinite(Date.parse(v.endAt)) && Date.parse(v.startAt) < Date.parse(v.endAt);
+    if (!record(e) || e.version !== 'NATIVE_BOUNDARY_EVIDENCE_V1' || e.dailyInterpretation !== 'UNRESOLVED' || e.dailyInputDisposition !== 'INVARIANT_NO_FIRST_MINUTE_ENTRIES' || !Array.isArray(e.dailyModels) || e.dailyModels.join(',') !== 'CIVIL_MIDNIGHT_24H,CIVIL_00_01_24H' || !window(e.sourceWindow) || !window(e.fullWeekWindow) || typeof e.workweekPolicySha256 !== 'string' || !/^[a-f0-9]{64}$/.test(e.workweekPolicySha256) || typeof e.sourceSha256 !== 'string' || !/^[a-f0-9]{64}$/.test(e.sourceSha256) || !record(e.workweekPolicy)) return false;
+    const w = e.workweekPolicy;
+    if (w.version !== 'PR_WORKWEEK_POLICY_V1' || typeof w.id !== 'string' || !Number.isInteger(w.revision) || Number(w.revision) < 1 || typeof w.federalEvidenceReference !== 'string' || w.federalWorkweek !== 'SAME_VERIFIED_BOUNDARY' || !record(w.origin) || !['STATUTORY_DEFAULT', 'EMPLOYER_NOTICE'].includes(String(w.origin.kind)) || !record(w.boundary) || !Number.isInteger(w.boundary.weekday) || Number(w.boundary.weekday) < 1 || Number(w.boundary.weekday) > 7 || typeof w.boundary.startTime !== 'string' || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(w.boundary.startTime) || w.boundary.timeZone !== 'America/Puerto_Rico') return false;
+  }
+  return true;
 }
 function validRun(value: unknown) {
   if (!record(value) || typeof value.id !== 'string' || !Number.isInteger(value.revision) || Number(value.revision) < 1 || !validPeriod(value.period) || !validDate(value.payday) || !['WAITING_FOR_AMOUNTS', 'BLOCKED', 'REVIEW_REQUIRED', 'APPROVED'].includes(String(value.status)) || !['PROVIDER_IMPORT', 'NATIVE_RECORDED_TIME'].includes(String(value.sourceAuthority)) || !strings(value.exceptions) || !Array.isArray(value.documents) || !value.documents.every(validDocument) || !Array.isArray(value.exceptionRevisions)) return false;

@@ -36,6 +36,15 @@ export function payrollExceptionMessage(exception: string) {
   if (exception.startsWith('POPULATION_DISPOSITION:')) return `Review the period population disposition for employee reference ${exception.slice('POPULATION_DISPOSITION:'.length)} before approval.`;
   const [code, reference] = exception.split(':');
   const native: Record<string, string> = {
+    WORKWEEK_EVIDENCE_REQUIRED: 'Ask the Owner to document the employee workweek. Unknown notice history cannot select a default.',
+    INVALID_WORKWEEK_POLICY: 'Ask the Owner to review workweek evidence, delivery and effective dates.',
+    INVALID_NATIVE_PROFILE: 'Ask the Owner to review the saved employee payroll facts and evidence.',
+    WORKWEEK_EMPLOYEE_COVERAGE_REQUIRED: 'Ask the Owner to verify that the workweek evidence covers this employee.',
+    WORKWEEK_PROFILE_CONFLICT: 'Ask the Owner to resolve conflicting legacy workweek coordinates and documented policy.',
+    WORKWEEK_POLICY_TRANSITION_UNSUPPORTED: 'This recorded context spans different workweek policies. Ask your payroll administrator to review the unsupported transition.',
+    WORKWEEK_EFFECTIVE_COVERAGE_REQUIRED: 'Ask the Owner to verify workweek evidence covering the entire recorded context, including prior and terminal days.',
+    DAILY_BOUNDARY_SENSITIVE: 'Recorded time intersects 00:00–00:01. Daily precision is unresolved; payroll needs rule review. Preserve the recorded entries.',
+    EMPLOYER_YTD_BASE_CONFLICT: 'Ask the Owner to reconcile the employer opening wage basis with the same-code documented year-to-date balance.',
     ATTESTED_YTD_REQUIRED: 'Ask the Owner to verify and attest the opening year-to-date balances.', ROUNDING_POLICY_ACCEPTANCE_REQUIRED: 'The payroll rounding rules need verification before approval.',
     RECORDED_SOURCE_COVERAGE_MISSING: 'Review and finalize the employee timecards, including confirmed zero-hour periods, before recalculating.',
     RECORDED_SOURCE_STALE: 'Refresh and review the recorded timecards, then recalculate.', RECORDED_SOURCE_UNAVAILABLE: 'Recorded timecards are unavailable. Reload their current status before recalculating.', OPEN_RECORDED_TIME: 'Complete and review the open recorded time or break before recalculating.',
