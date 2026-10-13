@@ -6,7 +6,7 @@ import { NativePayrollConfig } from './native-payroll-config';
 import { nativeCapabilities } from './native-ui-fixture.test-support';
 
 const boundary=vi.hoisted(()=>({data:null as NativeProfilesResponse|null,loading:false,error:''}));
-vi.mock('./use-payroll',()=>({usePayrollResource:()=>({...boundary,reload:async()=>{}}),usePayrollOperation:()=>({busy:false,pending:null,locked:false,message:'',error:'',revisionConflict:false,resuming:false,receipt:null,submit:async()=>{}})}));
+vi.mock('./use-payroll',()=>({usePayrollResource:(path:string)=>({...boundary,data:path==='/api/payroll/runs'?{version:'PAYROLL_API_V1',capabilities:{canReview:true},runs:[],jobs:[]}:boundary.data,reload:async()=>{}}),usePayrollOperation:()=>({busy:false,pending:null,locked:false,message:'',error:'',revisionConflict:false,resuming:false,receipt:null,submit:async()=>{}})}));
 const settings:PayrollSettingsResponse={version:'PAYROLL_API_V1',capabilities:nativeCapabilities,revisions:[],exceptions:[],grants:[],employees:[{id:'E1',name:'Fictional Employee',active:true}],futureDraftImpact:[]};
 const sources={employees:[{id:'E1',name:'Fictional Employee',role:'EMPLOYEE',active:true}],locations:[{id:'L1',name:'Fictional location',active:true}],breakTypes:[]};
 const render=()=>renderToStaticMarkup(<NativePayrollConfig settings={settings} sources={sources} recoveryScope="fictional-owner"/>);
@@ -49,4 +49,9 @@ it('initializes newly opened obligation identifiers without filling any factual 
  const html=renderToStaticMarkup(<DraftFields entries={d.profileFields}><NativeTaxFields draft={d} change={()=>{}}/></DraftFields>);
  expect(html).toMatch(/name="employer\.0\.code"[^>]*value="FUTA"/);expect(html).toMatch(/name="employer\.1\.code"[^>]*value="PR_UI"/);expect(html).toMatch(/name="employer\.2\.code"[^>]*value="CFSE"/);
  expect(html).not.toContain('value="0.00"');expect(html).not.toContain('checked=""');
+});
+
+it('keeps a positively referenced approved opening read-only instead of submitting an unresolvable rejected write',()=>{
+ const html=renderToStaticMarkup(<NativeOpeningForm draft={draft} sources={sources} operation={operation} change={()=>{}} frozen/>);
+ expect(html).toContain('Opening balances are frozen');expect(html).toMatch(/<button[^>]*disabled[^>]*>Attest opening balances/);
 });

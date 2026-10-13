@@ -4,7 +4,7 @@ import { PayrollSettings } from './payroll-settings';
 
 const boundary = vi.hoisted(() => ({ native: true, loading: false }));
 vi.mock('./use-payroll', () => ({
-  usePayrollResource: (path: string) => ({ loading: boundary.loading, error: '', reload: async () => {}, data: path === '/api/payroll/native-profiles' ? {version:'PAYROLL_NATIVE_PROFILES_V1',configurations:[],openingYtd:[],managerScopes:[]} : { capabilities: { canConfigure: true, internalCalculatorAvailable: boundary.native }, revisions: [], exceptions: [], grants: [], employees: [], futureDraftImpact: [] } }),
+  usePayrollResource: (path: string) => ({ loading: boundary.loading, error: '', reload: async () => {}, data: path === '/api/payroll/runs' ? {version:'PAYROLL_API_V1',capabilities:{canReview:true},runs:[],jobs:[]} : path === '/api/payroll/native-profiles' ? {version:'PAYROLL_NATIVE_PROFILES_V1',configurations:[],openingYtd:[],managerScopes:[]} : { capabilities: { canConfigure: true, internalCalculatorAvailable: boundary.native }, revisions: [], exceptions: [], grants: [], employees: [], futureDraftImpact: [] } }),
   usePayrollOperation: () => ({ busy: false, pending: null, locked: false, resuming: false, message: '', error: '', revisionConflict: false, submit: async () => {} }),
 }));
 vi.mock('next/navigation', () => ({ usePathname: () => '/app/settings/payroll' }));

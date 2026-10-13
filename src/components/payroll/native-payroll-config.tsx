@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react/ssr';
 import type { PayrollSettingsResponse } from '@/lib/payroll/contracts';
 import type { NativeConfigurationRevision, NativeYtd, NativeProfilesResponse } from '@/lib/payroll/native/contracts';
+import { readRuns } from './api';
 import { readNativeProfiles } from './native-profile-api';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import { OperationFeedback, PayrollPanel, PayrollState } from './payroll-ui';
@@ -15,12 +16,14 @@ export type NativeDraft={employeeId:string;configuration:NativeConfigurationRevi
 function draftFor(employeeId:string,data:NativeProfilesResponse):NativeDraft {const configuration=data.configurations.find(c=>c.employeeId===employeeId)??null;return {employeeId,configuration,opening:data.openingYtd.filter(o=>o.employeeId===employeeId).sort((a,b)=>b.ytd.year-a.ytd.year)[0]?.ytd??null,scope:data.managerScopes.find(s=>s.employeeId===employeeId)??null,profileFields:null,openingFields:null,scopeFields:null,wageIds:configuration?.wages.map(w=>w.id)??[crypto.randomUUID()],employerIds:configuration?.tax?.employerContributions.map((_,i)=>String(i))??['0','1','2'],deductionIds:configuration?.deductions.map(d=>d.id)??[],policyId:configuration?.wages.find(w=>w.workweekPolicy)?.workweekPolicy?.id??crypto.randomUUID(),taxId:configuration?.tax?.id??crypto.randomUUID()};}
 export function NativePayrollConfig({settings,sources,recoveryScope}:{settings:PayrollSettingsResponse;sources:NativeConfigurationSources|null;recoveryScope:string}) {
  const resource=usePayrollResource('/api/payroll/native-profiles',readNativeProfiles);
+ const history=usePayrollResource('/api/payroll/runs',readRuns);
  const operation=usePayrollOperation('/api/payroll/native-profiles',resource.reload,`${recoveryScope}:native-profiles`);
- const [draft,setDraft]=useState<NativeDraft|null>(null);const [reset,setReset]=useState(0);const [resetConfirm,setResetConfirm]=useState(false);
+ const [draft,setDraft]=useState<NativeDraft|null>(null);const [reset,setReset]=useState(0);const [resetConfirm,setResetConfirm]=useState(false);const [openingReset,setOpeningReset]=useState(0);const [openingChoice,setOpeningChoice]=useState<string|null>(null);
  const data=!resource.loading&&!resource.error&&settings.capabilities.canConfigure?resource.data:null;
  if(!settings.capabilities.canConfigure)return null;
  const change=(patch:Partial<NativeDraft>)=>setDraft(d=>d?{...d,...patch}:d);
  const select=(employeeId:string)=>{if(data)setDraft(employeeId?draftFor(employeeId,data):null);setResetConfirm(false);setReset(n=>n+1);};
+ const frozen=!!draft?.opening&&!!history.data?.runs?.some(r=>r.sourceAuthority==='NATIVE_RECORDED_TIME'&&r.status==='APPROVED'&&r.nativeCalculation?.employees.some(e=>e.employeeId===draft.employeeId&&e.breakdown.ytdBefore.year===draft.opening?.year));
  const current=draft&&data?.configurations.find(c=>c.employeeId===draft.employeeId);
  return <div className="pw-native-config"><OperationFeedback operation={operation}/>
    {resource.loading&&<PayrollState title="Loading employee payroll facts">Checking current Owner access.</PayrollState>}
@@ -38,7 +41,12 @@ export function NativePayrollConfig({settings,sources,recoveryScope}:{settings:P
         <NativeProfileForm key={`${draft.employeeId}:${reset}`} draft={draft} sources={sources} operation={operation} change={change}/>
       </>}
     </PayrollPanel>
-    <PayrollPanel title="Opening balances" description="Separately attest documented balances before the first native payroll. Missing differs from an attested zero.">{draft?<NativeOpeningForm key={`${draft.employeeId}:${reset}`} draft={draft} sources={sources} operation={operation} change={change}/>:<p className="pw-small">Choose an employee above. Prior gross, net and tax-specific wage bases require their own records.</p>}</PayrollPanel>
+    <PayrollPanel title="Opening balances" description="Separately attest documented balances before the first native payroll. Missing differs from an attested zero.">{draft?<>
+       <label>Opening record<select aria-label="Opening record" value={draft.opening?String(draft.opening.year):'NEW'} disabled={operation.locked} onChange={e=>setOpeningChoice(e.target.value)}><option value="NEW">New documented tax year</option>{data.openingYtd.filter(o=>o.employeeId===draft.employeeId).map(o=><option key={o.ytd.year} value={String(o.ytd.year)}>Year {o.ytd.year} · Revision {o.ytd.revision}</option>)}</select></label>
+       {openingChoice!==null&&<div className="pw-state"><p>Load this opening record? Unsaved opening fields will be replaced. Employee payroll facts and Manager access drafts stay in place.</p><div className="pw-actions"><button type="button" className="pw-button" onClick={()=>{change({opening:data.openingYtd.find(o=>o.employeeId===draft.employeeId&&String(o.ytd.year)===openingChoice)?.ytd??null,openingFields:null});setOpeningReset(n=>n+1);setOpeningChoice(null);}}>Load opening record</button><button type="button" className="pw-button pw-secondary" onClick={()=>setOpeningChoice(null)}>Keep draft</button></div></div>}
+       {history.error&&<button type="button" className="pw-button pw-secondary" onClick={()=>void history.reload()}>Reload approval history</button>}
+       <NativeOpeningForm key={`${draft.employeeId}:${reset}:${openingReset}`} draft={draft} sources={sources} operation={operation} change={change} frozen={frozen} verifying={history.loading} historyError={history.error}/>
+     </>:<p className="pw-small">Choose an employee above. Prior gross, net and tax-specific wage bases require their own records.</p>}</PayrollPanel>
     <PayrollPanel title="Manager payroll access" description="Grant review or approval only for specific payroll locations.">{draft&&sources.employees.some(e=>e.id===draft.employeeId&&e.active&&e.role==='MANAGER')?<NativeScopeForm key={`${draft.employeeId}:${reset}`} draft={draft} sources={sources} operation={operation} change={change}/>:<p className="pw-small">Choose an active Manager above. A scheduling assignment or an older grant does not establish current payroll permission.</p>}</PayrollPanel>
    </>}
  </div>;
