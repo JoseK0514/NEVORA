@@ -13,6 +13,9 @@ import type { UserRole } from "@/lib/domain";
 import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react/ssr';
 import { ManagerWeekOverview } from './manager-week-overview';
 import './manager-home.css';
+import './manager-home-mobile.css';
+import { MobileHomeOverview, MobileHomeTools } from './mobile-home-overview';
+import { MobileHomeDisclosure } from './mobile-home-disclosure';
 
 export type ManagerDashboardView =
   | "overview"
@@ -432,6 +435,7 @@ export function ManagerDashboard(props: Props) {
             : "manager-dashboard-v3"
       }
     >
+      {props.view === 'overview' ? <div className="mobile-home-heading"><h1>Home</h1><p>{props.workspaceName}</p></div> : null}
       <section className="dashboard-hero">
         <div className="dashboard-hero-copy">
           {props.view !== 'overview' ? <p>{props.view === "attendance" ? "Attendance intelligence" : "Manager dashboard"}</p> : null}
@@ -485,6 +489,12 @@ export function ManagerDashboard(props: Props) {
 
       {props.view === "overview" ? (
         <>
+          <MobileHomeOverview weekStart={props.weekStart} weekLabel={props.weekLabel}
+            previousWeek={props.previousWeek} nextWeek={props.nextWeek}
+            plannedShifts={props.days.reduce((total, day) => total + day.shiftCount, 0)}
+            availabilityReceived={props.availabilitySubmitted} activeEmployees={props.activeEmployees}
+            publishedLocations={props.locations.filter(location => location.scheduleStatus === 'PUBLISHED').length}
+            locations={props.locations.length}/>
           <dl className="manager-planning-summary" aria-label="Selected-week planning summary">
             <div><dt>Planned shifts</dt><dd>{props.days.reduce((total,day)=>total+day.shiftCount,0)}<small>Includes draft shifts</small></dd></div>
             <div><dt>Availability received</dt><dd>{props.availabilitySubmitted}<span> / {props.activeEmployees}</span><small>Active employees for this week</small></dd></div>
@@ -494,9 +504,12 @@ export function ManagerDashboard(props: Props) {
             {actions}
             <div className="manager-overview-rail">
               {activity}
-              <ManagerWeekOverview days={props.days} locations={props.locations} weekStart={props.weekStart} weekLabel={props.weekLabel} coverageConfigured={props.coverageConfigured}/>
+              <MobileHomeDisclosure id="mobile-week-planning" label="Weekly planning details" expandedLabel="Hide weekly planning" className="mobile-home-week-disclosure">
+                <ManagerWeekOverview days={props.days} locations={props.locations} weekStart={props.weekStart} weekLabel={props.weekLabel} coverageConfigured={props.coverageConfigured}/>
+              </MobileHomeDisclosure>
             </div>
           </div>
+          <MobileHomeTools weekStart={props.weekStart}/>
         </>
       ) : props.view === "attendance" ? (
         <div className="manager-attendance-stack">

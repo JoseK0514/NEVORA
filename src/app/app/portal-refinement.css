@@ -1,4 +1,6 @@
 /* Jose's current portal direction: quiet white surfaces and the approved auth blue. */
+html body .app-shell.nevora-portal .mobile-home-menu-symbol,
+html body .app-shell.nevora-portal .mobile-home-menu-close { display: none; }
 html body .app-shell.nevora-portal {
   --design-primary: #0756D9;
   --design-accent: #003AAE;

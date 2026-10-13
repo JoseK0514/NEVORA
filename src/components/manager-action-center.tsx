@@ -8,9 +8,17 @@ import {ArrowsClockwiseIcon, CalendarBlankIcon, ClockIcon, LockKeyIcon, UserChec
 import {formatBusinessTimestamp} from '../lib/business-time';
 import {actionCenterNavigation} from './action-center-navigation';
 import {AuthDisclosureSymbol} from './auth-disclosure-symbol';
+import {MobileHomeDisclosure} from './mobile-home-disclosure';
 type Connection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 type Category='all'|'scheduling'|'requests'|'timekeeping';
 const categoryLabels={scheduling:'Scheduling',requests:'Requests',timekeeping:'Timekeeping'};
+export function mobileActionDetail(detail:string){
+ return detail.replace(/(^|\s)(\d{4}-\d{2}-\d{2})(?=\s|$)/g,(token,space:string,date:string)=>{
+  const parsed=new Date(`${date}T12:00:00Z`);
+  if(!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date)return token;
+  return space+new Intl.DateTimeFormat('en-US',{timeZone:'UTC',dateStyle:'medium'}).format(parsed);
+ });
+}
 export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=false,onExpand,timeZone='UTC',category='all',onCategoryChange}:{snapshot:ActionCenter|null;connection:Connection;onRefresh?:()=>void;expanded?:boolean;onExpand?:()=>void;timeZone?:string;category?:Category;onCategoryChange?:(category:Category)=>void}){
  const ready=connection==='ready'&&snapshot?.state==='ready'?snapshot:null;
  const status=connection==='ready'&&!ready?'unavailable':connection;
@@ -31,12 +39,19 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
     const action=actionCenterNavigation(item);
     return <article key={item.id} data-action-id={item.id} data-action-kind={item.category}>
      <span className={styles.icon} aria-hidden="true"><Icon size={20}/></span>
-     <div className={styles.copy}><small className={item.priority==='URGENT'?styles.priority:undefined}>{item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'} · {item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</small><h3>{item.title}</h3><p>{item.detail}</p></div>
+     <div className={styles.copy}><small className={item.priority==='URGENT'?styles.priority:undefined}>{item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'} · {item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</small><h3>{item.title}</h3><p className="manager-desktop-action-detail">{item.detail}</p><p className="manager-mobile-action-detail">{mobileActionDetail(item.detail)}</p></div>
      <Link className={styles.review} href={action.href} aria-label={`${action.label}: ${item.title}`}>{action.label}</Link>
     </article>;
    };
  return <section className={styles.root} aria-label="Manager Action Center">
   <header><div><h2>Needs attention</h2></div>{ready?<strong className={styles.total} aria-label="Total actions">{ready.counts.total}</strong>:null}<button className="button secondary" type="button" onClick={onRefresh} aria-label="Refresh actions"><ArrowsClockwiseIcon size={18} aria-hidden="true"/><span>Refresh</span></button></header>
+  <MobileHomeDisclosure id="mobile-action-review" available={Boolean(ready)} expandedLabel="Close task review"
+    label={ready?(category==='all'?`Review ${ready.counts.total} ${ready.counts.total===1?'task':'tasks'}`:category==='requests'?`Review ${matching.length} ${matching.length===1?'request':'requests'}`:`Review ${category} tasks`):'Review tasks'}
+    summary={ready?<div>
+      <dl className="mobile-home-action-summary">{(['scheduling','requests','timekeeping'] as const).filter(value=>ready.counts[value]>0).map(value=><div key={value}><dt>{categoryLabels[value]}</dt><dd>{ready.counts[value]}</dd></div>)}</dl>
+      {ready.counts.total===0?<p className="mobile-home-current-note">No tasks found in the checked sources.</p>:null}
+      {ready.limitedAttendance?<p className="mobile-home-current-note">Some attendance comparisons are unavailable.</p>:null}
+    </div>:null}>
   {ready?<>
    <div className={styles.counts} role="group" aria-label="Filter actions by category"><button type="button" data-action-category="all" aria-pressed={category==='all'} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.('all')}>All actions</button>{(['scheduling','requests','timekeeping'] as const).map(value=><button type="button" key={value} data-action-category={value} aria-label={`${categoryLabels[value]}: ${ready.counts[value]} actions`} aria-pressed={category===value} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.(value)}><span>{categoryLabels[value]}</span><strong>{ready.counts[value]}</strong></button>)}</div>
    <div className={styles.filterBar}><p role="status" aria-live="polite">Showing {visible.length} of {matching.length} {noun}{matching.length===1?'':'s'}</p></div>
@@ -46,6 +61,7 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
    <div className={styles.provenance}><p>Checked <time dateTime={ready.observedAt}>{formatBusinessTimestamp(ready.observedAt,timeZone)}</time></p><details className={styles.note}><summary>About these actions</summary><p>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p></details></div>
   </>:<p className={styles.status} role="status">{({loading:'Loading actions',ready:'Actions unavailable',offline:'Actions unavailable offline',reconnecting:'Reconnecting to actions',unavailable:'Actions unavailable',access_lost:'Action Center access ended',paused:'Action updates paused'})[status]}. {status==='access_lost'?'Sign in with a currently authorized management account.':'The action list is unconfirmed. Refresh a current protected read before reviewing.'}</p>}
   <details className={styles.recovery}><summary><span>Recovery tools</span><AuthDisclosureSymbol/></summary><footer><Link href="/app/clocker-recovery"><ClockIcon size={18} aria-hidden="true"/>Clocker Recovery</Link><Link href="/app/account-recovery"><LockKeyIcon size={18} weight="duotone" aria-hidden="true"/>Assisted Account Recovery</Link></footer></details>
+  </MobileHomeDisclosure>
  </section>;
 }
 export function ManagerActionCenter({weekStart,actorId,timeZone}:{weekStart:string;actorId:string;timeZone?:string}){

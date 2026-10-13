@@ -2,11 +2,16 @@ import {it,expect,vi} from 'vitest';
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
-import {ActionCenterSurface} from './manager-action-center';
+import {ActionCenterSurface,mobileActionDetail} from './manager-action-center';
 import {parseActionCenter,type ActionCenter} from '../lib/action-center/project';
 const ready:Extract<ActionCenter,{state:'ready'}>={state:'ready',observedAt:'2026-10-07T12:00:00Z',validForMs:45000,weekStart:'2026-10-05',counts:{total:25,scheduling:25,requests:0,timekeeping:0},limitedAttendance:false,items:Array.from({length:25},(_,i)=>({id:'A'+i,type:'AVAILABILITY_MISSING',category:'scheduling',priority:'MISSING_INPUT',title:'Availability needed',detail:'Fictional employee '+i,href:'/app/availability?week=2026-10-05'}))};
+it('formats a plain planning date for phone reading without changing its day or accepting an invalid date',()=>{
+ expect(mobileActionDetail('2026-10-12 · 00:00–07:00 · Need 1 employee')).toBe('Oct 12, 2026 · 00:00–07:00 · Need 1 employee');
+ expect(mobileActionDetail('2026-02-31 · Review')).toBe('2026-02-31 · Review');
+ expect(mobileActionDetail('Alexandra is waiting for review.')).toBe('Alexandra is waiting for review.');
+});
 it('D7 preserves the full verified count and provides every deduplicated action beyond the preview',()=>{expect(parseActionCenter(ready,ready.weekStart)).toEqual(ready);const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="ready"/>);expect(html).toContain('Show all 25 actions');expect(html.match(/data-action-id=/g)).toHaveLength(20);const expanded=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="ready" expanded/>);expect(expanded.match(/data-action-id=/g)).toHaveLength(25);expect(expanded).toContain('week=2026-10-05');});
-it.each(['loading','offline','reconnecting','unavailable','access_lost','paused'] as const)('D7 %s clears names/counts and cannot claim no actions',connection=>{const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection={connection}/>);expect(html).not.toContain('Fictional employee');expect(html).not.toContain('Total actions');expect(html).not.toContain('No actions found');});
+it.each(['loading','offline','reconnecting','unavailable','access_lost','paused'] as const)('D7 %s clears names/counts and cannot claim no actions',connection=>{const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection={connection}/>);expect(html).not.toContain('Fictional employee');expect(html).not.toContain('Total actions');expect(html).not.toContain('No actions found');expect(html).not.toContain('Review 25 tasks');expect(html).not.toContain('mobile-home-action-summary');});
 it('D7 only a verified empty source can show no actions; missing ready data remains unavailable',()=>{const empty={...ready,counts:{total:0,scheduling:0,requests:0,timekeeping:0},items:[]};expect(renderToStaticMarkup(<ActionCenterSurface snapshot={empty} connection="ready"/>)).toContain('No actions found in the checked sources');expect(renderToStaticMarkup(<ActionCenterSurface snapshot={null} connection="ready"/>)).toContain('Actions unavailable');});
 it('D7 rejects count mismatch, duplicates, foreign destinations and unbounded lifetime',()=>{for(const bad of [{...ready,counts:{...ready.counts,total:0}},{...ready,items:[ready.items[0],ready.items[0]]},{...ready,items:[{...ready.items[0],href:'https://other.test'}]},{...ready,validForMs:45001}])expect(()=>parseActionCenter(bad,ready.weekStart)).toThrow();});
 

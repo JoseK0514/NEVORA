@@ -7,6 +7,7 @@ import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
 import { ListIcon } from "@phosphor-icons/react/dist/ssr/List";
+import { UserCircleIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
@@ -163,7 +164,7 @@ export function AppShell({
           {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
           {!employee ? (
             <ActionMenu id="manager-more-navigation" label="Menu" ariaLabel="More navigation"
-              triggerIcon={<ListIcon size={22} weight="regular" aria-hidden="true" focusable="false"/>} iconOnly>
+              triggerIcon={<><ListIcon className="management-menu-list-symbol" size={22} weight="regular" aria-hidden="true" focusable="false"/><UserCircleIcon className="mobile-home-menu-symbol" size={24} weight="regular" aria-hidden="true" focusable="false"/></>} iconOnly>
               {navigation.slice(5).map(item => (
                 <Link key={item.href} href={item.href} className="nevora-action-menu-item"
                   aria-current={item.href === activeHref ? 'page' : undefined}
@@ -174,6 +175,8 @@ export function AppShell({
               {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings" aria-label="Profile and device settings">Profile and device settings</button> : null}
               <div className="nevora-action-menu-divider" />
               <PortalSignout><button className="nevora-action-menu-item" type="submit">Sign out</button></PortalSignout>
+              <button type="button" className="mobile-home-menu-close" aria-label="Close navigation"
+                onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}><XIcon size={20} aria-hidden="true"/><span>Close navigation</span></button>
             </ActionMenu>
           ) : null}
           </div>

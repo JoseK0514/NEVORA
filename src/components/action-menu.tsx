@@ -41,6 +41,14 @@ export function ActionMenu({
       if (!menu.matches(":popover-open")) return;
       const triggerBox = trigger.getBoundingClientRect();
       const viewport = visibleViewport();
+      if (getComputedStyle(menu).getPropertyValue('--home-menu-sheet').trim() === '1') {
+        menu.style.width = `${Math.max(0, viewport.width - 32)}px`;
+        menu.style.left = `${viewport.offsetLeft + 16}px`;
+        menu.style.maxHeight = `${Math.max(44, viewport.height - 96)}px`;
+        menu.style.top = 'auto';
+        menu.style.bottom = `${Math.max(16, window.innerHeight - viewport.offsetTop - viewport.height + 16)}px`;
+        return;
+      }
       // Wrapping changes the natural height after a viewport resize.
       menu.style.width = `${actionMenuGeometry({ trigger: triggerBox, viewport, naturalHeight: 0, align }).width}px`;
       const geometry = actionMenuGeometry({
@@ -109,6 +117,7 @@ export function ActionMenu({
         className="button ghost nevora-action-menu-trigger"
         popoverTarget={id}
         aria-label={ariaLabel}
+        title={ariaLabel ?? label}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             keyboardOpenRef.current = true;
