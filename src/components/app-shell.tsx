@@ -96,7 +96,8 @@ export function AppShell({
 
   const Profile = notificationsEnabled ? "button" : "div";
   return (
-    <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}>
+    <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
+      data-mobile-workforce={pathname && pathname !== "/app" ? "true" : undefined}>
       <aside className="sidebar" data-collapsed={collapsed}>
         <div className="sidebar-heading">
         <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
@@ -243,6 +244,10 @@ export function AppShell({
                   <div><strong>{user.firstName} {user.lastName}</strong></div>
                   <PortalSignout><button type="submit"><NavIcon name="logout" employee size={18} /><span>Sign out</span></button></PortalSignout>
                 </div>
+                <button className="mobile-workforce-sheet-close" type="button" aria-label="Close actions"
+                  onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
+                  <XIcon size={20} aria-hidden="true"/><span>Close actions</span>
+                </button>
               </div>
             </>
           ) : (

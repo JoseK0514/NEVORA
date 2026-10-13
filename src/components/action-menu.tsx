@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { actionMenuGeometry } from "./action-menu-geometry";
+import { DotsThreeIcon, XIcon } from "@phosphor-icons/react/ssr";
 
 type ActionMenuProps = {
   id: string;
@@ -116,7 +117,7 @@ export function ActionMenu({
         type="button"
         className="button ghost nevora-action-menu-trigger"
         popoverTarget={id}
-        aria-label={ariaLabel}
+        aria-label={ariaLabel ?? label}
         title={ariaLabel ?? label}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
@@ -128,6 +129,7 @@ export function ActionMenu({
         }}
       >
         {triggerIcon}
+        {!iconOnly ? <DotsThreeIcon className="mobile-workforce-action-symbol" size={24} weight="regular" aria-hidden="true"/> : null}
         <span className={iconOnly ? "sr-only" : undefined}>{label}</span>
         {!iconOnly ? <svg
           className="nevora-action-menu-chevron"
@@ -154,6 +156,10 @@ export function ActionMenu({
         aria-label={ariaLabel ?? `${label} actions`}
       >
         {children}
+        <button className="mobile-workforce-sheet-close" type="button" aria-label="Close actions"
+          onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
+          <XIcon size={20} aria-hidden="true"/><span>Close actions</span>
+        </button>
       </div>
     </div>
   );

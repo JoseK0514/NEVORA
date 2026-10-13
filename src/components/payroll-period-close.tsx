@@ -3,6 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Period } from "@/lib/timecards/project";
 import { formatRecordedHours } from "@/lib/timecards/project";
 import type { readPeriodClose, MemberReview } from "@/lib/period-close/service";
+import { MobileHomeDisclosure } from "./mobile-home-disclosure";
+import { payrollReviewIssues, payrollReviewState } from "./payroll-review-copy";
 type Review = Awaited<ReturnType<typeof readPeriodClose>>;
 type PendingCommand = { action: string; command: unknown };
 export function PayrollPeriodClose({
@@ -157,6 +159,9 @@ export function PayrollPeriodClose({
           Retry original period command
         </button>
       )}
+      <MobileHomeDisclosure id="mobile-payroll-population" label="Review payroll population" expandedLabel="Close population details"
+        available={Boolean(review) && !busy && !retry}
+        summary={review && !busy && !retry ? <p>{review.members.length} people in this period.</p> : undefined}>
       {review && (
         <>
           <form
@@ -198,14 +203,16 @@ export function PayrollPeriodClose({
                     {member.active ? "Active account" : "Inactive account"}
                   </legend>
                   <p>
-                    {member.cardState} ·{" "}
+                    <span className="desktop-payroll-review-copy">{member.cardState}</span>
+                    <span className="mobile-payroll-review-copy">{payrollReviewState(member.cardState)}</span> ·{" "}
                     {formatRecordedHours(member.recordedNanoseconds)} recorded ·{" "}
                     {member.hasPeriodEvidence
                       ? "Historical period evidence retained"
                       : "No recorded period evidence"}
-                    {member.issues.length
-                      ? ` · Needs review: ${member.issues.join(", ")}`
-                      : ""}
+                    {member.issues.length ? <>
+                      <span className="desktop-payroll-review-copy">{` · Needs review: ${member.issues.join(", ")}`}</span>
+                      <span className="mobile-payroll-review-copy">{` · Needs review: ${payrollReviewIssues(member.issues)}`}</span>
+                    </> : null}
                   </p>
                   {!member.active && (
                     <p>
@@ -445,6 +452,7 @@ export function PayrollPeriodClose({
           ))}
         </>
       )}
+      </MobileHomeDisclosure>
     </section>
   );
 }

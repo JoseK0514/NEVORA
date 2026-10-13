@@ -1,0 +1,214 @@
+{
+  "version": 1,
+  "project": {
+    "name": "NEVORA Workforce",
+    "productType": "Workforce scheduling and timekeeping",
+    "stack": [
+      "nextjs",
+      "react"
+    ]
+  },
+  "sources": {
+    "tokens": [
+      "src/app/globals.css",
+      "src/app/mobile-workforce.css",
+      "src/components/manager-home-mobile.css",
+      "src/app/app/portal-refinement.css"
+    ],
+    "components": [
+      "src/components/app-shell.tsx",
+      "src/components/action-menu.tsx",
+      "src/components/mobile-home-disclosure.tsx",
+      "src/components/clocker-shell.tsx",
+      "src/components/payroll-review-copy.ts",
+      "src/components/timecards.tsx",
+      "src/components/payroll-period-close.tsx"
+    ],
+    "assets": [
+      "public/assets",
+      "public/images"
+    ],
+    "instructions": [
+      "DESIGN.MD",
+      "AGENTS.md"
+    ]
+  },
+  "design": {
+    "colorMode": "light",
+    "colors": {
+      "--nevora-accent-rgb": {
+        "value": "7, 86, 217",
+        "source": "src/app/globals.css"
+      },
+      "--nuvora-muted": {
+        "value": "#676A73",
+        "source": "src/app/globals.css"
+      },
+      "--color-bg-main": {
+        "value": "color-mix(in srgb, var(--fuel-canvas) 55%, var(--color-bg-surface))",
+        "source": "src/app/globals.css"
+      },
+      "--color-bg-surface": {
+        "value": "var(--nuvora-surface)",
+        "source": "src/app/globals.css"
+      },
+      "--color-brand-primary": {
+        "value": "var(--nuvora-text)",
+        "source": "src/app/globals.css"
+      },
+      "--color-brand-accent": {
+        "value": "var(--nevora-blue)",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-success": {
+        "value": "#1D6F42",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-success-bg": {
+        "value": "#EAF5EA",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-warning": {
+        "value": "#A05200",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-warning-bg": {
+        "value": "#FFF4E5",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-danger": {
+        "value": "#B42318",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-danger-bg": {
+        "value": "#FDECEC",
+        "source": "src/app/globals.css"
+      },
+      "--color-border-subtle": {
+        "value": "rgba(24, 25, 31, 0.07)",
+        "source": "src/app/globals.css"
+      },
+      "--muted": {
+        "value": "var(--nuvora-muted)",
+        "source": "src/app/globals.css"
+      },
+      "--employee-rail-muted": {
+        "value": "color-mix(in srgb, var(--soft-caramel) 80%, var(--fuel-coffee-dark))",
+        "source": "src/app/globals.css"
+      }
+    },
+    "typography": {
+      "--nuvora-text": {
+        "value": "#18191F",
+        "source": "src/app/globals.css"
+      },
+      "--font-family-apple": {
+        "value": "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", sans-serif",
+        "source": "src/app/globals.css"
+      },
+      "--font-ui": {
+        "value": "var(--font-family-apple)",
+        "source": "src/app/globals.css"
+      }
+    },
+    "spacing": {
+      "--space-xs": {
+        "value": "8px",
+        "source": "src/app/globals.css"
+      },
+      "--space-sm": {
+        "value": "12px",
+        "source": "src/app/globals.css"
+      },
+      "--space-md": {
+        "value": "20px",
+        "source": "src/app/globals.css"
+      },
+      "--space-lg": {
+        "value": "32px",
+        "source": "src/app/globals.css"
+      }
+    },
+    "radius": {
+      "--radius-premium": {
+        "value": "12px",
+        "source": "src/app/globals.css"
+      },
+      "--radius": {
+        "value": "var(--radius-premium)",
+        "source": "src/app/globals.css"
+      }
+    },
+    "shadows": {
+      "--shadow-premium": {
+        "value": "0 4px 12px rgba(24, 25, 31, 0.035), 0 1px 3px rgba(24, 25, 31, 0.025)",
+        "source": "src/app/globals.css"
+      },
+      "--shadow": {
+        "value": "var(--shadow-premium)",
+        "source": "src/app/globals.css"
+      }
+    },
+    "motion": {},
+    "density": "Readable mobile task UI"
+  },
+  "components": {
+    "installed": [],
+    "preferredPrimitives": [],
+    "patterns": []
+  },
+  "constraints": {
+    "must": [
+      "Preserve approved Home/auth and desktop",
+      "Mobile remaining route scope <=760px",
+      "Preserve all existing data and mutation authority"
+    ],
+    "avoid": [
+      "Decorative animation",
+      "Demo data",
+      "Raster UI stand-ins",
+      "New dependencies"
+    ]
+  },
+  "decisions": [
+    {
+      "date": "2026-10-13",
+      "scope": "Remaining mobile workforce routes, excluding approved authentication and Home",
+      "direction": "Extend approved Gusto Mobile-inspired NEVORA world: local Inter and Phosphor, deep blue masthead, focused white surfaces, grouped rows, readable native fields and compact action sheets. Preserve desktop and business/authorization contracts.",
+      "references": [
+        "https://mobbin.com/screens/06042184-b5dd-4e9c-be17-f969ee4b6819",
+        "https://mobbin.com/screens/615a1c68-9a32-4425-90eb-17f6a318a269",
+        "https://21st.dev/@ssychui/components/preferences-card",
+        "https://21st.dev/@halaska-studio/components/calendar",
+        "https://21st.dev/@kevingirelli/components/sheet"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "fact": "design.colorMode:light",
+      "source": "src/app/globals.css"
+    },
+    {
+      "fact": "design.tokens",
+      "source": "src/app/globals.css"
+    },
+    {
+      "fact": "project.instructions",
+      "source": "AGENTS.md"
+    },
+    {
+      "fact": "project.instructions",
+      "source": "DESIGN.md"
+    },
+    {
+      "fact": "project.stack:nextjs",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:react",
+      "source": "package.json"
+    }
+  ],
+  "generatedAt": "2026-10-13T18:05:53.669Z"
+}

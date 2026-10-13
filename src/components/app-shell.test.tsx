@@ -22,6 +22,13 @@ function render(role: "EMPLOYEE" | "LEAD" | "MANAGER" | "OWNER", pathname = "/ap
   return { html, mobile: html.split('aria-label="Mobile navigation"')[1].split("</nav>")[0] };
 }
 
+it.each(['EMPLOYEE','LEAD','MANAGER','OWNER'] as const)('keeps the approved %s Home outside the remaining mobile-page variant', role => {
+  expect(render(role, '/app').html).not.toContain('data-mobile-workforce="true"');
+});
+it.each(['/app/schedule','/app/availability','/app/requests','/app/settings/locations/loc-1','/app/profile'])('scopes the remaining mobile variant to the actual %s destination', pathname => {
+  expect(render('OWNER', pathname).html).toContain('data-mobile-workforce="true"');
+});
+
 it.each(["EMPLOYEE", "LEAD"] as const)("keeps %s My Time directly reachable and secondary links in More", (role) => {
   const { html, mobile } = render(role);
   const [primary, more] = mobile.split('id="employee-more-navigation"');

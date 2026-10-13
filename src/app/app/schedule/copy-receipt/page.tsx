@@ -12,7 +12,11 @@ export default async function CopyReceiptPage({
 }) {
   const { operation } = await searchParams;
   if (!operation || !/^[0-9a-f-]{36}$/i.test(operation))
-    return <p>Invalid operation reference.</p>;
+    return <><p className="desktop-copy-receipt-empty">Invalid operation reference.</p>
+      <section className="mobile-copy-receipt-empty">
+        <h1>Schedule copy receipt</h1><p>Invalid operation reference.</p>
+        <Link className="button secondary" href="/app/schedule">Back to schedule</Link>
+      </section></>;
   const proof = await requireSessionMutationProof();
   const receipt = await readScheduleCopyReceipt(proof, operation);
   const command =
