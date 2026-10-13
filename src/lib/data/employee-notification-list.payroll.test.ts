@@ -31,7 +31,7 @@ async function read(role:'EMPLOYEE'|'LEAD'|'MANAGER'|'OWNER',mode:Mode='normal',
   }else if(sql.startsWith('SELECT id')&&sql.includes('FROM notifications WHERE employee_id='))result=candidates;
   else if(sql.includes(' AS rows')){
    let rows:Record<string,unknown>[];
-   if(sql.includes('FROM notifications WHERE id ='))rows=[{id:last.values[0],employee_id:mode==='foreign'?'other':'self',type:kind,title:'PRIVATE_AMOUNT_MUST_NOT_RENDER',body:'PRIVATE_TAX_MUST_NOT_RENDER',event_key:'event-'+last.values[0],environment:'test',source_kind:kind,source_id:String(last.values[0]),source_version:'current',effective_version:'current',purpose:'REMINDER',urgency:'normal',due_at:past,expires_at:future}];
+   if(sql.includes('FROM notifications WHERE id ='))rows=[{id:last.values[0],employee_id:mode==='foreign'?'other':'self',type:kind,title:'PRIVATE_AMOUNT_MUST_NOT_RENDER',body:'PRIVATE_TAX_MUST_NOT_RENDER',event_key:'event-'+last.values[0],environment:'test',source_kind:kind,source_id:'10000000-0000-4000-8000-'+String(Number(String(last.values[0]).split('-').at(-1))+1).padStart(12,'0'),source_version:'current',effective_version:'current',purpose:'REMINDER',urgency:'normal',due_at:past,expires_at:future}];
    else if(sql.includes(payrollNoticeReadSql())){if(mode==='source-failed')throw Error('Private Finance read unavailable');sourceValues.push(last.values);rows=[{version:'current',kind}];}
    else if(sql.includes('FROM workspaces WHERE singleton=true'))rows=[workspace];
    else throw Error('Unexpected source query: '+sql);
@@ -52,7 +52,7 @@ it('registers the exact two-argument Finance query for ordinary protected replay
 });
 it.each(['EMPLOYEE','LEAD','MANAGER','OWNER'] as const)('%s sees only metadata for their own authorized published statement',async role=>{
  const result=await read(role);expect(result.finalized).toBe(true);expect(result.readsAfterFinal).toBe(0);
- expect(result.sourceValues).toEqual([['notice-0','self']]);
+ expect(result.sourceValues).toEqual([['10000000-0000-4000-8000-000000000001','self']]);
  expect(result.view).toMatchObject({state:'ready',kind:'notifications',coverage:'complete',items:[{id:'notice-0',label:'Pay statement update',href:'/app/notifications/open?notificationId=notice-0',reviewState:'unread',actionState:'available'}]});
  expect(JSON.stringify(result.view)).not.toMatch(/PRIVATE_|salary|tax|netPay|paid|payment/i);
 });
