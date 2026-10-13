@@ -51,7 +51,7 @@ async function read(count:number,mode:'normal'|'denied'|'missing'|'removed'|'cha
    if(mode==='removed')fresh.forEach((rows,i)=>{if(rows.some(r=>'employee_name' in r))fresh[i]=[];});
    if(mode==='changed-detail')fresh.forEach(rows=>rows.forEach(row=>{if(row.detail)(row.detail as Record<string,unknown>).reason='Changed after discovery';}));
    rows=[{candidates,reads:fresh,observedAt:now,validForMs:mode==='denied'?null:45000,active:true}];}
-  else if(sql.startsWith('SELECT id FROM notifications WHERE employee_id='))rows=candidates;
+  else if(sql.startsWith('SELECT id,read_at::text AS read FROM notifications WHERE employee_id='))rows=candidates;
   else if(sql.includes(' AS rows')){
    let observed:unknown[]=[];
    if(sql.includes('FROM notifications WHERE id =')){const index=String(values[0]).split('-').at(-1);observed=[{id:values[0],employee_id:'self',type:'TIME_OFF_APPROVED',title:'Time off',body:'Reviewed',event_key:`event-${index}`,environment:'test',source_kind:'TIME_OFF',source_id:`request-${index}`,source_version:'APPROVED',effective_version:'APPROVED',purpose:'EVENT',urgency:'high',due_at:past,expires_at:future}];}
