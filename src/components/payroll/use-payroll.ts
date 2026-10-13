@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PayrollReceipt, PayrollRunCommand, PayrollSettingsCommand } from '@/lib/payroll/contracts';
+import type { NativeProfileCommand } from '@/lib/payroll/native/contracts';
 import { PayrollRequestError, payrollRequest, readReceipt } from './api';
 
-type Command = PayrollRunCommand | PayrollSettingsCommand;
+type Command = PayrollRunCommand | PayrollSettingsCommand | NativeProfileCommand;
 type WithoutOperation<T> = T extends unknown ? Omit<T, 'operationId'> : never;
 
 export function usePayrollResource<T>(path: string, decode: (value: unknown) => T) {
@@ -44,7 +45,7 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   return { data, loading, error, reload };
 }
 
-export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payroll/runs', reload: () => Promise<void>, recoveryScope: string) {
+export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payroll/runs' | '/api/payroll/native-profiles', reload: () => Promise<void>, recoveryScope: string) {
   const referenceKey = `nevora-payroll-operation:${recoveryScope}`;
   const [pending, setPending] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
