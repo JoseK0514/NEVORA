@@ -235,3 +235,28 @@ it('fences a profile change made after capture and before approval acquires its 
         c.tax!.ruleEvidenceReference = null;
         await saveNativeProfile(proof, { action: 'SAVE_NATIVE_PROFILE', operationId: randomUUID(), reason: 'Concurrent same-money evidence revision', expectedRevision: 1, configuration: c }, f.db.executor);
     } return f.db.executor.transaction(qs, signal); } }; await expect(command(proof, { action: 'APPROVE', operationId: randomUUID(), runId: first.payload.id, expectedRevision: 1, reviewToken: first.payload.reviewToken }, ex)).rejects.toThrow('NATIVE_SOURCE_CONFLICT'); expect(changed).toBe(true); expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{ n: 0 }]); expect((await readRun(proof, first.payload.id, f.db.executor)).payload.status).toBe('REVIEW_REQUIRED'); });
+
+it('blocks contradictory actual employer baseline before source projection can normalize it', async () => {
+    await nativeFixture();
+    const current = (await nativeProfiles(proof, f.db.executor)).configurations.find(c => c.employeeId === 'c34-a')!;
+    const contributions = current.tax!.employerContributions.map(item => item.code === 'FUTA' ? { ...item, applicability: 'APPLICABLE' as const, basisPoints: 600, capMinor: '700000', wagesBeforeMinor: '700000' } : item);
+    await saveNativeProfile(proof, { action: 'SAVE_NATIVE_PROFILE', operationId: randomUUID(), expectedRevision: current.revision, reason: 'Fictional contradictory duplicated FUTA counter regression', configuration: { schema: current.schema, employeeId: current.employeeId, wages: current.wages, tax: { ...current.tax!, employerContributions: contributions }, deductions: current.deductions } }, f.db.executor);
+    const run = await preparedNative();
+    expect(run.payload.status).toBe('BLOCKED');
+    expect(run.payload.rows).toBeNull();
+    expect(run.payload.totals).toBeNull();
+    expect(run.payload.exceptions).toContain('EMPLOYER_YTD_BASE_CONFLICT:c34-a');
+    expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{ n: 0 }]);
+});
+
+it('retains the actual consistent opening employer counter and freezes the assessed contribution on approval', async () => {
+    await nativeFixture();
+    const current = (await nativeProfiles(proof, f.db.executor)).configurations.find(c => c.employeeId === 'c34-a')!;
+    const contributions = current.tax!.employerContributions.map(item => item.code === 'FUTA' ? { ...item, applicability: 'APPLICABLE' as const, basisPoints: 600, capMinor: '700000', wagesBeforeMinor: '0' } : item);
+    await saveNativeProfile(proof, { action: 'SAVE_NATIVE_PROFILE', operationId: randomUUID(), expectedRevision: current.revision, reason: 'Fictional consistent documented FUTA baseline and uncredited rate', configuration: { schema: current.schema, employeeId: current.employeeId, wages: current.wages, tax: { ...current.tax!, employerContributions: contributions }, deductions: current.deductions } }, f.db.executor);
+    const approved = await approvedNative();
+    expect(approved.payload.nativeCalculation!.employees[0].row.employerContributions).toContainEqual({ code: 'FUTA', label: 'FUTA', amountMinor: '6000' });
+    expect(approved.payload.rows![0].netMinor).toBe('82085');
+    expect(approved.snapshot!.native!.facts.inputs[0].ytd!.employerWagesMinor.FUTA).toBe('0');
+    expect(await f.q("SELECT payload#>>'{result,breakdown,ytdAfter,employerWagesMinor,FUTA}' AS wages FROM native_payroll_ledger")).toEqual([{ wages: '100000' }]);
+});

@@ -9,6 +9,7 @@ import { PayrollError } from '../model';
 import { parseConfiguration, parseYtd } from './model';
 import type { NativePayrollInput, NativeConfigurationRevision, NativeYtd } from './contracts';
 import { projectNativeYtd, type NativeLedgerEntry } from './ytd';
+import { projectEmployerYtdCounters } from './obligations';
 import { buildNativeRunCandidate, type NativePreparationFacts } from './preparation';
 import { NATIVE_CALCULATOR_VERSION } from './calculate';
 import { buildRecordedSourceCapture, projectRecordedSourceCapture, type RecordedSourceRequest, type RecordedSourceCapture } from './recorded-source.server';
@@ -150,11 +151,7 @@ export async function captureNativePayroll(seed: {
                     throw Error('OPEN_RECORDED_TIME');
                 return { id: e.logicalId, locationId: e.locationId, startAt: e.startAt, endAt: e.endAt, sourceKind: e.sourceKind, recordedVersion: e.recordedVersion, adjustmentId: e.adjustmentId, breaks: e.breaks.map(b => ({ id: b.id, typeId: b.classification?.id ?? null, startAt: b.startAt, endAt: b.endAt, recordedVersion: b.recordedVersion, classification: b.classification })) };
             });
-            const tax = configuration.tax ? { ...configuration.tax, employerContributions: configuration.tax.employerContributions.map(t => {
-                    if (t.applicability === 'APPLICABLE' && !Object.hasOwn(ytd.employerWagesMinor, t.code))
-                        throw Error('EMPLOYER_YTD_BASE_REQUIRED');
-                    return { ...t, wagesBeforeMinor: ytd.employerWagesMinor[t.code] ?? t.wagesBeforeMinor };
-                }) } : null;
+            const tax = configuration.tax ? projectEmployerYtdCounters(configuration.tax, opening.ytd, ytd) : null;
             inputs.push({ schema: 'NEVORA_NATIVE_PAYROLL_INPUT_V1', employeeId: member.employeeId, period: run.period, payday: run.payday, frequency: settings.preferences.schedule.frequency, timeZone: 'America/Puerto_Rico', wages: configuration.wages, tax, ytd, deductions: deductionInputs(configuration, opening.ytd, heads, run), timecards: capture.coverage.map(c => ({ employeeId: member.employeeId, period: { startDate: c.startDate, endDate: c.endDate }, revision: c.revision, state: 'FINALIZED', sourceHash: c.sourceHash, finalizedSourceHash: c.sourceHash, pendingCorrections: 0, entries, recordedSourceEvidence: { captureFence: capture.sourceFence, operationId: c.operationId, sourceHash: c.sourceHash, currentSourceHash: c.currentSourceHash } })) });
         }
         catch (error) {

@@ -7,9 +7,9 @@ import type { NativePayrollInput, NativePayrollResult, NativeEarning } from "./c
 import { exactMinor, type NativeExactnessOperation, add, halfUp, minor, multiply, ratio, serialized, subtract, type Rational } from "./money";
 import { classifyRecordedTime, fail, HOUR } from "./time";
 import { fica2026, prIncomeWithholding, sinotContribution, PR_2026_RULE_SOURCES } from "./rules/pr-2026";
-import { authorizedAmounts, employerAmounts, validateEmployerCoverage } from "./obligations";
+import { authorizedAmounts, employerAmounts, validateEmployerCoverage, validateEmployerYtdCounters } from "./obligations";
 const hash = (value: unknown) => createHash("sha256").update(stableExportJson(value)).digest("hex");
-export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V4_EXACT_CENT_YTD_BASES";
+export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V5_EMPLOYER_YTD_COUNTERS";
 export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
 export function calculateNativePayroll(input: NativePayrollInput): NativePayrollResult {
     try {
@@ -27,6 +27,7 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
         if (tax.prCentRounding !== "HALF_UP" && tax.prCentRounding !== "TRUNCATE" && tax.prCentRounding !== "UNVERIFIED")
             fail("PR_ROUNDING_RULE_UNVERIFIED");
         validateEmployerCoverage(tax);
+        validateEmployerYtdCounters(tax, input.ytd);
         const payday = Temporal.PlainDate.from(input.payday);
         if (payday.year !== 2026 || input.ytd.year !== payday.year)
             fail("RULESET_NOT_APPLICABLE");

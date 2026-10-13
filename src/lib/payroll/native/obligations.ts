@@ -1,4 +1,4 @@
-import type { NativeAuthorizedDeduction, NativePayrollInput, NativeTaxProfile } from "./contracts";
+import type { NativeAuthorizedDeduction, NativePayrollInput, NativeTaxProfile, NativeYtd } from "./contracts";
 import { exactMinor, halfUp, minor, ratio, type NativeExactnessOperation } from "./money";
 import { fail } from "./time";
 const STANDARD_EMPLOYER_CODES = ["FUTA", "PR_UI", "CFSE"];
@@ -31,6 +31,28 @@ export function validateEmployerCoverage(tax: NativeTaxProfile) {
     }
     if (STANDARD_EMPLOYER_CODES.some(code => !codes.has(code)))
         fail("EMPLOYER_COVERAGE_REQUIRED");
+}
+/** The consumed counter and attested same-employer YTD map describe one basis at one point in time. */
+export function validateEmployerYtdCounters(tax: NativeTaxProfile, ytd: NativeYtd) {
+    for (const item of tax.employerContributions.filter(contribution => contribution.applicability === 'APPLICABLE')) {
+        if (!Object.hasOwn(ytd.employerWagesMinor, item.code))
+            fail('EMPLOYER_YTD_BASE_REQUIRED', item.code);
+        if (minor(item.wagesBeforeMinor) !== minor(ytd.employerWagesMinor[item.code]))
+            fail('EMPLOYER_YTD_BASE_CONFLICT', item.code);
+    }
+}
+/** Persisted profile counters attest the opening baseline; only immutable native heads advance them. */
+export function projectEmployerYtdCounters(tax: NativeTaxProfile, opening: NativeYtd, projected: NativeYtd): NativeTaxProfile {
+    validateEmployerYtdCounters(tax, opening);
+    const result = { ...tax, employerContributions: tax.employerContributions.map(item => {
+        if (item.applicability !== 'APPLICABLE')
+            return item;
+        if (!Object.hasOwn(projected.employerWagesMinor, item.code))
+            fail('EMPLOYER_YTD_BASE_REQUIRED', item.code);
+        return { ...item, wagesBeforeMinor: projected.employerWagesMinor[item.code] };
+    }) };
+    validateEmployerYtdCounters(result, projected);
+    return result;
 }
 export function employerAmounts(tax: NativeTaxProfile, gross: bigint, exactnessOperations?: NativeExactnessOperation[]) {
     return tax.employerContributions.filter(item => item.applicability === "APPLICABLE").map(item => {

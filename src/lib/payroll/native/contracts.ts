@@ -90,6 +90,7 @@ export type NativeTaxProfile = {
         applicability: "APPLICABLE" | "EXEMPT";
         basisPoints: number | null;
         capMinor: string | null;
+        /** On saved configuration: same-code attested opening YTD baseline. On calculator input: current projected YTD. */
         wagesBeforeMinor: string;
         evidenceReference: string;
     }[];

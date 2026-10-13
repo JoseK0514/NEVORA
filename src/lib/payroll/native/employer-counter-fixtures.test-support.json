@@ -1,0 +1,2355 @@
+{
+  "sourceSha256": "d5a3032fea2ed451dd919be2ef66fdf5b0ea66a23cef048c950bd4886f63aef3",
+  "sourcePath": "/Users/josek0514/Documents/Codex/2026-10-12/1-full-application-inspection-business-analyst/work/team-checkouts/qa-security/outputs/calculator-77a10f0a-verification/fixtures/YTD_CONSISTENCY_CASES.json",
+  "cases": [
+    {
+      "id": "YP_UNEQUAL",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "APPLICABLE",
+              "basisPoints": 600,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "699500",
+              "evidenceReference": "QA fictional independently documented uncredited FUTA rate and actual before-cap same-employer wages"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "APPLICABLE",
+              "basisPoints": 250,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "690000",
+              "evidenceReference": "QA fictional effective assigned PR UI rate/base notice"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "APPLICABLE",
+              "basisPoints": 100,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "QA fictional documented uncapped CFSE assessment notice"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "20000000",
+          "netMinor": "18000000",
+          "socialSecurityWagesMinor": "18400000",
+          "medicareWagesMinor": "19950000",
+          "sinotWagesMinor": "895000",
+          "deductions": {
+            "DOCUMENTED_PRIOR_WITHHOLDING": "2000000"
+          },
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [
+            "qa-location"
+          ],
+          "employerWagesMinor": {
+            "FUTA": "699500",
+            "PR_UI": "690000",
+            "CFSE": "0"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "ready",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "fields": {
+          "grossMinor": "100000",
+          "netMinor": "85020",
+          "socialSecurityMinor": "3100",
+          "medicareMinor": "1450",
+          "additionalMedicareMinor": "450",
+          "sinotEmployeeMinor": "15",
+          "futaEmployerMinor": "30",
+          "prUiEmployerMinor": "250",
+          "cfseEmployerMinor": "1000",
+          "ytdGrossAfterMinor": "20100000",
+          "ytdNetAfterMinor": "18085020",
+          "ytdFutaAfterMinor": "799500",
+          "ytdPrUiAfterMinor": "790000"
+        },
+        "unchangedOpening": true
+      },
+      "facts": "NEW fixture only: independently specified fictional cumulative cash gross20000000, prior deduction aggregate2000000, and separately documented lower wage bases from their distinct prior coverage. Tests preservation/bounds and current math, not prior tax compliance or actual facts.",
+      "releaseAccepted": false
+    },
+    {
+      "id": "YP_EQUAL_CAP",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "APPLICABLE",
+              "basisPoints": 600,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "700000",
+              "evidenceReference": "QA fictional independently documented uncredited FUTA rate and actual before-cap same-employer wages"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "700000",
+          "netMinor": "700000",
+          "socialSecurityWagesMinor": "0",
+          "medicareWagesMinor": "0",
+          "sinotWagesMinor": "0",
+          "deductions": {},
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [
+            "qa-location"
+          ],
+          "employerWagesMinor": {
+            "FUTA": "700000"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "ready",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "fields": {
+          "grossMinor": "100000",
+          "netMinor": "82085",
+          "futaEmployerMinor": "0",
+          "ytdFutaAfterMinor": "800000"
+        },
+        "unchangedOpening": true
+      },
+      "facts": "NEW documented cash gross700000 and genuine same-employer FUTA base700000; employee bases0 reflect separately documented prior coverage. Tests equality bound and exhausted employer cap only.",
+      "releaseAccepted": false
+    },
+    {
+      "id": "YP_NEAR_CAP",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "APPLICABLE",
+              "basisPoints": 600,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "699500",
+              "evidenceReference": "QA fictional independently documented uncredited FUTA rate and actual before-cap same-employer wages"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "700000",
+          "netMinor": "700000",
+          "socialSecurityWagesMinor": "0",
+          "medicareWagesMinor": "0",
+          "sinotWagesMinor": "0",
+          "deductions": {},
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [
+            "qa-location"
+          ],
+          "employerWagesMinor": {
+            "FUTA": "699500"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "ready",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "fields": {
+          "futaEmployerMinor": "30",
+          "ytdFutaAfterMinor": "799500"
+        },
+        "unchangedOpening": true
+      },
+      "facts": "NEW gross700000 and actual FUTA basis699500; current100000 capped taxable500 at600bp yields30 exactly; cumulative wages are not clipped to700000.",
+      "releaseAccepted": false
+    },
+    {
+      "id": "YP_ZERO_FUTA",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "APPLICABLE",
+              "basisPoints": 600,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "QA fictional independently documented uncredited FUTA rate and actual before-cap same-employer wages"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "0",
+          "netMinor": "0",
+          "socialSecurityWagesMinor": "0",
+          "medicareWagesMinor": "0",
+          "sinotWagesMinor": "0",
+          "deductions": {},
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [],
+          "employerWagesMinor": {
+            "FUTA": "0"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "ready",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "fields": {
+          "grossMinor": "100000",
+          "netMinor": "82085",
+          "futaEmployerMinor": "6000",
+          "ytdFutaAfterMinor": "100000"
+        },
+        "unchangedOpening": true
+      },
+      "facts": "NEW complete zero cash opening and zero employer basis in both representations. Current100000 at fictional uncredited600bp yields6000.",
+      "releaseAccepted": false
+    },
+    {
+      "id": "YP_GROSS_FUTA_ZERO",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "APPLICABLE",
+              "basisPoints": 600,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "QA fictional independently documented uncredited FUTA rate and actual before-cap same-employer wages"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "700000",
+          "netMinor": "700000",
+          "socialSecurityWagesMinor": "0",
+          "medicareWagesMinor": "0",
+          "sinotWagesMinor": "0",
+          "deductions": {},
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [
+            "qa-location"
+          ],
+          "employerWagesMinor": {
+            "FUTA": "0"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "ready",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "fields": {
+          "grossMinor": "100000",
+          "netMinor": "82085",
+          "futaEmployerMinor": "6000",
+          "ytdFutaAfterMinor": "100000"
+        },
+        "unchangedOpening": true
+      },
+      "facts": "NEW exact paired control for EC_FALSE_EXHAUSTED_PROFILE: documented gross700000, distinct genuine FUTA basis0 in both representations; rate600bp current100000 gives6000.",
+      "releaseAccepted": false
+    },
+    {
+      "id": "YP_ZERO_PRUI",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "APPLICABLE",
+              "basisPoints": 250,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "QA fictional assigned PR UI rate/base notice"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "0",
+          "netMinor": "0",
+          "socialSecurityWagesMinor": "0",
+          "medicareWagesMinor": "0",
+          "sinotWagesMinor": "0",
+          "deductions": {},
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [],
+          "employerWagesMinor": {
+            "PR_UI": "0"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "ready",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "fields": {
+          "grossMinor": "100000",
+          "netMinor": "82085",
+          "prUiEmployerMinor": "2500",
+          "ytdPrUiAfterMinor": "100000"
+        },
+        "unchangedOpening": true
+      },
+      "facts": "NEW exact paired control for EC_ZERO_GROSS_FALSE_PRUI: zero prior ordinary cash gross and PR UI basis0 in both representations; fictional assigned250bp yields2500 current cents.",
+      "releaseAccepted": false
+    },
+    {
+      "id": "EC_ZERO_GROSS_FALSE_PROFILE",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "APPLICABLE",
+              "basisPoints": 600,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "700000",
+              "evidenceReference": "QA fictional independently documented uncredited FUTA rate and actual before-cap same-employer wages"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "0",
+          "netMinor": "0",
+          "socialSecurityWagesMinor": "0",
+          "medicareWagesMinor": "0",
+          "sinotWagesMinor": "0",
+          "deductions": {},
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [],
+          "employerWagesMinor": {
+            "FUTA": "0"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "blocked",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "noRequiredBlockCode": true
+      },
+      "facts": "NEW complete zero prior ordinary cash gross and YTD FUTA0; tax profile falsely claims700000 of SAME employer prior FUTA wages. Reject contradictory combined input before ready payroll. Individual opening parsers should still accept valid zero YTD.",
+      "releaseAccepted": false
+    },
+    {
+      "id": "EC_FALSE_EXHAUSTED_PROFILE",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "APPLICABLE",
+              "basisPoints": 600,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "700000",
+              "evidenceReference": "QA fictional independently documented uncredited FUTA rate and actual before-cap same-employer wages"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "700000",
+          "netMinor": "700000",
+          "socialSecurityWagesMinor": "0",
+          "medicareWagesMinor": "0",
+          "sinotWagesMinor": "0",
+          "deductions": {},
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [
+            "qa-location"
+          ],
+          "employerWagesMinor": {
+            "FUTA": "0"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "blocked",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "noRequiredBlockCode": true
+      },
+      "facts": "NEW actual same-employer prior gross700000 and documented FUTA basis0; profile falsely duplicates FUTA counter as700000. Both representations claim same time and basis. No successor/other-employer/noncash fact.",
+      "releaseAccepted": false
+    },
+    {
+      "id": "EC_FALSE_UNEXHAUSTED_PROFILE",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "APPLICABLE",
+              "basisPoints": 600,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "QA fictional independently documented uncredited FUTA rate and actual before-cap same-employer wages"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "700000",
+          "netMinor": "700000",
+          "socialSecurityWagesMinor": "0",
+          "medicareWagesMinor": "0",
+          "sinotWagesMinor": "0",
+          "deductions": {},
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [
+            "qa-location"
+          ],
+          "employerWagesMinor": {
+            "FUTA": "700000"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "blocked",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "noRequiredBlockCode": true
+      },
+      "facts": "NEW actual same-employer prior gross700000 and documented FUTA basis700000; stale/false profile counter0. Both claim identical before-period basis; combined input should block, not double assess current wages.",
+      "releaseAccepted": false
+    },
+    {
+      "id": "EC_ZERO_GROSS_FALSE_PRUI",
+      "input": {
+        "schema": "NEVORA_NATIVE_PAYROLL_INPUT_V1",
+        "employeeId": "qa-synthetic-employee",
+        "period": {
+          "startDate": "2026-10-05",
+          "endDate": "2026-10-11"
+        },
+        "payday": "2026-10-23",
+        "frequency": "WEEKLY",
+        "timeZone": "America/Puerto_Rico",
+        "timecards": [
+          {
+            "employeeId": "qa-synthetic-employee",
+            "period": {
+              "startDate": "2026-09-21",
+              "endDate": "2026-10-25"
+            },
+            "revision": 1,
+            "state": "FINALIZED",
+            "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "finalizedSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "pendingCorrections": 0,
+            "entries": [
+              {
+                "id": "XC01-0",
+                "locationId": "qa-location",
+                "startAt": "2026-10-05T09:00:00-04:00",
+                "endAt": "2026-10-05T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-0-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-05T17:00:00.000Z",
+                    "endAt": "2026-10-05T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-1",
+                "locationId": "qa-location",
+                "startAt": "2026-10-06T09:00:00-04:00",
+                "endAt": "2026-10-06T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-1-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-06T17:00:00.000Z",
+                    "endAt": "2026-10-06T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-2",
+                "locationId": "qa-location",
+                "startAt": "2026-10-07T09:00:00-04:00",
+                "endAt": "2026-10-07T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-2-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-07T17:00:00.000Z",
+                    "endAt": "2026-10-07T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-3",
+                "locationId": "qa-location",
+                "startAt": "2026-10-08T09:00:00-04:00",
+                "endAt": "2026-10-08T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-3-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-08T17:00:00.000Z",
+                    "endAt": "2026-10-08T17:30:00.000Z"
+                  }
+                ]
+              },
+              {
+                "id": "XC01-4",
+                "locationId": "qa-location",
+                "startAt": "2026-10-09T09:00:00-04:00",
+                "endAt": "2026-10-09T21:30:00.000Z",
+                "sourceKind": "RECORDED",
+                "recordedVersion": 1,
+                "adjustmentId": null,
+                "breaks": [
+                  {
+                    "id": "XC01-4-meal",
+                    "typeId": "qa-meal",
+                    "startAt": "2026-10-09T17:00:00.000Z",
+                    "endAt": "2026-10-09T17:30:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "wages": [
+          {
+            "id": "qa-wage-XC01",
+            "revision": 1,
+            "effectiveFrom": "2026-09-01T00:00:00-04:00",
+            "effectiveTo": null,
+            "locationIds": [
+              "qa-location"
+            ],
+            "hourlyRateMinor": "2500",
+            "compensation": "HOURLY",
+            "employment": "PR_PRIVATE_NONEXEMPT",
+            "overtime": "TIME_AND_HALF",
+            "dailyBasis": "CALENDAR_DAY",
+            "workweekAnchorDate": "2026-10-05",
+            "workweekStartTime": "00:00",
+            "overtimeBasis": "WEIGHTED_WEEKLY",
+            "wageCentRounding": "UNVERIFIED",
+            "breakRules": [
+              {
+                "typeId": "qa-meal",
+                "treatment": "UNPAID_RELIEVED_MEAL"
+              },
+              {
+                "typeId": "qa-rest",
+                "treatment": "PAID_REST"
+              }
+            ],
+            "standardContextAttested": true,
+            "evidenceReference": "QA synthetic complete ordinary context XC01",
+            "minimumWageCoverage": "PR_ACT_47_STANDARD_2026"
+          }
+        ],
+        "tax": {
+          "id": "qa-tax",
+          "revision": 1,
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "coverage": "PR_REGULAR_TAXABLE_RESIDENT",
+          "certificate": {
+            "personal": "INDIVIDUAL_FULL",
+            "fullDependents": 0,
+            "halfDependents": 0,
+            "deductionAllowances": 0,
+            "veteran": false,
+            "additionalMethod": "FIXED",
+            "additionalMinor": "0",
+            "additionalBasisPoints": null,
+            "wageDollarRounding": "NONE"
+          },
+          "certificateReference": "QA synthetic effective certificate",
+          "ficaCoverage": "STANDARD",
+          "sinotCoverage": "STANDARD",
+          "sinotEmployeeBasisPoints": 30,
+          "prCentRounding": "UNVERIFIED",
+          "ruleEvidenceReference": null,
+          "employerCoverageAttested": true,
+          "employerContributions": [
+            {
+              "code": "FUTA",
+              "label": "FUTA",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            },
+            {
+              "code": "PR_UI",
+              "label": "PR_UI",
+              "applicability": "APPLICABLE",
+              "basisPoints": 250,
+              "capMinor": "700000",
+              "wagesBeforeMinor": "700000",
+              "evidenceReference": "QA fictional assigned PR UI rate/base notice with contradictory prior counter"
+            },
+            {
+              "code": "CFSE",
+              "label": "CFSE",
+              "applicability": "EXEMPT",
+              "basisPoints": null,
+              "capMinor": null,
+              "wagesBeforeMinor": "0",
+              "evidenceReference": "Explicit synthetic exempt employer fixture, not a real employer fact"
+            }
+          ]
+        },
+        "ytd": {
+          "year": 2026,
+          "revision": 1,
+          "evidenceReference": "QA synthetic attested opening",
+          "attested": true,
+          "grossMinor": "0",
+          "netMinor": "0",
+          "socialSecurityWagesMinor": "0",
+          "medicareWagesMinor": "0",
+          "sinotWagesMinor": "0",
+          "deductions": {},
+          "employerContributions": {},
+          "ledgerFingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "locationIds": [],
+          "employerWagesMinor": {
+            "PR_UI": "0"
+          }
+        },
+        "deductions": []
+      },
+      "expectation": {
+        "state": "blocked",
+        "openingAccepted": true,
+        "commandAccepted": true,
+        "noRequiredBlockCode": true
+      },
+      "facts": "NEW complete zero prior cash gross and YTD PR_UI0; actual assigned250bp/700000 cap profile falsely claims700000 SAME employer prior wages. No historical exception.",
+      "releaseAccepted": false
+    }
+  ]
+}
