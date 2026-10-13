@@ -13,6 +13,8 @@ export type NativeLedgerEntry = {
     payday: string;
     sequence: number;
     result: NativePayrollReady;
+    locationCoverage?:{complete:boolean;locationIds:string[]}|null;
+    deductionSources?: import("./contracts").NativeAuthorizedDeduction[];
 };
 export function projectNativeYtd(opening: NativeYtd, ledger: NativeLedgerEntry[], correctionOf: string | null = null): NativeYtd {
     if (!opening || opening.attested !== true || !opening.evidenceReference || opening.revision < 1)
@@ -42,7 +44,7 @@ export function projectNativeYtd(opening: NativeYtd, ledger: NativeLedgerEntry[]
             fail("YTD_DEPENDENT_RUNS_REQUIRED");
         heads = heads.filter(item => item.runId !== target.runId);
     }
-    const output: NativeYtd = { ...opening, revision: opening.revision + ledger.length, deductions: { ...opening.deductions }, employerContributions: { ...opening.employerContributions }, employerWagesMinor: { ...opening.employerWagesMinor }, locationIds: [...new Set([...opening.locationIds, ...ledger.flatMap(item => item.result.breakdown.locationIds)])].sort(), ledgerFingerprint: hash({ opening, ledger: [...ledger].sort((a, b) => a.sequence - b.sequence), correctionOf }) };
+    const output: NativeYtd = { ...opening, revision: opening.revision + ledger.length, deductions: { ...opening.deductions }, employerContributions: { ...opening.employerContributions }, employerWagesMinor: { ...opening.employerWagesMinor }, locationIds: [...new Set([...opening.locationIds, ...ledger.flatMap(item => [...item.result.breakdown.locationIds,...item.result.breakdown.ytdBefore.locationIds,...item.result.breakdown.ytdAfter.locationIds,...(item.locationCoverage?.locationIds??[])])])].sort(), ledgerFingerprint: hash({ opening, ledger: [...ledger].sort((a, b) => a.sequence - b.sequence), correctionOf }) };
     const plus = (a: string, b: string) => (minor(a) + minor(b)).toString();
     for (const item of heads) {
         const row = item.result.row;

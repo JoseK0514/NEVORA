@@ -5,6 +5,8 @@ export type NativeRecordedBreak = {
     typeId: string | null;
     startAt: string;
     endAt: string | null;
+    recordedVersion?: number;
+    classification?: import("../../clocker/break-types").BreakTypeSnapshot | null;
 };
 export type NativeRecordedEntry = {
     id: string;
@@ -25,6 +27,7 @@ export type NativeTimecard = {
     finalizedSourceHash: string | null;
     pendingCorrections: number;
     entries: NativeRecordedEntry[];
+    recordedSourceEvidence?: {captureFence:string;operationId:string;sourceHash:string;currentSourceHash:string};
 };
 export type NativeWageProfile = {
     id: string;
@@ -103,6 +106,8 @@ export type NativeAuthorizedDeduction = {
     amountMinor: string | null;
     basisPoints: number | null;
     capMinor: string | null;
+    /** Capped authorization opening withheld before effectiveFrom; native
+     * same-authorization ledger heads advance it. Not a guessed YTD zero. */
     deductedBeforeMinor: string;
     authorization: "WRITTEN_POST_TAX";
     authorizationReference: string;

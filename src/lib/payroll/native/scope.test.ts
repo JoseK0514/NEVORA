@@ -1,0 +1,6 @@
+import { it, expect } from "vitest";
+import { managerScopeSql, payrollObjectScopeSql } from "./scope";
+import type { SessionMutationProof } from "../../shift-changes/types";
+const proof: SessionMutationProof = { employee: { id: "M1", role: "MANAGER", firstName: "QA", lastName: "Manager", primaryLocationId: "L1" }, sessionTokenHash: "a".repeat(64) };
+it("requires fresh Manager lifecycle, Owner-issued scope and complete disclosed object", () => { const s = payrollObjectScopeSql(proof, "(r.payload->'coverage')", "r.workspace_id"); expect(s).toContain("manager.role='MANAGER'"); expect(s).toContain("manager.updated_at::text=g.subject_employee_version"); expect(s).toContain("complete'='true'"); expect(s).toContain("disclosed.id"); expect(s).not.toContain("employee_location_eligibility"); });
+it("does not consult stale Manager grants for Employee/Lead or company-only documents", () => { expect(payrollObjectScopeSql({ ...proof, employee: { ...proof.employee, role: "LEAD" } }, "coverage", "ws")).not.toContain("scope"); expect(payrollObjectScopeSql(proof, "coverage", "ws", "review", true)).not.toContain("scope"); expect(managerScopeSql("$1", "$2", "approve")).toContain("approve'='true'"); });

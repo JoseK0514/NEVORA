@@ -370,7 +370,10 @@ export function parseRunCommand(v: unknown): PayrollRunCommand {
         Number(c.expectedRevision) > 0,
       "run",
     );
-    if (c.action === "IMPORT" || c.action === "CORRECT") {
+    if(c.action==="RECALCULATE"||c.action==="CORRECT_NATIVE"){
+      insist(Object.keys(c).every(k=>["action","operationId","runId","expectedRevision",...(c.action==="CORRECT_NATIVE"?["reason"]:[])].includes(k)),"nativeCommand");
+      if(c.action==="CORRECT_NATIVE")insist(text(c.reason),"reason");
+    }else if (c.action === "IMPORT" || c.action === "CORRECT") {
       parseImport(c.amounts);
       if (c.action === "CORRECT") insist(text(c.reason), "reason");
     } else if (c.action === "APPROVE")
