@@ -29,10 +29,11 @@ function policy(f:FormData,employeeId:string,previous:NativeWorkweekPolicy|null)
   return {version:'PR_WORKWEEK_POLICY_V1',id:previous?.id??text(f,'policyId'),revision:(previous?.revision??0)+1,employeeId,effectiveFrom:instant(f,'policyFrom'),effectiveTo:end(f,'policyTo',true),boundary:{weekday:weekday as 1|2|3|4|5|6|7,startTime,timeZone:'America/Puerto_Rico'},federalWorkweek:'SAME_VERIFIED_BOUNDARY',federalEvidenceReference:text(f,'federalEvidence','the federal week evidence reference'),origin};
 }
 export function profileFromForm(f:FormData,employeeId:string,previous:NativeConfiguration|null):NativeConfiguration {
-  const priorPolicy=previous?.wages.find(w=>w.workweekPolicy)?.workweekPolicy??null;
-  const workweekPolicy=policy(f,employeeId,priorPolicy);
   const wageIds=list(f,'wageId'); if(!wageIds.length) throw Error('Add an effective wage.');
-  const wages=wageIds.map(id=>{ const p=`wage.${id}.`, before=previous?.wages.find(w=>w.id===id); choice(f,p+'scope',['CONFIRMED'],'the supported employment and minimum wage coverage');
+  const wages=wageIds.map(id=>{ const p=`wage.${id}.`, before=previous?.wages.find(w=>w.id===id);
+    const scoped=new FormData();for(const [key,value] of f)if(key.startsWith(p))scoped.append(key.slice(p.length),value);
+    const workweekPolicy=scoped.has('policyKind')?policy(scoped,employeeId,before?.workweekPolicy??null):wageIds.length===1&&f.has('policyKind')?policy(f,employeeId,before?.workweekPolicy??null):before?.workweekPolicy??null;
+    choice(f,p+'scope',['CONFIRMED'],'the supported employment and minimum wage coverage');
     const retainLegacy = !workweekPolicy || (!!before?.workweekAnchorDate && Temporal.PlainDate.from(before.workweekAnchorDate).dayOfWeek === workweekPolicy.boundary.weekday && before.workweekStartTime === workweekPolicy.boundary.startTime);
     return {id,revision:(before?.revision??0)+1,effectiveFrom:instant(f,p+'from'),effectiveTo:end(f,p+'to',true),locationIds:locations(f,p+'locations'),hourlyRateMinor:rate(f,p+'rate'),compensation:'HOURLY' as const,employment:'PR_PRIVATE_NONEXEMPT' as const,minimumWageCoverage:'PR_ACT_47_STANDARD_2026' as const,overtime:choice(f,p+'overtime',['TIME_AND_HALF','DOUBLE_PRESERVED']),dailyBasis:'CALENDAR_DAY' as const,workweekAnchorDate:retainLegacy?before?.workweekAnchorDate??null:null,workweekStartTime:retainLegacy?before?.workweekStartTime??null:null,workweekPolicy,overtimeBasis:'WEIGHTED_WEEKLY' as const,wageCentRounding:before?.wageCentRounding??'UNVERIFIED' as const,breakRules:list(f,p+'breakId').filter(typeId=>raw(f,p+'break.'+typeId)).map(typeId=>({typeId,treatment:choice(f,p+'break.'+typeId,['PAID_REST','UNPAID_RELIEVED_MEAL'])})),standardContextAttested:confirm(f,p+'attest','the documented standard wage context'),evidenceReference:text(f,p+'evidence','the wage/context evidence reference')}; });
   let tax:NativeTaxProfile|null=null;
