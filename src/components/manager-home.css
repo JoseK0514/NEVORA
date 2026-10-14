@@ -150,3 +150,72 @@
  .manager-portal-home .manager-week-overview { padding: 20px; }
 }
 @media (max-width:360px) { .manager-portal-home .dashboard-hero-actions { grid-template-columns: minmax(0,1fr); } .manager-planning-summary > div { padding-inline: 10px; } .manager-planning-summary dd { font-size: 26px; } }
+
+/* Gusto-inspired home: calm hierarchy, task-first cards, and generous white space. */
+.manager-portal-home {
+  --home-ink: #1f2933;
+  --home-muted: #66737f;
+  --home-line: #dfe6e8;
+  --home-soft: #f4f8f7;
+  --home-teal: #347f7b;
+  max-width: 1180px;
+  gap: 30px;
+  color: var(--home-ink);
+}
+.manager-portal-home .dashboard-hero { padding: 4px 0 2px; }
+.manager-portal-home .dashboard-hero-copy { gap: 6px; }
+.manager-portal-home .dashboard-hero h1 { font-size: 28px; font-weight: 600; letter-spacing: -.035em; }
+.manager-portal-home .dashboard-hero-copy > span { color: var(--home-muted); }
+.manager-portal-home .dashboard-hero-actions { gap: 10px; }
+.manager-portal-home .dashboard-week-nav,
+.manager-portal-home .dashboard-hero .button.primary { border-radius: 6px; }
+.manager-portal-home .dashboard-week-nav { min-height: 44px; background: #fff; border-color: var(--home-line); }
+.manager-portal-home .dashboard-hero .button.primary { background: var(--home-teal); box-shadow: none; }
+.manager-portal-home .dashboard-hero .button.primary:hover { background: #286c68; }
+.manager-portal-home .dashboard-tabs { gap: 26px; border-color: var(--home-line); }
+.manager-portal-home .dashboard-tabs a { color: var(--home-muted); font-size: 13px; }
+.manager-portal-home .dashboard-tabs a.active { color: var(--home-teal); }
+.manager-portal-home .dashboard-tabs a.active::after { background: var(--home-teal); height: 3px; border-radius: 3px 3px 0 0; }
+.manager-planning-summary { padding: 4px 0 8px; }
+.manager-planning-summary > div { padding-inline: 24px; border-color: var(--home-line); }
+.manager-planning-summary dt { color: var(--home-muted); font-size: 12px; }
+.manager-planning-summary dd { color: var(--home-ink); font-size: 30px; font-weight: 600; }
+.manager-planning-summary dd span { color: #8b969d; }
+.manager-planning-summary small { color: var(--home-muted); }
+.manager-portal-home .manager-home-grid { grid-template-columns: minmax(0, 1.45fr) minmax(300px, .85fr); gap: 22px; }
+.manager-overview-rail { gap: 22px; }
+.manager-portal-home .manager-home-card,
+.manager-portal-home .manager-live-card,
+.manager-portal-home .manager-week-overview { border: 1px solid var(--home-line); border-radius: 8px; background: #fff; box-shadow: 0 2px 8px rgba(30, 54, 62, .035); }
+.manager-portal-home .manager-home-card-header { padding: 18px 20px; border-bottom-color: var(--home-line); }
+.manager-portal-home .manager-home-card-header h2,
+.manager-portal-home .manager-week-overview h2 { color: var(--home-ink); font-size: 17px; font-weight: 600; letter-spacing: -.015em; }
+.manager-portal-home .manager-home-count { width: 28px; height: 28px; border-radius: 50%; background: var(--home-soft); color: var(--home-teal); }
+.manager-portal-home .manager-home-empty { min-height: 116px; padding: 24px 20px; background: #fff; }
+.manager-portal-home .manager-home-empty strong { color: var(--home-ink); font-size: 14px; }
+.manager-portal-home .manager-home-empty small { max-width: 34ch; color: var(--home-muted); }
+.manager-portal-home .manager-live-summary { background: var(--home-soft); border-color: var(--home-line); }
+.manager-portal-home .manager-live-summary strong { color: var(--home-ink); }
+.manager-portal-home .manager-live-footer { border-color: var(--home-line); }
+.manager-portal-home .manager-live-refresh { border: 1px solid var(--home-line); color: var(--home-teal); }
+.manager-portal-home .manager-floor-row { padding: 16px 20px; border-color: var(--home-line); }
+.manager-portal-home .manager-floor-copy strong { color: var(--home-ink); }
+.manager-portal-home .manager-floor-copy small { color: var(--home-muted); }
+.manager-portal-home .manager-floor-avatar { background: #e4f0ee; color: var(--home-teal); }
+.manager-portal-home .manager-attendance-link { color: var(--home-teal); }
+.manager-portal-home .manager-week-overview { padding: 20px; }
+.manager-portal-home .manager-week-overview header p,
+.manager-portal-home .manager-chart-total,
+.manager-portal-home .manager-chart-note { color: var(--home-muted); }
+.manager-portal-home .manager-bar-track > span { background: #8fc4be; }
+.manager-portal-home .manager-week-chart li:hover .manager-bar-track > span { background: var(--home-teal); }
+.manager-portal-home .manager-location-plan { border-color: var(--home-line); }
+.manager-portal-home .manager-location-plan li { border-color: var(--home-line); }
+.manager-portal-home .manager-location-state { color: var(--home-muted); background: var(--home-soft); }
+.manager-portal-home .manager-location-state[data-state='PUBLISHED'],
+.manager-portal-home .manager-location-state[data-state='READY'] { color: var(--home-teal); background: #e4f0ee; }
+@media (max-width: 760px) {
+  .manager-portal-home { gap: 24px; }
+  .manager-portal-home .dashboard-hero h1 { font-size: 26px; }
+  .manager-planning-summary > div { padding-inline: 14px; }
+}
