@@ -423,8 +423,12 @@ export async function renderNativeEmployeePaystub(input: NativePaystubPresentati
     await paragraph(t.contributionsNote, 8, false, 12, true);
   }
   await checkpoint();
+  const firstSource = `${t.run}: ${p.runReference} / ${t.revision} ${p.runRevision}`;
+  // Keep the section heading with the complete first reference, including wrapped lines.
+  await ensure(wrap(t.sources, bold, 12, WIDTH).length * 16 + 8
+    + wrap(firstSource, regular, 8, WIDTH).length * 12 + 4);
   await paragraph(t.sources, 12, true, 8);
-  await paragraph(`${t.run}: ${p.runReference} / ${t.revision} ${p.runRevision}`, 8, false, 4, true);
+  await paragraph(firstSource, 8, false, 4, true);
   await paragraph(t.recorded, 8, false, 4, true);
   if (p.correction.kind === "REPLACEMENT") {
     await paragraph(`${t.root}: ${p.correction.originalRunReference}`, 8, false, 4, true);

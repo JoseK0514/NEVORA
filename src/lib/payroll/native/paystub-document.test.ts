@@ -320,3 +320,213 @@ describe("native employee PDF", () => {
     await expect(renderNativeEmployeePaystub(input)).rejects.toMatchObject({ code: "UNSUPPORTED_DOCUMENT_GLYPH", paths: ["taxes.0.label"] });
   });
 });
+
+// Exact ordinary-name presentation from sealed NP-17 original AS_OWNER (149-character company).
+function np17ApprovedPresentation(): NativePaystubPresentation {
+  return {
+    "version": "NEVORA_NATIVE_PAYSTUB_PRESENTATION_V1",
+    "templateVersion": "NEVORA_NATIVE_PAYSTUB_PDF_V1",
+    "sourceAuthority": "NATIVE_RECORDED_TIME",
+    "currency": "USD",
+    "language": "en",
+    "companyName": "Cooperativa Ficticia de Investigación, Conservación y Servicios Comunitarios de los Jardines del Valle del Norte y la Reserva Marítima de Puerto Rico",
+    "employeeName": "Fictional owner",
+    "employeeReference": "AS_OWNER",
+    "period": {
+      "endDate": "2026-09-27",
+      "startDate": "2026-09-21"
+    },
+    "payDate": "2026-09-29",
+    "approvedAt": "2026-10-14T10:59:48.006Z",
+    "runReference": "c44133bc-178c-4394-bbbc-13461f990c85",
+    "runRevision": 2,
+    "correction": {
+      "kind": "ORIGINAL"
+    },
+    "ytdYear": 2026,
+    "earnings": [
+      {
+        "label": "Regular hours",
+        "kind": "REGULAR",
+        "amountMinor": "100000",
+        "work": {
+          "nanoseconds": "144000000000000",
+          "baseRateMinorPerHour": {
+            "numerator": "2500",
+            "denominator": "1"
+          },
+          "premiumRateMinorPerHour": {
+            "numerator": "0",
+            "denominator": "1"
+          },
+          "paidRateMinorPerHour": {
+            "numerator": "2500",
+            "denominator": "1"
+          }
+        }
+      }
+    ],
+    "taxes": [
+      {
+        "label": "Additional Medicare",
+        "amount": {
+          "currentMinor": "0",
+          "ytdMinor": "0"
+        }
+      },
+      {
+        "label": "Medicare",
+        "amount": {
+          "currentMinor": "1450",
+          "ytdMinor": "1450"
+        }
+      },
+      {
+        "label": "Puerto Rico income tax",
+        "amount": {
+          "currentMinor": "9965",
+          "ytdMinor": "9965"
+        }
+      },
+      {
+        "label": "Disability insurance (SINOT)",
+        "amount": {
+          "currentMinor": "300",
+          "ytdMinor": "300"
+        }
+      },
+      {
+        "label": "Social Security",
+        "amount": {
+          "currentMinor": "6200",
+          "ytdMinor": "6200"
+        }
+      }
+    ],
+    "authorizedDeductions": [],
+    "totals": {
+      "gross": {
+        "currentMinor": "100000",
+        "ytdMinor": "100000"
+      },
+      "taxes": {
+        "currentMinor": "17915",
+        "ytdMinor": "17915"
+      },
+      "authorizedDeductions": {
+        "currentMinor": "0",
+        "ytdMinor": "0"
+      },
+      "net": {
+        "currentMinor": "82085",
+        "ytdMinor": "82085"
+      }
+    },
+    "employerContributions": {
+      "lines": [
+        {
+          "label": "Workers compensation insurance (CFSE)",
+          "amount": {
+            "currentMinor": "1000",
+            "ytdMinor": "1000"
+          }
+        },
+        {
+          "label": "Federal unemployment tax (FUTA)",
+          "amount": {
+            "currentMinor": "6000",
+            "ytdMinor": "6000"
+          }
+        },
+        {
+          "label": "Medicare",
+          "amount": {
+            "currentMinor": "1450",
+            "ytdMinor": "1450"
+          }
+        },
+        {
+          "label": "Puerto Rico unemployment insurance",
+          "amount": {
+            "currentMinor": "2500",
+            "ytdMinor": "2500"
+          }
+        },
+        {
+          "label": "Disability insurance (SINOT)",
+          "amount": {
+            "currentMinor": "300",
+            "ytdMinor": "300"
+          }
+        },
+        {
+          "label": "Social Security",
+          "amount": {
+            "currentMinor": "6200",
+            "ytdMinor": "6200"
+          }
+        }
+      ],
+      "total": {
+        "currentMinor": "17450",
+        "ytdMinor": "17450"
+      }
+    },
+    "sourceReferences": [
+      {
+        "label": "Approved payroll reference",
+        "value": "c44133bc-178c-4394-bbbc-13461f990c85 / 2"
+      }
+    ]
+  };
+}
+
+describe("NP17-001 source section grouping", () => {
+  const cases = [
+    { language: "en", replacement: false }, { language: "en", replacement: true },
+    { language: "es", replacement: false }, { language: "es", replacement: true },
+  ] as const;
+  function caseInput(language: "en" | "es", replacement: boolean) {
+    const p = np17ApprovedPresentation(); p.language = language;
+    if (replacement) {
+      p.runReference = "aa69fe07-fe9d-4020-a339-fc56596f3fa7";
+      p.approvedAt = "2026-10-14T10:59:51.995Z";
+      p.correction = { kind: "REPLACEMENT", originalRunReference: "c44133bc-178c-4394-bbbc-13461f990c85", replacesRunReference: "c44133bc-178c-4394-bbbc-13461f990c85" };
+    }
+    p.sourceReferences = [{ label: language === "es" ? "Referencia de nómina aprobada" : "Approved payroll reference", value: `${p.runReference} / 2` }];
+    return p;
+  }
+  async function expectPrintable(pages: PdfText[][]) {
+    const metrics = await PDFDocument.create();
+    const regular = await metrics.embedFont(StandardFonts.Helvetica), bold = await metrics.embedFont(StandardFonts.HelveticaBold);
+    for (const page of pages) for (const line of page) {
+      const width = [...line.text].reduce((n, char) => n + (line.bold ? bold : regular).widthOfTextAtSize(char, line.size), 0);
+      expect(line.x).toBeGreaterThanOrEqual(39.9); expect(line.x + width, line.text).toBeLessThanOrEqual(572.1);
+      expect(line.y).toBeGreaterThanOrEqual(24); expect(line.y + line.size).toBeLessThanOrEqual(752.1); expect(line.size).toBeGreaterThanOrEqual(8);
+    }
+  }
+  it.each(cases)("keeps approval heading and first reference together: $language / replacement=$replacement", async ({ language, replacement }) => {
+    const p = caseInput(language, replacement), pdf = await readPdf((await renderNativeEmployeePaystub(p)).bytes);
+    const heading = language === "es" ? "Aprobación y referencias de origen" : "Approval and source references";
+    const headingPage = pdf.pages.findIndex(page => page.some(line => line.text === heading));
+    const reference = `${language === "es" ? "Nómina" : "Payroll run"}: ${p.runReference} / ${language === "es" ? "revisión" : "revision"} 2`;
+    expect(headingPage).toBeGreaterThanOrEqual(0);
+    expect(pdf.pages[headingPage].map(line => line.text).join(" ")).toContain(reference);
+    for (const value of ["USD 1,000.00", "USD 179.15", "USD 820.85", "USD 174.50", "USD 99.65", "USD 62.00", "USD 60.00", "USD 25.00", "USD 14.50", "USD 10.00", "USD 3.00"]) expect(pdf.text).toContain(value);
+    expect(pdf.text).toContain(p.companyName); expect(pdf.text).toContain("Fictional owner");
+    expect(pdf.text).toContain("2026-09-21 — 2026-09-27"); expect(pdf.text).toContain(p.payDate); expect(pdf.text).toContain(p.approvedAt);
+    expect(pdf.text).toContain(p.sourceReferences[0].label); expect(pdf.text).toContain(p.sourceReferences[0].value);
+    if (replacement) expect(pdf.text).toContain("c44133bc-178c-4394-bbbc-13461f990c85");
+    await expectPrintable(pdf.pages);
+  });
+  it.each(cases)("keeps the whole wrapped first reference with the heading: $language / replacement=$replacement", async ({ language, replacement }) => {
+    const p = caseInput(language, replacement); p.runReference = "NP17-WRAPPED-" + "W".repeat(215) + "-END";
+    const pdf = await readPdf((await renderNativeEmployeePaystub(p)).bytes);
+    const heading = language === "es" ? "Aprobación y referencias de origen" : "Approval and source references";
+    const page = pdf.pages.find(page => page.some(line => line.text === heading))!;
+    expect(page).toBeDefined();
+    expect(page.map(line => line.text).join("").replace(/\s/g, "")).toContain(`${language === "es" ? "Nómina" : "Payroll run"}:${p.runReference}/${language === "es" ? "revisión" : "revision"}2`.replace(/\s/g, ""));
+    expect(pdf.text).toContain(p.sourceReferences[0].value);
+    await expectPrintable(pdf.pages);
+  });
+});
