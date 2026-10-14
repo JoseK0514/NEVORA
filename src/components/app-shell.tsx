@@ -97,7 +97,8 @@ export function AppShell({
   const Profile = notificationsEnabled ? "button" : "div";
   return (
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
-      data-mobile-workforce={pathname && pathname !== "/app" ? "true" : undefined}>
+      data-mobile-workforce={pathname && pathname !== "/app" ? "true" : undefined}
+      data-employee-corporate={user.role === "EMPLOYEE" && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}>
       <aside className="sidebar" data-collapsed={collapsed}>
         <div className="sidebar-heading">
         <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>

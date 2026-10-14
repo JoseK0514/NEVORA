@@ -11,5 +11,5 @@ export default async function TimecardsPage({searchParams}:{searchParams:Promise
   let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
   return <div className="employee-view"><TimecardsHeading manager={isManagerRole(session.role)}/>
-    <Timecards key={session.id} initialPeriod={period} manager={isManagerRole(session.role)} actorId={session.id}/></div>;
+    <Timecards key={session.id} initialPeriod={period} manager={isManagerRole(session.role)} actorId={session.id} employeeCorporate={session.role==='EMPLOYEE'}/></div>;
 }

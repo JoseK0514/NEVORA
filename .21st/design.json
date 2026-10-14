@@ -182,6 +182,34 @@
         "https://21st.dev/@halaska-studio/components/calendar",
         "https://21st.dev/@kevingirelli/components/sheet"
       ]
+    },
+    {
+      "date": "2026-10-13",
+      "scope": "Role EMPLOYEE, exact /app/my-time and /app/timecards, mobile screen <=760px",
+      "direction": "Approved Gusto-inspired native21st ports: coherent blue/white grouped surfaces, soft-blue Today totals, aligned typography,48px peer buttons,52px native fields, quiet record/navigation rows and neutral routine period information. Preserve original controllers, corrections, exact records, manager eligibility and all desktop/other-role/sibling presentation.",
+      "references": [
+        "https://mobbin.com/screens/b9bf269f-2d5e-4f19-9ada-338ae6cdebdf",
+        "https://mobbin.com/screens/615a1c68-9a32-4425-90eb-17f6a318a269",
+        "https://21st.dev/@shadcn/components/item"
+      ],
+      "componentProvenance": {
+        "retrieval": "Existing authenticated21st CLI catalog; MCP unavailable; source snapshots retained with proposal/evidence",
+        "nativePorts": {
+          "Button": 143,
+          "Input": 167,
+          "Button Group": 8608,
+          "Item": 8663,
+          "Card": 15582,
+          "Badge": 27366,
+          "Accordion": 494,
+          "Separator": 1556,
+          "Alert": 1170
+        },
+        "newDependencies": false,
+        "hostedAiGeneration": false
+      },
+      "implementation": "src/app/employee-mobile-corporate.css and native class helpers; one live business/control tree per route",
+      "handoff": "docs/execution/2026-10-13-employee-time-mobile-refinement.md"
     }
   ],
   "evidence": [

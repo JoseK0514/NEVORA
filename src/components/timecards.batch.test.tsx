@@ -13,8 +13,8 @@ import {Timecards} from './timecards';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 function card(id:string){const source={...period,employeeId:id,employeeName:`PRIVATE ${id}`,timeZone:'America/Puerto_Rico',pendingCorrections:0,entries:[],corrections:[]};return {source,state:'DRAFT',revision:0,sourceHash:'a'.repeat(32),history:[]};}
 const ready=(validForMs=45000)=>({state:'ready',observedAt:'2026-09-29T12:00:00Z',validForMs,cards:[card('E1'),card('E2'),card('OWNER')]});
-let cleanup:void|(()=>void);let commands:TimecardCommand[]=[],actorId='OWNER';
-function render(){host.cursor=0;return Timecards({initialPeriod:period,manager:true,actorId});}
+let cleanup:void|(()=>void);let commands:TimecardCommand[]=[],actorId='OWNER',manager=true,employeeCorporate=false;
+function render(){host.cursor=0;return Timecards({initialPeriod:period,manager,actorId,employeeCorporate});}
 const html=()=>renderToStaticMarkup(render());
 function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode)];}
 function control(test:(n:ReactElement<Record<string,unknown>>)=>boolean){const n=nodes(render()).find(test);if(!n)throw Error('Missing rendered control');return n.props;}
@@ -23,8 +23,47 @@ const check=(label:string,value=true)=>(control(n=>n.type==='input'&&n.props['ar
 const flush=()=>vi.advanceTimersByTimeAsync(0);
 async function mount(){render();host.mounted=true;cleanup=host.effects[0]();await flush();}
 function transport(outcome:'success'|'unknown'='success',validForMs=45000){vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready(validForMs));const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);if(outcome==='unknown')throw Error('Interrupted');return Response.json({status:'approved',operationId:c.operationId,revision:1});});}
-beforeEach(()=>{actorId='OWNER';host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];commands=[];vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});});
+beforeEach(()=>{actorId='OWNER';manager=true;employeeCorporate=false;host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];commands=[];vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});});
 afterEach(()=>{cleanup?.();cleanup=undefined;vi.unstubAllGlobals();vi.useRealTimers();});
+it('shows employee period information and keeps approval controls out of the employee view',async()=>{
+ manager=false;employeeCorporate=true;actorId='E1';
+ vi.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-27T12:00:00Z',cards:[card('E1')]}));
+ await mount();
+ expect(html()).toContain('Period is still open');
+ expect(html()).toContain('Period information');
+ expect(html()).toContain('data-tone="neutral"');
+ expect(html()).toContain('Request corrections in My Time.');
+ expect(html()).not.toMatch(/Approve timecard|Finalize period|Reopen period|Selected timecard review|Select PRIVATE/);
+ window.dispatchEvent(new Event('blur'));
+ expect(html()).not.toContain('Period is still open');
+ expect(html()).not.toContain('Your timecard');
+ expect(commands).toHaveLength(0);
+});
+it('clears employee timecard rows after access denial on the native refresh control',async()=>{
+ manager=false;employeeCorporate=true;actorId='E1';let denied=false;
+ vi.stubGlobal('fetch',async()=>denied?new Response(null,{status:403}):Response.json({...ready(),cards:[card('E1')]}));
+ await mount();expect(html()).toContain('Your timecard');
+ denied=true;
+ (control(n=>n.type==='button'&&n.props['aria-label']==='Refresh timecards').onClick as ()=>unknown)();
+ await flush();expect(html()).toContain('Sign in again to view your timecards.');
+ expect(html()).not.toContain('Your timecard');
+ expect(html()).not.toContain('Revision 0');
+ expect(commands).toHaveLength(0);
+});
+it('renders all mixed employee issue reasons without changing their order or exposing approvals',async()=>{
+ manager=false;employeeCorporate=true;actorId='E1';
+ const own=card('E1');
+ const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:null,positionName:null,sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-27T08:00:00Z',endAt:null,rawStartAt:'2026-09-27T08:00:00Z',rawEndAt:null,breaks:[{id:'break-1',name:'Meal',startAt:'2026-09-27T09:00:00Z',endAt:null,rawStartAt:'2026-09-27T09:00:00Z',rawEndAt:null,adjustmentId:null}]};
+ const source={...own.source,pendingCorrections:1,entries:[entry,{...entry,id:'punch-2',startAt:'2026-09-27T10:00:00Z',rawStartAt:'2026-09-27T10:00:00Z',breaks:[]}]};
+ vi.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-27T12:00:00Z',cards:[{...own,source}]}));
+ await mount();const rendered=html();
+ expect(rendered).toContain('data-tone="warning"');
+ const reasons=['Period is still open','Correction awaiting review','Missing clock out','Open break','Overlapping recorded time'];
+ const positions=reasons.map(reason=>rendered.indexOf(reason));
+ expect(positions.every(position=>position>=0)).toBe(true);
+ expect(positions).toEqual([...positions].sort((a,b)=>a-b));
+ expect(rendered).not.toMatch(/Approve timecard|Finalize period|Reopen period|Selected timecard review/);
+});
 it('requires explicit selection, a rendered reviewed set and fresh confirmation before approval',async()=>{
  transport();await mount();expect(control(n=>n.type==='button'&&n.props.children==='Review selected timecards').disabled).toBe(true);
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE OWNER').disabled).toBe(true);

@@ -4,6 +4,7 @@ import { NUVORA_BRAND } from "../lib/brand";
 import "./globals.css";
 import "./typeface-theme.css";
 import "./mobile-workforce.css";
+import "./employee-mobile-corporate.css";
 
 export const metadata: Metadata = {
   title: NUVORA_BRAND.metadataTitle,

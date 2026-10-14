@@ -11,6 +11,9 @@ import {parseCurrentTimecards,parseTimecardReceipt} from '@/lib/timecards/client
 import {batchExclusion,reviewTimecards,reviewIsCurrent,runReviewedBatch,type BatchAction,type ReviewedBatch,type BatchOutcome} from '@/lib/timecards/reviewed-batch';
 import styles from './timecards.module.css';
 import {MobileHomeDisclosure} from './mobile-home-disclosure';
+import {CaretRightIcon} from '@phosphor-icons/react/ssr';
+import {employeeButtonClass,employeeInputClass,employeeRowClass} from './employee-corporate-ui';
+import {employeeTimecardPresentation} from './employee-timecard-presentation';
 
 const stamp=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at));
 const issueNames:Record<string,string>={period_open:'Period is still open',open_entry:'Missing clock out',open_break:'Open break',pending_correction:'Correction awaiting review',overlapping_time:'Overlapping recorded time'};
@@ -40,7 +43,8 @@ function commandMessage(result:TimecardMutation):string{
   return result.status==='approved'?'Timecard approved.':result.status==='finalized'?'Timecard finalized.':'Period reopened. Earlier revisions remain preserved.';
 }
 
-export function Timecards({initialPeriod,manager,actorId}:{initialPeriod:Period;manager:boolean;actorId:string}){
+export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean}){
+  const corporate=employeeCorporate&&!manager;
   const [period,setPeriod]=useState(initialPeriod),[draft,setDraft]=useState(initialPeriod);
   const [data,setData]=useState<TimecardsResult|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState('Loading timecards…');
   const [notes,setNotes]=useState<Record<string,string>>({}),[pending,setPending]=useState<TimecardCommand|null>(null);
@@ -142,19 +146,19 @@ export function Timecards({initialPeriod,manager,actorId}:{initialPeriod:Period;
   usePrivateFragmentFocus('timecard-',currentActor&&data?.state==='ready');
   const cards=currentActor&&data?.state==='ready'?[...data.cards].sort((a,b)=>Number(b.card.issues.length>0)-Number(a.card.issues.length>0)||a.card.employeeName.localeCompare(b.card.employeeName)):[];
   const eligible=cards.filter(item=>!batchExclusion(item,actorId,batchAction));
-  return <section className={styles.root} aria-label={manager?'Manager timecards':'Your period timecard'}>
-    <div className={styles.periodPanel}>
-    <div className={styles.periodHeading}><NavIcon name="calendar" size={20}/><h2>Choose a period</h2><span>Review recorded time by date</span></div>
-    <form onSubmit={choose} className={styles.toolbar}>
-      <label>Period start<input type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>
-      <label>Period end<input type="date" required value={draft.endDate} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label>
-      <button className="button primary" disabled={busy||!!pending}>View period</button>
-      <button type="button" className="button secondary" disabled={busy} onClick={()=>void refresh(period)}>Refresh timecards</button>
+  return <section className={(corporate?'employee-corporate-timecards ':'')+styles.root} aria-label={manager?'Manager timecards':'Your period timecard'}>
+    <div className={(corporate?'employee-corporate-period ':'')+styles.periodPanel}>
+    <div className={(corporate?'employee-corporate-period-heading ':'')+styles.periodHeading}><NavIcon name="calendar" size={20}/><h2>Choose a period</h2><span>Review recorded time by date</span></div>
+    <form onSubmit={choose} className={(corporate?'employee-corporate-period-form ':'')+styles.toolbar}>
+      <label>Period start<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>
+      <label>Period end<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.endDate} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label>
+      <button className={corporate?employeeButtonClass('primary','button primary'):'button primary'} disabled={busy||!!pending}>View period</button>
+      <button type="button" className={corporate?employeeButtonClass('secondary','button secondary'):'button secondary'} aria-label={corporate?'Refresh timecards':undefined} disabled={busy} onClick={()=>void refresh(period)}>{corporate?<><span className="employee-corporate-desktop-copy">Refresh timecards</span><span className="employee-corporate-mobile-copy">Refresh</span></>:'Refresh timecards'}</button>
     </form>
     <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}</p>
     </div>
     {manager&&currentActor&&data?.state==='ready'&&cards.length?<dl className={styles.overview} aria-label="Period overview"><div><dt>Timecards</dt><dd>{cards.length}</dd></div><div><dt>Need attention</dt><dd>{cards.filter(item=>item.card.issues.length>0).length}</dd></div><div><dt>Finalized</dt><dd>{cards.filter(item=>item.state==='FINALIZED').length}</dd></div></dl>:null}
-    {!manager?<Link href="/app/my-time" className={styles.link}><NavIcon name="clock" size={18}/>Request a correction in My time →</Link>:null}
+    {!manager?<Link href="/app/my-time" className={corporate?employeeRowClass('employee-corporate-correction-link '+styles.link):styles.link}><NavIcon name="clock" size={18}/>{corporate?<><span className="employee-corporate-desktop-copy">Request a correction in My time →</span><span className="employee-corporate-mobile-copy">Request a correction<small>Continue in My Time</small></span><CaretRightIcon className="employee-corporate-caret" size={20} aria-hidden="true"/></>:'Request a correction in My time →'}</Link>:null}
     {manager&&currentActor&&data?.state==='ready'?<section className={styles.batch} aria-label="Selected timecard review">
       <details open={selected.length>0||!!review||!!outcomes||!!pending}>
       <summary className={styles.batchHeading}>
@@ -174,10 +178,12 @@ export function Timecards({initialPeriod,manager,actorId}:{initialPeriod:Period;
       </details>
     </section>:null}
     {currentActor&&data?.state==='ready'&&!cards.length?<div className={styles.empty}><NavIcon name="clock" size={32}/><h2>No timecards to show</h2><p>No employees are available for this period.</p><p className={styles.note}>Choose another date range to check recorded time.</p></div>:null}
-    {cards.map(item=><article key={item.card.employeeId} className={styles.card} tabIndex={-1} id={`timecard-${item.card.employeeId}`}>
+    {cards.map(item=>{
+      const presentation=corporate?employeeTimecardPresentation(item.card.issues):null;
+      return <article key={item.card.employeeId} className={(corporate?'employee-corporate-timecard ':'')+styles.card} tabIndex={-1} id={`timecard-${item.card.employeeId}`}>
       <header><div className={styles.identity}><span className={styles.avatar} aria-hidden="true"><NavIcon name={manager?'employee':'clock'} size={24}/></span><div><h2>{manager?item.card.employeeName:'Your timecard'}</h2><small>{periodDate(period.startDate)} – {periodDate(period.endDate)} · Revision {item.revision}</small></div></div><strong className={styles.state} data-state={item.state}>{item.state.replaceAll('_',' ').toLowerCase()}</strong></header>
-      <dl className={styles.totals}><div><dt><NavIcon name="hours" size={17}/>Recorded time</dt><dd>{formatRecordedHours(item.card.recordedNanoseconds)}</dd></div><div><dt><NavIcon name="clock" size={17}/>Break time</dt><dd>{formatRecordedHours(item.card.breakNanoseconds)}</dd></div></dl>
-      {item.card.issues.length?<div className={styles.issues}><NavIcon name="alert" size={20}/><div><h3>Needs attention</h3><ul>{item.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>Review the entries and resolve open time or corrections before approval.</p></div></div>:null}
+      <dl className={(corporate?'employee-corporate-timecard-metrics ':'')+styles.totals}><div><dt><NavIcon name="hours" size={17}/>Recorded time</dt><dd>{formatRecordedHours(item.card.recordedNanoseconds)}</dd></div><div><dt><NavIcon name="clock" size={17}/>Break time</dt><dd>{formatRecordedHours(item.card.breakNanoseconds)}</dd></div></dl>
+      {item.card.issues.length?<div className={(corporate?'employee-corporate-timecard-issues ':'')+styles.issues} data-tone={presentation?.tone}><NavIcon className={corporate?'employee-corporate-desktop-copy':undefined} name="alert" size={20}/>{corporate?<NavIcon className="employee-corporate-mobile-copy" name={presentation?.tone==='neutral'?'clock':'alert'} size={20}/>:null}<div><h3>{corporate?<><span className="employee-corporate-desktop-copy">Needs attention</span><span className="employee-corporate-mobile-copy">{presentation?.heading}</span></>:'Needs attention'}</h3><ul>{(presentation?.issues??item.card.issues).map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>{corporate?<><span className="employee-corporate-desktop-copy">Review the entries and resolve open time or corrections before approval.</span><span className="employee-corporate-mobile-copy">Review your recorded entries. Request corrections in My Time.</span></>:'Review the entries and resolve open time or corrections before approval.'}</p></div></div>:null}
       <MobileHomeDisclosure id={`mobile-timecard-${item.card.employeeId}`} label="Review timecard" expandedLabel="Close timecard review"
         available={!busy && pending?.employeeId !== item.card.employeeId && !outcomes && !review}>
       <Details card={item.card}/>
@@ -196,6 +202,6 @@ export function Timecards({initialPeriod,manager,actorId}:{initialPeriod:Period;
           <Details card={{...item.card,...h.snapshot}}/>
         </div>)}</details>:null}
       </MobileHomeDisclosure>
-    </article>)}
+    </article>;})}
   </section>;
 }
