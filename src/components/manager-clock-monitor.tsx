@@ -38,7 +38,7 @@ export function ClockMonitorCard({state,onRefresh}:{state:MonitorPanelState;onRe
    </div>:<div className="manager-home-empty"><strong>No one is clocked in</strong><small>No open time entries were recorded at the last check.</small></div>}
   </>:<div className="manager-home-empty" role="status">
    <strong>{paused?'Live updates paused':denied?'Sign in again':monitor?.state==='unavailable'?'Live activity unavailable':'Loading live activity'}</strong>
-   <small>{paused?'Reconnect and return to this page to check current activity.':denied?'Current Manager or Owner access is required.':monitor?.state==='unavailable'?'The latest clock records could not be confirmed. Try refreshing.':'Checking recorded clock-ins and breaks.'}</small>
+   <small className={denied?'manager-access-note':undefined}>{paused?'Reconnect and return to this page to check current activity.':denied?'Current Manager or Owner access is required.':monitor?.state==='unavailable'?'The latest clock records could not be confirmed. Try refreshing.':'Checking recorded clock-ins and breaks.'}</small>
   </div>}
   <footer className="manager-live-footer">
    <small>{ready?<>Checked <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt,ready.timeZone)}</time><span>Updates every 30s while this page is active.</span></>:'Only recorded punches appear here.'}</small>

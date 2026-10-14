@@ -8464,6 +8464,14 @@ body {
   line-height: 1.4;
 }
 
+.manager-home-empty > .manager-access-note {
+  max-width: 260px;
+  color: color-mix(in srgb, var(--text-primary) 68%, var(--muted));
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+}
+
 @media (max-width: 980px) {
   .manager-home-grid {
     grid-template-columns: 1fr;
