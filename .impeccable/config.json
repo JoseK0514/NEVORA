@@ -22,6 +22,15 @@
         ],
         "createdAt": "2026-10-12T15:22:26.970Z",
         "reason": "Assembly review: this local alias loads the existing fonts/typeface/inter/variable.ttf required by DESIGN.MD; preserve the supplied page design."
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "files": [
+          "src/app/typeface-theme.css"
+        ],
+        "createdAt": "2026-10-14T00:25:46.165Z",
+        "reason": "Repository requirement: AGENTS.md Visual system and page assets requires the local Inter/JetBrains Mono fonts; DESIGN.MD and the approved employee refinement retain them. Exception is limited to this existing local font declaration file."
       }
     ]
   }
