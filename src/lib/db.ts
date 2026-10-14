@@ -21,9 +21,14 @@ export function getTenantRuntimeDb(role: 'APP' | 'WORKER') {
 export function getDb() {
   if (database) return database;
 
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString =
+    process.env.DATABASE_URL ??
+    process.env.POSTGRES_PRISMA_URL ??
+    process.env.POSTGRES_URL ??
+    process.env.POSTGRES_URL_NON_POOLING;
+
   if (!connectionString) {
-    throw new Error("DATABASE_URL is not configured.");
+    throw new Error("A Neon database connection variable is not configured.");
   }
 
   database = neon(connectionString);
