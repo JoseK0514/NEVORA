@@ -16,6 +16,7 @@ import './manager-home.css';
 import './manager-home-mobile.css';
 import { MobileHomeOverview, MobileHomeTools } from './mobile-home-overview';
 import { MobileHomeDisclosure } from './mobile-home-disclosure';
+import type { ReactNode } from 'react';
 
 export type ManagerDashboardView =
   | "overview"
@@ -73,6 +74,8 @@ export type DashboardScheduleEmployeeItem = {
 };
 
 type Props = {
+  /** Display-only compositions can supply prepared panels without mounting readers. */
+  overviewSlots?: { actions: ReactNode; activity: ReactNode };
   role?: "OWNER" | "MANAGER";
   actorId?: string;
   correctionAuthority?:string;
@@ -420,8 +423,8 @@ function ActivityTab(props: Props) {
 }
 
 export function ManagerDashboard(props: Props) {
-  const actions = <ManagerActionCenter key={`${props.actorId}:${props.weekStart}`} weekStart={props.weekStart} actorId={props.actorId??''} timeZone={props.timeZone}/>;
-  const activity = <div className="manager-monitor-block" key="recorded-activity">
+  const actions = props.overviewSlots?.actions ?? <ManagerActionCenter key={`${props.actorId}:${props.weekStart}`} weekStart={props.weekStart} actorId={props.actorId??''} timeZone={props.timeZone}/>;
+  const activity = props.overviewSlots?.activity ?? <div className="manager-monitor-block" key="recorded-activity">
     <ManagerClockMonitor />
     <Link className="manager-attendance-link" href={dashboardHref(props.weekStart, 'attendance')}><NavIcon name="clock" size={18} />Review attendance</Link>
   </div>;
