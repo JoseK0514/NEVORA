@@ -219,3 +219,129 @@
   .manager-portal-home .dashboard-hero h1 { font-size: 26px; }
   .manager-planning-summary > div { padding-inline: 14px; }
 }
+
+/* Full home redesign: a structured, calm operations workspace. */
+.manager-portal-home {
+  --home-ink: #17212b;
+  --home-muted: #687681;
+  --home-line: #e3e9e8;
+  --home-canvas: #f7f9f8;
+  --home-card: #ffffff;
+  --home-teal: #176b68;
+  --home-teal-soft: #e4f2ef;
+  max-width: 1240px;
+  gap: 0;
+  color: var(--home-ink);
+}
+.manager-portal-home .dashboard-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 32px;
+  align-items: end;
+  padding: 28px 32px 24px;
+  margin: 0;
+  background: var(--home-card);
+  border: 1px solid var(--home-line);
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+}
+.manager-portal-home .dashboard-hero-copy { gap: 8px; }
+.manager-portal-home .dashboard-hero-copy::before {
+  content: "WORKSPACE OVERVIEW";
+  color: var(--home-teal);
+  font: 700 10px/1.2 var(--design-font-mono);
+  letter-spacing: .12em;
+}
+.manager-portal-home .dashboard-hero h1 { font-size: 32px; font-weight: 600; letter-spacing: -.04em; }
+.manager-portal-home .dashboard-hero-copy > span { color: var(--home-muted); font-size: 14px; }
+.manager-portal-home .dashboard-hero-actions { gap: 10px; }
+.manager-portal-home .dashboard-week-nav,
+.manager-portal-home .dashboard-hero .button.primary { border-radius: 8px; }
+.manager-portal-home .dashboard-week-nav { min-height: 44px; background: var(--home-canvas); border-color: var(--home-line); }
+.manager-portal-home .dashboard-week-nav > a { color: var(--home-teal); }
+.manager-portal-home .dashboard-hero .button.primary { background: var(--home-teal); box-shadow: none; }
+.manager-portal-home .dashboard-hero .button.primary:hover { background: #0f5754; }
+.manager-portal-home .dashboard-tabs {
+  padding: 0 32px;
+  gap: 28px;
+  background: var(--home-card);
+  border: 1px solid var(--home-line);
+  border-top: 0;
+}
+.manager-portal-home .dashboard-tabs a { min-height: 50px; color: var(--home-muted); font-size: 13px; }
+.manager-portal-home .dashboard-tabs a.active { color: var(--home-teal); }
+.manager-portal-home .dashboard-tabs a.active::after { height: 3px; background: var(--home-teal); border-radius: 3px 3px 0 0; }
+.manager-planning-summary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 28px 32px;
+  margin: 18px 0 0;
+  background: var(--home-teal);
+  border-radius: 12px;
+  color: #fff;
+}
+.manager-planning-summary > div,
+.manager-planning-summary > div:first-child { padding: 0 28px; border-left: 1px solid rgba(255,255,255,.22); }
+.manager-planning-summary > div:first-child { padding-left: 0; border-left: 0; }
+.manager-planning-summary dt,
+.manager-planning-summary dd,
+.manager-planning-summary dd span,
+.manager-planning-summary small { color: inherit; }
+.manager-planning-summary dt { opacity: .78; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.manager-planning-summary dd { margin: 9px 0 3px; font-size: 34px; font-weight: 600; }
+.manager-planning-summary dd span { opacity: .65; font-size: 20px; }
+.manager-planning-summary small { opacity: .72; }
+.manager-portal-home .manager-home-grid { grid-template-columns: minmax(0, 1.55fr) minmax(300px, .85fr); gap: 18px; margin-top: 18px; }
+.manager-overview-rail { gap: 18px; }
+.manager-portal-home .manager-home-card,
+.manager-portal-home .manager-live-card,
+.manager-portal-home .manager-week-overview {
+  border: 1px solid var(--home-line);
+  border-radius: 12px;
+  background: var(--home-card);
+  box-shadow: 0 4px 16px rgba(25, 54, 58, .045);
+}
+.manager-portal-home .manager-home-card-header { padding: 20px 22px; border-bottom-color: var(--home-line); }
+.manager-portal-home .manager-home-card-header h2,
+.manager-portal-home .manager-week-overview h2 { color: var(--home-ink); font-size: 17px; font-weight: 600; }
+.manager-portal-home .manager-home-count { width: 28px; height: 28px; color: var(--home-teal); background: var(--home-teal-soft); }
+.manager-portal-home .manager-home-empty { min-height: 150px; padding: 28px 22px; background: var(--home-canvas); }
+.manager-portal-home .manager-home-empty strong { color: var(--home-ink); font-size: 14px; }
+.manager-portal-home .manager-home-empty small { max-width: 34ch; color: var(--home-muted); line-height: 1.65; }
+.manager-portal-home .manager-live-summary { padding: 14px 22px; background: var(--home-canvas); border-color: var(--home-line); }
+.manager-portal-home .manager-live-summary strong { color: var(--home-ink); }
+.manager-portal-home .manager-live-footer,
+.manager-portal-home .manager-floor-row { border-color: var(--home-line); }
+.manager-portal-home .manager-live-footer { padding: 14px 22px; }
+.manager-portal-home .manager-live-refresh { border: 1px solid var(--home-line); color: var(--home-teal); }
+.manager-portal-home .manager-floor-row { padding: 17px 22px; }
+.manager-portal-home .manager-floor-avatar { background: var(--home-teal-soft); color: var(--home-teal); }
+.manager-portal-home .manager-floor-copy strong { color: var(--home-ink); }
+.manager-portal-home .manager-floor-copy small,
+.manager-portal-home .manager-week-overview header p,
+.manager-portal-home .manager-chart-total,
+.manager-portal-home .manager-chart-note { color: var(--home-muted); }
+.manager-portal-home .manager-attendance-link { color: var(--home-teal); }
+.manager-portal-home .manager-week-overview { padding: 22px; }
+.manager-portal-home .manager-bar-track > span { background: #9bcfc8; }
+.manager-portal-home .manager-week-chart li:hover .manager-bar-track > span { background: var(--home-teal); }
+.manager-portal-home .manager-location-plan,
+.manager-portal-home .manager-location-plan li { border-color: var(--home-line); }
+.manager-portal-home .manager-location-state { color: var(--home-muted); background: var(--home-canvas); }
+.manager-portal-home .manager-location-state[data-state='PUBLISHED'],
+.manager-portal-home .manager-location-state[data-state='READY'] { color: var(--home-teal); background: var(--home-teal-soft); }
+@media (max-width: 760px) {
+  .manager-portal-home .dashboard-hero { grid-template-columns: 1fr; padding: 24px 20px 20px; }
+  .manager-portal-home .dashboard-hero-actions { display: grid; grid-template-columns: 1fr auto; }
+  .manager-portal-home .dashboard-tabs { padding-inline: 20px; }
+  .manager-planning-summary { padding: 20px 16px; }
+  .manager-planning-summary > div,
+  .manager-planning-summary > div:first-child { padding-inline: 12px; }
+  .manager-planning-summary dd { font-size: 27px; }
+  .manager-portal-home .manager-home-grid { margin-top: 14px; }
+}
+@media (max-width: 360px) {
+  .manager-portal-home .dashboard-hero-actions { grid-template-columns: 1fr; }
+  .manager-planning-summary { grid-template-columns: 1fr; gap: 16px; }
+  .manager-planning-summary > div,
+  .manager-planning-summary > div:first-child { padding: 0; border-left: 0; }
+}
