@@ -21,5 +21,14 @@ export type NativeSnapshot = {
         otherOperationsExactnessAssessmentSha256: string;
         federalEmployeeRuleId: '26_CFR_31_3102_1_D';
         federalEmployeeCollectionSourceSha256: string;
+    } | {
+        status: 'FEDERAL_EMPLOYEE_STATUTORY_AND_OWNER_ATTESTED_PR_CENTS_OTHER_OPERATIONS_EXACT';
+        otherOperationsExactnessAssessmentSha256: string;
+        federalEmployeeRuleId: '26_CFR_31_3102_1_D';
+        federalEmployeeCollectionSourceSha256: string;
+        prIncomeRuleId: string;
+        prIncomeEvidenceKind: 'OWNER_ATTESTED_ACCOUNTANT_GUIDANCE';
+        prIncomeGuidanceRecordSha256: string;
+        prIncomeEmployeeIds: string[];
     };
 };

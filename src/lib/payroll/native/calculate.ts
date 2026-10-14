@@ -1,4 +1,5 @@
 import { FEDERAL_EMPLOYEE_CENT_RULE_SOURCE } from "./federal-employee-tax";
+import { PR_FINAL_PERIODIC_HALF_UP_GUIDANCE } from './pr-income-cent-policy';
 import { NATIVE_BOUNDARY_RULE_SOURCES } from "./workweek-policy";
 import {parseYtd} from "./model";
 import {ORDINARY_PR_MINIMUM_2026} from "./minimum-wage";
@@ -11,8 +12,8 @@ import { classifyRecordedTime, fail, HOUR } from "./time";
 import { fica2026, prIncomeWithholding, sinotContribution, PR_2026_RULE_SOURCES } from "./rules/pr-2026";
 import { authorizedAmounts, employerAmounts, validateEmployerCoverage, validateEmployerYtdCounters } from "./obligations";
 const hash = (value: unknown) => createHash("sha256").update(stableExportJson(value)).digest("hex");
-export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V8_FEDERAL_EMPLOYEE_COLLECTION";
-export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, federalEmployeeCents: FEDERAL_EMPLOYEE_CENT_RULE_SOURCE, boundarySources: NATIVE_BOUNDARY_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
+export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V9_OWNER_ATTESTED_PR_PERIODIC_CENTS";
+export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, federalEmployeeCents: FEDERAL_EMPLOYEE_CENT_RULE_SOURCE, prIncomeCents: PR_FINAL_PERIODIC_HALF_UP_GUIDANCE, boundarySources: NATIVE_BOUNDARY_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
 export function calculateNativePayroll(input: NativePayrollInput): NativePayrollResult {
     try {
         if (!input || input.schema !== "NEVORA_NATIVE_PAYROLL_INPUT_V1" || typeof input.employeeId !== "string" || !input.employeeId || input.timeZone !== "America/Puerto_Rico")
