@@ -38,12 +38,27 @@ function scenario(mode: 'HALF_UP' | 'UNVERIFIED' | 'TRUNCATE' = 'HALF_UP', evide
   source.population = { operationId: '44444444-4444-4444-8444-444444444444', revision: 1, period: i.period, members: [{ employeeId: 'E1', disposition: 'INCLUDE', reason: 'Fictional reviewed inclusion', employmentFacts: 'Fictional active standard employee; no real company attestation', employmentBasis: 'MANAGER_ATTESTED' }], sourceHash: hash({ roster: source.roster, timecards: source.timecards }) };
   const configuration = { schema: 'NEVORA_NATIVE_CONFIGURATION_V1', employeeId: 'E1', revision: 1, wages: i.wages, tax: i.tax, deductions: i.deductions };
   const database = { timeZone: 'America/Puerto_Rico', profiles: [configuration], openings: [{ employeeId: 'E1', revision: 1, ytd: i.ytd }], ledger: [], coverage: [{ employeeId: 'E1', ...i.timecards[0].period }] };
-  const capture = {
+  const capturedEntries: Extract<RecordedSourceCapture, { state: 'ready' }>['entries'] = i.timecards[0].entries.map(e => ({
+    ...e, logicalId: e.id, locationName: 'Fictional location', positionId: null, positionName: null,
+    rawStartAt: e.startAt, rawEndAt: e.endAt, breaks: [],
+  }));
+  const coveredPeriods = [
+    { startDate: '2026-08-24', endDate: '2026-08-31' },
+    i.period,
+    { startDate: '2026-10-01', endDate: '2026-10-05' },
+  ];
+  const capture: Extract<RecordedSourceCapture, { state: 'ready' }> = {
     state: 'ready', workspaceId: '11111111-1111-4111-8111-111111111111', employeeId: 'E1', timeZone: 'America/Puerto_Rico', period: i.period,
-    contexts: [], supersededCoverage: [], lineage: {}, locationIds: ['L1'], emptyFinalizedCoverage: [], sourceFence: 'd'.repeat(64),
-    coverage: [{ ...i.timecards[0].period, revision: 2, operationId: '22222222-2222-4222-8222-222222222222', sourceHash: 'a'.repeat(32), currentSourceHash: 'a'.repeat(32) }],
-    entries: i.timecards[0].entries.map(e => ({ ...e, logicalId: e.id })),
-  } as unknown as Extract<RecordedSourceCapture, { state: 'ready' }>;
+    contexts: [{ startAt: '2026-08-24T04:00:00Z', endAt: '2026-10-06T04:00:00Z' }], supersededCoverage: [],
+    lineage: { requests: [], adjustments: [], events: [], locations: [{ id: 'L1', workspaceId: '11111111-1111-4111-8111-111111111111' }] },
+    locationIds: ['L1'], emptyFinalizedCoverage: [coveredPeriods[0], coveredPeriods[2]], sourceFence: 'd'.repeat(64),
+    coverage: coveredPeriods.map((period, index) => {
+      const snapshot = { ...period, employeeId: 'E1', employeeName: 'Fictional SR01 employee', timeZone: 'America/Puerto_Rico', pendingCorrections: 0,
+        entries: capturedEntries.filter(e => e.startAt.slice(0, 10) >= period.startDate && e.startAt.slice(0, 10) <= period.endDate), corrections: [] };
+      return { ...period, revision: 2, operationId: `22222222-2222-4222-8222-22222222222${index}`, sourceHash: hash(snapshot), currentSourceHash: hash(snapshot), snapshot };
+    }),
+    entries: capturedEntries,
+  };
   const built: SqlStatement[][] = [];
   const ex: SqlExecutor = {
     query: async () => { throw Error('Unexpected direct database query'); },
