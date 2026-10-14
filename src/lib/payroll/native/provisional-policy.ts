@@ -1,12 +1,12 @@
 import { createHash } from 'node:crypto';
 import { stableExportJson } from '../../payroll-export/json';
-import type { NativePayrollInput } from './contracts';
+import { OWNER_PROVISIONAL_POLICY_REFERENCE, type NativePayrollInput } from './contracts';
 import { usesAcceptedProfessionalPrCents } from './pr-income-cent-policy';
 import { add, halfUp, ratio, serialized, subtract, type Rational } from './money';
 
 /** Owner waiver of calculation-policy dependencies; no statutory/actual-fact certification. */
 export const OWNER_PAYROLL_POLICY = Object.freeze({
-  id: 'OWNER_AUTHORIZED_PROVISIONAL_PR_STANDARD_2026_20261014',
+  id: OWNER_PROVISIONAL_POLICY_REFERENCE,
   kind: 'OWNER_AUTHORIZED_PROVISIONAL_POLICY' as const,
   taxYear: 2026,
   jurisdiction: 'PR',

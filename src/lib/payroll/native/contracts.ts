@@ -1,5 +1,7 @@
 import type { PayrollImportRow, PayrollPeriod } from "../contracts";
 import type { NativeCentRounding, NativeFrequency, PrCertificate } from "./rules/pr-2026";
+/** Client-safe identity shared by the protected profile and result readers. */
+export const OWNER_PROVISIONAL_POLICY_REFERENCE = 'OWNER_AUTHORIZED_PROVISIONAL_PR_STANDARD_2026_20261014';
 export type NativeRecordedBreak = {
     id: string;
     typeId: string | null;

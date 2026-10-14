@@ -1,4 +1,5 @@
 import type { PayrollReceipt, PayrollRunsResponse, PayrollSettingsResponse, PayrollStatementsResponse, PayrollImport, PayrollAmountLine, PayrollImportRow } from '@/lib/payroll/contracts';
+import { OWNER_PROVISIONAL_POLICY_REFERENCE } from '@/lib/payroll/native/contracts';
 
 export class PayrollRequestError extends Error {
   constructor(message: string, readonly status: number, readonly code = '') { super(message); }
@@ -105,6 +106,13 @@ function validNativeEmployee(value: unknown) {
 }
 function validNativeEvidence(p: Record<string, unknown>) {
   const rational = (value: unknown, signed = false) => record(value) && typeof value.numerator === 'string' && (signed ? /^-?(0|[1-9]\d*)$/ : /^(0|[1-9]\d*)$/).test(value.numerator) && typeof value.denominator === 'string' && /^[1-9]\d*$/.test(value.denominator);
+  const ownerPolicy = p.calculationPolicy !== undefined;
+  if (ownerPolicy) {
+    const policy = p.calculationPolicy;
+    if (!record(policy) || policy.id !== OWNER_PROVISIONAL_POLICY_REFERENCE || policy.kind !== 'OWNER_AUTHORIZED_PROVISIONAL_POLICY' || typeof policy.sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(policy.sha256) ||
+        p.rounding !== 'OWNER_PROVISIONAL_PAYCHECK_ALLOCATION' || p.taxRounding !== 'HALF_UP' || p.boundaryEvidence === undefined ||
+        !Array.isArray(policy.operations) || !policy.operations.length || policy.operations.length > 20000 || !policy.operations.every(o => record(o) && typeof o.operation === 'string' && /^[A-Z][A-Z_]+$/.test(o.operation) && (o.reference === null || typeof o.reference === 'string') && ['HALF_UP', 'LARGEST_REMAINDER_ALLOCATION', 'COMBINED_SHARE_RESIDUAL', 'CAP_THEN_HALF_UP'].includes(String(o.stage)) && rational(o.exactAmount) && minor(o.amountMinor) && rational(o.differenceMinor, true) && (o.uncappedExactAmount === undefined || rational(o.uncappedExactAmount)))) return false;
+  } else if (p.rounding === 'OWNER_PROVISIONAL_PAYCHECK_ALLOCATION') return false;
   if (p.federalEmployeeTax !== undefined) {
     const f = p.federalEmployeeTax;
     if (!record(f) || f.version !== 'NATIVE_FEDERAL_EMPLOYEE_COLLECTION_V1' || f.ruleId !== '26_CFR_31_3102_1_D' || !Array.isArray(f.operations) || f.operations.length > 3 || new Set(f.operations.map(t => record(t) ? t.code : null)).size !== f.operations.length || !f.operations.every(t => record(t) && ['SOCIAL_SECURITY', 'MEDICARE', 'ADDITIONAL_MEDICARE'].includes(String(t.code)) && minor(t.taxableMinor) && minor(t.collectedMinor) && Number.isInteger(t.basisPoints) && Number(t.basisPoints) >= 0 && Number(t.basisPoints) <= 10000 && rational(t.exactAmount) && rational(t.roundingDifference, true) && t.ruleId === f.ruleId)) return false;
@@ -112,7 +120,9 @@ function validNativeEvidence(p: Record<string, unknown>) {
   if (p.boundaryEvidence !== undefined) {
     const e = p.boundaryEvidence;
     const window = (v: unknown) => record(v) && typeof v.startAt === 'string' && typeof v.endAt === 'string' && Number.isFinite(Date.parse(v.startAt)) && Number.isFinite(Date.parse(v.endAt)) && Date.parse(v.startAt) < Date.parse(v.endAt);
-    if (!record(e) || e.version !== 'NATIVE_BOUNDARY_EVIDENCE_V1' || e.dailyInterpretation !== 'UNRESOLVED' || e.dailyInputDisposition !== 'INVARIANT_NO_FIRST_MINUTE_ENTRIES' || !Array.isArray(e.dailyModels) || e.dailyModels.join(',') !== 'CIVIL_MIDNIGHT_24H,CIVIL_00_01_24H' || !window(e.sourceWindow) || !window(e.fullWeekWindow) || typeof e.workweekPolicySha256 !== 'string' || !/^[a-f0-9]{64}$/.test(e.workweekPolicySha256) || typeof e.sourceSha256 !== 'string' || !/^[a-f0-9]{64}$/.test(e.sourceSha256) || !record(e.workweekPolicy)) return false;
+    if (!record(e) || e.version !== 'NATIVE_BOUNDARY_EVIDENCE_V1' || !Array.isArray(e.dailyModels) ||
+        (ownerPolicy ? e.dailyInterpretation !== 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H' || e.dailyInputDisposition !== 'OWNER_POLICY_APPLIED_ALL_INSTANTS' || e.dailyModels.join(',') !== 'CIVIL_MIDNIGHT_24H' : e.dailyInterpretation !== 'UNRESOLVED' || e.dailyInputDisposition !== 'INVARIANT_NO_FIRST_MINUTE_ENTRIES' || e.dailyModels.join(',') !== 'CIVIL_MIDNIGHT_24H,CIVIL_00_01_24H') ||
+        !window(e.sourceWindow) || !window(e.fullWeekWindow) || typeof e.workweekPolicySha256 !== 'string' || !/^[a-f0-9]{64}$/.test(e.workweekPolicySha256) || typeof e.sourceSha256 !== 'string' || !/^[a-f0-9]{64}$/.test(e.sourceSha256) || !record(e.workweekPolicy)) return false;
     const w = e.workweekPolicy;
     if (w.version !== 'PR_WORKWEEK_POLICY_V1' || typeof w.id !== 'string' || !Number.isInteger(w.revision) || Number(w.revision) < 1 || typeof w.federalEvidenceReference !== 'string' || w.federalWorkweek !== 'SAME_VERIFIED_BOUNDARY' || !record(w.origin) || !['STATUTORY_DEFAULT', 'EMPLOYER_NOTICE'].includes(String(w.origin.kind)) || !record(w.boundary) || !Number.isInteger(w.boundary.weekday) || Number(w.boundary.weekday) < 1 || Number(w.boundary.weekday) > 7 || typeof w.boundary.startTime !== 'string' || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(w.boundary.startTime) || w.boundary.timeZone !== 'America/Puerto_Rico') return false;
   }
