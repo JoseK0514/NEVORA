@@ -14,6 +14,18 @@ export type NativeSnapshot = {
         state: "ready";
     }>[];
     ruleEvidence: {
+        status: 'FEDERAL_EMPLOYEE_STATUTORY_OWNER_ATTESTED_PR_AND_PROVISIONAL_OTHER_OPERATIONS';
+        federalEmployeeRuleId: '26_CFR_31_3102_1_D';
+        federalEmployeeCollectionSourceSha256: string;
+        prIncomeRuleId: string;
+        prIncomeEvidenceKind: 'OWNER_ATTESTED_ACCOUNTANT_GUIDANCE';
+        prIncomeGuidanceRecordSha256: string;
+        prIncomeEmployeeIds: string[];
+        policyReference: string;
+        policyKind: 'OWNER_AUTHORIZED_PROVISIONAL_POLICY';
+        policySha256: string;
+        policyEmployeeIds: string[];
+    } | {
         status: 'EXACT_CENT_NO_ROUNDING_REQUIRED';
         assessmentSha256: string;
     } | {

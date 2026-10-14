@@ -1,6 +1,7 @@
 import type { NativeAuthorizedDeduction, NativePayrollInput, NativeTaxProfile, NativeYtd } from "./contracts";
 import { exactMinor, halfUp, minor, ratio, type NativeExactnessOperation } from "./money";
 import { fail } from "./time";
+import { collectPolicyAmount, recordPolicyAmount, type NativePolicyOperation } from './provisional-policy';
 const STANDARD_EMPLOYER_CODES = ["FUTA", "PR_UI", "CFSE"];
 const validText = (value: unknown) => typeof value === "string" && value.trim() === value && value.length > 0 && value.length <= 300 && !/[\u0000-\u001f\u007f]/.test(value);
 const validCode = (value: unknown): value is string => typeof value === "string" && /^[A-Z][A-Z0-9_]{0,79}$/.test(value);
@@ -54,17 +55,18 @@ export function projectEmployerYtdCounters(tax: NativeTaxProfile, opening: Nativ
     validateEmployerYtdCounters(result, projected);
     return result;
 }
-export function employerAmounts(tax: NativeTaxProfile, gross: bigint, exactnessOperations?: NativeExactnessOperation[]) {
+export function employerAmounts(tax: NativeTaxProfile, gross: bigint, exactnessOperations?: NativeExactnessOperation[], policyOperations?: NativePolicyOperation[]) {
     return tax.employerContributions.filter(item => item.applicability === "APPLICABLE").map(item => {
         const left = item.capMinor === null ? gross : minor(item.capMinor) - minor(item.wagesBeforeMinor);
         const taxable = left < BigInt(0) ? BigInt(0) : left > gross ? gross : left;
-        return { code: item.code, label: item.label, amountMinor: (exactnessOperations ? exactMinor(ratio(taxable * BigInt(item.basisPoints!), BigInt(10000)), exactnessOperations, "EMPLOYER_ASSESSMENT", item.code) : halfUp(ratio(taxable * BigInt(item.basisPoints!), BigInt(10000)))).toString() };
+        const exact = ratio(taxable * BigInt(item.basisPoints!), BigInt(10000));
+        return { code: item.code, label: item.label, amountMinor: (policyOperations ? collectPolicyAmount(exact, policyOperations, 'EMPLOYER_ASSESSMENT', item.code) : exactnessOperations ? exactMinor(exact, exactnessOperations, "EMPLOYER_ASSESSMENT", item.code) : halfUp(exact)).toString() };
     });
 }
 export function authorizedAmounts(input: NativePayrollInput, gross: bigint, statutoryCodes: string[], employer: {
     code: string;
     amountMinor: string;
-}[], exactnessOperations?: NativeExactnessOperation[]) {
+}[], exactnessOperations?: NativeExactnessOperation[], policyOperations?: NativePolicyOperation[]) {
     const codes = new Set(statutoryCodes), ids = new Set<string>();
     const output: {
         code: string;
@@ -81,14 +83,25 @@ export function authorizedAmounts(input: NativePayrollInput, gross: bigint, stat
         if (d.revoked || d.effectiveFrom > input.payday || (d.effectiveTo !== null && d.effectiveTo <= input.payday))
             continue;
         let amount: bigint;
+        let exact: ReturnType<typeof ratio>;
         if (d.method === "FIXED" && d.basisPoints === null)
-            amount = minor(d.amountMinor);
+            exact = ratio(minor(d.amountMinor));
         else if (d.method === "PERCENTAGE" && d.amountMinor === null && typeof d.basisPoints === "number" && Number.isSafeInteger(d.basisPoints) && d.basisPoints >= 0 && d.basisPoints <= 10000)
-            amount = exactnessOperations ? exactMinor(ratio(gross * BigInt(d.basisPoints), BigInt(10000)), exactnessOperations, "AUTHORIZED_DEDUCTION", d.id) : halfUp(ratio(gross * BigInt(d.basisPoints), BigInt(10000)));
+            exact = ratio(gross * BigInt(d.basisPoints), BigInt(10000));
         else
             fail("UNSUPPORTED_DEDUCTION", d.id);
+        const uncapped = exact;
         const before = minor(d.deductedBeforeMinor);
-        if (d.capMinor !== null) {
+        if (policyOperations) {
+            if (d.capMinor !== null) {
+                const left = minor(d.capMinor) - before, remaining = left < BigInt(0) ? BigInt(0) : left;
+                if (exact.numerator > remaining * exact.denominator) exact = ratio(remaining);
+            }
+            amount = recordPolicyAmount(exact, halfUp(exact), policyOperations, 'AUTHORIZED_DEDUCTION', d.id, 'CAP_THEN_HALF_UP', uncapped);
+        } else {
+            amount = d.method === 'FIXED' ? minor(d.amountMinor) : exactnessOperations ? exactMinor(exact, exactnessOperations, 'AUTHORIZED_DEDUCTION', d.id) : halfUp(exact);
+        }
+        if (!policyOperations && d.capMinor !== null) {
             const remaining = minor(d.capMinor) - before;
             amount = remaining < BigInt(0) ? BigInt(0) : remaining < amount ? remaining : amount;
         }

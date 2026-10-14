@@ -6,6 +6,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import { stableExportJson } from "../../payroll-export/json";
 import type { NativePayrollInput, NativeRecordedEntry, NativeWageProfile } from "./contracts";
 import { hourlyRate, type Rational } from "./money";
+import { usesOwnerPayrollPolicy } from './provisional-policy';
 export const HOUR = BigInt(3600000000000), DAY = HOUR * BigInt(24);
 const ZONE = "America/Puerto_Rico";
 export const ns = (s: string) => Temporal.Instant.from(s).epochNanoseconds;
@@ -26,6 +27,7 @@ export type WorkedPiece = {
     federalOvertime: boolean;
 };
 export function classifyRecordedTime(input: NativePayrollInput) {
+    const ownerPolicy = usesOwnerPayrollPolicy(input);
     const { period, wages, timecards } = input;
     if (!wages.length)
         fail("WAGE_PROFILE_REQUIRED");
@@ -167,7 +169,7 @@ export function classifyRecordedTime(input: NativePayrollInput) {
                 daily += raw.end - raw.start;
                 continue;
             }
-            if (streak > 7)
+            if (streak > 7 && !ownerPolicy)
                 fail("UNSUPPORTED_CONTINUOUS_REST_SEQUENCE", date);
             if (raw.week !== currentWeek) {
                 currentWeek = raw.week;
@@ -176,7 +178,7 @@ export function classifyRecordedTime(input: NativePayrollInput) {
             }
             let a = raw.start;
             while (a < raw.end) {
-                const premiumReason = streak === 7 ? "REST_DAY" as const : daily >= HOUR * BigInt(8) ? "DAILY" as const : weeklyRegular >= HOUR * BigInt(40) ? "WEEKLY" as const : null;
+                const premiumReason = (ownerPolicy ? streak >= 7 : streak === 7) ? "REST_DAY" as const : daily >= HOUR * BigInt(8) ? "DAILY" as const : weeklyRegular >= HOUR * BigInt(40) ? "WEEKLY" as const : null;
                 const overtime = premiumReason !== null;
                 const federalOvertime = weeklyWorked >= HOUR * BigInt(40);
                 let length = raw.end - a;
@@ -193,6 +195,6 @@ export function classifyRecordedTime(input: NativePayrollInput) {
             }
         }
     }
-    const boundaryEvidence: NativeBoundaryEvidence = { version: 'NATIVE_BOUNDARY_EVIDENCE_V1', workweekPolicy: resolved.policy, workweekPolicySha256: resolved.policySha256, sourceWindow: resolved.sourceWindow, fullWeekWindow: resolved.fullWeekWindow, dailyInterpretation: 'UNRESOLVED', dailyInputDisposition: boundarySensitive ? 'BOUNDARY_SENSITIVE' : 'INVARIANT_NO_FIRST_MINUTE_ENTRIES', dailyModels: ['CIVIL_MIDNIGHT_24H', 'CIVIL_00_01_24H'], sourceSha256: createHash('sha256').update(stableExportJson({ employeeId: input.employeeId, sourceWindow: resolved.sourceWindow, timecards })).digest('hex') };
+    const boundaryEvidence: NativeBoundaryEvidence = { version: 'NATIVE_BOUNDARY_EVIDENCE_V1', workweekPolicy: resolved.policy, workweekPolicySha256: resolved.policySha256, sourceWindow: resolved.sourceWindow, fullWeekWindow: resolved.fullWeekWindow, dailyInterpretation: ownerPolicy ? 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H' : 'UNRESOLVED', dailyInputDisposition: ownerPolicy ? 'OWNER_POLICY_APPLIED_ALL_INSTANTS' : boundarySensitive ? 'BOUNDARY_SENSITIVE' : 'INVARIANT_NO_FIRST_MINUTE_ENTRIES', dailyModels: ownerPolicy ? ['CIVIL_MIDNIGHT_24H'] : ['CIVIL_MIDNIGHT_24H', 'CIVIL_00_01_24H'], sourceSha256: createHash('sha256').update(stableExportJson({ employeeId: input.employeeId, sourceWindow: resolved.sourceWindow, timecards })).digest('hex') };
     return { pieces, unpaidBreakNanoseconds: unpaid, payLeft, payRight, boundaryEvidence };
 }

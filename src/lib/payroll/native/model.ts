@@ -6,6 +6,7 @@ import { PayrollError, uuid } from "../model";
 import { hourlyRate, minor } from "./money";
 import { validateEmployerCoverage } from "./obligations";
 import { prIncomeWithholding } from "./rules/pr-2026";
+import { OWNER_PAYROLL_POLICY } from './provisional-policy';
 const invalid = (): never => { throw new PayrollError("INVALID_NATIVE_PROFILE", 400); };
 const check = (v: unknown) => {
     if (!v)
@@ -108,7 +109,8 @@ export function parseYtd(v: unknown): NativeYtd {
     return structuredClone(v) as NativeYtd;
 }
 export function parseConfiguration(v: unknown): NativeConfiguration {
-    const c = object(v, ["schema", "employeeId", "wages", "tax", "deductions"]);
+    const c = object(v, ["schema", "employeeId", "wages", "tax", "deductions"], ['calculationPolicyReference']);
+    check(c.calculationPolicyReference === undefined || c.calculationPolicyReference === null || c.calculationPolicyReference === OWNER_PAYROLL_POLICY.id);
     check(c.schema === "NEVORA_NATIVE_CONFIGURATION_V1" && text(c.employeeId, 200));
     check(Array.isArray(c.wages) && c.wages.length > 0 && c.wages.length <= 100 && Array.isArray(c.deductions) && c.deductions.length <= 90);
     const wages = (c.wages as unknown[]).map(parseWage);

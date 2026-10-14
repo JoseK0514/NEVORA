@@ -40,9 +40,9 @@ export type NativeBoundaryEvidence = {
     workweekPolicySha256: string;
     sourceWindow: WorkweekInterval;
     fullWeekWindow: WorkweekInterval;
-    dailyInterpretation: 'UNRESOLVED';
-    dailyInputDisposition: 'INVARIANT_NO_FIRST_MINUTE_ENTRIES' | 'BOUNDARY_SENSITIVE';
-    dailyModels: readonly [
+    dailyInterpretation: 'UNRESOLVED' | 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H';
+    dailyInputDisposition: 'INVARIANT_NO_FIRST_MINUTE_ENTRIES' | 'BOUNDARY_SENSITIVE' | 'OWNER_POLICY_APPLIED_ALL_INSTANTS';
+    dailyModels: readonly [ 'CIVIL_MIDNIGHT_24H' ] | readonly [
         'CIVIL_MIDNIGHT_24H',
         'CIVIL_00_01_24H'
     ];

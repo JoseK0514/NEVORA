@@ -73,6 +73,29 @@ function scenario(mode: 'HALF_UP' | 'UNVERIFIED' | 'TRUNCATE' = 'HALF_UP', evide
 }
 
 describe('SR01 scoped accountant-confirmed final periodic collection', () => {
+  it('captures an explicitly selected provisional wage/tax policy and reconciles its21-cent paycheck through snapshot/ledger/document projections', async () => {
+    const s = scenario();
+    Object.assign(s.configuration, { calculationPolicyReference: 'OWNER_AUTHORIZED_PROVISIONAL_PR_STANDARD_2026_20261014' });
+    s.i.wages[0].hourlyRateMinor = '1250'; s.capture.entries[0].endAt = s.capture.entries[0].rawEndAt = '2026-09-14T08:01:00-04:00';
+    for (const c of s.capture.coverage) c.sourceHash = c.currentSourceHash = hash(c.snapshot);
+    const before = structuredClone(s.configuration);
+    const c = await captureNativePayroll(s.seed, s.run, s.ex, [statement('SR01_UNIT_PERMISSION_FENCE')]);
+    expect(c.run.status).toBe('REVIEW_REQUIRED'); expect(c.run.exceptions).toEqual([]);
+    expect(c.run.rows![0]).toMatchObject({ grossMinor: '21', netMinor: '20' });
+    expect(c.snapshot!.native!.ruleEvidence).toMatchObject({ status: 'FEDERAL_EMPLOYEE_STATUTORY_OWNER_ATTESTED_PR_AND_PROVISIONAL_OTHER_OPERATIONS', policyEmployeeIds: ['E1'], policyKind: 'OWNER_AUTHORIZED_PROVISIONAL_POLICY' });
+    expect(c.run.nativeCalculation!.employees[0].provenance).toMatchObject({ rounding: 'OWNER_PROVISIONAL_PAYCHECK_ALLOCATION', taxRounding: 'HALF_UP', calculationPolicy: { kind: 'OWNER_AUTHORIZED_PROVISIONAL_POLICY' } });
+    expect(c.snapshot!.native!.facts.inputs[0]).toMatchObject({ calculationPolicyReference: 'OWNER_AUTHORIZED_PROVISIONAL_PR_STANDARD_2026_20261014' });
+    expect(s.configuration).toEqual(before);
+    const approved = { ...c.run, status: 'APPROVED' as const, revision: 2, approvedBy: 'FICTIONAL_OWNER', approvedAt: '2026-10-05T12:00:00Z' };
+    expect(JSON.parse(String(nativeLedgerStatements(approved, c.snapshot!)[0].values.at(-1))).result).toEqual(c.run.nativeCalculation!.employees[0]);
+    const presentation = nativeEmployeePresentation(approved, c.snapshot!, 'E1');
+    expect(presentation.totals.gross).toEqual({ currentMinor: '21', ytdMinor: '21' }); expect(presentation.totals.net).toEqual({ currentMinor: '20', ytdMinor: '20' });
+  });
+  it('keeps an unrecognized provisional profile reference blocked without falling back to legacy exact cash', async () => {
+    const s = scenario(); Object.assign(s.configuration, { calculationPolicyReference: 'unaccepted owner reference' });
+    const c = await captureNativePayroll(s.seed, s.run, s.ex, []);
+    expect(c.run.status).toBe('BLOCKED'); expect(c.snapshot).toBeNull(); expect(c.run.rows).toBeNull();
+  });
   it('prepares the professionally bound monthly half-cent and preserves its cash/provenance through pure document/ledger projections', async () => {
     const s = scenario(); const before = structuredClone(s.configuration);
     const c = await captureNativePayroll(s.seed, s.run, s.ex, [statement('SR01_UNIT_PERMISSION_FENCE')]);

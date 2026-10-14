@@ -7,6 +7,13 @@ import { readNativeProfiles } from './native-profile-api';
 const values = (fields: Record<string, string | string[]>) => { const f = new FormData(); for (const [k,v] of Object.entries(fields)) for (const item of Array.isArray(v) ? v : [v]) f.append(k,item); return f; };
 const wage = () => values({ deductionsReviewed: 'on', wageId: 'W1', 'wage.W1.from': '2026-01-01T00:00', 'wage.W1.rate': '25.001234', 'wage.W1.locations': ['L1'], 'wage.W1.overtime': 'TIME_AND_HALF', 'wage.W1.scope': 'CONFIRMED', 'wage.W1.attest': 'on', 'wage.W1.evidence': 'Fictional actual wage evidence', policyKind: 'UNKNOWN' });
 describe('native form field conversion', () => {
+  it('preserves an explicitly bound owner policy on edits and leaves new profiles unselected', () => {
+    const i = input(); const previous = { schema: 'NEVORA_NATIVE_CONFIGURATION_V1' as const, employeeId: 'E1', wages: i.wages, tax: null, deductions: [], calculationPolicyReference: 'OWNER_AUTHORIZED_PROVISIONAL_PR_STANDARD_2026_20261014' };
+    const edited = form.profileFromForm(wage(), 'E1', previous);
+    expect(edited).toMatchObject({ calculationPolicyReference: previous.calculationPolicyReference });
+    expect(parseNativeProfileCommand({ operationId: '11111111-1111-4111-8111-111111111111', action: 'SAVE_NATIVE_PROFILE', reason: 'Fictional reviewed edit', expectedRevision: 1, configuration: edited })).toMatchObject({ configuration: { calculationPolicyReference: previous.calculationPolicyReference } });
+    expect(form.profileFromForm(wage(), 'E1', null)).not.toHaveProperty('calculationPolicyReference');
+  });
   it('saves unknown workweek with both legacy coordinates null and preserves fractional wages exactly', () => {
     const configuration = form.profileFromForm(wage(), 'E1', null);
     expect(configuration.wages[0]).toMatchObject({ hourlyRateMinor: '2500.1234', workweekPolicy: null, workweekAnchorDate: null, workweekStartTime: null, wageCentRounding: 'UNVERIFIED' });

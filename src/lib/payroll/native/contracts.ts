@@ -122,6 +122,8 @@ export type NativeAuthorizedDeduction = {
 };
 export type NativePayrollInput = {
     schema: "NEVORA_NATIVE_PAYROLL_INPUT_V1";
+    /** Explicit protected-profile selection; absent preserves the legacy path. */
+    calculationPolicyReference?: string | null;
     employeeId: string;
     period: PayrollPeriod;
     payday: string;
@@ -183,9 +185,10 @@ export type NativePayrollReady = {
         inputSha256: string;
         rulesetId: "PR_STANDARD_2026_V1";
         rulesSha256: string;
-        rounding: "EARNING_GROUP_HALF_UP" | "EXACT_CENT_NO_ROUNDING_REQUIRED";
+        rounding: "EARNING_GROUP_HALF_UP" | "EXACT_CENT_NO_ROUNDING_REQUIRED" | "OWNER_PROVISIONAL_PAYCHECK_ALLOCATION";
         taxRounding: NativeCentRounding | "EXACT_CENT_NO_ROUNDING_REQUIRED";
         exactnessOperations: import("./money").NativeExactnessOperation[];
+        calculationPolicy?: import('./provisional-policy').NativeCalculationPolicyEvidence;
     };
 };
 export type NativePayrollBlocked = {
@@ -200,6 +203,7 @@ export type NativePayrollBlocked = {
 export type NativePayrollResult = NativePayrollReady | NativePayrollBlocked;
 export type NativeConfiguration = {
     schema: "NEVORA_NATIVE_CONFIGURATION_V1";
+    calculationPolicyReference?: string | null;
     employeeId: string;
     wages: NativeWageProfile[];
     tax: NativeTaxProfile | null;
