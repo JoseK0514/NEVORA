@@ -123,3 +123,12 @@ export type ScopeCommand =
       expectedScopeRevision:number;expectedRoleGeneration:string};
 export type OperationalFootprint = {kind:'COMPANY'} | {kind:'LOCATIONS';locationIds:readonly string[]};
 export type { InvitationCommand, InvitationResult, InvitationStatusResult, InvitationReceipt, DeliveryState, ActivationResult } from '@/lib/auth/invitations/model';
+
+/** Owner-only control metadata; history is bounded and never current authority. */
+export type OwnerScopeHistoryEntry = {
+  revision:number;roleGeneration:string;action:'ASSIGN'|'REVOKE';scope:ScopeSelection|null;
+  source:'LEGACY_ADOPTION'|'OWNER_ASSIGNMENT';createdAt:string;
+};
+export type OwnerOperationalScopeData = {
+  current:OwnerScopeContext;history:OwnerScopeHistoryEntry[];historyTruncated:boolean;
+};

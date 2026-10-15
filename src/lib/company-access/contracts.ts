@@ -7,6 +7,8 @@ export type InvitationDelivery = {
   send(input: { registeredEmail: string; proof: string; expiresAt: string }): Promise<{ providerAccepted: true }>;
 };
 export type CompanyAccessBackend = {
+  readOwnerOperationalScope(proof: SessionMutationProof, employeeId: string, executor?: SqlExecutor): Promise<M.OperationalRead<M.OwnerOperationalScopeData>>;
+  withOperationalCompany<T>(proof: SessionMutationProof, load: () => Promise<T>, executor?: SqlExecutor): Promise<M.OperationalRead<T>>;
   readOperationalAuthority(proof: SessionMutationProof, executor?: SqlExecutor): Promise<M.OperationalAuthorityView>;
   assignOperationalScope(proof: SessionMutationProof, employeeId: string, command: M.ScopeCommand, executor?: SqlExecutor): Promise<M.ScopeResult>;
   readOperationalDirectory(proof: SessionMutationProof, executor?: SqlExecutor): Promise<M.OperationalRead<M.OperationalDirectoryData>>;
