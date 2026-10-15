@@ -394,3 +394,8 @@ it('coverage reads retain named quotas including inactive catalog requirements',
  mocks.query.mockResolvedValue([{id:'window',location_id:'l',day_of_week:1,start_time:'08:00',end_time:'12:00',position_requirements:[{positionId:'b',quantity:2}]}]);
  expect((await listCoverageWindows())[0]).toMatchObject({positionRequirements:[{positionId:'b',quantity:2}]});
 });
+
+// Business-unit admission I/O only. Real current Company/restriction/lifecycle
+// and rollback checks run in company-access-configuration/global-scheduling SQL.
+// Keep the actual operationalScopeStatements assembly in each write batch.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'northside',name:'Northside Services',active:true,timeZone:'America/New_York',createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
