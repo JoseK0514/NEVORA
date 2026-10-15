@@ -113,4 +113,25 @@ describe('single-company access custody migration',()=>{
   }finally{await f.db.dispose();}
  });
 
+ it('rejects an inactive workspace before any additive object or adoption can commit',async()=>{
+  const f=await fixture();try{
+   await f.q('UPDATE workspaces SET active=false');
+   await expect(f.apply()).rejects.toThrow('company_access_workspace_unavailable');
+   expect(await f.q("SELECT to_regclass('public.operational_subject_versions') AS subjects,to_regclass('public.company_access_adoption') AS adoption")).toEqual([{subjects:null,adoption:null}]);
+   expect(await f.q('SELECT active FROM workspaces')).toEqual([{active:false}]);
+  }finally{await f.db.dispose();}
+ });
+ it('rejects an absent workspace before additive schema and preserves the existing foundation',async()=>{
+  const db=await createDisposableFoundationDatabase({mode:'upgrade'});
+  const q=<T=Record<string,unknown>>(text:string)=>db.executor.query<T>({text,values:[]});
+  try{
+   await q(await readFile('db/migrations/0008_workspace_positions.sql','utf8'));
+   await q('DELETE FROM locations;DELETE FROM workspaces');
+   await expect(q(await readFile(migrationPath,'utf8'))).rejects.toThrow('company_access_workspace_unavailable');
+   expect(await q("SELECT to_regclass('public.operational_subject_versions') AS subjects,to_regclass('public.company_access_adoption') AS adoption")).toEqual([{subjects:null,adoption:null}]);
+   expect(await q('SELECT count(*)::integer AS count FROM workspaces')).toEqual([{count:0}]);
+   expect(await q("SELECT to_regclass('public.employees')::text AS employees")).toEqual([{employees:'employees'}]);
+  }finally{await db.dispose();}
+ });
+
 });

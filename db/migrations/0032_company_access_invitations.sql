@@ -1,6 +1,11 @@
 BEGIN;
 -- Single-company access only. No held tenancy/capability chain is adopted.
+LOCK TABLE workspaces IN SHARE ROW EXCLUSIVE MODE;
 SELECT id FROM workspaces ORDER BY id FOR NO KEY UPDATE;
+DO $$ BEGIN
+ IF (SELECT count(*) FROM workspaces)<>1 OR NOT EXISTS(SELECT 1 FROM workspaces WHERE singleton=true AND active=true)
+ THEN RAISE EXCEPTION 'company_access_workspace_unavailable'; END IF;
+END $$;
 LOCK TABLE employees IN SHARE ROW EXCLUSIVE MODE;
 
 CREATE FUNCTION company_access_next_revision(prior integer) RETURNS integer
