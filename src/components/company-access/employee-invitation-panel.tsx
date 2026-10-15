@@ -25,8 +25,10 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
   const response=await fetch('/api/company-access/invitations/'+encodeURIComponent(employeeId),{headers,cache:'no-store',credentials:'same-origin',redirect:'error',signal});
   if(!isCurrent(version))return;
   if(response.status===401||response.status===403){denied();return;}
+  const current=readInvitationStatus(await response.json(),employeeId);if(!isCurrent(version))return;
+  if(current.state==='unavailable'&&current.reason==='access_denied'){denied();return;}
   if(!response.ok)throw new Error('Current invitation unavailable.');
-  const current=readInvitationStatus(await response.json(),employeeId);if(!isCurrent(version))return;if(current.state==='unavailable'&&current.reason==='access_denied')denied();else setStatus(current);
+  setStatus(current);
  }
  async function refresh(){
   if(busy.current||command.current)return;busy.current=true;setPending(true);setConfirm(null);const version=generation.current,abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),15000);
