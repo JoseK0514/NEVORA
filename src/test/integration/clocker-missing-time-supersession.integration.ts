@@ -44,7 +44,7 @@ async function rawHistory() {
   return snapshot;
 }
 beforeEach(async () => {
-  f = await createPunchFixture({ breaks: true });
+  f = await createPunchFixture({ breaks: true,companyAccess:true });
   await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'c34-a',clock_timestamp()+interval '1 day')");
 });
 afterEach(async () => { if (f) await f.db.dispose(); });
@@ -97,7 +97,7 @@ describe('D2-CODEX-004 missing-time supersession', () => {
 
   it('installs 0017 over existing approved A without rewriting history or changing table/constraint definitions', async () => {
     await f.db.dispose();
-    f = await createPunchFixture({ migrationStage: 'pre-break' });
+    f = await createPunchFixture({ migrationStage: 'pre-break',companyAccess:true });
     for (const name of ['0014_clocker_breaks.sql', '0015_clocker_schedule_context.sql', '0016_time_corrections.sql']) await f.q(await readFile(`db/migrations/${name}`, 'utf8'));
     await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'c34-a',clock_timestamp()+interval '1 day')");
     const a = await root();
@@ -231,11 +231,16 @@ describe('D2-CODEX-004 missing-time supersession', () => {
     const a = await root();
     expect(await submitTimeCorrection(owner, supersede(a), f.db.executor)).toEqual({ status: 'unavailable' });
     expect(await submitTimeCorrection(employee, { ...supersede(a), locationId: 'loc-2' }, f.db.executor)).toEqual({ status: 'unavailable' });
-    await expect(submitTimeCorrection({ ...employee, sessionTokenHash: 'f'.repeat(64) }, supersede(a), f.db.executor)).rejects.toThrow(/management_authorization/);
+    const protectedRows=async()=>Promise.all(['time_correction_requests','time_correction_events','time_correction_adjustments'].map(table=>f.q(`SELECT to_jsonb(t) AS row FROM ${table} t ORDER BY to_jsonb(t)::text`)));
+    const beforeInvalid=await protectedRows();
+    expect(await submitTimeCorrection({ ...employee, sessionTokenHash: 'f'.repeat(64) }, supersede(a), f.db.executor)).toEqual({status:'unavailable'});
+    expect(await protectedRows()).toEqual(beforeInvalid);
     const b = pending(await submitTimeCorrection(employee, supersede(a), f.db.executor));
     expect(await reviewTimeCorrection(employee, reviewCommand(b.requestId), f.db.executor)).toEqual({ status: 'unavailable' });
     await f.q("UPDATE employees SET active=false WHERE id='c34-owner'");
-    await expect(review(b.requestId)).rejects.toThrow(/management_authorization/);
+    const beforeReview=await protectedRows();
+    expect(await review(b.requestId)).toEqual({status:'unavailable'});
+    expect(await protectedRows()).toEqual(beforeReview);
     expect(await f.q('SELECT count(*)::int AS n FROM time_correction_adjustments')).toEqual([{ n: 1 }]);
   });
 
@@ -269,18 +274,21 @@ describe('D2-CODEX-004 missing-time supersession', () => {
 
   it('recovers lost submit and approval responses through the exact receipt without duplicate adjustments', async () => {
     const a = await root(), command = supersede(a);
-    function loseCommittedResponse(): SqlExecutor {
+    let losses=0;
+    function loseCommittedResponse(kind:'submit'|'review'): SqlExecutor {
       let lose = true;
       return { query: f.db.executor.query, async transaction(statements, signal) {
         const result = await f.db.executor.transaction(statements, signal);
-        if (lose) { lose = false; throw new Error('fictional response lost after commit'); }
+        if (lose && statements.some(s=>s.text.includes(`SELECT nevora_${kind}_time_correction`))) { lose = false;losses++; throw new Error('fictional response lost after commit'); }
         return result;
       } };
     }
-    expect(await submitTimeCorrection(employee, command, loseCommittedResponse())).toEqual({ status: 'outcome-unknown', operationId: command.operationId });
+    expect(await submitTimeCorrection(employee, command, loseCommittedResponse('submit'))).toEqual({ status: 'outcome-unknown', operationId: command.operationId });
+    expect(losses).toBe(1);
     const b = pending(await submitTimeCorrection(employee, command, f.db.executor));
     const decision = reviewCommand(b.requestId);
-    expect(await reviewTimeCorrection(owner, decision, loseCommittedResponse())).toEqual({ status: 'outcome-unknown', operationId: decision.operationId });
+    expect(await reviewTimeCorrection(owner, decision, loseCommittedResponse('review'))).toEqual({ status: 'outcome-unknown', operationId: decision.operationId });
+    expect(losses).toBe(2);
     approved(await reviewTimeCorrection(owner, decision, f.db.executor));
     expect(await f.q('SELECT count(*)::int AS n FROM time_correction_requests')).toEqual([{ n: 2 }]);
     expect(await f.q('SELECT count(*)::int AS n FROM time_correction_adjustments')).toEqual([{ n: 2 }]);

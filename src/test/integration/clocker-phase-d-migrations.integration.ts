@@ -6,7 +6,7 @@ import {ClockerPunchService} from '../../lib/clocker/punches.server';
 import {submitTimeCorrection,reviewTimeCorrection} from '../../lib/time-corrections/service';
 import {readTimecards} from '../../lib/timecards/service';
 it('D8 upgrades the frozen D2 schema without changing actual punches, breaks, receipts, PINs, credentials or approved corrections',async()=>{
- const f=await createPunchFixture({breaks:true,migrationStage:'phase-d2'});
+ const f=await createPunchFixture({breaks:true,migrationStage:'phase-d2',companyAccess:true});
  try{
   const proof={employee:{id:'c34-owner',role:'OWNER' as const,firstName:'Owner',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
   await f.q("INSERT INTO employee_credentials(employee_id,password_hash) VALUES('c34-a','fictional-existing-hash');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'c34-a',clock_timestamp()+interval '1 day')");
