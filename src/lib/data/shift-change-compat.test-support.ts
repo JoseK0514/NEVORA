@@ -1,7 +1,7 @@
 // Test-only bridge supplies the newly mandatory reviewed command and server proof
 // to legacy API contract scenarios. Production never synthesizes this authority.
 import {randomUUID} from 'node:crypto';
-import {vi} from 'vitest';
+import {expect,vi} from 'vitest';
 import * as exchanges from './exchanges';
 import * as callouts from './callouts';
 import {fixture as previousFixture} from './request-notification-fixtures.test-support';
@@ -10,10 +10,29 @@ import {fictionalProfile} from '../../test/fixtures/shift-changes';
 import {sourceShiftTerms,shiftTermsFingerprint} from '../shift-changes/terms';
 import type {GenerationSource} from './generation-guards';
 import type {SessionMutationProof,ShiftChangeCommand} from '../shift-changes/types';
-import type {SqlExecutor} from '../notifications/types';
+import type {SqlExecutor,SqlStatement} from '../notifications/types';
 const registry=new WeakMap<SqlExecutor,ReturnType<typeof previousFixture>>();
-export function fixture(kind:'EXCHANGE'|'CALLOUT',status='PENDING') {
+const readOnlyBatches:SqlStatement[][]=[];
+/** Keep every executor batch in r.batches; business assertions inspect only the
+ * operation-bearing batch. The direct-publication contract opts in explicitly. */
+export function verifyReadOnlyFences() {
+ const batches=readOnlyBatches.splice(0);
+ for(const batch of batches)for(const statement of batch) {
+  expect(statement.text).toMatch(/^\s*(?:SELECT|SET LOCAL)\b/i);
+  expect(statement.text).not.toMatch(/\b(?:INSERT|DELETE|MERGE|TRUNCATE|CREATE|ALTER|DROP|CALL|DO)\b|\bUPDATE\s+[a-z_]/i);
+ }
+}
+export function fixture(kind:'EXCHANGE'|'CALLOUT',status='PENDING',mode:'SHIFT_CHANGE'|'DIRECT_PUBLICATION'='SHIFT_CHANGE') {
  const r=previousFixture(kind,status);registry.set(r.executor,r);
+ const businessBatches:SqlStatement[][]=[];
+ const businessTransaction=vi.fn<SqlExecutor['transaction']>(async statements=>statements.map(()=>[]));
+ vi.mocked(r.executor.transaction).mockImplementation(async statements=>{
+  const batch=[...statements];r.batches.push(batch);
+  if(mode==='DIRECT_PUBLICATION'||batch.some(s=>/^INSERT INTO shift_change_operations\b/.test(s.text))) {
+   businessBatches.push(batch);return businessTransaction(statements);
+  }
+  readOnlyBatches.push(batch);return statements.map(()=>[]);
+ });
  // Each original fixture's owner occupies a designated Lead slot.
  r.state.recipients[0].role='LEAD';
  vi.mocked(r.executor.query).mockImplementation(async statement=>{
@@ -21,7 +40,7 @@ export function fixture(kind:'EXCHANGE'|'CALLOUT',status='PENDING') {
   const source=build(r,kind);
   return [{source,state:structuredClone(r.state),observedAt:'2030-10-07T12:00:00Z',workspaceUpdatedAt:'2030-01-01 00:00:00.123456+00',authorized:true}] as never;
  });
- return r;
+ return {...r,businessBatches,businessTransaction};
 }
 function build(r:ReturnType<typeof previousFixture>,kind:'EXCHANGE'|'CALLOUT') {
  const state=r.state;
