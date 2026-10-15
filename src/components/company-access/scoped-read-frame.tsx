@@ -21,8 +21,10 @@ const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document
 export function ScopedReadFrame({observation,children,unavailable}:{observation?:ScopedObservation|null;children?:ReactNode;unavailable?:ReactNode}){
  const router=useRouter();
  const [body,setBody]=useState<Body>({authority:null,phase:'expired',content:null});
- const [recovery,setRecovery]=useState<Recovery>({required:false,view:null});
- const required=useRef(false),latest=useRef(-Infinity),retiredThrough=useRef(-Infinity),proactiveVersion=useRef('');
+ // A replacement view cannot know whether an earlier instance retired while an
+ // RSC response was in flight. Mounts therefore use the same fresh barrier.
+ const [recovery,setRecovery]=useState<Recovery>({required:true,view:null});
+ const required=useRef(true),latest=useRef(-Infinity),retiredThrough=useRef(-Infinity),proactiveVersion=useRef('');
  const anchor=useRef<CurrentAuthority|null>(null);
  const controls=useRef<{recover:()=>void;pause:()=>void;complete:(view:CurrentAuthority)=>void}|null>(null);
  const observed=observation?Date.parse(observation.observedAt):NaN,duration=observation?.validForMs??0;
@@ -56,7 +58,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    return {...result,requestStartedAt};
   },reason=>({state:'unavailable',reason}),()=> 'read_failed');
   function pause(){retire('paused');controller.pause();}
-  function recover(){retire('expired');controller.pause();if(online())controller.start();}
+  function recover(){retire('expired');lastRefresh='';controller.pause();if(online())controller.start();}
   function complete(current:CurrentAuthority){
    anchor.current=current;required.current=false;controller.pause();setRecovery({required:false,view:null});
   }
@@ -65,6 +67,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   document.addEventListener('visibilitychange',visibility);
   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
   for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,recover);
+  queueMicrotask(()=>{if(active)recover();});
   return()=>{active=false;controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,recover);};
  },[router]);
 
@@ -79,7 +82,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    // start, conservatively including its whole round trip and page-delivery time.
    const age=current&&current.authority===observation?.authority
     ?Math.max(0,performance.now()-current.requestStartedAt-(observed-Date.parse(current.observedAt)))
-    :Date.now()-observed;
+    :Infinity;
    const remaining=Math.min(duration,duration-age);
    const valid=!!observation&&Number.isFinite(observed)&&duration>0&&duration<=15000&&remaining>0&&observed>retiredThrough.current&&observed>=latest.current;
    const afterBarrier=!required.current||(!!recovery.view&&observation?.authority===recovery.view.authority&&observed>Date.parse(recovery.view.observedAt));
