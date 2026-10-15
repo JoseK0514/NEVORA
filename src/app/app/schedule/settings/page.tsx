@@ -1,3 +1,7 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { NavIcon, type NavIconName } from "@/components/nav-icon";
@@ -25,19 +29,24 @@ export default async function ScheduleSettingsPage({ searchParams }: {
   searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string }>;
 }) {
   const session = await requireRoles(MANAGER_ROLES);
+  const params=await searchParams;
+  const source=await withOperationalCompany(await requireSessionMutationProof(),async()=>{
   let policy = null;
   let policyUnavailable = false;
   try { policy = await readShiftChangePolicy(neonNotificationExecutor()); } catch { policyUnavailable = true; }
-  const params = await searchParams;
   const [staffing, employees, locations, coverageWindows, positions] = await Promise.all([
     listLocationStaffingSettings(), listEmployeeHourTargets(), listLocations(),
     listCoverageWindows(), listPositions({ includeInactive: true }),
   ]);
+    return {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Scheduling rules unavailable" reason={source.reason}/>;
+  const {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions}=source.data;
   function locationLabel(locationId: string, fallback: string) {
     return locations.find(location => location.id === locationId)?.shortName ?? fallback;
   }
 
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="scheduling-rules-page">
       <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" />
       <PageHeader
@@ -153,5 +162,5 @@ export default async function ScheduleSettingsPage({ searchParams }: {
         </div>
       </div>
     </div>
-  );
+  </ScopedReadFrame>);
 }

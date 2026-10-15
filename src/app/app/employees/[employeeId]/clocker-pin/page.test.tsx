@@ -2,19 +2,21 @@ import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 
-const m = vi.hoisted(() => ({ role: 'MANAGER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, missing: false, read: vi.fn() }));
+const m = vi.hoisted(() => ({ role: 'MANAGER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied: false, missing: false, read: vi.fn(), profile:vi.fn() }));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load()}}));
 vi.mock('next/link', () => ({ default: ({ href, children, ...props }: ComponentProps<'a'>) => createElement('a', { href, ...props }, children) }));
 vi.mock('next/navigation', () => ({ notFound: () => { throw Error('notFound'); } }));
 vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], requireRoles: async () => ({ role: m.role }) }));
 vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => ({ employee: { id: 'actor' }, sessionTokenHash: 'proof' }) }));
-vi.mock('@/lib/data/employees', () => ({ getEmployeeManagementProfile: async () => m.missing ? null : ({ firstName: 'Avery', lastName: 'Lane', role: m.targetRole, active: m.active }) }));
+vi.mock('@/lib/data/employees', () => ({ getEmployeeManagementProfile: m.profile }));
 vi.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { if (m.unavailable) throw Error('private infrastructure error'); return Buffer.alloc(32); } }));
 vi.mock('@/lib/clocker/pins.server', () => ({ readEmployeeClockerPin: m.read }));
 vi.mock('./actions', () => ({ saveClockerPinAction: vi.fn() }));
 import EmployeeClockerPinPage from './page';
 
 beforeEach(() => {
-  Object.assign(m, { role: 'MANAGER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, missing: false });
+  Object.assign(m, { role: 'MANAGER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied:false, missing: false });
+  m.profile.mockReset();m.profile.mockImplementation(async()=>m.missing?null:({firstName:'Avery',lastName:'Lane',role:m.targetRole,active:m.active}));
   m.read.mockReset();
   m.read.mockImplementation(async () => ({ employeeId: 'worker', version: m.version, configured: m.version > 0 }));
 });
@@ -69,3 +71,9 @@ it('uses notFound for missing employees', async () => {
   m.missing = true;
   await expect(render()).rejects.toThrow('notFound'); expect(m.read).not.toHaveBeenCalled();
 });
+it('withholds company PIN and profile reads when current scope denies the page',async()=>{
+ m.denied=true;const html=await render();expect(html).toContain('current company-wide management access');expect(html).not.toContain('<form');expect(m.profile).not.toHaveBeenCalled();expect(m.read).not.toHaveBeenCalled();
+});
+
+// This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

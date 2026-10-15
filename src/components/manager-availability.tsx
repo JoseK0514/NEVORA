@@ -1,3 +1,7 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import { formatBusinessDateTime } from "@/lib/business-time";
 import Link from "next/link";
 import { AvailabilityTeamList } from "@/components/availability-team-list";
@@ -19,12 +23,17 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   await requireRoles(MANAGER_ROLES);
   const validWeek = Boolean(week && /^\d{4}-\d{2}-\d{2}$/.test(week) && Number.isFinite(new Date(`${week}T12:00:00Z`).getTime()) && weekStartFor(week) === week);
   const invalidWeek = Boolean(week && !validWeek);
+  const source=await withOperationalCompany(await requireSessionMutationProof(),async()=>{
   const upcoming = validWeek ? null : await getUpcomingAvailabilityWeek(currentWeek);
   const selectedWeek = validWeek ? week! : upcoming?.weekStart ?? currentWeek;
   const [settings, statuses, windows, employees, locations] = await Promise.all([
     getWeekSettings(selectedWeek), listAvailabilitySubmissionStatuses(selectedWeek),
     listTeamAvailabilityWindows(selectedWeek), listEmployees(), listLocations(),
   ]);
+    return {selectedWeek,settings,statuses,windows,employees,locations};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Team availability unavailable" reason={source.reason}/>;
+  const {selectedWeek,settings,statuses,windows,employees,locations}=source.data;
   const missing = statuses.filter(item => !item.submitted).length;
   const locationNames = new Map(locations.map(location => [location.id, location.shortName]));
   const employeeLocations = new Map(employees.map(employee => [employee.id, locationNames.get(employee.primaryLocationId)]));
@@ -37,7 +46,7 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
     updatedLabel: status.updatedAt ? formatBusinessDateTime(status.updatedAt, timeZone) : undefined,
   }));
 
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="availability-page manager-workflow-page manager-team-availability">
       <ManagerIssueFocus prefix="employee-" />
       <header className="av-page-heading"><div><h1>Team availability</h1><p>Review submissions and available hours for the week.</p></div><Link className="av-button secondary" href={`/app/schedule?week=${selectedWeek}`}>View schedule<CaretRightIcon size={18} aria-hidden="true" /></Link></header>
@@ -49,5 +58,5 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
       <dl className="av-review-summary"><div><dt>Submitted</dt><dd>{statuses.length - missing}<span> / {statuses.length}</span></dd></div><div><dt>Missing</dt><dd>{missing}</dd></div><div><dt>Unavailable all week</dt><dd>{statuses.filter(item => item.submitted && item.windowCount === 0).length}</dd></div></dl>
       <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} />
     </div>
-  );
+  </ScopedReadFrame>);
 }

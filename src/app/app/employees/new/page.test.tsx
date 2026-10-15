@@ -2,8 +2,12 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 
+const access=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+
 const m = vi.hoisted(() => ({ role: "MANAGER", noLocations: false }));
-beforeEach(() => { m.role = "MANAGER"; m.noLocations = false; });
+beforeEach(() => { m.role = "MANAGER"; m.noLocations = false; access.denied=false; });
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
@@ -84,3 +88,8 @@ it("announces a server validation error without rendering untrusted error codes"
   expect(html).not.toContain("&lt;script&gt;");
   expect(html).not.toContain("<script>invalid</script>");
 });
+
+it('honors company-read denial before loading employee-creation catalogs (presentation boundary)',async()=>{access.denied=true;const html=renderToStaticMarkup(await NewEmployeePage({searchParams:Promise.resolve({})}));expect(html).toContain('Employee creation unavailable');expect(html).toContain('Return to Home');expect(html).not.toContain('new-employee-form');});
+
+// This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

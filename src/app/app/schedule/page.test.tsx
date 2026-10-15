@@ -125,3 +125,12 @@ it('Add shift preserves the selected second-location destination',async()=>{
 });
 
 it('forged acknowledged query does not manufacture success without canonical receipt',async()=>{const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',acknowledged:'1'})}));expect(output).not.toContain('Schedule confirmed.');});
+
+const operationalPageFixture=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+// Composition only; mounted body lifetime is covered by the browser harness.
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+beforeEach(()=>{operationalPageFixture.denied=false;});
+
+it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('current company-wide management access');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});
+it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('employee-schedule');expect(output).not.toContain('current company-wide management access');});

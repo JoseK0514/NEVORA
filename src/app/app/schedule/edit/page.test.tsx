@@ -66,3 +66,14 @@ it("uses the canonical nominal shift period for fractional, overnight, midnight,
   expect(shiftDurationLabel("2026-10-14", "16:00", "24:00")).toBe("8 hr scheduled");
   for (const end of ["", "08:00", "25:00"]) expect(shiftDurationLabel("2026-10-14", "08:00", end)).toBe("Enter a valid start and end time.");
 });
+
+// Server composition tests; actual mounted finite-body behavior is checked separately.
+const operationalPageFixture=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+
+beforeEach(()=>{operationalPageFixture.denied=false;});
+
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('current company-wide management access');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(html).not.toContain('name="shiftId"');});

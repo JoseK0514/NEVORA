@@ -1,5 +1,9 @@
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
+import {ScopedManagementHome} from '@/components/company-access/scoped-operational-views';
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
-import Link from 'next/link';
 import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {businessDate} from '@/lib/business-time';
@@ -48,20 +52,25 @@ export default async function DashboardPage({
     return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)}/>;
   }
 
+  const proof=await requireSessionMutationProof();
+  const authority=await readOperationalAuthority(proof);
+  if(authority.state==='unavailable')return <OperationalUnavailable title="Home unavailable" reason={authority.reason}/>;
+  if(authority.scope?.mode!=='COMPANY')return <ScopedManagementHome view={authority}/>;
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const view = validDashboardView(params.view);
   const previousWeek = addDays(weekStart, -7);
   const nextWeek = addDays(weekStart, 7);
 
-  const dashboardData=await loadManagerDashboardData(weekStart,await requireSessionMutationProof()).catch(()=>null);
-  if(!dashboardData)return <section className="panel"><h1>Dashboard unavailable</h1><p>A current authorized read could not be verified.</p><Link className="button secondary" href="/app">Refresh dashboard</Link></section>;
+  const source=await withOperationalCompany(proof,()=>loadManagerDashboardData(weekStart,proof));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Dashboard unavailable" reason={source.reason}/>;
+  const dashboardData=source.data;
   const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,scheduleRoster,daySummaries,hourRows,pendingTimeOff,pendingExchanges,pendingCallouts,latestRevision}=dashboardData;
 
-  return (
+  return (<ScopedReadFrame observation={source}>
     <ManagerDashboard
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}
-      correctionAuthority={correctionAuthority(await requireSessionMutationProof())}
+      correctionAuthority={correctionAuthority(proof)}
       workspaceName={workspace.name}
       timeZone={workspace.timeZone}
       firstName={session.firstName}
@@ -98,5 +107,5 @@ export default async function DashboardPage({
           : null
       }
     />
-  );
+  </ScopedReadFrame>);
 }

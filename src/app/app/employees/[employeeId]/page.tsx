@@ -1,3 +1,6 @@
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import { EmployeeCoreProfileForm } from "@/components/employee-core-profile-form";
 import { EmployeeSchedulingFields } from "@/components/employee-scheduling-fields";
 import { ConfigurationForm } from "@/components/configuration-form";
@@ -33,29 +36,34 @@ export default async function EmployeeProfilePage({
   const actor = await requireRoles(MANAGER_ROLES);
   const { employeeId } = await params;
 
+  const proof=await requireSessionMutationProof();
+  const source=await withOperationalCompany(proof,async()=>{
   const [employee, locations, positions] = await Promise.all([
     getEmployeeManagementProfile(employeeId),
     listLocations({ includeInactive: true }),
     listPositions({ includeInactive: true }),
   ]);
 
-  if (!employee) notFound();
 
-  const proof = await requireSessionMutationProof();
   let operational = null;
   let profileUnavailable = false;
   try {
-    operational = await readOperationalRuleProfileView(proof, employee.id);
+    if(employee)operational = await readOperationalRuleProfileView(proof, employee.id);
   } catch {
     profileUnavailable = true;
   }
 
+    return {employee,locations,positions,operational,profileUnavailable};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
+  const {employee,locations,positions,operational,profileUnavailable}=source.data;
+  if(!employee)notFound();
   const primaryLocation = locations.find(
     (location) => location.id === employee.primaryLocationId,
   );
   const canManageCore = actor.role === "OWNER" || employee.role !== "OWNER";
 
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="employee-profile-page">
       <Link className="profile-back" href="/app/employees">
         <ArrowLeftIcon size={18} aria-hidden="true" focusable="false" />
@@ -197,5 +205,5 @@ export default async function EmployeeProfilePage({
         }
       />
     </div>
-  );
+  </ScopedReadFrame>);
 }

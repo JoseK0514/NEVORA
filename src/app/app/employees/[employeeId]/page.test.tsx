@@ -104,3 +104,12 @@ it('links authorized employee management to a separate Clocker PIN screen',async
  m.employeeRole='OWNER';
  expect(renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}))).not.toContain('/clocker-pin');
 });
+
+// Server composition tests; actual mounted finite-body behavior is checked separately.
+const operationalPageFixture=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+
+beforeEach(()=>{operationalPageFixture.denied=false;});
+
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('current company-wide management access');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');});

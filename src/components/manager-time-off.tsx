@@ -1,3 +1,7 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import Link from "next/link";
 import { StatusPill } from "@/components/status-pill";
 import { NavIcon } from "@/components/nav-icon";
@@ -24,11 +28,11 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId }: {
 }) {
   await requireRoles(MANAGER_ROLES);
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
-  const requests = selected.status === "PENDING"
-    ? await listPendingTimeOffRequests()
-    : await listTeamTimeOffRequests(selected.status);
+  const source=await withOperationalCompany(await requireSessionMutationProof(),()=>selected.status==='PENDING'?listPendingTimeOffRequests():listTeamTimeOffRequests(selected.status));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Team time off unavailable" reason={source.reason}/>;
+  const requests=source.data;
 
-  return (
+  return (<ScopedReadFrame observation={source}>
     <TimeOffMotion><div className="timeoff-page manager-workflow-page manager-timeoff nto-page">
       <ManagerIssueFocus prefix="request-" />
       <header className="nto-header" data-timeoff-intro><div><h1>Time off</h1><p>Review time away and keep your team informed.</p></div><Link href="/app?view=requests" className="nto-back-link">All requests <NavIcon name="arrowRight" /></Link></header>
@@ -55,5 +59,5 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId }: {
         )) : <div className="nto-empty-state"><span className="nto-empty-icon"><NavIcon name={selected.id === "pending" ? "calendar" : "timeOff"} size={28} /></span><strong>{selected.id === "pending" ? "You're all caught up" : `No ${selected.label.toLowerCase()} requests`}</strong><span>{selected.id === "pending" ? "New employee requests will appear here for your review." : "Requests will appear here after you make a decision."}</span></div>}
       </section>
     </div></TimeOffMotion>
-  );
+  </ScopedReadFrame>);
 }

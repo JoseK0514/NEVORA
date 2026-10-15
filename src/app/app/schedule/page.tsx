@@ -1,3 +1,6 @@
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {ScheduleCopyForm} from '@/components/schedule-copy-form';
 import { randomUUID } from "node:crypto";
 import { ActionMenu } from "@/components/action-menu";
@@ -105,6 +108,7 @@ export default async function SchedulePage({
   const today = businessDate(observedAt, workspace.timeZone);
   const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
+  async function renderSchedule(){
   const dates = weekDates(weekStart);
   const employeeSchedule=manager?null:await readEmployeeWeeklyReview(await requireSessionMutationProof(),weekStart);
   const [locations, allShifts, employees, weekSettings, employeeAcknowledgement] =
@@ -325,4 +329,9 @@ export default async function SchedulePage({
       <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone} />
     </div>
   );
+  }
+  if(!manager)return renderSchedule();
+  const source=await withOperationalCompany(await requireSessionMutationProof(),renderSchedule);
+  if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason}/>;
+  return <ScopedReadFrame observation={source}>{source.data}</ScopedReadFrame>;
 }

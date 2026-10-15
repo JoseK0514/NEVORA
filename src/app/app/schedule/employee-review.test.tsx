@@ -31,3 +31,9 @@ it('relevant canceled-to-empty published week exposes its current-version confir
  expect(html).toContain('Off');expect(html).toContain('Confirm schedule');expect(html).toContain('No assignments remain');
  expect(html).not.toContain('employee-quiet-status success');
 });
+
+const operationalPageFixture=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+// Composition only; mounted body lifetime is covered by the browser harness.
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+beforeEach(()=>{operationalPageFixture.denied=false;});

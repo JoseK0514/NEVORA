@@ -1,3 +1,7 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Key } from "@phosphor-icons/react/dist/ssr";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -22,12 +26,13 @@ export default async function NewEmployeePage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const session = await requireRoles(MANAGER_ROLES);
-  const [locations, positions, params] = await Promise.all([
-    listLocations(), listPositions(), searchParams,
-  ]);
+  const params=await searchParams;
+  const source=await withOperationalCompany(await requireSessionMutationProof(),()=>Promise.all([listLocations(),listPositions()]));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Employee creation unavailable" reason={source.reason}/>;
+  const [locations,positions]=source.data;
   const activeLocations = locations.filter((location) => location.active);
 
-  return (
+  return (<ScopedReadFrame observation={source}>
     <NewEmployeeFrame>
       <header className="new-employee-header" data-employee-reveal>
         <Link className="new-employee-back" href="/app/employees">
@@ -70,5 +75,5 @@ export default async function NewEmployeePage({
         </aside>
       </div>
     </NewEmployeeFrame>
-  );
+  </ScopedReadFrame>);
 }

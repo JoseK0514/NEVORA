@@ -1,3 +1,4 @@
+import {beforeEach} from 'vitest';
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
@@ -19,3 +20,14 @@ it.each([undefined,'foreign-location'])('all-locations or invalid entry requires
  expect(html).toContain('<option value="" disabled="" selected="">Select location</option>');
  expect(html).not.toContain('type="hidden" name="locationId"');
 });
+
+// Server composition tests; actual mounted finite-body behavior is checked separately.
+const operationalPageFixture=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+
+beforeEach(()=>{operationalPageFixture.denied=false;});
+
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({week:'2026-10-12'})}));expect(html).toContain('current company-wide management access');expect(html).not.toContain('Create shift');expect(html).not.toContain('name="employeeId"');});

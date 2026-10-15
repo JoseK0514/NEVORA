@@ -1,3 +1,6 @@
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {listPositions} from "@/lib/data/positions";
 import { CreateShiftForm } from "@/components/create-shift-form";
 import { ShiftWorkspace } from "@/components/shift-workspace";
@@ -44,25 +47,29 @@ export default async function NewShiftPage({
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
+  const proof=await requireSessionMutationProof();
   const params = await searchParams;
   if (params.review !== undefined) {
-    const proof = await requireSessionMutationProof();
-    let selected;
-    try { selected = await readCoverageRepairSelection(params.review, proof); }
-    catch (error) {
-      if (!(error instanceof CoverageRepairConflictError)) throw error;
-      let href = '/app/schedule';
-      try { href = coverageRepairUrl(decodeCoverageRepairReview(params.review, proof).locator, true); } catch { /* No trusted locator. */ }
-      return <ShiftWorkspace compact title="Coverage changed" description="Review the current gap before choosing a replacement." backHref="/app/schedule" backLabel="Back to schedule">
-        <section className="shift-conflict-panel"><WarningCircleIcon size={36} aria-hidden="true" /><h2>This review is no longer current</h2><p>Refresh the review and select a current eligible replacement before saving.</p><Link className="shift-action primary" href={href}>Refresh coverage review</Link></section>
-      </ShiftWorkspace>;
-    }
+    const source=await withOperationalCompany(proof,async()=>{
+      try{return {kind:'selected' as const,selected:await readCoverageRepairSelection(params.review!,proof)};}
+      catch(error){
+        if(!(error instanceof CoverageRepairConflictError))throw error;
+        let href='/app/schedule';
+        try{href=coverageRepairUrl(decodeCoverageRepairReview(params.review!,proof).locator,true);}catch{/* No trusted locator. */}
+        return {kind:'conflict' as const,href};
+      }
+    });
+    if(source.state==='unavailable')return <OperationalUnavailable title="Replacement review unavailable" reason={source.reason}/>;
+    if(source.data.kind==='conflict')return <ScopedReadFrame observation={source}><ShiftWorkspace compact title="Coverage changed" description="Review the current gap before choosing a replacement." backHref="/app/schedule" backLabel="Back to schedule">
+      <section className="shift-conflict-panel"><WarningCircleIcon size={36} aria-hidden="true"/><h2>This review is no longer current</h2><p>Refresh the review and select a current eligible replacement before saving.</p><Link className="shift-action primary" href={source.data.href}>Refresh coverage review</Link></section>
+    </ShiftWorkspace></ScopedReadFrame>;
+    const selected=source.data.selected;
     const { locator } = selected;
     const day = formatDayLabel(locator.date);
     const overnight = locator.endTime === "24:00" || locator.endTime < locator.startTime;
     const nextDay = overnight ? formatDayLabel(addDays(locator.date, 1)) : null;
     const refreshHref = coverageRepairUrl(locator, true);
-    return <ShiftWorkspace compact title="Review replacement" description="Check the assignment details before saving." backHref={refreshHref} backLabel="Back to coverage review" context={formatWeekRange(locator.weekStart)}>
+    return <ScopedReadFrame observation={source}><ShiftWorkspace compact title="Review replacement" description="Check the assignment details before saving." backHref={refreshHref} backLabel="Back to coverage review" context={formatWeekRange(locator.weekStart)}>
       <ConfigurationForm action={createShiftAction} className="shift-editor-form shift-replacement-form">
       <input type="hidden" name="coverageRepairReview" value={params.review} />
       {Object.entries({ weekStart: locator.weekStart, employeeId: selected.employeeId, locationId: locator.locationId,
@@ -80,7 +87,7 @@ export default async function NewShiftPage({
         <div className="shift-review-notice"><InfoIcon size={22} aria-hidden="true" /><div><strong>{locator.target === "POSITION" ? "Fill this position requirement" : locator.target === "LEAD" ? "Fill the Lead requirement" : "Fill this staffing requirement"}</strong><p>This saves one replacement for the selected requirement. Remaining requirements stay visible in the gap.</p></div></div>
       </div>
       <footer className="shift-editor-footer"><p>The current coverage is checked again when you save.</p><div className="shift-editor-actions"><Link className="shift-action secondary" href={refreshHref}>Refresh coverage review</Link><button className="shift-action primary" type="submit"><CheckIcon size={18} aria-hidden="true" />Save replacement</button></div></footer>
-    </ConfigurationForm></ShiftWorkspace>;
+    </ConfigurationForm></ShiftWorkspace></ScopedReadFrame>;
   }
   const workspace = await getWorkspace();
   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
@@ -91,16 +98,18 @@ export default async function NewShiftPage({
       : weekStart;
   const weekEnd = addDays(weekStart, 6);
 
-  const [employees, locations, positions] = await Promise.all([
+  const source=await withOperationalCompany(proof,()=>Promise.all([
     listEmployees(),
     listLocations(),
     listPositions(),
-  ]);
+  ]));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={source.reason}/>;
+  const [employees,locations,positions]=source.data;
   const locationId = locations.some(location => location.id === params.locationId) ? params.locationId! : "";
   const cancelHref = `/app/schedule?week=${weekStart}${locationId ? `&location=${encodeURIComponent(locationId)}` : ""}`;
-  return (
+  return (<ScopedReadFrame observation={source}>
     <ShiftWorkspace title="Create shift" description="Choose who’s working, where, and when." backHref={cancelHref} backLabel="Back to schedule" context={formatWeekRange(weekStart)}>
       <CreateShiftForm action={createShiftAction} employees={employees} locations={locations} positions={positions} weekStart={weekStart} weekEnd={weekEnd} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId} startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} cancelHref={cancelHref} />
     </ShiftWorkspace>
-  );
+  </ScopedReadFrame>);
 }

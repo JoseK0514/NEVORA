@@ -1,3 +1,6 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScheduleCopyForm} from '@/components/schedule-copy-form';
 import { randomUUID } from "node:crypto";
 import { requireSessionMutationProof } from "@/lib/auth/session";
@@ -46,10 +49,13 @@ export default async function ScheduleTemplatesPage({
   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
   const weekStart = params.week && isValidWeekStart(params.week) ? params.week : currentWeek;
   const weekLabel = formatWeekRange(weekStart);
-  const templates = await listScheduleTemplates(await requireSessionMutationProof());
+  const proof=await requireSessionMutationProof();
+  const source=await withOperationalCompany(proof,()=>listScheduleTemplates(proof));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Schedule templates unavailable" reason={source.reason}/>;
+  const templates=source.data;
   const hasFeedback = Boolean(params.error || params.saved || params.archived || params.applied !== undefined);
 
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="schedule-templates-page">
       <PageHeader
         title="Schedule templates"
@@ -173,5 +179,5 @@ export default async function ScheduleTemplatesPage({
       </section>
       </TemplateMotion>
     </div>
-  );
+  </ScopedReadFrame>);
 }

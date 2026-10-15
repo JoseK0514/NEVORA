@@ -20,4 +20,31 @@
 .actions {display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 :global(.app-shell.nevora-portal) .coreForm :global(.configuration-fields) :global(.form-footer) {display:grid;width:100%;grid-template-columns:minmax(0,1fr)}
 .receipt {padding:.75rem;border:1px solid var(--design-border);border-radius:var(--design-radius-control);background:var(--design-surface-inset);line-height:1.5}
+.scopedPage {display:grid;gap:24px;min-width:0}
+.scopedPage .stack {align-content:start}
+.scopedPage .stack>:is(h2,p) {margin:0}
+.scopedPage header p {color:var(--design-text-secondary);line-height:1.6;max-width:70ch}
+.search {display:grid;gap:8px;min-width:0;font-size:14px}
+.search :is(input,select) {width:100%;min-height:48px;padding:10px 14px;border:1px solid var(--design-border);border-radius:var(--design-radius-control);background:var(--design-surface-elevated);color:var(--design-text-primary)}
+.search :global(.nevora-select) {padding-right:40px}
+.rosterRow {display:flex;align-items:center;gap:12px;min-width:0;padding:12px 0;border-bottom:1px solid var(--design-surface);overflow-wrap:anywhere}
+.rosterRow>div {min-width:0}
+:global(.app-shell.nevora-portal) .scopedPage .rosterRow h2 {font-size:16px;margin:0}
+.previousIcon {transform:rotate(180deg)}
+.weekNavigation {display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:12px;align-items:center;max-width:520px}
+.weekNavigation strong {font-size:1rem;line-height:1.5;text-align:center;overflow-wrap:anywhere}
+.weekNavigation>a {min-width:48px;padding:12px}
+.rosterRow p {margin:4px 0}
+.rosterRow small,.shiftRow small {color:var(--design-text-secondary);line-height:1.5}
+.avatar {display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:var(--design-surface-inset);color:var(--design-text-primary);font-size:14px;font-weight:550}
+.scopeDays {display:grid;gap:16px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.scopeDays>section {align-content:start}
+.scopeDays h2,.scopeDays p {margin:0}
+.shiftRow {display:flex;justify-content:space-between;align-items:start;gap:12px;min-width:0;padding:12px 0;border-bottom:1px solid var(--design-surface);overflow-wrap:anywhere}
+.shiftRow>div {flex:1;min-width:0}
+.shiftRow>:global(.status-pill) {flex:0 0 auto;max-width:100%;overflow-wrap:normal}
+.recordedMinutes {flex:0 0 auto;white-space:nowrap}
+.shiftRow h3 {margin:0;font-size:15px;font-weight:550}
+.shiftRow p {margin:6px 0}
+@media(max-width:760px){.scopeDays{grid-template-columns:minmax(0,1fr)}.shiftRow{flex-direction:column}}
 @media(max-width:480px){.actions>*{flex:1 1 100%}.locations{padding-inline-start:.5rem}}

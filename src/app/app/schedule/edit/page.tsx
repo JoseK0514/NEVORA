@@ -1,3 +1,7 @@
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import {listPositions} from "@/lib/data/positions";
 import { ShiftEditAssignment } from "./shift-edit-assignment";
 import { ConfigurationForm } from "@/components/configuration-form";
@@ -37,13 +41,16 @@ export default async function EditShiftPage({
   if (!params.shiftId) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
+  const shiftId=params.shiftId;
 
-  const [shift, employees, locations, positions] = await Promise.all([
-    getShiftForManagement(params.shiftId),
+  const source=await withOperationalCompany(await requireSessionMutationProof(),()=>Promise.all([
+    getShiftForManagement(shiftId),
     listEmployees(),
     listLocations({includeInactive:true}),
     listPositions({includeInactive:true}),
-  ]);
+  ]));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={source.reason}/>;
+  const [shift,employees,locations,positions]=source.data;
 
   if (!shift) {
     redirect("/app/schedule?error=INVALID_SHIFT");
@@ -53,7 +60,7 @@ export default async function EditShiftPage({
   const returnUrl = `/app/schedule?week=${shift.weekStart}`;
   const day = formatDayLabel(shift.date);
 
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="edit-shift-page">
       <header className="edit-shift-heading">
         <Link className="edit-shift-back" href={returnUrl}>
@@ -159,5 +166,5 @@ export default async function EditShiftPage({
       </section>
       </div>
     </div>
-  );
+  </ScopedReadFrame>);
 }

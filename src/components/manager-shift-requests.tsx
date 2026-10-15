@@ -1,3 +1,6 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {randomUUID} from 'node:crypto';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
@@ -64,6 +67,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof();
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
+  const source=await withOperationalCompany(proof,async()=>{
   const [pending, callouts, coverage, exchanges, history] = await Promise.all([
     selected.id === "pending" ? listManagerPendingExchanges() : Promise.resolve([]),
     selected.id === "pending" ? listPendingCallouts() : Promise.resolve([]),
@@ -75,11 +79,15 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   const liveCoverage=coverage.filter(e=>e.status==='OPEN');
   const approvals=new Map(await Promise.all([...livePending.map(e=>({id:e.id,revision:e.requestRevision,kind:'MANAGER_APPROVE' as const})),...callouts.map(e=>({id:e.id,revision:e.requestRevision,kind:'APPROVE_CALLOUT' as const}))].map(async e=>[e.id,e.revision?await readShiftChangeAvailability(proof,{kind:e.kind,requestId:e.id,expectedRevision:e.revision,operationId:randomUUID()}).catch(()=>({allowed:false,notice:'Current review is unavailable. Reconnect and reload.'})):{allowed:false,notice:'Reload the current request revision.'}] as const)));
   const historyViews=new Map(await Promise.all([...exchanges,...history].map(async e=>[e.id,await readShiftChangeHistoryView(proof,e.id).catch(()=>null)] as const)));
+    return {callouts,exchanges,history,livePending,liveCoverage,approvals,historyViews};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Team shift requests unavailable" reason={source.reason}/>;
+  const {callouts,exchanges,history,livePending,liveCoverage,approvals,historyViews}=source.data;
   const activity = [...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, copy: <><ExchangeCopy exchange={exchange} /><ShiftChangeHistory events={historyViews.get(exchange.id)??null}/></> })), ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, copy: <><CalloutCopy callout={callout} /><ShiftChangeHistory events={historyViews.get(callout.id)??null}/></> }))].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 30);
   const count = selected.id === "pending" ? livePending.length + callouts.length : selected.id === "coverage" ? liveCoverage.length : activity.length;
 
 
-  return <ExchangeReviewShell view={selected.id} className="exchange-page marketplace-page manager-workflow-page manager-shift-requests">
+  return <ScopedReadFrame observation={source}><ExchangeReviewShell view={selected.id} className="exchange-page marketplace-page manager-workflow-page manager-shift-requests">
     <div className="exchange-page-heading"><PageHeader eyebrow="Team scheduling" title="Shift requests" description="Help your team adjust their schedule. Review the details, then decide." actions={<Link className="button secondary" href="/app?view=requests"><NavIcon name="requests" />All requests<NavIcon name="arrowRight" size={16} /></Link>} /></div>
     {error ? <p className="form-error" role="alert">{errors[error] ?? "The request could not be reviewed. It may have changed; review it again."}</p> : null}
 
@@ -103,5 +111,5 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
       {activity.map(item => <article className="manager-workflow-row" key={item.id}>{item.copy}<StatusPill tone={item.status === "APPROVED" ? "success" : "neutral"}>{statusLabel(item.status)}</StatusPill></article>)}
       {!count ? <div className="timeoff-empty-state exchange-empty"><span className="exchange-kind-icon"><NavIcon name={selected.id === "pending" ? "coverage" : "exchange"} size={28} /></span><strong>{selected.id === "pending" ? "You’re all caught up" : selected.id === "coverage" ? "No open coverage" : "No recent outcomes"}</strong><span>{selected.id === "pending" ? "Requests needing a management decision will appear here." : selected.id === "coverage" ? "Unclaimed published shifts will appear here." : "Completed and declined requests will appear here."}</span></div> : null}
     </section>
-  </ExchangeReviewShell>;
+  </ExchangeReviewShell></ScopedReadFrame>;
 }
