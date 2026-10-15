@@ -1,6 +1,7 @@
 import {afterEach,beforeEach,expect,it} from 'vitest';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {randomUUID} from 'node:crypto';
+import {readFile} from 'node:fs/promises';
 import {calendarAuthority,manageEmployeeCalendarSubscription as manage,getEmployeeCalendarSubscription as status,findCalendarOperation,readCalendarFeed,revokeEmployeeCalendarSubscription} from '../../lib/calendar/service.server';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {SqlExecutor} from '../../lib/notifications/types';
@@ -21,6 +22,8 @@ async function seed(){
  await q("INSERT INTO employee_location_eligibility VALUES('calendar-self','loc-1'),('calendar-self','loc-2')");
  await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'calendar-owner',now()+interval '1 day'),(repeat('b',64),'calendar-self',now()+interval '1 day')");
  await q("INSERT INTO employee_credentials(employee_id,password_hash) VALUES('calendar-self','fictional-hash')");
+ // Intended Owner census precedes operational adoption; no automatic grant to later Managers.
+ for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
 }
 const command=(kind:'ISSUE'|'ROTATE'|'REVOKE'='ISSUE',generation:string|null=null)=>({kind,operationId:randomUUID(),authority:calendarAuthority(proof),expectedGeneration:generation});
 async function issue(){await seed();const cmd=command(),created=await manage(proof,cmd,db.executor);expect(created.status).toBe('created');if(created.status!=='created')throw Error('No capability');return {created,cmd,token:created.url.split('/')[3]};}

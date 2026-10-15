@@ -1,4 +1,5 @@
 import 'server-only';
+import {operationalScopeStatements} from '../company-access/operational-scope.server';
 import type {SqlStatement} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {Workspace} from '../domain';
@@ -13,9 +14,9 @@ export function calendarSourceLocks(workspace:Workspace,employeeIds:string[],wri
   {text:'SELECT id FROM locations WHERE workspace_id=$1 ORDER BY id FOR SHARE',values:[workspace.id]},
   {text:'LOCK TABLE employee_location_eligibility IN SHARE MODE',values:[]}];
 }
-export function calendarManagementGuards(proof:SessionMutationProof,workspace:Workspace,employeeId=proof.employee.id,manager=false):SqlStatement[]{
+export function calendarManagementGuards(proof:SessionMutationProof,workspace:Workspace,employeeId=proof.employee.id,manager=false,expectedAuthority?:string):SqlStatement[]{
  return [...calendarSourceLocks(workspace,[proof.employee.id,employeeId],true),
-  ...managementSessionStatements(proof,proof.employee.id,manager?['OWNER','MANAGER']:['EMPLOYEE','LEAD']),
+  ...(manager?operationalScopeStatements(proof,workspace,{kind:'COMPANY'},expectedAuthority):managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD'])),
   {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.id=$1 AND l.workspace_id=$2) THEN '1' ELSE 'calendar_authorization' END)::integer`,values:[employeeId,workspace.id]}];
 }
 export function capabilityGuards(workspace:Workspace,row:SubscriptionRow):SqlStatement[]{
