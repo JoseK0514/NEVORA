@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {ArrowsLeftRightIcon, CalendarMinusIcon, CaretRightIcon, ClockIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
 import type {ReactNode} from 'react';
 import {EmployeeTimeView} from './employee-time-panel';
 import {HOME_SOURCES} from '../lib/employee-home/project';
@@ -44,6 +45,11 @@ function businessDate(at: string, zone: string) {
   return ['year', 'month', 'day'].map(key => parts.find(part => part.type === key)!.value).join('-');
 }
 
+/** "America/Puerto_Rico" → "Puerto Rico time". */
+function zoneLabel(zone: string) {
+  return `${zone.split('/').pop()!.replace(/_/g, ' ')} time`;
+}
+
 function Arrow({forward = false}: {forward?: boolean}) {
   return <svg className={styles.arrow} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path d={forward ? 'M4 12h15m-5-5 5 5-5 5' : 'm9 5 7 7-7 7'}/>
@@ -69,7 +75,7 @@ function Assignment({shift, zone}: {shift: PublishedAssignment; zone: string}) {
       <Link className={styles.scheduleLink} href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}>
         View schedule <Arrow forward/>
       </Link>
-      <p className={styles.zone}>Schedule times · {zone}</p>
+      <p className={styles.zone}>Times in {zoneLabel(zone)}</p>
     </div>
   </>;
 }
@@ -96,7 +102,7 @@ function AttentionGroup({kind, items, partial, zone}: {kind: 'actions' | 'update
   const count = `${items.length}${partial ? ' known' : ''} ${actions ? (items.length === 1 ? 'action' : 'actions') : (items.length === 1 ? 'update' : 'updates')}`;
   return <section data-home-group={kind} aria-labelledby={headingId} className={actions ? styles.actions : styles.updates}>
     <header className={styles.groupHeader}>
-      <h2 id={headingId}>{actions ? 'Needs your attention' : 'Recent updates'}</h2>
+      <h2 id={headingId}>{actions ? 'To do' : 'Recent updates'}</h2>
       <span className={styles.count}>{count}</span>
     </header>
     {items.length ? <>
@@ -114,6 +120,22 @@ function AttentionGroup({kind, items, partial, zone}: {kind: 'actions' | 'update
         : (actions ? 'No actions required.' : 'No recent updates.')}
     </p>}
   </section>;
+}
+
+const shortcuts = [
+  {href: '/app/requests/hub', label: 'Request time off', Icon: CalendarMinusIcon},
+  {href: '/app/exchange/swap', label: 'Swap a shift', Icon: ArrowsLeftRightIcon},
+  {href: '/app/availability', label: 'Update availability', Icon: UserCheckIcon},
+  {href: '/app/my-time', label: 'My time', Icon: ClockIcon},
+];
+
+function Shortcuts() {
+  return <nav className={styles.shortcuts} aria-labelledby="employee-home-shortcuts">
+    <h2 id="employee-home-shortcuts">Shortcuts</h2>
+    <ul>{shortcuts.map(({href, label, Icon}) => <li key={href}><Link href={href}>
+      <Icon size={20} aria-hidden="true"/><span>{label}</span><CaretRightIcon className={styles.caret} size={16} aria-hidden="true"/>
+    </Link></li>)}</ul>
+  </nav>;
 }
 
 function SourceNotices({snapshot}: {snapshot: HomeSnapshot}) {
@@ -196,6 +218,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
         <AttentionGroup kind="actions" items={actions} partial={partial} zone={snapshot.timeZone}/>
         <AttentionGroup kind="updates" items={updates} partial={partial} zone={snapshot.timeZone}/>
         <SourceNotices snapshot={snapshot}/>
+        <Shortcuts/>
       </div> : null}
       <footer className={styles.freshness}>
         {snapshot ? <small>Home sources checked <time dateTime={snapshot.observedAt}>{stamp(snapshot.observedAt, snapshot.timeZone)}</time></small> : null}

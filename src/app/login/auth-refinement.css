@@ -1,16 +1,16 @@
 /* Approved authentication family. Every rule requires the explicit refinement scope. */
 html body .employee-login-page.auth-refinement-page {
-  --login-blue: #0756D9;
-  --login-blue-hover: #003AAE;
-  --login-cyan: #43CCFB;
-  --login-ice: #F0FBFF;
+  --login-blue: #077572;
+  --login-blue-hover: #055C5A;
+  --login-cyan: #9FD3CF;
+  --login-ice: #EEF7F6;
   --login-canvas: #F7F8FA;
   --login-field: #F6F7F9;
   --login-divider: #E7EBF0;
   --login-frame-radius: 24px;
   --login-control-radius: 14px;
   --login-symbol-radius: 12px;
-  --login-hero-ink: #062959;
+  --login-hero-ink: #1C4A47;
   min-height: 100svh;
   padding: 40px 32px;
   overflow-x: clip;
@@ -100,7 +100,7 @@ html body .auth-refinement-page .employee-login-brand {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(180deg, #062959B8 0%, #06295966 35%, transparent 66%);
+  background: linear-gradient(180deg, #1C4A47B8 0%, #1C4A4766 35%, transparent 66%);
 }
 
 .employee-login-page.auth-refinement-page .login-visual-copy { padding: 48px 44px; }
@@ -155,7 +155,7 @@ html body .auth-refinement-page .employee-login-card {
 html body .employee-login-page.auth-refinement-page .employee-login-form input:focus {
   border-color: var(--login-blue);
   background: var(--design-surface-elevated);
-  box-shadow: 0 0 0 3px #0756D91A;
+  box-shadow: 0 0 0 3px #0775721A;
 }
 
 html body .employee-login-page.auth-refinement-page .employee-login-card .employee-login-submit.button.primary {
@@ -261,7 +261,7 @@ html body .employee-login-page.auth-refinement-page .brand-legal span { font-siz
   .employee-login-page.auth-refinement-page .employee-login-composition { grid-template-columns: minmax(0, 1fr); border-radius: 20px; }
   .employee-login-page.auth-refinement-page .login-visual { min-height: 144px; }
   .employee-login-page.auth-refinement-page .login-visual-art { object-position: 50% 42%; }
-  .employee-login-page.auth-refinement-page .login-visual::after { background: linear-gradient(90deg, #062959DB, #06295980 60%, #06295914); }
+  .employee-login-page.auth-refinement-page .login-visual::after { background: linear-gradient(90deg, #1C4A47DB, #1C4A4780 60%, #1C4A4714); }
   .employee-login-page.auth-refinement-page .login-visual-copy { padding: 28px; }
   .employee-login-page.auth-refinement-page .login-visual h2 { max-width: 10ch; font-size: 30px; line-height: 1.14; letter-spacing: -.035em; }
   html body .auth-refinement-page .employee-login-card { padding: 32px 28px 28px; }
@@ -284,4 +284,11 @@ html body .employee-login-page.auth-refinement-page .brand-legal span { font-siz
 @media (prefers-reduced-motion: reduce) {
   .employee-login-page.auth-refinement-page :is(.employee-login-submit, .employee-login-form input, .login-access-symbol) { transition: none; }
   .employee-login-page.auth-refinement-page .employee-login-submit:active:not(:disabled) { transform: none; }
+}
+
+/* Teal pass (2026-10-15): shift the blue glass photography toward the portal teal.
+ * The NEVORA wordmark is untouched. */
+.employee-login-page.auth-refinement-page :is(.login-visual-art, .recovery-visual-art, .activation-visual-art) { filter: hue-rotate(-38deg) saturate(.8) brightness(.97); }
+@media (forced-colors: active) {
+  .employee-login-page.auth-refinement-page :is(.login-visual-art, .recovery-visual-art, .activation-visual-art) { filter: none; }
 }

@@ -157,3 +157,40 @@
   .manager-schedule-page *, .manager-schedule-page *::before, .manager-schedule-page *::after { transition: none !important; }
   .mws-shift:hover { transform: none; }
 }
+
+/* Calmer roster (2026-10-15; Square/Fresha/Deputy anatomy): one-line chips,
+ * blank empty cells with a pointer-only "+ Add", day totals, compact rows. */
+@media (min-width: 601px) {
+  .mws-roster .mws-grid-heading > div::after { content: attr(data-day-total); font-size: 11px; color: var(--design-text-secondary); font-variant-numeric: tabular-nums; }
+  .mws-roster .mws-grid-heading > div { min-height: 68px; gap: 2px; }
+  .mws-roster .mws-roster-row { min-height: 0; }
+  .mws-roster .mws-person { align-items: center; padding: 12px 14px 12px 20px; }
+  .mws-roster .mws-person h3 { font-size: 14px; font-weight: 500; }
+  .mws-roster .mws-person p { margin: 0; font-size: 12px; }
+  .mws-roster .mws-person small { font-size: 12px; }
+  .mws-roster .mws-day-cell { padding: 6px; gap: 4px; justify-content: center; }
+  .mws-roster .mws-day-cell.empty { position: relative; }
+  .mws-roster .mws-no-assignment { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .mws-roster .mws-add { display: grid; place-items: center; min-height: 44px; border-radius: 8px; color: var(--design-primary); font-size: 12px; font-weight: 600; text-decoration: none; opacity: 0; transition: opacity 120ms ease-out, background 120ms ease-out; }
+  .mws-roster .mws-day-cell.empty:hover .mws-add { opacity: 1; background: var(--design-primary-light); }
+  .mws-roster .mws-shift { gap: 2px; padding: 8px 10px; border-radius: 8px; border: 1px solid transparent; background: var(--design-primary-light); color: var(--design-text-primary); }
+  .mws-roster .mws-shift:hover { background: color-mix(in srgb, var(--design-primary) 14%, white); transform: none; }
+  .mws-roster .mws-shift.draft { background: var(--design-background); border: 1px dashed var(--design-primary); }
+  .mws-roster .mws-shift.lead { box-shadow: inset 3px 0 0 var(--design-primary); border-left-color: transparent; }
+  .mws-roster .mws-shift > strong { font-size: 13px; }
+  .mws-roster .mws-shift > strong > span { display: inline; }
+  .mws-roster .mws-shift small { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mws-roster .mws-shift .schedule-assigned-position { display: none; }
+  .mws-roster .mws-shift-meta { margin-top: 0; }
+  .mws-roster .mws-shift-status { padding: 1px 6px; border-radius: 999px; background: var(--design-surface-inset); color: var(--design-text-primary); font-weight: 500; }
+}
+.mws-roster .mws-unscheduled { border-bottom: 1px solid var(--design-border); }
+.mws-roster .mws-unscheduled > summary { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 20px; color: var(--design-primary); font-size: 14px; font-weight: 600; cursor: pointer; list-style: none; }
+.mws-roster .mws-unscheduled > summary::-webkit-details-marker { display: none; }
+.mws-roster .mws-unscheduled > summary svg { transition: transform 120ms ease-out; }
+.mws-roster .mws-unscheduled[open] > summary svg { transform: rotate(180deg); }
+.mws-roster .mws-unscheduled[open] > summary span::after { content: ""; }
+@media (prefers-reduced-motion: reduce) {
+  .mws-roster :is(.mws-add, .mws-unscheduled > summary svg) { transition: none; }
+}
+.mws-add { display: none; }

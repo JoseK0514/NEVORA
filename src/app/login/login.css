@@ -1,9 +1,9 @@
 /* Jose's login-only NEVORA blue/cyan variant; shared portal tokens stay intact. */
 html body .employee-login-page {
-  --login-blue: #0756D9;
-  --login-blue-hover: #003AAE;
-  --login-cyan: #43CCFB;
-  --login-ice: #F0FBFF;
+  --login-blue: #077572;
+  --login-blue-hover: #055C5A;
+  --login-cyan: #9FD3CF;
+  --login-ice: #EEF7F6;
   min-height: 100svh;
   padding: 40px 32px;
   overflow: visible;
@@ -155,7 +155,7 @@ html body .employee-login-card {
 
 html body .employee-login-page .employee-login-form input:focus {
   border-color: var(--login-blue);
-  box-shadow: 0 0 0 3px #0756D91A;
+  box-shadow: 0 0 0 3px #0775721A;
 }
 
 html body .employee-login-page .employee-login-card .employee-login-submit.button.primary {

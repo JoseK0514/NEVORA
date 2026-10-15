@@ -1,11 +1,14 @@
 .root {
-  --home-blue: var(--nevora-blue, #0756d9);
-  --home-press: var(--nevora-blue-hover, #003aae);
-  --home-ink: #18191f;
-  --home-muted: #676a73;
-  --home-line: #e2e4e9;
-  --home-canvas: #f6f6f8;
-  --home-soft: #f0fbff;
+  --home-blue: var(--g-accent, #077572);
+  --home-press: var(--g-accent-hover, #055c5a);
+  --home-ink: var(--g-ink, #1c1c1c);
+  --home-muted: var(--g-muted, #5f6368);
+  --home-line: var(--g-hairline, #ecedef);
+  --home-border: var(--g-border, #d7d9dc);
+  --home-canvas: #f6f7f8;
+  --home-soft: var(--g-accent-wash, #e7f3f2);
+  --home-masthead: var(--g-masthead, #1c4a47);
+  --home-card-shadow: 0 1px 3px #0000001a, 0 1px 2px #0000000d;
   container: employee-home-reviewed / inline-size;
   width: 100%;
   max-width: 1080px;
@@ -27,13 +30,13 @@
 .root :is(a, button, summary):focus-visible { outline: 3px solid var(--home-blue); outline-offset: 3px; }
 .root ::selection { background: var(--home-blue); color: white; }
 
-.arrival { padding: 24px 24px 56px; background: var(--home-blue); color: white; }
+.arrival { padding: 24px 24px 56px; background: var(--home-masthead); color: white; }
 .arrival h1 { font-size: 1.625rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.25; text-wrap: balance; }
 .arrival p { margin-top: 6px; color: #FFFFFF; font-size: .8125rem; }
 .content { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: -28px; padding-inline: 20px; }
 .primary, .secondary { display: grid; align-content: start; gap: 20px; min-width: 0; }
 .secondary { gap: 24px; }
-.assignment { min-width: 0; padding: 18px 20px 10px; border-radius: 18px; background: white; }
+.assignment { min-width: 0; padding: 18px 20px 10px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
 .assignmentHeader { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
 .assignmentHeader h2 { color: var(--home-muted); font-size: 1rem; font-weight: 500; line-height: 1.5; }
 .published { display: inline-flex; align-items: center; gap: 7px; padding: 3px 8px; border-radius: 20px; color: var(--home-press); background: var(--home-soft); font-size: .75rem; }
@@ -56,7 +59,7 @@
 .currentNote { margin-block: 6px 12px !important; color: var(--home-muted); font-size: .8125rem; }
 .current .interval { font-size: 1.5rem; }
 
-.recordedSlot { min-width: 0; padding: 16px 18px 12px; border-radius: 16px; background: white; }
+.recordedSlot { min-width: 0; padding: 16px 18px 12px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
 /* Style only the supplied original compact panel, without hiding its facts or controls. */
 .recordedSlot :global(.employee-clock-compact) { margin: 0; padding: 0; border: 0; }
 .recordedSlot :global(.employee-time-current-heading h2) { color: var(--home-ink); font-size: 1rem; font-weight: 500; line-height: 1.5; letter-spacing: -.02em; }
@@ -71,7 +74,7 @@
 .recordedFallback p { margin-top: 6px; color: var(--home-muted); font-size: .8125rem; }
 .recordedFallback small { display: block; margin-top: 6px; color: var(--home-muted); font-size: .75rem; }
 
-.actions { min-width: 0; padding: 16px 18px 4px; border-radius: 16px; background: white; }
+.actions { min-width: 0; padding: 16px 18px 4px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
 .updates { min-width: 0; padding-inline: 2px; }
 .groupHeader { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 2px; }
 .groupHeader h2 { font-size: 1.125rem; line-height: 1.45; font-weight: 600; letter-spacing: -.02em; }
@@ -127,6 +130,39 @@
   .freshness { grid-column: 1 / -1; }
 }
 
+/* Gusto anatomy (2026-10-15): small muted card labels, big ink figures,
+ * teal "›" link rows, a quiet clock card and Shortcuts. */
+.assignmentHeader h2, .groupHeader h2, .shortcuts h2 { color: var(--home-muted); font-size: .9375rem; font-weight: 400; letter-spacing: 0; }
+.groupHeader h2 { color: var(--home-ink); font-size: 1.125rem; font-weight: 500; }
+.published { color: var(--g-accent-strong, #07605f); }
+.assignmentFooter { margin-top: 16px; padding-top: 0; }
+.scheduleLink { font-weight: 600; }
+.zone { padding-bottom: 6px; }
+.recordedSlot :global(.employee-clock-compact) { display: grid; gap: 2px; padding: 0; background: transparent; }
+.recordedSlot :global(.employee-time-current-heading) { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.recordedSlot :global(.employee-time-current-heading h2) { display: flex; align-items: center; gap: 8px; }
+.recordedSlot :global(.employee-time-current-heading svg) { color: var(--home-blue); }
+.recordedSlot :global(.employee-time-message), .recordedSlot :global(.employee-time-current-copy) { padding: 0; border: 0; background: transparent; }
+.recordedSlot :global(.employee-time-badge) { padding: 3px 8px; border-radius: 999px; background: var(--home-canvas); color: var(--home-ink); font-size: .75rem; font-weight: 500; }
+.recordedSlot :global(.employee-time-note) { display: none; }
+.recordedSlot :global(.employee-time-link) { font-weight: 600; }
+.shortcuts { min-width: 0; padding: 16px 18px 4px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
+.shortcuts ul { margin: 6px 0 0; padding: 0; list-style: none; }
+.shortcuts a { display: grid; grid-template-columns: 20px minmax(0, 1fr) 16px; align-items: center; gap: 14px; min-height: 52px; border-top: 1px solid var(--home-line); color: var(--home-ink); font-size: .9375rem; }
+.shortcuts a > svg:first-child { color: var(--home-blue); }
+.caret { color: var(--home-blue); }
+.freshness small { font-size: .75rem; }
+
+@media (min-width: 761px) { .root { background: transparent; } }
+@container employee-home-reviewed (min-width: 52rem) {
+  .arrival { padding: 4px 0 24px; border-radius: 0; background: transparent; color: var(--home-ink); }
+  .arrival h1 { font-size: 1.75rem; font-weight: 500; letter-spacing: -.02em; }
+  .arrival p { color: var(--home-muted); }
+  .content { margin-top: 0; padding-inline: 0; column-gap: 40px; }
+  .secondary { padding-top: 0; }
+  .assignment, .recordedSlot, .actions, .shortcuts { box-shadow: none; border: 1px solid var(--home-border); }
+}
+
 @media (hover: hover) {
   .root :is(.scheduleLink, .textLink, .itemLink, .refreshButton, .overflow summary):hover:not(:disabled) { color: var(--home-press); background: var(--home-soft); }
 }
@@ -140,3 +176,8 @@
 @media (prefers-reduced-motion: reduce) {
   .root *, .root *::before, .root *::after { scroll-behavior: auto; }
 }
+/* Card labels stay quiet so the figures lead; the repeated class outranks the portal's .page-frame h2. */
+.root.root.root .assignmentHeader h2, .root.root.root .shortcuts h2, .root.root.root .recordedSlot :global(.employee-time-current-heading h2) {
+  color: var(--home-muted); font-size: .9375rem; font-weight: 400; letter-spacing: 0; line-height: 1.5;
+}
+.root.root.root .groupHeader h2 { color: var(--home-ink); font-size: 1.125rem; font-weight: 500; letter-spacing: -.01em; }

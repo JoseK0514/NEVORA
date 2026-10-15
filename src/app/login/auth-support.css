@@ -1,6 +1,6 @@
 /* Recovery, activation and reset extend the approved login geometry with neutral still artwork. */
 .employee-login-page.auth-support-page {
-  --auth-still-surface: #F1F4F8;
+  --auth-still-surface: #EEF5F4;
   --auth-popover-radius: 14px;
 }
 
