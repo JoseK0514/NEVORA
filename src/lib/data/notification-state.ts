@@ -170,9 +170,12 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
             if(operational){const originalRole=recipient?.role;recipient=await repository.recipientAccess(recipientId,'operational');if(!recipient?.active||recipient.role!==originalRole||!isOperationalReviewRecipient(recipient)||recipient.operationalCompany!==true||!recipient.operationalAuthority)return rejected(intent,'operational_access_lost');}
             const admitted=recipient;
             const response=async(result:SourceCheck)=>{
-                if(!result.deliverable||!operational)return result;
-                const current=await repository.recipientAccess(recipientId,'operational');
-                return current?.active&&current.role===admitted?.role&&current.operationalCompany===true&&current.operationalAuthority===admitted?.operationalAuthority?result:rejected(intent,'operational_access_lost');
+                if(!result.deliverable||intent.source.kind==='SELF_TEST')return result;
+                const current=await repository.recipientAccess(recipientId,operational?'operational':undefined);
+                // A successful own-source read keeps its original identity/role;
+                // promotion cannot inherit the earlier self-service admission.
+                if(!current?.active||current.employeeId!==admitted?.employeeId||current.role!==admitted?.role)return rejected(intent,'operational_access_lost');
+                return !operational||current.operationalCompany===true&&current.operationalAuthority===admitted?.operationalAuthority?result:rejected(intent,'operational_access_lost');
             };
             let source=await repository.readSource(intent.source);
             if(source?.kind==='EXCHANGE' && source.record.status==='OPEN'){const current=await readShiftChangeMaintenanceSnapshot(intent.source.id,'EXCHANGE',executor,now);if(current?.lifecycle.source)source=maintenanceExchangeSource(current,source.record);}

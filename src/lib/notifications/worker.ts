@@ -1,3 +1,4 @@
+import {notificationOperationalAllowedSql} from '../data/notification-operational-sql';
 import {runShiftChangeMaintenance} from '../data/shift-change-maintenance';
 import { performance } from 'node:perf_hooks';
 import { neonNotificationExecutor } from '../data/notification-transactions';
@@ -229,10 +230,11 @@ export async function runDispatch(input: {
         if (input.mode !== 'retry') {
             const selected = await run(() => deps.executor.query<{
                 id: string;
-            }>({ text: `SELECT id FROM notifications WHERE environment=$1 AND push_state='pending'
+            }>({ text: `SELECT id FROM notifications n WHERE environment=$1 AND push_state='pending'
         AND cancelled_at IS NULL AND due_at <= now() AND (purpose <> 'SUMMARY' OR source_kind='MANAGER_SUMMARY')
         AND ($2::text[] IS NULL OR employee_id=ANY($2::text[]))
         AND (purpose <> 'TEST' OR ($3::boolean AND source_kind='SELF_TEST'))
+        AND ${notificationOperationalAllowedSql()}
         ORDER BY due_at,id LIMIT 10`, values: [config.environment, config.environment === 'test' ? [...config.testAccountIds] : null, config.environment === 'test' && config.testDeliveryEnabled] }));
             if (selected.length) {
                 const ids = selected.map(row => row.id);

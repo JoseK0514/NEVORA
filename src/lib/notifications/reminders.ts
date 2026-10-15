@@ -1,4 +1,4 @@
-import {notificationCompanySql,notificationOperationalGuard,isNotificationOperationalAuthorizationError} from '../data/notification-operational-sql';
+import {notificationCompanySql,notificationOperationalAllowedSql,notificationOperationalGuard,isNotificationOperationalAuthorizationError} from '../data/notification-operational-sql';
 import { businessDate } from '../business-time';
 import { workspaceReadGuard } from '../data/workspaces';
 import { createHash, randomUUID } from 'node:crypto';
@@ -199,7 +199,7 @@ export async function runReminders(deps:ReminderDeps):Promise<WorkerReport> {
       AND purpose IN ('REMINDER','SUMMARY')
       AND (push_state='pending' OR EXISTS (SELECT 1 FROM push_deliveries d WHERE d.notification_id=notifications.id AND d.status IN ('queued','retry_pending','processing')))
       AND (purpose<>'SUMMARY' OR source_kind='MANAGER_SUMMARY' OR push_state='pending')
-      AND (due_at<=$2 OR purpose='REMINDER') ORDER BY due_at,id LIMIT $3`,values:[config.environment,started.toISOString(),limit]});
+      AND (due_at<=$2 OR purpose='REMINDER') AND ${notificationOperationalAllowedSql('notifications')} ORDER BY due_at,id LIMIT $3`,values:[config.environment,started.toISOString(),limit]});
     const groups = new Map<string,{recipient:RecipientAccess;inputs:SummaryInput[]}>();
     for (const {id} of ids) {
         if (!withinReconciliationBudget()) break;
