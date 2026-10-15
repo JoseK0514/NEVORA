@@ -7,9 +7,9 @@
 }
 
 :global(.app-shell):has(.root) {
-  --review-accent: #ED724C;
-  --review-accent-hover: #D8613C;
-  --review-accent-ink: #9F3821;
+  --review-accent: #077572;
+  --review-accent-hover: #055C5A;
+  --review-accent-ink: #055C5A;
   --review-ink: #111827;
   --review-muted: #4B5563;
   --review-canvas: #FAFAFA;
@@ -56,7 +56,7 @@
 .fields input:disabled { opacity: 0.65; }
 .fields .hint { margin: 8px 0 20px; font-size: 12px; }
 .primary, .secondary { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 12px 18px; border-radius: var(--review-control); font-size: 14px; line-height: 1.45; font-weight: 600; transition: background 160ms ease, border-color 160ms ease, transform 160ms ease; }
-.primary { border: 1px solid transparent; background: var(--review-accent); color: var(--review-ink); width: 100%; }
+.primary { border: 1px solid transparent; background: var(--review-accent); color: #FFFFFF; width: 100%; }
 .primary:hover:not(:disabled) { background: var(--review-accent-hover); }
 .primary:active:not(:disabled), .secondary:active { transform: translateY(1px); }
 .primary:disabled { opacity: 0.65; cursor: wait; }

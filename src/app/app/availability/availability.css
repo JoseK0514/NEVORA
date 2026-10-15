@@ -2,14 +2,14 @@
 @font-face { font-family: "JetBrains Mono"; src: url("/fonts/typeface/jetbrains-mono/variable.ttf") format("truetype"); font-style: normal; font-weight: 100 800; font-display: swap; }
 
 .availability-page {
-  --av-primary: var(--design-primary, #ED724C);
+  --av-primary: var(--design-primary, #077572);
   --av-canvas: var(--design-background, #FAFAFA);
   --av-panel: var(--design-surface-elevated, #FFFFFF);
   --av-ink: var(--design-text-primary, #111827);
   --av-muted: var(--design-text-secondary, #4B5563);
   --av-border: var(--design-border, #D1D5DB);
   --av-inset: var(--design-surface-inset, color-mix(in srgb, #E5E7EB 28%, #FAFAFA));
-  --av-accent-ink: var(--design-accent-ink, #9F3821);
+  --av-accent-ink: var(--design-accent-ink, #055C5A);
   --av-radius: var(--design-radius-card, 18px);
   --av-control-radius: var(--design-radius-control, 17px);
   --av-body: var(--design-font-body, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
@@ -17,9 +17,9 @@
   width: 100%; max-width: 1120px; margin: 0 auto; color: var(--av-ink); font-family: var(--av-body); font-size: 14px; line-height: 1.5;
 }
 .app-shell:has(.availability-page) {
-  --nevora-blue: var(--design-accent-ink, #9F3821);
+  --nevora-blue: var(--design-accent-ink, #055C5A);
   --nevora-blue-hover: var(--design-accent-ink-hover, #7D2D1B);
-  --nevora-cyan: var(--design-primary, #ED724C);
+  --nevora-cyan: var(--design-primary, #077572);
   --nevora-soft: color-mix(in srgb, var(--nevora-cyan) 12%, #FAFAFA);
   --nuvora-indigo: var(--nevora-blue);
   --nuvora-indigo-hover: var(--nevora-blue-hover);
@@ -44,7 +44,7 @@
 .availability-page .av-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 11px 18px; border: 1px solid var(--av-border); border-radius: var(--av-control-radius); font-size: 14px; font-weight: 600; text-decoration: none; color: var(--av-ink); background: var(--av-panel); cursor: pointer; transition: background-color .18s ease, border-color .18s ease, transform .18s ease; }
 .availability-page .av-button.primary { background: var(--av-primary); color: var(--av-ink); border-color: var(--av-primary); }
 .availability-page .av-button:hover:not(:disabled) { background: var(--av-inset); }
-.availability-page .av-button.primary:hover:not(:disabled) { background: #D8613C; border-color: #D8613C; }
+.availability-page .av-button.primary:hover:not(:disabled) { background: #055C5A; border-color: #055C5A; }
 .availability-page .av-button:active:not(:disabled) { transform: translateY(1px); }
 .availability-page .av-button:disabled { cursor: default; opacity: .48; }
 .av-week-panel, .av-editor, .av-team-panel { background: var(--av-panel); border: 1px solid var(--av-border); border-radius: var(--av-radius); box-shadow: 0 3px 14px rgba(17, 24, 39, .025); }

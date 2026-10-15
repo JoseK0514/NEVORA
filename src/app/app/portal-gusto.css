@@ -3,8 +3,8 @@
  * account menu for every authenticated page. Home adds its own layout in
  * src/components/manager-home-gusto.css. Authentication keeps its own world. */
 html body .app-shell.nevora-portal {
-  --g-accent: #0A7E7E;        /* 4.9:1 on white */
-  --g-accent-hover: #075E5E;
+  --g-accent: #077572;        /* 5.5:1 on white, 4.9:1 on the wash */
+  --g-accent-hover: #055C5A;
   --g-accent-strong: #07605F; /* text on the wash */
   --g-accent-wash: #E7F3F2;
   --g-masthead: #1C4A47;
@@ -42,7 +42,7 @@ html body .app-shell.nevora-portal {
   --nevora-blue: var(--g-accent);
   --nevora-blue-hover: var(--g-accent-hover);
   --nevora-soft: var(--g-accent-wash);
-  --nevora-accent-rgb: 10, 126, 126;
+  --nevora-accent-rgb: 7, 117, 114;
   --nevora-soft-rgb: 231, 243, 242;
   --nuvora-indigo: var(--g-accent);
   --nuvora-indigo-hover: var(--g-accent-hover);
@@ -190,8 +190,8 @@ html body .app-shell.nevora-portal .page-frame .status-pill { font-weight: 500; 
     --corporate-masthead: var(--g-masthead);
     --corporate-ice-divider: #C9E0DE;
   }
-  html body .app-shell.nevora-portal .mobile-nav-link.active { background: transparent; color: var(--g-accent); }
-  html body .app-shell.nevora-portal .mobile-nav-link.active svg { color: var(--g-accent); }
+  html body .app-shell.nevora-portal .mobile-nav .mobile-nav-link.active { background: transparent; color: var(--g-accent); font-weight: 600; }
+  html body .app-shell.nevora-portal .mobile-nav .mobile-nav-link.active svg { color: var(--g-accent); }
 }
 @media (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal .page-frame :is(.button,.pw-button,.ncc-button) { transition: none; }

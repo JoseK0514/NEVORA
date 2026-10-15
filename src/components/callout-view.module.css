@@ -76,7 +76,7 @@
 .actions a, .actions button, .refresh { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 52px; padding: 13px 16px; border: 1px solid var(--design-border); border-radius: var(--design-radius-control); font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1.5; text-align: center; transition: background-color 160ms ease, border-color 160ms ease; }
 .actions a, .refresh { background: var(--design-background); color: var(--design-text-primary); }
 .actions a:hover, .refresh:hover:not(:disabled) { background: var(--design-surface-inset); border-color: var(--design-text-secondary); }
-.actions button { background: var(--design-primary); color: var(--design-text-primary); border-color: var(--design-primary); }
+.actions button { background: var(--design-primary); color: #FFFFFF; border-color: var(--design-primary); }
 .actions button:hover:not(:disabled) { background: var(--design-accent); border-color: var(--design-accent); }
 .actions button:disabled { opacity: .5; cursor: not-allowed; }
 .form fieldset:disabled :is(select, textarea) { opacity: .65; }

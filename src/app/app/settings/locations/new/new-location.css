@@ -7,15 +7,15 @@
 }
 
 .app-shell:has(.add-location-page) {
-  --design-primary: #ED724C;
-  --design-accent: #D8613C;
+  --design-primary: #077572;
+  --design-accent: #055C5A;
   --design-background: #FAFAFA;
   --design-surface: #E5E7EB;
   --design-surface-elevated: #FFFFFF;
   --design-text-primary: #111827;
   --design-text-secondary: #4B5563;
   --design-border: #D1D5DB;
-  --design-accent-ink: #9F3821;
+  --design-accent-ink: #055C5A;
   --design-radius-card: 18px;
   --design-radius-control: 17px;
   --design-font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -88,7 +88,7 @@
 .add-location-link-note { margin: 0; padding: 12px 14px; background: var(--design-background); border-radius: 10px; color: var(--design-text-secondary); font-size: 12px; line-height: 1.6; }
 .add-location-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 24px; margin-top: 12px; border-top: 1px solid var(--design-surface); }
 .add-location-page .add-location-button { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; padding: 11px 20px; border: 1px solid transparent; border-radius: var(--design-radius-control); font: 600 14px/1.5 var(--design-font-body); cursor: pointer; text-align: center; text-decoration: none; transition: background-color 140ms ease, border-color 140ms ease; }
-.add-location-primary { background: var(--design-primary); color: var(--design-text-primary); }
+.add-location-primary { background: var(--design-primary); color: #FFFFFF; }
 .add-location-primary:hover { background: var(--design-accent); }
 .add-location-secondary { background: var(--design-surface-elevated); color: var(--design-text-primary); border-color: var(--design-border) !important; }
 .add-location-secondary:hover { background: #F3F4F5; }

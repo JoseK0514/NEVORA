@@ -1,8 +1,8 @@
 @font-face { font-family: 'Inter'; src: url('/fonts/assisted-recovery/inter-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
 @font-face { font-family: 'JetBrains Mono'; src: url('/fonts/assisted-recovery/jetbrains-mono-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 800; font-display: swap; }
 .app-shell:has(.assisted-recovery), .assisted-recovery {
- --assisted-primary: #ED724C; --assisted-hover: #D8613C; --assisted-canvas: #FAFAFA; --assisted-white: #FFFFFF;
- --assisted-ink: #111827; --assisted-muted: #4B5563; --assisted-line: #D1D5DB; --assisted-tint: #F8EAE5; --assisted-link: #9F3821;
+ --assisted-primary: #077572; --assisted-hover: #055C5A; --assisted-canvas: #FAFAFA; --assisted-white: #FFFFFF;
+ --assisted-ink: #111827; --assisted-muted: #4B5563; --assisted-line: #D1D5DB; --assisted-tint: #F8EAE5; --assisted-link: #055C5A;
  --nuvora-midnight: var(--assisted-ink); --nuvora-bg: var(--assisted-canvas); --nuvora-text: var(--assisted-ink); --nuvora-muted: var(--assisted-muted);
  --nuvora-indigo: var(--assisted-link); --nuvora-indigo-soft: var(--assisted-tint); --nuvora-indigo-hover: #7D2D1B;
  --ink: var(--assisted-ink); --muted: var(--assisted-muted); --canvas: var(--assisted-canvas); --surface: var(--assisted-white); --line: var(--assisted-line);
@@ -37,7 +37,7 @@
 .assisted-confirm input[type='checkbox'] { flex: 0 0 22px; width: 22px; height: 22px; min-height: 0; margin: 1px 0 0; accent-color: var(--assisted-link); }
 .assisted-recovery button { font-family: inherit; }
 .assisted-submit,.assisted-secondary { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 52px; border-radius: 17px; padding: 12px 16px; font-size: 15px; line-height: 1.5; font-weight: 600; border: 1px solid transparent; transition: background-color 160ms ease, border-color 160ms ease; }
-.assisted-submit { background: var(--assisted-primary); color: var(--assisted-ink); }
+.assisted-submit { background: var(--assisted-primary); color: #FFFFFF; }
 .assisted-submit:hover:not(:disabled) { background: var(--assisted-hover); }
 .assisted-recovery :disabled { cursor: wait; }
 .assisted-recovery fieldset:disabled .assisted-submit { background: var(--assisted-line); color: var(--assisted-muted); }

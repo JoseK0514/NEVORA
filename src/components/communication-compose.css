@@ -65,7 +65,7 @@
 .compose-review p { color: var(--design-text-secondary); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
 .compose-review strong { color: var(--design-text-primary); font-weight: 550; }
 .compose-review .compose-hint { margin-top: 7px; }
-.communication-view.compose-page .compose-form .compose-action { display: inline-flex; justify-content: center; align-items: center; gap: 12px; min-height: 52px; padding: 14px 22px; border: 1px solid transparent; border-radius: var(--design-radius-control); color: var(--design-text-primary); background: var(--design-primary); font-size: 14px; font-weight: 600; white-space: nowrap; transition: background .16s,transform .16s; }
+.communication-view.compose-page .compose-form .compose-action { display: inline-flex; justify-content: center; align-items: center; gap: 12px; min-height: 52px; padding: 14px 22px; border: 1px solid transparent; border-radius: var(--design-radius-control); color: #FFFFFF; background: var(--design-primary); font-size: 14px; font-weight: 600; white-space: nowrap; transition: background .16s,transform .16s; }
 .compose-page .compose-action:hover:not(:disabled) { background: var(--design-accent); transform: translateY(-1px); }
 .compose-page .compose-action:active:not(:disabled) { transform: translateY(0); }
 .compose-page button:disabled { cursor: not-allowed; opacity: .62; }

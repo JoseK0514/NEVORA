@@ -1,7 +1,7 @@
 @font-face { font-family: 'Inter'; src: url('/fonts/typeface/inter/variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
 @font-face { font-family: 'JetBrains Mono'; src: url('/fonts/typeface/jetbrains-mono/variable.ttf') format('truetype'); font-style: normal; font-weight: 100 800; font-display: swap; }
 .app-shell:has(.clocker-devices-page) {
-  --cd-primary: #ED724C; --cd-accent: #D8613C; --cd-link: #9F3821;
+  --cd-primary: #077572; --cd-accent: #055C5A; --cd-link: #055C5A;
   --cd-canvas: #FAFAFA; --cd-surface: #FFFFFF; --cd-inset: #F0F1F3;
   --cd-border: #E5E7EB; --cd-accent-soft: #FBEFEA;
   --cd-card-radius: 18px; --cd-control-radius: 17px;

@@ -14,7 +14,7 @@
 .toolbar input::-webkit-date-and-time-value { min-width: 0; text-align: left; }
 .toolbar input::-webkit-datetime-edit { min-width: 0; padding: 0; }
 .primary, .secondary, .link { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 48px; padding: 11px 16px; border: 1px solid var(--design-border); border-radius: var(--design-radius-control); font: 500 13px/1.4 var(--design-font-body); text-align: center; text-decoration: none; cursor: pointer; touch-action: manipulation; transition: background-color 140ms ease, border-color 140ms ease, transform 100ms ease; }
-.primary { background: var(--design-primary); color: var(--design-text-primary); border-color: transparent; }
+.primary { background: var(--design-primary); color: #FFFFFF; border-color: transparent; }
 .secondary { background: var(--design-surface-elevated); color: var(--design-text-primary); }
 .primary svg, .secondary svg, .link svg { flex: 0 0 auto; }
 .primary:hover { background: var(--design-accent); }

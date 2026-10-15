@@ -6,8 +6,8 @@
   font-display: swap;
 }
 body:has(.break-types-page) {
-  --design-primary: #ED724C;
-  --design-accent: #D8613C;
+  --design-primary: #077572;
+  --design-accent: #055C5A;
   --design-background: #FAFAFA;
   --design-surface: #FFFFFF;
   --design-text: #111827;
@@ -16,7 +16,7 @@ body:has(.break-types-page) {
   --design-control-border: #D1D5DB;
   --design-radius-card: 18px;
   --design-radius-control: 17px;
-  --design-accent-ink: #9F3821;
+  --design-accent-ink: #055C5A;
   --nevora-blue: var(--design-accent-ink);
   --nevora-blue-hover: #7D2D1B;
   --nevora-cyan: var(--design-primary);
@@ -51,7 +51,7 @@ body:has(.break-types-page) {
 .break-types-page .page-header h1 { max-width: 100%; font-size: clamp(30px, 3.3vw, 40px); font-weight: 500; line-height: 1.15; letter-spacing: -.045em; margin: 0 0 12px; }
 .break-types-page .page-description { font-size: 15px; }
 .break-types-page .button { min-height: 44px; padding: 11px 17px; gap: 8px; border-radius: var(--design-radius-control); font-size: 13px; font-weight: 500; line-height: 1.5; white-space: normal; transition: background .18s; }
-.break-types-page .button.primary { background: var(--design-primary); color: var(--ink); }
+.break-types-page .button.primary { background: var(--design-primary); color: #FFFFFF; }
 .break-types-page .button.primary:hover { background: var(--design-accent); }
 .break-types-page .button.secondary { border-color: var(--design-control-border); background: var(--surface); }
 .break-types-page .button.secondary:hover { background: var(--canvas); }

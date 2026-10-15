@@ -64,7 +64,7 @@
 .edit-shift-duration output { font-variant-numeric: tabular-nums; }
 .edit-shift-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 12px; margin-top: 28px; }
 .app-shell .edit-shift-page .edit-shift-actions .button { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 48px; padding: 12px; margin: 0; border-radius: var(--design-radius-control); font-size: 14px; font-weight: 600; line-height: 1.4; opacity: 1; transition: background-color .18s ease, border-color .18s ease; }
-.edit-shift-page .edit-shift-actions .button.primary { background: var(--design-primary); color: var(--design-text-primary); border-color: var(--design-primary); }
+.edit-shift-page .edit-shift-actions .button.primary { background: var(--design-primary); color: #FFFFFF; border-color: var(--design-primary); }
 .edit-shift-page .edit-shift-actions .button.primary:hover:not(:disabled) { background: var(--design-accent); border-color: var(--design-accent); }
 .edit-shift-page .edit-shift-actions .button.secondary { background: var(--design-surface-elevated); color: var(--design-text-primary); border-color: var(--design-border); }
 .edit-shift-page .edit-shift-actions .button.secondary:hover { background: var(--design-background); }

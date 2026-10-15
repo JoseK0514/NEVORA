@@ -7,7 +7,7 @@
 .sectionHeading > div { min-width: 0; }
 .sectionHeading p { margin-top: 5px; color: var(--design-text-secondary); font-size: 12px; }
 .sectionIcon { display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 40px; border-radius: 12px; color: var(--design-text-secondary); background: var(--design-background); border: 1px solid var(--design-surface); }
-.exportIcon { background: #FBEDE7; color: var(--design-accent-ink); border-color: #F4CDBF; }
+.exportIcon { background: #E7F3F2; color: var(--design-accent-ink); border-color: #C9E0DE; }
 .root label { display: grid; gap: 8px; font-size: 12px; font-weight: 500; min-width: 0; }
 .root :is(input,select,textarea) { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; min-height: 46px; padding: 11px 13px; color: var(--design-text-primary); background: #fff; border: 1px solid var(--design-border); border-radius: var(--design-radius-control); font: inherit; font-size: 14px; font-weight: 400; }
 .root input[type=date] { font-size: 16px; }
@@ -19,7 +19,7 @@
 .button { display: inline-flex; gap: 9px; justify-content: center; align-items: center; min-height: 46px; padding: 11px 16px; border: 1px solid var(--design-border); border-radius: var(--design-radius-control); background: #fff; color: var(--design-text-primary); font: inherit; font-size: 13px; font-weight: 600; line-height: 1.4; cursor: pointer; transition: background .16s ease, border-color .16s ease, box-shadow .16s ease; }
 .button svg { flex-shrink: 0; }
 .button:hover:enabled { background: var(--design-background); border-color: #9CA3AF; }
-.primary { background: var(--design-primary); border-color: var(--design-primary); }
+.primary { background: var(--design-primary); border-color: var(--design-primary); color: #FFFFFF; }
 .primary:hover:enabled { background: var(--design-accent); border-color: var(--design-accent); box-shadow: 0 2px 5px #9F382115; }
 .root :is(button,input,select,textarea):disabled { cursor: not-allowed; }
 .button:disabled { background: #F3F4F6; border-color: var(--design-surface); color: #6B7280; }
@@ -27,7 +27,7 @@
 .root :is(input,select,textarea,button,summary,a):focus-visible { outline: 3px solid var(--design-accent-ink); outline-offset: 3px; }
 .toolbar { display: grid; grid-template-columns: minmax(140px,1fr) minmax(140px,1fr) auto auto; gap: 14px; align-items: end; }
 .periodHint { margin-top: 14px!important; color: var(--design-accent-ink); font-size: 12px; }
-.notice { display: flex; align-items: flex-start; gap: 10px; padding: 14px 18px; border: 1px solid #F4CDBF; border-radius: 14px; background: #FFF7F3; font-size: 13px; line-height: 1.6; }
+.notice { display: flex; align-items: flex-start; gap: 10px; padding: 14px 18px; border: 1px solid #C9E0DE; border-radius: 14px; background: #FFF7F3; font-size: 13px; line-height: 1.6; }
 .notice svg { flex-shrink: 0; color: var(--design-accent-ink); margin-top: 1px; }
 .workspace { display: grid; grid-template-columns: minmax(0,7fr) minmax(0,5fr); gap: 20px; align-items: start; }
 .employeeCard { padding: 24px 0 0; overflow: hidden; }

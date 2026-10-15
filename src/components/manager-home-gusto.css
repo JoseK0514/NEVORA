@@ -2,8 +2,8 @@
  * page: teal palette, flat white canvas, Tasks column plus a plain right rail.
  * Same DOM on every width; phones keep the masthead/card world below. */
 html body .app-shell.nevora-portal:has(.manager-portal-home) {
-  --g-accent: #0A7E7E;        /* 4.9:1 on white */
-  --g-accent-hover: #075E5E;
+  --g-accent: #077572;        /* 5.5:1 on white, 4.9:1 on the wash */
+  --g-accent-hover: #055C5A;
   --g-accent-strong: #07605F; /* text on the wash */
   --g-accent-wash: #E7F3F2;
   --g-masthead: #1C4A47;
@@ -24,7 +24,7 @@ html body .app-shell.nevora-portal:has(.manager-portal-home) {
   --nevora-blue: var(--g-accent);
   --nevora-blue-hover: var(--g-accent-hover);
   --nevora-soft: var(--g-accent-wash);
-  --nevora-accent-rgb: 10, 126, 126;
+  --nevora-accent-rgb: 7, 117, 114;
   --portal-nav-fill: var(--g-accent-wash);
   --portal-focus: var(--g-accent);
   --color-brand-accent: var(--g-accent);

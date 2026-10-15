@@ -13,15 +13,15 @@
   font-display: swap;
 }
 body:has(.employee-profile-page) {
-  --design-primary: #ed724c;
-  --design-accent: #d8613c;
+  --design-primary: #077572;
+  --design-accent: #055c5a;
   --design-background: #fafafa;
   --design-surface: #e5e7eb;
   --design-surface-elevated: #ffffff;
   --design-text-primary: #111827;
   --design-text-secondary: #4b5563;
   --design-border: #d1d5db;
-  --design-accent-ink: #9f3821;
+  --design-accent-ink: #055c5a;
   --design-accent-ink-hover: #7d2d1b;
   --design-radius-card: 18px;
   --design-radius-control: 17px;
@@ -56,8 +56,8 @@ body:has(.employee-profile-page) .sidebar .sidebar-platform-footer { color: var(
 body:has(.employee-profile-page) .sidebar .nav-link:is(:hover, .active) { color: var(--design-background); background: color-mix(in srgb, var(--design-primary) 16%, transparent); }
 body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: var(--design-primary); }
 .employee-profile-page {
-  --profile-accent: var(--design-primary, #ed724c);
-  --profile-accent-hover: var(--design-accent, #d8613c);
+  --profile-accent: var(--design-primary, #077572);
+  --profile-accent-hover: var(--design-accent, #055c5a);
   --profile-ink: var(--design-text-primary, #111827);
   --profile-muted: var(--design-text-secondary, #4b5563);
   --profile-line: var(--design-border, #d1d5db);
@@ -70,7 +70,7 @@ body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: va
   --ink: var(--profile-ink);
   --line: var(--profile-line);
   --surface-strong: var(--profile-canvas);
-  --nevora-blue: var(--design-accent-ink, #9f3821);
+  --nevora-blue: var(--design-accent-ink, #055c5a);
   display: grid;
   gap: 24px;
   width: min(960px, 100%);
@@ -116,7 +116,7 @@ body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: va
   flex: 0 0 64px;
   border-radius: 22px;
   background: color-mix(in srgb, var(--profile-accent) 12%, var(--profile-surface));
-  color: var(--design-accent-ink, #9f3821);
+  color: var(--design-accent-ink, #055c5a);
   font-size: 21px;
   font-weight: 500;
 }

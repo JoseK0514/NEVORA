@@ -180,6 +180,7 @@ function ScheduleTab(props: Props) {
 
             <div
               className="schedule-builder-shifts"
+              role="group"
               aria-label={`${employee.employeeName} shifts`}
             >
               {employee.shifts.map((shift) => {

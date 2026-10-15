@@ -80,7 +80,7 @@
 .employee-my-time-view .employee-time-correction-submit { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 16px; border: 1px solid var(--design-border); border-radius: var(--design-radius-control); font: 500 13px/1.4 var(--design-font-body); transition: background 180ms ease; }
 .employee-my-time-view .employee-time-correction-trigger { color: var(--design-accent-ink); background: var(--design-surface-elevated); }
 .employee-my-time-view .employee-time-correction-trigger:hover:not(:disabled) { background: var(--nevora-soft); }
-.employee-my-time-view .employee-time-correction-submit { background: var(--design-primary); color: var(--design-text-primary); border-color: var(--design-primary); font-weight: 600; }
+.employee-my-time-view .employee-time-correction-submit { background: var(--design-primary); color: #FFFFFF; border-color: var(--design-primary); font-weight: 600; }
 .employee-my-time-view .employee-time-correction-submit:hover:not(:disabled) { background: var(--design-accent); }
 .employee-my-time-view .employee-correction-center .employee-time-section-heading { align-items: flex-start; }
 .employee-my-time-view .employee-correction-center .employee-time-section-heading > div { min-width: 0; flex: 1; }

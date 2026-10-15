@@ -52,7 +52,7 @@
 .mws-day-navigation button span { font-size: 11px; }
 .mws-day-navigation button strong { font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
 .mws-day-navigation button:hover { background: var(--design-surface-inset); }
-.mws-day-navigation button.selected { color: var(--design-text-primary); background: var(--design-primary); }
+.mws-day-navigation button.selected { color: #FFFFFF; background: var(--design-primary); }
 .mws-day-navigation button.today:not(.selected) { color: var(--design-accent-ink); border-color: var(--design-border); }
 .mws-result-summary { border-top: 1px solid var(--design-border); padding: 12px 24px; font-size: 11px; color: var(--design-text-secondary); }
 .mws-roster-content { overflow-x: auto; scrollbar-width: thin; }
@@ -62,7 +62,7 @@
 .mws-grid-heading > div { min-height: 74px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 3px; border-left: 1px solid var(--design-border); font-size: 11px; color: var(--design-text-secondary); }
 .mws-grid-heading strong { font-weight: 500; font-size: 18px; color: var(--design-text-primary); }
 .mws-grid-heading small { font-size: 10px; color: var(--design-accent-ink); }
-.mws-grid-heading .today strong { background: var(--design-primary); border-radius: 50%; min-width: 28px; height: 28px; display: grid; place-items: center; }
+.mws-grid-heading .today strong { background: var(--design-primary); color: #FFFFFF; border-radius: 50%; min-width: 28px; height: 28px; display: grid; place-items: center; }
 .mws-roster-row { border-bottom: 1px solid var(--design-border); min-height: 132px; }
 .mws-roster-row:last-child { border-bottom: 0; }
 .mws-person { display: flex; align-items: start; gap: 10px; padding: 20px 14px 20px 20px; min-width: 0; }

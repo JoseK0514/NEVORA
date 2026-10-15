@@ -60,7 +60,7 @@
 .exchange-review .manager-workflow-review .shift-change-form > p { flex-basis: 100%; margin: 4px 0 0; }
 .exchange-review .button { min-height: 44px; border-radius: var(--design-radius-pill); font-size: 13px; font-weight: 600; }
 .exchange-review .manager-workflow-review .button { min-width: 112px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 18px; }
-.exchange-review .button.primary, .exchange-review .employee-action.primary { background: var(--design-primary); border: 1px solid var(--design-primary); color: var(--design-text-primary); }
+.exchange-review .button.primary, .exchange-review .employee-action.primary { background: var(--design-primary); border: 1px solid var(--design-primary); color: #FFFFFF; }
 .exchange-review .button.secondary { background: var(--design-surface-elevated); border: 1px solid var(--exchange-line); color: var(--design-text-primary); }
 .exchange-review :is(.button, .employee-action):disabled { opacity: .55; cursor: wait; }
 .exchange-review .exchange-callout-shift { display: flex; gap: 10px; align-items: flex-start; padding: 16px 18px; border-radius: 14px; background: var(--design-background); border: 1px solid var(--exchange-line); font-size: 14px; line-height: 1.6; }

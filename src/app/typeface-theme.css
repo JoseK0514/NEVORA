@@ -135,7 +135,7 @@ html body :is(
 ) {
   background: var(--design-primary);
   border-color: var(--design-primary);
-  color: var(--design-text-primary);
+  color: #FFFFFF;
 }
 
 html body :is(
@@ -337,7 +337,7 @@ body .nevora-select {
 .employee-home .employee-time-link {
   border-color: var(--design-primary);
   background: var(--design-primary);
-  color: var(--design-text-primary);
+  color: #FFFFFF;
   font-weight: 600;
 }
 

@@ -7,15 +7,15 @@
 }
 
 body:has(.workspace-page) {
-  --design-primary: #ED724C;
-  --design-accent: #D8613C;
+  --design-primary: #077572;
+  --design-accent: #055C5A;
   --design-background: #FAFAFA;
   --design-surface: #E5E7EB;
   --design-surface-elevated: #FFFFFF;
   --design-text-primary: #111827;
   --design-text-secondary: #4B5563;
   --design-border: #D1D5DB;
-  --design-accent-ink: #9F3821;
+  --design-accent-ink: #055C5A;
   --design-radius-card: 18px;
   --design-radius-control: 17px;
   --design-font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -96,7 +96,7 @@ body:has(.workspace-page) .sidebar .nav-link.active .nav-icon { color: var(--des
 .workspace-form-footer > p { color: var(--design-text-secondary); font-size: 12px; line-height: 1.5; }
 .workspace-form-actions { display: flex; flex-shrink: 0; gap: 8px; }
 .workspace-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; padding: 10px 16px; border: 1px solid transparent; border-radius: var(--design-radius-control); font-size: 12px; line-height: 1.4; font-weight: 600; text-align: center; transition: background 160ms ease, transform 160ms ease; }
-.workspace-button-primary { background: var(--design-primary); color: var(--design-text-primary); }
+.workspace-button-primary { background: var(--design-primary); color: #FFFFFF; }
 .workspace-button-primary:hover { background: var(--design-accent); }
 .workspace-button-secondary { background: var(--design-surface-elevated); border-color: var(--design-border); color: var(--design-text-primary); }
 .workspace-button-secondary:hover { background: var(--design-background); }

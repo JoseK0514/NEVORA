@@ -121,7 +121,8 @@
   text-decoration: none;
 }
 
-.request-hub-action-primary { background: var(--design-primary); }
+.request-hub-action-primary { background: var(--design-primary); color: #FFFFFF; }
+.request-hub-action-primary > span { color: #FFFFFF; }
 .request-hub-action-secondary { background: var(--design-surface-inset); border-color: var(--design-border); }
 
 .request-hub-history {

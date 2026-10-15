@@ -1,9 +1,9 @@
 @font-face { font-family:'Inter'; src:url('/fonts/typeface/inter/variable.ttf') format('truetype'); font-style:normal; font-weight:100 900; font-display:swap; }
 @font-face { font-family:'JetBrains Mono'; src:url('/fonts/typeface/jetbrains-mono/variable.ttf') format('truetype'); font-style:normal; font-weight:100 900; font-display:swap; }
 .app-shell:has(.swap-page), .swap-page {
-  --design-primary:#ED724C;
-  --design-accent:#D8613C;
-  --design-accent-ink:#9F3821;
+  --design-primary:#077572;
+  --design-accent:#055C5A;
+  --design-accent-ink:#055C5A;
   --design-accent-ink-hover:#7D2D1B;
   --design-background:#FAFAFA;
   --design-surface-elevated:#FFFFFF;

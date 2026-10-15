@@ -272,7 +272,7 @@ export function AppShell({
                     aria-current={active ? "page" : undefined}
                   >
                     <NavIcon name={item.icon} size={22} />
-                    <span>{item.label === "Dashboard"
+                    <span>{item.label === "Home"
                       ? "Home"
                       : item.label === "Shift requests"
                         ? "Shifts"

@@ -55,7 +55,7 @@
 .shift-editor-footer > p { margin: 0; max-width: 250px; font-size: 12px; line-height: 1.6; color: var(--design-text-secondary); }
 .shift-editor-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; flex-shrink: 0; }
 .shift-workspace .shift-action { min-width: 144px; min-height: 48px; box-sizing: border-box; display: inline-flex; justify-content: center; align-items: center; gap: 8px; border: 1px solid var(--design-border); border-radius: var(--design-radius-pill); padding: 10px 18px; font: 550 13px/1.4 var(--design-font-body); text-align: center; text-decoration: none; cursor: pointer; transition: background .16s ease, border-color .16s ease; }
-.shift-workspace .shift-action.primary { background: var(--design-primary); border-color: var(--design-primary); color: var(--design-text-primary); }
+.shift-workspace .shift-action.primary { background: var(--design-primary); border-color: var(--design-primary); color: #FFFFFF; }
 .shift-workspace .shift-action.primary:hover { background: var(--design-accent); border-color: var(--design-accent); }
 .shift-workspace .shift-action.secondary { background: var(--design-surface-elevated); color: var(--design-text-primary); }
 .shift-workspace .shift-action.secondary:hover { background: var(--design-surface-inset); }

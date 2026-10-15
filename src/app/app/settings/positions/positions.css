@@ -7,15 +7,15 @@
 }
 
 body:has(.positions-page) {
-  --design-primary: #ED724C;
-  --design-accent: #D8613C;
+  --design-primary: #077572;
+  --design-accent: #055C5A;
   --design-background: #FAFAFA;
   --design-surface: #E5E7EB;
   --design-elevated: #FFFFFF;
   --design-text: #111827;
   --design-muted: #4B5563;
   --design-border: #D1D5DB;
-  --design-accent-ink: #9F3821;
+  --design-accent-ink: #055C5A;
   --design-radius-card: 18px;
   --design-radius-control: 17px;
   --design-font: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -55,7 +55,7 @@ body:has(.positions-page) .sidebar .nav-link.active .nav-icon { color: var(--des
 .positions-heading p { max-width: 60ch; font-size: 14px; line-height: 1.6; color: var(--design-muted); }
 .positions-heading > a { flex-shrink: 0; }
 .positions-button { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 44px; padding: 11px 17px; border: 1px solid transparent; border-radius: var(--design-radius-control); font-size: 13px; line-height: 1.4; font-weight: 600; text-align: center; cursor: pointer; transition: background 160ms ease, transform 160ms ease; }
-.positions-button-primary { color: var(--design-text); background: var(--design-primary); }
+.positions-button-primary { color: #FFFFFF; background: var(--design-primary); }
 .positions-button-primary:hover { background: var(--design-accent); }
 .positions-button-secondary { color: var(--design-text); background: var(--design-elevated); border-color: var(--design-border); }
 .positions-button-secondary:hover { background: var(--design-background); }

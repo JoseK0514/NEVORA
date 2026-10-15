@@ -9,14 +9,14 @@
   font-style: normal; font-weight: 100 800; font-display: swap;
 }
 .directory {
-  --design-primary: #ed724c;
+  --design-primary: #077572;
   --design-background: #fafafa;
   --design-surface-elevated: #fff;
   --design-surface-inset: #f4f5f6;
   --design-text-primary: #111827;
   --design-text-secondary: #4b5563;
   --design-border: #d1d5db;
-  --design-accent-ink: #9f3821;
+  --design-accent-ink: #055c5a;
   --design-radius-card: 18px;
   --design-radius-control: 17px;
   --design-radius-pill: 9999px;
@@ -29,8 +29,8 @@
 :global(.app-shell):has(.directory) :global(.sidebar) { background: #111827; }
 :global(.app-shell):has(.directory) :global(.sidebar .nav-link) { color: #d1d5db; }
 :global(.app-shell):has(.directory) :global(.sidebar .nav-link.active),
-:global(.app-shell):has(.directory) :global(.sidebar .nav-link:hover) { color: #fff; background: #ed724c20; }
-:global(.app-shell):has(.directory) :global(.sidebar .nav-link.active .nav-icon) { color: #ed724c; }
+:global(.app-shell):has(.directory) :global(.sidebar .nav-link:hover) { color: #fff; background: #0775721f; }
+:global(.app-shell):has(.directory) :global(.sidebar .nav-link.active .nav-icon) { color: #077572; }
 :global(.app-shell):has(.directory) :global(.sidebar-profile small),
 :global(.app-shell):has(.directory) :global(.sidebar-platform-footer) { color: #d1d5db; }
 :global(.app-shell):has(.directory) :global(.app-main) { background: #fafafa; }
@@ -45,8 +45,8 @@
   min-height: 44px; border: 1px solid transparent; font-size: 13px; font-weight: 600; line-height: 1.4;
   text-decoration: none; cursor: pointer; transition: background-color .18s, border-color .18s, color .18s;
 }
-.primaryAction { flex-shrink: 0; background: var(--design-primary); color: var(--design-text-primary); padding: 13px 20px; border-radius: var(--design-radius-control); min-height: 48px; }
-.primaryAction:hover { background: #d8613c; }
+.primaryAction { flex-shrink: 0; background: var(--design-primary); color: #FFFFFF; padding: 13px 20px; border-radius: var(--design-radius-control); min-height: 48px; }
+.primaryAction:hover { background: #055c5a; }
 .primaryAction svg { flex-shrink: 0; }
 .directory :is(a, button, input, select):focus-visible { outline: 2px solid var(--design-accent-ink); outline-offset: 3px; }
 .panel { border: 1px solid var(--design-border); border-radius: var(--design-radius-card); background: var(--design-surface-elevated); box-shadow: 0 3px 14px #11182703; container: directory / inline-size; }
@@ -88,7 +88,7 @@
 .table tbody tr:hover { background: #fcfcfc; }
 .table :is(th, td) { min-width: 0; padding: 0; overflow-wrap: anywhere; }
 .person { display: flex; align-items: center; gap: 13px; font-weight: 400; text-align: left; }
-.avatar { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; background: #f5eee9; color: #7d3c26; border: 1px solid #ebe1da; border-radius: 14px; font-size: 13px; font-weight: 500; }
+.avatar { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; background: #e7f3f2; color: #07605f; border: 1px solid #d7d9dc; border-radius: 14px; font-size: 13px; font-weight: 500; }
 .personCopy { display: grid; gap: 6px; min-width: 0; }
 .personCopy strong { font-size: 14px; line-height: 1.45; font-weight: 600; }
 .employeeId { font-family: var(--design-font-mono); color: var(--design-text-secondary); font-size: 10px; line-height: 1.5; }
@@ -104,7 +104,7 @@
 .profileAction svg { flex-shrink: 0; transition: transform .18s; }
 .profileAction:hover svg { transform: translate(1px, -1px); }
 .empty { display: grid; justify-items: center; padding: 56px 24px; text-align: center; }
-.emptyIcon { display: grid; place-items: center; height: 60px; width: 60px; border: 1px solid #ebe1da; background: #faf4f0; color: var(--design-accent-ink); border-radius: var(--design-radius-card); margin-bottom: 20px; }
+.emptyIcon { display: grid; place-items: center; height: 60px; width: 60px; border: 1px solid #d7d9dc; background: #faf4f0; color: var(--design-accent-ink); border-radius: var(--design-radius-card); margin-bottom: 20px; }
 .empty h2 { font-size: 20px; line-height: 1.35; letter-spacing: -.025em; font-weight: 500; margin: 0 0 10px; }
 .empty p { font-size: 13px; line-height: 1.7; color: var(--design-text-secondary); max-width: 380px; margin: 0 0 18px; }
 .emptyAction { color: var(--design-accent-ink); padding: 10px 18px; border-color: var(--design-border); border-radius: var(--design-radius-control); }

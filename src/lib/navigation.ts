@@ -9,7 +9,7 @@ export type NavigationItem = {
 };
 
 const managementNavigation: NavigationItem[] = [
-  { href: "/app", label: "Dashboard", icon: "dashboard" },
+  { href: "/app", label: "Home", icon: "dashboard" },
   { href: "/app/schedule", label: "Schedule", icon: "schedule" },
   { href: "/app/availability", label: "Availability", icon: "availability" },
   { href: "/app/requests", label: "Time off", icon: "timeOff" },

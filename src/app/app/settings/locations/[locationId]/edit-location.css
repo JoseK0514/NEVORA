@@ -6,11 +6,11 @@
 }
 
 .app-shell:has(.edit-location-page) {
-  --edit-accent: #ED724C;
-  --edit-accent-hover: #D8613C;
+  --edit-accent: #077572;
+  --edit-accent-hover: #055C5A;
   --edit-ink: #111827;
   --edit-muted: #4B5563;
-  --edit-link: #9F3821;
+  --edit-link: #055C5A;
   --edit-border: #D1D5DB;
   --edit-canvas: #FAFAFA;
   --edit-surface: #FFFFFF;

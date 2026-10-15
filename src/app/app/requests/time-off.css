@@ -50,7 +50,7 @@
 .nto-next-step span { color: var(--design-text-secondary); }
 .nto-form-footer { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 20px 32px; border-top: 1px solid var(--nto-line); }
 .nto-page .nto-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; min-width: 104px; padding: 12px 20px; border: 1px solid transparent; border-radius: var(--design-radius-pill); font-family: inherit; font-size: 13px; font-weight: 600; line-height: 1.5; text-decoration: none; cursor: pointer; transition: background .18s ease, border-color .18s ease, transform .18s ease; }
-.nto-page .nto-primary { background: var(--design-primary); color: var(--design-text-primary); }
+.nto-page .nto-primary { background: var(--design-primary); color: #FFFFFF; }
 .nto-page .nto-primary:hover { background: var(--design-accent); }
 .nto-page .nto-secondary { background: var(--design-surface-elevated); color: var(--design-text-primary); border-color: var(--design-border); }
 .nto-page .nto-secondary:hover { background: var(--design-surface-inset); }

@@ -7,15 +7,15 @@
 }
 
 .page {
-  --pin-primary: #ED724C;
-  --pin-primary-hover: #D8613C;
+  --pin-primary: #077572;
+  --pin-primary-hover: #055C5A;
   --pin-ink: #111827;
   --pin-muted: #4B5563;
   --pin-line: #D1D5DB;
   --pin-canvas: #FAFAFA;
   --pin-surface: #FFFFFF;
   --pin-inset: #F4F5F6;
-  --pin-accent-ink: #9F3821;
+  --pin-accent-ink: #055C5A;
   width: 100%;
   max-width: 1100px;
   color: var(--pin-ink);
