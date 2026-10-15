@@ -103,6 +103,7 @@ it('manager_group_revalidates_each_member_and_keeps_only_unresolved_work',async(
  const executor:SqlExecutor={query:async<T>(s:SqlStatement)=>{
   if(s.text.includes('SELECT * FROM notifications'))return [groupRow] as T[];
   if(s.text.includes('allowed_location_ids'))return [{id:'M',role:'MANAGER',active:true,allowed_location_ids:[]}] as T[];
+  if(s.text.includes('operational_subject_versions'))return [{id:'M',role:'MANAGER',active:true,company:true,authority:'b'.repeat(64)}] as T[];
   return [{id:s.values[0],employee_id:'employee',employee_name:'Test',start_date:'2026-10-08',end_date:'2026-10-08',status:s.values[0]==='a'||resolved?'APPROVED':'PENDING',created_at:'2020-01-01T00:00:00Z'}] as T[];
  },transaction:async()=>{throw new Error('No writes');}};
  const repo=sqlNotificationStateRepository(executor);const group=await repo.findIntent('group');

@@ -71,6 +71,7 @@ const templates:Template[]=[
 ];
 type Entry={key:string;template:Template;values:readonly unknown[]};
 const managementTemplates:Template[]=[
+ {name:'operationalRecipient',args:1,sql:p=>notificationReadSql.operationalRecipient(p[0])},
  {name:'summarySeeds',args:4,sql:p=>notificationReadSql.summarySeeds(p[0],p[1],p[2],p[3])},
  ...(['coverageLocations','coverageWindows','coverageEmployees','coveragePositions'] as const).map(name=>({name,args:0,sql:()=>notificationReadSql[name]()})),
 ];

@@ -1,3 +1,4 @@
+import {notificationCompanySql} from './notification-operational-sql';
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "../db";
 import type { NotificationIntent, SourceRef, SqlStatement } from "../notifications/types";
@@ -143,7 +144,7 @@ export async function markAllNotificationsRead(employeeId: string) {
 /** Append these statements to the business batch. Conflict returns the persisted
  * id (the newly generated candidate id must never be used for an existing row). */
 export function notificationIntentStatements(intents: readonly NotificationIntent[]): SqlStatement[] {
-  return intents.map(intent => ({
+  return intents.map(intent => {const statement={
     text: `INSERT INTO notifications (id, employee_id, type, title, body, action_href, event_key,
       environment, source_kind, source_id, source_version, effective_version, purpose,
       urgency, due_at, expires_at, item_keys, push_state)
@@ -153,7 +154,18 @@ export function notificationIntentStatements(intents: readonly NotificationInten
     values: [intent.id,intent.employeeId,intent.type,intent.title,intent.body,intent.actionHref ?? null,
       intent.eventKey,intent.environment,intent.source.kind,intent.source.id,intent.source.version,
       intent.effectiveVersion,intent.purpose,intent.urgency,intent.dueAt,intent.expiresAt,[...(intent.itemKeys ?? [])]],
-  }));
+  };
+    // Independent financial/device consumers retain the exact original VALUES
+    // contract. Operational candidates are authorized at actual persistence.
+    if(!['PAYROLL_PREPARATION','PAYROLL_STATEMENT','SELF_TEST'].includes(intent.source.kind)){
+      const values="VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending')";
+      const selected=`SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending'
+      FROM employees notification_recipient WHERE notification_recipient.id=$2 AND notification_recipient.active
+      AND((notification_recipient.role IN('EMPLOYEE','LEAD') AND $9::text<>'MANAGER_SUMMARY' AND $13::text<>'SUMMARY') OR ${notificationCompanySql('notification_recipient')})`;
+      const guarded=statement.text.replace(values,selected);if(guarded===statement.text)throw Error('Operational outbox contract changed');statement.text=guarded;
+    }
+    return statement;
+  });
 }
 
 export function cancelNotificationStatements(source: SourceRef, recipientId?: string): SqlStatement[] {

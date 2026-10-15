@@ -1,3 +1,4 @@
+import {readFile} from 'node:fs/promises';
 vi.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import { fixtureProof } from './shift-change-api';
@@ -73,6 +74,7 @@ beforeAll(async () => { database = await createDisposableNotificationDatabase();
 afterAll(async () => { await database?.dispose(); });
 beforeEach(async () => {
   await database.dispose(); database=await createDisposableNotificationDatabase(); db=database.executor; transport.executor=db;
+  await sql(await readFile('db/migrations/0031_native_payroll.sql','utf8'));
   await sql(`INSERT INTO employees (id,first_name,last_name,phone,role,primary_location_id) VALUES
     ('QA-E','QA-Avery','Rivera','QA-NO-PHONE','EMPLOYEE','loc-1'),('QA-F','QA-Blair','Rivera','QA-NO-PHONE','LEAD','loc-2'),
     ('QA-M','QA-Morgan','Manager','QA-NO-PHONE','MANAGER','loc-1'),('QA-O','QA-Owen','Owner','QA-NO-PHONE','OWNER','loc-1')`);
@@ -80,6 +82,8 @@ beforeEach(async () => {
   await sql(`INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES ($1,'QA-E',now()+interval '14 days'),($2,'QA-F',now()+interval '14 days')`, [sessionA, sessionB]);
   await sql(`INSERT INTO schedules(id,location_id,week_start,created_by,updated_at) VALUES ('QA-s1','loc-1',$1,'QA-M','2026-10-01 12:00:00.123456+00'),('QA-s2','loc-2',$1,'QA-M','2026-10-01 12:00:00.123457+00')`, [week]);
   await sql(`INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES ('QA-sh1','QA-s1','QA-E','2030-10-11','09:00','17:00'),('QA-sh2','QA-s2','QA-F','2030-10-12','09:00','17:00')`);
+  // Explicit legacy Manager/Owner census precedes current enforcement.
+  await sql(await readFile('db/migrations/0032_company_access_invitations.sql','utf8'));
 });
 
 describe('actual ordered publication and request SQL', () => {

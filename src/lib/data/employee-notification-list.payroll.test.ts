@@ -3,6 +3,8 @@ vi.mock('server-only',()=>({}));
 import {notificationReadManifest} from './employee-notification-list.server';
 import {readPortalNotificationList} from './portal-notification-list.server';
 import {payrollNoticeReadSql} from '../payroll/notices';
+import {employeeReadLimits,employeeViewGuards} from './employee-profile.server';
+import {managementSessionStatements} from './management-session';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 
@@ -17,9 +19,18 @@ async function read(role:'EMPLOYEE'|'LEAD'|'MANAGER'|'OWNER',mode:Mode='normal',
  const workspace={id:'workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:past,updatedAt:past};
  const candidate=(i:number)=>({id:'notice-'+i,at:past,...(mode==='missing-read'?{}:{read:readAt})});
  const candidates=Array.from({length:count},(_,i)=>candidate(i)),observations:Record<string,unknown>[][]=[],sourceValues:Array<readonly unknown[]>=[];
- let finalized=false,readsAfterFinal=0;
+ let finalized=false,readsAfterFinal=0,postFinalAuthorityFences=0;
  const ex:SqlExecutor={query:async()=>{throw Error('Unbounded query prohibited');},transaction:async(statements:SqlStatement[])=>{
-  if(finalized){readsAfterFinal++;throw Error('No executor fallback after protected observation');}
+  if(finalized){
+   // The new final role/session fence may execute, but source facts must replay
+   // only from the protected observation. No financial/operational data fallback.
+   const allowed=new Set([...employeeReadLimits,...employeeViewGuards(proof,workspace,false),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])].map(s=>JSON.stringify(s)));
+   if(statements.every(s=>allowed.has(JSON.stringify(s)))){postFinalAuthorityFences++;return statements.map(()=>[]) as never;}
+   readsAfterFinal++;throw Error('No executor source fallback after protected observation');
+  }
+  if(statements.some(s=>s.text.startsWith('SELECT id,created_at::text'))){
+   return statements.map(s=>s.text.startsWith('SELECT id,created_at::text')?candidates:s.text.startsWith('SELECT LEAST(15000')?[{validForMs:15000}]:[]) as never;
+  }
   const last=statements.at(-1)!,sql=last.text;let result:unknown[];
   if(sql.startsWith('WITH facts AS MATERIALIZED')){
    finalized=true;const fresh=structuredClone(observations);
@@ -40,7 +51,7 @@ async function read(role:'EMPLOYEE'|'LEAD'|'MANAGER'|'OWNER',mode:Mode='normal',
   else throw Error('Unexpected discovery query: '+sql);
   return statements.map((_,i)=>i===statements.length-1?result:[]) as never;
  }};
- return{view:await readPortalNotificationList(proof,'test',ex),sourceValues,observations:observations.length,finalized,readsAfterFinal};
+ return{view:await readPortalNotificationList(proof,'test',ex),sourceValues,observations:observations.length,finalized,readsAfterFinal,postFinalAuthorityFences};
 }
 
 it('registers the exact two-argument Finance query for ordinary protected replay',()=>{
@@ -51,7 +62,7 @@ it('registers the exact two-argument Finance query for ordinary protected replay
  expect(()=>manifest.identify({text:'SELECT payload FROM payroll_documents',values:[]})).toThrow();
 });
 it.each(['EMPLOYEE','LEAD','MANAGER','OWNER'] as const)('%s sees only metadata for their own authorized published statement',async role=>{
- const result=await read(role);expect(result.finalized).toBe(true);expect(result.readsAfterFinal).toBe(0);
+ const result=await read(role);expect(result.finalized).toBe(true);expect(result.readsAfterFinal).toBe(0);expect(result.postFinalAuthorityFences).toBe(['MANAGER','OWNER'].includes(role)?1:0);
  expect(result.sourceValues).toEqual([['10000000-0000-4000-8000-000000000001','self']]);
  expect(result.view).toMatchObject({state:'ready',kind:'notifications',coverage:'complete',items:[{id:'notice-0',label:'Pay statement update',href:'/app/notifications/open?notificationId=notice-0',reviewState:'unread',actionState:'available'}]});
  expect(JSON.stringify(result.view)).not.toMatch(/PRIVATE_|salary|tax|netPay|paid|payment/i);
