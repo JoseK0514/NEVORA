@@ -5,7 +5,7 @@ import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 const owner={employee:{id:'c34-owner',role:'OWNER' as const,firstName:'Owner',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
-beforeEach(async()=>{f=await createPunchFixture();await f.q(`INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('AUDIT-T','c34-a','loc-1',$1,'2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)`,[f.devices[0].device.id]);});
+beforeEach(async()=>{f=await createPunchFixture({companyAccess:true});await f.q(`INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('AUDIT-T','c34-a','loc-1',$1,'2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)`,[f.devices[0].device.id]);});
 afterEach(async()=>{await f?.db.dispose();});
 async function card(){const r=await readTimecards(owner,period,f.db.executor);expect(r.state).toBe('ready');if(r.state!=='ready')throw Error(JSON.stringify(r));return r.cards.find(c=>c.card.employeeId==='c34-a')!;}
 async function act(action:'APPROVE'|'FINALIZE'|'REOPEN'){const c=await card();return mutateTimecard(owner,{...period,operationId:randomUUID(),employeeId:'c34-a',expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action,...(action==='REOPEN'?{note:'Independent audit: reopen for correction.'}:{})},f.db.executor);}
