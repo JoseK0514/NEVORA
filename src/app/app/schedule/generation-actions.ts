@@ -1,5 +1,5 @@
 "use server";
-import {assertOperationalAccess,isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
+import {assertOperationalAccess,assertOriginalOperationalAccess,isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 
 import { projectGenerationSetup, type GenerationSetupException } from '../../../lib/scheduling/generation/setup';
 import { revalidatePath } from 'next/cache';
@@ -50,30 +50,36 @@ export async function generateWeekAction(_previous:GenerationActionState,form:Fo
   // Redirecting authentication remains outside error handling.
   const session=await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof();
+  let original:Awaited<ReturnType<typeof assertOperationalAccess>>|undefined;
   try {
-    await assertOperationalAccess(proof,{kind:'COMPANY'});
+    original=await assertOperationalAccess(proof,{kind:'COMPANY'});
     fields(form,['weekStart','mode','scope','locationId']);
     const weekStart=value(form,'weekStart'),mode=value(form,'mode'),scope=value(form,'scope'),locationId=value(form,'locationId');
     if(!validMonday(weekStart) || !['BUILD_WEEK','FILL_GAPS_ONLY'].includes(mode) || !['ALL','SELECTED'].includes(scope) || (scope==='ALL'?form.has('locationId'):!locationId.trim())) throw new GenerationScopeError();
     const [workspace,locations,positions]=await Promise.all([getWorkspace(),listLocations({includeInactive:true}),listPositions({includeInactive:true})]);
+    await assertOriginalOperationalAccess(proof,original);
     if(scope==='SELECTED'&&!locations.some(l=>l.id===locationId)) throw new GenerationScopeError();
     const result=await generateWeekDraft({proof,workspaceId:workspace.id,actorEmployeeId:session.id,weekStart,mode:mode as 'BUILD_WEEK'|'FILL_GAPS_ONLY',locationScope:scope==='ALL'?{kind:'ALL'}:{kind:'SELECTED',locationIds:[locationId]}});
+    await assertOriginalOperationalAccess(proof,original);
     if(result.changed) revalidatePath('/app/schedule');
     const message=result.status==='INVALID'?'Needs setup. No automatic assignments were made.':result.status==='BUDGET_EXHAUSTED'?'Search limit reached. Review the partial draft and remaining gaps.':result.status==='PARTIAL'?result.summary.added===0?'No legal additions were found. Review the remaining gaps.':'Partial draft saved. Review the remaining gaps.':result.changed?'Draft complete for configured coverage. Review before publishing.':'No changes needed. Configured coverage is complete.';
     return {status:'success',message,result:projection(result,locations,positions)};
-  } catch(error) {return failure(error);}
+  } catch(error) {if(original){try{await assertOriginalOperationalAccess(proof,original);}catch(lost){return failure(lost);}}return failure(error);}
 }
 export async function clearGenerationExclusionAction(_previous:GenerationActionState,form:FormData):Promise<GenerationActionState> {
   const session=await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof();
+  let original:Awaited<ReturnType<typeof assertOperationalAccess>>|undefined;
   try {
-    await assertOperationalAccess(proof,{kind:'COMPANY'});
+    original=await assertOperationalAccess(proof,{kind:'COMPANY'});
     fields(form,['weekStart','locationId','exclusionId']);
     const weekStart=value(form,'weekStart'),locationId=value(form,'locationId'),exclusionId=value(form,'exclusionId');
     if(!validMonday(weekStart)||!locationId.trim()||!exclusionId.trim()) throw new GenerationScopeError();
     const workspace=await getWorkspace();
+    await assertOriginalOperationalAccess(proof,original);
     await clearGenerationExclusion({proof,workspaceId:workspace.id,actorEmployeeId:session.id,weekStart,locationId,exclusionId});
+    await assertOriginalOperationalAccess(proof,original);
     revalidatePath('/app/schedule');
     return {status:'success',message:'Automatic fill allowed for this need. Run Build Week or Fill Gaps Only when ready.'};
-  } catch(error) {return failure(error);}
+  } catch(error) {if(original){try{await assertOriginalOperationalAccess(proof,original);}catch(lost){return failure(lost);}}return failure(error);}
 }

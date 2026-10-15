@@ -7,7 +7,7 @@ const m=vi.hoisted(()=>({
   clear:vi.fn(), send:vi.fn(()=>new Promise<never>(()=>{})), provider:vi.fn(), role:'MANAGER', existingWeek:'2030-10-07', templateStart:'09:00',
   shifts:[{id:'s',employeeId:'E',locationId:'loc-1',date:'2030-09-30',startTime:'09:00',endTime:'17:00',isDesignatedLead:false}],
 }));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]}}),isOperationalAuthorizationError:()=>false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64)}),isOperationalAuthorizationError:()=>false}));
 vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek},employeeOptions:[],positionOptions:[]}})}));
 vi.mock('@/lib/data/schedule-copy',()=>({executeScheduleCopy:m.copy}));
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>managementProof('M',m.role as 'MANAGER')}));

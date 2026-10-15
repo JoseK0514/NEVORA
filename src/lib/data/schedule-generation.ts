@@ -1,4 +1,4 @@
-import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
+import {assertOperationalAccess,assertOriginalOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { createHash } from 'node:crypto';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { planWeek } from '../scheduling/generation/planner';
@@ -78,8 +78,9 @@ const semantics = (s: GenerationSourceRow) => canonical([s.schedule_id, s.employ
 export async function generateWeekDraft(request: GenerationRequest & { proof: SessionMutationProof }, executor: SqlExecutor = neonNotificationExecutor()): Promise<GenerationResult> {
   assertManagementProof(request.proof, request.actorEmployeeId);
   validateGenerationRequest(request);
-  const {workspace}=await assertOperationalAccess(request.proof,{kind:'COMPANY'},executor);
-  return withGenerationRetry(async () => {
+  const admission=await assertOperationalAccess(request.proof,{kind:'COMPANY'},executor);
+  const {workspace}=admission;
+  try{return await withGenerationRetry(async () => {
     const {
       source,
       changedAt,
@@ -190,7 +191,7 @@ export async function generateWeekDraft(request: GenerationRequest & { proof: Se
       if (parent) weeks.add(parent.weekStart);
     }
     for (const a of plan.additions) for (const week of affectedWorkweeks(a)) weeks.add(week);
-    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...operationalScopeStatements(request.proof,workspace,{kind:'COMPANY'}), ...writes, generationInsertedSourceGuard(after,additions.map(row=>String(row.id)),source.shifts.map(row=>String(row.assignment_episode_id))), ...operationalScopeStatements(request.proof,workspace,{kind:'COMPANY'})]);
+    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...operationalScopeStatements(request.proof,workspace,{kind:'COMPANY'},admission.authority), ...writes, generationInsertedSourceGuard(after,additions.map(row=>String(row.id)),source.shifts.map(row=>String(row.assignment_episode_id))), ...operationalScopeStatements(request.proof,workspace,{kind:'COMPANY'},admission.authority)]);
     const scopedParentIds = new Set([...parentByLocation].filter(([locationId]) => plan.demand.locationIds.includes(locationId)).map(([, parent]) => parent.id));
     return {
       status: plan.status,
@@ -265,5 +266,5 @@ export async function generateWeekDraft(request: GenerationRequest & { proof: Se
         periodsEnumerated: plan.periodsEnumerated
       }
     };
-  });
+  });}finally{await assertOriginalOperationalAccess(request.proof,admission,executor);}
 }

@@ -45,6 +45,20 @@ export async function assertOperationalAccess(proof:SessionMutationProof,footpri
   ...operationalScopeStatements(proof,workspace,actual,view.authority)]);
  return {workspace,authority:view.authority,scope:view.scope,observedAt:view.observedAt,validForMs:view.validForMs};
 }
+/** Fence a private command response to its original server admission, including
+ * error exits. Never read a fresh authority here and rebind an in-flight request. */
+export async function assertOriginalOperationalAccess(proof:SessionMutationProof,original:Readonly<Awaited<ReturnType<typeof assertOperationalAccess>>>,executor:SqlExecutor=neonNotificationExecutor()):Promise<void>{
+ if(!/^[a-f0-9]{64}$/.test(original?.authority))throw new OperationalAuthorizationError();
+ try{
+  await executor.transaction([...workspaceReadGuard(original.workspace),
+   {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
+   ...operationalScopeStatements(proof,original.workspace,original.scope.mode==='COMPANY'?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:original.scope.locationIds},original.authority)]);
+ }catch(error){
+  const workspaceChanged=!!(error&&typeof error==='object'&&'code'in error&&error.code==='22P02'&&'message'in error&&error.message==='invalid input syntax for type integer: "workspace_version_conflict"');
+  if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)||workspaceChanged)throw new OperationalAuthorizationError();
+  throw error;
+ }
+}
 /** Append after the caller's workspace, sorted employee and business locks. Keep generic session/finance guards separate. */
 export function operationalScopeStatements(proof:SessionMutationProof,workspace:Workspace,footprint:OperationalFootprint,expectedAuthority?:string):SqlStatement[] {
  assertManagementProof(proof,proof?.employee?.id);
