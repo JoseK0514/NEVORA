@@ -1,11 +1,12 @@
+import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../../company-access/operational-scope.server';
 import { createHash, randomUUID } from "node:crypto";
 import type { SessionMutationProof } from "../../shift-changes/types";
 import type { SqlExecutor } from "../../notifications/types";
 import { neonNotificationExecutor } from "../../data/notification-transactions";
-import { getWorkspace, workspaceReadGuard } from "../../data/workspaces";
+import { workspaceReadGuard } from "../../data/workspaces";
 import {
   assertManagementProof,
-  managementSessionStatements,
+  isManagementAuthorizationError,
 } from "../../data/management-session";
 import { sourceSql } from "../../data/attendance-review.server";
 import type { AttendanceSource } from "../../attendance/types";
@@ -58,10 +59,10 @@ export async function readAttendancePolicies(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),
 ) {
+  try{assertManagementProof(proof,proof?.employee?.id);}catch{return {state:'unavailable' as const,reason:'access_denied'};}
   try {
-    assertManagementProof(proof, proof.employee.id);
     const started = performance.now(),
-      workspace = await getWorkspace(executor);
+      {workspace,authority} = await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
     const values = [workspace.id, proof.sessionTokenHash, workspace.timeZone];
     const guards = [
       ...workspaceReadGuard(workspace),
@@ -69,14 +70,14 @@ export async function readAttendancePolicies(
         text: "LOCK TABLE employees,locations,schedules,schedule_publication_revisions,schedule_publication_revision_shifts,time_entries,break_entries,time_correction_adjustments,time_correction_requests,time_correction_events,nevora_company_policy_revisions IN SHARE MODE",
         values: [],
       },
-      ...managementSessionStatements(proof, proof.employee.id),
+      ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
     ];
     const read = await executor.transaction([
       ...guards,
       { text: sourceSql, values },
       { text: runtimeSql, values },
       { text: policySql, values: [workspace.id] },
-      ...managementSessionStatements(proof, proof.employee.id),
+      ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
     ]);
     const sourceRow = read[guards.length]?.[0] as Record<string, unknown>,
       runtime = read[guards.length + 1]?.[0] as PolicyRuntime & {
@@ -118,10 +119,10 @@ export async function readAttendancePolicies(
     };
     const remaining =
       Math.min(
-        45000,
+        15000,
         Date.parse(runtime.expiresAt) - Date.parse(runtime.observedAt),
-      ) - Math.ceil(performance.now() - started);
-    if (remaining <= 0)
+      );
+    if (remaining - Math.ceil(performance.now() - started) <= 0)
       return { state: "unavailable" as const, reason: "access_denied" };
     await executor.transaction([
       ...guards,
@@ -146,16 +147,20 @@ export async function readAttendancePolicies(
           JSON.stringify(snapshot),
         ],
       },
-      ...managementSessionStatements(proof, proof.employee.id),
+      ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
     ]);
-    return {
-      ...snapshot,
-      validForMs: Math.max(
-        0,
-        remaining - Math.ceil(performance.now() - started),
-      ),
-    };
-  } catch {
+    // Observation persistence is a mutation: guard it in its own transaction
+    // above, then recheck after the awaited commit before returning the payload.
+    await executor.transaction([
+      ...workspaceReadGuard(workspace),
+      {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
+      ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
+    ]);
+    const validForMs=remaining-Math.ceil(performance.now()-started);
+    if(validForMs<1)return {state:'unavailable' as const,reason:'access_denied'};
+    return {...snapshot,validForMs};
+  } catch(error) {
+    if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))return {state:'unavailable' as const,reason:'access_denied'};
     return {
       state: "unavailable" as const,
       reason: "source_changed_or_unavailable",

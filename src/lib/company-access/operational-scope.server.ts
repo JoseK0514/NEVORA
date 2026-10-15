@@ -5,7 +5,7 @@ import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
 import {neonNotificationExecutor} from '@/lib/data/sql-executor';
 import {getWorkspace,workspaceReadGuard} from '@/lib/data/workspaces';
-import {assertManagementProof,managementSessionStatements} from '@/lib/data/management-session';
+import {assertManagementProof,managementSessionStatements,isManagementAuthorizationError} from '@/lib/data/management-session';
 import {parseScopeSelection} from './scope-selection';
 import type {ScopeSelection,ScopeCommand,ScopeReceipt,ScopeResult,OperationalFootprint,OperationalAuthorityView,OperationalRead,OwnerOperationalScopeData,OwnerScopeContext,OwnerScopeHistoryEntry} from './model';
 
@@ -85,6 +85,7 @@ function effective(row:Pick<Row,'roleGeneration'|'grantGeneration'|'scopeRevisio
  return scope?{state:'ASSIGNED',scope,invalid:false}:{state:'UNASSIGNED',scope:null,invalid:true};
 }
 export async function readOperationalAuthority(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalAuthorityView> {
+ try{assertManagementProof(proof,proof?.employee?.id);}catch{return {state:'unavailable',reason:'access_denied'};}
  try {
   const workspace=await getWorkspace(executor),start=locks(proof,workspace,[]);
   const result=await executor.transaction([...start,currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash),...managementSessionStatements(proof,proof.employee.id,['OWNER','MANAGER','LEAD','EMPLOYEE'])]);
@@ -97,7 +98,7 @@ export async function readOperationalAuthority(proof:SessionMutationProof,execut
    grant.state==='LIFECYCLE_CHANGED'?'LIFECYCLE_CHANGED':grant.state==='REVOKED'?'REVOKED':'UNASSIGNED';
   return {state:'ready',employeeId:row.employeeId,role:row.role,source,scope,scopeRevision:row.scopeRevision,authority:row.authority,
    locations:scope?row.locations:[],observedAt:new Date(row.observedAt).toISOString(),validForMs:row.validForMs};
- }catch{return {state:'unavailable',reason:'read_failed'};}
+ }catch(error){return {state:'unavailable',reason:isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }
 
 export async function readOwnerOperationalScope(proof:SessionMutationProof,employeeId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OwnerOperationalScopeData>> {

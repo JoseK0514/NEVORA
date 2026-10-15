@@ -5,7 +5,8 @@ import { saveBreakType } from '../../lib/clocker/break-types.server';
 import { setEmployeeClockerPin, verifyEmployeeClockerPin, readClockerIdentity } from '../../lib/clocker/pins.server';
 
 /** Fictional employees and owned loopback PostgreSQL only. */
-export async function createPunchFixture(options:{breaks?:boolean;migrationStage?:'current'|'pre-break'|'phase-d2'}={}){
+export async function createPunchFixture(options:{breaks?:boolean;companyAccess?:boolean;migrationStage?:'current'|'pre-break'|'phase-d2'}={}){
+ if(options.companyAccess&&options.migrationStage&&options.migrationStage!=='current')throw Error('Company access fixture requires the complete current schema.');
  const preBreak=options.migrationStage==='pre-break';
  const db=await createDisposableFoundationDatabase({mode:preBreak?'phase-c-base':options.migrationStage==='phase-d2'?'phase-d2-base':'current-runtime'});
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>db.executor.query<T>({text,values});
@@ -21,6 +22,11 @@ export async function createPunchFixture(options:{breaks?:boolean;migrationStage
    INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'c34-owner',now()+interval '1 day');
    INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT id,'loc-1' FROM employees;
    INSERT INTO employee_location_eligibility VALUES('c34-a','loc-2');`);
+  // Explicit opt-in for current operational consumers. Seed the census above
+  // before adoption; never grant Company to later-created/promoted Managers.
+  if(options.companyAccess){
+   for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
+  }
   await setEmployeeClockerPin(owner,{employeeId:'c34-a',pin:'0123',expectedVersion:0},key,db.executor);
   await setEmployeeClockerPin(owner,{employeeId:'c34-b',pin:'4567',expectedVersion:0},key,db.executor);
   const devices:(NonNullable<Awaited<ReturnType<typeof authenticateClockerDevice>>>&{credential:string;locationKey:string})[]=[];

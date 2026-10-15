@@ -1,4 +1,5 @@
 vi.mock("server-only", () => ({}));
+import {readFile} from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createDisposableFoundationDatabase } from "./local-postgres";
@@ -33,6 +34,8 @@ beforeEach(async () => {
       (repeat('e',64),'worker',clock_timestamp()+interval '1 day');
       INSERT INTO clocker_devices(id,location_id,name) VALUES('inheritance-device','loc-1','Fictional inheritance device');`, values: [],
   });
+  // Both fictional Owner and legacy Company Manager exist before adoption.
+  for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await db.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
   const [timing] = await db.executor.query<{ weekStartsOn: number }>({
     // The fictional week starts tomorrow, so its current interval began six
     // days ago. The two-hour entry fits regardless of the wall-clock weekday.
@@ -146,7 +149,7 @@ it.each(["policy", "source", "revocation"])("protected SQL reread holds overtime
       return rows;
     },
   };
-  expect(await readAttendancePolicies(manager, executor)).toEqual({ state: "unavailable", reason: "source_changed_or_unavailable" });
+  expect(await readAttendancePolicies(manager, executor)).toEqual({ state: "unavailable", reason: drift === "revocation" ? "access_denied" : "source_changed_or_unavailable" });
   expect(changed).toBe(true);
   expect(await observations()).toEqual(observedBefore);
   if (drift === "policy") {
@@ -164,7 +167,7 @@ it.each(["employee", "revoked", "expired", "role changed", "inactive"])("actual 
   if (scenario === "role changed") await db.executor.query({ text: "UPDATE employees SET role='EMPLOYEE' WHERE id='manager'", values: [] });
   if (scenario === "inactive") await db.executor.query({ text: "UPDATE employees SET active=false WHERE id='manager'", values: [] });
   const before = await revisions(), observedBefore = await observations();
-  expect(await readAttendancePolicies(proof, db.executor)).toEqual({ state: "unavailable", reason: "source_changed_or_unavailable" });
+  expect(await readAttendancePolicies(proof, db.executor)).toEqual({ state: "unavailable", reason: "access_denied" });
   expect(await observations()).toEqual(observedBefore);
   expect(await revisions()).toEqual(before);
 });

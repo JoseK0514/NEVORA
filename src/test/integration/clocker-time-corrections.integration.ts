@@ -109,7 +109,7 @@ async function approve(requestId: string, operationId = randomUUID()) {
 }
 
 beforeEach(async () => {
-  f = await createPunchFixture({ breaks: true });
+  f = await createPunchFixture({ breaks: true, companyAccess:true });
   await f.q(
     `INSERT INTO employee_sessions(token_hash,employee_id,expires_at)
      VALUES(repeat('d',64),'c34-a',clock_timestamp()+interval '1 day')`,

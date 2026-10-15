@@ -1,4 +1,6 @@
 import {Client} from 'pg';
+import {randomUUID} from 'node:crypto';
+import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {Temporal} from '@js-temporal/polyfill';
 import {afterEach,beforeEach,describe,expect,it} from 'vitest';
 import {createPunchFixture} from './clocker-punch-fixture';
@@ -10,7 +12,7 @@ let f:Awaited<ReturnType<typeof createPunchFixture>>;
 let owner:SessionMutationProof;
 
 beforeEach(async()=>{
-  f=await createPunchFixture({breaks:true});
+  f=await createPunchFixture({breaks:true,companyAccess:true});
   owner={
     sessionTokenHash:f.owner.sessionTokenHash,
     employee:{
@@ -247,6 +249,15 @@ describe('D1.2 authorized recorded-time reader',()=>{
 
   it.each(['OWNER','MANAGER'] as const)('allows current %s authority',async role=>{
     await f.q('UPDATE employees SET role=$1 WHERE id=$2',[role,owner.employee.id]);
+    if(role==='MANAGER'){
+      // The role transition correctly invalidates grants. A separate current
+      // Owner explicitly assigns Company for this positive Manager test.
+      await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('d12-grant-owner','Grant','Owner','NONE','OWNER','loc-1');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('e',64),'d12-grant-owner',clock_timestamp()+interval '1 hour')");
+      const grantingOwner={...owner,employee:{...owner.employee,id:'d12-grant-owner'},sessionTokenHash:'e'.repeat(64)};
+      const scope=await readOwnerOperationalScope(grantingOwner,owner.employee.id,f.db.executor);if(scope.state!=='ready')throw Error('Owner grant context');const current=scope.data.current;
+      expect((await assignOperationalScope(grantingOwner,owner.employee.id,{action:'ASSIGN',operationId:randomUUID(),expectedEmployeeVersion:current.employeeUpdatedAt,expectedRoleGeneration:current.roleGeneration,expectedScopeRevision:current.scopeRevision,scope:{mode:'COMPANY',locationIds:[]}},f.db.executor)).state).toBe('saved');
+      owner.employee.role='MANAGER';
+    }
     expect(await read()).toMatchObject({state:'ready'});
   });
 

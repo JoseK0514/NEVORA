@@ -1,3 +1,4 @@
+import {readCompanyResult} from '../company-access/company-result.server';
 import 'server-only';
 
 import { Temporal } from '@js-temporal/polyfill';
@@ -392,7 +393,7 @@ async function readAttendanceReviewCore(
 
 // Internal capture retains overlap/publication causes; public review is unchanged.
 export async function readAttendanceReview(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<AttendanceDisplayReview> {
- return readAttendanceReviewCore(proof,executor);
+ return readCompanyResult(proof,()=>readAttendanceReviewCore(proof,executor),executor);
 }
 export async function readAttendanceReviewWithInternalCapture(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
  const retained: {capture: AttendanceActionCapture | null} = {capture:null};
