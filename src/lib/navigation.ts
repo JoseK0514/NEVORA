@@ -1,6 +1,7 @@
 import type { UserRole } from "@/lib/domain";
 import type { NavIconName } from "@/components/nav-icon";
 import type { PayrollCapabilities } from './payroll/contracts';
+import type {OperationalAuthorityView} from './company-access/model';
 
 export type NavigationItem = {
   href: string;
@@ -47,17 +48,17 @@ export function managementNavigationGroups(items: NavigationItem[]) {
 
 /** Canonical workflows keep their URLs, queries and commands. Only their
  * employee navigation owner is the Requests group. Manager owners are unchanged. */
-export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities): string | undefined {
+export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities, operational?:OperationalAuthorityView): string | undefined {
   const pathname = path.split(/[?#]/, 1)[0];
   const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   if ((role === "EMPLOYEE" || role === "LEAD") &&
       (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
-  return navigationForRole(role, payroll)
+  return navigationForRole(role, payroll, operational)
     .filter(item => item.href === "/app" ? pathname === "/app" : matches(item.href))
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 }
 
-export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities) {
+export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities, operational?:OperationalAuthorityView) {
   const finance: NavigationItem[] = payroll?.enabled ? [
     ...(payroll.canReview ? [{ href: '/app/payroll', label: 'Payroll', icon: 'payroll' as const }] : []),
     { href: '/app/my-pay', label: 'My pay', icon: 'statement' },
@@ -72,7 +73,10 @@ export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities)
   }
 
   if (role === "MANAGER") {
-    return management;
+    const scope=operational?.state==='ready'&&operational.role==='MANAGER'?operational.scope:null;
+    if(scope?.mode==='COMPANY')return management;
+    const allowed=new Set(['/app',...(scope?.mode==='LOCATIONS'&&scope.locationIds.length?['/app/schedule','/app/employees']:[]),...finance.map(item=>item.href)]);
+    return management.filter(item=>allowed.has(item.href));
   }
 
   return [...employeeNavigation, ...finance];

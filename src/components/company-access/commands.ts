@@ -1,6 +1,6 @@
 import type {UserRole} from '@/lib/domain';
 import type {EmployeeManagementProfile} from '@/lib/data/employees';
-import type {ScopeSelection,OwnerScopeContext,CoreProfileInput,EmployeeCoreAccessCommand,CreateEmployeeWithAccessCommand,InvitationStatusResult,InvitationResult,ScopeResult,EmployeeCoreAccessResult,AccessFailure} from '@/lib/company-access/model';
+import type {ScopeSelection,OwnerScopeContext,CoreProfileInput,EmployeeCoreAccessCommand,CreateEmployeeWithAccessCommand,InvitationStatusResult,InvitationResult,ScopeResult,EmployeeCoreAccessResult,AccessFailure,OperationalAuthorityView} from '@/lib/company-access/model';
 import {normalizePhoneNumber} from '@/lib/phone';
 const roles=['OWNER','MANAGER','LEAD','EMPLOYEE'] as const;
 function object(v:unknown):Record<string,unknown>{if(!v||typeof v!=='object'||Array.isArray(v))throw new Error('Current information could not be read.');return v as Record<string,unknown>;}
@@ -37,6 +37,12 @@ export function createCommandFromForm(f:FormData,actorRole:UserRole,scope:ScopeS
  return command;
 }
 const failure=(v:unknown):AccessFailure=>choice(v,['access_denied','not_configured','source_changed','read_failed','source_limit']);
+export function readOperationalNavigation(value:unknown):OperationalAuthorityView {
+ const o=object(value);if(o.state==='unavailable')return {state:'unavailable',reason:failure(o.reason)};
+ if(o.state!=='ready'||!Array.isArray(o.locations))throw new Error('Current management access could not be read.');
+ const validForMs=revision(o.validForMs,false);if(validForMs>15000)throw new Error('Current management access could not be read.');
+ return {state:'ready',employeeId:text(o.employeeId),role:choice(o.role,roles),source:choice(o.source,['OWNER_ROLE','LEGACY_ADOPTION','OWNER_ASSIGNMENT','UNASSIGNED','REVOKED','LIFECYCLE_CHANGED']),scope:readScope(o.scope),scopeRevision:revision(o.scopeRevision),authority:text(o.authority),locations:o.locations.map(v=>{const l=object(v);return {id:text(l.id),name:text(l.name),shortName:text(l.shortName)};}),observedAt:date(o.observedAt),validForMs};
+}
 export function readInvitationStatus(value:unknown,employeeId:string):InvitationStatusResult {
  const o=object(value);if(o.state==='unavailable')return {state:'unavailable',reason:failure(o.reason)};
  if(o.state!=='ready'||o.employeeId!==employeeId)throw new Error('Current invitation information could not be read.');

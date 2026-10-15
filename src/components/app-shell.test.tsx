@@ -4,7 +4,7 @@ import { expect, it, vi } from "vitest";
 import { AppShell } from "./app-shell";
 
 const navigationMock = vi.hoisted(() => ({ pathname: "/app/my-time" }));
-vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname }));
+vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname,useRouter:()=>({refresh:vi.fn()}) }));
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children),
 }));
@@ -14,10 +14,12 @@ vi.mock("@/lib/navigation", () => import("../lib/navigation"));
 vi.mock("@/app/login/actions", () => ({ logout: vi.fn() }));
 vi.mock("next/image", () => ({ default: () => null }));
 
+const company={state:'ready' as const,employeeId:'actor',role:'MANAGER' as const,source:'LEGACY_ADOPTION' as const,scope:{mode:'COMPANY' as const,locationIds:[] as []},scopeRevision:1,authority:'fictional',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000};
+
 function render(role: "EMPLOYEE" | "LEAD" | "MANAGER" | "OWNER", pathname = "/app/my-time") {
   navigationMock.pathname = pathname;
   const html = renderToStaticMarkup(
-    <AppShell workspaceName="Northside Services" user={{ firstName: "Sam", lastName: "Cruz", role }}><h1>My Time</h1></AppShell>,
+    <AppShell workspaceName="Northside Services" operationalAuthority={company} user={{ id:"actor",firstName: "Sam", lastName: "Cruz", role }}><h1>My Time</h1></AppShell>,
   );
   return { html, mobile: html.split('aria-label="Mobile navigation"')[1].split("</nav>")[0] };
 }
@@ -66,7 +68,7 @@ it.each(["EMPLOYEE", "LEAD", "MANAGER", "OWNER"] as const)("renders the NEVORA p
 });
 
 it.each(['MANAGER','OWNER'] as const)('places %s device settings only in existing profile affordances when enabled',role=>{
- const html=renderToStaticMarkup(<AppShell workspaceName="Northside Services" notificationsEnabled user={{firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
+ const html=renderToStaticMarkup(<AppShell workspaceName="Northside Services" notificationsEnabled user={{id:"actor",firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
  expect(html.match(/id="portal-device-settings"/g)).toHaveLength(1);
  expect(html.match(/popoverTarget="portal-device-settings"/g)?.length).toBeGreaterThanOrEqual(2);
  expect(html).not.toContain('href="/app/notifications"');
@@ -76,7 +78,7 @@ it('feature off retains the ordinary profile and does not mount setup',()=>{
 });
 
 it("preserves configured Fuel customer identity in the sidebar", () => {
-  const html = renderToStaticMarkup(<AppShell workspaceName="Fuel Coffee Drive" user={{firstName:"Sam",lastName:"Cruz",role:"EMPLOYEE"}}>Content</AppShell>);
+  const html = renderToStaticMarkup(<AppShell workspaceName="Fuel Coffee Drive" user={{id:"actor",firstName:"Sam",lastName:"Cruz",role:"EMPLOYEE"}}>Content</AppShell>);
   expect(html).toContain("Fuel Coffee Drive");
 });
 

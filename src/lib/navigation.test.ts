@@ -4,10 +4,12 @@ import type { PayrollCapabilities } from './payroll/contracts';
 
 const payroll: PayrollCapabilities = { enabled: true, canConfigure: false, canReview: false, canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' };
 
+const company = {state:'ready' as const,employeeId:'M1',role:'MANAGER' as const,source:'LEGACY_ADOPTION' as const,scope:{mode:'COMPANY' as const,locationIds:[] as []},scopeRevision:1,authority:'fictional',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000};
+
 describe("role navigation", () => {
   it("keeps owner controls restricted to owners", () => {
     const owner = navigationForRole("OWNER").map((item) => item.href);
-    const manager = navigationForRole("MANAGER").map((item) => item.href);
+    const manager = navigationForRole("MANAGER",undefined,company).map((item) => item.href);
     const lead = navigationForRole("LEAD").map((item) => item.href);
     const employee = navigationForRole("EMPLOYEE").map((item) => item.href);
 

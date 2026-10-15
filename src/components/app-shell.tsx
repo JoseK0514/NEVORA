@@ -4,20 +4,43 @@ import Link from "next/link";
 import { NotificationBell } from "./notification-bell";
 import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
-import { usePathname } from "next/navigation";
+import { usePathname,useRouter } from "next/navigation";
 import { BrandLockup } from "./brand-lockup";
 import { NavIcon } from "@/components/nav-icon";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback,useEffect, useRef, useState, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import type { UserRole } from "@/lib/domain";
 import { activeNavigationHref, managementNavigationGroups, navigationForRole } from "@/lib/navigation";
 import { NUVORA_BRAND } from "../lib/brand";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
+import type {OperationalAuthorityView} from '@/lib/company-access/model';
+import {useOperationalNavigation} from './company-access/use-operational-navigation';
 
 const employeePrimary = ["/app", "/app/schedule", "/app/my-time"];
 
-export function AppShell({
+type AppShellProps = {
+  workspaceName: string;
+  initialCollapsed?: boolean;
+  preferenceCookie?: string;
+  notificationAuthority?: string;
+  notificationsEnabled?: boolean;
+  payrollCapabilities?: PayrollCapabilities;
+  operationalAuthority?: OperationalAuthorityView;
+  children: ReactNode;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    role: UserRole;
+  };
+};
+
+export function AppShell(props:AppShellProps){
+ return <AppShellView key={JSON.stringify([props.user.id,props.user.role])} {...props}/>;
+}
+
+function AppShellView({
   children,
   workspaceName,
   user,
@@ -26,21 +49,10 @@ export function AppShell({
   initialCollapsed = false,
   preferenceCookie = "nevora_sidebar",
   notificationAuthority,
-}: {
-  workspaceName: string;
-  initialCollapsed?: boolean;
-  preferenceCookie?: string;
-  notificationAuthority?: string;
-  notificationsEnabled?: boolean;
-  payrollCapabilities?: PayrollCapabilities;
-  children: ReactNode;
-  user: {
-    firstName: string;
-    lastName: string;
-    role: UserRole;
-  };
-}) {
+  operationalAuthority,
+}:AppShellProps) {
   const pathname = usePathname();
+  const router=useRouter();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   function toggleSidebar() {
     const next = !collapsed; setCollapsed(next);
@@ -48,11 +60,13 @@ export function AppShell({
   }
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
-  const navigation = navigationForRole(user.role, payrollCapabilities);
+  const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')window.location.reload();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router]);
+  const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
+  const navigation = navigationForRole(user.role, payrollCapabilities,operational.view??undefined);
   const mobilePrimary = navigation.filter((item) => employeePrimary.includes(item.href));
   const mobileMore = navigation.filter((item) => !employeePrimary.includes(item.href));
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
-  const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities);
+  const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities,operational.view??undefined);
 
   useEffect(() => {
     for (const id of ['employee-more-navigation', 'manager-more-navigation']) {
@@ -160,9 +174,9 @@ export function AppShell({
             <BrandLockup variant="compact" />
           </Link>
           <div className="mobile-header-actions">
-          {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
+          {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
           {notificationsEnabled && !employee ? <button type="button" className="role-chip portal-role-trigger" popoverTarget="portal-device-settings" aria-label="Profile and device settings">{user.role[0]}{user.role.slice(1).toLowerCase()}</button> : <span className="role-chip">{user.role[0]}{user.role.slice(1).toLowerCase()}</span>}
-          {!employee ? (
+          {!employee&&navigation.some(item=>item.href==='/app/updates') ? (
             <Link href="/app/updates" className="button secondary manager-updates-link"
               aria-label="Updates" aria-current={activeHref === '/app/updates' ? 'page' : undefined}
               title="Updates">
@@ -185,9 +199,12 @@ export function AppShell({
           </div>
         </header>
 
-        <div className="page-frame">{children}</div>
+        <div className="page-frame">
+          {user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}
+          {children}
+        </div>
 
-        <nav className="mobile-nav" aria-label="Mobile navigation">
+        <nav className="mobile-nav" aria-label="Mobile navigation" style={!employee?{gridTemplateColumns:`repeat(${Math.min(navigation.length,5)},minmax(0,1fr))`}:undefined}>
           {employee ? (
             <>
               {mobilePrimary.map((item) => (
