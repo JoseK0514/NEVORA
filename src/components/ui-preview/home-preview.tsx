@@ -29,7 +29,7 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
     className={`${mobile ? 'mobile-nav-link' : 'nav-link'}${item.href === '/app' ? ' active' : ''}`}
     aria-current={item.href === '/app' ? 'page' : undefined}>
     <span className={mobile ? undefined : 'nav-icon'}><NavIcon name={item.icon} employee={employee} size={mobile ? 22 : 20}/></span>
-    <span className={mobile ? undefined : 'nav-label'}>{item.href === '/app' ? 'Home' : item.href === '/app/schedule' ? 'Schedule' : item.label}</span>
+    <span className={mobile ? undefined : 'nav-label'}>{item.href === '/app' ? 'Home' : item.href === '/app/schedule' ? 'Schedule' : mobile && item.href === '/app/exchange' ? 'Shifts' : item.label}</span>
   </a>;
   return <div className={`${employee ? 'app-shell employee-shell nevora-portal' : 'app-shell nevora-portal'} ui-preview-shell`}>
     <aside className="sidebar">

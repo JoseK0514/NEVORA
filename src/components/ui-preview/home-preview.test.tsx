@@ -42,6 +42,18 @@ it('the preview composition replaces private readers while the native Home keeps
   expect(preview).toContain('Sample activity');
 });
 
+it('the Gusto-style Overview leads with a greeting, drops the tab row and keeps every team view reachable', () => {
+  const html = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome}/>);
+  expect(html).toMatch(/Good (morning|afternoon|evening), /);
+  expect(html).not.toContain('aria-label="Dashboard views"');
+  expect(html).not.toContain('manager-planning-summary');
+  expect(html).toContain('This week');
+  expect(html).toContain('Shortcuts');
+  for (const view of ['attendance', 'team', 'requests', 'activity']) expect(html).toContain(`&amp;view=${view}`);
+  const team = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} view="team"/>);
+  expect(team).toContain('aria-label="Dashboard views"');
+});
+
 it('the sample route is closed in production and opens only in development or by explicit preview configuration', () => {
   vi.stubEnv('NODE_ENV', 'production');
   vi.stubEnv('NEVORA_UI_PREVIEW_ENABLED', '');

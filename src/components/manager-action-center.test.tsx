@@ -10,9 +10,9 @@ it('formats a plain planning date for phone reading without changing its day or 
  expect(mobileActionDetail('2026-02-31 · Review')).toBe('2026-02-31 · Review');
  expect(mobileActionDetail('Alexandra is waiting for review.')).toBe('Alexandra is waiting for review.');
 });
-it('D7 preserves the full verified count and provides every deduplicated action beyond the preview',()=>{expect(parseActionCenter(ready,ready.weekStart)).toEqual(ready);const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="ready"/>);expect(html).toContain('Show all 25 actions');expect(html.match(/data-action-id=/g)).toHaveLength(20);const expanded=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="ready" expanded/>);expect(expanded.match(/data-action-id=/g)).toHaveLength(25);expect(expanded).toContain('week=2026-10-05');});
-it.each(['loading','offline','reconnecting','unavailable','access_lost','paused'] as const)('D7 %s clears names/counts and cannot claim no actions',connection=>{const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection={connection}/>);expect(html).not.toContain('Fictional employee');expect(html).not.toContain('Total actions');expect(html).not.toContain('No actions found');expect(html).not.toContain('Review 25 tasks');expect(html).not.toContain('mobile-home-action-summary');});
-it('D7 only a verified empty source can show no actions; missing ready data remains unavailable',()=>{const empty={...ready,counts:{total:0,scheduling:0,requests:0,timekeeping:0},items:[]};expect(renderToStaticMarkup(<ActionCenterSurface snapshot={empty} connection="ready"/>)).toContain('No actions found in the checked sources');expect(renderToStaticMarkup(<ActionCenterSurface snapshot={null} connection="ready"/>)).toContain('Actions unavailable');});
+it('D7 preserves the full verified count and provides every deduplicated action beyond the preview',()=>{expect(parseActionCenter(ready,ready.weekStart)).toEqual(ready);const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="ready"/>);expect(html).toContain('Show all 25 tasks');expect(html.match(/data-action-id=/g)).toHaveLength(20);const expanded=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="ready" expanded/>);expect(expanded.match(/data-action-id=/g)).toHaveLength(25);expect(expanded).toContain('week=2026-10-05');});
+it.each(['loading','offline','reconnecting','unavailable','access_lost','paused'] as const)('D7 %s clears names/counts and cannot claim no actions',connection=>{const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection={connection}/>);expect(html).not.toContain('Fictional employee');expect(html).not.toContain('Total tasks');expect(html).not.toContain('No tasks found');expect(html).not.toContain('caught up');expect(html).not.toContain('Review 25 tasks');expect(html).not.toContain('mobile-home-action-summary');});
+it('D7 only a verified empty source can show no actions; missing ready data remains unavailable',()=>{const empty={...ready,counts:{total:0,scheduling:0,requests:0,timekeeping:0},items:[]};expect(renderToStaticMarkup(<ActionCenterSurface snapshot={empty} connection="ready"/>)).toContain('No tasks found in the checked sources');expect(renderToStaticMarkup(<ActionCenterSurface snapshot={empty} connection="ready"/>)).toContain('You’re all caught up');expect(renderToStaticMarkup(<ActionCenterSurface snapshot={null} connection="ready"/>)).toContain('Tasks unavailable');expect(renderToStaticMarkup(<ActionCenterSurface snapshot={null} connection="ready"/>)).not.toContain('caught up');});
 it('D7 rejects count mismatch, duplicates, foreign destinations and unbounded lifetime',()=>{for(const bad of [{...ready,counts:{...ready.counts,total:0}},{...ready,items:[ready.items[0],ready.items[0]]},{...ready,items:[{...ready.items[0],href:'https://other.test'}]},{...ready,validForMs:45001}])expect(()=>parseActionCenter(bad,ready.weekStart)).toThrow();});
 
 import * as managerSurfaces from './manager-action-center';
@@ -24,8 +24,8 @@ it('keeps a pending request discoverable when many coverage gaps occupy the queu
  const snapshot:ActionCenter={state:'ready',weekStart:'2026-10-05',observedAt:'2026-10-05T12:00:00Z',validForMs:30000,counts:{total:38,scheduling:37,requests:1,timekeeping:0},limitedAttendance:false,items:[...gaps,request]};
  const html=renderToStaticMarkup(createElement(managerSurfaces.ActionCenterSurface,{snapshot,connection:'ready'}));
  expect(html).toContain('Leave request waiting');
- expect(html).toContain('aria-label="Total actions">38');
- expect(html).toContain('Show all 38 actions');
+ expect(html).toContain('aria-label="Total tasks">38');
+ expect(html).toContain('Show all 38 tasks');
  const expanded=renderToStaticMarkup(createElement(managerSurfaces.ActionCenterSurface,{snapshot,connection:'ready',expanded:true}));
  expect(expanded).toContain('data-action-id="gap-36"');
  expect(expanded.match(/data-action-id=/g)).toHaveLength(38);
@@ -189,8 +189,8 @@ it('category filtering finds a request beyond the first twenty mixed actions',()
 it('a verified empty category keeps an All actions reset without claiming all sources are empty',()=>{
  const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="ready" category="requests"/>);
  expect(html).toContain('No requests to review in the checked sources.');
- expect(html).toContain('All actions');
- expect(html).not.toContain('No actions found in the checked sources.');
+ expect(html).toContain('All tasks');
+ expect(html).not.toContain('No tasks found in the checked sources.');
  expect(html.match(/data-action-id=/g)).toBeNull();
 });
 it('unavailable data removes category controls even with a previous selection',()=>{

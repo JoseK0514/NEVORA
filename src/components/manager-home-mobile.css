@@ -107,16 +107,16 @@
   html body .app-shell.nevora-portal .manager-portal-home .mobile-home-action-summary > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 32px; }
   html body .app-shell.nevora-portal .manager-portal-home .mobile-home-action-summary dt { color: var(--mh-secondary); font-size: var(--mh-body); }
   html body .app-shell.nevora-portal .manager-portal-home .mobile-home-action-summary dd { margin: 0; font-size: var(--mh-body); font-weight: 550; font-variant-numeric: tabular-nums; }
-  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Filter actions by category"] { margin: 12px 0; }
-  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Filter actions by category"] { gap: 8px; }
-  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Filter actions by category"] :is(button,span,strong) { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Filter tasks by category"] { margin: 12px 0; }
+  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Filter tasks by category"] { gap: 8px; }
+  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Filter tasks by category"] :is(button,span,strong) { font-size: var(--mh-caption); }
   html body .app-shell.nevora-portal .manager-portal-home .manager-desktop-action-detail { display: none; }
   html body .app-shell.nevora-portal .manager-portal-home .manager-mobile-action-detail { display: block; }
   html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content :is(p,small) { font-size: var(--mh-caption); }
   html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content :is(h3,summary strong) { font-size: var(--mh-body); }
   html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content :is(a,button) { font-size: var(--mh-body); }
   html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content summary { font-size: var(--mh-caption); }
-  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Total actions"] { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Total tasks"] { font-size: var(--mh-caption); }
   html body .app-shell.nevora-portal .manager-portal-home .manager-home-card-header { padding: 0; }
   html body .app-shell.nevora-portal .manager-portal-home .manager-live-summary { margin: 16px 0 0; padding: 12px 0; border: 0; background: var(--mh-canvas); border-radius: 12px; justify-content: center; font-size: var(--mh-caption); }
   html body .app-shell.nevora-portal .manager-portal-home .manager-home-empty { min-height: 0; padding: 20px 0; }

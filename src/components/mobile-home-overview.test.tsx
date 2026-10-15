@@ -11,9 +11,11 @@ it("keeps selected-week facts, draft context and exact week destinations in the 
   expect(html).toContain('href="/app?week=2026-10-05"');
   expect(html).toContain('href="/app?week=2026-10-19"');
   expect(html).toContain('href="/app/schedule?week=2026-10-12"');
-  expect(html).toContain('including drafts');
-  expect(html).toContain('<dd>6<span> / 10</span></dd>');
-  expect(html).toContain('<dd>1<span> / 2</span></dd>');
+  expect(html).toContain('Includes drafts');
+  expect(html).toContain('6<span> of 10</span>');
+  expect(html).toContain('style="width:60%"');
+  expect(html).toContain('1<span> of 2</span>');
+  expect(html).toContain('style="width:50%"');
 });
 
 it("preserves the remaining manager views behind meaningful phone actions", () => {
@@ -23,4 +25,14 @@ it("preserves the remaining manager views behind meaningful phone actions", () =
   }
   expect(html).toContain('Review attendance');
   expect(html).toContain('Pending requests');
+  expect(html).toContain('href="/app/clocker-recovery"');
+  expect(html).toContain('href="/app/account-recovery"');
+});
+
+it("an empty roster shows an empty bar rather than dividing by zero", () => {
+  const html = renderToStaticMarkup(<MobileHomeOverview weekStart="2026-10-12" weekLabel="Oct 12 – Oct 18"
+    previousWeek="2026-10-05" nextWeek="2026-10-19" plannedShifts={0}
+    availabilityReceived={0} activeEmployees={0} publishedLocations={0} locations={0}/>);
+  expect(html).toContain('0<span> of 0</span>');
+  expect(html).toContain('style="width:0%"');
 });

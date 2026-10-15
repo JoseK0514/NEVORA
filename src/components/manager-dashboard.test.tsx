@@ -18,14 +18,14 @@ it("loads the current Action Center without exposing unverified server-provided 
   };
   const html = renderToStaticMarkup(<ManagerDashboard {...props}/>);
   expect(html).toContain("Northside Services");
-  expect(html).toContain('aria-label="Selected-week planning summary"');
-  expect(html).toContain('Includes draft shifts');
-  expect(html).toContain('Published locations');
+  expect(html).toContain('class="mobile-home-week-facts"');
+  expect(html).toContain('Includes drafts');
+  expect(html).toContain('Locations published');
   expect(html).not.toContain("at Fuel.");
   const rosterHtml = renderToStaticMarkup(<ManagerDashboard {...props} view="schedule"/>);
   expect(rosterHtml).toContain("Employee");
   expect(rosterHtml).not.toContain("Barista");
-  expect(html).toContain('Loading actions');expect(html).not.toContain('All caught up');expect(html).not.toContain('Sam Cruz is waiting');expect(html).not.toContain('aria-label="Total actions"');
+  expect(html).toContain('Loading tasks');expect(html).not.toContain('All caught up');expect(html).not.toContain('Sam Cruz is waiting');expect(html).not.toContain('aria-label="Total tasks"');
   expect(html).toContain('href="/app/clocker-recovery"');expect(html).toContain('href="/app/account-recovery"');
 });
 
@@ -44,9 +44,8 @@ it("summarizes the selected planning week and counts only explicitly published s
       {locationId:"unspecified",locationName:"West",state:"PUBLISHED",totalBlocks:1,coveredBlocks:1,uncoveredBlocks:0},
     ]}
   />);
-  const summary = html.split('aria-label="Selected-week planning summary"')[1]?.split('</dl>')[0];
-  expect(summary).toContain('<dt>Planned shifts</dt><dd>7<small>Includes draft shifts</small></dd>');
-  expect(summary).toContain('<dt>Availability received</dt><dd>2<span> / 3</span>');
-  expect(summary).toContain('<dt>Published locations</dt><dd>1<span> / 3</span>');
-  expect(summary).toContain('Includes draft shifts');
+  const summary = html.split('class="mobile-home-week-facts"')[1]?.split('</dl>')[0];
+  expect(summary).toContain('<dt>Planned shifts <small>Includes drafts</small></dt><dd><span class="home-fact-value">7</span></dd>');
+  expect(summary).toContain('<dt>Availability received</dt><dd class="home-fraction"><span class="home-fact-value">2<span> of 3</span>');
+  expect(summary).toContain('<dt>Locations published</dt><dd class="home-fraction"><span class="home-fact-value">1<span> of 3</span>');
 });

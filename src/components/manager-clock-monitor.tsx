@@ -6,7 +6,7 @@ import {createMonitorController,fetchClockMonitor,type MonitorPanelState} from '
 import {formatMonitorDuration} from '../lib/clock-monitor';
 
 function initials(name:string){return name.split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]?.toUpperCase()).join('');}
-function checkedAt(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date(at));}
+function checkedAt(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));}
 
 export function ClockMonitorCard({state,onRefresh}:{state:MonitorPanelState;onRefresh:()=>void}){
  const {monitor,paused,refreshing}=state;
@@ -16,13 +16,13 @@ export function ClockMonitorCard({state,onRefresh}:{state:MonitorPanelState;onRe
  const breaks=ready?.employees.filter(e=>e.state==='ON_BREAK').length;
  return <section className="manager-home-card manager-floor-card manager-live-card" aria-labelledby="manager-live-title">
   <header className="manager-home-card-header">
-   <h2 id="manager-live-title">Clocked In Now</h2>
-   {ready?<span className="manager-home-count" aria-label={`${ready.employees.length} clocked in`}>{ready.employees.length}</span>:null}
+   <h2 id="manager-live-title">Clocked in now</h2>
+   {ready?.employees.length?<span className="manager-home-count" aria-label={`${ready.employees.length} clocked in`}>{ready.employees.length}</span>:null}
   </header>
   {ready?<>
-   <div className="manager-live-summary" aria-label="Recorded clock status counts">
-    <span><strong>{floor}</strong> On Floor</span><span><strong>{breaks}</strong> On Break</span>
-   </div>
+   {ready.employees.length?<div className="manager-live-summary" aria-label="Recorded clock status counts">
+    <span><strong>{floor}</strong> on floor</span><span><strong>{breaks}</strong> on break</span>
+   </div>:null}
    {ready.employees.length?<div className="manager-home-list">
     {ready.employees.map(person=><div className="manager-floor-row" key={person.timeEntryId}>
      <div className="manager-floor-person">
@@ -33,15 +33,15 @@ export function ClockMonitorCard({state,onRefresh}:{state:MonitorPanelState;onRe
        <small className="manager-live-duration">{formatMonitorDuration(person.elapsedMinutes)} since clock-in{person.breakElapsedMinutes!==null?` · ${formatMonitorDuration(person.breakElapsedMinutes)} on break`:''}</small>
       </span>
      </div>
-     <span className={`manager-floor-status${person.state==='ON_BREAK'?' on-break':''}`}>{person.state==='ON_BREAK'?'On Break':'On Floor'}</span>
+     <span className={`manager-floor-status${person.state==='ON_BREAK'?' on-break':''}`}>{person.state==='ON_BREAK'?'On break':'On floor'}</span>
     </div>)}
-   </div>:<div className="manager-home-empty"><strong>No one is clocked in</strong><small>No open time entries were recorded at the last check.</small></div>}
+   </div>:<div className="manager-home-empty"><strong>No one is clocked in right now</strong></div>}
   </>:<div className="manager-home-empty" role="status">
    <strong>{paused?'Live updates paused':denied?'Sign in again':monitor?.state==='unavailable'?'Live activity unavailable':'Loading live activity'}</strong>
    <small>{paused?'Reconnect and return to this page to check current activity.':denied?'Current Manager or Owner access is required.':monitor?.state==='unavailable'?'The latest clock records could not be confirmed. Try refreshing.':'Checking recorded clock-ins and breaks.'}</small>
   </div>}
   <footer className="manager-live-footer">
-   <small>{ready?<>Checked <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt,ready.timeZone)}</time><span>Updates every 30s while this page is active.</span></>:'Only recorded punches appear here.'}</small>
+   <small>{ready?<>Updated <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt,ready.timeZone)}</time><span>Updates every 30s while this page is active.</span></>:'Only recorded punches appear here.'}</small>
    {denied?<Link className="manager-live-refresh" href="/login">Sign In</Link>:<button className="manager-live-refresh" type="button" onClick={onRefresh} disabled={refreshing||paused} aria-label="Refresh live activity">{refreshing?'Refreshing…':'Refresh'}</button>}
   </footer>
  </section>;
