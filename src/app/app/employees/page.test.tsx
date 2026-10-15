@@ -84,12 +84,25 @@ it("distinguishes no matches from a genuinely empty workforce", async () => {
 });
 
 // Server composition tests; actual mounted finite-body behavior is checked separately.
-const operationalPageFixture=vi.hoisted(()=>({denied:false}));
+const operationalPageFixture=vi.hoisted(()=>({denied:false,scoped:false}));
 vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
-beforeEach(()=>{operationalPageFixture.denied=false;});
+beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;});
 
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({}));expect(html).toContain('current company-wide management access');expect(fixture.events).toEqual(['authorize']);expect(html).not.toContain('Active Person');});
+
+it('uses the released minimal directory projection for a location-scoped Manager',async()=>{
+ operationalPageFixture.scoped=true;
+ const html=renderToStaticMarkup(await EmployeesPage());
+ expect(html).toContain('Local Person');expect(html).not.toContain('Active Person');
+ expect(html).not.toContain('href="/app/employees/local"');expect(html).not.toContain('href="/app/employees/new"');
+ expect(fixture.events).toEqual(['authorize']);
+});
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalDirectory:async()=>{
+ if(operationalPageFixture.denied)return {state:'unavailable',reason:'access_denied'};
+ if(operationalPageFixture.scoped)return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{mode:'LOCATIONS',employees:[{id:'local',firstName:'Local',lastName:'Person',role:'EMPLOYEE',locationIds:['loc']}],locations:[{id:'loc',name:'Main',shortName:'Main',active:true}]}};
+ const source=await import('@/lib/data/employees');return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{mode:'COMPANY',employees:await source.listEmployees(),locations:await source.listLocations({includeInactive:true})}};
+}}));

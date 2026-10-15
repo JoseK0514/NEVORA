@@ -1,4 +1,9 @@
-import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import accessStyles from '@/components/company-access/company-access.module.css';
+import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
+import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
+import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
+import {SelectField} from '@/components/select-field';
+import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {listPositions} from "@/lib/data/positions";
@@ -98,6 +103,18 @@ export default async function NewShiftPage({
       : weekStart;
   const weekEnd = addDays(weekStart, 6);
 
+  const access=await readOperationalAuthority(proof);
+  if(access.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={access.reason}/>;
+  if(access.scope?.mode!=='COMPANY'){
+    if(access.scope?.mode!=='LOCATIONS'||!access.locations.length)return <OperationalUnavailable title="Shift creation unavailable" reason="access_denied"/>;
+    if(params.locationId===undefined)return <ScopedReadFrame observation={access}><section className={'panel '+accessStyles.stack}><h1>Choose a location</h1><p>Select a managed location before assigning a shift.</p><form className={accessStyles.stack} method="get" action="/app/schedule/new"><input type="hidden" name="week" value={weekStart}/><SelectField className={accessStyles.search} name="locationId" label="Location" defaultValue="" required options={[{value:'',label:'Select a managed location',disabled:true},...access.locations.map(l=>({value:l.id,label:l.name}))]}/><button className="button primary" type="submit">Continue</button></form></section></ScopedReadFrame>;
+    const source=await readOperationalShiftEditor(proof,{weekStart,locationId:params.locationId});
+    if(source.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={source.reason} scoped/>;
+    if(source.authority!==access.authority)return <OperationalUnavailable title="Shift creation unavailable" reason="source_changed" scoped/>;
+    const observation={authority:source.authority,observedAt:access.observedAt,validForMs:Math.min(access.validForMs,source.validForMs)};
+    if(source.data.saveAvailability!=='available')return <ScopedShiftReadOnly data={source.data} observation={observation}/>;
+    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={createShiftAction} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name} prefill={{date,employeeId:params.employeeId,positionId:params.positionId,startTime:params.start,endTime:params.end,lead:params.lead==='1'}}/></ScopedReadFrame>;
+  }
   const source=await withOperationalCompany(proof,()=>Promise.all([
     listEmployees(),
     listLocations(),

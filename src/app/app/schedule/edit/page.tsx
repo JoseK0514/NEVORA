@@ -1,4 +1,7 @@
-import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
+import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
+import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
@@ -42,8 +45,18 @@ export default async function EditShiftPage({
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
   const shiftId=params.shiftId;
+  const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
+  if(access.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={access.reason}/>;
+  if(access.scope?.mode!=='COMPANY'){
+    const source=await readOperationalShiftEditor(proof,{shiftId});
+    if(source.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={source.reason} scoped/>;
+    if(source.authority!==access.authority)return <OperationalUnavailable title="Shift editor unavailable" reason="source_changed" scoped/>;
+    const observation={authority:source.authority,observedAt:access.observedAt,validForMs:Math.min(access.validForMs,source.validForMs)};
+    if(source.data.saveAvailability!=='available')return <ScopedShiftReadOnly data={source.data} observation={observation}/>;
+    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={updateShiftAction} deleteAction={deleteShiftAction} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name}/></ScopedReadFrame>;
+  }
 
-  const source=await withOperationalCompany(await requireSessionMutationProof(),()=>Promise.all([
+  const source=await withOperationalCompany(proof,()=>Promise.all([
     getShiftForManagement(shiftId),
     listEmployees(),
     listLocations({includeInactive:true}),

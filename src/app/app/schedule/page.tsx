@@ -1,4 +1,6 @@
-import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {readOperationalSchedule} from '@/lib/company-access/operational-read.server';
+import {ScopedOperationalSchedule} from '@/components/company-access/scoped-operational-views';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {ScheduleCopyForm} from '@/components/schedule-copy-form';
@@ -108,6 +110,16 @@ export default async function SchedulePage({
   const today = businessDate(observedAt, workspace.timeZone);
   const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
+  if(manager){
+    const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
+    if(access.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={access.reason}/>;
+    if(access.scope?.mode!=='COMPANY'){
+      const source=await readOperationalSchedule(proof,{weekStart,...(params.location===undefined||params.location==='all'?{}:{locationId:params.location})});
+      if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
+      if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
+      return <ScopedOperationalSchedule data={source.data} observation={source}/>;
+    }
+  }
   async function renderSchedule(){
   const dates = weekDates(weekStart);
   const employeeSchedule=manager?null:await readEmployeeWeeklyReview(await requireSessionMutationProof(),weekStart);

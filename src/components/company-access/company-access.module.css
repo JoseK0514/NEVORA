@@ -48,3 +48,14 @@
 .shiftRow p {margin:6px 0}
 @media(max-width:760px){.scopeDays{grid-template-columns:minmax(0,1fr)}.shiftRow{flex-direction:column}}
 @media(max-width:480px){.actions>*{flex:1 1 100%}.locations{padding-inline-start:.5rem}}
+.scopedForm :global(.configuration-fields),.scopedForm fieldset {display:grid;gap:16px;min-width:0;border:0;padding:0;margin:0}
+.scopedForm textarea {width:100%;min-height:112px;border:1px solid var(--design-border);border-radius:var(--design-radius-control);padding:12px 14px;background:var(--design-surface-elevated);color:var(--design-text-primary)}
+.scopedTimes {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.scopedLead {display:flex;align-items:flex-start;gap:12px;min-height:44px;padding:12px 0;font-weight:400}
+:global(.app-shell.nevora-portal) .scopedLead>input {flex:0 0 20px;width:20px;height:20px;min-height:20px;padding:0;margin:2px 0 0;appearance:auto}
+.scopedLead>span {display:grid;gap:4px}
+.scopedLead small {font-weight:400;color:var(--design-text-secondary);line-height:1.5}
+@media(max-width:480px){.scopedTimes{grid-template-columns:minmax(0,1fr)}}
+.shiftLink {display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--design-text-primary);text-decoration:none;overflow-wrap:anywhere}
+.shiftLink>svg {flex:0 0 auto;color:var(--design-accent-ink)}
+.shiftLink:hover {color:var(--design-accent-ink)}

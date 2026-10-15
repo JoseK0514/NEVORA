@@ -5,6 +5,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
   actorRole: "MANAGER",
   employeeRole: "EMPLOYEE",
+  profileUnavailable:false, invitation:vi.fn(),
 }));
 
 vi.mock("next/link", () => ({
@@ -55,7 +56,7 @@ vi.mock("@/lib/employee-display", () => ({
 vi.mock("@/lib/phone", () => ({ formatPhoneNumber: (value: string) => value }));
 vi.mock("@/components/page-header", () => ({ PageHeader: ({ title }: { title: string }) => createElement("h1", null, title) }));
 vi.mock("@/components/employee-core-profile-form", () => ({
-  EmployeeCoreProfileForm: () => createElement("div", { "data-testid": "employee-core-form" }, "Employee details"),
+  EmployeeCoreProfileForm: ({ownerScope}:{ownerScope?:{scopeRevision:number}}) => createElement("div", { "data-testid": "employee-core-form", "data-scope-revision":ownerScope?.scopeRevision??"none" }, "Employee details"),
 }));
 vi.mock("@/components/employee-scheduling-fields", () => ({ EmployeeSchedulingFields: () => null }));
 vi.mock("@/components/configuration-form", () => ({ ConfigurationForm: ({ children }: { children: React.ReactNode }) => createElement("form", null, children) }));
@@ -68,6 +69,7 @@ vi.mock("../actions", () => ({
 import EmployeeProfilePage from "./page";
 
 beforeEach(() => {
+  m.profileUnavailable=false;m.invitation.mockReset().mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'2026-10-05 12:00:00+00',eligibility:'INVITABLE',registeredEmailMasked:'s***@example.invalid',invitationRevision:0,invitation:null,delivery:'UNAVAILABLE',allowedCommands:['ISSUE'],retryAfterMs:null});
   m.actorRole = "MANAGER";
   m.employeeRole = "EMPLOYEE";
 });
@@ -113,3 +115,20 @@ vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({
 beforeEach(()=>{operationalPageFixture.denied=false;});
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('current company-wide management access');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');});
+
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeProfile:async()=>{
+ if(m.profileUnavailable)return {state:'unavailable',reason:'source_changed'};
+ const source=await import('@/lib/data/employees'),profile=await source.getEmployeeManagementProfile('worker'),locations=await source.listLocations();
+ return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{profile,locations,ownerScope:m.actorRole==='OWNER'?{employeeId:'worker',employeeUpdatedAt:'2026-10-05 12:00:00+00',role:m.employeeRole,active:true,roleGeneration:'9',scopeRevision:7,scopeState:'UNASSIGNED',scope:null}:null}};
+}}));
+vi.mock('@/lib/auth/invitations/service.server',()=>({readInvitationStatus:m.invitation}));
+it('mounts real Owner invitation and scope controls with the coherent profile context',async()=>{
+ m.actorRole='OWNER';const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));
+ expect(html).toContain('Account invitation');expect(html).toContain('Management access');expect(html).toContain('data-scope-revision="7"');expect(m.invitation).toHaveBeenCalledOnce();
+});
+it('does not request or render Owner invitation/scope controls for a Manager',async()=>{
+ const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));expect(html).not.toContain('Account invitation');expect(html).not.toContain('Management access');expect(m.invitation).not.toHaveBeenCalled();
+});
+it('withholds the profile and Owner controls when the coherent read changed',async()=>{
+ m.actorRole='OWNER';m.profileUnavailable=true;const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('Employee profile unavailable');expect(html).not.toContain('Sam');expect(m.invitation).not.toHaveBeenCalled();
+});
