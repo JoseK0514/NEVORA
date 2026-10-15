@@ -114,7 +114,7 @@ export async function findEmployeeCredential(employeeId: string) {
   return rows[0];
 }
 
-export async function insertEmployee(input: {
+export type EmployeeCreationMutationInput = {
   id: string;
   firstName: string;
   lastName: string;
@@ -127,14 +127,16 @@ export async function insertEmployee(input: {
   positionIds?: readonly string[];
   actorEmployeeId: string;
   proof: SessionMutationProof;
-}, executor?: SqlExecutor) {
+};
+
+export async function prepareEmployeeCreationMutation(input: EmployeeCreationMutationInput, executor?: SqlExecutor) {
   assertManagementProof(input.proof, input.actorEmployeeId);
   const sql = executor ?? neonNotificationExecutor();
   const workspace = await getWorkspace(sql);
   const eligible = [...new Set([input.primaryLocationId, ...input.eligibleLocationIds])].sort();
   const positions = [...new Set(input.positionIds ?? [])].sort();
   if (!["OWNER", "MANAGER", "LEAD", "EMPLOYEE"].includes(input.role)) throw new Error('Choose an access role.');
-  const statements: SqlStatement[] = [
+  const guards: SqlStatement[] = [
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR UPDATE', values: [input.actorEmployeeId] },
     { text: `SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees WHERE id=$1 AND active=true AND role IN ('OWNER','MANAGER') AND ($2<>'OWNER' OR role='OWNER')) THEN '1' ELSE 'employee_creation_permission_denied' END)::integer`, values: [input.actorEmployeeId, input.role] },
@@ -143,12 +145,20 @@ export async function insertEmployee(input: {
     { text: 'SELECT id FROM positions WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE', values: [positions] },
     { text: `SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM unnest($1::text[]) requested(id) LEFT JOIN positions p ON p.id=requested.id WHERE p.id IS NULL OR NOT p.active OR p.workspace_id<>$2) THEN '1' ELSE 'employee_position_invalid' END)::integer`, values: [positions, workspace.id] },
     ...managementSessionStatements(input.proof, input.actorEmployeeId),
+  ];
+  const writes: SqlStatement[] = [
     { text: 'INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,$2,$3,$4,$5,$6,$7)', values: [input.id, input.firstName, input.lastName, input.phone, input.email ?? null, input.role, input.primaryLocationId] },
     ...eligible.map(locationId => ({ text: 'INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES($1,$2)', values: [input.id, locationId] })),
     ...employeePositionMembershipStatements({ employeeId: input.id, positionIds: positions }),
   ];
-  if (input.passwordHash) statements.push({ text: 'INSERT INTO employee_credentials(employee_id,password_hash) VALUES($1,$2)', values: [input.id, input.passwordHash] });
-  await sql.transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId)]);
+  if (input.passwordHash) writes.push({ text: 'INSERT INTO employee_credentials(employee_id,password_hash) VALUES($1,$2)', values: [input.id, input.passwordHash] });
+  return { workspace, guards, writes, finalAuthority: managementSessionStatements(input.proof, input.actorEmployeeId) };
+}
+
+export async function insertEmployee(input: EmployeeCreationMutationInput, executor?: SqlExecutor) {
+  const sql = executor ?? neonNotificationExecutor();
+  const batch = await prepareEmployeeCreationMutation(input, sql);
+  await sql.transaction([...batch.guards, ...batch.writes, ...batch.finalAuthority]);
 }
 
 export async function activateEmployeeCredential(input: {
@@ -259,8 +269,7 @@ export async function getEmployeeManagementProfile(
   };
 }
 
-export async function updateEmployeeProfile(
-  input: {
+export type EmployeeCoreMutationInput = {
     employeeId: string;
     expectedUpdatedAt: string;
     firstName: string;
@@ -272,9 +281,9 @@ export async function updateEmployeeProfile(
     active: boolean;
     actorEmployeeId: string;
     proof: SessionMutationProof;
-  },
-  executor?: SqlExecutor,
-): Promise<{ updatedAt: string }> {
+  };
+
+export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutationInput, executor?: SqlExecutor) {
   assertManagementProof(input.proof, input.actorEmployeeId);
   if (!["OWNER", "MANAGER", "LEAD", "EMPLOYEE"].includes(input.role)) {
     throw new Error("employee_profile_invalid_role");
@@ -299,7 +308,7 @@ export async function updateEmployeeProfile(
   const workspace = await getWorkspace(sql);
   const lockIds = [...new Set([input.actorEmployeeId, input.employeeId])].sort();
 
-  const statements: SqlStatement[] = [
+  const guards: SqlStatement[] = [
     ...workspaceReadGuard(workspace),
     {
       text: `SELECT e.id
@@ -391,6 +400,8 @@ export async function updateEmployeeProfile(
         'actor',$2::text,'token',$1::text,'expires',expires_at)::text,true)
         FROM employee_sessions WHERE token_hash=$1 AND employee_id=$2`,
       values: [input.proof.sessionTokenHash, input.actorEmployeeId] },
+  ];
+  const writes: SqlStatement[] = [
     {
       text: `INSERT INTO employee_location_eligibility(employee_id,location_id)
         VALUES($1,$2)
@@ -426,14 +437,21 @@ export async function updateEmployeeProfile(
       ],
     },
   ];
-  const result = await sql.transaction([...statements, {
+  const finalAuthority: SqlStatement = {
     text: `SELECT (CASE WHEN authority->>'actor'=$1 AND authority->>'token'=$2
         AND (authority->>'expires')::timestamptz>clock_timestamp()
         THEN '1' ELSE 'management_authorization' END)::integer
       FROM (SELECT NULLIF(current_setting('nevora.profile_authority',true),'')::jsonb AS authority) captured`,
     values: [input.actorEmployeeId, input.proof.sessionTokenHash],
-  }]);
-  const written = result[statements.length - 1]?.[0] as { updatedAt: string } | undefined;
+  };
+  return { workspace, guards, writes, finalAuthority };
+}
+
+export async function updateEmployeeProfile(input: EmployeeCoreMutationInput, executor?: SqlExecutor): Promise<{ updatedAt: string }> {
+  const sql = executor ?? neonNotificationExecutor();
+  const batch = await prepareEmployeeProfileMutation(input, sql);
+  const result = await sql.transaction([...batch.guards, ...batch.writes, batch.finalAuthority]);
+  const written = result[batch.guards.length + batch.writes.length - 1]?.[0] as { updatedAt: string } | undefined;
   if (!written) throw new Error('employee_profile_stale');
   return written;
 }
