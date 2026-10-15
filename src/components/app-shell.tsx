@@ -12,6 +12,7 @@ import { NavIcon } from "@/components/nav-icon";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
+import { PortalAccountMenu } from "./portal-account-menu";
 import type { UserRole } from "@/lib/domain";
 import { activeNavigationHref, managementNavigationGroups, navigationForRole } from "@/lib/navigation";
 import { NUVORA_BRAND } from "../lib/brand";
@@ -164,6 +165,13 @@ export function AppShell({
           </Link>
           <div className="mobile-header-actions">
           {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
+          <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
+            {employee ? <Link href="/app/profile" className="nevora-action-menu-item"
+              onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
+            {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}
+            <div className="nevora-action-menu-divider" />
+            <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
+          </PortalAccountMenu>
           {!employee ? (
             <ActionMenu id="manager-more-navigation" label="Menu" ariaLabel="More navigation"
               triggerIcon={<><ListIcon className="management-menu-list-symbol" size={22} weight="regular" aria-hidden="true" focusable="false"/><UserCircleIcon className="mobile-home-menu-symbol" size={24} weight="regular" aria-hidden="true" focusable="false"/></>} iconOnly>

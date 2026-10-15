@@ -4,6 +4,7 @@ import {useState, type MouseEvent, type ReactNode} from 'react';
 import {AuthBrand} from '../auth-brand';
 import {NavIcon} from '../nav-icon';
 import {ActionMenu} from '../action-menu';
+import {PortalAccountMenu} from '../portal-account-menu';
 import {ManagerDashboard} from '../manager-dashboard';
 import {ActionCenterSurface} from '../manager-action-center';
 import {ClockMonitorCard} from '../manager-clock-monitor';
@@ -48,6 +49,11 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
         <a href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}><AuthBrand/></a>
         <div className="mobile-header-actions">
           <button type="button" className="portal-header-notifications" aria-label="Sample notifications" onClick={() => notice('This is a frozen sample. Notifications are not connected.')}><NavIcon name="notifications" size={22}/></button>
+          <PortalAccountMenu initials={`${profile.first_name[0]}${profile.last_name[0]}`} name={`${profile.first_name} ${profile.last_name}`}>
+            {employee ? <a href="/app/profile" className="nevora-action-menu-item">Your profile</a> : null}
+            <div className="nevora-action-menu-divider" />
+            <button type="button" className="nevora-action-menu-item portal-account-signout" onClick={event => { event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover(); notice('Sign out is not connected in this sample.'); }}>Sign out</button>
+          </PortalAccountMenu>
           {!employee ? <ActionMenu id="preview-manager-menu" label="Menu" ariaLabel="More navigation" triggerIcon={<><ListIcon className="management-menu-list-symbol" size={22} aria-hidden="true"/><UserCircleIcon className="mobile-home-menu-symbol" size={24} aria-hidden="true"/></>} iconOnly>
             {secondary.map(item => <a key={item.href} href={item.href} className="nevora-action-menu-item">{item.label}</a>)}
           </ActionMenu> : null}

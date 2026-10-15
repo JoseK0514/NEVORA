@@ -37,9 +37,6 @@ html body .app-shell.nevora-portal .manager-portal-home .manager-attendance-link
 @media (min-width: 761px) {
   html body .app-shell.nevora-portal:has(.manager-portal-home),
   html body .app-shell.nevora-portal:has(.manager-portal-home) :is(.app-main,.page-frame,.mobile-header) { background: var(--g-canvas); }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar .nav-link.active {
-    background: transparent; color: var(--g-accent); box-shadow: inset 3px 0 0 var(--g-accent); border-radius: 0 10px 10px 0;
-  }
 
   html body .app-shell.nevora-portal .manager-portal-home { max-width: 1120px; gap: 32px; color: var(--g-ink); }
   html body .app-shell.nevora-portal .manager-portal-home .dashboard-hero { padding: 4px 0 0; }
@@ -324,25 +321,6 @@ html body .app-shell.nevora-portal .manager-portal-home .home-recent-row span { 
   html body .app-shell.nevora-portal .manager-portal-home .manager-live-footer small { font: var(--g-t-caption); }
   html body .app-shell.nevora-portal .manager-portal-home .mobile-home-tools a { font: var(--g-t-small); }
 
-  /* Compact Gusto-style sidebar on Home. */
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar { gap: 20px; }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar-nav { gap: 16px; }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar-nav-group { gap: 2px; }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar-group-label { padding: 0 12px 4px; font: 500 12px/1.4 var(--design-font-body); color: var(--g-muted); letter-spacing: 0; }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar .nav-link { min-height: 40px; padding: 0 12px; gap: 12px; font: 400 14px/1.3 var(--design-font-body); color: var(--g-ink); border-radius: 0 8px 8px 0; }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar .nav-link .nav-icon { color: var(--g-muted); }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar .nav-link .nav-icon svg { width: 20px; height: 20px; }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar .nav-link:hover { background: var(--g-hairline); color: var(--g-ink); }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar .nav-link.active { font-weight: 600; background: var(--g-accent-wash); }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar .nav-link.active .nav-icon { color: var(--g-accent); }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar-profile { min-height: 52px; padding: 8px 12px; gap: 10px; border-top: 1px solid var(--g-hairline); }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar-profile .avatar { width: 32px; height: 32px; font: 600 12px/1 var(--design-font-body); background: var(--g-accent-wash); color: var(--g-accent-strong); }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar-profile strong { font: 500 14px/1.3 var(--design-font-body); }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar .sidebar-logout-row { min-height: 40px; font: 400 14px/1 var(--design-font-body); color: var(--g-muted); }
-  /* The workspace name already leads the top bar; keep only the platform credit. */
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar-platform-footer { min-height: 0; }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar-platform-footer > span { display: none; }
-  html body .app-shell.nevora-portal:has(.manager-portal-home) .sidebar-platform-footer small { font: 500 10px/1.4 var(--design-font-body); letter-spacing: .04em; color: var(--g-muted); }
   html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-header .portal-workspace-name { font: 500 14px/1.3 var(--design-font-body); color: var(--g-ink); }
 }
 @media (max-width: 760px) {
@@ -368,3 +346,6 @@ html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-facts 
 @media (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal .manager-portal-home :is([aria-label="Refresh tasks"],.manager-live-refresh,.manager-task-caret) { transition: none; }
 }
+/* Home tertiary buttons outrank the portal secondary-button tier. */
+html body .app-shell.nevora-portal .page-frame .manager-portal-home [aria-label="Refresh tasks"] { border: 0; background: transparent; color: var(--g-accent); }
+html body .app-shell.nevora-portal .page-frame .manager-portal-home [aria-label="Refresh tasks"]:hover:not(:disabled) { background: var(--g-accent-wash); }

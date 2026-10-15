@@ -29,7 +29,7 @@
 
 .arrival { padding: 24px 24px 56px; background: var(--home-blue); color: white; }
 .arrival h1 { font-size: 1.625rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.25; text-wrap: balance; }
-.arrival p { margin-top: 6px; color: #e3edff; font-size: .8125rem; }
+.arrival p { margin-top: 6px; color: #FFFFFF; font-size: .8125rem; }
 .content { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: -28px; padding-inline: 20px; }
 .primary, .secondary { display: grid; align-content: start; gap: 20px; min-width: 0; }
 .secondary { gap: 24px; }

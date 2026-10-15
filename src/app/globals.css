@@ -13745,7 +13745,7 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 .employee-home .employee-home-next h2 { margin:0 0 16px; font-size:24px; }
 .employee-home .employee-home-assignment { overflow-wrap:anywhere; }
 .employee-home .employee-home-shift-time { font-size:20px; line-height:1.5; }
-.employee-home .employee-home-review { min-height:44px; display:inline-flex; align-items:center; gap:12px; font-weight:600; color:#0756D9; }
+.employee-home .employee-home-review { min-height:44px; display:inline-flex; align-items:center; gap:12px; font-weight:600; color:var(--nevora-blue,#0756D9); }
 .employee-home .employee-home-scheduled-now { border-top:1px solid #e3e4e8; padding-top:16px; margin-top:16px; }
 .employee-home .employee-home-scheduled-now h3 { font-size:16px; margin:0; }
 .employee-home .employee-home-scheduled-now p, .employee-home .employee-home-scheduled-now .employee-home-shift-time { font-size:14px; }
@@ -13756,13 +13756,13 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 .employee-home .employee-home-actions li>a { display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:56px; padding:12px 0; border-bottom:1px solid #e3e4e8; color:#18191F; overflow-wrap:anywhere; }
 .employee-home .employee-home-actions li>a small { display:block; color:#565965; margin-top:4px; }
 .employee-home .employee-home-source-notices li { font-size:14px; padding:8px 0; }
-.employee-home .employee-home-source-notices li>a { display:inline-flex; min-height:44px; padding:0 8px; color:#0756D9; border:0; text-decoration:underline; text-underline-offset:3px; }
+.employee-home .employee-home-source-notices li>a { display:inline-flex; min-height:44px; padding:0 8px; color:var(--nevora-blue,#0756D9); border:0; text-decoration:underline; text-underline-offset:3px; }
 .employee-home .employee-home-refresh { display:flex; align-items:center; flex-wrap:wrap; gap:12px; padding-top:20px; }
 .employee-home .employee-home-refresh small { color:#565965; }
 .employee-home .employee-home-recovery { min-height:120px; }
-.employee-home .employee-home-primary a:focus-visible, .employee-home .employee-home-primary button:focus-visible { outline:3px solid #0756D9; outline-offset:3px; }
-.employee-home .employee-home-primary a:hover { color:#003AAE; }
-.employee-home .employee-home-primary a:active { color:#003AAE; }
+.employee-home .employee-home-primary a:focus-visible, .employee-home .employee-home-primary button:focus-visible { outline:3px solid var(--nevora-blue,#0756D9); outline-offset:3px; }
+.employee-home .employee-home-primary a:hover { color:var(--nevora-blue-hover,#003AAE); }
+.employee-home .employee-home-primary a:active { color:var(--nevora-blue-hover,#003AAE); }
 @media(max-width:767px) {
  .employee-home .employee-home-layout { grid-template-columns:minmax(0,1fr); gap:16px; }
  .employee-home .employee-home-primary, .employee-home .employee-home-recorded { padding:20px; }
@@ -13770,7 +13770,7 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 
 /* Phase E contextual plain-text updates, within the employee content rail. */
 .communication-view{max-width:800px;margin-inline:auto}
-.communication-back{display:inline-flex;align-items:center;min-height:44px;padding:8px 0;border:0;background:none;color:#0756D9;font:inherit;text-decoration:none;cursor:pointer}
+.communication-back{display:inline-flex;align-items:center;min-height:44px;padding:8px 0;border:0;background:none;color:var(--nevora-blue,#0756D9);font:inherit;text-decoration:none;cursor:pointer}
 .communication-detail header h1{font-size:clamp(24px,4vw,32px);line-height:1.2;overflow-wrap:anywhere;margin:12px 0}
 .communication-meta,.communication-counter{font-size:14px;color:#555862}
 .communication-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;margin:24px 0;max-width:66ch}
@@ -13791,7 +13791,7 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 .communication-compose .communication-counter{margin:0 0 8px}
 .communication-audience{padding-top:20px;border-top:1px solid #dcdde3}
 .communication-list strong{overflow-wrap:anywhere}
-.communication-view :focus-visible{outline:3px solid #0756D9;outline-offset:3px}
+.communication-view :focus-visible{outline:3px solid var(--nevora-blue,#0756D9);outline-offset:3px}
 .communication-view :is(a,button,input,textarea,select){scroll-margin-block:8px}
 @media(max-width:767px){.communication-view :is(a,button,input,textarea,select){scroll-margin-block:80px calc(100px + env(safe-area-inset-bottom,0px))}}
 @media(max-width:430px){.communication-view .employee-view-heading{align-items:flex-start;flex-wrap:wrap;gap:12px}.communication-view .employee-view-heading .button{width:100%;justify-content:center}.communication-detail{padding:20px 16px}}

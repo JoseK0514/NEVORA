@@ -1,0 +1,199 @@
+/* Portal-wide Gusto system (Batch 2, 2026-10-15). Teal palette, white canvas,
+ * 28/20/16/14/12 type, three button tiers, compact sidebar and a top-right
+ * account menu for every authenticated page. Home adds its own layout in
+ * src/components/manager-home-gusto.css. Authentication keeps its own world. */
+html body .app-shell.nevora-portal {
+  --g-accent: #0A7E7E;        /* 4.9:1 on white */
+  --g-accent-hover: #075E5E;
+  --g-accent-strong: #07605F; /* text on the wash */
+  --g-accent-wash: #E7F3F2;
+  --g-masthead: #1C4A47;
+  --g-ink: #1C1C1C;
+  --g-muted: #5F6368;
+  --g-border: #D7D9DC;
+  --g-hairline: #ECEDEF;
+  --g-canvas: #FFFFFF;
+  --g-inset: #F6F7F8;
+  --g-urgent: #E1553F;
+  --g-radius: 6px;
+  --g-control-radius: 8px;
+  --g-card-shadow: 0 1px 2px #0000000F, 0 1px 1px #0000000A;
+  --g-press: 120ms;
+  --g-t-display: 500 28px/1.25 var(--design-font-body);
+  --g-t-title: 500 20px/1.3 var(--design-font-body);
+  --g-t-body: 400 16px/1.5 var(--design-font-body);
+  --g-t-small: 400 14px/1.45 var(--design-font-body);
+  --g-t-caption: 400 12px/1.4 var(--design-font-body);
+
+  --design-primary: var(--g-accent);
+  --design-accent: var(--g-accent-hover);
+  --design-accent-ink: var(--g-accent);
+  --design-accent-ink-hover: var(--g-accent-hover);
+  --design-primary-light: var(--g-accent-wash);
+  --design-text-primary: var(--g-ink);
+  --design-text-secondary: var(--g-muted);
+  --design-background: var(--g-canvas);
+  --design-secondary: var(--g-canvas);
+  --design-border: var(--g-border);
+  --design-surface: var(--g-hairline);
+  --design-surface-inset: var(--g-inset);
+  --design-radius-card: 12px;
+  --design-radius-control: var(--g-control-radius);
+  --nevora-blue: var(--g-accent);
+  --nevora-blue-hover: var(--g-accent-hover);
+  --nevora-soft: var(--g-accent-wash);
+  --nevora-accent-rgb: 10, 126, 126;
+  --nevora-soft-rgb: 231, 243, 242;
+  --nuvora-indigo: var(--g-accent);
+  --nuvora-indigo-hover: var(--g-accent-hover);
+  --nuvora-indigo-soft: var(--g-accent-wash);
+  --color-brand-accent: var(--g-accent);
+  --color-bg-main: var(--g-canvas);
+  --color-border-subtle: var(--g-border);
+  --canvas: var(--g-canvas);
+  --coffee: var(--g-accent);
+  --coffee-dark: var(--g-accent-hover);
+  --caramel: var(--g-accent);
+  --soft-caramel: var(--g-accent-wash);
+  --blue: var(--g-accent);
+  --soft-blue: var(--g-accent-wash);
+  --employee-brand-soft: var(--g-accent-wash);
+  --fuel-ivory: var(--g-canvas);
+  --portal-nav-fill: var(--g-accent-wash);
+  --portal-focus: var(--g-accent);
+  --portal-title: 28px;
+  --portal-section: 20px;
+  background: var(--g-canvas);
+  color: var(--g-ink);
+}
+html body .app-shell.nevora-portal :is(.app-main,.page-frame) { background: var(--g-canvas); }
+html body .app-shell.nevora-portal ::selection { background: #CDE7E5; color: var(--g-ink); }
+
+/* Type: one scale. Weights 400/500/600 only. Figures align in every table. */
+html body .app-shell.nevora-portal .page-frame h1 { font: var(--g-t-display); letter-spacing: -.02em; }
+html body .app-shell.nevora-portal .page-frame h2 { font: var(--g-t-title); letter-spacing: -.01em; color: var(--g-ink); }
+html body .app-shell.nevora-portal .page-frame h3 { font-weight: 600; letter-spacing: -.005em; }
+html body .app-shell.nevora-portal .page-frame :is(td,th,dd,time,output,[data-number],.tabular) { font-variant-numeric: tabular-nums; }
+html body .app-shell.nevora-portal .page-frame :is(th) { font-weight: 500; color: var(--g-muted); }
+html body .app-shell.nevora-portal .page-frame :is(p,li,td,small) > a:not([class]) { color: var(--g-accent); text-underline-offset: 3px; }
+html body .app-shell.nevora-portal .page-frame :is(p,li,td,small) > a:not([class]):hover { color: var(--g-accent-hover); }
+
+/* Buttons: primary teal fill, secondary outline, tertiary/ghost teal text. */
+html body .app-shell.nevora-portal .page-frame :is(.button,.pw-button,.ncc-button) {
+  border-radius: var(--g-control-radius); font-weight: 600; box-shadow: none;
+  transition: background var(--g-press) ease-out, border-color var(--g-press) ease-out, color var(--g-press) ease-out, transform var(--g-press) ease-out;
+}
+html body .app-shell.nevora-portal :is(.button.primary,.ncc-button.primary,.pw-button:not(.pw-secondary):not(.pw-danger),
+  .manager-home-action,.time-clock-button.clock-in,.schedule-builder-add,.new-shift-action.primary,
+  .marketplace-claim,.marketplace-primary-action,.availability-preferences-button.primary,.manager-subtab-action,
+  .employee-profile-view,.timeoff-settings-submit,.schedule-settings-save-btn,.employee-action.primary,
+  .portal-device-button.primary,.schedule-generation-action.primary,.employee-time-correction-submit,.manager-correction-actions button.primary) {
+  background: var(--g-accent); border-color: var(--g-accent); color: #FFFFFF; border-radius: var(--g-control-radius);
+}
+html body .app-shell.nevora-portal :is(.button.primary,.ncc-button.primary,.pw-button:not(.pw-secondary):not(.pw-danger),
+  .manager-home-action,.time-clock-button.clock-in,.schedule-builder-add,.new-shift-action.primary,
+  .marketplace-claim,.marketplace-primary-action,.availability-preferences-button.primary,.manager-subtab-action,
+  .employee-profile-view,.timeoff-settings-submit,.schedule-settings-save-btn,.employee-action.primary,
+  .portal-device-button.primary,.schedule-generation-action.primary,.employee-time-correction-submit,.manager-correction-actions button.primary):is(:hover,:active):not(:disabled) {
+  background: var(--g-accent-hover); border-color: var(--g-accent-hover); color: #FFFFFF;
+}
+html body .app-shell.nevora-portal .page-frame :is(.button.secondary,.pw-button.pw-secondary,.ncc-button:not(.primary)) {
+  background: var(--g-canvas); border: 1px solid var(--g-border); color: var(--g-ink);
+}
+html body .app-shell.nevora-portal .page-frame :is(.button.secondary,.pw-button.pw-secondary,.ncc-button:not(.primary)):hover:not(:disabled) { background: var(--g-inset); border-color: #BFC3C8; }
+html body .app-shell.nevora-portal .page-frame .button.ghost { background: transparent; border-color: transparent; color: var(--g-accent); }
+html body .app-shell.nevora-portal .page-frame .button.ghost:hover:not(:disabled) { background: var(--g-accent-wash); }
+html body .app-shell.nevora-portal .page-frame :is(.button,.pw-button,.ncc-button):active:not(:disabled) { transform: scale(.98); }
+html body .app-shell.nevora-portal :is(button,.button):disabled { opacity: .55; }
+
+/* Form controls: quiet edge, teal focus. */
+html body .app-shell.nevora-portal .page-frame :is(input,select,textarea):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+  border-color: var(--g-border); border-radius: var(--g-control-radius); background-color: var(--g-canvas); color: var(--g-ink);
+}
+html body .app-shell.nevora-portal .page-frame :is(input,select,textarea):not([type="hidden"]):focus-visible { outline: 2px solid var(--g-accent); outline-offset: 1px; border-color: var(--g-accent); }
+html body .app-shell.nevora-portal :is(input[type="checkbox"],input[type="radio"]) { accent-color: var(--g-accent); }
+html body .app-shell.nevora-portal :is(button,a,input,select,textarea,summary):focus-visible { outline-color: var(--g-accent); }
+
+/* Status pills keep their semantic colours; neutral pills move to the grey ladder. */
+html body .app-shell.nevora-portal .page-frame .status-pill { font-weight: 500; letter-spacing: 0; }
+
+/* Desktop chrome: white top bar with workspace, bell and account menu. */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .mobile-header { min-height: 64px; padding: 10px 32px; background: var(--g-canvas); border-bottom: 1px solid var(--g-hairline); }
+  html body .app-shell.nevora-portal .mobile-header .portal-workspace-name { font: 500 14px/1.3 var(--design-font-body); color: var(--g-ink); }
+  html body .app-shell.nevora-portal .portal-notification-bell,
+  html body .app-shell.nevora-portal .ui-preview-shell .portal-header-notifications { border: 0; border-radius: 999px; background: transparent; color: var(--g-muted); }
+  html body .app-shell.nevora-portal .portal-notification-bell:hover { background: var(--g-inset); color: var(--g-ink); }
+
+  html body .app-shell.nevora-portal .portal-account-menu .nevora-action-menu-trigger {
+    width: auto; min-width: 0; height: auto; white-space: nowrap; flex: none;
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 10px 4px 4px; border: 0; border-radius: 999px;
+    background: transparent; color: var(--g-ink); font: 500 14px/1 var(--design-font-body); box-shadow: none;
+  }
+  html body .app-shell.nevora-portal .portal-account-menu .nevora-action-menu-trigger:hover { background: var(--g-inset); }
+  html body .app-shell.nevora-portal .portal-account-menu .mobile-workforce-action-symbol { display: none; }
+  html body .app-shell.nevora-portal .portal-account-menu .nevora-action-menu-chevron { color: var(--g-muted); }
+  html body .app-shell.nevora-portal .portal-account-avatar {
+    flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+    background: var(--g-accent-wash); color: var(--g-accent-strong); font: 600 12px/1 var(--design-font-body);
+  }
+  html body .app-shell.nevora-portal .portal-account-menu .nevora-action-menu-popover { min-width: 220px; }
+  html body .app-shell.nevora-portal .portal-account-heading { margin: 0; padding: 8px 12px 4px; font: var(--g-t-caption); color: var(--g-muted); }
+  /* The account menu replaces the sidebar profile and sign-out rows on desktop. */
+  html body .app-shell.nevora-portal .sidebar :is(.sidebar-profile,.sidebar-signout-form) { display: none; }
+
+  /* Compact Gusto sidebar. */
+  html body .app-shell.nevora-portal .sidebar { gap: 20px; background: var(--g-canvas); border-right: 1px solid var(--g-hairline); }
+  html body .app-shell.nevora-portal .sidebar-nav { gap: 16px; }
+  html body .app-shell.nevora-portal .sidebar-nav-group { gap: 2px; }
+  html body .app-shell.nevora-portal .sidebar-group-label { padding: 0 12px 4px; font: 500 12px/1.4 var(--design-font-body); color: var(--g-muted); letter-spacing: 0; }
+  html body .app-shell.nevora-portal .sidebar .nav-link { min-height: 40px; padding: 0 12px; gap: 12px; font: 400 14px/1.3 var(--design-font-body); color: var(--g-ink); border-radius: 0 8px 8px 0; }
+  html body .app-shell.nevora-portal .sidebar .nav-link .nav-icon { color: var(--g-muted); }
+  html body .app-shell.nevora-portal .sidebar .nav-link .nav-icon svg { width: 20px; height: 20px; }
+  html body .app-shell.nevora-portal .sidebar .nav-link:hover { background: var(--g-inset); color: var(--g-ink); }
+  html body .app-shell.nevora-portal .sidebar .nav-link.active { background: var(--g-accent-wash); color: var(--g-accent-strong); font-weight: 600; box-shadow: inset 3px 0 0 var(--g-accent); }
+  html body .app-shell.nevora-portal .sidebar .nav-link.active .nav-icon { color: var(--g-accent); }
+  html body .app-shell.nevora-portal .sidebar-platform-footer { min-height: 0; }
+  html body .app-shell.nevora-portal .sidebar-platform-footer > span { display: none; }
+  html body .app-shell.nevora-portal .sidebar-platform-footer small { font: 500 10px/1.4 var(--design-font-body); letter-spacing: .04em; color: var(--g-muted); }
+  html body .app-shell.nevora-portal .sidebar-toggle { border: 0; color: var(--g-muted); }
+  html body .app-shell.nevora-portal .sidebar-toggle:hover { background: var(--g-inset); color: var(--g-ink); }
+  html body .app-shell.nevora-portal .sidebar[data-collapsed="true"] .nav-link { border-radius: 8px; box-shadow: none; }
+}
+
+/* Phones: the account menu stays in the existing menus; dark-teal mastheads. */
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal .portal-account-menu { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-mobile-workforce="true"] {
+    --mobile-masthead: var(--g-masthead);
+    --mobile-masthead-secondary: #CFE3E1;
+    --mobile-accent: var(--g-accent);
+    --mobile-accent-hover: var(--g-accent-hover);
+    --mobile-selected: var(--g-accent-wash);
+    --mobile-canvas: #F6F7F8;
+    --mobile-ink: var(--g-ink);
+    --mobile-secondary: var(--g-muted);
+    --mobile-divider: var(--g-hairline);
+    --mobile-radius: 12px;
+    --mobile-control-radius: 8px;
+    --mobile-shadow: 0 1px 3px #0000001A, 0 1px 2px #0000000D;
+    --mobile-sheet-shadow: 0 12px 48px #1C4A4733;
+  }
+  html body .app-shell.app-shell[data-employee-corporate="true"] {
+    --corporate-accent: var(--g-accent);
+    --corporate-accent-hover: var(--g-accent-hover);
+    --corporate-ink: var(--g-ink);
+    --corporate-support: var(--g-muted);
+    --corporate-divider: var(--g-hairline);
+    --corporate-selected: var(--g-accent-wash);
+    --corporate-pressed: #D3EAE8;
+    --corporate-masthead: var(--g-masthead);
+    --corporate-ice-divider: #C9E0DE;
+  }
+  html body .app-shell.nevora-portal .mobile-nav-link.active { background: transparent; color: var(--g-accent); }
+  html body .app-shell.nevora-portal .mobile-nav-link.active svg { color: var(--g-accent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal .page-frame :is(.button,.pw-button,.ncc-button) { transition: none; }
+  html body .app-shell.nevora-portal .page-frame :is(.button,.pw-button,.ncc-button):active { transform: none; }
+}

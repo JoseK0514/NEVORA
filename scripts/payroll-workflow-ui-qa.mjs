@@ -322,13 +322,13 @@ try {
       await page.getByRole('button', { name: 'Re-enter original action', exact: true }).waitFor();
       const absent = await context.request.get(app.url + `/api/payroll/receipts?operationId=${absentReference}`, { headers: apiHeaders() }); assert.deepEqual(await absent.json(), { receipt: null });
       assert(await page.getByRole('button', { name: 'Prepare a draft', exact: true }).isDisabled());
-      await page.locator('.sidebar-logout-row').click(); await page.waitForURL(url => url.pathname === '/login');
+      await page.getByRole('button', { name: 'Account menu', exact: true }).click(); await page.locator('#portal-account-menu').getByRole('button', { name: 'Sign out', exact: true }).click(); await page.waitForURL(url => url.pathname === '/login');
       await login(context, fixture.ids.reviewer, fixture.password); await page.goto(app.url + '/app/payroll');
       await page.getByRole('heading', { name: 'Pay periods', exact: true }).waitFor();
       assert.equal(await page.getByRole('button', { name: 'Check action reference', exact: true }).count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Prepare a draft', exact: true }).isDisabled(), false);
       assert.equal(await page.evaluate(key => localStorage.getItem(key), ownerStorageKey), absentReference);
-      await page.locator('.sidebar-logout-row').click(); await page.waitForURL(url => url.pathname === '/login');
+      await page.getByRole('button', { name: 'Account menu', exact: true }).click(); await page.locator('#portal-account-menu').getByRole('button', { name: 'Sign out', exact: true }).click(); await page.waitForURL(url => url.pathname === '/login');
       await login(context, fixture.ids.owner, fixture.password); await page.goto(app.url + '/app/payroll');
       await page.getByRole('button', { name: 'Re-enter original action', exact: true }).waitFor();
       assert.equal(await page.evaluate(key => localStorage.getItem(key), ownerStorageKey), absentReference);

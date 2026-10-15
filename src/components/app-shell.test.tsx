@@ -102,6 +102,16 @@ it('feature off retains the ordinary profile and does not mount setup',()=>{
  const {html}=render('EMPLOYEE');expect(html).not.toContain('portal-device-settings');expect(html).toContain('href="/app/profile" class="sidebar-profile portal-profile-trigger"');expect(html).toContain('href="/app/notifications"');
 });
 
+it.each(["EMPLOYEE", "MANAGER"] as const)("offers a top-right account menu with sign out for %s", role => {
+  const { html } = render(role);
+  expect(html).toContain('class="portal-account-menu"');
+  expect(html).toContain('aria-label="Account menu"');
+  expect(html).toContain('id="portal-account-menu"');
+  expect(html).toContain('Signed in as ');
+  expect(html).toContain('portal-account-signout');
+  if (role === "EMPLOYEE") expect(html).toContain('>Your profile</a>');
+});
+
 it("preserves configured Fuel customer identity in the sidebar", () => {
   const html = renderToStaticMarkup(<AppShell workspaceName="Fuel Coffee Drive" user={{firstName:"Sam",lastName:"Cruz",role:"EMPLOYEE"}}>Content</AppShell>);
   expect(html).toContain("Fuel Coffee Drive");
@@ -149,7 +159,9 @@ it.each(['MANAGER','OWNER'] as const)('gives %s one icon-only mobile menu and pr
  expect(header.match(/href="\/app\/notifications"/g)).toHaveLength(1);
  expect(header).toContain('aria-label="More navigation"');
  expect(header).toContain('<span class="sr-only">Menu</span>');
- expect(header).not.toContain('nevora-action-menu-chevron');
+ const mobileMenu=header.split('<div class="nevora-action-menu">').find(part=>part.includes('aria-label="More navigation"'))!;
+ expect(mobileMenu).not.toContain('nevora-action-menu-chevron');
+ expect(header).toContain('class="portal-account-menu"');
  expect(header).not.toContain('role-chip');
 });
 
