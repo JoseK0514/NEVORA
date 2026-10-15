@@ -15,7 +15,12 @@ beforeEach(() => { vi.clearAllMocks(); state.activation.mockResolvedValue(null);
 it('login_defaults_and_permissions_remain_unchanged', async () => { await expect(login(form())).rejects.toThrow('redirect:/app'); expect(state.create).toHaveBeenCalledWith('EMPLOYEE',await state.credential()); state.credential.mockResolvedValue(null); await expect(login(form('/app/requests?tab=my'))).rejects.toThrow('redirect:/login?error=invalid'); });
 it('safe_notification_return_is_preserved_after_successful_login', async () => { await expect(login(form('/app/notifications/open?notificationId=fictional'))).rejects.toThrow('redirect:/app/notifications/open?notificationId=fictional'); expect(state.prepare).toHaveBeenCalledWith('EMPLOYEE'); expect(state.prepare.mock.invocationCallOrder[0]).toBeLessThan(state.create.mock.invocationCallOrder[0]); });
 it.each(['https://evil.test', '//evil.test', '/clocker/2', '/app/%2e%2e', '/application'])('unsafe_return_%s_falls_back_to_app', async (path) => { await expect(login(form(path))).rejects.toThrow('redirect:/app'); });
-it('activation_and_errors_keep_validated_return', async () => { const path = '/app/notifications/open?notificationId=fictional'; state.activation.mockResolvedValue({ active: true, has_credential: false }); await expect(login(form(path))).rejects.toThrow(`redirect:/activate?employeeId=EMPLOYEE&returnTo=${encodeURIComponent(path)}`); await expect(activateAccountAction(form(path))).rejects.toThrow(`redirect:/login?activated=1&returnTo=${encodeURIComponent(path)}`); });
+it('uncredentialed login is generic and the retired knowledge-only action never calls credential creation', async () => {
+ const path='/app/notifications/open?notificationId=fictional';state.activation.mockResolvedValue({active:true,has_credential:false});state.credential.mockResolvedValue(null);
+ await expect(login(form(path))).rejects.toThrow('redirect:/login?error=invalid');
+ expect(state.activation).not.toHaveBeenCalled();expect(state.create).not.toHaveBeenCalled();
+ await expect(activateAccountAction(form(path))).rejects.toThrow('redirect:/activate');expect(state.activate).not.toHaveBeenCalled();
+});
 it('javascript_disabled_native_signout_exits_after_cleanup_rejection', async () => { state.destroy.mockRejectedValue(new Error('storage failure')); await expect(logout()).rejects.toThrow('redirect:/login'); });
 vi.mock('@/components/brand-mark', () => ({ BrandMark: () => null, BrandWordmark: () => null }));
 vi.mock('@/components/brand-lockup', () => ({ BrandLockup: () => null }));

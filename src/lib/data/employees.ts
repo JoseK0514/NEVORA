@@ -161,38 +161,10 @@ export async function insertEmployee(input: EmployeeCreationMutationInput, execu
   await sql.transaction([...batch.guards, ...batch.writes, ...batch.finalAuthority]);
 }
 
-export async function activateEmployeeCredential(input: {
-  employeeId: string;
-  phone: string;
-  passwordHash: string;
-}) {
-  const sql = neonNotificationExecutor();
-  const phoneDigits = input.phone.replace(/\D/g, "");
-
-  const results = await sql.transaction([
-    { text: 'SELECT id FROM employees WHERE upper(id)=upper($1) ORDER BY id FOR UPDATE', values: [input.employeeId] },
-    // Fresh post-lock statement; duplicate activation is serialized on employee.
-    { text: `INSERT INTO employee_credentials (
-         employee_id,
-         password_hash,
-         must_change_password
-       )
-       SELECT
-         e.id,
-         $3,
-         false
-       FROM employees e
-       LEFT JOIN employee_credentials c
-         ON c.employee_id = e.id
-       WHERE upper(e.id) = upper($1)
-         AND regexp_replace(e.phone, '[^0-9]', '', 'g') = $2
-         AND e.active = true
-         AND c.employee_id IS NULL
-       RETURNING employee_id`, values: [input.employeeId, phoneDigits, input.passwordHash] },
-  ]);
-  return (results.at(-1)?.[0] as { employee_id: string } | undefined)?.employee_id ?? null;
+/** Retired knowledge-only first activation. Public initialization requires invitation possession. */
+export async function activateEmployeeCredential(_input: {employeeId:string;phone:string;passwordHash:string}):Promise<null> {
+  return null;
 }
-
 
 export async function getEmployeeActivationState(employeeId: string) {
   const sql = getDb();
