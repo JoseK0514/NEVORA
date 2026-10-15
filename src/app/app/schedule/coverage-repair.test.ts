@@ -38,3 +38,8 @@ it('an infrastructure failure is never converted into a known successful save', 
   await expect(createShiftAction(form())).rejects.toThrow('owned fictional transport failure');
   expect(m.repair).toHaveBeenCalledTimes(1); expect(m.ensure).not.toHaveBeenCalled(); expect(m.ordinary).not.toHaveBeenCalled();
 });
+
+// These business/unit fixtures do not execute SQL. Current scope admission and
+// rollback are exercised by company-access-schedule-*.integration.ts.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));

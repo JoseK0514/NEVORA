@@ -5,7 +5,7 @@ vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw O
 vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'MANAGER', role: 'MANAGER' }),requireSessionMutationProof:async()=>({employee:{id:'MANAGER',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)}) }));
 vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ id: 'w', active: true, timeZone: 'America/New_York' }) }));
 vi.mock('@/lib/data/schedules', () => ({
-  insertShift: writes.insert, updateShift: writes.update, ensureSchedule: writes.ensure,
+  insertShiftAtLocation: writes.insert, insertShift: writes.insert, updateShift: writes.update, ensureSchedule: writes.ensure,
   getShiftForManagement: async () => ({ id: 'shift', employeeId: 'SAM', locationId: 'main', positionId: 'cashier', weekStart: '2030-10-07' }),
   getShiftValidationContext: async ({ employeeId, positionId }: { employeeId: string; positionId?: string }) => ({
     workspace: { id: 'w', active: true, timeZone: 'America/New_York' },
@@ -48,3 +48,8 @@ it.each([createShiftAction, updateShiftAction])('an explicit No position selecti
   await expect(action(form('owner',''))).rejects.toMatchObject({ destination: expect.stringContaining('/app/schedule?week=2030-10-07') });
   expect(action === createShiftAction ? writes.insert : writes.update).toHaveBeenCalledWith(expect.objectContaining({ employeeId: 'OWNER', positionId: null }));
 });
+
+// These business/unit fixtures do not execute SQL. Current scope admission and
+// rollback are exercised by company-access-schedule-*.integration.ts.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));

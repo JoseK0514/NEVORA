@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import type {Workspace,UserRole} from '@/lib/domain';
 import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
-import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
+import {neonNotificationExecutor} from '@/lib/data/sql-executor';
 import {getWorkspace,workspaceReadGuard} from '@/lib/data/workspaces';
 import {assertManagementProof,managementSessionStatements} from '@/lib/data/management-session';
 import {parseScopeSelection} from './scope-selection';
@@ -27,6 +27,24 @@ const current=`w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND
 const allowedCompany=`(e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ${validSelectionSql}))`;
 
 export class OperationalAuthorizationError extends Error {constructor(){super('operational_authorization');}}
+/** Exact authorization diagnostics only; database/validation failures retain their meaning. */
+export function isOperationalAuthorizationError(error:unknown):boolean {
+ return error instanceof OperationalAuthorizationError || (error!==null&&typeof error==='object'
+  &&'code'in error&&error.code==='22P02'&&'message'in error
+  &&error.message==='invalid input syntax for type integer: "operational_authorization"');
+}
+/** Admission before private validation. Writers MUST also append the current
+ * operational guard inside their business transaction, after all lock waits. */
+export async function assertOperationalAccess(proof:SessionMutationProof,footprint:OperationalFootprint|undefined,executor:SqlExecutor=neonNotificationExecutor()) {
+ const view=await readOperationalAuthority(proof,executor);
+ if(view.state!=='ready'||!view.scope||!['OWNER','MANAGER'].includes(view.role))throw new OperationalAuthorizationError();
+ const actual=footprint??(view.scope.mode==='COMPANY'?{kind:'COMPANY'} as const:{kind:'LOCATIONS',locationIds:view.scope.locationIds} as const);
+ const workspace=await getWorkspace(executor);
+ await executor.transaction([...workspaceReadGuard(workspace),
+  {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
+  ...operationalScopeStatements(proof,workspace,actual,view.authority)]);
+ return {workspace,authority:view.authority,scope:view.scope};
+}
 /** Append after the caller's workspace, sorted employee and business locks. Keep generic session/finance guards separate. */
 export function operationalScopeStatements(proof:SessionMutationProof,workspace:Workspace,footprint:OperationalFootprint,expectedAuthority?:string):SqlStatement[] {
  assertManagementProof(proof,proof?.employee?.id);

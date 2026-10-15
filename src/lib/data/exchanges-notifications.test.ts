@@ -161,3 +161,7 @@ it.each([
   expect(r.batches).toEqual([]);
   expect(r.state).toEqual(before);
 });
+
+// These business/unit fixtures do not execute SQL. Current scope admission and
+// rollback are exercised by company-access-schedule-*.integration.ts.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));

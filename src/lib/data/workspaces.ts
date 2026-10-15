@@ -1,6 +1,6 @@
 import type { Workspace } from '../domain';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
-import { neonNotificationExecutor } from './notification-transactions';
+import { neonNotificationExecutor } from './sql-executor';
 import { validateWorkspaceProfile } from '../workspace/validation';
 
 import type { SessionMutationProof } from "../shift-changes/types";

@@ -85,7 +85,10 @@ it('protected review reads bracket the same coherent source with current managem
   const r = executorFixture(); const result = await readCoverageRepair(r.locator, r.proof, false, r.executor);
   expect(r.batches).toHaveLength(1);
   expect(r.batches[0].filter(s => s.text.includes('management_authorization'))).toHaveLength(2);
-  expect(r.batches[0][4].text).toBe(`SELECT ${generationSourceSql} AS source`);
+  const sourceIndex=r.batches[0].findIndex(s=>s.text===`SELECT ${generationSourceSql} AS source`);
+  expect(sourceIndex).toBeGreaterThan(0);
+  expect(r.batches[0].slice(0,sourceIndex).some(s=>s.text.includes('operational_authorization'))).toBe(true);
+  expect(r.batches[0].slice(sourceIndex+1).some(s=>s.text.includes('operational_authorization'))).toBe(true);
   expect(result.candidates[0].review).toBeTruthy();
   expect(result).not.toHaveProperty('source'); expect(result.candidates[0]).not.toHaveProperty('rules');
   expect(JSON.stringify(result)).not.toContain(r.proof.sessionTokenHash);
@@ -100,7 +103,9 @@ it('a valid repair creates its schedule and exact positioned Lead shift in ONE e
   expect(batch.filter(s => s.text.startsWith('INSERT INTO shifts'))).toHaveLength(1);
   expect(batch.find(s => s.text.startsWith('INSERT INTO shifts'))!.values.slice(2)).toEqual(['E', '2030-10-07', '08:00', '12:00', true, 'barista']);
   expect(batch.some(s => s.text.includes('generation_source_conflict'))).toBe(true);
-  expect(batch.at(-1)!.text).toContain('management_authorization');
+  expect(batch.at(-2)!.text).toContain('management_authorization');
+  expect(batch.at(-1)!.text).toContain('operational_authorization');
+  expect(batch.at(-1)!.values[3]).toEqual([]);
   expect(batch.some(s => s.text.includes('INSERT INTO notifications'))).toBe(false);
 });
 
@@ -171,3 +176,7 @@ it.each(['2026-11-01', '2026-03-08'])('a DST ambiguous or missing local endpoint
   const weekStart = date === '2026-11-01' ? '2026-10-26' : '2026-03-02';
   expect(() => deriveCoverageRepair(r.source, { ...r.locator, weekStart, date, gapKey: `loc-1|${date}|${date.endsWith('11-01') ? '01:30' : '02:30'}|04:00`, startTime: date.endsWith('11-01') ? '01:30' : '02:30', endTime: '04:00' })).toThrow('Coverage changed');
 });
+
+// These business/unit fixtures do not execute SQL. Current scope admission and
+// rollback are exercised by company-access-schedule-*.integration.ts.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));

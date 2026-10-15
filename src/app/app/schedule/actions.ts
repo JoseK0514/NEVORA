@@ -11,26 +11,29 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { isDateInWeek, isValidWeekStart } from "@/lib/date-utils";
 import { setAvailabilityDeadline } from "@/lib/data/week-settings";
 import { publishScheduleWithRevision } from "@/lib/data/publication-revisions";
-import { listEmployees } from "@/lib/data/employees";
 import {
   deleteShift,
   createCoverageRepairShift,
-  ensureSchedule,
   getShiftForManagement,
   getShiftValidationContext,
-  insertShift,
-  listWeekShifts,
+  insertShiftAtLocation,
   updateShift,
 } from "@/lib/data/schedules";
 import { executeScheduleCopy } from "@/lib/data/schedule-copy";
 import { prepareExchangeContext } from "@/lib/scheduling/exchange-validation";
 import { validateShift } from "@/lib/scheduling/validate-shift";
 import { ManualAssignmentConflictError } from "@/lib/data/manual-assignment-validation";
+import {assertOperationalAccess,isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
+import {isManagementAuthorizationError} from '@/lib/data/management-session';
+import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
 import { coverageRepairUrl, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
 
 function scheduleUrl(weekStart: string, suffix = "") {
   return `/app/schedule?week=${encodeURIComponent(weekStart)}${suffix}`;
 }
+
+const accessError=()=>({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
+const denied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error);
 
 export async function createShiftAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
@@ -46,12 +49,17 @@ export async function createShiftAction(formData: FormData) {
   const positionId = formData.has("positionId") ? String(formData.get("positionId") ?? "").trim() || null : undefined;
   const isDesignatedLead = formData.get("isDesignatedLead") === "on";
 
+  let company:boolean;
+  try{company=(await assertOperationalAccess(proof,{kind:'LOCATIONS',locationIds:[locationId]})).scope.mode==='COMPANY';}
+  catch(error){if(denied(error))return accessError();throw error;}
+
   if (formData.has('coverageRepairReview')) {
     let saved;
     try {
       saved = await createCoverageRepairShift({ review: String(formData.get('coverageRepairReview') ?? ''),
         weekStart, employeeId, locationId, date, startTime, endTime, positionId, isDesignatedLead, actorEmployeeId: session.id, proof });
     } catch (error) {
+      if(denied(error))return accessError();
       if (error instanceof CoverageRepairConflictError || error instanceof ManualAssignmentConflictError) return { error: error.message, issueCode: error.code };
       throw error;
     }
@@ -75,59 +83,33 @@ export async function createShiftAction(formData: FormData) {
   try { shiftBoundaryInstants({ date, startTime, endTime }, workspace.timeZone); }
   catch { redirect(scheduleUrl(weekStart, "&error=INVALID_SHIFT")); }
 
-  const context = await getShiftValidationContext({
-    employeeId,
-    locationId,
-    positionId: positionId || undefined,
-    date,
-    weekStart,
-  });
-
-  if (!context) {
-    redirect(scheduleUrl(weekStart, "&error=EMPLOYEE_NOT_FOUND"));
+  // Restricted forms may select only the minimal current editor options. The
+  // complete canonical rule source remains server-private inside the writer.
+  if(!company){
+    const editor=await readOperationalShiftEditor(proof,{weekStart,locationId});
+    if(editor.state!=='ready'||editor.data.saveAvailability!=='available'
+      ||!editor.data.employeeOptions.some(e=>e.id===employeeId)
+      ||(positionId&&!editor.data.positionOptions.some(p=>p.id===positionId)))return accessError();
   }
-
-
-  const validation = validateShift({
-    candidate: { employeeId, locationId, positionId:positionId || undefined, date, startTime, endTime, isDesignatedLead },
-    ...context,
-    mode: "MANAGER_SCHEDULE",
-  });
-
-  const blockingIssue = validation.issues.find((issue) => issue.severity === "error");
-
-  if (blockingIssue) {
-    return { error: blockingIssue.message, issueCode: blockingIssue.code };
+  let validation:ReturnType<typeof validateShift>|undefined;
+  if(company){
+    const context=await getShiftValidationContext({employeeId,locationId,positionId:positionId||undefined,date,weekStart});
+    if(!context)redirect(scheduleUrl(weekStart,"&error=EMPLOYEE_NOT_FOUND"));
+    validation=validateShift({candidate:{employeeId,locationId,positionId:positionId||undefined,date,startTime,endTime,isDesignatedLead},...context,mode:'MANAGER_SCHEDULE'});
+    const blocking=validation.issues.find(issue=>issue.severity==='error');
+    if(blocking)return {error:blocking.message,issueCode:blocking.code};
   }
-
-  try {
-    const scheduleId = await ensureSchedule({
-      locationId,
-      weekStart,
-      createdBy: session.id,
-      proof,
-    });
-
-    await insertShift({
-      actorEmployeeId: session.id,
-      proof,
-      scheduleId,
-      employeeId,
-      date,
-      startTime,
-      endTime,
-      notes: notes || undefined,
-      positionId,
-      isDesignatedLead,
-    });
-  } catch (error) {
-    if (error instanceof ManualAssignmentConflictError) return { error: error.message, issueCode: error.code };
+  try{
+    await insertShiftAtLocation({actorEmployeeId:session.id,proof,locationId,weekStart,employeeId,date,startTime,endTime,notes:notes||undefined,positionId,isDesignatedLead});
+  }catch(error){
+    if(denied(error))return accessError();
+    if(error instanceof ManualAssignmentConflictError)return company?{error:error.message,issueCode:error.code}:{error:'Assignment is unavailable. Reload and try again.',issueCode:'SOURCE_CHANGED'};
     throw error;
   }
 
   revalidatePath("/app/schedule");
 
-  const warning = validation.issues.find((issue) => issue.severity === "warning");
+  const warning = validation?.issues.find((issue) => issue.severity === "warning");
   redirect(
     scheduleUrl(
       weekStart,
@@ -142,6 +124,7 @@ export async function publishScheduleAction(formData: FormData) {
   const weekStart = String(formData.get("weekStart") ?? "");
   const locationId = String(formData.get("locationId") ?? "");
   const confirmWarnings = formData.get("confirmWarnings") === "yes";
+  try{await assertOperationalAccess(proof,{kind:'COMPANY'});}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
 
   if (!isValidWeekStart(weekStart) || !locationId) {
     redirect("/app/schedule?error=INVALID_PUBLISH");
@@ -159,12 +142,9 @@ export async function publishScheduleAction(formData: FormData) {
     }
   }
 
-  const { published } = await publishScheduleWithRevision({
-    locationId,
-    weekStart,
-    managerId: session.id,
-    proof,
-  });
+  let published:boolean;
+  try{({published}=await publishScheduleWithRevision({locationId,weekStart,managerId:session.id,proof}));}
+  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
 
   revalidatePath("/app/schedule");
   redirect(
@@ -191,62 +171,25 @@ export async function updateShiftAction(formData: FormData) {
   const positionId = formData.has("positionId") ? String(formData.get("positionId") ?? "").trim() || null : undefined;
   const isDesignatedLead = formData.get("isDesignatedLead") === "on";
 
-  const existing = await getShiftForManagement(shiftId);
-
-  if (
-    !existing ||
-    !employeeId ||
-    !date ||
-    !startTime ||
-    !endTime ||
-    !isDateInWeek(date, existing.weekStart)
-  ) {
-    redirect("/app/schedule?error=INVALID_SHIFT");
-  }
-
-  const workspace = await getWorkspace();
-  try { shiftBoundaryInstants({ date, startTime, endTime }, workspace.timeZone); }
-  catch { redirect(`/app/schedule/edit?shiftId=${encodeURIComponent(shiftId)}&error=INVALID_SHIFT`); }
-
-  const context = await getShiftValidationContext({
-    employeeId,
-    locationId: existing.locationId,
-    positionId: positionId === undefined ? existing.positionId : positionId || undefined,
-    date,
-    weekStart: existing.weekStart,
-  });
-
-  if (!context) {
-    redirect(scheduleUrl(existing.weekStart, "&error=EMPLOYEE_NOT_FOUND"));
-  }
-
-
-  const adjusted =
-    employeeId === existing.employeeId
-      ? prepareExchangeContext(
-          context,
-          existing,
-        )
-      : context;
-
-  const validation = validateShift({
-    candidate: {
-      employeeId,
-      locationId: existing.locationId,
-      positionId: positionId === undefined ? existing.positionId : positionId || undefined,
-      date,
-      startTime,
-      endTime,
-      isDesignatedLead,
-    },
-    ...adjusted,
-    mode: "MANAGER_SCHEDULE",
-  });
-
-  const blocking = validation.issues.find((issue) => issue.severity === "error");
-
-  if (blocking) {
-    return { error: blocking.message, issueCode: blocking.code };
+  let company:boolean;
+  try{company=(await assertOperationalAccess(proof,undefined)).scope.mode==='COMPANY';}
+  catch(error){if(denied(error))return accessError();throw error;}
+  const editor=await readOperationalShiftEditor(proof,{shiftId});
+  if(editor.state!=='ready'||editor.data.saveAvailability!=='available')return accessError();
+  const existing=company?await getShiftForManagement(shiftId):editor.data.shift;
+  if(!existing||!employeeId||!date||!startTime||!endTime||!isDateInWeek(date,existing.weekStart))redirect('/app/schedule?error=INVALID_SHIFT');
+  if(!company&&(!editor.data.employeeOptions.some(e=>e.id===employeeId)||(positionId&&!editor.data.positionOptions.some(p=>p.id===positionId))))return accessError();
+  const workspace=await getWorkspace();
+  try{shiftBoundaryInstants({date,startTime,endTime},workspace.timeZone);}
+  catch{redirect(`/app/schedule/edit?shiftId=${encodeURIComponent(shiftId)}&error=INVALID_SHIFT`);}
+  let validation:ReturnType<typeof validateShift>|undefined;
+  if(company){
+    const context=await getShiftValidationContext({employeeId,locationId:existing.locationId,positionId:positionId===undefined?existing.positionId:positionId||undefined,date,weekStart:existing.weekStart});
+    if(!context)redirect(scheduleUrl(existing.weekStart,'&error=EMPLOYEE_NOT_FOUND'));
+    const adjusted=employeeId===existing.employeeId?prepareExchangeContext(context,existing):context;
+    validation=validateShift({candidate:{employeeId,locationId:existing.locationId,positionId:positionId===undefined?existing.positionId:positionId||undefined,date,startTime,endTime,isDesignatedLead},...adjusted,mode:'MANAGER_SCHEDULE'});
+    const blocking=validation.issues.find(issue=>issue.severity==='error');
+    if(blocking)return {error:blocking.message,issueCode:blocking.code};
   }
 
   let updated: boolean;
@@ -264,7 +207,8 @@ export async function updateShiftAction(formData: FormData) {
       isDesignatedLead,
     });
   } catch (error) {
-    if (error instanceof ManualAssignmentConflictError) return { error: error.message, issueCode: error.code };
+    if(denied(error))return accessError();
+    if(error instanceof ManualAssignmentConflictError)return company?{error:error.message,issueCode:error.code}:{error:'Assignment is unavailable. Reload and try again.',issueCode:'SOURCE_CHANGED'};
     throw error;
   }
 
@@ -273,7 +217,7 @@ export async function updateShiftAction(formData: FormData) {
   }
 
   revalidatePath("/app/schedule");
-  const warning = validation.issues.find((issue) => issue.severity === "warning");
+  const warning = validation?.issues.find((issue) => issue.severity === "warning");
 
   redirect(
     scheduleUrl(
@@ -287,13 +231,12 @@ export async function deleteShiftAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
   const shiftId = String(formData.get("shiftId") ?? "");
-  const existing = await getShiftForManagement(shiftId);
-
-  if (!existing) {
-    redirect("/app/schedule?error=INVALID_SHIFT");
-  }
-
-  const deleted = await deleteShift(shiftId, proof);
+  const editor=await readOperationalShiftEditor(proof,{shiftId});
+  if(editor.state!=='ready'||editor.data.saveAvailability!=='available'||!editor.data.shift)redirect('/app/schedule?error=ACCESS_DENIED');
+  const existing=editor.data.shift;
+  let deleted:boolean;
+  try{deleted=await deleteShift(shiftId,proof);}
+  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
 
   if (!deleted) {
     redirect(
@@ -308,6 +251,7 @@ export async function deleteShiftAction(formData: FormData) {
 export async function copyPreviousWeekAction(formData: FormData) {
  await requireRoles(MANAGER_ROLES);
  const proof=await requireSessionMutationProof();
+ try{await assertOperationalAccess(proof,{kind:'COMPANY'});}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
  const receipt=await executeScheduleCopy(proof,{operationId:String(formData.get('operationId')??''),kind:'PREVIOUS_WEEK',weekStart:String(formData.get('weekStart')??'')});
  revalidatePath('/app/schedule');
  redirect(`/app/schedule/copy-receipt?operation=${receipt.operationId}`);
@@ -318,6 +262,7 @@ export async function setAvailabilityDeadlineAction(formData: FormData) {
   const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
   const deadlineLocal = String(formData.get("availabilityDeadline") ?? "").trim();
+  try{await assertOperationalAccess(proof,{kind:'COMPANY'});}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
 
   if (
     !isValidWeekStart(weekStart)

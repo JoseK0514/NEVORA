@@ -6,7 +6,7 @@ import {companyAccessFixture} from './company-access-fixture';
 const context=vi.hoisted(()=>({executor:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
 vi.mock('server-only',()=>({}));
 vi.mock('../../lib/auth/session',()=>({getSession:async()=>context.proof?.employee??null,requireSessionMutationProof:async()=>{if(!context.proof)throw Error('No session');return context.proof;}}));
-vi.mock('../../lib/data/notification-transactions',async importOriginal=>({...await importOriginal<typeof import('../../lib/data/notification-transactions')>(),neonNotificationExecutor:()=>{if(!context.executor)throw Error('Missing owned executor');return context.executor;}}));
+vi.mock('../../lib/data/sql-executor',()=>({neonNotificationExecutor:()=>{if(!context.executor)throw Error('Missing owned executor');return context.executor;}}));
 import {GET as authority} from '../../app/api/company-access/operational-authority/route';
 import {GET,POST} from '../../app/api/company-access/operational-scopes/[employeeId]/route';
 it('Owner route assigns scope from current versions, own authority is minimal and a Manager cannot grant or inspect Owner controls',async()=>{

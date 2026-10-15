@@ -12,7 +12,7 @@ vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], 
 vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('M') }));
 vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ id: 'test-workspace', active: true, timeZone: 'America/Puerto_Rico' }) }));
 vi.mock('@/lib/data/schedules', () => ({
-  insertShift: writes.insert, updateShift: writes.update, ensureSchedule: writes.ensure,
+  insertShiftAtLocation: writes.insert, insertShift: writes.insert, updateShift: writes.update, ensureSchedule: writes.ensure,
   getShiftForManagement: async () => ({ id: 'old', employeeId: 'E', locationId: 'loc-1', date: '2030-10-07', startTime: '08:00', endTime: '09:00', weekStart: '2030-10-07' }),
   getShiftValidationContext: async () => ({
     workspace: { id: 'test-workspace', active: true, timeZone: 'America/Puerto_Rico' },
@@ -73,9 +73,15 @@ it.each([
   [copyPreviousWeekAction, '/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'],
   [applyTemplateAction, '/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111'],
 ] as const)('manual parent conflicts recover locally while copy outcomes navigate to the authoritative receipt', async (action, destination) => {
-  writes.ensure.mockRejectedValueOnce(new ManualAssignmentConflictError('LOCATION_INACTIVE', 'The location or workspace is inactive or unavailable.'));
+  writes.insert.mockRejectedValueOnce(new ManualAssignmentConflictError('LOCATION_INACTIVE', 'The location or workspace is inactive or unavailable.'));
   if (destination) await expect(action(form())).rejects.toMatchObject({ destination });
   else await expect(action(form())).resolves.toMatchObject({ issueCode: 'LOCATION_INACTIVE', error: 'The location or workspace is inactive or unavailable.' });
-  expect(writes.insert).not.toHaveBeenCalled();
-  if(destination)expect(writes.copy).toHaveBeenCalledTimes(1);
+  if(destination){expect(writes.insert).not.toHaveBeenCalled();expect(writes.copy).toHaveBeenCalledTimes(1);}
+  else expect(writes.insert).toHaveBeenCalledTimes(1);
+  expect(writes.ensure).not.toHaveBeenCalled();
 });
+
+// These business/unit fixtures do not execute SQL. Current scope admission and
+// rollback are exercised by company-access-schedule-*.integration.ts.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));

@@ -1,9 +1,12 @@
+import {neonNotificationExecutor} from './sql-executor';
+export {neonNotificationExecutor} from './sql-executor';
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
+import type {OperationalFootprint} from '../company-access/model';
 import { currentCalloutReleaseSql } from './shift-change-release';
 import type { AssignmentOrigin } from '../domain';
 import type { GenerationClaims } from '../scheduling/generation-claims';
 import { workspaceReadGuard } from './workspaces';
 import type { NotificationConfig } from '../notifications/types';
-import { getDb, queryRows } from '../db';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { randomUUID } from 'node:crypto';
 import { assignmentCapabilityIssues, workspaceLocationAvailable } from '../scheduling/capabilities';
@@ -26,24 +29,6 @@ import { ManualAssignmentConflictError, validateManualAssignments } from './manu
 import { assertCoverageRepairReview } from './coverage-repair.server';
 import { CoverageRepairConflictError } from '../scheduling/coverage-repair';
 import type { EmployeePublicationProjection, RecipientAccess, ScheduleSourceSnapshot } from '../notifications/types';
-/** Neon HTTP transactions are ordered, non-interactive batches. Never await
- * individual query promises before passing the batch to sql.transaction. */
-export function neonNotificationExecutor(): SqlExecutor {
-    return {
-        async query<T>(statement: SqlStatement, signal?: AbortSignal) {
-            signal?.throwIfAborted();
-            return queryRows<T>(await getDb().query(statement.text, [...statement.values], signal ? { fetchOptions: { signal } } : undefined));
-        },
-        async transaction(statements, signal) {
-            signal?.throwIfAborted();
-            if (!statements.length)
-                return [];
-            const sql = getDb();
-            const results = await sql.transaction(statements.map(statement => sql.query(statement.text, [...statement.values])), signal ? { fetchOptions: { signal } } : undefined);
-            return results.map(result => queryRows(result));
-        },
-    };
-}
 export type GuardedSchedule = {
     id: string;
     locationId: string;
@@ -95,6 +80,41 @@ export type WeekMutationBatch = {
     revisionSourceId?: string;
     affectedLocationId?: string;
 };
+/** Derive every old/new schedule and assignment location from the guarded
+ * database snapshot. Publication repair and generated provenance are global. */
+function operationalWriteFootprint(state:GuardedWeekState,batch:WeekMutationBatch,forceCompany=false):{footprint:OperationalFootprint;scheduleIds:string[]} {
+ const ids=new Set<string>(),locations=new Set<string>();let company=forceCompany;
+ const beforeSchedules=new Map(state.schedules.map(s=>[s.id,s]));
+ const afterSchedules=new Map(batch.afterSchedules.map(s=>[s.id,s]));
+ const changedSchedules=new Set([...beforeSchedules.keys(),...afterSchedules.keys()]);
+ for(const id of changedSchedules){
+  const before=beforeSchedules.get(id),after=afterSchedules.get(id);
+  if(JSON.stringify(before)===JSON.stringify(after))continue;
+  ids.add(id);
+  for(const schedule of [before,after])if(schedule){locations.add(schedule.locationId);if(schedule.status!=='DRAFT')company=true;}
+ }
+ const beforeShifts=new Map(state.shifts.map(s=>[s.sourceShiftId,s]));
+ const afterShifts=new Map(batch.afterShifts.map(s=>[s.sourceShiftId,s]));
+ for(const id of new Set([...beforeShifts.keys(),...afterShifts.keys()])){
+  const before=beforeShifts.get(id),after=afterShifts.get(id);
+  if(JSON.stringify(before)===JSON.stringify(after))continue;
+  for(const shift of [before,after])if(shift){
+   ids.add(shift.scheduleId);locations.add(shift.locationId);
+   const schedule=(shift===before?beforeSchedules:afterSchedules).get(shift.scheduleId);
+   if(!schedule||schedule.status!=='DRAFT'||shift.assignmentOrigin==='GENERATED'||shift.generatedClaims)company=true;
+  }
+ }
+ if(batch.publishWeekStarts?.length)company=true;
+ // Even an unrelated raw published baseline can generate revision/capture and
+ // notification writes. Admission must cover those effects before validation.
+ for(const week of new Set([...state.schedules,...batch.afterSchedules].map(s=>s.weekStart))){
+  const latest=state.revisions.filter(r=>r.weekStart===week).at(-1);
+  const current=publishedShifts(batch.afterSchedules,batch.afterShifts,week);
+  if((latest||batch.afterSchedules.some(s=>s.weekStart===week&&s.status==='PUBLISHED'))
+   &&JSON.stringify(canonicalShifts(latest?.shifts??[]))!==JSON.stringify(canonicalShifts(current)))company=true;
+ }
+ return {footprint:company||!locations.size?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:[...locations].sort()},scheduleIds:[...ids].sort()};
+}
 export type WeekMutationResult = {
     committed: boolean;
     revisions: PublicationRevision[];
@@ -214,6 +234,7 @@ export async function commitPublishedWeekChange(input: ManagementWeekAuthority &
     build: (snapshot: GuardedWeekState, config: NotificationConfig) => WeekMutationBatch;
 }, executor: SqlExecutor = neonNotificationExecutor()): Promise<WeekMutationResult> {
     if (input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') assertManagementProof(input.proof, input.actorEmployeeId);
+    if(input.sourceType==='PUBLISH'||input.coverageRepairReview!==undefined)await assertOperationalAccess(input.proof!,{kind:'COMPANY'},executor);
     const weeks = [...new Set(input.weekStarts)].sort();
     if (!weeks.length)
         return {
@@ -243,6 +264,7 @@ export async function commitPublishedWeekChange(input: ManagementWeekAuthority &
             return {
                 committed: false, revisions: []
             };
+        if(input.sourceType==='MANAGER_MUTATION')await assertOperationalAccess(input.proof,operationalWriteFootprint(state,batch,input.coverageRepairReview!==undefined).footprint,executor);
         const {guards,statements,revisions}=preparePublishedWeekChange({...input,state,batch,config,schedulingSource:read.source,observedAt:read.read_at});
         try {
             await executor.transaction([...guards,...statements]);
@@ -266,12 +288,14 @@ export type PublishedChangePlanInput = ManagementWeekAuthority & {
     weekStarts: readonly string[]; actorEmployeeId: string; sourceId?: string;
     suppressPublicationEventEmployeeIds?:readonly string[]; revisionWeekStarts?:readonly string[]; state: GuardedWeekState; batch: WeekMutationBatch; config: NotificationConfig; observedAt: string;
     schedulingSource?: GenerationSource;
+    coverageRepairReview?: string;
 };
 export type PreparedPublishedChange = { guards: SqlStatement[]; statements: SqlStatement[]; revisions: PublicationRevision[] };
 /** Pure batch assembly. The caller owns execution and retries. */
 export function preparePublishedWeekChange(input: PublishedChangePlanInput): PreparedPublishedChange {
  const {state,batch,config}=input;
  const weeks=[...new Set(input.weekStarts)].sort();
+ const operational=operationalWriteFootprint(state,batch,input.sourceType==='PUBLISH'||input.coverageRepairReview!==undefined);
         // Only a changed assignment requires current eligibility. Retained historical
         // inactive facts and request-status-only writes must remain readable/writable.
         const assignments = batch.afterShifts.filter(next => {
@@ -326,25 +350,24 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
             },
             ...((input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') ? managementSessionStatements(input.proof, input.actorEmployeeId) : []),
         ];
+        const stamp:SqlStatement=input.sourceType==='MANAGER_MUTATION'?{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=ANY($1::text[])`,values:[operational.scheduleIds]}:{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[])`,values:[weeks]};
         const statements: SqlStatement[] = [
             {
                 text: `SELECT (CASE WHEN ${notificationStateSql} = $2::jsonb THEN '1' ELSE 'schedule_week_version_conflict' END)::integer AS guarded`, values: [weeks, JSON.stringify(state)]
             },
             ...batch.statements,
             // Monotonic even for writers whose transactions began before a lock wait.
-            {
-                text: `UPDATE schedules SET updated_at=GREATEST(clock_timestamp(), updated_at + interval '1 microsecond') WHERE week_start=ANY($1::date[])`, values: [weeks]
-            },
+            stamp,
         ];
         // Check ALL actual writes, including drafts. A conditional delete/update
         // that became a no-op must abort/recompute rather than return false success.
         statements.push({
             text: `SELECT (CASE WHEN
-      COALESCE((SELECT jsonb_agg(to_jsonb(t) - 'weekStart' - 'hasExchangeHistory' - 'approvedCalloutEmployeeId' - 'assignmentOrigin' - 'generatedClaims' - 'hasCalloutHistory' - 'hasPublicationHistory' ORDER BY t."sourceShiftId" COLLATE "C") FROM (${currentShiftsSql()}) t),'[]'::jsonb)=$2::jsonb
+      COALESCE((SELECT jsonb_agg(to_jsonb(t) - 'weekStart' - 'hasExchangeHistory' - 'approvedCalloutEmployeeId' - 'hasCalloutHistory' - 'hasPublicationHistory' ORDER BY t."sourceShiftId" COLLATE "C") FROM (${currentShiftsSql()}) t),'[]'::jsonb)=$2::jsonb
       AND COALESCE((SELECT jsonb_agg(t ORDER BY t.id COLLATE "C") FROM (
         SELECT id,location_id AS "locationId",week_start::text AS "weekStart",status FROM schedules WHERE week_start=ANY($1::date[])) t),'[]'::jsonb)=$3::jsonb
       THEN '1' ELSE 'schedule_week_version_conflict' END)::integer AS guarded_after`,
-            values: [weeks, JSON.stringify(canonicalShifts(batch.afterShifts)), JSON.stringify([...batch.afterSchedules].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(s => ({
+            values: [weeks, JSON.stringify(canonicalShifts(batch.afterShifts).map(shift=>{const actual=batch.afterShifts.find(s=>s.sourceShiftId===shift.sourceShiftId)!;return {...shift,assignmentOrigin:actual.assignmentOrigin??'MANAGER',generatedClaims:actual.generatedClaims??null};})), JSON.stringify([...batch.afterSchedules].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(s => ({
                     id: s.id, locationId: s.locationId, weekStart: s.weekStart, status: s.status
                 })))]
         });
@@ -396,7 +419,14 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
         }
  // Publication, history and notification DML may wait after initial authorization.
  // Recheck wall-clock validity before this SAME transaction can commit.
- if (input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH')
-     statements.push(...managementSessionStatements(input.proof, input.actorEmployeeId));
+ if(revisions.length){
+  stamp.text=`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[])`;
+  stamp.values=[weeks];
+ }
+ if (input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') {
+  const footprint:OperationalFootprint=revisions.length?{kind:'COMPANY'}:operational.footprint;
+  guards.push(...operationalScopeStatements(input.proof,config.workspace!,footprint));
+  statements.push(...operationalScopeStatements(input.proof,config.workspace!,footprint));
+ }
  return {guards,statements,revisions};
 }

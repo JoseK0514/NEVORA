@@ -1,3 +1,5 @@
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
+import {workspaceReadGuard} from './workspaces';
 import { createHash } from 'node:crypto';
 import type { SessionMutationProof } from '../shift-changes/types';
 import type { SqlExecutor } from '../notifications/types';
@@ -9,7 +11,7 @@ import { rankCoverageCandidates } from '../scheduling/coverage-ranking';
 import { CoverageRepairConflictError, parseCoverageRepairLocator, reportedCoverageState, type CoverageRepairLocator } from '../scheduling/coverage-repair';
 import { generationSourceSql, type GenerationSource } from './generation-guards';
 import { mapSchedulingSourceFacts } from './scheduling-source-facts';
-import { assertManagementProof, managementSessionStatements } from './management-session';
+import { assertManagementProof } from './management-session';
 import { neonNotificationExecutor } from './notification-transactions';
 
 function stable(value: unknown): string {
@@ -94,14 +96,14 @@ export function assertCoverageRepairReview(source: GenerationSource | undefined,
 
 async function protectedSource(proof: SessionMutationProof, executor: SqlExecutor): Promise<GenerationSource> {
   assertManagementProof(proof, proof.employee.id);
-  const statements = [
-    { text: 'SELECT id FROM workspaces WHERE singleton=true ORDER BY id FOR SHARE', values: [] },
-    { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [proof.employee.id] },
-    ...managementSessionStatements(proof, proof.employee.id),
-    { text: `SELECT ${generationSourceSql} AS source`, values: [] },
-    ...managementSessionStatements(proof, proof.employee.id),
-  ];
-  const results = await executor.transaction(statements); const source = (results[4]?.[0] as { source?: GenerationSource } | undefined)?.source;
+  const {workspace}=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
+  const guards=[...workspaceReadGuard(workspace),
+    {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'})];
+  const results=await executor.transaction([...guards,
+    {text:`SELECT ${generationSourceSql} AS source`,values:[]},
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'})]);
+  const source=(results[guards.length]?.[0] as {source?:GenerationSource}|undefined)?.source;
   if (!source) throw new CoverageRepairConflictError();
   return source;
 }
