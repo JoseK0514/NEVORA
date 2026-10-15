@@ -70,15 +70,31 @@ export function ownedPayrollEnvironment(options: {payrollEnabled?:boolean} = {})
   return {NEVORA_PAYROLL_ENABLED: options.payrollEnabled === true ? 'true' : 'false'};
 }
 
+type OwnedMailOptions={recoverySmtpPort?:number;invitationSmtpPort?:number};
+function validateOwnedMailOptions(options:OwnedMailOptions){
+ for(const port of [options.recoverySmtpPort,options.invitationSmtpPort])if(port!==undefined&&(!Number.isInteger(port)||port<1||port>65535))throw Error('Owned SMTP port must be explicit.');
+ if(options.recoverySmtpPort!==undefined&&options.invitationSmtpPort!==undefined&&options.recoverySmtpPort!==options.invitationSmtpPort)throw Error('Recovery and invitation mail must use the same owned transport.');
+}
+/** Explicit invocation-owned mail only. Never copy ambient provider settings. */
+export function ownedMailEnvironment(origin:string,options:OwnedMailOptions={}):Record<string,string>{
+ validateOwnedMailOptions(options);
+ const invitation=options.invitationSmtpPort!==undefined,port=options.invitationSmtpPort??options.recoverySmtpPort;
+ const flags={NEVORA_INVITATION_DELIVERY_ENABLED:invitation?'true':'false'};
+ if(port===undefined)return flags;
+ let url:URL;try{url=new URL(origin);}catch{throw Error('Owned mail origin must identify the loopback application.');}
+ if(url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!url.port||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw Error('Owned mail origin must identify the loopback application.');
+ return {...flags,FUEL_PORTAL_ORIGIN:url.origin,NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:String(port),NEVORA_RECOVERY_FROM:invitation?'invitation@example.invalid':'recovery@example.invalid'};
+}
+
 /**
  * Real Next development runtime, real login/session/actions and canonical local
  * SQL. The scratch DB adapter is replaced; E can additionally pin Next's exact
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; recoverySmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
-  if(options.recoverySmtpPort!==undefined&&(!Number.isInteger(options.recoverySmtpPort)||options.recoverySmtpPort<1||options.recoverySmtpPort>65535))throw Error('Owned SMTP port must be explicit.');
+  validateOwnedMailOptions(options);
   if (options.processOwnerId !== undefined && !/^[a-f0-9]{32}$/.test(options.processOwnerId)) throw Error('Owned process marker must identify the invocation.');
   if (options.onProcessStarted && !options.processOwnerId) throw Error('Owned process registration requires its invocation marker.');
   options.signal?.throwIfAborted();
@@ -182,7 +198,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       ...ownedPayrollEnvironment(options),
       NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
-      ...(options.recoverySmtpPort?{FUEL_PORTAL_ORIGIN:url,NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:String(options.recoverySmtpPort),NEVORA_RECOVERY_FROM:'recovery@example.invalid'}:{}),
+      ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
