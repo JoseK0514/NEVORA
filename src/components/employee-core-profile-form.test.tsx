@@ -6,10 +6,6 @@ import { expect, it, vi } from "vitest";
 
 const cssPath = fileURLToPath(new URL("../app/globals.css", import.meta.url));
 
-vi.mock("@/components/configuration-form", () => ({
-  ConfigurationForm: ({ children, reviewedUpdatedAt }: { children: React.ReactNode; reviewedUpdatedAt: string }) =>
-    createElement("form", null, createElement("input", {type:"hidden",name:"expectedUpdatedAt",value:reviewedUpdatedAt}), children),
-}));
 vi.mock("@/components/phone-input", () => ({
   PhoneInput: (props: Record<string, unknown>) => createElement("input", props),
 }));
@@ -37,7 +33,7 @@ const locations = [
   { id: "other-old", workspaceId: "w", clockerKey: "other-old", name: "Other Old Office", shortName: "Other Old", active: false },
 ];
 
-it("keeps employee identity immutable and explains deactivate/reactivate behavior", () => {
+it("renders stable identity and account lifecycle guidance (presentation smoke)", () => {
   const html = renderToStaticMarkup(
     <EmployeeCoreProfileForm
       employee={employee}
@@ -47,7 +43,8 @@ it("keeps employee identity immutable and explains deactivate/reactivate behavio
     />,
   );
   expect(html).toContain('name="employeeId" value="worker"');
-  expect(html).toContain('name="expectedUpdatedAt" value="2026-10-05 12:00:00+00"');
+  // Version custody now travels in one command JSON field; mounted command tests
+  // verify the opened employee/scope revisions through actual submission.
   expect(html).not.toContain('name="id"');
   expect(html).toContain("Employee ID");
   expect(html).toContain("worker");

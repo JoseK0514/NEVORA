@@ -19,14 +19,6 @@ vi.mock("@/lib/data/employees", () => ({
   ],
 }));
 vi.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
-vi.mock("@/components/page-header", () => ({
-  PageHeader: ({ description }: { description?: string }) =>
-    createElement("p", null, description),
-}));
-vi.mock("@/components/configuration-form", () => ({
-  ConfigurationForm: ({ children }: { children: React.ReactNode }) =>
-    createElement("form", null, children),
-}));
 vi.mock("@/components/phone-input", () => ({
   PhoneInput: (props: React.ComponentProps<"input">) => createElement("input", props),
 }));
@@ -38,7 +30,7 @@ vi.mock("@/app/app/employees/actions", () => ({ createEmployeeFormAction: vi.fn(
 
 import NewEmployeePage from "./page";
 
-it("uses canonical native-authoritative selects while preserving Owner-only Owner assignment", async () => {
+it("keeps native selects and role options (presentation smoke)", async () => {
   m.role = "MANAGER";
   const manager = renderToStaticMarkup(
     await NewEmployeePage({ searchParams: Promise.resolve({}) }),
@@ -69,6 +61,8 @@ it("preserves submitted field names, required contact fields and optional email"
   expect(fields.find(field => field.includes('name="email"'))).not.toContain('required=""');
   expect(html).toContain('value="EMPLOYEE" selected=""');
   expect(html.match(/href="\/app\/employees"/g)).toHaveLength(3);
+  expect(html).toContain("An Owner sends the account invitation from their profile.");
+  expect(html).toContain("A registered email is required before an invitation can be sent.");
 });
 
 it("blocks creation when no active location exists and supplies the Owner setup route", async () => {

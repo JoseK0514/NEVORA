@@ -1,0 +1,23 @@
+.stack {display:grid;gap:1rem;min-width:0}
+.heading {display:flex;align-items:center;gap:.5rem}
+.heading svg {flex:0 0 auto;color:var(--design-accent-ink)}
+:global(.app-shell.nevora-portal) .fields[aria-describedby] {display:grid;gap:.75rem;min-width:0;border:0;padding:0;margin:0}
+.fields legend {font-size:1rem;font-weight:550;line-height:1.5;margin-bottom:.5rem;padding:0}
+.fields p {margin:0;line-height:1.5}
+:global(.app-shell.nevora-portal) .fields .choice {display:flex;align-items:flex-start;gap:.75rem;min-height:44px;padding:.75rem;border:1px solid var(--design-border);border-radius:var(--design-radius-control);font-size:14px;font-weight:400;cursor:pointer;overflow-wrap:anywhere}
+:global(.app-shell.nevora-portal) .fields .choice > input:is([type=radio],[type=checkbox]) {flex:0 0 20px;width:20px;min-width:20px;height:20px;min-height:20px;margin:.15rem 0 0;padding:0;appearance:auto;accent-color:var(--design-accent-ink);box-shadow:none}
+.fields .choice > span {display:grid;gap:.25rem;min-width:0;color:var(--design-text-primary);font-weight:400}
+.fields .choice strong {font-weight:550}
+.fields .choice small {font-size:.875rem;color:var(--design-text-secondary);font-weight:400;line-height:1.5}
+.fields .choice:has(input:checked) {border-color:var(--design-accent-ink);background:var(--design-surface-inset)}
+.fields .choice:focus-within {outline:2px solid var(--design-accent-ink);outline-offset:2px}
+.fields:disabled .choice {cursor:default;opacity:.7}
+.locations {display:grid;gap:.5rem;min-width:0;padding-inline-start:1rem}
+.current {display:grid;gap:.25rem;line-height:1.5;margin:0;padding:.75rem 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.current span {color:var(--muted)}
+.status {display:grid;gap:.5rem;line-height:1.5;overflow-wrap:anywhere}
+.status p {margin:0}
+.actions {display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+:global(.app-shell.nevora-portal) .coreForm :global(.configuration-fields) :global(.form-footer) {display:grid;width:100%;grid-template-columns:minmax(0,1fr)}
+.receipt {padding:.75rem;border:1px solid var(--design-border);border-radius:var(--design-radius-control);background:var(--design-surface-inset);line-height:1.5}
+@media(max-width:480px){.actions>*{flex:1 1 100%}.locations{padding-inline-start:.5rem}}

@@ -1,4 +1,11 @@
-import { ConfigurationForm, type ConfigurationResult } from "@/components/configuration-form";
+'use client';
+
+import {useState} from 'react';
+import {EmployeeAccessForm} from './company-access/employee-access-form';
+import {coreCommandFromForm} from './company-access/commands';
+import {ManagerOperationalScopeFields} from './company-access/manager-operational-scope-fields';
+import type {OwnerScopeContext,ScopeSelection} from '@/lib/company-access/model';
+import styles from './company-access/company-access.module.css';
 import { PhoneInput } from "@/components/phone-input";
 import { SelectField } from "@/components/select-field";
 import type { EmployeeManagementProfile } from "@/lib/data/employees";
@@ -9,13 +16,20 @@ export function EmployeeCoreProfileForm({
   employee,
   locations,
   actorRole,
+  ownerScope = null,
   action,
 }: {
   employee: EmployeeManagementProfile;
   locations: Location[];
   actorRole: UserRole;
-  action: (data: FormData) => Promise<ConfigurationResult>;
+  ownerScope?: OwnerScopeContext|null;
+  action: (data: FormData) => Promise<unknown>;
 }) {
+  // Editable drafts retain the versions they were opened against. An RSC refresh
+  // must not silently attach dirty fields to a newer employee/access revision.
+  const [baseline]=useState(()=>({employee,ownerScope}));
+  const [role,setRole]=useState(employee.role),[active,setActive]=useState(String(employee.active)),[scope,setScope]=useState<ScopeSelection|null>(null);
+  const needsScope=actorRole==='OWNER'&&role==='MANAGER'&&active==='true'&&(baseline.employee.role!=='MANAGER'||!baseline.employee.active);
   const roleOptions = [
     ...(actorRole === "OWNER" ? [{ value: "OWNER", label: "Owner" }] : []),
     { value: "MANAGER", label: "Manager" },
@@ -34,7 +48,7 @@ export function EmployeeCoreProfileForm({
     }));
 
   return (
-    <ConfigurationForm action={action} reviewedUpdatedAt={employee.updatedAt} className="employee-form employee-core-profile-form">
+    <EmployeeAccessForm action={action} employeeId={employee.id} build={(fields,id)=>coreCommandFromForm(fields,baseline.employee,baseline.ownerScope,actorRole,scope,id)} className={'employee-form employee-core-profile-form '+styles.coreForm}>
       <input type="hidden" name="employeeId" value={employee.id} />
 
       <div className="employee-core-id">
@@ -80,7 +94,8 @@ export function EmployeeCoreProfileForm({
         <SelectField
           name="role"
           label="Access role"
-          defaultValue={employee.role}
+          value={role}
+          onChange={event=>setRole(event.target.value as UserRole)}
           options={roleOptions}
           required
         />
@@ -102,7 +117,8 @@ export function EmployeeCoreProfileForm({
       <SelectField
         name="active"
         label="Employee status"
-        defaultValue={String(employee.active)}
+        value={active}
+        onChange={event=>setActive(event.target.value)}
         options={[
           { value: "true", label: "Active" },
           { value: "false", label: "Inactive" },
@@ -111,11 +127,14 @@ export function EmployeeCoreProfileForm({
         required
       />
 
+      {needsScope&&(baseline.ownerScope?<ManagerOperationalScopeFields current={baseline.ownerScope} locations={locations.filter(l=>l.active).map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:<p role="alert" className="form-error">Current management access is unavailable. Reload this employee before promoting or reactivating a Manager.</p>)}
+      {actorRole!=='OWNER'&&role==='MANAGER'&&(baseline.employee.role!=='MANAGER'||!baseline.employee.active)&&<p className="muted">An Owner must assign management access after this change. No company or location access is granted automatically.</p>}
+
       <div className="form-footer">
         <button className="button primary" type="submit">
           <CheckIcon size={18} aria-hidden="true" focusable="false" /> Save Employee Details
         </button>
       </div>
-    </ConfigurationForm>
+    </EmployeeAccessForm>
   );
 }
