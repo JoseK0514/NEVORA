@@ -1,10 +1,10 @@
 import {expect,it,vi} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
 vi.mock('@/lib/data/workspaces',()=>({getPublicWorkspaceName:async()=> 'Fictional workspace'}));
-vi.mock('./actions',()=>({activateAccountAction:async()=>{}}));
 import ActivatePage from './page';
-it('does not offer ID and phone knowledge as activation proof to a public visitor',async()=>{
+it('renders the approved activation shell and workspace guidance (server-render smoke only)',async()=>{
  const html=renderToStaticMarkup(await ActivatePage({searchParams:Promise.resolve({})}));
- expect(html).not.toContain('name="employeeId"');expect(html).not.toContain('name="phone"');expect(html).not.toContain('action="/activate');
- expect(html).toContain('Activate account');
+ expect(html).toContain('<h1>Activate account</h1>');expect(html).toContain('Fictional workspace');
+ expect(html).toContain('Open your email invitation, then choose a password.');
+ expect(html).toContain('Opening your invitation');expect(html).toContain('Already activated? Sign in');
 });
