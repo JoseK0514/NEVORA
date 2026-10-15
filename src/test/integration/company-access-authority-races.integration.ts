@@ -3,6 +3,7 @@ import {Client} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import {getWorkspace,workspaceReadGuard} from '../../lib/data/workspaces';
+import {isManagementAuthorizationError} from '../../lib/data/management-session';
 import {readOwnerOperationalScope,assignOperationalScope,operationalScopeStatements,readOperationalAuthority} from '../../lib/company-access/operational-scope.server';
 vi.mock('server-only',()=>({}));
 type Fixture=Awaited<ReturnType<typeof companyAccessFixture>>;
@@ -26,11 +27,19 @@ async function sink(f:Fixture,barrier?:Client){
    CREATE TRIGGER test_owned_scope_write_wait BEFORE INSERT ON test_owned_scope_writes FOR EACH ROW EXECUTE FUNCTION test_owned_scope_write_wait()`);
  }
 }
-async function guarded(f:Fixture){
+async function guarded(f:Fixture,writeId=1){
  const w=await getWorkspace(f.db.executor);
- return f.db.executor.transaction([...workspaceReadGuard(w),{text:"SELECT id FROM employees WHERE id='manager' FOR SHARE",values:[]},
-  ...operationalScopeStatements(f.manager,w,{kind:'COMPANY'}),{text:'INSERT INTO test_owned_scope_writes VALUES(1)',values:[]},
-  ...operationalScopeStatements(f.manager,w,{kind:'COMPANY'})]).then(()=>true,()=>false);
+ try{
+  await f.db.executor.transaction([...workspaceReadGuard(w),{text:"SELECT id FROM employees WHERE id='manager' FOR SHARE",values:[]},
+   ...operationalScopeStatements(f.manager,w,{kind:'COMPANY'}),{text:'INSERT INTO test_owned_scope_writes VALUES($1)',values:[writeId]},
+   ...operationalScopeStatements(f.manager,w,{kind:'COMPANY'})]);
+  return true;
+ }catch(error){
+  const operational=error!==null&&typeof error==='object'&&'code'in error&&error.code==='22P02'&&'message'in error
+   &&error.message==='invalid input syntax for type integer: "operational_authorization"';
+  if(!operational&&!isManagementAuthorizationError(error))throw error;
+  return false;
+ }
 }
 async function close(f:Fixture,...clients:Client[]){for(const c of clients){await c.query('ROLLBACK').catch(()=>{});await c.query('SELECT pg_advisory_unlock_all()').catch(()=>{});await c.end().catch(()=>{});}await f.db.dispose();}
 it('a revocation holding the workspace commits before a blocked operational guard and the guarded write is denied',async()=>{
@@ -65,7 +74,8 @@ it.each(['scope revocation','role change'] as const)('an operation holding its g
   const changing=kind==='scope revocation'?assignOperationalScope(f.owner,'manager',c,f.db.executor):writer.query("UPDATE employees SET role='EMPLOYEE' WHERE id='manager'");
   await waitLock(f,kind==='scope revocation'?'%SELECT id FROM workspaces WHERE singleton%':'%UPDATE employees SET role%');
   await barrier.query('SELECT pg_advisory_unlock(321033)');expect(await pending).toBe(true);await changing;
-  expect(await f.q('SELECT * FROM test_owned_scope_writes')).toEqual([{id:1}]);expect(await guarded(f)).toBe(false);
+  expect(await f.q('SELECT * FROM test_owned_scope_writes')).toEqual([{id:1}]);expect(await guarded(f,2)).toBe(false);
+  expect(await f.q('SELECT * FROM test_owned_scope_writes ORDER BY id')).toEqual([{id:1}]);
  }finally{await close(f,barrier,writer);}
 });
 it('wall-clock expiry after a guarded write rolls the write back on its final check',async()=>{
