@@ -1,5 +1,7 @@
 "use server";
 
+import {isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
+
 import { isValidIsoDate } from "@/lib/date-utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -63,12 +65,13 @@ export async function reviewTimeOffAction(formData: FormData) {
     redirect("/app/requests?tab=team&error=review");
   }
 
-  const reviewed = await reviewTimeOffRequest({
-    requestId,
-    managerId: session.id,
-    proof,
-    status: decision,
-  });
+  let reviewed:boolean;
+  try {
+    reviewed=await reviewTimeOffRequest({requestId,managerId:session.id,proof,status:decision});
+  } catch(error) {
+    if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))redirect('/app/requests?tab=team&error=review');
+    throw error;
+  }
 
   if (!reviewed) redirect("/app/requests?tab=team&error=review");
 
