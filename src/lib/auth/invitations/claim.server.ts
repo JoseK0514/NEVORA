@@ -80,9 +80,13 @@ export async function claimInvitation(proof:string,password:string,executor:SqlE
  }catch(error){return failure(error,commitAttempted,signal?.aborted??false);}
  finally{release?.();}
 }
-/** Internal maintenance only; no public route or new scheduler. Metadata remains retained. */
+/** Internal maintenance only: at most 100 old digests per call; no scheduler. Metadata remains retained. */
 export async function clearTerminalInvitationDigests(executor:SqlExecutor=neonNotificationExecutor()):Promise<number>{
- const rows=await executor.query<{id:string}>({text:`UPDATE company_invitations SET proof_digest=NULL WHERE proof_digest IS NOT NULL
-  AND COALESCE(consumed_at,retired_at,expires_at)<=clock_timestamp()-interval '24 hours' RETURNING id`,values:[]});
+ const rows=await executor.query<{id:string}>({text:`WITH eligible AS MATERIALIZED (
+  SELECT workspace_id,id FROM company_invitations WHERE proof_digest IS NOT NULL
+   AND COALESCE(consumed_at,retired_at,expires_at)<=clock_timestamp()-interval '24 hours'
+  ORDER BY COALESCE(consumed_at,retired_at,expires_at),workspace_id,id LIMIT 100 FOR UPDATE SKIP LOCKED
+ ) UPDATE company_invitations i SET proof_digest=NULL FROM eligible e
+  WHERE i.workspace_id=e.workspace_id AND i.id=e.id RETURNING i.id`,values:[]});
  return rows.length;
 }
