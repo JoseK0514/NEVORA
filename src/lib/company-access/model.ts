@@ -76,7 +76,10 @@ export type OperationalDirectoryData =
       locations:Pick<CatalogLocation,'id'|'name'|'shortName'|'active'>[] };
 
 export type OperationalShiftRow = Pick<ScheduleShiftRow,
-  'id'|'scheduleId'|'employeeId'|'employeeName'|'locationId'|'date'|'startTime'|'endTime'|'notes'|'positionId'|'isDesignatedLead'|'isCalloutApproved'>;
+  'id'|'scheduleId'|'employeeId'|'employeeName'|'locationId'|'date'|'startTime'|'endTime'|'notes'|'positionId'|'isDesignatedLead'|'isCalloutApproved'|'scheduleStatus'> & {
+    /** Captured publication label when a snapshot exists, including captured null; otherwise current catalog fallback. */
+    positionName: string | null;
+  };
 export type OperationalEditableShift = Pick<ManagementShift,
   'id'|'scheduleId'|'employeeId'|'employeeName'|'locationId'|'weekStart'|'date'|'startTime'|'endTime'|'notes'|'positionId'|'isDesignatedLead'|'scheduleStatus'|'isCalloutApproved'>;
 
