@@ -31,9 +31,9 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
  useEffect(()=>{
   if(previousActor.current!==actorId){setRetry(null);saveRetry.current=null;}previousActor.current=actorId;
   let active=true,focused=true,reading=false,readSequence=0,sourceKey:string|null=null;
-  let sourceSnapshot:{cards:TimecardItem[];profiles:SavedExportProfile[]}|null=null;let expiry:ReturnType<typeof setTimeout>|undefined;const lifecycle=generation.current,pendingSave=saveRetry;
+  let sourceSnapshot:{cards:TimecardItem[];profiles:SavedExportProfile[]}|null=null;let expiry:ReturnType<typeof setTimeout>|undefined,early:ReturnType<typeof setTimeout>|undefined;const lifecycle=generation.current,pendingSave=saveRetry;
   cancelRefresh.current=()=>{readSequence++;reading=false;abort.current?.abort();};
-  const clear=(message:string,denied=false)=>{generation.current.value++;cancelRefresh.current();sourceKey=null;sourceSnapshot=null;mutating.current=false;if(expiry)clearTimeout(expiry);expiry=undefined;validUntil.current=0;setSnapshotActor(null);setCards(null);setProfiles([]);setProfileId('neutral');setSelected([]);setResult(null);setDraft(neutralProfile());setReviewed(false);setState(message);setNotice('');setBusy(false);if(denied){setRetry(null);saveRetry.current=null;}};
+  const clear=(message:string,denied=false)=>{generation.current.value++;cancelRefresh.current();sourceKey=null;sourceSnapshot=null;mutating.current=false;if(expiry)clearTimeout(expiry);if(early)clearTimeout(early);expiry=early=undefined;validUntil.current=0;setSnapshotActor(null);setCards(null);setProfiles([]);setProfileId('neutral');setSelected([]);setResult(null);setDraft(neutralProfile());setReviewed(false);setState(message);setNotice('');setBusy(false);if(denied){setRetry(null);saveRetry.current=null;}};
   clearProtected.current=clear;
   acceptSavedProfile.current=item=>{
    if(!active||!sourceSnapshot||performance.now()>=validUntil.current){clear('Export data expired. Refresh a current protected snapshot.');throw Error('Expired mapping receipt');}
@@ -67,8 +67,11 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
      // While it is pending the original expiry stays armed and invalidates it.
      if(preserve&&performance.now()>=validUntil.current){clear('Export data expired. Refresh a current protected snapshot.');return;}
      if(preserve&&nextSource!==sourceKey)clear('Loading finalized time');
-     if(expiry)clearTimeout(expiry);sourceSnapshot={cards:parsed.cards,profiles:verified};sourceKey=nextSource;validUntil.current=deadline;
+     if(expiry)clearTimeout(expiry);if(early)clearTimeout(early);sourceSnapshot={cards:parsed.cards,profiles:verified};sourceKey=nextSource;validUntil.current=deadline;
      expiry=setTimeout(()=>clear('Export data expired. Refresh a current protected snapshot.'),remaining);
+     // A fresh paired projection may replace this lease. Merely starting it
+     // never moves the original expiry or renews retained drafts/downloads.
+     early=setTimeout(()=>void load(true),remaining*.65);
      setSnapshotActor(actorId);setCards(parsed.cards);setProfiles(verified);setState('ready');
     }
    }catch{if(active&&current===generation.current.value&&sequence===readSequence)clear('Exports unavailable');}
@@ -79,7 +82,7 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
   const account=()=>{setRetry(null);saveRetry.current=null;refresh();};
   window.addEventListener('focus',refresh);window.addEventListener('blur',hide);window.addEventListener('pageshow',refresh);window.addEventListener('storage',account);window.addEventListener('online',refresh);window.addEventListener('offline',offline);window.addEventListener('pagehide',hide);document.addEventListener('visibilitychange',visible);
   const poll=setInterval(()=>{if(focused&&document.visibilityState==='visible'&&navigator.onLine)void load(true);},30000);
-  return()=>{active=false;lifecycle.value++;abort.current?.abort();if(expiry)clearTimeout(expiry);clearInterval(poll);validUntil.current=0;clearProtected.current=()=>{};cancelRefresh.current=()=>{};acceptSavedProfile.current=()=>{};sourceSnapshot=null;mutating.current=false;pendingSave.current=null;window.removeEventListener('focus',refresh);window.removeEventListener('blur',hide);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',account);window.removeEventListener('online',refresh);window.removeEventListener('offline',offline);window.removeEventListener('pagehide',hide);document.removeEventListener('visibilitychange',visible);};
+  return()=>{active=false;lifecycle.value++;abort.current?.abort();if(expiry)clearTimeout(expiry);if(early)clearTimeout(early);clearInterval(poll);validUntil.current=0;clearProtected.current=()=>{};cancelRefresh.current=()=>{};acceptSavedProfile.current=()=>{};sourceSnapshot=null;mutating.current=false;pendingSave.current=null;window.removeEventListener('focus',refresh);window.removeEventListener('blur',hide);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',account);window.removeEventListener('online',refresh);window.removeEventListener('offline',offline);window.removeEventListener('pagehide',hide);document.removeEventListener('visibilitychange',visible);};
  },[period,actorId]);
  const currentActor=snapshotActor===actorId;
  const downloadCurrent=(text:string,type:string,name:string)=>{if(!currentActor||performance.now()>=validUntil.current){clearProtected.current('Export data expired. Refresh a current protected snapshot.');return;}download(text,type,name);};
