@@ -1,3 +1,4 @@
+import {readFile} from 'node:fs/promises';
 import {afterEach,beforeEach,expect,it} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import {createDisposableFoundationDatabase} from './local-postgres';
@@ -21,6 +22,9 @@ beforeEach(async()=>{
  db=await createDisposableFoundationDatabase({mode:'current-runtime'});
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','555-0100','OWNER','loc-1'),('employee','Fictional','Self','555-0101','EMPLOYEE','loc-1')");
  for(const p of [owner,employee])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);
+
+ // Explicit current Company schema; intended actors are already seeded.
+ for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
 });
 afterEach(async()=>{await db?.dispose();});
 it('ack revision hash employee exact; duplicates retain original timestamp',async()=>{

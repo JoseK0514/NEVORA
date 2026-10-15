@@ -39,7 +39,10 @@ async function worker(){
  const deps:WorkerDeps={config,clock:()=>new Date(),executor:db.executor,subscriptions,deliveries:sqlDeliveryRepository('test',db.executor),state:sqlNotificationStateRepository(db.executor),sender:{send}};
  return {deps,send};
 }
-async function seedActors(){fixtureTimeZone=fixtureZoneForHour(12);await q('UPDATE workspaces SET time_zone=$1 WHERE singleton=true',[fixtureTimeZone]);const hour=Number(businessTime(new Date(),fixtureTimeZone).slice(0,2));expect(hour).toBeGreaterThanOrEqual(7);expect(hour).toBeLessThan(21);await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','QA-NO-PHONE','OWNER','loc-1'),('employee','Fictional','Self','QA-NO-PHONE','EMPLOYEE','loc-1'),('foreign','Fictional','Other','QA-NO-PHONE','EMPLOYEE','loc-2')");for(const p of [owner,employee])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);}
+async function seedActors(beforePayrollNotices=false){fixtureTimeZone=fixtureZoneForHour(12);await q('UPDATE workspaces SET time_zone=$1 WHERE singleton=true',[fixtureTimeZone]);const hour=Number(businessTime(new Date(),fixtureTimeZone).slice(0,2));expect(hour).toBeGreaterThanOrEqual(7);expect(hour).toBeLessThan(21);await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','QA-NO-PHONE','OWNER','loc-1'),('employee','Fictional','Self','QA-NO-PHONE','EMPLOYEE','loc-1'),('foreign','Fictional','Other','QA-NO-PHONE','EMPLOYEE','loc-2')");for(const p of [owner,employee])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);
+ // Preserve the old source-enum upgrade schema, adding only independent auth.
+ for(const file of beforePayrollNotices?['0032_company_access_invitations.sql']:['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
+}
 beforeEach(async()=>{db=await createDisposableNotificationDatabase();await seedActors();});
 afterEach(async()=>{await db?.dispose();});
 it('duplicate intent one event per version recipient; inbox and safe open work without push',async()=>{
@@ -78,7 +81,7 @@ it('outbox fault leaves no partial publication and unmarked database activation 
 });
 
 it('upgrade retains historical communication notifications through payroll and forward repair',async()=>{
- await db.dispose();db=await createDisposableNotificationDatabase({beforePayrollNotices:true});await seedActors();
+ await db.dispose();db=await createDisposableNotificationDatabase({beforePayrollNotices:true});await seedActors(true);
  const {c,r}=await publish();const history=await q('SELECT id,source_id,source_kind FROM notifications ORDER BY id');
  for(const file of ['0029_payroll_private_notices.sql','0030_notification_source_kinds.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
  expect(await q('SELECT id,source_id,source_kind FROM notifications ORDER BY id')).toEqual(history);

@@ -43,7 +43,7 @@ export async function assertOperationalAccess(proof:SessionMutationProof,footpri
  await executor.transaction([...workspaceReadGuard(workspace),
   {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
   ...operationalScopeStatements(proof,workspace,actual,view.authority)]);
- return {workspace,authority:view.authority,scope:view.scope};
+ return {workspace,authority:view.authority,scope:view.scope,observedAt:view.observedAt,validForMs:view.validForMs};
 }
 /** Append after the caller's workspace, sorted employee and business locks. Keep generic session/finance guards separate. */
 export function operationalScopeStatements(proof:SessionMutationProof,workspace:Workspace,footprint:OperationalFootprint,expectedAuthority?:string):SqlStatement[] {
