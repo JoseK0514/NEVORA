@@ -159,3 +159,22 @@ it('expiry after role and scope writes rolls back the entire captured-authority 
   expect(await f.q('SELECT count(*)::integer AS count FROM company_access_operations WHERE operation_id=$1',[c.operationId])).toEqual([{count:0}]);
  }finally{await barrier.query('SELECT pg_advisory_unlock_all()').catch(()=>{});await barrier.end().catch(()=>{});await f.db.dispose();}
 });
+
+it('Owner reactivation requires a new conscious scope and binds it to the new generation; a Company Manager cannot create an Owner',async()=>{
+ const f=await companyAccessFixture();try{
+  await f.q("UPDATE employees SET active=false,updated_at=clock_timestamp() WHERE id='manager'");
+  const absent=await command(f,'manager',{active:true});
+  expect((await saveEmployeeCoreAccessProfile(f.owner,absent,f.db.executor)).state).toBe('invalid');
+  expect(await f.q("SELECT active FROM employees WHERE id='manager'")).toEqual([{active:false}]);
+  const chosen=await command(f,'manager',{active:true},{mode:'LOCATIONS',locationIds:['loc-1']});
+  const saved=await saveEmployeeCoreAccessProfile(f.owner,chosen,f.db.executor);
+  expect(saved.state).toBe('saved');if(saved.state!=='saved')throw Error('reactivate');
+  expect(saved.receipt.roleGeneration).toBe('3');expect(saved.receipt.scopeRevision).toBe(2);expect(saved.receipt.scope).toEqual({mode:'LOCATIONS',locationIds:['loc-1']});
+  const create:CreateEmployeeWithAccessCommand={operationId:randomUUID(),employee:{id:'FORGED-OWNER',firstName:'Fictional',lastName:'QA',phone:'7875550106',email:null,role:'OWNER',primaryLocationId:'loc-1',eligibleLocationIds:[],positionIds:[]}};
+  // The reactivated Manager is restricted; restore Company deliberately before exercising the independent role ceiling.
+  const {assignOperationalScope}=await import('../../lib/company-access/operational-scope.server');
+  const c=await readOwnerOperationalScope(f.owner,'manager',f.db.executor);if(c.state!=='ready')throw Error('scope');
+  expect((await assignOperationalScope(f.owner,'manager',{action:'ASSIGN',operationId:randomUUID(),expectedEmployeeVersion:c.data.current.employeeUpdatedAt,expectedRoleGeneration:c.data.current.roleGeneration,expectedScopeRevision:c.data.current.scopeRevision,scope:{mode:'COMPANY',locationIds:[]}},f.db.executor)).state).toBe('saved');
+  expect((await createEmployeeWithAccess(f.manager,create,f.db.executor)).state).toBe('unavailable');expect(await f.q("SELECT id FROM employees WHERE id='FORGED-OWNER'")).toEqual([]);
+ }finally{await f.db.dispose();}
+});
