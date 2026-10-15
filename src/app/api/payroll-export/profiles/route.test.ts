@@ -73,3 +73,7 @@ describe('NVA-001 profile API with real parser/service and fictional SQL transpo
   expect(r.status).toBe(503);expect(await r.json()).toEqual({state:'unavailable'});expect(writes).toEqual([]);
  });
 });
+
+// Business-unit admission I/O only; real current Company enforcement and API
+// scope/lifecycle/receipt vectors run in company-access-period-export SQL.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({workspace:{id:'W',name:'Fictional Company',timeZone:'America/Puerto_Rico',active:true,createdAt:'2026-01-01T00:00:00Z',updatedAt:'2026-01-01T00:00:00Z'},authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));

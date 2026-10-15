@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it,vi} from 'vitest';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 import {neutralProfile} from './model';
@@ -20,7 +20,7 @@ const card={source,sourceHash:'a'.repeat(32),revision:1,state:'FINALIZED',histor
 const workspace={id:'W',name:'Fictional Company',timeZone:'America/Puerto_Rico',active:true,createdAt:'2026-01-01T00:00:00Z',updatedAt:'2026-01-01T00:00:00Z'};
 const digest=(value:unknown)=>createHash('sha256').update(stableExportJson(value)).digest('hex');
 
-// Only database transport is replaced: parsing, projection, custody and CSV stay real.
+// Business-unit transport/admission I/O only; parsing, projection, custody and CSV stay real.
 function fixture(profile:unknown=neutralProfile()){
  const writes:SqlStatement[]=[],queries:SqlStatement[]=[],batches:(readonly SqlStatement[])[]=[];
  const state:{receipt:{hash:string;payload:unknown}|null;unfinalized:boolean}={receipt:null,unfinalized:false};
@@ -119,3 +119,7 @@ describe('NVA-001 real export-service validation boundaries',()=>{
   await expect(readExportProfiles({...proof,sessionTokenHash:''},f.executor)).rejects.toThrow('authorization');expect(f.queries).toEqual([]);
  });
 });
+
+// Current Company/lifecycle/receipt/rollback behavior uses owned real SQL in
+// company-access-period-export.integration.ts; retain real guard assembly here.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({workspace,authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));
