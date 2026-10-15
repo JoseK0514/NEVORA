@@ -1,4 +1,5 @@
 "use server";
+import {assertOperationalAccess,isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {parseOperationalProfileForm} from '@/lib/shift-changes/policy-form';
 import {saveOperationalRuleProfile} from '@/lib/data/shift-change-policy';
@@ -42,6 +43,7 @@ export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
   const actor = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
   try {
+    await assertOperationalAccess(proof,{kind:'COMPANY'});
     const employeeId = String(formData.get("employeeId") ?? "");
     const written = await saveEmployeeSchedulingProfile({
       employeeId,
@@ -51,10 +53,10 @@ export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
       proof,
       expectedUpdatedAt: String(formData.get('expectedUpdatedAt') ?? ''),
     });
-    revalidatePath("/app/employees");
-    revalidatePath(`/app/employees/${encodeURIComponent(employeeId)}`);
+    try{revalidatePath('/app/employees');revalidatePath(`/app/employees/${encodeURIComponent(employeeId)}`);}catch{/* The returned write version establishes a committed save. */}
     return { success: "Scheduling profile updated.", updatedAt: written.updatedAt };
   } catch (error) {
+    if(isOperationalAuthorizationError(error))return {error:'Operational access is unavailable. Reload and try again.'};
     if (error instanceof Error && error.message.includes('profile_stale')) return { error: 'This employee changed since you opened the profile. Reload and review the latest scheduling details.' };
     return {
       error:

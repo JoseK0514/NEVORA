@@ -1,3 +1,4 @@
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { getDb, queryRows } from "@/lib/db";
 import type { Employee, UserRole } from "@/lib/domain";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
@@ -441,8 +442,8 @@ export async function saveEmployeeSchedulingProfile(
 ): Promise<{ updatedAt: string }> {
   assertManagementProof(input.proof, input.actorEmployeeId);
   if (!input.expectedUpdatedAt) throw new Error('profile_stale');
-  const sql = executor ?? neonNotificationExecutor(),
-    workspace = await getWorkspace(sql);
+  const sql=executor??neonNotificationExecutor();
+  const {workspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'},sql);
   const positions = [...new Set(input.positionIds)].sort();
   const locations = [...new Set(input.eligibleLocationIds)].sort();
   const employeeIds = [
@@ -480,7 +481,7 @@ export async function saveEmployeeSchedulingProfile(
         text: `SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM unnest($1::text[]) requested(id) LEFT JOIN positions p ON p.id=requested.id WHERE p.id IS NULL OR p.workspace_id<>$2 OR (NOT p.active AND NOT EXISTS(SELECT 1 FROM employee_positions ep WHERE ep.employee_id=$3 AND ep.position_id=p.id))) THEN '1' ELSE 'profile_position_invalid' END)::integer`,
         values: [positions, workspace.id, input.employeeId],
       },
-      ...managementSessionStatements(input.proof, input.actorEmployeeId),
+      ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
       ...employeePositionMembershipStatements({
         employeeId: input.employeeId,
         positionIds: positions,
@@ -495,7 +496,7 @@ export async function saveEmployeeSchedulingProfile(
       },
       { text: "UPDATE employees SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=$1 RETURNING updated_at::text AS \"updatedAt\"", values: [input.employeeId] },
     ];
-    const result = await sql.transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId)]);
+    const result = await sql.transaction([...statements, ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'})]);
     const written = result[statements.length - 1]?.[0] as { updatedAt: string } | undefined;
     if (!written) throw new Error('profile_stale');
     return written;

@@ -92,3 +92,7 @@ it.each([0, -1, 1.5, 101])(
     expect(sql.transaction).not.toHaveBeenCalled();
   },
 );
+
+// Unit-only admission I/O; real Company/current-scope behavior and rollback are
+// exercised in company-access-configuration.integration.ts.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'w',name:'Fictional',active:true,timeZone:'America/New_York',createdAt:'',updatedAt:'version'}})}));
