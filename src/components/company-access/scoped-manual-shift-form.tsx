@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import {useRef,useState} from 'react';
+import {useRef,useState,type ReactNode} from 'react';
 import type {OperationalShiftEditorData} from '@/lib/company-access/model';
 import {addDays,formatDayLabel,formatTime,formatWeekRange,isDateInWeek} from '@/lib/date-utils';
 import {ConfigurationForm,type ConfigurationResult} from '@/components/configuration-form';
@@ -9,7 +9,7 @@ import {NavIcon} from '@/components/nav-icon';
 import styles from './company-access.module.css';
 
 type Prefill={date?:string;employeeId?:string;positionId?:string;startTime?:string;endTime?:string;lead?:boolean};
-type Props={data:OperationalShiftEditorData;action:(data:FormData)=>Promise<ConfigurationResult>;deleteAction?:(data:FormData)=>Promise<unknown>;locationName?:string;prefill?:Prefill};
+type Props={data:OperationalShiftEditorData;action:(data:FormData)=>Promise<ConfigurationResult>;deleteAction?:(data:FormData)=>Promise<unknown>;locationName?:string;prefill?:Prefill;feedback?:ReactNode};
 /** Uses the minimal scoped DTO directly. Existing server actions reauthorize and
  * validate the complete assignment; a read hint or sourceVersion is not authority.
  */
@@ -17,7 +17,7 @@ export function ScopedManualShiftForm(props:Props){
  const {data,prefill}=props;
  return <ScopedManualShiftEditor key={JSON.stringify([data.shift?.id??null,data.weekStart,data.locationId,data.shift?null:prefill??null])} {...props}/>;
 }
-function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill={}}:Props){
+function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill={},feedback}:Props){
  const shift=data.shift;
  const initialPerson=shift?.employeeId??(data.employeeOptions.some(p=>p.id===prefill.employeeId)?prefill.employeeId:'')??'';
  const initialPosition=shift?.positionId??(data.employeeOptions.find(p=>p.id===initialPerson)?.positionIds.includes(prefill.positionId??'')&&data.positionOptions.some(p=>p.id===prefill.positionId)?prefill.positionId:'')??'';
@@ -51,7 +51,7 @@ function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill=
  }
  async function remove(){if(!shift||!deleteAction||busy.current||uncertain)return;setRemoving(true);try{const fields=new FormData();fields.set('shiftId',shift.id);const feedback=await perform(fields,deleteAction);setDeleteFeedback(feedback.error??feedback.success??'Review the current schedule before continuing.');}finally{setRemoving(false);}}
  return <div className={styles.scopedPage}><header><h1>{shift?'Edit draft shift':'Create shift'}</h1><p>{locationName??'Your selected location'} · {formatWeekRange(data.weekStart)}</p></header>
-  <ConfigurationForm action={fields=>perform(fields)} className={styles.scopedForm}>
+  {feedback}<ConfigurationForm action={fields=>perform(fields)} className={styles.scopedForm}>
    <fieldset disabled={uncertain||working} className={styles.stack}>
     <input type="hidden" name="weekStart" value={data.weekStart}/><input type="hidden" name="locationId" value={data.locationId}/>{shift&&<input type="hidden" name="shiftId" value={shift.id}/>}
     <section className={'panel '+styles.stack}><h2>Assignment</h2>{!data.employeeOptions.length&&<p role="status">No eligible employees are available at this location. Ask your Owner to review employee assignments.</p>}

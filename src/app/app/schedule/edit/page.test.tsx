@@ -85,3 +85,14 @@ it('uses the actual minimal manual editor for scoped drafts without global emplo
 it.each(['requires_company','unavailable'])('keeps scoped editor read-only when save hint is %s',async saveAvailability=>{
  operationalPageFixture.scoped=true;operationalPageFixture.saveAvailability=saveAvailability;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Shift details');expect(html).not.toContain('Save changes');expect(html).not.toContain('Save shift');expect(mocks.shift).not.toHaveBeenCalled();
 });
+it.each(['available','requires_company','unavailable'])('announces a real scoped edit redirect error in %s while retaining context',async saveAvailability=>{
+ operationalPageFixture.scoped=true;operationalPageFixture.saveAvailability=saveAvailability;
+ const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift',error:'INVALID_SHIFT'})}));
+ expect(html).toContain('role="alert"');expect(html).toContain('The shift could not be updated.');expect(html).toContain('Avery Rivera');
+ expect(html).toContain('href="/app/schedule?week=2026-10-12&amp;location=main"');
+ expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(mocks.locations).not.toHaveBeenCalled();
+});
+it.each(['UNTRUSTED_QUERY_TEXT','constructor'])('scoped edit uses safe generic feedback for unknown redirect code %s',async error=>{
+ operationalPageFixture.scoped=true;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift',error})}));
+ expect(html).toContain('role="alert"');expect(html).toContain('The shift could not be updated.');expect(html).not.toContain(error);
+});

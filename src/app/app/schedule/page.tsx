@@ -14,7 +14,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
 import { SchedulePublicationChange } from "@/components/schedule-publication-change";
 import { listCapturedShiftPositions } from "@/lib/data/publication-revisions";
-import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
+import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
 import Link from "next/link";
 import { ManagerWeeklyRoster } from "@/components/manager-weekly-roster";
 import { assignedHours, type RosterEmployee } from "@/lib/scheduling/manager-roster-presentation";
@@ -49,31 +49,6 @@ import {
 import { getWeekSettings } from "@/lib/data/week-settings";
 import {readEmployeeWeeklyReview} from "@/lib/data/employee-weekly-review.server";
 import { employeeRoleLabel } from "@/lib/employee-display";
-
-const ERROR_MESSAGES: Record<string, string> = {
-  DEADLINE_WORKSPACE_CHANGED: "Workspace settings changed while saving. Your deadline was not saved. Review the business timezone and submit again.",
-  INVALID_DEADLINE: "Enter a valid business-local deadline. Daylight saving times that are skipped or occur twice cannot be used.",
-  INVALID_SHIFT: "The shift information is incomplete or outside this week.",
-  EMPLOYEE_NOT_FOUND: "The selected employee could not be found.",
-  LOCATION_NOT_ELIGIBLE: "That employee is not eligible to work at the selected location.",
-  SHIFT_OVERLAP: "That employee already has an overlapping shift.",
-  APPROVED_TIME_OFF: "That employee has approved time off during the selected shift.",
-  EMPLOYEE_INACTIVE: "Inactive employees cannot be scheduled.",
-  INVALID_TIME_RANGE: "Enter a valid shift date and time period.",
-  INVALID_SHIFT_LEAD:
-    "Only an Owner, Manager, or Lead can be the designated shift lead.",
-  INVALID_PUBLISH: "The schedule could not be published.",
-  NO_SCHEDULE: "There is no schedule to publish for that location yet.",
-  SHIFT_HAS_EXCHANGE_HISTORY:
-    "This shift has scheduling history and cannot be deleted. Edit it instead.",
-};
-
-const WARNING_MESSAGES: Record<string, string> = {
-  OUTSIDE_AVAILABILITY:
-    "Shift saved, but it is outside the employee's submitted availability.",
-  WEEKLY_HOURS:
-    "Shift saved, but the employee is now scheduled for more than 40 hours.",
-};
 
 function validWeek(value?: string) {
   return (
@@ -117,7 +92,7 @@ export default async function SchedulePage({
       const source=await readOperationalSchedule(proof,{weekStart,...(params.location===undefined||params.location==='all'?{}:{locationId:params.location})});
       if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
       if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
-      return <ScopedOperationalSchedule data={source.data} observation={source}/>;
+      return <ScopedOperationalSchedule data={source.data} observation={source} feedback={<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'}/>}/>;
     }
   }
   async function renderSchedule(){
@@ -230,17 +205,7 @@ export default async function SchedulePage({
         </Link>
       </header>
 
-      {params.error ? (
-        <p className="form-error" role="alert">
-          {ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The schedule could not be updated."}
-        </p>
-      ) : null}
-      {params.warning ? (
-        <p className="form-warning" role="status">
-          {WARNING_MESSAGES[params.warning] ?? schedulingIssueMessage(params.warning) ??
-            "Shift saved with a scheduling warning."}
-        </p>
-      ) : null}
+      <ScheduleRouteFeedback error={params.error} warning={params.warning}/>
       {params.published ? (
         <p className="form-success" role="status">
           {locations.find((location) => location.id === params.published)

@@ -8,7 +8,7 @@ import {requireSessionMutationProof} from '@/lib/auth/session';
 import {listPositions} from "@/lib/data/positions";
 import { ShiftEditAssignment } from "./shift-edit-assignment";
 import { ConfigurationForm } from "@/components/configuration-form";
-import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
+import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { NavIcon } from "@/components/nav-icon";
@@ -23,16 +23,6 @@ import {
   updateShiftAction,
 } from "@/app/app/schedule/actions";
 
-const ERROR_MESSAGES: Record<string, string> = {
-  LOCATION_NOT_ELIGIBLE: "That employee is not eligible to work at this location.",
-  SHIFT_OVERLAP: "That employee already has an overlapping shift.",
-  APPROVED_TIME_OFF: "That employee has approved time off during this shift.",
-  EMPLOYEE_INACTIVE: "Inactive employees cannot be scheduled.",
-  INVALID_TIME_RANGE: "Enter a valid shift date and time period.",
-  INVALID_SHIFT_LEAD:
-    "Only an Owner, Manager, or Lead can be the designated shift lead.",
-};
-
 export default async function EditShiftPage({
   searchParams,
 }: {
@@ -45,6 +35,7 @@ export default async function EditShiftPage({
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
   const shiftId=params.shiftId;
+  const feedback=<ScheduleRouteFeedback destination="editor" error={params.error}/>;
   const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
   if(access.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={access.reason}/>;
   if(access.scope?.mode!=='COMPANY'){
@@ -52,8 +43,8 @@ export default async function EditShiftPage({
     if(source.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={source.reason} scoped/>;
     if(source.authority!==access.authority)return <OperationalUnavailable title="Shift editor unavailable" reason="source_changed" scoped/>;
     const observation={authority:source.authority,observedAt:access.observedAt,validForMs:Math.min(access.validForMs,source.validForMs)};
-    if(source.data.saveAvailability!=='available')return <ScopedShiftReadOnly data={source.data} observation={observation}/>;
-    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={updateShiftAction} deleteAction={deleteShiftAction} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name}/></ScopedReadFrame>;
+    if(source.data.saveAvailability!=='available')return <ScopedShiftReadOnly data={source.data} observation={observation} feedback={feedback}/>;
+    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={updateShiftAction} deleteAction={deleteShiftAction} feedback={feedback} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name}/></ScopedReadFrame>;
   }
 
   const source=await withOperationalCompany(proof,()=>Promise.all([
@@ -83,11 +74,7 @@ export default async function EditShiftPage({
         <p>Update who is working and when.</p>
       </header>
 
-      {params.error ? (
-        <p className="form-error" role="alert">
-          {ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The shift could not be updated."}
-        </p>
-      ) : null}
+      {feedback}
 
       <div className="edit-shift-layout">
         <aside className="edit-shift-context" aria-labelledby="current-shift-title">
