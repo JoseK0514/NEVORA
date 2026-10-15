@@ -1,9 +1,10 @@
+import {readFile} from 'node:fs/promises';
 import type { SqlExecutor } from '../../lib/notifications/types';
 import type { SessionMutationProof } from '../../lib/shift-changes/types';
 import { fictionalProfile } from '../fixtures/shift-changes';
 import { sourceShiftTerms,shiftTermsFingerprint } from '../../lib/shift-changes/terms';
 export const proof=(id:string):SessionMutationProof=>({employee:{id,firstName:'Fictional',lastName:id,role:id==='owner'?'OWNER':'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:(id==='owner'?'a':id==='e1'?'b':id==='e2'?'c':'d').repeat(64)});
-export async function seedShiftChanges(executor:SqlExecutor) {
+export async function seedShiftChanges(executor:SqlExecutor,{companyAccess=false}:{companyAccess?:boolean}={}) {
  const q=(text:string,values:readonly unknown[]=[])=>executor.query({text,values});
  for(const id of ['owner','e1','e2','e3']) {
   await q('INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,\'Fictional\',$1,$1,$2,\'loc-1\')',[id,proof(id).employee.role]);
@@ -17,6 +18,9 @@ export async function seedShiftChanges(executor:SqlExecutor) {
  await q("UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false");
  for(let d=0;d<7;d++) await q("INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES($1,'loc-1',$2,'08:00','16:00')",['win'+d,d]);
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('schedule','loc-1','2035-10-01','PUBLISHED','owner')");
+ // Current operational tests opt in after seeding their intended Owner census.
+ // Managers created later receive no automatic Company assignment.
+ if(companyAccess)for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
 }
 export async function fixtureShift(executor:SqlExecutor,id:string,employee='e1',date='2035-10-02') {
  const q=(text:string,values:readonly unknown[]=[])=>executor.query<Record<string,unknown>>({text,values});

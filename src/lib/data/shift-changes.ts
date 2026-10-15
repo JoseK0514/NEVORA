@@ -1,7 +1,8 @@
+import {readShiftChangeCompany,shiftChangeCompanyStatements,shiftChangeCompanyFence,isShiftChangeAuthorizationError} from './shift-change-authority';
 import { createHash, randomUUID } from 'node:crypto';
 import type { SessionMutationProof, ShiftChangeCommand, ShiftChangeResult, ShiftTerms, ConsentSnapshot, ShiftChangeEvaluation } from '../shift-changes/types';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
-import { readShiftChangeSnapshot, ShiftChangeAuthorizationError, type CommandSnapshot } from './shift-change-snapshot';
+import { readShiftChangeSnapshot, type CommandSnapshot } from './shift-change-snapshot';
 import { shiftChangeSessionGuard,shiftChangeAfterGuard } from './shift-change-guards';
 import { generationMutationGuards, type GenerationSourceRow } from './generation-guards';
 import { neonNotificationExecutor, preparePublishedWeekChange, type GuardedShift } from './notification-transactions';
@@ -22,8 +23,10 @@ const unavailable:ShiftChangeResult={status:'unavailable'};
 const blocked=(code:'STALE_TERMS'|'POLICY_UNKNOWN'|'CONSENT_REQUIRED',message:string):ShiftChangeResult=>({status:'blocked',issues:[{code,message}]});
 const fingerprint=(command:ShiftChangeCommand)=>createHash('sha256').update(JSON.stringify(Object.fromEntries(Object.entries(command).sort(([a],[b])=>a.localeCompare(b))))).digest('hex');
 export async function findShiftChangeOperation(proof:SessionMutationProof,operationId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftChangeResult|null> {
+ try{return await readShiftChangeCompany(proof,async()=>{
  const [r]=await executor.query<{result:ShiftChangeResult}>({text:`SELECT o.result FROM shift_change_operations o JOIN workspaces w ON w.id=o.workspace_id AND w.active JOIN employees e ON e.id=o.actor_employee_id AND e.active JOIN employee_sessions s ON s.employee_id=e.id AND s.token_hash=$1 AND s.expires_at>clock_timestamp() WHERE o.actor_employee_id=$2 AND o.operation_id=$3::uuid AND e.role=$4`,values:[proof.sessionTokenHash,proof.employee.id,operationId,proof.employee.role]});
  return r?.result??null;
+ },executor);}catch(error){if(isShiftChangeAuthorizationError(error))return null;throw error;}
 }
 type Plan={result:ShiftChangeResult;statements:SqlStatement[];afterShifts:GuardedShift[];deadline?:string;requestId:string;sourceType:'EXCHANGE'|'CALLOUT'};
 function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeResult {
@@ -177,10 +180,12 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
 }
 export async function executeShiftChange(proof:SessionMutationProof,command:ShiftChangeCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftChangeResult> {
  if(!proof?.employee?.id||!/^[a-f0-9]{64}$/.test(proof.sessionTokenHash)||!isShiftChangeCommand(command))return unavailable;
+ let originalAuthority:string|undefined;
  for(let attempt=0;attempt<3;attempt++) {
   let transactionStarted=false;
   try {
    const s=await readShiftChangeSnapshot(proof,command,executor);
+   if(s.operational){if(originalAuthority!==undefined&&originalAuthority!==s.operational.authority)return unavailable;originalAuthority=s.operational.authority;}
    const op=s.source.shift_change_operations.find(o=>o.actor_employee_id===proof.employee.id&&o.operation_id===command.operationId&&o.workspace_id===s.facts.workspace.id);
    if(op)return op.command_fingerprint===fingerprint(command)?op.result as ShiftChangeResult:conflict;
    const plan=planCommand(s,command);
@@ -194,13 +199,14 @@ export async function executeShiftChange(proof:SessionMutationProof,command:Shif
    const guardWeeks=[...new Set([...weeks,...s.ledger.flatMap(t=>affectedWorkweeks(shiftPeriod(t)))])];
    const guards=generationMutationGuards(s.source,guardWeeks);
    transactionStarted=true;
-   await executor.transaction([...guards.slice(0,-1),{text:'SELECT token_hash FROM employee_sessions WHERE token_hash=$1 FOR SHARE',values:[proof.sessionTokenHash]},shiftChangeSessionGuard(proof,plan.deadline),guards.at(-1)!,...prepared.statements,shiftChangeAfterGuard(s,plan.afterShifts),
-    {text:'INSERT INTO shift_change_operations(workspace_id,actor_employee_id,operation_id,command_fingerprint,request_id,result) VALUES($1,$2,$3,$4,$5,$6)',values:[s.facts.workspace.id,proof.employee.id,command.operationId,fingerprint(command),plan.requestId,JSON.stringify(plan.result)]},shiftChangeSessionGuard(proof,plan.deadline)]);
+   await executor.transaction([...guards.slice(0,-1),{text:'SELECT token_hash FROM employee_sessions WHERE token_hash=$1 FOR SHARE',values:[proof.sessionTokenHash]},shiftChangeSessionGuard(proof,plan.deadline),...shiftChangeCompanyStatements(proof,s.operational),guards.at(-1)!,...prepared.statements,shiftChangeAfterGuard(s,plan.afterShifts),
+    {text:'INSERT INTO shift_change_operations(workspace_id,actor_employee_id,operation_id,command_fingerprint,request_id,result) VALUES($1,$2,$3,$4,$5,$6)',values:[s.facts.workspace.id,proof.employee.id,command.operationId,fingerprint(command),plan.requestId,JSON.stringify(plan.result)]},shiftChangeSessionGuard(proof,plan.deadline),...shiftChangeCompanyStatements(proof,s.operational)]);
+   await shiftChangeCompanyFence(proof,s.operational,executor);
    return plan.result;
   } catch(error) {
    const code=error&&typeof error==='object'&&'code' in error?String(error.code):'';
    const message=error instanceof Error?error.message:'';
-   if(error instanceof ShiftChangeAuthorizationError||message.includes('shift_change_authorization'))return unavailable;
+   if(isShiftChangeAuthorizationError(error))return unavailable;
    if(message.includes('shift_change_deadline'))return blocked('STALE_TERMS','The completion deadline has passed.');
    if(code==='23505')return conflict;
    const retry=code==='40001'||code==='40P01'||code==='22P02'&&/generation_source_conflict|schedule_week_version_conflict|workspace_version_conflict|request_transition_conflict|shift_change_after_conflict/.test(message);
@@ -237,5 +243,5 @@ export async function readShiftChangeAvailability(proof:SessionMutationProof,com
   const unknown=!scope?.mode||scope.submissionAdvanceMinutes===null||scope.completionAdvanceMinutes===null||result.status==='blocked'&&result.issues.some(i=>['RULE_UNVERIFIABLE','POLICY_UNKNOWN'].includes(i.code));
   const stale=result.status==='conflict'||result.status==='blocked'&&result.issues.some(i=>i.code==='STALE_TERMS');
   return {allowed:false,notice:unknown?'Needs Owner rule review':stale?'Stale or expired. Review the current assignment.':'Unavailable with the current consent, eligibility or policy.'};
- }catch(error){if(error instanceof ShiftChangeAuthorizationError)return {allowed:false,notice:'Unavailable for your current account.'};throw error;}
+ }catch(error){if(isShiftChangeAuthorizationError(error))return {allowed:false,notice:'Unavailable for your current account.'};throw error;}
 }

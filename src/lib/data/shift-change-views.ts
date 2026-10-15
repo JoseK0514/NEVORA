@@ -1,3 +1,4 @@
+import {readShiftChangeCompany,isShiftChangeAuthorizationError} from './shift-change-authority';
 import {findShiftChangeOperation} from './shift-changes';
 import type {SessionMutationProof} from '../shift-changes/types';
 import {readShiftChangeHistory} from './shift-change-history';
@@ -7,8 +8,10 @@ import {resolveOperationalRuleProfile} from '../shift-changes/policy';
 /** Management-only read. No default settings row is created. */
 export async function readOperationalRuleProfileView(proof:SessionMutationProof,employeeId:string,executor:SqlExecutor=neonNotificationExecutor()){
  if(!['OWNER','MANAGER'].includes(proof.employee.role))return null;
+ try{return await readShiftChangeCompany(proof,async()=>{
  const rows=await executor.query<{profile:unknown}>({text:`SELECT settings.operational_rule_profile AS profile FROM employee_scheduling_settings settings WHERE settings.employee_id=$1 AND EXISTS(SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE e.id=$2 AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND e.active AND e.role IN ('OWNER','MANAGER'))`,values:[employeeId,proof.employee.id,proof.sessionTokenHash]});
  return rows[0]?resolveOperationalRuleProfile(rows[0].profile):null;
+ },executor);}catch(error){if(isShiftChangeAuthorizationError(error))return null;throw error;}
 }
 export type ShiftHistoryView={revision:number;event:string;at:string;source:string|null;target:string|null;mode:string|null};
 /** Explicit immutable presentation only; private peer absence/rules/participants never cross the UI boundary. */
