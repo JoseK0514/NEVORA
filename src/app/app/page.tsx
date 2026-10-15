@@ -45,7 +45,7 @@ export default async function DashboardPage({
 
   if (!manager) {
     const proof=await requireSessionMutationProof();
-    return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)}/>;
+    return <EmployeeDashboard firstName={session.firstName} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)}/>;
   }
 
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;

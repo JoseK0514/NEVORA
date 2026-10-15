@@ -36,6 +36,6 @@ export function formatEmployeeMetric(
   }).format(value);
 }
 
-export function EmployeeDashboard({authority,timeAuthority}:{authority:string;timeAuthority:string}){
- return <div className="employee-dashboard employee-home"><EmployeeHomeActions authority={authority} timeAuthority={timeAuthority}/></div>;
+export function EmployeeDashboard({firstName,authority,timeAuthority}:{firstName?:string;authority:string;timeAuthority:string}){
+ return <div className="employee-dashboard employee-home"><EmployeeHomeActions firstName={firstName} authority={authority} timeAuthority={timeAuthority}/></div>;
 }

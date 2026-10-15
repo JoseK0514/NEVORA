@@ -1,11 +1,13 @@
 .root {
-  --home-blue: var(--nevora-blue, #0756d9);
-  --home-press: var(--nevora-blue-hover, #003aae);
-  --home-ink: #18191f;
-  --home-muted: #676a73;
-  --home-line: #e2e4e9;
-  --home-canvas: #f6f6f8;
-  --home-soft: #f0fbff;
+  --home-blue: #087f7b;
+  --home-press: #05625f;
+  --home-ink: #1f2423;
+  --home-muted: #697371;
+  --home-line: #e5e9e7;
+  --home-canvas: #f7f8f7;
+  --home-soft: #e6f5f2;
+  --home-warning: #a76219;
+  --home-success: #087f7b;
   container: employee-home-reviewed / inline-size;
   width: 100%;
   max-width: 1080px;
@@ -27,13 +29,14 @@
 .root :is(a, button, summary):focus-visible { outline: 3px solid var(--home-blue); outline-offset: 3px; }
 .root ::selection { background: var(--home-blue); color: white; }
 
-.arrival { padding: 24px 24px 56px; background: var(--home-blue); color: white; }
+.arrival { padding: 28px 20px 58px; background: var(--home-blue); color: white; border-radius: 0 0 24px 24px; }
+.arrival::after { content: 'Your workday, made simple'; display: block; margin-top: 8px; color: #d7f3ee; font-size: .8125rem; }
 .arrival h1 { font-size: 1.625rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.25; text-wrap: balance; }
 .arrival p { margin-top: 6px; color: #e3edff; font-size: .8125rem; }
-.content { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: -28px; padding-inline: 20px; }
+.content { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: -28px; padding-inline: 16px; }
 .primary, .secondary { display: grid; align-content: start; gap: 20px; min-width: 0; }
 .secondary { gap: 24px; }
-.assignment { min-width: 0; padding: 18px 20px 10px; border-radius: 18px; background: white; }
+.assignment { min-width: 0; padding: 18px 18px 10px; border: 1px solid rgba(30, 55, 50, .06); border-radius: 20px; background: white; box-shadow: 0 8px 24px rgba(24, 58, 51, .08); }
 .assignmentHeader { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
 .assignmentHeader h2 { color: var(--home-muted); font-size: 1rem; font-weight: 500; line-height: 1.5; }
 .published { display: inline-flex; align-items: center; gap: 7px; padding: 3px 8px; border-radius: 20px; color: var(--home-press); background: var(--home-soft); font-size: .75rem; }
@@ -56,7 +59,7 @@
 .currentNote { margin-block: 6px 12px !important; color: var(--home-muted); font-size: .8125rem; }
 .current .interval { font-size: 1.5rem; }
 
-.recordedSlot { min-width: 0; padding: 16px 18px 12px; border-radius: 16px; background: white; }
+.recordedSlot { min-width: 0; padding: 16px 18px 12px; border: 1px solid rgba(30, 55, 50, .06); border-radius: 18px; background: white; box-shadow: 0 6px 20px rgba(24, 58, 51, .05); }
 /* Style only the supplied original compact panel, without hiding its facts or controls. */
 .recordedSlot :global(.employee-clock-compact) { margin: 0; padding: 0; border: 0; }
 .recordedSlot :global(.employee-time-current-heading h2) { color: var(--home-ink); font-size: 1rem; font-weight: 500; line-height: 1.5; letter-spacing: -.02em; }
@@ -71,7 +74,7 @@
 .recordedFallback p { margin-top: 6px; color: var(--home-muted); font-size: .8125rem; }
 .recordedFallback small { display: block; margin-top: 6px; color: var(--home-muted); font-size: .75rem; }
 
-.actions { min-width: 0; padding: 16px 18px 4px; border-radius: 16px; background: white; }
+.actions { min-width: 0; padding: 16px 18px 4px; border: 1px solid rgba(30, 55, 50, .06); border-radius: 18px; background: white; box-shadow: 0 6px 20px rgba(24, 58, 51, .05); }
 .updates { min-width: 0; padding-inline: 2px; }
 .groupHeader { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 2px; }
 .groupHeader h2 { font-size: 1.125rem; line-height: 1.45; font-weight: 600; letter-spacing: -.02em; }
@@ -83,7 +86,7 @@
 .itemCopy strong { display: block; font-size: .9375rem; line-height: 1.45; font-weight: 500; }
 .updates .itemCopy strong { font-weight: 400; }
 .itemCopy small { display: block; margin-top: 4px; color: var(--home-muted); font-size: .8125rem; line-height: 1.5; }
-.itemCopy .deadline { color: #a05200; }
+.itemCopy .deadline { color: var(--home-warning); font-weight: 500; }
 .itemLink > .arrow { color: var(--home-muted); }
 .groupEmpty { padding-block: 8px 12px; color: var(--home-muted); font-size: .875rem; }
 .overflow { margin-top: 4px; }
