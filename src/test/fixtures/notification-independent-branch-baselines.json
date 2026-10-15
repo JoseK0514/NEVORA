@@ -1,0 +1,134 @@
+{
+  "PAYROLL_PREPARATION": {
+    "intent": {
+      "id": "owned-preservation",
+      "employeeId": "owned-recipient",
+      "type": "PAYROLL_PREPARATION",
+      "title": "Generic",
+      "body": "Generic",
+      "eventKey": "owned-event",
+      "environment": "test",
+      "source": {
+        "kind": "PAYROLL_PREPARATION",
+        "id": "owned-source",
+        "version": "owned-version"
+      },
+      "effectiveVersion": "owned-version",
+      "purpose": "REMINDER",
+      "urgency": "normal",
+      "dueAt": "2030-01-01T12:00:00Z",
+      "expiresAt": "2030-01-02T12:00:00Z"
+    },
+    "statement": {
+      "text": "INSERT INTO notifications (id, employee_id, type, title, body, action_href, event_key,\n      environment, source_kind, source_id, source_version, effective_version, purpose,\n      urgency, due_at, expires_at, item_keys, push_state)\n      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending')\n      ON CONFLICT (environment, event_key) WHERE environment IS NOT NULL AND event_key IS NOT NULL\n      DO UPDATE SET event_key = notifications.event_key RETURNING id",
+      "values": [
+        "owned-preservation",
+        "owned-recipient",
+        "PAYROLL_PREPARATION",
+        "Generic",
+        "Generic",
+        null,
+        "owned-event",
+        "test",
+        "PAYROLL_PREPARATION",
+        "owned-source",
+        "owned-version",
+        "owned-version",
+        "REMINDER",
+        "normal",
+        "2030-01-01T12:00:00Z",
+        "2030-01-02T12:00:00Z",
+        []
+      ]
+    },
+    "sha256": "077fa80ec1a3dfec1af9ee08b29e0ef4c2d39c9cf13d379bc978a0665a6f5cae"
+  },
+  "PAYROLL_STATEMENT": {
+    "intent": {
+      "id": "owned-preservation",
+      "employeeId": "owned-recipient",
+      "type": "PAYROLL_STATEMENT",
+      "title": "Generic",
+      "body": "Generic",
+      "eventKey": "owned-event",
+      "environment": "test",
+      "source": {
+        "kind": "PAYROLL_STATEMENT",
+        "id": "owned-source",
+        "version": "owned-version"
+      },
+      "effectiveVersion": "owned-version",
+      "purpose": "REMINDER",
+      "urgency": "normal",
+      "dueAt": "2030-01-01T12:00:00Z",
+      "expiresAt": "2030-01-02T12:00:00Z"
+    },
+    "statement": {
+      "text": "INSERT INTO notifications (id, employee_id, type, title, body, action_href, event_key,\n      environment, source_kind, source_id, source_version, effective_version, purpose,\n      urgency, due_at, expires_at, item_keys, push_state)\n      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending')\n      ON CONFLICT (environment, event_key) WHERE environment IS NOT NULL AND event_key IS NOT NULL\n      DO UPDATE SET event_key = notifications.event_key RETURNING id",
+      "values": [
+        "owned-preservation",
+        "owned-recipient",
+        "PAYROLL_STATEMENT",
+        "Generic",
+        "Generic",
+        null,
+        "owned-event",
+        "test",
+        "PAYROLL_STATEMENT",
+        "owned-source",
+        "owned-version",
+        "owned-version",
+        "REMINDER",
+        "normal",
+        "2030-01-01T12:00:00Z",
+        "2030-01-02T12:00:00Z",
+        []
+      ]
+    },
+    "sha256": "6351078b0ae1d0bcb93de88df0d68659b07588019414282b326750dbfda5e80c"
+  },
+  "SELF_TEST": {
+    "intent": {
+      "id": "owned-preservation",
+      "employeeId": "owned-recipient",
+      "type": "SELF_TEST",
+      "title": "Generic",
+      "body": "Generic",
+      "eventKey": "owned-event",
+      "environment": "test",
+      "source": {
+        "kind": "SELF_TEST",
+        "id": "owned-source",
+        "version": "owned-version"
+      },
+      "effectiveVersion": "owned-version",
+      "purpose": "TEST",
+      "urgency": "normal",
+      "dueAt": "2030-01-01T12:00:00Z",
+      "expiresAt": "2030-01-02T12:00:00Z"
+    },
+    "statement": {
+      "text": "INSERT INTO notifications (id, employee_id, type, title, body, action_href, event_key,\n      environment, source_kind, source_id, source_version, effective_version, purpose,\n      urgency, due_at, expires_at, item_keys, push_state)\n      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending')\n      ON CONFLICT (environment, event_key) WHERE environment IS NOT NULL AND event_key IS NOT NULL\n      DO UPDATE SET event_key = notifications.event_key RETURNING id",
+      "values": [
+        "owned-preservation",
+        "owned-recipient",
+        "SELF_TEST",
+        "Generic",
+        "Generic",
+        null,
+        "owned-event",
+        "test",
+        "SELF_TEST",
+        "owned-source",
+        "owned-version",
+        "owned-version",
+        "TEST",
+        "normal",
+        "2030-01-01T12:00:00Z",
+        "2030-01-02T12:00:00Z",
+        []
+      ]
+    },
+    "sha256": "fc0bca666c12694af953ed51f716444237a08c55eca39aeceb7d4f3b1949cc38"
+  }
+}

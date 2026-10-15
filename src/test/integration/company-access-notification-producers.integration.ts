@@ -119,7 +119,7 @@ it('real availability account/day budget survives a changed deadline and repeate
  }finally{await f.db.dispose();}
 });
 it.each(['PAYROLL_PREPARATION','PAYROLL_STATEMENT','SELF_TEST'] as const)('%s persistence retains its exact independent SQL and seventeen positional values',async kind=>{
- const fixtures=JSON.parse(await readFile('outputs/invitations-activation-operational-scope-20261014/NOTIFICATION_INDEPENDENT_BRANCH_BASELINES.json','utf8')) as Record<string,{intent:NotificationIntent;statement:SqlStatement}>;
+ const fixtures=JSON.parse(await readFile(new URL('../fixtures/notification-independent-branch-baselines.json',import.meta.url),'utf8')) as Record<string,{intent:NotificationIntent;statement:SqlStatement}>;
  const fixture=fixtures[kind];expect(notificationIntentStatements([fixture.intent])).toEqual([fixture.statement]);expect(fixture.statement.values).toHaveLength(17);
 });
 it.each(['seed','group'] as const)('late scope loss before the real %s lifecycle-cancellation batch preserves notification history',async phase=>{
