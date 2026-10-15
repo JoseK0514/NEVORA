@@ -44,12 +44,42 @@ function hiddenReturns(node: unknown): unknown[] {
     };
     return element.type === 'input' && element.props.name === 'returnTo' && element.props.type === 'hidden' ? [element.props.value] : hiddenReturns(element.props.children);
 }
-it.each(['/app/notifications/open?notificationId=fictional', 'https://evil.test', ['/app', '//evil.test']])('login_activation_forms_include_only_validated_hidden_return_%s', async (returnTo) => {
-    const [{ default: LoginPage }, { default: ActivatePage }] = await Promise.all([import('./page'), import('../activate/page')]);
-    const searchParams = Promise.resolve({ returnTo });
-    const expected = typeof returnTo === 'string' && returnTo.startsWith('/app/') ? [returnTo] : [];
-    expect(hiddenReturns(await LoginPage({ searchParams }))).toEqual(expected);
-    expect(hiddenReturns(await ActivatePage({ searchParams }))).toEqual(expected);
+function pageElements(node:unknown):{type:unknown;props:Record<string,unknown>}[]{
+    if(Array.isArray(node))return node.flatMap(pageElements);
+    if(!node||typeof node!=='object'||!('props'in node))return [];
+    const element=node as {type:unknown;props:Record<string,unknown>};
+    return [element,...pageElements(element.props.children)];
+}
+function activationLoginDestination(node:unknown):URL{
+    const elements=pageElements(node);
+    const invitation=elements.filter(element=>Object.prototype.hasOwnProperty.call(element.props,'loginHref'));
+    if(invitation.length){
+        expect(invitation).toHaveLength(1);
+        expect(typeof invitation[0].props.loginHref).toBe('string');
+        return new URL(String(invitation[0].props.loginHref),'https://activation.test');
+    }
+    // The author checkout still has the retired form; Root owns the reviewed invitation page.
+    // Accept that legacy representation only when its exact native action is present.
+    const legacy=elements.filter(element=>element.type==='form'&&element.props.action===activateAccountAction);
+    expect(legacy).toHaveLength(1);
+    const returns=hiddenReturns(legacy[0]);expect(returns.length).toBeLessThanOrEqual(1);
+    if(returns.length)expect(typeof returns[0]).toBe('string');
+    return new URL('/login?activated=1'+(returns.length?'&returnTo='+encodeURIComponent(String(returns[0])):''),'https://activation.test');
+}
+it.each([
+    {name:'valid notification',returnTo:'/app/notifications/open?notificationId=fictional',expected:'/app/notifications/open?notificationId=fictional'},
+    {name:'external origin',returnTo:'https://evil.test',expected:null},
+    {name:'array input',returnTo:['/app','//evil.test'],expected:null},
+    {name:'protocol-relative origin',returnTo:'//evil.test',expected:null},
+    {name:'encoded traversal',returnTo:'/app/%2e%2e',expected:null},
+])('login and invitation success preserve only the validated return destination: $name',async({returnTo,expected})=>{
+    const [{default:LoginPage},{default:ActivatePage}]=await Promise.all([import('./page'),import('../activate/page')]);
+    const searchParams=Promise.resolve({returnTo});
+    expect(hiddenReturns(await LoginPage({searchParams}))).toEqual(expected?[expected]:[]);
+    const destination=activationLoginDestination(await ActivatePage({searchParams}));
+    expect(destination.origin).toBe('https://activation.test');expect(destination.pathname).toBe('/login');expect(destination.hash).toBe('');
+    expect(destination.searchParams.get('activated')).toBe('1');expect(destination.searchParams.get('returnTo')).toBe(expected);
+    expect([...destination.searchParams.keys()].sort()).toEqual(expected?['activated','returnTo']:['activated']);
 });
 
 // Public identity is an external database read, independent of return-to validation.
