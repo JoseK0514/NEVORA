@@ -1,4 +1,5 @@
 "use server";
+import {assertOperationalAccess,isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 import { requireSessionMutationProof } from "@/lib/auth/session";
 
 import { executeScheduleCopy } from "@/lib/data/schedule-copy";
@@ -29,6 +30,7 @@ export async function saveTemplateAction(formData: FormData) {
   }
 
   try {
+    await assertOperationalAccess(proof,{kind:'COMPANY'});
     await createTemplateFromWeek({
       name,
       weekStart,
@@ -46,6 +48,7 @@ export async function saveTemplateAction(formData: FormData) {
 export async function applyTemplateAction(formData: FormData) {
  await requireRoles(MANAGER_ROLES);
  const proof=await requireSessionMutationProof();
+ try{await assertOperationalAccess(proof,{kind:'COMPANY'});}catch(error){if(isOperationalAuthorizationError(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
  const receipt=await executeScheduleCopy(proof,{operationId:String(formData.get('operationId')??''),kind:'TEMPLATE',weekStart:String(formData.get('weekStart')??''),templateId:String(formData.get('templateId')??'')});
  revalidatePath('/app/schedule');
  redirect(`/app/schedule/copy-receipt?operation=${receipt.operationId}`);
@@ -61,7 +64,8 @@ export async function archiveTemplateAction(formData: FormData) {
     redirect(templateUrl(weekStart, "&error=invalid"));
   }
 
-  await archiveScheduleTemplate(templateId, proof);
+  try{await assertOperationalAccess(proof,{kind:'COMPANY'});await archiveScheduleTemplate(templateId,proof);}
+  catch(error){if(isOperationalAuthorizationError(error))redirect(templateUrl(weekStart,'&error=ACCESS_DENIED'));throw error;}
   revalidatePath("/app/schedule/templates");
   redirect(templateUrl(weekStart, "&archived=1"));
 }

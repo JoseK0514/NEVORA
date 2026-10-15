@@ -1,8 +1,8 @@
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { randomUUID } from "node:crypto";
-import { getWorkspace, workspaceReadGuard } from "./workspaces";
+import { workspaceReadGuard } from "./workspaces";
 import {
   assertManagementProof,
-  managementSessionStatements,
 } from "./management-session";
 import type { SessionMutationProof } from "../shift-changes/types";
 import {
@@ -44,19 +44,19 @@ async function authorizedRead(
   executor: SqlExecutor,
 ) {
   assertManagementProof(proof!, proof?.employee?.id ?? "");
-  const workspace = await getWorkspace(executor);
+  const {workspace}=await assertOperationalAccess(proof!,{kind:'COMPANY'},executor);
   const guards = [
     ...workspaceReadGuard(workspace),
     {
       text: "SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE",
       values: [proof!.employee.id],
     },
-    ...managementSessionStatements(proof!, proof!.employee.id),
+    ...operationalScopeStatements(proof!,workspace,{kind:'COMPANY'}),
   ];
   const result = await executor.transaction([
     ...guards,
     statement(workspace.id),
-    ...managementSessionStatements(proof!, proof!.employee.id),
+    ...operationalScopeStatements(proof!,workspace,{kind:'COMPANY'}),
   ]);
   return (result[guards.length] ?? []) as Record<string, unknown>[];
 }
@@ -123,7 +123,7 @@ export async function createTemplateFromWeek(
   }
 
   assertManagementProof(input.proof, input.createdBy);
-  const workspace = await getWorkspace(executor);
+  const {workspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'},executor);
   const { source } = await readGenerationSource(executor);
   const shifts = await listWeekShifts({ weekStart: input.weekStart }, executor);
   const templateId = randomUUID();
@@ -160,9 +160,9 @@ export async function createTemplateFromWeek(
   await executor.transaction([
     ...generationMutationGuards(source, [input.weekStart]),
     ...workspaceReadGuard(workspace),
-    ...managementSessionStatements(input.proof, input.createdBy),
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
     ...statements,
-    ...managementSessionStatements(input.proof, input.createdBy),
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
   ]);
   return templateId;
 }
@@ -173,7 +173,7 @@ export async function archiveScheduleTemplate(
   executor: SqlExecutor = neonNotificationExecutor(),
 ) {
   assertManagementProof(proof, proof.employee.id);
-  const workspace = await getWorkspace(executor);
+  const {workspace}=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
   const guards = [
     ...workspaceReadGuard(workspace),
     {
@@ -184,7 +184,7 @@ export async function archiveScheduleTemplate(
       text: "SELECT id FROM schedule_templates WHERE id=$1 AND workspace_id=$2 FOR UPDATE",
       values: [templateId, workspace.id],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
   ];
   const result = await executor.transaction([
     ...guards,
@@ -192,7 +192,7 @@ export async function archiveScheduleTemplate(
       text: "UPDATE schedule_templates SET active=false,updated_at=clock_timestamp() WHERE id=$1 AND workspace_id=$2 AND active RETURNING id",
       values: [templateId, workspace.id],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
   ]);
   return Boolean(result[guards.length]?.[0]);
 }

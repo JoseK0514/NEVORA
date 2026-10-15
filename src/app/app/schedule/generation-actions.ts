@@ -1,4 +1,5 @@
 "use server";
+import {assertOperationalAccess,isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 
 import { projectGenerationSetup, type GenerationSetupException } from '../../../lib/scheduling/generation/setup';
 import { revalidatePath } from 'next/cache';
@@ -35,7 +36,7 @@ function fields(form:FormData,allowed:readonly string[]) {
 }
 function value(form:FormData,key:string) {const v=form.get(key);return typeof v==='string'?v:'';}
 function failure(error:unknown):GenerationActionState {
-  const message=error instanceof GenerationTargetNotDraftError?`Automatic scheduling requires Draft targets. Review: ${error.locationNames.join(', ')}.`:error instanceof GenerationConflictError?'Scheduling inputs changed or are busy. Reload this week and try again.':error instanceof GenerationPermissionError?'Your scheduling permission changed. Reload and try again.':error instanceof GenerationScopeError?'Choose a valid Monday, location scope and Draft schedule.':'The schedule could not be updated. Please try again.';
+  const message=error instanceof GenerationTargetNotDraftError?`Automatic scheduling requires Draft targets. Review: ${error.locationNames.join(', ')}.`:error instanceof GenerationConflictError?'Scheduling inputs changed or are busy. Reload this week and try again.':error instanceof GenerationPermissionError||isOperationalAuthorizationError(error)?'Your scheduling permission changed. Reload and try again.':error instanceof GenerationScopeError?'Choose a valid Monday, location scope and Draft schedule.':'The schedule could not be updated. Please try again.';
   return {status:'error',message};
 }
 function projection(result:GenerationResult,locations:{id:string;shortName:string}[],positions:{id:string;name:string}[]):NonNullable<GenerationActionState['result']> {
@@ -50,6 +51,7 @@ export async function generateWeekAction(_previous:GenerationActionState,form:Fo
   const session=await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof();
   try {
+    await assertOperationalAccess(proof,{kind:'COMPANY'});
     fields(form,['weekStart','mode','scope','locationId']);
     const weekStart=value(form,'weekStart'),mode=value(form,'mode'),scope=value(form,'scope'),locationId=value(form,'locationId');
     if(!validMonday(weekStart) || !['BUILD_WEEK','FILL_GAPS_ONLY'].includes(mode) || !['ALL','SELECTED'].includes(scope) || (scope==='ALL'?form.has('locationId'):!locationId.trim())) throw new GenerationScopeError();
@@ -65,6 +67,7 @@ export async function clearGenerationExclusionAction(_previous:GenerationActionS
   const session=await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof();
   try {
+    await assertOperationalAccess(proof,{kind:'COMPANY'});
     fields(form,['weekStart','locationId','exclusionId']);
     const weekStart=value(form,'weekStart'),locationId=value(form,'locationId'),exclusionId=value(form,'exclusionId');
     if(!validMonday(weekStart)||!locationId.trim()||!exclusionId.trim()) throw new GenerationScopeError();

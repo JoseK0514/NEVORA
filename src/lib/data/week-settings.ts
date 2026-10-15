@@ -1,3 +1,4 @@
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { getWorkspace, workspaceReadGuard, WorkspaceConcurrencyError } from './workspaces';
 import type { Workspace } from '../domain';
 import { randomUUID } from "node:crypto";
@@ -54,14 +55,15 @@ export async function setAvailabilityDeadline(input: {
   proof: SessionMutationProof;
 }) {
   assertManagementProof(input.proof,input.updatedBy);
+  const {workspace:accessWorkspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'});
   const sql = getDb();
 
-  const workspace = input.conversionWorkspace ?? await getWorkspace();
+  const workspace = input.conversionWorkspace ?? accessWorkspace;
   const seedQueries = [
     ...workspaceReadGuard(workspace).map(statement => sql.query(statement.text, [...statement.values])),
     sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + input.weekStart}, 0))`,
     sql.query("SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE", [input.updatedBy]),
-    ...managementSessionStatements(input.proof,input.updatedBy).map(statement => sql.query(statement.text,[...statement.values])),
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}).map(statement => sql.query(statement.text,[...statement.values])),
     sql`INSERT INTO schedule_week_settings (
       week_start,
       availability_deadline,
@@ -145,7 +147,7 @@ export async function setAvailabilityDeadline(input: {
 
   const cancellation = availabilityCancellation(input.weekStart, null, input.deadlineIso ? new Date(input.deadlineIso).toISOString() : null);
   seedQueries.push(sql.query(cancellation.text, cancellation.values));
-  seedQueries.push(...managementSessionStatements(input.proof,input.updatedBy).map(statement => sql.query(statement.text,[...statement.values])));
+  seedQueries.push(...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}).map(statement => sql.query(statement.text,[...statement.values])));
   try {
     await sql.transaction(seedQueries);
   } catch (error) {
