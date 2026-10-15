@@ -1,89 +1,42 @@
 "use server";
-
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {parseOperationalProfileForm} from '@/lib/shift-changes/policy-form';
 import {saveOperationalRuleProfile} from '@/lib/data/shift-change-policy';
 import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import {
-  insertEmployee,
-  saveEmployeeSchedulingProfile,
-  updateEmployeeProfile,
-} from "@/lib/data/employees";
-import type { UserRole } from "@/lib/domain";
-import { normalizePhoneNumber } from "@/lib/phone";
+import {revalidatePath} from 'next/cache';
+import {MANAGER_ROLES,requireRoles} from '@/lib/auth/permissions';
+import {saveEmployeeSchedulingProfile} from '@/lib/data/employees';
+import {saveEmployeeCoreAccessProfile,createEmployeeWithAccess} from '@/lib/company-access/employee-profile.server';
+import type {EmployeeCoreAccessCommand,CreateEmployeeWithAccessCommand,EmployeeCoreAccessResult} from '@/lib/company-access/model';
 
-const ROLES: UserRole[] = ["OWNER", "MANAGER", "LEAD", "EMPLOYEE"];
-const CONTROL_CHARACTERS = /[\p{Cc}\p{Cf}]/u;
-const readable = (value: string, max: number) =>
-  !!value && [...value].length <= max && !CONTROL_CHARACTERS.test(value);
-const validEmployeeEmail = (value: string) =>
-  !value ||
-  ([...value].length <= 254 &&
-    !CONTROL_CHARACTERS.test(value) &&
-    !/\s/.test(value) &&
-    /^[^@]+@[^@]+$/.test(value));
-
-async function createEmployee(formData: FormData, inline=false) {
-  const session = await requireRoles(MANAGER_ROLES);
-  const proof = await requireSessionMutationProof();
-
-  const id = String(formData.get("id") ?? "").trim().toUpperCase();
-  const firstName = String(formData.get("firstName") ?? "").trim();
-  const lastName = String(formData.get("lastName") ?? "").trim();
-  const phone = normalizePhoneNumber(String(formData.get("phone") ?? ""));
-  const emailValue = String(formData.get("email") ?? "").trim();
-  const role = String(formData.get("role") ?? "") as UserRole;
-  const primaryLocationId = String(formData.get("primaryLocationId") ?? "");
-  const eligibleLocationIds = formData
-    .getAll("eligibleLocationIds")
-    .map(String)
-    .filter(Boolean);
-
-  if (
-    !id ||
-    !firstName ||
-    !lastName ||
-    !phone ||
-    !ROLES.includes(role) ||
-    !primaryLocationId
-  ) {
-    employeeFailure('invalid',inline);
-  }
-  if (!readable(id, 128)) employeeFailure("id", inline);
-  if (!readable(firstName, 160) || !readable(lastName, 160)) {
-    employeeFailure("name", inline);
-  }
-  if (!validEmployeeEmail(emailValue)) employeeFailure("email", inline);
-
-  if (role === "OWNER" && session.role !== "OWNER") {
-    employeeFailure('permission',inline);
-  }
-
-  try {
-    await insertEmployee({
-      id,
-      firstName,
-      lastName,
-      phone,
-      email: emailValue || undefined,
-      role,
-      primaryLocationId,
-      eligibleLocationIds,
-      positionIds: formData.getAll("positionIds").map(String),
-      actorEmployeeId: session.id,
-      proof,
-    });
-  } catch {
-    employeeFailure('save',inline);
-  }
-
-  revalidatePath("/app/employees");
-  if(inline)return {success:"Employee created. Open Employees to view the scheduling profile."};
-  redirect("/app/employees?created=1");
+function readEmployeeCommand(data:FormData):unknown {
+ const keys=[...data.keys()].filter(key=>!key.startsWith('$ACTION_'));
+ const value=data.get('command');
+ if(keys.length!==1||keys[0]!=='command'||typeof value!=='string'||Buffer.byteLength(value,'utf8')>8192)return null;
+ try{return JSON.parse(value);}catch{return null;}
 }
+function refreshEmployee(receipt:Extract<EmployeeCoreAccessResult,{state:'saved'}>['receipt']) {
+ try{revalidatePath('/app/employees');revalidatePath(`/app/employees/${encodeURIComponent(receipt.employeeId)}`);}catch{/* A committed receipt remains committed if refresh fails. */}
+}
+export async function saveEmployeeCoreProfileAction(data:FormData):Promise<EmployeeCoreAccessResult> {
+ const command=readEmployeeCommand(data);
+ if(command===null)return {state:'invalid',fieldErrors:[{field:'command',message:'Submit one complete employee command.'}]};
+ try{
+  const proof=await requireSessionMutationProof();
+  const result=await saveEmployeeCoreAccessProfile(proof,command as EmployeeCoreAccessCommand);
+  if(result.state==='saved')refreshEmployee(result.receipt);return result;
+ }catch{return {state:'unavailable'};}
+}
+export async function createEmployeeFormAction(data:FormData):Promise<EmployeeCoreAccessResult> {
+ const command=readEmployeeCommand(data);
+ if(command===null)return {state:'invalid',fieldErrors:[{field:'command',message:'Submit one complete employee command.'}]};
+ try{
+  const proof=await requireSessionMutationProof();
+  const result=await createEmployeeWithAccess(proof,command as CreateEmployeeWithAccessCommand);
+  if(result.state==='saved')refreshEmployee(result.receipt);return result;
+ }catch{return {state:'unavailable'};}
+}
+export async function createEmployeeAction(data:FormData):Promise<EmployeeCoreAccessResult>{return createEmployeeFormAction(data);}
 
 export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
   const actor = await requireRoles(MANAGER_ROLES);
@@ -110,126 +63,6 @@ export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
   }
 }
 
-export async function saveEmployeeCoreProfileAction(formData: FormData) {
-  const actor = await requireRoles(MANAGER_ROLES);
-  const proof = await requireSessionMutationProof();
-  const employeeId = String(formData.get("employeeId") ?? "").trim();
-  const expectedUpdatedAt = String(
-    formData.get("expectedUpdatedAt") ?? "",
-  ).trim();
-  const firstName = String(formData.get("firstName") ?? "").trim();
-  const lastName = String(formData.get("lastName") ?? "").trim();
-  const phone = normalizePhoneNumber(String(formData.get("phone") ?? ""));
-  const email = String(formData.get("email") ?? "").trim();
-  const role = String(formData.get("role") ?? "") as UserRole;
-  const primaryLocationId = String(
-    formData.get("primaryLocationId") ?? "",
-  ).trim();
-  const activeValue = String(formData.get("active") ?? "");
-
-  if (
-    !employeeId ||
-    !expectedUpdatedAt ||
-    !firstName ||
-    !lastName ||
-    !phone ||
-    !ROLES.includes(role) ||
-    !primaryLocationId ||
-    !["true", "false"].includes(activeValue)
-  ) {
-    return { error: "Complete all required employee details." };
-  }
-  if (!readable(employeeId, 128)) {
-    return { error: "Employee ID must contain 1–128 readable characters." };
-  }
-  if (!readable(firstName, 160) || !readable(lastName, 160)) {
-    return {
-      error: "Employee names must contain 1–160 readable characters.",
-    };
-  }
-  if (!validEmployeeEmail(email)) {
-    return { error: "Enter a valid employee email address." };
-  }
-
-  let updatedAt: string;
-  try {
-    const written = await updateEmployeeProfile({
-      employeeId,
-      expectedUpdatedAt,
-      firstName,
-      lastName,
-      phone,
-      email: email || undefined,
-      role,
-      primaryLocationId,
-      active: activeValue === "true",
-      actorEmployeeId: actor.id,
-      proof,
-    });
-    updatedAt = written.updatedAt;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "";
-    if (message.includes("employee_profile_stale")) {
-      return {
-        error:
-          "This employee changed since you opened the profile. Reload and review the latest details.",
-      };
-    }
-    if (message.includes("employee_profile_permission_denied") || message.includes('management_authorization')) {
-      return {
-        error: "You do not have permission to make this employee change.",
-      };
-    }
-    if (message.includes("employee_profile_last_owner")) {
-      return {
-        error: "Keep at least one active Owner in the workspace.",
-      };
-    }
-    if (message.includes("employee_profile_location_invalid")) {
-      return {
-        error:
-          "Choose an active primary location. An inactive existing location can only be retained while the employee remains inactive.",
-      };
-    }
-    return {
-      error:
-        "Employee details could not be saved. Check the email and current profile, then try again.",
-    };
-  }
-
-  revalidatePath("/app/employees");
-  revalidatePath(`/app/employees/${encodeURIComponent(employeeId)}`);
-  return { success: "Employee details updated.", updatedAt };
-}
-
-const employeeErrors: Record<string, string> = {
-  invalid: "Complete all required employee fields.",
-  id: "Employee ID must contain 1–128 readable characters.",
-  name: "Employee names must contain 1–160 readable characters.",
-  email: "Enter a valid employee email address.",
-  permission: "Only an Owner can create another Owner.",
-  save: "Employee could not be saved. Check unique ID/email and active locations/positions.",
-};
-function employeeFailure(code: string, inline: boolean): never {
-  if (inline) throw new Error(employeeErrors[code]);
-  redirect(`/app/employees/new?error=${code}`);
-}
-export async function createEmployeeAction(data: FormData): Promise<void> {
-  await createEmployee(data);
-}
-export async function createEmployeeFormAction(data: FormData) {
-  try {
-    return (await createEmployee(data, true))!;
-  } catch (error) {
-    return {
-      error:
-        error instanceof Error &&
-        Object.values(employeeErrors).includes(error.message)
-          ? error.message
-          : "Employee could not be saved. Your entries are preserved.",
-    };
-  }
-}
 
 export async function saveOperationalRulesAction(data:FormData):Promise<import('@/lib/shift-changes/types').PolicyWriteResult>{
  const input=parseOperationalProfileForm(data);if(!input)return {status:'invalid',fieldErrors:[{field:'profile',message:'Choose every rule status explicitly and complete configured values, time basis and routing.'}]};
