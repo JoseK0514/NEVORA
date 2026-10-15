@@ -9,7 +9,16 @@ import type { SessionMutationProof } from '../../lib/shift-changes/types';
 // Adapt only transport and request context. All authorization and business SQL
 // below is the real repository/action implementation on an owned database.
 const context = vi.hoisted(() => ({ executor: null as SqlExecutor | null, cookies: new Map<string, string>(), cookieWrites: 0 }));
-vi.mock('@/lib/db', () => ({ getDb: () => ({ query: (text: string, values: unknown[] = []) => context.executor!.query({ text, values }) }), queryRows: (rows: unknown) => rows }));
+vi.mock('@/lib/db', () => {
+  // Match Neon's lazy statement contract: assembling a transaction starts no
+  // independent queries. Both the extracted default executor and explicit
+  // fixture executor execute the real ordered PostgreSQL batch below.
+  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>context.executor!.query({text,values}).then(yes,no)});
+  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,index)=>text+(index?'$'+index:'')+part,''),values),{
+    query:statement,transaction:(queries:{statement:SqlStatement}[])=>context.executor!.transaction(queries.map(query=>query.statement)),
+  });
+  return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};
+});
 vi.mock('next/headers', () => ({ cookies: async () => ({
   get: (name: string) => context.cookies.has(name) ? { value: context.cookies.get(name)! } : undefined,
   set: (name: string, value: string) => { context.cookieWrites++; context.cookies.set(name, value); },
