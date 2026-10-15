@@ -5,7 +5,8 @@ import { access, copyFile, mkdir, mkdtemp, readFile, readdir, realpath, writeFil
 import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { createDisposableExchangeDatabase } from './local-postgres';
-import type { OwnedDatabaseIdentity } from './owned-pg-transport';
+import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-transport';
+import type {SqlExecutor} from '../../lib/notifications/types';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
@@ -70,6 +71,8 @@ export function ownedPayrollEnvironment(options: {payrollEnabled?:boolean} = {})
   return {NEVORA_PAYROLL_ENABLED: options.payrollEnabled === true ? 'true' : 'false'};
 }
 
+export type OwnedNextDatabaseInitializer=(context:{executor:SqlExecutor;identity:Readonly<OwnedDatabaseIdentity>;signal?:AbortSignal})=>Promise<void>;
+
 type OwnedMailOptions={recoverySmtpPort?:number;invitationSmtpPort?:number};
 function validateOwnedMailOptions(options:OwnedMailOptions){
  for(const port of [options.recoverySmtpPort,options.invitationSmtpPort])if(port!==undefined&&(!Number.isInteger(port)||port<1||port>65535))throw Error('Owned SMTP port must be explicit.');
@@ -92,7 +95,7 @@ export function ownedMailEnvironment(origin:string,options:OwnedMailOptions={}):
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
   if (options.processOwnerId !== undefined && !/^[a-f0-9]{32}$/.test(options.processOwnerId)) throw Error('Owned process marker must identify the invocation.');
@@ -163,9 +166,19 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
   options.signal?.addEventListener('abort', abort, { once: true });
   try {
     options.signal?.throwIfAborted();
-    const [identity] = await database.executor.query<OwnedDatabaseIdentity>({
-      text: "SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()", values: [],
-    });
+    const identityQuery={text: "SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()",values:[]};
+    const [identity] = await database.executor.query<OwnedDatabaseIdentity>(identityQuery,options.signal);
+    if(options.initializeDatabase){
+      // Reuse the existing pure loopback/name/OID/marker validator. Constructing
+      // this lazy transport starts no connection or application process.
+      if(!identity)throw Error('Owned database identity missing before initialization');
+      createOwnedPgTransport(database.connectionString,identity);
+      await options.initializeDatabase({executor:database.executor,identity:Object.freeze({...identity}),signal:options.signal});
+      options.signal?.throwIfAborted();
+      const [current]=await database.executor.query<OwnedDatabaseIdentity>(identityQuery,options.signal);
+      if(!current||current.name!==identity.name||current.oid!==identity.oid||current.marker!==identity.marker)throw Error('Owned database identity changed during initialization');
+    }
+    options.signal?.throwIfAborted();
     for (const name of files) {
       if (isAbsolute(name) || name.split('/').includes('..')) throw new Error('Unsafe tracked source path');
       await mkdir(dirname(join(mirror, name)), { recursive: true });
