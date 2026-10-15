@@ -192,10 +192,11 @@ describe('D2-CODEX-002/003/007 bounded regression controls',()=>{
     let loseResponse=true;
     const executor:typeof f.db.executor={query:f.db.executor.query,transaction:async statements=>{
       const result=await f.db.executor.transaction(statements);
-      if(loseResponse){loseResponse=false;throw new Error('Committed response delivery lost');}
+      if(loseResponse&&statements.some(s=>s.text.includes('nevora_review_time_correction'))){loseResponse=false;throw new Error('Committed response delivery lost');}
       return result;
     }};
     expect(await reviewTimeCorrection(ownerProof,command,executor)).toEqual({status:'outcome-unknown',operationId:command.operationId});
+    expect(loseResponse).toBe(false);
     expect((await reviewTimeCorrection(ownerProof,command,executor)).status).toBe('approved');
     expect(await f.q("SELECT count(*)::int AS count FROM time_correction_events WHERE request_id=$1 AND event_kind IN ('APPROVED','REJECTED')",[pending.requestId])).toEqual([{count:1}]);
     expect(await f.q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE request_id=$1',[pending.requestId])).toEqual([{count:1}]);
