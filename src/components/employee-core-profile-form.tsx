@@ -12,19 +12,14 @@ import type { EmployeeManagementProfile } from "@/lib/data/employees";
 import type { Location, UserRole } from "@/lib/domain";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 
-export function EmployeeCoreProfileForm({
-  employee,
-  locations,
-  actorRole,
-  ownerScope = null,
-  action,
-}: {
-  employee: EmployeeManagementProfile;
-  locations: Location[];
-  actorRole: UserRole;
-  ownerScope?: OwnerScopeContext|null;
-  action: (data: FormData) => Promise<unknown>;
-}) {
+type EmployeeCoreProfileProps={
+ employee:EmployeeManagementProfile;locations:Location[];actorId:string;actorRole:UserRole;
+ ownerScope?:OwnerScopeContext|null;action:(data:FormData)=>Promise<unknown>;
+};
+export function EmployeeCoreProfileForm(props:EmployeeCoreProfileProps){
+ return <EmployeeCoreProfileEditor key={JSON.stringify([props.actorId,props.actorRole,props.employee.id])} {...props}/>;
+}
+function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null,action}:EmployeeCoreProfileProps){
   // Editable drafts retain the versions they were opened against. An RSC refresh
   // must not silently attach dirty fields to a newer employee/access revision.
   const [baseline]=useState(()=>({employee,ownerScope}));

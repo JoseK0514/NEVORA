@@ -12,25 +12,26 @@ const invitationText={ISSUED:'Invitation issued',CONSUMED:'Invitation used',REVO
 
 /** A different actor/target gets fresh transient state, never a previous receipt. */
 export function EmployeeInvitationPanel(props:{employeeId:string;initialStatus:InvitationStatusResult;actorId:string}){
- return <InvitationPanel key={props.actorId+':'+props.employeeId} {...props}/>;
+ return <InvitationPanel key={JSON.stringify([props.actorId,props.employeeId,props.initialStatus.state==='unavailable'&&props.initialStatus.reason==='access_denied'])} {...props}/>;
 }
 function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;initialStatus:InvitationStatusResult;actorId:string}){
  const [status,setStatus]=useState(initialStatus),[pending,setPending]=useState(false),[message,setMessage]=useState(''),[receipt,setReceipt]=useState<Extract<InvitationResult,{state:'saved'}>['receipt']|null>(null),[confirm,setConfirm]=useState<'ISSUE'|'REVOKE'|null>(null),[uncertain,setUncertain]=useState(false);
- const command=useRef<InvitationCommand|null>(null),busy=useRef(false),mounted=useRef(false),request=useRef<AbortController|null>(null);
- useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;request.current?.abort();};},[]);
+ const command=useRef<InvitationCommand|null>(null),busy=useRef(false),mounted=useRef(false),request=useRef<AbortController|null>(null),generation=useRef(0);
+ useEffect(()=>{mounted.current=true;function retire(){++generation.current;request.current?.abort();command.current=null;}return()=>{mounted.current=false;retire();};},[]);
  const headers={'x-nevora-company-access':'1','x-nevora-actor':actorId};
- function denied(){setStatus({state:'unavailable',reason:'access_denied'});setReceipt(null);setConfirm(null);command.current=null;setUncertain(false);setMessage('Your current access does not allow invitation management. Sign in again or contact your Owner.');}
- async function currentStatus(signal:AbortSignal){
+ const isCurrent=(version:number)=>mounted.current&&generation.current===version;
+ function denied(){++generation.current;request.current?.abort();request.current=null;busy.current=false;setPending(false);setStatus({state:'unavailable',reason:'access_denied'});setReceipt(null);setConfirm(null);command.current=null;setUncertain(false);setMessage('Your current access does not allow invitation management. Sign in again or contact your Owner.');}
+ async function currentStatus(signal:AbortSignal,version:number){
   const response=await fetch('/api/company-access/invitations/'+encodeURIComponent(employeeId),{headers,cache:'no-store',credentials:'same-origin',redirect:'error',signal});
-  if(!mounted.current)return;
+  if(!isCurrent(version))return;
   if(response.status===401||response.status===403){denied();return;}
   if(!response.ok)throw new Error('Current invitation unavailable.');
-  const current=readInvitationStatus(await response.json(),employeeId);if(mounted.current)setStatus(current);
+  const current=readInvitationStatus(await response.json(),employeeId);if(!isCurrent(version))return;if(current.state==='unavailable'&&current.reason==='access_denied')denied();else setStatus(current);
  }
  async function refresh(){
-  if(busy.current||command.current)return;busy.current=true;setPending(true);setConfirm(null);const abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),15000);
-  try{await currentStatus(abort.signal);}catch{if(mounted.current){setStatus({state:'unavailable',reason:'read_failed'});setMessage('Current invitation information could not be loaded. Refresh before taking another action.');}}
-  finally{clearTimeout(timeout);if(mounted.current){busy.current=false;setPending(false);request.current=null;}}
+  if(busy.current||command.current)return;busy.current=true;setPending(true);setConfirm(null);const version=generation.current,abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),15000);
+  try{await currentStatus(abort.signal,version);}catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'read_failed'});setMessage('Current invitation information could not be loaded. Refresh before taking another action.');}}
+  finally{clearTimeout(timeout);if(isCurrent(version)){busy.current=false;setPending(false);request.current=null;}}
  }
  async function run(reconcile=false){
   if(busy.current)return;
@@ -41,17 +42,17 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
    command.current=confirm==='ISSUE'?{action:'ISSUE',operationId,expectedEmployeeVersion:status.employeeVersion,expectedInvitationRevision:status.invitationRevision}:{action:'REVOKE',operationId,invitationId:status.invitation!.id,expectedInvitationRevision:status.invitationRevision};
   }
   const submitted=command.current;if(!submitted)return;
-  busy.current=true;setPending(true);setConfirm(null);setMessage('');const abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),20000);
+  busy.current=true;setPending(true);setConfirm(null);setMessage('');const version=generation.current,abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),20000);
   try{
    const response=await fetch(reconcile?'/api/company-access/invitation-operations/'+encodeURIComponent(submitted.operationId):'/api/company-access/invitations/'+encodeURIComponent(employeeId),{method:reconcile?'GET':'POST',headers:{...headers,...(!reconcile?{'Content-Type':'application/json'}:{})},...(!reconcile?{body:JSON.stringify(submitted)}:{}),cache:'no-store',credentials:'same-origin',redirect:'error',signal:abort.signal});
-   if(!mounted.current)return;
+   if(!isCurrent(version))return;
    if(response.status===401||response.status===403){denied();return;}
-   const result=readInvitationResult(await response.json(),submitted.operationId,employeeId);if(!mounted.current)return;
+   const result=readInvitationResult(await response.json(),submitted.operationId,employeeId);if(!isCurrent(version))return;
    if(result.state==='outcome_unknown'){setStatus({state:'unavailable',reason:'source_changed'});setUncertain(true);setMessage('The action outcome is not confirmed. Check this action before sending another invitation.');return;}
    if(!response.ok&&result.state==='saved')throw new Error('Receipt transport unavailable.');
    if(result.state==='saved'){
     setReceipt(result.receipt);command.current=null;setUncertain(false);setMessage(result.receipt.action==='ISSUE'?'Invitation issued. Check the separate delivery status below.':'Invitation revoked.');
-    try{await currentStatus(abort.signal);}catch{if(mounted.current)setStatus({state:'unavailable',reason:'read_failed'});}
+    try{await currentStatus(abort.signal,version);}catch{if(isCurrent(version))setStatus({state:'unavailable',reason:'read_failed'});}
    }else if(reconcile){
     // An unavailable historical read cannot prove that the original write failed.
     setUncertain(true);setMessage('The original action is still not confirmed. Check again before starting another invitation action.');
@@ -59,8 +60,8 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
     command.current=null;setUncertain(false);setStatus({state:'unavailable',reason:'source_changed'});
     setMessage(result.state==='limited'?`Too many invitation actions. Wait at least ${Math.ceil(result.retryAfterMs/1000)} seconds, then refresh current information.`:result.state==='conflict'?'Employee or invitation information changed. Refresh and review it before choosing a new action.':result.state==='invalid'?result.fieldErrors.map(e=>e.message).join(' '):'Invitation email is unavailable. Refresh current information before trying again.');
    }
-  }catch{if(mounted.current){setStatus({state:'unavailable',reason:'source_changed'});setUncertain(true);setMessage('The action outcome is not confirmed. Check this action before sending another invitation.');}}
-  finally{clearTimeout(timeout);if(mounted.current){busy.current=false;setPending(false);request.current=null;}}
+  }catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'source_changed'});setUncertain(true);setMessage('The action outcome is not confirmed. Check this action before sending another invitation.');}}
+  finally{clearTimeout(timeout);if(isCurrent(version)){busy.current=false;setPending(false);request.current=null;}}
  }
  const available=status.state==='ready',deniedAccess=status.state==='unavailable'&&status.reason==='access_denied';
  return <section className={'panel '+styles.stack} aria-labelledby={'invitation-'+employeeId} aria-busy={pending}>

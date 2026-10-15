@@ -8,7 +8,7 @@ import {ManagerOperationalScopeFields} from './manager-operational-scope-fields'
 import styles from './company-access.module.css';
 
 export function ManagerOperationalScopePanel(props:{current:OwnerScopeContext;locations:{id:string;name:string}[];actorId:string}){
- return <ScopePanel key={props.actorId+':'+props.current.employeeId} {...props}/>;
+ return <ScopePanel key={JSON.stringify([props.actorId,props.current.employeeId])} {...props}/>;
 }
 function ScopePanel({current,locations,actorId}:{current:OwnerScopeContext;locations:{id:string;name:string}[];actorId:string}){
  const [baseline]=useState(current),[value,setValue]=useState<ScopeSelection|null>(current.scope),[pending,setPending]=useState(false),[unknown,setUnknown]=useState(false),[locked,setLocked]=useState(false),[denied,setDenied]=useState(false),[message,setMessage]=useState(''),[confirm,setConfirm]=useState<'ASSIGN'|'REVOKE'|null>(null),[receipt,setReceipt]=useState<Extract<ScopeResult,{state:'saved'}>['receipt']|null>(null);

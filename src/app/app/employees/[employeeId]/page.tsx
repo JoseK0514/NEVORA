@@ -118,6 +118,7 @@ export default async function EmployeeProfilePage({
                 <EmployeeCoreProfileForm
                   employee={employee}
                   locations={locations}
+                  actorId={actor.id}
                   actorRole={actor.role}
                   action={saveEmployeeCoreProfileAction}
                 />

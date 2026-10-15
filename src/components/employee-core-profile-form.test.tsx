@@ -38,7 +38,7 @@ it("renders stable identity and account lifecycle guidance (presentation smoke)"
     <EmployeeCoreProfileForm
       employee={employee}
       locations={locations}
-      actorRole="OWNER"
+      actorId="OWNER1" actorRole="OWNER"
       action={vi.fn()}
     />,
   );
@@ -60,7 +60,7 @@ it("keeps the current inactive primary location visible without offering unrelat
     <EmployeeCoreProfileForm
       employee={employee}
       locations={locations}
-      actorRole="OWNER"
+      actorId="OWNER1" actorRole="OWNER"
       action={vi.fn()}
     />,
   );
@@ -74,10 +74,10 @@ it("keeps the current inactive primary location visible without offering unrelat
 
 it("only offers Owner authority to an Owner actor", () => {
   const ownerHtml = renderToStaticMarkup(
-    <EmployeeCoreProfileForm employee={employee} locations={locations} actorRole="OWNER" action={vi.fn()} />,
+    <EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />,
   );
   const managerHtml = renderToStaticMarkup(
-    <EmployeeCoreProfileForm employee={employee} locations={locations} actorRole="MANAGER" action={vi.fn()} />,
+    <EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="MANAGER" action={vi.fn()} />,
   );
   expect(ownerHtml).toContain('value="OWNER"');
   expect(managerHtml).not.toContain('value="OWNER"');
