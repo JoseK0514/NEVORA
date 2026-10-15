@@ -3,7 +3,10 @@ import type { AccessFailure } from '@/lib/company-access/model';
 export type InvitationCommand =
  |{action:'ISSUE';operationId:string;expectedEmployeeVersion:string;expectedInvitationRevision:number}
  |{action:'REVOKE';operationId:string;invitationId:string;expectedInvitationRevision:number};
-export type ActivationResult = {state:'activated'|'invalid'|'unavailable'|'outcome_unknown'};
+/** Own login identity is disclosed only after a known successful credential commit. */
+export type ActivationResult =
+ |{state:'activated';employeeId:string}
+ |{state:'invalid'|'unavailable'|'outcome_unknown'};
 export type InvitationStatusResult =
   | { state:'ready'; employeeId:string;employeeVersion:string;
       eligibility:'INVITABLE'|'NO_EMAIL'|'ALREADY_ACTIVATED'|'INACTIVE'|'SELF_ISSUE_DENIED';
