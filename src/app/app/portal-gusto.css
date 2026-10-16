@@ -66,6 +66,14 @@ html body .app-shell.nevora-portal {
   background: var(--g-canvas);
   color: var(--g-ink);
 }
+/* Phone type floor (U0): nothing in the small or caption roles reads below
+ * 15px on a phone, where most employees use NEVORA. */
+@media (max-width: 767px) {
+  html body .app-shell.nevora-portal {
+    --g-t-small: 400 15px/1.45 var(--design-font-body);
+    --g-t-caption: 400 15px/1.4 var(--design-font-body);
+  }
+}
 html body .app-shell.nevora-portal :is(.app-main,.page-frame) { background: var(--g-canvas); }
 html body .app-shell.nevora-portal ::selection { background: #CDE7E5; color: var(--g-ink); }
 
@@ -226,3 +234,9 @@ html body .app-shell.nevora-portal :is(.mws-empty, .updates-empty, .rules-empty,
   max-width: 44ch; margin: 0; font: var(--g-t-small); color: var(--g-muted); text-wrap: pretty;
 }
 html body .app-shell.nevora-portal .nevora-empty-action { margin-top: 10px; }
+
+/* Spot illustrations (U0): line art in the accent on a wash disc. */
+html body .app-shell.nevora-portal .nevora-illustration { display: block; color: var(--g-accent); }
+html body .app-shell.nevora-portal .nevora-empty-illustration { margin-bottom: 8px; }
+@media (max-width: 767px) { html body .app-shell.nevora-portal .nevora-empty-illustration { width: 96px; height: 82px; } }
+@media (prefers-contrast: more) { html body .app-shell.nevora-portal .nevora-illustration circle:first-child { fill: transparent; } }

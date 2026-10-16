@@ -6,7 +6,7 @@
  */
 const RETIRE = false;
 const CACHE_PREFIX = 'fuel-portal-public-';
-const CACHE_NAME = `${CACHE_PREFIX}v3`;
+const CACHE_NAME = `${CACHE_PREFIX}v4`;
 const OFFLINE = '/fuel-portal-offline.html';
 const PUBLIC_ASSETS = [OFFLINE, '/images/nevora-wordmark.png', '/icons/fuel-192.png', '/icons/fuel-512.png', '/icons/fuel-maskable-192.png', '/icons/fuel-maskable-512.png', '/icons/fuel-apple-180.png'];
 const GENERATION = /^[A-Za-z0-9_-]{1,128}$/;

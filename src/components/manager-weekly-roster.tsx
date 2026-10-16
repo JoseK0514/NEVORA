@@ -113,7 +113,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
         <summary><span>Show {unscheduled.length} unscheduled</span><CaretDownIcon size={16} aria-hidden="true" /></summary>
         {unscheduled.map(renderRow)}
       </details> : null}
-    </div> : <EmptyState className="mws-empty" status icon={<UsersIcon size={22} />} title={employees.length ? "No team members match" : "Your team schedule starts here"}
+    </div> : <EmptyState className="mws-empty" status icon={<UsersIcon size={22} />} illustration={employees.length ? undefined : "setup-checklist"} title={employees.length ? "No team members match" : "Your team schedule starts here"}
       action={employees.length ? <button type="button" className="button secondary" onClick={() => setQuery("")}>Clear search</button> : <Link className="button secondary" href="/app/employees">Manage employees</Link>}>
       {employees.length ? "Try another name or clear your search." : "Add team members to start assigning shifts."}
     </EmptyState>}

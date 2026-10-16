@@ -253,3 +253,24 @@ html body .app-shell.nevora-portal .nevora-success-panel { transition: opacity 2
 @media (prefers-reduced-motion: reduce) {
   @starting-style { html body .app-shell.nevora-portal .nevora-success-panel { translate: none; } }
 }
+
+/* Route skeletons (U0): page-shaped placeholders for each section. */
+html body .app-shell.nevora-portal .route-skeleton { display: grid; gap: 20px; max-width: 1180px; }
+html body .app-shell.nevora-portal .route-skeleton-header { display: grid; gap: 10px; }
+html body .app-shell.nevora-portal .route-skeleton :is(.route-skeleton-header, .route-skeleton-grid, .route-skeleton-cards) i {
+  display: block; border-radius: 8px;
+  background: linear-gradient(90deg, #F1F2F4 0%, #F7F8F9 40%, #F1F2F4 80%) 0 0 / 300% 100%;
+  animation: nevora-shimmer 1.4s ease-in-out infinite;
+}
+html body .app-shell.nevora-portal .route-skeleton-header i:first-child { width: min(320px, 70%); height: 28px; }
+html body .app-shell.nevora-portal .route-skeleton-header i:last-child { width: min(460px, 90%); height: 14px; }
+html body .app-shell.nevora-portal .route-skeleton-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+html body .app-shell.nevora-portal .route-skeleton-grid i { height: 56px; }
+html body .app-shell.nevora-portal .route-skeleton-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+html body .app-shell.nevora-portal .route-skeleton-cards i { height: 96px; border-radius: 12px; }
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal .route-skeleton { padding: 16px; }
+  html body .app-shell.nevora-portal .route-skeleton-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  html body .app-shell.nevora-portal .route-skeleton-grid i { height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal .route-skeleton i { animation: none; } }

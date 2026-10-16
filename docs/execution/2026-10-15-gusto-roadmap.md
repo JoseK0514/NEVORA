@@ -57,5 +57,10 @@ Jose approves each commit.
 - Illustrations for empty and success states (teal/ink line style).
 - Dark mode, built on the consolidated tokens.
 
+## Status — full implementation plan
+Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then backend phases B1–B6, each of which needs Jose's go-ahead.
+- **U0 foundations (done, 2026-10-15):** theme colour and manifest in dark teal, a teal offline page (SW cache v4), route skeletons for 12 sections, six spot illustrations with `EmptyState illustration`, and a 15px phone floor for the small and caption type roles.
+- **Next:** U1 navigation and shared tabs.
+
 ## Owed testing
 - VoiceOver pass, 200% zoom, and at least one physical iPhone.

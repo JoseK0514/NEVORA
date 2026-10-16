@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   icons: { apple: [{ url: "/icons/fuel-apple-180.png", sizes: "180x180", type: "image/png" }] },
 };
 
-export const viewport: Viewport = { themeColor: "#20232D" };
+export const viewport: Viewport = { themeColor: "#1C4A47" };
 
 export default async function PlatformLayout({ children }: { children: ReactNode }) {
   const session = await requireSession();

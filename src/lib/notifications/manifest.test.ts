@@ -11,7 +11,7 @@ it('manifest_preserves_portal_identity', async () => {
   expect(existsSync('src/lib/notifications/manifest.ts')).toBe(true);
   const { manifest } = await import('./manifest');
   const result = manifest();
-  expect(result).toMatchObject({ id: '/app', start_url: '/app', scope: '/app', name: 'NEVORA', short_name: 'NEVORA', display: 'standalone', theme_color: '#20232D', background_color: '#F6F6F8' });
+  expect(result).toMatchObject({ id: '/app', start_url: '/app', scope: '/app', name: 'NEVORA', short_name: 'NEVORA', display: 'standalone', theme_color: '#1C4A47', background_color: '#FFFFFF' });
   expect(result.icons).toEqual([
     { src: '/icons/fuel-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
     { src: '/icons/fuel-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -31,7 +31,7 @@ it('regular public manifest endpoint returns revalidated metadata', async () => 
 it('portal links manifest and theme without leaking metadata to root or Clocker', async () => {
   const portal = await import('../../app/app/layout');
   expect('metadata' in portal && portal.metadata).toMatchObject({ manifest: '/fuel-portal.webmanifest', appleWebApp: { capable: true, title: 'NEVORA' }, icons: { apple: [{ url: '/icons/fuel-apple-180.png', sizes: '180x180', type: 'image/png' }] } });
-  expect('viewport' in portal && portal.viewport).toMatchObject({ themeColor: '#20232D' });
+  expect('viewport' in portal && portal.viewport).toMatchObject({ themeColor: '#1C4A47' });
   expect(existsSync('src/app/manifest.ts')).toBe(false); expect(existsSync('src/app/manifest.webmanifest')).toBe(false);
   for (const path of ['src/app/layout.tsx', 'src/app/clocker/layout.tsx']) if (existsSync(path)) expect(readFileSync(path, 'utf8')).not.toMatch(/manifest|themeColor|PortalDeviceSetup|fuel-portal-sw/);
 });
