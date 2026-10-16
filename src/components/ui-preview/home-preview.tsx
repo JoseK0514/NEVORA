@@ -6,6 +6,7 @@ import {NavIcon} from '../nav-icon';
 import {ActionMenu} from '../action-menu';
 import {PortalAccountMenu} from '../portal-account-menu';
 import {SheetGestures} from '../sheet-gestures';
+import {Toaster, toast} from '../toaster';
 import {ManagerDashboard} from '../manager-dashboard';
 import {ActionCenterSurface} from '../manager-action-center';
 import {ClockMonitorCard} from '../manager-clock-monitor';
@@ -69,6 +70,7 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
       </nav>
     </main>
     <SheetGestures/>
+    <Toaster/>
   </div>;
 }
 
@@ -77,7 +79,7 @@ export function HomePreview() {
   const [message, setMessage] = useState('');
   const [category, setCategory] = useState<Category>('all');
   const [expanded, setExpanded] = useState(false);
-  const refresh = () => setMessage('Sample data is frozen at October 13, 2026. No live records were requested.');
+  const refresh = () => toast('Sample data is frozen at October 13, 2026. No live records were requested.', 'info');
   function stayInPreview(event: MouseEvent<HTMLDivElement>) {
     const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
     if (!link) return;

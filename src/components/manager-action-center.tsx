@@ -8,6 +8,7 @@ import {ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, CheckCircleIcon, 
 import {formatBusinessTimestamp} from '../lib/business-time';
 import {actionCenterNavigation} from './action-center-navigation';
 import {MobileHomeDisclosure} from './mobile-home-disclosure';
+import {SkeletonRows} from './skeleton';
 type Connection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 type Category='all'|'scheduling'|'requests'|'timekeeping';
 const categoryLabels={scheduling:'Scheduling',requests:'Requests',timekeeping:'Timekeeping'};
@@ -81,7 +82,7 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
    {matching.length>visible.length&&!expanded?<button className="button secondary" onClick={onExpand}>Show all {matching.length} tasks</button>:null}
    {ready.limitedAttendance?<p className={styles.status}>Some attendance comparisons are unavailable. Check the attendance view for source limitations.</p>:null}
    <div className={styles.provenance}><details className={styles.note}><summary><InfoIcon size={16} aria-hidden="true"/>About these tasks</summary><p>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p></details></div>
-  </>:<p className={styles.status} role="status">{({loading:'Loading tasks',ready:'Tasks unavailable',offline:'Tasks unavailable offline',reconnecting:'Reconnecting to tasks',unavailable:'Tasks unavailable',access_lost:'Task access ended',paused:'Task updates paused'})[status]}. {status==='access_lost'?'Sign in with a currently authorized management account.':'The task list is unconfirmed. Refresh a current protected read before reviewing.'}</p>}
+  </>:<>{status==='loading'||status==='reconnecting'?<SkeletonRows rows={3}/>:null}<p className={status==='loading'||status==='reconnecting'?`${styles.status} nevora-skeleton-status`:styles.status} role="status">{({loading:'Loading tasks',ready:'Tasks unavailable',offline:'Tasks unavailable offline',reconnecting:'Reconnecting to tasks',unavailable:'Tasks unavailable',access_lost:'Task access ended',paused:'Task updates paused'})[status]}{status==='loading'||status==='reconnecting'?'…':`. ${status==='access_lost'?'Sign in with a currently authorized management account.':'The task list is unconfirmed. Refresh a current protected read before reviewing.'}`}</p></>}
   </MobileHomeDisclosure>
  </section>;
 }

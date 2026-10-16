@@ -98,8 +98,8 @@ function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabili
         <button className="pw-button" type="button" disabled={locked || operation.revisionConflict || !reviewed || !run.reviewToken || !run.rows || !run.totals || notes.blocking.length > 0} onClick={() => run.reviewToken && void operation.submit({ action: 'APPROVE', runId: run.id, expectedRevision: run.revision, reviewToken: run.reviewToken })}>Approve revision {run.revision}<CheckCircleIcon size={18} aria-hidden /></button>
       </> : <p className="pw-notice">An authorized payroll approver must approve this revision.</p>}
     </section>}
-    {run.status === 'APPROVED' && <section className="pw-section">
-      <h3>Approval recorded</h3><p className="pw-small">Approved {run.approvedAt ? new Date(run.approvedAt).toLocaleString() : ''} · Approver reference <code>{run.approvedBy}</code></p>
+    {run.status === 'APPROVED' && <section className="pw-section pw-approved">
+      <div className="pw-approved-heading"><CheckCircleIcon size={28} weight="duotone" aria-hidden="true" /><div><h3>Approval recorded</h3><p className="pw-small">Revision {run.revision} for {formatDateRange(run.period.startDate, run.period.endDate)} is approved. Next, publish statements so employees can see their pay.</p></div></div><p className="pw-small">Approved {run.approvedAt ? new Date(run.approvedAt).toLocaleString() : ''} · Approver reference <code>{run.approvedBy}</code></p>
       {run.documents.length ? <div className="pw-documents">{run.documents.map(document => <DocumentLink key={document.id} document={document} />)}</div> : <PayrollState title="Documents are being prepared">Check PDF generation below. Documents appear when generation succeeds.</PayrollState>}
       {run.documents.some(document => document.kind === 'EMPLOYEE_STATEMENT' && !document.published) && (capabilities.canApprove ? <div className="pw-publication">
         <label className="pw-check"><input type="checkbox" checked={publishConfirmed} onChange={event => setPublishConfirmed(event.target.checked)} disabled={locked} /><span>Make the approved statements available to their employees.</span></label>

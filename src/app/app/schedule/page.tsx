@@ -226,11 +226,17 @@ export default async function SchedulePage({
         </p>
       ) : null}
       {params.published ? (
-        <p className="form-success" role="status">
-          {locations.find((location) => location.id === params.published)
-            ?.shortName ?? "Schedule"}{" "}
-          published.
-        </p>
+        <section className="nevora-success-panel" role="status" aria-labelledby="schedule-published-title">
+          <CalendarCheckIcon size={28} weight="duotone" aria-hidden="true" />
+          <div>
+            <h2 id="schedule-published-title">{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</h2>
+            <p>Employees can now see their {formatWeekRange(weekStart)} shifts in NEVORA.</p>
+          </div>
+          <div className="nevora-success-actions">
+            <Link className="button secondary" href="/app/updates/compose">Send an update</Link>
+            <Link className="nevora-success-link" href={`/app?week=${encodeURIComponent(weekStart)}`}>Back to Home <CaretRightIcon size={16} aria-hidden="true" /></Link>
+          </div>
+        </section>
       ) : null}
       {params.updated ? <p className="form-success" role="status">Shift updated.</p> : null}
       {params.deleted ? <p className="form-success" role="status">Shift deleted.</p> : null}

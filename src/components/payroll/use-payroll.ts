@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PayrollRunCommand, PayrollSettingsCommand } from '@/lib/payroll/contracts';
 import { PayrollRequestError, payrollRequest, readReceipt } from './api';
+import { toast } from '../toaster';
 
 type Command = PayrollRunCommand | PayrollSettingsCommand;
 type WithoutOperation<T> = T extends unknown ? Omit<T, 'operationId'> : never;
@@ -44,6 +45,16 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   return { data, loading, error, reload };
 }
 
+/** Toast copy for a receipt-confirmed command; never shown before the receipt. */
+function confirmedMessage(command: { action?: string }) {
+  switch (command.action) {
+    case 'APPROVE': return 'Payroll revision approved';
+    case 'PUBLISH': return 'Statements published to employees';
+    case 'PAYMENT_EXPORT': return 'Payment instructions prepared';
+    default: return 'Action recorded';
+  }
+}
+
 export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payroll/runs', reload: () => Promise<void>, recoveryScope: string) {
   const referenceKey = `nevora-payroll-operation:${recoveryScope}`;
   const [pending, setPending] = useState<string | null>(null);
@@ -71,7 +82,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
       const receipt = readReceipt(await payrollRequest(`/api/payroll/receipts?operationId=${encodeURIComponent(id)}`));
       if (receipt && receipt.operationId !== id) throw new Error('The returned receipt does not match this action reference. Check the same reference again.');
       if (receipt && receipt.operationId === id) {
-        finish(id); setMessage('Action recorded. Review the current status below.'); await reload();
+        finish(id); setMessage('Action recorded. Review the current status below.'); toast('Action recorded'); await reload();
       } else {
         setUnconfirmed(true);
         setMessage('No receipt is available yet. Check this same reference again; the action has not been confirmed.');
@@ -98,7 +109,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
     try {
       const receipt = readReceipt(await payrollRequest(path, next));
       if (!receipt || receipt.operationId !== next.operationId) throw new Error('The action response is unconfirmed. Check its saved reference.');
-      finish(next.operationId); setMessage('Action recorded. Review the current status below.'); await reload();
+      finish(next.operationId); setMessage('Action recorded. Review the current status below.'); toast(confirmedMessage(next)); await reload();
     } catch (failure) {
       if (failure instanceof PayrollRequestError && (failure.code === 'OPERATION_CONFLICT' || (reconstructed && [400, 409].includes(failure.status)))) {
         command.current = null; setRetryAvailable(false);

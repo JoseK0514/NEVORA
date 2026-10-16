@@ -4,7 +4,7 @@ import { expect, it, vi } from "vitest";
 import { AppShell } from "./app-shell";
 
 const navigationMock = vi.hoisted(() => ({ pathname: "/app/my-time" }));
-vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname }));
+vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname, useSearchParams: () => new URLSearchParams() }));
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children),
 }));

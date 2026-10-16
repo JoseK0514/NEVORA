@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
 import {createMonitorController,fetchClockMonitor,type MonitorPanelState} from '../lib/clock-monitor-client';
 import {formatMonitorDuration} from '../lib/clock-monitor';
+import {SkeletonRows} from './skeleton';
 
 function initials(name:string){return name.split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]?.toUpperCase()).join('');}
 function checkedAt(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));}
@@ -36,10 +37,10 @@ export function ClockMonitorCard({state,onRefresh}:{state:MonitorPanelState;onRe
      <span className={`manager-floor-status${person.state==='ON_BREAK'?' on-break':''}`}>{person.state==='ON_BREAK'?'On break':'On floor'}</span>
     </div>)}
    </div>:<div className="manager-home-empty"><strong>No one is clocked in right now</strong></div>}
-  </>:<div className="manager-home-empty" role="status">
+  </>:<>{!paused&&!denied&&monitor?.state!=='unavailable'?<SkeletonRows rows={2} variant="line"/>:null}<div className={!paused&&!denied&&monitor?.state!=='unavailable'?'manager-home-empty nevora-skeleton-status':'manager-home-empty'} role="status">
    <strong>{paused?'Live updates paused':denied?'Sign in again':monitor?.state==='unavailable'?'Live activity unavailable':'Loading live activity'}</strong>
    <small>{paused?'Reconnect and return to this page to check current activity.':denied?'Current Manager or Owner access is required.':monitor?.state==='unavailable'?'The latest clock records could not be confirmed. Try refreshing.':'Checking recorded clock-ins and breaks.'}</small>
-  </div>}
+  </div></>}
   <footer className="manager-live-footer">
    <small>{ready?<>Updated <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt,ready.timeZone)}</time><span>Updates every 30s while this page is active.</span></>:'Only recorded punches appear here.'}</small>
    {denied?<Link className="manager-live-refresh" href="/login">Sign In</Link>:<button className="manager-live-refresh" type="button" onClick={onRefresh} disabled={refreshing||paused} aria-label="Refresh live activity">{refreshing?'Refreshing…':'Refresh'}</button>}
