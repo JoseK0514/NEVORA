@@ -7,7 +7,7 @@
 .sectionHeading > div { min-width: 0; }
 .sectionHeading p { margin-top: 5px; color: var(--design-text-secondary); font-size: 12px; }
 .sectionIcon { display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 40px; border-radius: 12px; color: var(--design-text-secondary); background: var(--design-background); border: 1px solid var(--design-surface); }
-.exportIcon { background: #E7F3F2; color: var(--design-accent-ink); border-color: #C9E0DE; }
+.exportIcon { background: var(--g-accent-wash, #E7F3F2); color: var(--design-accent-ink); border-color: #C9E0DE; }
 .root label { display: grid; gap: 8px; font-size: 12px; font-weight: 500; min-width: 0; }
 .root :is(input,select,textarea) { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; min-height: 46px; padding: 11px 13px; color: var(--design-text-primary); background: #fff; border: 1px solid var(--design-border); border-radius: var(--design-radius-control); font: inherit; font-size: 14px; font-weight: 400; }
 .root input[type=date] { font-size: 16px; }

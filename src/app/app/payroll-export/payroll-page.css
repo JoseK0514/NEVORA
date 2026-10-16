@@ -14,15 +14,15 @@
 }
 
 body:has(.payroll-page) {
-  --design-primary: #077572;
-  --design-accent: #055C5A;
+  --design-primary: var(--g-accent, #077572);
+  --design-accent: var(--g-accent-hover, #055C5A);
   --design-background: #FAFAFA;
   --design-surface: #E5E7EB;
   --design-surface-elevated: #FFFFFF;
   --design-text-primary: #111827;
   --design-text-secondary: #4B5563;
   --design-border: #D1D5DB;
-  --design-accent-ink: #055C5A;
+  --design-accent-ink: var(--g-accent-hover, #055C5A);
   --design-radius-card: 18px;
   --design-radius-control: 17px;
   --design-font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -36,7 +36,7 @@ body:has(.payroll-page) {
   --line: var(--design-surface);
   --nevora-blue: var(--design-accent-ink);
   --nevora-blue-hover: #7D2D1B;
-  --nevora-soft: #E7F3F2;
+  --nevora-soft: var(--g-accent-wash, #E7F3F2);
   --font-family-apple: var(--design-font-body);
   background: var(--design-background);
   font-family: var(--design-font-body);
@@ -49,7 +49,7 @@ body:has(.payroll-page) .employee-shell { --color-bg-main: var(--design-backgrou
 .payroll-page-heading { display: flex; gap: 16px; align-items: center; margin-bottom: 28px; }
 .payroll-page-heading h1 { margin: 0 0 7px; font-size: clamp(28px,3vw,36px); font-weight: 500; line-height: 1.2; letter-spacing: -.04em; }
 .payroll-page-heading p { margin: 0; color: var(--design-text-secondary); font-size: 14px; line-height: 1.6; }
-.payroll-page-mark { flex: 0 0 58px; width: 58px; height: 58px; display: grid; place-items: center; border: 1px solid #C9E0DE; border-radius: 18px; background: #E7F3F2; color: var(--design-accent-ink); }
+.payroll-page-mark { flex: 0 0 58px; width: 58px; height: 58px; display: grid; place-items: center; border: 1px solid #C9E0DE; border-radius: 18px; background: var(--g-accent-wash, #E7F3F2); color: var(--design-accent-ink); }
 .payroll-page-mark span { display: inline-flex; }
 @media(max-width:600px) {
   .payroll-page-heading { gap: 12px; align-items: flex-start; margin-bottom: 22px; }

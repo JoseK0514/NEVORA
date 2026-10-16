@@ -173,7 +173,7 @@ html body .app-shell.nevora-portal .page-frame .form-success[role="status"]:not(
   font: 500 14px/1.4 var(--design-font-body); pointer-events: auto;
   transition: opacity 180ms var(--m-ease-out, ease-out), translate 180ms var(--m-ease-out, ease-out);
 }
-html body .nevora-toast > svg { color: #077572; }
+html body .nevora-toast > svg { color: var(--g-accent, #077572); }
 html body .nevora-toast[data-tone="info"] > svg { color: #5F6368; }
 html body .nevora-toast > button { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 8px; background: transparent; color: #5F6368; cursor: pointer; }
 html body .nevora-toast > button:hover { background: #F6F7F8; color: #1C1C1C; }

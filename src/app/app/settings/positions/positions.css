@@ -7,15 +7,15 @@
 }
 
 body:has(.positions-page) {
-  --design-primary: #077572;
-  --design-accent: #055C5A;
+  --design-primary: var(--g-accent, #077572);
+  --design-accent: var(--g-accent-hover, #055C5A);
   --design-background: #FAFAFA;
   --design-surface: #E5E7EB;
   --design-elevated: #FFFFFF;
   --design-text: #111827;
   --design-muted: #4B5563;
   --design-border: #D1D5DB;
-  --design-accent-ink: #055C5A;
+  --design-accent-ink: var(--g-accent-hover, #055C5A);
   --design-radius-card: 18px;
   --design-radius-control: 17px;
   --design-font: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;

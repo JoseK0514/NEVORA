@@ -6,16 +6,16 @@
 }
 
 .app-shell:has(.edit-location-page) {
-  --edit-accent: #077572;
-  --edit-accent-hover: #055C5A;
+  --edit-accent: var(--g-accent, #077572);
+  --edit-accent-hover: var(--g-accent-hover, #055C5A);
   --edit-ink: #111827;
   --edit-muted: #4B5563;
-  --edit-link: #055C5A;
+  --edit-link: var(--g-accent-hover, #055C5A);
   --edit-border: #D1D5DB;
   --edit-canvas: #FAFAFA;
   --edit-surface: #FFFFFF;
   --edit-inset: #F3F4F5;
-  --edit-soft: #E7F3F2;
+  --edit-soft: var(--g-accent-wash, #E7F3F2);
   --font-ui: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-family-apple: var(--font-ui);
   --nuvora-text: var(--edit-ink);

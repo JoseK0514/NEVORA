@@ -125,3 +125,6 @@
 }
 .page :global(.clocker-language-toggle > span) { display: inline-grid; place-items: center; min-width: 28px; height: 22px; border-radius: 6px; background: #f1f2f4; color: var(--clocker-ink); font-size: 12px; font-weight: 700; }
 .page :global(.clocker-language-toggle[aria-pressed="true"] > span) { background: var(--clocker-accent); color: #ffffff; }
+/* The portal-wide hover rule (typeface-theme.css) pairs --design-accent with dark
+ * ink. Here --design-accent is the dark teal hover, so keep the on-accent text. */
+.page.page.page :global(.button.primary):is(:hover, :active):not(:disabled) { color: var(--clocker-on-accent); }

@@ -9,14 +9,14 @@
   font-style: normal; font-weight: 100 800; font-display: swap;
 }
 .directory {
-  --design-primary: #077572;
+  --design-primary: var(--g-accent, #077572);
   --design-background: #fafafa;
   --design-surface-elevated: #fff;
   --design-surface-inset: #f4f5f6;
   --design-text-primary: #111827;
   --design-text-secondary: #4b5563;
   --design-border: #d1d5db;
-  --design-accent-ink: #055c5a;
+  --design-accent-ink: var(--g-accent-hover, #055c5a);
   --design-radius-card: 18px;
   --design-radius-control: 17px;
   --design-radius-pill: 9999px;
@@ -30,7 +30,7 @@
 :global(.app-shell):has(.directory) :global(.sidebar .nav-link) { color: #d1d5db; }
 :global(.app-shell):has(.directory) :global(.sidebar .nav-link.active),
 :global(.app-shell):has(.directory) :global(.sidebar .nav-link:hover) { color: #fff; background: #0775721f; }
-:global(.app-shell):has(.directory) :global(.sidebar .nav-link.active .nav-icon) { color: #077572; }
+:global(.app-shell):has(.directory) :global(.sidebar .nav-link.active .nav-icon) { color: var(--g-accent, #077572); }
 :global(.app-shell):has(.directory) :global(.sidebar-profile small),
 :global(.app-shell):has(.directory) :global(.sidebar-platform-footer) { color: #d1d5db; }
 :global(.app-shell):has(.directory) :global(.app-main) { background: #fafafa; }
@@ -46,7 +46,7 @@
   text-decoration: none; cursor: pointer; transition: background-color .18s, border-color .18s, color .18s;
 }
 .primaryAction { flex-shrink: 0; background: var(--design-primary); color: #FFFFFF; padding: 13px 20px; border-radius: var(--design-radius-control); min-height: 48px; }
-.primaryAction:hover { background: #055c5a; }
+.primaryAction:hover { background: var(--g-accent-hover, #055c5a); }
 .primaryAction svg { flex-shrink: 0; }
 .directory :is(a, button, input, select):focus-visible { outline: 2px solid var(--design-accent-ink); outline-offset: 3px; }
 .panel { border: 1px solid var(--design-border); border-radius: var(--design-radius-card); background: var(--design-surface-elevated); box-shadow: 0 3px 14px #11182703; container: directory / inline-size; }
@@ -88,7 +88,7 @@
 .table tbody tr:hover { background: #fcfcfc; }
 .table :is(th, td) { min-width: 0; padding: 0; overflow-wrap: anywhere; }
 .person { display: flex; align-items: center; gap: 13px; font-weight: 400; text-align: left; }
-.avatar { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; background: #e7f3f2; color: #07605f; border: 1px solid #d7d9dc; border-radius: 14px; font-size: 13px; font-weight: 500; }
+.avatar { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; background: var(--g-accent-wash, #e7f3f2); color: var(--g-accent-strong, #07605f); border: 1px solid #d7d9dc; border-radius: 14px; font-size: 13px; font-weight: 500; }
 .personCopy { display: grid; gap: 6px; min-width: 0; }
 .personCopy strong { font-size: 14px; line-height: 1.45; font-weight: 600; }
 .employeeId { font-family: var(--design-font-mono); color: var(--design-text-secondary); font-size: 10px; line-height: 1.5; }

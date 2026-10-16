@@ -750,6 +750,7 @@ The visible text of every page, for owner, employee and both payroll roles, was 
 - **Teal:** the kiosk defines its own teal tokens (`clocker-shell.module.css`), because it runs outside the portal shell.
   - Accent `#077572`, hover `#055C5A`, focus and icons `#07605F`, wash `#E7F3F2`, with white text on teal.
   - It also redefines `--design-primary`, which the root `typeface-theme.css` still sets to the old orange.
+  - Hover keeps white text: the portal-wide hover rule in `typeface-theme.css` pairs `--design-accent` with dark ink, which reads 2.27:1 on the dark teal, so the kiosk overrides the colour (fixed in U10).
   - On phones it overrides the legacy blue tokens it inherited from `mobile-workforce.css` (masthead `#1C4A47`).
   - Main buttons are at least 56px tall.
 - **Bilingual labels** (`src/components/clocker-language.tsx`): a Puerto Rico Spanish second line sits beside the unchanged English for:
@@ -768,3 +769,16 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - The kiosk needs development mode for local http, because production requires an https Clocker origin.
 - **Not run:** the seven phase-c scripts themselves need a disposable `FUEL_TEST_DATABASE_URL`. They are also already stale: they fill "New Clocker PIN", while the PIN form has read "New PIN" since commit e8ea9f5.
 - **Deferred:** the optional company logo in the kiosk header waits for B1 (brand tier).
+
+#### U10: tokens and cascade (2026-10-16)
+
+- **Baselines first:** a computed-style snapshot of every element on 96 page views (owner, employee, both payroll roles and sign-in, at 1440px and 390px). It covers 38 properties per element: colour, fonts, spacing, borders, layout and size. Full-page screenshots mask times, countdowns and hours meters.
+  - Two snapshots of the same build match exactly. Two builds of the same code differ only by timestamp widths and random device ids, which became the noise baseline.
+- **`@layer` migration: tried, measured and reverted.** Wrapping the legacy files (`globals.css`, `typeface-theme.css`, `mobile-workforce.css`, `employee-mobile-corporate.css`, `portal-design-system.css`, `portal-refinement.css`) in `@layer legacy` changed 18,033 computed styles on 94 of 96 pages.
+  - Why: the approved look depends on legacy rules out-ranking newer component CSS. For example, employee Home's heading renders at weight 500 because a legacy rule beats its module's 600. In the lowest layer, the dormant component declarations take over.
+  - `globals.css` also carries 165 `!important` declarations, which would invert against every unlayered `!important`.
+  - **Recommendation:** retire legacy CSS page by page, moving the rules each page really uses into its own stylesheet and deleting the rest. Layering then becomes a near-zero-diff step. B1 doesn't need layers, because company tokens are injected inline on `.app-shell`.
+- **Legacy aliases kept as the bridge:** all 38 (`--design-*`, `--nevora-*`, `--nuvora-*`, …) are still referenced, some hundreds of times, and they route legacy rules through the `--g-*` tokens. Removing them would mean rewriting legacy CSS for no visible gain.
+- **Brand hexes routed through tokens:** 60 literal teal values in 17 page stylesheets (mostly page-local aliases such as `--design-primary: #077572`) became `var(--g-accent, #077572)`, and likewise for hover, strong, wash and masthead. The kiosk keeps its own locally defined teal.
+  - **Zero diff:** the snapshot matches the noise baseline exactly.
+  - **Brand flows through:** overriding `--g-accent` on `.app-shell`, as B1 will, recolours every teal element on Add employee, Positions, Workspace and Payroll exports.

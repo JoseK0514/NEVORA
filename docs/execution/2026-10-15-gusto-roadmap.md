@@ -69,7 +69,12 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
 - **U7 delight (done, 2026-10-16):** a table-tested celebration gate and a 560ms burst for five server-confirmed moments, once per session and never under reduced motion.
 - **U8 finder, tables and Insights (done, 2026-10-16):** a ⌘K finder over a new read-only names route, filter-as-you-type Employees with sticky headers, and Reports renamed Insights with an "At a glance" strip. Phone tables already stacked.
 - **U9 Clocker kiosk (done, 2026-10-16):** locally defined teal (including the phone kiosk's leftover blue), 56px actions, Puerto Rico Spanish second lines with English names unchanged, and a per-tablet Spanish toggle.
-- **Next:** U10 token consolidation and `@layer` (screenshot baselines first).
+- **U10 tokens and cascade (done, 2026-10-16):**
+  - Computed-style and screenshot baselines are in place.
+  - The `@layer` migration was measured (18,033 style changes on 94 of 96 pages) and reverted; the recommendation is to retire legacy CSS page by page first.
+  - The 38 aliases are kept as the bridge.
+  - 60 literal brand hexes now route through `--g-*` tokens, with zero diff, and a test brand override flows through.
+- **UI track complete.** Next: B1 brand tier (needs Jose's go-ahead), then the owed VoiceOver, 200% zoom and iPhone testing.
 
 ## Owed testing
 - VoiceOver pass, 200% zoom, and at least one physical iPhone.

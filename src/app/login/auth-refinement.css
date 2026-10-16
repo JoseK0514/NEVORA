@@ -1,7 +1,7 @@
 /* Approved authentication family. Every rule requires the explicit refinement scope. */
 html body .employee-login-page.auth-refinement-page {
-  --login-blue: #077572;
-  --login-blue-hover: #055C5A;
+  --login-blue: var(--g-accent, #077572);
+  --login-blue-hover: var(--g-accent-hover, #055C5A);
   --login-cyan: #9FD3CF;
   --login-ice: #EEF7F6;
   --login-canvas: #F7F8FA;
@@ -10,7 +10,7 @@ html body .employee-login-page.auth-refinement-page {
   --login-frame-radius: 24px;
   --login-control-radius: 14px;
   --login-symbol-radius: 12px;
-  --login-hero-ink: #1C4A47;
+  --login-hero-ink: var(--g-masthead, #1C4A47);
   min-height: 100svh;
   padding: 40px 32px;
   overflow-x: clip;

@@ -44,7 +44,7 @@
 .availability-page .av-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 11px 18px; border: 1px solid var(--av-border); border-radius: var(--av-control-radius); font-size: 14px; font-weight: 600; text-decoration: none; color: var(--av-ink); background: var(--av-panel); cursor: pointer; transition: background-color .18s ease, border-color .18s ease, transform .18s ease; }
 .availability-page .av-button.primary { background: var(--av-primary); color: var(--av-ink); border-color: var(--av-primary); }
 .availability-page .av-button:hover:not(:disabled) { background: var(--av-inset); }
-.availability-page .av-button.primary:hover:not(:disabled) { background: #055C5A; border-color: #055C5A; }
+.availability-page .av-button.primary:hover:not(:disabled) { background: var(--g-accent-hover, #055C5A); border-color: var(--g-accent-hover, #055C5A); }
 .availability-page .av-button:active:not(:disabled) { transform: translateY(1px); }
 .availability-page .av-button:disabled { cursor: default; opacity: .48; }
 .av-week-panel, .av-editor, .av-team-panel { background: var(--av-panel); border: 1px solid var(--av-border); border-radius: var(--av-radius); box-shadow: 0 3px 14px rgba(17, 24, 39, .025); }

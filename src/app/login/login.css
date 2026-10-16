@@ -1,7 +1,7 @@
 /* Jose's login-only NEVORA blue/cyan variant; shared portal tokens stay intact. */
 html body .employee-login-page {
-  --login-blue: #077572;
-  --login-blue-hover: #055C5A;
+  --login-blue: var(--g-accent, #077572);
+  --login-blue-hover: var(--g-accent-hover, #055C5A);
   --login-cyan: #9FD3CF;
   --login-ice: #EEF7F6;
   min-height: 100svh;

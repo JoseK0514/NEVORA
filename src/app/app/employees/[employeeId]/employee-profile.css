@@ -13,15 +13,15 @@
   font-display: swap;
 }
 body:has(.employee-profile-page) {
-  --design-primary: #077572;
-  --design-accent: #055c5a;
+  --design-primary: var(--g-accent, #077572);
+  --design-accent: var(--g-accent-hover, #055c5a);
   --design-background: #fafafa;
   --design-surface: #e5e7eb;
   --design-surface-elevated: #ffffff;
   --design-text-primary: #111827;
   --design-text-secondary: #4b5563;
   --design-border: #d1d5db;
-  --design-accent-ink: #055c5a;
+  --design-accent-ink: var(--g-accent-hover, #055c5a);
   --design-accent-ink-hover: #7d2d1b;
   --design-radius-card: 18px;
   --design-radius-control: 17px;
