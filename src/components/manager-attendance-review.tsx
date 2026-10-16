@@ -40,7 +40,6 @@ function checkedAt(at: string, zone: string) {
     timeZone: zone,
     hour: 'numeric',
     minute: '2-digit',
-    second: '2-digit',
     hour12: true,
   }).format(new Date(at));
 }
@@ -110,15 +109,15 @@ export function AttendanceReviewSurface({
       <ConfiguredAttendancePolicies />
       <header className="attendance-review-header">
         <div>
-          <p>Today · recorded punches</p>
-          <h2 id="attendance-review-title">Attendance intelligence</h2>
-          <span>Verified recorded-time signals that may need manager review.</span>
+          <p>Today</p>
+          <h2 id="attendance-review-title">Today’s clock-ins</h2>
+          <span>Clock-ins and breaks that may need a look.</span>
         </div>
         {ready ? (
           <div className="attendance-review-summary" aria-label="Attendance exception summary">
             <span>
               <strong>{ready.signalCount}</strong>
-              {ready.signalCount === 1 ? ' signal' : ' signals'}
+              {' to review'}
             </span>
             <span>
               <strong>{ready.affectedEmployeeCount}</strong>
@@ -171,8 +170,8 @@ export function AttendanceReviewSurface({
         ) : (
           <div className="attendance-review-empty" role="status">
             <span className="attendance-review-empty-mark" aria-hidden="true">✓</span>
-            <strong>No recorded-time exceptions</strong>
-            <small>No verified attendance signals were found in the current authorized snapshot.</small>
+            <strong>Nothing to review</strong>
+            <small>No clock-ins need a look right now.</small>
           </div>
         )
       ) : (
@@ -202,11 +201,11 @@ export function AttendanceReviewSurface({
         <div>
           {ready ? (
             <small>
-              Checked <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt, ready.timeZone)}</time>
+              Updated <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt, ready.timeZone)}</time>
               <span>Updates every 30s while this page is active.</span>
             </small>
           ) : (
-            <small>Recorded-time signals only. Policy lateness and overtime are not evaluated here.</small>
+            <small>Clock records only. Lateness and overtime rules aren’t applied here.</small>
           )}
         </div>
         {denied ? (

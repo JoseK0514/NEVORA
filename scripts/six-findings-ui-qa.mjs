@@ -279,7 +279,7 @@ try {
   await login(managerPage, "QA-MANAGER");
   await managerPage.goto(app.url + "/app?view=attendance");
   await managerPage
-    .getByText("Configured attendance comparisons", { exact: true })
+    .getByText("What we compare", { exact: true })
     .click();
   await managerPage
     .getByText("Not configured", { exact: false })

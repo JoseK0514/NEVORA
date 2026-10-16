@@ -1,4 +1,12 @@
 import { coverageRepairUrl, reportedCoverageState } from '../scheduling/coverage-repair';
+import { formatDisplayDate, formatTime } from '../date-utils';
+
+/** "Mon, Oct 12 · 8:00 AM–4:00 PM" for people; ids and links keep ISO values. */
+function gapWhen(gap: { date: string; startTime: string; endTime: string }) {
+  const start = gap.startTime.slice(0, 5), end = gap.endTime.slice(0, 5);
+  const when = start === "00:00" && end === "24:00" ? "all day" : `${formatTime(start)}–${end === "24:00" ? "midnight" : formatTime(end)}`;
+  return `${formatDisplayDate(gap.date)} · ${when}`;
+}
 
 export type ManagerActionPriority =
   | "URGENT"
@@ -99,7 +107,7 @@ function coverageAction(
   if (missingPositions.length) return {
     id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'URGENT',
     title: `Position coverage missing at ${gap.locationName}`,
-    detail: `${gap.date} · ${gap.startTime}–${gap.endTime} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} missing`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
+    detail: `${gapWhen(gap)} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} missing`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
     href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`, locationId: gap.locationId,
   };
@@ -114,8 +122,8 @@ function coverageAction(
       ? `Lead coverage missing at ${gap.locationName}`
       : `Coverage gap at ${gap.locationName}`,
     detail: leadOnly
-      ? `${gap.date} · ${gap.startTime}–${gap.endTime} · Designated lead required`
-      : `${gap.date} · ${gap.startTime}–${gap.endTime} · Need ${people}`,
+      ? `${gapWhen(gap)} · Designated lead required`
+      : `${gapWhen(gap)} · Need ${people}`,
     href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`,
     locationId: gap.locationId,
@@ -130,7 +138,7 @@ function requestAction(
       id: `TIME_OFF:${request.id}`,
       type: "TIME_OFF",
       priority: "REVIEW",
-      title: "Time Off Request",
+      title: "Time-off request",
       detail: `${request.employeeName} is waiting for review.`,
       href: `/app/requests?tab=pending&requestId=${encode(request.id)}`,
       dateTime: request.createdAt,

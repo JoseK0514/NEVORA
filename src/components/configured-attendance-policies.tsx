@@ -91,7 +91,7 @@ export function ConfiguredAttendancePolicies() {
   }, []);
   return (
     <details className="panel">
-      <summary>Configured attendance comparisons</summary>
+      <summary>What we compare</summary>
       <p>
         Factual comparisons use configured thresholds and saved source
         revisions. They do not establish absence, disciplinary outcomes,

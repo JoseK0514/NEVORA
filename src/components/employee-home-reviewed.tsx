@@ -243,7 +243,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
               <p className={styles.currentNote}>Scheduled assignment; clock status is shown separately.</p>
               <Assignment shift={snapshot.currentShift} zone={snapshot.timeZone}/>
             </section> : null}
-            {snapshot.publicationState === 'partial' ? <p className={styles.notice} role="status">Schedule not published yet for all your eligible locations. Known published shifts are shown.</p> : null}
+            {snapshot.publicationState === 'partial' ? <p className={styles.notice} role="status">Some of your locations haven’t published this week yet. The shifts shown are published.</p> : null}
           </> : <div className={styles.recovery} role="status">
             <p>{recovery}</p>
             {loading ? <div className={styles.loadingLines} aria-hidden="true"><span/><span/><span/></div> : null}

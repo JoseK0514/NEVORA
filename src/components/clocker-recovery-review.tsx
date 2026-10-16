@@ -130,7 +130,7 @@ export function ClockerRecoveryReview({actorId, timeZone}: {actorId: string; tim
       <section className={styles.lookup} aria-labelledby="recovery-lookup-heading" data-review-enter>
         <div className={styles.sectionHeading}>
           <span className={styles.iconWell}><ReceiptIcon size={24} aria-hidden="true"/></span>
-          <div><h2 id="recovery-lookup-heading">Check a saved action</h2><p>Paste the saved action reference from the employee’s tablet.</p></div>
+          <div><h2 id="recovery-lookup-heading">Check a saved action</h2><p>Enter the reference shown on the employee’s tablet.</p></div>
         </div>
         <form onSubmit={event => {
           event.preventDefault();

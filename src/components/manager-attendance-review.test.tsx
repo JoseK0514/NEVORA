@@ -75,7 +75,7 @@ it('renders verified attendance signals with manager-readable names and factual 
   expect(html).toContain('Alex Morgan');
   expect(html).toContain('Northside');
   expect(html).toContain('Clock-in after scheduled start');
-  expect(html).toContain('<strong>1</strong> signal');
+  expect(html).toContain('<strong>1</strong> to review');
   expect(html).toContain('<strong>1</strong> person');
   expect(html).toContain('15 min');
   expect(html).not.toContain('Late');
@@ -94,7 +94,7 @@ it('distinguishes a healthy empty snapshot from unavailable data', () => {
       onRefresh={() => {}}
     />,
   );
-  expect(emptyHtml).toContain('No recorded-time exceptions');
+  expect(emptyHtml).toContain('Nothing to review');
 
   const unavailableHtml = renderToStaticMarkup(
     <AttendanceReviewSurface
@@ -107,7 +107,7 @@ it('distinguishes a healthy empty snapshot from unavailable data', () => {
     />,
   );
   expect(unavailableHtml).toContain('Attendance review unavailable');
-  expect(unavailableHtml).not.toContain('No recorded-time exceptions');
+  expect(unavailableHtml).not.toContain('Nothing to review');
 });
 
 it('shows access denial as a sign-in state and never retains people', () => {

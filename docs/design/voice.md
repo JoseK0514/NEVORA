@@ -50,3 +50,28 @@ new label, message and empty state.
 | Checked 4:49:10 PM | Updated 4:49 PM |
 | 2026-09-28 – 2026-10-04 | Sep 28 – Oct 4, 2026 |
 | No assignment (×70) | (blank cell, with a hover "+ Add") |
+
+## Plain language over audit language (U5, 2026-10-16)
+People see what happened and what to do next. Audit terms (source, observation, verified,
+authorized snapshot, revision, captured, reference) stay in code, in exports and in "Details"
+disclosures, and appear in the main text only where they are the subject. For example, a payroll
+approval belongs to one exact revision, so the revision is shown there.
+
+| Instead of | Write |
+|---|---|
+| Recorded time includes breaks. Not payroll hours. | Hours include breaks and aren't payroll hours. |
+| Verified recorded-time signals that may need manager review. | Clock-ins and breaks that may need a look. |
+| No verified attendance signals were found in the current authorized snapshot. | No clock-ins need a look right now. |
+| Period checked. 10 timecards. | 10 timecards in this period. |
+| Oct 10 – Oct 16 · Revision 0 | Oct 10 – Oct 16 (revisions are in the card's history) |
+| Requests preserve the original recorded time and require manager review. | Your manager reviews each request. Your original times are kept. |
+| This inbox shows supported source updates. | Updates about your requests and schedule. |
+| Exact durations and finalized-source references. No provider compatibility claim. | Exact hours, each linked to its finalized timecard. Check the format with your payroll provider. |
+| History checked through Oct 16, starting Sep 21. | Checked Sep 21 – Oct 16. |
+| Attendance observations / Hours by captured position | Clock-in notes / Hours by position |
+| 2026-10-12 · 00:00–07:00 · Need 1 employee | Mon, Oct 12 · 12:00 AM–7:00 AM · Need 1 employee |
+| 00:00–24:00 | all day ("midnight" for an end of 24:00) |
+| Monday at 00:00 | Monday at 12:00 AM |
+| Time Off Request | Time-off request |
+| Attendance intelligence · 0 signals | Today's clock-ins · 0 to review |
+| Checked 7:43:15 AM | Updated 7:43 AM |

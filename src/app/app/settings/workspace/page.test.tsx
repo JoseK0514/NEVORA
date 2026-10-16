@@ -28,7 +28,7 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
   expect(html).toContain('value="Northside Operations"');
   expect(html).toContain('value="America/Puerto_Rico"');
   expect(html).not.toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);
-  expect(html).toContain("Monday at 00:00");
+  expect(html).toContain("Monday at 12:00 AM");
   expect(html).toContain('type="submit"');
   expect(html).toContain("Save workspace");
   expect(html).toContain('href="/app/settings"');

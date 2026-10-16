@@ -19,7 +19,7 @@ import {Reports,ReportsView} from './reports';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 const nextPeriod={startDate:'2026-09-28',endDate:'2026-10-04'};
 const originalName='PRIVATE Original Employee',freshName='PRIVATE Fresh Employee';
-const sections=['Period summary','Schedule vs actual','Hours by employee','Hours by location','Hours by captured position','Attendance observations','Overtime','Callouts &amp; time off','Shift changes &amp; coverage','Schedule stability','Approval status','Report definitions'];
+const sections=['Period summary','Schedule vs actual','Hours by employee','Hours by location','Hours by position','Clock-in notes','Overtime','Callouts &amp; time off','Shift changes &amp; coverage','Schedule stability','Approval status','Report definitions'];
 function ready(name=originalName,validForMs=15000,p=period){
  const day=p.startDate==='2026-09-21'?'2026-09-22':'2026-09-29';
  const source={employeeId:'E1',employeeName:name,timeZone:'America/Puerto_Rico',...p,pendingCorrections:0,corrections:[],entries:[{id:'T1',locationId:'L1',locationName:'PRIVATE Office',positionId:'P1',positionName:'PRIVATE Captured Support',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:day+'T12:00:00Z',endAt:day+'T20:00:00Z',rawStartAt:day+'T12:00:00Z',rawEndAt:day+'T20:00:00Z',breaks:[]}]};
@@ -52,7 +52,7 @@ afterEach(()=>{unmount();vi.restoreAllMocks();vi.unstubAllGlobals();vi.useRealTi
 it('R01 true non-print window blur removes names totals and export controls without losing period filters',async()=>{const requests=reads();await mount();expect(html()).toContain(originalName);expect(html()).toContain('8h 0m');event('blur');assertProtectedAbsent();expect(nodes(tree()).filter(node=>node.type==='input').map(node=>node.props.value)).toEqual(['2026-09-21','2026-09-27']);expect(requests).toHaveLength(1);expect(requests[0].signal?.aborted).toBe(true);});
 it('R02 element blur and duplicate active focus do not retire a current report or trigger a replacement read',async()=>{const requests=reads();await mount();event('blur',new EventTarget());event('focus',new EventTarget());event('focus');await flush();expect(html()).toContain(originalName);expect(requests).toHaveLength(1);});
 it('R03 a delayed JSON body after window blur cannot restore protected content or an expiry timer',async()=>{const body=deferred<unknown>();vi.stubGlobal('fetch',async()=>bodyResponse(body.promise));await mount();event('blur');body.resolve(ready());await flush();assertProtectedAbsent();expect(vi.getTimerCount()).toBe(0);});
-it('R04 an old period body cannot overwrite the fresh committed period',async()=>{const old=deferred<unknown>();const requests:unknown[]=[];vi.stubGlobal('fetch',async(_path:string,init?:RequestInit)=>{const requested=JSON.parse(String(init?.body));requests.push(requested);return requested.startDate==='2026-09-21'?bodyResponse(old.promise):Response.json(ready(freshName,15000,nextPeriod));});await mount();choosePeriod(nextPeriod);await flush();expect(html()).toContain(freshName);old.resolve(ready());await flush();expect(html()).toContain(freshName);expect(html()).not.toContain(originalName);expect(html()).toContain('2026-09-28 through 2026-10-04');expect(requests).toEqual([period,nextPeriod]);});
+it('R04 an old period body cannot overwrite the fresh committed period',async()=>{const old=deferred<unknown>();const requests:unknown[]=[];vi.stubGlobal('fetch',async(_path:string,init?:RequestInit)=>{const requested=JSON.parse(String(init?.body));requests.push(requested);return requested.startDate==='2026-09-21'?bodyResponse(old.promise):Response.json(ready(freshName,15000,nextPeriod));});await mount();choosePeriod(nextPeriod);await flush();expect(html()).toContain(freshName);old.resolve(ready());await flush();expect(html()).toContain(freshName);expect(html()).not.toContain(originalName);expect(html()).toContain('Sep 28 – Oct 4, 2026');expect(requests).toEqual([period,nextPeriod]);});
 it('R04 a retired refresh body cannot replace a newer verified source',async()=>{const old=deferred<unknown>();let count=0;vi.stubGlobal('fetch',async()=>++count===1?bodyResponse(old.promise):Response.json(ready(freshName)));await mount();click('Refresh');await flush();expect(html()).toContain(freshName);old.resolve(ready());await flush();expect(html()).toContain(freshName);expect(html()).not.toContain(originalName);});
 it('R05 cleanup fences a pending body without post-unmount state publication or timers',async()=>{const body=deferred<unknown>();vi.stubGlobal('fetch',async()=>bodyResponse(body.promise));await mount();unmount();const writes=host.writes.length;body.resolve(ready());await vi.advanceTimersByTimeAsync(0);expect(host.writes).toHaveLength(writes);expect(vi.getTimerCount()).toBe(0);});
 it.each(['pagehide','hidden','offline'])('R06 %s retires an already received response whose JSON is pending',async kind=>{const body=deferred<unknown>();vi.stubGlobal('fetch',async()=>bodyResponse(body.promise));await mount();retire(kind);body.resolve(ready());await flush();assertProtectedAbsent();expect(vi.getTimerCount()).toBe(0);});
@@ -101,7 +101,7 @@ it('R15 draft dates show explicit unapplied guidance and do not silently change 
  const input=control(node=>node.type==='input'&&node.props.value===period.startDate);
  (input.onChange as (event:unknown)=>void)({target:{value:nextPeriod.startDate}});
  const output=html();expect(output).toContain('Dates changed. Select View period to apply.');
- expect(output).toContain('Applied period</span>2026-09-21 through 2026-09-27');
+ expect(output).toContain('Applied period</span>Sep 21 – Sep 27, 2026');
  expect(requests).toHaveLength(1);
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{
   expect(path).toBe('/api/reports/export');expect(JSON.parse(String(init?.body))).toEqual(period);
@@ -113,6 +113,6 @@ it('R15 draft dates show explicit unapplied guidance and do not silently change 
 it('R15 invalid period submission preserves the applied range and does not issue another report request',async()=>{
  const requests=reads();await mount();choosePeriod({startDate:'2026-09-21',endDate:'2026-11-07'});
  const output=html();expect(output).toContain('Choose a valid period of 1 to 31 days.');
- expect(output).toContain('Applied period</span>2026-09-21 through 2026-09-27');
+ expect(output).toContain('Applied period</span>Sep 21 – Sep 27, 2026');
  expect(requests).toHaveLength(1);expect(output).toContain(originalName);
 });

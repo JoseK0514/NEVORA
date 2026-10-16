@@ -444,11 +444,11 @@ export function ManagerDashboard(props: Props) {
       {props.view === 'overview' ? <div className="mobile-home-heading"><h1>Home</h1><p>{props.workspaceName}</p></div> : null}
       <section className="dashboard-hero">
         <div className="dashboard-hero-copy">
-          {props.view !== 'overview' ? <p>{props.view === "attendance" ? "Attendance intelligence" : "Manager dashboard"}</p> : null}
-          <h1 suppressHydrationWarning>{props.view === "attendance" ? "Recorded-time review" : props.view === 'overview' ? `${greeting(props.timeZone)}, ${props.firstName}` : `Welcome back, ${props.firstName}.`}</h1>
+          {props.view !== 'overview' ? <p>{props.view === "attendance" ? "Attendance" : "Manager dashboard"}</p> : null}
+          <h1 suppressHydrationWarning>{props.view === "attendance" ? "Time review" : props.view === 'overview' ? `${greeting(props.timeZone)}, ${props.firstName}` : `Welcome back, ${props.firstName}.`}</h1>
           <span>
             {props.view === "attendance"
-              ? `Today’s verified attendance signals at ${props.workspaceName}.`
+              ? `Who clocked in today at ${props.workspaceName}, and anything that needs a look.`
               : props.view === 'overview' ? `Here’s what’s going on with your team at ${props.workspaceName}.` : `Here’s what’s happening this week at ${props.workspaceName}.`}
           </span>
         </div>

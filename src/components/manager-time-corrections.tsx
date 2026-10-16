@@ -69,7 +69,7 @@ export function ManagerTimeCorrectionsSurface({
       <div>
         <p>Time corrections</p>
         <h2 id="manager-corrections-title">Correction requests</h2>
-        <span>Review proposed historical adjustments without changing the original Clocker record.</span>
+        <span>Fixes to past clock times wait here for your decision. The original Clocker record is kept.</span>
       </div>
       {ready?<strong className="manager-corrections-count">{ready.requests.length}</strong>:null}
     </header>

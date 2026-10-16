@@ -80,7 +80,7 @@ export default async function WorkspacePage() {
               </div>
               <div className="workspace-week">
                 <CalendarBlankIcon size={20} aria-hidden="true" />
-                <div><span>Workweek starts</span><strong>Monday at 00:00</strong></div>
+                <div><span>Workweek starts</span><strong>Monday at 12:00 AM</strong></div>
                 <span className="workspace-week-note">In your business timezone</span>
               </div>
             </fieldset>

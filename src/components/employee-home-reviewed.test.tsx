@@ -182,7 +182,7 @@ describe('truthful source states and refresh intent', () => {
     current.sources.acknowledgements = {...current.sources.acknowledgements, state: 'unavailable', reason: 'review_unavailable'};
     const markup = html(props(projectEmployeeHome(current)));
     expect(markup).toContain('Private location');
-    expect(markup).toContain('Schedule not published yet for all your eligible locations');
+    expect(markup).toContain('Some of your locations haven’t published this week yet');
     expect(markup).toContain('Schedule reviews unavailable — a changed schedule needs review');
     expect(markup).toContain('Open schedule reviews');
     expect(markup).not.toContain("You're all set.");

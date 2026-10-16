@@ -108,7 +108,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                 {!employees.length ? <div className="rules-empty"><NavIcon name="employees" size={24} /><div><strong>No employees to configure</strong><p>Add active employees to set their weekly hour targets.</p><Link className="button secondary" href="/app/employees">Manage employees<NavIcon name="arrowRight" /></Link></div></div> : null}
               </div>
             </section>
-            {staffing.length || employees.length ? <div className="rules-savebar"><div><strong>Staffing &amp; weekly hours</strong><p>Saved changes apply to Schedule Health immediately.</p></div><button className="button primary" type="submit">Save staffing &amp; hours</button></div> : null}
+            {staffing.length || employees.length ? <div className="rules-savebar"><div><strong>Staffing &amp; weekly hours</strong><p>Saved changes apply right away.</p></div><button className="button primary" type="submit">Save staffing &amp; hours</button></div> : null}
           </ConfigurationForm>
 
           <section className="rules-panel manager-issue-target" id="coverage-windows" tabIndex={-1}>

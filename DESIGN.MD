@@ -668,3 +668,18 @@ Reference: the Future Pro home on Mobbin (time-of-day greeting on a light backgr
   - Today tiles (Scheduled, Clocked in, Late) need published-only counts and late clock-ins, so they move to B4 with the missed-punch reader.
   - An Inbox tab badge needs a count on every page.
   - Per-device snooze, the Upcoming rail and the owner setup checklist come later.
+
+#### U5: plain language (2026-10-16)
+
+The visible text of every page, for owner, employee and both payroll roles, was collected from the fictional-data runtime: 1,064 lines, with disclosures opened. It was scanned for audit terms, ISO dates, 24-hour times and Title Case. 54 strings were rewritten across attendance, timecards, My time, Home, notifications, updates, payroll export, the payroll backlog, reports, Clocker recovery and devices, scheduling rules, workspace settings and task titles.
+- The rules and examples live in `docs/design/voice.md`, under "Plain language over audit language".
+- **Coverage-gap details:** "Mon, Oct 12 · 8:00 AM–4:00 PM", with "all day" and "midnight" where they apply. Ids, links and the stored `dateTime` keep their ISO values.
+- **Reports:** readable periods ("Sep 28 – Oct 4, 2026"), "3 of 4 coverage requests filled", schedule changes and dates instead of revisions and ISO values. The "Report definitions" disclosure and the CSV keep their exact technical wording.
+- **Timecard headers:** no revision number. Each card's history still lists every revision.
+- **Payroll revisions** stay visible, because each approval belongs to one exact revision.
+- **Tests and scripts** that pinned the old text change in the same commit:
+  - `phase-d-attendance-ui-qa.mjs`: "Nothing to review"
+  - `phase-d-browser-qa.mjs`: the partial-publication notice
+  - the related unit tests
+- **Script-pinned text kept unchanged:** "Some Home sections could not be fully checked. Counts show known items.", "Loading Home…", "Refresh recorded time", "Clocked In", "Approval recorded", and "I reviewed revision".
+- **Not yet covered:** the payroll export's population manifest wording and the Clocker kiosk (U9) keep their current text. Spanish comes with B5.

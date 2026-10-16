@@ -21,6 +21,6 @@ export function TimecardsHeading({manager}:{manager:boolean}) {
   },{scope:heading});
   return <header ref={heading} className={styles.heading}>
     <h1>Timecards</h1>
-    <p>{manager?'Review recorded time and close each period.':'Your recorded time, breaks, and review history.'}</p>
+    <p>{manager?'Review hours and close each pay period.':'Your hours, breaks and approvals.'}</p>
   </header>;
 }

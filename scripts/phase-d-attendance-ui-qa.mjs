@@ -258,7 +258,7 @@ try {
     assert.equal((await actualAttendance(employee)).status(), 403);
     const employeePage = await employee.newPage();
     await employeePage.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
-    assert.equal(await employeePage.getByText('Attendance intelligence', { exact: true }).count(), 0);
+    assert.equal(await employeePage.getByText('Today’s clock-ins', { exact: true }).count(), 0);
     checked(engine + ': Employee cannot enter Manager attendance surface');
     await employee.close();
 
@@ -278,7 +278,7 @@ try {
     const page = await owner.newPage();
     page.setDefaultTimeout(15000);
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Attendance intelligence', exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     const body = await page.locator('body').innerText();
     assert.match(body, /Alexandria Attendance Review Employee With A Long Name/);
@@ -368,13 +368,13 @@ try {
       payload: { ...fixtureReady(), groups: [], recordCount: 0, signalCount: 0, affectedEmployeeCount: 0, labels: { employees: [], locations: [] }, coverage: { ...fixtureReady().coverage, state: 'complete', limitations: [] } },
     };
     await refresh.click();
-    await page.getByText('No recorded-time exceptions', { exact: true }).waitFor();
+    await page.getByText('Nothing to review', { exact: true }).waitFor();
     checked(engine + ': empty is distinct from unavailable');
 
     fixture = { status: 503, payload: { state: 'unavailable', reason: 'read_failed' } };
     await refresh.click();
     await page.getByText('Attendance review unavailable', { exact: true }).waitFor();
-    assert.equal(await page.getByText('No recorded-time exceptions', { exact: true }).count(), 0);
+    assert.equal(await page.getByText('Nothing to review', { exact: true }).count(), 0);
     checked(engine + ': unavailable clears healthy empty state');
 
     fixture = { status: 200, payload: { ...fixtureReady(), validForMs: 120 } };

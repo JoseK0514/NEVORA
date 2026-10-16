@@ -64,7 +64,8 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
 - **U2 employee Today Home (done, 2026-10-15):** light arrival with a time-of-day greeting, a brand-gradient next-shift pass with Today/Tomorrow and a live countdown, a stacked To do card with kind icons, four quick action tiles, and a 15px phone type floor on Home.
 - **U3 Schedule (done, 2026-10-16):** employee My shifts | Open shifts (claimable offers and own pending claims), manager location status chips, hours against target, position-tinted shifts with dashed drafts, a sticky name column and a print layout.
 - **U4 manager Inbox (done, 2026-10-16):** `/app/inbox` with exceptions first, filters, in-place time-off decisions with swipe on phones, and the manager Inbox tab. Today tiles, the tab badge, snooze and the setup checklist are deferred (Today tiles to B4).
-- **Next:** U5 plain language, U6 Pay.
+- **U5 plain language (done, 2026-10-16):** 54 audit-style strings rewritten from a scan of every page's visible text, with readable coverage-gap times and no revision numbers in timecard headers; the guide is in `docs/design/voice.md`.
+- **Next:** U6 Pay.
 
 ## Owed testing
 - VoiceOver pass, 200% zoom, and at least one physical iPhone.

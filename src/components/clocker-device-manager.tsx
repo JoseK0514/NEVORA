@@ -160,7 +160,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         return <article className={styles.deviceRow} data-clocker-device={device.id} key={device.id}>
           <div className={styles.deviceIdentity}><span className={`${styles.deviceIcon} ${device.state === 'REVOKED' ? styles.revokedIcon : ''}`}><DeviceTablet size={25} aria-hidden="true" /></span>
           <div className={styles.deviceCopy}><h3>{device.name}</h3><p>{location?.name ?? 'Location unavailable'}</p>
-            <small>{device.lastSeenAt ? `Last checked ${date(device.lastSeenAt)}` : 'Not checked by a tablet yet'}</small>
+            <small>{device.lastSeenAt ? `Last checked ${date(device.lastSeenAt)}` : 'No tablet has connected yet'}</small>
             {location?.active === false ? <p className={styles.stateHint}>Reactivate this location before reconnecting.</p> : device.state === 'EXPIRED' ? <p className={styles.stateHint}>Create a new setup code to connect this tablet.</p> : device.state === 'PENDING' ? <p className={styles.stateHint}>Finish setup on the shared tablet.</p> : device.state === 'UNREGISTERED' ? <p className={styles.stateHint}>Create a setup code to connect this tablet.</p> : null}
           </div></div>
           <div className={styles.rowActions}><StatusPill tone={device.state === 'ACTIVE' && location?.active ? 'success' : device.state === 'REVOKED' ? 'neutral' : 'warning'}>{label}</StatusPill>

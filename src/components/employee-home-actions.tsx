@@ -44,7 +44,7 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
     {snapshot?<>
      {snapshot.publicationState==='unavailable'?<p>Schedule unavailable</p>:snapshot.nextShift?<Assignment shift={snapshot.nextShift} zone={snapshot.timeZone}/>:<><p>No upcoming published shift</p><Link className="employee-home-review" href="/app/schedule">View schedule</Link></>}
      {snapshot.currentShift?<section className="employee-home-scheduled-now" aria-label="Scheduled now"><h3>Scheduled now</h3><p>Scheduled assignment; clock status is shown separately.</p><Assignment shift={snapshot.currentShift} zone={snapshot.timeZone}/></section>:null}
-     {snapshot.publicationState==='partial'?<p className="employee-home-publication" role="status">Schedule not published yet for all your eligible locations. Known published shifts are shown.</p>:null}
+     {snapshot.publicationState==='partial'?<p className="employee-home-publication" role="status">Some of your locations haven’t published this week yet. The shifts shown are published.</p>:null}
     </>:<div className="employee-home-recovery" role="status"><p>{state.paused?'Home paused — return online to refresh.':denied?'Sign in again to view Home.':loading?'Loading Home…':'Home unavailable — try again.'}</p></div>}
    </section>
    {snapshot?<section className="employee-home-actions" aria-labelledby="employee-actions-heading"><h2 id="employee-actions-heading">Needs your attention</h2>

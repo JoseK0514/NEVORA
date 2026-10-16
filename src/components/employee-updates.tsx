@@ -60,7 +60,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
     })}</ul>
    </section>)}</div> : <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{emptyTitle}</h2><p>{emptyDescription}</p>{filter !== 'all' ? <button className="button secondary" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
   </section>
-  <p className="updates-footnote">{mode === 'manager' ? 'Open an update to review the message and recipient acknowledgement status.' : 'Opening an update does not acknowledge it. Review the full message before confirming receipt.'}</p>
+  <p className="updates-footnote">{mode === 'manager' ? 'Open an update to review the message and recipient acknowledgement status.' : 'Opening an update doesn’t confirm it. Read the full message, then confirm.'}</p>
  </UpdateEntrance>;
 }
 

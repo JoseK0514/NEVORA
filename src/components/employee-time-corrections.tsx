@@ -281,7 +281,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
   const feedback=busy?null:retry?{state:'outcome_unknown' as const,operationId:retry.operationId}:result;
   return <section className="employee-view-surface employee-correction-center" aria-labelledby="employee-corrections-title">
     <header className="employee-time-section-heading">
-      <div><h2 id="employee-corrections-title">Corrections</h2><p>Requests preserve the original recorded time and require manager review.</p></div>
+      <div><h2 id="employee-corrections-title">Corrections</h2><p>Your manager reviews each request. Your original times are kept.</p></div>
       <button className="employee-time-correction-trigger" type="button" aria-expanded={open} aria-controls="employee-missing-time-correction" onClick={()=>{setOpen(value=>!value);setReplacementTarget(null);setStart('');setEnd('');setReason('');}} disabled={!ready||ready.locations.length===0}>
         {open?'Cancel':'Report missing time'}
       </button>
