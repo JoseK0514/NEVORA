@@ -16,6 +16,7 @@ import './manager-home.css';
 import './manager-home-mobile.css';
 import './manager-home-gusto.css';
 import { HomeRecentActivity, MobileHomeOverview, MobileHomeTools } from './mobile-home-overview';
+import { ManagerTodayTiles } from './manager-today';
 import type { ReactNode } from 'react';
 
 /** Workspace-local time of day for the Home greeting. */
@@ -83,7 +84,7 @@ export type DashboardScheduleEmployeeItem = {
 
 type Props = {
   /** Display-only compositions can supply prepared panels without mounting readers. */
-  overviewSlots?: { actions: ReactNode; activity: ReactNode };
+  overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode };
   role?: "OWNER" | "MANAGER";
   actorId?: string;
   correctionAuthority?:string;
@@ -496,6 +497,7 @@ export function ManagerDashboard(props: Props) {
       {props.view === "overview" ? (
         /* Gusto-style Home: Tasks lead; this week, live activity and shortcuts form the rail. */
         <div className="home-layout">
+          <div className="home-layout-today">{props.overviewSlots?.today ?? <ManagerTodayTiles />}</div>
           <MobileHomeOverview weekStart={props.weekStart} weekLabel={props.weekLabel}
             previousWeek={props.previousWeek} nextWeek={props.nextWeek}
             plannedShifts={props.days.reduce((total, day) => total + day.shiftCount, 0)}

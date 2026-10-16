@@ -349,3 +349,44 @@ html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-facts 
 /* Home tertiary buttons outrank the portal secondary-button tier. */
 html body .app-shell.nevora-portal .page-frame .manager-portal-home [aria-label="Refresh tasks"] { border: 0; background: transparent; color: var(--g-accent); }
 html body .app-shell.nevora-portal .page-frame .manager-portal-home [aria-label="Refresh tasks"]:hover:not(:disabled) { background: var(--g-accent-wash); }
+
+/* Today tiles (B4): published shifts against recorded punches, above Tasks. */
+/* Phones have no named areas (a single column), so the area is set only where the grid names it. */
+html body .app-shell.nevora-portal .manager-portal-home .home-layout-today { min-width: 0; }
+@media (min-width: 761px) { html body .app-shell.nevora-portal .manager-portal-home .home-layout-today { grid-area: today; } }
+@media (min-width: 900px) {
+  html body .app-shell.nevora-portal .manager-portal-home .home-layout {
+    grid-template-areas: "today today" "tasks week" "tasks live" "tasks activity" "tasks shortcuts" "tasks .";
+    grid-template-rows: auto auto auto auto auto 1fr;
+  }
+}
+@media (min-width: 761px) and (max-width: 899px) {
+  html body .app-shell.nevora-portal .manager-portal-home .home-layout { grid-template-areas: "today" "week" "tasks" "live" "activity" "shortcuts"; }
+}
+html body .app-shell.nevora-portal .today-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+html body .app-shell.nevora-portal .today-tile {
+  position: relative; display: grid; align-content: space-between; gap: 10px; min-height: 104px; padding: 16px; border: 1px solid var(--g-hairline); border-radius: 12px;
+  background: var(--g-canvas); color: var(--g-ink); text-decoration: none; transition: border-color var(--g-press) ease, box-shadow var(--g-press) ease;
+}
+html body .app-shell.nevora-portal .today-tile:hover { border-color: var(--g-border); box-shadow: var(--g-card-shadow); }
+html body .app-shell.nevora-portal .today-tile:focus-visible { outline: 2px solid var(--g-accent); outline-offset: 2px; }
+html body .app-shell.nevora-portal .today-tile-label { display: flex; align-items: center; gap: 8px; color: var(--g-muted); font: var(--g-t-small); }
+html body .app-shell.nevora-portal .today-tile-label svg { flex: none; color: var(--g-accent-strong); }
+html body .app-shell.nevora-portal .today-tile strong { font: 500 30px/1 var(--design-font-body); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+html body .app-shell.nevora-portal .today-tile[data-urgent] { border-color: #F2C2B8; box-shadow: inset 4px 0 0 var(--g-urgent); }
+html body .app-shell.nevora-portal .today-tile[data-urgent] .today-tile-label { color: var(--g-ink); }
+html body .app-shell.nevora-portal .today-tile[data-urgent] .today-tile-label svg { color: #B42318; }
+html body .app-shell.nevora-portal .today-tiles-note { grid-column: 1 / -1; margin: 0; color: var(--g-muted); font: var(--g-t-small); }
+html body .app-shell.nevora-portal .today-tile-loading span, html body .app-shell.nevora-portal .today-tile-loading strong { display: block; height: 14px; width: 70%; border-radius: 6px; background: var(--g-inset); }
+html body .app-shell.nevora-portal .today-tile-loading strong { height: 28px; width: 36%; }
+html body .app-shell.nevora-portal .today-tiles-unavailable { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; border: 1px solid var(--g-hairline); border-radius: 12px; background: var(--g-canvas); }
+html body .app-shell.nevora-portal .today-tiles-unavailable p { margin: 0; color: var(--g-muted); }
+html body .app-shell.nevora-portal .today-tiles-unavailable .button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal .today-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  html body .app-shell.nevora-portal .today-tile { min-height: 96px; padding: 14px; border: 0; box-shadow: var(--mh-shadow, var(--g-card-shadow)); }
+  html body .app-shell.nevora-portal .today-tile[data-urgent] { box-shadow: inset 4px 0 0 var(--g-urgent), var(--mh-shadow, var(--g-card-shadow)); }
+  html body .app-shell.nevora-portal .today-tile strong { font-size: 28px; }
+}
+@media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal .today-tile { transition: none; } }
+@media (forced-colors: active) { html body .app-shell.nevora-portal .today-tile[data-urgent] { border: 2px solid CanvasText; } }

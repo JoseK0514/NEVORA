@@ -8,6 +8,12 @@ import {PortalAccountMenu} from '../portal-account-menu';
 import {SheetGestures} from '../sheet-gestures';
 import {Toaster, toast} from '../toaster';
 import {ManagerDashboard} from '../manager-dashboard';
+import {TodayTilesSurface} from '../manager-today';
+import type {Today} from '@/lib/today/project';
+
+/** Fictional numbers for the preview; the live Home reads /api/manager/today. */
+const previewToday: Today = {state: 'ready', observedAt: '2030-10-16T14:05:00.000Z', validForMs: 60000, timeZone: 'America/Puerto_Rico', today: '2030-10-16',
+  counts: {scheduled: 6, clockedIn: 4, late: 1, notClockedIn: 1}, shifts: [], missed: []};
 import {ActionCenterSurface} from '../manager-action-center';
 import {ClockMonitorCard} from '../manager-clock-monitor';
 import {EmployeeHomeReviewedView} from '../employee-home-reviewed';
@@ -98,7 +104,7 @@ export function HomePreview() {
         status="ready" refreshing={false} onRetry={refresh} displayName="Alexandra"
         ownTimeSlot={<EmployeeTimeView compact state={{time: previewOwnTime, paused: false, refreshing: false}} onRefresh={refresh}/>}/></div>
         : <ManagerDashboard {...previewManagerHome} role={role} firstName={role === 'OWNER' ? 'Fictional' : 'Morgan'}
-          overviewSlots={{actions: <ActionCenterSurface snapshot={previewActionCenter} connection="ready" timeZone={homePreviewRecords.workspace.time_zone}
+          overviewSlots={{today: <TodayTilesSurface snapshot={previewToday} />, actions: <ActionCenterSurface snapshot={previewActionCenter} connection="ready" timeZone={homePreviewRecords.workspace.time_zone}
             category={category} onCategoryChange={setCategory} expanded={expanded} onExpand={() => setExpanded(true)} onRefresh={refresh}/>,
           activity: <div className="manager-monitor-block"><ClockMonitorCard state={{monitor: previewMonitor, paused: false, refreshing: false}} onRefresh={refresh}/><a className="manager-attendance-link" href="/app?view=attendance"><NavIcon name="clock" size={18}/>Review attendance</a></div>}}/>}
     </PreviewShell>

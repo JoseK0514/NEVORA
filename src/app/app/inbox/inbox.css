@@ -85,3 +85,20 @@
 .inbox-decision .nto-primary { border: 1px solid var(--g-accent, #077572); background: var(--g-accent, #077572); color: #FFFFFF; }
 .inbox-decision .nto-button:disabled { opacity: .6; cursor: default; }
 @media (prefers-reduced-motion: reduce) { .inbox-group-caret { transition: none; } }
+
+/* Missed punches (B4): published shifts today with no clock-in, above everything else. */
+html body .app-shell.nevora-portal .missed-punches { display: grid; gap: 10px; margin: 0 0 24px; padding: 18px 20px; border: 1px solid #F2C2B8; border-radius: 12px; background: var(--g-canvas); box-shadow: inset 4px 0 0 var(--g-urgent); }
+html body .app-shell.nevora-portal .missed-punches-head h2 { display: flex; align-items: center; gap: 8px; margin: 0; font: var(--g-t-title); color: #9A2E1B; }
+html body .app-shell.nevora-portal .missed-count { display: inline-grid; place-items: center; min-width: 28px; height: 24px; padding: 0 8px; border-radius: 999px; background: #FDECEC; color: #9A2E1B; font: 600 14px/1 var(--design-font-body); }
+html body .app-shell.nevora-portal .missed-punches-head p { margin: 4px 0 0; color: var(--g-muted); font: var(--g-t-small); }
+html body .app-shell.nevora-portal .missed-punches ul { display: grid; margin: 0; padding: 0; list-style: none; }
+html body .app-shell.nevora-portal .missed-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--g-hairline); }
+html body .app-shell.nevora-portal .missed-row-copy { display: grid; gap: 2px; min-width: 0; }
+html body .app-shell.nevora-portal .missed-row-copy strong { color: var(--g-ink); font-weight: 600; }
+html body .app-shell.nevora-portal .missed-row-copy span { color: var(--g-muted); font: var(--g-t-small); }
+html body .app-shell.nevora-portal .missed-row-action { display: inline-flex; align-items: center; gap: 4px; flex: none; min-height: 44px; padding: 0 4px; color: var(--g-accent); font-weight: 500; text-decoration: none; }
+html body .app-shell.nevora-portal .missed-row-action:focus-visible { outline: 2px solid var(--g-accent); outline-offset: 2px; border-radius: 6px; }
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal .missed-punches { padding: 16px; }
+  html body .app-shell.nevora-portal .missed-row { flex-wrap: wrap; }
+}

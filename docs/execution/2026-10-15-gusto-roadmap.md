@@ -84,7 +84,11 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
   - A module that is off is hidden everywhere and refused on the server.
   - It can't be turned off while requests in it are still waiting.
   - Migration 0032.
-- **Next:** B3 open-shift eligibility or B4 Today accuracy (each needs Jose's go-ahead). Apply migrations 0031 and 0032 before any release.
+- **B4 Today accuracy (done, 2026-10-16):** today's published shifts are compared with recorded punches.
+  - Four Today tiles on manager Home (including "Started, not clocked in").
+  - A Missed punches panel at the top of the Inbox.
+  - Read-only, with no migration.
+- **Next:** B3 open-shift eligibility, B5 Spanish or B6 offline (each needs Jose's go-ahead). Apply migrations 0031 and 0032 before any release.
 
 ## Owed testing
 - VoiceOver itself (it can't be driven here; the script is in `DESIGN.MD`) and at least one physical iPhone.

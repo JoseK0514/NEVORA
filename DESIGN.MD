@@ -897,3 +897,35 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - B1, U1, U2, U4 and U8 flows.
 - **Not tested at runtime:** the server refusing a forced START_BREAK from a stale tablet (the kiosk never offers it once breaks are off). A real screen-reader pass of the switches.
 - **Before release:** apply migrations 0031 and 0032 to existing databases.
+
+#### B4: Today accuracy and missed punches (2026-10-16)
+
+- **Reader:** `src/lib/data/today.server.ts` and a pure projection, `src/lib/today/project.ts`, behind `GET /api/manager/today`.
+  - The route is read-only, for Owners and managers, and needs the `X-Nevora-Today` header. Responses are private and uncached.
+  - One SQL snapshot compares today's published shifts with the punches actually recorded.
+  - Published shifts come from the latest publication revision of each week, so they match what employees were shown. Approved callouts are left out, and yesterday's overnight shifts count only while still running.
+- **Matching:** a punch belongs to a shift when it is the same person at the same place and overlaps the shift. A clock-in up to 90 minutes early is allowed. Nothing is inferred.
+- **States, worded factually:**
+  - Starts later, and Starting now (the first 5 minutes).
+  - Started, not clocked in (more than 5 minutes after start, no punch).
+  - No punches recorded (the shift ended with nothing).
+  - Clocked in, On break and Finished.
+  - Separately, a shift counts as late when its first clock-in is a minute or more after the start.
+  - The words "no-show" and "absent" are never used; a test enforces it.
+- **Manager Home tiles** (above Tasks; two by two on phones): Scheduled today, Clocked in now (everyone on the clock, scheduled or not), Clocked in after start, and Started, not clocked in.
+  - The last tile gets the coral bar when it is above zero and links to the Inbox.
+  - A note reads "Published shifts only · Updated <time>". If the read fails, the tiles say so and offer Try again; they never show zeros.
+- **Inbox: Missed punches** at the top, listing started-not-clocked-in shifts first, then shifts with no punches.
+  - Rows link to Contact (the employee profile) or Review timecard. On a calm day the panel is hidden.
+- **Refresh:** the shared private snapshot controller polls every 30 seconds while the page is visible and online, and the snapshot expires after 60 seconds.
+- **Home preview:** `/ui-preview/home` shows fictional tile numbers and never calls the API.
+- **Verified on fictional data:**
+  - The API shift list matches an independent SQL count of today's published shifts.
+  - The counts agree with the list, and the tiles show the API numbers.
+  - An early clock-in finishes a shift and clears it from missed punches; a clock-in 30 minutes late counts as after start.
+  - The Inbox panel shows exactly the missed list.
+  - An employee is refused (403), and so is a read without the marker header.
+  - axe and overflow pass on Home and Inbox at 1440 and 390, and owner zoom (45 views) passes.
+  - The 156-check sweep passes, as do U1, U2, U4 and U8.
+- **Found and fixed:** on phones the Home grid has no named areas, so a `grid-area: today` placed the tiles in a 122px implicit column. The area is now set only where the grid names it.
+- **Not covered:** a live shift in progress during testing (the states are unit-tested at their boundaries instead), and location-scoped managers, who see the whole workspace as the clock monitor already does.

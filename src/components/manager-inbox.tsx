@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { MissedPunches } from "./manager-today";
 import { useState } from "react";
 import { ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
@@ -43,7 +44,7 @@ function Row({ item }: { item: ActionItem }) {
 
 export function ManagerInbox({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
-  return <InboxSurface snapshot={snapshot} connection={connection} onRefresh={refresh} timeZone={timeZone} />;
+  return <><MissedPunches /><InboxSurface snapshot={snapshot} connection={connection} onRefresh={refresh} timeZone={timeZone} /></>;
 }
 
 /** Presentation only: receives the released action center observation. */
