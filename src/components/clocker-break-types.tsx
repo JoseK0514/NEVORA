@@ -133,7 +133,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     (!search || type.name.toLocaleLowerCase().includes(search) || type.category.toLowerCase().includes(search)));
   const editing = selection?.operation === 'CREATE' || selection?.operation === 'EDIT';
   const title = selection?.operation === 'CREATE' ? 'Add break type' : selection?.operation === 'EDIT' ? 'Edit break type'
-    : selection?.operation === 'ARCHIVE' ? 'Archive Break Type?' : 'Reactivate Break Type?';
+    : selection?.operation === 'ARCHIVE' ? 'Archive break type?' : 'Reactivate break type?';
   const saveLabel = selection?.operation === 'CREATE' ? 'Create break type' : selection?.operation === 'EDIT' ? 'Save changes'
     : selection?.operation === 'ARCHIVE' ? 'Archive break type' : 'Reactivate break type';
 

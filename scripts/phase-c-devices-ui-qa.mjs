@@ -77,7 +77,7 @@ try{
   const ownerPage=await owner.newPage();ownerPage.setDefaultTimeout(15000);
   const runtimeErrors=[];ownerPage.on('pageerror',error=>runtimeErrors.push(error.message));
   await goto(ownerPage,'/app/settings/clocker');
-  await ownerPage.getByRole('heading',{name:'Clocker Devices',exact:true}).waitFor();
+  await ownerPage.getByRole('heading',{name:'Clocker devices',exact:true}).waitFor();
   const name=`${engine} Reception tablet`;
   const code=await addDevice(ownerPage,name);assert.match(code,/^nev_enr_[a-f0-9]{64}$/);
   checked(`${engine}: Owner creates one-use setup code through real server action`);
@@ -140,7 +140,7 @@ try{
   assert.equal(forbidden.status(),403);assert.deepEqual(await q('SELECT count(*)::int AS count FROM clocker_device_events'),before);
   checked(`${engine}: real HTTP boundary rejects cross-origin requests`);
   const manager=await newContext(browser);await login(manager,'C1-MANAGER');const managerPage=await manager.newPage();await managerPage.goto(app.url+'/app/settings/clocker');
-  assert.notEqual(new URL(managerPage.url()).pathname,'/app/settings/clocker');checked(`${engine}: Manager cannot open Owner device setup`);await manager.close();
+  await managerPage.waitForURL(u=>u.pathname!=='/app/settings/clocker');assert.equal(await managerPage.getByRole('button',{name:'Add device',exact:true}).count(),0);checked(`${engine}: Manager cannot open Owner device setup`);await manager.close();
   // A same-tablet Owner handoff must revoke that tablet's portal session.
   const handoffCode=await addDevice(ownerPage,`${engine} Dedicated handoff tablet`);
   await goto(ownerPage,'/clocker/2');await connect(ownerPage,handoffCode);

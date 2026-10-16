@@ -25,7 +25,7 @@ async function context(browser,viewport={width:1024,height:768}){
 async function goto(page,path){const r=await page.goto(app.url+path,{waitUntil:'networkidle'});assert.equal(r.status(),200,'Working route '+path);}
 async function login(c){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
  await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign In',exact:true}).click()]);return p;}
-async function savePin(p,id,pin){await goto(p,`/app/employees/${id}/clocker-pin`);await p.getByLabel('New Clocker PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm Clocker PIN',{exact:true}).fill(pin);await p.getByRole('button',{name:/Save PIN|Reset PIN/,exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
+async function savePin(p,id,pin){await goto(p,`/app/employees/${id}/clocker-pin`);await p.locator('#new-clocker-pin').fill(pin);await p.locator('#confirm-clocker-pin').fill(pin);await p.getByRole('button',{name:/Save PIN|Reset PIN/,exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
 async function enroll(owner,p,name){
  await goto(owner,'/app/settings/clocker');await owner.getByRole('button',{name:'Add device',exact:true}).click();
  const d=owner.getByRole('dialog');await d.getByLabel('Device name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Create setup code',exact:true}).click();await d.waitFor({state:'hidden'});
@@ -40,7 +40,7 @@ async function editBreak(owner,name,category,minutes){
 }
 async function archiveBreak(owner,operation){
  const row=owner.locator('[data-break-type="ui-rest"]');await row.getByRole('button',{name:/^Manage /}).click();await owner.getByRole('button',{name:operation,exact:true}).click();
- const d=owner.getByRole('dialog');await d.getByRole('button',{name:operation+' Break Type',exact:true}).click();await d.waitFor({state:'hidden'});
+ const d=owner.getByRole('dialog');await d.getByRole('button',{name:operation+' break type',exact:true}).click();await d.waitFor({state:'hidden'});
 }
 async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
 async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}
@@ -199,9 +199,9 @@ try{
   const longName='Alexandria'+('x'.repeat(65));await q("UPDATE employees SET first_name=$1,updated_at=clock_timestamp() WHERE id='PUNCH-A'",[longName]);
   await t.setViewportSize({width:320,height:740});await verify(t);await t.getByRole('heading',{name:'Hi, '+longName+'.',exact:true}).waitFor();await geometry(t,engine+': complete long name at 320px');await shot(t,engine+'-long-name-320');
   await t.getByRole('heading',{name:'Hi, '+longName+'.',exact:true}).focus();await t.keyboard.press('Tab');
-  const button=t.getByRole('button',{name:'Clock In',exact:true});console.log('[Keyboard diagnostic]',engine,await t.evaluate(()=>({activeTag:document.activeElement?.tagName,activeLabel:document.activeElement?.textContent?.trim().slice(0,100)})));await t.waitForFunction(()=>document.activeElement?.textContent?.trim()==='Clock In',null,{timeout:1500});assert(await button.evaluate(e=>document.activeElement===e));
-  const measured=await button.evaluate(e=>{const c=getComputedStyle(e);const luminance=value=>{const rgb=value.match(/[\d.]+/g).slice(0,3).map(Number).map(n=>{const s=n/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4;});return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];};const a=luminance(c.color),b=luminance(c.backgroundColor);return {ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),outline:parseFloat(c.outlineWidth),opacity:c.opacity};});
-  assert(measured.ratio>=4.5);assert(measured.outline>=2);assert.equal(measured.opacity,'1');checked(engine+': keyboard focus and measured primary-button contrast');
+  const button=t.getByRole('button',{name:'Clock In',exact:true});console.log('[Keyboard diagnostic]',engine,await t.evaluate(()=>({activeTag:document.activeElement?.tagName,activeLabel:document.activeElement?.textContent?.trim().slice(0,100)})));await t.waitForFunction(()=>{const e=document.activeElement;return (e?.getAttribute('aria-label')??e?.textContent?.trim())==='Clock In';},null,{timeout:1500});assert(await button.evaluate(e=>document.activeElement===e));
+  const measured=await button.evaluate(e=>{const c=getComputedStyle(e);const luminance=value=>{const rgb=value.match(/[\d.]+/g).slice(0,3).map(Number).map(n=>{const s=n/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4;});return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];};const a=luminance(c.color),b=luminance(c.backgroundColor);return {ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),outline:parseFloat(c.outlineWidth),opacity:c.opacity,color:c.color,background:c.backgroundColor};});
+  assert(measured.ratio>=4.5,JSON.stringify(measured));assert(measured.outline>=2,JSON.stringify(measured));assert.equal(measured.opacity,'1');checked(engine+': keyboard focus and measured primary-button contrast');
   await done(t);await q("UPDATE employees SET first_name='Avery',updated_at=clock_timestamp() WHERE id='PUNCH-A'");
   assert.deepEqual(errors,[]);checked(engine+': no runtime or hydration errors');await tablet.close();await owner.close();await browser.close();
  }

@@ -58,7 +58,7 @@ try{
  for(const engine of ['chromium','webkit']){
   const browser=await pw[engine].launch();browsers.push(browser);
   const owner=await context(browser),p=await login(owner);
-  await card(p).getByText('No one is clocked in',{exact:true}).waitFor();checked(engine+': successful empty snapshot, real Owner login');
+  await card(p).getByText('No one is clocked in right now',{exact:true}).waitFor();checked(engine+': successful empty snapshot, real Owner login');
   const empty=await monitor(owner);assert.equal(empty.status(),200);assert.match(empty.headers()['cache-control'],/no-store/);assert.match(empty.headers().vary,/Cookie/);checked(engine+': uncached private authenticated endpoint');
   for(const id of ['C7-A','C7-B']){const c=await context(browser);await login(c,id);assert.equal((await monitor(c)).status(),403);await c.close();checked(engine+': '+id+' self-service denied');}
   const anonymous=await context(browser);assert.equal((await monitor(anonymous)).status(),401);await anonymous.close();checked(engine+': missing session denied');
@@ -68,9 +68,9 @@ try{
   const revision='c7-pub-'+engine;
   await q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES($1,$2,COALESCE((SELECT max(revision_number) FROM schedule_publication_revisions WHERE week_start=$2),0)+1,'PUBLISH','QAOWNER')",[revision,day.week]);
   for(const id of ['C7-A','C7-B'])await q("INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,position_id,position_name) VALUES($1,$2,$3,'c7-schedule','loc-1',$4,$5,'00:00','24:00','qa-pos','Recorded Support')",[revision+':'+id,revision,'shift-'+id,id,day.date]);
-  await refresh(p);await card(p).getByText('No one is clocked in',{exact:true}).waitFor();checked(engine+': published shifts alone never count as clocked in');
+  await refresh(p);await card(p).getByText('No one is clocked in right now',{exact:true}).waitFor();checked(engine+': published shifts alone never count as clocked in');
   const pin=engine==='chromium'?'0246':'2468';
-  await p.goto(app.url+'/app/employees/C7-A/clocker-pin');await p.getByLabel('New Clocker PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm Clocker PIN',{exact:true}).fill(pin);await p.getByRole('button',{name:engine==='chromium'?'Save PIN':'Reset PIN',exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();
+  await p.goto(app.url+'/app/employees/C7-A/clocker-pin');await p.locator('#new-clocker-pin').fill(pin);await p.locator('#confirm-clocker-pin').fill(pin);await p.getByRole('button',{name:engine==='chromium'?'Save PIN':'Reset PIN',exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();
   await p.goto(app.url+'/app/settings/clocker');await p.getByRole('button',{name:'Add device',exact:true}).click();
   const dialog=p.getByRole('dialog');await dialog.getByLabel('Device name',{exact:true}).fill(engine+' C7 Tablet');await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Create setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
   const code=await p.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
@@ -82,7 +82,7 @@ try{
   // The real tablet privacy timeout runs during the automatic polling wait. Reverify, never extend/bypass its grant.
   await t.goto(app.url+'/clocker/2');await t.getByLabel('Employee PIN',{exact:true}).fill(pin);await t.getByRole('button',{name:'Continue',exact:true}).click();await t.getByRole('heading',{name:/^Hi, /}).waitFor();
   await punch(t,'END_BREAK');await refresh(p);await card(p).locator('.manager-floor-status').filter({hasText:'On Floor'}).waitFor();checked(engine+': real End Break restores On Floor');
-  await punch(t,'CLOCK_OUT');await refresh(p);await card(p).getByText('No one is clocked in',{exact:true}).waitFor();checked(engine+': real Clock Out removes the employee');await punch(t,'CLOCK_IN');await refresh(p);await waitPeople(p,1);
+  await punch(t,'CLOCK_OUT');await refresh(p);await card(p).getByText('No one is clocked in right now',{exact:true}).waitFor();checked(engine+': real Clock Out removes the employee');await punch(t,'CLOCK_IN');await refresh(p);await waitPeople(p,1);
   await p.goto(app.url+'/app?week=2030-10-07');await waitPeople(p,1);checked(engine+': selected schedule week does not change actual current activity');
   // Long names/location labels exercise actual data, not hard-coded fixture cards.
   await q("UPDATE employees SET first_name=$1,last_name='QA' WHERE id='C7-A'",['Alexandria'.repeat(7)]);
