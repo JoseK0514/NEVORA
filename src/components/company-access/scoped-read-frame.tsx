@@ -34,12 +34,13 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   let active=true,requestStartedAt=0,lastRefresh='';
   function retire(phase:'paused'|'expired'){
    required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
-   setBody({authority:null,phase,content:null});setRecovery({required:true,view:null});
+   setBody(previous=>previous.authority===null&&previous.phase===phase&&previous.content===null?previous:{authority:null,phase,content:null});
+   setRecovery(previous=>previous.required&&previous.view===null?previous:{required:true,view:null});
   }
   const controller=createPrivateSnapshotController<AuthoritySnapshot>(state=>{
    if(!active||!required.current)return;
    const current=!state.paused&&state.snapshot?.state==='ready'?state.snapshot:null;
-   setRecovery({required:true,view:current});
+   setRecovery(previous=>previous.required&&previous.view===current?previous:{required:true,view:current});
    if(current&&!state.refreshing){
     const key=JSON.stringify([current.authority,current.observedAt,current.requestStartedAt]);
     if(lastRefresh!==key){lastRefresh=key;router.refresh();}
