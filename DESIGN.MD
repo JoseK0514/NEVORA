@@ -744,3 +744,27 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - Compact density.
   - Payroll cost on Insights, which needs payroll totals in the report.
   - On phones, "At a glance" sits below the period controls. Moving it first means restructuring the report's tested lifetime and state handling.
+
+#### U9: Clocker kiosk (2026-10-16)
+
+- **Teal:** the kiosk defines its own teal tokens (`clocker-shell.module.css`), because it runs outside the portal shell.
+  - Accent `#077572`, hover `#055C5A`, focus and icons `#07605F`, wash `#E7F3F2`, with white text on teal.
+  - It also redefines `--design-primary`, which the root `typeface-theme.css` still sets to the old orange.
+  - On phones it overrides the legacy blue tokens it inherited from `mobile-workforce.css` (masthead `#1C4A47`).
+  - Main buttons are at least 56px tall.
+- **Bilingual labels** (`src/components/clocker-language.tsx`): a Puerto Rico Spanish second line sits beside the unchanged English for:
+  - actions: Marcar entrada, Iniciar descanso, Terminar descanso, Marcar salida, Confirmar salida, Seguir trabajando, Listo, Continuar
+  - statuses: En turno, En descanso, Fuera de turno
+  - receipts: Entrada registrada, Salida registrada and the break receipts
+  - the PIN title: Ingresa tu PIN
+
+  How it stays script-safe:
+  - Buttons keep an exact English `aria-label`, so every name the phase-c scripts press is unchanged. Inside buttons, the Spanish line is hidden from assistive tech.
+  - English titles and statuses keep their own elements, and the Spanish is a separate `lang="es"` line that screen readers announce in Spanish.
+  - Personal greetings ("Hi, Avery."), legal text and payroll text stay English.
+- **Language memory:** an "ES Spanish labels on/off" toggle on the PIN screen is remembered per tablet (`localStorage`, on by default).
+- **Verified on fictional data:**
+  - The same steps the phase-c scripts use: set a PIN, enroll a tablet, verify with "Number n" and "Continue", "Clock In", the "Clock In Recorded" heading, then "Clock Out", "Confirm Clock Out" and "Clock Out Recorded". This ran at 1024px and 390px, with axe clean once entrance animations settle.
+  - The kiosk needs development mode for local http, because production requires an https Clocker origin.
+- **Not run:** the seven phase-c scripts themselves need a disposable `FUEL_TEST_DATABASE_URL`. They are also already stale: they fill "New Clocker PIN", while the PIN form has read "New PIN" since commit e8ea9f5.
+- **Deferred:** the optional company logo in the kiosk header waits for B1 (brand tier).

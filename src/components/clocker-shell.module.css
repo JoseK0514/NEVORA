@@ -1,10 +1,17 @@
 @font-face { font-family: 'Nevora Clocker'; src: url('/fonts/clocker/inter-variable.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
 
 .page {
-  --clocker-accent: #ed724c;
-  --clocker-accent-hover: #e3623b;
-  --clocker-focus: #9f3e22;
-  --clocker-soft: #fff0e9;
+  /* Teal, defined locally: the kiosk runs outside the portal shell (U9). */
+  --clocker-accent: #077572;
+  --clocker-accent-hover: #055c5a;
+  --clocker-focus: #07605f;
+  --clocker-soft: #e7f3f2;
+  --clocker-on-accent: #ffffff;
+  /* The root theme still defines the old orange; the kiosk is outside the portal overrides. */
+  --design-primary: var(--clocker-accent);
+  --design-accent: var(--clocker-accent-hover);
+  --design-accent-ink: var(--clocker-focus);
+  --design-primary-light: var(--clocker-soft);
   --clocker-ink: #111827;
   --clocker-muted: #5b616d;
   --clocker-border: #e5e7eb;
@@ -55,8 +62,8 @@
 .task > div { width: 100%; min-width: 0; }
 .task:focus { outline: none; }
 .task h1 { max-width: 100%; font-size: clamp(27px, 2.8vw, 34px); font-weight: 550; line-height: 1.18; letter-spacing: -.04em; }
-.page :global(.button) { min-height: 54px; border-radius: 17px; padding: 14px 20px; font-size: 15px; line-height: 1.4; font-weight: 600; gap: 10px; white-space: normal; border-width: 1px; transition: background-color .16s ease, transform .16s ease; box-shadow: none; }
-.page :global(.button.primary) { background: var(--clocker-accent); color: var(--clocker-ink); border-color: transparent; }
+.page :global(.button) { min-height: 56px; border-radius: 17px; padding: 14px 20px; font-size: 15px; line-height: 1.4; font-weight: 600; gap: 10px; white-space: normal; border-width: 1px; transition: background-color .16s ease, transform .16s ease; box-shadow: none; }
+.page :global(.button.primary) { background: var(--clocker-accent); color: var(--clocker-on-accent); border-color: transparent; }
 .page :global(.button.primary:hover) { background: var(--clocker-accent-hover); }
 .page :global(.button.secondary) { background: #fff; color: var(--clocker-ink); border-color: #d1d5db; }
 .page :global(.button.secondary:hover), .page :global(.button.ghost:hover) { background: #f3f4f6; }
@@ -91,3 +98,30 @@
 }
 @media (max-width: 380px) { .context { padding: 20px; column-gap: 12px; } .context h2 { font-size: 18px; } .clock time { font-size: 28px; } .task { padding: 28px 20px 20px; } .deviceStatus { margin-left: auto; } }
 @media (prefers-reduced-motion: reduce) { .page *, .page *::before, .page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } .page button:active { transform: none; } }
+
+/* U9: the phone kiosk uses the portal's teal ladder, not the legacy blue
+ * tokens it inherits from mobile-workforce.css (the kiosk is outside the shell). */
+.page.page.page[data-mobile-clocker="true"] {
+  --mobile-masthead: #1c4a47;
+  --mobile-masthead-secondary: #cfe3e1;
+  --mobile-accent: #077572;
+  --mobile-accent-hover: #055c5a;
+  --mobile-selected: #e7f3f2;
+  --mobile-canvas: #f6f7f8;
+  --mobile-ink: #1c1c1c;
+  --mobile-secondary: #5f6368;
+  --mobile-divider: #ecedef;
+  --mobile-shadow: 0 1px 3px #0000001a, 0 1px 2px #0000000d;
+  --mobile-sheet-shadow: 0 12px 48px #1c4a4733;
+}
+.page.page.page[data-mobile-clocker="true"] :global(.button.primary) { color: #ffffff; }
+
+/* U9 bilingual labels: English first, Spanish beneath in a lighter weight. */
+.page :global(.clocker-label) { display: inline-grid; justify-items: inherit; gap: 2px; line-height: 1.25; }
+.page :global(.clocker-es) { font-size: 13px; font-weight: 500; }
+.page :global(.clocker-language-toggle) {
+  justify-self: center; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid var(--clocker-border); border-radius: 999px;
+  background: #ffffff; color: var(--clocker-muted); font: inherit; font-size: 14px; cursor: pointer;
+}
+.page :global(.clocker-language-toggle > span) { display: inline-grid; place-items: center; min-width: 28px; height: 22px; border-radius: 6px; background: #f1f2f4; color: var(--clocker-ink); font-size: 12px; font-weight: 700; }
+.page :global(.clocker-language-toggle[aria-pressed="true"] > span) { background: var(--clocker-accent); color: #ffffff; }

@@ -4,6 +4,7 @@ import styles from './clocker-pin.module.css';
 import { ClockerPunchPanel } from './clocker-punch-panel';
 import { ClockerIcon } from './clocker-icon';
 import { useClockerMotion } from './clocker-motion';
+import { ClockerLanguageToggle, Es, useClockerSpanish } from './clocker-language';
 type Verified={state:'verified';firstName:string;expiresAt:string};
 type Reply=Verified|{state:'idle'};
 class PinRequestError extends Error { constructor(message:string,readonly recover:boolean){super(message);} }
@@ -23,6 +24,7 @@ async function requestPin(locationKey:string,body:object):Promise<Reply>{
 export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{locationKey:string;timeZone?:string;punchEnabled?:boolean}){
  const input=useRef<HTMLInputElement>(null),busy=useRef(false),epoch=useRef(0);
  const [count,setCount]=useState(0),[pending,setPending]=useState(true);
+ const spanish=useClockerSpanish();
  const [identity,setIdentity]=useState<Verified|null>(null);
  const [error,setError]=useState<string|null>(null),[blocked,setBlocked]=useState(false);
  const motion=useClockerMotion(identity?'verified':'pin');
@@ -90,7 +92,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
    <p className={styles.note}>This screen clears automatically after 30 seconds.</p>
   </>:<>
    <div className={styles.pinIcon}><ClockerIcon name="lock" size={28}/></div>
-   <h1>Enter your PIN</h1><p>Use your four-digit employee PIN.</p>
+   <h1>Enter your PIN</h1>{spanish?<p className={styles.titleEs}><Es phrase="Enter your PIN"/></p>:null}<p>Use your four-digit employee PIN.</p>
    <form onSubmit={submit}>
     <fieldset disabled={pending||blocked}>
      <label className={styles.pinLabel} htmlFor="clocker-pin">Employee PIN</label>
@@ -101,10 +103,11 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
      <div className={styles.keypad} aria-label="PIN keypad">
       {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" onClick={()=>key(value)} aria-label={value==='clear'?'Clear PIN':value==='delete'?'Delete digit':`Number ${value}`}>{value==='clear'?'Clear':value==='delete'?<ClockerIcon name="delete" size={23}/>:value}</button>)}
      </div>
-     <button className="button primary" type="submit" disabled={count!==4}>Continue<ClockerIcon name="arrow" size={20}/></button>
+     <button className="button primary" type="submit" aria-label="Continue" disabled={count!==4}><span className="clocker-label"><span>Continue</span>{spanish?<Es phrase="Continue" inButton/>:null}</span><ClockerIcon name="arrow" size={20}/></button>
     </fieldset>
    </form>
    <p id="clocker-pin-help" className={styles.note}>Your PIN is separate from your portal password.</p>
+   <ClockerLanguageToggle/>
   </>}
   {pending?<p role="status" className={styles.note}>Checking tablet verification…</p>:null}
   {error?<div><p role="alert" className={styles.error}>{error}</p>{blocked?<button type="button" className="button secondary" onClick={()=>void reset()}>Check Connection</button>:null}</div>:null}

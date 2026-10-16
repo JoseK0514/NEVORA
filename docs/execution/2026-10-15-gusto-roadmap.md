@@ -68,7 +68,8 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
 - **U6 Pay (done, 2026-10-16):** a five-step payroll stepper derived from run state, and a Payday moment for the newest statement on My pay (no amounts, since statements carry none).
 - **U7 delight (done, 2026-10-16):** a table-tested celebration gate and a 560ms burst for five server-confirmed moments, once per session and never under reduced motion.
 - **U8 finder, tables and Insights (done, 2026-10-16):** a ⌘K finder over a new read-only names route, filter-as-you-type Employees with sticky headers, and Reports renamed Insights with an "At a glance" strip. Phone tables already stacked.
-- **Next:** U9 Clocker, U10 tokens.
+- **U9 Clocker kiosk (done, 2026-10-16):** locally defined teal (including the phone kiosk's leftover blue), 56px actions, Puerto Rico Spanish second lines with English names unchanged, and a per-tablet Spanish toggle.
+- **Next:** U10 token consolidation and `@layer` (screenshot baselines first).
 
 ## Owed testing
 - VoiceOver pass, 200% zoom, and at least one physical iPhone.

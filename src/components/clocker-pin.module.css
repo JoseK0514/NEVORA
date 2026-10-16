@@ -132,3 +132,6 @@
 @media (max-width:480px) { .management, .unavailable { padding: 24px 20px; } .back { margin-bottom: 12px; } .pageHeading { margin-bottom: 20px; } .employeeSummary { flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding-bottom: 20px; } .formHeading { align-items: flex-start; gap: 12px; margin-bottom: 20px; } .formHeading h2 { font-size: 21px; } .fields { gap: 18px; } .management label { gap: 8px; } .management fieldset { gap: 16px; } .management input:not([type=hidden]) { height: 52px; } .keypad button { min-height: 48px; } .terminal form { margin-top: 16px; } }
 @media (max-width:360px) { .employeeName { flex-basis: calc(100% - 60px); } .badge { margin-left: 60px; } .formActions { flex-direction: column; } .primary, .formActions .secondary { width: 100%; } }
 @media (prefers-reduced-motion:reduce) { .management *, .terminal * { animation: none !important; transition: none !important; } }
+
+/* U9: Spanish second lines under English titles and statuses. */
+.titleEs { margin: -6px 0 0; color: var(--muted, #5f6368); font-size: 17px; font-weight: 500; }
