@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import {ArrowsLeftRightIcon, CalendarMinusIcon, CaretRightIcon, ClockIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
-import type {ReactNode} from 'react';
+import {ArrowsLeftRightIcon, CalendarCheckIcon, CalendarMinusIcon, ChatTextIcon, ClockIcon, HourglassMediumIcon, PencilSimpleLineIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
+import {useEffect, useState, type ReactNode} from 'react';
+import {Illustration} from './illustrations';
 import {EmployeeTimeView} from './employee-time-panel';
 import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, HomeSource, PublishedAssignment} from '../lib/employee-home/types';
@@ -50,24 +51,61 @@ function zoneLabel(zone: string) {
   return `${zone.split('/').pop()!.replace(/_/g, ' ')} time`;
 }
 
+/** "Today" or "Tomorrow" relative to when Home was read, in the workspace zone. */
+function relativeDay(date: string, observedAt: string, zone: string) {
+  const today = businessDate(observedAt, zone);
+  const tomorrow = businessDate(new Date(Date.parse(observedAt) + 86_400_000).toISOString(), zone);
+  return date === today ? 'Today' : date === tomorrow ? 'Tomorrow' : null;
+}
+
+export function untilLabel(ms: number) {
+  const minutes = Math.max(1, Math.round(ms / 60_000));
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.floor(minutes / 60), rest = minutes % 60;
+  if (hours < 24) return rest ? `${hours} h ${rest} min` : `${hours} h`;
+  const days = Math.round(hours / 24);
+  return `${days} ${days === 1 ? 'day' : 'days'}`;
+}
+
+/** A glanceable countdown, updated each minute after mount. Decorative: the
+ * start time above it is the accessible fact, so screen readers skip it. */
+function Countdown({startAt}: {startAt: string}) {
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    const tick = () => setNow(Date.now());
+    tick();
+    const timer = setInterval(tick, 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  const remaining = now === null ? null : Date.parse(startAt) - now;
+  if (remaining === null || remaining <= 0) return null;
+  return <p className={styles.countdown} aria-hidden="true"><HourglassMediumIcon size={16} weight="bold"/>Starts in {untilLabel(remaining)}</p>;
+}
+
+function greeting(at: string, zone: string) {
+  const hour = Number(new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', hourCycle: 'h23'}).format(new Date(at)));
+  return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+}
+
 function Arrow({forward = false}: {forward?: boolean}) {
   return <svg className={styles.arrow} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path d={forward ? 'M4 12h15m-5-5 5 5-5 5' : 'm9 5 7 7-7 7'}/>
   </svg>;
 }
 
-function Assignment({shift, zone}: {shift: PublishedAssignment; zone: string}) {
+function Assignment({shift, zone, observedAt, countdown = false}: {shift: PublishedAssignment; zone: string; observedAt?: string; countdown?: boolean}) {
   const endDate = businessDate(shift.endAt, zone);
   const formatTime = (at: string) => new Intl.DateTimeFormat('en-US', {
     timeZone: zone, hour: 'numeric', minute: '2-digit',
   }).format(new Date(at));
   return <>
-    <p className={styles.assignmentDate}><time dateTime={shift.date}>{dateLabel(shift.date)}</time></p>
+    <p className={styles.assignmentDate}>{observedAt && relativeDay(shift.date, observedAt, zone) ? <><strong>{relativeDay(shift.date, observedAt, zone)}</strong> · </> : null}<time dateTime={shift.date}>{dateLabel(shift.date)}</time></p>
     <p className={styles.interval}>
       <time dateTime={shift.startAt}>{formatTime(shift.startAt)}</time>
       <span className={styles.intervalDash} aria-hidden="true">–</span>
       <time dateTime={shift.endAt}>{formatTime(shift.endAt)}</time>
     </p>
+    {countdown ? <Countdown startAt={shift.startAt}/> : null}
     <p className={styles.location}>{shift.locationLabel}{shift.positionLabel ? <span className={styles.position}> · {shift.positionLabel}</span> : null}</p>
     {endDate !== shift.date ? <p className={styles.assignmentDetail}>Ends <time dateTime={shift.endAt}>{dateLabel(endDate)}</time></p> : null}
     {shift.designatedLead ? <p className={styles.assignmentDetail}>Designated lead</p> : null}
@@ -80,14 +118,21 @@ function Assignment({shift, zone}: {shift: PublishedAssignment; zone: string}) {
   </>;
 }
 
+const kindIcons = {
+  SCHEDULE: CalendarCheckIcon, EXCHANGE: ArrowsLeftRightIcon, TIME_OFF: CalendarMinusIcon,
+  TIME_CORRECTION: PencilSimpleLineIcon, COMMUNICATION: ChatTextIcon,
+} as const;
+
 function AttentionRow({item, zone}: {item: AttentionItem; zone: string}) {
+  const Icon = kindIcons[item.ref.kind] ?? ChatTextIcon;
   return <li>
     <Link className={styles.itemLink} href={item.href}>
+      <span className={styles.itemIcon} aria-hidden="true"><Icon size={20}/></span>
       <span className={styles.itemCopy}>
         <strong>{item.label}</strong>
         {item.ref.kind === 'SCHEDULE' ? <small>Week of <time dateTime={item.ref.id}>{dateLabel(item.ref.id)}</time></small>
           : <small>Recorded <time dateTime={item.changedAt}>{stamp(item.changedAt, zone)}</time></small>}
-        {item.required ? <small>Required review</small> : null}
+        {item.required ? <small className={styles.required}>Required review</small> : null}
         {item.deadlineAt ? <small className={styles.deadline}>Respond by <time dateTime={item.deadlineAt}>{stamp(item.deadlineAt, zone)}</time></small> : null}
       </span>
       <Arrow/>
@@ -129,11 +174,11 @@ const shortcuts = [
   {href: '/app/my-time', label: 'My time', Icon: ClockIcon},
 ];
 
-function Shortcuts() {
-  return <nav className={styles.shortcuts} aria-labelledby="employee-home-shortcuts">
-    <h2 id="employee-home-shortcuts">Shortcuts</h2>
+function QuickActions() {
+  return <nav className={styles.quick} aria-labelledby="employee-home-quick">
+    <h2 id="employee-home-quick">Quick actions</h2>
     <ul>{shortcuts.map(({href, label, Icon}) => <li key={href}><Link href={href}>
-      <Icon size={20} aria-hidden="true"/><span>{label}</span><CaretRightIcon className={styles.caret} size={16} aria-hidden="true"/>
+      <span className={styles.quickIcon} aria-hidden="true"><Icon size={22}/></span><span>{label}</span>
     </Link></li>)}</ul>
   </nav>;
 }
@@ -177,20 +222,21 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
   return <div className={styles.root} data-home-state={viewState} aria-busy={refreshing || loading}>
     <header className={styles.arrival}>
       <h1>{name ? `Hi, ${name}.` : 'Home'}</h1>
-      {snapshot ? <p><time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {
+      {snapshot ? <p>{greeting(snapshot.observedAt, snapshot.timeZone)} · <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {
         timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
       }).format(new Date(snapshot.observedAt))}</time></p> : null}
     </header>
     <div className={styles.content}>
       <div className={styles.primary}>
-        <section className={styles.assignment} aria-labelledby="employee-reviewed-next-heading">
+        <section className={styles.assignment} aria-labelledby="employee-reviewed-next-heading"
+          data-pass={snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? 'true' : undefined}>
           <header className={styles.assignmentHeader}>
             <h2 id="employee-reviewed-next-heading">Next shift</h2>
             {snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? <span className={styles.published}>Published</span> : null}
           </header>
           {snapshot ? <>
             {snapshot.publicationState === 'unavailable' ? <p className={styles.assignmentMessage}>Schedule unavailable</p>
-              : snapshot.nextShift ? <Assignment shift={snapshot.nextShift} zone={snapshot.timeZone}/>
+              : snapshot.nextShift ? <Assignment shift={snapshot.nextShift} zone={snapshot.timeZone} observedAt={snapshot.observedAt} countdown/>
                 : <><p className={styles.assignmentMessage}>No upcoming published shift</p><Link className={styles.scheduleLink} href="/app/schedule">View schedule <Arrow forward/></Link></>}
             {snapshot.currentShift && snapshot.publicationState !== 'unavailable' ? <section className={styles.current} aria-label="Scheduled now">
               <h3>Scheduled now</h3>
@@ -214,14 +260,14 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
       </div>
       {snapshot ? <div className={styles.secondary}>
         {partial ? <p className={styles.notice} role="status">Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.</p> : null}
-        {allSet ? <p className={styles.allSet} role="status">You&apos;re all set.</p> : null}
+        {allSet ? <div className={styles.allSet}><Illustration name="all-caught-up" size={72}/><p role="status">You&apos;re all set.</p></div> : null}
         <AttentionGroup kind="actions" items={actions} partial={partial} zone={snapshot.timeZone}/>
+        <QuickActions/>
         <AttentionGroup kind="updates" items={updates} partial={partial} zone={snapshot.timeZone}/>
         <SourceNotices snapshot={snapshot}/>
-        <Shortcuts/>
       </div> : null}
       <footer className={styles.freshness}>
-        {snapshot ? <small>Home sources checked <time dateTime={snapshot.observedAt}>{stamp(snapshot.observedAt, snapshot.timeZone)}</time></small> : null}
+        {snapshot ? <small data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
         {denied ? <Link className={styles.textLink} href="/login">Sign in <Arrow forward/></Link>
           : <button className={styles.refreshButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
             {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Retry home'}

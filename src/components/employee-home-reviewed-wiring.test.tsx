@@ -44,7 +44,7 @@ function adapter(state: PrivatePanelState<HomeLifetime>, extra: Partial<Paramete
 
 const html = (state: PrivatePanelState<HomeLifetime>, extra: Partial<Parameters<typeof EmployeeHomeReviewedRenderer>[0]> = {}) => renderToStaticMarkup(adapter(state, extra));
 function suppressPrivate(markup: string) {
-  for (const value of ['PRIVATE_ASSIGNMENT_LOCATION', 'PRIVATE_ACTION', 'private-request', '2030-10-08', '1 action', 'Home sources checked', at]) expect(markup).not.toContain(value);
+  for (const value of ['PRIVATE_ASSIGNMENT_LOCATION', 'PRIVATE_ACTION', 'private-request', '2030-10-08', '1 action', 'data-home-updated', at]) expect(markup).not.toContain(value);
   expect(markup).not.toContain('data-home-group=');
   expect(markup).not.toContain('Clocked In');
 }

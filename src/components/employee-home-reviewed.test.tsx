@@ -6,7 +6,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {describe, expect, it, vi} from 'vitest';
 import {projectEmployeeHome, HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, PublishedAssignment} from '../lib/employee-home/types';
-import {EmployeeHomeReviewedView, type EmployeeHomeReviewedViewProps} from './employee-home-reviewed';
+import {EmployeeHomeReviewedView, untilLabel, type EmployeeHomeReviewedViewProps} from './employee-home-reviewed';
 
 const at = '2030-10-07T12:00:00.000Z';
 const assignment: PublishedAssignment = {
@@ -78,7 +78,7 @@ describe('released Home data and navigation', () => {
 
   it.each(['paused', 'unauthorized', 'unavailable'] as const)('redacts stale ready data immediately when status becomes %s', status => {
     const stale = html(props(undefined, {status}));
-    for (const secret of ['Private location', 'Private own recorded-time slot', 'Alexandra', '2030-10-08', 'Checked <time', 'Home sources checked', at]) {
+    for (const secret of ['Private location', 'Private own recorded-time slot', 'Alexandra', '2030-10-08', 'Checked <time', 'data-home-updated', at]) {
       expect(stale).not.toContain(secret);
     }
     expect(stale).not.toContain("You're all set.");
@@ -228,12 +228,42 @@ describe('original redacted clock recovery preservation',()=>{
   const slot=<EmployeeTimeView compact state={{time,paused:false,refreshing:false}} onRefresh={()=>{}}/>;
   const released=props(projectEmployeeHome(snapshot({attention:[item('privacy-item',{actionable:true})]})),{ownTimeSlot:slot});
   const control=html(released);
-  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 action','Home sources checked',at,'Hi, Alexandra.'])expect(control).toContain(field);
+  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 action','data-home-updated',at,'Hi, Alexandra.'])expect(control).toContain(field);
   const lost=html({...released,status});
-  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 action','Home sources checked',at,'Hi, Alexandra.','Clocked In'])expect(lost).not.toContain(field);
+  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 action','data-home-updated',at,'Hi, Alexandra.','Clocked In'])expect(lost).not.toContain(field);
   const clock=lost.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/)![1];
   expect(clock).toContain('href="/app/my-time"');
   if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign In');expect(clock).not.toContain('aria-label="Refresh recorded time"');}
   else {expect(clock).toContain('aria-label="Refresh recorded time"');if(status==='paused'||status==='loading')expect(clock).toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);else expect(clock).not.toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);}
  });
+});
+
+describe('Today Home (U2)', () => {
+  it('shows the next shift as a pass with a relative day, greeting and quick actions', () => {
+    const markup = html(props());
+    expect(markup).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+    expect(markup).toContain('<strong>Tomorrow</strong> · <time dateTime="2030-10-08">');
+    expect(markup).toContain('Good morning · <time');
+    for (const label of ['Quick actions', 'Request time off', 'Swap a shift', 'Update availability', 'My time']) expect(markup).toContain(label);
+    expect(markup).toContain('data-home-updated="true">Updated <time');
+    // The countdown needs a live clock, so it is absent from server markup.
+    expect(markup).not.toContain('Starts in');
+  });
+  it('keeps the calm card when there is no published shift or the schedule is unavailable', () => {
+    expect(html(props(projectEmployeeHome(snapshot({nextShift: null}))))).not.toContain('data-pass');
+    expect(html(props(projectEmployeeHome(snapshot({publicationState: 'unavailable', nextShift: null}))))).not.toContain('data-pass');
+  });
+  it('places quick actions after To do and before recent updates', () => {
+    const markup = html(props(projectEmployeeHome(snapshot({attention: [item('todo', {actionable: true}), item('news')]}))));
+    const order = ['data-home-group="actions"', 'Quick actions', 'data-home-group="updates"'].map(marker => markup.indexOf(marker));
+    expect(order.every(index => index > 0)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+  });
+  it('words the countdown for a glance', () => {
+    expect(untilLabel(25 * 60_000)).toBe('25 min');
+    expect(untilLabel(9 * 3_600_000 + 11 * 60_000)).toBe('9 h 11 min');
+    expect(untilLabel(5 * 3_600_000)).toBe('5 h');
+    expect(untilLabel(30 * 3_600_000)).toBe('1 day');
+    expect(untilLabel(80 * 3_600_000)).toBe('3 days');
+  });
 });

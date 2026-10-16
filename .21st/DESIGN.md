@@ -107,3 +107,22 @@ First phase of the full implementation plan (mobile first, enjoyable, customizab
 - **Links:** manager time-off links and review redirects use `?tab=pending` instead of the unrecognized `?tab=team`. People land on the same Pending view.
 - **Tab bar material:** the frosted phone tab bar is now 92% white, up from 82%. A teal element scrolled under the active tab had dropped its label to 4.26:1; at 92% every label stays at 4.5:1 or more over any content.
 - **Deferred:** the manager Requests tab becomes Inbox, with one badge, when `/app/inbox` ships (U4).
+
+#### U2: employee Today Home (2026-10-15)
+
+Reference: the Future Pro home on Mobbin (time-of-day greeting on a light background above one coloured event card), adapted to NEVORA tokens.
+- **Arrival:** employee Home drops the teal hero, so the next-shift pass is the one brand-colour moment under the teal app bar. The line under the heading reads "Good morning · Thursday, October 15, 2026" in the workspace time zone. The live Home still receives no name, by design; the "Hi, Alexandra." heading appears only where a name is supplied, as in the preview.
+- **Next-shift pass:**
+  - A diagonal gradient from the accent to the masthead, with white type, a soft light bloom, and a perforated stub (dashed rule and side notches in the page colour) before "View schedule".
+  - "Today" or "Tomorrow" leads the date, counted from when Home was read.
+  - A countdown pill ("Starts in 9 h 11 min") updates each minute after the page loads. Screen readers skip it, since the start time is the accessible fact.
+  - The countdown is absent from server markup and from shifts already started.
+  - No published shift, or an unavailable schedule, keeps the calm white card.
+  - Increased contrast flattens the pass to the masthead colour; forced colours turn it into an outlined card.
+- **To do:** each row has a 40px icon tile by kind (schedule, swap, time off, correction, update). "Required review" is a teal chip. With two or more items the card shows a stacked edge.
+- **Quick actions:** four tiles, two per row, placed after To do and before Recent updates: Request time off, Swap a shift, Update availability, My time.
+- **All set:** "You're all set." sits beside the all-caught-up illustration.
+- **Footer:** "Updated 4:49 PM" with "Refresh home". The footer carries `data-home-updated`.
+- **Phone type:** everything on Home is 15px or larger on phones, except the "Published" and clock status chips (14px).
+- **Script contracts kept:** "Loading Home…", "Refresh recorded time", "Clocked In", `data-home-state`, `data-home-group`, `data-home-refresh`, "Refresh home"/"Retry home", "You're all set.", "Scheduled now", "No upcoming published shift", and next shift before To do.
+- **Deferred:** a new pay statement in the pending stack needs a payroll read on Home. It moves to U6, where the Payday moment is wired to My pay.

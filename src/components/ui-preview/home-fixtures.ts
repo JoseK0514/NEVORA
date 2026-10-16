@@ -47,7 +47,7 @@ export const previewEmployeeHome: EmployeeHomeRead = {
   state: 'ready', allSet: false,
   snapshot: {
     observedAt: previewObservedAt, authority: 'sample-display-only', validForMs: 45000, timeZone,
-    sources, publicationState: 'partial', currentShift: null,
+    sources, publicationState: 'complete', currentShift: null,
     nextShift: {
       shiftId: employeeShift.id, assignmentEpisodeId: 'sample-assignment', termsRevision: 1,
       weekStart: previewWeek, date: employeeShift.date,
@@ -59,6 +59,14 @@ export const previewEmployeeHome: EmployeeHomeRead = {
     attention: [{
       ref: {kind: 'SCHEDULE', id: previewWeek, version: 'sample-publication'}, label: 'Review your published schedule',
       href: `/app/schedule?week=${previewWeek}`, required: true, actionable: true,
+      deadlineAt: null, changedAt: previewObservedAt,
+    }, {
+      ref: {kind: 'EXCHANGE', id: 'sample-swap', version: 'sample-1'}, label: 'Shift swap offered by a teammate',
+      href: '/app/exchange?tab=requests', required: false, actionable: true,
+      deadlineAt: null, changedAt: previewObservedAt,
+    }, {
+      ref: {kind: 'TIME_OFF', id: 'sample-leave', version: 'sample-1'}, label: 'Time off approved · Oct 25 – Oct 26, 2026',
+      href: '/app/requests?tab=my', required: false, actionable: false,
       deadlineAt: null, changedAt: previewObservedAt,
     }],
   },

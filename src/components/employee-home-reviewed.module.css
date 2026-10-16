@@ -132,7 +132,7 @@
 
 /* Gusto anatomy (2026-10-15): small muted card labels, big ink figures,
  * teal "›" link rows, a quiet clock card and Shortcuts. */
-.assignmentHeader h2, .groupHeader h2, .shortcuts h2 { color: var(--home-muted); font-size: .9375rem; font-weight: 400; letter-spacing: 0; }
+.assignmentHeader h2, .groupHeader h2, .quick h2 { color: var(--home-muted); font-size: .9375rem; font-weight: 400; letter-spacing: 0; }
 .groupHeader h2 { color: var(--home-ink); font-size: 1.125rem; font-weight: 500; }
 .published { color: var(--g-accent-strong, #07605f); }
 .assignmentFooter { margin-top: 16px; padding-top: 0; }
@@ -146,11 +146,6 @@
 .recordedSlot :global(.employee-time-badge) { padding: 3px 8px; border-radius: 999px; background: var(--home-canvas); color: var(--home-ink); font-size: .75rem; font-weight: 500; }
 .recordedSlot :global(.employee-time-note) { display: none; }
 .recordedSlot :global(.employee-time-link) { font-weight: 600; }
-.shortcuts { min-width: 0; padding: 16px 18px 4px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
-.shortcuts ul { margin: 6px 0 0; padding: 0; list-style: none; }
-.shortcuts a { display: grid; grid-template-columns: 20px minmax(0, 1fr) 16px; align-items: center; gap: 14px; min-height: 52px; border-top: 1px solid var(--home-line); color: var(--home-ink); font-size: .9375rem; }
-.shortcuts a > svg:first-child { color: var(--home-blue); }
-.caret { color: var(--home-blue); }
 .freshness small { font-size: .75rem; }
 
 @media (min-width: 761px) { .root { background: transparent; } }
@@ -160,7 +155,7 @@
   .arrival p { color: var(--home-muted); }
   .content { margin-top: 0; padding-inline: 0; column-gap: 40px; }
   .secondary { padding-top: 0; }
-  .assignment, .recordedSlot, .actions, .shortcuts { box-shadow: none; border: 1px solid var(--home-border); }
+  .assignment, .recordedSlot, .actions { box-shadow: none; border: 1px solid var(--home-border); }
 }
 
 @media (hover: hover) {
@@ -177,7 +172,104 @@
   .root *, .root *::before, .root *::after { scroll-behavior: auto; }
 }
 /* Card labels stay quiet so the figures lead; the repeated class outranks the portal's .page-frame h2. */
-.root.root.root .assignmentHeader h2, .root.root.root .shortcuts h2, .root.root.root .recordedSlot :global(.employee-time-current-heading h2) {
+.root.root.root .assignmentHeader h2, .root.root.root .quick h2, .root.root.root .recordedSlot :global(.employee-time-current-heading h2) {
   color: var(--home-muted); font-size: .9375rem; font-weight: 400; letter-spacing: 0; line-height: 1.5;
 }
 .root.root.root .groupHeader h2 { color: var(--home-ink); font-size: 1.125rem; font-weight: 500; letter-spacing: -.01em; }
+
+/* U2 "Today" Home (2026-10-15). A light arrival lets the next-shift pass be the
+ * one brand-colour moment; the To do card stacks; quick actions are tiles. */
+.root { --pass-pad: 20px; --pass-notch: var(--home-canvas); --pass-from: var(--g-accent, #077572); }
+@media (min-width: 761px) { .root { --pass-notch: var(--g-canvas, #ffffff); } }
+.arrival { padding: 20px 20px 4px; background: transparent; color: var(--home-ink); }
+.arrival h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: -.03em; }
+.arrival p { margin-top: 4px; color: var(--home-muted); font-size: .9375rem; }
+.content { margin-top: 16px; }
+
+/* The pass: brand gradient, white type, a perforated stub before the footer. */
+.assignment[data-pass] {
+  position: relative; overflow: hidden; padding: 18px var(--pass-pad) 8px; color: #ffffff;
+  background: linear-gradient(145deg, var(--pass-from) 0%, var(--home-masthead) 78%);
+  box-shadow: 0 12px 28px -16px rgb(28 74 71 / .7), 0 1px 2px rgb(0 0 0 / .08);
+}
+.assignment[data-pass]::before {
+  position: absolute; inset: -40% -30% auto auto; width: 240px; height: 240px; border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255 / .14), transparent 68%); content: ''; pointer-events: none;
+}
+.root.root.root .assignment[data-pass] .assignmentHeader h2 { color: rgb(255 255 255 / .82); }
+.assignment[data-pass] .published { color: #ffffff; background: rgb(255 255 255 / .16); }
+.assignment[data-pass] .published::before { background: #ffffff; }
+.assignment[data-pass] :is(.assignmentDate, .position, .zone, .currentNote, .notice, .intervalDash) { color: rgb(255 255 255 / .82); }
+.assignment[data-pass] .assignmentDate strong { color: #ffffff; font-weight: 600; }
+.assignment[data-pass] .interval { font-size: 2rem; }
+.assignment[data-pass] .location { color: #ffffff; }
+.assignment[data-pass] .assignmentFooter { position: relative; margin-top: 18px; border-top: 1.5px dashed rgb(255 255 255 / .32); }
+.assignment[data-pass] .assignmentFooter::before, .assignment[data-pass] .assignmentFooter::after {
+  position: absolute; top: -10px; width: 18px; height: 18px; border-radius: 50%; background: var(--pass-notch); content: '';
+}
+.assignment[data-pass] .assignmentFooter::before { left: calc(-1 * var(--pass-pad) - 9px); }
+.assignment[data-pass] .assignmentFooter::after { right: calc(-1 * var(--pass-pad) - 9px); }
+.assignment[data-pass] .scheduleLink { color: #ffffff; }
+.assignment[data-pass] .current { border-top-color: rgb(255 255 255 / .24); }
+.assignment[data-pass] .current h3 { color: #ffffff; }
+.assignment[data-pass] .current .assignmentFooter { border-top-style: solid; border-top-color: rgb(255 255 255 / .2); }
+.assignment[data-pass] .current .assignmentFooter::before, .assignment[data-pass] .current .assignmentFooter::after { display: none; }
+.root .assignment[data-pass] :is(a, button):focus-visible { outline-color: #ffffff; }
+.countdown {
+  display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px !important; padding: 5px 12px 5px 10px; border-radius: 999px;
+  color: #ffffff; background: rgb(255 255 255 / .16); font-size: .9375rem; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+@media (hover: hover) {
+  .root .assignment[data-pass] .scheduleLink:hover { color: #ffffff; background: rgb(255 255 255 / .12); }
+}
+.root .assignment[data-pass] .scheduleLink:active { color: #ffffff; background: rgb(255 255 255 / .12); }
+
+/* To do: icon rows; with two or more items the card reads as a stack. */
+.itemLink { display: grid; grid-template-columns: 40px minmax(0, 1fr) 18px; gap: 14px; }
+.itemIcon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--home-blue); background: var(--home-soft); }
+.updates .itemIcon { color: var(--home-muted); background: #eff0f2; }
+.required { display: inline-block !important; width: fit-content; margin-top: 6px !important; padding: 2px 8px; border-radius: 999px; color: var(--g-accent-strong, #07605f) !important; background: var(--home-soft); font-weight: 500; }
+.actions:has(li + li) { box-shadow: var(--home-card-shadow), 0 8px 0 -4px #ffffff, 0 9px 2px -4px rgb(0 0 0 / .1); margin-bottom: 6px; }
+
+/* Quick actions: four tiles, two per row. */
+.quick { min-width: 0; }
+.quick h2 { margin-bottom: 10px !important; }
+.quick ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.quick li { display: grid; } /* each tile fills its row, so a row of two stays even */
+.quick a {
+  display: grid; align-content: space-between; gap: 14px; min-height: 104px; padding: 14px; border: 1px solid var(--home-line); border-radius: 14px;
+  color: var(--home-ink); background: #ffffff; font-size: .9375rem; font-weight: 500; line-height: 1.35; box-shadow: 0 1px 2px rgb(0 0 0 / .04);
+  transition: transform 140ms ease-out, border-color 140ms ease;
+}
+.quickIcon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--home-blue); background: var(--home-soft); }
+@media (hover: hover) { .quick a:hover { border-color: var(--home-border); } }
+.quick a:active { transform: scale(.98); }
+
+.allSet { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; background: #ffffff; box-shadow: var(--home-card-shadow); }
+.allSet p { font-size: 1.0625rem; font-weight: 600; }
+.allSet svg { flex: none; }
+
+/* Phone type floor: nothing on Home reads below 15px except the two status chips. */
+@container employee-home-reviewed (max-width: 51.99rem) {
+  .assignmentDate, .position, .zone, .currentNote, .assignmentDetail, .itemCopy small, .count, .groupEmpty, .notice, .sourceNotices p,
+  .freshness small, .scheduleLink, .textLink, .overflow summary, .refreshButton, .recordedFallback p, .recordedFallback small { font-size: .9375rem; }
+  .recordedSlot :global(:is(.employee-time-current-copy p, .employee-time-message p, .employee-time-empty, .employee-time-footer > small, .employee-time-refresh, .employee-time-link)) { font-size: .9375rem; }
+  .published, .recordedSlot :global(.employee-time-badge) { font-size: .875rem; }
+}
+@container employee-home-reviewed (min-width: 52rem) {
+  .root { --pass-pad: 24px; }
+  .arrival { padding: 4px 0 8px; }
+  .content { margin-top: 16px; }
+  .assignment[data-pass] { padding-top: 22px; border: 0; }
+  .assignment[data-pass] .interval { font-size: 2.25rem; }
+  .actions:has(li + li) { box-shadow: 0 8px 0 -4px #ffffff, 0 9px 0 -3px var(--home-border); }
+  .allSet { box-shadow: none; border: 1px solid var(--home-border); }
+}
+@container employee-home-reviewed (max-width: 22.5rem) { .root { --pass-pad: 16px; } .quick a { min-height: 96px; padding: 12px; } }
+@media (prefers-reduced-motion: reduce) { .quick a { transition: none; } .quick a:active { transform: none; } }
+@media (prefers-contrast: more) { .assignment[data-pass] { background: var(--home-masthead); } .assignment[data-pass]::before { display: none; } }
+@media (forced-colors: active) {
+  .assignment[data-pass] { border: 2px solid CanvasText; background: Canvas; color: CanvasText; }
+  .assignment[data-pass] :is(.assignmentDate, .position, .zone, .currentNote, .notice, .location, .scheduleLink, .countdown) { color: CanvasText; }
+  .assignment[data-pass] .assignmentFooter::before, .assignment[data-pass] .assignmentFooter::after { display: none; }
+}
