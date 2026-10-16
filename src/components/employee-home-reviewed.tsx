@@ -4,6 +4,8 @@ import Link from 'next/link';
 import {ArrowsLeftRightIcon, CalendarCheckIcon, CalendarMinusIcon, ChatTextIcon, ClockIcon, HourglassMediumIcon, PencilSimpleLineIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
 import {useEffect, useState, type ReactNode} from 'react';
 import {Illustration} from './illustrations';
+import {Celebration} from './celebration';
+import type {CelebrationKind} from '../lib/celebrations';
 import {EmployeeTimeView} from './employee-time-panel';
 import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, HomeSource, PublishedAssignment} from '../lib/employee-home/types';
@@ -123,11 +125,20 @@ const kindIcons = {
   TIME_CORRECTION: PencilSimpleLineIcon, COMMUNICATION: ChatTextIcon,
 } as const;
 
-function AttentionRow({item, zone}: {item: AttentionItem; zone: string}) {
+/** Approvals the employee receives are the moments worth marking; the server
+ * wrote these labels from the request's confirmed status. */
+export function approvalCelebration(item: AttentionItem): {kind: CelebrationKind; key: string} | null {
+  if (item.ref.kind === 'TIME_OFF' && /^Time off approved\b/.test(item.label)) return {kind: 'TIME_OFF_APPROVED', key: `${item.ref.id}:${item.ref.version}`};
+  if (item.ref.kind === 'EXCHANGE' && /^(Swap|Coverage) approved\b/.test(item.label)) return {kind: 'SHIFT_CHANGE_APPROVED', key: `${item.ref.id}:${item.ref.version}`};
+  return null;
+}
+
+function AttentionRow({item, zone, celebrate = false}: {item: AttentionItem; zone: string; celebrate?: boolean}) {
+  const moment = celebrate ? approvalCelebration(item) : null;
   const Icon = kindIcons[item.ref.kind] ?? ChatTextIcon;
   return <li>
     <Link className={styles.itemLink} href={item.href}>
-      <span className={styles.itemIcon} aria-hidden="true"><Icon size={20}/></span>
+      <span className={styles.itemIcon} aria-hidden="true"><Icon size={20}/>{moment ? <Celebration kind={moment.kind} eventKey={moment.key} confirmed/> : null}</span>
       <span className={styles.itemCopy}>
         <strong>{item.label}</strong>
         {item.ref.kind === 'SCHEDULE' ? <small>Week of <time dateTime={item.ref.id}>{dateLabel(item.ref.id)}</time></small>
@@ -143,7 +154,8 @@ function AttentionRow({item, zone}: {item: AttentionItem; zone: string}) {
 function AttentionGroup({kind, items, partial, zone}: {kind: 'actions' | 'updates'; items: AttentionItem[]; partial: boolean; zone: string}) {
   const actions = kind === 'actions';
   const headingId = `employee-reviewed-${kind}-heading`;
-  const row = (item: AttentionItem) => <AttentionRow key={`${item.ref.kind}:${item.ref.id}`} item={item} zone={zone}/>;
+  const firstApproval = items.find(item => approvalCelebration(item));
+  const row = (item: AttentionItem) => <AttentionRow key={`${item.ref.kind}:${item.ref.id}`} item={item} zone={zone} celebrate={item === firstApproval}/>;
   const count = `${items.length}${partial ? ' known' : ''} ${actions ? (items.length === 1 ? 'action' : 'actions') : (items.length === 1 ? 'update' : 'updates')}`;
   return <section data-home-group={kind} aria-labelledby={headingId} className={actions ? styles.actions : styles.updates}>
     <header className={styles.groupHeader}>

@@ -11,6 +11,7 @@ import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { HourglassMediumIcon } from '@phosphor-icons/react/dist/ssr/HourglassMedium';
 import { EmptyState } from './empty-state';
+import { Celebration } from './celebration';
 import { EmployeeScheduleMotion } from './employee-schedule-motion';
 import { addDays, formatDayLabel, formatTime, formatWeekRange, weekDates, weekStartFor } from '../lib/date-utils';
 import { shiftBoundaryInstants } from '../lib/business-time';
@@ -32,6 +33,8 @@ export type EmployeeMyScheduleProps = {
   shifts: readonly Shift[];
   locations: EmployeeScheduleRead['locations'];
   acknowledged: boolean;
+  /** The revision the person confirmed; keys the one-time moment. */
+  acknowledgedRevisionId?: string;
   confirmation?: ReactNode;
   confirmationNeeded?: boolean;
   error?: boolean | string;
@@ -121,7 +124,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       {state !== 'published' ? <div className="my-schedule-feedback" role="status"><strong>{state==='unavailable'?'Schedule unavailable':'Your full week is not published yet'}</strong><p>{state==='unavailable'?'We couldn’t load your schedule. Try again to see your current assignments.':shifts.length?'Only your published assignments are shown. Other days may still change.':'Your schedule will appear here when it is published. An empty day does not mean a day off yet.'}</p>{state==='unavailable'?<Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Try again</Link>:null}</div> : null}
 
       {confirmation && state !== 'unavailable' ? <section className={`my-schedule-review${acknowledged?' is-confirmed':''}`} aria-labelledby="my-review-title">
-        <div className="my-review-icon">{acknowledged?<CheckCircleIcon size={24} aria-hidden="true" />:<CalendarCheckIcon size={24} aria-hidden="true" />}</div>
+        <div className="my-review-icon">{acknowledged?<CheckCircleIcon size={24} aria-hidden="true" />:<CalendarCheckIcon size={24} aria-hidden="true" />}{acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}</div>
         <div className="my-review-copy"><h2 id="my-review-title">{acknowledged?'You’re up to date':confirmationNeeded?'Review this week’s schedule':'Schedule review'}</h2><p>{acknowledged?'You’ve confirmed the current schedule.':confirmationNeeded?(shifts.length?'Check your shifts below, then confirm you’ve seen this week.':'No assignments remain for this published week. Review the changes, then confirm this schedule.'):'Confirmation is not available. Review the current week again.'}</p></div>
         <div className="my-review-action">{confirmation}</div>
       </section> : null}

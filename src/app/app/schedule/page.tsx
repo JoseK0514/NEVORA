@@ -33,6 +33,7 @@ import { listScheduleStatuses, listWeekShifts } from "@/lib/data/schedules";
 import { listEmployeeHourTargets } from "@/lib/data/schedule-health";
 import { listEmployeeExchangeActivity, listOpenCoverage, type ExchangeRecord } from "@/lib/data/exchanges";
 import { PrintScheduleButton } from "@/components/print-schedule-button";
+import { Celebration } from "@/components/celebration";
 import {
   addDays,
   formatDayLabel,
@@ -181,6 +182,7 @@ export default async function SchedulePage({
       shifts={employeeSchedule!.shifts}
       locations={locations}
       acknowledged={employeeAcknowledgement.acknowledged}
+      acknowledgedRevisionId={employeeAcknowledgement.acknowledged ? employeeAcknowledgement.acknowledgedRevisionId ?? undefined : undefined}
       confirmation={confirmation}
       confirmationNeeded={employeeAcknowledgement.needsAcknowledgement}
       error={params.error ? params.error === 'conflict' ? 'The schedule changed. Review the current week before confirming.' : params.error === 'blocked' ? 'This review is no longer authorized. Sign in and review the schedule again.' : 'The result could not be confirmed. Retry the original confirmation to check its outcome.' : false}
@@ -260,6 +262,7 @@ export default async function SchedulePage({
       {params.published ? (
         <section className="nevora-success-panel" role="status" aria-labelledby="schedule-published-title">
           <CalendarCheckIcon size={28} weight="duotone" aria-hidden="true" />
+          <Celebration kind="SCHEDULE_PUBLISHED" eventKey={`${weekStart}:${params.published}`} confirmed />
           <div>
             <h2 id="schedule-published-title">{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</h2>
             <p>Employees can now see their {formatWeekRange(weekStart)} shifts in NEVORA.</p>

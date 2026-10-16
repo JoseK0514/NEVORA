@@ -274,3 +274,22 @@ html body .app-shell.nevora-portal .route-skeleton-cards i { height: 96px; borde
   html body .app-shell.nevora-portal .route-skeleton-grid i { height: 40px; }
 }
 @media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal .route-skeleton i { animation: none; } }
+
+/* U7 celebrations: one short burst from a confirmed result (≤600ms, transform
+ * and opacity only). Never shown under reduced motion. */
+html body .app-shell.nevora-portal :has(> .nevora-celebration) { position: relative; }
+html body .app-shell.nevora-portal .nevora-celebration { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; z-index: 2; display: none; }
+html body .app-shell.nevora-portal .nevora-celebration[data-playing] { display: block; }
+html body .app-shell.nevora-portal .nevora-celebration i {
+  position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 2px; background: var(--g-accent, #077572); opacity: 0;
+  animation: nevora-celebrate 560ms cubic-bezier(.23, 1, .32, 1) forwards;
+}
+html body .app-shell.nevora-portal .nevora-celebration i[data-tone="1"] { background: var(--g-masthead, #1C4A47); border-radius: 50%; }
+html body .app-shell.nevora-portal .nevora-celebration i[data-tone="2"] { background: #E0A526; width: 6px; height: 10px; }
+html body .app-shell.nevora-portal .nevora-celebration i[data-tone="3"] { background: #7CC4BF; border-radius: 50%; width: 6px; height: 6px; }
+@keyframes nevora-celebrate {
+  0% { opacity: 1; transform: translate(0, 0) scale(.4) rotate(0deg); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1) rotate(160deg); }
+}
+@media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal .nevora-celebration { display: none; } }

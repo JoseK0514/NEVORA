@@ -8,6 +8,7 @@ import { actionCenterNavigation } from "./action-center-navigation";
 import { SwipeRow } from "./swipe-row";
 import { TimeOffReviewActions } from "./time-off-review-actions";
 import { EmptyState } from "./empty-state";
+import { Celebration } from "./celebration";
 import { SkeletonRows } from "./skeleton";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { groupInboxItems, inboxSections, timeOffRequestId } from "@/lib/action-center/inbox";
@@ -73,9 +74,12 @@ export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZon
       {connection === "loading" || connection === "reconnecting" ? <SkeletonRows rows={4} /> : null}
       <p role="status">{statusText[connection]}</p>
       {connection === "access_lost" ? <Link className="inbox-link" href="/login">Sign in</Link> : null}
-    </div> : ready.items.length === 0 ? <EmptyState illustration="all-caught-up" status title="Inbox clear">
-      Nothing needs a decision in the checked sources.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}
-    </EmptyState> : <>
+    </div> : ready.items.length === 0 ? <div className="inbox-clear">
+      <EmptyState illustration="all-caught-up" status title="Inbox clear">
+        Nothing needs a decision in the checked sources.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}
+      </EmptyState>
+      {ready.limitedAttendance ? null : <Celebration kind="INBOX_CLEAR" eventKey={ready.observedAt.slice(0, 10)} confirmed />}
+    </div> : <>
       {shown.map(section => <section key={section.id} className="inbox-section" data-section={section.id} aria-labelledby={`inbox-${section.id}`}>
         <h2 id={`inbox-${section.id}`}>{section.title}<span className="sr-only">,</span> <span className="inbox-section-count">{section.items.length}</span></h2>
         <ul className="inbox-list">{groupInboxItems(section.items).map(entry => entry.kind === "item" ? <Row key={entry.item.id} item={entry.item} />

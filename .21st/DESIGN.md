@@ -193,3 +193,24 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - Approval still shows "Approval recorded" and the exact revision.
 - **Payday moment** (`PaydayMoment` in `my-pay.tsx`): the newest published statement leads My pay, with the payday illustration, "Latest statement", "Payday Fri, Oct 16", the period, "From your payroll provider" and its document link. Older statements follow under "Earlier statements".
   - Statements carry no amounts, so the moment shows no figures. A pay breakdown bar needs amounts in the statements response, which is a backend change for later approval.
+
+#### U7: delight (2026-10-16)
+
+- **Gate** (`src/lib/celebrations.ts`, table-tested): a moment plays only when it is on the allow-list, the server has already confirmed it, it isn't in an excluded area (payroll actions, the Clocker, errors, loading), it has an occurrence key, it hasn't been seen on this device, and nothing else celebrated this session.
+  - A second moment refused for the session is marked seen, so an old approval never celebrates later.
+  - If storage is blocked, the gate falls back to once per page.
+- **Moment** (`src/components/celebration.tsx`): twelve particles on fixed angles in teal, masthead, gold and mint, bursting from the confirmed element in 560ms using only transform and opacity. It is hidden from assistive tech, because the surrounding text already carries the meaning.
+  - Nothing renders, and the session isn't used, under reduced motion. It is never a modal and never moves money.
+- **Wired, all server-confirmed:**
+
+  | Moment | Plays when |
+  |---|---|
+  | Schedule confirmed | the "You're up to date" review card appears (keyed by week and confirmed revision) |
+  | Schedule published | the manager's published panel shows |
+  | Time off approved, swap/coverage approved | the employee's Home update arrives (the server writes these labels from the request status) |
+  | Inbox clear | the Inbox is ready, empty and not limited |
+  | Payday | the newest published statement on My pay is shown |
+
+- **Not celebrated:** payroll approval and publishing by the person doing them, declines, lateness, streaks and amounts.
+- **Waiting on data:** first published shift, first full week, everyone acknowledged and work anniversaries.
+- **Per-device memory:** another device opening an already-confirmed week sees the moment once.

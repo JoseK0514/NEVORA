@@ -5,6 +5,7 @@ import { usePayrollResource } from './use-payroll';
 import { DocumentLink, PayrollFrame, PayrollPanel, PayrollState, PrivacyNote } from './payroll-ui';
 import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
 import { Illustration } from '../illustrations';
+import { Celebration } from '../celebration';
 import type { PayrollStatementsResponse } from '@/lib/payroll/contracts';
 
 /** The newest published statement, made the page's moment. Statements carry no
@@ -12,6 +13,7 @@ import type { PayrollStatementsResponse } from '@/lib/payroll/contracts';
 export function PaydayMoment({ statement }: { statement: PayrollStatementsResponse['statements'][number] }) {
   return <section className="pw-payday" aria-labelledby="pw-payday-title">
     <Illustration name="payday" size={96} className="pw-payday-art" />
+    <Celebration kind="PAYDAY_AVAILABLE" eventKey={statement.id} confirmed={statement.published} />
     <div className="pw-payday-copy">
       <p className="pw-payday-kicker">Latest statement</p>
       <h2 id="pw-payday-title">Payday {formatDisplayDate(statement.payday)}</h2>
