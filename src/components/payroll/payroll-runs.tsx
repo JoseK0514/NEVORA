@@ -1,5 +1,6 @@
 'use client';
 
+import { PayrollStepper } from './payroll-stepper';
 import { useState, type FormEvent } from 'react';
 import { ArrowRightIcon, CalendarDotsIcon, CheckCircleIcon, FileArrowUpIcon } from '@phosphor-icons/react/ssr';
 import type { PayrollCapabilities, PayrollRun } from '@/lib/payroll/contracts';
@@ -74,6 +75,7 @@ function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabili
     } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'Check the payroll import.'); }
   };
   return <PayrollPanel title={formatDateRange(run.period.startDate, run.period.endDate)} description={`Payday ${formatDisplayDate(run.payday)} · Revision ${run.revision}`} aside={<span className={`pw-badge ${run.status === 'APPROVED' ? 'pw-badge-success' : ''}`}>{statusLabels[run.status]}</span>}>
+    <PayrollStepper run={run} />
     {run.correctionOf && <p className="pw-notice">Correction linked to payroll run <code>{run.correctionOf}</code>.</p>}
     {notes.corrections.map((reason, index) => <p className="pw-notice" key={index}><strong>Correction reason:</strong> {reason}</p>)}
     {notes.blocking.length > 0 && <PayrollState title={run.status === 'WAITING_FOR_AMOUNTS' ? 'Provider amounts needed' : 'Resolve these exceptions'} error={run.status !== 'WAITING_FOR_AMOUNTS'}>{notes.blocking.map((exception, index) => <span className="pw-exception" key={index}>{payrollExceptionMessage(exception)}</span>)}</PayrollState>}

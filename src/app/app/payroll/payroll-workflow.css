@@ -146,3 +146,36 @@
 
 .payroll-workflow .pw-review-current { min-width:0; display:grid; gap:16px; }
 .payroll-workflow .pw-workflow-guidance { margin:0; font-size:13px; line-height:1.6; color:var(--design-text-secondary); }
+
+/* U6 (2026-10-16): where this run is, and the payday moment on My pay. */
+.pw-stepper-wrap { display: grid; gap: 10px; margin: 4px 0 18px; }
+.pw-stepper { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.pw-stepper li { position: relative; display: grid; justify-items: center; gap: 6px; text-align: center; min-width: 0; }
+.pw-stepper li + li::before { position: absolute; top: 13px; right: 50%; width: 100%; height: 2px; background: var(--g-border, #D7D9DC); content: ""; z-index: 0; }
+.pw-stepper li[data-state="done"] + li::before, .pw-stepper li[data-state="done"] + li[data-state]::before { background: var(--g-accent, #077572); }
+.pw-step-dot {
+  position: relative; z-index: 1; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--g-border, #D7D9DC); background: #FFFFFF; color: var(--g-muted, #5F6368); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.pw-stepper li[data-state="done"] .pw-step-dot { border-color: var(--g-accent, #077572); background: var(--g-accent, #077572); color: #FFFFFF; }
+.pw-stepper li[data-state="current"] .pw-step-dot { border-color: var(--g-accent, #077572); color: var(--g-accent-strong, #07605F); box-shadow: 0 0 0 4px var(--g-accent-wash, #E7F3F2); }
+.pw-stepper li[data-state="blocked"] .pw-step-dot { border-color: #B4541F; color: #8A3B12; box-shadow: 0 0 0 4px #FBEDE4; }
+.pw-step-label { font-size: 14px; font-weight: 500; color: var(--g-muted, #5F6368); overflow-wrap: anywhere; }
+.pw-stepper li:is([data-state="current"], [data-state="blocked"]) .pw-step-label { color: var(--g-ink, #1C1C1C); font-weight: 600; }
+.pw-stepper-hint { margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--g-inset, #F6F7F8); color: var(--g-ink, #1C1C1C); font-size: 15px; }
+
+.pw-payday {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 18px; margin-bottom: 18px; padding: 20px;
+  border: 1px solid var(--g-hairline, #ECEDEF); border-radius: 16px; background: linear-gradient(180deg, var(--g-accent-wash, #E7F3F2), #FFFFFF 70%);
+}
+.pw-payday-art { color: var(--g-accent, #077572); }
+.pw-payday-copy { display: grid; gap: 4px; min-width: 0; }
+.pw-payday-kicker { margin: 0; color: var(--g-accent-strong, #07605F); font-size: 14px; font-weight: 600; }
+.pw-payday h2 { margin: 0; font-size: 22px; letter-spacing: -.01em; }
+.pw-payday-copy > p:not(.pw-payday-kicker) { margin: 0 0 8px; color: var(--g-muted, #5F6368); font-size: 15px; }
+.pw-earlier { margin: 4px 0 8px; font-size: 16px; }
+@media (max-width: 520px) {
+  .pw-payday { grid-template-columns: minmax(0, 1fr); justify-items: start; padding: 18px 16px; }
+  .pw-step-label { font-size: 13px; }
+}
+@media (prefers-contrast: more) { .pw-payday { background: #FFFFFF; border-color: #1C1C1C; } }

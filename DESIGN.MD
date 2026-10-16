@@ -683,3 +683,18 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - the related unit tests
 - **Script-pinned text kept unchanged:** "Some Home sections could not be fully checked. Counts show known items.", "Loading Home…", "Refresh recorded time", "Clocked In", "Approval recorded", and "I reviewed revision".
 - **Not yet covered:** the payroll export's population manifest wording and the Clocker kiosk (U9) keep their current text. Spanish comes with B5.
+
+#### U6: pay (2026-10-16)
+
+- **Payroll stepper** (`src/components/payroll/payroll-stepper.tsx`) sits at the top of each run's review and reads Hours → Amounts → Review → Approve → Publish.
+  - Every state comes from the run itself:
+    - Hours waits on open timecards (`TIME_NOT_FINALIZED`).
+    - Amounts waits on a provider import.
+    - Review is blocked by other exceptions; correction notes don't block.
+    - Approve waits on approval.
+    - Publish waits until every employee statement is published.
+  - The first unfinished step is marked current and carries `aria-current="step"`. Each step's spoken label includes its state and hint, and a hint line under the stepper says what to do now: "Hours: 2 timecards to finalize", "Publish: Statements are being prepared", "Publish: 3 statements to publish".
+  - **Colour states:** done steps are teal with a check, the current step is ringed in teal, and blocked steps are ringed in orange.
+  - Approval still shows "Approval recorded" and the exact revision.
+- **Payday moment** (`PaydayMoment` in `my-pay.tsx`): the newest published statement leads My pay, with the payday illustration, "Latest statement", "Payday Fri, Oct 16", the period, "From your payroll provider" and its document link. Older statements follow under "Earlier statements".
+  - Statements carry no amounts, so the moment shows no figures. A pay breakdown bar needs amounts in the statements response, which is a backend change for later approval.
