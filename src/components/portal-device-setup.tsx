@@ -27,20 +27,20 @@ export function DeviceSetupContent(props: ContentProps) {
     {props.standalone === true ? <p>Opened as a standalone app.</p> : <>
       {props.standalone === 'unknown' ? <p>We cannot confirm whether this window is standalone.</p> : null}
       <div className="portal-device-actions">
-        <button type="button" className="portal-device-button secondary" onClick={props.installPrompt ? props.onInstall : props.onInstructions}>{props.installPrompt ? 'Add to Home Screen' : 'Show Install Instructions'}</button>
+        <button type="button" className="portal-device-button secondary" onClick={props.installPrompt ? props.onInstall : props.onInstructions}>{props.installPrompt ? 'Add to Home Screen' : 'Show install instructions'}</button>
       </div>
     </>}
     {props.instructions ? <p className="portal-device-instructions">{props.ios ? 'In Safari, use Share → Add to Home Screen. Enable “Open as Web App” if offered, then open NEVORA from the new icon.' : 'Open your browser menu and choose Install app or Add to Home Screen if available, then open NEVORA from the new icon.'} Reading these instructions does not install the app.</p> : null}
-    <h3>Stay Updated</h3>
+    <h3>Stay updated</h3>
     <p>Receive important schedule changes and reminders.</p>
     <p role="status">{descriptions[props.state]}</p>
     <div className="portal-device-actions">
-      {props.state === 'ready' ? <button type="button" className="portal-device-button primary" onClick={props.onEnable}>Enable Notifications</button> : null}
-      {props.state === 'enabled' || props.state === 'revoked' || props.state === 'denied' || props.state === 'error' ? <button type="button" className="portal-device-button secondary" onClick={props.onTurnOff}>Turn Off</button> : null}
-      {props.state === 'enabled' && props.testAllowed ? <button type="button" className="portal-device-button primary" onClick={props.onTest}>Test Notification</button> : null}
-      {props.state === 'error' || props.state === 'denied' || props.state === 'unavailable' ? <button type="button" className="portal-device-button primary" onClick={props.onRetry}>Check Again</button> : null}
+      {props.state === 'ready' ? <button type="button" className="portal-device-button primary" onClick={props.onEnable}>Enable notifications</button> : null}
+      {props.state === 'enabled' || props.state === 'revoked' || props.state === 'denied' || props.state === 'error' ? <button type="button" className="portal-device-button secondary" onClick={props.onTurnOff}>Turn off</button> : null}
+      {props.state === 'enabled' && props.testAllowed ? <button type="button" className="portal-device-button primary" onClick={props.onTest}>Test notification</button> : null}
+      {props.state === 'error' || props.state === 'denied' || props.state === 'unavailable' ? <button type="button" className="portal-device-button primary" onClick={props.onRetry}>Check again</button> : null}
       {pending ? <button type="button" className="portal-device-button primary" disabled>{props.state === 'loading' ? 'Checking…' : 'Updating…'}</button> : null}
-      {!pending && ['ready', 'install', 'dismissed'].includes(props.state) ? <button type="button" className="portal-device-button secondary" onClick={props.onDismiss}>Not Now</button> : null}
+      {!pending && ['ready', 'install', 'dismissed'].includes(props.state) ? <button type="button" className="portal-device-button secondary" onClick={props.onDismiss}>Not now</button> : null}
     </div>
     {props.message ? <p className="portal-device-message" role={props.state === 'error' ? 'alert' : 'status'}>{props.message}</p> : null}
   </div>;

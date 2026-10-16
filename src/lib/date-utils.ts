@@ -83,3 +83,18 @@ export function durationMinutes(startTime: string, endTime: string) {
   const duration = toMinutes(endTime) - toMinutes(startTime);
   return duration < 0 ? duration + 1440 : duration;
 }
+
+const utcDate = (date: string) => new Date(`${date}T12:00:00Z`);
+const monthDay = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+
+/** One readable date for people: "Tue, Oct 6". */
+export function formatDisplayDate(date: string) {
+  return new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(utcDate(date));
+}
+
+/** A readable period: "Sep 28 – Oct 4, 2026", or both years when they differ. */
+export function formatDateRange(start: string, end: string) {
+  const startYear = start.slice(0, 4), endYear = end.slice(0, 4);
+  if (startYear !== endYear) return `${monthDay.format(utcDate(start))}, ${startYear} – ${monthDay.format(utcDate(end))}, ${endYear}`;
+  return `${monthDay.format(utcDate(start))} – ${monthDay.format(utcDate(end))}, ${endYear}`;
+}

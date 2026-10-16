@@ -152,18 +152,18 @@ for (const [engine, browserType] of Object.entries({ chromium, webkit })) {
         await context.addInitScript(frozenClock, date); await context.addInitScript(nativePushDouble); await setupApi(context);
         const page = await context.newPage(); page.on('pageerror', error => results.errors.push({ engine, role, width, message: error.message }));
         await settled(page, current.replace(/\/$/, '') + routeFor('/app', role, 'push'));
-        const dialog = await openSettings(page); await dialog.getByRole('button', { name: 'Enable Notifications', exact: true }).waitFor();
+        const dialog = await openSettings(page); await dialog.getByRole('button', { name: 'Enable notifications', exact: true }).waitFor();
         const ready = await auditSetup(page, dialog); assert.equal(ready.overflow, false);
         assert(ready.controls.every(c => c.height >= 44), '44px setup targets');
         const buttons = dialog.locator('.portal-device-actions').last().locator('button'); const sizes = await buttons.evaluateAll(bs => bs.map(b => b.getBoundingClientRect().width)); assert(Math.max(...sizes) - Math.min(...sizes) < 1, 'equal action widths');
         await save(page, `${engine}-${role}-setup-ready-${width}`);
-        await dialog.getByRole('button', { name: 'Show Install Instructions' }).click(); await save(page, `${engine}-${role}-install-instructions-${width}`);
-        await dialog.getByRole('button', { name: 'Enable Notifications', exact: true }).focus(); await save(page, `${engine}-${role}-setup-focus-${width}`);
-        await dialog.getByRole('button', { name: 'Enable Notifications', exact: true }).click(); await dialog.getByText('Notifications enabled on this device.', { exact: true }).waitFor();
+        await dialog.getByRole('button', { name: 'Show install instructions' }).click(); await save(page, `${engine}-${role}-install-instructions-${width}`);
+        await dialog.getByRole('button', { name: 'Enable notifications', exact: true }).focus(); await save(page, `${engine}-${role}-setup-focus-${width}`);
+        await dialog.getByRole('button', { name: 'Enable notifications', exact: true }).click(); await dialog.getByText('Notifications enabled on this device.', { exact: true }).waitFor();
         assert.deepEqual(await page.evaluate(() => window.qa.permissionGesture), [true]);
         await save(page, `${engine}-${role}-setup-enabled-${width}`);
-        await dialog.getByRole('button', { name: 'Test Notification' }).click(); await dialog.getByText(/does not confirm receipt/).waitFor();
-        await dialog.getByRole('button', { name: 'Turn Off', exact: true }).click(); await dialog.getByText('Notifications turned off on this device.', { exact: true }).waitFor();
+        await dialog.getByRole('button', { name: 'Test notification' }).click(); await dialog.getByText(/does not confirm receipt/).waitFor();
+        await dialog.getByRole('button', { name: 'Turn off', exact: true }).click(); await dialog.getByText('Notifications turned off on this device.', { exact: true }).waitFor();
         results.setup.push({ engine, role, width, ready, gesture: true, testQueued: true, turnOff: true });
         await context.close(); await writeFile(resolve(output, 'browser-results.json'), JSON.stringify(results, null, 2));
       }
@@ -187,8 +187,8 @@ for (const [engine, browserType] of Object.entries({ chromium, webkit })) {
         const page = await context.newPage(); page.on('pageerror', error => results.errors.push({ engine, role, width, name, message: error.message }));
         await settled(page, current.replace(/\/$/, '') + routeFor('/app', role, 'push'));
         const dialog = await openSettings(page); try { await dialog.getByText(text).first().waitFor({timeout:5000}); } catch(error) { await save(page, `${engine}-${role}-${name}-${width}-failure`); console.error(await page.locator('body').innerText()); throw error; }
-        if (name === 'iphone') { await dialog.getByRole('button', { name: 'Show Install Instructions' }).click(); await dialog.getByText(/In Safari, use Share/).waitFor(); }
-        if (name === 'denied-writes') { await dialog.getByRole('button', { name: 'Enable Notifications' }).click(); await dialog.getByText(/cannot safely coordinate/).waitFor(); assert.equal(await page.evaluate(() => window.qa.permission), 0); }
+        if (name === 'iphone') { await dialog.getByRole('button', { name: 'Show install instructions' }).click(); await dialog.getByText(/In Safari, use Share/).waitFor(); }
+        if (name === 'denied-writes') { await dialog.getByRole('button', { name: 'Enable notifications' }).click(); await dialog.getByText(/cannot safely coordinate/).waitFor(); assert.equal(await page.evaluate(() => window.qa.permission), 0); }
         const audit = await auditSetup(page, dialog); assert.equal(audit.overflow, false);
         const file = await save(page, `${engine}-${role}-${name}-${width}`);
         results.states.push({ engine, role, width, name, screenshot: file.file, audit });

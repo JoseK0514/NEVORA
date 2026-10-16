@@ -185,13 +185,13 @@ try {
       await page.goto(`${app.url}/app/employees/new`);
       const creation = page.locator('form.employee-form');
       await creation.getByRole('textbox', { name: /^Employee ID\b/ }).fill(employeeId);
-      await creation.getByLabel('First Name', { exact: true }).fill('Sam');
-      await creation.getByLabel('Last Name', { exact: true }).fill('Rivera');
-      await creation.getByRole('textbox', { name: /^Phone Number\b/ }).fill('2025550142');
+      await creation.getByLabel('First name', { exact: true }).fill('Sam');
+      await creation.getByLabel('Last name', { exact: true }).fill('Rivera');
+      await creation.getByRole('textbox', { name: /^Phone number\b/ }).fill('2025550142');
       await creation.locator('[name=email]').fill('sam@example.invalid');
       await creation.locator('[name=primaryLocationId]').selectOption(locations[0].id);
       await creation.getByLabel('Studio Assistant', { exact: true }).check();
-      await creation.getByRole('button', { name: 'Create Employee', exact: true }).click();
+      await creation.getByRole('button', { name: 'Create employee', exact: true }).click();
       await creation.getByRole('status').filter({ hasText: 'Employee created.' }).waitFor();
       assert.deepEqual(await readEmployee(), {
         id: employeeId, first_name: 'Sam', last_name: 'Rivera', phone: '202-555-0142', email: 'sam@example.invalid',
@@ -200,7 +200,7 @@ try {
       assert.deepEqual((await client.query('SELECT position_id FROM employee_positions WHERE employee_id=$1', [employeeId])).rows, [{ position_id: positionId }]);
       assert.deepEqual((await client.query('SELECT location_id FROM employee_location_eligibility WHERE employee_id=$1', [employeeId])).rows, [{ location_id: locations[0].id }]);
       checked('employee creation persists contact, role, position and primary eligibility atomically');
-      await creation.getByRole('button', { name: 'Create Employee', exact: true }).click();
+      await creation.getByRole('button', { name: 'Create employee', exact: true }).click();
       await creation.getByRole('alert').waitFor();
       assert.equal((await client.query('SELECT count(*)::int AS count FROM employees WHERE id=$1', [employeeId])).rows[0].count, 1);
       checked('duplicate employee submission preserves the existing record');
@@ -212,13 +212,13 @@ try {
       await core.getByLabel('First name', { exact: true }).fill('Samuel');
       await core.locator('[name=email]').fill('samuel@example.invalid');
       const submitted = page.waitForRequest(request => request.method() === 'POST' && !!request.headers()['next-action']);
-      await core.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      await core.getByRole('button', { name: 'Save employee details', exact: true }).click();
       const actionRequest = await submitted;
       await core.getByRole('status').filter({ hasText: 'Employee details updated.' }).waitFor();
       const saved = await readEmployee();
       assert.equal(saved.first_name, 'Samuel'); assert.equal(saved.email, 'samuel@example.invalid');
       await stalePage.locator('.employee-core-profile-form [name=firstName]').fill('Stale');
-      await stalePage.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      await stalePage.getByRole('button', { name: 'Save employee details', exact: true }).click();
       await stalePage.getByRole('alert').filter({ hasText: 'changed since you opened' }).waitFor();
       assert.deepEqual(await readEmployee(), saved);
       await stalePage.close();
@@ -279,7 +279,7 @@ try {
       assert.equal(await managerCore.locator('select[name=role] option[value=OWNER]').count(), 0);
       await managerCore.locator('select[name=role]').evaluate(select => select.add(new Option('Forged Owner', 'OWNER')));
       await managerCore.locator('select[name=role]').selectOption('OWNER');
-      await managerCore.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      await managerCore.getByRole('button', { name: 'Save employee details', exact: true }).click();
       await managerCore.getByRole('alert').filter({ hasText: 'permission' }).waitFor();
       assert.equal((await readEmployee()).role, 'MANAGER');
       await staffPage.goto(`${app.url}/app/employees/new`);
@@ -292,21 +292,21 @@ try {
       await forgedCreate.locator('[name=primaryLocationId]').selectOption(locations[0].id);
       await forgedCreate.locator('select[name=role]').evaluate(select => select.add(new Option('Forged Owner', 'OWNER')));
       await forgedCreate.locator('select[name=role]').selectOption('OWNER');
-      await forgedCreate.getByRole('button', { name: 'Create Employee', exact: true }).click();
+      await forgedCreate.getByRole('button', { name: 'Create employee', exact: true }).click();
       await forgedCreate.getByRole('alert').filter({ hasText: 'Only an owner' }).waitFor();
       assert.equal(await readEmployee('CEDAR-FORGED-OWNER'), undefined);
       checked('Manager cannot edit Owner access, promote themselves or create an Owner with a forged form');
 
       await page.goto(`${app.url}/app/employees/${employeeId}`);
       await core.locator('[name=active]').selectOption('false');
-      await core.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      await core.getByRole('button', { name: 'Save employee details', exact: true }).click();
       await core.getByRole('status').filter({ hasText: 'Employee details updated.' }).waitFor();
       assert.equal((await readEmployee()).active, false);
       assert.equal((await client.query('SELECT count(*)::int AS count FROM employee_sessions WHERE employee_id=$1', [employeeId])).rows[0].count, 0);
       await staffPage.goto(`${app.url}/app/employees`);
       assert.equal(new URL(staffPage.url()).pathname, '/login');
       await core.locator('[name=active]').selectOption('true');
-      await core.getByRole('button', { name: 'Save Employee Details', exact: true }).click();
+      await core.getByRole('button', { name: 'Save employee details', exact: true }).click();
       await core.getByRole('status').filter({ hasText: 'Employee details updated.' }).waitFor();
       assert.equal((await readEmployee()).active, true);
       await staffPage.goto(`${app.url}/app`);

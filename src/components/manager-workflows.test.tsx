@@ -71,7 +71,7 @@ it("distinguishes missing, intentionally unavailable and submitted windows witho
 });
 it("keeps management pending, coverage and outcome data separate", async () => {
   const pending = renderToStaticMarkup(await ManagerShiftRequests({ timeZone:"America/Puerto_Rico",tab:"requests"}));
-  expect(listManagerPendingExchanges).toHaveBeenCalledOnce(); expect(listPendingCallouts).toHaveBeenCalledOnce(); expect(listManagementCoverage).not.toHaveBeenCalled(); expect(pending).not.toMatch(/Offer Shift|Trade Shift|Accept Swap/);
+  expect(listManagerPendingExchanges).toHaveBeenCalledOnce(); expect(listPendingCallouts).toHaveBeenCalledOnce(); expect(listManagementCoverage).not.toHaveBeenCalled(); expect(pending).not.toMatch(/Offer shift|Trade shift|Accept Swap/);
   await ManagerShiftRequests({ timeZone:"America/Puerto_Rico",tab:"coverage"}); expect(listManagementCoverage).toHaveBeenCalledOnce(); expect(listTeamExchangeActivity).not.toHaveBeenCalled();
   await ManagerShiftRequests({ timeZone:"America/Puerto_Rico",tab:"activity"}); expect(listTeamExchangeActivity).toHaveBeenCalledWith(true);
 });

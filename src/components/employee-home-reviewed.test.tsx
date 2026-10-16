@@ -109,7 +109,7 @@ describe('released Home data and navigation', () => {
     const markup = html(props(projectEmployeeHome(snapshot({currentShift: current}))));
     expect(markup).toContain('Scheduled now');
     expect(markup).toContain('Ends');
-    expect(markup).toContain('Designated Lead');
+    expect(markup).toContain('Designated lead');
     expect(markup).toContain('week=2030-10-07&amp;day=2030-10-08');
     expect(markup).toContain('clock status is shown separately');
     expect(markup).not.toContain('Clocked in');

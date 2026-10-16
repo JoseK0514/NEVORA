@@ -70,7 +70,7 @@ function Assignment({shift, zone}: {shift: PublishedAssignment; zone: string}) {
     </p>
     <p className={styles.location}>{shift.locationLabel}{shift.positionLabel ? <span className={styles.position}> · {shift.positionLabel}</span> : null}</p>
     {endDate !== shift.date ? <p className={styles.assignmentDetail}>Ends <time dateTime={shift.endAt}>{dateLabel(endDate)}</time></p> : null}
-    {shift.designatedLead ? <p className={styles.assignmentDetail}>Designated Lead</p> : null}
+    {shift.designatedLead ? <p className={styles.assignmentDetail}>Designated lead</p> : null}
     <div className={styles.assignmentFooter}>
       <Link className={styles.scheduleLink} href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}>
         View schedule <Arrow forward/>
@@ -224,7 +224,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
         {snapshot ? <small>Home sources checked <time dateTime={snapshot.observedAt}>{stamp(snapshot.observedAt, snapshot.timeZone)}</time></small> : null}
         {denied ? <Link className={styles.textLink} href="/login">Sign in <Arrow forward/></Link>
           : <button className={styles.refreshButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
-            {refreshing ? 'Checking…' : snapshot ? 'Refresh Home' : 'Retry Home'}
+            {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Retry home'}
           </button>}
       </footer>
     </div>

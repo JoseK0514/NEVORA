@@ -11,6 +11,7 @@ import { createOwnedNextApp } from '../src/test/integration/owned-next-app.ts';
 import { seedOwnedApp } from '../src/test/integration/owned-app-fixture.ts';
 import { workerOnce } from '../src/lib/payroll/worker.ts';
 import { schedulePayroll } from '../src/lib/payroll/schedule.ts';
+import { formatDateRange } from '../src/lib/date-utils.ts';
 
 if (process.env.DATABASE_URL) throw Error('Unset DATABASE_URL before owned payroll workflow verification.');
 const bin = process.env.NEVORA_TEST_PG_BIN;
@@ -306,7 +307,7 @@ try {
       const beforePrepare = await context.request.get(app.url + '/api/payroll/runs', { headers: apiHeaders() });
       const before = await beforePrepare.json(); assert(before.missingPeriods.length >= 2); assert(before.runs.some(run => run.period.startDate === latestPeriod.period.startDate));
       assert(before.missingPeriods.every((item, index, all) => index === 0 || all[index - 1].period.startDate <= item.period.startDate));
-      assert.equal(await page.locator('.pw-backlog-period').first().locator('strong').first().innerText(), `${before.missingPeriods[0].period.startDate} – ${before.missingPeriods[0].period.endDate}`);
+      assert.equal(await page.locator('.pw-backlog-period').first().locator('strong').first().innerText(), formatDateRange(before.missingPeriods[0].period.startDate, before.missingPeriods[0].period.endDate));
       pass('Actual API shows at least two older missing periods oldest first while latest original run exists');
       for (const width of [320, 390, 768, 1440]) { await page.setViewportSize({ width, height: width < 600 ? 844 : 1000 }); await geometry(page, `${engine} backlog ${width}`); }
       await page.locator('.pw-backlog-period').first().getByRole('button', { name: 'Review period', exact: true }).click();
@@ -393,7 +394,7 @@ try {
     }
     const current = await context.request.get(app.url + '/api/payroll/runs', { headers: apiHeaders() }); const currentEnvelope = await current.json();
     const ambiguous = currentEnvelope.missingPeriods.find(item => item.state === 'AMBIGUOUS_TRANSITION'); assert(ambiguous);
-    const ambiguousRow = page.locator('.pw-backlog-period').filter({ hasText: `${ambiguous.period.startDate} – ${ambiguous.period.endDate}` }).first();
+    const ambiguousRow = page.locator('.pw-backlog-period').filter({ hasText: formatDateRange(ambiguous.period.startDate, ambiguous.period.endDate) }).first();
     await ambiguousRow.getByRole('button', { name: 'Review period', exact: true }).click();
     await page.getByText('Review the schedule transition', { exact: true }).waitFor();
     assert(await page.getByRole('button', { name: 'Prepare this period', exact: true }).isDisabled());

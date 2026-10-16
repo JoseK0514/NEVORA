@@ -92,7 +92,7 @@ export function EmployeeSchedulingFields({
       </fieldset>
 
       <fieldset>
-        <legend>Eligible Locations</legend>
+        <legend>Eligible locations</legend>
         {availableLocations.length > DISCLOSURE_THRESHOLD ? (
           <details className="employee-choice-disclosure">
             <summary>

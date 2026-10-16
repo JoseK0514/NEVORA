@@ -561,3 +561,12 @@ The Gusto palette and system now cover every authenticated portal page, not only
 The accent moved from #0A7E7E to **#077572** (5.5:1 on white, 4.9:1 on the #E7F3F2 wash) so teal text passes AA on every wash. Solid teal fills always carry white text. Earlier component rules that paired dark ink with the primary fill (made for the old orange) now use #FFFFFF. Page-local orange tokens and tints in portal stylesheets map to the teal ladder. The public Clocker kiosk shell and the authentication theme are unchanged. The management sidebar label for `/app` is "Home". The schedule roster's labelled shift container has `role="group"`.
 
 Verified on an owned, disposable local PostgreSQL runtime with fictional accounts and payroll fixtures, with push delivery disabled. It was a separate instance; the existing preview runtime was not touched. The check covered 77 routes for Owner, Manager, Lead, Employee and the payroll owner/employee at 1440px and 390px: 154 page loads, each with zero axe WCAG 2.2 AA violations, no document overflow, no visible control under 44px, no client or server errors, and no remaining legacy blue or orange.
+
+#### Phase 2: language, dates and empty states (2026-10-15)
+
+The portal follows `docs/design/voice.md`.
+- **Labels:** about 80 Title Case labels moved to sentence case. Exceptions are proper nouns and acronyms (NEVORA, Clocker, PIN, ID, Apple/Google Calendar), "Sign In", and the status words shared with the public Clocker kiosk ("Clock In", "Clock Out", "On Break", "Clocked In", "Off Clock", "Try Again"). The kiosk itself is unchanged. QA scripts and tests follow the new labels.
+- **Links:** in-app links use a caret; the external arrow only marks links that leave NEVORA or open the Clocker URL.
+- **Dates:** people see `formatDisplayDate` ("Tue, Oct 6") and `formatDateRange` ("Sep 28 – Oct 4, 2026") from `src/lib/date-utils.ts`. Payroll runs, backlog, settings and My pay no longer show ISO dates. Freshness lines read "Updated 7:31 PM"; the employee record-details disclosure keeps exact seconds.
+- **Empty states:** `src/components/empty-state.tsx` (structure adapted from the 21st "Empty" block) is the empty-state pattern. Older full-panel variants share its look through `portal-gusto.css`.
+- **Colour:** the remaining brand-peach tints (#F8EAE5, #FFF8F5) map to the teal ladder. Payroll's error state uses a red tint, and semantic warning and error colours are unchanged.

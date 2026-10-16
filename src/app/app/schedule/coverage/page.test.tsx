@@ -52,7 +52,7 @@ beforeEach(() => {
 
 it('actual manager position/Lead action opens the matching location/interval and excludes unqualified employees', async () => {
   const html = renderToStaticMarkup(await CoveragePage({ searchParams: Promise.resolve(params(action().href)) }));
-  expect(html).toContain('Fictional South'); expect(html).toContain('barista'); expect(html).toContain('Designated Lead required');
+  expect(html).toContain('Fictional South'); expect(html).toContain('barista'); expect(html).toContain('Designated lead required');
   expect(html).toContain('Fictional Qualified'); expect(html).not.toContain('Fictional Unqualified'); expect(html).toContain('1 eligible'); expect(html).toContain('No target set');
   expect(html).toContain('location=loc-1'); expect(html).toContain('Prior weeks short are context only');
   const link = html.match(/href="([^"]*\/app\/schedule\/new\?review=[^"]+)"/)![1]; const p = params(link.replaceAll('&amp;', '&'));

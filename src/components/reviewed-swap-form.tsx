@@ -35,13 +35,13 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
             {sorted.map(({ shift }) => {
               const day = formatDayLabel(shift.date);
               return <label className={`swap-option${selected === shift.id ? ' is-selected' : ''}`} key={shift.id}>
-                <input type="radio" name="targetShiftId" value={shift.id} required checked={selected === shift.id} onChange={() => setSelected(shift.id)} aria-label={`${swapDateLabel(shift.date)} · ${swapTimeLabel(shift)} · ${shift.employeeName} · ${shift.locationName} · ${swapPositionLabel(shift)} · ${shift.isDesignatedLead ? 'Designated Lead' : 'No designated Lead'}${shift.timeZone ? ` · Times in ${shift.timeZone.replaceAll('_', ' ')}` : ''}`} />
+                <input type="radio" name="targetShiftId" value={shift.id} required checked={selected === shift.id} onChange={() => setSelected(shift.id)} aria-label={`${swapDateLabel(shift.date)} · ${swapTimeLabel(shift)} · ${shift.employeeName} · ${shift.locationName} · ${swapPositionLabel(shift)} · ${shift.isDesignatedLead ? 'Designated lead' : 'No designated Lead'}${shift.timeZone ? ` · Times in ${shift.timeZone.replaceAll('_', ' ')}` : ''}`} />
                 <span className="swap-date-tile" aria-hidden="true"><span>{day.weekday}</span><strong>{Number(shift.date.slice(-2))}</strong><span>{day.day.split(' ')[0]}</span></span>
                 <span className="swap-option-copy">
                   <strong>{swapTimeLabel(shift)}</strong>
                   <span><UserCircleIcon size={16} aria-hidden="true" />{shift.employeeName}</span>
                   <span><MapPinIcon size={16} aria-hidden="true" />{shift.locationName}</span>
-                  <span className="swap-option-role">{swapPositionLabel(shift)} · {shift.isDesignatedLead ? 'Designated Lead' : 'No designated Lead'}</span>
+                  <span className="swap-option-role">{swapPositionLabel(shift)} · {shift.isDesignatedLead ? 'Designated lead' : 'No designated Lead'}</span>
                   {shift.timeZone ? <span className="swap-timezone">{shift.timeZone.replaceAll('_', ' ')}</span> : null}
                 </span>
                 <span className="swap-selection-mark" aria-hidden="true">{selected === shift.id ? <CheckIcon size={14} weight="bold" /> : null}</span>

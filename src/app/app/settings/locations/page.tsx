@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, CaretDown, CheckCircle, Clock, MagnifyingGlass, PencilSimple, Plus, Storefront, Users } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, CaretDown, CaretRight, CheckCircle, Clock, MagnifyingGlass, PencilSimple, Plus, Storefront, Users } from "@phosphor-icons/react/dist/ssr";
 import { ActionMenu } from "@/components/action-menu";
 import { StatusPill } from "@/components/status-pill";
 import { requireRoles } from "@/lib/auth/permissions";
@@ -24,10 +24,10 @@ function directoryLink(query: string, status: Filter) {
 }
 
 function issueAction(code: LocationSetupIssueCode) {
-  if (code === "NO_ELIGIBLE_EMPLOYEES") return { href: "/app/employees", label: "Employee Eligibility" };
-  if (code === "WORKSPACE_INACTIVE") return { href: "/app/settings/workspace", label: "Workspace Settings" };
+  if (code === "NO_ELIGIBLE_EMPLOYEES") return { href: "/app/employees", label: "Employee eligibility" };
+  if (code === "WORKSPACE_INACTIVE") return { href: "/app/settings/workspace", label: "Workspace settings" };
   if (code === "LOCATION_INACTIVE") return null;
-  return { href: "/app/schedule/settings", label: "Scheduling Rules" };
+  return { href: "/app/schedule/settings", label: "Scheduling rules" };
 }
 
 export default async function LocationsPage({ searchParams }: { searchParams?: Promise<Search> } = {}) {
@@ -70,7 +70,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
           <h1>Locations</h1>
           <p>Manage your workplaces, scheduling setup, and Clocker access.</p>
         </div>
-        <Link href={`${directoryPath}/new`} className="button primary locations-add"><Plus size={20} aria-hidden="true" />Add Location</Link>
+        <Link href={`${directoryPath}/new`} className="button primary locations-add"><Plus size={20} aria-hidden="true" />Add location</Link>
       </header>
 
       <section className="locations-directory" aria-labelledby="locations-directory-title">
@@ -109,15 +109,15 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
                 <div className="location-team"><Users size={19} aria-hidden="true" /><span>{eligibleCount} eligible {eligibleCount === 1 ? "employee" : "employees"}</span></div>
                 <div className="location-clocker">
                   <span className="location-clocker-label"><Clock size={19} aria-hidden="true" />Clocker link</span>
-                  <Link href={`/clocker/${location.clockerKey}`} aria-label={`Open Clocker for ${location.name}`}><span>/clocker/{location.clockerKey}</span><ArrowUpRight size={17} aria-hidden="true" /></Link>
+                  <Link href={`/clocker/${location.clockerKey}`} aria-label={`Open Clocker for ${location.name}`}><span>/clocker/{location.clockerKey}</span><CaretRight size={17} aria-hidden="true" /></Link>
                   {!location.active ? <small>Unavailable while inactive</small> : null}
                 </div>
                 <div className="location-card-actions">
-                  <Link className="button secondary" href={`${directoryPath}/${encodeURIComponent(location.id)}`} aria-label={`Edit Location: ${location.name}`}><PencilSimple size={18} aria-hidden="true" />Edit Location</Link>
+                  <Link className="button secondary" href={`${directoryPath}/${encodeURIComponent(location.id)}`} aria-label={`Edit Location: ${location.name}`}><PencilSimple size={18} aria-hidden="true" />Edit location</Link>
                   <ActionMenu id={`location-actions-${location.id}`} label="Manage" ariaLabel={`Manage ${location.name}`}>
-                    <Link className="nevora-action-menu-item" href={`${directoryPath}/${encodeURIComponent(location.id)}`}><strong>Edit Location</strong><span>Name, short name and active status.</span></Link>
-                    <Link className="nevora-action-menu-item" href="/app/schedule/settings"><strong>Scheduling Rules</strong><span>Coverage and staffing requirements.</span></Link>
-                    <Link className="nevora-action-menu-item" href="/app/employees"><strong>Employee Eligibility</strong><span>Choose who can work at this location.</span></Link>
+                    <Link className="nevora-action-menu-item" href={`${directoryPath}/${encodeURIComponent(location.id)}`}><strong>Edit location</strong><span>Name, short name and active status.</span></Link>
+                    <Link className="nevora-action-menu-item" href="/app/schedule/settings"><strong>Scheduling rules</strong><span>Coverage and staffing requirements.</span></Link>
+                    <Link className="nevora-action-menu-item" href="/app/employees"><strong>Employee eligibility</strong><span>Choose who can work at this location.</span></Link>
                   </ActionMenu>
                 </div>
               </div>
@@ -129,7 +129,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
                   </summary>
                   <ul>{readiness.issues.map(issue => {
                     const action = issueAction(issue.code);
-                    return <li key={issue.code + JSON.stringify(issue.details)}><span>{issue.message}</span>{action ? <Link href={action.href}>{action.label}<ArrowUpRight size={16} aria-hidden="true" /></Link> : null}</li>;
+                    return <li key={issue.code + JSON.stringify(issue.details)}><span>{issue.message}</span>{action ? <Link href={action.href}>{action.label}<CaretRight size={16} aria-hidden="true" /></Link> : null}</li>;
                   })}</ul>
                 </details>
               ) : (
@@ -143,7 +143,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
               <h3>{locations.length ? "No matching locations" : "Your first workplace starts here"}</h3>
               <p>{locations.length ? "Try another name or clear the filters to see every location." : "Add a location, then set up staffing, coverage, and your eligible team."}</p>
               <Link href={locations.length ? directoryPath : `${directoryPath}/new`} className={`button ${locations.length ? "secondary" : "primary"}`}>
-                {locations.length ? "Clear search and filters" : <><Plus size={20} aria-hidden="true" />Add Location</>}
+                {locations.length ? "Clear search and filters" : <><Plus size={20} aria-hidden="true" />Add location</>}
               </Link>
             </div>
           ) : null}

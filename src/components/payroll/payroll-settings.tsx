@@ -8,6 +8,7 @@ import { dollarsToMinor, minorToDollars } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import { OperationFeedback, PayrollFrame, PayrollPanel, PayrollState, PrivacyNote } from './payroll-ui';
 import { noticeReadiness, reminderWindow } from './workflow-status';
+import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
 
 function today() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
 const defaults: PayrollPreferences = {
@@ -120,7 +121,7 @@ function RuleEditor({ rules, onChange }: { rules: PayrollRule[]; onChange: (rule
   })}</div>;
 }
 function ImpactPreview({ data }: { data: PayrollSettingsResponse }) {
-  return <div className="pw-impact"><strong>Future draft impact</strong>{data.futureDraftImpact.length ? <ul>{data.futureDraftImpact.map(item => <li key={item.runId}>{item.period.startDate} – {item.period.endDate}: {item.reason}</li>)}</ul> : <p>No affected future drafts were returned by the server.</p>}</div>;
+  return <div className="pw-impact"><strong>Future draft impact</strong>{data.futureDraftImpact.length ? <ul>{data.futureDraftImpact.map(item => <li key={item.runId}>{formatDateRange(item.period.startDate, item.period.endDate)}: {item.reason}</li>)}</ul> : <p>No affected future drafts were returned by the server.</p>}</div>;
 }
 
 function EmployeeException({ data, preferences, operation }: { data: PayrollSettingsResponse; preferences: PayrollPreferences; operation: ReturnType<typeof usePayrollOperation> }) {

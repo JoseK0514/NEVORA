@@ -33,7 +33,7 @@ export default async function LoginPage({
         <LoginVisual />
         <section className="auth-card employee-login-card">
           <div className="employee-login-heading">
-            <h1>Employee Login</h1>
+            <h1>Employee login</h1>
           </div>
 
           {params.error ? (

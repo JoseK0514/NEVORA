@@ -282,7 +282,7 @@ try {
     .getByText("Configured attendance comparisons", { exact: true })
     .click();
   await managerPage
-    .getByText("Not Configured", { exact: false })
+    .getByText("Not configured", { exact: false })
     .first()
     .waitFor();
   await managerPage.screenshot({
@@ -309,7 +309,7 @@ try {
   });
   assert.equal(denied, 403);
   checked(
-    "Manager Attendance shows configured and Not Configured states; Owner policy writes denied to Manager",
+    "Manager Attendance shows configured and Not configured states; Owner policy writes denied to Manager",
   );
   await page.goto(app.url + "/app/settings/company-policies");
   await page.setViewportSize({ width: 375, height: 900 });

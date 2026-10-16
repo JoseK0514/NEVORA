@@ -63,12 +63,12 @@ export default async function NewEmployeePage({
                 <div><h2 id="employee-contact-heading">Personal details</h2><p>Use the details they will use to activate their account.</p></div>
               </div>
               <div className="form-columns">
-                <label>First Name<input name="firstName" autoComplete="given-name" required maxLength={160} /></label>
-                <label>Last Name<input name="lastName" autoComplete="family-name" required maxLength={160} /></label>
+                <label>First name<input name="firstName" autoComplete="given-name" required maxLength={160} /></label>
+                <label>Last name<input name="lastName" autoComplete="family-name" required maxLength={160} /></label>
               </div>
               <div className="form-columns">
                 <label>Employee ID<input name="id" placeholder="Enter an employee ID" autoCapitalize="characters" spellCheck={false} required maxLength={128} aria-describedby="employee-id-help" /><small id="employee-id-help">A unique ID for sign-in.</small></label>
-                <label>Phone Number<PhoneInput name="phone" autoComplete="tel-national" required /><small>Used to verify account activation.</small></label>
+                <label>Phone number<PhoneInput name="phone" autoComplete="tel-national" required /><small>Used to verify account activation.</small></label>
               </div>
               <label className="new-employee-email"><span className="new-employee-label">Email <span>Optional</span></span><input name="email" type="email" autoComplete="email" maxLength={254} /></label>
             </section>
@@ -108,7 +108,7 @@ export default async function NewEmployeePage({
 
             <div className="form-footer new-employee-footer">
               <Link className="button secondary" href="/app/employees">Cancel</Link>
-              <button className="button primary" type="submit" disabled={!activeLocations.length}>Create Employee <ArrowRight size={16} aria-hidden="true" /></button>
+              <button className="button primary" type="submit" disabled={!activeLocations.length}>Create employee <ArrowRight size={16} aria-hidden="true" /></button>
             </div>
           </ConfigurationForm>
         </section>
@@ -123,7 +123,7 @@ export default async function NewEmployeePage({
             <li>They create a password and sign in.</li>
           </ol>
           <p className="new-employee-next-note">Check the phone number carefully. It must match during activation.</p>
-          <Link className="new-employee-directory-link" href="/app/employees">View Employees <ArrowRight size={15} aria-hidden="true" /></Link>
+          <Link className="new-employee-directory-link" href="/app/employees">View employees <ArrowRight size={15} aria-hidden="true" /></Link>
         </aside>
       </div>
     </NewEmployeeFrame>

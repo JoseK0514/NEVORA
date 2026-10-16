@@ -33,10 +33,10 @@ async function goto(page,path){
  assert.equal(result.status(),200,`Expected working route ${path}, got ${result.status()}`);
 }
 async function addDevice(page,name){
- await page.getByRole('button',{name:'Add Device',exact:true}).click();
+ await page.getByRole('button',{name:'Add device',exact:true}).click();
  const dialog=page.getByRole('dialog');await dialog.getByLabel('Device name',{exact:true}).fill(name);
  await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');
- await dialog.getByRole('button',{name:'Create Setup Code',exact:true}).click();
+ await dialog.getByRole('button',{name:'Create setup code',exact:true}).click();
  await dialog.waitFor({state:'hidden'});
  return page.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
 }
@@ -93,16 +93,16 @@ try{
   checked(`${engine}: tablet enrollment uses HttpOnly cookie and never enables fake punches`);
   await goto(ownerPage,'/app/settings/clocker'); // Refresh after enrollment advanced the device version.
   const stale=await owner.newPage();await goto(stale,'/app/settings/clocker');
-  let dialog=await action(ownerPage,name,'Rename');await dialog.getByLabel('Device name',{exact:true}).fill(name+' renamed');await dialog.getByRole('button',{name:'Save Name',exact:true}).click();await dialog.waitFor({state:'hidden'});
+  let dialog=await action(ownerPage,name,'Rename');await dialog.getByLabel('Device name',{exact:true}).fill(name+' renamed');await dialog.getByRole('button',{name:'Save name',exact:true}).click();await dialog.waitFor({state:'hidden'});
   checked(`${engine}: rename persists and refreshes local optimistic version`);
-  dialog=await action(stale,name,'Revoke Access');await dialog.getByRole('button',{name:'Revoke Device',exact:true}).click();
+  dialog=await action(stale,name,'Revoke access');await dialog.getByRole('button',{name:'Revoke device',exact:true}).click();
   await dialog.getByRole('alert').filter({hasText:'changed'}).waitFor();
   assert.equal((await q('SELECT active FROM clocker_devices WHERE name=$1',[name+' renamed']))[0].active,true);
   checked(`${engine}: stale Owner view cannot revoke a newer device`);await stale.close();
-  dialog=await action(ownerPage,name+' renamed','Revoke Access');await dialog.getByRole('button',{name:'Revoke Device',exact:true}).click();await dialog.waitFor({state:'hidden'});
+  dialog=await action(ownerPage,name+' renamed','Revoke access');await dialog.getByRole('button',{name:'Revoke device',exact:true}).click();await dialog.waitFor({state:'hidden'});
   await tabletPage.reload();await tabletPage.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();
   checked(`${engine}: revocation is reflected on the actual tablet`);
-  dialog=await action(ownerPage,name+' renamed','Reconnect Tablet');await dialog.getByRole('button',{name:'Create New Code',exact:true}).click();await dialog.waitFor({state:'hidden'});
+  dialog=await action(ownerPage,name+' renamed','Reconnect tablet');await dialog.getByRole('button',{name:'Create new code',exact:true}).click();await dialog.waitFor({state:'hidden'});
   const replacementCode=await ownerPage.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
   await connect(tabletPage,replacementCode);checked(`${engine}: replacement/re-enrollment flow recovers a revoked tablet`);
   // Commit the enrollment but lose its response; the UI must reconcile, not blindly replay.
@@ -152,11 +152,11 @@ try{
   for(const width of [320,375,390,430,768,1024,1440]){
    await reviewPage.setViewportSize({width,height:width<500?844:1000});await goto(reviewPage,'/app/settings/clocker');
    await geometry(reviewPage,`${engine}: Owner devices ${width}px`);
-   await reviewPage.getByRole('button',{name:'Add Device',exact:true}).click();await geometry(reviewPage,`${engine}: device dialog ${width}px`);
+   await reviewPage.getByRole('button',{name:'Add device',exact:true}).click();await geometry(reviewPage,`${engine}: device dialog ${width}px`);
    if(width===390){const file=join(evidence,`${engine}-device-dialog-390.png`);await reviewPage.screenshot({path:file,fullPage:true});report.screenshots.push(file);}
    await reviewPage.keyboard.press('Escape');await reviewPage.getByRole('dialog').waitFor({state:'hidden'});
-   await reviewPage.waitForFunction(()=>document.activeElement?.textContent?.trim()==='Add Device',null,{timeout:1500});
-   assert(await reviewPage.getByRole('button',{name:'Add Device',exact:true}).evaluate(e=>document.activeElement===e),'Dialog must restore focus');
+   await reviewPage.waitForFunction(()=>document.activeElement?.textContent?.trim()==='Add device',null,{timeout:1500});
+   assert(await reviewPage.getByRole('button',{name:'Add device',exact:true}).evaluate(e=>document.activeElement===e),'Dialog must restore focus');
    if([390,1440].includes(width)){const file=join(evidence,`${engine}-devices-${width}.png`);await reviewPage.screenshot({path:file,fullPage:true});report.screenshots.push(file);}
   }
   for(const viewport of [{width:1024,height:768},{width:768,height:1024},{width:320,height:740}]){

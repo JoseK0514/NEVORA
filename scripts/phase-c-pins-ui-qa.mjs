@@ -35,8 +35,8 @@ try{
   await goto(p,'/app/employees/C2-EMPLOYEE/clocker-pin');await save(p,'0246');
   assert.equal(await p.getByLabel('New Clocker PIN',{exact:true}).inputValue(),'');
   assert.equal(await p.getByLabel('Confirm Clocker PIN',{exact:true}).inputValue(),'');checked(engine+': secure PIN setup clears the inputs');
-  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add Device',exact:true}).click();
-  const d=p.getByRole('dialog');await d.getByLabel('Device name',{exact:true}).fill(engine+' PIN tablet');await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Create Setup Code',exact:true}).click();await d.waitFor({state:'hidden'});
+  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add device',exact:true}).click();
+  const d=p.getByRole('dialog');await d.getByLabel('Device name',{exact:true}).fill(engine+' PIN tablet');await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Create setup code',exact:true}).click();await d.waitFor({state:'hidden'});
   const code=await p.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
   const tablet=await context(browser,{width:1024,height:768});const t=await tablet.newPage();await t.clock.install();t.setDefaultTimeout(15000);t.on('pageerror',e=>errors.push(e.message));
   await goto(t,'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect tablet',exact:true}).click();await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();

@@ -5,6 +5,7 @@ import type { PayrollRunsResponse } from '@/lib/payroll/contracts';
 import type { usePayrollOperation } from './use-payroll';
 import { PayrollPanel } from './payroll-ui';
 import { backlogDescription } from './workflow-status';
+import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
 
 export function BacklogReview({ data, operation }: { data: PayrollRunsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const [expanded, setExpanded] = useState(false);
@@ -17,10 +18,10 @@ export function BacklogReview({ data, operation }: { data: PayrollRunsResponse; 
   const key = (item: typeof missing[number]) => JSON.stringify(item);
   const visible = expanded ? missing : missing.slice(0, 3);
   return <PayrollPanel title="Missing pay periods" description={backlogDescription(backlog)}>
-    <p className="pw-small">History checked through {backlog.asOfDate}{backlog.rangeStart ? `, starting ${backlog.rangeStart}` : ''}. Preparing a draft does not finalize time, approve amounts or submit a payment.</p>
+    <p className="pw-small">History checked through {formatDisplayDate(backlog.asOfDate)}{backlog.rangeStart ? `, starting ${formatDisplayDate(backlog.rangeStart)}` : ''}. Preparing a draft does not finalize time, approve amounts or submit a payment.</p>
     {backlog.ambiguousCount !== null && backlog.ambiguousCount > 0 && <p className="pw-notice">{backlog.ambiguousCount} {backlog.ambiguousCount === 1 ? 'period needs' : 'periods need'} schedule-transition review.</p>}
     <div className="pw-backlog-list">{visible.map(item => <div className="pw-backlog-period" key={key(item)}>
-      <div className="pw-backlog-heading"><div><strong>{item.period.startDate} – {item.period.endDate}</strong><small>Payday {item.payday} · Settings revision {item.settingsRevision}</small></div><button type="button" className="pw-button pw-secondary" aria-expanded={selected === key(item)} aria-controls={`period-${item.period.startDate}-${item.settingsRevision}`} disabled={locked} onClick={() => { setSelected(selected === key(item) ? null : key(item)); setAcknowledged(false); }}>{selected === key(item) ? 'Close review' : 'Review period'}</button></div>
+      <div className="pw-backlog-heading"><div><strong>{formatDateRange(item.period.startDate, item.period.endDate)}</strong><small>Payday {formatDisplayDate(item.payday)} · Settings revision {item.settingsRevision}</small></div><button type="button" className="pw-button pw-secondary" aria-expanded={selected === key(item)} aria-controls={`period-${item.period.startDate}-${item.settingsRevision}`} disabled={locked} onClick={() => { setSelected(selected === key(item) ? null : key(item)); setAcknowledged(false); }}>{selected === key(item) ? 'Close review' : 'Review period'}</button></div>
       {selected === key(item) && <div id={`period-${item.period.startDate}-${item.settingsRevision}`} className="pw-backlog-confirm">
         {item.state === 'AMBIGUOUS_TRANSITION' && <div className="pw-notice"><strong>Review the schedule transition</strong>{item.issues.map((issue, index) => <p key={index}>{issue}</p>)}<p>Confirm these period boundaries and payday before manual preparation.</p></div>}
         <p className="pw-small">This draft uses the saved effective settings. Review its timecards, population and provider amounts before a separate approval.</p>

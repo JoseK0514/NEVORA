@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, MagnifyingGlass, MapPin, UserPlus, Users, X } from "@phosphor-icons/react/dist/ssr";
+import { CaretRight, MagnifyingGlass, MapPin, UserPlus, Users, X } from "@phosphor-icons/react/dist/ssr";
 import type { CSSProperties } from "react";
 import type { Employee, Location } from "@/lib/domain";
 import { employeeInitials, employeeRoleLabel } from "@/lib/employee-display";
@@ -30,7 +30,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
     <EmployeeDirectoryMotion className={styles.directory}>
       <header className={styles.header} data-directory-enter>
         <div><h1>Employees</h1><p>Find people, review their details, and manage your team.</p></div>
-        <Link className={styles.primaryAction} href="/app/employees/new"><UserPlus size={20} aria-hidden="true" /> Add Employee</Link>
+        <Link className={styles.primaryAction} href="/app/employees/new"><UserPlus size={20} aria-hidden="true" /> Add employee</Link>
       </header>
       <section className={styles.panel} aria-label="Employee directory" data-directory-enter>
         <EmployeeDirectoryFilters>
@@ -81,7 +81,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
               <td className={styles.phone} role="cell">{formatPhoneNumber(employee.phone)}</td>
               <td className={styles.status} role="cell"><StatusPill tone={employee.active ? "success" : "neutral"}>{employee.active ? "Active" : "Inactive"}</StatusPill></td>
               <td className={styles.profile} role="cell"><Link href={`/app/employees/${encodeURIComponent(employee.id)}`} className={styles.profileAction}>
-                View Profile <ArrowUpRight size={17} aria-hidden="true" /><span className={styles.srOnly}> for {name}</span>
+                View profile <CaretRight size={17} aria-hidden="true" /><span className={styles.srOnly}> for {name}</span>
               </Link></td>
             </tr>;
           })}</tbody>
@@ -90,7 +90,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
           <h2>{employees.length ? "No matching employees" : "Your team starts here"}</h2>
           <p>{employees.length ? "Try a different name or employee ID, or clear your filters to see everyone." : "Add your first employee to start building your team and scheduling their work."}</p>
           <Link className={styles.emptyAction} href={employees.length ? "/app/employees" : "/app/employees/new"}>
-            {employees.length ? <><X size={18} aria-hidden="true" /> Clear filters</> : <><UserPlus size={20} aria-hidden="true" /> Add Employee</>}
+            {employees.length ? <><X size={18} aria-hidden="true" /> Clear filters</> : <><UserPlus size={20} aria-hidden="true" /> Add employee</>}
           </Link>
         </div>}
       </section>

@@ -50,7 +50,7 @@ function Assignments({ rows, empty }: { rows: ReadyView['accepted']; empty: stri
     overnight endpoints. Keep explicit dates and end-of-day 24:00 notation. */}
   <span>{row.date} {row.startTime} – {row.endDate ?? (row.endTime < row.startTime ? addDays(row.date, 1) : row.date)} {row.endTime}</span>
   <span>Assignment: {row.assignmentId}{row.positionId !== undefined ? <> · Position: {row.positionId}</> : null}
-   {row.isDesignatedLead ? ' · Designated Lead' : ''}</span>
+   {row.isDesignatedLead ? ' · Designated lead' : ''}</span>
   <span>{row.message}</span>
   <span>{row.validation === 'RETAINED_UNCHANGED' ? 'Retained unchanged' : 'Canonical final evaluation'}
    {row.operationalRules === 'NOT_SUPPLIED' ? ' · Operational profile not supplied' : row.operationalRules === 'PROFILE_SUPPLIED' ? ' · Operational profile supplied' : ''}</span>
@@ -91,7 +91,7 @@ export function GenerationExplanationPanel({ result, connection, expected, sourc
   message = 'The generation result is no longer current. Return to the current generation review.';
  else if (view?.state === 'conflict') message = 'The source changed. Return to the current generation review.';
  else if (unknown) message = 'The save outcome is unconfirmed. Check the original attempt.';
- const demandLabels = { POSITION: 'Positions', STAFFING: 'Staffing', LEAD: 'Designated Lead' };
+ const demandLabels = { POSITION: 'Positions', STAFFING: 'Staffing', LEAD: 'Designated lead' };
  const setupLabels = { READY: 'Ready', NEEDS_SETUP: 'Needs setup', INACTIVE: 'Inactive' };
  return <section className="schedule-publication-controls schedule-generation-controls" aria-label="Generation explanation"
   aria-busy={result.state === 'loading' || connection === 'loading'}>
@@ -140,7 +140,7 @@ export function GenerationExplanationPanel({ result, connection, expected, sourc
     {ready.gaps.length ? <ul>{ready.gaps.map((row, index) => <li key={index}>
      <strong>{row.locationId} · {row.date} {row.startTime} – {row.endTime}</strong>
      <span>Staff missing: {row.missingStaff ?? 'Not configured'}</span>
-     <span>Designated Lead missing: {row.missingLead === null ? 'Not configured' : row.missingLead ? 'Yes' : 'No'}</span>
+     <span>Designated lead missing: {row.missingLead === null ? 'Not configured' : row.missingLead ? 'Yes' : 'No'}</span>
      {row.positions.map(position => <span key={position.positionId}>Position {position.positionId}: {position.missing} missing</span>)}
     </li>)}</ul> : <p>No uncovered configured periods in this result.</p>}
    </Disclosure>

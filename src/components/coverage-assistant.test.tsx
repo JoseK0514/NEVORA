@@ -46,7 +46,7 @@ it("keeps signed replacement review links and selected requirements intact", () 
     requirements: [{ label: "Operations: 1 missing", href: "/app/schedule/coverage?repair=current-position", selected: true }],
   });
   expect(html).toContain('href="/app/schedule/new?review=signed-review-token"');
-  expect(html).toContain('aria-current="true"'); expect(html).toContain("Designated Lead required");
+  expect(html).toContain('aria-current="true"'); expect(html).toContain("Designated lead required");
   expect(html).toContain("Review replacement");
 });
 

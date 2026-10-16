@@ -26,13 +26,13 @@
   --nevora-cyan: var(--review-accent);
   --coffee: var(--review-accent-ink);
   --coffee-dark: var(--review-ink);
-  --soft-caramel: #F8EAE5;
+  --soft-caramel: #E7F3F2;
   color: var(--review-ink);
   background: var(--review-canvas);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 :global(.app-shell):has(.root) :global(.sidebar) { background: var(--review-ink); }
-:global(.app-shell):has(.root) :global(.nav-link.active) { background: #F8EAE5; color: var(--review-accent-ink); }
+:global(.app-shell):has(.root) :global(.nav-link.active) { background: #E7F3F2; color: var(--review-accent-ink); }
 
 .root { width: 100%; max-width: 1120px; margin: 0 auto; overflow-wrap: anywhere; }
 .root :is(h1, h2, h3, h4, p) { margin: 0; }
@@ -46,7 +46,7 @@
 .workspace { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, 1fr); grid-auto-flow: dense; gap: 24px; align-items: start; }
 .lookup { min-width: 0; background: var(--review-surface); border: 1px solid var(--review-line); border-radius: var(--review-radius); padding: 28px; }
 .sectionHeading { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
-.iconWell { flex: 0 0 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; background: #F8EAE5; color: var(--review-accent-ink); }
+.iconWell { flex: 0 0 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; background: #E7F3F2; color: var(--review-accent-ink); }
 .sectionHeading h2, .guide h2 { font-size: 18px; font-weight: 600; line-height: 1.35; }
 .sectionHeading p { margin-top: 4px; font-size: 13px; }
 .fields { border: 0; min-width: 0; margin: 0; padding: 0; display: grid; }

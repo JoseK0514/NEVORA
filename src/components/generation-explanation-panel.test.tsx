@@ -121,7 +121,7 @@ describe('unused F3 source-bound generation explanation panel', () => {
   const s = snapshot(i), view = ready(s), html = render(s);
   expect(view.status).toBe('PARTIAL'); expect(html).toContain('Partial plan. Unresolved gaps remain.');
   expect(html).toContain('Remaining gaps'); expect(html).toContain('Staff missing:'); expect(html).toContain('Position barista:');
-  expect(html).toContain('Designated Lead missing:'); expect(html).toContain('Positions'); expect(html).toContain('Designated Lead');
+  expect(html).toContain('Designated lead missing:'); expect(html).toContain('Positions'); expect(html).toContain('Designated lead');
   for (const r of view.reasons) expect(html).toContain(r.message);
   expect(html).not.toContain('Complete for the attempted locations.'); noWriteControls(html);
  });

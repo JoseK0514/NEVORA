@@ -71,8 +71,8 @@ try{
   await refresh(p);await card(p).getByText('No one is clocked in',{exact:true}).waitFor();checked(engine+': published shifts alone never count as clocked in');
   const pin=engine==='chromium'?'0246':'2468';
   await p.goto(app.url+'/app/employees/C7-A/clocker-pin');await p.getByLabel('New Clocker PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm Clocker PIN',{exact:true}).fill(pin);await p.getByRole('button',{name:engine==='chromium'?'Save PIN':'Reset PIN',exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();
-  await p.goto(app.url+'/app/settings/clocker');await p.getByRole('button',{name:'Add Device',exact:true}).click();
-  const dialog=p.getByRole('dialog');await dialog.getByLabel('Device name',{exact:true}).fill(engine+' C7 Tablet');await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Create Setup Code',exact:true}).click();await dialog.waitFor({state:'hidden'});
+  await p.goto(app.url+'/app/settings/clocker');await p.getByRole('button',{name:'Add device',exact:true}).click();
+  const dialog=p.getByRole('dialog');await dialog.getByLabel('Device name',{exact:true}).fill(engine+' C7 Tablet');await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Create setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
   const code=await p.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
   const tablet=await context(browser),t=await tablet.newPage();t.setDefaultTimeout(15000);t.on('pageerror',e=>report.errors.push(e.message));
   await t.goto(app.url+'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect tablet',exact:true}).click();await t.getByLabel('Employee PIN',{exact:true}).fill(pin);await t.getByRole('button',{name:'Continue',exact:true}).click();await t.getByRole('heading',{name:/^Hi, /}).waitFor();

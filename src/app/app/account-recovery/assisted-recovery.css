@@ -2,7 +2,7 @@
 @font-face { font-family: 'JetBrains Mono'; src: url('/fonts/assisted-recovery/jetbrains-mono-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 800; font-display: swap; }
 .app-shell:has(.assisted-recovery), .assisted-recovery {
  --assisted-primary: #077572; --assisted-hover: #055C5A; --assisted-canvas: #FAFAFA; --assisted-white: #FFFFFF;
- --assisted-ink: #111827; --assisted-muted: #4B5563; --assisted-line: #D1D5DB; --assisted-tint: #F8EAE5; --assisted-link: #055C5A;
+ --assisted-ink: #111827; --assisted-muted: #4B5563; --assisted-line: #D1D5DB; --assisted-tint: #E7F3F2; --assisted-link: #055C5A;
  --nuvora-midnight: var(--assisted-ink); --nuvora-bg: var(--assisted-canvas); --nuvora-text: var(--assisted-ink); --nuvora-muted: var(--assisted-muted);
  --nuvora-indigo: var(--assisted-link); --nuvora-indigo-soft: var(--assisted-tint); --nuvora-indigo-hover: #7D2D1B;
  --ink: var(--assisted-ink); --muted: var(--assisted-muted); --canvas: var(--assisted-canvas); --surface: var(--assisted-white); --line: var(--assisted-line);

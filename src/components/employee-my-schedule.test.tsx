@@ -37,7 +37,7 @@ it('an active overnight shift from yesterday retains callout but does not invent
 });
 it('midnight end, real position names, lead and approved-callout labels remain explicit',()=>{
  const output=html({shifts:[{...shift,startTime:'16:00',endTime:'24:00',positionName:'Customer Support',isDesignatedLead:true,isCalloutApproved:true}]});
- for(const value of ['Ends Tue, Oct 13','Customer Support','Designated Lead','Call-out approved']) expect(output).toContain(value);
+ for(const value of ['Ends Tue, Oct 13','Customer Support','Designated lead','Call-out approved']) expect(output).toContain(value);
 });
 it('selected day, today, current-week return and planning destinations retain native URLs',()=>{
  const output=html({selectedDay:'2026-10-14'});

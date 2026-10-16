@@ -55,7 +55,7 @@ it('forged URL flags cannot claim a persisted success',async()=>{
 });
 it('trade displays both reviewed slots with position and Lead context',async()=>{
  f.activity=[{...exchange('both'),sourceShift:{...exchange('both').sourceShift,positionName:'Drive-through coordinator',isDesignatedLead:true},targetShift:{...exchange('both').sourceShift,id:'other',date:'2026-10-06',startTime:'16:00',endTime:'20:00',locationName:'East Terrace',positionName:'Kitchen coordinator'}}];
- const result=await html();expect(result).toContain('East Terrace');expect(result).toContain('Kitchen coordinator');expect(result).toContain('Drive-through coordinator');expect(result).toContain('Designated Lead');
+ const result=await html();expect(result).toContain('East Terrace');expect(result).toContain('Kitchen coordinator');expect(result).toContain('Drive-through coordinator');expect(result).toContain('Designated lead');
 });
 it('effective expired lifecycle never offers cancellation',async()=>{
  f.activity=[{...exchange('expired'),status:'OPEN',actionable:false,attention:'EXPIRED'}];
@@ -78,13 +78,13 @@ function assignedReview(){
  f.reviewed={source:{timeZone:shift.timeZone,termsRevision:shift.termsRevision,shiftId:shift.id,scheduleId:shift.scheduleId,employeeId:shift.employeeId,locationId:shift.locationId,weekStart:shift.weekStart,date:shift.date,startTime:shift.startTime,endTime:shift.endTime,positionId:shift.positionId,isDesignatedLead:shift.isDesignatedLead,assignmentEpisodeId:'episode-current'},sourceTermsFingerprint:'v1:current',target:null,targetTermsFingerprint:null};
 }
 it.each(['unknown coverage policy','elapsed coverage submission cutoff'])('trade builder navigation remains independent of %s',async refusal=>{
- assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('>Trade Shift<');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('>Unable to Work<');
+ assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('>Trade shift<');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('>Unable to Work<');
 });
 it('builder navigation itself does not declare swap eligibility when only coverage is valid',async()=>{
  assignedReview();f.coverageAllowed=true;const result=await html();expect(result).toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('Eligible to trade');
 });
 it.each<Record<string, string | boolean | number>>([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'10:00',endTime:'18:00'},{locationId:'replacement-site'},{positionId:'replacement-position'},{employeeId:'new-owner'},{date:'2035-10-06'},{scheduleId:'replacement-schedule'},{weekStart:'2035-10-08'},{isDesignatedLead:false}])('inter-read material source change %j refuses undisplayed creation consent',async change=>{
- assignedReview();f.coverageAllowed=true;f.reviewed!.source={...f.reviewed!.source,...change};const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('value="v1:current"');expect(result).not.toContain('>Trade Shift<');expect(result).toContain('Stale assignment');
+ assignedReview();f.coverageAllowed=true;f.reviewed!.source={...f.reviewed!.source,...change};const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('value="v1:current"');expect(result).not.toContain('>Trade shift<');expect(result).toContain('Stale assignment');
 });
 it.each(['pending','completed'] as const)('URL result render performs read-only %s lookup rather than cache-invalidating action',async status=>{
  const operationId='11111111-1111-4111-8111-111111111111';f.operation={status,operationId,requestId:'r1',revision:2};const result=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({operationId})}));expect(result).toContain(status==='pending'?'Request recorded':'Completed.');expect(reconcileShiftChangeAction).not.toHaveBeenCalled();expect(readShiftChangeOperationView).toHaveBeenCalledWith(expect.objectContaining({sessionTokenHash:'a'.repeat(64)}),operationId);

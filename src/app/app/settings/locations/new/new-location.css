@@ -26,7 +26,7 @@
   --nuvora-muted: var(--design-text-secondary);
   --nuvora-indigo: var(--design-accent-ink);
   --nuvora-indigo-hover: #7D2D1B;
-  --nuvora-indigo-soft: #F8EAE5;
+  --nuvora-indigo-soft: #E7F3F2;
   --color-bg-main: var(--design-background);
   --color-bg-surface: var(--design-surface-elevated);
   --color-brand-primary: var(--design-text-primary);
@@ -34,14 +34,14 @@
   --coffee-dark: #20232D;
   --coffee: var(--design-accent-ink);
   --caramel: var(--design-primary);
-  --soft-caramel: #F8EAE5;
+  --soft-caramel: #E7F3F2;
   --muted: var(--design-text-secondary);
   --ink: var(--design-text-primary);
   --line: var(--design-border);
   --nevora-blue: var(--design-accent-ink);
   --nevora-blue-hover: #7D2D1B;
   --nevora-cyan: var(--design-primary);
-  --nevora-soft: #F8EAE5;
+  --nevora-soft: #E7F3F2;
   --nevora-accent-rgb: 159, 56, 33;
   --nevora-highlight-rgb: 237, 114, 76;
   --nevora-soft-rgb: 248, 234, 229;

@@ -81,7 +81,7 @@ describe('F2 isolated deliberate publication review display', () => {
   const r = ready(), html = render(r);
   expect(html).toContain('Warning count'); expect(html).toContain('>6<');
   for (const warning of r.warnings) { expect(html).toContain(warning.message); expect(html).toContain('>' + warning.count + '<'); }
-  expect(html).toContain('Coverage'); expect(html).toContain('Positions'); expect(html).toContain('Designated Lead'); expect(html).toContain('Hour targets');
+  expect(html).toContain('Coverage'); expect(html).toContain('Positions'); expect(html).toContain('Designated lead'); expect(html).toContain('Hour targets');
   expect(html).toContain('Checked'); expect(confirmation(html)).not.toContain('disabled'); expect(html).toContain('Return to review');
   for (const hidden of [r.fingerprint, r.reviewId, r.sourceVersion, r.configurationVersion, r.selection.locationId, r.selection.scheduleId!]) expect(html).not.toContain(hidden);
   expect(html).not.toContain('Publish anyway'); expect(html).not.toContain('<form'); expect(html).not.toContain('type="submit"');

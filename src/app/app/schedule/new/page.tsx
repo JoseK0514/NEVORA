@@ -75,7 +75,7 @@ export default async function NewShiftPage({
           <div><dt><ClockIcon size={20} aria-hidden="true" />Time</dt><dd>{formatTime(locator.startTime)} – {formatTime(locator.endTime)}{nextDay ? <small>Ends {nextDay.weekday}, {nextDay.day}</small> : null}</dd></div>
           <div><dt><MapPinIcon size={20} aria-hidden="true" />Location</dt><dd>{selected.locationName}</dd></div>
           <div><dt><BriefcaseIcon size={20} aria-hidden="true" />Position</dt><dd>{selected.positionName ?? "No position required"}</dd></div>
-          <div className="shift-review-lead"><dt><MedalIcon size={20} aria-hidden="true" />Shift Lead</dt><dd>{selected.isDesignatedLead ? "Designated Shift Lead required" : "Not required for this repair"}</dd></div>
+          <div className="shift-review-lead"><dt><MedalIcon size={20} aria-hidden="true" />Shift lead</dt><dd>{selected.isDesignatedLead ? "Designated Shift Lead required" : "Not required for this repair"}</dd></div>
         </dl>
         <div className="shift-review-notice"><InfoIcon size={22} aria-hidden="true" /><div><strong>{locator.target === "POSITION" ? "Fill this position requirement" : locator.target === "LEAD" ? "Fill the Lead requirement" : "Fill this staffing requirement"}</strong><p>This saves one replacement for the selected requirement. Remaining requirements stay visible in the gap.</p></div></div>
       </div>

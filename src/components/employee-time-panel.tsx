@@ -11,6 +11,8 @@ import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 import {employeeButtonClass} from './employee-corporate-ui';
 
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off Clock':entry.state==='ON_BREAK'?'On Break':'Clocked In';
+/** Freshness needs minutes, not seconds: "Oct 15, 7:31 PM". */
+function checked(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));}
 function stamp(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date(at));}
 function entryDate(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short',month:'short',day:'numeric'}).format(new Date(at));}
 function entryRange(entry:EmployeeTimeEntry,zone:string){
@@ -49,12 +51,12 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
   {compact?<Link className="employee-time-link" href="/app/my-time">My time <NavIcon name="arrowRight" size={16}/></Link>:null}
  </div>;
  const content=<>
-  <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock status':'Current Status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:null}</div>
+  <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock status':'Current status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:null}</div>
   {ready?<>
    {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p><time dateTime={current.clockInAt}>{stamp(current.clockInAt,ready.timeZone)}</time> · Clock In</p><p><b>{formatRecordedDuration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<> · <b>{formatRecordedDuration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
   </>:<div className="employee-time-message" role="status"><strong>{title}</strong><p>{paused?'Return online to check your latest records.':denied?'Your current employee session is required.':time?.state==='unavailable'?'Your latest clock records could not be confirmed. Try refreshing.':'Checking your actual punches and breaks.'}</p></div>}
   <p className="employee-time-note">Use your location’s Clocker to record punches.</p>
-  <footer className="employee-time-footer"><small className={corporate&&ready?'employee-corporate-desktop-copy':undefined}>{ready?<>Checked <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time>{!compact?<span>{ready.timeZone} · Updates every 30s while active.</span>:null}</>:'Only recorded punches appear here.'}</small>
+  <footer className="employee-time-footer"><small className={corporate&&ready?'employee-corporate-desktop-copy':undefined}>{ready?<>Updated <time dateTime={ready.observedAt}>{checked(ready.observedAt,ready.timeZone)}</time>{!compact?<span>{ready.timeZone} · Updates every 30s while active.</span>:null}</>:'Only recorded punches appear here.'}</small>
    {corporate&&ready&&!compact?<div className="employee-corporate-freshness">
     <p>Checked <time dateTime={ready.observedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:ready.timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(ready.observedAt))}</time></p>
    </div>:null}{controls}
@@ -75,7 +77,7 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
   {corporate?<div className="employee-time-overview">{overview}</div>:overview}
   {ready?<>
    <section className="employee-view-surface employee-time-recent" aria-labelledby="employee-time-recent-title">
-    <header className="employee-time-section-heading"><h2 id="employee-time-recent-title"><span className="my-time-section-icon"><ReceiptIcon size={20} weight="duotone" aria-hidden="true"/></span>Recent Entries</h2><span className="my-time-history-count">{ready.recent.total} {ready.recent.total===1?'entry':'entries'}</span></header>
+    <header className="employee-time-section-heading"><h2 id="employee-time-recent-title"><span className="my-time-section-icon"><ReceiptIcon size={20} weight="duotone" aria-hidden="true"/></span>Recent entries</h2><span className="my-time-history-count">{ready.recent.total} {ready.recent.total===1?'entry':'entries'}</span></header>
     {ready.recent.entries.length?<><p className="employee-time-note">Showing {ready.recent.entries.length} of {ready.recent.total} earlier entries · most recent first.</p><div className="employee-time-entries">{ready.recent.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div></>:<p className="employee-time-empty">No earlier entries.</p>}
    </section>
    <EmployeeCorrectionCenter zone={ready.timeZone}/>

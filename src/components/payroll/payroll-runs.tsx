@@ -9,6 +9,7 @@ import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import { DocumentLink, OperationFeedback, PayrollFrame, PayrollPanel, PayrollState, PrivacyNote } from './payroll-ui';
 import { BacklogReview } from './backlog-review';
 import { noticeOutcome, noticeReadiness, payrollExceptionMessage, payrollReviewNotes } from './workflow-status';
+import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
 
 const statusLabels = { WAITING_FOR_AMOUNTS: 'Waiting for amounts', REVIEW_REQUIRED: 'Review required', APPROVED: 'Approved' };
 const jobLabels = { PREPARE: 'Draft preparation', PDF: 'PDF generation', PUBLISH: 'Statement publication', REMINDER: 'Private payroll notice' };
@@ -31,7 +32,7 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
       <BacklogReview data={resource.data} operation={operation} />
       {resource.data.runs.length === 0 ? <PayrollState title="No payroll runs yet">Start with company payroll settings, then prepare a draft for the period you want to review.</PayrollState> : <div className="pw-review-layout">
         <PayrollPanel title="Pay periods" description="Each approval belongs to one exact revision."><div className="pw-run-list">{resource.data.runs.map(item => <button key={item.id} type="button" className={`pw-run-option${item.id === run?.id ? ' selected' : ''}`} aria-pressed={item.id === run?.id} onClick={() => setSelectedId(item.id)} disabled={locked}>
-          <span><strong>{item.period.startDate} – {item.period.endDate}</strong><small>Payday {item.payday} · Revision {item.revision}</small></span><span className={`pw-badge ${item.status === 'APPROVED' ? 'pw-badge-success' : ''}`}>{statusLabels[item.status]}</span>
+          <span><strong>{formatDateRange(item.period.startDate, item.period.endDate)}</strong><small>Payday {formatDisplayDate(item.payday)} · Revision {item.revision}</small></span><span className={`pw-badge ${item.status === 'APPROVED' ? 'pw-badge-success' : ''}`}>{statusLabels[item.status]}</span>
         </button>)}</div></PayrollPanel>
         {run && <div className="pw-review-current"><p className="pw-workflow-guidance" role="status"><strong>Next step:</strong> {run.status==='WAITING_FOR_AMOUNTS'?'Import amounts from your payroll provider or accountant.':run.status==='REVIEW_REQUIRED'?'Review discrepancies and employee amounts before approving.':'Generate and review the approved documents, then publish statements when ready.'}</p>
         <RunReview key={`${run.id}:${run.revision}:${run.reviewToken}`} run={run} capabilities={resource.data.capabilities} operation={operation} /></div>}
@@ -72,7 +73,7 @@ function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabili
       } else void operation.submit({ action: 'IMPORT', runId: run.id, expectedRevision: run.revision, amounts });
     } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'Check the payroll import.'); }
   };
-  return <PayrollPanel title={`${run.period.startDate} – ${run.period.endDate}`} description={`Payday ${run.payday} · Revision ${run.revision}`} aside={<span className={`pw-badge ${run.status === 'APPROVED' ? 'pw-badge-success' : ''}`}>{statusLabels[run.status]}</span>}>
+  return <PayrollPanel title={formatDateRange(run.period.startDate, run.period.endDate)} description={`Payday ${formatDisplayDate(run.payday)} · Revision ${run.revision}`} aside={<span className={`pw-badge ${run.status === 'APPROVED' ? 'pw-badge-success' : ''}`}>{statusLabels[run.status]}</span>}>
     {run.correctionOf && <p className="pw-notice">Correction linked to payroll run <code>{run.correctionOf}</code>.</p>}
     {notes.corrections.map((reason, index) => <p className="pw-notice" key={index}><strong>Correction reason:</strong> {reason}</p>)}
     {notes.blocking.length > 0 && <PayrollState title={run.status === 'WAITING_FOR_AMOUNTS' ? 'Provider amounts needed' : 'Resolve these exceptions'} error={run.status !== 'WAITING_FOR_AMOUNTS'}>{notes.blocking.map((exception, index) => <span className="pw-exception" key={index}>{payrollExceptionMessage(exception)}</span>)}</PayrollState>}

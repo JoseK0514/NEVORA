@@ -34,7 +34,7 @@ export default async function ActivatePage({ searchParams }: {
         <ActivationVisual />
         <section className="auth-card employee-login-card activation-card">
           <div className="employee-login-heading">
-            <h1>Activate Account</h1>
+            <h1>Activate account</h1>
           </div>
           {params.error ? <p className="form-error" id={errorId} role="alert">
             {params.error === "not_found"

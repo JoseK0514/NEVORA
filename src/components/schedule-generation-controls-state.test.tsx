@@ -18,7 +18,7 @@ beforeEach(()=>{harness.slots=[];harness.cursor=0;harness.dispatches=[];vi.clear
 it('invalidates prior generation explanations after successful clear, survives fresh review, and shows the next generation result',async()=>{
   vi.mocked(generateWeekAction).mockResolvedValue(previous);render();await harness.dispatches[0](new FormData());
   expect(render()).toContain('North · Manager excluded · Automatic fill off.');
-  vi.mocked(clearGenerationExclusionAction).mockResolvedValue({status:'success',message:'Automatic fill allowed for this need. Run Build Week or Fill Gaps Only when ready.'});
+  vi.mocked(clearGenerationExclusionAction).mockResolvedValue({status:'success',message:'Automatic fill allowed for this need. Run Build week or Fill gaps only when ready.'});
   await harness.dispatches[1](new FormData());
   const cleared=render({...review,exclusions:[]});
   expect(cleared).not.toContain('North · Manager excluded · Automatic fill off.');
@@ -28,7 +28,7 @@ it('invalidates prior generation explanations after successful clear, survives f
   const fresh:GenerationActionState={status:'success',message:'Draft complete for configured coverage. Review before publishing.'};
   vi.mocked(generateWeekAction).mockResolvedValue(fresh);await harness.dispatches[0](new FormData());
   expect(render({...review,exclusions:[]})).toContain(fresh.message);
-  expect(render({...review,exclusions:[]})).not.toContain('Run Build Week or Fill Gaps Only when ready.');
+  expect(render({...review,exclusions:[]})).not.toContain('Run Build week or Fill gaps only when ready.');
 });
 it('retains prior generation evidence and excluded state when clearing fails',async()=>{
   vi.mocked(generateWeekAction).mockResolvedValue(previous);render();await harness.dispatches[0](new FormData());render();

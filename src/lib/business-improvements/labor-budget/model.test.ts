@@ -22,7 +22,7 @@ const budgets = [
     endAt: "2026-10-08T04:00:00Z",
   },
 ];
-it("keeps customer values exact while no trusted Finance method means Not Configured and null costs", () => {
+it("keeps customer values exact while no trusted Finance method means Not configured and null costs", () => {
   const input = parseLaborPlanningInputs({
     rates,
     budgets,

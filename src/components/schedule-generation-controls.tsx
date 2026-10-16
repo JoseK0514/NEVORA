@@ -10,7 +10,7 @@ const idle:GenerationActionState={status:'idle',message:''};
 function PendingActions({disabled}:{disabled:boolean}) {
   const {pending,data}=useFormStatus();
   const mode=data?.get("mode");
-  return <div className="schedule-generation-peers"><button className="schedule-generation-action primary" type="submit" name="mode" value="BUILD_WEEK" disabled={disabled||pending}>{pending&&mode==='BUILD_WEEK'?'Building…':'Build Week'}</button><button className="schedule-generation-action secondary" type="submit" name="mode" value="FILL_GAPS_ONLY" disabled={disabled||pending}>{pending&&mode==='FILL_GAPS_ONLY'?'Filling…':'Fill Gaps Only'}</button></div>;
+  return <div className="schedule-generation-peers"><button className="schedule-generation-action primary" type="submit" name="mode" value="BUILD_WEEK" disabled={disabled||pending}>{pending&&mode==='BUILD_WEEK'?'Building…':'Build week'}</button><button className="schedule-generation-action secondary" type="submit" name="mode" value="FILL_GAPS_ONLY" disabled={disabled||pending}>{pending&&mode==='FILL_GAPS_ONLY'?'Filling…':'Fill gaps only'}</button></div>;
 }
 function ClearButton() {const {pending}=useFormStatus();return <button className="schedule-generation-action secondary" type="submit" disabled={pending}>{pending?'Allowing…':'Allow auto-fill'}</button>;}
 function Coverage({coverage}:{coverage:ScheduleGenerationReview['coverage']}) {return <span>{coverage&&!coverage.unavailable&&coverage.percentage!==null?`${Math.round(coverage.percentage)}% configured coverage`:'Coverage unavailable'}</span>;}
@@ -30,7 +30,7 @@ function ExclusionControl({event,weekStart,onCleared}:{event:ScheduleGenerationR
     return next;
   },idle);
   if(state.status === 'success') return <li><GenerationFeedback state={state}/></li>;
-  return <li><div><strong>Manager excluded · Automatic fill off</strong><span>{event.locationName} · {formatDayLabel(event.date).day} · {formatTime(event.startTime)} – {formatTime(event.endTime)}{event.positionName?` · ${event.positionName}`:''}{event.needsLead?' · Designated Lead':''}</span></div><form action={action}><input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="locationId" value={event.locationId}/><input type="hidden" name="exclusionId" value={event.id}/><ClearButton/></form><GenerationFeedback state={state}/></li>;
+  return <li><div><strong>Manager excluded · Automatic fill off</strong><span>{event.locationName} · {formatDayLabel(event.date).day} · {formatTime(event.startTime)} – {formatTime(event.endTime)}{event.positionName?` · ${event.positionName}`:''}{event.needsLead?' · Designated lead':''}</span></div><form action={action}><input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="locationId" value={event.locationId}/><input type="hidden" name="exclusionId" value={event.id}/><ClearButton/></form><GenerationFeedback state={state}/></li>;
 }
 export function ScheduleGenerationControls({weekStart,selectedLocation,review}:{weekStart:string;selectedLocation:string;review:ScheduleGenerationReview}) {
   const [state,action]=useActionState(generateWeekAction,idle);

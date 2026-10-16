@@ -29,24 +29,24 @@ it('retains device identity, search and every management operation across states
   expect(html).toContain('type="search"');
   expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
   expect(html.match(/>Rename<\/button>/g)).toHaveLength(4);
-  expect(html.match(/>Revoke Access<\/button>/g)).toHaveLength(3);
-  expect(html).toContain('Replace Tablet');
-  expect(html).toContain('Reconnect Tablet');
-  expect(html.match(/>New Setup Code<\/button>/g)).toHaveLength(2);
+  expect(html.match(/>Revoke access<\/button>/g)).toHaveLength(3);
+  expect(html).toContain('Replace tablet');
+  expect(html).toContain('Reconnect tablet');
+  expect(html.match(/>New setup code<\/button>/g)).toHaveLength(2);
 });
 
 it('disables registration when no active location exists while retaining existing management', () => {
   const html = render([device('inactive', 'ACTIVE', 'old')], [locations[1]]);
-  expect(html).toMatch(/<button(?=[^>]*disabled="")[^>]*>[\s\S]*?Add Device<\/button>/);
-  expect(html).toMatch(/<button(?=[^>]*disabled="")[^>]*>Replace Tablet<\/button>/);
+  expect(html).toMatch(/<button(?=[^>]*disabled="")[^>]*>[\s\S]*?Add device<\/button>/);
+  expect(html).toMatch(/<button(?=[^>]*disabled="")[^>]*>Replace tablet<\/button>/);
   expect(html).toContain('>Rename</button>');
-  expect(html).toContain('>Revoke Access</button>');
+  expect(html).toContain('>Revoke access</button>');
   expect(html).toContain('href="/app/settings/locations"');
 });
 
 it('exposes a first-device action and no management or search controls for an empty inventory', () => {
   const html = render([]);
-  expect(html).toContain('Add Your First Device');
+  expect(html).toContain('Add your first device');
   expect(html).not.toContain('data-clocker-device=');
   expect(html).not.toContain('type="search"');
   expect(html).not.toContain('nevora-action-menu-item');

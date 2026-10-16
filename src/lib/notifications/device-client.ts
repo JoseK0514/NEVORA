@@ -136,7 +136,7 @@ export class DeviceController {
       if (generation) await this.runtime.suppress(generation).catch(() => {});
       if (this.current(epoch)) {
         this.epoch++; // A bounded UI wait cannot let a late native operation enroll.
-        this.publish({ ...this.snapshot.server, phase: 'error' }, 'Setup could not finish. Turn Off stops server delivery. If reopening does not help, this browser notification setup may need recovery. Ask your manager for help.');
+        this.publish({ ...this.snapshot.server, phase: 'error' }, 'Setup could not finish. Turn off stops server delivery. If reopening does not help, this browser notification setup may need recovery. Ask your manager for help.');
       }
     }
   }

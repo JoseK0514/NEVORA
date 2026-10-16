@@ -7,6 +7,7 @@ import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { CopyIcon } from "@phosphor-icons/react/dist/ssr/Copy";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
 import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
 import { gsap } from "gsap";
@@ -167,7 +168,7 @@ export function EditLocationForm({ location, action }: {
         <section className="edit-location-rules" aria-labelledby="edit-location-rules-title">
           <div className="edit-location-aside-heading"><SlidersHorizontalIcon {...iconProps} /><h2 id="edit-location-rules-title">Staffing &amp; coverage</h2></div>
           <p>Manage minimum staffing, coverage periods, and Lead requirements in Scheduling Rules.</p>
-          <Link href="/app/schedule/settings" className="edit-location-rules-link">Scheduling Rules<ArrowUpRightIcon {...iconProps} size={18} /></Link>
+          <Link href="/app/schedule/settings" className="edit-location-rules-link">Scheduling rules<CaretRightIcon {...iconProps} size={18} /></Link>
         </section>
       </aside>
     </div>

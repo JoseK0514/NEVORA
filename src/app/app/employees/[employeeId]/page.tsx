@@ -4,7 +4,7 @@ import { ConfigurationForm } from "@/components/configuration-form";
 import { OperationalRuleFields } from "@/components/operational-rule-fields";
 import { EmployeeProfileTabs } from "@/components/employee-profile-tabs";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
-import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import "./employee-profile.css";
@@ -142,7 +142,7 @@ export default async function EmployeeProfilePage({
                   href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`}
                 >
                   Manage Clocker PIN
-                  <ArrowUpRightIcon size={18} aria-hidden="true" focusable="false" />
+                  <CaretRightIcon size={18} aria-hidden="true" focusable="false" />
                 </Link>
               </section>
             ) : null}
@@ -172,7 +172,7 @@ export default async function EmployeeProfilePage({
               />
               <button className="button primary" type="submit">
                 <CheckIcon size={18} aria-hidden="true" focusable="false" />
-                Save Scheduling Profile
+                Save scheduling profile
               </button>
             </ConfigurationForm>
             {profileUnavailable ? (

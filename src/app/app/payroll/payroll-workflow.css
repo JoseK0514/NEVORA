@@ -37,19 +37,19 @@
 .payroll-workflow .pw-state strong { display: block; font-size: 15px; color: var(--design-text-primary); line-height: 1.5; font-weight: 550; }
 .payroll-workflow .pw-state p { font-size: 13px; line-height: 1.7; margin: 6px 0 0; }
 .payroll-workflow .pw-state .pw-button { margin-top: 14px; }
-.payroll-workflow .pw-state-error { border-color: #C9E0DE; background: #FFF8F5; }
+.payroll-workflow .pw-state-error { border-color: #F5C2BC; background: #FEF3F2; }
 .payroll-workflow .pw-feedback:empty { display: none; }
 .payroll-workflow .pw-error, .payroll-workflow .pw-notice { padding: 14px 16px; margin: 0 0 18px; border-radius: 12px; font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
 .payroll-workflow .pw-error { background: #FFF3EE; color: #055C5A; border: 1px solid #C9E0DE; }
 .payroll-workflow .pw-notice { color: var(--design-text-secondary); background: var(--design-background); border: 1px solid var(--design-surface); }
-.payroll-workflow .pw-recovery { padding: 20px; border: 1px solid #C9E0DE; border-radius: 16px; margin-bottom: 22px; background: #FFF8F5; font-size: 13px; }
+.payroll-workflow .pw-recovery { padding: 20px; border: 1px solid #C9E0DE; border-radius: 16px; margin-bottom: 22px; background: #F3F9F8; font-size: 13px; }
 .payroll-workflow .pw-recovery p { color: var(--design-text-secondary); line-height: 1.7; }
 .payroll-workflow code { font-family: var(--design-font-mono); font-size: 11px; overflow-wrap: anywhere; }
 .payroll-workflow .pw-recovery code { display: block; margin: 12px 0 18px; }
 .payroll-workflow .pw-review-layout { display: grid; align-items: start; grid-template-columns: minmax(240px, 3fr) minmax(0, 7fr); gap: var(--pw-gap); }
 .payroll-workflow .pw-run-list { display: flex; flex-direction: column; gap: 10px; }
 .payroll-workflow .pw-run-option { text-align: left; display: flex; flex-direction: column; gap: 12px; padding: 16px; width: 100%; min-width: 0; border: 1px solid var(--design-surface); border-radius: 13px; background: #fff; cursor: pointer; color: var(--design-text-primary); font-family: inherit; }
-.payroll-workflow .pw-run-option.selected { border-color: #C9E0DE; background: #FFF8F5; }
+.payroll-workflow .pw-run-option.selected { border-color: #C9E0DE; background: #F3F9F8; }
 .payroll-workflow .pw-run-option strong { display: block; font-size: 13px; line-height: 1.6; font-weight: 550; }
 .payroll-workflow .pw-run-option small { display: block; margin-top: 6px; }
 .payroll-workflow .pw-badge { display: inline-flex; align-items: center; align-self: flex-start; width: fit-content; padding: 5px 9px; border-radius: 8px; font-size: 11px; font-weight: 500; line-height: 1.5; background: #E7F3F2; color: var(--design-accent-ink); flex-shrink: 0; }
@@ -58,7 +58,7 @@
 .payroll-workflow .pw-totals div { padding: 16px; border: 1px solid var(--design-surface); border-radius: 13px; min-width: 0; }
 .payroll-workflow .pw-totals dt { font-size: 11px; line-height: 1.6; color: var(--design-text-secondary); }
 .payroll-workflow .pw-totals dd { font-size: clamp(17px, 1.5vw, 23px); letter-spacing: -.03em; margin: 7px 0 0; font-weight: 500; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.payroll-workflow .pw-totals .pw-net { background: #FFF8F5; border-color: #C9E0DE; }
+.payroll-workflow .pw-totals .pw-net { background: #F3F9F8; border-color: #C9E0DE; }
 .payroll-workflow .pw-source { border-radius: 12px; background: var(--design-background); padding: 16px; overflow-wrap: anywhere; }
 .payroll-workflow .pw-source strong { font-size: 12px; font-weight: 550; }
 .payroll-workflow .pw-source p { font-size: 13px; line-height: 1.65; margin: 5px 0 6px; color: var(--design-text-secondary); }

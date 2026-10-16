@@ -183,8 +183,8 @@ export default async function ExchangePage({
         {operation ? <p className="employee-notice" role="status">{shiftChangeFeedback(operation)}</p> : null}
 
         <nav className="employee-view-tabs exchange-view-tabs" aria-label="Shift marketplace views">
-          <Link className={activeView === "available" ? "selected" : ""} href="/app/exchange?tab=available" aria-current={activeView === "available" ? "page" : undefined}>Available Shifts</Link>
-          <Link className={activeView === "requests" ? "selected" : ""} href="/app/exchange?tab=requests" aria-current={activeView === "requests" ? "page" : undefined}>Your Requests</Link>
+          <Link className={activeView === "available" ? "selected" : ""} href="/app/exchange?tab=available" aria-current={activeView === "available" ? "page" : undefined}>Available shifts</Link>
+          <Link className={activeView === "requests" ? "selected" : ""} href="/app/exchange?tab=requests" aria-current={activeView === "requests" ? "page" : undefined}>Your requests</Link>
         </nav>
 
         <div className="employee-view-surface employee-exchange-feed">
@@ -196,7 +196,7 @@ export default async function ExchangePage({
                   <small>{marketplaceDisplayName(exchange.requestedByName)} · {marketplaceRoleLabel(exchange.requestedByRole)}</small>
                   {!acceptViews.get(exchange.id)?.allowed?<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>:null}
                 </div>
-                <div className="employee-shift-entry-actions">{acceptViews.get(exchange.id)?.allowed?<ShiftChangeForm fields={{kind:'ACCEPT',...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action primary" type="submit"><span>Claim Shift</span></button></ShiftChangeForm>:null}</div>
+                <div className="employee-shift-entry-actions">{acceptViews.get(exchange.id)?.allowed?<ShiftChangeForm fields={{kind:'ACCEPT',...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action primary" type="submit"><span>Claim shift</span></button></ShiftChangeForm>:null}</div>
               </div>
             )) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
           ) : hasTradeRequests ? (
@@ -211,8 +211,8 @@ export default async function ExchangePage({
                     </div>
                     <div className="employee-shift-entry-actions">
                       <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${encodeURIComponent(shift.id)}`}><span>Unable to Work</span></Link>
-                      {offerViews.get(shift.id)?.allowed&&offerViews.get(shift.id)?.fields?<ShiftChangeForm fields={{kind:'OFFER_COVERAGE',...offerViews.get(shift.id)!.fields!}}><button className="employee-action" type="submit"><span>Offer Shift</span></button></ShiftChangeForm>:null}
-                      {offerViews.get(shift.id)?.fields?<Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${encodeURIComponent(shift.id)}`}><span>Trade Shift</span></Link>:null}
+                      {offerViews.get(shift.id)?.allowed&&offerViews.get(shift.id)?.fields?<ShiftChangeForm fields={{kind:'OFFER_COVERAGE',...offerViews.get(shift.id)!.fields!}}><button className="employee-action" type="submit"><span>Offer shift</span></button></ShiftChangeForm>:null}
+                      {offerViews.get(shift.id)?.fields?<Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${encodeURIComponent(shift.id)}`}><span>Trade shift</span></Link>:null}
                     </div>
                   </div>
                 ))}
@@ -234,7 +234,7 @@ export default async function ExchangePage({
               </section> : null}
 
               {visibleActivity.length ? <section className="employee-exchange-section">
-                <h2>Your Requests</h2>
+                <h2>Your requests</h2>
                 {visibleActivity.map((exchange) => (
                   <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                     <div className="employee-shift-entry-copy">

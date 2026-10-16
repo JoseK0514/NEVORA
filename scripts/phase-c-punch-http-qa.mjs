@@ -43,9 +43,9 @@ try{
    await p.getByRole('button',{name:'Save PIN',exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();
   }
   await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) VALUES($1,'workspace-fuel',$2,'REST',15,'QAOWNER','QAOWNER')",['http-rest-'+engine,engine+' rest']);
-  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add Device',exact:true}).click();
+  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add device',exact:true}).click();
   const name=engine+' Punch tablet',dialog=p.getByRole('dialog');await dialog.getByLabel('Device name',{exact:true}).fill(name);
-  await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Create Setup Code',exact:true}).click();await dialog.waitFor({state:'hidden'});
+  await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Create setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
   const code=await p.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
   const tablet=await context(browser),t=await tablet.newPage();t.setDefaultTimeout(15000);t.on('pageerror',e=>runtimeErrors.push(e.message));
   await goto(t,'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect Tablet',exact:true}).click();await verify(t,pinA);
@@ -90,8 +90,8 @@ try{
   assert.equal((await api(t,{operation:'receipt',commandId:lost.commandId,verificationId:(await api(t,{operation:'state'})).body.verificationId})).body.state,'unknown');
   assert.equal((await api(t,{operation:'execute',command:lost})).body.code,'CONTEXT_CHANGED');checked(engine+': next employee cannot inherit prior punches or receipts');
   const forbidden=await tablet.request.post(app.url+'/api/clocker/2/punch',{headers:{Origin:'https://evil.invalid','X-Nevora-Clocker':'1'},data:{operation:'state'}});assert.equal(forbidden.status(),403);checked(engine+': cross-origin request rejected by actual HTTP route');
-  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:`Manage ${name}`,exact:true}).click();await p.getByRole('button',{name:'Revoke Access',exact:true}).click();
-  await p.getByRole('dialog').getByRole('button',{name:'Revoke Device',exact:true}).click();await p.getByRole('dialog').waitFor({state:'hidden'});
+  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:`Manage ${name}`,exact:true}).click();await p.getByRole('button',{name:'Revoke access',exact:true}).click();
+  await p.getByRole('dialog').getByRole('button',{name:'Revoke device',exact:true}).click();await p.getByRole('dialog').waitFor({state:'hidden'});
   assert.equal((await api(t,{operation:'state'})).status,401);checked(engine+': revoked device loses API access immediately');
   assert.deepEqual(runtimeErrors,[]);checked(engine+': no unexpected runtime or hydration errors');
   await tablet.close();await owner.close();await browser.close();

@@ -101,7 +101,7 @@ describe('reviewed Home renderer uses the original release boundary', () => {
   it.each([{reason: 'read_failed'}, {reason: 'unexpected-read-failure'}])('keeps original nonprivate recovery on $reason', ({reason}) => {
     const state: PrivatePanelState<HomeLifetime> = {snapshot: {state: 'unavailable', reason}, refreshing: false, paused: false};
     const view = adapter(state); expect(view.props.status).toBe('unavailable'); expect(view.props.home).toBeNull(); expect(view.props.ownTimeSlot).toBeNull();
-    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Retry Home');
+    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Retry home');
     expect(clockRegion(markup)).toContain('Recorded time unavailable'); expect(clockRegion(markup)).toContain('href="/app/my-time"');
     expect(clockRegion(markup)).toContain('aria-label="Refresh recorded time"'); expect(clockRegion(markup)).not.toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);
   });

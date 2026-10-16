@@ -101,7 +101,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
                 {shift.endTime<shift.startTime || shift.endTime==='24:00'?<span className="my-shift-overnight">Ends {formatDayLabel(addDays(shift.date,1)).weekday}, {formatDayLabel(addDays(shift.date,1)).day}</span>:null}
                 <span className="my-shift-location"><MapPinIcon size={16} aria-hidden="true" />{locations.find(location=>location.id===shift.locationId)?.shortName?.trim() || 'Location unavailable'}</span>
                 {shift.positionName?<span className="my-shift-position">{shift.positionName}</span>:null}
-                {shift.isDesignatedLead || shift.isCalloutApproved?<div className="employee-schedule-tags">{shift.isDesignatedLead?<small className="employee-designated-lead">Designated Lead</small>:null}{shift.isCalloutApproved?<small className="employee-approved-callout">Call-out approved</small>:null}</div>:null}
+                {shift.isDesignatedLead || shift.isCalloutApproved?<div className="employee-schedule-tags">{shift.isDesignatedLead?<small className="employee-designated-lead">Designated lead</small>:null}{shift.isCalloutApproved?<small className="employee-approved-callout">Call-out approved</small>:null}</div>:null}
               </div>
               <ShiftOptions shift={shift} today={today} observedAt={observedAt} timeZone={timeZone} />
             </div>) : <p className="employee-schedule-off">{emptyScheduleLabel(state)}</p>}

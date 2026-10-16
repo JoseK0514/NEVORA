@@ -14,7 +14,7 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit}:{
  useEffect(()=>{if(message)feedback.current?.focus();},[message,done]);
  return <section className="auth-card employee-login-card recovery-card">
   <div className="employee-login-heading">
-   <h1>Forgot Access</h1>
+   <h1>Forgot access</h1>
   </div>
   {done?<div className="recovery-receipt" ref={feedback} role="status" tabIndex={-1}>
    <h2>Request received</h2><p>{message}</p>

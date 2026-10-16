@@ -20,7 +20,7 @@ it('renders a valid empty catalog with creation available', async () => {
   expect(mocks.roles).toHaveBeenCalledWith(['OWNER']);
   expect(mocks.list).toHaveBeenCalledWith({ employeeId: 'owner', sessionTokenHash: 'a'.repeat(64) });
   expect(html).toContain('aria-label="Configured break types"');
-  expect(html).toContain('Add Break Type');
+  expect(html).toContain('Add break type');
   expect(html).not.toContain('role="alert"');
 });
 
@@ -38,7 +38,7 @@ it('does not represent a failed catalog read as an empty editable catalog', asyn
   const html = renderToStaticMarkup(await BreakTypesPage());
   expect(html).toContain('role="alert"');
   expect(html).not.toContain('aria-label="Configured break types"');
-  expect(html).not.toContain('Add Break Type');
+  expect(html).not.toContain('Add break type');
   expect(html).toContain('href="/app/settings/breaks"');
 });
 

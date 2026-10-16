@@ -19,7 +19,7 @@ import { listPendingCallouts, listTeamCalloutHistory, type CalloutRecord } from 
 import {  formatDayLabel, formatTime } from "@/lib/date-utils";
 import {ManagerIssueFocus} from './manager-issue-focus';
 
-const tabs = [{ id: "pending", label: "Pending" }, { id: "coverage", label: "Open Coverage" }, { id: "activity", label: "Team Activity" }] as const;
+const tabs = [{ id: "pending", label: "Pending" }, { id: "coverage", label: "Open coverage" }, { id: "activity", label: "Team activity" }] as const;
 const reasons: Record<string, string> = { ILLNESS: "Illness / sick", FAMILY_EMERGENCY: "Family emergency", TRANSPORTATION: "Transportation issue", SCHOOL: "School conflict", PERSONAL_EMERGENCY: "Personal emergency", OTHER: "Other" };
 const errors: Record<string, string> = {
   EXCHANGE_CHANGED: "The schedule changed before approval. Review the request again.",

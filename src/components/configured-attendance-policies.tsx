@@ -120,7 +120,7 @@ export function ConfiguredAttendancePolicies() {
                   <li key={d.kind}>
                     <strong>{names[d.kind]}</strong>:{" "}
                     {d.reason === "policy_not_selected"
-                      ? "Not Configured"
+                      ? "Not configured"
                       : d.state === "unverifiable"
                         ? "Unverifiable — complete source evidence is unavailable"
                         : `${d.observations.length} observations`}

@@ -24,7 +24,7 @@ function Assignment({shift,zone}:{shift:PublishedAssignment;zone:string}){
  return <div className="employee-home-assignment">
   <p className="employee-home-shift-time"><time dateTime={shift.startAt}>{stamp(shift.startAt,zone)}</time><span aria-hidden="true"> – </span><time dateTime={shift.endAt}>{stamp(shift.endAt,zone)}</time></p>
   <p className="employee-home-location">{shift.locationLabel}{shift.positionLabel?` · ${shift.positionLabel}`:''}</p>
-  {shift.designatedLead?<p>Designated Lead</p>:null}
+  {shift.designatedLead?<p>Designated lead</p>:null}
   <Link className="employee-home-review" href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}>View schedule <span aria-hidden="true">→</span></Link>
  </div>;
 }
@@ -57,7 +57,7 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
      <Link href={destinations[key]}>Open {names[key].toLowerCase()}</Link>
     </li>)}</ul>
    </section>:null}
-   <footer className="employee-home-refresh">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button className="button secondary" type="button" onClick={onRetry} disabled={state.paused||state.refreshing}>{state.refreshing?'Checking…':'Retry Home'}</button>}{snapshot?<small>Checked <time dateTime={snapshot.observedAt}>{stamp(snapshot.observedAt,snapshot.timeZone)}</time></small>:null}</footer>
+   <footer className="employee-home-refresh">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button className="button secondary" type="button" onClick={onRetry} disabled={state.paused||state.refreshing}>{state.refreshing?'Checking…':'Retry home'}</button>}{snapshot?<small>Checked <time dateTime={snapshot.observedAt}>{stamp(snapshot.observedAt,snapshot.timeZone)}</time></small>:null}</footer>
   </div>
   <aside className="employee-home-surface employee-home-recorded" aria-label="Own recorded time">
    {snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:<EmployeeTimeView compact state={{time:state.snapshot?.state==='unavailable'?{state:'unavailable',reason:denied?'access_denied':'read_failed'}:null,refreshing:loading,paused:state.paused}} onRefresh={onRetry}/>}

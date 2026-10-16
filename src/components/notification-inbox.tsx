@@ -12,7 +12,7 @@ import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
 import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
-import {ArrowUpRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {MagnifyingGlassIcon} from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import {ListChecksIcon} from '@phosphor-icons/react/dist/ssr/ListChecks';
 import {WalletIcon} from '@phosphor-icons/react/dist/ssr/Wallet';
@@ -77,7 +77,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
        <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} aria-hidden="true"/>:null}{reviewLabels[review]}</span><span className={styles.action} data-state={action}>{actionLabels[action]}</span></div>
        <span className={styles.destination}>{presentation.destination}</span>
       </div>
-      <span className={styles.open}>Open record<ArrowUpRightIcon size={18} aria-hidden="true"/></span>
+      <span className={styles.open}>Open record<CaretRightIcon size={18} aria-hidden="true"/></span>
      </Link>{onMarkRead&&review==='unread'?<button type="button" className={styles.markRead} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={`Mark ${item.label} read`}>{pendingRead===item.id?'Marking read…':'Mark read'}</button>:null}</li>;
     })}</ul>
    </section>)}</div>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="regular" aria-hidden="true"/></span>
@@ -85,7 +85,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
     <p>{search?'Try another search, or clear it to see your updates.':ready.coverage==='partial'?'This view is incomplete. Retry to check what is available.':'Check Requests and Schedule for their current status.'}</p>
     {search?<button type="button" className={styles.secondary} onClick={()=>setSearch('')}>Clear search</button>:filter!=='all'?<button type="button" className={styles.secondary} onClick={()=>setFilter('all')}>View all notifications</button>:null}
    </div>}
-   <footer className={styles.footer}><p>This inbox shows supported source updates. Reading an update and completing its action are separate.</p><div><Link href={onMarkRead?"/app?view=requests":"/app/requests"}>Requests<ArrowUpRightIcon size={16} aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<ArrowUpRightIcon size={16} aria-hidden="true"/></Link></div></footer>
+   <footer className={styles.footer}><p>This inbox shows supported source updates. Reading an update and completing its action are separate.</p><div><Link href={onMarkRead?"/app?view=requests":"/app/requests"}>Requests<CaretRightIcon size={16} aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<CaretRightIcon size={16} aria-hidden="true"/></Link></div></footer>
   </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} aria-hidden="true"/></span><h3>{state.paused?'Updates paused':denied?'Sign in again':unavailable?'Notifications unavailable':'Loading notifications…'}</h3><p>{state.paused?'Return to this window while online to check current information.':denied?'Your current employee session is required.':unavailable?'We could not confirm your current information. Try again.':'Checking your current access.'}</p></div>}
  </section>;
 }

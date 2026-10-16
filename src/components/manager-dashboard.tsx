@@ -10,7 +10,8 @@ import { StatusPill } from "@/components/status-pill";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
 import { formatDayLabel, formatTime } from "@/lib/date-utils";
 import type { UserRole } from "@/lib/domain";
-import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react/ssr';
+import { CaretLeftIcon, CaretRightIcon, CheckCircleIcon } from '@phosphor-icons/react/ssr';
+import { EmptyState } from './empty-state';
 import './manager-home.css';
 import './manager-home-mobile.css';
 import './manager-home-gusto.css';
@@ -221,13 +222,7 @@ function DashboardEmptyTray({
   title: string;
   detail: string;
 }) {
-  return (
-    <div className="manager-empty-tray">
-      <span aria-hidden="true">✓</span>
-      <strong>{title}</strong>
-      <small>{detail}</small>
-    </div>
-  );
+  return <EmptyState className="manager-empty-tray" icon={<CheckCircleIcon size={22} />} title={title}>{detail}</EmptyState>;
 }
 
 function TeamTab(props: Props) {
@@ -246,26 +241,26 @@ function TeamTab(props: Props) {
       <header className="manager-subtab-header">
         <div>
           <span>Team</span>
-          <h2>Team Overview</h2>
+          <h2>Team overview</h2>
           <p>Availability and scheduled hours for this week.</p>
         </div>
         <Link className="manager-subtab-link" href={`/app/availability?week=${props.weekStart}`}>
-          View Availability
+          View availability
         </Link>
       </header>
 
       <div className="manager-team-summary-line" aria-label="Team summary">
         <div>
           <strong>{props.activeEmployees}</strong>
-          <span>Active Employees</span>
+          <span>Active employees</span>
         </div>
         <div>
           <strong>{availabilityPercentage}%</strong>
-          <span>Availability Submitted</span>
+          <span>Availability submitted</span>
         </div>
         <div>
           <strong>{targetMissing}</strong>
-          <span>Targets Missing</span>
+          <span>Targets missing</span>
         </div>
         <div>
           <strong>{underOrOver.length}</strong>
@@ -275,8 +270,8 @@ function TeamTab(props: Props) {
 
       <section className="manager-subtab-section">
         <header className="manager-subtab-section-heading">
-          <h3>Employee Hours</h3>
-          <Link href="/app/schedule/settings">Manage Targets</Link>
+          <h3>Employee hours</h3>
+          <Link href="/app/schedule/settings">Manage targets</Link>
         </header>
 
         {props.hours.length ? (
@@ -332,7 +327,7 @@ function RequestsTab(props: Props) {
       <header className="manager-subtab-header">
         <div>
           <span>Requests</span>
-          <h2>Pending Requests</h2>
+          <h2>Pending requests</h2>
           <p>Only items waiting for a manager decision appear here.</p>
         </div>
         <div className="manager-request-counts" aria-label="Pending request counts">
@@ -377,7 +372,7 @@ function ActivityTab(props: Props) {
       <header className="manager-subtab-header">
         <div>
           <span>Activity</span>
-          <h2>Recent Activity</h2>
+          <h2>Recent activity</h2>
           <p>Schedule publications and active operational events.</p>
         </div>
       </header>
@@ -518,7 +513,7 @@ export function ManagerDashboard(props: Props) {
         <div className="manager-attendance-stack">
           <ManagerAttendanceReview />
           <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
-          <Link className="button secondary" href="/app/clocker-recovery">Clocker Recovery</Link>
+          <Link className="button secondary" href="/app/clocker-recovery">Clocker recovery</Link>
         </div>
       ) : props.view === "schedule" ? (
         <ScheduleTab {...props} />

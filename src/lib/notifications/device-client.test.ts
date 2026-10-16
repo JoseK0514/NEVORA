@@ -40,7 +40,7 @@ it('turn off reports pending server cleanup, suppresses first and never resets r
  const order:string[]=[];const {controller}=fixture({permission:()=> 'granted',api:async op=>op==='unsubscribe'?{status:'pending'}:{...status,enabled:true,ownershipGeneration:'old'},suppress:async()=>{order.push('suppress');},unsubscribe:async()=>{order.push('unsubscribe');}});
  await controller.start();await controller.turnOff();expect(order).toEqual(['suppress','unsubscribe']);expect(controller.snapshot.state).toBe('error');expect(controller.snapshot.message).toContain('cleanup');
 });
-it('Not Now persistence failure is explicit and does not pretend durable dismissal',async()=>{
+it('Not now persistence failure is explicit and does not pretend durable dismissal',async()=>{
  const {controller}=fixture({saveDismissal:()=>false});await controller.start();controller.dismiss();expect(controller.snapshot.message).toContain('remember');
 });
 it('test endpoint is only called for enabled authorized device and queued copy is honest',async()=>{
@@ -59,7 +59,7 @@ it('permission revoked between preload and click never prompts again',async()=>{
  let permission:NotificationPermission='default';const request=vi.fn(async()=> 'granted' as const);
  const {controller}=fixture({permission:()=>permission,requestPermission:request});await controller.start();permission='denied';await controller.enable();expect(request).not.toHaveBeenCalled();expect(controller.snapshot.state).toBe('denied');
 });
-it('a dismissed controller can reopen manually without deleting persistent Not Now',async()=>{
+it('a dismissed controller can reopen manually without deleting persistent Not now',async()=>{
  const save=vi.fn(()=>true);const {controller}=fixture({saveDismissal:save});await controller.start();controller.dismiss();expect(controller.snapshot.state).toBe('dismissed');controller.reopen();expect(controller.snapshot.state).toBe('ready');expect(save).toHaveBeenCalledOnce();
 });
 it('signout broadcasts suppression to both prepared active and waiting workers even without local storage',async()=>{
@@ -146,13 +146,13 @@ it('old logout subscription read cannot unsubscribe a replacement subscription a
   expect(replacement.unsubscribe).not.toHaveBeenCalled();
  } finally {stop();vi.unstubAllGlobals();}
 });
-it('delayed Turn Off suppression cannot enter unsubscribe after its controller is disposed',async()=>{
+it('delayed Turn off suppression cannot enter unsubscribe after its controller is disposed',async()=>{
  const suppression=deferred<void>();const unsubscribe=vi.fn(async()=>{});
  const {controller}=fixture({permission:()=> 'granted',api:async op=>op==='unsubscribe'?{status:'complete'}:{...status,enabled:true,ownershipGeneration:'old-generation'},suppress:()=>suppression.promise,unsubscribe});
  await controller.start();const pending=controller.turnOff();controller.dispose();suppression.resolve();await pending;
  expect(unsubscribe).not.toHaveBeenCalled();
 });
-it.each([true,false])('delayed Turn Off preserves a newly owned reused subscription with storage=%s',async storageAvailable=>{
+it.each([true,false])('delayed Turn off preserves a newly owned reused subscription with storage=%s',async storageAvailable=>{
  const b=await cleanupBrowserFixture(storageAvailable);const suppression=deferred<void>();
  const {controller}=fixture({...b.runtime,permission:()=> 'granted',api:async op=>op==='unsubscribe'?{status:'complete'}:{...status,enabled:true,ownershipGeneration:'old-generation'},suppress:()=>suppression.promise});
  try {
@@ -163,7 +163,7 @@ it.each([true,false])('delayed Turn Off preserves a newly owned reused subscript
   expect(b.posted).not.toContainEqual({version:1,type:'SUPPRESS_OWNER',generation:'new-generation'});
  } finally {controller.dispose();vi.unstubAllGlobals();}
 });
-it.each(['fuel-portal-owner-generation','fuel-portal-account-fence'])('Turn Off rechecks cross-tab %s after reading the subscription and retains healthy unsubscribe',async key=>{
+it.each(['fuel-portal-owner-generation','fuel-portal-account-fence'])('Turn off rechecks cross-tab %s after reading the subscription and retains healthy unsubscribe',async key=>{
  const b=await cleanupBrowserFixture();
  const {controller}=fixture({...b.runtime,permission:()=> 'granted',api:async op=>op==='unsubscribe'?{status:'complete'}:{...status,enabled:true,ownershipGeneration:'old-generation'}});
  try {
@@ -278,10 +278,10 @@ it('unknown native completion cannot restore enabled ownership from server statu
  finally{controller.dispose();vi.unstubAllGlobals();}
 });
 
-it('failed enrollment guidance does not promise Turn Off resolves an unknown native operation', async () => {
+it('failed enrollment guidance does not promise Turn off resolves an unknown native operation', async () => {
  const {controller}=fixture({withEnrollment:async()=>{throw Error('Unresolved operation');}});
  await controller.start();await controller.enable();
- expect(controller.snapshot.message).toContain('Turn Off stops server delivery');
+ expect(controller.snapshot.message).toContain('Turn off stops server delivery');
  expect(controller.snapshot.message).toContain('browser notification setup may need recovery');
 });
 
@@ -306,7 +306,7 @@ it.each(['permission', 'subscription'])('passive reconciliation suppresses a ret
   expect(suppress).toHaveBeenCalledWith('old');
   expect(requestPermission).not.toHaveBeenCalled();
 });
-it('passive checks coalesce, preserve Not Now, and cannot revive a disposed controller', async () => {
+it('passive checks coalesce, preserve Not now, and cannot revive a disposed controller', async () => {
   const next = deferred<object>();
   let calls = 0;
   const { controller } = fixture({ api: async () => ++calls === 1 ? status : next.promise });
@@ -343,7 +343,7 @@ it('passive checks do not replace an active enable epoch', async () => {
   native.resolve({}); await enabling;
   expect(controller.snapshot.state).toBe('enabled');
 });
-it('passive checks skip native Turn Off even after its UI wait expires', async () => {
+it('passive checks skip native Turn off even after its UI wait expires', async () => {
   vi.useFakeTimers();
   try {
     const native = deferred<void>();

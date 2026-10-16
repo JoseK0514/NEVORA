@@ -90,7 +90,7 @@ export default async function WorkspacePage() {
               <div className="workspace-form-actions">
                 <Link className="workspace-button workspace-button-secondary" href="/app/settings">Cancel</Link>
                 <button type="submit" className="workspace-button workspace-button-primary">
-                  <CheckIcon size={18} aria-hidden="true" />Save Workspace
+                  <CheckIcon size={18} aria-hidden="true" />Save workspace
                 </button>
               </div>
             </div>

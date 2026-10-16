@@ -132,10 +132,10 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     (filter === 'All' || type.active === (filter === 'Active')) &&
     (!search || type.name.toLocaleLowerCase().includes(search) || type.category.toLowerCase().includes(search)));
   const editing = selection?.operation === 'CREATE' || selection?.operation === 'EDIT';
-  const title = selection?.operation === 'CREATE' ? 'Add Break Type' : selection?.operation === 'EDIT' ? 'Edit Break Type'
+  const title = selection?.operation === 'CREATE' ? 'Add break type' : selection?.operation === 'EDIT' ? 'Edit break type'
     : selection?.operation === 'ARCHIVE' ? 'Archive Break Type?' : 'Reactivate Break Type?';
-  const saveLabel = selection?.operation === 'CREATE' ? 'Create Break Type' : selection?.operation === 'EDIT' ? 'Save Changes'
-    : selection?.operation === 'ARCHIVE' ? 'Archive Break Type' : 'Reactivate Break Type';
+  const saveLabel = selection?.operation === 'CREATE' ? 'Create break type' : selection?.operation === 'EDIT' ? 'Save changes'
+    : selection?.operation === 'ARCHIVE' ? 'Archive break type' : 'Reactivate break type';
 
   return <div ref={container} className={styles.manager}>
     <div className={styles.toolbar} data-break-entrance>
@@ -145,7 +145,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
           <ArrowClockwiseIcon size={18} aria-hidden="true" />Reload break types
         </button>
         <button className="button primary" type="button" onClick={event => open({ operation: 'CREATE' }, event)}>
-          <PlusIcon size={18} aria-hidden="true" />Add Break Type
+          <PlusIcon size={18} aria-hidden="true" />Add break type
         </button>
       </div>
     </div>

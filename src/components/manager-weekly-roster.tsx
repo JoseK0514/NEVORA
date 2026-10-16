@@ -9,6 +9,7 @@ import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { MedalIcon } from "@phosphor-icons/react/dist/ssr/Medal";
 import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { EmptyState } from "./empty-state";
 import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
 import { assignedHours, filterRoster, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
@@ -112,6 +113,9 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
         <summary><span>Show {unscheduled.length} unscheduled</span><CaretDownIcon size={16} aria-hidden="true" /></summary>
         {unscheduled.map(renderRow)}
       </details> : null}
-    </div> : <div className="mws-empty" role="status"><UsersIcon size={28} weight="regular" aria-hidden="true" /><h3>{employees.length ? "No team members match" : "Your team schedule starts here"}</h3><p>{employees.length ? "Try another name or clear your search." : "Add team members to start assigning shifts."}</p>{employees.length ? <button type="button" onClick={() => setQuery("")}>Clear search</button> : <Link href="/app/employees">Manage employees</Link>}</div>}
+    </div> : <EmptyState className="mws-empty" status icon={<UsersIcon size={22} />} title={employees.length ? "No team members match" : "Your team schedule starts here"}
+      action={employees.length ? <button type="button" className="button secondary" onClick={() => setQuery("")}>Clear search</button> : <Link className="button secondary" href="/app/employees">Manage employees</Link>}>
+      {employees.length ? "Try another name or clear your search." : "Add team members to start assigning shifts."}
+    </EmptyState>}
   </section>;
 }

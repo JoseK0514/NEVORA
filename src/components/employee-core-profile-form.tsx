@@ -113,7 +113,7 @@ export function EmployeeCoreProfileForm({
 
       <div className="form-footer">
         <button className="button primary" type="submit">
-          <CheckIcon size={18} aria-hidden="true" focusable="false" /> Save Employee Details
+          <CheckIcon size={18} aria-hidden="true" focusable="false" /> Save employee details
         </button>
       </div>
     </ConfigurationForm>

@@ -5,7 +5,7 @@ import { useRef, useState, useSyncExternalStore } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
-import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { BriefcaseIcon } from "@phosphor-icons/react/dist/ssr/Briefcase";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
@@ -151,7 +151,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
               <p className="positions-result-count" role="status" aria-live="polite">Showing {shown} of {positions.length} {positions.length === 1 ? "position" : "positions"}</p>
             </> : <div className="positions-empty"><span className="positions-empty-icon"><BriefcaseIcon size={32} weight="duotone" aria-hidden="true" /></span><h3>A place for every qualification</h3><p>No positions configured. Positionless shifts remain available.</p><button type="button" className="positions-button positions-button-secondary" onClick={revealAdd} disabled={!ready}><PlusIcon size={18} aria-hidden="true" />Add your first position</button></div>}
           </section>
-          <aside className="positions-guidance" aria-label="Position guidance"><InfoIcon size={22} weight="duotone" aria-hidden="true" /><div><h2>Retire a position, keep its history</h2><p>Inactive positions cannot be newly assigned. Existing coverage requirements remain visible in Scheduling Rules and need attention.</p><Link href="/app/schedule/settings">Review Scheduling Rules<ArrowUpRightIcon size={16} aria-hidden="true" /></Link></div></aside>
+          <aside className="positions-guidance" aria-label="Position guidance"><InfoIcon size={22} weight="duotone" aria-hidden="true" /><div><h2>Retire a position, keep its history</h2><p>Inactive positions cannot be newly assigned. Existing coverage requirements remain visible in Scheduling Rules and need attention.</p><Link href="/app/schedule/settings">Review scheduling rules<CaretRightIcon size={16} aria-hidden="true" /></Link></div></aside>
         </>
       )}
     </div>

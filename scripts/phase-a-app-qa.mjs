@@ -105,12 +105,12 @@ async function submitAndSettle(page, button, { refresh = false } = {}) {
 }
 async function offer(page, shiftId) {
   await goto(page, '/app/exchange?tab=requests');
-  await submitAndSettle(page, offerForm(page, shiftId).getByRole('button', { name: 'Offer Shift', exact: true }), { refresh: true });
+  await submitAndSettle(page, offerForm(page, shiftId).getByRole('button', { name: 'Offer shift', exact: true }), { refresh: true });
   return waitFor(async () => (await q("SELECT * FROM shift_exchanges WHERE source_shift_id=$1 AND kind='COVERAGE' AND status='OPEN' ORDER BY created_at DESC LIMIT 1", [shiftId]))[0], 'Actual offer did not commit');
 }
 async function claim(page, requestId) {
   await goto(page, '/app/exchange?tab=available');
-  await submitAndSettle(page, page.locator(`[id="request-${requestId}"]`).getByRole('button', { name: 'Claim Shift', exact: true }), { refresh: true });
+  await submitAndSettle(page, page.locator(`[id="request-${requestId}"]`).getByRole('button', { name: 'Claim shift', exact: true }), { refresh: true });
   return waitFor(async () => { const row = (await q('SELECT * FROM shift_exchanges WHERE id=$1', [requestId]))[0]; return row && ['APPROVED', 'MANAGER_PENDING'].includes(row.status) ? row : null; }, 'Actual claim did not commit');
 }
 async function gate(id, task, mutation) {
@@ -222,7 +222,7 @@ try {
       }
       await route.fallback();
     });
-    await offerForm(page, data.sourceId).getByRole('button', { name: 'Offer Shift', exact: true }).click();
+    await offerForm(page, data.sourceId).getByRole('button', { name: 'Offer shift', exact: true }).click();
     await page.getByRole('button', { name: 'Check & retry same request', exact: true }).waitFor();
     const before = await q('SELECT operation_id,command_fingerprint,request_id,result FROM shift_change_operations WHERE actor_employee_id=$1', [data.actors[0]]);
     assert.equal(before.length, 1); assert.equal(before[0].result.status, 'pending');

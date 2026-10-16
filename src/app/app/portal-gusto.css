@@ -204,3 +204,25 @@ html body .app-shell.nevora-portal .page-frame .status-pill { font-weight: 500; 
   html body .app-shell.nevora-portal .page-frame :is(.button,.pw-button,.ncc-button) { transition: none; }
   html body .app-shell.nevora-portal .page-frame :is(.button,.pw-button,.ncc-button):active { transform: none; }
 }
+
+/* One empty-state pattern (Phase 2). EmptyState renders .nevora-empty; the older
+ * full-panel variants share the same look until each moves to the component. */
+html body .app-shell.nevora-portal :is(.nevora-empty, .mws-empty, .updates-empty, .rules-empty, .positions-empty, .nto-empty-state, .employee-view-empty, .swap-empty, .st-empty-state, .locations-empty, .coverage-empty, .av-empty, .dashboard-empty-state, .attendance-review-empty, .manager-corrections-empty) {
+  display: grid; justify-items: center; align-content: center; gap: 6px; min-height: 0; max-width: none;
+  padding: 40px 24px; text-align: center; color: var(--g-muted); border: 1px dashed var(--g-border); border-radius: 12px; background: var(--g-canvas);
+}
+html body .app-shell.nevora-portal .nevora-empty-media,
+html body .app-shell.nevora-portal :is(.mws-empty, .updates-empty, .rules-empty, .positions-empty, .swap-empty, .locations-empty, .coverage-empty, .av-empty) > svg:first-child,
+html body .app-shell.nevora-portal :is(.positions-empty-icon, .nto-empty-icon, .employee-empty-icon) {
+  display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 6px; border-radius: 12px;
+  background: var(--g-accent-wash); color: var(--g-accent); padding: 11px; box-sizing: border-box;
+}
+html body .app-shell.nevora-portal .nevora-empty-title,
+html body .app-shell.nevora-portal :is(.mws-empty, .updates-empty, .rules-empty, .positions-empty, .nto-empty-state, .employee-view-empty, .swap-empty, .st-empty-state, .locations-empty, .coverage-empty, .av-empty, .dashboard-empty-state, .attendance-review-empty, .manager-corrections-empty) :is(h2, h3, strong):first-of-type {
+  margin: 0; font: 600 16px/1.4 var(--design-font-body); color: var(--g-ink);
+}
+html body .app-shell.nevora-portal .nevora-empty-description,
+html body .app-shell.nevora-portal :is(.mws-empty, .updates-empty, .rules-empty, .positions-empty, .nto-empty-state, .employee-view-empty, .swap-empty, .st-empty-state, .locations-empty, .coverage-empty, .av-empty, .dashboard-empty-state, .attendance-review-empty, .manager-corrections-empty) p {
+  max-width: 44ch; margin: 0; font: var(--g-t-small); color: var(--g-muted); text-wrap: pretty;
+}
+html body .app-shell.nevora-portal .nevora-empty-action { margin-top: 10px; }

@@ -18,7 +18,7 @@ import styles from './clocker-device-manager.module.css';
 
 type Operation = 'REGISTER' | 'RENAME' | 'ROTATE' | 'REVOKE';
 type Selection = { operation: Operation; device?: ClockerDeviceView };
-const statuses = { UNREGISTERED: 'Needs Setup', PENDING: 'Awaiting Setup', EXPIRED: 'Setup Expired', ACTIVE: 'Registered', REVOKED: 'Revoked' };
+const statuses = { UNREGISTERED: 'Needs setup', PENDING: 'Awaiting setup', EXPIRED: 'Setup expired', ACTIVE: 'Registered', REVOKED: 'Revoked' };
 
 export function ClockerDeviceManager({ initialDevices, locations, timeZone, action }: {
   initialDevices: ClockerDeviceView[]; locations: ClockerLocationView[]; timeZone: string;
@@ -116,15 +116,15 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     catch { codeField.current?.focus(); codeField.current?.select(); setCopyMessage('Select and copy the setup code.'); }
   }
   const locationForSetup = locations.find(location => location.id === setup?.device.locationId);
-  const title = selection?.operation === 'REGISTER' ? 'Add Device' : selection?.operation === 'RENAME' ? 'Rename Device'
+  const title = selection?.operation === 'REGISTER' ? 'Add device' : selection?.operation === 'RENAME' ? 'Rename device'
     : selection?.operation === 'REVOKE' ? 'Revoke Device Access?' : 'Create a New Setup Code?';
 
   return <div className={styles.manager}>
     <div className={styles.toolbar}>
       <p>One device per shared tablet, assigned to a location.</p>
       <div className={styles.buttons}>
-        <button className="button secondary" type="button" onClick={() => window.location.reload()}><ArrowClockwise size={18} aria-hidden="true" />Refresh Devices</button>
-        <button className="button primary" type="button" disabled={!activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} aria-hidden="true" />Add Device</button>
+        <button className="button secondary" type="button" onClick={() => window.location.reload()}><ArrowClockwise size={18} aria-hidden="true" />Refresh devices</button>
+        <button className="button primary" type="button" disabled={!activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} aria-hidden="true" />Add device</button>
       </div>
     </div>
     {!activeLocations.length ? <p className={styles.locationNotice}>Add or reactivate a location in <Link href="/app/settings/locations">Locations</Link> before registering a tablet.</p> : null}
@@ -136,11 +136,11 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     {notice ? <p className={styles.notice} role="status">{notice}</p> : null}
     {setup && locationForSetup ? <section className={styles.setupCode} aria-labelledby="clocker-code-title">
       <div className={styles.codeHeader}><div><p className={styles.eyebrow}>Finish on your shared tablet</p><h2 id="clocker-code-title">Connect {setup.device.name}</h2></div>
-        <button className="button ghost" type="button" onClick={() => setSetup(null)}>Hide Code</button></div>
+        <button className="button ghost" type="button" onClick={() => setSetup(null)}>Hide code</button></div>
       <p>Open this location’s Clocker on the tablet, then paste the one-use setup code.</p>
       <Link className="button secondary" href={`/clocker/${locationForSetup.clockerKey}`} target="_blank" rel="noopener noreferrer">Open {locationForSetup.name} Clocker<ArrowSquareOut size={18} aria-hidden="true" /></Link>
       <label className={styles.field}>Setup code<textarea ref={codeField} value={setup.code} readOnly rows={2} spellCheck={false} autoComplete="off" /></label>
-      <div className={styles.codeFooter}><button className="button primary" type="button" onClick={copyCode}><Copy size={18} aria-hidden="true" />Copy Setup Code</button><span>Expires {date(setup.expiresAt)}</span></div>
+      <div className={styles.codeFooter}><button className="button primary" type="button" onClick={copyCode}><Copy size={18} aria-hidden="true" />Copy setup code</button><span>Expires {date(setup.expiresAt)}</span></div>
       {copyMessage ? <p role="status">{copyMessage}</p> : null}
       <p className={styles.hint}>Keep this Owner session signed in until the tablet connects. Then choose Refresh Devices to see its status.</p>
     </section> : null}
@@ -156,7 +156,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       </div> : null}
       {visibleDevices.length ? visibleDevices.map(device => {
         const location = locations.find(item => item.id === device.locationId);
-        const label = location?.active === false && device.state !== 'REVOKED' ? 'Location Inactive' : statuses[device.state];
+        const label = location?.active === false && device.state !== 'REVOKED' ? 'Location inactive' : statuses[device.state];
         return <article className={styles.deviceRow} data-clocker-device={device.id} key={device.id}>
           <div className={styles.deviceIdentity}><span className={`${styles.deviceIcon} ${device.state === 'REVOKED' ? styles.revokedIcon : ''}`}><DeviceTablet size={25} aria-hidden="true" /></span>
           <div className={styles.deviceCopy}><h3>{device.name}</h3><p>{location?.name ?? 'Location unavailable'}</p>
@@ -167,13 +167,13 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
             <ActionMenu id={`clocker-manage-${device.id}`} label="Manage" ariaLabel={`Manage ${device.name}`}>
               <button className="nevora-action-menu-item" type="button" onClick={event => open({ operation: 'RENAME', device }, event)}>Rename</button>
               <button className="nevora-action-menu-item" type="button" disabled={!location?.active} onClick={event => open({ operation: 'ROTATE', device }, event)}>
-                {device.state === 'ACTIVE' ? 'Replace Tablet' : device.state === 'REVOKED' ? 'Reconnect Tablet' : 'New Setup Code'}
+                {device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'}
               </button>
-              {device.state !== 'REVOKED' ? <button className={`nevora-action-menu-item ${styles.dangerText}`} type="button" onClick={event => open({ operation: 'REVOKE', device }, event)}>Revoke Access</button> : null}
+              {device.state !== 'REVOKED' ? <button className={`nevora-action-menu-item ${styles.dangerText}`} type="button" onClick={event => open({ operation: 'REVOKE', device }, event)}>Revoke access</button> : null}
             </ActionMenu></div>
         </article>;
       }) : <div className={styles.empty}><DeviceTablet size={40} weight="duotone" aria-hidden="true" /><h3>{devices.length ? 'No matching devices' : 'Your first tablet starts here'}</h3><p>{devices.length ? 'Try another device name, location, or status.' : 'Add a device, choose its location, and finish setup on the shared tablet.'}</p>
-        {devices.length ? <button className="button secondary" type="button" onClick={() => { setQuery(''); setFilter('ALL'); searchField.current?.focus({ preventScroll: true }); }}>Clear Filters</button> : <button className="button primary" type="button" disabled={!activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} aria-hidden="true" />Add Your First Device</button>}
+        {devices.length ? <button className="button secondary" type="button" onClick={() => { setQuery(''); setFilter('ALL'); searchField.current?.focus({ preventScroll: true }); }}>Clear filters</button> : <button className="button primary" type="button" disabled={!activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} aria-hidden="true" />Add your first device</button>}
       </div>}
       <p className={styles.listFootnote}>Device status reflects registration, not a live connection. Refresh to see the latest setup state.</p>
     </section>
@@ -199,14 +199,14 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
           {selection.operation === 'REGISTER' ? <SelectField name="locationId" label="Location" required defaultValue="" options={[{ value: '', label: 'Choose a location', disabled: true }, ...activeLocations.map(location => ({ value: location.id, label: location.name }))]} /> : null}
           <div className={styles.dialogActions}>
             <button className={`button ${selection.operation === 'REVOKE' ? styles.dangerButton : 'primary'}`} type="submit">
-              {pending ? 'Saving…' : selection.operation === 'REGISTER' ? 'Create Setup Code' : selection.operation === 'RENAME' ? 'Save Name' : selection.operation === 'REVOKE' ? 'Revoke Device' : 'Create New Code'}
+              {pending ? 'Saving…' : selection.operation === 'REGISTER' ? 'Create setup code' : selection.operation === 'RENAME' ? 'Save name' : selection.operation === 'REVOKE' ? 'Revoke device' : 'Create new code'}
             </button>
           </div>
         </fieldset>
         {error ? <p role="alert" className={styles.error}>{error.message}</p> : null}
         <div className={styles.dialogFooter}>
           <button className="button secondary" type="button" disabled={pending} onClick={close}>Cancel</button>
-          {error?.refresh ? <button className="button primary" type="button" onClick={() => window.location.reload()}>Refresh Devices</button> : null}
+          {error?.refresh ? <button className="button primary" type="button" onClick={() => window.location.reload()}>Refresh devices</button> : null}
         </div>
       </form> : null}
     </dialog>

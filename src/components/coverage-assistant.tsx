@@ -103,7 +103,7 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
         <div className="coverage-location"><MapPinIcon size={20} aria-hidden="true" /><span>{props.locationName}</span></div>
         {(props.positionName || props.designatedLead) ? <dl className="coverage-shift-facts">
           {props.positionName ? <div><dt>Position</dt><dd>{props.positionName}</dd></div> : null}
-          {props.designatedLead ? <div><dt>Lead requirement</dt><dd>Designated Lead required</dd></div> : null}
+          {props.designatedLead ? <div><dt>Lead requirement</dt><dd>Designated lead required</dd></div> : null}
         </dl> : null}
         {props.requirements?.length && (props.status === "READY" || props.status === "CHOOSE") ? <nav className="coverage-requirements" aria-label="Choose the requirement to repair">
           <h3>Coverage needed</h3>

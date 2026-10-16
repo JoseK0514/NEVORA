@@ -29,7 +29,7 @@ export function SwapShiftSummary({ shift, label, employee = false }: { shift: Ex
       {employee ? <li><UserCircleIcon size={18} aria-hidden="true" /><span>{shift.employeeName}</span></li> : null}
       <li><MapPinIcon size={18} aria-hidden="true" /><span>{shift.locationName}</span></li>
       <li><BriefcaseIcon size={18} aria-hidden="true" /><span>{swapPositionLabel(shift)}</span></li>
-      <li><MedalIcon size={18} aria-hidden="true" /><span>{shift.isDesignatedLead ? 'Designated Lead' : 'No designated Lead'}</span></li>
+      <li><MedalIcon size={18} aria-hidden="true" /><span>{shift.isDesignatedLead ? 'Designated lead' : 'No designated Lead'}</span></li>
     </ul>
     {shift.timeZone ? <p className="swap-timezone">Times in {shift.timeZone.replaceAll('_', ' ')}</p> : null}
   </section>;

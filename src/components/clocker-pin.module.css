@@ -27,7 +27,7 @@
 .pageHeading h1 { margin: 0 0 10px; font-size: clamp(30px, 3vw, 38px); line-height: 1.15; font-weight: 550; letter-spacing: -.04em; }
 .pageHeading p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--pin-muted); }
 .employeeSummary { display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--pin-line); padding: 0 0 24px; margin-bottom: 28px; }
-.avatar { display: grid; place-items: center; flex: 0 0 48px; width: 48px; height: 48px; background: #F8EAE5; color: var(--pin-accent-ink); border-radius: 16px; font-weight: 600; font-size: 16px; }
+.avatar { display: grid; place-items: center; flex: 0 0 48px; width: 48px; height: 48px; background: #E7F3F2; color: var(--pin-accent-ink); border-radius: 16px; font-weight: 600; font-size: 16px; }
 .employeeName { display: grid; gap: 4px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .employeeName strong { font-size: 16px; font-weight: 600; line-height: 1.4; }
 .employeeName span { font-size: 13px; color: var(--pin-muted); line-height: 1.5; }
