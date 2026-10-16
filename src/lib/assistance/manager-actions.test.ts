@@ -95,7 +95,7 @@ describe("buildManagerActionItems", () => {
     expect(Object.fromEntries(url.searchParams)).toMatchObject({ week: '2026-09-28', date: '2026-09-30', locationId: 'loc-2', start: '09:00', end: '17:00' });
     expect(parseCoverageRepairLocator(url.searchParams.get('repair'))).toMatchObject({ target: 'STAFFING', reported: { missingStaff: 2, requiresLead: false, positions: [] } });
     expect(items.find((item) => item.type === "TIME_OFF")?.href).toBe(
-      "/app/requests?tab=team&requestId=request-7",
+      "/app/requests?tab=pending&requestId=request-7",
     );
   });
 

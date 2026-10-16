@@ -132,7 +132,7 @@ function requestAction(
       priority: "REVIEW",
       title: "Time Off Request",
       detail: `${request.employeeName} is waiting for review.`,
-      href: `/app/requests?tab=team&requestId=${encode(request.id)}`,
+      href: `/app/requests?tab=pending&requestId=${encode(request.id)}`,
       dateTime: request.createdAt,
     };
   }

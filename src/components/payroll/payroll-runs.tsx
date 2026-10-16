@@ -21,7 +21,7 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
   const [prepareOpen, setPrepareOpen] = useState(false);
   const run = resource.data?.runs.find(item => item.id === selectedId) ?? resource.data?.runs[0];
   const locked = operation.busy || (!!operation.pending && !operation.resuming);
-  return <PayrollFrame title="Payroll" description="Prepare a draft, review provider amounts and publish approved pay statements." settings={resource.data?.capabilities.canConfigure}>
+  return <PayrollFrame title="Payroll" description="Prepare a draft, review provider amounts and publish approved pay statements.">
     <OperationFeedback operation={operation} />
     {resource.loading && !resource.data ? <PayrollState title="Loading payroll">Checking your current access and payroll runs.</PayrollState> : resource.error ? <PayrollState title="Payroll unavailable" error retry={() => void resource.reload()}>{resource.error}</PayrollState> : resource.data && <>
       <div className="pw-toolbar"><p><CalendarDotsIcon size={18} aria-hidden />{resource.data.runs.length} payroll {resource.data.runs.length === 1 ? 'run' : 'runs'}</p><div className="pw-actions"><button className="pw-button pw-secondary" onClick={() => void resource.reload()} disabled={resource.loading || locked}>Refresh</button><button className="pw-button" onClick={() => setPrepareOpen(value => !value)} disabled={locked}>Prepare a draft<ArrowRightIcon size={18} aria-hidden /></button></div></div>

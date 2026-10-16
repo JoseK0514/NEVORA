@@ -88,14 +88,14 @@ it.each(["EMPLOYEE", "LEAD"] as const)("%s can submit valid personal Time Off", 
 it.each(["OWNER", "MANAGER"] as const)("%s can review team Time Off", async role => {
   vi.mocked(requireSession).mockResolvedValue({ id: "reviewer", firstName: "Alex", lastName: "Rivera", role, primaryLocationId: "loc-1" });
   const data = new FormData(); data.set("requestId", "request-1"); data.set("decision", "APPROVED");
-  await expect(reviewTimeOffAction(data)).rejects.toThrow("redirect:/app/requests?tab=team&reviewed=1");
+  await expect(reviewTimeOffAction(data)).rejects.toThrow("redirect:/app/requests?tab=pending&reviewed=1");
   expect(reviewTimeOffRequest).toHaveBeenCalledWith({ requestId: "request-1", managerId: "reviewer", status: "APPROVED", proof:managementProof("reviewer",role) });
 });
 it("does not report an already changed Time Off request as a successful review", async () => {
   vi.mocked(requireSession).mockResolvedValue({ id: "reviewer", firstName: "Alex", lastName: "Rivera", role: "MANAGER", primaryLocationId: "loc-1" });
   vi.mocked(reviewTimeOffRequest).mockResolvedValue(false);
   const data = new FormData(); data.set("requestId", "request-1"); data.set("decision", "APPROVED");
-  await expect(reviewTimeOffAction(data)).rejects.toThrow("redirect:/app/requests?tab=team&error=review");
+  await expect(reviewTimeOffAction(data)).rejects.toThrow("redirect:/app/requests?tab=pending&error=review");
 });
 
 vi.mock("@/lib/business-time",()=>import("../../lib/business-time"));

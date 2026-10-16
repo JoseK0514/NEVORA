@@ -176,7 +176,7 @@ it('F1 renderer never restores names or destinations removed by the accepted who
 });
 
 it('category filtering finds a request beyond the first twenty mixed actions',()=>{
- const snapshot:Extract<ActionCenter,{state:'ready'}>={...ready,counts:{total:26,scheduling:25,requests:1,timekeeping:0},items:[...ready.items,{id:'TIME_OFF:request-26',type:'TIME_OFF',category:'requests',priority:'REVIEW',title:'Time off for Avery',detail:'Two days requested',href:'/app/requests?tab=team&requestId=request-26'}]};
+ const snapshot:Extract<ActionCenter,{state:'ready'}>={...ready,counts:{total:26,scheduling:25,requests:1,timekeeping:0},items:[...ready.items,{id:'TIME_OFF:request-26',type:'TIME_OFF',category:'requests',priority:'REVIEW',title:'Time off for Avery',detail:'Two days requested',href:'/app/requests?tab=pending&requestId=request-26'}]};
  const html=renderToStaticMarkup(<ActionCenterSurface snapshot={snapshot} connection="ready" category="requests"/>);
  expect(html.match(/data-action-id=/g)).toHaveLength(1);
  expect(html).toContain('Time off for Avery');
@@ -184,7 +184,7 @@ it('category filtering finds a request beyond the first twenty mixed actions',()
  expect(html).toContain('aria-pressed="true"');
  expect(html).toContain('Review time off');
   expect(html).toContain('Showing 1 of 1 request');
- expect(html).toContain('href="/app/requests?tab=team&amp;requestId=request-26#request-request-26"');
+ expect(html).toContain('href="/app/requests?tab=pending&amp;requestId=request-26#request-request-26"');
 });
 it('a verified empty category keeps an All actions reset without claiming all sources are empty',()=>{
  const html=renderToStaticMarkup(<ActionCenterSurface snapshot={ready} connection="ready" category="requests"/>);

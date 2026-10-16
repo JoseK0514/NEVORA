@@ -12,9 +12,9 @@ import {ActionCenterSurface} from '../manager-action-center';
 import {ClockMonitorCard} from '../manager-clock-monitor';
 import {EmployeeHomeReviewedView} from '../employee-home-reviewed';
 import {EmployeeTimeView} from '../employee-time-panel';
-import {navigationForRole, managementNavigationGroups} from '@/lib/navigation';
+import {navigationForRole, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole} from '@/lib/navigation';
 import {NUVORA_BRAND} from '@/lib/brand';
-import {ListIcon, UserCircleIcon, XIcon} from '@phosphor-icons/react/ssr';
+import {XIcon} from '@phosphor-icons/react/ssr';
 import {homePreviewRecords, previewActionCenter, previewEmployeeHome, previewManagerHome, previewMonitor, previewOwnTime} from './home-fixtures';
 
 type PreviewRole = 'OWNER' | 'MANAGER' | 'EMPLOYEE';
@@ -26,13 +26,13 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
   const employee = role === 'EMPLOYEE';
   const navigation = navigationForRole(role);
   const profile = homePreviewRecords.people.find(person => person.id === (role === 'OWNER' ? 'QAOWNER' : role === 'MANAGER' ? 'AUDIT-M' : 'AUDIT-E'))!;
-  const primary = employee ? navigation.filter(item => ['/app', '/app/schedule', '/app/my-time'].includes(item.href)) : navigation.slice(0, 5);
-  const secondary = navigation.filter(item => !primary.includes(item));
+  const primary = mobileTabsForRole(role);
+  const secondary = mobileMoreForRole(role);
   const navLink = (item: (typeof navigation)[number], mobile = false) => <a key={item.href} href={item.href}
     className={`${mobile ? 'mobile-nav-link' : 'nav-link'}${item.href === '/app' ? ' active' : ''}`}
     aria-current={item.href === '/app' ? 'page' : undefined}>
     <span className={mobile ? undefined : 'nav-icon'}><NavIcon name={item.icon} employee={employee} size={mobile ? 22 : 20}/></span>
-    <span className={mobile ? undefined : 'nav-label'}>{item.href === '/app' ? 'Home' : item.href === '/app/schedule' ? 'Schedule' : mobile && item.href === '/app/exchange' ? 'Shifts' : item.label}</span>
+    <span className={mobile ? undefined : 'nav-label'}>{item.label}</span>
   </a>;
   return <div className={`${employee ? 'app-shell employee-shell nevora-portal' : 'app-shell nevora-portal'} ui-preview-shell`}>
     <aside className="sidebar">
@@ -56,9 +56,6 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
             <div className="nevora-action-menu-divider" />
             <button type="button" className="nevora-action-menu-item portal-account-signout" onClick={event => { event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover(); notice('Sign out is not connected in this sample.'); }}>Sign out</button>
           </PortalAccountMenu>
-          {!employee ? <ActionMenu id="preview-manager-menu" label="Menu" ariaLabel="More navigation" triggerIcon={<><ListIcon className="management-menu-list-symbol" size={22} aria-hidden="true"/><UserCircleIcon className="mobile-home-menu-symbol" size={24} aria-hidden="true"/></>} iconOnly>
-            {secondary.map(item => <a key={item.href} href={item.href} className="nevora-action-menu-item">{item.label}</a>)}
-          </ActionMenu> : null}
         </div>
       </header>
       <div className="page-frame">{children}</div>
@@ -66,7 +63,10 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
         {employee ? <><button type="button" popoverTarget="preview-employee-menu" className="mobile-nav-link employee-more-trigger" aria-label="More"><NavIcon name="more" employee size={22}/><span>More</span></button>
           <div id="preview-employee-menu" className="employee-more-navigation" popover="auto"><p className="employee-more-label">More</p>{secondary.map(item => <a key={item.href} href={item.href} className="employee-more-link"><NavIcon name={item.icon} employee size={22}/><span>{item.label}</span></a>)}
             <button type="button" className="mobile-workforce-sheet-close" aria-label="Close actions" onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}><XIcon size={20} aria-hidden="true"/><span>Close actions</span></button>
-          </div></> : null}
+          </div></> : <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation" triggerClassName="mobile-nav-link manager-more-trigger"
+            triggerContent={<><NavIcon name="more" size={22}/><span>More</span></>}>
+            {secondary.map(item => <a key={item.href} href={item.href} className="nevora-action-menu-item">{item.label}</a>)}
+          </ActionMenu>}
       </nav>
     </main>
     <SheetGestures/>

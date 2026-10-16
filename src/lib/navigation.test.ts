@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeNavigationHref, navigationForRole } from "./navigation";
+import { activeMobileTab, activeNavigationHref, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor } from "./navigation";
 import type { PayrollCapabilities } from './payroll/contracts';
 
 const payroll: PayrollCapabilities = { enabled: true, canConfigure: false, canReview: false, canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' };
@@ -41,4 +41,35 @@ describe("role navigation", () => {
 
 it.each(['EMPLOYEE','LEAD'] as const)('Home_Schedule_MyTime_More_all_routes_reachable for %s in explicit order',role=>{
  expect(navigationForRole(role).map(item=>item.href)).toEqual(['/app','/app/schedule','/app/my-time','/app/requests/hub','/app/availability','/app/updates','/app/notifications','/app/profile']);
+});
+
+describe('phone tabs', () => {
+  it.each(['EMPLOYEE','LEAD'] as const)('gives %s Pay while payroll is on and Hours while it is off', role => {
+    expect(mobileTabsForRole(role).map(tab => tab.label)).toEqual(['Home','Schedule','Requests','Hours']);
+    expect(mobileTabsForRole(role, payroll).map(tab => [tab.label, tab.href])).toEqual([['Home','/app'],['Schedule','/app/schedule'],['Requests','/app/requests/hub'],['Pay','/app/my-pay']]);
+    expect(activeMobileTab(role, '/app/my-time', payroll)).toBe('/app/my-pay');
+    expect(mobileMoreForRole(role, payroll).map(item => item.href)).toEqual(['/app/updates','/app/notifications','/app/profile']);
+  });
+  it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Requests and Team, with every other destination in More', role => {
+    expect(mobileTabsForRole(role).map(tab => tab.href)).toEqual(['/app','/app/schedule','/app/requests','/app/employees']);
+    const reachable = [...mobileTabsForRole(role).flatMap(tab => tab.owns), ...mobileMoreForRole(role, { ...payroll, canReview: true }).map(item => item.href)];
+    for (const item of navigationForRole(role, { ...payroll, canReview: true })) expect(reachable).toContain(item.href);
+    expect(activeMobileTab(role, '/app/schedule/templates')).toBe('more');
+    expect(activeMobileTab(role, '/app/schedule/new')).toBe('/app/schedule');
+    expect(activeMobileTab(role, '/app/payroll')).toBeUndefined();
+  });
+});
+
+describe('section tabs', () => {
+  it('lists only destinations the role can open', () => {
+    expect(sectionTabsFor('MANAGER', '/app/timecards', payroll)?.items.map(item => item.label)).toEqual(['Timecards','Time exports']);
+    expect(sectionTabsFor('OWNER', '/app/payroll', { ...payroll, canReview: true, canConfigure: true })?.items.map(item => item.label)).toEqual(['Timecards','Payroll runs','Time exports','Payroll settings']);
+    expect(sectionTabsFor('EMPLOYEE', '/app/my-pay', payroll)?.items.map(item => item.href)).toEqual(['/app/my-pay','/app/my-time']);
+    expect(sectionTabsFor('EMPLOYEE', '/app/my-time')).toBeNull();
+  });
+  it('keeps tabs off nested and unrelated pages', () => {
+    expect(sectionTabsFor('EMPLOYEE', '/app/exchange/swap')).toBeNull();
+    expect(sectionTabsFor('MANAGER', '/app/requests?tab=pending')?.label).toBe('Requests');
+    expect(sectionTabsFor('MANAGER', '/app/employees')).toBeNull();
+  });
 });

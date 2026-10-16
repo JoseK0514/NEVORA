@@ -42,7 +42,7 @@ export function PayrollSettings({ recoveryScope }: { recoveryScope: string }) {
   const resource = usePayrollResource('/api/payroll/settings', readSettings);
   const operation = usePayrollOperation('/api/payroll/settings', resource.reload, recoveryScope);
   const revision = resource.data?.revisions.reduce((latest, item) => item.revision > (latest?.revision ?? 0) ? item : latest, resource.data.revisions[0]);
-  return <PayrollFrame title="Payroll settings" description="Set company defaults, effective dates and authorized employee exceptions." settings>
+  return <PayrollFrame title="Payroll settings" description="Set company defaults, effective dates and authorized employee exceptions.">
     <OperationFeedback operation={operation} />
     {resource.loading && !resource.data ? <PayrollState title="Loading payroll settings">Checking current owner access and configuration revisions.</PayrollState> : resource.error ? <PayrollState title="Settings unavailable" error retry={() => void resource.reload()}>{resource.error}</PayrollState> : resource.data && <>
       {!revision && <PayrollState title="Configure payroll before preparing runs">These are unsaved starting preferences. Choose your company settings and an effective date; imported provider amounts remain the authority.</PayrollState>}

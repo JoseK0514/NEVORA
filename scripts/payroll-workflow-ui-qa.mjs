@@ -257,9 +257,10 @@ try {
     const ownDownload = await employee.request.get(app.url + `/api/payroll/documents/${statements[0].id}`, { headers: apiHeaders() });
     assert.equal(ownDownload.status(), 200); assert.equal((await ownDownload.body()).subarray(0, 4).toString(), '%PDF');
     await geometry(personal, engine + ' personal statements 390'); await shot(personal, engine + '-my-pay-390');
-    await personal.getByRole('button', { name: 'More', exact: true }).click();
-    await personal.locator('#employee-more-navigation').getByRole('link', { name: 'My pay', exact: true }).waitFor();
-    pass(engine + ': employee sees only own published statements, guessed other document denied, mobile More entry available');
+    assert.equal(await personal.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'), '/app/my-pay');
+    assert.equal(await personal.locator('.mobile-nav a[href="/app/my-pay"]').innerText(), 'Pay');
+    assert.equal(await personal.locator('.section-tabs a[aria-current="page"]').innerText(), 'Statements');
+    pass(engine + ': employee sees only own published statements, guessed other document denied, mobile Pay tab selected');
     await employee.close();
     const manager = await browser.newContext(); await login(manager, fixture.ids.manager, fixture.password);
     assert.equal((await manager.request.get(app.url + '/api/payroll/runs', { headers: apiHeaders() })).status(), 403);

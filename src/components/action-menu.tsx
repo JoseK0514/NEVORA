@@ -12,6 +12,9 @@ type ActionMenuProps = {
   align?: "start" | "end";
   triggerIcon?: ReactNode;
   iconOnly?: boolean;
+  /** Replaces the default trigger look, e.g. for a tab-bar More button. */
+  triggerClassName?: string;
+  triggerContent?: ReactNode;
 };
 
 export function ActionMenu({
@@ -22,6 +25,8 @@ export function ActionMenu({
   align = "end",
   triggerIcon,
   iconOnly = false,
+  triggerClassName,
+  triggerContent,
 }: ActionMenuProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -115,7 +120,7 @@ export function ActionMenu({
       <button
         ref={triggerRef}
         type="button"
-        className="button ghost nevora-action-menu-trigger"
+        className={triggerClassName ?? "button ghost nevora-action-menu-trigger"}
         popoverTarget={id}
         aria-label={ariaLabel ?? label}
         title={ariaLabel ?? label}
@@ -128,7 +133,7 @@ export function ActionMenu({
           keyboardOpenRef.current = false;
         }}
       >
-        {triggerIcon}
+        {triggerContent ?? <>{triggerIcon}
         {!iconOnly ? <DotsThreeIcon className="mobile-workforce-action-symbol" size={24} weight="regular" aria-hidden="true"/> : null}
         <span className={iconOnly ? "sr-only" : undefined}>{label}</span>
         {!iconOnly ? <svg
@@ -146,7 +151,7 @@ export function ActionMenu({
             strokeLinejoin="round"
             strokeWidth="1.6"
           />
-        </svg> : null}
+        </svg> : null}</>}
       </button>
       <div
         ref={menuRef}

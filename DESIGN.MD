@@ -595,3 +595,20 @@ First phase of the full implementation plan (mobile first, enjoyable, customizab
 - **Route skeletons** (`src/components/route-skeleton.tsx` and `loading.tsx` in schedule, requests, requests/hub, exchange, timecards, payroll, my-pay, my-time, employees, updates, notifications and reports): page-shaped placeholders while server data loads. The shape is set by `data-shape`: a 7-day grid for schedule, cards for pay, time and reports, and lists elsewhere. Each announces "Loading [section]…" through role="status". Static under reduced motion. Home keeps its own client loading state.
 - **Illustrations** (`src/components/illustrations/`): six spot drawings (empty-schedule, all-caught-up, payday, open-shift, offline, setup-checklist), drawn as one-weight lines in `currentColor` on a wash disc, so a company brand colour carries through without new artwork. `EmptyState` takes `illustration` for full-panel moments, such as the first-run team schedule. Small inline empties keep the icon tile. Under increased contrast the disc is removed.
 - **Phone type floor:** below 767px, the small and caption type roles are 15px. Desktop keeps 14px and 12px. Hard-coded sizes on older components are not covered yet; they are handled as each surface is rebuilt (U2–U4) and in the token consolidation (U10).
+
+#### U1: navigation and shared tabs (2026-10-15)
+
+- **Phone tab bar** (`mobileTabsForRole()` in `src/lib/navigation.ts`): every role gets four destinations plus More.
+  - Employees and leads: Home · Schedule · Requests · Pay (Hours while payroll is off) · More.
+  - Managers and owners: Home · Schedule · Requests · Team · More.
+  - Each tab owns the sidebar destinations that light it up. Availability and shift requests light Requests; My time lights Pay; anything without a tab lights More.
+  - The manager More menu moved from the header into the tab bar. It keeps its id and its "More navigation" name, and opens as the same bottom sheet. More lists everything that has no tab, in sidebar order. The desktop sidebar is unchanged.
+- **Section tabs** (`src/components/section-tabs.tsx`, drawn by the shell from `sectionTabsFor()`): one underline row between pages that share a place, each a real URL.
+  - Requests: Time off · Shift requests · Availability, plus Overview for employees.
+  - Time and pay: Timecards · Payroll runs · Time exports · Payroll settings. These tabs replace the payroll-only `pw-tabs`, and only destinations the role can open appear.
+  - Pay for employees with payroll: Statements · Hours.
+  - Nested pages (forms, details) show no tabs. On phones the row scrolls sideways instead of wrapping, keeps the current tab in view, and fades the edge that has more tabs. Tabs are 44px tall with a 2px teal underline and visible focus, and are static under reduced motion.
+- **Words:** "My Time" became "My time" everywhere it showed.
+- **Links:** manager time-off links and review redirects use `?tab=pending` instead of the unrecognized `?tab=team`. People land on the same Pending view.
+- **Tab bar material:** the frosted phone tab bar is now 92% white, up from 82%. A teal element scrolled under the active tab had dropped its label to 4.26:1; at 92% every label stays at 4.5:1 or more over any content.
+- **Deferred:** the manager Requests tab becomes Inbox, with one badge, when `/app/inbox` ships (U4).

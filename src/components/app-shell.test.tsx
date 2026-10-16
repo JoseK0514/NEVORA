@@ -44,27 +44,31 @@ it.each(['/app/schedule','/app/availability','/app/requests','/app/settings/loca
   expect(render('OWNER', pathname).html).toContain('data-mobile-workforce="true"');
 });
 
-it.each(["EMPLOYEE", "LEAD"] as const)("keeps %s My Time directly reachable and secondary links in More", (role) => {
+it.each(["EMPLOYEE", "LEAD"] as const)("gives %s Home, Schedule, Requests and Hours tabs with the rest in More", (role) => {
   const { html, mobile } = render(role);
   const [primary, more] = mobile.split('id="employee-more-navigation"');
   expect([...primary.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app", "/app/schedule", "/app/my-time",
+    "/app", "/app/schedule", "/app/requests/hub", "/app/my-time",
   ]);
   expect(primary).toContain('popoverTarget="employee-more-navigation"');
   expect(primary).toMatch(/href="\/app\/my-time" class="mobile-nav-link active" aria-current="page"/);
+  expect(primary).toContain('<span>Hours</span>');
   expect(more).toContain('popover="auto"');
   expect([...more.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app/requests/hub", "/app/availability", "/app/updates", "/app/notifications", "/app/profile",
+    "/app/updates", "/app/notifications", "/app/profile",
   ]);
   expect(html).toContain("app-shell employee-shell");
   expect(html).not.toContain("sidebar-mantra");
 });
 
-it.each(["MANAGER", "OWNER"] as const)("preserves the existing %s shell and mobile destinations", (role) => {
+it.each(["MANAGER", "OWNER"] as const)("gives %s Home, Schedule, Requests, Team and More tabs", (role) => {
   const { html, mobile } = render(role);
-  expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app", "/app/schedule", "/app/availability", "/app/requests", "/app/exchange",
+  const [primary] = mobile.split('id="manager-more-navigation"');
+  expect([...primary.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
+    "/app", "/app/schedule", "/app/requests", "/app/employees",
   ]);
+  expect(primary).toContain('aria-label="More navigation"');
+  expect(primary).toContain('<span>More</span>');
   expect(html).not.toContain("employee-shell");
   expect(html).not.toContain("employee-more-navigation");
   expect(html).not.toContain("sidebar-mantra");
@@ -125,13 +129,14 @@ it('groups authorized owner destinations and provides an accessible sidebar cont
  expect(html).toContain('aria-expanded="true"');
 });
 
-it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reachable from the mobile header', role=>{
- const {html}=render(role);
+it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reachable from the tab-bar More', role=>{
+ const {html,mobile}=render(role);
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
- expect(header).toContain('popoverTarget="manager-more-navigation"');
- const menu=header.split('id="manager-more-navigation"')[1]?.split('</div>')[0] ?? '';
+ expect(header).not.toContain('manager-more-navigation');
+ expect(mobile).toContain('popoverTarget="manager-more-navigation"');
+ const menu=mobile.split('id="manager-more-navigation"')[1] ?? '';
  expect([...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual([
-  '/app/updates','/app/employees','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),
+  '/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),
  ]);
 });
 
@@ -140,29 +145,44 @@ it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessibl
 });
 
 it.each(['MANAGER','OWNER'] as const)('keeps %s Updates in the mobile menu with nested routes selected',role=>{
- const {html}=render(role,'/app/updates/compose');
+ const {html,mobile}=render(role,'/app/updates/compose');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
- const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
- const direct=header.split('id="manager-more-navigation"')[0];
- const menu=header.split('id="manager-more-navigation"')[1];
+ const [direct,menu]=mobile.split('id="manager-more-navigation"');
  expect(direct).not.toContain('href="/app/updates"');
- expect(header).not.toContain('manager-updates-link');
+ expect(direct).toContain('class="mobile-nav-link manager-more-trigger active"');
  expect(menu).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
  expect(menu.match(/href="\/app\/updates"/g)).toHaveLength(1);
  expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
  expect(sidebar.match(/href="\/app\/updates"/g)).toHaveLength(1);
 });
 
-it.each(['MANAGER','OWNER'] as const)('gives %s one icon-only mobile menu and preserves the authorized notification destination',role=>{
+it.each(['MANAGER','OWNER'] as const)('gives %s one More menu in the tab bar and preserves the authorized notification destination',role=>{
  const html=renderToStaticMarkup(<AppShell workspaceName="QA" notificationAuthority="fictional-view-authority" user={{firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
+ const mobile=html.split('aria-label="Mobile navigation"')[1].split('</nav>')[0];
  expect(header.match(/href="\/app\/notifications"/g)).toHaveLength(1);
- expect(header).toContain('aria-label="More navigation"');
- expect(header).toContain('<span class="sr-only">Menu</span>');
- const mobileMenu=header.split('<div class="nevora-action-menu">').find(part=>part.includes('aria-label="More navigation"'))!;
- expect(mobileMenu).not.toContain('nevora-action-menu-chevron');
+ expect(header).not.toContain('aria-label="More navigation"');
+ expect(html.match(/aria-label="More navigation"/g)?.length).toBe(2); // trigger and its menu
+ expect(mobile).not.toContain('nevora-action-menu-chevron');
  expect(header).toContain('class="portal-account-menu"');
  expect(header).not.toContain('role-chip');
+});
+
+it.each([['MANAGER','/app/exchange','/app/requests'],['OWNER','/app/availability','/app/requests'],['MANAGER','/app/employees/AUDIT-E','/app/employees'],['EMPLOYEE','/app/exchange','/app/requests/hub'],['LEAD','/app/availability','/app/requests/hub']] as const)('lights the %s tab that owns %s',(role,pathname,tab)=>{
+ const {mobile}=render(role,pathname);
+ expect(mobile).toContain(`href="${tab}" class="mobile-nav-link active" aria-current="page"`);
+});
+
+it.each([['OWNER','/app/requests',['/app/requests','/app/exchange','/app/availability']],['EMPLOYEE','/app/requests/hub',['/app/requests/hub','/app/requests','/app/exchange','/app/availability']]] as const)('shows %s section tabs on %s with real URLs',(role,pathname,hrefs)=>{
+ const {html}=render(role,pathname);
+ const tabs=html.split('class="section-tabs"')[1].split('</nav>')[0];
+ expect([...tabs.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual(hrefs);
+ expect(tabs).toContain(`href="${pathname}" class="section-tab" aria-current="page"`);
+});
+
+it('shows no section tabs on pages outside a shared group',()=>{
+ expect(render('EMPLOYEE','/app/my-time').html).not.toContain('class="section-tabs"');
+ expect(render('OWNER','/app/schedule').html).not.toContain('class="section-tabs"');
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination within the existing employee More navigation',role=>{

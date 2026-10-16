@@ -60,7 +60,7 @@ export async function reviewTimeOffAction(formData: FormData) {
   const decision = String(formData.get("decision") ?? "");
 
   if (!requestId || (decision !== "APPROVED" && decision !== "DENIED")) {
-    redirect("/app/requests?tab=team&error=review");
+    redirect("/app/requests?tab=pending&error=review");
   }
 
   const reviewed = await reviewTimeOffRequest({
@@ -70,10 +70,10 @@ export async function reviewTimeOffAction(formData: FormData) {
     status: decision,
   });
 
-  if (!reviewed) redirect("/app/requests?tab=team&error=review");
+  if (!reviewed) redirect("/app/requests?tab=pending&error=review");
 
   revalidatePath("/app/requests");
-  redirect("/app/requests?tab=team&reviewed=1");
+  redirect("/app/requests?tab=pending&reviewed=1");
 }
 
 

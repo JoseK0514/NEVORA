@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { DownloadSimpleIcon, FileTextIcon, FileCodeIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import type { ReactNode } from 'react';
@@ -8,16 +7,12 @@ import type { PayrollDocument } from '@/lib/payroll/contracts';
 import type { usePayrollOperation } from './use-payroll';
 import { PayrollExportMotion } from '@/components/payroll-export-motion';
 
-export function PayrollFrame({ title, description, settings = false, personal = false, children }: { title: string; description: string; settings?: boolean; personal?: boolean; children: ReactNode }) {
+/** Page frame for payroll pages. Tabs between Timecards, Payroll runs, Time
+ * exports and Payroll settings come from the shell's section tabs. */
+export function PayrollFrame({ title, description, personal = false, children }: { title: string; description: string; personal?: boolean; children: ReactNode }) {
   const pathname = usePathname();
   return <div className="employee-view payroll-page payroll-workflow">
     <header className="payroll-page-heading"><div className="payroll-page-mark"><PayrollExportMotion kind={personal ? 'statement' : pathname === '/app/settings/payroll' ? 'settings' : 'payroll'} /></div><div><h1>{title}</h1><p>{description}</p></div></header>
-    {!personal && <nav className="pw-tabs" aria-label="Payroll pages">
-      <Link href="/app/timecards">Timecards</Link>
-      <Link href="/app/payroll" aria-current={pathname === '/app/payroll' ? 'page' : undefined}>Payroll runs</Link>
-      <Link href="/app/payroll-export">Time exports</Link>
-      {settings && <Link href="/app/settings/payroll" aria-current={pathname === '/app/settings/payroll' ? 'page' : undefined}>Payroll settings</Link>}
-    </nav>}
     {children}
   </div>;
 }

@@ -26,7 +26,7 @@ const managementNavigation: NavigationItem[] = [
 const employeeNavigation: NavigationItem[] = [
   { href: "/app", label: "Home", icon: "dashboard" },
   { href: "/app/schedule", label: "My schedule", icon: "schedule" },
-  { href: "/app/my-time", label: "My Time", icon: "clock" },
+  { href: "/app/my-time", label: "My time", icon: "clock" },
   { href: "/app/requests/hub", label: "Requests", icon: "requests" },
   { href: "/app/availability", label: "Availability", icon: "availability" },
   { href: "/app/updates", label: "Updates", icon: "updates" },
@@ -76,4 +76,70 @@ export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities)
   }
 
   return [...employeeNavigation, ...finance];
+}
+
+export type MobileTab = NavigationItem & {
+  /** Sidebar destinations that light this tab up. */
+  owns: string[];
+};
+
+/** Phone tab bar: four destinations, then More for everything else. Employees
+ * get Home, Schedule, Requests and Pay (Hours while payroll is off); managers
+ * get Home, Schedule, Requests and Team. */
+export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities): MobileTab[] {
+  const home: MobileTab = { href: "/app", label: "Home", icon: "dashboard", owns: ["/app"] };
+  const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule"] };
+  if (role === "EMPLOYEE" || role === "LEAD") {
+    const pay: MobileTab = payroll?.enabled
+      ? { href: "/app/my-pay", label: "Pay", icon: "statement", owns: ["/app/my-pay", "/app/my-time"] }
+      : { href: "/app/my-time", label: "Hours", icon: "clock", owns: ["/app/my-time"] };
+    return [home, schedule, { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/availability"] }, pay];
+  }
+  return [
+    home,
+    schedule,
+    { href: "/app/requests", label: "Requests", icon: "requests", owns: ["/app/requests", "/app/exchange", "/app/availability"] },
+    { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees"] },
+  ];
+}
+
+/** Authorized destinations without a tab of their own, in sidebar order. */
+export function mobileMoreForRole(role: UserRole, payroll?: PayrollCapabilities) {
+  const owned = new Set(mobileTabsForRole(role, payroll).flatMap(tab => tab.owns));
+  return navigationForRole(role, payroll).filter(item => !owned.has(item.href));
+}
+
+/** The tab that owns the current page: a tab href, "more", or none. */
+export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities): string | undefined {
+  const active = activeNavigationHref(role, path, payroll);
+  if (!active) return undefined;
+  return mobileTabsForRole(role, payroll).find(tab => tab.owns.includes(active))?.href ?? "more";
+}
+
+export type SectionTabGroup = { label: string; items: { href: string; label: string }[] };
+
+/** Pages that share one place in the navigation show tabs between each other.
+ * Every tab is an existing URL; only destinations the role can open appear. */
+export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCapabilities): SectionTabGroup | null {
+  const pathname = path.split(/[?#]/, 1)[0];
+  const requests = [
+    { href: "/app/requests", label: "Time off" },
+    { href: "/app/exchange", label: "Shift requests" },
+    { href: "/app/availability", label: "Availability" },
+  ];
+  const groups: SectionTabGroup[] = role === "EMPLOYEE" || role === "LEAD"
+    ? [
+      { label: "Requests", items: [{ href: "/app/requests/hub", label: "Overview" }, ...requests] },
+      ...(payroll?.enabled ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "Statements" }, { href: "/app/my-time", label: "Hours" }] }] : []),
+    ]
+    : [
+      { label: "Requests", items: requests },
+      { label: "Time and pay", items: [
+        { href: "/app/timecards", label: "Timecards" },
+        ...(navigationForRole(role, payroll).some(item => item.href === "/app/payroll") ? [{ href: "/app/payroll", label: "Payroll runs" }] : []),
+        { href: "/app/payroll-export", label: "Time exports" },
+        ...(payroll?.canConfigure ? [{ href: "/app/settings/payroll", label: "Payroll settings" }] : []),
+      ] },
+    ];
+  return groups.find(group => group.items.some(item => item.href === pathname)) ?? null;
 }

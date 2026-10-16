@@ -6,8 +6,7 @@ import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
-import { ListIcon } from "@phosphor-icons/react/dist/ssr/List";
-import { UserCircleIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
@@ -17,11 +16,10 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { activeNavigationHref, managementNavigationGroups, navigationForRole } from "@/lib/navigation";
+import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor } from "@/lib/navigation";
+import { SectionTabs } from "./section-tabs";
 import { NUVORA_BRAND } from "../lib/brand";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
-
-const employeePrimary = ["/app", "/app/schedule", "/app/my-time"];
 
 export function AppShell({
   children,
@@ -55,8 +53,10 @@ export function AppShell({
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
   const navigation = navigationForRole(user.role, payrollCapabilities);
-  const mobilePrimary = navigation.filter((item) => employeePrimary.includes(item.href));
-  const mobileMore = navigation.filter((item) => !employeePrimary.includes(item.href));
+  const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities);
+  const mobileMore = mobileMoreForRole(user.role, payrollCapabilities);
+  const activeTab = activeMobileTab(user.role, pathname ?? "", payrollCapabilities);
+  const sectionTabs = pathname ? sectionTabsFor(user.role, pathname, payrollCapabilities) : null;
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
   const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities);
 
@@ -175,37 +175,20 @@ export function AppShell({
             <div className="nevora-action-menu-divider" />
             <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
           </PortalAccountMenu>
-          {!employee ? (
-            <ActionMenu id="manager-more-navigation" label="Menu" ariaLabel="More navigation"
-              triggerIcon={<><ListIcon className="management-menu-list-symbol" size={22} weight="regular" aria-hidden="true" focusable="false"/><UserCircleIcon className="mobile-home-menu-symbol" size={24} weight="regular" aria-hidden="true" focusable="false"/></>} iconOnly>
-              {navigation.slice(5).map(item => (
-                <Link key={item.href} href={item.href} className="nevora-action-menu-item"
-                  aria-current={item.href === activeHref ? 'page' : undefined}
-                  onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-                  {item.label}
-                </Link>
-              ))}
-              {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings" aria-label="Profile and device settings">Profile and device settings</button> : null}
-              <div className="nevora-action-menu-divider" />
-              <PortalSignout><button className="nevora-action-menu-item" type="submit">Sign out</button></PortalSignout>
-              <button type="button" className="mobile-home-menu-close" aria-label="Close navigation"
-                onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}><XIcon size={20} aria-hidden="true"/><span>Close navigation</span></button>
-            </ActionMenu>
-          ) : null}
           </div>
         </header>
 
-        <div className="page-frame">{children}</div>
+        <div className="page-frame">{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}{children}</div>
 
         <nav className="mobile-nav" aria-label="Mobile navigation">
           {employee ? (
             <>
-              {mobilePrimary.map((item) => (
+              {mobileTabs.map((item) => (
                 <Link key={item.href} href={item.href}
-                  className={item.href === activeHref ? "mobile-nav-link active" : "mobile-nav-link"}
-                  aria-current={item.href === activeHref ? "page" : undefined}>
+                  className={item.href === activeTab ? "mobile-nav-link active" : "mobile-nav-link"}
+                  aria-current={item.href === activeTab ? "page" : undefined}>
                   <NavIcon name={item.icon} employee size={22} />
-                  <span>{item.href === "/app/schedule" ? "Schedule" : item.label}</span>
+                  <span>{item.label}</span>
                 </Link>
               ))}
               <button
@@ -220,7 +203,7 @@ export function AppShell({
                   employeeMoreKeyboardOpen.current = false;
                 }}
                 aria-label="More"
-                className={mobileMore.some((item) => item.href === activeHref) ? "mobile-nav-link employee-more-trigger active" : "mobile-nav-link employee-more-trigger"}>
+                className={activeTab === "more" ? "mobile-nav-link employee-more-trigger active" : "mobile-nav-link employee-more-trigger"}>
                 <NavIcon name="more" employee size={22} />
                 <span>More</span>
               </button>
@@ -264,8 +247,8 @@ export function AppShell({
             </>
           ) : (
             <>
-              {navigation.slice(0, 5).map((item) => {
-                const active = item.href === activeHref;
+              {mobileTabs.map((item) => {
+                const active = item.href === activeTab;
 
                 return (
                   <Link
@@ -275,16 +258,24 @@ export function AppShell({
                     aria-current={active ? "page" : undefined}
                   >
                     <NavIcon name={item.icon} size={22} />
-                    <span>{item.label === "Home"
-                      ? "Home"
-                      : item.label === "Shift requests"
-                        ? "Shifts"
-                        : item.label === "My schedule"
-                          ? "Schedule"
-                          : item.label}</span>
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
+              <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation"
+                triggerClassName={activeTab === "more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
+                triggerContent={<><NavIcon name="more" size={22} /><span>More</span></>}>
+                {mobileMore.map(item => (
+                  <Link key={item.href} href={item.href} className="nevora-action-menu-item"
+                    aria-current={item.href === activeHref ? 'page' : undefined}
+                    onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
+                    {item.label}
+                  </Link>
+                ))}
+                {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings" aria-label="Profile and device settings">Profile and device settings</button> : null}
+                <div className="nevora-action-menu-divider" />
+                <PortalSignout><button className="nevora-action-menu-item" type="submit">Sign out</button></PortalSignout>
+              </ActionMenu>
             </>
           )}
         </nav>
