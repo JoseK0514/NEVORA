@@ -277,3 +277,26 @@ The visible text of every page, for owner, employee and both payroll roles, was 
 - **Brand hexes routed through tokens:** 60 literal teal values in 17 page stylesheets (mostly page-local aliases such as `--design-primary: #077572`) became `var(--g-accent, #077572)`, and likewise for hover, strong, wash and masthead. The kiosk keeps its own locally defined teal.
   - **Zero diff:** the snapshot matches the noise baseline exactly.
   - **Brand flows through:** overriding `--g-accent` on `.app-shell`, as B1 will, recolours every teal element on Add employee, Positions, Workspace and Payroll exports.
+
+#### Owed testing: zoom, iOS Safari and screen-reader structure (2026-10-16)
+
+- **200% zoom and 400% reflow** (Playwright, emulated the way browser zoom lays out: 1440 and 1280 screens at 200% are 720 and 640 CSS px wide at 2x density, and 400% is 320 by 256). 81 views across owner, employee and both payroll roles.
+  - No page-level horizontal scroll, no clipped text and no control covered at rest, before or after the fixes.
+  - **Fixed, focus hidden by the sticky chrome (WCAG 2.4.11):** on 55 of 81 views, tabbing to a control near the bottom left it behind the tab bar, and wrapping back to the top left it under the sticky header. `scroll-padding-block` on the page now keeps focus and in-page jumps clear of both (`portal-gusto.css`).
+  - **Fixed, chrome too tall on short screens (WCAG 1.4.10):** at 400% the header and tab bar covered 53–57% of the screen. On screens 500px tall or less (zoom, phones in landscape) the header now scrolls away and only the tab bar stays, so the chrome covers 26–27%.
+- **iOS Safari** (iPhone 17 Pro Max simulator, iOS 26.5, fictional data, dev-mode runtime because production's `Secure` cookie is dropped by WebKit on local http):
+  - Checked: sign-in, employee Home, Schedule, Requests, My time, Profile, the More sheet, sign-out, the manager Inbox and a partial swipe on a time-off row. The swipe followed the finger, showed the Approve backdrop and snapped back without approving anything.
+  - Safe areas, the masthead under the status bar and the floating Safari toolbar all render correctly.
+  - **Fixed, the Home More sheet:** Home sits outside the `data-mobile-workforce` attribute, so its More sheet kept an older floating panel and both roles' menus had no "Close actions" button. They now match every other page (0 computed-style differences in WebKit and Chromium).
+  - **Fixed, the section tab strip:** a legacy phone rule capped it at 100% inside its negative margins, so the hairline stopped 32px short on the right. It now runs edge to edge.
+  - **Fixed, wording:** the My time heading no longer becomes "My Time" (a legacy `text-transform: capitalize`), and the phone footer and Record details say "Updated" rather than "Checked".
+- **Screen-reader structure** (WebKit accessibility tree, the source VoiceOver reads; employee, payroll employee and manager on 8 key screens): one h1 per page, no skipped heading levels, no unnamed controls, every navigation landmark named, live regions present, `lang="en"`.
+  - **Not run: VoiceOver itself.** It can't be driven on this Mac without enabling AppleScript control of VoiceOver, a system security setting, and the iOS Simulator has no VoiceOver. A tree review is not screen-reader coverage.
+  - **VoiceOver script for Jose** (Safari on iPhone, or Safari with ⌘F5 on the Mac):
+    1. Sign in as the fictional employee. On Home, swipe right through the page. The greeting, next-shift card and countdown should read once (the countdown isn't announced every minute), then Quick actions.
+    2. Open the rotor and choose Headings: one "Home" heading, then section headings in order.
+    3. Tab bar: each tab reads its name and "selected" on the current one. Open More, check that "Close actions" is announced and that a two-finger scrub (Z gesture) closes the sheet.
+    4. Requests: the section tabs read as links, with the current one marked.
+    5. Sign in as the fictional manager. In Inbox, Requests, focus a time-off row: Approve and Decline are reachable as buttons without swiping.
+    6. On the kiosk PIN screen, the English label is read first, then the Spanish line in a Spanish voice.
+- **Still owed:** a physical iPhone, and the VoiceOver script above.

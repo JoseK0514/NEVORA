@@ -74,7 +74,8 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
   - The `@layer` migration was measured (18,033 style changes on 94 of 96 pages) and reverted; the recommendation is to retire legacy CSS page by page first.
   - The 38 aliases are kept as the bridge.
   - 60 literal brand hexes now route through `--g-*` tokens, with zero diff, and a test brand override flows through.
-- **UI track complete.** Next: B1 brand tier (needs Jose's go-ahead), then the owed VoiceOver, 200% zoom and iPhone testing.
+- **Owed testing (2026-10-16):** 200% zoom and 400% reflow on 81 views, iOS Safari in the simulator, and a WebKit accessibility-tree review. Six fixes: focus kept clear of the sticky chrome, the header scrolls away on short screens, the Home More sheet matches other pages, the full-width tab strip, "My time" casing, and "Updated" wording.
+- **UI track complete.** Next: B1 brand tier (needs Jose's go-ahead).
 
 ## Owed testing
-- VoiceOver pass, 200% zoom, and at least one physical iPhone.
+- VoiceOver itself (it can't be driven here; the script is in `DESIGN.MD`) and at least one physical iPhone.

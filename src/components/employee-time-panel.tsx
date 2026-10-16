@@ -58,9 +58,9 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
   <p className="employee-time-note">Use your location’s Clocker to record punches.</p>
   <footer className="employee-time-footer"><small className={corporate&&ready?'employee-corporate-desktop-copy':undefined}>{ready?<>Updated <time dateTime={ready.observedAt}>{checked(ready.observedAt,ready.timeZone)}</time>{!compact?<span>{ready.timeZone} · Updates every 30s while active.</span>:null}</>:'Only recorded punches appear here.'}</small>
    {corporate&&ready&&!compact?<div className="employee-corporate-freshness">
-    <p>Checked <time dateTime={ready.observedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:ready.timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(ready.observedAt))}</time></p>
+    <p>Updated <time dateTime={ready.observedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:ready.timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(ready.observedAt))}</time></p>
    </div>:null}{controls}
-   {corporate&&ready&&!compact?<details className="employee-corporate-record-details"><summary>Record details <CaretDownIcon size={16} aria-hidden="true"/></summary><div><p>Checked <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time></p><p>{ready.timeZone} · Updates every 30s while active.</p></div></details>:null}</footer>
+   {corporate&&ready&&!compact?<details className="employee-corporate-record-details"><summary>Record details <CaretDownIcon size={16} aria-hidden="true"/></summary><div><p>Updated <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time></p><p>{ready.timeZone} · Updates every 30s while active.</p></div></details>:null}</footer>
  </>;
  if(compact)return <div className="employee-clock-compact">{content}</div>;
  const overview=<>

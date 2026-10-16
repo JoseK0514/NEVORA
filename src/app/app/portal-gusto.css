@@ -266,6 +266,8 @@ html body .app-shell.nevora-portal .section-tab[aria-current="page"]::after { ba
 html body .app-shell.nevora-portal .section-tab:focus-visible { outline: 2px solid var(--g-accent); outline-offset: 2px; border-radius: 4px; }
 @media (max-width: 760px) {
   html body .app-shell.nevora-portal .section-tabs { margin: -8px -16px 16px; padding: 0 16px; }
+  /* Full bleed on both sides: the legacy phone rule caps .page-frame children at 100%. */
+  html body .app-shell.nevora-portal .page-frame .section-tabs.section-tabs { max-width: none; }
   html body .app-shell.nevora-portal .section-tabs-track { gap: 20px; }
 }
 @media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal :is(.section-tab, .section-tab::after) { transition: none; } }
@@ -280,6 +282,28 @@ html body .app-shell.nevora-portal .section-tab:focus-visible { outline: 2px sol
     width: 100%; margin: 0; border: 0; background: transparent; font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   html body .app-shell.nevora-portal .mobile-nav .mobile-nav-link span { white-space: nowrap; }
+  /* Headings keep their sentence case; the legacy My time rule capitalised every word.
+   * Doubled class: outranks it whatever order Next loads the stylesheets in. */
+  html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-corporate="true"] .page-frame .employee-view.employee-view h1 { text-transform: none; }
+  /* Home sits outside the mobile-workforce attribute, so its More sheet kept the older
+   * floating panel, and both roles' More menus lost the close button. They now match every other page. */
+  html body .app-shell.nevora-portal.employee-shell:not([data-mobile-workforce]) #employee-more-navigation {
+    inset: auto 16px 16px; max-width: none; max-height: calc(100dvh - 96px);
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border: 0; border-radius: 24px; background: #FFFFFF; box-shadow: 0 12px 48px #1C4A4733;
+  }
+  html body .app-shell.nevora-portal.employee-shell:not([data-mobile-workforce]) #employee-more-navigation .employee-more-link { min-height: 48px; font-size: 17px; }
+  html body .app-shell.nevora-portal:not([data-mobile-workforce]) :is(#employee-more-navigation, .mobile-nav .nevora-action-menu-popover) .mobile-workforce-sheet-close {
+    display: flex; align-items: center; justify-content: center; gap: 8px; position: sticky; bottom: 0; width: 100%; min-height: 48px; margin-top: 8px;
+    border: 0; border-radius: 999px; background: #F6F7F8; color: var(--g-ink); font: 500 17px/1.5 var(--design-font-body); cursor: pointer;
+  }
+  /* Focus and in-page jumps stop clear of the sticky header and the tab bar (WCAG 2.4.11). */
+  html:has(body .app-shell.nevora-portal .mobile-nav) { scroll-padding-block: 84px calc(80px + env(safe-area-inset-bottom)); }
+}
+/* Short screens (400% zoom, phones in landscape): the header scrolls away so the
+ * sticky chrome stays to the tab bar instead of covering half the screen (WCAG 1.4.10). */
+@media (max-width: 760px) and (max-height: 500px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal .mobile-header { position: relative; }
+  html:has(body .app-shell.nevora-portal .mobile-nav) { scroll-padding-top: 12px; }
 }
 
 /* ⌘K finder (U8): a desktop tool. Opens without animation; native modal dialog. */
