@@ -24,7 +24,7 @@ async function send(locationKey: string, body: object, signal?: AbortSignal): Pr
   throw new SetupFailure('Tablet setup could not be confirmed. Choose Check Setup before trying again.', true);
 }
 
-export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled = false, punchEnabled = false }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean; punchEnabled?: boolean }) {
+export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled = false, punchEnabled = false, brand }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean; punchEnabled?: boolean; brand?: { style?: Record<string, string>; logoUrl?: string | null } }) {
   const [state, setState] = useState<SetupState>({ state: 'unregistered' });
   const [pending, setPending] = useState(true);
   const [feedback, setFeedback] = useState<{ message: string; uncertain: boolean } | null>(null);
@@ -73,7 +73,7 @@ export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled 
     finally { busy.current = false; setPending(false); }
   }
 
-  return <ClockerShell locationLabel={locationLabel} timeZone={timeZone}
+  return <ClockerShell locationLabel={locationLabel} timeZone={timeZone} brand={brand}
     deviceName={state.state === 'connected' ? state.deviceName : undefined}
     status={feedback?.uncertain ? 'unconfirmed' : pending ? 'checking' : state.state === 'connected' ? 'connected' : 'setup'}>
     <div ref={motion} className={styles.kioskBody} aria-busy={pending}>

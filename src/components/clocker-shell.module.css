@@ -128,3 +128,7 @@
 /* The portal-wide hover rule (typeface-theme.css) pairs --design-accent with dark
  * ink. Here --design-accent is the dark teal hover, so keep the on-accent text. */
 .page.page.page :global(.button.primary):is(:hover, :active):not(:disabled) { color: var(--clocker-on-accent); }
+
+/* Company logo (B1): beside the wordmark in a white chip, never replacing it. */
+.companyLogo { display: inline-flex; align-items: center; justify-content: center; height: 36px; max-width: 140px; padding: 4px 8px; border: 1px solid var(--clocker-border); border-radius: 8px; background: #ffffff; }
+.companyLogo img { display: block; max-width: 100%; max-height: 28px; width: auto; height: auto; object-fit: contain; }

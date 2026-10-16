@@ -300,3 +300,57 @@ The visible text of every page, for owner, employee and both payroll roles, was 
     5. Sign in as the fictional manager. In Inbox, Requests, focus a time-off row: Approve and Decline are reachable as buttons without swiping.
     6. On the kiosk PIN screen, the English label is read first, then the Spanish line in a Spanish voice.
 - **Still owed:** a physical iPhone, and the VoiceOver script above.
+
+#### B1: brand tier (2026-10-16)
+
+- **What a company can change:** one brand colour and one logo, set by the Owner at Settings › Branding (`/app/settings/branding`).
+  - Everything else in tier 0 stays locked: layout, navigation, type, spacing, the red, amber and green status colours, accessibility floors, legal and payroll copy, the NEVORA wordmark, and the Clocker's English labels.
+- **One seed, a derived ladder** (`src/lib/workspace-presentation/derive.ts`, OKLCH, algorithm 1). The seed becomes ten tokens: accent, hover, strong, wash, line, tint, select, pressed, masthead and masthead ink.
+  - NEVORA teal (#077572) returns the hand-tuned values exactly, and with no brand saved nothing is injected.
+  - **Floors:**
+    - White text on buttons is at least 5:1 for the accent and 4.5:1 for hover.
+    - Links are at least 4.5:1 on white, on the wash, and on a 12% mix of the accent (teal reaches 4.65 there).
+    - Selected text on its tint is at least 4.5:1.
+    - White on the header is at least 7:1, and secondary header text at least 4.5:1.
+    - Focus rings are at least 3:1 on white and on grey panels.
+  - **Automatic adjustments, each explained in the editor in plain words:**
+    - A grey seed (chroma under 0.03) falls back to teal.
+    - A hue within 10° of an alert colour is moved to the nearest clear hue.
+    - The accent is darkened until the floors hold.
+    - A very dark seed is lightened to lightness 0.36, so buttons stay distinct from the header.
+  - Tests check 2,000 random seeds plus edge colours against every floor.
+- **Injection:** the layout sets only known `--g-*` keys inline on `.app-shell`. Values must be strict hex, and only a complete set is applied.
+  - Five light tints that were hard-coded (#C9E0DE, #F3F9F8, #CDE7E5, #D3EAE8, #CFE3E1) now have tokens (`--g-accent-line`, `--g-accent-tint`, `--g-accent-select`, `--g-accent-pressed`, `--g-masthead-ink`). Their 23 uses route through them.
+  - The browser theme colour and the manifest's `theme_color` follow the masthead.
+  - The kiosk maps the brand onto its own four teal variables.
+  - Reads never break a page: a missing table or bad row renders teal.
+- **Logo:** PNG or WebP only, identified from the bytes; SVG is refused.
+  - Limits: up to 256 KB, 32–2048 px a side, at most 4:1.
+  - It shows in a white chip beside the unchanged wordmark: in the sidebar on desktop, in the header on phones, and in the Clocker header.
+  - It is served from `/api/workspace-presentation/logo/[id]` with `nosniff`, `default-src 'none'; sandbox` and immutable caching. The route needs no sign-in, because a logo is public branding and ids are random UUIDs.
+- **Storage** (`db/migrations/0031_workspace_presentation.sql`, following the 0025 pattern):
+  - Immutable revisions: operation id, command hash, previous settings, changed keys.
+  - Immutable logo assets.
+  - Two Owner-only functions under an advisory lock, with idempotent replay and a revision check. A logo must belong to the workspace.
+  - The server re-derives every colour and stores the seed, algorithm and snapshot.
+- **Editor** (`src/components/brand-editor.tsx`):
+  - Eight suggested colours, none of which need adjusting.
+  - A colour picker and a hex field with inline validation.
+  - Explanations of any adjustment, and a ten-row readability table.
+  - Phone, desktop and Clocker previews running the same derivation.
+  - Logo upload, replace and remove; reset to teal; and recent changes.
+  - It retries an unconfirmed save with the same operation id, and a stale editor gets a conflict instead of overwriting.
+- **Verified on fictional data:**
+  - 20 SQL checks covering Owner-only access, replay, conflicts, immutability, SVG refusal and logo ownership.
+  - 23 browser flows.
+  - The 156-check sweep with the default brand, with an olive brand (yellow seed) and with a rose-red brand.
+  - The kiosk flow with a violet brand and logo, and again after reset.
+  - Zero colour, font or spacing difference from the U10 baseline with no brand.
+  - Contrast failures found and fixed on the way: with an olive brand, seven components used the accent as text on its tints at 4.3–4.49:1. That is how the tint floor came about, and Ocean moved from #2563EB to #1D4ED8.
+- **Test harness fix:** with Playwright's `isMobile`, Chromium widens the layout viewport to fit oversized content, so `scrollWidth - innerWidth` stays 0. The sweep and flows now measure against the configured width. Rerunning found no hidden overflow on earlier pages; the branding page's swatch row was the only case, and it is fixed.
+- **Deferred:**
+  - Separate light, dark and square-mark logos (one logo in a white chip works on every surface for now).
+  - Branding on the sign-in page.
+  - Cleanup of unused logo assets.
+  - Words and modules (B2).
+- **Before release:** apply migration 0031 to existing databases. New installs get it through `scripts/company-setup.ts`.

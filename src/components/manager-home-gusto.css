@@ -31,7 +31,7 @@ html body .app-shell.nevora-portal:has(.manager-portal-home) {
   --blue: var(--g-accent);
   --soft-blue: var(--g-accent-wash);
 }
-html body .app-shell.nevora-portal .manager-portal-home ::selection { background: #CDE7E5; }
+html body .app-shell.nevora-portal .manager-portal-home ::selection { background: var(--g-accent-select, #CDE7E5); }
 html body .app-shell.nevora-portal .manager-portal-home .manager-attendance-link { display: none; }
 
 @media (min-width: 761px) {
@@ -181,7 +181,7 @@ html body .app-shell.nevora-portal .manager-portal-home .manager-attendance-link
 @media (max-width: 760px) {
   html body .app-shell.nevora-portal:has(.manager-portal-home) {
     --mh-masthead: var(--g-masthead);
-    --mh-masthead-secondary: #CFE3E1;
+    --mh-masthead-secondary: var(--g-masthead-ink, #CFE3E1);
     --mh-accent: var(--g-accent);
     --mh-accent-hover: var(--g-accent-hover);
     --mh-active: transparent;

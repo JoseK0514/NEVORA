@@ -3,6 +3,7 @@ import { WalletIcon } from "@phosphor-icons/react/dist/ssr/Wallet";
 import Link from "next/link";
 import { BuildingsIcon } from "@phosphor-icons/react/dist/ssr/Buildings";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
+import { PaletteIcon } from "@phosphor-icons/react/dist/ssr/Palette";
 import { DeviceTabletIcon } from "@phosphor-icons/react/dist/ssr/DeviceTablet";
 import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
 import { CoffeeIcon } from "@phosphor-icons/react/dist/ssr/Coffee";
@@ -25,6 +26,7 @@ const groups = [
     items: [
       { id: "profile", title: "Company profile", description: "Business name and timezone.", href: "/app/settings/workspace", icon: BuildingsIcon },
       { id: "locations", title: "Locations", description: "Location details, status, and Clocker links.", href: "/app/settings/locations", icon: MapPinIcon },
+      { id: "branding", title: "Branding", description: "Company colour and logo, kept readable.", href: "/app/settings/branding", icon: PaletteIcon },
     ],
   },
   {

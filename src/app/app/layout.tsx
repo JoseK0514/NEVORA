@@ -12,6 +12,8 @@ import { readNotificationConfig } from "@/lib/notifications/config";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/service';
+import { currentBrand } from "@/lib/workspace-presentation/current.server";
+import { DEFAULT_TOKENS } from "@/lib/workspace-presentation/derive";
 
 export const metadata: Metadata = {
   manifest: "/fuel-portal.webmanifest",
@@ -19,7 +21,10 @@ export const metadata: Metadata = {
   icons: { apple: [{ url: "/icons/fuel-apple-180.png", sizes: "180x180", type: "image/png" }] },
 };
 
-export const viewport: Viewport = { themeColor: "#1C4A47" };
+/** The browser chrome follows the company header colour (B1). */
+export async function generateViewport(): Promise<Viewport> {
+  return { themeColor: (await currentBrand()).tokens?.masthead ?? DEFAULT_TOKENS.masthead };
+}
 
 export default async function PlatformLayout({ children }: { children: ReactNode }) {
   const session = await requireSession();
@@ -29,6 +34,7 @@ export default async function PlatformLayout({ children }: { children: ReactNode
   const proof = await requireSessionMutationProof();
   const preferenceCookie = "nevora_sidebar_" + createHash("sha256").update(workspace.id + ":" + session.id).digest("hex").slice(0,16);
   const initialCollapsed = (await cookies()).get(preferenceCookie)?.value === "collapsed";
+  const brand = await currentBrand();
   return (
     <AppShell
       key={session.id}
@@ -38,6 +44,7 @@ export default async function PlatformLayout({ children }: { children: ReactNode
       notificationAuthority={employeeViewAuthority(proof,"notifications")}
       notificationsEnabled={readNotificationConfig(process.env).featureEnabled}
       payrollCapabilities={payrollCapabilities}
+      brand={{ style: brand.style, logoUrl: brand.logoUrl }}
       user={{
         firstName: session.firstName,
         lastName: session.lastName,

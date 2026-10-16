@@ -31,7 +31,8 @@ it('regular public manifest endpoint returns revalidated metadata', async () => 
 it('portal links manifest and theme without leaking metadata to root or Clocker', async () => {
   const portal = await import('../../app/app/layout');
   expect('metadata' in portal && portal.metadata).toMatchObject({ manifest: '/fuel-portal.webmanifest', appleWebApp: { capable: true, title: 'NEVORA' }, icons: { apple: [{ url: '/icons/fuel-apple-180.png', sizes: '180x180', type: 'image/png' }] } });
-  expect('viewport' in portal && portal.viewport).toMatchObject({ themeColor: '#1C4A47' });
+  // No brand (and no database here): the NEVORA header colour.
+  expect('generateViewport' in portal && await portal.generateViewport()).toMatchObject({ themeColor: '#1C4A47' });
   expect(existsSync('src/app/manifest.ts')).toBe(false); expect(existsSync('src/app/manifest.webmanifest')).toBe(false);
   for (const path of ['src/app/layout.tsx', 'src/app/clocker/layout.tsx']) if (existsSync(path)) expect(readFileSync(path, 'utf8')).not.toMatch(/manifest|themeColor|PortalDeviceSetup|fuel-portal-sw/);
 });

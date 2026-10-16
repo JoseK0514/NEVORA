@@ -1,14 +1,16 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { NUVORA_BRAND } from '@/lib/brand';
 import { ClockerIcon } from './clocker-icon';
 import { AuthBrand } from './auth-brand';
 import styles from './clocker-shell.module.css';
 
-export function ClockerShell({ locationLabel, timeZone, deviceName, status, children }: {
+export function ClockerShell({ locationLabel, timeZone, deviceName, status, children, brand }: {
   locationLabel: string; timeZone: string; deviceName?: string;
+  /** Company brand (B1): kiosk colour tokens and an optional logo beside the wordmark. */
+  brand?: { style?: Record<string, string>; logoUrl?: string | null };
   status: 'checking' | 'connected' | 'setup' | 'unconfirmed'; children: ReactNode;
 }) {
   const [now, setNow] = useState<Date | null>(null);
@@ -23,11 +25,15 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
   const date = now ? new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'long', month: 'long', day: 'numeric' }).format(now) : 'Loading location time';
   const statusLabel = status === 'connected' ? 'Tablet connected' : status === 'checking' ? 'Checking setup' : status === 'unconfirmed' ? 'Setup needs checking' : 'Setup required';
 
-  return <main className={styles.page} data-mobile-clocker="true">
+  return <main className={styles.page} data-mobile-clocker="true" style={brand?.style as CSSProperties | undefined}>
     <a href="#clocker-task" className={styles.skip}>Skip to time clock</a>
     <header className={styles.header}>
       <div className={`${styles.brand} clocker-desktop-brand`}><Image src="/images/nevora-wordmark.png" alt="NEVORA" width={132} height={18} priority/><span>Time clock</span></div>
       <div className="clocker-mobile-brand"><AuthBrand/></div>
+      {brand?.logoUrl ? <span className={styles.companyLogo}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- an immutable, same-origin asset already sized for the chip */}
+        <img src={brand.logoUrl} alt="Company logo" decoding="async"/>
+      </span> : null}
       <div className={styles.deviceStatus} data-connected={status === 'connected'}><span aria-hidden="true"/>{statusLabel}</div>
     </header>
     <section className={styles.frame} aria-label="Shared time clock">

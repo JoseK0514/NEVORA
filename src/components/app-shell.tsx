@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
 import { XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import { PortalAccountMenu } from "./portal-account-menu";
@@ -31,8 +31,11 @@ export function AppShell({
   initialCollapsed = false,
   preferenceCookie = "nevora_sidebar",
   notificationAuthority,
+  brand,
 }: {
   workspaceName: string;
+  /** Company brand (B1): derived colour tokens and an optional logo. */
+  brand?: { style?: Record<string, string>; logoUrl?: string | null };
   initialCollapsed?: boolean;
   preferenceCookie?: string;
   notificationAuthority?: string;
@@ -100,8 +103,14 @@ export function AppShell({
   }, []);
 
   const Profile = notificationsEnabled ? "button" : "div";
+  // The NEVORA wordmark never changes; a company logo sits beside it in a white chip.
+  const companyLogo = brand?.logoUrl ? <span className="company-logo-chip">
+    {/* eslint-disable-next-line @next/next/no-img-element -- an immutable, same-origin asset already sized for the chip */}
+    <img src={brand.logoUrl} alt={`${workspaceName} logo`} decoding="async" />
+  </span> : null;
   return (
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
+      style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
       data-mobile-workforce={pathname && pathname !== "/app" ? "true" : undefined}
       data-employee-corporate={user.role === "EMPLOYEE" && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}>
       <aside className="sidebar" data-collapsed={collapsed}>
@@ -109,6 +118,7 @@ export function AppShell({
         <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
           <AuthBrand />
         </Link>
+        {companyLogo}
 
         <button className="sidebar-toggle" type="button" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={22} /></button>
         </div>
@@ -167,6 +177,7 @@ export function AppShell({
           <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
             <AuthBrand />
           </Link>
+          {companyLogo}
           <div className="mobile-header-actions">
           {!employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} /> : null}
           {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}

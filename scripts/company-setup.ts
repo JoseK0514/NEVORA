@@ -140,7 +140,7 @@ export async function setupCompany(client: Client, input: CompanyInput) {
     '0023_employee_attention_receipts', '0024_contextual_communications', '0025_calendar_subscriptions',
     '0023_template_ownership', '0024_schedule_copy_receipts', '0025_company_policies',
     '0026_attendance_observations', '0027_payroll_period_custody', '0028_configurable_payroll', '0029_payroll_private_notices',
-    '0030_notification_source_kinds',
+    '0030_notification_source_kinds', '0031_workspace_presentation',
   ].map(async name => migrationBody(await readFile(new URL(`../db/migrations/${name}.sql`, import.meta.url), 'utf8'))));
   const passwordHash = await hashPassword(input.owner.password);
   const workspaceId = randomUUID(), locationId = randomUUID();
