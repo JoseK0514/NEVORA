@@ -17,7 +17,9 @@ vi.mock('@/lib/data/employee-weekly-review.server',()=>({readEmployeeWeeklyRevie
 vi.mock('@/lib/data/employee-schedule',()=>({readEmployeeSchedule:async()=>({state:'unpublished',shifts:f.shifts,locations:f.locations}),emptyScheduleLabel:(state:string)=>state==='published'?'Off — no assignment':state==='unpublished'?'Schedule not published yet':'Schedule unavailable — try again'}));
 vi.mock('@/lib/auth/permissions',()=>({isManagerRole:(role:string)=>['MANAGER','OWNER'].includes(role)}));
 vi.mock('@/lib/data/employees',()=>({listEmployees:async()=>f.employees,listLocations:async()=>f.locations}));
-vi.mock('@/lib/data/schedules',()=>({listWeekShifts:async()=>f.shifts}));
+vi.mock('@/lib/data/schedules',()=>({listWeekShifts:async()=>f.shifts,listScheduleStatuses:async()=>[]}));
+vi.mock('@/lib/data/schedule-health',()=>({listEmployeeHourTargets:async()=>[]}));
+vi.mock('@/lib/data/exchanges',()=>({listOpenCoverage:async()=>[],listEmployeeExchangeActivity:async()=>[]}));
 vi.mock('@/lib/date-utils',()=>import('../../../lib/date-utils'));
 vi.mock('@/app/app/schedule/actions',()=>({copyPreviousWeekAction:vi.fn(),setAvailabilityDeadlineAction:vi.fn(),publishScheduleAction:vi.fn()}));
 vi.mock('@/lib/data/schedule-publication-review',()=>({getSchedulePublishReadiness:async()=>({locationName:'West Office',coverageGaps:3,missingLeadBlocks:1,positionNeedsSetup:false,staffingNeedsSetup:false,coverageNeedsSetup:false,underTargetCount:2,overTargetCount:1,unconfiguredTargetCount:1,hasWarnings:true})}));

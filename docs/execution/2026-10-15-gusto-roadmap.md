@@ -62,7 +62,8 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
 - **U0 foundations (done, 2026-10-15):** theme colour and manifest in dark teal, a teal offline page (SW cache v4), route skeletons for 12 sections, six spot illustrations with `EmptyState illustration`, and a 15px phone floor for the small and caption type roles.
 - **U1 navigation and shared tabs (done, 2026-10-15):** four phone tabs plus More for every role (employees: Home, Schedule, Requests, Pay/Hours; managers: Home, Schedule, Requests, Team), section tabs on shared pages (Requests, Time and pay, Pay), "My time", and `?tab=pending` links.
 - **U2 employee Today Home (done, 2026-10-15):** light arrival with a time-of-day greeting, a brand-gradient next-shift pass with Today/Tomorrow and a live countdown, a stacked To do card with kind icons, four quick action tiles, and a 15px phone type floor on Home.
-- **Next:** U3 Schedule, U4 manager Today and Inbox, U6 Pay.
+- **U3 Schedule (done, 2026-10-16):** employee My shifts | Open shifts (claimable offers and own pending claims), manager location status chips, hours against target, position-tinted shifts with dashed drafts, a sticky name column and a print layout.
+- **Next:** U4 manager Today and Inbox, U6 Pay.
 
 ## Owed testing
 - VoiceOver pass, 200% zoom, and at least one physical iPhone.

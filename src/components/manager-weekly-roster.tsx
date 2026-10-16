@@ -11,7 +11,7 @@ import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { EmptyState } from "./empty-state";
 import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
-import { assignedHours, filterRoster, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
+import { assignedHours, filterRoster, positionTint, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
 gsap.registerPlugin(useGSAP);
 
@@ -34,9 +34,20 @@ function dayTotal(employees: RosterEmployee[], date: string) {
   return shifts.length ? `${shifts.length} ${shifts.length === 1 ? "shift" : "shifts"} · ${assignedHours(shifts)} h` : "No shifts";
 }
 
+/** Weekly hours across all locations against the person's target and limit. */
+function HoursMeter({ hours }: { hours: NonNullable<RosterEmployee["hours"]> }) {
+  const over = hours.week > hours.maximum;
+  const goal = hours.target ?? hours.maximum;
+  const fill = goal > 0 ? Math.min(100, Math.round((hours.week / goal) * 100)) : 0;
+  return <span className="mws-hours" data-over={over || undefined}>
+    <span className="mws-hours-bar" aria-hidden="true"><i style={{ width: `${fill}%` }} /></span>
+    <small>{over ? `Over ${hours.maximum}h limit` : hours.target !== null ? `${hours.week} of ${hours.target}h target` : `${hours.week} of ${hours.maximum}h limit`}</small>
+  </span>;
+}
+
 function Shift({ shift }: { shift: RosterShift }) {
   const overnight = shift.endTime < shift.startTime || shift.endTime === "24:00";
-  return <Link className={`mws-shift${shift.lead ? " lead" : ""}${shift.status === "DRAFT" ? " draft" : ""}`} href={`/app/schedule/edit?shiftId=${encodeURIComponent(shift.id)}`}>
+  return <Link className={`mws-shift${shift.lead ? " lead" : ""}${shift.status === "DRAFT" ? " draft" : ""}`} data-tint={shift.tint ?? positionTint(shift.position)} href={`/app/schedule/edit?shiftId=${encodeURIComponent(shift.id)}`}>
     <span className="mws-shift-day">{formatDayLabel(shift.date).weekday}</span>
     <strong>{compactTime(shift.startTime)}<span> – {compactTime(shift.endTime)}</span></strong>
     {overnight ? <small>Ends {formatDayLabel(addDays(shift.date, 1)).day}</small> : null}
@@ -79,7 +90,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   const renderRow = (employee: RosterEmployee) => {
         const shownShifts = employee.shifts.filter(shift => visibleDates.includes(shift.date));
         return <article className="mws-roster-row manager-issue-target" id={`schedule-employee-${employee.id}`} tabIndex={-1} key={employee.id} aria-label={`${employee.name} shifts`}>
-          <div className="mws-person"><span className="mws-avatar" aria-hidden="true">{employee.name.split(" ").filter(Boolean).slice(0, 2).map(part => part[0]).join("")}</span><div><h3>{employee.name}</h3><p>{employee.role}</p><small>{assignedHours(employee.shifts)}h assigned this week</small></div></div>
+          <div className="mws-person"><span className="mws-avatar" aria-hidden="true">{employee.name.split(" ").filter(Boolean).slice(0, 2).map(part => part[0]).join("")}</span><div><h3>{employee.name}</h3><p>{employee.role}</p><small>{assignedHours(employee.shifts)}h assigned this week</small>{employee.hours ? <HoursMeter hours={employee.hours} /> : null}</div></div>
           {visibleDates.map(date => {
             const shifts = employee.shifts.filter(shift => shift.date === date);
             return <div className={`mws-day-cell${!shifts.length ? " empty" : ""}${date === today ? " today" : ""}`} key={date} role="group" aria-label={`${formatDayLabel(date).weekday}, ${formatDayLabel(date).day}`}>

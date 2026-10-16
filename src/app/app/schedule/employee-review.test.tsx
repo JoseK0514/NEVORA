@@ -15,7 +15,9 @@ vi.mock('@/lib/data/schedule-publication-review',()=>({getSchedulePublishReadine
 vi.mock('@/lib/data/positions',()=>({listPositions:async()=>[{id:'fixture-position',name:'Fixture Barista'}]}));
 vi.mock('@/lib/data/schedule-generation-review',()=>({getScheduleGenerationReview:vi.fn()}));
 vi.mock('@/lib/data/employees',()=>({listEmployees:vi.fn(),listLocations:vi.fn()}));
-vi.mock('@/lib/data/schedules',()=>({listWeekShifts:vi.fn()}));
+vi.mock('@/lib/data/schedules',()=>({listWeekShifts:vi.fn(),listScheduleStatuses:vi.fn()}));
+vi.mock('@/lib/data/schedule-health',()=>({listEmployeeHourTargets:vi.fn()}));
+vi.mock('@/lib/data/exchanges',()=>({listOpenCoverage:async()=>[],listEmployeeExchangeActivity:async()=>[]}));
 vi.mock('@/lib/data/week-settings',()=>({getWeekSettings:vi.fn()}));
 const fixture=vi.hoisted(()=>({empty:false}));
 vi.mock('@/lib/data/employee-weekly-review.server',()=>({readEmployeeWeeklyReview:async()=>({state:'published',locations:[{id:'fixture-location',shortName:'Fixture location'}],shifts:fixture.empty?[]:[{id:'fixture-shift',employeeId:'fixture-employee',date:'2026-10-11',startTime:'22:00',endTime:'06:00',locationId:'fixture-location',positionId:'fixture-position',positionName:'Fixture Barista at publication',isDesignatedLead:false,isCalloutApproved:false}],acknowledgement:{acknowledged:!fixture.empty,latestRevisionId:'fixture-revision',needsAcknowledgement:fixture.empty},displayedRevisionId:'fixture-revision',intent:fixture.empty?{operationId:'11111111-1111-4111-8111-111111111111',authority:'a'.repeat(64)}:null,publicationChanges:fixture.empty?[{type:'REMOVED',affectedEmployeeIds:['fixture-employee'],before:{isDesignatedLead:false,isCalloutApproved:false,sourceShiftId:'fixture-shift',employeeId:'fixture-employee',locationId:'fixture-location',date:'2026-10-11',startTime:'22:00',endTime:'06:00'}}]:[]})}));

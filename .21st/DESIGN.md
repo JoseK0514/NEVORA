@@ -126,3 +126,21 @@ Reference: the Future Pro home on Mobbin (time-of-day greeting on a light backgr
 - **Phone type:** everything on Home is 15px or larger on phones, except the "Published" and clock status chips (14px).
 - **Script contracts kept:** "Loading Home…", "Refresh recorded time", "Clocked In", `data-home-state`, `data-home-group`, `data-home-refresh`, "Refresh home"/"Retry home", "You're all set.", "Scheduled now", "No upcoming published shift", and next shift before To do.
 - **Deferred:** a new pay statement in the pending stack needs a payroll read on Home. It moves to U6, where the Payday moment is wired to My pay.
+
+#### U3: schedule (2026-10-16)
+
+- **Employee: My shifts | Open shifts.** A segmented switch on real URLs (`/app/schedule?week=…` and `&view=open`) sits under the heading. Open shifts shows its available count, also announced to screen readers.
+  - **My shifts:** the week agenda as before. The "Shift requests" link moved from the header into the "Planning ahead?" footer, so shifts sit higher on phones.
+  - **Open shifts:** the same eligible, claimable coverage offers that the shift marketplace lists (`listOpenCoverage`, actionable and open). It also lists this person's own claims that are waiting for a manager, marked "Requested · waiting for approval".
+  - Each card shows a date tile, the time, the location and position, and a link: "View and claim" or "View request". Claiming stays in the existing marketplace flow.
+  - An empty list shows the open-shift illustration; a failed read says "Open shifts unavailable", never empty.
+  - The page notes that claiming sends a request to your manager. Eligibility reasons wait for B3.
+- **Manager: status chips.** Each location tab shows Published, Draft, or Not started from `listScheduleStatuses`, and All locations shows "1 of 2 published". A failed read hides the chips.
+- **Manager: hours against target.** Under "56h assigned this week", a 4px meter reads "12 of 30h target", or "12 of 40h limit" without a target. It turns orange with "Over 40h limit" when hours pass the maximum.
+  - The meter counts hours across all locations, using targets from `listEmployeeHourTargets`. A failed read hides it.
+- **Manager: shift chips.** Six position tints, each a left bar and a wash, follow the workspace's position order: the first position gets the brand teal, then the other five in turn. A stable name hash covers positions outside the catalog. The position name is always printed, so colour is never the only cue. Drafts are white with a dashed border.
+- **Manager: name column.** It stays in place while the week scrolls sideways (601px and up).
+- **Manager: print.** "Print schedule" in the schedule's More menu prints a one-page landscape week. A title line gives the workspace, week, location and time zone. Navigation, controls, banners and empty cells are hidden, and tints print.
+- **Deferred:**
+  - Open shifts and conflicts inside the manager grid need an unassigned-shift and conflict source in the roster.
+  - The phone toolbar consolidation moves to U8 (desktop finder and tables).

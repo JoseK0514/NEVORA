@@ -54,3 +54,39 @@
 @media(prefers-reduced-motion:no-preference) { .my-schedule :is(a,summary,button) { transition:background-color .15s ease,color .15s ease,border-color .15s ease; } }
 @media(max-width:400px) { .my-week-days { display:flex; flex-wrap:wrap; gap:6px; }.my-week-day { flex:1 1 calc(25% - 6px); min-width:44px; }.my-schedule-footer .my-schedule-link { font-size:13px; } }
 @media print { .my-week-navigation,.my-week-days,.my-shift-options,.my-review-action,.my-schedule-requests,.my-schedule-footer { display:none; }.my-schedule .employee-schedule-day { break-inside:avoid; } }
+
+/* U3 (2026-10-16): My shifts | Open shifts on real URLs, and open shift cards. */
+.my-schedule-views { display: flex; gap: 4px; width: fit-content; max-width: 100%; margin: 0 0 16px; padding: 4px; border-radius: 12px; background: #ECEDEF; }
+.my-schedule-views a {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 9px;
+  color: var(--g-muted, #5F6368); font-size: 15px; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 150ms ease, color 150ms ease;
+}
+.my-schedule-views a[aria-current="page"] { color: var(--g-ink, #1C1C1C); background: #FFFFFF; font-weight: 600; box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
+.my-schedule-views a:focus-visible { outline: 2px solid var(--g-accent, #077572); outline-offset: 2px; }
+.my-schedule-views-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; color: #FFFFFF; background: var(--g-accent, #077572); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 760px) { .my-schedule-views { width: 100%; } .my-schedule-views a { flex: 1; padding: 0 10px; } }
+
+.my-open-shifts { display: grid; gap: 12px; padding: 0 20px 20px; }
+.my-open-shifts > .my-agenda-heading { margin-inline: -20px; }
+@media (max-width: 760px) { .my-open-shifts { padding: 0 16px 16px; } .my-open-shifts > .my-agenda-heading { margin-inline: -16px; } }
+.my-open-group { margin: 8px 0 0; color: var(--g-muted, #5F6368); font-size: 15px; font-weight: 500; }
+.my-open-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.my-open-shift {
+  display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 16px;
+  border: 1px solid var(--g-hairline, #ECEDEF); border-radius: 14px; background: #FFFFFF;
+}
+.my-open-shift.is-requested { border-color: #F0D9B5; background: #FFFBF4; }
+.my-open-date { display: grid; justify-items: center; gap: 0; padding: 6px 0; border-radius: 10px; background: var(--g-accent-wash, #E7F3F2); color: var(--g-accent-strong, #07605F); }
+.my-open-date span { font-size: 13px; font-weight: 500; }
+.my-open-date strong { font-size: 20px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.my-open-copy { display: grid; gap: 4px; min-width: 0; }
+.my-open-copy > strong { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.my-open-status { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 2px 8px; border-radius: 999px; color: #8A4B00; background: #FBF1E2; font-size: 14px; font-weight: 500; }
+.my-open-action { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px; color: var(--g-accent, #077572); font-size: 15px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.my-open-note { margin: 4px 0 0; color: var(--g-muted, #5F6368); font-size: 15px; }
+@media (max-width: 520px) {
+  .my-open-shift { grid-template-columns: 48px minmax(0, 1fr); }
+  .my-open-action { grid-column: 2; justify-self: start; padding: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .my-schedule-views a { transition: none; } }
+@media (prefers-contrast: more) { .my-schedule-views { background: #FFFFFF; border: 1px solid #1C1C1C; } .my-open-shift { border-color: #1C1C1C; } }

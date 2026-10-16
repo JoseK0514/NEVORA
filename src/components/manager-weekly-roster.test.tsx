@@ -50,3 +50,19 @@ it("offers an actionable empty roster without implying publication", () => {
   expect(output).toContain("Your team schedule starts here");
   expect(output).not.toContain("Published");
 });
+
+it("tints shifts by position name, stably and within six tints", async () => {
+  const { positionTint } = await import("../lib/scheduling/manager-roster-presentation");
+  expect(positionTint("Barista")).toBe(positionTint("  barista "));
+  for (const name of ["Barista", "Cashier", "Shift lead", "Cook", "Host", "Support"]) expect(positionTint(name)).toBeGreaterThanOrEqual(0), expect(positionTint(name)).toBeLessThan(6);
+  expect(positionTint(undefined)).toBe(0);
+  expect(html()).toMatch(/class="mws-shift lead" data-tint="\d"/);
+});
+it("shows weekly hours against target and flags hours over the limit", () => {
+  const withHours = (hours: RosterEmployee["hours"]) => html(undefined, [{ ...employees[0], hours }]);
+  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12 of 30h target");
+  expect(withHours({ week: 12, target: null, maximum: 40 })).toContain("12 of 40h limit");
+  expect(withHours({ week: 44, target: 30, maximum: 40 })).toContain("Over 40h limit");
+  expect(html()).not.toContain("mws-hours");
+  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12h assigned this week");
+});

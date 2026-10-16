@@ -45,3 +45,22 @@ it('selected day, today, current-week return and planning destinations retain na
  expect(output).toContain('/app/schedule?week=2026-10-12&amp;day=2026-10-12#schedule-2026-10-12');
  expect(output).toContain('/app/availability');expect(output).toContain('/app/requests');
 });
+
+const open={id:'open-1',date:'2026-10-14',startTime:'09:00',endTime:'17:00',location:'North Office',position:'Barista',href:'/app/exchange?tab=available#request-open-1'};
+it('My shifts and Open shifts are real URLs with an announced count',()=>{
+ const mine=html({openShifts:{available:[open],requested:[]}});
+ expect(mine).toContain('href="/app/schedule?week=2026-10-12" aria-current="page">My shifts');
+ expect(mine).toContain('href="/app/schedule?week=2026-10-12&amp;view=open">Open shifts');
+ expect(mine).toMatch(/<span class="sr-only">, (<!-- -->)?1(<!-- -->)? available<\/span>/);
+ expect(mine).toContain('employee-schedule-agenda');
+});
+it('Open shifts lists claimable shifts and own claims waiting for approval without the week agenda',()=>{
+ const output=html({view:'open',openShifts:{available:[open],requested:[{...open,id:'mine-1',href:'/app/exchange?tab=requests&requestId=mine-1'}]}});
+ for(const value of ['Waiting for approval','Requested · waiting for approval','View request','View and claim','#request-open-1','North Office · Barista','Claiming sends a request to your manager']) expect(output).toContain(value);
+ expect(output).not.toContain('employee-schedule-agenda');
+});
+it('Open shifts shows a calm empty state and an honest unavailable state',()=>{
+ expect(html({view:'open',openShifts:{available:[],requested:[]}})).toContain('No open shifts right now');
+ const failed=html({view:'open',openShifts:null});
+ expect(failed).toContain('Open shifts unavailable');expect(failed).not.toContain('No open shifts right now');
+});

@@ -9,6 +9,8 @@ import { ArrowsLeftRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowsLeftRi
 import { DotsThreeIcon } from '@phosphor-icons/react/dist/ssr/DotsThree';
 import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
+import { HourglassMediumIcon } from '@phosphor-icons/react/dist/ssr/HourglassMedium';
+import { EmptyState } from './empty-state';
 import { EmployeeScheduleMotion } from './employee-schedule-motion';
 import { addDays, formatDayLabel, formatTime, formatWeekRange, weekDates, weekStartFor } from '../lib/date-utils';
 import { shiftBoundaryInstants } from '../lib/business-time';
@@ -16,7 +18,11 @@ import { emptyScheduleLabel, type EmployeeScheduleRead } from '../lib/data/emplo
 import type { ScheduleShiftRow } from '../lib/data/schedules';
 
 type Shift = ScheduleShiftRow & { positionName?: string | null };
+export type OpenShift = { id: string; date: string; startTime: string; endTime: string; location: string; position: string | null; href: string };
 export type EmployeeMyScheduleProps = {
+  /** "mine" shows the week; "open" shows claimable shifts. Both are real URLs. */
+  view?: 'mine' | 'open';
+  openShifts?: { available: OpenShift[]; requested: OpenShift[] } | null;
   weekStart: string;
   today: string;
   observedAt: string;
@@ -51,7 +57,33 @@ function ShiftOptions({ shift, today, observedAt, timeZone }: { shift: Shift; to
   </details>;
 }
 
+function OpenShiftCard({ shift, requested = false }: { shift: OpenShift; requested?: boolean }) {
+  const label = formatDayLabel(shift.date);
+  return <li className={`my-open-shift${requested ? ' is-requested' : ''}`}>
+    <time className="my-open-date" dateTime={shift.date}><span>{label.weekday}</span><strong>{Number(shift.date.slice(8))}</strong></time>
+    <div className="my-open-copy">
+      <strong>{formatTime(shift.startTime)} <span aria-hidden="true">–</span> {formatTime(shift.endTime)}</strong>
+      <span className="my-shift-location"><MapPinIcon size={16} aria-hidden="true" />{shift.location}{shift.position ? ` · ${shift.position}` : ''}</span>
+      {requested ? <span className="my-open-status"><HourglassMediumIcon size={14} weight="bold" aria-hidden="true" />Requested · waiting for approval</span> : null}
+    </div>
+    <Link href={shift.href} className="my-open-action">{requested ? 'View request' : 'View and claim'}<span className="sr-only"> for {label.weekday}, {label.day}, {formatTime(shift.startTime)}</span> <ArrowRightIcon size={16} aria-hidden="true" /></Link>
+  </li>;
+}
+
+function OpenShifts({ open }: { open: EmployeeMyScheduleProps['openShifts'] }) {
+  if (!open) return <div className="my-schedule-feedback" role="status"><strong>Open shifts unavailable</strong><p>We couldn’t check open shifts right now.</p><Link href="/app/exchange?tab=available" className="my-schedule-link">Open shift requests</Link></div>;
+  return <section className="employee-view-surface my-open-shifts" aria-labelledby="my-open-title">
+    <div className="my-agenda-heading"><h2 id="my-open-title">Open shifts</h2><span>Shifts you can claim</span></div>
+    {open.requested.length ? <><h3 className="my-open-group">Waiting for approval</h3><ul className="my-open-list">{open.requested.map(shift => <OpenShiftCard key={shift.id} shift={shift} requested />)}</ul></> : null}
+    {open.available.length ? <>{open.requested.length ? <h3 className="my-open-group">Available</h3> : null}<ul className="my-open-list">{open.available.map(shift => <OpenShiftCard key={shift.id} shift={shift} />)}</ul></>
+      : <EmptyState illustration="open-shift" title="No open shifts right now">When a teammate offers a shift you can work, it shows up here.</EmptyState>}
+    <p className="my-open-note">Claiming sends a request to your manager. The shift is yours once it’s approved.</p>
+  </section>;
+}
+
 export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
+  const view = props.view ?? 'mine';
+  const openCount = props.openShifts ? props.openShifts.available.length : null;
   const { weekStart, today, observedAt, timeZone, selectedDay, state, locations, acknowledged, confirmation, confirmationNeeded, error, receipt, changes } = props;
   // Unavailable reads cannot retain private rows, actionable links or receipts.
   const shifts = state === 'unavailable' ? [] : props.shifts;
@@ -63,8 +95,12 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
     <div className="employee-view employee-schedule-view my-schedule">
       <header className="my-schedule-heading my-schedule-enter">
         <div><h1>My schedule</h1><p>Review your week and manage your shifts.</p></div>
-        <Link href="/app/exchange?tab=my" className="my-schedule-link my-schedule-requests"><ArrowsLeftRightIcon size={18} aria-hidden="true" />Shift requests</Link>
       </header>
+      <nav className="my-schedule-views my-schedule-enter" aria-label="Schedule views">
+        <Link href={`/app/schedule?week=${weekStart}`} aria-current={view === 'mine' ? 'page' : undefined}>My shifts</Link>
+        <Link href={`/app/schedule?week=${weekStart}&view=open`} aria-current={view === 'open' ? 'page' : undefined}>Open shifts{openCount ? <><span className="my-schedule-views-count" aria-hidden="true">{openCount}</span><span className="sr-only">, {openCount} available</span></> : null}</Link>
+      </nav>
+      {view === 'open' ? <OpenShifts open={props.openShifts} /> : <>
 
       <section className="my-week-overview my-schedule-enter" aria-labelledby="my-week-title">
         <div className="my-week-topline">
@@ -108,7 +144,8 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
           </div>
         </article>; })}
       </section>
-      <footer className="my-schedule-footer"><p>Planning ahead?</p><div><Link href="/app/availability" className="my-schedule-link">Update availability</Link><Link href="/app/requests" className="my-schedule-link">Request time off</Link><Link href="/app/profile#employee-calendar-title" className="my-schedule-link">Calendar subscription</Link></div></footer>
+      </>}
+      <footer className="my-schedule-footer"><p>Planning ahead?</p><div><Link href="/app/exchange?tab=my" className="my-schedule-link"><ArrowsLeftRightIcon size={18} aria-hidden="true" />Shift requests</Link><Link href="/app/availability" className="my-schedule-link">Update availability</Link><Link href="/app/requests" className="my-schedule-link">Request time off</Link><Link href="/app/profile#employee-calendar-title" className="my-schedule-link">Calendar subscription</Link></div></footer>
     </div>
   </EmployeeScheduleMotion>;
 }

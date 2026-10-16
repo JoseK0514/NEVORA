@@ -29,7 +29,10 @@ import { requireSession, requireSessionMutationProof } from "@/lib/auth/session"
 import {emptyScheduleLabel} from '@/lib/data/employee-schedule';
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
-import { listWeekShifts } from "@/lib/data/schedules";
+import { listScheduleStatuses, listWeekShifts } from "@/lib/data/schedules";
+import { listEmployeeHourTargets } from "@/lib/data/schedule-health";
+import { listEmployeeExchangeActivity, listOpenCoverage, type ExchangeRecord } from "@/lib/data/exchanges";
+import { PrintScheduleButton } from "@/components/print-schedule-button";
 import {
   addDays,
   formatDayLabel,
@@ -95,6 +98,7 @@ export default async function SchedulePage({
     acknowledged?: string;
     publishCheck?: string;
     day?: string;
+    view?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -147,6 +151,18 @@ export default async function SchedulePage({
   if (!manager) {
     const hasPublishedShifts = allShifts.length > 0;
     const publicationChanges=employeeSchedule!.publicationChanges;
+    // Open shifts: the same eligible, claimable coverage offers the shift marketplace lists,
+    // plus this person's own claims still waiting for a manager. A failed read shows as unavailable.
+    const toOpenShift = (row: ExchangeRecord, href: string) => ({ id: row.id, date: row.sourceShift.date, startTime: row.sourceShift.startTime, endTime: row.sourceShift.endTime, location: row.sourceShift.locationName, position: row.sourceShift.positionName ?? null, href });
+    const [openCoverage, ownActivity] = await Promise.all([
+      listOpenCoverage(session.id, today).catch(() => null),
+      listEmployeeExchangeActivity(session.id).catch(() => null),
+    ]);
+    const openShifts = openCoverage && ownActivity ? {
+      available: openCoverage.filter(row => row.actionable === true && row.status === 'OPEN').map(row => toOpenShift(row, `/app/exchange?tab=available#request-${encodeURIComponent(row.id)}`)),
+      requested: ownActivity.filter(row => row.kind === 'COVERAGE' && row.status === 'MANAGER_PENDING' && row.targetEmployeeId === session.id && row.sourceShift.date >= today)
+        .map(row => toOpenShift(row, `/app/exchange?tab=requests&requestId=${encodeURIComponent(row.id)}`)),
+    } : null;
 
     const confirmation = employeeAcknowledgement.latestRevisionId && (hasPublishedShifts || employeeSchedule!.intent || employeeAcknowledgement.acknowledged) ? (
       employeeAcknowledgement.needsAcknowledgement && employeeSchedule!.intent ? (
@@ -154,6 +170,8 @@ export default async function SchedulePage({
       ) : employeeAcknowledgement.acknowledged ? <span className="employee-quiet-status success">Confirmed</span> : <span className="employee-quiet-status">Confirmation unavailable — review the current schedule again.</span>
     ) : undefined;
     return <EmployeeMySchedule
+      view={params.view === 'open' ? 'open' : 'mine'}
+      openShifts={openShifts}
       weekStart={weekStart}
       today={today}
       observedAt={observedAt.toISOString()}
@@ -170,7 +188,8 @@ export default async function SchedulePage({
       changes={<SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} />}
     />;
   }
-  const [positions, capturedPositions, generationReview] = await Promise.all([
+  // Status chips and hour targets are optional context: a failed read hides them, never shows zero.
+  const [positions, capturedPositions, generationReview, scheduleStatuses, hourTargets] = await Promise.all([
     listPositions({ includeInactive: true }),
     listCapturedShiftPositions({
       weekStart,
@@ -180,9 +199,16 @@ export default async function SchedulePage({
       workspaceId: workspace.id, actorEmployeeId: session.id, weekStart,
       locationScope: selectedLocation === "all" ? { kind: "ALL" } : { kind: "SELECTED", locationIds: [selectedLocation] },
     }).catch((): ScheduleGenerationReview => ({ editable: false, unavailable: true, attempted: 0, needsSetup: 0, coverage: null, exclusions: [] })),
+    listScheduleStatuses(weekStart).catch(() => null),
+    listEmployeeHourTargets().catch(() => null),
   ]);
+  const statusFor = (locationId: string) => scheduleStatuses ? scheduleStatuses.find(row => row.locationId === locationId)?.status ?? "NONE" : null;
+  const publishedCount = scheduleStatuses ? locations.filter(location => statusFor(location.id) === "PUBLISHED").length : null;
+  const targetsById = new Map((hourTargets ?? []).map(target => [target.employeeId, target]));
   const capturedByShift = new Map(capturedPositions.map(shift => [shift.sourceShiftId, shift]));
   const positionNames = new Map(positions.map(position => [position.id, position.name]));
+  // The workspace's first position gets the brand tint, the next five the others, in catalog order.
+  const positionTints = new Map(positions.map((position, index) => [position.name.trim().toLocaleLowerCase(), index % 6]));
   const activeEmployees = employees.filter((employee) => employee.active);
   const reviewLocation = locations.find(location => location.id === params.publishCheck);
   const publicationReview = reviewLocation ? {
@@ -193,12 +219,18 @@ export default async function SchedulePage({
     id: employee.id,
     name: `${employee.firstName} ${employee.lastName}`,
     role: employeeRoleLabel(employee.role),
+    hours: targetsById.has(employee.id) ? {
+      week: assignedHours(allShifts.filter(shift => shift.employeeId === employee.id && !shift.isCalloutApproved).map(shift => ({ ...shift, location: "", status: shift.scheduleStatus, lead: shift.isDesignatedLead }))),
+      target: targetsById.get(employee.id)!.targetWeeklyHours ?? null,
+      maximum: targetsById.get(employee.id)!.maximumWeeklyHours,
+    } : undefined,
     shifts: visibleShifts.filter(shift => shift.employeeId === employee.id && !shift.isCalloutApproved).map(shift => {
       const captured = shift.scheduleStatus !== "DRAFT" ? capturedByShift.get(shift.id) : undefined;
       return {
         id: shift.id, date: shift.date, startTime: shift.startTime, endTime: shift.endTime,
         location: locations.find(location => location.id === shift.locationId)?.shortName ?? "",
         position: captured ? captured.positionName : shift.positionId ? positionNames.get(shift.positionId) : undefined,
+        tint: (() => { const name = captured ? captured.positionName : shift.positionId ? positionNames.get(shift.positionId) : undefined; return name ? positionTints.get(name.trim().toLocaleLowerCase()) : undefined; })(),
         status: shift.scheduleStatus, lead: shift.isDesignatedLead,
       };
     }),
@@ -278,6 +310,7 @@ export default async function SchedulePage({
               <Link className="nevora-action-menu-item mws-mobile-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Templates</strong><span>Manage reusable shift patterns.</span></Link>
               <Link className="nevora-action-menu-item" href="#schedule-planning"><strong>Build and publish</strong><span>Automatic scheduling and publication by location.</span></Link>
               <ScheduleCopyForm actorId={session.id} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
+              <PrintScheduleButton />
               <Link className="nevora-action-menu-item" href="/app/schedule/settings"><strong>Scheduling rules</strong><span>Coverage requirements and employee hour targets.</span></Link>
               <Link className="nevora-action-menu-item" href="/app/updates"><strong>Team updates</strong><span>Keep your team informed.</span></Link>
               <div className="nevora-action-menu-divider" />
@@ -298,6 +331,7 @@ export default async function SchedulePage({
                 href={`/app/schedule?week=${weekStart}`}
               >
                 All locations
+                {publishedCount !== null && locations.length ? <span className="mws-status-chip" data-status={publishedCount === locations.length ? "PUBLISHED" : "MIXED"}>{publishedCount} of {locations.length} published</span> : null}
               </Link>
               {locations.map((location) => (
                 <Link
@@ -307,6 +341,7 @@ export default async function SchedulePage({
                   href={`/app/schedule?week=${weekStart}&location=${location.id}`}
                 >
                   {location.shortName}
+                  {statusFor(location.id) ? <span className="mws-status-chip" data-status={statusFor(location.id)}>{statusFor(location.id) === "PUBLISHED" ? "Published" : statusFor(location.id) === "DRAFT" ? "Draft" : statusFor(location.id) === "ARCHIVED" ? "Archived" : "Not started"}</span> : null}
                 </Link>
               ))}
             </div>
@@ -326,6 +361,7 @@ export default async function SchedulePage({
         </details>
       </section>
 
+      <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
       <ManagerIssueFocus prefix="schedule-" />
       {reviewDay?<div className="manager-schedule-context manager-issue-target" id="schedule-review" tabIndex={-1}><p>Opened for review: {formatDayLabel(reviewDay).weekday} {formatDayLabel(reviewDay).day} · {selectedLocation==='all'?'All locations':locations.find(location=>location.id===selectedLocation)?.shortName}</p><Link href={`/app/schedule?week=${weekStart}${locationQuery}`}>Show full week</Link></div>:null}
       <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone} />
