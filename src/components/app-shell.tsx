@@ -18,6 +18,7 @@ import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
 import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
+import { CommandFinder } from "./command-finder";
 import { NUVORA_BRAND } from "../lib/brand";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 
@@ -167,6 +168,7 @@ export function AppShell({
             <AuthBrand />
           </Link>
           <div className="mobile-header-actions">
+          {!employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} /> : null}
           {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
           <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
             {employee ? <Link href="/app/profile" className="nevora-action-menu-item"

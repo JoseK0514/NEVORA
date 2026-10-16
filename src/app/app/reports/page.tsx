@@ -15,6 +15,6 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
-  return <ReportsEntrance><header className={styles.pageHeader} data-report-entrance=""><span className={styles.headerIcon}><ChartBarIcon size={26} weight="regular" aria-hidden="true"/></span><div><h1>Reports</h1><p>Hours, attendance and schedule changes for any period.</p></div></header>
+  return <ReportsEntrance><header className={styles.pageHeader} data-report-entrance=""><span className={styles.headerIcon}><ChartBarIcon size={26} weight="regular" aria-hidden="true"/></span><div><h1>Insights</h1><p>Hours, attendance and schedule changes for any period.</p></div></header>
     <Reports key={session.id} initialPeriod={period}/></ReportsEntrance>;
 }

@@ -214,3 +214,28 @@ The visible text of every page, for owner, employee and both payroll roles, was 
 - **Not celebrated:** payroll approval and publishing by the person doing them, declines, lateness, streaks and amounts.
 - **Waiting on data:** first published shift, first full week, everyone acknowledged and work anniversaries.
 - **Per-device memory:** another device opening an already-confirmed week sees the moment once.
+
+#### U8: finder, tables and Insights (2026-10-16)
+
+- **⌘K / Ctrl+K finder** (`src/components/command-finder.tsx`, `src/lib/finder.ts`) for owners and managers: Actions (add a shift, add an employee, send an update), the pages the role can open, people and locations.
+  - **Results:** an empty query shows actions and pages only, so opening the finder never lists the whole team. Matches rank by label start, then word start, then contains, then keywords. People link to their record; locations link to their schedule.
+  - **Interaction:** a native modal dialog with a combobox and listbox (`aria-activedescendant`). Arrow keys move, Enter opens, Esc closes, and focus returns to where it was. There is no open animation, since it's a frequent keyboard tool. A "Search ⌘K" button (44px tall) sits in the desktop top bar (Ctrl K on other systems). Typed Employees searches replace the history entry, so Back returns to the page before Employees.
+- **New read-only route, for review:** `GET /api/manager/finder` follows the clock-monitor pattern:
+  - rejects cross-site requests and requires an `X-Nevora-Finder: 1` header
+  - allows only owner or manager sessions
+  - sends `no-store, private` headers
+  - returns only active people (id, name, role label) and active locations (id, name), never phone, email or Clocker keys
+  - reports a failure as unavailable, never as an empty list
+
+  It writes nothing.
+- **Employees** filter as you type (after 300ms) and as soon as a select changes. Typed queries replace the history entry, and the caret stays put while results update. "Apply filters" stays. On desktop, the table's column headers stay visible while the list scrolls.
+- **Tables on phones:** a scan of every table at 390px found both (Employees, Reports) already stacking as cards with no sideways scroll, so nothing changed.
+- **Insights:** Reports is now called Insights (same URL). An "At a glance" strip leads with six answers taken only from the loaded report: hours worked, scheduled vs worked, clock-in notes, time off and callouts, coverage filled, and timecards to finish.
+  - Each card jumps to its detailed section; the tables, CSV and print stay as they were.
+  - **Incomplete sources:** the cards read "Not available" or "Incomplete" rather than a number.
+  - **Status headings** read "Insights unavailable…", updated in the QA script too.
+- **Deferred:**
+  - Sortable desktop headers, which need a sort parameter in the employee directory.
+  - Compact density.
+  - Payroll cost on Insights, which needs payroll totals in the report.
+  - On phones, "At a glance" sits below the period controls. Moving it first means restructuring the report's tested lifetime and state handling.

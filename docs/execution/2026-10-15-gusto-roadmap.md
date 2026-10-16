@@ -67,7 +67,8 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
 - **U5 plain language (done, 2026-10-16):** 54 audit-style strings rewritten from a scan of every page's visible text, with readable coverage-gap times and no revision numbers in timecard headers; the guide is in `docs/design/voice.md`.
 - **U6 Pay (done, 2026-10-16):** a five-step payroll stepper derived from run state, and a Payday moment for the newest statement on My pay (no amounts, since statements carry none).
 - **U7 delight (done, 2026-10-16):** a table-tested celebration gate and a 560ms burst for five server-confirmed moments, once per session and never under reduced motion.
-- **Next:** U8 finder and tables, U9 Clocker, U10 tokens.
+- **U8 finder, tables and Insights (done, 2026-10-16):** a ⌘K finder over a new read-only names route, filter-as-you-type Employees with sticky headers, and Reports renamed Insights with an "At a glance" strip. Phone tables already stacked.
+- **Next:** U9 Clocker, U10 tokens.
 
 ## Owed testing
 - VoiceOver pass, 200% zoom, and at least one physical iPhone.

@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import { AppShell } from './app-shell';
 vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
-vi.mock('next/navigation',()=>({usePathname:()=>'/app',useSearchParams:()=>new URLSearchParams()}));
+vi.mock('next/navigation',()=>({usePathname:()=>'/app',useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams:()=>new URLSearchParams()}));
 vi.mock('@/app/login/actions',()=>({logout:vi.fn()}));
 it.each(['OWNER','MANAGER'] as const)('%s has native sign-out inside the mobile management menu',role=>{
  for(const notificationsEnabled of [false,true]){

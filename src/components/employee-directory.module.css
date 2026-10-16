@@ -144,3 +144,6 @@
 @media (prefers-reduced-motion: reduce) {
   .directory *, .directory *::before, .directory *::after { transition: none !important; animation: none !important; }
 }
+
+/* U8: the column headers stay visible while a long team list scrolls (desktop). */
+@media (min-width: 761px) { .table thead { position: sticky; top: 64px; z-index: 2; } .table thead tr { box-shadow: 0 1px 0 var(--g-hairline, #ECEDEF); } }
