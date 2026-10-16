@@ -570,3 +570,11 @@ The portal follows `docs/design/voice.md`.
 - **Dates:** people see `formatDisplayDate` ("Tue, Oct 6") and `formatDateRange` ("Sep 28 – Oct 4, 2026") from `src/lib/date-utils.ts`. Payroll runs, backlog, settings and My pay no longer show ISO dates. Freshness lines read "Updated 7:31 PM"; the employee record-details disclosure keeps exact seconds.
 - **Empty states:** `src/components/empty-state.tsx` (structure adapted from the 21st "Empty" block) is the empty-state pattern. Older full-panel variants share its look through `portal-gusto.css`.
 - **Colour:** the remaining brand-peach tints (#F8EAE5, #FFF8F5) map to the teal ladder. Payroll's error state uses a red tint, and semantic warning and error colours are unchanged.
+
+#### Phase 3: motion and materials (2026-10-15)
+
+`src/app/app/portal-motion.css` and `src/components/sheet-gestures.tsx` follow Apple's fluid-interface guidance and Emil Kowalski's rules: interruptible transitions, motion from the trigger, and no motion on frequent keyboard paths.
+- **Menus:** grow from their trigger corner over 150ms with a strong ease-out, from 0.96 scale with a fade, and close in 110ms. Uses `@starting-style` and `allow-discrete`.
+- **Phone sheets** (manager More on workforce pages and Home, employee More): a grab handle, a slide up over 320ms on the iOS drawer curve `cubic-bezier(.32,.72,0,1)`, exit by the same path, and a dimmed backdrop. Swipe down to dismiss: 1:1 tracking from the grab point with pointer capture, single touch, rubber-band resistance upward. A sheet closes past 30% of its height or on a flick (over 0.11 px/ms and at least 24px); otherwise it snaps back from its live position. The click after a dismissing drag is suppressed.
+- **Disclosures:** `details` animate their height through `::details-content` with `interpolate-size` where supported. The mobile Review disclosure fades in.
+- **Materials:** the desktop top bar is sticky frosted glass, and its hairline edge appears only after 32px of scroll (scroll-driven animation, static fallback). The phone tab bar is frosted. Reduced transparency and increased contrast fall back to solid white, the latter with an ink edge. Reduced motion keeps fades and removes movement.

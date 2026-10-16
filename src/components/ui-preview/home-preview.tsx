@@ -5,6 +5,7 @@ import {AuthBrand} from '../auth-brand';
 import {NavIcon} from '../nav-icon';
 import {ActionMenu} from '../action-menu';
 import {PortalAccountMenu} from '../portal-account-menu';
+import {SheetGestures} from '../sheet-gestures';
 import {ManagerDashboard} from '../manager-dashboard';
 import {ActionCenterSurface} from '../manager-action-center';
 import {ClockMonitorCard} from '../manager-clock-monitor';
@@ -67,6 +68,7 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
           </div></> : null}
       </nav>
     </main>
+    <SheetGestures/>
   </div>;
 }
 

@@ -3,6 +3,7 @@ import {HomePreview} from '@/components/ui-preview/home-preview';
 import '@/app/app/portal-design-system.css';
 import '@/app/app/portal-refinement.css';
 import '@/app/app/portal-gusto.css';
+import '@/app/app/portal-motion.css';
 import './preview.css';
 
 export const metadata = {title: 'Home · NEVORA sample preview', robots: {index: false, follow: false}};

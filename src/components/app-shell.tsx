@@ -13,6 +13,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import { PortalAccountMenu } from "./portal-account-menu";
+import { SheetGestures } from "./sheet-gestures";
 import type { UserRole } from "@/lib/domain";
 import { activeNavigationHref, managementNavigationGroups, navigationForRole } from "@/lib/navigation";
 import { NUVORA_BRAND } from "../lib/brand";
@@ -286,6 +287,7 @@ export function AppShell({
           )}
         </nav>
       </main>
+      <SheetGestures />
       {notificationsEnabled ? <PortalDeviceSetup role={user.role} /> : null}
     </div>
   );

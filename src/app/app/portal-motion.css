@@ -1,0 +1,159 @@
+/* Portal motion and materials (Phase 3, 2026-10-15). Apple "Designing Fluid
+ * Interfaces" and Emil Kowalski's rules: transitions (interruptible), strong
+ * ease-out under 300ms for menus, the iOS drawer curve for sheets, motion that
+ * starts from the trigger, and gentler equivalents for reduced motion,
+ * reduced transparency and increased contrast. */
+html body .app-shell.nevora-portal {
+  --m-ease-out: cubic-bezier(.23, 1, .32, 1);
+  --m-ease-drawer: cubic-bezier(.32, .72, 0, 1);
+  --m-menu-in: 150ms;
+  --m-menu-out: 110ms;
+  --m-sheet-in: 320ms;
+  --m-sheet-out: 220ms;
+  --m-glass: rgba(255, 255, 255, .78);
+  interpolate-size: allow-keywords;
+}
+
+/* 1. Menus and popovers grow from their trigger (desktop and anchored menus). */
+html body .app-shell.nevora-portal .nevora-action-menu-popover {
+  transform-origin: top right;
+  opacity: 0;
+  transform: translateY(-4px) scale(.96);
+  transition: opacity var(--m-menu-out) var(--m-ease-out), transform var(--m-menu-out) var(--m-ease-out),
+    overlay var(--m-menu-out) allow-discrete, display var(--m-menu-out) allow-discrete;
+}
+html body .app-shell.nevora-portal .nevora-action-menu-popover.align-start { transform-origin: top left; }
+html body .app-shell.nevora-portal .nevora-action-menu-popover:popover-open {
+  opacity: 1;
+  transform: none;
+  transition-duration: var(--m-menu-in);
+}
+@starting-style {
+  html body .app-shell.nevora-portal .nevora-action-menu-popover:popover-open { opacity: 0; transform: translateY(-4px) scale(.96); }
+}
+
+/* 2. Phone sheets slide up from the bottom edge, leave the same way, dim the
+ * page behind them and show a grab handle (swipe-to-dismiss lives in SheetGestures). */
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal:is([data-mobile-workforce="true"]) .nevora-action-menu-popover,
+  html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation,
+  html body .app-shell.nevora-portal .employee-more-navigation {
+    --sheet: 1;
+    transform-origin: bottom center;
+    opacity: 1;
+    transform: translateY(calc(100% + 32px));
+    transition: transform var(--m-sheet-out) var(--m-ease-drawer), overlay var(--m-sheet-out) allow-discrete, display var(--m-sheet-out) allow-discrete;
+    touch-action: pan-y;
+  }
+  html body .app-shell.nevora-portal:is([data-mobile-workforce="true"]) .nevora-action-menu-popover:popover-open,
+  html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation:popover-open,
+  html body .app-shell.nevora-portal .employee-more-navigation:popover-open {
+    transform: none;
+    transition-duration: var(--m-sheet-in);
+  }
+  @starting-style {
+    html body .app-shell.nevora-portal:is([data-mobile-workforce="true"]) .nevora-action-menu-popover:popover-open,
+    html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation:popover-open,
+    html body .app-shell.nevora-portal .employee-more-navigation:popover-open { transform: translateY(calc(100% + 32px)); }
+  }
+  /* A dragging sheet follows the finger 1:1. */
+  html body .app-shell.nevora-portal [data-sheet-dragging="true"] { transition: none !important; }
+  html body .app-shell.nevora-portal:is([data-mobile-workforce="true"]) .nevora-action-menu-popover::before,
+  html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation::before,
+  html body .app-shell.nevora-portal .employee-more-navigation::before {
+    content: ""; display: block; width: 36px; height: 4px; margin: 0 auto 10px; border-radius: 999px; background: #D7D9DC;
+  }
+  html body .app-shell.nevora-portal :is(.nevora-action-menu-popover, .employee-more-navigation)::backdrop {
+    background: rgba(28, 28, 28, 0);
+    transition: background var(--m-sheet-out) ease, overlay var(--m-sheet-out) allow-discrete, display var(--m-sheet-out) allow-discrete;
+  }
+  html body .app-shell.nevora-portal:is([data-mobile-workforce="true"]) .nevora-action-menu-popover:popover-open::backdrop,
+  html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation:popover-open::backdrop,
+  html body .app-shell.nevora-portal .employee-more-navigation:popover-open::backdrop { background: rgba(28, 28, 28, .28); }
+  @starting-style {
+    html body .app-shell.nevora-portal :is(.nevora-action-menu-popover, .employee-more-navigation):popover-open::backdrop { background: rgba(28, 28, 28, 0); }
+  }
+}
+
+/* 3. Disclosures open smoothly where the browser can animate to auto height. */
+html body .app-shell.nevora-portal .page-frame details::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition: block-size 200ms var(--m-ease-out), content-visibility 200ms allow-discrete;
+}
+html body .app-shell.nevora-portal .page-frame details[open]::details-content { block-size: auto; }
+html body .app-shell.nevora-portal .page-frame .mobile-home-disclosure[data-revealed="true"] > .mobile-home-disclosure-content {
+  transition: opacity 180ms var(--m-ease-out), translate 180ms var(--m-ease-out);
+}
+@starting-style {
+  html body .app-shell.nevora-portal .page-frame .mobile-home-disclosure[data-revealed="true"] > .mobile-home-disclosure-content { opacity: 0; translate: 0 -4px; }
+}
+
+/* 4. Translucent chrome: a frosted top bar whose edge appears only once content
+ * scrolls under it, and a frosted phone tab bar. */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .mobile-header {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--m-glass);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
+  }
+  @supports (animation-timeline: scroll()) {
+    html body .app-shell.nevora-portal .mobile-header {
+      animation: portal-scroll-edge linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 32px;
+    }
+  }
+}
+@keyframes portal-scroll-edge {
+  from { border-bottom-color: transparent; box-shadow: none; }
+  to { border-bottom-color: var(--g-hairline, #ECEDEF); box-shadow: 0 1px 8px rgba(28, 28, 28, .04); }
+}
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal.nevora-portal .mobile-nav {
+    background: rgba(255, 255, 255, .82);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+  }
+}
+
+/* Accessibility fallbacks. */
+@media (prefers-reduced-transparency: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal .mobile-nav,
+  html body .app-shell.nevora-portal :is(.mobile-header, .mobile-nav) {
+    background: #FFFFFF; -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  html body .app-shell.nevora-portal.nevora-portal .mobile-nav,
+  html body .app-shell.nevora-portal :is(.mobile-header, .mobile-nav) {
+    background: #FFFFFF; -webkit-backdrop-filter: none; backdrop-filter: none; border-color: #1C1C1C;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Fades stay; movement goes. */
+  html body .app-shell.nevora-portal .nevora-action-menu-popover,
+  html body .app-shell.nevora-portal .nevora-action-menu-popover:popover-open { transform: none; }
+  @starting-style {
+    html body .app-shell.nevora-portal .nevora-action-menu-popover:popover-open { transform: none; }
+  }
+  html body .app-shell.nevora-portal .page-frame details::details-content { transition: none; }
+  html body .app-shell.nevora-portal .page-frame .mobile-home-disclosure[data-revealed="true"] > .mobile-home-disclosure-content { transition: opacity 120ms ease; translate: none; }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal:is([data-mobile-workforce="true"]) .nevora-action-menu-popover,
+  html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation,
+  html body .app-shell.nevora-portal .employee-more-navigation {
+    transform: none; opacity: 0;
+    transition: opacity 160ms ease, overlay 160ms allow-discrete, display 160ms allow-discrete;
+  }
+  html body .app-shell.nevora-portal:is([data-mobile-workforce="true"]) .nevora-action-menu-popover:popover-open,
+  html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation:popover-open,
+  html body .app-shell.nevora-portal .employee-more-navigation:popover-open { opacity: 1; transform: none; }
+  @starting-style {
+    html body .app-shell.nevora-portal:is([data-mobile-workforce="true"]) .nevora-action-menu-popover:popover-open,
+    html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation:popover-open,
+    html body .app-shell.nevora-portal .employee-more-navigation:popover-open { opacity: 0; transform: none; }
+  }
+}
