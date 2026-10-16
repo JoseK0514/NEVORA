@@ -80,24 +80,17 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
    <div className={styles.filterBar}><p role="status" aria-live="polite" className={visible.length===matching.length?'sr-only':undefined}>Showing {visible.length} of {matching.length} {noun}{matching.length===1?'':'s'}</p></div>
    {matching.length?<div id="manager-action-list" className={styles.list}>{visibleGroups.map((group,index)=>groups[index].length===1?renderItem(group[0]):<details className={styles.actionGroup} key={group[0].id}><summary><span><small>{categoryLabels[group[0].category]} · {priorityLabel(group[0].priority)}</small><strong>{taskGroupHeading(group[0].type,groups[index].length,group[0].title)}</strong></span><span className={styles.groupCount}><span className="manager-task-review-label">Review</span><CaretDownIcon className="manager-task-caret" size={18} aria-hidden="true"/></span></summary><div>{group.length<groups[index].length?<p className={styles.groupPreview}>Showing {group.length} of {groups[index].length}. Use “Show all tasks” below to review the rest.</p>:null}{group.map(item=>renderItem(item,true))}</div></details>)}</div>:<p id="manager-action-list" className={category==='all'?`${styles.status} manager-tasks-clear`:styles.status} role="status">{category==='all'?<><CheckCircleIcon size={28} aria-hidden="true"/><strong>You’re all caught up</strong><span>No tasks found in the checked sources.</span></>:`No ${category==='requests'?'requests':`${category} tasks`} to review in the checked sources.`}</p>}
    {matching.length>visible.length&&!expanded?<button className="button secondary" onClick={onExpand}>Show all {matching.length} tasks</button>:null}
+   {ready.counts.total?<Link className={styles.inboxLink} href="/app/inbox">Open inbox</Link>:null}
    {ready.limitedAttendance?<p className={styles.status}>Some attendance comparisons are unavailable. Check the attendance view for source limitations.</p>:null}
    <div className={styles.provenance}><details className={styles.note}><summary><InfoIcon size={16} aria-hidden="true"/>About these tasks</summary><p>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p></details></div>
   </>:<>{status==='loading'||status==='reconnecting'?<SkeletonRows rows={3}/>:null}<p className={status==='loading'||status==='reconnecting'?`${styles.status} nevora-skeleton-status`:styles.status} role="status">{({loading:'Loading tasks',ready:'Tasks unavailable',offline:'Tasks unavailable offline',reconnecting:'Reconnecting to tasks',unavailable:'Tasks unavailable',access_lost:'Task access ended',paused:'Task updates paused'})[status]}{status==='loading'||status==='reconnecting'?'…':`. ${status==='access_lost'?'Sign in with a currently authorized management account.':'The task list is unconfirmed. Refresh a current protected read before reviewing.'}`}</p></>}
   </MobileHomeDisclosure>
  </section>;
 }
-export function ManagerActionCenter({weekStart,actorId,timeZone}:{weekStart:string;actorId:string;timeZone?:string}){
- const [snapshot,setSnapshot]=useState<ActionCenter|null>(null),[connection,setConnection]=useState<Connection>('loading'),[expanded,setExpanded]=useState(false);
- const [category,setCategory]=useState<Category>('all');
- useEffect(()=>{
-  const restore=()=>{const value=new URL(window.location.href).searchParams.get('actionCategory');setCategory(value==='scheduling'||value==='requests'||value==='timekeeping'?value:'all');setExpanded(false);};
-  restore();window.addEventListener('popstate',restore);return()=>window.removeEventListener('popstate',restore);
- },[]);
- const selectCategory=(value:Category)=>{
-  setCategory(value);setExpanded(false);
-  const url=new URL(window.location.href);if(value==='all')url.searchParams.delete('actionCategory');else url.searchParams.set('actionCategory',value);
-  window.history.replaceState(window.history.state,'',url);
- };
+/** The live, authority-checked action center read shared by Home Tasks and the
+ * Inbox. It pauses offline and in background tabs and never keeps stale items. */
+export function useActionCenter(weekStart:string,actorId:string){
+ const [snapshot,setSnapshot]=useState<ActionCenter|null>(null),[connection,setConnection]=useState<Connection>('loading');
  const controller=useRef<ReturnType<typeof createPrivateSnapshotController<ActionCenter>>|null>(null);
  useEffect(()=>{
   const c=createPrivateSnapshotController<ActionCenter>(value=>{setSnapshot(value.refreshing?null:value.snapshot);if(value.paused)setConnection(navigator.onLine?'paused':'offline');else if(value.refreshing)setConnection(previous=>previous==='reconnecting'?'reconnecting':'loading');else if(value.snapshot?.state==='ready')setConnection('ready');else setConnection(value.snapshot?.state==='unavailable'&&value.snapshot.reason==='access_denied'?'access_lost':'unavailable');},async signal=>{
@@ -109,7 +102,23 @@ export function ManagerActionCenter({weekStart,actorId,timeZone}:{weekStart:stri
   for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.addEventListener(name,current);for(const name of ['blur','pagehide','offline'])window.addEventListener(name,pause);window.addEventListener('online',online);document.addEventListener('visibilitychange',current);current();
   return()=>{c.stop();controller.current=null;for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.removeEventListener(name,current);for(const name of ['blur','pagehide','offline'])window.removeEventListener(name,pause);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',current);};
  },[weekStart,actorId]);
- return <ActionCenterSurface snapshot={snapshot} connection={connection} timeZone={timeZone} category={category} onCategoryChange={selectCategory} expanded={expanded} onExpand={()=>setExpanded(true)} onRefresh={()=>controller.current?.refresh()}/>;
+ return {snapshot,connection,refresh:()=>controller.current?.refresh()};
+}
+export type ActionCenterConnection=Connection;
+export function ManagerActionCenter({weekStart,actorId,timeZone}:{weekStart:string;actorId:string;timeZone?:string}){
+ const [expanded,setExpanded]=useState(false);
+ const [category,setCategory]=useState<Category>('all');
+ useEffect(()=>{
+  const restore=()=>{const value=new URL(window.location.href).searchParams.get('actionCategory');setCategory(value==='scheduling'||value==='requests'||value==='timekeeping'?value:'all');setExpanded(false);};
+  restore();window.addEventListener('popstate',restore);return()=>window.removeEventListener('popstate',restore);
+ },[]);
+ const selectCategory=(value:Category)=>{
+  setCategory(value);setExpanded(false);
+  const url=new URL(window.location.href);if(value==='all')url.searchParams.delete('actionCategory');else url.searchParams.set('actionCategory',value);
+  window.history.replaceState(window.history.state,'',url);
+ };
+ const {snapshot,connection,refresh}=useActionCenter(weekStart,actorId);
+ return <ActionCenterSurface snapshot={snapshot} connection={connection} timeZone={timeZone} category={category} onCategoryChange={selectCategory} expanded={expanded} onExpand={()=>setExpanded(true)} onRefresh={refresh}/>;
 }
 
 import { Temporal } from '@js-temporal/polyfill';

@@ -50,8 +50,9 @@ describe('phone tabs', () => {
     expect(activeMobileTab(role, '/app/my-time', payroll)).toBe('/app/my-pay');
     expect(mobileMoreForRole(role, payroll).map(item => item.href)).toEqual(['/app/updates','/app/notifications','/app/profile']);
   });
-  it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Requests and Team, with every other destination in More', role => {
-    expect(mobileTabsForRole(role).map(tab => tab.href)).toEqual(['/app','/app/schedule','/app/requests','/app/employees']);
+  it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Inbox and Team, with every other destination in More', role => {
+    expect(mobileTabsForRole(role).map(tab => tab.href)).toEqual(['/app','/app/schedule','/app/inbox','/app/employees']);
+    expect(navigationForRole(role).map(item => item.href).slice(0, 3)).toEqual(['/app','/app/inbox','/app/schedule']);
     const reachable = [...mobileTabsForRole(role).flatMap(tab => tab.owns), ...mobileMoreForRole(role, { ...payroll, canReview: true }).map(item => item.href)];
     for (const item of navigationForRole(role, { ...payroll, canReview: true })) expect(reachable).toContain(item.href);
     expect(activeMobileTab(role, '/app/schedule/templates')).toBe('more');

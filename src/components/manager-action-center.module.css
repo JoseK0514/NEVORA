@@ -98,3 +98,7 @@
  .review {grid-column:2;width:max-content;}
  .provenance {gap:0;}
 }
+
+/* U4: the full list lives in the Inbox. */
+.inboxLink { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--g-accent, #077572); font-size: 15px; font-weight: 600; text-decoration: none; }
+.inboxLink::after { content: "›"; font-size: 18px; line-height: 1; }

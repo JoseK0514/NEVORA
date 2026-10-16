@@ -61,12 +61,13 @@ it.each(["EMPLOYEE", "LEAD"] as const)("gives %s Home, Schedule, Requests and Ho
   expect(html).not.toContain("sidebar-mantra");
 });
 
-it.each(["MANAGER", "OWNER"] as const)("gives %s Home, Schedule, Requests, Team and More tabs", (role) => {
+it.each(["MANAGER", "OWNER"] as const)("gives %s Home, Schedule, Inbox, Team and More tabs", (role) => {
   const { html, mobile } = render(role);
   const [primary] = mobile.split('id="manager-more-navigation"');
   expect([...primary.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app", "/app/schedule", "/app/requests", "/app/employees",
+    "/app", "/app/schedule", "/app/inbox", "/app/employees",
   ]);
+  expect(primary).toContain('<span>Inbox</span>');
   expect(primary).toContain('aria-label="More navigation"');
   expect(primary).toContain('<span>More</span>');
   expect(html).not.toContain("employee-shell");
@@ -168,7 +169,7 @@ it.each(['MANAGER','OWNER'] as const)('gives %s one More menu in the tab bar and
  expect(header).not.toContain('role-chip');
 });
 
-it.each([['MANAGER','/app/exchange','/app/requests'],['OWNER','/app/availability','/app/requests'],['MANAGER','/app/employees/AUDIT-E','/app/employees'],['EMPLOYEE','/app/exchange','/app/requests/hub'],['LEAD','/app/availability','/app/requests/hub']] as const)('lights the %s tab that owns %s',(role,pathname,tab)=>{
+it.each([['MANAGER','/app/exchange','/app/inbox'],['OWNER','/app/availability','/app/inbox'],['MANAGER','/app/inbox','/app/inbox'],['OWNER','/app/requests','/app/inbox'],['MANAGER','/app/employees/AUDIT-E','/app/employees'],['EMPLOYEE','/app/exchange','/app/requests/hub'],['LEAD','/app/availability','/app/requests/hub']] as const)('lights the %s tab that owns %s',(role,pathname,tab)=>{
  const {mobile}=render(role,pathname);
  expect(mobile).toContain(`href="${tab}" class="mobile-nav-link active" aria-current="page"`);
 });

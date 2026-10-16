@@ -10,6 +10,7 @@ export type NavigationItem = {
 
 const managementNavigation: NavigationItem[] = [
   { href: "/app", label: "Home", icon: "dashboard" },
+  { href: "/app/inbox", label: "Inbox", icon: "inbox" },
   { href: "/app/schedule", label: "Schedule", icon: "schedule" },
   { href: "/app/availability", label: "Availability", icon: "availability" },
   { href: "/app/requests", label: "Time off", icon: "timeOff" },
@@ -37,7 +38,7 @@ const employeeNavigation: NavigationItem[] = [
 /** Presentation groups consume only already-authorized navigation entries. */
 export function managementNavigationGroups(items: NavigationItem[]) {
   const definitions = [
-    {label:'Plan', hrefs:['/app','/app/schedule','/app/availability','/app/exchange','/app/schedule/templates']},
+    {label:'Plan', hrefs:['/app','/app/inbox','/app/schedule','/app/availability','/app/exchange','/app/schedule/templates']},
     {label:'Team', hrefs:['/app/employees','/app/requests','/app/updates']},
     {label:'Time & Pay', hrefs:['/app/timecards','/app/payroll','/app/payroll-export','/app/reports','/app/my-pay']},
     {label:'Workspace', hrefs:['/app/settings','/app/schedule/settings']},
@@ -85,7 +86,7 @@ export type MobileTab = NavigationItem & {
 
 /** Phone tab bar: four destinations, then More for everything else. Employees
  * get Home, Schedule, Requests and Pay (Hours while payroll is off); managers
- * get Home, Schedule, Requests and Team. */
+ * get Home, Schedule, Inbox and Team. */
 export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities): MobileTab[] {
   const home: MobileTab = { href: "/app", label: "Home", icon: "dashboard", owns: ["/app"] };
   const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule"] };
@@ -98,7 +99,7 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities)
   return [
     home,
     schedule,
-    { href: "/app/requests", label: "Requests", icon: "requests", owns: ["/app/requests", "/app/exchange", "/app/availability"] },
+    { href: "/app/inbox", label: "Inbox", icon: "inbox", owns: ["/app/inbox", "/app/requests", "/app/exchange", "/app/availability"] },
     { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees"] },
   ];
 }

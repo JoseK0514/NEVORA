@@ -1,0 +1,39 @@
+import {describe, expect, it} from 'vitest';
+import {inboxSections, timeOffRequestId} from './inbox';
+import type {ActionItem} from './project';
+
+const item = (id: string, type: ActionItem['type'], category: ActionItem['category'], priority: ActionItem['priority'] = 'REVIEW'): ActionItem =>
+  ({id, type, category, priority, title: id, detail: '', href: '/app'} as ActionItem);
+
+describe('inbox sections', () => {
+  it('puts urgent first, then exceptions in review order, then requests', () => {
+    const sections = inboxSections([
+      item('TIME_OFF:a', 'TIME_OFF', 'requests'), item('TIMECARD:x', 'TIMECARD', 'timekeeping'),
+      item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT'), item('TIME_CORRECTION:c', 'TIME_CORRECTION', 'timekeeping'),
+      item('hours', 'HOURS_REVIEW', 'scheduling'), item('EXCHANGE:e', 'EXCHANGE', 'requests'), item('TIME_OFF:b', 'TIME_OFF', 'requests'),
+    ]);
+    expect(sections.map(section => [section.id, section.items.map(entry => entry.id)])).toEqual([
+      ['urgent', ['gap']],
+      ['exceptions', ['TIME_CORRECTION:c', 'hours', 'TIMECARD:x']],
+      ['requests', ['TIME_OFF:a', 'TIME_OFF:b', 'EXCHANGE:e']],
+    ]);
+  });
+  it('omits empty sections and never invents items', () => {
+    expect(inboxSections([])).toEqual([]);
+    expect(inboxSections([item('EXCHANGE:e', 'EXCHANGE', 'requests')]).map(section => section.id)).toEqual(['requests']);
+  });
+  it('finds the time-off request id only on time-off items', () => {
+    expect(timeOffRequestId(item('TIME_OFF:req-1', 'TIME_OFF', 'requests'))).toBe('req-1');
+    expect(timeOffRequestId(item('TIME_OFF:', 'TIME_OFF', 'requests'))).toBeNull();
+    expect(timeOffRequestId(item('EXCHANGE:x', 'EXCHANGE', 'requests'))).toBeNull();
+  });
+});
+
+describe('inbox grouping', async () => {
+  const {groupInboxItems} = await import('./inbox');
+  it('collapses three or more of one kind at one place, keeping order and time-off rows separate', () => {
+    const gap = (id: string, locationId: string) => ({...item(id, 'COVERAGE_GAP', 'scheduling', 'URGENT'), locationId});
+    const entries = groupInboxItems([gap('a', 'main'), gap('b', 'west'), gap('c', 'main'), gap('d', 'main'), item('TIME_OFF:1', 'TIME_OFF', 'requests'), item('TIME_OFF:2', 'TIME_OFF', 'requests'), item('TIME_OFF:3', 'TIME_OFF', 'requests')]);
+    expect(entries.map(entry => entry.kind === 'item' ? entry.item.id : `group:${entry.items.map(i => i.id).join(',')}`)).toEqual(['group:a,c,d', 'b', 'TIME_OFF:1', 'TIME_OFF:2', 'TIME_OFF:3']);
+  });
+});

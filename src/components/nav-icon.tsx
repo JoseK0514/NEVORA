@@ -26,6 +26,7 @@ import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwis
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { MegaphoneIcon } from "@phosphor-icons/react/dist/ssr/Megaphone";
 import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
+import { TrayIcon } from "@phosphor-icons/react/dist/ssr/Tray";
 import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
 import { ExportIcon } from "@phosphor-icons/react/dist/ssr/Export";
 import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/ssr/SidebarSimple";
@@ -60,6 +61,7 @@ const icons = {
   chevronRight: CaretRightIcon,
   updates: MegaphoneIcon,
   notifications: BellIcon,
+  inbox: TrayIcon,
   reports: ChartBarIcon,
   export: ExportIcon,
   sidebar: SidebarSimpleIcon,

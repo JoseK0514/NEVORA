@@ -649,3 +649,22 @@ Reference: the Future Pro home on Mobbin (time-of-day greeting on a light backgr
 - **Deferred:**
   - Open shifts and conflicts inside the manager grid need an unassigned-shift and conflict source in the roster.
   - The phone toolbar consolidation moves to U8 (desktop finder and tables).
+
+#### U4: manager Inbox (2026-10-16)
+
+- **`/app/inbox`** (`src/app/app/inbox/page.tsx`, `src/components/manager-inbox.tsx`) is the manager's one place for what needs a decision. Employees are sent to the Requests overview.
+  - It reads through the existing authority-checked action center, now shared as the `useActionCenter()` hook with Home Tasks. It pauses offline and in background tabs, and never keeps stale items.
+  - **Order** (`src/lib/action-center/inbox.ts`): "Needs attention now" (urgent), then "To review" (corrections, attendance, coverage, hours, missing setup, timecards, acknowledgements), then "Requests" (time off, shift requests, unable-to-work).
+  - **Filters:** All · To review · Requests, each with a count, plus "Updated 10:30 AM · Refresh".
+  - Urgent rows carry a 4px coral left bar.
+  - **Grouping:** three or more items of one kind at one location collapse into a single expandable card, for example "Coverage gap at Main Office · 14". One source can't bury the rest, and time-off rows always stay separate.
+  - "Inbox clear", with the all-caught-up illustration, appears only for a ready, empty observation; loading, offline and lost-access states say so.
+- **Deciding time off in place:** a time-off row carries the Time off page's own Approve and Decline buttons, posting the same `reviewTimeOffAction`.
+  - **Swipe** (`src/components/swipe-row.tsx`): on phones, swipe right to approve or left to decline. The backdrop (teal or coral) says what releasing will do, and the swipe commits only past half the row by pressing that row's visible button. A short swipe snaps back, and vertical drags scroll the page.
+  - **Confirmation:** the row shows "Approving…" until the server confirms. After a decision, the existing action still lands on the Time off page with "The request was reviewed."; returning to the Inbox needs a small server-action change awaiting Jose's approval.
+  - **Swaps and unable-to-work requests** link to their review page, because their approval needs revision checks the action center doesn't carry.
+- **Navigation:** the manager phone tab is now Inbox, lit for the Inbox and for Time off, Shift requests and Availability. The sidebar lists Inbox under Home. Home Tasks gains "Open inbox ›".
+- **Deferred:**
+  - Today tiles (Scheduled, Clocked in, Late) need published-only counts and late clock-ins, so they move to B4 with the missed-punch reader.
+  - An Inbox tab badge needs a count on every page.
+  - Per-device snooze, the Upcoming rail and the owner setup checklist come later.
