@@ -1,4 +1,5 @@
 import 'server-only';
+import {readActivePresentation} from '../workspace-presentation/service';
 import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { neonNotificationExecutor } from '../data/notification-transactions';
@@ -59,14 +60,17 @@ export class ClockerPunchService {
    'snapshot',clocker_punch_snapshot($1),'breakTypes',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'version',version,'name',name,
    'category',category,'targetMinutes',target_minutes,'active',active) ORDER BY lower(name),id)
    FROM clocker_break_types WHERE workspace_id=$2 AND active),'[]'::jsonb)) AS value`,[proof.employeeId,proof.device.workspaceId]));
-  const {snapshot,breakTypes}=data;
+  // Breaks turned off by the company (B2): no new breaks; an open break can still end.
+  const breaksOn=(await readActivePresentation(proof.device.workspaceId,this.executor)).modules.breaks;
+  const {snapshot}=data,breakTypes=breaksOn?data.breakTypes:[];
   const atOtherLocation=Boolean(snapshot.entry&&snapshot.entry.locationId!==proof.device.locationId);
   const allowedActions:PunchAction[]=atOtherLocation?[]:!snapshot.entry?['CLOCK_IN']:
    snapshot.entry.status==='ON_BREAK'?['END_BREAK','CLOCK_OUT']:breakTypes.length?['START_BREAK','CLOCK_OUT']:['CLOCK_OUT'];
-  return {snapshot,verificationId:this.context(proof),allowedActions,atOtherLocation,breakTypes};
+  return {snapshot,verificationId:this.context(proof),allowedActions,atOtherLocation,breakTypes,...(breaksOn?{}:{breaksOff:true as const})};
  }
  async execute(proof:ClockerIdentityProof,input:unknown):Promise<PunchReceipt>{
   const command=parsePunchCommand(input),expected=this.context(proof);
+  if(command.action==='START_BREAK'&&!(await readActivePresentation(proof.device.workspaceId,this.executor)).modules.breaks)throw new ClockerPunchError('CONTEXT_CHANGED');
   if(!timingSafeEqual(Buffer.from(command.verificationId,'hex'),Buffer.from(expected,'hex')))throw new ClockerPunchError('CONTEXT_CHANGED');
   const requestHash=createHash('sha256').update(JSON.stringify(['nevora-punch-command-v1',proof.employeeId,command])).digest('hex');
   return this.guarded<PunchReceipt>(proof,statement(

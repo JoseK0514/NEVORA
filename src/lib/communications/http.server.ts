@@ -5,6 +5,7 @@ import {COMMUNICATION_TRANSPORT_BYTES} from './validation';
 import {communicationAuthority,listEmployeeCommunications,readCommunication,previewCommunicationAudience,executeCommunicationCommand,findCommunicationOperation,recordCommunicationRead,readCommunicationContext} from './service.server';
 import type {CommunicationCommand,CommunicationDraft} from './types';
 import type {AttentionCommand} from '../employee-attention/types';
+import {moduleEnabled} from '../workspace-presentation/current.server';
 type Action='list'|'read'|'preview'|'command'|'operation'|'context';
 export async function communicationHttp(request:Request,mode:'EMPLOYEE'|'MANAGER',action:Action,id?:string):Promise<Response>{
  const write=action==='preview'||action==='command',boundary=correctionBoundary(request,write,'x-nevora-communication',COMMUNICATION_TRANSPORT_BYTES);
@@ -13,6 +14,7 @@ export async function communicationHttp(request:Request,mode:'EMPLOYEE'|'MANAGER
  try{
   const session=await getSession();if(!session)return correctionJson({state:'unauthorized',reason:'access_denied'},401);
   if(!(mode==='MANAGER'?['OWNER','MANAGER']:['EMPLOYEE','LEAD']).includes(session.role))return correctionJson({state:'unauthorized',reason:'access_denied'},403);
+  if(!(await moduleEnabled('updates')))return correctionJson({state:'unavailable',reason:'module_off'},404); // turned off by the company (B2)
   const proof=await requireSessionMutationProof();if(proof.employee.id!==session.id||proof.employee.role!==session.role||request.headers.get('x-nevora-communication-authority')!==communicationAuthority(proof))return correctionJson({state:'unauthorized',reason:'access_denied'},403);
   let value:unknown;if(write){try{value=await readCorrectionJson(request,COMMUNICATION_TRANSPORT_BYTES);}catch{return correctionJson({state:'invalid',reason:'invalid_command'},400);}}
   const result=action==='context'?await readCommunicationContext(proof):action==='list'?await listEmployeeCommunications(proof):action==='read'?await readCommunication(proof,id??''):

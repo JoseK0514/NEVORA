@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { PageHeader } from '@/components/page-header';
@@ -11,6 +12,9 @@ import { saveBreakTypeAction } from './actions';
 import './break-types.css';
 export const dynamic='force-dynamic';
 export default async function BreakTypesPage(){
+  const moduleOff = await moduleGate("breaks");
+  if (moduleOff) return moduleOff;
+
  await requireRoles(['OWNER']);
  const session=await requireSessionMutationProof();
  let types:BreakType[]|null=null;

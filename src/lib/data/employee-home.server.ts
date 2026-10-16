@@ -16,6 +16,7 @@ import {readEmployeeTime} from './employee-time.server';
 import {getExchange} from './exchanges';
 import {readShiftChangeAvailability} from './shift-changes';
 import {listEmployeeCommunications} from '../communications/service.server';
+import {readActivePresentation} from '../workspace-presentation/service';
 import {communicationRecipientAllowedSql} from '../communications/sql';
 
 const hash=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -225,6 +226,12 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
   if(JSON.stringify(before.locations)!==JSON.stringify(after.locations))return denied;
   const validForMs=Math.min(45000,Date.parse(after.expiresAt)-Date.parse(after.observedAt),45000-(Date.parse(after.observedAt)-Date.parse(before.observedAt)));
   if(validForMs<=0)return unavailable;
+  // Company modules (B2): a module that is off has nothing to show on Home.
+  const modules=(await readActivePresentation(workspace.id,executor)).modules;
+  const off=(part:Section)=>{part.observation=observation('complete',null);part.items=[];};
+  if(!modules.marketplace)off(exchanges);
+  if(!modules.timeOff)off(timeOff);
+  if(!modules.updates){communications=observation('complete',null);communicationItems=[];}
   const sources={schedule:assignments.publicationState==='unavailable'?observation('unavailable','read_failed',null):{...observation(assignments.publicationState,assignments.publicationState==='partial'?'unpublished':null,hash(assignments)),observedAt:assignments.observedAt},acknowledgements:acknowledgements.observation,exchanges:exchanges.observation,timeOff:timeOff.observation,ownTime:ownTime.observation,communications};
   return projectEmployeeHome({observedAt:after.observedAt,authority:homeAuthority(proof),timeZone:workspace.timeZone,validForMs,sources,publicationState:assignments.publicationState,nextShift:assignments.nextShift,currentShift:assignments.currentShift,attention:[...acknowledgements.items,...exchanges.items,...timeOff.items,...ownTime.items,...communicationItems]});
  }catch(error){return isManagementAuthorizationError(error)?denied:unavailable;}

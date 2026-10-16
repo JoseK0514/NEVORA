@@ -6,6 +6,7 @@ import { MagnifyingGlassIcon } from "@phosphor-icons/react/ssr";
 import type { UserRole } from "@/lib/domain";
 import type { PayrollCapabilities } from "@/lib/payroll/contracts";
 import { finderItems, rankFinder, type FinderData } from "@/lib/finder";
+import type { NavContext } from "@/lib/navigation";
 
 type Remote = { state: "idle" | "loading" | "ready" | "unavailable"; data: FinderData | null; at: number };
 const FRESH_MS = 60_000;
@@ -13,7 +14,7 @@ const FRESH_MS = 60_000;
 /** ⌘K / Ctrl+K finder for managers: pages, common actions, people and
  * locations. Opens instantly (no animation: it's a keyboard tool used often),
  * traps focus in a native modal dialog and returns focus on close. */
-export function CommandFinder({ role, payroll }: { role: UserRole; payroll?: PayrollCapabilities }) {
+export function CommandFinder({ role, payroll, context }: { role: UserRole; payroll?: PayrollCapabilities; context?: NavContext }) {
   const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
   const input = useRef<HTMLInputElement>(null);
@@ -22,7 +23,7 @@ export function CommandFinder({ role, payroll }: { role: UserRole; payroll?: Pay
   const [remote, setRemote] = useState<Remote>({ state: "idle", data: null, at: 0 });
   const hint = useRef<HTMLElement>(null);
 
-  const results = useMemo(() => rankFinder(finderItems(role, payroll, remote.data), query), [role, payroll, remote.data, query]);
+  const results = useMemo(() => rankFinder(finderItems(role, payroll, remote.data, context), query), [role, payroll, remote.data, query, context]);
 
   function load() {
     if (remote.state === "loading" || (remote.state === "ready" && Date.now() - remote.at < FRESH_MS)) return;

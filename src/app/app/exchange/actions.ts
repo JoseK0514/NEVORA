@@ -6,9 +6,11 @@ import { requireSelfService,requireRoles,MANAGER_ROLES } from '@/lib/auth/permis
 import { parseShiftChangeCommand } from '@/lib/shift-changes/command-parser';
 import type { ShiftChangeCommand,ShiftChangeResult } from '@/lib/shift-changes/types';
 import { executeShiftChange,findShiftChangeOperation } from '@/lib/data/shift-changes';
+import { moduleEnabled } from '@/lib/workspace-presentation/current.server';
 function refreshShiftChangeResult(result:ShiftChangeResult){if(['completed','pending','closed'].includes(result.status)){revalidatePath('/app/exchange');revalidatePath('/app/schedule');revalidatePath('/app');}}
 async function perform(form:FormData,kinds:ShiftChangeCommand['kind'][],manager=false):Promise<ShiftChangeResult> {
  if(manager)await requireRoles(MANAGER_ROLES);else await requireSelfService('/app/exchange?tab=requests');
+ if(!(await moduleEnabled('marketplace')))return {status:'unavailable'}; // turned off by the company (B2)
  const command=parseShiftChangeCommand(form);
  if(!command||!kinds.includes(command.kind))return {status:'unavailable'};
  const proof=await requireSessionMutationProof();

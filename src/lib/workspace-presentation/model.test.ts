@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_TOKENS } from "./derive";
 import { inspectLogo, LOGO_MAX_BYTES } from "./logo";
-import { parseLogoCommand, parsePresentationCommand, presentationCommandHash, presentationSettings, storedBrand } from "./model";
+import { DEFAULT_BRAND, brandSettings, mergeSettings, parseLogoCommand, parsePresentationCommand, presentationCommandHash, readSettings, storedBrand, storedModules } from "./model";
+import { ALL_MODULES_ON, MODULES, blockerText, enabledModules, moduleForPath, pathEnabled } from "./modules";
+import { WORD_PRESETS, lower, wordPreset } from "./words";
 
 const op = "3f1c2b9e-1a2b-4c3d-8e9f-0a1b2c3d4e5f";
 const asset = "9b2f6c1e-2d3a-4b5c-9d6e-7f8091a2b3c4";
@@ -31,48 +33,73 @@ function webpLossless(width: number, height: number) {
 }
 
 describe("parsePresentationCommand", () => {
-  it("accepts a seed or a reset and normalizes them", () => {
-    expect(parsePresentationCommand({ operationId: op.toUpperCase(), expectedRevision: 0, seed: "#2563eb", logoAssetId: null }))
-      .toEqual({ operationId: op, expectedRevision: 0, seed: "#2563EB", logoAssetId: null });
+  const brand = (extra: Record<string, unknown> = {}) => ({ operationId: op, expectedRevision: 0, section: "brand", seed: null, logoAssetId: null, ...extra });
+  it("accepts a brand seed or a reset and normalizes them", () => {
+    expect(parsePresentationCommand(brand({ operationId: op.toUpperCase(), seed: "#2563eb" })))
+      .toEqual({ operationId: op, expectedRevision: 0, section: "brand", seed: "#2563EB", logoAssetId: null });
     // Choosing NEVORA teal is the same as no brand.
-    expect(parsePresentationCommand({ operationId: op, expectedRevision: 3, seed: "#077572", logoAssetId: asset }).seed).toBeNull();
+    expect(parsePresentationCommand(brand({ expectedRevision: 3, seed: "#077572", logoAssetId: asset }))).toMatchObject({ seed: null });
+  });
+
+  it("accepts words and modules sections", () => {
+    expect(parsePresentationCommand({ operationId: op, expectedRevision: 2, section: "words", preset: "retail" }))
+      .toEqual({ operationId: op, expectedRevision: 2, section: "words", preset: "retail" });
+    // Canonical order, so the same choice always hashes the same.
+    expect(parsePresentationCommand({ operationId: op, expectedRevision: 2, section: "modules", disabled: ["breaks", "timeOff"] }))
+      .toMatchObject({ section: "modules", disabled: ["timeOff", "breaks"] });
   });
 
   it("rejects anything else", () => {
-    const good = { operationId: op, expectedRevision: 0, seed: null, logoAssetId: null };
     for (const bad of [
-      null, [], "x", { ...good, extra: 1 }, { operationId: op, expectedRevision: 0, seed: null },
-      { ...good, operationId: "not-a-uuid" }, { ...good, expectedRevision: -1 }, { ...good, expectedRevision: 1.5 },
-      { ...good, expectedRevision: 2147483647 }, { ...good, seed: "blue" }, { ...good, seed: "#12345" },
-      { ...good, seed: "#000;}body{x:y" }, { ...good, logoAssetId: "../etc" }, { ...good, logoAssetId: 5 },
+      null, [], "x", brand({ extra: 1 }), { operationId: op, expectedRevision: 0, seed: null, logoAssetId: null },
+      brand({ operationId: "not-a-uuid" }), brand({ expectedRevision: -1 }), brand({ expectedRevision: 1.5 }),
+      brand({ expectedRevision: 2147483647 }), brand({ seed: "blue" }), brand({ seed: "#12345" }),
+      brand({ seed: "#000;}body{x:y" }), brand({ logoAssetId: "../etc" }), brand({ logoAssetId: 5 }),
+      { operationId: op, expectedRevision: 0, section: "words", preset: "Custom words" },
+      { operationId: op, expectedRevision: 0, section: "words", preset: "retail", seed: null },
+      { operationId: op, expectedRevision: 0, section: "modules", disabled: ["payroll"] },
+      { operationId: op, expectedRevision: 0, section: "modules", disabled: ["timeOff", "timeOff"] },
+      { operationId: op, expectedRevision: 0, section: "modules", disabled: "timeOff" },
+      { operationId: op, expectedRevision: 0, section: "layout" },
     ]) expect(() => parsePresentationCommand(bad), JSON.stringify(bad)).toThrow();
   });
 
   it("hashes the canonical command", () => {
-    const a = parsePresentationCommand({ operationId: op, expectedRevision: 1, seed: "#2563eb", logoAssetId: null });
-    const b = parsePresentationCommand({ operationId: op.toUpperCase(), expectedRevision: 1, seed: "#2563EB", logoAssetId: null });
+    const a = parsePresentationCommand(brand({ expectedRevision: 1, seed: "#2563eb" }));
+    const b = parsePresentationCommand(brand({ operationId: op.toUpperCase(), expectedRevision: 1, seed: "#2563EB" }));
     expect(presentationCommandHash(a)).toBe(presentationCommandHash(b));
     expect(presentationCommandHash(a)).toMatch(/^[a-f0-9]{64}$/);
     expect(presentationCommandHash({ ...a, expectedRevision: 2 })).not.toBe(presentationCommandHash(a));
   });
 });
 
-describe("presentationSettings", () => {
+describe("mergeSettings", () => {
+  const saved = { version: 1, brand: brandSettings("#7C3AED", asset), words: { preset: "retail" }, modules: { disabled: ["breaks"] } };
   it("derives and stores the colour snapshot on the server", () => {
-    const settings = presentationSettings({ operationId: op, expectedRevision: 0, seed: "#FACC15", logoAssetId: asset });
-    expect(settings.version).toBe(1);
+    const settings = mergeSettings(null, { operationId: op, expectedRevision: 0, section: "brand", seed: "#FACC15", logoAssetId: asset });
     expect(settings.brand.seed).toBe("#FACC15");
     expect(settings.brand.tokens?.accent).not.toBe("#FACC15");
     expect(settings.brand.adjustments).toContain("darkened");
     expect(settings.brand.logoAssetId).toBe(asset);
   });
 
+  it("changes only the section being saved", () => {
+    const words = mergeSettings(saved, { operationId: op, expectedRevision: 1, section: "words", preset: "care" });
+    expect(words).toEqual({ ...saved, words: { preset: "care" } });
+    const modules = mergeSettings(saved, { operationId: op, expectedRevision: 1, section: "modules", disabled: ["timeOff"] });
+    expect(modules).toEqual({ ...saved, modules: { disabled: ["timeOff"] } });
+    const brand = mergeSettings(saved, { operationId: op, expectedRevision: 1, section: "brand", seed: null, logoAssetId: null });
+    expect(brand.words).toEqual({ preset: "retail" });
+    expect(brand.modules).toEqual({ disabled: ["breaks"] });
+    expect(brand.brand.tokens).toBeNull();
+  });
+
   it("stores a reset or a grey seed as the default", () => {
-    expect(presentationSettings({ operationId: op, expectedRevision: 0, seed: null, logoAssetId: null }).brand.tokens).toBeNull();
-    const grey = presentationSettings({ operationId: op, expectedRevision: 0, seed: "#808080", logoAssetId: null });
-    expect(grey.brand.tokens).toBeNull();
-    expect(grey.brand.seed).toBeNull();
-    expect(grey.brand.adjustments).toEqual(["grey"]);
+    expect(brandSettings(null, null).tokens).toBeNull();
+    const grey = brandSettings("#808080", null);
+    expect(grey.tokens).toBeNull();
+    expect(grey.seed).toBeNull();
+    expect(grey.adjustments).toEqual(["grey"]);
   });
 
   it("reads stored rows defensively", () => {
@@ -80,6 +107,42 @@ describe("presentationSettings", () => {
     expect(storedBrand({ version: 2, brand: {} }).tokens).toBeNull();
     expect(storedBrand({ version: 1, brand: { tokens: DEFAULT_TOKENS, logoAssetId: "nope", seed: "#077572" } }))
       .toEqual({ tokens: DEFAULT_TOKENS, logoAssetId: null, seed: "#077572" });
+    expect(readSettings({ version: 1, brand: {}, words: { preset: "x" }, modules: { disabled: ["breaks", "nope"] } }))
+      .toEqual({ version: 1, brand: DEFAULT_BRAND, modules: { disabled: ["breaks"] } });
+    expect(storedModules({ version: 1, brand: {}, modules: { disabled: ["updates"] } })).toEqual({ ...ALL_MODULES_ON, updates: false });
+    expect(storedModules(null)).toEqual(ALL_MODULES_ON);
+  });
+});
+
+describe("modules", () => {
+  it("maps portal paths to their module, keeping the Requests overview", () => {
+    expect(moduleForPath("/app/requests")).toBe("timeOff");
+    expect(moduleForPath("/app/requests?tab=pending")).toBe("timeOff");
+    expect(moduleForPath("/app/requests/hub")).toBeNull();
+    expect(moduleForPath("/app/exchange/swap")).toBe("marketplace");
+    expect(moduleForPath("/app/updates/compose")).toBe("updates");
+    expect(moduleForPath("/app/my-pay")).toBe("payStatements");
+    expect(moduleForPath("/app/settings/breaks")).toBe("breaks");
+    expect(moduleForPath("/app/updatesx")).toBeNull();
+    expect(moduleForPath("/app/schedule")).toBeNull();
+    expect(pathEnabled("/app/exchange", { ...ALL_MODULES_ON, marketplace: false })).toBe(false);
+    expect(pathEnabled("/app/requests/hub", { ...ALL_MODULES_ON, timeOff: false })).toBe(true);
+  });
+
+  it("ignores unknown ids and explains blockers", () => {
+    expect(enabledModules(["timeOff", "kudos", 7])).toEqual({ ...ALL_MODULES_ON, timeOff: false });
+    expect(blockerText("timeOff", 1)).toBe("1 request for time off is waiting for a decision. Decide it first.");
+    expect(blockerText("marketplace", 3)).toBe("3 shift swap or cover requests are still open. Let them finish first.");
+    for (const m of MODULES) expect(m.offNote.length).toBeGreaterThan(20);
+  });
+});
+
+describe("words", () => {
+  it("has every slot in English and Spanish for each preset", () => {
+    for (const preset of WORD_PRESETS) for (const lang of ["en", "es"] as const)
+      for (const slot of ["person", "people", "location", "locations"] as const) expect(preset[lang][slot], `${preset.id} ${lang} ${slot}`).toMatch(/\S/);
+    expect(wordPreset("unknown").id).toBe("standard");
+    expect(lower("Team member")).toBe("team member");
   });
 });
 

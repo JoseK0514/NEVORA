@@ -4,6 +4,10 @@ import Link from "next/link";
 import { BuildingsIcon } from "@phosphor-icons/react/dist/ssr/Buildings";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { PaletteIcon } from "@phosphor-icons/react/dist/ssr/Palette";
+import { ToggleRightIcon } from "@phosphor-icons/react/dist/ssr/ToggleRight";
+import { currentPresentation } from "@/lib/workspace-presentation/current.server";
+import { pathEnabled } from "@/lib/workspace-presentation/modules";
+import { wordPreset } from "@/lib/workspace-presentation/words";
 import { DeviceTabletIcon } from "@phosphor-icons/react/dist/ssr/DeviceTablet";
 import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
 import { CoffeeIcon } from "@phosphor-icons/react/dist/ssr/Coffee";
@@ -27,6 +31,7 @@ const groups = [
       { id: "profile", title: "Company profile", description: "Business name and timezone.", href: "/app/settings/workspace", icon: BuildingsIcon },
       { id: "locations", title: "Locations", description: "Location details, status, and Clocker links.", href: "/app/settings/locations", icon: MapPinIcon },
       { id: "branding", title: "Branding", description: "Company colour and logo, kept readable.", href: "/app/settings/branding", icon: PaletteIcon },
+      { id: "features", title: "Features & words", description: "Turn features on or off, and choose your team's words.", href: "/app/settings/features", icon: ToggleRightIcon },
     ],
   },
   {
@@ -69,7 +74,12 @@ const groups = [
 export default async function SettingsPage() {
   await requireRoles(["OWNER"]);
   const payroll = payrollFeatureEnabled() ? await readPayrollCapabilities(await requireSessionMutationProof()) : undefined;
-  const visibleGroups = [...groups, ...(payroll?.canConfigure ? [{id:"payroll",title:"Payroll",description:"Financial settings and authorized payroll access.",items:[{id:"payroll",title:"Payroll settings",description:"Company preferences, employee exceptions, and financial access.",href:"/app/settings/payroll",icon:WalletIcon}]}] : [])];
+  const presentation = await currentPresentation(), words = wordPreset(presentation.words).en;
+  // Features the company turned off leave the hub; rows name people and places in the company's words (B2).
+  const named = groups.map(group => ({ ...group, items: group.items.filter(item => pathEnabled(item.href, presentation.modules)).map(item =>
+    item.id === "employees" ? { ...item, title: `${words.people} & access`, description: `${words.person} information, access roles, and scheduling eligibility.` }
+    : item.id === "locations" ? { ...item, title: words.locations, description: `${words.location} details, status, and Clocker links.` } : item) }));
+  const visibleGroups = [...named, ...(payroll?.canConfigure ? [{id:"payroll",title:"Payroll",description:"Financial settings and authorized payroll access.",items:[{id:"payroll",title:"Payroll settings",description:"Company preferences, employee exceptions, and financial access.",href:"/app/settings/payroll",icon:WalletIcon}]}] : [])];
   return (
     <SettingsHubMotion>
       <header className="settings-hub-heading">

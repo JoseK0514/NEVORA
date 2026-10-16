@@ -17,7 +17,7 @@ const PRESETS = [
 const MAX_LOGO = 262_144;
 
 type History = { revision: number; changedAt: string; changedKeys: string[] };
-type Command = { operationId: string; expectedRevision: number; seed: string | null; logoAssetId: string | null };
+type Command = { operationId: string; expectedRevision: number; section: "brand"; seed: string | null; logoAssetId: string | null };
 
 function base64(buffer: ArrayBuffer) {
   const bytes = new Uint8Array(buffer); let text = "";
@@ -53,7 +53,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
 
   async function save() {
     if (!valid || busy) return;
-    const command: Command = retry.current ?? { operationId: crypto.randomUUID(), expectedRevision: revision, seed: effectiveSeed === DEFAULT_SEED ? null : effectiveSeed, logoAssetId: logo };
+    const command: Command = retry.current ?? { operationId: crypto.randomUUID(), expectedRevision: revision, section: "brand", seed: effectiveSeed === DEFAULT_SEED ? null : effectiveSeed, logoAssetId: logo };
     retry.current = command;
     setBusy("save"); setNotice({ tone: "info", text: "Saving…" });
     try {

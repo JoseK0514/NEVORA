@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import {usePresentation} from './presentation-context';
+import type {ModuleId} from '@/lib/workspace-presentation/modules';
 import {ArrowsLeftRightIcon, CalendarCheckIcon, CalendarMinusIcon, ChatTextIcon, ClockIcon, HourglassMediumIcon, PencilSimpleLineIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
 import {useEffect, useState, type ReactNode} from 'react';
 import {Illustration} from './illustrations';
@@ -179,17 +181,18 @@ function AttentionGroup({kind, items, partial, zone}: {kind: 'actions' | 'update
   </section>;
 }
 
-const shortcuts = [
-  {href: '/app/requests/hub', label: 'Request time off', Icon: CalendarMinusIcon},
-  {href: '/app/exchange/swap', label: 'Swap a shift', Icon: ArrowsLeftRightIcon},
+const shortcuts: {href: string; label: string; Icon: typeof ClockIcon; module?: ModuleId}[] = [
+  {href: '/app/requests/hub', label: 'Request time off', Icon: CalendarMinusIcon, module: 'timeOff'},
+  {href: '/app/exchange/swap', label: 'Swap a shift', Icon: ArrowsLeftRightIcon, module: 'marketplace'},
   {href: '/app/availability', label: 'Update availability', Icon: UserCheckIcon},
   {href: '/app/my-time', label: 'My time', Icon: ClockIcon},
 ];
 
 function QuickActions() {
+  const {modules} = usePresentation();
   return <nav className={styles.quick} aria-labelledby="employee-home-quick">
     <h2 id="employee-home-quick">Quick actions</h2>
-    <ul>{shortcuts.map(({href, label, Icon}) => <li key={href}><Link href={href}>
+    <ul>{shortcuts.filter(item => !item.module || modules[item.module]).map(({href, label, Icon}) => <li key={href}><Link href={href}>
       <span className={styles.quickIcon} aria-hidden="true"><Icon size={22}/></span><span>{label}</span>
     </Link></li>)}</ul>
   </nav>;

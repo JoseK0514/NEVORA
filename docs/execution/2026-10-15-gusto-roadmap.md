@@ -80,7 +80,11 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
   - Colours are derived in OKLCH under fixed contrast floors and injected as `--g-*` tokens. The kiosk, theme colour and manifest follow them.
   - Storage is migration 0031 (immutable, Owner-only, idempotent).
   - Verified with SQL checks, browser flows, a kiosk run, and the sweep under the default brand and two stress brands.
-- **Next:** B2 words and modules (needs Jose's go-ahead). Apply migration 0031 before any release.
+- **B2 words and modules (done, 2026-10-16):** vocabulary presets with English and Spanish slots, and five modules an Owner can turn off.
+  - A module that is off is hidden everywhere and refused on the server.
+  - It can't be turned off while requests in it are still waiting.
+  - Migration 0032.
+- **Next:** B3 open-shift eligibility or B4 Today accuracy (each needs Jose's go-ahead). Apply migrations 0031 and 0032 before any release.
 
 ## Owed testing
 - VoiceOver itself (it can't be driven here; the script is in `DESIGN.MD`) and at least one physical iPhone.

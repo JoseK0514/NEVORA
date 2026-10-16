@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto';
+import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import {ShiftChangeForm} from '@/components/shift-change-form';
 import {ExchangeAssignment as ShiftSlot} from '@/components/exchange-assignment';
 import {ExchangeReviewShell} from '@/components/exchange-review-shell';
@@ -114,6 +115,9 @@ export default async function ExchangePage({
     operationId?:string;
   }>;
 }) {
+  const moduleOff = await moduleGate("marketplace");
+  if (moduleOff) return moduleOff;
+
   const session = await requireSession();
   const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);

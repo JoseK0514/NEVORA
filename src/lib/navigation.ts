@@ -1,6 +1,12 @@
 import type { UserRole } from "@/lib/domain";
 import type { NavIconName } from "@/components/nav-icon";
 import type { PayrollCapabilities } from './payroll/contracts';
+import { ALL_MODULES_ON, pathEnabled, type EnabledModules } from './workspace-presentation/modules';
+import { DEFAULT_WORDS, type WordSlots } from './workspace-presentation/words';
+
+/** Company choices that shape navigation (B2): modules that are off disappear
+ * everywhere, and the vocabulary names the people page. Defaults change nothing. */
+export type NavContext = { modules?: EnabledModules; words?: WordSlots };
 
 export type NavigationItem = {
   href: string;
@@ -48,17 +54,24 @@ export function managementNavigationGroups(items: NavigationItem[]) {
 
 /** Canonical workflows keep their URLs, queries and commands. Only their
  * employee navigation owner is the Requests group. Manager owners are unchanged. */
-export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities): string | undefined {
+export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
   const pathname = path.split(/[?#]/, 1)[0];
   const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   if ((role === "EMPLOYEE" || role === "LEAD") &&
       (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
-  return navigationForRole(role, payroll)
+  return navigationForRole(role, payroll, context)
     .filter(item => item.href === "/app" ? pathname === "/app" : matches(item.href))
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 }
 
-export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities) {
+export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}): NavigationItem[] {
+  const modules = context.modules ?? ALL_MODULES_ON, words = context.words ?? DEFAULT_WORDS.en;
+  return baseNavigation(role, payroll)
+    .filter(item => pathEnabled(item.href, modules))
+    .map(item => item.href === "/app/employees" ? { ...item, label: words.people } : item);
+}
+
+function baseNavigation(role: UserRole, payroll?: PayrollCapabilities): NavigationItem[] {
   const finance: NavigationItem[] = payroll?.enabled ? [
     ...(payroll.canReview ? [{ href: '/app/payroll', label: 'Payroll', icon: 'payroll' as const }] : []),
     { href: '/app/my-pay', label: 'My pay', icon: 'statement' },
@@ -87,11 +100,11 @@ export type MobileTab = NavigationItem & {
 /** Phone tab bar: four destinations, then More for everything else. Employees
  * get Home, Schedule, Requests and Pay (Hours while payroll is off); managers
  * get Home, Schedule, Inbox and Team. */
-export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities): MobileTab[] {
+export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}): MobileTab[] {
   const home: MobileTab = { href: "/app", label: "Home", icon: "dashboard", owns: ["/app"] };
   const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule"] };
   if (role === "EMPLOYEE" || role === "LEAD") {
-    const pay: MobileTab = payroll?.enabled
+    const pay: MobileTab = payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements
       ? { href: "/app/my-pay", label: "Pay", icon: "statement", owns: ["/app/my-pay", "/app/my-time"] }
       : { href: "/app/my-time", label: "Hours", icon: "clock", owns: ["/app/my-time"] };
     return [home, schedule, { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/availability"] }, pay];
@@ -105,23 +118,24 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities)
 }
 
 /** Authorized destinations without a tab of their own, in sidebar order. */
-export function mobileMoreForRole(role: UserRole, payroll?: PayrollCapabilities) {
-  const owned = new Set(mobileTabsForRole(role, payroll).flatMap(tab => tab.owns));
-  return navigationForRole(role, payroll).filter(item => !owned.has(item.href));
+export function mobileMoreForRole(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}) {
+  const owned = new Set(mobileTabsForRole(role, payroll, context).flatMap(tab => tab.owns));
+  return navigationForRole(role, payroll, context).filter(item => !owned.has(item.href));
 }
 
 /** The tab that owns the current page: a tab href, "more", or none. */
-export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities): string | undefined {
-  const active = activeNavigationHref(role, path, payroll);
+export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
+  const active = activeNavigationHref(role, path, payroll, context);
   if (!active) return undefined;
-  return mobileTabsForRole(role, payroll).find(tab => tab.owns.includes(active))?.href ?? "more";
+  return mobileTabsForRole(role, payroll, context).find(tab => tab.owns.includes(active))?.href ?? "more";
 }
 
 export type SectionTabGroup = { label: string; items: { href: string; label: string }[] };
 
 /** Pages that share one place in the navigation show tabs between each other.
  * Every tab is an existing URL; only destinations the role can open appear. */
-export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCapabilities): SectionTabGroup | null {
+export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): SectionTabGroup | null {
+  const modules = context.modules ?? ALL_MODULES_ON;
   const pathname = path.split(/[?#]/, 1)[0];
   const requests = [
     { href: "/app/requests", label: "Time off" },
@@ -131,16 +145,18 @@ export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCa
   const groups: SectionTabGroup[] = role === "EMPLOYEE" || role === "LEAD"
     ? [
       { label: "Requests", items: [{ href: "/app/requests/hub", label: "Overview" }, ...requests] },
-      ...(payroll?.enabled ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "Statements" }, { href: "/app/my-time", label: "Hours" }] }] : []),
+      ...(payroll?.enabled && modules.payStatements ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "Statements" }, { href: "/app/my-time", label: "Hours" }] }] : []),
     ]
     : [
       { label: "Requests", items: requests },
       { label: "Time and pay", items: [
         { href: "/app/timecards", label: "Timecards" },
-        ...(navigationForRole(role, payroll).some(item => item.href === "/app/payroll") ? [{ href: "/app/payroll", label: "Payroll runs" }] : []),
+        ...(navigationForRole(role, payroll, context).some(item => item.href === "/app/payroll") ? [{ href: "/app/payroll", label: "Payroll runs" }] : []),
         { href: "/app/payroll-export", label: "Time exports" },
         ...(payroll?.canConfigure ? [{ href: "/app/settings/payroll", label: "Payroll settings" }] : []),
       ] },
     ];
-  return groups.find(group => group.items.some(item => item.href === pathname)) ?? null;
+  // A turned-off module's pages leave the tabs; a lone tab is no tab row.
+  const visible = groups.map(group => ({ ...group, items: group.items.filter(item => pathEnabled(item.href, modules)) })).filter(group => group.items.length > 1);
+  return visible.find(group => group.items.some(item => item.href === pathname)) ?? null;
 }

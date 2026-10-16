@@ -13,6 +13,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/service';
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
+import { wordPreset } from "@/lib/workspace-presentation/words";
 import { DEFAULT_TOKENS } from "@/lib/workspace-presentation/derive";
 
 export const metadata: Metadata = {
@@ -45,6 +46,7 @@ export default async function PlatformLayout({ children }: { children: ReactNode
       notificationsEnabled={readNotificationConfig(process.env).featureEnabled}
       payrollCapabilities={payrollCapabilities}
       brand={{ style: brand.style, logoUrl: brand.logoUrl }}
+      presentation={{ modules: brand.modules, words: wordPreset(brand.words).en }}
       user={{
         firstName: session.firstName,
         lastName: session.lastName,

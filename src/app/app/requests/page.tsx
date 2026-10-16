@@ -1,4 +1,5 @@
 import { TimeOffWithdrawal } from "@/components/time-off-withdrawal";
+import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { ManagerTimeOff } from "@/components/manager-time-off";
@@ -41,6 +42,9 @@ export default async function RequestsPage({
     requestId?: string;
   }>;
 }) {
+  const moduleOff = await moduleGate("timeOff");
+  if (moduleOff) return moduleOff;
+
   const session = await requireSession();
   const manager = isTimeOffReviewerRole(session.role);
   const params = await searchParams;

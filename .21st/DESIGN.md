@@ -354,3 +354,41 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - Cleanup of unused logo assets.
   - Words and modules (B2).
 - **Before release:** apply migration 0031 to existing databases. New installs get it through `scripts/company-setup.ts`.
+
+#### B2: words and modules (2026-10-16)
+
+- **Where:** Settings › Features & words (`/app/settings/features`), Owner only. Branding stays about looks.
+- **Words:** five fixed presets rather than free text, each with reviewed English and Puerto Rico Spanish slots: Standard, Retail, Restaurant, Field services and Care (`src/lib/workspace-presentation/words.ts`).
+  - The slots are person, people, location and locations.
+  - **Applied to:** the menu label for the people page, the people and locations page titles and their Add buttons, the settings hub rows, and the ⌘K "Add …" action.
+  - Full sentences keep generic wording until strings move into dictionaries in B5, which will use these slots.
+  - Standard reproduces today's wording exactly.
+- **Modules** (`src/lib/workspace-presentation/modules.ts`): Time off, Shift swaps and cover, Company updates, Pay statements (only when payroll is on), and Breaks on the Clocker.
+  - Kudos is left out because it doesn't exist yet.
+  - Each module explains what changes while it's off. Turning a module off deletes nothing.
+- **A module that is off disappears everywhere:**
+  - sidebar, phone tabs (Pay becomes Hours), section tabs, the ⌘K finder and the settings hub;
+  - employee Home quick actions and its time-off, swap and update sources (reported complete and empty, so no "unavailable" warnings);
+  - manager Inbox and Home request counts;
+  - the Requests overview (Availability only if both request modules are off);
+  - on Schedule, the Open shifts view, per-shift swap and "Unable to work" options, and footer links.
+- **And it is refused on the server:**
+  - nine pages show a calm "… is turned off" page; Owners get a link to turn it back on;
+  - time-off and shift-request server actions;
+  - all updates API routes (404 `module_off`);
+  - employee statement and statement-document APIs;
+  - on the Clocker, no break types are offered (the kiosk says "Breaks aren't recorded on the Clocker here." instead of the setup warning) and START_BREAK is refused. A break already started can always end.
+- **Nothing is stranded:** time off can't be turned off while a request waits for a decision, and shift swaps can't be turned off while a swap, cover or callout request is open.
+  - The editor locks the switch and says why. The save function re-checks inside the same locked transaction.
+- **Storage:** the same immutable revision chain as B1.
+  - Each save carries one section (`brand`, `words` or `modules`) and the service merges it onto the latest settings, so saving one never overwrites another.
+  - Migration 0032 replaces the save function to validate presets and module ids, record changed keys across all sections, and run the in-flight checks.
+  - Each database holds one workspace (`workspaces.singleton`), so the request tables carry no workspace column; the first draft of 0032 assumed one and the runtime check caught it.
+- **Verified on fictional data:**
+  - 12 SQL checks: validation, changed keys, both busy refusals (a real pending request and a probe callout), replay of an already-off module, B1 checks, and rollback.
+  - 30 browser flows covering words, locks, three modules off, deciding the request then turning off time off and swaps, every surface listed above, and a full reset.
+  - The sweep with every module off (all 156 checks pass, including every turned-off page), and the default sweep (156/156).
+  - Kiosk: breaks turned off mid-break, End Break works, no new break, calm note, back on restores Start Break; plus the U9 kiosk flow.
+  - B1, U1, U2, U4 and U8 flows.
+- **Not tested at runtime:** the server refusing a forced START_BREAK from a stale tablet (the kiosk never offers it once breaks are off). A real screen-reader pass of the switches.
+- **Before release:** apply migrations 0031 and 0032 to existing databases.

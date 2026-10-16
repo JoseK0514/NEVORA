@@ -8,6 +8,8 @@ import {ManagerDashboard,type ManagerDashboardView} from '@/components/manager-d
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {homeAuthority} from '@/lib/data/employee-home.server';
 import {isManagerRole} from '@/lib/auth/permissions';
+import {currentPresentation} from '@/lib/workspace-presentation/current.server';
+import {requestTypeAllowed} from '@/lib/workspace-presentation/modules';
 import {addDays,formatWeekRange,isValidWeekStart,weekStartFor} from '@/lib/date-utils';
 
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
@@ -57,6 +59,7 @@ export default async function DashboardPage({
   if(!dashboardData)return <section className="panel"><h1>Dashboard unavailable</h1><p>A current authorized read could not be verified.</p><Link className="button secondary" href="/app">Refresh dashboard</Link></section>;
   const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,scheduleRoster,daySummaries,hourRows,pendingTimeOff,pendingExchanges,pendingCallouts,latestRevision}=dashboardData;
 
+  const {modules}=await currentPresentation();
   return (
     <ManagerDashboard
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
@@ -78,15 +81,15 @@ export default async function DashboardPage({
       coverageIssueCount={dashboard.totalCoverageGaps}
       coverageConfigured={coverageRulesConfigured}
       pendingRequestCount={dashboard.pendingRequestCount}
-      managerActions={managerActions}
+      managerActions={managerActions.filter(item=>requestTypeAllowed(item.type,modules))}
       scheduleRoster={scheduleRoster}
       locations={dashboard.locationReadiness}
       days={daySummaries}
       hours={hourRows}
       requestCounts={{
-        timeOff: pendingTimeOff.length,
-        exchange: pendingExchanges.length,
-        callout: pendingCallouts.length,
+        timeOff: modules.timeOff ? pendingTimeOff.length : 0,
+        exchange: modules.marketplace ? pendingExchanges.length : 0,
+        callout: modules.marketplace ? pendingCallouts.length : 0,
       }}
       latestRevision={
         latestRevision

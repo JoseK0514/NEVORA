@@ -1,4 +1,5 @@
 import { getWorkspace } from "@/lib/data/workspaces";
+import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import { shiftBoundaryInstants } from "@/lib/business-time";
 import { redirect } from "next/navigation";
 import { CalloutView } from "@/components/callout-view";
@@ -14,6 +15,9 @@ export default async function CalloutPage({
 }: {
   searchParams: Promise<{ shiftId?: string; error?: string }>;
 }) {
+  const moduleOff = await moduleGate("marketplace");
+  if (moduleOff) return moduleOff;
+
   const session = await requireSelfService("/app/exchange?tab=requests");
   const workspace = await getWorkspace();
   const params = await searchParams;

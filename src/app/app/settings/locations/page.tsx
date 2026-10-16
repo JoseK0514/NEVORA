@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { currentPresentation } from "@/lib/workspace-presentation/current.server";
+import { lower, wordPreset } from "@/lib/workspace-presentation/words";
 import { ArrowLeft, CaretDown, CaretRight, CheckCircle, Clock, MagnifyingGlass, PencilSimple, Plus, Storefront, Users } from "@phosphor-icons/react/dist/ssr";
 import { ActionMenu } from "@/components/action-menu";
 import { StatusPill } from "@/components/status-pill";
@@ -32,6 +34,7 @@ function issueAction(code: LocationSetupIssueCode) {
 
 export default async function LocationsPage({ searchParams }: { searchParams?: Promise<Search> } = {}) {
   await requireRoles(["OWNER"]);
+  const words = wordPreset((await currentPresentation()).words).en;
   const [workspace, locations, employees, positions, staffing, coverageWindows, search] = await Promise.all([
     getWorkspace(), listLocations({ includeInactive: true }), listEmployees(),
     listPositions({ includeInactive: true }), listLocationStaffingSettings(), listCoverageWindows(),
@@ -67,10 +70,10 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
       <header className="locations-heading">
         <div className="locations-heading-copy">
           <Link href="/app/settings" className="locations-back"><ArrowLeft size={18} aria-hidden="true" />Back to Settings</Link>
-          <h1>Locations</h1>
+          <h1>{words.locations}</h1>
           <p>Manage your workplaces, scheduling setup, and Clocker access.</p>
         </div>
-        <Link href={`${directoryPath}/new`} className="button primary locations-add"><Plus size={20} aria-hidden="true" />Add location</Link>
+        <Link href={`${directoryPath}/new`} className="button primary locations-add"><Plus size={20} aria-hidden="true" />Add {lower(words.location)}</Link>
       </header>
 
       <section className="locations-directory" aria-labelledby="locations-directory-title">
@@ -143,7 +146,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
               <h3>{locations.length ? "No matching locations" : "Your first workplace starts here"}</h3>
               <p>{locations.length ? "Try another name or clear the filters to see every location." : "Add a location, then set up staffing, coverage, and your eligible team."}</p>
               <Link href={locations.length ? directoryPath : `${directoryPath}/new`} className={`button ${locations.length ? "secondary" : "primary"}`}>
-                {locations.length ? "Clear search and filters" : <><Plus size={20} aria-hidden="true" />Add location</>}
+                {locations.length ? "Clear search and filters" : <><Plus size={20} aria-hidden="true" />Add {lower(words.location)}</>}
               </Link>
             </div>
           ) : null}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ALL_MODULES_ON, type EnabledModules } from '@/lib/workspace-presentation/modules';
 import type { ReactNode } from 'react';
 import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
@@ -23,6 +24,8 @@ export type OpenShift = { id: string; date: string; startTime: string; endTime: 
 export type EmployeeMyScheduleProps = {
   /** "mine" shows the week; "open" shows claimable shifts. Both are real URLs. */
   view?: 'mine' | 'open';
+  /** Company modules (B2): shift swaps and time off links follow them. */
+  modules?: EnabledModules;
   openShifts?: { available: OpenShift[]; requested: OpenShift[] } | null;
   weekStart: string;
   today: string;
@@ -85,7 +88,8 @@ function OpenShifts({ open }: { open: EmployeeMyScheduleProps['openShifts'] }) {
 }
 
 export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
-  const view = props.view ?? 'mine';
+  const modules = props.modules ?? ALL_MODULES_ON;
+  const view = modules.marketplace ? props.view ?? 'mine' : 'mine';
   const openCount = props.openShifts ? props.openShifts.available.length : null;
   const { weekStart, today, observedAt, timeZone, selectedDay, state, locations, acknowledged, confirmation, confirmationNeeded, error, receipt, changes } = props;
   // Unavailable reads cannot retain private rows, actionable links or receipts.
@@ -99,10 +103,10 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       <header className="my-schedule-heading my-schedule-enter">
         <div><h1>My schedule</h1><p>Review your week and manage your shifts.</p></div>
       </header>
-      <nav className="my-schedule-views my-schedule-enter" aria-label="Schedule views">
+      {modules.marketplace ? <nav className="my-schedule-views my-schedule-enter" aria-label="Schedule views">
         <Link href={`/app/schedule?week=${weekStart}`} aria-current={view === 'mine' ? 'page' : undefined}>My shifts</Link>
         <Link href={`/app/schedule?week=${weekStart}&view=open`} aria-current={view === 'open' ? 'page' : undefined}>Open shifts{openCount ? <><span className="my-schedule-views-count" aria-hidden="true">{openCount}</span><span className="sr-only">, {openCount} available</span></> : null}</Link>
-      </nav>
+      </nav> : null}
       {view === 'open' ? <OpenShifts open={props.openShifts} /> : <>
 
       <section className="my-week-overview my-schedule-enter" aria-labelledby="my-week-title">
@@ -142,13 +146,13 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
                 {shift.positionName?<span className="my-shift-position">{shift.positionName}</span>:null}
                 {shift.isDesignatedLead || shift.isCalloutApproved?<div className="employee-schedule-tags">{shift.isDesignatedLead?<small className="employee-designated-lead">Designated lead</small>:null}{shift.isCalloutApproved?<small className="employee-approved-callout">Call-out approved</small>:null}</div>:null}
               </div>
-              <ShiftOptions shift={shift} today={today} observedAt={observedAt} timeZone={timeZone} />
+              {modules.marketplace ? <ShiftOptions shift={shift} today={today} observedAt={observedAt} timeZone={timeZone} /> : null}
             </div>) : <p className="employee-schedule-off">{emptyScheduleLabel(state)}</p>}
           </div>
         </article>; })}
       </section>
       </>}
-      <footer className="my-schedule-footer"><p>Planning ahead?</p><div><Link href="/app/exchange?tab=my" className="my-schedule-link"><ArrowsLeftRightIcon size={18} aria-hidden="true" />Shift requests</Link><Link href="/app/availability" className="my-schedule-link">Update availability</Link><Link href="/app/requests" className="my-schedule-link">Request time off</Link><Link href="/app/profile#employee-calendar-title" className="my-schedule-link">Calendar subscription</Link></div></footer>
+      <footer className="my-schedule-footer"><p>Planning ahead?</p><div>{modules.marketplace ? <Link href="/app/exchange?tab=my" className="my-schedule-link"><ArrowsLeftRightIcon size={18} aria-hidden="true" />Shift requests</Link> : null}<Link href="/app/availability" className="my-schedule-link">Update availability</Link>{modules.timeOff ? <Link href="/app/requests" className="my-schedule-link">Request time off</Link> : null}<Link href="/app/profile#employee-calendar-title" className="my-schedule-link">Calendar subscription</Link></div></footer>
     </div>
   </EmployeeScheduleMotion>;
 }

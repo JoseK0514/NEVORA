@@ -6,30 +6,36 @@ import { neonNotificationExecutor } from "../data/notification-transactions";
 import { brandStyle, type BrandTokens } from "./derive";
 import { inspectLogo, type LogoProblem } from "./logo";
 import {
-  parseLogoCommand, parsePresentationCommand, presentationCommandHash, presentationSettings, storedBrand,
+  mergeSettings, parseLogoCommand, parsePresentationCommand, presentationCommandHash, readSettings,
   type PresentationSettings,
 } from "./model";
+import { ALL_MODULES_ON, enabledModules, type EnabledModules, type ModuleBlockers, type ModuleId } from "./modules";
+import type { WordPresetId } from "./words";
 
 export type PresentationRevision = { operationId: string; revision: number; changedAt: string; changedKeys: string[]; settings: PresentationSettings };
 export type ActiveBrand = { style: Record<string, string> | undefined; tokens: BrandTokens | null; logoAssetId: string | null; revision: number };
-const NO_BRAND: ActiveBrand = { style: undefined, tokens: null, logoAssetId: null, revision: 0 };
+export type ActivePresentation = ActiveBrand & { modules: EnabledModules; words: WordPresetId };
+const NO_PRESENTATION: ActivePresentation = { style: undefined, tokens: null, logoAssetId: null, revision: 0, modules: ALL_MODULES_ON, words: "standard" };
 
-/** The brand every page renders with. Read on each request, so it never
- * throws: a missing table or an unreadable row falls back to NEVORA teal. */
-export async function readActiveBrand(workspaceId: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<ActiveBrand> {
+/** The brand, words and modules every page renders with. Read on each
+ * request, so it never throws: a missing table or an unreadable row falls
+ * back to NEVORA teal, standard words and every module on. */
+export async function readActivePresentation(workspaceId: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<ActivePresentation> {
   try {
     const rows = await executor.query<{ revision: number; settings: unknown }>({
       text: "SELECT revision,settings FROM nevora_workspace_presentation_revisions WHERE workspace_id=$1 ORDER BY revision DESC LIMIT 1",
       values: [workspaceId],
     });
-    if (!rows[0]) return NO_BRAND;
-    const brand = storedBrand(rows[0].settings);
-    const style = brandStyle(brand.tokens);
-    return { style, tokens: style ? brand.tokens : null, logoAssetId: brand.logoAssetId, revision: rows[0].revision };
+    if (!rows[0]) return NO_PRESENTATION;
+    const settings = readSettings(rows[0].settings);
+    const style = brandStyle(settings.brand.tokens);
+    return { style, tokens: style ? settings.brand.tokens : null, logoAssetId: settings.brand.logoAssetId, revision: rows[0].revision,
+      modules: enabledModules(settings.modules?.disabled), words: settings.words?.preset ?? "standard" };
   } catch {
-    return NO_BRAND;
+    return NO_PRESENTATION;
   }
 }
+export const readActiveBrand = readActivePresentation;
 
 export async function readPresentationHistory(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<PresentationRevision[]> {
   assertManagementProof(proof, proof.employee.id);
@@ -68,15 +74,46 @@ async function ownerTransaction(proof: SessionMutationProof, statement: { text: 
 }
 const WORKSPACE = Symbol("workspace");
 
+export class ModuleBusy extends Error { constructor(readonly module: ModuleId, readonly count: number) { super(`module_busy:${module}`); } }
+
 export async function saveWorkspacePresentation(proof: SessionMutationProof, input: unknown, executor: SqlExecutor = neonNotificationExecutor()) {
   const command = parsePresentationCommand(input);
-  const settings = presentationSettings(command);
+  const workspace = await getWorkspace(executor);
+  // Sections merge onto the latest saved settings. A retry replays the stored
+  // result; anything saved since the editor loaded is a conflict.
+  const [mine, latest] = await Promise.all([
+    executor.query<{ settings: unknown }>({ text: "SELECT settings FROM nevora_workspace_presentation_revisions WHERE operation_id=$1::uuid AND workspace_id=$2", values: [command.operationId, workspace.id] }),
+    executor.query<{ revision: number; settings: unknown }>({ text: "SELECT revision,settings FROM nevora_workspace_presentation_revisions WHERE workspace_id=$1 ORDER BY revision DESC LIMIT 1", values: [workspace.id] }),
+  ]);
+  if (!mine[0] && (latest[0]?.revision ?? 0) !== command.expectedRevision) throw Error("workspace_presentation_conflict");
+  const settings = mine[0] ? readSettings(mine[0].settings) : mergeSettings(latest[0]?.settings, command);
   const saved = await ownerTransaction(proof, {
     text: "SELECT nevora_set_workspace_presentation($1::uuid,$2,$3,$4::integer,$5::jsonb,$6) AS result",
     values: [command.operationId, WORKSPACE, proof.employee.id, command.expectedRevision, JSON.stringify(settings), presentationCommandHash(command)],
-  }, executor) as Omit<PresentationRevision, "settings"> | undefined;
+  }, executor).catch((error: unknown) => {
+    const busy = /module_busy:(timeOff|marketplace):(\d+)/.exec(String(error));
+    if (busy) throw new ModuleBusy(busy[1] as ModuleId, Number(busy[2]));
+    throw error;
+  }) as Omit<PresentationRevision, "settings"> | undefined;
   if (!saved) throw Error("Presentation outcome unknown; retry original command.");
   return { ...saved, settings };
+}
+
+/** Requests still waiting in modules an Owner might turn off (B2). */
+export async function readModuleBlockers(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<ModuleBlockers> {
+  assertManagementProof(proof, proof.employee.id);
+  const workspace = await getWorkspace(executor);
+  const guards = [...workspaceReadGuard(workspace), ...managementSessionStatements(proof, proof.employee.id, ["OWNER"])];
+  const result = await executor.transaction([
+    ...guards,
+    // One workspace per database (workspaces.singleton): request tables are unscoped.
+    { text: `SELECT (SELECT count(*) FROM time_off_requests WHERE status='PENDING')::integer AS "timeOff",
+      ((SELECT count(*) FROM shift_exchanges WHERE status IN ('OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'))
+       +(SELECT count(*) FROM shift_callouts WHERE status='PENDING'))::integer AS marketplace`, values: [] },
+    ...managementSessionStatements(proof, proof.employee.id, ["OWNER"]),
+  ]);
+  const row = result[guards.length]?.[0] as { timeOff: number; marketplace: number } | undefined;
+  return row ? { timeOff: row.timeOff, marketplace: row.marketplace } : {};
 }
 
 export class LogoRejected extends Error { constructor(readonly problem: LogoProblem) { super(problem); } }

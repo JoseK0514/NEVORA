@@ -16,9 +16,10 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor } from "@/lib/navigation";
+import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { CommandFinder } from "./command-finder";
+import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 
@@ -32,10 +33,13 @@ export function AppShell({
   preferenceCookie = "nevora_sidebar",
   notificationAuthority,
   brand,
+  presentation,
 }: {
   workspaceName: string;
   /** Company brand (B1): derived colour tokens and an optional logo. */
   brand?: { style?: Record<string, string>; logoUrl?: string | null };
+  /** Company modules and words (B2). */
+  presentation?: NavContext;
   initialCollapsed?: boolean;
   preferenceCookie?: string;
   notificationAuthority?: string;
@@ -56,13 +60,14 @@ export function AppShell({
   }
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
-  const navigation = navigationForRole(user.role, payrollCapabilities);
-  const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities);
-  const mobileMore = mobileMoreForRole(user.role, payrollCapabilities);
-  const activeTab = activeMobileTab(user.role, pathname ?? "", payrollCapabilities);
-  const sectionTabs = pathname ? sectionTabsFor(user.role, pathname, payrollCapabilities) : null;
+  const context = presentation ?? {};
+  const navigation = navigationForRole(user.role, payrollCapabilities, context);
+  const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities, context);
+  const mobileMore = mobileMoreForRole(user.role, payrollCapabilities, context);
+  const activeTab = activeMobileTab(user.role, pathname ?? "", payrollCapabilities, context);
+  const sectionTabs = pathname ? sectionTabsFor(user.role, pathname, payrollCapabilities, context) : null;
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
-  const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities);
+  const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
 
   useEffect(() => {
     for (const id of ['employee-more-navigation', 'manager-more-navigation']) {
@@ -179,7 +184,7 @@ export function AppShell({
           </Link>
           {companyLogo}
           <div className="mobile-header-actions">
-          {!employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} /> : null}
+          {!employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
           {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
           <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
             {employee ? <Link href="/app/profile" className="nevora-action-menu-item"
@@ -191,7 +196,7 @@ export function AppShell({
           </div>
         </header>
 
-        <div className="page-frame">{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}{children}</div>
+        <div className="page-frame">{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{children}</PresentationProvider></div>
 
         <nav className="mobile-nav" aria-label="Mobile navigation">
           {employee ? (

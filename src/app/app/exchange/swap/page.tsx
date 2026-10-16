@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto';
+import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
 import {matchesDisplayedShift} from '../../../../lib/shift-changes/displayed-terms';
 import { getWorkspace } from "@/lib/data/workspaces";
@@ -21,6 +22,9 @@ export default async function SwapPage({
 }: {
   searchParams: Promise<{ sourceShiftId?: string }>;
 }) {
+  const moduleOff = await moduleGate("marketplace");
+  if (moduleOff) return moduleOff;
+
   const session = await requireSelfService("/app/exchange?tab=requests");
   const workspace = await getWorkspace();
   const params = await searchParams;

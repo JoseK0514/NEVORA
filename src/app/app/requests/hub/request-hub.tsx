@@ -4,14 +4,16 @@ import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRi
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { NavIcon } from "@/components/nav-icon";
 import { RequestHubMotion } from "./request-hub-motion";
+import { ALL_MODULES_ON, type EnabledModules } from "@/lib/workspace-presentation/modules";
 
-export function RequestHub() {
+export function RequestHub({ modules = ALL_MODULES_ON }: { modules?: EnabledModules }) {
+  const none = !modules.timeOff && !modules.marketplace;
   return (
     <RequestHubMotion>
       <header className="request-hub-heading">
         <div>
           <h1>Requests</h1>
-          <p>Time off or a shift change. Start here.</p>
+          <p>{modules.timeOff && modules.marketplace ? "Time off or a shift change. Start here." : modules.timeOff ? "Ask for time off. Start here." : modules.marketplace ? "A change to one of your shifts. Start here." : "Your availability and schedule."}</p>
         </div>
         <Link className="request-hub-schedule" href="/app/schedule">
           <NavIcon name="schedule" size={18} />
@@ -21,7 +23,7 @@ export function RequestHub() {
       </header>
 
       <section className="request-hub-choices" aria-label="Request types">
-        <article className="request-hub-card request-hub-timeoff">
+        {modules.timeOff ? <article className="request-hub-card request-hub-timeoff">
           <span className="request-hub-icon" aria-hidden="true">
             <CalendarMinusIcon size={32} weight="duotone" />
           </span>
@@ -43,9 +45,9 @@ export function RequestHub() {
               <NavIcon name="chevronRight" size={16} />
             </Link>
           </div>
-        </article>
+        </article> : null}
 
-        <article className="request-hub-card">
+        {modules.marketplace ? <article className="request-hub-card">
           <span className="request-hub-icon" aria-hidden="true">
             <ArrowsLeftRightIcon size={32} weight="duotone" />
           </span>
@@ -64,7 +66,19 @@ export function RequestHub() {
             </Link>
             <p className="request-hub-action-hint">Choose a shift to start a swap or callout.</p>
           </div>
-        </article>
+        </article> : null}
+        {none ? <article className="request-hub-card">
+          <div className="request-hub-card-copy">
+            <h2>Availability</h2>
+            <p>Your company handles time off and shift changes outside NEVORA. You can still tell your manager when you can work.</p>
+          </div>
+          <div className="request-hub-actions">
+            <Link className="request-hub-action request-hub-action-primary" href="/app/availability">
+              <span>Update availability</span>
+              <NavIcon name="arrowRight" size={20} />
+            </Link>
+          </div>
+        </article> : null}
       </section>
 
       <aside className="request-hub-guidance" aria-label="Request guidance">
@@ -75,7 +89,7 @@ export function RequestHub() {
             <p>Open the relevant request page to see its status and any available actions.</p>
           </div>
         </div>
-        <details className="request-hub-help">
+        {modules.timeOff && modules.marketplace ? <details className="request-hub-help">
           <summary><span>Which request should I use?</span><CaretDownIcon size={18} aria-hidden="true" /></summary>
           <div className="request-hub-help-content">
             <p><strong>Time off</strong> is for a date or time range you need away from work.</p>
@@ -83,7 +97,7 @@ export function RequestHub() {
             <p>For a swap or callout, start with your scheduled shift.</p>
             <Link href="/app/schedule"><span>Open my schedule</span><NavIcon name="arrowRight" size={16} /></Link>
           </div>
-        </details>
+        </details> : null}
       </aside>
     </RequestHubMotion>
   );

@@ -1,6 +1,8 @@
 import type { UserRole } from './domain';
 import type { PayrollCapabilities } from './payroll/contracts';
-import { navigationForRole } from './navigation';
+import { navigationForRole, type NavContext } from './navigation';
+import { pathEnabled } from './workspace-presentation/modules';
+import { DEFAULT_WORDS, lower } from './workspace-presentation/words';
 
 export type FinderGroup = 'Pages' | 'Actions' | 'People' | 'Locations';
 export type FinderItem = { id: string; group: FinderGroup; label: string; detail?: string; href: string; keywords?: string };
@@ -10,8 +12,8 @@ const GROUP_ORDER: FinderGroup[] = ['Actions', 'Pages', 'People', 'Locations'];
 
 /** Every place a manager can go, plus a few common starts. People and
  * locations come from the read-only finder route, never from this file. */
-export function finderItems(role: UserRole, payroll: PayrollCapabilities | undefined, data: FinderData | null): FinderItem[] {
-  const pages = navigationForRole(role, payroll).map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, href: item.href }));
+export function finderItems(role: UserRole, payroll: PayrollCapabilities | undefined, data: FinderData | null, context: NavContext = {}): FinderItem[] {
+  const pages = navigationForRole(role, payroll, context).map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, href: item.href }));
   const actions: FinderItem[] = [
     { id: 'action:shift', group: 'Actions', label: 'Add a shift', href: '/app/schedule/new', keywords: 'new create schedule' },
     { id: 'action:employee', group: 'Actions', label: 'Add an employee', href: '/app/employees/new', keywords: 'new hire person team' },
@@ -19,7 +21,10 @@ export function finderItems(role: UserRole, payroll: PayrollCapabilities | undef
   ];
   const people = (data?.people ?? []).map(person => ({ id: `person:${person.id}`, group: 'People' as const, label: person.name, detail: person.role, href: `/app/employees/${encodeURIComponent(person.id)}`, keywords: person.id }));
   const locations = (data?.locations ?? []).map(location => ({ id: `location:${location.id}`, group: 'Locations' as const, label: location.name, detail: 'Schedule', href: `/app/schedule?location=${encodeURIComponent(location.id)}` }));
-  return [...actions, ...pages, ...people, ...locations];
+  // Actions follow the company's modules and words too.
+  const words = context.words ?? DEFAULT_WORDS.en;
+  const named = actions.filter(item => pathEnabled(item.href, context.modules)).map(item => item.id === 'action:employee' && words !== DEFAULT_WORDS.en ? { ...item, label: `Add ${lower(words.person)}` } : item);
+  return [...named, ...pages, ...people, ...locations];
 }
 
 function score(item: FinderItem, query: string) {

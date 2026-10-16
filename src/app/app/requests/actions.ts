@@ -1,4 +1,5 @@
 "use server";
+import { moduleEnabled } from "@/lib/workspace-presentation/current.server";
 
 import { isValidIsoDate } from "@/lib/date-utils";
 import { revalidatePath } from "next/cache";
@@ -13,6 +14,7 @@ import {
 
 export async function requestTimeOffAction(formData: FormData) {
   const session = await requireSelfService("/app/requests");
+  if (!(await moduleEnabled("timeOff"))) redirect("/app/requests"); // turned off by the company (B2)
   const proof = await requireSessionMutationProof();
   const requestId = String(formData.get("requestId") ?? "");
   const startDate = String(formData.get("startDate") ?? "");
@@ -55,6 +57,7 @@ export async function requestTimeOffAction(formData: FormData) {
 
 export async function reviewTimeOffAction(formData: FormData) {
   const session = await requireRoles(TIME_OFF_REVIEW_ROLES);
+  if (!(await moduleEnabled("timeOff"))) redirect("/app/requests");
   const proof = await requireSessionMutationProof();
   const requestId = String(formData.get("requestId") ?? "");
   const decision = String(formData.get("decision") ?? "");
@@ -82,6 +85,7 @@ import { isManagementAuthorizationError } from '@/lib/data/management-session';
 
 export async function withdrawTimeOffAction(_previous:WithdrawalActionState, formData:FormData):Promise<WithdrawalActionState> {
   const session=await requireSelfService('/app/requests');
+  if(!(await moduleEnabled('timeOff')))return {outcome:'unavailable'};
   const proof=await requireSessionMutationProof();
   let command;
   try{

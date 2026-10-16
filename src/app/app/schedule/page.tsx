@@ -1,4 +1,5 @@
 import {ScheduleCopyForm} from '@/components/schedule-copy-form';
+import { currentPresentation } from '@/lib/workspace-presentation/current.server';
 import { randomUUID } from "node:crypto";
 import { ActionMenu } from "@/components/action-menu";
 import {ManagerIssueFocus} from '@/components/manager-issue-focus';
@@ -155,10 +156,12 @@ export default async function SchedulePage({
     // Open shifts: the same eligible, claimable coverage offers the shift marketplace lists,
     // plus this person's own claims still waiting for a manager. A failed read shows as unavailable.
     const toOpenShift = (row: ExchangeRecord, href: string) => ({ id: row.id, date: row.sourceShift.date, startTime: row.sourceShift.startTime, endTime: row.sourceShift.endTime, location: row.sourceShift.locationName, position: row.sourceShift.positionName ?? null, href });
-    const [openCoverage, ownActivity] = await Promise.all([
+    const {modules} = await currentPresentation();
+    // Shift swaps turned off (B2): no open shifts to read or show.
+    const [openCoverage, ownActivity] = modules.marketplace ? await Promise.all([
       listOpenCoverage(session.id, today).catch(() => null),
       listEmployeeExchangeActivity(session.id).catch(() => null),
-    ]);
+    ]) : [null, null];
     const openShifts = openCoverage && ownActivity ? {
       available: openCoverage.filter(row => row.actionable === true && row.status === 'OPEN').map(row => toOpenShift(row, `/app/exchange?tab=available#request-${encodeURIComponent(row.id)}`)),
       requested: ownActivity.filter(row => row.kind === 'COVERAGE' && row.status === 'MANAGER_PENDING' && row.targetEmployeeId === session.id && row.sourceShift.date >= today)
@@ -171,6 +174,7 @@ export default async function SchedulePage({
       ) : employeeAcknowledgement.acknowledged ? <span className="employee-quiet-status success">Confirmed</span> : <span className="employee-quiet-status">Confirmation unavailable — review the current schedule again.</span>
     ) : undefined;
     return <EmployeeMySchedule
+      modules={modules}
       view={params.view === 'open' ? 'open' : 'mine'}
       openShifts={openShifts}
       weekStart={weekStart}
