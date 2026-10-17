@@ -228,7 +228,8 @@
 .itemLink { display: grid; grid-template-columns: 40px minmax(0, 1fr) 18px; gap: 14px; }
 .itemIcon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--home-blue); background: var(--home-soft); }
 .updates .itemIcon { color: var(--home-muted); background: #eff0f2; }
-.required { display: inline-block !important; width: fit-content; margin-top: 6px !important; padding: 2px 8px; border-radius: 999px; color: var(--g-accent-strong, #07605f) !important; background: var(--home-soft); font-weight: 500; }
+/* D4: a required review is something to do, not an action control: amber, not teal. */
+.required { display: inline-block !important; width: fit-content; margin-top: 6px !important; padding: 2px 8px; border-radius: 999px; color: #8A4B00 !important; background: #FBF1E2; font-weight: 500; }
 .actions:has(li + li) { box-shadow: var(--home-card-shadow), 0 8px 0 -4px #ffffff, 0 9px 2px -4px rgb(0 0 0 / .1); margin-bottom: 6px; }
 
 /* Quick actions: four tiles, two per row. */

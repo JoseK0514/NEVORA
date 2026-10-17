@@ -33,7 +33,7 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
       <BacklogReview data={resource.data} operation={operation} />
       {resource.data.runs.length === 0 ? <PayrollState title="No payroll runs yet">Start with company payroll settings, then prepare a draft for the period you want to review.</PayrollState> : <div className="pw-review-layout">
         <PayrollPanel title="Pay periods" description="Each approval belongs to one exact revision."><div className="pw-run-list">{resource.data.runs.map(item => <button key={item.id} type="button" className={`pw-run-option${item.id === run?.id ? ' selected' : ''}`} aria-pressed={item.id === run?.id} onClick={() => setSelectedId(item.id)} disabled={locked}>
-          <span><strong>{formatDateRange(item.period.startDate, item.period.endDate)}</strong><small>Payday {formatDisplayDate(item.payday)} · Revision {item.revision}</small></span><span className={`pw-badge ${item.status === 'APPROVED' ? 'pw-badge-success' : ''}`}>{statusLabels[item.status]}</span>
+          <span><strong>{formatDateRange(item.period.startDate, item.period.endDate)}</strong><small>Payday {formatDisplayDate(item.payday)} · Revision {item.revision}</small></span><span className={`pw-badge ${item.status === 'APPROVED' ? 'pw-badge-success' : ''}`} data-status={item.status}>{statusLabels[item.status]}</span>
         </button>)}</div></PayrollPanel>
         {run && <div className="pw-review-current"><p className="pw-workflow-guidance" role="status"><strong>Next step:</strong> {run.status==='WAITING_FOR_AMOUNTS'?'Import amounts from your payroll provider or accountant.':run.status==='REVIEW_REQUIRED'?'Review discrepancies and employee amounts before approving.':'Generate and review the approved documents, then publish statements when ready.'}</p>
         <RunReview key={`${run.id}:${run.revision}:${run.reviewToken}`} run={run} capabilities={resource.data.capabilities} operation={operation} /></div>}
@@ -74,7 +74,7 @@ function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabili
       } else void operation.submit({ action: 'IMPORT', runId: run.id, expectedRevision: run.revision, amounts });
     } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'Check the payroll import.'); }
   };
-  return <PayrollPanel title={formatDateRange(run.period.startDate, run.period.endDate)} description={`Payday ${formatDisplayDate(run.payday)} · Revision ${run.revision}`} aside={<span className={`pw-badge ${run.status === 'APPROVED' ? 'pw-badge-success' : ''}`}>{statusLabels[run.status]}</span>}>
+  return <PayrollPanel title={formatDateRange(run.period.startDate, run.period.endDate)} description={`Payday ${formatDisplayDate(run.payday)} · Revision ${run.revision}`} aside={<span className={`pw-badge ${run.status === 'APPROVED' ? 'pw-badge-success' : ''}`} data-status={run.status}>{statusLabels[run.status]}</span>}>
     <PayrollStepper run={run} />
     {run.correctionOf && <p className="pw-notice">Correction linked to payroll run <code>{run.correctionOf}</code>.</p>}
     {notes.corrections.map((reason, index) => <p className="pw-notice" key={index}><strong>Correction reason:</strong> {reason}</p>)}

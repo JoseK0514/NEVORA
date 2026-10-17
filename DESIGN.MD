@@ -1045,3 +1045,33 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - axe, overflow, targets and client errors pass on Home for both roles at 1440 and 390.
   - The 156-check sweep passes, as do U1, U4, U8, B3, B4 and the D1/D2 checks. Unit tests: 7,202 passed.
 - **Left for the error pass:** the employee Home notices "Some Home sections could not be fully checked", "Schedule partial" and "Schedule reviews partial" are data-source states, not layout.
+
+#### D4: Component consistency (2026-10-16)
+
+- **One segmented control (desktop).**
+  - A light pill track (`--g-inset`, 1px `#E6E7E9` edge) with 44px segments. The chosen segment is white with ink text at weight 600 and a soft shadow; the others are muted at 500.
+  - Applied to: Inbox filters (were black), Locations filters (were black), Home task filters (were teal chips), the request and time-off tabs, Updates and Notifications filters, My shifts / Open shifts, Shift requests views, and the Branding preview switch.
+  - The Schedule location switcher keeps its status chips, but the chosen location reads in ink instead of teal.
+  - Count chips inside a chosen segment are neutral grey.
+  - Deliberately left as they are:
+    - The Schedule day picker, which is a date chooser.
+    - The payroll period list and the Branding preview, which are list selection and preview content, not segmented controls.
+- **One button size (desktop).** Primary and secondary buttons are 44px tall with 8px corners (`--g-control-radius`) and 14px labels. Stragglers brought in line:
+  - Add employee (was 48px with 17px corners) and Apply filters.
+  - Fill gaps only (22px corners).
+  - Locations Search (11px).
+  - Time export buttons (13px).
+  - Request hub buttons (52px tall).
+  - Availability buttons (45px).
+  - The Inbox time-off Approve and Decline buttons (pills at 15px).
+- **Teal for actions only (every width).** Status labels use the status ladder: grey for neutral or waiting, amber for something to review, green for done.
+  - Payroll badges: Review required is amber, Waiting for amounts is grey, Approved stays green. A `data-status` attribute was added in `payroll-runs.tsx`.
+  - Employee Home's "Required review" is amber.
+  - The "0 requests" count and "Owner access" label are grey.
+  - Employees directory initials are neutral grey, as in Gusto's directory.
+  - Teal remains on buttons, links, the active sidebar item, the account avatar and focus rings.
+- **Verified on fictional data (production build):**
+  - The inventory script confirms a single selected style across 14 pages and no off-standard primary or secondary buttons.
+  - axe passes on the 14 pages touched.
+  - The 156-check sweep passes, as do U1, U4, U6, U8, B4 and the D1/D2 and D3 checks. Unit tests: 7,202 passed.
+  - **Found and fixed:** the Inbox count chip kept white text from the old black pill and failed contrast on white (U4 axe).

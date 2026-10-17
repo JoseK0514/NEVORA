@@ -135,3 +135,52 @@ html body .app-shell.nevora-portal .task-tag[data-priority="MISSING_INPUT"] { ba
   html body .app-shell.nevora-portal .page-frame .home-layout .mobile-home-tools a { min-height: 44px; }
   html body .app-shell.nevora-portal .page-frame .manager-tasks-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 12px; }
 }
+
+/* D4: one segmented control. A light pill track; the chosen segment is white with
+ * ink text, the rest are muted. Black and teal selected states are retired, so teal
+ * stays the action colour. (The Employees control already matches with its sliding thumb.) */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) {
+    display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px; width: fit-content; max-width: 100%; padding: 4px;
+    border: 1px solid #E6E7E9; border-radius: 999px; background: var(--g-inset); box-shadow: none;
+  }
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) > :is(a, button) {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px;
+    background: transparent; color: var(--g-muted); box-shadow: none; font: 500 14px/1.2 var(--design-font-body); text-decoration: none; white-space: nowrap; cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) > :is(a, button):hover { color: var(--g-ink); background: transparent; }
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) > :is(a, button):is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"], .selected) {
+    background: #FFFFFF; color: var(--g-ink); font-weight: 600; box-shadow: 0 1px 3px rgb(17 24 39 / .1);
+  }
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) > :is(a, button):focus-visible { outline: 2px solid var(--g-accent); outline-offset: 1px; }
+  /* Counts inside a chosen segment were styled for the old dark pill; on white they are neutral chips. */
+  html body .app-shell.nevora-portal .page-frame .inbox-filters button[aria-pressed="true"] .inbox-filter-count,
+  html body .app-shell.nevora-portal .page-frame .locations-filters a[aria-current="page"] > span { background: #E9EAEC; color: var(--g-ink); }
+  /* The Schedule location switcher keeps its status chips; the chosen location reads in ink, not teal. */
+  html body .app-shell.nevora-portal .page-frame .schedule-location-control .segmented > a.selected { color: var(--g-ink); font-weight: 600; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs) > :is(a, button) { transition: none; }
+}
+
+/* D4: one button size. Primary and secondary buttons are 44px tall with 8px corners
+ * and 14px labels everywhere on desktop; the stragglers below had 11–22px corners,
+ * 45–52px heights or 12–13px labels. */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .page-frame :is(.button.primary, .button.secondary, .pw-button, .ncc-button, .request-hub-action, .av-button, .nto-button,
+    .schedule-generation-action, .locations-search button, [class*="employee-directory-module"][class*="primaryAction"], [class*="employee-directory-module"][class*="applyAction"], [class*="payroll-export-module"][class*="__button"]) {
+    min-height: 44px; border-radius: var(--g-control-radius); font-size: 14px; font-weight: 600;
+  }
+  html body .app-shell.nevora-portal .page-frame :is(.request-hub-action, .av-button, [class*="employee-directory-module"][class*="primaryAction"]) { height: auto; min-height: 44px; padding-block: 0; }
+}
+
+/* D4: teal is for actions. Status labels use the status ladder at every width:
+ * grey for neutral or waiting, amber for something to review, green for done. */
+html body .app-shell.nevora-portal .payroll-workflow .pw-badge:not(.pw-badge-success) { background: #F1F2F4; color: var(--g-ink); }
+html body .app-shell.nevora-portal .payroll-workflow .pw-badge[data-status="REVIEW_REQUIRED"] { background: #FBF1E2; color: #8A4B00; }
+html body .app-shell.nevora-portal .exchange-review .exchange-count { background: #F1F2F4; color: var(--g-ink); }
+html body .app-shell.nevora-portal .page-frame .branding-access { background: #F1F2F4; color: var(--g-ink); }
+/* People's initials are identity, not status: neutral like Gusto's directory. */
+html body .app-shell.nevora-portal .page-frame [class*="employee-directory-module"][class*="avatar"] { background: #F1F2F4; color: var(--g-ink); border-color: #E2E4E7; }
+@media (forced-colors: active) { html body .app-shell.nevora-portal :is(.pw-badge, .exchange-count, .branding-access) { border: 1px solid CanvasText; } }
