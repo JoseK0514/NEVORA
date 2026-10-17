@@ -45,7 +45,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
     const key=JSON.stringify([current.authority,current.observedAt,current.requestStartedAt]);
     // A refresh waits behind an unfinished Server Action. A same-page replace
     // fetches fresh dynamic data while discarding that action's stale router result.
-    if(lastRefresh!==key){lastRefresh=key;router.replace(window.location.pathname+window.location.search,{scroll:false});}
+    if(lastRefresh!==key){lastRefresh=key;if(anchor.current)router.replace(window.location.pathname+window.location.search,{scroll:false});else router.refresh();}
    }
   },async signal=>{
    requestStartedAt=performance.now();
