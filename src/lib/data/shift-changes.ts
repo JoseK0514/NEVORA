@@ -241,8 +241,10 @@ export async function readShiftChangeAvailability(proof:SessionMutationProof,com
   const stale=result.status==='conflict'||result.status==='blocked'&&result.issues.some(i=>i.code==='STALE_TERMS');
   // B3: name the rules that refused it, in plain words; the rules themselves are unchanged.
   // A rule that blocks is named even when other rules still need the Owner's review.
-  const reasons=stale?[]:eligibilityReasons([...(result.status==='blocked'?result.issues:[]),...(unknown?[{code:'POLICY_UNKNOWN' as const}]:[])]);
+  // Reasons are worded for the person claiming ("You already work then"), so only a claim gets them;
+  // a manager approving someone else's claim keeps the general notices.
+  const reasons=stale||command.kind!=='ACCEPT'?[]:eligibilityReasons([...(result.status==='blocked'?result.issues:[]),...(unknown?[{code:'POLICY_UNKNOWN' as const}]:[])]);
   if(reasons.some(r=>r!=='unconfirmed'))return {allowed:false,notice:reasons.map(r=>REASON_TEXT[r]).join('. ')+'.',reasons,refusal:'rules'};
-  return {allowed:false,notice:unknown?'Needs Owner rule review':stale?'Stale or expired. Review the current assignment.':'Unavailable with the current consent, eligibility or policy.',refusal:unknown?'review':stale?'stale':'other'};
+  return {allowed:false,notice:unknown?'Needs Owner rule review':stale?'This shift changed. Reload to see the latest.':'Not available under the current rules.',refusal:unknown?'review':stale?'stale':'other'};
  }catch(error){if(error instanceof ShiftChangeAuthorizationError)return {allowed:false,notice:'Unavailable for your current account.'};throw error;}
 }

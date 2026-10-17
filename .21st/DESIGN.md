@@ -606,3 +606,29 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - axe, overflow and client errors pass at 1440 and 1920.
   - The 156-check sweep passes, as do U1, U2, U3, U4, U8, B4 and the D1–D5 checks.
   - Unit tests: 7,198 passed. Five tenancy and phase-E tests timed out under load; all 217 in those files pass alone.
+
+#### Error pass: data-state messages (2026-10-17)
+
+- **Employee Home: a week that isn't fully published is a known state, not a failure.**
+  - On fictional data, Home said "Some Home sections could not be fully checked" and listed "Schedule partial" and "Schedule reviews partial". Nothing had failed: one location simply hadn't published this week.
+  - The schedule source already said `unpublished`. The acknowledgements source reported the same condition as `unknown_source` (the server's fallback reason).
+  - The server now names it `unpublished` (`employee-home.server.ts`), a value the Home contract already allowed. The response shape and the overall `partial` state are unchanged.
+  - The view treats `unpublished` as known (`isComplete` in `employee-home-reviewed.tsx`). The publication note in the Next shift card stays. The "could not be fully checked" notice, "known" counts and source rows now appear only when a source really failed or was cut short.
+- **Fixes to B3 found in this pass:**
+  - The plain-language claim reasons ("You already work during this time") applied to manager approvals too, where "you" would describe someone else. They now apply only to a person's own claim; approvals keep their earlier notices.
+  - Employee Home decided "partial" by comparing the notice text "Needs Owner rule review". B3 changed when that text appears, so Home stopped flagging offers whose rules still need review. Home now reads the structured `refusal` and `reasons` fields, which restores the earlier behaviour.
+  - Two database integration tests expected the availability result to be exactly `{allowed, notice}`; B3 added fields. They now check the fields they care about. They had not run in B3 because they need a database.
+- **Plainer notices** (shift requests, both roles):
+  - "Stale or expired. Review the current assignment." → "This shift changed. Reload to see the latest."
+  - "Unavailable with the current consent, eligibility or policy." → "Not available under the current rules."
+  - "Reload the current request revision." and "This request needs a fresh revision before responding." → "This request changed. Reload to see the latest."
+  - "Current eligibility/review is unavailable. Reconnect and reload." → "We couldn't check this right now. Reload to try again."
+  - "Stale or unverified. Reload the current assignment or ask management to review." → "This request changed or needs a manager's review. Reload, or ask your manager."
+  - One manager test was updated to the new wording.
+- **Left as they are on purpose:** payroll and payroll-export wording ("revision", "provider amounts", "population revision"). Payroll copy is locked as approved, and QA scripts press "Approve revision". "Needs Owner rule review" also stays: it's short and a manager test reads it.
+- **Verified:**
+  - Employee Home on fictional data: both sources report `unpublished`, the view state is ready, and the false notice and partial rows are gone while the publication note remains.
+  - Unit tests: 7,205 passed.
+  - The exchanges integration suite (14 files, 163 tests) passed on a throwaway database inside the preview's disposable cluster. The database was created and dropped by the tests; no other database was touched.
+  - Browser: the 156-check sweep passes, as do U1, U2, U3, U4, U8, B3, B4 and the D1–D6 checks.
+  - The B3 flow now runs with as many future shifts as the calendar allows. On Oct 17 only the Oct 18 shift could still be offered.

@@ -169,7 +169,7 @@ export default async function ExchangePage({
   const available=openCoverage.filter(e=>e.actionable===true&&e.status==='OPEN');
   const incoming=incomingSwaps.filter(e=>e.status==='EMPLOYEE_PENDING'&&e.targetEmployeeId===session.id);
   const requestFields=(id:string,revision:number|undefined)=>revision&&Number.isSafeInteger(revision)?{requestId:id,expectedRevision:revision}:null;
-  const availability=async (kind:ShiftChangeCommand['kind'],id:string,revision:number|undefined):Promise<ShiftChangeAvailability>=>{const fields=requestFields(id,revision);return fields?readShiftChangeAvailability(proof!,{kind,...fields,operationId:randomUUID()} as ShiftChangeCommand).catch(()=>({allowed:false,notice:'Current eligibility is unavailable. Reconnect and reload.'})):{allowed:false,notice:'This request needs a fresh revision before responding.'};};
+  const availability=async (kind:ShiftChangeCommand['kind'],id:string,revision:number|undefined):Promise<ShiftChangeAvailability>=>{const fields=requestFields(id,revision);return fields?readShiftChangeAvailability(proof!,{kind,...fields,operationId:randomUUID()} as ShiftChangeCommand).catch(()=>({allowed:false,notice:'We couldn’t check this right now. Reload to try again.'})):{allowed:false,notice:'This request changed. Reload to see the latest.'};};
   const acceptViews=new Map(await Promise.all([...available,...incoming].map(async e=>[e.id,await availability('ACCEPT',e.id,e.requestRevision)] as const)));
   // B3: shifts the claim rules refuse are listed apart, with the rules named.
   const refused=(id:string)=>{const view=acceptViews.get(id);return view&&!view.allowed&&view.refusal!==undefined?view:null;};
@@ -236,7 +236,7 @@ export default async function ExchangePage({
                   <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                     <div className="employee-shift-entry-copy">
                       <strong>{marketplaceDisplayName(exchange.requestedByName)} wants to trade</strong>
-                      {!requestFields(exchange.id,exchange.requestRevision)?<span className="shift-change-unavailable">Reload the current request revision.</span>:!acceptViews.get(exchange.id)?.allowed?<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>:null}
+                      {!requestFields(exchange.id,exchange.requestRevision)?<span className="shift-change-unavailable">This request changed. Reload to see the latest.</span>:!acceptViews.get(exchange.id)?.allowed?<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>:null}
                       <div className={`exchange-assignments${exchange.targetShift ? " paired" : ""}`}><ShiftSlot shift={exchange.sourceShift} label="Their shift"/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Your shift"/>:null}</div><ShiftChangeHistory events={histories.get(exchange.id)??null}/>
                       <span>Accepting sends this trade for schedule checks. Review the result before changing your plans.</span>
                     </div>
@@ -252,7 +252,7 @@ export default async function ExchangePage({
                     <div className="employee-shift-entry-copy">
                       <strong>{exchange.kind === "COVERAGE" ? "Coverage" : "Trade"}</strong>
                       <div className={`exchange-assignments${exchange.targetShift ? " paired" : ""}`}><ShiftSlot shift={exchange.sourceShift} label="Requested assignment"/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}</div><ShiftChangeHistory events={histories.get(exchange.id)??null}/>
-                      {exchange.actionable===false&&['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(exchange.status)?<span className="shift-change-unavailable">Stale or unverified. Reload the current assignment or ask management to review.</span>:null}
+                      {exchange.actionable===false&&['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(exchange.status)?<span className="shift-change-unavailable">This request changed or needs a manager’s review. Reload, or ask your manager.</span>:null}
                     </div>
                     <div className="employee-shift-entry-actions" data-status={exchange.status}>
                       <StatusPill tone={statusTone(exchange.status)}>{exchange.status==='OPEN'?'Offered':exchange.status==='EMPLOYEE_PENDING'?'Awaiting employee':exchange.status==='MANAGER_PENDING'?'Manual review':exchange.status==='APPROVED'?'Completed':statusLabel(exchange.status)}</StatusPill>

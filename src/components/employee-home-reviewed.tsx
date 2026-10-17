@@ -198,8 +198,12 @@ function QuickActions() {
   </nav>;
 }
 
+/** Complete, or only waiting on a location to publish (a known state, explained in the Next shift card). */
+const isComplete = (source: HomeSnapshot['sources'][keyof HomeSnapshot['sources']]) =>
+  source.state === 'complete' || (source.state === 'partial' && source.reason === 'unpublished');
+
 function SourceNotices({snapshot}: {snapshot: HomeSnapshot}) {
-  const sources = HOME_SOURCES.filter(key => snapshot.sources[key].state !== 'complete');
+  const sources = HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key]));
   if (!sources.length) return null;
   return <ul className={styles.sourceNotices} aria-label="Home source availability">
     {sources.map(key => {
@@ -224,7 +228,10 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
   const denied = !paused && (status === 'unauthorized' || home?.state === 'unauthorized');
   const released = !paused && !denied && (status === 'ready' || status === 'partial') && home && 'snapshot' in home ? home : null;
   const snapshot = released?.snapshot;
-  const partial = !!snapshot && (status === 'partial' || released!.state === 'partial');
+  // A week that isn't fully published yet is known, not a failed check: the Next shift
+  // card already says so. Only sources that could not be read make Home "partial".
+  const knownOnly = !!snapshot && HOME_SOURCES.every(key => isComplete(snapshot.sources[key]));
+  const partial = !!snapshot && (status === 'partial' || released!.state === 'partial') && !knownOnly;
   const loading = !paused && !denied && !snapshot && status === 'loading';
   const viewState = paused ? 'paused' : denied ? 'unauthorized' : snapshot ? (partial ? 'partial' : 'ready') : loading ? 'loading' : 'unavailable';
   // Filtering the already projected array retains canonical ordering and refs.

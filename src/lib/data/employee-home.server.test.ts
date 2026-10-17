@@ -41,3 +41,8 @@ it('retains newer authorized review and explicit empty-week link while honestly 
  if(!('snapshot'in r))throw Error('Missing Home');
  expect(r.snapshot.attention).toEqual(expect.arrayContaining([expect.objectContaining({href:'/app/schedule?week=2030-10-07',required:true,actionable:true}),expect.objectContaining({href:'/app/schedule?week=2030-09-30',required:true,actionable:false})]));
 });
+it('a week not fully published yet is reported as unpublished, not as an unknown source',async()=>{
+ mocks.review.mockResolvedValue({state:'unpublished',displayedRevisionId:'r2',shifts:[{id:'own'}],acknowledgement:{needsAcknowledgement:true},intent:{operationId:'intent'},publicationChanges:[]});
+ const r=await read(executor({priorWeek:true}));
+ expect(r).toMatchObject({state:'partial',snapshot:{sources:{acknowledgements:{state:'partial',reason:'unpublished'}}}});
+});

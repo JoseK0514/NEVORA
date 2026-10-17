@@ -108,14 +108,14 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
   async function section(source:'acknowledgements'|'timeOff'|'exchanges'|'ownTime'):Promise<Section>{
    try{
     const statement=indexStatement(source,workspace.id,proof.employee.id),rows=await protectedExecutor.query<IndexRow>(statement),items:AttentionItem[]=[];
-    let partial=rows.length>CAP,reviewUnavailable=false;
+    let partial=rows.length>CAP,reviewUnavailable=false,unpublished=false;
     const refs=source==='timeOff'||source==='ownTime'?await readReceipts(source==='timeOff'?'TIME_OFF':'TIME_CORRECTION'):null;
     for(const row of rows.slice(0,CAP)){
      if(!row.id||!Number.isFinite(Date.parse(row.changedAt)))throw Error('Invalid source');
      if(source==='acknowledgements'){
       const review=await readEmployeeWeeklyReview(proof,row.id,protectedExecutor);
       if(review.state==='unavailable'||review.displayedRevisionId!==row.version)throw Error('Weekly source unavailable');
-      if(review.state==='unpublished')partial=true;
+      if(review.state==='unpublished'){partial=true;unpublished=true;}
       const required=review.acknowledgement.needsAcknowledgement;
       if(!review.shifts.length){
        // Prior own relevance can include a removal. Preserve this exact week's
@@ -141,7 +141,7 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
       if(row.detail?.legacy){partial=true;continue;}
       const responds=exchange.status==='OPEN'&&exchange.requestedByEmployeeId!==proof.employee.id||exchange.status==='EMPLOYEE_PENDING'&&exchange.targetEmployeeId===proof.employee.id;
       const allowed=responds&&exchange.actionable?await readShiftChangeAvailability(proof,{kind:'ACCEPT',operationId:randomUUID(),requestId:row.id,expectedRevision:exchange.requestRevision!},protectedExecutor):{allowed:false,notice:null};
-      if(!exchange.actionable&&exchange.attention==='CONFIGURATION_REQUIRED'||allowed.notice==='Needs Owner rule review')partial=true;
+      if(!exchange.actionable&&exchange.attention==='CONFIGURATION_REQUIRED'||'refusal' in allowed&&(allowed.refusal==='review'||!!allowed.reasons?.includes('unconfirmed')))partial=true;
       if(!participant&&!allowed.allowed)continue;
       const ref={kind:'EXCHANGE' as const,id:row.id,version:`r:${row.version}`};
       items.push({ref,label:allowed.allowed?(exchange.kind==='SWAP'?'Review swap request':'Review coverage offer'):exchange.status==='MANAGER_PENDING'?'Shift request awaiting manager review':'Shift request pending',href:homeDestination(ref,participant?'requests':'available')!,required:false,actionable:allowed.allowed,deadlineAt:allowed.allowed?exchange.effectiveCompletionDeadline??null:null,changedAt:row.changedAt});
@@ -159,7 +159,7 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
     // Reject an index that changed while its canonical details were awaited.
     if(hash(await protectedExecutor.query<IndexRow>(statement))!==hash(rows))return {observation:observation('unavailable','source_changed',null),items:[]};
     indexes.set(source,{statement,rows});
-    return {observation:observation(partial?'partial':'complete',partial?(reviewUnavailable?'review_unavailable':rows.length>CAP?'source_cap':'unknown_source'):null,hash(rows)),items};
+    return {observation:observation(partial?'partial':'complete',partial?(reviewUnavailable?'review_unavailable':rows.length>CAP?'source_cap':unpublished?'unpublished':'unknown_source'):null,hash(rows)),items};
    }catch{return failed();}
   }
   const [acknowledgements,exchanges,timeOff,ownTime]=await Promise.all([section('acknowledgements'),section('exchanges'),section('timeOff'),section('ownTime')]);

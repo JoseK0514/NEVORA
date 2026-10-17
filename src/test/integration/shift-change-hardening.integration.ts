@@ -171,7 +171,7 @@ it.each(['manual-policy','recorded-policy','overtime'] as const)('H12 manager ge
  expect(JSON.stringify(view)).not.toMatch(/weeklyMinutes|operational|reviewedBy|classification|WALL_CLOCK/);
  expect(await readShiftChangeAvailability(proof('e3'),command,db.executor)).toMatchObject({allowed:false});
  await q("UPDATE employee_scheduling_settings SET operational_rule_profile=jsonb_set(operational_rule_profile,'{minimumRest}','{\"status\":\"UNKNOWN\"}') WHERE employee_id='e2'");
- expect(await readShiftChangeAvailability(proof('owner'),command,db.executor)).toEqual({allowed:false,notice:'Needs Owner rule review'});
+ expect(await readShiftChangeAvailability(proof('owner'),command,db.executor)).toMatchObject({allowed:false,notice:'Needs Owner rule review',refusal:'review'});
  await q("DELETE FROM employee_sessions WHERE employee_id='owner'");expect(await readShiftChangeAvailability(proof('owner'),command,db.executor)).toEqual({allowed:false,notice:'Unavailable for your current account.'});
 });
 async function reviseDecisionPolicies(mode:'AUTOMATIC_WHEN_VALID'|'MANAGER_REVIEW',expectedRevision=1){

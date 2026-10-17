@@ -188,6 +188,22 @@ describe('truthful source states and refresh intent', () => {
     expect(markup).not.toContain("You're all set.");
   });
 
+  it('treats a week that is not fully published as known, not as a failed check', () => {
+    const current = snapshot({publicationState: 'partial'});
+    current.sources.schedule = {...current.sources.schedule, state: 'partial', reason: 'unpublished'};
+    current.sources.acknowledgements = {...current.sources.acknowledgements, state: 'partial', reason: 'unpublished'};
+    const markup = html(props(projectEmployeeHome(current)));
+    expect(markup).toContain('Some of your locations haven’t published this week yet');
+    expect(markup).not.toContain('could not be fully checked');
+    expect(markup).not.toMatch(/Schedule partial|Schedule reviews partial/);
+    expect(markup).not.toContain('known action');
+    // A source that really failed still says so.
+    current.sources.communications = {...current.sources.communications, state: 'partial', reason: 'source_cap'};
+    const failed = html(props(projectEmployeeHome(current)));
+    expect(failed).toContain('could not be fully checked');
+    expect(failed).toContain('partially shown');
+  });
+
   it('does not show unavailable schedule facts or imply an off-clock state', () => {
     const current = snapshot();
     current.sources.schedule = {...current.sources.schedule, state: 'unavailable', reason: 'read_failed'};

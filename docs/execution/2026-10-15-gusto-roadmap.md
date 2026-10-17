@@ -97,8 +97,8 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
 - **D4 component consistency (done, 2026-10-16):** one segmented control, one 44px / 8px button, and teal kept for actions while status labels use grey, amber and green.
 - **D5 employee desktop (done, 2026-10-16):** My schedule puts the week first with its status beside it, Availability rows are compact, Profile no longer lights Home, and time zones read as places.
 - **D6 desktop craft (done, 2026-10-17):** keyboard focus on date fields, arrow keys in dense lists, one row hover, one calm empty state, and place-name time zones; checked at 1920.
+- **Error pass (done, 2026-10-17):** employee Home no longer calls a not-yet-published week a failed check, and shift-request notices are in plain words. Two B3 follow-ups were fixed: claim reasons stay off manager approvals, and Home's partial check uses structured fields.
 - **Next:**
-  - The error pass (employee Home source notices and other data-state messages).
   - Backend: B5 Spanish or B6 offline (each needs Jose's go-ahead).
   - Apply migrations 0031 and 0032 before any release.
 
