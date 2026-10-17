@@ -36,3 +36,18 @@ it('a failed read is unavailable, never an empty day', async () => {
   expect(response.status).toBe(503);
   expect(await response.json()).toEqual({ state: 'unavailable', reason: 'read_failed' });
 });
+it('a manager reads with their own session proof; location scoping happens in that read', async () => {
+  vi.mocked(getSession).mockResolvedValue({ id: 'mgr', firstName: 'A', lastName: 'B', role: 'MANAGER', primaryLocationId: 'l1' } as never);
+  const { requireSessionMutationProof } = await import('@/lib/auth/session');
+  const proof = { employee: { id: 'mgr', role: 'MANAGER' }, sessionTokenHash: 'b'.repeat(64) };
+  vi.mocked(requireSessionMutationProof).mockResolvedValueOnce(proof as never);
+  expect((await GET(request())).status).toBe(200);
+  expect(readToday).toHaveBeenCalledWith(proof);
+});
+it('a manager without a location grant is denied, not shown an empty day', async () => {
+  vi.mocked(getSession).mockResolvedValue({ id: 'mgr', firstName: 'A', lastName: 'B', role: 'MANAGER', primaryLocationId: 'l1' } as never);
+  vi.mocked(readToday).mockResolvedValue({ state: 'unavailable', reason: 'access_denied' });
+  const response = await GET(request());
+  expect(response.status).toBe(403);
+  expect(await response.json()).toEqual({ state: 'unavailable', reason: 'access_denied' });
+});
