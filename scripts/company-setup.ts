@@ -142,6 +142,8 @@ export async function setupCompany(client: Client, input: CompanyInput) {
     '0026_attendance_observations', '0027_payroll_period_custody', '0028_configurable_payroll', '0029_payroll_private_notices',
     '0030_notification_source_kinds',
   ].map(async name => migrationBody(await readFile(new URL(`../db/migrations/${name}.sql`, import.meta.url), 'utf8'))));
+  const currentMigrations = await Promise.all(['0031_native_payroll', '0032_company_access_invitations']
+    .map(async name => migrationBody(await readFile(new URL(`../db/migrations/${name}.sql`, import.meta.url), 'utf8'))));
   const passwordHash = await hashPassword(input.owner.password);
   const workspaceId = randomUUID(), locationId = randomUUID();
   await client.query('BEGIN');
@@ -163,6 +165,8 @@ export async function setupCompany(client: Client, input: CompanyInput) {
     await client.query(`INSERT INTO locations(id,workspace_id,clocker_key,name,short_name)
       VALUES($1,$2,$3,$4,$5)`, [locationId, workspaceId, input.locationKey, input.locationName, input.locationShortName]);
     await insertOwner(client, input.owner, passwordHash, locationId, [locationId]);
+    // Immutable access adoption must bind the configured company and real employees.
+    for (const migration of currentMigrations) await client.query(migration);
     await client.query('COMMIT');
     return { workspaceId, locationId };
   } catch (error) {
