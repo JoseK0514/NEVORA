@@ -189,6 +189,14 @@ it('shows no section tabs on pages outside a shared group',()=>{
 it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination within the existing employee More navigation',role=>{
  const {html}=render(role,'/app/updates/own-update');
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
- expect(header).not.toContain('href="/app/updates"');
+ // The desktop location trail (hidden on phones) links back to the section; no other header shortcut appears.
+ const [before,rest]=header.split('<nav class="portal-location-nav"');
+ expect(before+rest.slice(rest.indexOf('</nav>')+6)).not.toContain('href="/app/updates"');
+ expect(rest).toContain('<li><a href="/app/updates">Updates</a></li>');
  expect(html).toContain('href="/app/updates" class="employee-more-link active" aria-current="page"');
+});
+it('D1: the desktop top bar shows workspace, section and page, and pins Workspace in the sidebar',()=>{
+ const {html}=render('OWNER','/app/timecards');
+ expect(html).toContain('<ol class="portal-location"><li class="portal-location-workspace" title="Northside Services">Northside Services</li><li>Time &amp; Pay</li><li><span aria-current="page">Timecards</span></li></ol>');
+ expect(html).toContain('data-group="Workspace"');
 });

@@ -147,3 +147,18 @@
 
 /* U8: the column headers stay visible while a long team list scrolls (desktop). */
 @media (min-width: 761px) { .table thead { position: sticky; top: 64px; z-index: 2; } .table thead tr { box-shadow: 0 1px 0 var(--g-hairline, #ECEDEF); } }
+
+/* D2 (2026-10-16): a denser directory on wide screens. Rows are about 60px and
+ * the whole row opens the profile; the View profile link stays the real target
+ * for keyboards and screen readers. */
+@container directory (min-width: 851px) {
+  .table thead th { font-size: 13px; }
+  .table tbody tr { position: relative; min-height: 60px; padding-block: 10px; cursor: pointer; }
+  .table tbody tr:hover { background: var(--g-inset, #F6F7F8); }
+  .avatar { flex-basis: 36px; width: 36px; height: 36px; font-size: 13px; }
+  .personCopy { gap: 2px; }
+  .profileAction { font-size: 13px; }
+  .profileAction::after { content: ""; position: absolute; inset: 0; }
+  .table tbody tr:has(.profileAction:focus-visible) { outline: 2px solid var(--g-accent, #077572); outline-offset: -2px; }
+  .profileAction:focus-visible { outline: 0; }
+}

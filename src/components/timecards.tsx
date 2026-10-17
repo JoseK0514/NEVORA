@@ -146,7 +146,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   usePrivateFragmentFocus('timecard-',currentActor&&data?.state==='ready');
   const cards=currentActor&&data?.state==='ready'?[...data.cards].sort((a,b)=>Number(b.card.issues.length>0)-Number(a.card.issues.length>0)||a.card.employeeName.localeCompare(b.card.employeeName)):[];
   const eligible=cards.filter(item=>!batchExclusion(item,actorId,batchAction));
-  return <section className={(corporate?'employee-corporate-timecards ':'')+styles.root} aria-label={manager?'Manager timecards':'Your period timecard'}>
+  return <section className={(corporate?'employee-corporate-timecards ':'')+styles.root+(manager?' '+styles.managerRoot:'')} aria-label={manager?'Manager timecards':'Your period timecard'}>
     <div className={(corporate?'employee-corporate-period ':'')+styles.periodPanel}>
     <div className={(corporate?'employee-corporate-period-heading ':'')+styles.periodHeading}><NavIcon name="calendar" size={20}/><h2>Choose a period</h2><span>Pick the dates to review</span></div>
     <form onSubmit={choose} className={(corporate?'employee-corporate-period-form ':'')+styles.toolbar}>
@@ -178,7 +178,45 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       </details>
     </section>:null}
     {currentActor&&data?.state==='ready'&&!cards.length?<div className={styles.empty}><NavIcon name="clock" size={32}/><h2>No timecards to show</h2><p>No employees are available for this period.</p><p className={styles.note}>Choose another date range to check recorded time.</p></div>:null}
+    {manager&&cards.length?<div className={styles.rows} role="group" aria-label="Timecards in this period"><div className={styles.rowHeader}>
+      <span className={styles.rowSelect}><input type="checkbox" aria-label="Select all eligible timecards" checked={eligible.length>0&&eligible.slice(0,100).every(item=>selected.includes(item.card.employeeId))}
+        disabled={busy||!!pending||!!outcomes||!eligible.length} onChange={e=>{setSelected(e.target.checked?eligible.slice(0,100).map(item=>item.card.employeeId):[]);setReview(null);setConfirmed(false);}}/></span>
+      <span aria-hidden="true">Employee</span><span aria-hidden="true">Status</span><span aria-hidden="true">Recorded</span><span aria-hidden="true">Breaks</span><span aria-hidden="true">Attention</span><span aria-hidden="true" className={styles.rowHeaderActions}>Actions</span>
+    </div>
     {cards.map(item=>{
+      // D2: one row per person (Gusto/Square pattern). Same controls and names; entries and history open under Details.
+      const id=item.card.employeeId,name=item.card.employeeName,exclusion=batchExclusion(item,actorId,batchAction),own=actorId===id;
+      return <article key={id} className={styles.row} tabIndex={-1} id={`timecard-${id}`} data-attention={item.card.issues.length>0||undefined}>
+        <div className={styles.rowMain}>
+          <span className={styles.rowSelect}><input type="checkbox" aria-label={`Select ${name}`} checked={selected.includes(id)} disabled={busy||!!pending||!!outcomes||!!exclusion||(!selected.includes(id)&&selected.length>=100)} onChange={e=>{setSelected(ids=>e.target.checked?ids.length<100?[...ids,id]:ids:ids.filter(value=>value!==id));setReview(null);setConfirmed(false);}}/></span>
+          <div className={styles.rowIdentity}><h2>{name}</h2><small>{periodDate(period.startDate)} – {periodDate(period.endDate)}</small></div>
+          <span className={styles.rowState}><strong className={styles.state} data-state={item.state}>{item.state.replaceAll('_',' ').toLowerCase()}</strong></span>
+          <dl className={styles.rowTotals}><div><dt>Recorded</dt><dd>{formatRecordedHours(item.card.recordedNanoseconds)}</dd></div><div><dt>Breaks</dt><dd>{formatRecordedHours(item.card.breakNanoseconds)}</dd></div></dl>
+          <div className={styles.rowAttention}>{item.card.issues.length?<><NavIcon name="alert" size={16}/><span>{issueNames[item.card.issues[0]]}{item.card.issues.length>1?<small> +{item.card.issues.length-1} more</small>:null}</span></>
+            :own?<span className={styles.rowQuiet}>Needs a different manager</span>:<span className={styles.rowQuiet}>No issues found</span>}</div>
+          <div className={styles.rowActions}>
+            {pending?.employeeId===id?<button type="button" className="button primary" disabled={busy} onClick={()=>void act(item,pending.action)}>Retry pending action</button>:
+              item.state==='FINALIZED'?<span className={styles.rowQuiet}>Reopen in Details</span>:
+              <><button type="button" className="button primary" disabled={busy||!!pending||!!outcomes||own||!!item.card.issues.length} onClick={()=>void act(item,'APPROVE')}>Approve timecard</button>
+                <button type="button" className="button secondary" disabled={busy||!!pending||!!outcomes||own||item.state!=='APPROVED'||!!item.card.issues.length} onClick={()=>void act(item,'FINALIZE')}>Finalize period</button></>}
+          </div>
+        </div>
+        <details className={styles.rowDetails}><summary>Details<span className="sr-only"> for {name}</span><NavIcon name="chevronRight" size={16}/></summary>
+          {item.card.issues.length?<div className={styles.issues}><NavIcon name="alert" size={20}/><div><h3>Needs attention</h3><ul>{item.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>Review the entries and resolve open time or corrections before approval.</p></div></div>:null}
+          {exclusion&&!item.card.issues.length?<p className={styles.note}>Not selectable for {batchAction==='APPROVE'?'approval':'finalization'}: {{self:'a different manager must review',issues:'resolve timecard issues first',state:'incompatible current state'}[exclusion]}.</p>:null}
+          <Details card={item.card}/>
+          {item.state==='FINALIZED'&&pending?.employeeId!==id?<div className={styles.actions}><label>Reopen reason<input value={notes[id]??''} maxLength={500} onChange={e=>setNotes({...notes,[id]:e.target.value})}/></label>
+            <button type="button" className="button secondary" disabled={busy||!!pending||!!outcomes||own||!notes[id]?.trim()} onClick={()=>void act(item,'REOPEN')}>Reopen period</button></div>:null}
+          {own?<p className={styles.note}>Your timecard requires a different manager.</p>:null}
+          {item.history.length?<details className={styles.history}><summary>Historical revisions ({item.history.length})</summary>
+            {item.history.map(h=><div key={h.operationId}><h3>Revision {h.revision} · {h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'}</h3>
+              <p>{stamp(h.occurredAt,item.card.timeZone)} · {h.actorName}{h.note?` · ${h.note}`:''}</p>
+              <Details card={{...item.card,...h.snapshot}}/>
+            </div>)}</details>:null}
+        </details>
+      </article>;
+    })}</div>:null}
+    {manager?null:cards.map(item=>{
       const presentation=corporate?employeeTimecardPresentation(item.card.issues):null;
       return <article key={item.card.employeeId} className={(corporate?'employee-corporate-timecard ':'')+styles.card} tabIndex={-1} id={`timecard-${item.card.employeeId}`}>
       <header><div className={styles.identity}><span className={styles.avatar} aria-hidden="true"><NavIcon name={manager?'employee':'clock'} size={24}/></span><div><h2>{manager?item.card.employeeName:'Your timecard'}</h2><small>{periodDate(period.startDate)} – {periodDate(period.endDate)}</small></div></div><strong className={styles.state} data-state={item.state}>{item.state.replaceAll('_',' ').toLowerCase()}</strong></header>

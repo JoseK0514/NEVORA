@@ -91,7 +91,12 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
 - **B3 open-shift eligibility (done, 2026-10-16):** open shifts that can't be claimed are collapsed under "Shifts you can’t pick up" with plain reasons, on Schedule › Open shifts and the Exchange available tab.
   - Reasons come from the existing claim check. No rule changed, and there's no migration.
   - A blocking rule is named even when other rules also need the Owner's review.
-- **Next:** B5 Spanish or B6 offline (each needs Jose's go-ahead). Apply migrations 0031 and 0032 before any release.
+- **D1 desktop shell and grid (done, 2026-10-16):** one left edge and two measures for every page, one header pattern, a workspace › section › page trail in the top bar, and a sidebar that fits a laptop with Workspace pinned.
+- **D2 dense lists (done, 2026-10-16):** Timecards as one row per person (6,692 → 1,486px for 10 people), denser Employees rows that open the profile, and Home tasks and Inbox groups as lists.
+- **Next:**
+  - Desktop: D3 Home hierarchy, D4 component consistency, D5 employee desktop, D6 craft.
+  - Backend: B5 Spanish or B6 offline (each needs Jose's go-ahead).
+  - Apply migrations 0031 and 0032 before any release.
 
 ## Owed testing
 - VoiceOver itself (it can't be driven here; the script is in `DESIGN.MD`) and at least one physical iPhone.

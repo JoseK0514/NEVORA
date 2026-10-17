@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { MissedPunches } from "./manager-today";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { actionCenterNavigation } from "./action-center-navigation";
@@ -44,11 +44,11 @@ function Row({ item }: { item: ActionItem }) {
 
 export function ManagerInbox({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
-  return <><MissedPunches /><InboxSurface snapshot={snapshot} connection={connection} onRefresh={refresh} timeZone={timeZone} /></>;
+  return <InboxSurface snapshot={snapshot} connection={connection} onRefresh={refresh} timeZone={timeZone} lead={<MissedPunches />} />;
 }
 
 /** Presentation only: receives the released action center observation. */
-export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZone }: { snapshot: ActionCenter | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string }) {
+export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZone, lead }: { snapshot: ActionCenter | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; /** Shown under the page header (D1), e.g. missed punches. */ lead?: ReactNode }) {
   const [filter, setFilter] = useState<Filter>("all");
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
   const sections = ready ? inboxSections(ready.items) : [];
@@ -66,6 +66,7 @@ export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZon
         </button>
       </div>
     </header>
+    {lead}
     {ready && ready.items.length ? <div className="inbox-filters" role="group" aria-label="Show">
       {(["all", "exceptions", "requests"] as const).map(value => <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)}>
         {value === "all" ? "All" : value === "exceptions" ? "To review" : "Requests"}<span className="sr-only">,</span> <span className="inbox-filter-count">{counts[value]}</span>

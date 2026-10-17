@@ -68,6 +68,24 @@ export function AppShell({
   const sectionTabs = pathname ? sectionTabsFor(user.role, pathname, payrollCapabilities, context) : null;
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
   const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
+  const navGroups = employee ? [{ label: "", items: navigation }] : managementNavigationGroups(navigation);
+  // Top-bar location (D1): section, then page. The page links back when you are deeper in it.
+  const activeGroup = navGroups.find(group => group.items.some(item => item.href === activeHref));
+  const activeItem = activeGroup?.items.find(item => item.href === activeHref);
+  const deeper = !!activeItem && pathname !== activeItem.href;
+
+  // Keep the current page visible in a sidebar that scrolls on short screens,
+  // clear of the pinned Workspace group.
+  useEffect(() => {
+    const nav = document.getElementById("desktop-primary-navigation");
+    const link = nav?.querySelector<HTMLElement>(".nav-link.active");
+    if (!nav || !link || nav.scrollHeight <= nav.clientHeight) return;
+    const pinned = nav.querySelector<HTMLElement>('[data-group="Workspace"]');
+    const box = nav.getBoundingClientRect(), item = link.getBoundingClientRect();
+    const bottom = box.bottom - (pinned && !pinned.contains(link) ? pinned.offsetHeight : 0);
+    if (item.top < box.top) nav.scrollTop -= box.top - item.top + 8;
+    else if (item.bottom > bottom) nav.scrollTop += item.bottom - bottom + 8;
+  }, [activeHref]);
 
   useEffect(() => {
     for (const id of ['employee-more-navigation', 'manager-more-navigation']) {
@@ -128,7 +146,7 @@ export function AppShell({
         <button className="sidebar-toggle" type="button" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={22} /></button>
         </div>
         <nav id="desktop-primary-navigation" className="sidebar-nav" aria-label="Primary navigation">
-          {(employee ? [{label:"",items:navigation}] : managementNavigationGroups(navigation)).map(group => <div className="sidebar-nav-group" key={group.label}>
+          {navGroups.map(group => <div className="sidebar-nav-group" data-group={group.label || undefined} key={group.label}>
           {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}
           {group.items.map((item) => {
             const active = item.href === activeHref;
@@ -179,6 +197,13 @@ export function AppShell({
       <main className="app-main">
         <header className="mobile-header">
           <span className="portal-workspace-name" title={workspaceName}>{workspaceName}</span>
+          {activeItem ? <nav className="portal-location-nav" aria-label="You are here">
+            <ol className="portal-location">
+              <li className="portal-location-workspace" title={workspaceName}>{workspaceName}</li>
+              {activeGroup?.label ? <li>{activeGroup.label}</li> : null}
+              <li>{deeper ? <Link href={activeItem.href}>{activeItem.label}</Link> : <span aria-current="page">{activeItem.label}</span>}</li>
+            </ol>
+          </nav> : null}
           <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
             <AuthBrand />
           </Link>

@@ -455,3 +455,52 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - axe, overflow and 44px targets pass at 320, 390 and 1440. Reduced motion is honoured, and there are no client errors.
   - The 156-check sweep passes, as do the U3 flows. Unit tests cover the mapping and the rendering.
 - **Not covered:** the reasons for swaps (B3 covers open shifts only); the manager's approval screen, which keeps its own notices; and real shift-lead, coverage-gap and rest-rule refusals in the browser. Those are unit-tested through the mapping only.
+
+#### D1: Desktop shell and page grid (2026-10-16)
+
+- **One left edge.** Every page starts at the same position for every role: 276px at 1440. Before this, page wrappers capped themselves at anywhere from 880 to 1280px and some were centred, so the left edge moved between 272 and 402px from page to page.
+  - Rules live in `src/app/app/portal-desktop.css` (desktop widths only).
+  - Each page's root wrapper is left-aligned and uses one of two measures:
+    - **Wide (1,440px):** Home, Inbox, schedules, employees, timecards, Insights and lists.
+    - **Reading (1,120px):** settings hub, Branding, payroll steps, Updates and Profile.
+  - The employee frame's extra 18px margin is gone, so employees and managers share the edge.
+  - Section tabs match the measure of the page under them.
+- **Page header.** Title, one-line description, actions on the right.
+  - The icon tiles beside the Payroll and Insights titles are hidden on desktop. The markup stays because a QA script reads the payroll mark.
+  - The Inbox title now comes first, with Missed punches under the header (`InboxSurface` `lead` slot).
+- **Top bar.** It shows where you are: workspace › section › page (for example, "Northside QA Workforce › Time & Pay › Timecards").
+  - On a deeper page, the page step links back to its section.
+  - It's desktop only; phones keep their own header.
+- **Sidebar.**
+  - Rows are 36px for mouse and trackpad (phones keep 44px), and group spacing is tighter. The Owner's 16 items now fit at 1440×900 without scrolling.
+  - The Workspace group (Settings, Scheduling rules) is pinned at the bottom of the list, so on shorter screens (1280×800) Settings stays visible while the rest scrolls.
+  - The page you're on scrolls into view.
+  - The old 34px drop shadow, which left a grey band over the page, is replaced by the hairline border alone.
+  - Groups don't collapse: once the list fits, collapsing would only add clicks.
+- **Kept from the plan as it was:** section tabs stay above the page title as a section bar on every page that has them. Moving them under the title would need each page's header markup changed.
+
+#### D2: Dense lists on desktop (2026-10-16)
+
+- **Timecards (managers): one row per person.**
+  - Columns: select, employee, status, recorded, breaks, attention (first issue and "+N more"), and actions (Approve timecard, Finalize period).
+  - Entries, issues, corrections, reopening and revision history open under each row's Details.
+  - The period picker is a toolbar, the overview is a stat strip, and selected-timecard review is a slim bar.
+  - A new "Select all eligible timecards" checkbox selects up to 100 eligible cards through the same batch rules.
+  - Unavailable actions recede (outlined grey) instead of a faded teal button on every row.
+  - Button names, checkbox names, `#timecard-<id>` anchors and the batch flow are unchanged. The employee timecard view is untouched.
+  - Fictional 10-person period: page height went from 6,692 to 1,486px.
+- **Employees.** Rows went from 96 to about 60px and column labels from 11 to 13px. The whole row opens the profile (a stretched link); the "View profile" link is still the keyboard and screen-reader target, and the row shows its focus.
+- **Home tasks and Inbox groups** read as lists: one bordered container with hairline rows, and a coloured edge only on urgent work. Inbox group counts and arrows sit at the right edge.
+- **Targets stay at least 44px** (row buttons, Details, the top-bar links). On phones the Timecards rows stack into compact cards with buttons side by side.
+- **Verified on fictional data (production build):**
+  - Same left edge on 16 manager and 9 employee pages.
+  - Trail content and links; Settings visible at 1440×900 and 1280×800.
+  - At 1920, wide pages stop at 1,440px and reading pages at 1,120px.
+  - Inbox order; Timecards rows match the overview count and Details opens; Employees row click opens the profile.
+  - axe, overflow, targets and client errors pass at 1440 and 390.
+  - The 156-check sweep passes, as do U1, U4, U8, B3 and B4. Unit tests: 7,181 passed; the 17 tenancy and phase-E failures were load timeouts and all 217 pass when run alone.
+- **Next (not done):**
+  - D3 Home hierarchy: task titles name their location, and the tiles become a stat strip.
+  - D4 component consistency: one segmented control (the Inbox's black "All" pill), one button size and radius, teal for actions only.
+  - D5 employee desktop.
+  - D6 craft pass.
