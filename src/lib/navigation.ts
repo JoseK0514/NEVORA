@@ -41,6 +41,43 @@ const employeeNavigation: NavigationItem[] = [
   { href: "/app/profile", label: "Profile", icon: "employee" },
 ];
 
+/** Desktop sidebar (D3). An entry that is already one step away (a section tab,
+ * a page toolbar, the settings hub or the account menu) leaves the sidebar when the
+ * place that holds it is present. Phones, the More menus and the finder keep every
+ * entry; this only shortens the desktop list. */
+const SIDEBAR_HOLDERS: Record<string, string> = {
+  "/app/availability": "/app/requests",
+  "/app/exchange": "/app/requests",
+  "/app/payroll-export": "/app/timecards",
+  "/app/schedule/templates": "/app/schedule",
+  "/app/schedule/settings": "/app/settings",
+};
+const EMPLOYEE_SIDEBAR_HOLDERS: Record<string, string> = {
+  "/app/availability": "/app/requests/hub",
+  "/app/profile": "/app",
+};
+/** Entries reached from the desktop account menu instead. */
+const ACCOUNT_MENU_ENTRIES = new Set(["/app/my-pay"]);
+
+function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" || role === "LEAD" ? EMPLOYEE_SIDEBAR_HOLDERS : SIDEBAR_HOLDERS; }
+
+export function sidebarNavigation(role: UserRole, items: NavigationItem[]): NavigationItem[] {
+  const present = new Set(items.map(item => item.href)), holders = sidebarHolders(role), management = role !== "EMPLOYEE" && role !== "LEAD";
+  return items
+    .filter(item => !(holders[item.href] && present.has(holders[item.href])) && !(management && ACCOUNT_MENU_ENTRIES.has(item.href)))
+    // Time off now stands for all three request pages, which share its tab row.
+    .map(item => management && item.href === "/app/requests" && (present.has("/app/exchange") || present.has("/app/availability")) ? { ...item, label: "Requests", icon: "requests" as const } : item);
+}
+
+/** The sidebar entry to highlight: a page whose own entry left the sidebar lights its holder. */
+export function sidebarActiveHref(role: UserRole, path: string | null | undefined, items: NavigationItem[], payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
+  const active = activeNavigationHref(role, path ?? "", payroll, context);
+  const shown = new Set(items.map(item => item.href));
+  if (!active || shown.has(active)) return active;
+  const holder = sidebarHolders(role)[active];
+  return holder && shown.has(holder) ? holder : undefined;
+}
+
 /** Presentation groups consume only already-authorized navigation entries. */
 export function managementNavigationGroups(items: NavigationItem[]) {
   const definitions = [

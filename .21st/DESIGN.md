@@ -504,3 +504,34 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - D4 component consistency: one segmented control (the Inbox's black "All" pill), one button size and radius, teal for actions only.
   - D5 employee desktop.
   - D6 craft pass.
+
+#### D3: Home hierarchy and a shorter desktop sidebar (2026-10-16)
+
+- **Sidebar (desktop only).** The Owner's list goes from 16 entries to 10: Home, Inbox, Schedule, Employees, Requests, Updates, Timecards, Payroll, Insights, Settings.
+  - **Where the removed entries live now** (`sidebarNavigation` and `sidebarActiveHref` in `src/lib/navigation.ts`). Each is one step away and lights its holder in the sidebar:
+    - Availability and Shift requests: the Requests tab row (the "Time off" entry is now "Requests").
+    - Payroll export: the Time exports tab on Timecards.
+    - Templates: the Schedule page.
+    - Scheduling rules: the Settings hub.
+    - My pay: "Your pay statements" in the account menu.
+  - An entry stays when the place that would hold it is missing. Managers have no Settings, so they keep Scheduling rules; with Time off switched off, Availability and Shift requests keep their own entries.
+  - Employees lose Availability (in their Requests tabs) and Profile (in the account menu).
+  - Phone tab bars, More menus and the ⌘K finder are unchanged.
+- **Today strip.** The four tiles are one bordered strip with 24px figures. Zeros are muted grey; only a started-not-clocked-in count turns coral with a top edge. The "Published shifts only · Updated" note is the strip's footer.
+- **Tasks.**
+  - Each row leads with a word tag: Urgent or Coverage need (coral), Setup needed (amber), Review (grey). The category follows in plain text. Colour is never the only signal.
+  - Coverage-gap groups name their location ("14 coverage gaps at Main Office").
+  - Only urgent rows keep the coral edge.
+  - "Show all N tasks" and "Open inbox" share one row.
+- **Rail.**
+  - Rail headings are 16px, so they read below the 20px Tasks heading.
+  - With the Today strip on screen, an empty "Clocked in now" card is hidden, along with its grid row, because the strip already shows 0. The card still appears when someone is on the clock.
+  - All six shortcuts stay, because the Clocker and Account recovery tools have no other desktop entry.
+- **Employee Home (desktop).** Quick actions are one-line tiles (56px instead of 104px), which shortens the right column. Phones keep the larger two-row tiles.
+- **Verified on fictional data (production build):**
+  - The Owner's 10 entries and the active holder for each moved page.
+  - Every removed entry is still reachable (tabs, the Schedule page, the Settings hub, the account menu link opening My pay); the manager keeps Scheduling rules; the phone More menu is unchanged.
+  - The strip has muted zeros; coverage-gap headings name the location; only urgent rows carry the coral edge.
+  - axe, overflow, targets and client errors pass on Home for both roles at 1440 and 390.
+  - The 156-check sweep passes, as do U1, U4, U8, B3, B4 and the D1/D2 checks. Unit tests: 7,202 passed.
+- **Left for the error pass:** the employee Home notices "Some Home sections could not be fully checked", "Schedule partial" and "Schedule reviews partial" are data-source states, not layout.

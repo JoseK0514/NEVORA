@@ -273,3 +273,9 @@
   .assignment[data-pass] :is(.assignmentDate, .position, .zone, .currentNote, .notice, .location, .scheduleLink, .countdown) { color: CanvasText; }
   .assignment[data-pass] .assignmentFooter::before, .assignment[data-pass] .assignmentFooter::after { display: none; }
 }
+/* D3 (desktop): quick actions as one-line tiles, so the right column ends closer
+ * to the left one. Phones keep the larger two-row tiles. */
+@container employee-home-reviewed (min-width: 52rem) {
+  .quick a { grid-template-columns: 32px minmax(0, 1fr); align-items: center; align-content: center; gap: 12px; min-height: 56px; padding: 10px 14px; border-radius: 12px; }
+  .quickIcon { width: 32px; height: 32px; border-radius: 10px; }
+}

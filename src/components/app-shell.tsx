@@ -16,7 +16,7 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, type NavContext } from "@/lib/navigation";
+import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { CommandFinder } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
@@ -68,10 +68,12 @@ export function AppShell({
   const sectionTabs = pathname ? sectionTabsFor(user.role, pathname, payrollCapabilities, context) : null;
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
   const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
-  const navGroups = employee ? [{ label: "", items: navigation }] : managementNavigationGroups(navigation);
+  const sidebarItems = sidebarNavigation(user.role, navigation);
+  const sidebarActive = sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
+  const navGroups = employee ? [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems);
   // Top-bar location (D1): section, then page. The page links back when you are deeper in it.
-  const activeGroup = navGroups.find(group => group.items.some(item => item.href === activeHref));
-  const activeItem = activeGroup?.items.find(item => item.href === activeHref);
+  const activeGroup = navGroups.find(group => group.items.some(item => item.href === sidebarActive));
+  const activeItem = activeGroup?.items.find(item => item.href === sidebarActive);
   const deeper = !!activeItem && pathname !== activeItem.href;
 
   // Keep the current page visible in a sidebar that scrolls on short screens,
@@ -85,7 +87,7 @@ export function AppShell({
     const bottom = box.bottom - (pinned && !pinned.contains(link) ? pinned.offsetHeight : 0);
     if (item.top < box.top) nav.scrollTop -= box.top - item.top + 8;
     else if (item.bottom > bottom) nav.scrollTop += item.bottom - bottom + 8;
-  }, [activeHref]);
+  }, [sidebarActive]);
 
   useEffect(() => {
     for (const id of ['employee-more-navigation', 'manager-more-navigation']) {
@@ -149,7 +151,7 @@ export function AppShell({
           {navGroups.map(group => <div className="sidebar-nav-group" data-group={group.label || undefined} key={group.label}>
           {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}
           {group.items.map((item) => {
-            const active = item.href === activeHref;
+            const active = item.href === sidebarActive;
 
             return (
               <Link
@@ -214,6 +216,8 @@ export function AppShell({
           <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
             {employee ? <Link href="/app/profile" className="nevora-action-menu-item"
               onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
+            {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
+              onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your pay statements</Link> : null}
             {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}
             <div className="nevora-action-menu-divider" />
             <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>

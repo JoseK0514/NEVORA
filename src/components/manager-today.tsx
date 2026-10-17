@@ -54,7 +54,7 @@ export function TodayTilesSurface({ snapshot, refreshing = false, onRetry }: { s
   ];
   return <section className="today-tiles" aria-labelledby="today-tiles-title">
     <h2 id="today-tiles-title" className="sr-only">Today</h2>
-    {tiles.map(({ id, label, value, Icon, href, urgent }) => <Link key={id} href={href} className="today-tile" data-tile={id} data-urgent={urgent || undefined}>
+    {tiles.map(({ id, label, value, Icon, href, urgent }) => <Link key={id} href={href} className="today-tile" data-tile={id} data-urgent={urgent || undefined} data-zero={value === 0 || undefined}>
       <span className="today-tile-label"><Icon size={18} aria-hidden="true" />{label}</span>
       <strong>{value}</strong>
     </Link>)}

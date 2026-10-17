@@ -93,8 +93,9 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
   - A blocking rule is named even when other rules also need the Owner's review.
 - **D1 desktop shell and grid (done, 2026-10-16):** one left edge and two measures for every page, one header pattern, a workspace › section › page trail in the top bar, and a sidebar that fits a laptop with Workspace pinned.
 - **D2 dense lists (done, 2026-10-16):** Timecards as one row per person (6,692 → 1,486px for 10 people), denser Employees rows that open the profile, and Home tasks and Inbox groups as lists.
+- **D3 Home and sidebar (done, 2026-10-16):** the desktop sidebar goes from 16 entries to 10 (each removed page is one step away), Today is a strip with muted zeros, tasks carry word tags and name their location, and the rail is quieter.
 - **Next:**
-  - Desktop: D3 Home hierarchy, D4 component consistency, D5 employee desktop, D6 craft.
+  - Desktop: D4 component consistency, D5 employee desktop, D6 craft.
   - Backend: B5 Spanish or B6 offline (each needs Jose's go-ahead).
   - Apply migrations 0031 and 0032 before any release.
 
