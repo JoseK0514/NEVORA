@@ -36,5 +36,7 @@ describe("desktop sidebar (D3)", () => {
     const items = sidebarNavigation("EMPLOYEE", navigationForRole("EMPLOYEE", own));
     expect(items.map(item => item.label)).toEqual(["Home", "My schedule", "My time", "Requests", "Updates", "Notifications", "My pay"]);
     expect(sidebarActiveHref("EMPLOYEE", "/app/availability", items, own)).toBe("/app/requests/hub");
+    // Profile lives in the account menu: no sidebar entry lights up for it (D5 fix: it used to light Home).
+    expect(sidebarActiveHref("EMPLOYEE", "/app/profile", items, own)).toBeUndefined();
   });
 });

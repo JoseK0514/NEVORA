@@ -91,3 +91,32 @@
 }
 @media (prefers-reduced-motion: reduce) { .my-schedule-views a { transition: none; } }
 @media (prefers-contrast: more) { .my-schedule-views { background: #FFFFFF; border: 1px solid #1C1C1C; } .my-open-shift { border-color: #1C1C1C; } }
+
+/* D5 (desktop): the week leads; its status (not published, review, what changed)
+ * sits in a column beside it instead of stacking above. Days are one compact row:
+ * time on the first line, place and position on the second. */
+@media (min-width: 1100px) {
+  html body .app-shell.nevora-portal .page-frame .my-schedule { width: 100%; max-width: none; }
+  .my-schedule-body:has(.my-schedule-side > :is(.my-schedule-feedback, .my-schedule-review), .my-schedule-changes > *) {
+    display: grid; grid-template-columns: minmax(0, 1fr) 340px; column-gap: 24px; align-items: start;
+  }
+  .my-schedule-body:has(.my-schedule-side > :is(.my-schedule-feedback, .my-schedule-review), .my-schedule-changes > *) > .my-schedule-agenda { grid-column: 1; grid-row: 1; }
+  .my-schedule-body:has(.my-schedule-side > :is(.my-schedule-feedback, .my-schedule-review), .my-schedule-changes > *) > .my-schedule-side {
+    grid-column: 2; grid-row: 1; position: sticky; top: 24px; display: grid; gap: 12px;
+  }
+  .my-schedule-side > .my-schedule-feedback { margin-bottom: 0; }
+  .my-schedule-side > .my-schedule-review { grid-template-columns: 32px minmax(0, 1fr); align-items: start; margin-bottom: 0; padding: 18px; }
+  .my-schedule-side > .my-schedule-review .my-review-action { grid-column: 1 / -1; }
+  .my-schedule-side > .my-schedule-review .my-review-action :is(button, .button) { width: 100%; }
+  .my-schedule-side .my-schedule-changes:empty { display: none; }
+  .my-schedule .employee-schedule-day { min-height: 0; padding: 14px 24px; gap: 16px; }
+  .my-schedule .employee-agenda-date strong { font-size: 22px; }
+  .my-shift-copy { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 12px; row-gap: 2px; }
+  .my-shift-copy > strong, .my-shift-copy > .employee-schedule-tags { flex-basis: 100%; }
+  .my-shift-copy > .my-shift-position::before { content: "·"; margin-right: 12px; color: var(--g-muted, #5F6368); }
+}
+@media (min-width: 1100px) {
+  .my-schedule-side .my-schedule-changes .schedule-publication-change { margin: 0; }
+}
+/* D4 button shape for the confirm action (it kept 13px corners and 46px height). */
+@media (min-width: 761px) { .my-review-action .employee-action { min-height: 44px; border-radius: var(--g-control-radius, 8px); } }

@@ -5,6 +5,7 @@ import { BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { NavIcon } from './nav-icon';
 import type { EmployeeProfile } from '../lib/employee-view';
+import { timeZoneLabel } from '../lib/time-zone-label';
 
 export function EmployeeProfileDetails({ profile, notificationsEnabled }: {
   profile: EmployeeProfile['profile'];
@@ -16,7 +17,7 @@ export function EmployeeProfileDetails({ profile, notificationsEnabled }: {
       <div><dt>Role</dt><dd>{profile.role}</dd></div>
       <div><dt>Workspace</dt><dd>{profile.workspace}</dd></div>
       <div><dt>Work locations</dt><dd>{profile.locations.join(' · ')}</dd></div>
-      <div><dt>Time zone</dt><dd>{profile.timeZone}</dd></div>
+      <div><dt>Time zone</dt><dd>{timeZoneLabel(profile.timeZone)}</dd></div>
     </dl>
     <section className="employee-account-settings" aria-labelledby="profile-notifications-title">
       <div className="profile-section-heading">

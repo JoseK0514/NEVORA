@@ -9,6 +9,7 @@ import {formatRecordedDuration,type EmployeeTimeEntry} from '../lib/employee-tim
 import {EmployeeCorrectionCenter,EmployeeCorrectionRecoveryContext,EmployeeEntryCorrection} from './employee-time-corrections';
 import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 import {employeeButtonClass} from './employee-corporate-ui';
+import {timeZoneLabel} from '../lib/time-zone-label';
 
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off Clock':entry.state==='ON_BREAK'?'On Break':'Clocked In';
 /** Freshness needs minutes, not seconds: "Oct 15, 7:31 PM". */
@@ -56,11 +57,11 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
    {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p><time dateTime={current.clockInAt}>{stamp(current.clockInAt,ready.timeZone)}</time> · Clock In</p><p><b>{formatRecordedDuration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<> · <b>{formatRecordedDuration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
   </>:<div className="employee-time-message" role="status"><strong>{title}</strong><p>{paused?'Return online to check your latest records.':denied?'Your current employee session is required.':time?.state==='unavailable'?'Your latest clock records could not be confirmed. Try refreshing.':'Checking your actual punches and breaks.'}</p></div>}
   <p className="employee-time-note">Use your location’s Clocker to record punches.</p>
-  <footer className="employee-time-footer"><small className={corporate&&ready?'employee-corporate-desktop-copy':undefined}>{ready?<>Updated <time dateTime={ready.observedAt}>{checked(ready.observedAt,ready.timeZone)}</time>{!compact?<span>{ready.timeZone} · Updates every 30s while active.</span>:null}</>:'Only recorded punches appear here.'}</small>
+  <footer className="employee-time-footer"><small className={corporate&&ready?'employee-corporate-desktop-copy':undefined}>{ready?<>Updated <time dateTime={ready.observedAt}>{checked(ready.observedAt,ready.timeZone)}</time>{!compact?<span>{timeZoneLabel(ready.timeZone)} · Updates every 30s while active.</span>:null}</>:'Only recorded punches appear here.'}</small>
    {corporate&&ready&&!compact?<div className="employee-corporate-freshness">
     <p>Updated <time dateTime={ready.observedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:ready.timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(ready.observedAt))}</time></p>
    </div>:null}{controls}
-   {corporate&&ready&&!compact?<details className="employee-corporate-record-details"><summary>Record details <CaretDownIcon size={16} aria-hidden="true"/></summary><div><p>Updated <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time></p><p>{ready.timeZone} · Updates every 30s while active.</p></div></details>:null}</footer>
+   {corporate&&ready&&!compact?<details className="employee-corporate-record-details"><summary>Record details <CaretDownIcon size={16} aria-hidden="true"/></summary><div><p>Updated <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time></p><p>{timeZoneLabel(ready.timeZone)} · Updates every 30s while active.</p></div></details>:null}</footer>
  </>;
  if(compact)return <div className="employee-clock-compact">{content}</div>;
  const overview=<>

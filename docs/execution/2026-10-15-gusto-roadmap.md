@@ -95,8 +95,10 @@ Phases 5–8 continue as the full implementation plan: UI phases U0–U10, then 
 - **D2 dense lists (done, 2026-10-16):** Timecards as one row per person (6,692 → 1,486px for 10 people), denser Employees rows that open the profile, and Home tasks and Inbox groups as lists.
 - **D3 Home and sidebar (done, 2026-10-16):** the desktop sidebar goes from 16 entries to 10 (each removed page is one step away), Today is a strip with muted zeros, tasks carry word tags and name their location, and the rail is quieter.
 - **D4 component consistency (done, 2026-10-16):** one segmented control, one 44px / 8px button, and teal kept for actions while status labels use grey, amber and green.
+- **D5 employee desktop (done, 2026-10-16):** My schedule puts the week first with its status beside it, Availability rows are compact, Profile no longer lights Home, and time zones read as places.
 - **Next:**
-  - Desktop: D5 employee desktop, D6 craft.
+  - Desktop: D6 craft pass.
+  - The error pass (employee Home source notices).
   - Backend: B5 Spanish or B6 offline (each needs Jose's go-ahead).
   - Apply migrations 0031 and 0032 before any release.
 

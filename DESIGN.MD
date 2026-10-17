@@ -1075,3 +1075,25 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - axe passes on the 14 pages touched.
   - The 156-check sweep passes, as do U1, U4, U6, U8, B4 and the D1/D2 and D3 checks. Unit tests: 7,202 passed.
   - **Found and fixed:** the Inbox count chip kept white text from the old black pill and failed contrast on white (U4 axe).
+
+#### D5: Employee desktop pass (2026-10-16)
+
+- **My schedule (1100px and wider).**
+  - The week list leads on the left. Its status sits in a 340px column beside it that stays in view while scrolling: "not published yet", Review this week's schedule with a full-width Confirm, and What changed.
+  - Each day is one compact row: the time on the first line, then place · position. Days with a single shift went from about 117px to about 75px; the Today row is 94px.
+  - Two plain wrappers (`my-schedule-body`, `my-schedule-side`) hold the layout. Below 1100px and on phones it stays one column, in the same order as before.
+  - The two-column grid applies only when there is status to show; otherwise the week uses the full width.
+- **Availability.** Day rows went from 88 to 60px, with the switch and hours next to the day name instead of across the page.
+- **Profile (fix for D3).** After D3, Profile lit Home in the sidebar and the trail read "Home". Profile now lives only in the account menu: no sidebar entry lights up, and the trail names the page. The same fallback names My pay for Owners.
+- **Time zones** read "Puerto Rico time" instead of "America/Puerto_Rico" on Profile and My time (`src/lib/time-zone-label.ts`).
+- **Details:**
+  - The empty-state icon is centred again; an older rule pinned it top-left.
+  - "Review needed" on Updates reads amber, following the D4 status ladder.
+  - The schedule Confirm button takes the D4 button shape.
+- **Verified on fictional data (production build):**
+  - Profile shows no lit entry, the trail and the friendly zone; My time has no raw identifier.
+  - My schedule columns sit side by side at 1440 and in one column at 1024; days are compact.
+  - Availability rows are 61px, the empty icon is centred, and the review tag is amber.
+  - axe, overflow, targets and client errors pass on nine employee pages at 1440 and three at 390.
+  - The 156-check sweep passes, as do U1, U2, U3, U4, U8, B3 and the D1–D4 checks. Unit tests: 7,202 passed; one phase-E process test timed out under load and passes alone.
+- **Still open for the error pass:** employee Home's "Some Home sections could not be fully checked" and the two "partial" notices.

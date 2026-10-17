@@ -54,17 +54,17 @@ const SIDEBAR_HOLDERS: Record<string, string> = {
 };
 const EMPLOYEE_SIDEBAR_HOLDERS: Record<string, string> = {
   "/app/availability": "/app/requests/hub",
-  "/app/profile": "/app",
 };
-/** Entries reached from the desktop account menu instead. */
+/** Entries reached from the desktop account menu instead; their pages light no sidebar entry. */
 const ACCOUNT_MENU_ENTRIES = new Set(["/app/my-pay"]);
+const EMPLOYEE_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
 
 function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" || role === "LEAD" ? EMPLOYEE_SIDEBAR_HOLDERS : SIDEBAR_HOLDERS; }
 
 export function sidebarNavigation(role: UserRole, items: NavigationItem[]): NavigationItem[] {
   const present = new Set(items.map(item => item.href)), holders = sidebarHolders(role), management = role !== "EMPLOYEE" && role !== "LEAD";
   return items
-    .filter(item => !(holders[item.href] && present.has(holders[item.href])) && !(management && ACCOUNT_MENU_ENTRIES.has(item.href)))
+    .filter(item => !(holders[item.href] && present.has(holders[item.href])) && !(management ? ACCOUNT_MENU_ENTRIES : EMPLOYEE_ACCOUNT_MENU_ENTRIES).has(item.href))
     // Time off now stands for all three request pages, which share its tab row.
     .map(item => management && item.href === "/app/requests" && (present.has("/app/exchange") || present.has("/app/availability")) ? { ...item, label: "Requests", icon: "requests" as const } : item);
 }

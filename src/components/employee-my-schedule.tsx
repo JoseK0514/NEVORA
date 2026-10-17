@@ -126,6 +126,8 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
         </nav>
       </section>
 
+      {/* D5: on desktop the week leads and its status sits beside it; one column on phones, same order. */}
+      <div className="my-schedule-body"><div className="my-schedule-side">
       {error ? <div className="my-schedule-feedback error" role="alert"><strong>Confirmation could not be completed.</strong><p>{typeof error === 'string' ? error : 'Review the current schedule and try again.'}</p><Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Review current week</Link></div> : null}
       {safeReceipt ? <p className="my-schedule-feedback success" role="status">Schedule confirmed.</p> : null}
       {state !== 'published' ? <div className="my-schedule-feedback" role="status"><strong>{state==='unavailable'?'Schedule unavailable':'Your full week is not published yet'}</strong><p>{state==='unavailable'?'We couldn’t load your schedule. Try again to see your current assignments.':shifts.length?'Only your published assignments are shown. Other days may still change.':'Your schedule will appear here when it is published. An empty day does not mean a day off yet.'}</p>{state==='unavailable'?<Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Try again</Link>:null}</div> : null}
@@ -137,6 +139,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       </section> : null}
 
       <div className="my-schedule-changes">{state==='unavailable'?null:changes}</div>
+      </div>
       <section className="employee-view-surface employee-schedule-agenda my-schedule-agenda" aria-labelledby="my-agenda-title">
         <div className="my-agenda-heading"><h2 id="my-agenda-title">Your week at a glance</h2><span>{state==='published'?'Published schedule':'Published assignments only'}</span></div>
         {dates.map(date => { const label=formatDayLabel(date); const dayShifts=shifts.filter(shift=>shift.date===date); return <article className={`employee-schedule-day${date===today?' today':''}${date===selectedDay?' selected':''}`} id={`schedule-${date}`} key={date} aria-label={`${label.weekday}, ${label.day}`}>
@@ -154,6 +157,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
           </div>
         </article>; })}
       </section>
+      </div>
       </>}
       <footer className="my-schedule-footer"><p>Planning ahead?</p><div>{modules.marketplace ? <Link href="/app/exchange?tab=my" className="my-schedule-link"><ArrowsLeftRightIcon size={18} aria-hidden="true" />Shift requests</Link> : null}<Link href="/app/availability" className="my-schedule-link">Update availability</Link>{modules.timeOff ? <Link href="/app/requests" className="my-schedule-link">Request time off</Link> : null}<Link href="/app/profile#employee-calendar-title" className="my-schedule-link">Calendar subscription</Link></div></footer>
     </div>

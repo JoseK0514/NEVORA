@@ -13,7 +13,7 @@ it('keeps exact freshness and timezone available in the employee record disclosu
  expect(disclosure).toContain('Record details');
  expect(disclosure).toContain('dateTime="2030-10-07T16:00:00Z"');
  expect(disclosure).toContain('12:00:00 PM');
- expect(disclosure).toContain('America/Puerto_Rico');
+ expect(disclosure).toContain('Puerto Rico time');
  expect(disclosure).toContain('Updates every 30s while active.');
  expect(html.match(/aria-label="Refresh recorded time"/g)).toHaveLength(1);
 });

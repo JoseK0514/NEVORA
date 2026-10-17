@@ -73,7 +73,8 @@ export function AppShell({
   const navGroups = employee ? [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems);
   // Top-bar location (D1): section, then page. The page links back when you are deeper in it.
   const activeGroup = navGroups.find(group => group.items.some(item => item.href === sidebarActive));
-  const activeItem = activeGroup?.items.find(item => item.href === sidebarActive);
+  // A page reached from the account menu (Profile, My pay) has no sidebar entry; the trail still names it.
+  const activeItem = activeGroup?.items.find(item => item.href === sidebarActive) ?? navigation.find(item => item.href === activeHref);
   const deeper = !!activeItem && pathname !== activeItem.href;
 
   // Keep the current page visible in a sidebar that scrolls on short screens,

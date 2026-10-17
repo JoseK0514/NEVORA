@@ -184,3 +184,13 @@ html body .app-shell.nevora-portal .page-frame .branding-access { background: #F
 /* People's initials are identity, not status: neutral like Gusto's directory. */
 html body .app-shell.nevora-portal .page-frame [class*="employee-directory-module"][class*="avatar"] { background: #F1F2F4; color: var(--g-ink); border-color: #E2E4E7; }
 @media (forced-colors: active) { html body .app-shell.nevora-portal :is(.pw-badge, .exchange-count, .branding-access) { border: 1px solid CanvasText; } }
+
+/* D5: employee desktop details. */
+/* Empty states centre their icon (an older rule pinned it to the top-left corner). */
+html body .app-shell.nevora-portal .page-frame .employee-view-empty > .employee-empty-icon { position: static; justify-self: center; }
+/* "Review needed" is something to do: amber like the other review labels; reviewed stays grey. */
+html body .app-shell.nevora-portal .page-frame .updates-status:not(.is-reviewed) { color: #8A4B00; }
+@media (min-width: 761px) {
+  /* Availability: one compact row per day, the switch and hours beside the day name. */
+  html body .app-shell.nevora-portal .page-frame .av-day-row { grid-template-columns: 160px 154px minmax(0, 1fr); min-height: 60px; padding: 8px 0; }
+}
