@@ -36,7 +36,7 @@ describe('fresh company setup for the assembled application',()=>{
   await client.query("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('CURRENT-MANAGER','Cedar','Manager','202-555-0199','MANAGER',$1)",[result.locationId]);
   expect((await client.query("SELECT count(*)::int AS count FROM operational_scopes_current WHERE employee_id='CURRENT-MANAGER'")).rows[0].count).toBe(0);
   expect((await client.query('SELECT id FROM workspaces')).rows).toEqual([{id:result.workspaceId}]);
- })),
+ }));
  it('rolls back schema and Owner when the access migration fails, then supports a clean retry',()=>fresh(async client=>{
   await client.query(`CREATE SCHEMA qa_setup_failure;
    CREATE FUNCTION qa_setup_failure.stop_access() RETURNS event_trigger LANGUAGE plpgsql AS $$
@@ -51,7 +51,7 @@ describe('fresh company setup for the assembled application',()=>{
   expect((await client.query('SELECT workspace_id,state FROM company_access_adoption')).rows)
    .toEqual([{workspace_id:result.workspaceId,state:'ENFORCED'}]);
   expect((await client.query('SELECT id FROM employees')).rows).toEqual([{id:config.BOOTSTRAP_EMPLOYEE_ID}]);
- })),
+ }));
  it('serializes concurrent current setup to one company, Owner and adoption',()=>fresh(async (client,database)=>{
   const second=new Client({connectionString:database.connectionString});
   try{
@@ -65,5 +65,5 @@ describe('fresh company setup for the assembled application',()=>{
    expect((await client.query('SELECT employee_id,generation::text FROM operational_subject_versions')).rows)
     .toEqual([{employee_id:config.BOOTSTRAP_EMPLOYEE_ID,generation:'1'}]);
   }finally{await second.end();}
- })),
+ }));
 });
