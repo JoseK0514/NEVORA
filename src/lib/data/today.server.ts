@@ -5,12 +5,15 @@ import { projectToday, EARLY_CLOCK_IN_MINUTES, type Today } from '../today/proje
 import { getWorkspace, workspaceReadGuard } from './workspaces';
 import { assertManagementProof, managementSessionStatements, isManagementAuthorizationError } from './management-session';
 import { neonNotificationExecutor } from './notification-transactions';
+import { managerLocationsSql, managerScopeStatements, readManagerScopeStorage, type ManagerScopeStorage } from './manager-location-scope.server';
 
 // One SQL snapshot and database clock. Published shifts come from the latest
 // publication revision of each week (an empty latest revision hides older
 // assignments), so the list matches what employees were shown. Approved
 // callouts are excluded. Punches are read as recorded; nothing is inferred.
-const todaySql = `WITH observed AS MATERIALIZED (SELECT clock_timestamp() AS at),
+// Shifts and punches are limited to the locations the actor manages.
+const todaySql = (storage: ManagerScopeStorage) => `WITH observed AS MATERIALIZED (SELECT clock_timestamp() AS at),
+scope AS MATERIALIZED (${managerLocationsSql(storage, '$1', '$4')}),
 day AS (SELECT (o.at AT TIME ZONE $3)::date AS today FROM observed o),
 latest AS (
  SELECT DISTINCT ON (r.week_start) r.id FROM schedule_publication_revisions r CROSS JOIN day d
@@ -25,12 +28,13 @@ shift_rows AS (
  FROM schedule_publication_revision_shifts sh JOIN latest r ON r.id=sh.revision_id
  JOIN employees e ON e.id=sh.employee_id JOIN locations l ON l.id=sh.location_id CROSS JOIN day d
  WHERE sh.date BETWEEN d.today-1 AND d.today AND sh.employee_id IS NOT NULL AND NOT sh.is_callout_approved AND l.workspace_id=$1
+  AND sh.location_id IN (SELECT id FROM scope)
 ),
 entry_rows AS (
  SELECT t.id,t.employee_id AS "employeeId",t.location_id AS "locationId",t.clock_in_at::text AS "clockInAt",t.clock_out_at::text AS "clockOutAt",
   EXISTS(SELECT 1 FROM break_entries b WHERE b.time_entry_id=t.id AND b.break_end_at IS NULL) AS "onBreak"
  FROM time_entries t JOIN locations l ON l.id=t.location_id CROSS JOIN observed o
- WHERE l.workspace_id=$1 AND t.clock_in_at<=o.at AND (t.clock_out_at IS NULL OR EXISTS(SELECT 1 FROM shift_rows s
+ WHERE l.workspace_id=$1 AND t.location_id IN (SELECT id FROM scope) AND t.clock_in_at<=o.at AND (t.clock_out_at IS NULL OR EXISTS(SELECT 1 FROM shift_rows s
   WHERE s."employeeId"=t.employee_id AND s."locationId"=t.location_id AND t.clock_in_at<s.end_at AND t.clock_out_at>s.start_at-interval '${EARLY_CLOCK_IN_MINUTES} minutes'))
 )
 SELECT jsonb_build_object('observedAt',o.at,'expiresAt',(SELECT expires_at FROM employee_sessions WHERE token_hash=$2),'timeZone',$3::text,'today',d.today::text,
@@ -44,12 +48,14 @@ export async function readToday(proof: SessionMutationProof, executor: SqlExecut
   try { assertManagementProof(proof, proof?.employee?.id); } catch { return { state: 'unavailable', reason: 'access_denied' }; }
   try {
     const workspace = await getWorkspace(executor);
+    const storage = await readManagerScopeStorage(executor);
     const guards = [...workspaceReadGuard(workspace),
       { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [proof.employee.id] },
+      ...managerScopeStatements(storage, workspace.id, proof.employee.id),
       ...managementSessionStatements(proof, proof.employee.id),
     ];
     const result = await executor.transaction([...guards,
-      { text: todaySql, values: [workspace.id, proof.sessionTokenHash, workspace.timeZone] },
+      { text: todaySql(storage), values: [workspace.id, proof.sessionTokenHash, workspace.timeZone, proof.employee.id] },
       ...managementSessionStatements(proof, proof.employee.id),
     ]);
     const row = result[guards.length]?.[0] as { snapshot: unknown } | undefined;

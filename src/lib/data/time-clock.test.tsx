@@ -18,6 +18,7 @@ beforeEach(()=>{
  query.mockImplementation(async(text:string)=>{
   if(text.startsWith('WITH observed')){if(failure)throw failure;return [{snapshot:{observedAt:'2030-10-08T04:00:00Z',expiresAt:'2030-10-09T00:00:00Z',timeZone:workspace.timeZone,rows:monitorRows}}];}
   if(text.startsWith('SELECT id, name, time_zone'))return [workspace];
+  if(text.startsWith('SELECT count(*)::integer AS installed'))return [{installed:0}];
   return [];
  });
  vi.mocked(getDb).mockReturnValue({query,transaction:(statements:Promise<unknown>[])=>Promise.all(statements)} as unknown as ReturnType<typeof getDb>);
