@@ -1097,3 +1097,22 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - axe, overflow, targets and client errors pass on nine employee pages at 1440 and three at 390.
   - The 156-check sweep passes, as do U1, U2, U3, U4, U8, B3 and the D1–D4 checks. Unit tests: 7,202 passed; one phase-E process test timed out under load and passes alone.
 - **Still open for the error pass:** employee Home's "Some Home sections could not be fully checked" and the two "partial" notices.
+
+#### D6: Desktop craft pass (2026-10-17)
+
+- **Focus.** A Tab sweep through 15 pages (both roles) found one gap: date fields on Timecards and Insights showed no ring, because the browser focuses their inner parts. They now take the ring through `:focus-within`, as do time fields.
+- **Arrow keys in dense lists** (`src/lib/row-navigation.ts`, wired once in `AppShell`).
+  - Up and Down move focus to the same control in the next or previous row of Employees, Timecards and Home tasks.
+  - Lists opt in with `data-row-nav` (the value is the row selector).
+  - Text fields keep their own arrows, modified keys are ignored, and nothing moves past the first or last row.
+  - Covered in the real browser: the repo has no DOM environment for unit tests, and none was added.
+- **One row hover** for mouse users on Home tasks and Inbox groups (`--g-inset`, 120ms, off under reduced motion), matching Employees and Timecards.
+- **One calm empty state.** Every full-panel empty state has a 1px hairline border, 12px corners and 40px padding. The dashed "drop zone" edge is gone (Time off, open shifts, the shift board), and Shift requests lost its extra padding.
+- **Time zones as places** on the manager Schedule ("Times in Puerto Rico.") and in the Insights period summary ("Puerto Rico time").
+- **Insights date fields** are 220px wide instead of half the page each.
+- **1920 check:** Home, Schedule, Insights and Timecards hold at 1,440px wide, left-aligned, with no overflow.
+- **Verified on fictional data (production build):**
+  - The D6 checks cover arrow keys in all three lists, text fields keeping their arrows, the date-field focus ring, place-name time zones, one empty-state shape and the row hover.
+  - axe, overflow and client errors pass at 1440 and 1920.
+  - The 156-check sweep passes, as do U1, U2, U3, U4, U8, B4 and the D1–D5 checks.
+  - Unit tests: 7,198 passed. Five tenancy and phase-E tests timed out under load; all 217 in those files pass alone.

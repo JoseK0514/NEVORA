@@ -103,7 +103,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
 
   return <section className="mws-roster manager-issue-target" id={reviewDay ? undefined : "schedule-review"} tabIndex={-1} ref={container} aria-labelledby="mws-roster-title">
     <header className="mws-roster-heading">
-      <div><h2 id="mws-roster-title">Team schedule</h2><p><span className="mws-timezone-full">Times in {timeZone.replaceAll("_", " ")}. Select a shift to edit.</span><span className="mws-timezone-compact">Times in {timeZone.split("/").at(-1)?.replaceAll("_", " ")}</span></p></div>
+      <div><h2 id="mws-roster-title">Team schedule</h2><p><span className="mws-timezone-full">Times in {timeZone.split("/").at(-1)?.replaceAll("_", " ") ?? timeZone}. Select a shift to edit.</span><span className="mws-timezone-compact">Times in {timeZone.split("/").at(-1)?.replaceAll("_", " ")}</span></p></div>
       <div className="mws-search">
         <MagnifyingGlassIcon size={18} aria-hidden="true" />
         <input type="search" aria-label="Search team" placeholder="Search team" value={query} onChange={event => setQuery(event.target.value)} />

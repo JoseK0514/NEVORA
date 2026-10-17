@@ -71,7 +71,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         </EmployeeDirectoryFilters>
         {visibleEmployees.length ? <table className={styles.table} role="table" aria-label="Employees">
           <thead role="rowgroup"><tr role="row">{["Employee", "Role", "Primary location", "Phone", "Status", "Profile"].map(label => <th scope="col" key={label} role="columnheader">{label}</th>)}</tr></thead>
-          <tbody role="rowgroup">{visibleEmployees.map(employee => {
+          <tbody role="rowgroup" data-row-nav="tr">{visibleEmployees.map(employee => {
             const location = locationsById.get(employee.primaryLocationId);
             const name = `${employee.firstName} ${employee.lastName}`;
             return <tr key={employee.id} role="row">

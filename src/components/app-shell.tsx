@@ -21,6 +21,7 @@ import { SectionTabs } from "./section-tabs";
 import { CommandFinder } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
+import { handleRowNavigation } from "../lib/row-navigation";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 
 export function AppShell({
@@ -89,6 +90,12 @@ export function AppShell({
     if (item.top < box.top) nav.scrollTop -= box.top - item.top + 8;
     else if (item.bottom > bottom) nav.scrollTop += item.bottom - bottom + 8;
   }, [sidebarActive]);
+
+  // Arrow keys move between rows of dense lists that opt in (D6).
+  useEffect(() => {
+    document.addEventListener("keydown", handleRowNavigation);
+    return () => document.removeEventListener("keydown", handleRowNavigation);
+  }, []);
 
   useEffect(() => {
     for (const id of ['employee-more-navigation', 'manager-more-navigation']) {

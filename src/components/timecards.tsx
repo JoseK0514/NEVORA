@@ -178,7 +178,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       </details>
     </section>:null}
     {currentActor&&data?.state==='ready'&&!cards.length?<div className={styles.empty}><NavIcon name="clock" size={32}/><h2>No timecards to show</h2><p>No employees are available for this period.</p><p className={styles.note}>Choose another date range to check recorded time.</p></div>:null}
-    {manager&&cards.length?<div className={styles.rows} role="group" aria-label="Timecards in this period"><div className={styles.rowHeader}>
+    {manager&&cards.length?<div className={styles.rows} role="group" aria-label="Timecards in this period" data-row-nav="article"><div className={styles.rowHeader}>
       <span className={styles.rowSelect}><input type="checkbox" aria-label="Select all eligible timecards" checked={eligible.length>0&&eligible.slice(0,100).every(item=>selected.includes(item.card.employeeId))}
         disabled={busy||!!pending||!!outcomes||!eligible.length} onChange={e=>{setSelected(e.target.checked?eligible.slice(0,100).map(item=>item.card.employeeId):[]);setReview(null);setConfirmed(false);}}/></span>
       <span aria-hidden="true">Employee</span><span aria-hidden="true">Status</span><span aria-hidden="true">Recorded</span><span aria-hidden="true">Breaks</span><span aria-hidden="true">Attention</span><span aria-hidden="true" className={styles.rowHeaderActions}>Actions</span>

@@ -194,3 +194,24 @@ html body .app-shell.nevora-portal .page-frame .updates-status:not(.is-reviewed)
   /* Availability: one compact row per day, the switch and hours beside the day name. */
   html body .app-shell.nevora-portal .page-frame .av-day-row { grid-template-columns: 160px 154px minmax(0, 1fr); min-height: 60px; padding: 8px 0; }
 }
+
+/* D6: date and time fields show the focus ring when their inner parts take keyboard focus. */
+html body .app-shell.nevora-portal .page-frame input:is([type="date"], [type="time"], [type="datetime-local"]):focus-within { outline: 2px solid var(--g-accent); outline-offset: 1px; border-color: var(--g-accent); }
+
+/* D6: one calm empty state. A quiet hairline box, centred, no dashed "drop zone" edge. */
+html body .app-shell.nevora-portal .page-frame :is(.nevora-empty, .mws-empty, .updates-empty, .rules-empty, .positions-empty, .nto-empty-state, .employee-view-empty, .swap-empty, .st-empty-state, .locations-empty, .coverage-empty, .av-empty, .dashboard-empty-state, .attendance-review-empty, .manager-corrections-empty, .timeoff-empty-state) {
+  border: 1px solid var(--g-hairline); border-radius: 12px; padding: 40px 24px; background: var(--g-canvas); box-shadow: none;
+}
+@media (min-width: 761px) {
+  /* Insights: date fields sized to a date, not half the page. */
+  html body .app-shell.nevora-portal .page-frame form[class*="reports-module"][class*="toolbar"] { grid-template-columns: minmax(0, 220px) minmax(0, 220px) auto auto; justify-content: start; }
+}
+/* D6: one row hover for mouse users (Employees and Timecards already use it). */
+@media (min-width: 761px) and (hover: hover) {
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list > :is(article, details):hover,
+  html body .app-shell.nevora-portal .page-frame .inbox-group summary:hover { background-color: var(--g-inset); }
+  html body .app-shell.nevora-portal .page-frame :is(.manager-portal-home #manager-action-list > *, .inbox-group summary) { transition: background-color 120ms ease; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal .page-frame :is(.manager-portal-home #manager-action-list > *, .inbox-group summary) { transition: none; }
+}
