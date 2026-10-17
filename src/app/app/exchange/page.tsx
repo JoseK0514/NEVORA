@@ -6,7 +6,9 @@ import {ExchangeReviewShell} from '@/components/exchange-review-shell';
 import {ShiftChangeHistory} from '@/components/shift-change-history';
 import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
 import {readShiftChangeTerms} from '@/lib/data/shift-change-snapshot';
-import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
+import {readShiftChangeAvailability,type ShiftChangeAvailability} from '@/lib/data/shift-changes';
+import {BlockedOpenShifts} from '@/components/blocked-open-shifts';
+import {refusalLines} from '@/lib/shift-changes/eligibility-reasons';
 import {shiftChangeFeedback} from '@/components/shift-change-form-state';
 import type {ShiftChangeCommand} from '@/lib/shift-changes/types';
 import { getWorkspace } from "@/lib/data/workspaces";
@@ -167,8 +169,12 @@ export default async function ExchangePage({
   const available=openCoverage.filter(e=>e.actionable===true&&e.status==='OPEN');
   const incoming=incomingSwaps.filter(e=>e.status==='EMPLOYEE_PENDING'&&e.targetEmployeeId===session.id);
   const requestFields=(id:string,revision:number|undefined)=>revision&&Number.isSafeInteger(revision)?{requestId:id,expectedRevision:revision}:null;
-  const availability=async (kind:ShiftChangeCommand['kind'],id:string,revision:number|undefined)=>{const fields=requestFields(id,revision);return fields?readShiftChangeAvailability(proof!,{kind,...fields,operationId:randomUUID()} as ShiftChangeCommand).catch(()=>({allowed:false,notice:'Current eligibility is unavailable. Reconnect and reload.'})):{allowed:false,notice:'This request needs a fresh revision before responding.'};};
+  const availability=async (kind:ShiftChangeCommand['kind'],id:string,revision:number|undefined):Promise<ShiftChangeAvailability>=>{const fields=requestFields(id,revision);return fields?readShiftChangeAvailability(proof!,{kind,...fields,operationId:randomUUID()} as ShiftChangeCommand).catch(()=>({allowed:false,notice:'Current eligibility is unavailable. Reconnect and reload.'})):{allowed:false,notice:'This request needs a fresh revision before responding.'};};
   const acceptViews=new Map(await Promise.all([...available,...incoming].map(async e=>[e.id,await availability('ACCEPT',e.id,e.requestRevision)] as const)));
+  // B3: shifts the claim rules refuse are listed apart, with the rules named.
+  const refused=(id:string)=>{const view=acceptViews.get(id);return view&&!view.allowed&&view.refusal!==undefined?view:null;};
+  const claimable=available.filter(e=>!refused(e.id));
+  const blocked=available.flatMap(e=>{const view=refused(e.id);return view?[{id:e.id,date:e.sourceShift.date,startTime:e.sourceShift.startTime,endTime:e.sourceShift.endTime,location:e.sourceShift.locationName,position:e.sourceShift.positionName??null,reasons:refusalLines(view)}]:[];});
   const offerViews=new Map(await Promise.all(myShifts.map(async shift=>{const reviewed=await readShiftChangeTerms(proof!,shift.id).catch(()=>null);const displayed=assigned.find(row=>row.id===shift.id);const fields=reviewed&&displayed&&matchesDisplayedShift(displayed,reviewed.source)&&matchesDisplayedShift(shift,reviewed.source)?{sourceShiftId:reviewed.source.shiftId,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint}:null;const allowed=fields?await readShiftChangeAvailability(proof!,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...fields}).catch(()=>({allowed:false,notice:'Current policy is unavailable.'})):{allowed:false,notice:'Stale assignment. Reload before offering.'};return [shift.id,{fields,...allowed}] as const;})));
   const assignedShifts=assigned.filter(s=>{try{return Date.parse(shiftBoundaryInstants(s,workspace.timeZone).endAt)>new Date().getTime();}catch{return true;}});
   const selectedHistory=params.requestId?await readShiftChangeHistoryView(proof!,params.requestId).catch(()=>null):[];
@@ -193,7 +199,7 @@ export default async function ExchangePage({
 
         <div className="employee-view-surface employee-exchange-feed">
           {activeView === "available" ? (
-            available.length ? available.map((exchange) => (
+            claimable.length || blocked.length ? <>{claimable.length ? claimable.map((exchange) => (
               <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
                 <div className="employee-shift-entry-copy">
                   <div className={`exchange-assignments${exchange.targetShift ? " paired" : ""}`}><ShiftSlot shift={exchange.sourceShift} label="Offered shift"/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}</div>
@@ -202,7 +208,9 @@ export default async function ExchangePage({
                 </div>
                 <div className="employee-shift-entry-actions">{acceptViews.get(exchange.id)?.allowed?<ShiftChangeForm fields={{kind:'ACCEPT',...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action primary" type="submit"><span>Claim shift</span></button></ShiftChangeForm>:null}</div>
               </div>
-            )) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
+            )) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>No open shifts fit your schedule</strong><p>The shifts below can’t be picked up yet.</p></div>}
+              <BlockedOpenShifts shifts={blocked} availabilityHref={session.role === 'EMPLOYEE' || session.role === 'LEAD' ? '/app/availability' : null} /></>
+            : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
           ) : hasTradeRequests ? (
             <>
               {assignedShifts.length ? <section className="employee-exchange-section">

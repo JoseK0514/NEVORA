@@ -17,6 +17,7 @@ import type { CalloutRecord } from './callouts';
 import { requestNotificationStatements,requestSnapshot,guardedRequestMutation } from './request-notifications';
 import { shiftChangeEvent,decisionVersionReferences } from './shift-change-history';
 import { cancelNotificationStatements } from './notifications';
+import { eligibilityReasons, REASON_TEXT, type EligibilityReason } from '../shift-changes/eligibility-reasons';
 const conflict:ShiftChangeResult={status:'conflict'};
 const unavailable:ShiftChangeResult={status:'unavailable'};
 const blocked=(code:'STALE_TERMS'|'POLICY_UNKNOWN'|'CONSENT_REQUIRED',message:string):ShiftChangeResult=>({status:'blocked',issues:[{code,message}]});
@@ -218,7 +219,9 @@ import { isShiftChangeCommand } from '../shift-changes/command-parser';
 
 /** Read-only UI availability uses the same command plan as final guarded writes.
  * Return a finite safe projection, never the private snapshot or SQL statements. */
-export async function readShiftChangeAvailability(proof:SessionMutationProof,command:ShiftChangeCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<{allowed:boolean;notice:string|null}> {
+/** reasons and refusal are additive: older callers read allowed and notice only. */
+export type ShiftChangeAvailability={allowed:boolean;notice:string|null;reasons?:EligibilityReason[];refusal?:'rules'|'review'|'stale'|'other'};
+export async function readShiftChangeAvailability(proof:SessionMutationProof,command:ShiftChangeCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftChangeAvailability> {
  try {
   const snapshot=await readShiftChangeSnapshot(proof,command,executor);
   const plan=planCommand(snapshot,command),result='result' in plan?plan.result:plan;
@@ -236,6 +239,10 @@ export async function readShiftChangeAvailability(proof:SessionMutationProof,com
   const scope=snapshot.policy?.[snapshot.request?.kind==='SWAP'||command.kind==='PROPOSE_SWAP'?'swap':'coverage'];
   const unknown=!scope?.mode||scope.submissionAdvanceMinutes===null||scope.completionAdvanceMinutes===null||result.status==='blocked'&&result.issues.some(i=>['RULE_UNVERIFIABLE','POLICY_UNKNOWN'].includes(i.code));
   const stale=result.status==='conflict'||result.status==='blocked'&&result.issues.some(i=>i.code==='STALE_TERMS');
-  return {allowed:false,notice:unknown?'Needs Owner rule review':stale?'Stale or expired. Review the current assignment.':'Unavailable with the current consent, eligibility or policy.'};
+  // B3: name the rules that refused it, in plain words; the rules themselves are unchanged.
+  // A rule that blocks is named even when other rules still need the Owner's review.
+  const reasons=stale?[]:eligibilityReasons([...(result.status==='blocked'?result.issues:[]),...(unknown?[{code:'POLICY_UNKNOWN' as const}]:[])]);
+  if(reasons.some(r=>r!=='unconfirmed'))return {allowed:false,notice:reasons.map(r=>REASON_TEXT[r]).join('. ')+'.',reasons,refusal:'rules'};
+  return {allowed:false,notice:unknown?'Needs Owner rule review':stale?'Stale or expired. Review the current assignment.':'Unavailable with the current consent, eligibility or policy.',refusal:unknown?'review':stale?'stale':'other'};
  }catch(error){if(error instanceof ShiftChangeAuthorizationError)return {allowed:false,notice:'Unavailable for your current account.'};throw error;}
 }

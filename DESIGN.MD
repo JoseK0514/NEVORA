@@ -929,3 +929,34 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - The 156-check sweep passes, as do U1, U2, U4 and U8.
 - **Found and fixed:** on phones the Home grid has no named areas, so a `grid-area: today` placed the tiles in a 122px implicit column. The area is now set only where the grid names it.
 - **Not covered:** a live shift in progress during testing (the states are unit-tested at their boundaries instead), and location-scoped managers, who see the whole workspace as the clock monitor already does.
+
+#### B3: Open-shift eligibility reasons (2026-10-16)
+
+- **What it does:** an open shift the claim rules refuse is no longer shown as claimable or with a generic notice. It sits in a collapsed "Shifts you can’t pick up" list under the claimable ones, with the reasons named in plain words. This appears on the employee Schedule › Open shifts view and on Requests › Shift requests › Available shifts.
+- **The rules don't change.** The existing claim check, `readShiftChangeAvailability` (ACCEPT), decides as before. It now also returns the rules that refused the claim (`reasons`) and the kind of refusal (`refusal`: rules, review, stale or other). Both fields are additive; older callers read `allowed` and `notice` as before.
+- **Mapping** (`src/lib/shift-changes/eligibility-reasons.ts`): only codes that block a claim become reasons. Warnings (target hours, availability not submitted, projected overtime review) never do. Each reason appears once, in a fixed order:
+  - You have approved time off then
+  - You already work during this time
+  - You already have a shift that day
+  - It’s outside your availability
+  - It would go over your weekly hours limit / the daily hours limit
+  - Not enough rest between your shifts
+  - It’s longer than the shift length limit
+  - The required break doesn’t fit
+  - It needs a position / role you’re not set up for
+  - You’re not set up to work at this location
+  - It needs a qualified shift lead
+  - It would leave required coverage short
+  - Your manager needs to confirm some rules (rules the company hasn't set up yet; always listed last)
+- **A blocking rule is always named,** even when other rules still need the Owner's review. Before B3, the fictional lead saw only "Needs Owner rule review" although availability also blocked the claim, so reviewing the rules would not have made the shift claimable.
+- **Refusals without a named rule** say what is known: the shift just changed, or it doesn't fit the current rules. A failed check stays where it was before (listed, re-checked by the marketplace, and checked again on submit), rather than being guessed into either list.
+- **Design** (`src/components/blocked-open-shifts.tsx`): a native `<details>`, collapsed by default, with a 52px summary, a neutral count chip and a caret that turns in 160ms (no turn under reduced motion). Each row has a grey date chip, time and place, and the reasons as a short list. There's no claim action. When any reason is availability, the list ends with "Update your availability ›". The Open shifts badge counts only claimable shifts. When every open shift is refused, the view reads "No open shifts fit your schedule right now" instead of the empty state.
+- **Verified on fictional data** (owned runtime, offers made through the Exchange page):
+  - As found, the lead is refused both shifts, with availability named first and the Owner review last.
+  - After the fictional Owner reviews the lead's rules (on the employee page) and the lead gets fictional availability, both shifts are claimable.
+  - Fictional approved time off on one date collapses that shift with "You have approved time off then", and the badge drops to 1. Removing the time off restores it.
+  - The remaining shift claims through the unchanged flow.
+  - Enter on the summary opens it and keeps focus there, with a visible ring.
+  - axe, overflow and 44px targets pass at 320, 390 and 1440. Reduced motion is honoured, and there are no client errors.
+  - The 156-check sweep passes, as do the U3 flows. Unit tests cover the mapping and the rendering.
+- **Not covered:** the reasons for swaps (B3 covers open shifts only); the manager's approval screen, which keeps its own notices; and real shift-lead, coverage-gap and rest-rule refusals in the browser. Those are unit-tested through the mapping only.

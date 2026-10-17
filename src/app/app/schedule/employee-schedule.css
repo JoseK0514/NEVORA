@@ -84,6 +84,7 @@
 .my-open-status { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 2px 8px; border-radius: 999px; color: #8A4B00; background: #FBF1E2; font-size: 14px; font-weight: 500; }
 .my-open-action { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px; color: var(--g-accent, #077572); font-size: 15px; font-weight: 600; text-decoration: none; white-space: nowrap; }
 .my-open-note { margin: 4px 0 0; color: var(--g-muted, #5F6368); font-size: 15px; }
+.my-open-none { margin: 0; padding: 4px 0; color: var(--g-muted, #5F6368); font-size: 15px; }
 @media (max-width: 520px) {
   .my-open-shift { grid-template-columns: 48px minmax(0, 1fr); }
   .my-open-action { grid-column: 2; justify-self: start; padding: 0; }

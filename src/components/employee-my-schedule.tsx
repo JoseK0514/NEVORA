@@ -12,6 +12,7 @@ import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { HourglassMediumIcon } from '@phosphor-icons/react/dist/ssr/HourglassMedium';
 import { EmptyState } from './empty-state';
+import { BlockedOpenShifts } from './blocked-open-shifts';
 import { Celebration } from './celebration';
 import { EmployeeScheduleMotion } from './employee-schedule-motion';
 import { addDays, formatDayLabel, formatTime, formatWeekRange, weekDates, weekStartFor } from '../lib/date-utils';
@@ -20,13 +21,13 @@ import { emptyScheduleLabel, type EmployeeScheduleRead } from '../lib/data/emplo
 import type { ScheduleShiftRow } from '../lib/data/schedules';
 
 type Shift = ScheduleShiftRow & { positionName?: string | null };
-export type OpenShift = { id: string; date: string; startTime: string; endTime: string; location: string; position: string | null; href: string };
+export type OpenShift = { id: string; date: string; startTime: string; endTime: string; location: string; position: string | null; href: string; reasons?: string[] };
 export type EmployeeMyScheduleProps = {
   /** "mine" shows the week; "open" shows claimable shifts. Both are real URLs. */
   view?: 'mine' | 'open';
   /** Company modules (B2): shift swaps and time off links follow them. */
   modules?: EnabledModules;
-  openShifts?: { available: OpenShift[]; requested: OpenShift[] } | null;
+  openShifts?: { available: OpenShift[]; requested: OpenShift[]; unavailable?: OpenShift[] } | null;
   weekStart: string;
   today: string;
   observedAt: string;
@@ -82,7 +83,9 @@ function OpenShifts({ open }: { open: EmployeeMyScheduleProps['openShifts'] }) {
     <div className="my-agenda-heading"><h2 id="my-open-title">Open shifts</h2><span>Shifts you can claim</span></div>
     {open.requested.length ? <><h3 className="my-open-group">Waiting for approval</h3><ul className="my-open-list">{open.requested.map(shift => <OpenShiftCard key={shift.id} shift={shift} requested />)}</ul></> : null}
     {open.available.length ? <>{open.requested.length ? <h3 className="my-open-group">Available</h3> : null}<ul className="my-open-list">{open.available.map(shift => <OpenShiftCard key={shift.id} shift={shift} />)}</ul></>
+      : open.unavailable?.length ? <p className="my-open-none">No open shifts fit your schedule right now.</p>
       : <EmptyState illustration="open-shift" title="No open shifts right now">When a teammate offers a shift you can work, it shows up here.</EmptyState>}
+    <BlockedOpenShifts shifts={open.unavailable ?? []} />
     <p className="my-open-note">Claiming sends a request to your manager. The shift is yours once it’s approved.</p>
   </section>;
 }

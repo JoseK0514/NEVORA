@@ -64,3 +64,13 @@ it('Open shifts shows a calm empty state and an honest unavailable state',()=>{
  const failed=html({view:'open',openShifts:null});
  expect(failed).toContain('Open shifts unavailable');expect(failed).not.toContain('No open shifts right now');
 });
+it('B3: shifts the claim rules refuse sit collapsed below the claimable ones, with plain reasons and no claim action',()=>{
+ const refused={...open,id:'blocked-1',href:'/app/exchange?tab=available#request-blocked-1',reasons:['You have approved time off then','It’s outside your availability']};
+ const output=html({view:'open',openShifts:{available:[open],requested:[],unavailable:[refused]}});
+ expect(output).toContain('<details class="blocked-open-shifts">');
+ for(const value of ['Shifts you can’t pick up','>1<','You have approved time off then','It’s outside your availability','Update your availability','/app/availability']) expect(output).toContain(value);
+ expect(output.split('blocked-open-shifts')[1]).not.toContain('View and claim');
+ expect(output).not.toContain('#request-blocked-1');
+ const onlyRefused=html({view:'open',openShifts:{available:[],requested:[],unavailable:[{...refused,reasons:['It needs a position you’re not set up for']}]}});
+ expect(onlyRefused).toContain('No open shifts fit your schedule right now');expect(onlyRefused).not.toContain('No open shifts right now');expect(onlyRefused).not.toContain('Update your availability');
+});

@@ -28,6 +28,8 @@ import { getScheduleGenerationReview, type ScheduleGenerationReview } from "@/li
 import {EmployeeWeeklyConfirmation} from "@/components/employee-weekly-confirmation";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import {emptyScheduleLabel} from '@/lib/data/employee-schedule';
+import { readShiftChangeAvailability } from "@/lib/data/shift-changes";
+import { refusalLines } from "@/lib/shift-changes/eligibility-reasons";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import { listScheduleStatuses, listWeekShifts } from "@/lib/data/schedules";
@@ -162,8 +164,19 @@ export default async function SchedulePage({
       listOpenCoverage(session.id, today).catch(() => null),
       listEmployeeExchangeActivity(session.id).catch(() => null),
     ]) : [null, null];
+    // B3: each open shift is checked with the same claim rules the marketplace enforces.
+    // Ones that can't be claimed are listed apart with plain reasons. A failed check keeps
+    // the shift listed as before; the marketplace re-checks it and the claim is checked on submit.
+    const offered = (openCoverage ?? []).filter(row => row.actionable === true && row.status === 'OPEN');
+    const claimProof = offered.length ? await requireSessionMutationProof() : null;
+    const checks = new Map(await Promise.all(offered.map(async row => [row.id, row.requestRevision && Number.isSafeInteger(row.requestRevision)
+      ? await readShiftChangeAvailability(claimProof!, { kind: 'ACCEPT', requestId: row.id, expectedRevision: row.requestRevision, operationId: randomUUID() }).catch(() => null)
+      : null] as const)));
+    const refused = (id: string) => { const check = checks.get(id); return check && !check.allowed && check.refusal !== undefined ? check : null; };
+    const openHref = (row: ExchangeRecord) => `/app/exchange?tab=available#request-${encodeURIComponent(row.id)}`;
     const openShifts = openCoverage && ownActivity ? {
-      available: openCoverage.filter(row => row.actionable === true && row.status === 'OPEN').map(row => toOpenShift(row, `/app/exchange?tab=available#request-${encodeURIComponent(row.id)}`)),
+      available: offered.filter(row => !refused(row.id)).map(row => toOpenShift(row, openHref(row))),
+      unavailable: offered.flatMap(row => { const check = refused(row.id); return check ? [{ ...toOpenShift(row, openHref(row)), reasons: refusalLines(check) }] : []; }),
       requested: ownActivity.filter(row => row.kind === 'COVERAGE' && row.status === 'MANAGER_PENDING' && row.targetEmployeeId === session.id && row.sourceShift.date >= today)
         .map(row => toOpenShift(row, `/app/exchange?tab=requests&requestId=${encodeURIComponent(row.id)}`)),
     } : null;
