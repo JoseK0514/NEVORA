@@ -24,11 +24,11 @@ export function EmployeeProfileDetails({ profile, notificationsEnabled }: {
         <BellIcon size={22} weight="regular" aria-hidden="true" />
         <h2 id="profile-notifications-title">Notifications</h2>
       </div>
-      <p>Review your updates and choose how this device alerts you.</p>
+      <p>{notificationsEnabled ? 'Review your notifications and choose how this device alerts you.' : 'Review your notifications here in the app.'}</p>
       <Link className="profile-setting-row" href="/app/notifications"><span>View notifications</span><CaretRightIcon size={18} aria-hidden="true" /></Link>
       {notificationsEnabled
         ? <button type="button" className="profile-setting-row" popoverTarget="portal-device-settings"><span>Device notification settings</span><NavIcon name="settings" /></button>
-        : <p className="profile-supporting-copy">Device notification setup is unavailable. Your in-app notifications are still accessible.</p>}
+        : <p className="profile-supporting-copy">Alerts on this device aren&apos;t turned on for your workplace yet.</p>}
     </section>
   </>;
 }

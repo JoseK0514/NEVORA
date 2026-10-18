@@ -3,7 +3,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {beforeEach,expect,it,vi} from 'vitest';
 import type {ExchangeShift} from '../../../../lib/data/exchanges';
 import SwapPage from './page';
-const state=vi.hoisted(()=>({source:null as ExchangeShift|null,target:null as ExchangeShift|null,sourceChange:{} as Partial<ExchangeShift>,targetChange:{} as Partial<ExchangeShift>,sourceFingerprintChange:false}));
+const state=vi.hoisted(()=>({source:null as ExchangeShift|null,target:null as ExchangeShift|null,sourceChange:{} as Partial<ExchangeShift>,targetChange:{} as Partial<ExchangeShift>,sourceFingerprintChange:false,refuse:null as null|string}));
 vi.mock('@/lib/auth/permissions',()=>({requireSelfService:async()=>({id:'self',role:'EMPLOYEE'})}));
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
 vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
@@ -20,21 +20,30 @@ vi.mock('@/lib/data/shift-change-snapshot',()=>({readShiftChangeTerms:async(_pro
 function material(s:ExchangeShift){return {timeZone:s.timeZone,termsRevision:s.termsRevision,shiftId:s.id,scheduleId:s.scheduleId,employeeId:s.employeeId,locationId:s.locationId,weekStart:s.weekStart,date:s.date,startTime:s.startTime,endTime:s.endTime,positionId:s.positionId??null,isDesignatedLead:!!s.isDesignatedLead,assignmentEpisodeId:s.assignmentEpisodeId};}
 beforeEach(()=>{state.source={timeZone:'America/Puerto_Rico',termsRevision:1,assignmentEpisodeId:'episode-source',id:'source',scheduleId:'schedule',employeeId:'self',employeeName:'Fictional Employee',locationId:'loc',locationName:'North',weekStart:'2035-10-01',date:'2035-10-03',startTime:'08:00',endTime:'16:00',positionId:'cashier',positionName:'Cashier',isDesignatedLead:true};state.target={...state.source,id:'target',assignmentEpisodeId:'episode-target',employeeId:'other',employeeName:'Fictional Partner',date:'2035-10-04',startTime:'10:00',endTime:'18:00'};state.sourceChange={};state.targetChange={};state.sourceFingerprintChange=false;});
 const render=async()=>renderToStaticMarkup(await SwapPage({searchParams:Promise.resolve({sourceShiftId:'source'})}));
-it('unchanged displayed assignments are bound to reviewed source and target without a default consent',async()=>{const result=await render();expect(result).toContain('value="v1:source"');expect(result).toContain('Cashier');expect(result).toContain('Fictional Partner');expect(result).toContain('Send trade request');expect(result).not.toContain('name="targetTermsFingerprint"');});
+it('unchanged displayed assignments are bound to reviewed source and target without a default consent',async()=>{const result=await render();expect(result).toContain('value="v1:source"');expect(result).toContain('Cashier');expect(result).toContain('Fictional Partner');expect(result).toContain('Send swap request');expect(result).not.toContain('name="targetTermsFingerprint"');});
 it.each([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('source material change refuses the undisplayed assignment: %j',async sourceChange=>{state.sourceChange=sourceChange;await expect(render()).rejects.toThrow('error=EXCHANGE_CHANGED');});
-it.each([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('target material change excludes that undisplayed replacement: %j',async targetChange=>{state.targetChange=targetChange;const result=await render();expect(result).not.toContain('<form');expect(result).not.toContain('Fictional Partner');expect(result).toContain('No shifts to trade');});
+it.each([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('target material change excludes that undisplayed replacement: %j',async targetChange=>{state.targetChange=targetChange;const result=await render();expect(result).not.toContain('<form');expect(result).not.toContain('Fictional Partner');expect(result).toContain('No shifts to swap');});
 it('source fingerprint changing while target is reviewed withholds the mixed-snapshot builder',async()=>{state.sourceFingerprintChange=true;expect(await render()).not.toContain('<form');});
+it('explains a rule refusal when the rules refuse every target and coverage too (deadline passed)', async()=>{
+  state.refuse='The deadline for changes to this shift has passed.';
+  const html=await render();
+  state.refuse=null;
+  expect(html).toContain('No shifts to swap');
+  expect(html).toContain('The deadline for changes to this shift has passed.');
+  expect(html).not.toContain('<form');
+});
 it('keeps explicit selection and a safe coverage path when there are no targets', async()=>{
   const html=await render();
   expect(html).toContain('type="radio"');
   expect(html).not.toContain('checked=""');
   expect(html).toContain('disabled=""');
-  expect(html).toContain('Review your trade');
+  expect(html).toContain('Review your swap');
   state.target=null;
   const empty=await render();
-  expect(empty).not.toContain('<form');
-  expect(empty).toContain('/app/exchange/callout?sourceShiftId=source');
+  // F2: the fallback is the real coverage offer for this source, never the inability (callout) form.
+  expect(empty).toContain('value="OFFER_COVERAGE"');
   expect(empty).toContain('Offer for coverage');
+  expect(empty).not.toContain('/app/exchange/callout');
 });
 
-vi.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:async()=>({allowed:true,notice:null})}));
+vi.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:async()=>state.refuse?{allowed:false,notice:state.refuse}:{allowed:true,notice:null}}));

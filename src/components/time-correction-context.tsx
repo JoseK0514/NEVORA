@@ -1,4 +1,5 @@
 import type {CorrectionContext} from '@/lib/time-corrections/read-model';
+import { timeZoneLabel } from '@/lib/time-zone-label';
 
 export function correctionStamp(at:string,zone:string){
   return new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));
@@ -16,7 +17,7 @@ export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone
       </div>
       {proposedStartAt&&proposedEndAt?<div><small>Proposed · {context.state==='none'?'awaiting approval':'pending review'}</small><strong>{interval(proposedStartAt,proposedEndAt)}</strong></div>:null}
     </div>
-    <p className="correction-context-zone">Times in {zone}</p>
+    <p className="correction-context-zone">Times in {timeZoneLabel(zone)}</p>
   </>;
 }
 

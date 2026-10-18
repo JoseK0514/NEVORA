@@ -57,7 +57,7 @@ function buildState(
   ) as AvailabilityState;
 }
 
-function submissionStatusCopy(status: AvailabilitySubmissionStatus) {
+function submissionStatusCopy(status: AvailabilitySubmissionStatus, hasDeadline = true) {
   if (status.state === "LOCKED") {
     if (!status.submitted) {
       return {
@@ -91,7 +91,7 @@ function submissionStatusCopy(status: AvailabilitySubmissionStatus) {
 
   return {
     label: "Not submitted",
-    detail: "Submit this week before the deadline so management can schedule accurately.",
+    detail: hasDeadline ? "Submit this week before the deadline so management can schedule accurately." : "Submit this week so management can schedule accurately.",
   };
 }
 
@@ -144,7 +144,7 @@ export default async function AvailabilityPage({
       requestTime > new Date(settings.availabilityDeadline).getTime(),
   );
   const submissionCopy = submissionStatus
-    ? submissionStatusCopy(submissionStatus)
+    ? submissionStatusCopy(submissionStatus, Boolean(settings?.availabilityDeadline))
     : null;
 
   return (

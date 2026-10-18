@@ -32,7 +32,8 @@ it('shows employee period information and keeps approval controls out of the emp
  expect(html()).toContain('Period is still open');
  expect(html()).toContain('Period information');
  expect(html()).toContain('data-tone="neutral"');
- expect(html()).toContain('Request corrections in My time.');
+ expect(html()).toContain('Totals can change until the period closes.');
+ expect(html()).not.toContain('Needs attention');
  expect(html()).not.toMatch(/Approve timecard|Finalize period|Reopen period|Selected timecard review|Select PRIVATE/);
  window.dispatchEvent(new Event('blur'));
  expect(html()).not.toContain('Period is still open');

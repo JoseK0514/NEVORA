@@ -13,7 +13,7 @@ it('makes the overnight end date explicit across a year boundary', () => {
   expect(html).toContain('dateTime="2035-12-31"');
   expect(html).toContain('Position support');
   expect(html).toContain('No designated Lead');
-  expect(html).toContain('Times in America/Puerto Rico');
+  expect(html).toContain('Times in Puerto Rico time');
   expect(html).toContain('Fictional Employee');
 });
 

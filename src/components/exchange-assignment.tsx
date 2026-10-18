@@ -1,4 +1,5 @@
 import type { ExchangeShift } from "@/lib/data/exchanges";
+import { timeZoneLabel } from '@/lib/time-zone-label';
 import { formatDayLabel, formatTime } from "@/lib/date-utils";
 import { NavIcon } from "./nav-icon";
 
@@ -11,6 +12,6 @@ export function ExchangeAssignment({ shift, label }: { shift: ExchangeShift; lab
     <span className="exchange-assignment-detail"><NavIcon name="location" size={16} />{shift.locationName}</span>
     <span className="exchange-assignment-detail"><NavIcon name="shift" size={16} />{shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : "No assigned position")}</span>
     <span className="exchange-assignment-lead">{shift.isDesignatedLead ? "Designated lead" : "No designated Lead"}</span>
-    {shift.timeZone ? <span className="exchange-assignment-zone">Times in {shift.timeZone.replaceAll("_", " ")}</span> : null}
+    {shift.timeZone ? <span className="exchange-assignment-zone">Times in {timeZoneLabel(shift.timeZone)}</span> : null}
   </div>;
 }

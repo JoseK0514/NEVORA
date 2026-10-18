@@ -74,3 +74,15 @@ it('B3: shifts the claim rules refuse sit collapsed below the claimable ones, wi
  const onlyRefused=html({view:'open',openShifts:{available:[],requested:[],unavailable:[{...refused,reasons:['It needs a position you’re not set up for']}]}});
  expect(onlyRefused).toContain('No open shifts fit your schedule right now');expect(onlyRefused).not.toContain('No open shifts right now');expect(onlyRefused).not.toContain('Update your availability');
 });
+
+it('opens swap choosing from Home: a banner, open options on upcoming shifts, and the mode kept across weeks (Codex F1)', () => {
+  const markup = html({intent: 'swap'});
+  expect(markup).toContain('Choose the shift you want to swap');
+  expect(markup).toMatch(/<details class="my-shift-options" open="">/);
+  expect(markup).toContain('href="/app/exchange/swap?sourceShiftId=self-shift"');
+  expect(markup).toContain('href="/app/schedule?week=2026-10-19&amp;intent=swap"');
+  const none = html({intent: 'swap', shifts: []});
+  expect(none).toContain('No shifts to swap this week');
+  expect(html()).not.toContain('Choose the shift you want to swap');
+  expect(html()).not.toMatch(/<details class="my-shift-options" open="">/);
+});

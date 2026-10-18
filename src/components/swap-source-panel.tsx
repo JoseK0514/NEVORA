@@ -13,8 +13,8 @@ export function SwapSourcePanel({ source }: { source: ExchangeShift }) {
     </details>
     <div className="swap-source-note"><ArrowsLeftRightIcon size={20} aria-hidden="true" /><p>You’re offering this assignment in exchange for another employee’s shift.</p></div>
     <details className="swap-help">
-      <summary>How a trade works<PlusIcon className="swap-plus" size={18} aria-hidden="true" /><MinusIcon className="swap-minus" size={18} aria-hidden="true" /></summary>
-      <p>You consent when you send the request. The other employee must consent too. Valid trades complete automatically when policy permits; exceptions wait for management.</p>
+      <summary>How a swap works<PlusIcon className="swap-plus" size={18} aria-hidden="true" /><MinusIcon className="swap-minus" size={18} aria-hidden="true" /></summary>
+      <p>You consent when you send the request. The other employee must consent too. Valid swaps complete automatically when policy permits; exceptions wait for management.</p>
     </details>
   </aside>;
 }

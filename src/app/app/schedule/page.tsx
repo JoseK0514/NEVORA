@@ -103,6 +103,7 @@ export default async function SchedulePage({
     publishCheck?: string;
     day?: string;
     view?: string;
+    intent?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -189,6 +190,7 @@ export default async function SchedulePage({
     return <EmployeeMySchedule
       modules={modules}
       view={params.view === 'open' ? 'open' : 'mine'}
+      intent={params.intent === 'swap' ? 'swap' : undefined}
       openShifts={openShifts}
       weekStart={weekStart}
       today={today}

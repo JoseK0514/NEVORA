@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { timeZoneLabel } from '@/lib/time-zone-label';
 import {NavIcon} from './nav-icon';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
 import {useCallback,useEffect,useRef,useState,type FormEvent} from 'react';
@@ -20,7 +21,7 @@ const issueNames:Record<string,string>={period_open:'Period is still open',open_
 const periodDate=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric',year:'numeric'}).format(new Date(`${value}T12:00:00Z`));
 function Details({card}:{card:Timecard}){
   return <div className={styles.details}>
-    <p className={styles.definition}>Times in {card.timeZone.split('/').at(-1)?.replaceAll('_',' ')}. Hours include breaks, shown separately. These aren’t payroll hours.</p>
+    <p className={styles.definition}>Times in {timeZoneLabel(card.timeZone)}. Hours include breaks, shown separately. These aren’t payroll hours.</p>
     {card.entries.length?card.entries.map(entry=><details key={entry.id} className={styles.entry}>
       <summary><span><strong>{stamp(entry.startAt,card.timeZone)}</strong><small>{entry.locationName} · {entry.positionName??'Position not captured'}</small></span>
         <span className={styles.entrySource}>{entry.sourceKind==='ADJUSTMENT'?'Missing-time adjustment':entry.adjustmentId?'Corrected entry':'Recorded punch'}<NavIcon name="chevronRight" size={16}/></span></summary>
@@ -221,7 +222,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       return <article key={item.card.employeeId} className={(corporate?'employee-corporate-timecard ':'')+styles.card} tabIndex={-1} id={`timecard-${item.card.employeeId}`}>
       <header><div className={styles.identity}><span className={styles.avatar} aria-hidden="true"><NavIcon name={manager?'employee':'clock'} size={24}/></span><div><h2>{manager?item.card.employeeName:'Your timecard'}</h2><small>{periodDate(period.startDate)} – {periodDate(period.endDate)}</small></div></div><strong className={styles.state} data-state={item.state}>{item.state.replaceAll('_',' ').toLowerCase()}</strong></header>
       <dl className={(corporate?'employee-corporate-timecard-metrics ':'')+styles.totals}><div><dt><NavIcon name="hours" size={17}/>Recorded time</dt><dd>{formatRecordedHours(item.card.recordedNanoseconds)}</dd></div><div><dt><NavIcon name="clock" size={17}/>Break time</dt><dd>{formatRecordedHours(item.card.breakNanoseconds)}</dd></div></dl>
-      {item.card.issues.length?<div className={(corporate?'employee-corporate-timecard-issues ':'')+styles.issues} data-tone={presentation?.tone}><NavIcon className={corporate?'employee-corporate-desktop-copy':undefined} name="alert" size={20}/>{corporate?<NavIcon className="employee-corporate-mobile-copy" name={presentation?.tone==='neutral'?'clock':'alert'} size={20}/>:null}<div><h3>{corporate?<><span className="employee-corporate-desktop-copy">Needs attention</span><span className="employee-corporate-mobile-copy">{presentation?.heading}</span></>:'Needs attention'}</h3><ul>{(presentation?.issues??item.card.issues).map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>{corporate?<><span className="employee-corporate-desktop-copy">Review the entries and resolve open time or corrections before approval.</span><span className="employee-corporate-mobile-copy">Review your recorded entries. Request corrections in My time.</span></>:'Review the entries and resolve open time or corrections before approval.'}</p></div></div>:null}
+      {item.card.issues.length?<div className={(corporate?'employee-corporate-timecard-issues ':'')+styles.issues} data-tone={presentation?.tone}><NavIcon name={presentation?.tone==='neutral'?'clock':'alert'} size={20}/><div><h3>{corporate?presentation?.heading:'Needs attention'}</h3><ul>{(presentation?.issues??item.card.issues).map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>{corporate?(presentation?.tone==='neutral'?'Totals can change until the period closes.':'Review your recorded entries. Request corrections in My time.'):'Review the entries and resolve open time or corrections before approval.'}</p></div></div>:null}
       <MobileHomeDisclosure id={`mobile-timecard-${item.card.employeeId}`} label="Review timecard" expandedLabel="Close timecard review"
         available={!busy && pending?.employeeId !== item.card.employeeId && !outcomes && !review}>
       <Details card={item.card}/>

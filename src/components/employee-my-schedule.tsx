@@ -25,6 +25,8 @@ export type OpenShift = { id: string; date: string; startTime: string; endTime: 
 export type EmployeeMyScheduleProps = {
   /** "mine" shows the week; "open" shows claimable shifts. Both are real URLs. */
   view?: 'mine' | 'open';
+  /** "swap": the person came to pick a shift to swap (Home's Swap a shift); options open on eligible shifts. */
+  intent?: 'swap';
   /** Company modules (B2): shift swaps and time off links follow them. */
   modules?: EnabledModules;
   openShifts?: { available: OpenShift[]; requested: OpenShift[]; unavailable?: OpenShift[] } | null;
@@ -51,10 +53,14 @@ function hasNotEnded(shift: Shift, observedAt: string, timeZone: string) {
   catch { return false; }
 }
 
-function ShiftOptions({ shift, today, observedAt, timeZone }: { shift: Shift; today: string; observedAt: string; timeZone: string }) {
+function swappable(shift: Shift, today: string, observedAt: string, timeZone: string) {
+  return !shift.isCalloutApproved && shift.date >= today && hasNotEnded(shift, observedAt, timeZone);
+}
+
+function ShiftOptions({ shift, today, observedAt, timeZone, open = false }: { shift: Shift; today: string; observedAt: string; timeZone: string; open?: boolean }) {
   if (shift.isCalloutApproved || !hasNotEnded(shift, observedAt, timeZone)) return null;
   const id = encodeURIComponent(shift.id);
-  return <details className="my-shift-options">
+  return <details className="my-shift-options" open={open}>
     <summary><DotsThreeIcon size={20} weight="bold" aria-hidden="true" /><span>Shift options</span><span className="sr-only"> for {formatDayLabel(shift.date).day}, {formatTime(shift.startTime)}</span></summary>
     <div className="my-shift-options-body">
       {shift.date >= today ? <Link href={`/app/exchange/swap?sourceShiftId=${id}`} className="my-schedule-link"><ArrowsLeftRightIcon size={18} aria-hidden="true" />Request a swap</Link> : null}
@@ -101,6 +107,9 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
   const safeReceipt = receipt && acknowledged && state !== 'unavailable';
   const currentWeek = weekStartFor(today);
   const zoneName = timeZone.split('/').at(-1)?.replaceAll('_', ' ') ?? timeZone;
+  const swapIntent = props.intent === 'swap' && modules.marketplace && view === 'mine';
+  const swapCount = swapIntent ? shifts.filter(shift => swappable(shift, today, observedAt, timeZone)).length : 0;
+  const keep = swapIntent ? '&intent=swap' : '';
   return <EmployeeScheduleMotion weekStart={weekStart}>
     <div className="employee-view employee-schedule-view my-schedule">
       <header className="my-schedule-heading my-schedule-enter">
@@ -116,15 +125,21 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
         <div className="my-week-topline">
           <div className="my-week-title"><CalendarDotsIcon size={26} weight="duotone" aria-hidden="true" /><div><h2 id="my-week-title">{formatWeekRange(weekStart)}</h2><p>{weekStart.slice(0,4)} <span aria-hidden="true">·</span> Company time: {zoneName}</p></div></div>
           <nav className="my-week-navigation" aria-label="Schedule week">
-            <Link href={`/app/schedule?week=${addDays(weekStart,-7)}`} aria-label="Previous week" className="my-week-arrow"><ArrowLeftIcon size={19} aria-hidden="true" /></Link>
+            <Link href={`/app/schedule?week=${addDays(weekStart,-7)}${keep}`} aria-label="Previous week" className="my-week-arrow"><ArrowLeftIcon size={19} aria-hidden="true" /></Link>
             <Link href={`/app/schedule?week=${currentWeek}&day=${today}#schedule-${today}`} className="my-week-today">Today</Link>
-            <Link href={`/app/schedule?week=${addDays(weekStart,7)}`} aria-label="Next week" className="my-week-arrow"><ArrowRightIcon size={19} aria-hidden="true" /></Link>
+            <Link href={`/app/schedule?week=${addDays(weekStart,7)}${keep}`} aria-label="Next week" className="my-week-arrow"><ArrowRightIcon size={19} aria-hidden="true" /></Link>
           </nav>
         </div>
         <nav className="my-week-days" aria-label="Days in this week">
           {dates.map(date => { const label=formatDayLabel(date); const assigned=shifts.some(shift=>shift.date===date); return <a key={date} href={`#schedule-${date}`} className={`my-week-day${date===today?' is-today':''}${date===selectedDay?' is-selected':''}`} aria-current={date===today?'date':undefined} aria-label={`${label.weekday}, ${label.day}${date===today?', today':''}${assigned?', assigned shift':''}`}><span>{label.weekday}</span><strong>{Number(date.slice(8))}</strong><i className={assigned?'has-shift':''} aria-hidden="true" /></a>; })}
         </nav>
       </section>
+
+      {swapIntent ? <div className="my-schedule-feedback my-swap-intent" role="status">
+        <strong>{swapCount ? 'Choose the shift you want to swap' : 'No shifts to swap this week'}</strong>
+        <p>{swapCount ? 'Its options are open below. Select Request a swap on that shift.' : 'Only upcoming shifts can be swapped. Try next week, or check Open shifts.'}</p>
+        <Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Done choosing</Link>
+      </div> : null}
 
       {/* D5: on desktop the week leads and its status sits beside it; one column on phones, same order. */}
       <div className="my-schedule-body"><div className="my-schedule-side">
@@ -152,7 +167,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
                 {shift.positionName?<span className="my-shift-position">{shift.positionName}</span>:null}
                 {shift.isDesignatedLead || shift.isCalloutApproved?<div className="employee-schedule-tags">{shift.isDesignatedLead?<small className="employee-designated-lead">Designated lead</small>:null}{shift.isCalloutApproved?<small className="employee-approved-callout">Call-out approved</small>:null}</div>:null}
               </div>
-              {modules.marketplace ? <ShiftOptions shift={shift} today={today} observedAt={observedAt} timeZone={timeZone} /> : null}
+              {modules.marketplace ? <ShiftOptions shift={shift} today={today} observedAt={observedAt} timeZone={timeZone} open={swapIntent && swappable(shift, today, observedAt, timeZone)} /> : null}
             </div>) : <p className="employee-schedule-off">{emptyScheduleLabel(state)}</p>}
           </div>
         </article>; })}

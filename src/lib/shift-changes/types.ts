@@ -32,7 +32,7 @@ export type ShiftChangeRequest = {
   recordedApprovalMode: ApprovalMode | null; effectiveApprovalMode: ApprovalMode | null;
 };
 export type OperationalIssueCode = 'MIN_REST' | 'MAX_SHIFT_HOURS' | 'MAX_DAILY_HOURS' | 'BREAK_REQUIREMENT' | 'RULE_UNVERIFIABLE' | 'PROJECTED_OVERTIME_REVIEW';
-export type ShiftChangeIssue = { code: ValidationIssueCode | OperationalIssueCode | 'STALE_TERMS' | 'CONSENT_REQUIRED' | 'POLICY_UNKNOWN'; message: string };
+export type ShiftChangeIssue = { code: ValidationIssueCode | OperationalIssueCode | 'STALE_TERMS' | 'DEADLINE_PASSED' | 'CONSENT_REQUIRED' | 'POLICY_UNKNOWN'; message: string };
 export type ProposedAssignment = { shiftId: string; employeeId: string };
 export type ShiftChangeEvaluation = { decision: 'ELIGIBLE' | 'MANAGER_REVIEW' | 'BLOCKED' | 'UNVERIFIED'; issues: readonly ShiftChangeIssue[]; affectedWeeks: readonly string[]; proposedAssignments: readonly ProposedAssignment[]; scheduledProjections: readonly (ProjectedScheduledHours & { employeeId: string })[] };
 /** Private server source. Do not serialize to clients. */

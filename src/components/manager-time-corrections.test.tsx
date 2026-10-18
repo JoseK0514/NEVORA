@@ -39,7 +39,8 @@ describe('D2 manager correction surface',()=>{
     expect(html).toContain('11:45 AM');
     expect(html).toContain('Prior decisions');
     expect(html).toContain('Checked earlier boundaries.');
-    expect(html).toContain('America/Puerto_Rico');
+    expect(html).toContain('Times in Puerto Rico time');
+    expect(html).not.toContain('America/Puerto_Rico');
   });
   it('does not present a cleared, unverified snapshot as a confirmed empty queue',()=>{
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);

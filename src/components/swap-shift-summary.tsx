@@ -1,4 +1,5 @@
 import { CalendarBlankIcon } from '@phosphor-icons/react/dist/ssr/CalendarBlank';
+import { timeZoneLabel } from '@/lib/time-zone-label';
 import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { BriefcaseIcon } from '@phosphor-icons/react/dist/ssr/Briefcase';
 import { MedalIcon } from '@phosphor-icons/react/dist/ssr/Medal';
@@ -31,6 +32,6 @@ export function SwapShiftSummary({ shift, label, employee = false }: { shift: Ex
       <li><BriefcaseIcon size={18} aria-hidden="true" /><span>{swapPositionLabel(shift)}</span></li>
       <li><MedalIcon size={18} aria-hidden="true" /><span>{shift.isDesignatedLead ? 'Designated lead' : 'No designated Lead'}</span></li>
     </ul>
-    {shift.timeZone ? <p className="swap-timezone">Times in {shift.timeZone.replaceAll('_', ' ')}</p> : null}
+    {shift.timeZone ? <p className="swap-timezone">Times in {timeZoneLabel(shift.timeZone)}</p> : null}
   </section>;
 }

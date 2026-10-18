@@ -162,32 +162,32 @@ function AttentionGroup({kind, items, partial, zone}: {kind: 'actions' | 'update
   const headingId = `employee-reviewed-${kind}-heading`;
   const firstApproval = items.find(item => approvalCelebration(item));
   const row = (item: AttentionItem) => <AttentionRow key={`${item.ref.kind}:${item.ref.id}`} item={item} zone={zone} celebrate={item === firstApproval}/>;
-  const count = `${items.length}${partial ? ' known' : ''} ${actions ? (items.length === 1 ? 'action' : 'actions') : (items.length === 1 ? 'update' : 'updates')}`;
+  const count = `${items.length}${partial ? ' known' : ''} ${actions ? (items.length === 1 ? 'action' : 'actions') : (items.length === 1 ? 'item' : 'items')}`;
   return <section data-home-group={kind} aria-labelledby={headingId} className={actions ? styles.actions : styles.updates}>
     <header className={styles.groupHeader}>
-      <h2 id={headingId}>{actions ? 'To do' : 'Recent updates'}</h2>
+      <h2 id={headingId}>{actions ? 'To do' : 'Recent activity'}</h2>
       <span className={styles.count}>{count}</span>
     </header>
     {items.length ? <>
       <ul className={styles.itemList}>{items.slice(0, 3).map(row)}</ul>
       {items.length > 3 ? <details className={styles.overflow}>
         <summary>
-          <span className={styles.expandLabel}>View all {kind} ({items.length - 3} more)</span>
+          <span className={styles.expandLabel}>View all {actions ? 'actions' : 'activity'} ({items.length - 3} more)</span>
           <span className={styles.collapseLabel}>Show fewer {kind}</span>
           <Arrow/>
         </summary>
         <ul className={styles.itemList}>{items.slice(3).map(row)}</ul>
       </details> : null}
     </> : <p className={styles.groupEmpty}>
-      {partial ? (actions ? 'No actions in the checked sources.' : 'No updates in the checked sources.')
-        : (actions ? 'No actions required.' : 'No recent updates.')}
+      {partial ? (actions ? 'No actions in the checked sources.' : 'No activity in the checked sources.')
+        : (actions ? 'No actions required.' : 'No recent activity.')}
     </p>}
   </section>;
 }
 
 const shortcuts: {href: string; label: string; Icon: typeof ClockIcon; module?: ModuleId}[] = [
-  {href: '/app/requests/hub', label: 'Request time off', Icon: CalendarMinusIcon, module: 'timeOff'},
-  {href: '/app/exchange/swap', label: 'Swap a shift', Icon: ArrowsLeftRightIcon, module: 'marketplace'},
+  {href: '/app/requests', label: 'Request time off', Icon: CalendarMinusIcon, module: 'timeOff'},
+  {href: '/app/schedule?intent=swap', label: 'Swap a shift', Icon: ArrowsLeftRightIcon, module: 'marketplace'},
   {href: '/app/availability', label: 'Update availability', Icon: UserCheckIcon},
   {href: '/app/my-time', label: 'My time', Icon: ClockIcon},
 ];

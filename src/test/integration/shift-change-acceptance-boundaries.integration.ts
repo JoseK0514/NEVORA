@@ -52,7 +52,7 @@ it.each(['before-first-authority', 'after-initial-authority'] as const)(
       },
     };
     try {
-      expect(await executeShiftChange(proof('e2'), command, executor)).toMatchObject({ status: 'blocked', issues: [{ code: 'STALE_TERMS' }] });
+      expect(await executeShiftChange(proof('e2'), command, executor)).toMatchObject({ status: 'blocked', issues: [{ code: 'DEADLINE_PASSED' }] });
       expect(waited).toBe(true);
       expect(await q('SELECT to_jsonb(x) row FROM shift_exchanges x WHERE id=$1', [item.requestId])).toEqual(before);
       expect(await q('SELECT employee_id FROM shifts WHERE id=$1', [item.id])).toEqual([{ employee_id: 'e1' }]);

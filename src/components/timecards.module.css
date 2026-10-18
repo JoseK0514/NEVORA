@@ -67,6 +67,8 @@
 .entry dl > div { display: grid; grid-template-columns: 145px minmax(0, 1fr); gap: 12px; }.entry dt { color: var(--tc-muted); }.entry dd { margin: 0; }
 .entry ul { padding-left: 20px; font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.7; }
 .issues { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; padding: 16px; border: 1px solid var(--warning-border, #e8cfaa); border-radius: 14px; background: var(--warning-bg, #fff8eb); color: var(--warning-text, #7a4b15); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; }
+/* Employee view: an open period alone is information, not a warning (Codex F5). */
+.issues[data-tone="neutral"] { border-color: var(--g-hairline, #e2e4e7); background: var(--g-inset, #f4f5f6); color: var(--g-ink, #111827); }
 .issues > svg { margin-top: 2px; }.issues h3 { margin: 0 0 6px; font-size: calc(14 * var(--type-unit, 1px)); font-weight: 600; }.issues ul { margin: 0; padding-left: 18px; }.issues p { margin: 8px 0 0; }
 .selection { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 16px 0 0; font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.65; cursor: pointer; }
 .selection input[type="checkbox"] { flex: 0 0 20px; width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--design-accent-ink, #055c5a); }.selection:has(input:disabled) { color: var(--tc-muted); cursor: default; }

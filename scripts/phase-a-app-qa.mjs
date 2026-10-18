@@ -105,7 +105,7 @@ async function submitAndSettle(page, button, { refresh = false } = {}) {
 }
 async function offer(page, shiftId) {
   await goto(page, '/app/exchange?tab=requests');
-  await submitAndSettle(page, offerForm(page, shiftId).getByRole('button', { name: 'Offer shift', exact: true }), { refresh: true });
+  await submitAndSettle(page, offerForm(page, shiftId).getByRole('button', { name: 'Offer for coverage', exact: true }), { refresh: true });
   return waitFor(async () => (await q("SELECT * FROM shift_exchanges WHERE source_shift_id=$1 AND kind='COVERAGE' AND status='OPEN' ORDER BY created_at DESC LIMIT 1", [shiftId]))[0], 'Actual offer did not commit');
 }
 async function claim(page, requestId) {
@@ -222,7 +222,7 @@ try {
       }
       await route.fallback();
     });
-    await offerForm(page, data.sourceId).getByRole('button', { name: 'Offer shift', exact: true }).click();
+    await offerForm(page, data.sourceId).getByRole('button', { name: 'Offer for coverage', exact: true }).click();
     await page.getByRole('button', { name: 'Check & retry same request', exact: true }).waitFor();
     const before = await q('SELECT operation_id,command_fingerprint,request_id,result FROM shift_change_operations WHERE actor_employee_id=$1', [data.actors[0]]);
     assert.equal(before.length, 1); assert.equal(before[0].result.status, 'pending');
@@ -253,7 +253,7 @@ try {
           else await updateShift({shiftId,employeeId,date,startTime:'08:00',endTime:'16:00',positionId,isDesignatedLead:true,actorEmployeeId:'QAOWNER',...patch},app.database.executor);
         });
         await page.waitForLoadState('networkidle');
-        assert.equal(await page.getByRole('button',{name:'Send trade request',exact:true}).count(),0);
+        assert.equal(await page.getByRole('button',{name: 'Send swap request',exact:true}).count(),0);
         if(side==='source') assert.match(page.url(),/error=EXCHANGE_CHANGED/);
         else assert.match(await page.locator('body').innerText(),/No shifts to trade/);
         return {side,field,realReadBarrier:true,mutationCommitted:true,staleFormWithheld:true};
@@ -280,12 +280,12 @@ try {
   await check('I1/A001 actual two-sided trade picker and acceptance preserve both assignments', async () => {
     const data = await seedOwnedScenario(app.database.executor, 'SWAP', 5), requester = await login(data.actors[0]), target = await login(data.actors[1]);
     await goto(requester, `/app/exchange/swap?sourceShiftId=${data.sourceId}`);
-    assert(await requester.getByRole('button', { name: 'Send trade request', exact: true }).isDisabled());
+    assert(await requester.getByRole('button', { name: 'Send swap request', exact: true }).isDisabled());
     await requester.getByRole('combobox', { name: 'Requested shift', exact: true }).click();
     await requester.getByRole('option').filter({ hasText: `QA SWAP Blair` }).click();
     assert.match(await requester.locator('.reviewed-swap-terms').innerText(), /You give[\s\S]*You receive/);
     await screenshot(requester, 'reviewed-trade-390');
-    await requester.getByRole('button', { name: 'Send trade request', exact: true }).click();
+    await requester.getByRole('button', { name: 'Send swap request', exact: true }).click();
     const request = await waitFor(async () => (await q("SELECT * FROM shift_exchanges WHERE source_shift_id=$1 AND kind='SWAP'", [data.sourceId]))[0], 'Trade not created');
     await goto(target, '/app/exchange?tab=requests');
     await target.locator(`[id="request-${request.id}"]`).getByRole('button', { name: 'Accept', exact: true }).click();
@@ -370,7 +370,7 @@ try {
             assert(focus.focused && focus.visible && (focus.outline!=='none'&&parseFloat(focus.width)>0||focus.shadow!=='none'),'Missing visible keyboard focus');
             await combo.press('Enter');
             await page.locator('.reviewed-swap-terms').waitFor();
-            assert.equal(await page.getByRole('button',{name:'Send trade request',exact:true}).isEnabled(),true);
+            assert.equal(await page.getByRole('button',{name: 'Send swap request',exact:true}).isEnabled(),true);
           }
           const last=page.locator('.shift-change-form button:visible').last();
           if(await last.count()) {

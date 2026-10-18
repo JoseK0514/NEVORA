@@ -164,7 +164,7 @@ describe('released Home data and navigation', () => {
     expect(updates).not.toContain('Respond by');
     expect(updates).toContain('Recorded');
     expect(markup).toContain('2 actions');
-    expect(markup).toContain('1 update');
+    expect(markup).toContain('1 item');
   });
 
   it('retains each schedule-review week and communication detail route with no direct acknowledgement action', () => {
@@ -186,7 +186,7 @@ describe('released Home data and navigation', () => {
     const rows = Array.from({length: 9}, (_, index) => item(`i${index}`, {actionable: index < 4}));
     const markup = html(props(projectEmployeeHome(snapshot({attention: rows}))));
     expect(group(markup, 'actions')).toContain('View all actions');
-    expect(group(markup, 'updates')).toContain('View all updates');
+    expect(group(markup, 'updates')).toContain('View all activity');
     expect(markup.match(/<details /g)).toHaveLength(2);
     for (const row of rows) expect(markup).toContain(row.href.replaceAll('&', '&amp;'));
     expect(markup).not.toContain('/app/actions');
@@ -292,6 +292,10 @@ describe('Today Home (U2)', () => {
     expect(markup).toContain('<strong>Tomorrow</strong> · <time dateTime="2030-10-08">');
     expect(markup).toContain('Good morning · <time');
     for (const label of ['Quick actions', 'Request time off', 'Swap a shift', 'Update availability', 'My time']) expect(markup).toContain(label);
+    // Codex F1/W1: time off opens its form directly; Swap a shift opens shift choosing, never the source-less swap route.
+    expect(markup).toMatch(/href="\/app\/requests"[^>]*>(?:<[^>]+>)*<\/span><span>Request time off/);
+    expect(markup).toContain('href="/app/schedule?intent=swap"');
+    expect(markup).not.toContain('href="/app/exchange/swap"');
     expect(markup).toContain('data-home-updated="true">Updated <time');
     // The countdown needs a live clock, so it is absent from server markup.
     expect(markup).not.toContain('Starts in');

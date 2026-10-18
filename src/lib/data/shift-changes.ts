@@ -20,7 +20,7 @@ import { cancelNotificationStatements } from './notifications';
 import { eligibilityReasons, REASON_TEXT, type EligibilityReason } from '../shift-changes/eligibility-reasons';
 const conflict:ShiftChangeResult={status:'conflict'};
 const unavailable:ShiftChangeResult={status:'unavailable'};
-const blocked=(code:'STALE_TERMS'|'POLICY_UNKNOWN'|'CONSENT_REQUIRED',message:string):ShiftChangeResult=>({status:'blocked',issues:[{code,message}]});
+const blocked=(code:'STALE_TERMS'|'DEADLINE_PASSED'|'POLICY_UNKNOWN'|'CONSENT_REQUIRED',message:string):ShiftChangeResult=>({status:'blocked',issues:[{code,message}]});
 const fingerprint=(command:ShiftChangeCommand)=>createHash('sha256').update(JSON.stringify(Object.fromEntries(Object.entries(command).sort(([a],[b])=>a.localeCompare(b))))).digest('hex');
 export async function findShiftChangeOperation(proof:SessionMutationProof,operationId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftChangeResult|null> {
  const [r]=await executor.query<{result:ShiftChangeResult}>({text:`SELECT o.result FROM shift_change_operations o JOIN workspaces w ON w.id=o.workspace_id AND w.active JOIN employees e ON e.id=o.actor_employee_id AND e.active JOIN employee_sessions s ON s.employee_id=e.id AND s.token_hash=$1 AND s.expires_at>clock_timestamp() WHERE o.actor_employee_id=$2 AND o.operation_id=$3::uuid AND e.role=$4`,values:[proof.sessionTokenHash,proof.employee.id,operationId,proof.employee.role]});
@@ -137,7 +137,7 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
   if(source.employeeId!==actor.id||!published(source)||source.assignmentEpisodeId!==c.sourceEpisodeId||shiftTermsFingerprint(source)!==c.sourceTermsFingerprint)return blocked('STALE_TERMS','Review the current source assignment.');
   if(c.kind==='PROPOSE_SWAP'&&(!target||!published(target)||target.assignmentEpisodeId!==c.targetEpisodeId||shiftTermsFingerprint(target)!==c.targetTermsFingerprint))return blocked('STALE_TERMS','Review the current target assignment.');
   if(!scope?.mode||deadline.status!=='READY')return blocked('POLICY_UNKNOWN','Workflow policy needs review.');
-  if(!deadline.allowed)return blocked('STALE_TERMS','The submission deadline has passed.');
+  if(!deadline.allowed)return blocked('DEADLINE_PASSED','The submission deadline has passed.');
   if(c.kind==='PROPOSE_SWAP'&&!['EMPLOYEE','LEAD'].includes(s.facts.employees.find(e=>e.id===target?.employeeId)?.role??''))return unavailable;
   if(c.kind==='PROPOSE_SWAP') {const e=evaluateShiftChange(s,c);if(['BLOCKED','UNVERIFIED'].includes(e.decision))return {status:'blocked',issues:e.issues};decisionVersions=decisionVersionReferences(s,e,'swap');}
   guardDeadline=deadline.submissionDeadline;
@@ -202,7 +202,7 @@ export async function executeShiftChange(proof:SessionMutationProof,command:Shif
    const code=error&&typeof error==='object'&&'code' in error?String(error.code):'';
    const message=error instanceof Error?error.message:'';
    if(error instanceof ShiftChangeAuthorizationError||message.includes('shift_change_authorization'))return unavailable;
-   if(message.includes('shift_change_deadline'))return blocked('STALE_TERMS','The completion deadline has passed.');
+   if(message.includes('shift_change_deadline'))return blocked('DEADLINE_PASSED','The completion deadline has passed.');
    if(code==='23505')return conflict;
    const retry=code==='40001'||code==='40P01'||code==='22P02'&&/generation_source_conflict|schedule_week_version_conflict|workspace_version_conflict|request_transition_conflict|shift_change_after_conflict/.test(message);
    if(retry) {if(attempt<2)continue;return conflict;}
@@ -239,12 +239,14 @@ export async function readShiftChangeAvailability(proof:SessionMutationProof,com
   const scope=snapshot.policy?.[snapshot.request?.kind==='SWAP'||command.kind==='PROPOSE_SWAP'?'swap':'coverage'];
   const unknown=!scope?.mode||scope.submissionAdvanceMinutes===null||scope.completionAdvanceMinutes===null||result.status==='blocked'&&result.issues.some(i=>['RULE_UNVERIFIABLE','POLICY_UNKNOWN'].includes(i.code));
   const stale=result.status==='conflict'||result.status==='blocked'&&result.issues.some(i=>i.code==='STALE_TERMS');
+  // An expired window is not a changed shift: reloading cannot reopen it (Codex F4).
+  const late=result.status==='blocked'&&result.issues.some(i=>i.code==='DEADLINE_PASSED');
   // B3: name the rules that refused it, in plain words; the rules themselves are unchanged.
   // A rule that blocks is named even when other rules still need the Owner's review.
   // Reasons are worded for the person claiming ("You already work then"), so only a claim gets them;
   // a manager approving someone else's claim keeps the general notices.
-  const reasons=stale||command.kind!=='ACCEPT'?[]:eligibilityReasons([...(result.status==='blocked'?result.issues:[]),...(unknown?[{code:'POLICY_UNKNOWN' as const}]:[])]);
+  const reasons=stale||late||command.kind!=='ACCEPT'?[]:eligibilityReasons([...(result.status==='blocked'?result.issues:[]),...(unknown?[{code:'POLICY_UNKNOWN' as const}]:[])]);
   if(reasons.some(r=>r!=='unconfirmed'))return {allowed:false,notice:reasons.map(r=>REASON_TEXT[r]).join('. ')+'.',reasons,refusal:'rules'};
-  return {allowed:false,notice:unknown?'Needs Owner rule review':stale?'This shift changed. Reload to see the latest.':'Not available under the current rules.',refusal:unknown?'review':stale?'stale':'other'};
+  return {allowed:false,notice:unknown?'Needs Owner rule review':late?'The deadline for changes to this shift has passed.':stale?'This shift changed. Reload to see the latest.':'Not available under the current rules.',refusal:unknown?'review':late?'other':stale?'stale':'other'};
  }catch(error){if(error instanceof ShiftChangeAuthorizationError)return {allowed:false,notice:'Unavailable for your current account.'};throw error;}
 }
