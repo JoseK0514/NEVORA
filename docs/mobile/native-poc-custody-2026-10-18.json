@@ -1,0 +1,881 @@
+{
+  "source": "/Users/josek0514/Documents/Codex/2026-10-14/we-wi/work/nevora-cross-platform-poc",
+  "sourceBranch": "codex/nevora-cross-platform-poc-20261014",
+  "sourceHead": "b58496b84b21690f7be22474f7570da2d81af6c3",
+  "archive": "/Users/josek0514/.codex/worktrees/nevora-mobile-launch/Fuel Scheduler/.superpowers/sdd/2026-10-18-nevora-ios-android-launch/native-poc-source.tar.gz",
+  "archiveSha256": "4a070e554a3141e33048254a47173fdf3fc939552dfba17e31eb15f448f80a9f",
+  "archiveBytes": 4961089,
+  "fileCount": 174,
+  "files": [
+    {
+      "path": "apps/employee-poc/.gitignore",
+      "sha256": "ebb4575d110fba15027b4e0994b8c93a07556f350d2a6922a98f47cf4c63e473",
+      "bytes": 188
+    },
+    {
+      "path": "apps/employee-poc/android/.gitignore",
+      "sha256": "065e4a92a240fe11a0ea230491ad9dabef143f5fd5a3e6884ad6f0395666a971",
+      "bytes": 1824
+    },
+    {
+      "path": "apps/employee-poc/android/app/.gitignore",
+      "sha256": "99c54e51ee601a60fbde8016b2cbf717483bc2e92773be86c9247d02a7fa6ea4",
+      "bytes": 26
+    },
+    {
+      "path": "apps/employee-poc/android/app/build.gradle",
+      "sha256": "ec83d6740bb61d69f1c09cff1d3dd9cf6b2bd0a99af6412862d7aa67dcfe1ec9",
+      "bytes": 2179
+    },
+    {
+      "path": "apps/employee-poc/android/app/capacitor.build.gradle",
+      "sha256": "47e2308de17888afa42c3a6975626c50ef2fc0abbaf4c7da862eb32d567c3105",
+      "bytes": 414
+    },
+    {
+      "path": "apps/employee-poc/android/app/proguard-rules.pro",
+      "sha256": "1cf8c57e8f79c250b0af9c1a5a4edad71a5c348a79ab70243b6bae086c150ad2",
+      "bytes": 751
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java",
+      "sha256": "ff50b4c110a7434312f9af54171f9e8523b015836f707c9b387b76d4c38a97f8",
+      "bytes": 774
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/debug/AndroidManifest.xml",
+      "sha256": "5903d32eab22265a318ac8b69be8cac6486752b44a65f03446fee234462935be",
+      "bytes": 155
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/debug/res/xml/native_network_security.xml",
+      "sha256": "8cba5053ae04293fda047f15aea90c33fc95a3254406d2befeeb35fe3e078f03",
+      "bytes": 188
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/AndroidManifest.xml",
+      "sha256": "806e6d0b0e3da66c9220173121672f6a54724189a679947902d126af37973beb",
+      "bytes": 1538
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/java/com/velani/nevora/poc/MainActivity.java",
+      "sha256": "9a57f51df8a8228b1910fef30e1b87c62f512c23bd97a2896b55958b907d5338",
+      "bytes": 255
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/java/com/velani/nevora/poc/NevoraSession.java",
+      "sha256": "6393b0f7c1698e1074632f415991cc6d9642a89c94a2d2fa63eb41d676d79100",
+      "bytes": 5784
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-land-hdpi/splash.png",
+      "sha256": "08cc34ad7713fe7ed58bceaa37b2387b670c53cd60264b4bd6442db3098e75dc",
+      "bytes": 7705
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-land-mdpi/splash.png",
+      "sha256": "5cf98b4451bd99b20df26f9e608a46946118be6b0ae90762f9ca1786a30c76ff",
+      "bytes": 4040
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-land-xhdpi/splash.png",
+      "sha256": "22f87e1e3bc89aa01a7dbc39c9a4db058cd0bf4ad3fe9f55712bf69eb997f4bf",
+      "bytes": 9251
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-land-xxhdpi/splash.png",
+      "sha256": "42aa26392546fcdee1b8d3ac6d4b41bfcceb41dc6a4f3a3c30c24a8a8f4db862",
+      "bytes": 13984
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-land-xxxhdpi/splash.png",
+      "sha256": "60393ce8636fd263e4e1fea3fd4ab2de948c6295e898fda9b50ac4e5283be809",
+      "bytes": 17683
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-port-hdpi/splash.png",
+      "sha256": "c5015f4ba3628392b538386c5e210f0b94f352a3160adab934fd0311972137ca",
+      "bytes": 7934
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-port-mdpi/splash.png",
+      "sha256": "07fa579e1c83e04ba7f9cbcbfcf41b68e15fe3638f2c44a04e58b809103e6b69",
+      "bytes": 4096
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-port-xhdpi/splash.png",
+      "sha256": "b73049cb37fe76d6c11b87a796766bf6af0c85483b31eb6a921657b0d764a4b9",
+      "bytes": 9875
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-port-xxhdpi/splash.png",
+      "sha256": "0c7f1212f25b7b90e9a6e1d320013e4ff3d3e03e634cbb07b7b7981cac51627f",
+      "bytes": 13346
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-port-xxxhdpi/splash.png",
+      "sha256": "3db071a03b2f8ffe0dfd4170fc59842d53cd15bba5e88af59401d58efabf7827",
+      "bytes": 17489
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml",
+      "sha256": "a8514094f754b099d3e55ce1d6e0b2de79db418b2eeacb0fc2a6bb0bfadef221",
+      "bytes": 1880
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable/ic_launcher_background.xml",
+      "sha256": "718ba51adf166bb55c3e9936bb8199a0148457f7f0191aaa2f37a94f3159d6ec",
+      "bytes": 5606
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/drawable/splash.png",
+      "sha256": "5cf98b4451bd99b20df26f9e608a46946118be6b0ae90762f9ca1786a30c76ff",
+      "bytes": 4040
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/layout/activity_main.xml",
+      "sha256": "5d770feb791313b947020cbfc57e5c733c556dac5e9e49261a1190e527073253",
+      "bytes": 535
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "sha256": "9c3a7e0a6515c6e1a7ae834a9ae430311ebc3241f7b2e5e7f0460aa690709a7c",
+      "bytes": 265
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+      "sha256": "9c3a7e0a6515c6e1a7ae834a9ae430311ebc3241f7b2e5e7f0460aa690709a7c",
+      "bytes": 265
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "sha256": "72b71c3581ca3b5a23b1c168d69b9d855b3f184fa079902a01f088eb4f0607d5",
+      "bytes": 2786
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+      "sha256": "32baa10d2632a4417454a579f992bd640e0a3cec79321423559b2c9940de58a9",
+      "bytes": 3450
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+      "sha256": "bfcc1b0fa931b14bb241372c76ab4f04374b67d02363c98d9cb12edfdacdf5f3",
+      "bytes": 4341
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "sha256": "27ed3603010ebc278f64f8645741ab132ff517abb5308eb9df6c8e42a48956b2",
+      "bytes": 1869
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+      "sha256": "58e78a618778926b1f6d9472a6468de878de8530970934e94aab5ba4ba08cc00",
+      "bytes": 2110
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+      "sha256": "0166fc333074c373fbd0ce6b5defd71552166165ac778121ca9c9dff6b83f0fc",
+      "bytes": 2725
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "sha256": "d35dbfff175b83c13ef59cf924abfc810f7b6a158595d7417c5498ea8c7c7ed1",
+      "bytes": 3981
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+      "sha256": "6f88083b8166cc559102f7044688de7525287632ebe09ac45d001ac8bf4b3eae",
+      "bytes": 5036
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+      "sha256": "40911a00922868686854a4804b93fd6e56b503664696de03f450bff690affb6d",
+      "bytes": 6593
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "sha256": "ed346eb1e3f0280f15709393705899b3ff55c20b88f4e0308006b3c33cf5fe14",
+      "bytes": 6644
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+      "sha256": "4a82bc1e9923576275869998925ce0ae021a79aa18b24a0dd87ad6b61ca85053",
+      "bytes": 9793
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+      "sha256": "1ee4cd9ff371dcb2e3938097e434f6fb8731688ed7165e61fc63693ad5b2f455",
+      "bytes": 10455
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "sha256": "87cb2f2ffe992652bb4fa768c73719a37b5852ab17fbf8e170e888f7a42b0761",
+      "bytes": 9441
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+      "sha256": "bd24fd383253bf8d43f0a81f11c071d76d1d555114376dd647cd9fb38fa0a9da",
+      "bytes": 15529
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+      "sha256": "ab93096331e7cd8ec379f73f1e9adcaaa9ee1115c9f4ff10411a811fb9700174",
+      "bytes": 15916
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/values/ic_launcher_background.xml",
+      "sha256": "cd40bafe618ff506f4088778b135cb4faa15f25e0c9b475e22d730c74b7be115",
+      "bytes": 120
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/values/native_origin.xml",
+      "sha256": "44a232744136b91873d64b745f6eabc3b15a3fbcd23838a3c946a8f7dd0eb25f",
+      "bytes": 90
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/values/strings.xml",
+      "sha256": "a03059231e24f6e874376e9bdfb7c2703f1fef1696190ef7e6f2d5c3cade4875",
+      "bytes": 302
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/values/styles.xml",
+      "sha256": "18ebba36575e9461347ee67361b23caf095f158ee85dbefe1b83a4669ba5bd6c",
+      "bytes": 823
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/main/res/xml/file_paths.xml",
+      "sha256": "a46ed43ef65c90cb6778f4581decf3556e3f0055aad8f36d69dae16f9a0e99aa",
+      "bytes": 213
+    },
+    {
+      "path": "apps/employee-poc/android/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java",
+      "sha256": "d4045ae8fac1f0807e6b24eb34e68409a9a235df9d1a3f896fb8c9a49424363d",
+      "bytes": 402
+    },
+    {
+      "path": "apps/employee-poc/android/build.gradle",
+      "sha256": "46ade7db7afeb8049ccea59fce83095dca736ceb8c9acd79cc944e988c3357d9",
+      "bytes": 637
+    },
+    {
+      "path": "apps/employee-poc/android/capacitor.settings.gradle",
+      "sha256": "1fdbc4499634a5cf33c0d421c6e3fd779f4ec36d06d2e76c6107987d7bd1a979",
+      "bytes": 323
+    },
+    {
+      "path": "apps/employee-poc/android/gradle.properties",
+      "sha256": "3bab15c5b8bc4c2f4b6cf525497d15ad4abca53a460e6dd2eb0f0135817d31e6",
+      "bytes": 987
+    },
+    {
+      "path": "apps/employee-poc/android/gradle/wrapper/gradle-wrapper.jar",
+      "sha256": "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172",
+      "bytes": 43764
+    },
+    {
+      "path": "apps/employee-poc/android/gradle/wrapper/gradle-wrapper.properties",
+      "sha256": "9a479a85aa879bb55284fc16d0de5b81a745c3854f4e2d88c42e7debaf007435",
+      "bytes": 253
+    },
+    {
+      "path": "apps/employee-poc/android/gradlew",
+      "sha256": "b187b4c52e749f5760afdd6fadc31b2a98ad35fb249bf0dff03b72650f320409",
+      "bytes": 8733
+    },
+    {
+      "path": "apps/employee-poc/android/gradlew.bat",
+      "sha256": "1d297e00bd21de3ace22b4d7f2de1f9dfa858883d66bbf7c1ccbecccec8f4f3b",
+      "bytes": 2937
+    },
+    {
+      "path": "apps/employee-poc/android/settings.gradle",
+      "sha256": "6ce098d15ebd69b44c4ecd786bca1bdc366340d2459b2af4d7bb0ab317aa9669",
+      "bytes": 208
+    },
+    {
+      "path": "apps/employee-poc/android/variables.gradle",
+      "sha256": "83d502c9ed8fcf1dd4791482067abeedbebae49fafe9cd14a8a1f5891deb0d88",
+      "bytes": 498
+    },
+    {
+      "path": "apps/employee-poc/capacitor.config.ts",
+      "sha256": "bd677c6fb8e53b861d6cdccb28eea47090c5fc6bf0ad93eb732192f819537b58",
+      "bytes": 294
+    },
+    {
+      "path": "apps/employee-poc/index.html",
+      "sha256": "2a24be24d8337f83625a8c578b23bb32330022294a3e350055c9c41f0bd89e8e",
+      "bytes": 623
+    },
+    {
+      "path": "apps/employee-poc/ios/.gitignore",
+      "sha256": "2b7132a9943d2622e51e656897ca5162f56b121b40b423dedce1fbc699dba88a",
+      "bytes": 206
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App.xcodeproj/project.pbxproj",
+      "sha256": "5fe47fdd3fdae6be5b7379aa95dc3a5c675b0497b8840957051b17cc144d14e1",
+      "bytes": 19629
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+      "sha256": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+      "bytes": 238
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "sha256": "ae00573cb45bdbf1c4cc0d73d811ca3f544d2093d2c6516c57a296501c908fae",
+      "bytes": 408
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App.xcodeproj/xcshareddata/xcschemes/NEVORA.xcscheme",
+      "sha256": "3732caf3b8818e8c6832cbcc7c906579fd29332151a2b5a357674c08102b04aa",
+      "bytes": 2053
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/AppDelegate.swift",
+      "sha256": "481e2ad8672b14acbd3e3df65acdc6d046526ae542b7bec903cf842fc68d9e49",
+      "bytes": 2504
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png",
+      "sha256": "485c1f3784c3babe0b44c5308cbecc1f5714d321f20e73ce50068bedee773de8",
+      "bytes": 574414
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "sha256": "5c09bec6eede599b14fa9e4c44b03e7febebc930615a0cd70f02981c09dfe48a",
+      "bytes": 218
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Assets.xcassets/Contents.json",
+      "sha256": "972ec1fd42325872438eb085ac29e94f51c10788ec18ec5549439950866c541d",
+      "bytes": 62
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Assets.xcassets/Splash.imageset/Contents.json",
+      "sha256": "041481917eb249533ac6dd63d283bc6190b2d0642a93deda11b2ed0f6f7b605a",
+      "bytes": 403
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png",
+      "sha256": "1b5002b74a5500e697298ced06ca2811ac33f2771f236f3c720ff23243890530",
+      "bytes": 41273
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png",
+      "sha256": "1b5002b74a5500e697298ced06ca2811ac33f2771f236f3c720ff23243890530",
+      "bytes": 41273
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png",
+      "sha256": "1b5002b74a5500e697298ced06ca2811ac33f2771f236f3c720ff23243890530",
+      "bytes": 41273
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Base.lproj/LaunchScreen.storyboard",
+      "sha256": "87a42e842164d75f39cca56a2cf743652f4d8e858f2eba12ae21a8ddcd9a21c6",
+      "bytes": 1994
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Base.lproj/Main.storyboard",
+      "sha256": "e5a0c5e187db492eedbb2e67409aef0539ca3584cbfa368e643190fc58197933",
+      "bytes": 1010
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/Info.plist",
+      "sha256": "1cedfd9b5654c4567deb823ee3b48186ee211b2c9311553757b7085223650cc4",
+      "bytes": 2360
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/NevoraSession.swift",
+      "sha256": "6e30432400791b98c0421a776f96bb8da2d3680a104eef161d8f40d1e77c51d3",
+      "bytes": 6070
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/NevoraViewController.swift",
+      "sha256": "6d0017267386640ae57c9b1610d9e2552ea6dd3651bf5575b78682f9dac6fca8",
+      "bytes": 162
+    },
+    {
+      "path": "apps/employee-poc/ios/App/App/SceneDelegate.swift",
+      "sha256": "0234a8139213e18f4caaf2a2f1602dbf81c5f5ebebe7ba8f3fc5c9fbc0992054",
+      "bytes": 896
+    },
+    {
+      "path": "apps/employee-poc/ios/App/CapApp-SPM/.gitignore",
+      "sha256": "4b958e2b4dd57319aadef2551153c74b9cb5ffe9f89d6e3e491122a94913f016",
+      "bytes": 165
+    },
+    {
+      "path": "apps/employee-poc/ios/App/CapApp-SPM/Package.swift",
+      "sha256": "b38396af2fc8427967c2116bd4f47b904110d544d7254e9c5bd012336fab39b4",
+      "bytes": 857
+    },
+    {
+      "path": "apps/employee-poc/ios/App/CapApp-SPM/README.md",
+      "sha256": "42c535861f4a866e35f85764ed6af1ea046d6a409bf9852ecb00e5d292a1626e",
+      "bytes": 162
+    },
+    {
+      "path": "apps/employee-poc/ios/App/CapApp-SPM/Sources/CapApp-SPM/CapApp-SPM.swift",
+      "sha256": "70bf9dafddc35e3877dfb133a996f5be7ccd1e132897a98fdbf4869ff605ece9",
+      "bytes": 33
+    },
+    {
+      "path": "apps/employee-poc/ios/App/NativePOCUITests/NativePOCUITests.swift",
+      "sha256": "3ca6377ef89d59e017bcb01775304f73a6fdf1be2310823d8895aaa4471c3cae",
+      "bytes": 3602
+    },
+    {
+      "path": "apps/employee-poc/ios/debug.xcconfig",
+      "sha256": "4838938a72b913b99cfda54a43bbe73f05893071dc6e3702b0adc44794b64272",
+      "bytes": 23
+    },
+    {
+      "path": "apps/employee-poc/native-origin.txt",
+      "sha256": "4f7b6a42571fb65c81ff355b3dbd0ac242ddc61bf97bbbc7e75ae44494d3f233",
+      "bytes": 22
+    },
+    {
+      "path": "apps/employee-poc/native/NativePOCUITests.swift",
+      "sha256": "3ca6377ef89d59e017bcb01775304f73a6fdf1be2310823d8895aaa4471c3cae",
+      "bytes": 3602
+    },
+    {
+      "path": "apps/employee-poc/native/NevoraSession.java",
+      "sha256": "6393b0f7c1698e1074632f415991cc6d9642a89c94a2d2fa63eb41d676d79100",
+      "bytes": 5784
+    },
+    {
+      "path": "apps/employee-poc/native/NevoraSession.swift",
+      "sha256": "6e30432400791b98c0421a776f96bb8da2d3680a104eef161d8f40d1e77c51d3",
+      "bytes": 6070
+    },
+    {
+      "path": "apps/employee-poc/native/NevoraViewController.swift",
+      "sha256": "6d0017267386640ae57c9b1610d9e2552ea6dd3651bf5575b78682f9dac6fca8",
+      "bytes": 162
+    },
+    {
+      "path": "apps/employee-poc/package-lock.json",
+      "sha256": "42790715a28a3123a17b587572019ef78d741466fe5e18632c4e4eacb3654f73",
+      "bytes": 108671
+    },
+    {
+      "path": "apps/employee-poc/package.json",
+      "sha256": "308a2188cd33cf16366ddbfb33a613da48abdf4a60d779e5db93fc2f52ea3659",
+      "bytes": 711
+    },
+    {
+      "path": "apps/employee-poc/public-brand.tmp",
+      "sha256": "5db92b431ae35d6955a1f9d95183c8e84d4294c8be5dfed09439d379f3ad304e",
+      "bytes": 334925
+    },
+    {
+      "path": "apps/employee-poc/public/Geist-LICENSE.txt",
+      "sha256": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",
+      "bytes": 4368
+    },
+    {
+      "path": "apps/employee-poc/public/brand.png",
+      "sha256": "5db92b431ae35d6955a1f9d95183c8e84d4294c8be5dfed09439d379f3ad304e",
+      "bytes": 334925
+    },
+    {
+      "path": "apps/employee-poc/public/geist-latin.woff2",
+      "sha256": "a369fcf5628ea2aa4e1b9e2ec6a5b3624e365bda588e1f0f2f12b564f728fbb8",
+      "bytes": 69652
+    },
+    {
+      "path": "apps/employee-poc/scripts/setup-native.mjs",
+      "sha256": "5608fb3dfbfdc4de5f8f231be8cdeb2f1946d6d3935edcd9acdd30b01b38e695",
+      "bytes": 6888
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/Cargo.lock",
+      "sha256": "ff84085f71adf2a3b0125db429ca8dc635ae7671fa91d0cc6acb38ff7b0b4ddd",
+      "bytes": 116957
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/Cargo.toml",
+      "sha256": "92be0b8309be5dc3a2716552e408bf512b756abc98b03f2018fba631e6aeb67b",
+      "bytes": 485
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/build.rs",
+      "sha256": "8af41c0062014fc594e4bb9899e60ee9930ab57d4cf0c73041ff557d6ec736e6",
+      "bytes": 35
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/capabilities/default.json",
+      "sha256": "e8084720ad20094b7093213a4c2e2459d0b1a15deda52c39a586add00d34dc19",
+      "bytes": 158
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/gen/schemas/acl-manifests.json",
+      "sha256": "bdc3ced2ae416f11b23bc9c9b62341a3a59aa7bb5322f04f197bb08cb610409f",
+      "bytes": 66720
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/gen/schemas/capabilities.json",
+      "sha256": "8a73e3ab06ae5d45b299bec809adf6562b1e95a0d90727ed7bcab1b6b8fe9fe8",
+      "bytes": 179
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/gen/schemas/desktop-schema.json",
+      "sha256": "4a946fe48fbb0c7c535ea53e6070bd8276f3f3d74f96efbaa6d85bd7b53b0f05",
+      "bytes": 117263
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/gen/schemas/macOS-schema.json",
+      "sha256": "4a946fe48fbb0c7c535ea53e6070bd8276f3f3d74f96efbaa6d85bd7b53b0f05",
+      "bytes": 117263
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/128x128.png",
+      "sha256": "321a2d164fc0c5205939a18ebd539ad534550bad400958ec6afc4702f6941e95",
+      "bytes": 20642
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/128x128@2x.png",
+      "sha256": "4cd04149524ba89add16d1fd198848c6da8f52919a07b7cdb9537f7e834e5010",
+      "bytes": 72038
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/32x32.png",
+      "sha256": "8c31347c64f990e733ae8cad0b548271a7ba7c4d5dea5f1a7db2dad49bb53c80",
+      "bytes": 2042
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/64x64.png",
+      "sha256": "4b6a1bca8cbd5052a367114715246b172fb3b977f1df438955ecf22a9dc2117e",
+      "bytes": 6310
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/Square107x107Logo.png",
+      "sha256": "93c9d88ad19f33f6001282042fac189ab3d9c08ff19a42dfc91bee3295e2df2a",
+      "bytes": 14974
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/Square142x142Logo.png",
+      "sha256": "f91e3cc81d61ad86119c1ae51e1e1e4dbfaf65f539eff51fd7b907107f588cc6",
+      "bytes": 24609
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/Square150x150Logo.png",
+      "sha256": "910d845538ef969e72c2174030b455869dbfe0f266febc05e4d956790c5a9cdf",
+      "bytes": 27266
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/Square284x284Logo.png",
+      "sha256": "7bd40a121273040e0c3c4d6c13e638245dcc01af1e8030b2b1d2a92b33bfa9c1",
+      "bytes": 87171
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/Square30x30Logo.png",
+      "sha256": "5d3e9b8d905644424e4e2a6d49036e5bc871f62e50c3962b6372d299984571d2",
+      "bytes": 1827
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/Square310x310Logo.png",
+      "sha256": "338d866b65052c60bb3f0423704bac4cb0d1e51c64aa45ab74a9e4b14bd85533",
+      "bytes": 101405
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/Square44x44Logo.png",
+      "sha256": "bc13ad667cf38813fa45492f0849d958542a82e34f005fce10955b421893f46c",
+      "bytes": 3379
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/Square71x71Logo.png",
+      "sha256": "cc31694f2486ac44db0625d79436b4562231eb879a56450c5fa50da5b9244a2c",
+      "bytes": 7468
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/Square89x89Logo.png",
+      "sha256": "70ac4d4e8e521d912e732ab66fe14255be39f89f0f39ec72518df8cd4e2fb977",
+      "bytes": 11077
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/StoreLogo.png",
+      "sha256": "e73b4b46ec7fdf75feb4016e4ea1d9908e1cc766f1283b6653a0ffb442f9fe9e",
+      "bytes": 4194
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-anydpi-v26/ic_launcher.xml",
+      "sha256": "760d4b8a06bf7163dd010c33ad2cac9e4a75fa0177afaba042f83e311eef0c3e",
+      "bytes": 261
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-hdpi/ic_launcher.png",
+      "sha256": "c3a62a86117909ecd24b39bceb6e29293fb61ddbe96ad854ec1b5add4a98ebf6",
+      "bytes": 6052
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-hdpi/ic_launcher_foreground.png",
+      "sha256": "bf7c06bcf0e585da3040e033360979e4bb8918848a4c851369ed9ee403567068",
+      "bytes": 31275
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-hdpi/ic_launcher_round.png",
+      "sha256": "e7cd0e8eb22e66918caccb22f50c8322fd25818771dc3f25edb8a7d616423bd1",
+      "bytes": 6805
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-mdpi/ic_launcher.png",
+      "sha256": "8e85d3a853e12dd92a8de65cd79403a670fa8a71a47c36a56c2d909f32b1e767",
+      "bytes": 3100
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-mdpi/ic_launcher_foreground.png",
+      "sha256": "c7b0932034b95352159c1e3eede41279721ae681257be024fc11561cc91c1bf7",
+      "bytes": 15272
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-mdpi/ic_launcher_round.png",
+      "sha256": "75f84e85698c700007126ec519088e047004a79ee0ad44855a05f0bfea5411ff",
+      "bytes": 3500
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-xhdpi/ic_launcher.png",
+      "sha256": "448341fcbcb0e7d9f3d6b216148212457edd6fb66a4b5bbcec4d501bb26af7a3",
+      "bytes": 9981
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-xhdpi/ic_launcher_foreground.png",
+      "sha256": "0e4ae666766d2e9bd311360c35d6f99153dc15119ec6e36d136ed4029cf9ab9e",
+      "bytes": 52909
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-xhdpi/ic_launcher_round.png",
+      "sha256": "87f525dab264a22ee7e325061249dd9f225fb4c0a8eda467fb816f7372d6227b",
+      "bytes": 11049
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-xxhdpi/ic_launcher.png",
+      "sha256": "8e54971e55b19075d61ab813047dfb97754282c4250d7fb18d61cad59761e52d",
+      "bytes": 20057
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-xxhdpi/ic_launcher_foreground.png",
+      "sha256": "1ea537e96c0accbc15bdb143469188218a9c357e30ab7cb8274f7f685359fead",
+      "bytes": 110599
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-xxhdpi/ic_launcher_round.png",
+      "sha256": "5ff177f522d99100ad70f75bd9a2cfbe1969293eb1436c860cd67cf1c676ccd0",
+      "bytes": 21584
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-xxxhdpi/ic_launcher.png",
+      "sha256": "883abc91c8aa98dc7aebf5cc479531ccbb7a79c99f04e8cf3cb677ff1e16e2da",
+      "bytes": 33565
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-xxxhdpi/ic_launcher_foreground.png",
+      "sha256": "44cc990b0d422a21a9c61f526824229d093a225faeea835561a8e2f4da457c04",
+      "bytes": 186094
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/mipmap-xxxhdpi/ic_launcher_round.png",
+      "sha256": "f039fde574c8b18f37790c9390d5b07802e6b56318f836222ff95444dbcbf16f",
+      "bytes": 35675
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/android/values/ic_launcher_background.xml",
+      "sha256": "b1c42868a1777ed1cf61108b506ffc91d0a826318d8516e36cf8f76fab8c4ced",
+      "bytes": 118
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/icon.icns",
+      "sha256": "7a178e86408c5c2e39dfaa18dec58cbbe46e99cdadee55806d9fbc8b1c6b40ac",
+      "bytes": 1235356
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/icon.ico",
+      "sha256": "349019607d53c0a279bf0f92811f735a7c861782adb6616c74fc59381d4a6aeb",
+      "bytes": 86443
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/icon.png",
+      "sha256": "2b1b4102b56e226f5e51fd1429e1322237aee932b17c9fa652349ad4fd3d6878",
+      "bytes": 241764
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-20x20@1x.png",
+      "sha256": "2c492c4b77c372cc32ddef1c7743ac09216bc0bac3f3f37fc078d4ba39a7ca8e",
+      "bytes": 966
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-20x20@2x-1.png",
+      "sha256": "aede72ca8d606d4327a76366cbc2d57bef2bd887f1d710ce5a0e787f55f832e8",
+      "bytes": 2910
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-20x20@2x.png",
+      "sha256": "aede72ca8d606d4327a76366cbc2d57bef2bd887f1d710ce5a0e787f55f832e8",
+      "bytes": 2910
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-20x20@3x.png",
+      "sha256": "8435e2459c85c1678d6ff6ffd4e802786a8a3cdde7e271abb485604efef59821",
+      "bytes": 5641
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-29x29@1x.png",
+      "sha256": "34953a2deea07be58622f9c183b7698527b0465a201a312337cd7356f65bfda7",
+      "bytes": 1711
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-29x29@2x-1.png",
+      "sha256": "5f335b408397241553e2d7501f6ddefedef160a1928b0587105a8c493ee62eb6",
+      "bytes": 5357
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-29x29@2x.png",
+      "sha256": "5f335b408397241553e2d7501f6ddefedef160a1928b0587105a8c493ee62eb6",
+      "bytes": 5357
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-29x29@3x.png",
+      "sha256": "c5af3cb555902d595ef23a94bfdcb50041e948bf890efb041bc6ff704524003a",
+      "bytes": 10662
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-40x40@1x.png",
+      "sha256": "aede72ca8d606d4327a76366cbc2d57bef2bd887f1d710ce5a0e787f55f832e8",
+      "bytes": 2910
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-40x40@2x-1.png",
+      "sha256": "74adf1673360bf8870adcee70aa1bd0122b06f5b20e63804b90fe3f4f65d1ca8",
+      "bytes": 9233
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-40x40@2x.png",
+      "sha256": "74adf1673360bf8870adcee70aa1bd0122b06f5b20e63804b90fe3f4f65d1ca8",
+      "bytes": 9233
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-40x40@3x.png",
+      "sha256": "3964ad4d8e125108641872386aeadea1de29a0e5d1c82336446b093929e79f44",
+      "bytes": 18446
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-512@2x.png",
+      "sha256": "485c1f3784c3babe0b44c5308cbecc1f5714d321f20e73ce50068bedee773de8",
+      "bytes": 574414
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-60x60@2x.png",
+      "sha256": "3964ad4d8e125108641872386aeadea1de29a0e5d1c82336446b093929e79f44",
+      "bytes": 18446
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-60x60@3x.png",
+      "sha256": "9e5db53e4147f4e85df8adce1f94e8c43c4a3618f8a09e4f08b35075161208c1",
+      "bytes": 37786
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-76x76@1x.png",
+      "sha256": "651f0ea4e6c31c41f7a204003d4501a099f3516c617a06c7b88200e58da99dc0",
+      "bytes": 8463
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-76x76@2x.png",
+      "sha256": "655fd6a71d9787b182f4100d0389e960f241aa56d9c8319d88001b9553409018",
+      "bytes": 27674
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/icons/ios/AppIcon-83.5x83.5@2x.png",
+      "sha256": "35a3a682f45adb8d793919076fa91a5faba4b21ebb7bf4aa065b155e75f977e8",
+      "bytes": 32957
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/src/main.rs",
+      "sha256": "d50020f4f3926c0ee07358a8d8325381c8c5c493480071e61865b4fbc383558a",
+      "bytes": 4335
+    },
+    {
+      "path": "apps/employee-poc/src-tauri/tauri.conf.json",
+      "sha256": "a9ed8c7aaf6a5cfb941b6ce5b0ba46bbe1463cdcb02c674073db8b1c80d7f482",
+      "bytes": 737
+    },
+    {
+      "path": "apps/employee-poc/src/main.tsx",
+      "sha256": "84c1020d2622bd0e9b57a2816802d5235e0152a82cfe481793723921ff2d7272",
+      "bytes": 17143
+    },
+    {
+      "path": "apps/employee-poc/src/session.ts",
+      "sha256": "2ed3b9ce4c6b1219a1caf6590a93b4ff6a3b3084015b5ac5e104373968fd311d",
+      "bytes": 2264
+    },
+    {
+      "path": "apps/employee-poc/src/tokens.css",
+      "sha256": "645959bbfe11fc3aedaf0d80593d6a7a884c97d70125480aa35be008f99f4b7b",
+      "bytes": 553
+    },
+    {
+      "path": "apps/employee-poc/src/ui.css",
+      "sha256": "2647d4f19fad208f2d5ce6bcdee5dd02f95192b40649e1e502f7b83cac4eb21d",
+      "bytes": 12596
+    },
+    {
+      "path": "apps/employee-poc/tsconfig.json",
+      "sha256": "3614a1bd8c69a03467fcb8f2f37ede07ab0d1421b1fc10a42f90ff3dca796524",
+      "bytes": 243
+    },
+    {
+      "path": "apps/employee-poc/vite.config.ts",
+      "sha256": "41bbb2de02ff8305a43ad38255dddfee0d74c2576b709115432ede5eec55e66b",
+      "bytes": 247
+    },
+    {
+      "path": "scripts/native-poc-android.mjs",
+      "sha256": "a81744c87b59933e066d6af47af5db2fc158845a80aa41027565d3c0d87ed6b4",
+      "bytes": 5061
+    },
+    {
+      "path": "scripts/native-poc-backend.mjs",
+      "sha256": "6038b5cbb03f169d1c3bb9eb9c505490a979f7eeaad3847484b660a516cf1dde",
+      "bytes": 4852
+    },
+    {
+      "path": "scripts/native-poc-functional.mjs",
+      "sha256": "48e2be632b67e9d066d994d5a6dc4baf8da114d2e44944207f831f7a6e33ac27",
+      "bytes": 3210
+    },
+    {
+      "path": "src/app/api/native-poc/home/route.ts",
+      "sha256": "1aecd516439491b1169de71b6dfdd253ca041859744ae3faf9233a1d70f949b9",
+      "bytes": 1628
+    },
+    {
+      "path": "src/app/api/native-poc/login/route.ts",
+      "sha256": "15f75ed5c827f47107733c7e040ef3d204a661acab3d355ebd77c0c13803c929",
+      "bytes": 1944
+    },
+    {
+      "path": "src/app/api/native-poc/logout/route.ts",
+      "sha256": "c93a61cf9d08ef07a52f9868618755b7855beaa48d95eb9f8153a7ac105c0d98",
+      "bytes": 444
+    },
+    {
+      "path": "src/lib/native-poc/http.test.ts",
+      "sha256": "15afaf9bf1fd7aae71dd1ad2766c266c3917794fa346d09f765222eff4d60d3d",
+      "bytes": 2801
+    },
+    {
+      "path": "src/lib/native-poc/http.ts",
+      "sha256": "2f1dd3138248859dcb7e3629056450c4c1d4fc3514e3315754e01bc282b38805",
+      "bytes": 2764
+    },
+    {
+      "path": "src/test/integration/owned-next-app.ts",
+      "sha256": "50b0bafc1c0cb4cdf1fd4eb9905af23cd23c0c0a8266f2654824365cb3096f1a",
+      "bytes": 9997
+    }
+  ]
+}
