@@ -64,9 +64,9 @@ Matching manifests are source evidence only. Fresh-install/upgrade, hosted schem
 
 ## Verification record
 
-Current results are recorded in `baseline-checks-2026-10-18.md` when commands finish. Logs and the recoverable POC archive live under the ignored plan workspace `.superpowers/sdd/2026-10-18-nevora-ios-android-launch/`.
+Results and the remaining G0 requirements are recorded in [baseline checks](baseline-checks-2026-10-18.md). Logs and the recoverable POC archive live under the ignored plan workspace `.superpowers/sdd/2026-10-18-nevora-ios-android-launch/`.
 
-The source-bound build runner correctly refused to run while the new documentation files were untracked. This documentation checkpoint is committed first so the runner can identify an exact clean source. Its custody checks are preserved.
+The source-bound build runner correctly refused to run while the new documentation files were untracked. After committing that documentation checkpoint, the build passed at `f7af552f8c550939d00c02bb007eb145856b8bbd`, with `sourceClean: true` and `sourceUnchanged: true`. Its custody checks are preserved. The later activation selector fix changes only the browser QA script; no application code differs from the full-app source in this checkpoint.
 
 ## Release boundaries
 

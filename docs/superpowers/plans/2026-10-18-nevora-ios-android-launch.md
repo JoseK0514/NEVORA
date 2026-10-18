@@ -1,6 +1,6 @@
 # Full NEVORA iOS and Android Launch Implementation Plan
 
-> **For execution:** Use superpowers:executing-plans to work through the checked steps, loading applicable repository skills. Delegation or a different execution method requires separate authorization. This document is a proposed program plan; no implementation, branch creation, merge, environment activation, or publication has occurred.
+> **For execution:** Use superpowers:executing-plans to work through the checked steps, loading applicable repository skills. Delegation or a different execution method requires separate authorization. Execution started October 18 on `codex/nevora-mobile-launch` in an isolated Git worktree. Task 1 is in progress and G0 remains open. See [source baseline](../../mobile/source-baseline.md) and [baseline checks](../../mobile/baseline-checks-2026-10-18.md). No production environment or store publication has been activated.
 
 **Goal:** Deliver the existing full NEVORA application on iOS and Android with role-appropriate employee, lead, manager and owner workflows, production-capable native integration, verified privacy/safety controls and accepted store builds.
 
@@ -38,7 +38,7 @@ Each of these has an owning acceptance scenario below:
 
 ## Branch recommendation
 
-**Working branch: propose creating `codex/nevora-mobile-launch` in a new managed worktree from current `origin/development`, then integrate the verified full-app `origin/NEVORA-UI-READINESS` source.**
+**Working branch: `codex/nevora-mobile-launch`, created in a separate Git worktree from `origin/development` and fast-forwarded to the full-app `origin/NEVORA-UI-READINESS` source.** The branch is pushed to GitHub. The desktop app could not register this projectless chat's checkout as a managed worktree; Git isolation is established independently.
 
 Verified branch evidence:
 
@@ -54,7 +54,7 @@ The remote full-app branch **does exist**. A fresh all-heads lookup corrected th
 
 At the observed SHAs, bringing the UI branch into a new branch based on development can fast-forward. Refresh remote identity and ancestry before doing it; if either branch has moved, reassess the delta instead of forcing the old sequence. Review the 270-commit application/schema delta as a baseline integration, not as merely visual changes.
 
-Keep the work in small reviewed commits/PRs and synchronize with development as work lands. The proposed branch is the initial integration lane, not permission to keep a months-long divergent release. Use a frozen release branch/tag only when feature parity and acceptance gates are met.
+Keep the work in small reviewed commits/PRs and synchronize with development as work lands. The branch is the initial integration lane, not permission to keep a months-long divergent release. The upcoming web release retains its own candidate: record that candidate's exact SHA and reconcile it into the mobile branch after it freezes or ships. Mobile changes must not enter the web candidate automatically. Use a frozen release branch/tag only when feature parity and acceptance gates are met.
 
 ## Architecture decision and tradeoffs
 
@@ -103,8 +103,8 @@ Keep server APIs and web Server Actions as separate adapters over the same domai
 
 **Owner:** Engineering/release. **Inputs:** live branch SHAs, existing worktrees, package scripts. **Output:** G0 baseline record and a tested integration branch.
 
-- [ ] Refresh development/UI remote refs and record exact SHAs, merge base and uncommitted source inventory. Preserve the complete native POC and existing test-harness changes with hashes/recoverable source custody before importing selected files.
-- [ ] Create the proposed isolated mobile integration branch from current origin/development. Integrate the full-app UI source with preserved history after reviewing the delta and current single-company instructions.
+- [x] Refresh development/UI remote refs and record exact SHAs, merge base and uncommitted source inventory. Preserve the complete native POC and existing test-harness changes with hashes/recoverable source custody before importing selected files. See the 174-file source inventory and recoverable archive recorded in docs/mobile/source-baseline.md.
+- [x] Create the proposed isolated mobile integration branch from current origin/development. Integrate the full-app UI source with preserved history after reviewing the delta and current single-company instructions. Completed October 18; only the new branch advanced.
 - [ ] Inventory schema changes and release controls. Numeric migration prefixes repeat across 0023-0027; derive an explicit dependency order and verify fresh-install and upgrade parity. The test migration list is evidence, not authorization to migrate a hosted database.
 - [ ] Inspect scripts/environment before execution, install the locked baseline in the isolated checkout, and run the existing CI-required checks. Record failures as baseline issues and fix them in bounded commits without weakening tests.
 - [ ] Ensure exact-candidate CI runs through a PR targeting development or reviewed CI trigger changes. Keep automatic Vercel deployment disabled and confirm the local preview route is disabled in release configuration.
@@ -282,7 +282,7 @@ These recommendations need no answer to make this plan reviewable. They must be 
 
 Planning rechecked live GitHub branch heads, ancestry and package/release configuration; read the current single-company scope, auth/origin boundaries, route/API inventory, service ownership, migration names, CI/release controls and official Capacitor/Next.js guidance. No application test suite or native build was rerun while writing this plan. The earlier audit's 206 focused tests and prototype web-assets build remain scoped to that audited snapshot.
 
-No branch was created or merged, no source was ported, no environment/store account was changed and no deployment was made. All task boxes remain unchecked.
+At the end of the original planning pass, no branch had been created or merged and all task boxes were unchecked. The October 18 execution checkpoint has since created/pushed the mobile branch and completed the first two Task 1 items; current results are in [baseline checks](../../mobile/baseline-checks-2026-10-18.md). Native feature ports, environment/store account changes and deployment remain pending.
 
 ## References
 
