@@ -5,6 +5,7 @@ import { ConfigurationForm } from "@/components/configuration-form";
 import { PositionQuotaFields } from "@/components/position-quota-fields";
 import { ShiftChangePolicyFields } from "@/components/shift-change-policy-fields";
 import { ManagerIssueFocus } from "@/components/manager-issue-focus";
+import { RulesHoursList } from "@/components/rules-hours-list";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
 import { listPositions } from "@/lib/data/positions";
@@ -33,6 +34,14 @@ export default async function ScheduleSettingsPage({ searchParams }: {
     listLocationStaffingSettings(), listEmployeeHourTargets(), listLocations(),
     listCoverageWindows(), listPositions({ includeInactive: true }),
   ]);
+  const weekOrder = [1, 2, 3, 4, 5, 6, 0];
+  const coverageGroups = [...new Set(coverageWindows.map(window => window.locationId))].map(locationId => {
+    const windows = coverageWindows.filter(window => window.locationId === locationId)
+      .sort((a, b) => weekOrder.indexOf(a.dayOfWeek) - weekOrder.indexOf(b.dayOfWeek) || a.startTime.localeCompare(b.startTime));
+    // A period that still asks for an inactive position opens its group, as its quantities do.
+    const needsReview = windows.some(window => window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active)));
+    return { locationId, label: locationLabel(locationId, locationId), windows, days: new Set(windows.map(window => window.dayOfWeek)).size, needsReview };
+  });
   function locationLabel(locationId: string, fallback: string) {
     return locations.find(location => location.id === locationId)?.shortName ?? fallback;
   }
@@ -95,18 +104,11 @@ export default async function ScheduleSettingsPage({ searchParams }: {
 
             <section className="rules-panel manager-issue-target" id="target-hours" tabIndex={-1}>
               <RuleHeading icon="hours" title="Weekly hours" description="Targets guide balanced schedules. Maximums flag excess scheduled hours. Leave a target blank to leave it out of the hours review." />
-              <div className="rules-hours-list">
-                {employees.map(employee => (
-                  <div className="rules-hours-row manager-issue-target" id={"target-" + employee.employeeId} tabIndex={-1} key={employee.employeeId}>
-                    <div className="rules-employee"><strong>{employee.employeeName}</strong><span>{employee.employeeId} · {employee.role[0]}{employee.role.slice(1).toLowerCase()} · {locationLabel(employee.primaryLocationId, "—")}</span></div>
-                    <div className="rules-hour-fields">
-                      <label><span>Target</span><span className="rules-number-input"><input type="number" name={"target-" + employee.employeeId} aria-label={employee.employeeName + " target weekly hours"} defaultValue={employee.targetWeeklyHours ?? ""} min={0} max={168} step={0.25} placeholder="Not set" /><small>hrs</small></span></label>
-                      <label><span>Maximum</span><span className="rules-number-input"><input type="number" name={"maximum-" + employee.employeeId} aria-label={employee.employeeName + " maximum weekly hours"} defaultValue={employee.maximumWeeklyHours ?? 40} min={0} max={168} step={0.25} required /><small>hrs</small></span></label>
-                    </div>
-                  </div>
-                ))}
-                {!employees.length ? <div className="rules-empty"><NavIcon name="employees" size={24} /><div><strong>No employees to configure</strong><p>Add active employees to set their weekly hour targets.</p><Link className="button secondary" href="/app/employees">Manage employees<NavIcon name="arrowRight" /></Link></div></div> : null}
-              </div>
+              {employees.length ? <RulesHoursList rows={employees.map(employee => ({
+                employeeId: employee.employeeId, employeeName: employee.employeeName,
+                detail: `${employee.employeeId} · ${employee.role[0]}${employee.role.slice(1).toLowerCase()} · ${locationLabel(employee.primaryLocationId, "—")}`,
+                targetWeeklyHours: employee.targetWeeklyHours ?? null, maximumWeeklyHours: employee.maximumWeeklyHours ?? null,
+              }))} /> : <div className="rules-hours-list"><div className="rules-empty"><NavIcon name="employees" size={24} /><div><strong>No employees to configure</strong><p>Add active employees to set their weekly hour targets.</p><Link className="button secondary" href="/app/employees">Manage employees<NavIcon name="arrowRight" /></Link></div></div></div>}
             </section>
             {staffing.length || employees.length ? <div className="rules-savebar"><div><strong>Staffing &amp; weekly hours</strong><p>Saved changes apply right away.</p></div><button className="button primary" type="submit">Save staffing &amp; hours</button></div> : null}
           </ConfigurationForm>
@@ -128,19 +130,27 @@ export default async function ScheduleSettingsPage({ searchParams }: {
               </ConfigurationForm>
             </details> : <div className="rules-empty"><NavIcon name="calendar" size={24} /><div><strong>Add a location before creating a coverage period.</strong><Link className="button secondary" href="/app/settings/locations">Manage locations<NavIcon name="arrowRight" /></Link></div></div>}
 
+            {/* U3: periods grouped by location, in week order. A link to one period opens its group. */}
             <div className="rules-period-list">
-              {coverageWindows.map(window => (
-                <article className="rules-period-card manager-issue-target" id={"coverage-" + window.id} tabIndex={-1} key={window.id}>
-                  <div className="rules-period-header">
-                    <div className="rules-day-tile" aria-hidden="true">{dayNames[window.dayOfWeek].slice(0, 3)}</div>
-                    <div className="rules-period-copy"><h3>{locationLabel(window.locationId, window.locationId)} · {dayNames[window.dayOfWeek]}</h3><p>{formatTimeRange(window.startTime, window.endTime)}</p><span>{window.minimumStaff ? window.minimumStaff + " staff required" : "Uses location staffing requirement"}</span></div>
-                    <form action={deleteCoverageWindowAction}><input type="hidden" name="windowId" value={window.id} /><button className="rules-remove" type="submit" aria-label={"Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period"}>Remove</button></form>
+              {coverageGroups.map(group => (
+                <details className="rules-period-group" key={group.locationId} open={coverageGroups.length === 1 || group.needsReview}>
+                  <summary><span><strong>{group.label}</strong><small>{group.windows.length} {group.windows.length === 1 ? "period" : "periods"} · {group.days} {group.days === 1 ? "day" : "days"} a week</small></span><NavIcon name="chevronRight" /></summary>
+                  <div className="rules-period-group-list">
+                    {group.windows.map(window => (
+                      <article className="rules-period-card manager-issue-target" id={"coverage-" + window.id} tabIndex={-1} key={window.id}>
+                        <div className="rules-period-header">
+                          <div className="rules-day-tile" aria-hidden="true">{dayNames[window.dayOfWeek].slice(0, 3)}</div>
+                          <div className="rules-period-copy"><h3>{dayNames[window.dayOfWeek]}</h3><p>{formatTimeRange(window.startTime, window.endTime)}</p><span>{window.minimumStaff ? window.minimumStaff + " staff required" : "Uses location staffing requirement"}</span></div>
+                          <form action={deleteCoverageWindowAction}><input type="hidden" name="windowId" value={window.id} /><button className="rules-remove" type="submit" aria-label={"Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period"}>Remove</button></form>
+                        </div>
+                        <details className="rules-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
+                          <summary>Position quantities<span>{window.positionRequirements.length ? window.positionRequirements.length + " configured" : "Optional"}</span><NavIcon name="chevronRight" /></summary>
+                          <ConfigurationForm action={replaceCoverageWindowPositionRequirementsAction} className="rules-quota-form"><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields positions={positions} requirements={window.positionRequirements} /><button className="button secondary" type="submit">Save position quantities</button></ConfigurationForm>
+                        </details>
+                      </article>
+                    ))}
                   </div>
-                  <details className="rules-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
-                    <summary>Position quantities<span>{window.positionRequirements.length ? window.positionRequirements.length + " configured" : "Optional"}</span><NavIcon name="chevronRight" /></summary>
-                    <ConfigurationForm action={replaceCoverageWindowPositionRequirementsAction} className="rules-quota-form"><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields positions={positions} requirements={window.positionRequirements} /><button className="button secondary" type="submit">Save position quantities</button></ConfigurationForm>
-                  </details>
-                </article>
+                </details>
               ))}
               {!coverageWindows.length ? <div className="rules-empty"><NavIcon name="calendar" size={24} /><div><strong>No coverage periods yet</strong><p>Add the recurring shift periods your team expects each week.</p></div></div> : null}
             </div>

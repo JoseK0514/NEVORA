@@ -10,6 +10,7 @@ import {actionCenterNavigation} from './action-center-navigation';
 import {MobileHomeDisclosure} from './mobile-home-disclosure';
 import {SkeletonRows} from './skeleton';
 import {hasSetupGaps,setupSteps,withoutSetupItems,type SetupSteps} from '../lib/action-center/setup';
+import {isPastCoverageGap} from '../lib/action-center/inbox';
 type Connection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 type Category='all'|'scheduling'|'requests'|'timekeeping';
 const categoryLabels={scheduling:'Scheduling',requests:'Requests',timekeeping:'Timekeeping'};
@@ -49,9 +50,13 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
  const ready=connection==='ready'&&snapshot?.state==='ready'?snapshot:null;
  const status=connection==='ready'&&!ready?'unavailable':connection;
  const matching=ready?.items.filter(item=>category==='all'||item.category===category)??[];
+ // C2: coverage gaps on earlier days are history, grouped after current work and not marked urgent.
+ const today=ready?new Intl.DateTimeFormat('en-CA',{timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(ready.observedAt)):undefined;
+ const past=(item:ActionItem)=>isPastCoverageGap(item,today);
  const grouped=new Map<string,ActionItem[]>();
- for(const item of matching){const key=JSON.stringify([item.priority,item.type,item.locationId??null]);const group=grouped.get(key)??[];group.push(item);grouped.set(key,group);}
- const groups=[...grouped.values()].sort((a,b)=>({URGENT:0,REVIEW:1,MISSING_INPUT:2}[a[0].priority]-{URGENT:0,REVIEW:1,MISSING_INPUT:2}[b[0].priority]));
+ for(const item of matching){const key=JSON.stringify([past(item),item.priority,item.type,item.locationId??null]);const group=grouped.get(key)??[];group.push(item);grouped.set(key,group);}
+ const groups=[...grouped.values()].sort((a,b)=>Number(past(a[0]))-Number(past(b[0]))||({URGENT:0,REVIEW:1,MISSING_INPUT:2}[a[0].priority]-{URGENT:0,REVIEW:1,MISSING_INPUT:2}[b[0].priority]));
+ const tag=(item:ActionItem)=>past(item)?{priority:'PAST',label:'Earlier this week'}:{priority:item.priority,label:priorityLabel(item.priority)};
  // Reserve a place for each group before filling the bounded preview. A large
  // coverage group must not crowd a pending request out of the first view.
  const sizes=groups.map(()=>expanded?1000:1);
@@ -68,7 +73,7 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
     const action=actionCenterNavigation(item);
     return <article key={item.id} data-action-id={item.id} data-action-kind={item.category}>
      <span className={styles.icon} aria-hidden="true"><Icon size={20}/></span>
-     <div className={styles.copy}>{nested?null:<><small className={item.priority==='URGENT'?styles.priority:undefined}><span className="task-tag" data-priority={item.priority}>{item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</span> {item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'}</small><h3>{item.title}</h3></>}<p className="manager-desktop-action-detail">{item.detail}</p><p className="manager-mobile-action-detail">{mobileActionDetail(item.detail)}</p></div>
+     <div className={styles.copy}>{nested?null:<><small className={item.priority==='URGENT'&&!past(item)?styles.priority:undefined}><span className="task-tag" data-priority={tag(item).priority}>{past(item)?tag(item).label:item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</span> {item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'}</small><h3>{item.title}</h3></>}<p className="manager-desktop-action-detail">{item.detail}</p><p className="manager-mobile-action-detail">{mobileActionDetail(item.detail)}</p></div>
      <Link className={styles.review} href={action.href} aria-label={`${action.label}: ${item.title}`}>{action.label}</Link>
     </article>;
    };
@@ -84,7 +89,7 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
   {ready?<>
    {activeCategories>1||category!=='all'?<div className={styles.counts} role="group" aria-label="Filter tasks by category"><button type="button" data-action-category="all" aria-pressed={category==='all'} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.('all')}>All tasks</button>{(['scheduling','requests','timekeeping'] as const).map(value=><button type="button" key={value} data-action-category={value} aria-label={`${categoryLabels[value]}: ${plural(ready.counts[value],'task','tasks')}`} aria-pressed={category===value} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.(value)}><span>{categoryLabels[value]}</span><strong>{ready.counts[value]}</strong></button>)}</div>:null}
    <div className={styles.filterBar}><p role="status" aria-live="polite" className={visible.length===matching.length?'sr-only':undefined}>Showing {visible.length} of {matching.length} {noun}{matching.length===1?'':'s'}</p></div>
-   {matching.length?<div id="manager-action-list" className={styles.list} data-row-nav="">{visibleGroups.map((group,index)=>groups[index].length===1?renderItem(group[0]):<details className={styles.actionGroup} key={group[0].id}><summary><span><small><span className="task-tag" data-priority={group[0].priority}>{priorityLabel(group[0].priority)}</span> {categoryLabels[group[0].category]}</small><strong>{taskGroupHeading(group[0].type,groups[index].length,group[0].title)}</strong></span><span className={styles.groupCount}><span className="manager-task-review-label">Review</span><CaretDownIcon className="manager-task-caret" size={18} aria-hidden="true"/></span></summary><div>{group.length<groups[index].length?<p className={styles.groupPreview}>Showing {group.length} of {groups[index].length}. Use “Show all tasks” below to review the rest.</p>:null}{group.map(item=>renderItem(item,true))}</div></details>)}</div>:<p id="manager-action-list" className={category==='all'?`${styles.status} manager-tasks-clear`:styles.status} role="status">{category==='all'?<><CheckCircleIcon size={28} aria-hidden="true"/><strong>You’re all caught up</strong><span>{emptyLine}</span></>:`No ${category==='requests'?'requests':`${category} tasks`} to review in the checked sources.`}</p>}
+   {matching.length?<div id="manager-action-list" className={styles.list} data-row-nav="">{visibleGroups.map((group,index)=>groups[index].length===1?renderItem(group[0]):<details className={styles.actionGroup} key={group[0].id}><summary><span><small><span className="task-tag" data-priority={tag(group[0]).priority}>{tag(group[0]).label}</span> {categoryLabels[group[0].category]}</small><strong>{taskGroupHeading(group[0].type,groups[index].length,group[0].title)}</strong></span><span className={styles.groupCount}><span className="manager-task-review-label">Review</span><CaretDownIcon className="manager-task-caret" size={18} aria-hidden="true"/></span></summary><div>{group.length<groups[index].length?<p className={styles.groupPreview}>Showing {group.length} of {groups[index].length}. Use “Show all tasks” below to review the rest.</p>:null}{group.map(item=>renderItem(item,true))}</div></details>)}</div>:<p id="manager-action-list" className={category==='all'?`${styles.status} manager-tasks-clear`:styles.status} role="status">{category==='all'?<><CheckCircleIcon size={28} aria-hidden="true"/><strong>You’re all caught up</strong><span>{emptyLine}</span></>:`No ${category==='requests'?'requests':`${category} tasks`} to review in the checked sources.`}</p>}
    {(matching.length>visible.length&&!expanded)||sourceTotal?<div className="manager-tasks-footer">
     {matching.length>visible.length&&!expanded?<button className="button secondary" onClick={onExpand}>Show all {matching.length} tasks</button>:null}
     {sourceTotal?<Link className={styles.inboxLink} href="/app/inbox">Open inbox</Link>:null}

@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {inboxSections, timeOffRequestId} from './inbox';
+import {inboxSections, isPastCoverageGap, timeOffRequestId} from './inbox';
 import type {ActionItem} from './project';
 
 const item = (id: string, type: ActionItem['type'], category: ActionItem['category'], priority: ActionItem['priority'] = 'REVIEW'): ActionItem =>
@@ -35,5 +35,19 @@ describe('inbox grouping', async () => {
     const gap = (id: string, locationId: string) => ({...item(id, 'COVERAGE_GAP', 'scheduling', 'URGENT'), locationId});
     const entries = groupInboxItems([gap('a', 'main'), gap('b', 'west'), gap('c', 'main'), gap('d', 'main'), item('TIME_OFF:1', 'TIME_OFF', 'requests'), item('TIME_OFF:2', 'TIME_OFF', 'requests'), item('TIME_OFF:3', 'TIME_OFF', 'requests')]);
     expect(entries.map(entry => entry.kind === 'item' ? entry.item.id : `group:${entry.items.map(i => i.id).join(',')}`)).toEqual(['group:a,c,d', 'b', 'TIME_OFF:1', 'TIME_OFF:2', 'TIME_OFF:3']);
+  });
+});
+
+describe('past coverage gaps (C2)', () => {
+  const gap = (id: string, dateTime: string) => ({...item(id, 'COVERAGE_GAP', 'scheduling', 'URGENT'), dateTime});
+  it('moves gaps on earlier days into their own last section and keeps today and later as current', () => {
+    const sections = inboxSections([gap('mon', '2026-10-12T08:00'), gap('today', '2026-10-18T08:00'), item('TIME_OFF:a', 'TIME_OFF', 'requests')], '2026-10-18');
+    expect(sections.map(section => [section.id, section.items.map(entry => entry.id)])).toEqual([
+      ['urgent', ['today']], ['requests', ['TIME_OFF:a']], ['past', ['mon']],
+    ]);
+  });
+  it('leaves everything current without a date to compare', () => {
+    expect(inboxSections([gap('mon', '2026-10-12T08:00')]).map(section => section.id)).toEqual(['urgent']);
+    expect(isPastCoverageGap({...item('x', 'COVERAGE_GAP', 'scheduling')}, '2026-10-18')).toBe(false);
   });
 });

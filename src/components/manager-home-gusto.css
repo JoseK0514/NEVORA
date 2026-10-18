@@ -476,3 +476,9 @@ html body .app-shell.nevora-portal .manager-portal-home .owner-setup-done { marg
   html body .app-shell.nevora-portal .manager-portal-home .owner-setup-progress > span { background: CanvasText; forced-color-adjust: none; }
   html body .app-shell.nevora-portal .manager-portal-home .owner-setup-mark { color: CanvasText; }
 }
+
+/* U1 (owner inspection): on phones the setup card is compact, listing only its open
+ * steps (the count still says how many are done), so Today and Tasks reach the first screen. */
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-step[data-state="done"] { display: none; }
+}

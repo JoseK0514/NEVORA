@@ -367,13 +367,14 @@ export function ManagerDashboard(props: Props) {
         <div className="home-layout">
           {props.overviewSlots ? props.overviewSlots.setup ?? null : props.role === 'OWNER' ? <OwnerSetupCardLive locationCount={props.totalLocations}/> : null}
           <div className="home-layout-today">{props.overviewSlots?.today ?? <ManagerTodayTiles />}</div>
+          {/* U1: Tasks before This week, so phones reach them on the first screen; desktop places both by grid area. */}
+          <div className="home-layout-tasks">{actions}</div>
           <MobileHomeOverview weekStart={props.weekStart} weekLabel={props.weekLabel}
             previousWeek={props.previousWeek} nextWeek={props.nextWeek}
             plannedShifts={props.days.reduce((total, day) => total + day.shiftCount, 0)}
             availabilityReceived={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible}
             publishedLocations={props.locations.filter(location => location.scheduleStatus === 'PUBLISHED').length}
             locations={props.locations.length}/>
-          <div className="home-layout-tasks">{actions}</div>
           <div className="home-layout-live">{activity}</div>
           {props.latestRevision ? <HomeRecentActivity weekStart={props.weekStart} label={revisionSourceLabel(props.latestRevision.sourceType)}
             dateTime={props.latestRevision.createdAt}

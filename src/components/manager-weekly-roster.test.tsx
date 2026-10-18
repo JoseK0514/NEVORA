@@ -66,3 +66,11 @@ it("shows weekly hours against target and flags hours over the limit", () => {
   expect(html()).not.toContain("mws-hours");
   expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12h assigned this week");
 });
+
+it("keeps people without a shift that day one tap away on a single day too (U2)", () => {
+  const output = html("2026-10-06");
+  const tucked = output.split('class="mws-unscheduled"')[1] ?? "";
+  expect(tucked).toContain("Show 1 not scheduled this day");
+  expect(tucked).toContain("Jordan Morgan");
+  expect(output.split('class="mws-unscheduled"')[0]).toContain("Avery Taylor");
+});

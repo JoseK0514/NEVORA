@@ -149,7 +149,7 @@
 .av-person-note { display: grid; gap: 5px; padding: 16px; border-radius: 12px; background: var(--av-inset); }
 .av-person-note strong { font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; }
 .av-person-note p { font-size: calc(12 * var(--type-unit, 1px)); color: var(--av-muted); }
-.av-person-note.missing { background: #FFFAF0; }
+.av-person-pending { margin: 0; align-self: center; font-size: calc(14 * var(--type-unit, 1px)); color: var(--av-muted); }
 .av-empty { padding: 40px 24px; display: grid; justify-items: center; gap: 12px; text-align: center; color: var(--av-muted); }
 .av-empty h3 { font-weight: 500; font-size: calc(18 * var(--type-unit, 1px)); color: var(--av-ink); }
 
@@ -183,6 +183,9 @@
   .av-filters { margin: 0 20px 20px; max-width: calc(100% - 40px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: auto; }
   .av-review-column-headings { display: none; }
   .av-person-row { grid-template-columns: 1fr; gap: 16px; padding: 20px; }
+  /* U2: missing rows are one compact line on phones; the "Not submitted" pill carries the state. */
+  .av-person-row.missing { gap: 0; padding-block: 14px; }
+  .av-person-row.missing .av-person-hours { display: none; }
   .av-hour-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .av-hour-list li { flex-direction: column; align-items: flex-start; gap: 4px; }
   /* Three figures per row; two or one once a column would drop under 5rem (larger text sizes). */

@@ -21,6 +21,8 @@
 .inbox-section { display: grid; gap: 10px; }
 .inbox-section h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: calc(17 * var(--type-unit, 1px)); }
 .inbox-section[data-section="urgent"] h2 { color: #A8361F; }
+.inbox-section[data-section="past"] h2 { color: var(--g-muted, #5F6368); }
+.inbox-section-note { margin: -4px 0 0; color: var(--g-muted, #5F6368); font-size: calc(14 * var(--type-unit, 1px)); }
 .inbox-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 
 .inbox-row { position: relative; overflow: hidden; border: 1px solid var(--g-hairline, #ECEDEF); border-radius: 14px; background: #FFFFFF; }

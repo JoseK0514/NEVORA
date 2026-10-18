@@ -20,10 +20,11 @@ const statusText = {
 
 /** O1: no decision from here. The Inbox item carries no dates, duration or
  * note, so every request opens its full review, which shows them first. */
-function Row({ item }: { item: ActionItem }) {
-  const Icon = item.priority === "URGENT" ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : item.category === "requests" ? UserCheckIcon : CalendarBlankIcon;
+function Row({ item, calm = false }: { item: ActionItem; /** Past work (C2): no urgent styling. */ calm?: boolean }) {
+  const urgent = item.priority === "URGENT" && !calm;
+  const Icon = urgent ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : item.category === "requests" ? UserCheckIcon : CalendarBlankIcon;
   const action = actionCenterNavigation(item);
-  return <li className={`inbox-row${item.priority === "URGENT" ? " is-urgent" : ""}`}><div className="inbox-row-content">
+  return <li className={`inbox-row${urgent ? " is-urgent" : ""}`}><div className="inbox-row-content">
     <span className="inbox-icon" aria-hidden="true"><Icon size={20} /></span>
     <div className="inbox-copy">
       <strong>{item.title}</strong>
@@ -54,7 +55,9 @@ export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZon
     window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
   };
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
-  const sections = ready ? inboxSections(ready.items) : [];
+  // The workspace's date at the time of this observation, so server and browser agree.
+  const today = ready ? new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ready.observedAt)) : undefined;
+  const sections = ready ? inboxSections(ready.items, today) : [];
   const counts = { all: ready?.items.length ?? 0, exceptions: ready?.items.filter(item => item.category !== "requests").length ?? 0, requests: ready?.counts.requests ?? 0 };
   const shown = sections.map(section => ({ ...section, items: section.items.filter(item => filter === "all" || (filter === "requests" ? item.category === "requests" : item.category !== "requests")) })).filter(section => section.items.length);
   const updated = ready ? new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(ready.observedAt)) : null;
@@ -87,13 +90,14 @@ export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZon
     </div> : <>
       {shown.map(section => <section key={section.id} className="inbox-section" data-section={section.id} aria-labelledby={`inbox-${section.id}`}>
         <h2 id={`inbox-${section.id}`}>{section.title}<span className="sr-only">,</span> <span className="inbox-section-count">{section.items.length}</span></h2>
-        <ul className="inbox-list">{groupInboxItems(section.items).map(entry => entry.kind === "item" ? <Row key={entry.item.id} item={entry.item} />
-          : <li key={entry.key} className={`inbox-group${entry.items[0].priority === "URGENT" ? " is-urgent" : ""}`}>
+        {section.id === "past" ? <p className="inbox-section-note">These times have passed. Review them for the record; they don’t need action now.</p> : null}
+        <ul className="inbox-list">{groupInboxItems(section.items).map(entry => entry.kind === "item" ? <Row key={entry.item.id} item={entry.item} calm={section.id === "past"} />
+          : <li key={entry.key} className={`inbox-group${entry.items[0].priority === "URGENT" && section.id !== "past" ? " is-urgent" : ""}`}>
             <details>
-              <summary><span className="inbox-icon" aria-hidden="true">{entry.items[0].priority === "URGENT" ? <WarningCircleIcon size={20} /> : <CalendarBlankIcon size={20} />}</span>
+              <summary><span className="inbox-icon" aria-hidden="true">{entry.items[0].priority === "URGENT" && section.id !== "past" ? <WarningCircleIcon size={20} /> : <CalendarBlankIcon size={20} />}</span>
                 <span className="inbox-copy"><strong>{entry.title}</strong><p>{entry.items.length} items · earliest first</p></span>
                 <span className="inbox-section-count">{entry.items.length}</span><CaretDownIcon className="inbox-group-caret" size={18} aria-hidden="true" /></summary>
-              <ul className="inbox-list">{entry.items.map(item => <Row key={item.id} item={item} />)}</ul>
+              <ul className="inbox-list">{entry.items.map(item => <Row key={item.id} item={item} calm={section.id === "past"} />)}</ul>
             </details>
           </li>)}</ul>
       </section>)}

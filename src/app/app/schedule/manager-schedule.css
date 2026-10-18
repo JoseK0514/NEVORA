@@ -131,7 +131,7 @@
 @media (max-width: 600px) {
   .manager-schedule-page { gap: 16px; }
   .manager-schedule-page .schedule-operations-shell { display: contents; }
-  .mws-planning:not(.review-open) { order: 1; }
+  /* U2: Build and publish stays beside the week and location controls (one collapsed row). */
   .mws-header { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
   .mws-header > div { display: contents; }
   .mws-header h1 { font-size: 1.5rem; grid-column: 1; grid-row: 1; }

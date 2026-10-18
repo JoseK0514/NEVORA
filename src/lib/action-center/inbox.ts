@@ -1,6 +1,6 @@
 import type {ActionItem} from './project';
 
-export type InboxSection = {id: 'urgent' | 'exceptions' | 'requests'; title: string; items: ActionItem[]};
+export type InboxSection = {id: 'urgent' | 'exceptions' | 'requests' | 'past'; title: string; items: ActionItem[]};
 
 /** Exceptions before requests: corrections, attendance, coverage, hours,
  * missing setup, timecards and acknowledgements, then people's requests. */
@@ -17,13 +17,22 @@ function ordered(items: ActionItem[], rank: Partial<Record<ActionItem['type'], n
     .map(({item}) => item);
 }
 
-export function inboxSections(items: ActionItem[]): InboxSection[] {
-  const urgent = items.filter(item => item.priority === 'URGENT');
-  const rest = items.filter(item => item.priority !== 'URGENT');
+/** C2: a coverage gap on a day before today (workspace dates, "YYYY-MM-DD") is
+ * history to review, not work for now. It keeps its own section; nothing is dropped. */
+export function isPastCoverageGap(item: ActionItem, today?: string) {
+  return !!today && item.type === 'COVERAGE_GAP' && !!item.dateTime && item.dateTime.slice(0, 10) < today;
+}
+
+export function inboxSections(items: ActionItem[], today?: string): InboxSection[] {
+  const past = items.filter(item => isPastCoverageGap(item, today));
+  const current = items.filter(item => !isPastCoverageGap(item, today));
+  const urgent = current.filter(item => item.priority === 'URGENT');
+  const rest = current.filter(item => item.priority !== 'URGENT');
   return [
     {id: 'urgent' as const, title: 'Needs attention now', items: ordered(urgent, {...exceptionRank, ...requestRank})},
     {id: 'exceptions' as const, title: 'To review', items: ordered(rest.filter(item => item.category !== 'requests'), exceptionRank)},
     {id: 'requests' as const, title: 'Requests', items: ordered(rest.filter(item => item.category === 'requests'), requestRank)},
+    {id: 'past' as const, title: 'Earlier this week', items: past},
   ].filter(section => section.items.length);
 }
 
