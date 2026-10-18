@@ -146,19 +146,9 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       </div> : null}
 
       {/* D5: on desktop the week leads and its status sits beside it; one column on phones, same order. */}
-      <div className="my-schedule-body"><div className="my-schedule-side">
-      {error ? <div className="my-schedule-feedback error" role="alert"><strong>Confirmation could not be completed.</strong><p>{typeof error === 'string' ? error : 'Review the current schedule and try again.'}</p><Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Review current week</Link></div> : null}
-      {safeReceipt ? <p className="my-schedule-feedback success" role="status">Schedule confirmed.</p> : null}
-      {state !== 'published' ? <div className="my-schedule-feedback" role="status"><strong>{state==='unavailable'?'Schedule unavailable':'Your full week is not published yet'}</strong><p>{state==='unavailable'?'We couldn’t load your schedule. Try again to see your current assignments.':shifts.length?'Only your published assignments are shown. Other days may still change.':'Your schedule will appear here when it is published. An empty day does not mean a day off yet.'}</p>{state==='unavailable'?<Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Try again</Link>:null}</div> : null}
-
-      {confirmation && state !== 'unavailable' ? <section className={`my-schedule-review${acknowledged?' is-confirmed':''}`} aria-labelledby="my-review-title">
-        <div className="my-review-icon">{acknowledged?<CheckCircleIcon size={24} aria-hidden="true" />:<CalendarCheckIcon size={24} aria-hidden="true" />}{acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}</div>
-        <div className="my-review-copy"><h2 id="my-review-title">{acknowledged?'You’re up to date':confirmationNeeded?'Review this week’s schedule':'Schedule review'}</h2><p>{acknowledged?'You’ve confirmed the current schedule.':confirmationNeeded?(shifts.length?'Check your shifts below, then confirm you’ve seen this week.':'No assignments remain for this published week. Review the changes, then confirm this schedule.'):'Confirmation is not available. Review the current week again.'}</p></div>
-        <div className="my-review-action">{confirmation}</div>
-      </section> : null}
-
-      <div className="my-schedule-changes">{state==='unavailable'?null:changes}</div>
-      </div>
+      <div className="my-schedule-body">
+      {/* Phones read the week first; this short link reaches the review below it (Codex U2). */}
+      {confirmationNeeded && !acknowledged && confirmation && state !== 'unavailable' ? <a className="my-review-jump" href="#my-review-title">Review this week&apos;s schedule below</a> : null}
       <section className="employee-view-surface employee-schedule-agenda my-schedule-agenda" aria-labelledby="my-agenda-title">
         <div className="my-agenda-heading"><h2 id="my-agenda-title">Your week at a glance</h2><span>{state==='published'?'Published schedule':'Published assignments only'}</span></div>
         {dates.map(date => { const label=formatDayLabel(date); const dayShifts=shifts.filter(shift=>shift.date===date); return <article className={`employee-schedule-day${date===today?' today':''}${date===selectedDay?' selected':''}`} id={`schedule-${date}`} key={date} aria-label={`${label.weekday}, ${label.day}`}>
@@ -176,6 +166,19 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
           </div>
         </article>; })}
       </section>
+      <div className="my-schedule-side">
+      {error ? <div className="my-schedule-feedback error" role="alert"><strong>Confirmation could not be completed.</strong><p>{typeof error === 'string' ? error : 'Review the current schedule and try again.'}</p><Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Review current week</Link></div> : null}
+      {safeReceipt ? <p className="my-schedule-feedback success" role="status">Schedule confirmed.</p> : null}
+      {state !== 'published' ? <div className="my-schedule-feedback" role="status"><strong>{state==='unavailable'?'Schedule unavailable':'Your full week is not published yet'}</strong><p>{state==='unavailable'?'We couldn’t load your schedule. Try again to see your current assignments.':shifts.length?'Only your published assignments are shown. Other days may still change.':'Your schedule will appear here when it is published. An empty day does not mean a day off yet.'}</p>{state==='unavailable'?<Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Try again</Link>:null}</div> : null}
+
+      {confirmation && state !== 'unavailable' ? <section className={`my-schedule-review${acknowledged?' is-confirmed':''}`} aria-labelledby="my-review-title">
+        <div className="my-review-icon">{acknowledged?<CheckCircleIcon size={24} aria-hidden="true" />:<CalendarCheckIcon size={24} aria-hidden="true" />}{acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}</div>
+        <div className="my-review-copy"><h2 id="my-review-title">{acknowledged?'You’re up to date':confirmationNeeded?'Review this week’s schedule':'Schedule review'}</h2><p>{acknowledged?'You’ve confirmed the current schedule.':confirmationNeeded?(shifts.length?'Check your shifts below, then confirm you’ve seen this week.':'No assignments remain for this published week. Review the changes, then confirm this schedule.'):'Confirmation is not available. Review the current week again.'}</p></div>
+        <div className="my-review-action">{confirmation}</div>
+      </section> : null}
+
+      <div className="my-schedule-changes">{state==='unavailable'?null:changes}</div>
+      </div>
       </div>
       </>}
       {/* One grouped list of rows, iOS-settings style (Jose's phone notes, 2026-10-18), instead of loose links. */}

@@ -218,6 +218,12 @@
 /* The pass is always shown, so its quiet states read on green too: no shift, unavailable, loading, sign in again. */
 .assignment[data-pass] :is(.assignmentMessage, .recovery p) { color: #ffffff; }
 .assignment[data-pass] .loadingLines span { background: rgb(255 255 255 / .22); }
+/* Codex U1: keep the pass compact so the clock status shows sooner on phones. An empty "next shift"
+   is one quiet line, and the zone and publication notices sit tight (text stays at the 15px phone floor). */
+.upcoming .assignmentMessage { margin-block: 2px 0 !important; font-size: 1rem; line-height: 1.45; }
+.upcoming .assignmentMessage + .scheduleLink { min-height: 40px; padding-block: 4px; }
+.assignment[data-pass] .notice { padding: 6px 0 4px; line-height: 1.45; }
+.assignment[data-pass] .cardZone { padding-block: 6px 0; }
 .assignment[data-pass] :is(.current, .upcoming) h3 { color: #ffffff; }
 /* One tear per card: between now and next. Each block's link then sits on a plain rule. */
 .assignment[data-pass] .upcoming { border-top: 1.5px dashed rgb(255 255 255 / .32); }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
@@ -13,20 +13,31 @@ function dateLabel(date: string) {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
 }
 
-export function TimeOffForm({ requestId }: { requestId: string; employeeView?: boolean }) {
-  const [partialDay, setPartialDay] = useState(false);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [reason, setReason] = useState("");
+/** An unsent request survives switching to My requests and Back (Codex W2). It is kept in memory only
+ *  (never browser storage), for the same person, and cleared on Cancel, on submit and on reload. */
+type Draft = { owner: string; partialDay: boolean; startDate: string; endDate: string; startTime: string; endTime: string; reason: string };
+let unsent: Draft | null = null;
+
+export function TimeOffForm({ requestId, draftOwner = "" }: { requestId: string; employeeView?: boolean; draftOwner?: string }) {
+  const kept = draftOwner && unsent?.owner === draftOwner ? unsent : null;
+  const [partialDay, setPartialDay] = useState(kept?.partialDay ?? false);
+  const [startDate, setStartDate] = useState(kept?.startDate ?? "");
+  const [endDate, setEndDate] = useState(kept?.endDate ?? "");
+  const [startTime, setStartTime] = useState(kept?.startTime ?? "");
+  const [endTime, setEndTime] = useState(kept?.endTime ?? "");
+  const [reason, setReason] = useState(kept?.reason ?? "");
+  useEffect(() => {
+    if (!draftOwner) return;
+    const empty = !startDate && !endDate && !startTime && !endTime && !reason.trim();
+    unsent = empty ? null : { owner: draftOwner, partialDay, startDate, endDate, startTime, endTime, reason };
+  }, [draftOwner, partialDay, startDate, endDate, startTime, endTime, reason]);
   const effectiveEnd = partialDay ? startDate : endDate;
   const datesValid = !!startDate && !!effectiveEnd && effectiveEnd >= startDate;
   const timesInvalid = !!startTime && !!endTime && startTime >= endTime;
   const days = datesValid ? Math.round((Date.parse(effectiveEnd) - Date.parse(startDate)) / 86400000) + 1 : 0;
 
   return (
-    <form action={requestTimeOffAction} className="nto-form">
+    <form action={requestTimeOffAction} className="nto-form" onSubmit={() => { unsent = null; }}>
       <input type="hidden" name="requestId" value={requestId} />
       <div className="nto-compose">
         <div className="nto-form-fields">
@@ -69,7 +80,7 @@ export function TimeOffForm({ requestId }: { requestId: string; employeeView?: b
         </aside>
       </div>
       <footer className="nto-form-footer">
-        <Link className="nto-button nto-secondary" href="/app/requests?tab=my">Cancel</Link>
+        <Link className="nto-button nto-secondary" href="/app/requests?tab=my" onClick={() => { unsent = null; }}>Cancel</Link>
         <EmployeeSubmitButton className="nto-button nto-primary" pendingText="Submitting request…" disabled={partialDay && timesInvalid}>Submit request <ArrowRightIcon size={18} aria-hidden="true" /></EmployeeSubmitButton>
       </footer>
     </form>

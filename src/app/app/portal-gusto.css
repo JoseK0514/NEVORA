@@ -513,3 +513,7 @@ html body .app-shell.nevora-portal .module-off p { margin: 0; color: var(--g-mut
 html body .app-shell.nevora-portal .module-off-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: var(--g-accent-wash); color: var(--g-accent-strong); }
 html body .app-shell.nevora-portal .module-off .button { display: inline-flex; align-items: center; min-height: 44px; }
 html body .app-shell.nevora-portal .module-off-home { display: inline-flex; align-items: center; min-height: 44px; color: var(--g-accent); font-weight: 500; text-decoration: none; }
+/* Profile (Codex U4): the read-only identity block has a plain heading and a correction note. */
+html body .app-shell.nevora-portal .employee-profile-work-title { margin: 0 0 10px; font-size: calc(17 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.4; color: var(--g-ink, #111827); }
+html body .app-shell.nevora-portal .employee-profile-correction { margin: 10px 0 0; color: var(--g-muted, #5f6368); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.5; }
+html body .app-shell.nevora-portal .employee-profile-work-title + .employee-profile-details { margin-top: 0; }

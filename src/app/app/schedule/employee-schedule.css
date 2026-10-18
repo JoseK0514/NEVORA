@@ -129,5 +129,11 @@
 }
 /* D4 button shape for the confirm action (it kept 13px corners and 46px height). */
 @media (min-width: 761px) { .my-review-action .employee-action { min-height: 44px; border-radius: var(--g-control-radius, 8px); } }
-/* Inside the Open shifts card the empty state is plain content, not a second box (Jose's phone notes). */
-html body .app-shell.nevora-portal .page-frame .my-open-shifts.my-open-shifts .nevora-empty { border:0; border-radius:0; background:transparent; box-shadow:none; padding:28px 16px 12px; }
+/* On phones, inside the Open shifts card, the empty state is plain content, not a second box (Jose's phone notes). Desktop keeps the one shared empty-state style (D6). */
+@media (max-width: 760px) { html body .app-shell.nevora-portal .page-frame .my-open-shifts.my-open-shifts .nevora-empty { border:0; border-radius:0; background:transparent; box-shadow:none; padding:28px 16px 12px; } }
+/* Phones: the week comes first; a short link reaches the review below (Codex U2). Desktop keeps the side panel. */
+.my-review-jump { display:flex; align-items:center; min-height:44px; margin:0 0 12px; padding:10px 16px; border:1px solid color-mix(in srgb, var(--g-accent, #077572) 30%, transparent); border-radius:12px; background:var(--g-accent-wash, #e7f3f2); color:var(--g-accent-strong, #07605f); font-size:calc(14 * var(--type-unit, 1px)); font-weight:600; text-decoration:none; }
+.my-review-jump::after { content:'↓' / ''; margin-left:auto; }
+@media (min-width: 1100px) { .my-review-jump { display:none; } }
+.my-schedule-side .my-schedule-review { scroll-margin-top: 96px; }
+html body .app-shell.nevora-portal .page-frame .my-schedule-footer h2 { margin: 0 0 8px 4px; color: var(--muted); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.4; letter-spacing: 0; }

@@ -95,7 +95,7 @@ export default async function RequestsPage({
                 <p>Choose when you need to be away.</p>
               </div>
             </div>
-            <TimeOffForm employeeView requestId={randomUUID()} />
+            <TimeOffForm employeeView requestId={randomUUID()} draftOwner={session.id} />
           </article>
         ) : null}
 

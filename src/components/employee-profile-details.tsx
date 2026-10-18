@@ -12,13 +12,16 @@ export function EmployeeProfileDetails({ profile, notificationsEnabled }: {
   notificationsEnabled: boolean;
 }) {
   return <>
+    {/* Codex U4: read-only identity, named for what it is, with the way to correct it. */}
+    <h2 className="employee-profile-work-title">Work details</h2>
     <dl className="employee-profile-details">
       <div><dt>Name</dt><dd>{profile.name}</dd></div>
-      <div><dt>Role</dt><dd>{profile.role}</dd></div>
+      <div><dt>Account role</dt><dd>{profile.role}</dd></div>
       <div><dt>Workspace</dt><dd>{profile.workspace}</dd></div>
       <div><dt>Work locations</dt><dd>{profile.locations.join(' · ')}</dd></div>
       <div><dt>Time zone</dt><dd>{timeZoneLabel(profile.timeZone)}</dd></div>
     </dl>
+    <p className="profile-supporting-copy employee-profile-correction">Something wrong here? Ask your manager to update it.</p>
     <section className="employee-account-settings" aria-labelledby="profile-notifications-title">
       <div className="profile-section-heading">
         <BellIcon size={22} weight="regular" aria-hidden="true" />
