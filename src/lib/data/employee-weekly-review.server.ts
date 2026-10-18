@@ -14,7 +14,7 @@ import {neonNotificationExecutor} from './notification-transactions';
 
 export type EmployeeWeeklyReview=Omit<EmployeeScheduleRead,'shifts'>&{shifts:(EmployeeScheduleRead['shifts'][number]&{positionName?:string|null})[];displayedRevisionId:string|null;acknowledgement:EmployeeAcknowledgementState;intent:AttentionIntent|null;readIntent:AttentionIntent|null;read:boolean;publicationChanges:ReturnType<typeof ownPublicationChanges>};
 const unavailable:EmployeeWeeklyReview={state:'unavailable',shifts:[],locations:[],displayedRevisionId:null,acknowledgement:{acknowledged:false,needsAcknowledgement:false},intent:null,readIntent:null,read:false,publicationChanges:[]};
-type Observation={read:boolean;relevant:boolean;revisionId:string|null;acknowledgedRevisionId:string|null;complete:boolean;shifts:EmployeeWeeklyReview['shifts'];locations:EmployeeScheduleRead['locations'];before:PublishedShiftSnapshot[];after:PublishedShiftSnapshot[]};
+type Observation={read:boolean;relevant:boolean;revisionId:string|null;acknowledgedRevisionId:string|null;complete:boolean;shifts:EmployeeWeeklyReview['shifts'];locations:EmployeeScheduleRead['locations'];unpublished?:unknown;before:PublishedShiftSnapshot[];after:PublishedShiftSnapshot[]};
 const snapshot=(revision:string)=>`SELECT rs.source_shift_id AS "sourceShiftId",rs.location_id AS "locationId",rs.employee_id AS "employeeId",rs.date::text AS date,
  left(rs.start_time::text,5) AS "startTime",left(rs.end_time::text,5) AS "endTime",rs.position_id AS "positionId",rs.position_name AS "positionName",
  rs.is_designated_lead AS "isDesignatedLead",rs.is_callout_approved AS "isCalloutApproved"
@@ -40,6 +40,7 @@ export async function readEmployeeWeeklyReview(proof:SessionMutationProof,weekSt
     (SELECT count(*)>0 AND bool_and(EXISTS(SELECT 1 FROM schedules s WHERE s.location_id=l.id AND s.week_start=$3::date AND s.status='PUBLISHED')) FROM allowed l) AS complete,
     COALESCE((SELECT jsonb_agg(to_jsonb(own)) FROM own),'[]'::jsonb) AS shifts,
     COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'shortName',short_name) ORDER BY id) FROM allowed),'[]'::jsonb) AS locations,
+    COALESCE((SELECT jsonb_agg(l.id ORDER BY l.id) FROM allowed l WHERE NOT EXISTS(SELECT 1 FROM schedules s WHERE s.location_id=l.id AND s.week_start=$3::date AND s.status='PUBLISHED')),'[]'::jsonb) AS unpublished,
     COALESCE((SELECT jsonb_agg(to_jsonb(before)) FROM before),'[]'::jsonb) AS before,
     COALESCE((SELECT jsonb_agg(to_jsonb(after)) FROM after),'[]'::jsonb) AS after`,values:[workspace.id,proof.employee.id,weekStart]};
   const results=await executor.transaction([...guards,source,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal),row=results[guards.length]?.[0] as Observation|undefined;
@@ -48,7 +49,10 @@ export async function readEmployeeWeeklyReview(proof:SessionMutationProof,weekSt
   if(JSON.stringify(final[guards.length]?.[0])!==JSON.stringify(row))return unavailable;
   const acknowledgement=buildAcknowledgementState({employeeId:proof.employee.id,latestRevisionId:row.relevant?row.revisionId??undefined:undefined,
    acknowledgementRevisionId:row.acknowledgedRevisionId??undefined,acknowledgedRevisionShifts:row.before,latestRevisionShifts:row.after});
-  return {read:row.read,readIntent:row.revisionId&&row.relevant&&acknowledgement.acknowledged?attentionIntent(proof,workspace.id,'MARK_READ',{...ref,version:row.revisionId}):null,state:row.complete?'published':'unpublished',shifts:row.shifts,locations:row.locations,displayedRevisionId:row.revisionId,acknowledgement,
+  return {read:row.read,readIntent:row.revisionId&&row.relevant&&acknowledgement.acknowledged?attentionIntent(proof,workspace.id,'MARK_READ',{...ref,version:row.revisionId}):null,state:row.complete?'published':'unpublished',shifts:row.shifts,locations:row.locations,
+   // A partly published week names the person's own locations that have not published yet.
+   ...(row.complete?{}:{unpublishedLocationIds:Array.isArray(row.unpublished)?row.unpublished.filter((id):id is string=>typeof id==='string'&&row.locations.some(l=>l.id===id)):[]}),
+   displayedRevisionId:row.revisionId,acknowledgement,
    intent:row.revisionId&&row.relevant&&acknowledgement.needsAcknowledgement?attentionIntent(proof,workspace.id,'CONFIRM_WEEK',{...ref,version:row.revisionId}):null,
    publicationChanges:acknowledgement.needsAcknowledgement?ownPublicationChanges(row.before,row.after,proof.employee.id):[]};
  }catch{return unavailable;}

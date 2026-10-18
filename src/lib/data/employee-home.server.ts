@@ -233,6 +233,6 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
   if(!modules.timeOff)off(timeOff);
   if(!modules.updates){communications=observation('complete',null);communicationItems=[];}
   const sources={schedule:assignments.publicationState==='unavailable'?observation('unavailable','read_failed',null):{...observation(assignments.publicationState,assignments.publicationState==='partial'?'unpublished':null,hash(assignments)),observedAt:assignments.observedAt},acknowledgements:acknowledgements.observation,exchanges:exchanges.observation,timeOff:timeOff.observation,ownTime:ownTime.observation,communications};
-  return projectEmployeeHome({observedAt:after.observedAt,authority:homeAuthority(proof),timeZone:workspace.timeZone,validForMs,sources,publicationState:assignments.publicationState,nextShift:assignments.nextShift,currentShift:assignments.currentShift,attention:[...acknowledgements.items,...exchanges.items,...timeOff.items,...ownTime.items,...communicationItems]});
+  return projectEmployeeHome({observedAt:after.observedAt,authority:homeAuthority(proof),timeZone:workspace.timeZone,validForMs,sources,publicationState:assignments.publicationState,...(assignments.publicationState==='partial'?{unpublishedLocations:assignments.unpublishedLocations??[]}:{}),nextShift:assignments.nextShift,currentShift:assignments.currentShift,attention:[...acknowledgements.items,...exchanges.items,...timeOff.items,...ownTime.items,...communicationItems]});
  }catch(error){return isManagementAuthorizationError(error)?denied:unavailable;}
 }

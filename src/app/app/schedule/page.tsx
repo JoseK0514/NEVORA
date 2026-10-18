@@ -199,6 +199,7 @@ export default async function SchedulePage({
       selectedDay={params.day}
       state={employeeSchedule!.state}
       shifts={employeeSchedule!.shifts}
+      unpublishedLocationIds={employeeSchedule!.unpublishedLocationIds}
       locations={locations}
       acknowledged={employeeAcknowledgement.acknowledged}
       acknowledgedRevisionId={employeeAcknowledgement.acknowledged ? employeeAcknowledgement.acknowledgedRevisionId ?? undefined : undefined}

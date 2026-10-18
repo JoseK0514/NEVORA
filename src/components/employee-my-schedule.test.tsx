@@ -11,7 +11,8 @@ const html=(props:Partial<EmployeeMyScheduleProps>={})=>renderToStaticMarkup(cre
 it('a published empty day is distinguished from an unpublished date',()=>{
  expect(html()).toContain('Off — no assignment');
  const partial=html({state:'unpublished'});
- expect(partial).toContain('Only your published assignments are shown');
+ expect(partial).toContain('Your North Office shifts are final. Another location you work at hasn’t published this week yet.');
+ expect(partial).not.toContain('Your full week is not published yet');
  expect(partial).toContain('Schedule not published yet');
  expect(partial).not.toContain('Off — no assignment');
 });
@@ -93,4 +94,20 @@ it('lists Planning ahead as one group of rows with the same destinations (Jose p
   for (const href of ['/app/exchange?tab=my', '/app/availability', '/app/requests', '/app/profile#employee-calendar-title']) {
     expect(markup).toMatch(new RegExp(`<a href="${href.replace(/[?#]/g, m => '\\' + m)}" class="my-schedule-row">`));
   }
+});
+
+it('says plainly what the review asks: confirm you have seen your own schedule (Jose, 2026-10-18)', () => {
+  const markup = html({confirmationNeeded: true, confirmation: createElement('button', null, 'Confirm schedule')});
+  expect(markup).toContain('>Your manager asks you to confirm this week</a>');
+  expect(markup).toContain('Confirm you’ve seen your schedule');
+  expect(markup).toContain('Check your shifts for this week, then confirm.');
+  expect(markup).not.toContain('below');
+});
+
+it('names the location that has not published, inside the week card (Jose, 2026-10-18)', () => {
+  const markup = html({state: 'unpublished', locations: [{id: 'north', shortName: 'North Office'}, {id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
+  expect(markup).toContain('class="my-week-note"');
+  expect(markup).toContain('Your North Office shifts are final. Harbor hasn’t published this week yet.');
+  const none = html({state: 'unpublished', shifts: [], locations: [{id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
+  expect(none).toContain('Harbor hasn’t published this week yet. Shifts shown are final. An empty day isn’t a day off yet.');
 });

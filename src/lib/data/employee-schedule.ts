@@ -8,7 +8,9 @@ import {currentCalloutReleaseSql} from './shift-change-release';
 import type {ScheduleShiftRow} from './schedules';
 
 export type EmployeeScheduleState = 'published'|'unpublished'|'unavailable';
-export type EmployeeScheduleRead = {state:EmployeeScheduleState;shifts:ScheduleShiftRow[];locations:{id:string;shortName:string}[]};
+export type EmployeeScheduleRead = {state:EmployeeScheduleState;shifts:ScheduleShiftRow[];locations:{id:string;shortName:string}[];
+ /** The person's own locations that have not published this week (names it in the employee's note). */
+ unpublishedLocationIds?:string[]};
 const unavailable:EmployeeScheduleRead={state:'unavailable',shifts:[],locations:[]};
 
 /** Canonical active, currently eligible location source for employee reads. */
@@ -36,12 +38,14 @@ export async function readEmployeeSchedule(proof:SessionMutationProof,weekStart:
    WHERE sh.employee_id=$2 AND s.week_start=$3::date AND s.status='PUBLISHED' ORDER BY sh.date,sh.start_time,sh.id LIMIT 501
   ) SELECT (SELECT complete FROM coverage) AS complete,
    COALESCE((SELECT jsonb_agg(to_jsonb(own)) FROM own),'[]') AS shifts,
-   COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'shortName',short_name) ORDER BY id) FROM allowed),'[]') AS locations`,values:[workspace.id,proof.employee.id,weekStart]},...managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD'])]);
-  const row=results[guards.length]?.[0] as {complete:boolean;shifts:ScheduleShiftRow[];locations:{id:string;shortName:string}[]}|undefined;
+   COALESCE((SELECT jsonb_agg(jsonb_build_object('id',id,'shortName',short_name) ORDER BY id) FROM allowed),'[]') AS locations,
+   COALESCE((SELECT jsonb_agg(l.id ORDER BY l.id) FROM allowed l WHERE NOT EXISTS(SELECT 1 FROM schedules s WHERE s.week_start=$3::date AND s.location_id=l.id AND s.status='PUBLISHED')),'[]') AS unpublished`,values:[workspace.id,proof.employee.id,weekStart]},...managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD'])]);
+  const row=results[guards.length]?.[0] as {complete:boolean;shifts:ScheduleShiftRow[];locations:{id:string;shortName:string}[];unpublished?:unknown}|undefined;
   if(!row||!Array.isArray(row.shifts)||row.shifts.length>500||!Array.isArray(row.locations)||row.shifts.some(s=>s.employeeId!==proof.employee.id||s.scheduleStatus!=='PUBLISHED'||!row.locations.some(l=>l.id===s.locationId)))return unavailable;
   // Logout/role loss after the protected observation must not return private rows.
   await executor.transaction(managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD']));
-  return {state:row.complete?'published':'unpublished',shifts:row.shifts,locations:row.locations};
+  const unpublishedLocationIds=Array.isArray(row.unpublished)?row.unpublished.filter((id):id is string=>typeof id==='string'&&row.locations.some(l=>l.id===id)):[];
+  return {state:row.complete?'published':'unpublished',shifts:row.shifts,locations:row.locations,...(row.complete?{}:{unpublishedLocationIds})};
  }catch{return unavailable;}
 }
 

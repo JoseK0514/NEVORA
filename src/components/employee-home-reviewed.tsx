@@ -13,6 +13,7 @@ import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, HomeSource, PublishedAssignment} from '../lib/employee-home/types';
 import styles from './employee-home-reviewed.module.css';
 import {formatDisplayDate} from '../lib/date-utils';
+import {unpublishedNote} from '../lib/publication-note';
 
 export type EmployeeHomeReviewedViewProps = {
   home: EmployeeHomeRead | null;
@@ -280,7 +281,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
               </>
               : snapshot.nextShift ? <Assignment shift={snapshot.nextShift} zone={snapshot.timeZone} observedAt={snapshot.observedAt} countdown/>
                 : <><p className={styles.assignmentMessage}>No upcoming published shift</p><Link className={styles.scheduleLink} href="/app/schedule">View schedule <Arrow forward/></Link></>}
-            {snapshot.publicationState === 'partial' ? <p className={styles.notice} role="status">Some of your locations haven’t published this week yet. The shifts shown are published.</p> : null}
+            {snapshot.publicationState === 'partial' ? <p className={styles.notice} role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
           </> : <div className={styles.recovery} role="status">
             <p>{recovery}</p>
             {loading ? <div className={styles.loadingLines} aria-hidden="true"><span/><span/><span/></div> : null}

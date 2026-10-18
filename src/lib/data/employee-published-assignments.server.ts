@@ -12,7 +12,7 @@ import {currentCalloutReleaseSql} from './shift-change-release';
 
 type AssignmentRow={shiftId:string;assignmentEpisodeId:string;termsRevision:number;weekStart:string;date:string;
  startTime:string;endTime:string;locationId:string;locationLabel:string;positionLabel:string|null;designatedLead:boolean;publicationRevisionId:string|null};
-type Observation={observedAt:string;timeZone:string;future:AssignmentRow[];current:AssignmentRow[];coverageComplete:boolean};
+type Observation={observedAt:string;timeZone:string;future:AssignmentRow[];current:AssignmentRow[];coverageComplete:boolean;unpublishedLabels?:unknown};
 type SourceAuthority={allowedLocationIds:string[]};
 const unavailable:PublishedAssignmentRead={observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'};
 const MAX_WINDOW_ROWS=500;
@@ -38,7 +38,9 @@ export function projectPublishedAssignmentRows(input:Observation):PublishedAssig
    .sort((a,b)=>a.startAt.localeCompare(b.startAt)||a.shiftId.localeCompare(b.shiftId));
   if(future.some(row=>Date.parse(row.startAt)<=at))return null;
   return {observedAt:input.observedAt,timeZone:input.timeZone,nextShift:future[0]??null,currentShift:current[0]??null,
-   publicationState:input.coverageComplete?'complete':'partial'};
+   publicationState:input.coverageComplete?'complete':'partial',
+   // Only a partly published week carries the names; a complete read keeps its original shape.
+   ...(input.coverageComplete?{}:{unpublishedLocations:Array.isArray(input.unpublishedLabels)?input.unpublishedLabels.filter((l):l is string=>typeof l==='string'&&l.length>0).slice(0,10):[]})};
  }catch{return null;}
 }
 
@@ -61,6 +63,8 @@ const nextSql=`WITH clock AS MATERIALIZED (SELECT clock_timestamp() AS at), loca
  current AS (${ownSelect('AND sh.date BETWEEN local.day-1 AND local.day AND (sh.date<local.day OR sh.start_time<=local.wall) ORDER BY sh.date,sh.start_time,sh.id LIMIT 501','CROSS JOIN local')})
  SELECT to_jsonb(clock.at) AS "observedAt",ARRAY(SELECT id FROM allowed ORDER BY id) AS "allowedLocationIds",
  (SELECT complete FROM coverage) AS "coverageComplete",
+ (SELECT COALESCE(jsonb_agg(l.short_name ORDER BY l.id),'[]'::jsonb) FROM allowed l CROSS JOIN local WHERE NOT EXISTS(SELECT 1 FROM schedules s WHERE s.location_id=l.id
+  AND s.week_start=date_trunc('week',local.day::timestamp)::date AND s.status='PUBLISHED')) AS "unpublishedLabels",
  COALESCE((SELECT jsonb_agg(to_jsonb(future)) FROM future),'[]'::jsonb) AS future,
  COALESCE((SELECT jsonb_agg(to_jsonb(current)) FROM current),'[]'::jsonb) AS current FROM clock`;
 

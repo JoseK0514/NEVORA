@@ -8,11 +8,11 @@ const row=(overrides:Record<string,unknown>={})=>({shiftId:'own',assignmentEpiso
 
 it('next_shift_crosses_multiple_weeks and year_rollover using real instants and source identity',()=>{
  const result=projectPublishedAssignmentRows({observedAt:'2026-12-30T12:00:00.000Z',timeZone:'America/Puerto_Rico',
-  future:[row({weekStart:'2027-01-04'})],current:[],coverageComplete:false});
+  future:[row({weekStart:'2027-01-04'})],current:[],coverageComplete:false,unpublishedLabels:['North']});
  expect(result).toEqual({observedAt:'2026-12-30T12:00:00.000Z',timeZone:'America/Puerto_Rico',
   nextShift:{shiftId:'own',assignmentEpisodeId:'00000000-0000-4000-8000-000000000001',termsRevision:1,weekStart:'2027-01-04',
    date:'2027-01-04',startAt:'2027-01-04T12:00:00.000Z',endAt:'2027-01-04T20:00:00.000Z',locationId:'loc-1',locationLabel:'Main',
-   positionLabel:'Counter',designatedLead:false,publicationRevisionId:'revision-1'},currentShift:null,publicationState:'partial'});
+   positionLabel:'Counter',designatedLead:false,publicationRevisionId:'revision-1'},currentShift:null,publicationState:'partial',unpublishedLocations:['North']});
 });
 it('ongoing_overnight_previous_week is Scheduled now and Next Shift stays separate',()=>{
  const result=projectPublishedAssignmentRows({observedAt:'2027-01-04T04:00:00.000Z',timeZone:'America/Puerto_Rico',

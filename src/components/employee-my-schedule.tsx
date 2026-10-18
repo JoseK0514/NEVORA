@@ -12,6 +12,8 @@ import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { HourglassMediumIcon } from '@phosphor-icons/react/dist/ssr/HourglassMedium';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info';
+import { unpublishedNote } from '../lib/publication-note';
 import { UserCheckIcon } from '@phosphor-icons/react/dist/ssr/UserCheck';
 import { CalendarMinusIcon } from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import { CalendarPlusIcon } from '@phosphor-icons/react/dist/ssr/CalendarPlus';
@@ -29,6 +31,8 @@ export type OpenShift = { id: string; date: string; startTime: string; endTime: 
 export type EmployeeMyScheduleProps = {
   /** "mine" shows the week; "open" shows claimable shifts. Both are real URLs. */
   view?: 'mine' | 'open';
+  /** Own locations that haven't published this week; names them in the week's note. */
+  unpublishedLocationIds?: readonly string[];
   /** "swap": the person came to pick a shift to swap (Home's Swap a shift); options open on eligible shifts. */
   intent?: 'swap';
   /** Company modules (B2): shift swaps and time off links follow them. */
@@ -114,6 +118,9 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
   const swapIntent = props.intent === 'swap' && modules.marketplace && view === 'mine';
   const swapCount = swapIntent ? shifts.filter(shift => swappable(shift, today, observedAt, timeZone)).length : 0;
   const keep = swapIntent ? '&intent=swap' : '';
+  const nameOf = (id: string) => locations.find(location => location.id === id)?.shortName ?? '';
+  const unpublishedNames = (props.unpublishedLocationIds ?? []).map(nameOf).filter(Boolean);
+  const publishedNames = [...new Set(shifts.map(shift => nameOf(shift.locationId)).filter(Boolean))];
   return <EmployeeScheduleMotion weekStart={weekStart}>
     <div className="employee-view employee-schedule-view my-schedule">
       <header className="my-schedule-heading my-schedule-enter">
@@ -137,6 +144,10 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
         <nav className="my-week-days" aria-label="Days in this week">
           {dates.map(date => { const label=formatDayLabel(date); const assigned=shifts.some(shift=>shift.date===date); return <a key={date} href={`#schedule-${date}`} className={`my-week-day${date===today?' is-today':''}${date===selectedDay?' is-selected':''}`} aria-current={date===today?'date':undefined} aria-label={`${label.weekday}, ${label.day}${date===today?', today':''}${assigned?', assigned shift':''}`}><span>{label.weekday}</span><strong>{Number(date.slice(8))}</strong><i className={assigned?'has-shift':''} aria-hidden="true" /></a>; })}
         </nav>
+        {/* A partly published week says what is final and who hasn't published yet, beside the week itself (Jose, 2026-10-18). */}
+        {state === 'unpublished' ? <p className="my-week-note" role="status"><InfoIcon size={18} aria-hidden="true" /><span>{shifts.length
+          ? unpublishedNote(unpublishedNames, publishedNames)
+          : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`}</span></p> : null}
       </section>
 
       {swapIntent ? <div className="my-schedule-feedback my-swap-intent" role="status">
@@ -148,7 +159,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       {/* D5: on desktop the week leads and its status sits beside it; one column on phones, same order. */}
       <div className="my-schedule-body">
       {/* Phones read the week first; this short link reaches the review below it (Codex U2). */}
-      {confirmationNeeded && !acknowledged && confirmation && state !== 'unavailable' ? <a className="my-review-jump" href="#my-review-title">Review this week&apos;s schedule below</a> : null}
+      {confirmationNeeded && !acknowledged && confirmation && state !== 'unavailable' ? <a className="my-review-jump" href="#my-review-title">Your manager asks you to confirm this week</a> : null}
       <section className="employee-view-surface employee-schedule-agenda my-schedule-agenda" aria-labelledby="my-agenda-title">
         <div className="my-agenda-heading"><h2 id="my-agenda-title">Your week at a glance</h2><span>{state==='published'?'Published schedule':'Published assignments only'}</span></div>
         {dates.map(date => { const label=formatDayLabel(date); const dayShifts=shifts.filter(shift=>shift.date===date); return <article className={`employee-schedule-day${date===today?' today':''}${date===selectedDay?' selected':''}`} id={`schedule-${date}`} key={date} aria-label={`${label.weekday}, ${label.day}`}>
@@ -169,11 +180,11 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       <div className="my-schedule-side">
       {error ? <div className="my-schedule-feedback error" role="alert"><strong>Confirmation could not be completed.</strong><p>{typeof error === 'string' ? error : 'Review the current schedule and try again.'}</p><Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Review current week</Link></div> : null}
       {safeReceipt ? <p className="my-schedule-feedback success" role="status">Schedule confirmed.</p> : null}
-      {state !== 'published' ? <div className="my-schedule-feedback" role="status"><strong>{state==='unavailable'?'Schedule unavailable':'Your full week is not published yet'}</strong><p>{state==='unavailable'?'We couldn’t load your schedule. Try again to see your current assignments.':shifts.length?'Only your published assignments are shown. Other days may still change.':'Your schedule will appear here when it is published. An empty day does not mean a day off yet.'}</p>{state==='unavailable'?<Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Try again</Link>:null}</div> : null}
+      {state === 'unavailable' ? <div className="my-schedule-feedback" role="status"><strong>Schedule unavailable</strong><p>We couldn’t load your schedule. Try again to see your current assignments.</p><Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Try again</Link></div> : null}
 
       {confirmation && state !== 'unavailable' ? <section className={`my-schedule-review${acknowledged?' is-confirmed':''}`} aria-labelledby="my-review-title">
         <div className="my-review-icon">{acknowledged?<CheckCircleIcon size={24} aria-hidden="true" />:<CalendarCheckIcon size={24} aria-hidden="true" />}{acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}</div>
-        <div className="my-review-copy"><h2 id="my-review-title">{acknowledged?'You’re up to date':confirmationNeeded?'Review this week’s schedule':'Schedule review'}</h2><p>{acknowledged?'You’ve confirmed the current schedule.':confirmationNeeded?(shifts.length?'Check your shifts below, then confirm you’ve seen this week.':'No assignments remain for this published week. Review the changes, then confirm this schedule.'):'Confirmation is not available. Review the current week again.'}</p></div>
+        <div className="my-review-copy"><h2 id="my-review-title">{acknowledged?'You’re up to date':confirmationNeeded?'Confirm you’ve seen your schedule':'Schedule review'}</h2><p>{acknowledged?'You’ve confirmed the current schedule.':confirmationNeeded?(shifts.length?'Check your shifts for this week, then confirm.':'No assignments remain for this published week. Review the changes, then confirm this schedule.'):'Confirmation is not available. Review the current week again.'}</p></div>
         <div className="my-review-action">{confirmation}</div>
       </section> : null}
 

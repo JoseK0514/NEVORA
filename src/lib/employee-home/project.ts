@@ -65,7 +65,7 @@ export function projectEmployeeHome(input:HomeSnapshot):EmployeeHomeRead{
   const nextShift=available?safeAssignment(input.nextShift):null,currentShift=available?safeAssignment(input.currentShift):null;
   if(nextShift&&Date.parse(nextShift.startAt)<=at||currentShift&&(Date.parse(currentShift.startAt)>at||Date.parse(currentShift.endAt)<=at))throw Error('Expired assignment');
   const boundaries=[nextShift?.startAt,currentShift?.endAt,...Object.values(sources).map(s=>s.validUntil),...[...merged.values()].filter(i=>i.actionable).map(i=>i.deadlineAt)].filter((v):v is string=>!!v).map(v=>Date.parse(v)-at).filter(v=>v>0);
-  const snapshot:HomeSnapshot={observedAt:input.observedAt,authority:input.authority,timeZone:input.timeZone,validForMs:Math.min(input.validForMs,...boundaries),sources,publicationState:available?input.publicationState:'unavailable',nextShift,currentShift,attention:[...merged.values()].sort(compare)};
+  const snapshot:HomeSnapshot={observedAt:input.observedAt,authority:input.authority,timeZone:input.timeZone,validForMs:Math.min(input.validForMs,...boundaries),sources,publicationState:available?input.publicationState:'unavailable',...(available&&input.publicationState==='partial'?{unpublishedLocations:Array.isArray(input.unpublishedLocations)?input.unpublishedLocations.filter(l=>typeof l==='string'&&l.length>0).slice(0,10):[]}:{}),nextShift,currentShift,attention:[...merged.values()].sort(compare)};
   const complete=HOME_SOURCES.every(key=>sources[key].state==='complete')&&snapshot.publicationState==='complete';
   return {state:complete?'ready':'partial',snapshot,allSet:complete&&snapshot.attention.length===0};
  }catch{return {state:'unavailable',reason:'read_failed'};}

@@ -6,7 +6,7 @@ export type PublishedAssignment = {
 };
 
 export type PublishedAssignmentRead =
-  | {observedAt:string;timeZone:string;nextShift:PublishedAssignment|null;currentShift:PublishedAssignment|null;publicationState:'complete'|'partial'}
+  | {observedAt:string;timeZone:string;nextShift:PublishedAssignment|null;currentShift:PublishedAssignment|null;publicationState:'complete'|'partial';unpublishedLocations?:string[]}
   | {observedAt:null;timeZone:null;nextShift:null;currentShift:null;publicationState:'unavailable'};
 
 import type {AttentionRef} from '../employee-attention/types';
@@ -16,5 +16,7 @@ export type HomeSource='schedule'|'acknowledgements'|'exchanges'|'timeOff'|'ownT
 export type AttentionItem={ref:AttentionRef;label:string;href:string;required:boolean;actionable:boolean;deadlineAt:string|null;changedAt:string};
 export type HomeSnapshot={observedAt:string;authority:string;timeZone:string;validForMs:number;
  sources:Record<HomeSource,SourceObservation>;publicationState:'complete'|'partial'|'unavailable';
- nextShift:PublishedAssignment|null;currentShift:PublishedAssignment|null;attention:AttentionItem[]};
+ nextShift:PublishedAssignment|null;currentShift:PublishedAssignment|null;attention:AttentionItem[];
+ /** Names of the person's own locations that have not published this week, when partial. */
+ unpublishedLocations?:string[]};
 export type EmployeeHomeRead={state:'ready'|'partial';snapshot:HomeSnapshot;allSet:boolean}|{state:'unauthorized'|'unavailable';reason:string};

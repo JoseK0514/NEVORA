@@ -137,3 +137,9 @@
 @media (min-width: 1100px) { .my-review-jump { display:none; } }
 .my-schedule-side .my-schedule-review { scroll-margin-top: 96px; }
 html body .app-shell.nevora-portal .page-frame .my-schedule-footer h2 { margin: 0 0 8px 4px; color: var(--muted); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.4; letter-spacing: 0; }
+/* Phones stack the week, then the status panel: keep the usual 16px between the cards. */
+@media (max-width: 1099px) { .my-schedule-agenda + .my-schedule-side { margin-top: 16px; } }
+/* Partly published week: one calm line inside the week card, not a warning box. */
+.my-week-note { display:flex; align-items:flex-start; gap:8px; margin:14px 0 0; padding:10px 12px; border-radius:10px; background:var(--g-inset, #f4f5f6); color:var(--g-ink, #111827); font-size:calc(14 * var(--type-unit, 1px)); line-height:1.5; }
+.my-week-note > svg { flex:none; margin-top:2px; color:var(--g-muted, #5f6368); }
+@media (max-width:760px) { .my-week-note { font-size:0.9375rem; } }
