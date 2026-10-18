@@ -142,8 +142,8 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
   const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule"] };
   if (role === "EMPLOYEE" || role === "LEAD") {
     const pay: MobileTab = payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements
-      ? { href: "/app/my-pay", label: "Pay", icon: "statement", owns: ["/app/my-pay", "/app/my-time"] }
-      : { href: "/app/my-time", label: "Hours", icon: "clock", owns: ["/app/my-time"] };
+      ? { href: "/app/my-pay", label: "Pay", icon: "statement", owns: ["/app/my-pay", "/app/my-time", "/app/timecards"] }
+      : { href: "/app/my-time", label: "Hours", icon: "clock", owns: ["/app/my-time", "/app/timecards"] };
     return [home, schedule, { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/availability"] }, pay];
   }
   return [
@@ -182,7 +182,10 @@ export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCa
   const groups: SectionTabGroup[] = role === "EMPLOYEE" || role === "LEAD"
     ? [
       { label: "Requests", items: [{ href: "/app/requests/hub", label: "Overview" }, ...requests] },
-      ...(payroll?.enabled && modules.payStatements ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "Statements" }, { href: "/app/my-time", label: "Hours" }] }] : []),
+      // Timecards stays in the employee's Pay / Hours family (Codex mobile review M7).
+      ...(payroll?.enabled && modules.payStatements
+        ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "Statements" }, { href: "/app/my-time", label: "Hours" }, { href: "/app/timecards", label: "Timecards" }] }]
+        : [{ label: "Hours", items: [{ href: "/app/my-time", label: "Hours" }, { href: "/app/timecards", label: "Timecards" }] }]),
     ]
     : [
       { label: "Requests", items: requests },

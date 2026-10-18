@@ -254,6 +254,8 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
       {snapshot ? <p>{greeting(snapshot.observedAt, snapshot.timeZone)} · <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {
         timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
       }).format(new Date(snapshot.observedAt))}</time></p> : null}
+      {/* Codex mobile review M8: required work is noticed on the first screen; the full list stays below. */}
+      {snapshot && actions.length ? <a className={styles.todoJump} href="#employee-reviewed-actions-heading">{actions.length === 1 ? '1 item needs your review' : `${actions.length} items need your review`}</a> : null}
     </header>
     <div className={styles.content}>
       <div className={styles.primary}>

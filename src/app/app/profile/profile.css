@@ -45,3 +45,33 @@
   .profile-signout { padding: 20px; flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) { .profile-view *, .profile-view *::before, .profile-view *::after { transition: none; scroll-behavior: auto; } }
+
+/* Codex mobile review M1-M4 (2026-10-18): Work details, App settings as one grouped list, compact Sign out. */
+.profile-view .profile-settings { min-width: 0; }
+.profile-view .profile-settings > h2 { margin: 0 0 8px 4px; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.4; letter-spacing: 0; }
+.profile-view .profile-settings-list { border: 1px solid var(--color-border-subtle, var(--design-border)); border-radius: 14px; background: var(--design-surface-elevated, #fff); overflow: hidden; }
+.profile-view .profile-settings-list > * + * { border-top: 1px solid var(--color-border-subtle, var(--design-border)); }
+.profile-view .profile-settings-list .profile-setting-row,
+.profile-view .profile-signout-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 60px; margin: 0; padding: 12px 16px; border: 0; border-radius: 0; background: transparent; color: var(--g-ink, #111827); font: inherit; text-align: left; text-decoration: none; cursor: pointer; }
+.profile-view .profile-setting-copy { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.profile-view .profile-setting-copy > svg { flex: none; color: var(--g-accent, #077572); }
+.profile-view .profile-setting-copy strong { display: block; font-size: calc(15 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.4; }
+.profile-view .profile-setting-copy small { display: block; margin-top: 2px; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.45; }
+.profile-view .profile-setting-caret { flex: none; color: var(--design-text-secondary); transition: transform 150ms ease-out; }
+.profile-view .profile-setting-note { margin: 0; padding: 12px 16px 12px 48px; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.5; }
+.profile-view .profile-calendar-disclosure > summary { list-style: none; }
+.profile-view .profile-calendar-disclosure > summary::-webkit-details-marker { display: none; }
+.profile-view .profile-calendar-disclosure[open] .profile-setting-caret { transform: rotate(180deg); }
+/* Inside the disclosure the row is the heading; the panel's own heading stays for its anchor and screen readers. */
+.profile-view .profile-calendar-disclosure .employee-calendar { margin: 0; border: 0; border-radius: 0; box-shadow: none; padding-top: 4px; }
+.profile-view .profile-calendar-disclosure .employee-calendar > .profile-section-heading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.profile-view .profile-signout { margin-top: 20px; padding: 0; border: 1px solid var(--color-border-subtle, var(--design-border)); border-radius: 14px; background: var(--design-surface-elevated, #fff); display: block; overflow: hidden; }
+.profile-view .profile-signout form { display: block; }
+.profile-view .profile-signout-row .profile-setting-copy > svg { color: var(--design-text-secondary); }
+.profile-view :is(.profile-setting-row, .profile-signout-row):focus-visible { outline: 2px solid var(--g-accent, #077572); outline-offset: -2px; }
+@media (hover: hover) { .profile-view :is(.profile-settings-list .profile-setting-row, .profile-signout-row):hover { background: var(--g-inset, #f4f5f6); } }
+.profile-view .profile-refresh-link { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 0; border: 0; background: transparent; color: var(--g-accent, #077572); font: inherit; font-size: calc(14 * var(--type-unit, 1px)); font-weight: 600; cursor: pointer; }
+.profile-view .profile-refresh-link:disabled { color: var(--design-text-secondary); cursor: default; }
+@media (prefers-reduced-motion: reduce) { .profile-view .profile-setting-caret { transition: none; } }
+/* The calendar link scrolls the disclosure clear of the sticky phone header. */
+.profile-view .profile-calendar-disclosure { scroll-margin-top: 88px; }

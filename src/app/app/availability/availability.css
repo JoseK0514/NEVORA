@@ -194,3 +194,12 @@
 @media (prefers-reduced-motion: reduce) {
   .availability-page *, .availability-page *::before, .availability-page *::after { transition: none; scroll-behavior: auto; }
 }
+
+/* Codex mobile review M5: the usual-week and specific-week descriptions meet the 15px phone floor. */
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal .av-week-context span:not(.av-icon-tile),
+  html body .app-shell.nevora-portal .av-upcoming-banner span { font-size: 15px; line-height: 1.45; }
+}
+/* The specific-week entry is a link styled as the primary action; keep its label white on teal at every width (axe contrast). */
+html body .app-shell.nevora-portal .availability-page .av-upcoming-banner a.av-button.primary,
+html body .app-shell.nevora-portal .availability-page .av-upcoming-banner a.av-button.primary:is(:visited,:hover) { color: #fff; }

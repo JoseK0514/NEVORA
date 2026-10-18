@@ -182,8 +182,15 @@ it.each([['OWNER','/app/requests',['/app/requests','/app/exchange','/app/availab
 });
 
 it('shows no section tabs on pages outside a shared group',()=>{
- expect(render('EMPLOYEE','/app/my-time').html).not.toContain('class="section-tabs"');
  expect(render('OWNER','/app/schedule').html).not.toContain('class="section-tabs"');
+});
+
+it('M7: an employee reaches Timecards from the Pay section tabs',()=>{
+ const {html}=render('EMPLOYEE','/app/my-time');
+ const tabs=html.split('class="section-tabs"')[1]?.split('</nav>')[0]??'';
+ expect(tabs).toContain('href="/app/my-time"');
+ expect(tabs).toContain('href="/app/timecards"');
+ expect(render('EMPLOYEE','/app/timecards').html).toContain('href="/app/timecards" class="section-tab" aria-current="page"');
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination within the existing employee More navigation',role=>{

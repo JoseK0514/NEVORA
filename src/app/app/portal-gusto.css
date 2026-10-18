@@ -517,3 +517,4 @@ html body .app-shell.nevora-portal .module-off-home { display: inline-flex; alig
 html body .app-shell.nevora-portal .employee-profile-work-title { margin: 0 0 10px; font-size: calc(17 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.4; color: var(--g-ink, #111827); }
 html body .app-shell.nevora-portal .employee-profile-correction { margin: 10px 0 0; color: var(--g-muted, #5f6368); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.5; }
 html body .app-shell.nevora-portal .employee-profile-work-title + .employee-profile-details { margin-top: 0; }
+html body .app-shell.nevora-portal #employee-reviewed-actions-heading { scroll-margin-top: 96px; } /* M8 to-do link target clears the header */

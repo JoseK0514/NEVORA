@@ -302,3 +302,7 @@
   .quick a { grid-template-columns: 32px minmax(0, 1fr); align-items: center; align-content: center; gap: 12px; min-height: 56px; padding: 10px 14px; border-radius: 12px; }
   .quickIcon { width: 32px; height: 32px; border-radius: 10px; }
 }
+/* M8: a quiet link under the greeting to the To do list. */
+.todoJump { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 4px; color: var(--home-blue); font-size: .9375rem; font-weight: 600; text-decoration: none; }
+.todoJump::after { content: '↓' / ''; }
+.todoJump:focus-visible { outline: 2px solid var(--home-blue); outline-offset: 2px; border-radius: 4px; }

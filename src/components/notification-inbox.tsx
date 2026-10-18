@@ -77,7 +77,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
        <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} aria-hidden="true"/>:null}{reviewLabels[review]}</span><span className={styles.action} data-state={action}>{actionLabels[action]}</span></div>
        <span className={styles.destination}>{presentation.destination}</span>
       </div>
-      <span className={styles.open}>Open record<CaretRightIcon size={18} aria-hidden="true"/></span>
+      <span className={styles.open}>{presentation.action}<CaretRightIcon size={18} aria-hidden="true"/></span>
      </Link>{onMarkRead&&review==='unread'?<button type="button" className={styles.markRead} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={`Mark ${item.label} read`}>{pendingRead===item.id?'Marking read…':'Mark read'}</button>:null}</li>;
     })}</ul>
    </section>)}</div>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="regular" aria-hidden="true"/></span>

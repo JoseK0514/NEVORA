@@ -20,7 +20,7 @@ import {
 } from "@/lib/data/week-settings";
 import {
   formatWeekRange,
-  isValidWeekStart, weekStartFor,
+  addDays, isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 import type { AvailabilityState } from "@/lib/availability-presets";
 
@@ -162,19 +162,21 @@ export default async function AvailabilityPage({
         {selectedWeek && submissionStatus && submissionCopy ? <div className={`av-submission-detail${submissionStatus.submitted ? " submitted" : ""}`}><strong>{submissionCopy.label}</strong><p>{submissionCopy.detail}</p>{submissionStatus.updatedAt ? <small>Last updated {formatBusinessDateTime(submissionStatus.updatedAt, workspace.timeZone)}</small> : null}</div> : null}
       </section>
 
-      {!selectedWeek && upcomingWeek?.availabilityDeadline ? (
+      {/* Codex mobile review M5: a specific week is always reachable, with or without a cutoff. */}
+      {!selectedWeek ? (
         <section className="av-upcoming-banner">
           <div>
-            <p>Upcoming schedule</p>
-            <strong>{formatWeekRange(upcomingWeek.weekStart)}</strong>
+            <p>{upcomingWeek?.availabilityDeadline ? "Upcoming schedule" : "A specific week"}</p>
+            <strong>{formatWeekRange(upcomingWeek?.weekStart ?? addDays(currentWeek, 7))}</strong>
             <span>
-              Availability closes{" "}
-              {formatBusinessDateTime(upcomingWeek.availabilityDeadline, workspace.timeZone)}.
+              {upcomingWeek?.availabilityDeadline
+                ? <>Availability closes {formatBusinessDateTime(upcomingWeek.availabilityDeadline, workspace.timeZone)}.</>
+                : "Different hours for one week? Submit them here. Your usual week stays the same."}
             </span>
           </div>
           <Link
             className="av-button primary"
-            href={`/app/availability?week=${upcomingWeek.weekStart}`}
+            href={`/app/availability?week=${upcomingWeek?.weekStart ?? addDays(currentWeek, 7)}`}
           >
             Submit for this week<ArrowRightIcon size={18} aria-hidden="true" />
           </Link>

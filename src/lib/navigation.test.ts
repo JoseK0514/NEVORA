@@ -65,8 +65,8 @@ describe('section tabs', () => {
   it('lists only destinations the role can open', () => {
     expect(sectionTabsFor('MANAGER', '/app/timecards', payroll)?.items.map(item => item.label)).toEqual(['Timecards','Time exports']);
     expect(sectionTabsFor('OWNER', '/app/payroll', { ...payroll, canReview: true, canConfigure: true })?.items.map(item => item.label)).toEqual(['Timecards','Payroll runs','Time exports','Payroll settings']);
-    expect(sectionTabsFor('EMPLOYEE', '/app/my-pay', payroll)?.items.map(item => item.href)).toEqual(['/app/my-pay','/app/my-time']);
-    expect(sectionTabsFor('EMPLOYEE', '/app/my-time')).toBeNull();
+    expect(sectionTabsFor('EMPLOYEE', '/app/my-pay', payroll)?.items.map(item => item.href)).toEqual(['/app/my-pay','/app/my-time','/app/timecards']);
+    expect(sectionTabsFor('EMPLOYEE', '/app/my-time')?.items.map(item => item.href)).toEqual(['/app/my-time','/app/timecards']);
   });
   it('keeps tabs off nested and unrelated pages', () => {
     expect(sectionTabsFor('EMPLOYEE', '/app/exchange/swap')).toBeNull();

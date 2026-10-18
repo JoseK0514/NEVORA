@@ -199,7 +199,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
           {modules.marketplace ? <li><Link href="/app/exchange?tab=my" className="my-schedule-row"><ArrowsLeftRightIcon size={20} aria-hidden="true" /><span>Shift requests</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li> : null}
           <li><Link href="/app/availability" className="my-schedule-row"><UserCheckIcon size={20} aria-hidden="true" /><span>Update availability</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li>
           {modules.timeOff ? <li><Link href="/app/requests" className="my-schedule-row"><CalendarMinusIcon size={20} aria-hidden="true" /><span>Request time off</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li> : null}
-          <li><Link href="/app/profile#employee-calendar-title" className="my-schedule-row"><CalendarPlusIcon size={20} aria-hidden="true" /><span>Calendar subscription</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li>
+          <li><Link href="/app/profile#employee-calendar-title" className="my-schedule-row"><CalendarPlusIcon size={20} aria-hidden="true" /><span>Add shifts to your calendar</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li>
         </ul>
       </footer>
     </div>

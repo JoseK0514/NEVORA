@@ -213,7 +213,7 @@ describe('truthful source states and refresh intent', () => {
     current.sources.acknowledgements = {...current.sources.acknowledgements, state: 'unavailable', reason: 'review_unavailable'};
     const markup = html(props(projectEmployeeHome(current)));
     expect(markup).toContain('Private location');
-    expect(markup).toContain('Another location you work at hasn’t published this week yet. Shifts shown are final.');
+    expect(markup).toContain('Another location you work at hasn’t published this week yet. Shifts shown are published.');
     expect(markup).toContain('Schedule reviews unavailable — a changed schedule needs review');
     expect(markup).toContain('Open schedule reviews');
     expect(markup).not.toContain("You're all set.");
@@ -224,7 +224,7 @@ describe('truthful source states and refresh intent', () => {
     current.sources.schedule = {...current.sources.schedule, state: 'partial', reason: 'unpublished'};
     current.sources.acknowledgements = {...current.sources.acknowledgements, state: 'partial', reason: 'unpublished'};
     const markup = html(props(projectEmployeeHome(current)));
-    expect(markup).toContain('Another location you work at hasn’t published this week yet. Shifts shown are final.');
+    expect(markup).toContain('Another location you work at hasn’t published this week yet. Shifts shown are published.');
     expect(markup).not.toContain('could not be fully checked');
     expect(markup).not.toMatch(/Schedule partial|Schedule reviews partial/);
     expect(markup).not.toContain('known action');

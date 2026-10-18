@@ -14,10 +14,10 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
  const unavailable=state.snapshot?.state==='unavailable';
  const name='Profile';
  return <section className="employee-view-surface employee-account-panel employee-profile-panel" aria-label={name} data-private-view={kind}>
-  <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="employee" size={24}/></span><div><h2>Personal details</h2><p>Your information at work.</p></div></header>
+  <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="employee" size={24}/></span><div><h2>Work details</h2></div></header>
   {!ready?<div role="status"><h2>{state.paused?'Updates paused':denied?'Sign in again':unavailable?`${name} unavailable`:`Loading ${name.toLowerCase()}…`}</h2><p>{state.paused?'Return to this window while online to check current information.':denied?'Your current employee session is required.':unavailable?'We could not confirm your current information. Try again.':'Checking your current access.'}</p></div>:
    <EmployeeProfileDetails profile={ready.profile} notificationsEnabled={notificationsEnabled}/>}
-  <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button type="button" className="button secondary" disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':unavailable?'Retry':kind==='profile'?'Refresh details':'Refresh'}</button>}</footer>
+  <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button type="button" className={kind==='profile'?'profile-refresh-link':'button secondary'} disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':unavailable?'Retry':kind==='profile'?'Refresh details':'Refresh'}</button>}</footer>
  </section>;
 }
 export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint,markReadAllowed=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string;markReadAllowed?:boolean}){

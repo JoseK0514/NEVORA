@@ -11,7 +11,7 @@ const html=(props:Partial<EmployeeMyScheduleProps>={})=>renderToStaticMarkup(cre
 it('a published empty day is distinguished from an unpublished date',()=>{
  expect(html()).toContain('Off — no assignment');
  const partial=html({state:'unpublished'});
- expect(partial).toContain('Your North Office shifts are final. Another location you work at hasn’t published this week yet.');
+ expect(partial).toContain('Your North Office shifts are published. Another location you work at hasn’t published this week yet.');
  expect(partial).not.toContain('Your full week is not published yet');
  expect(partial).toContain('Schedule not published yet');
  expect(partial).not.toContain('Off — no assignment');
@@ -107,7 +107,7 @@ it('says plainly what the review asks: confirm you have seen your own schedule (
 it('names the location that has not published, inside the week card (Jose, 2026-10-18)', () => {
   const markup = html({state: 'unpublished', locations: [{id: 'north', shortName: 'North Office'}, {id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
   expect(markup).toContain('class="my-week-note"');
-  expect(markup).toContain('Your North Office shifts are final. Harbor hasn’t published this week yet.');
+  expect(markup).toContain('Your North Office shifts are published. Harbor hasn’t published this week yet.');
   const none = html({state: 'unpublished', shifts: [], locations: [{id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
-  expect(none).toContain('Harbor hasn’t published this week yet. Shifts shown are final. An empty day isn’t a day off yet.');
+  expect(none).toContain('Harbor hasn’t published this week yet. Shifts shown are published. An empty day isn’t a day off yet.');
 });
