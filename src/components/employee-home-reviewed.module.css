@@ -214,6 +214,9 @@
 .assignment[data-pass] .assignmentFooter::before { left: calc(-1 * var(--pass-pad) - 9px); }
 .assignment[data-pass] .assignmentFooter::after { right: calc(-1 * var(--pass-pad) - 9px); }
 .assignment[data-pass] .scheduleLink { color: #ffffff; }
+/* The pass is always shown, so its quiet states read on green too: no shift, unavailable, loading, sign in again. */
+.assignment[data-pass] :is(.assignmentMessage, .recovery p) { color: #ffffff; }
+.assignment[data-pass] .loadingLines span { background: rgb(255 255 255 / .22); }
 .assignment[data-pass] :is(.current, .upcoming) h3 { color: #ffffff; }
 /* One tear per card: between now and next. Each block's link then sits on a plain rule. */
 .assignment[data-pass] .upcoming { border-top: 1.5px dashed rgb(255 255 255 / .32); }

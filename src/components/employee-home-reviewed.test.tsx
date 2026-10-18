@@ -137,7 +137,7 @@ describe('released Home data and navigation', () => {
     expect(markup).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
     expect(none).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
     const unavailable = html(props(projectEmployeeHome(snapshot({currentShift: current, nextShift: null, publicationState: 'unavailable'}))));
-    expect(unavailable).not.toContain('data-pass');
+    expect(unavailable).toContain('Schedule unavailable');
   });
 
   it('keeps "Next shift" as the heading and names the day link when no shift is under way', () => {
@@ -300,9 +300,14 @@ describe('Today Home (U2)', () => {
     // The countdown needs a live clock, so it is absent from server markup.
     expect(markup).not.toContain('Starts in');
   });
-  it('keeps the calm card when there is no published shift or the schedule is unavailable', () => {
-    expect(html(props(projectEmployeeHome(snapshot({nextShift: null}))))).not.toContain('data-pass');
-    expect(html(props(projectEmployeeHome(snapshot({publicationState: 'unavailable', nextShift: null}))))).not.toContain('data-pass');
+  it('keeps the green pass when there is no published shift or the schedule is unavailable (Jose, 2026-10-18)', () => {
+    const none = html(props(projectEmployeeHome(snapshot({nextShift: null}))));
+    expect(none).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+    expect(none).toContain('No upcoming published shift');
+    expect(none).not.toContain('>Published<');
+    const unavailable = html(props(projectEmployeeHome(snapshot({publicationState: 'unavailable', nextShift: null}))));
+    expect(unavailable).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+    expect(unavailable).toContain('Schedule unavailable');
   });
   it('places quick actions after To do and before recent updates', () => {
     const markup = html(props(projectEmployeeHome(snapshot({attention: [item('todo', {actionable: true}), item('news')]}))));
