@@ -76,6 +76,7 @@ export default async function DashboardPage({
       readyLocationCount={dashboard.readyLocationCount}
       totalLocations={locations.length}
       availabilitySubmitted={availabilitySubmissionSummary.submittedEmployees}
+      availabilityEligible={availabilitySubmissionSummary.eligibleEmployees}
       activeEmployees={availabilitySubmissionSummary.activeEmployees}
       unavailableAllWeek={availabilitySubmissionSummary.unavailableAllWeek}
       coverageIssueCount={dashboard.totalCoverageGaps}

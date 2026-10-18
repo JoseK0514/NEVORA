@@ -100,6 +100,8 @@ type Props = {
   readyLocationCount: number;
   totalLocations: number;
   availabilitySubmitted: number;
+  /** Employees and leads asked for availability this week; the submission denominator (O2). */
+  availabilityEligible: number;
   activeEmployees: number;
   unavailableAllWeek: number;
   coverageIssueCount: number;
@@ -234,8 +236,8 @@ function TeamTab(props: Props) {
   const underOrOver = props.hours.filter(
     (item) => item.status === "UNDER" || item.status === "OVER",
   );
-  const availabilityPercentage = props.activeEmployees
-    ? Math.round((props.availabilitySubmitted / props.activeEmployees) * 100)
+  const availabilityPercentage = props.availabilityEligible
+    ? Math.round((props.availabilitySubmitted / props.availabilityEligible) * 100)
     : 0;
 
   return (
@@ -259,6 +261,7 @@ function TeamTab(props: Props) {
         <div>
           <strong>{availabilityPercentage}%</strong>
           <span>Availability submitted</span>
+          <span>{props.availabilitySubmitted} of {props.availabilityEligible} employees and leads</span>
         </div>
         <div>
           <strong>{targetMissing}</strong>
@@ -511,7 +514,7 @@ export function ManagerDashboard(props: Props) {
           <MobileHomeOverview weekStart={props.weekStart} weekLabel={props.weekLabel}
             previousWeek={props.previousWeek} nextWeek={props.nextWeek}
             plannedShifts={props.days.reduce((total, day) => total + day.shiftCount, 0)}
-            availabilityReceived={props.availabilitySubmitted} activeEmployees={props.activeEmployees}
+            availabilityReceived={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible}
             publishedLocations={props.locations.filter(location => location.scheduleStatus === 'PUBLISHED').length}
             locations={props.locations.length}/>
           <div className="home-layout-tasks">{actions}</div>

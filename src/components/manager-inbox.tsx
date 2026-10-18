@@ -6,13 +6,10 @@ import { useState, type ReactNode } from "react";
 import { ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { actionCenterNavigation } from "./action-center-navigation";
-import { SwipeRow } from "./swipe-row";
-import { TimeOffReviewActions } from "./time-off-review-actions";
 import { EmptyState } from "./empty-state";
 import { Celebration } from "./celebration";
 import { SkeletonRows } from "./skeleton";
-import { reviewTimeOffAction } from "@/app/app/requests/actions";
-import { groupInboxItems, inboxSections, timeOffRequestId } from "@/lib/action-center/inbox";
+import { groupInboxItems, inboxSections } from "@/lib/action-center/inbox";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 
 type Filter = "all" | "exceptions" | "requests";
@@ -21,25 +18,19 @@ const statusText = {
   unavailable: "Inbox unavailable — try again.", access_lost: "Sign in again to view the inbox.", ready: "Inbox unavailable — try again.",
 } as const;
 
+/** O1: no decision from here. The Inbox item carries no dates, duration or
+ * note, so every request opens its full review, which shows them first. */
 function Row({ item }: { item: ActionItem }) {
   const Icon = item.priority === "URGENT" ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : item.category === "requests" ? UserCheckIcon : CalendarBlankIcon;
   const action = actionCenterNavigation(item);
-  const requestId = timeOffRequestId(item);
-  const body = <>
+  return <li className={`inbox-row${item.priority === "URGENT" ? " is-urgent" : ""}`}><div className="inbox-row-content">
     <span className="inbox-icon" aria-hidden="true"><Icon size={20} /></span>
     <div className="inbox-copy">
       <strong>{item.title}</strong>
       <p>{mobileActionDetail(item.detail)}</p>
       <Link className="inbox-link" href={action.href} aria-label={`${action.label}: ${item.title}`}>{action.label}</Link>
     </div>
-    {requestId ? <form action={reviewTimeOffAction} className="inbox-decision" aria-label={`Decide on: ${item.title}`}>
-      <input type="hidden" name="requestId" value={requestId} />
-      <TimeOffReviewActions />
-    </form> : null}
-  </>;
-  const className = `inbox-row${item.priority === "URGENT" ? " is-urgent" : ""}`;
-  return requestId ? <SwipeRow className={className}>{body}</SwipeRow>
-    : <li className={className}><div className="swipe-row-content">{body}</div></li>;
+  </div></li>;
 }
 
 export function ManagerInbox({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
@@ -95,7 +86,6 @@ export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZon
           </li>)}</ul>
       </section>)}
       {ready.limitedAttendance ? <p className="inbox-note">Some attendance comparisons are unavailable. Check the attendance view for details.</p> : null}
-      <p className="inbox-note inbox-swipe-hint">On a phone, swipe a time-off request right to approve or left to decline.</p>
     </>}
   </div>;
 }

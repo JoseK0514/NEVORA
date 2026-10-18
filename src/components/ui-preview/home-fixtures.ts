@@ -109,7 +109,7 @@ export const previewManagerHome: ComponentProps<typeof ManagerDashboard> = {
   workspaceName: records.workspace.name, timeZone, firstName: 'Fictional', role: 'OWNER',
   weekStart: previewWeek, weekLabel: 'Oct 12–18, 2026', previousWeek: '2026-10-05', nextWeek: '2026-10-19',
   view: 'overview', readyLocationCount: 1, totalLocations: records.locations.length,
-  availabilitySubmitted: 0, activeEmployees: records.people.length, unavailableAllWeek: 0,
+  availabilitySubmitted: 0, availabilityEligible: records.people.length, activeEmployees: records.people.length, unavailableAllWeek: 0,
   coverageIssueCount: 0, coverageConfigured: true, pendingRequestCount: 0, managerActions: actions,
   days: records.days.map(day => ({date: day.date, weekday: new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short'})
     .format(new Date(`${day.date}T12:00:00Z`)), day: day.date.slice(-2), shiftCount: day.count, gapCount: 0})),

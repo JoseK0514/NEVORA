@@ -1,5 +1,5 @@
 /* Inbox (U4, 2026-10-16): one list of what needs a decision. Exceptions
- * first, then requests; time-off rows can be decided in place. */
+ * first, then requests. Each row opens its full review (O1). */
 .manager-inbox { display: grid; gap: 20px; max-width: 880px; }
 .inbox-header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
 .inbox-header h1 { margin: 0; }
@@ -23,13 +23,9 @@
 .inbox-section[data-section="urgent"] h2 { color: #A8361F; }
 .inbox-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 
-.inbox-row, .swipe-row { position: relative; overflow: hidden; border: 1px solid var(--g-hairline, #ECEDEF); border-radius: 14px; background: #FFFFFF; }
+.inbox-row { position: relative; overflow: hidden; border: 1px solid var(--g-hairline, #ECEDEF); border-radius: 14px; background: #FFFFFF; }
 .inbox-row.is-urgent { border-left: 4px solid var(--g-urgent, #E1553F); }
-.swipe-row-content {
-  position: relative; z-index: 1; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: start; gap: 14px; padding: 14px 16px;
-  background: #FFFFFF; touch-action: pan-y; transition: transform 260ms cubic-bezier(.32, .72, 0, 1);
-}
-.swipe-row-content[data-dragging] { transition: none; }
+.inbox-row-content { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: start; gap: 14px; padding: 14px 16px; }
 .inbox-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--g-accent, #077572); background: var(--g-accent-wash, #E7F3F2); }
 .is-urgent .inbox-icon { color: #A8361F; background: #FCEBE7; }
 .inbox-copy { display: grid; gap: 4px; min-width: 0; }
@@ -37,33 +33,15 @@
 .inbox-copy p { margin: 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); line-height: 1.45; overflow-wrap: anywhere; }
 .inbox-link { display: inline-flex; align-items: center; width: fit-content; min-height: 44px; color: var(--g-accent, #077572); font-size: calc(15 * var(--type-unit, 1px)); font-weight: 600; text-decoration: none; }
 .inbox-link::after { margin-left: 6px; content: "›"; font-size: calc(18 * var(--type-unit, 1px)); line-height: 1; }
-.inbox-decision { align-self: center; }
-.inbox-decision .nto-review-buttons { display: flex; gap: 8px; }
-.inbox-decision .nto-button { min-height: 44px; }
-
-/* The swipe backdrop: teal on the left (approve), coral on the right (decline). */
-.swipe-row-backdrop { position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: calc(15 * var(--type-unit, 1px)); font-weight: 600; color: #FFFFFF; }
-.swipe-row-backdrop span { opacity: 0; transition: opacity 120ms ease; }
-.swipe-row[data-swipe="approve"] .swipe-row-backdrop { background: var(--g-accent, #077572); }
-.swipe-row[data-swipe="decline"] .swipe-row-backdrop { justify-content: flex-end; background: #B4361F; }
-.swipe-row[data-swipe="approve"] .swipe-row-approve, .swipe-row[data-swipe="decline"] .swipe-row-decline { opacity: 1; }
-.swipe-row[data-swipe="approve"] .swipe-row-decline, .swipe-row[data-swipe="decline"] .swipe-row-approve { display: none; }
-.swipe-row[data-armed] .swipe-row-backdrop { filter: saturate(1.15); }
 
 .inbox-status { display: grid; gap: 12px; }
 .inbox-status p { margin: 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); }
 .inbox-note { margin: 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); }
-.inbox-swipe-hint { display: none; }
 
 @media (max-width: 760px) {
   .manager-inbox { gap: 16px; }
-  .swipe-row-content { grid-template-columns: 40px minmax(0, 1fr); }
-  .inbox-decision { grid-column: 1 / -1; }
-  .inbox-decision .nto-review-buttons { display: grid; grid-template-columns: 1fr 1fr; }
-  .inbox-swipe-hint { display: block; }
 }
-@media (prefers-reduced-motion: reduce) { .swipe-row-content, .swipe-row-backdrop span { transition: none; } }
-@media (prefers-contrast: more) { .inbox-row, .swipe-row { border-color: #1C1C1C; } }
+@media (prefers-contrast: more) { .inbox-row { border-color: #1C1C1C; } }
 
 /* Grouped repeats: one card that opens to its items. */
 .inbox-group { border: 1px solid var(--g-hairline, #ECEDEF); border-radius: 14px; background: #FFFFFF; overflow: hidden; }
@@ -76,14 +54,6 @@
 .inbox-group details > .inbox-list { padding: 0 8px 8px; }
 .inbox-group .inbox-row { border-left-width: 1px; }
 
-/* Decision buttons: the Time off page's pills, styled here too. */
-.inbox-decision .nto-button {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px;
-  font: inherit; font-size: calc(15 * var(--type-unit, 1px)); font-weight: 600; cursor: pointer; white-space: nowrap;
-}
-.inbox-decision .nto-secondary { border: 1px solid var(--g-border, #D7D9DC); background: #FFFFFF; color: var(--g-ink, #1C1C1C); }
-.inbox-decision .nto-primary { border: 1px solid var(--g-accent, #077572); background: var(--g-accent, #077572); color: #FFFFFF; }
-.inbox-decision .nto-button:disabled { opacity: .6; cursor: default; }
 @media (prefers-reduced-motion: reduce) { .inbox-group-caret { transition: none; } }
 
 /* Missed punches (B4): published shifts today with no clock-in, above everything else. */

@@ -69,7 +69,7 @@ function MissedRow({ shift, timeZone }: { shift: TodayShift; timeZone: string })
       <strong>{shift.employeeName}</strong>
       <span>{STATUS_TEXT[shift.status]} · {running ? `started ${time(shift.startAt, timeZone)}` : `${time(shift.startAt, timeZone)}–${time(shift.endAt, timeZone)}`} · {shift.locationName}</span>
     </div>
-    <Link className="missed-row-action" href={running ? `/app/employees/${encodeURIComponent(shift.employeeId)}` : "/app/timecards"}>
+    <Link className="missed-row-action" href={running ? `/app/employees/${encodeURIComponent(shift.employeeId)}` : `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`}>
       {running ? "Contact" : "Review timecard"} <span aria-hidden="true">›</span><span className="sr-only"> for {shift.employeeName}</span>
     </Link>
   </li>;

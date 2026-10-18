@@ -12,7 +12,7 @@ import { readShiftChangePolicy } from "@/lib/data/shift-change-policy";
 import { neonNotificationExecutor } from "@/lib/data/notification-transactions";
 import { listCoverageWindows, listEmployeeHourTargets, listLocationStaffingSettings } from "@/lib/data/schedule-health";
 import { addCoverageWindowFormAction, replaceCoverageWindowPositionRequirementsAction, deleteCoverageWindowAction, saveScheduleHealthSettingsFormAction } from "./actions";
-import { formatTime } from "@/lib/date-utils";
+import { formatTimeRange } from "@/lib/date-utils";
 import "./scheduling-rules.css";
 
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -133,8 +133,8 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                 <article className="rules-period-card manager-issue-target" id={"coverage-" + window.id} tabIndex={-1} key={window.id}>
                   <div className="rules-period-header">
                     <div className="rules-day-tile" aria-hidden="true">{dayNames[window.dayOfWeek].slice(0, 3)}</div>
-                    <div className="rules-period-copy"><h3>{locationLabel(window.locationId, window.locationId)} · {dayNames[window.dayOfWeek]}</h3><p>{formatTime(window.startTime)} – {formatTime(window.endTime)}</p><span>{window.minimumStaff ? window.minimumStaff + " staff required" : "Uses location staffing requirement"}</span></div>
-                    <form action={deleteCoverageWindowAction}><input type="hidden" name="windowId" value={window.id} /><button className="rules-remove" type="submit" aria-label={"Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTime(window.startTime) + " coverage period"}>Remove</button></form>
+                    <div className="rules-period-copy"><h3>{locationLabel(window.locationId, window.locationId)} · {dayNames[window.dayOfWeek]}</h3><p>{formatTimeRange(window.startTime, window.endTime)}</p><span>{window.minimumStaff ? window.minimumStaff + " staff required" : "Uses location staffing requirement"}</span></div>
+                    <form action={deleteCoverageWindowAction}><input type="hidden" name="windowId" value={window.id} /><button className="rules-remove" type="submit" aria-label={"Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period"}>Remove</button></form>
                   </div>
                   <details className="rules-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
                     <summary>Position quantities<span>{window.positionRequirements.length ? window.positionRequirements.length + " configured" : "Optional"}</span><NavIcon name="chevronRight" /></summary>
