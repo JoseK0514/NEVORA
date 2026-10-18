@@ -257,7 +257,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
     <div className={styles.content}>
       <div className={styles.primary}>
         <section className={styles.assignment} aria-labelledby="employee-reviewed-next-heading"
-          data-pass={snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? 'true' : undefined}>
+          data-pass={(underWay || snapshot?.nextShift) && snapshot?.publicationState !== 'unavailable' ? 'true' : undefined}>
           <header className={styles.assignmentHeader}>
             <h2 id="employee-reviewed-next-heading">{underWay ? 'Your shifts' : 'Next shift'}</h2>
             {snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? <span className={styles.published}>Published</span> : null}

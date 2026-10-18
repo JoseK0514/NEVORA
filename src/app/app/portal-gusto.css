@@ -243,7 +243,12 @@ html body .app-shell.nevora-portal .page-frame .status-pill { font-weight: 500; 
   html body .app-shell.nevora-portal:has([data-home-state]) .mobile-header .login-brand-module { color: var(--g-masthead-ink, #CFE3E1); }
   html body .app-shell.nevora-portal:has([data-home-state]) .mobile-header :is(.portal-notification-bell,.portal-header-notifications,.nevora-action-menu-trigger) { color: #FFFFFF; background: transparent; border: 0; }
   html body .app-shell.nevora-portal:has([data-home-state]) .mobile-header :is(a,button):focus-visible { outline-color: #FFFFFF; }
-  html body .app-shell.nevora-portal .page-frame:has([data-home-state]) { padding: 0 0 112px; }
+  /* The Home canvas runs to the bottom and ends 16px above the tab bar (69px with its 8px padding)
+     and the home indicator, so nothing scrolls past the last row into a blank strip. */
+  html body .app-shell.nevora-portal .page-frame:has([data-home-state]) { padding: 0; }
+  html body .app-shell.nevora-portal .page-frame [data-home-state] { padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)); }
+  /* Phones scroll in one direction only: no sideways drift, and no bounce past the page's end. */
+  html:has(.app-shell.nevora-portal), html:has(.app-shell.nevora-portal) body { overflow-x: clip; overscroll-behavior: none; }
   html body .app-shell.nevora-portal .mobile-nav .mobile-nav-link.active { background: transparent; color: var(--g-accent); font-weight: 600; }
   html body .app-shell.nevora-portal .mobile-nav .mobile-nav-link.active svg { color: var(--g-accent); }
 }

@@ -133,6 +133,11 @@ describe('released Home data and navigation', () => {
     expect(none).toContain('No upcoming published shift');
     expect(none).toMatch(/aria-label="View schedule, Mon, Oct 7"/);
     expect(none).toMatch(/href="\/app\/schedule"[^>]*>View schedule/);
+    // A shift under way keeps the pass, with or without a next shift.
+    expect(markup).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+    expect(none).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+    const unavailable = html(props(projectEmployeeHome(snapshot({currentShift: current, nextShift: null, publicationState: 'unavailable'}))));
+    expect(unavailable).not.toContain('data-pass');
   });
 
   it('keeps "Next shift" as the heading and names the day link when no shift is under way', () => {
