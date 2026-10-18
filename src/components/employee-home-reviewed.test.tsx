@@ -111,9 +111,35 @@ describe('released Home data and navigation', () => {
     expect(markup).toContain('Ends');
     expect(markup).toContain('Designated lead');
     expect(markup).toContain('week=2030-10-07&amp;day=2030-10-08');
-    expect(markup).toContain('clock status is shown separately');
+    expect(markup).toContain("Clock status below shows whether you're clocked in.");
     expect(markup).not.toContain('Clocked in');
     expect(markup.indexOf('Next shift')).toBeLessThan(markup.indexOf('data-test-own-time'));
+  });
+
+  it('leads with the shift under way, then the next shift, with one zone line and distinct day-link names', () => {
+    const current = {...assignment, shiftId: 'now', date: '2030-10-07', startAt: '2030-10-07T11:00:00Z', endAt: '2030-10-07T19:00:00Z'};
+    const markup = html(props(projectEmployeeHome(snapshot({currentShift: current}))));
+    const card = markup.slice(markup.indexOf('aria-labelledby="employee-reviewed-next-heading"'), markup.indexOf('data-test-own-time'));
+    expect(card).toContain('>Your shifts</h2>');
+    expect(card.split('Scheduled now<').length - 1).toBe(1);
+    expect(card.indexOf('Scheduled now')).toBeLessThan(card.indexOf('>Next shift</h3>'));
+    expect(card.indexOf('>Today</strong>')).toBeLessThan(card.indexOf('>Next shift</h3>'));
+    expect(card.match(/Times in Puerto Rico time/g)).toHaveLength(1);
+    expect(card).toContain('aria-label="View schedule, Mon, Oct 7"');
+    expect(card).toContain('aria-label="View schedule, Tue, Oct 8"');
+    expect(card.indexOf('Starts in') === -1 || card.indexOf('Starts in') > card.indexOf('>Next shift</h3>')).toBe(true);
+    expect(card).not.toMatch(/Clocked [Ii]n/);
+    const none = html(props(projectEmployeeHome(snapshot({currentShift: current, nextShift: null}))));
+    expect(none).toContain('No upcoming published shift');
+    expect(none).toMatch(/aria-label="View schedule, Mon, Oct 7"/);
+    expect(none).toMatch(/href="\/app\/schedule"[^>]*>View schedule/);
+  });
+
+  it('keeps "Next shift" as the heading and names the day link when no shift is under way', () => {
+    const markup = html(props());
+    expect(markup).toContain('>Next shift</h2>');
+    expect(markup).not.toContain('Your shifts');
+    expect(markup).toContain('aria-label="View schedule, Tue, Oct 8"');
   });
 
   it('partitions by authoritative flags and preserves projected href/order rather than title or status wording', () => {

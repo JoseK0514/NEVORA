@@ -12,6 +12,7 @@ import {EmployeeTimeView} from './employee-time-panel';
 import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, HomeSource, PublishedAssignment} from '../lib/employee-home/types';
 import styles from './employee-home-reviewed.module.css';
+import {formatDisplayDate} from '../lib/date-utils';
 
 export type EmployeeHomeReviewedViewProps = {
   home: EmployeeHomeRead | null;
@@ -97,7 +98,8 @@ function Arrow({forward = false}: {forward?: boolean}) {
   </svg>;
 }
 
-function Assignment({shift, zone, observedAt, countdown = false}: {shift: PublishedAssignment; zone: string; observedAt?: string; countdown?: boolean}) {
+/** One shift. `showZone` is off when the card carries a single zone line for both blocks. */
+function Assignment({shift, zone, observedAt, countdown = false, showZone = true}: {shift: PublishedAssignment; zone: string; observedAt?: string; countdown?: boolean; showZone?: boolean}) {
   const endDate = businessDate(shift.endAt, zone);
   const formatTime = (at: string) => new Intl.DateTimeFormat('en-US', {
     timeZone: zone, hour: 'numeric', minute: '2-digit',
@@ -114,10 +116,12 @@ function Assignment({shift, zone, observedAt, countdown = false}: {shift: Publis
     {endDate !== shift.date ? <p className={styles.assignmentDetail}>Ends <time dateTime={shift.endAt}>{dateLabel(endDate)}</time></p> : null}
     {shift.designatedLead ? <p className={styles.assignmentDetail}>Designated lead</p> : null}
     <div className={styles.assignmentFooter}>
-      <Link className={styles.scheduleLink} href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}>
+      {/* One whole name per day link ("View schedule, Sat, Oct 17"), so two links tell apart and translate whole. */}
+      <Link className={styles.scheduleLink} href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}
+        aria-label={`View schedule, ${formatDisplayDate(shift.date)}`}>
         View schedule <Arrow forward/>
       </Link>
-      <p className={styles.zone}>Times in {zoneLabel(zone)}</p>
+      {showZone ? <p className={styles.zone}>Times in {zoneLabel(zone)}</p> : null}
     </div>
   </>;
 }
@@ -239,6 +243,8 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
   const updates = snapshot?.attention.filter(item => !item.actionable && !item.required) ?? [];
   const name = snapshot ? displayName?.trim() : undefined;
   const allSet = !!snapshot && !partial && released!.allSet;
+  // A shift under way leads the card; the next shift follows under its own heading.
+  const underWay = snapshot?.currentShift && snapshot.publicationState !== 'unavailable' ? snapshot.currentShift : null;
   const recovery = paused ? 'Home paused — return online to refresh.' : denied ? 'Sign in again to view Home.' : loading ? 'Loading Home…' : 'Home unavailable — try again.';
 
   return <div className={styles.root} data-home-state={viewState} aria-busy={refreshing || loading}>
@@ -253,18 +259,26 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
         <section className={styles.assignment} aria-labelledby="employee-reviewed-next-heading"
           data-pass={snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? 'true' : undefined}>
           <header className={styles.assignmentHeader}>
-            <h2 id="employee-reviewed-next-heading">Next shift</h2>
+            <h2 id="employee-reviewed-next-heading">{underWay ? 'Your shifts' : 'Next shift'}</h2>
             {snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? <span className={styles.published}>Published</span> : null}
           </header>
           {snapshot ? <>
             {snapshot.publicationState === 'unavailable' ? <p className={styles.assignmentMessage}>Schedule unavailable</p>
+              : underWay ? <>
+                <section className={styles.current} aria-label="Scheduled now">
+                  <h3>Scheduled now</h3>
+                  <p className={styles.currentNote}>Clock status below shows whether you&apos;re clocked in.</p>
+                  <Assignment shift={underWay} zone={snapshot.timeZone} observedAt={snapshot.observedAt} showZone={false}/>
+                </section>
+                <section className={styles.upcoming} aria-labelledby="employee-reviewed-upcoming-heading">
+                  <h3 id="employee-reviewed-upcoming-heading">Next shift</h3>
+                  {snapshot.nextShift ? <Assignment shift={snapshot.nextShift} zone={snapshot.timeZone} observedAt={snapshot.observedAt} countdown showZone={false}/>
+                    : <><p className={styles.assignmentMessage}>No upcoming published shift</p><Link className={styles.scheduleLink} href="/app/schedule">View schedule <Arrow forward/></Link></>}
+                </section>
+                <p className={`${styles.zone} ${styles.cardZone}`}>Times in {zoneLabel(snapshot.timeZone)}</p>
+              </>
               : snapshot.nextShift ? <Assignment shift={snapshot.nextShift} zone={snapshot.timeZone} observedAt={snapshot.observedAt} countdown/>
                 : <><p className={styles.assignmentMessage}>No upcoming published shift</p><Link className={styles.scheduleLink} href="/app/schedule">View schedule <Arrow forward/></Link></>}
-            {snapshot.currentShift && snapshot.publicationState !== 'unavailable' ? <section className={styles.current} aria-label="Scheduled now">
-              <h3>Scheduled now</h3>
-              <p className={styles.currentNote}>Scheduled assignment; clock status is shown separately.</p>
-              <Assignment shift={snapshot.currentShift} zone={snapshot.timeZone}/>
-            </section> : null}
             {snapshot.publicationState === 'partial' ? <p className={styles.notice} role="status">Some of your locations haven’t published this week yet. The shifts shown are published.</p> : null}
           </> : <div className={styles.recovery} role="status">
             <p>{recovery}</p>

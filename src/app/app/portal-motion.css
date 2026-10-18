@@ -170,7 +170,7 @@ html body .app-shell.nevora-portal .page-frame .form-success[role="status"]:not(
   display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 10px;
   padding: 12px 12px 12px 14px; border: 1px solid #ECEDEF; border-radius: 12px; background: #FFFFFF; color: #1C1C1C;
   box-shadow: 0 12px 32px rgba(28, 28, 28, .12), 0 2px 6px rgba(28, 28, 28, .06);
-  font: 500 14px/1.4 var(--design-font-body); pointer-events: auto;
+  font: 500 calc(14 * var(--type-unit, 1px))/1.4 var(--design-font-body); pointer-events: auto;
   transition: opacity 180ms var(--m-ease-out, ease-out), translate 180ms var(--m-ease-out, ease-out);
 }
 html body .nevora-toast > svg { color: var(--g-accent, #077572); }
@@ -220,14 +220,14 @@ html body .nevora-skeleton i:first-child { width: 58%; height: 14px; }
 html body .nevora-skeleton i:last-child { width: 82%; }
 html body .nevora-skeleton-line > span { padding: 6px 0; }
 @keyframes nevora-shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
-html body .app-shell.nevora-portal .nevora-skeleton-status { min-height: 0; padding: 8px 0 0; font-size: 12px; color: var(--g-muted, #5F6368); }
-html body .app-shell.nevora-portal .nevora-skeleton-status :is(strong, small) { font-size: 12px; font-weight: 400; color: var(--g-muted, #5F6368); }
+html body .app-shell.nevora-portal .nevora-skeleton-status { min-height: 0; padding: 8px 0 0; font-size: calc(12 * var(--type-unit, 1px)); color: var(--g-muted, #5F6368); }
+html body .app-shell.nevora-portal .nevora-skeleton-status :is(strong, small) { font-size: calc(12 * var(--type-unit, 1px)); font-weight: 400; color: var(--g-muted, #5F6368); }
 @media (prefers-reduced-motion: reduce) { html body .nevora-skeleton i { animation: none; } }
 
 /* Inline validation (FormValidation): a red edge and one plain sentence under the field. */
 html body .app-shell.nevora-portal .page-frame :is(input, select, textarea)[aria-invalid="true"] { border-color: #B42318; box-shadow: 0 0 0 3px #FEE4E2; }
 html body .app-shell.nevora-portal .page-frame .field-error {
-  display: flex; align-items: center; gap: 6px; margin: 6px 0 0; color: #B42318; font: 500 13px/1.4 var(--design-font-body);
+  display: flex; align-items: center; gap: 6px; margin: 6px 0 0; color: #B42318; font: 500 calc(13 * var(--type-unit, 1px))/1.4 var(--design-font-body);
 }
 html body .app-shell.nevora-portal .page-frame .field-error::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
@@ -238,10 +238,10 @@ html body .app-shell.nevora-portal .nevora-success-panel {
   padding: 18px 20px; border: 1px solid var(--g-accent-line, #C9E0DE); border-radius: 12px; background: var(--g-accent-tint, #F3F9F8); color: var(--g-ink, #1C1C1C);
 }
 html body .app-shell.nevora-portal .nevora-success-panel > svg, html body .app-shell.nevora-portal .pw-approved-heading > svg { color: var(--g-accent, #077572); }
-html body .app-shell.nevora-portal .nevora-success-panel h2 { margin: 0; font: 600 16px/1.4 var(--design-font-body); }
+html body .app-shell.nevora-portal .nevora-success-panel h2 { margin: 0; font: 600 calc(16 * var(--type-unit, 1px))/1.4 var(--design-font-body); }
 html body .app-shell.nevora-portal .nevora-success-panel p { margin: 2px 0 0; font: var(--g-t-small); color: var(--g-muted, #5F6368); }
 html body .app-shell.nevora-portal .nevora-success-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-html body .app-shell.nevora-portal .nevora-success-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; color: var(--g-accent, #077572); font: 600 14px/1 var(--design-font-body); text-decoration: none; }
+html body .app-shell.nevora-portal .nevora-success-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; color: var(--g-accent, #077572); font: 600 calc(14 * var(--type-unit, 1px))/1 var(--design-font-body); text-decoration: none; }
 html body .app-shell.nevora-portal .pw-approved { border-color: var(--g-accent-line, #C9E0DE); background: var(--g-accent-tint, #F3F9F8); }
 html body .app-shell.nevora-portal .pw-approved-heading { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: start; margin-bottom: 8px; }
 html body .app-shell.nevora-portal .pw-approved-heading h3 { margin: 0; }

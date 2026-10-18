@@ -18,7 +18,7 @@ function render(){host.cursor=0;return Timecards({initialPeriod:period,manager,a
 const html=()=>renderToStaticMarkup(render());
 function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode)];}
 function control(test:(n:ReactElement<Record<string,unknown>>)=>boolean){const n=nodes(render()).find(test);if(!n)throw Error('Missing rendered control');return n.props;}
-const click=(label:string)=>(control(n=>n.type==='button'&&n.props.children===label).onClick as ()=>unknown)();
+const click=(label:string)=>(control(n=>n.type==='button'&&(n.props.children===label||n.props['aria-label']===label)).onClick as ()=>unknown)();
 const check=(label:string,value=true)=>(control(n=>n.type==='input'&&n.props['aria-label']===label).onChange as (e:unknown)=>void)({target:{checked:value}});
 const flush=()=>vi.advanceTimersByTimeAsync(0);
 async function mount(){render();host.mounted=true;cleanup=host.effects[0]();await flush();}

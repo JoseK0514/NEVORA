@@ -25,11 +25,11 @@ html body .app-shell.nevora-portal {
   --g-control-radius: 8px;
   --g-card-shadow: 0 1px 2px #0000000F, 0 1px 1px #0000000A;
   --g-press: 120ms;
-  --g-t-display: 500 28px/1.25 var(--design-font-body);
-  --g-t-title: 500 20px/1.3 var(--design-font-body);
-  --g-t-body: 400 16px/1.5 var(--design-font-body);
-  --g-t-small: 400 14px/1.45 var(--design-font-body);
-  --g-t-caption: 400 12px/1.4 var(--design-font-body);
+  --g-t-display: 500 calc(28 * var(--type-unit, 1px))/1.25 var(--design-font-body);
+  --g-t-title: 500 calc(20 * var(--type-unit, 1px))/1.3 var(--design-font-body);
+  --g-t-body: 400 calc(16 * var(--type-unit, 1px))/1.5 var(--design-font-body);
+  --g-t-small: 400 calc(14 * var(--type-unit, 1px))/1.45 var(--design-font-body);
+  --g-t-caption: 400 calc(12 * var(--type-unit, 1px))/1.4 var(--design-font-body);
 
   --design-primary: var(--g-accent);
   --design-accent: var(--g-accent-hover);
@@ -67,8 +67,8 @@ html body .app-shell.nevora-portal {
   --fuel-ivory: var(--g-canvas);
   --portal-nav-fill: var(--g-accent-wash);
   --portal-focus: var(--g-accent);
-  --portal-title: 28px;
-  --portal-section: 20px;
+  --portal-title: calc(28 * var(--type-unit, 1px));
+  --portal-section: calc(20 * var(--type-unit, 1px));
   background: var(--g-canvas);
   color: var(--g-ink);
 }
@@ -76,9 +76,17 @@ html body .app-shell.nevora-portal {
  * 15px on a phone, where most employees use NEVORA. */
 @media (max-width: 767px) {
   html body .app-shell.nevora-portal {
-    --g-t-small: 400 15px/1.45 var(--design-font-body);
-    --g-t-caption: 400 15px/1.4 var(--design-font-body);
+    --g-t-small: 400 calc(15 * var(--type-unit, 1px))/1.45 var(--design-font-body);
+    --g-t-caption: 400 calc(15 * var(--type-unit, 1px))/1.4 var(--design-font-body);
   }
+}
+/* Phone type follows the reader's text size (phone foundations, slice 1). A size that
+ * desktop shares is written calc(n * var(--type-unit, 1px)): 1px on desktop, which keeps
+ * desktop type in px, and 1/16rem in the phone chrome, so each size there is n/16 rem and
+ * computes to the same pixel at the default 16px root. Phone-only rules use rem directly.
+ * Spacing, icons, borders and the 44px targets stay in px. The root is never set. */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal { --type-unit: 0.0625rem; }
 }
 html body .app-shell.nevora-portal :is(.app-main,.page-frame) { background: var(--g-canvas); }
 html body .app-shell.nevora-portal ::selection { background: var(--g-accent-select, #CDE7E5); color: var(--g-ink); }
@@ -119,6 +127,31 @@ html body .app-shell.nevora-portal .page-frame .button.ghost { background: trans
 html body .app-shell.nevora-portal .page-frame .button.ghost:hover:not(:disabled) { background: var(--g-accent-wash); }
 html body .app-shell.nevora-portal .page-frame :is(.button,.pw-button,.ncc-button):active:not(:disabled) { transform: scale(.98); }
 html body .app-shell.nevora-portal :is(button,.button):disabled { opacity: .55; }
+
+/* One button shape on phones (phone foundations, D4 with phone type). Primary and secondary
+ * buttons, including the page stragglers the 390 inventory found, take 8px corners, 44px
+ * minimum, a 17px/600 label that balances its lines, and 10px 16px padding. One height, 44px,
+ * for every phone primary and secondary; 48px only where a named sticky confirm or sheet
+ * action sets it by class (fix loop 1, UI-F2: the old lone-primary rule never won). Two buttons side by
+ * side wrap onto their own rows instead of wrapping a label inside a half-width button.
+ * Not here: tab bar items, section tabs, segmented controls, chips, the next-shift pass,
+ * the "Close actions" pill, swipe backdrops and the Clocker. Doubled classes outrank the
+ * legacy phone pills (mobile-workforce, employee corporate). */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame :is(.button.primary, .button.secondary, .pw-button, .ncc-button, .nto-button, .av-button, .request-hub-action, .request-hub-schedule, .locations-search button, .shift-action, .employee-action, .positions-button, .workspace-button, .schedule-generation-action, .assisted-submit, .inbox-refresh, .employee-corporate-button:is(.employee-corporate-button--primary, .employee-corporate-button--secondary), .employee-time-correction-trigger, .employee-time-correction-submit, [class*="employee-directory-module"]:is([class*="primaryAction"], [class*="applyAction"]), :is(button, a)[class*="payroll-export-module"][class*="__button"], :is(button, a):is([class*="__primary"], [class*="__secondary"]), [class*="callout-view-module"][class$="__actions"] button, button[class*="notification-inbox-module__"][class*="__refresh"]) {
+    align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 16px;
+    border-radius: var(--g-control-radius); font-size: 1.0625rem; font-weight: 600; line-height: 1.25; text-align: center; text-wrap: balance;
+  }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .request-hub-action, .shift-action, .employee-action, .positions-button, .workspace-button, .employee-corporate-button--primary, .employee-corporate-button--secondary, :is(button, a)[class*="__primary"], :is(button, a)[class*="__secondary"], :is(button, a)[class*="__button"]):is(:has(+ :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .request-hub-action, .shift-action, .employee-action, .positions-button, .workspace-button, .employee-corporate-button--primary, .employee-corporate-button--secondary, :is(button, a)[class*="__primary"], :is(button, a)[class*="__secondary"], :is(button, a)[class*="__button"])), :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .request-hub-action, .shift-action, .employee-action, .positions-button, .workspace-button, .employee-corporate-button--primary, .employee-corporate-button--secondary, :is(button, a)[class*="__primary"], :is(button, a)[class*="__secondary"], :is(button, a)[class*="__button"]) + *) {
+    min-height: 44px; flex: 1 1 max-content;
+  }
+  html body .app-shell.nevora-portal .page-frame :has(> :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .request-hub-action, .shift-action, .employee-action, .positions-button, .workspace-button, .employee-corporate-button--primary, .employee-corporate-button--secondary) + :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .request-hub-action, .shift-action, .employee-action, .positions-button, .workspace-button, .employee-corporate-button--primary, .employee-corporate-button--secondary)) { flex-wrap: wrap; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .employee-action, .employee-corporate-button--primary, .employee-corporate-button--secondary) svg { flex: none; width: 20px; height: 20px; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .employee-action, .employee-corporate-button--primary, .employee-corporate-button--secondary):focus-visible { outline: 2px solid var(--g-accent); outline-offset: 2px; }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: no-preference), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  html body .app-shell.nevora-portal .page-frame :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .employee-action, .employee-corporate-button--primary, .employee-corporate-button--secondary):active:not(:disabled) { transform: scale(.98); }
+}
 
 /* Form controls: quiet edge, teal focus. */
 html body .app-shell.nevora-portal .page-frame :is(input,select,textarea):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
@@ -233,7 +266,7 @@ html body .app-shell.nevora-portal :is(.positions-empty-icon, .nto-empty-icon, .
 }
 html body .app-shell.nevora-portal .nevora-empty-title,
 html body .app-shell.nevora-portal :is(.mws-empty, .updates-empty, .rules-empty, .positions-empty, .nto-empty-state, .employee-view-empty, .swap-empty, .st-empty-state, .locations-empty, .coverage-empty, .av-empty, .dashboard-empty-state, .attendance-review-empty, .manager-corrections-empty) :is(h2, h3, strong):first-of-type {
-  margin: 0; font: 600 16px/1.4 var(--design-font-body); color: var(--g-ink);
+  margin: 0; font: 600 calc(16 * var(--type-unit, 1px))/1.4 var(--design-font-body); color: var(--g-ink);
 }
 html body .app-shell.nevora-portal .nevora-empty-description,
 html body .app-shell.nevora-portal :is(.mws-empty, .updates-empty, .rules-empty, .positions-empty, .nto-empty-state, .employee-view-empty, .swap-empty, .st-empty-state, .locations-empty, .coverage-empty, .av-empty, .dashboard-empty-state, .attendance-review-empty, .manager-corrections-empty) p {
@@ -259,7 +292,7 @@ html body .app-shell.nevora-portal .section-tabs-track[data-more-start] { mask-i
 html body .app-shell.nevora-portal .section-tabs-track[data-more-start][data-more-end] { mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
 html body .app-shell.nevora-portal .section-tab {
   position: relative; flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 2px;
-  font: 500 15px/1.3 var(--design-font-body); color: var(--g-muted); text-decoration: none; white-space: nowrap; scroll-snap-align: start;
+  font: 500 calc(15 * var(--type-unit, 1px))/1.3 var(--design-font-body); color: var(--g-muted); text-decoration: none; white-space: nowrap; scroll-snap-align: start;
   transition: color 150ms ease;
 }
 html body .app-shell.nevora-portal .section-tab::after {
@@ -288,6 +321,10 @@ html body .app-shell.nevora-portal .section-tab:focus-visible { outline: 2px sol
     width: 100%; margin: 0; border: 0; background: transparent; font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   html body .app-shell.nevora-portal .mobile-nav .mobile-nav-link span { white-space: nowrap; }
+  /* One tab label size (phone foundations, slice 1): 12px at the default root, growing to a
+   * 13px cap, the largest that keeps "Schedule" on one line in a 320 column. It replaces the
+   * 9, 10 and 12px legacy rules. The named exception to the 15px phone floor (U1). */
+  html body .app-shell.nevora-portal .mobile-nav .mobile-nav-link.mobile-nav-link { font-size: min(0.75rem, 13px); }
   /* Headings keep their sentence case; the legacy My time rule capitalised every word.
    * Doubled class: outranks it whatever order Next loads the stylesheets in. */
   html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-corporate="true"] .page-frame .employee-view.employee-view h1 { text-transform: none; }
@@ -297,10 +334,10 @@ html body .app-shell.nevora-portal .section-tab:focus-visible { outline: 2px sol
     inset: auto 16px 16px; max-width: none; max-height: calc(100dvh - 96px);
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border: 0; border-radius: 24px; background: #FFFFFF; box-shadow: 0 12px 48px #1C4A4733;
   }
-  html body .app-shell.nevora-portal.employee-shell:not([data-mobile-workforce]) #employee-more-navigation .employee-more-link { min-height: 48px; font-size: 17px; }
+  html body .app-shell.nevora-portal.employee-shell:not([data-mobile-workforce]) #employee-more-navigation .employee-more-link { min-height: 48px; font-size: 1.0625rem; }
   html body .app-shell.nevora-portal:not([data-mobile-workforce]) :is(#employee-more-navigation, .mobile-nav .nevora-action-menu-popover) .mobile-workforce-sheet-close {
     display: flex; align-items: center; justify-content: center; gap: 8px; position: sticky; bottom: 0; width: 100%; min-height: 48px; margin-top: 8px;
-    border: 0; border-radius: 999px; background: #F6F7F8; color: var(--g-ink); font: 500 17px/1.5 var(--design-font-body); cursor: pointer;
+    border: 0; border-radius: 999px; background: #F6F7F8; color: var(--g-ink); font: 500 1.0625rem/1.5 var(--design-font-body); cursor: pointer;
   }
   /* Focus and in-page jumps stop clear of the sticky header and the tab bar (WCAG 2.4.11). */
   html:has(body .app-shell.nevora-portal .mobile-nav) { scroll-padding-block: 84px calc(80px + env(safe-area-inset-bottom)); }
@@ -315,13 +352,12 @@ html body .app-shell.nevora-portal .section-tab:focus-visible { outline: 2px sol
 /* ⌘K finder (U8): a desktop tool. Opens without animation; native modal dialog. */
 html body .app-shell.nevora-portal .command-finder-trigger {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px 0 12px; border: 1px solid var(--g-border); border-radius: 8px;
-  background: #FFFFFF; color: var(--g-muted); font: inherit; font-size: 14px; cursor: pointer;
+  background: #FFFFFF; color: var(--g-muted); font: inherit; font-size: calc(14 * var(--type-unit, 1px)); cursor: pointer;
 }
 html body .app-shell.nevora-portal .command-finder-trigger kbd, html body .app-shell.nevora-portal .command-finder kbd {
   padding: 1px 6px; border: 1px solid var(--g-border); border-radius: 5px; background: var(--g-inset); color: var(--g-ink); font: 500 12px/1.5 var(--design-font-body);
 }
 html body .app-shell.nevora-portal .command-finder-trigger:hover { color: var(--g-ink); border-color: #BFC3C8; }
-@media (max-width: 760px) { html body .app-shell.nevora-portal .command-finder-trigger { display: none; } }
 html body .app-shell.nevora-portal .command-finder {
   width: min(620px, calc(100vw - 32px)); max-height: min(560px, calc(100vh - 120px)); margin: 12vh auto auto; padding: 0;
   border: 1px solid var(--g-border); border-radius: 14px; background: #FFFFFF; color: var(--g-ink); box-shadow: 0 24px 60px rgb(28 28 28 / .22);
@@ -329,18 +365,119 @@ html body .app-shell.nevora-portal .command-finder {
 html body .app-shell.nevora-portal .command-finder::backdrop { background: rgb(28 28 28 / .32); }
 html body .app-shell.nevora-portal .command-finder-panel { display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; max-height: inherit; }
 html body .app-shell.nevora-portal .command-finder-search { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--g-hairline); color: var(--g-muted); }
-html body .app-shell.nevora-portal .command-finder-search input { flex: 1; min-height: 32px; border: 0; outline: 0; background: transparent; color: var(--g-ink); font: inherit; font-size: 17px; }
+html body .app-shell.nevora-portal .command-finder-search input { flex: 1; min-height: 32px; border: 0; outline: 0; background: transparent; color: var(--g-ink); font: inherit; font-size: calc(17 * var(--type-unit, 1px)); }
 html body .app-shell.nevora-portal .command-finder-results { margin: 0; padding: 6px; overflow-y: auto; list-style: none; }
 html body .app-shell.nevora-portal .command-finder-results li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; padding: 0 12px; border-radius: 8px; cursor: pointer; }
-html body .app-shell.nevora-portal .command-finder-group { grid-column: 1 / -1; margin: 10px -12px 2px; padding: 0 12px; color: var(--g-muted); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
-html body .app-shell.nevora-portal .command-finder-label { min-height: 40px; display: flex; align-items: center; font-size: 15px; }
-html body .app-shell.nevora-portal .command-finder-detail { color: var(--g-muted); font-size: 14px; }
+html body .app-shell.nevora-portal .command-finder-group { grid-column: 1 / -1; margin: 10px -12px 2px; padding: 0 12px; color: var(--g-muted); font-size: calc(12 * var(--type-unit, 1px)); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+html body .app-shell.nevora-portal .command-finder-label { min-height: 40px; display: flex; align-items: center; font-size: calc(15 * var(--type-unit, 1px)); }
+html body .app-shell.nevora-portal .command-finder-detail { color: var(--g-muted); font-size: calc(14 * var(--type-unit, 1px)); }
 html body .app-shell.nevora-portal .command-finder-results li[aria-selected="true"] { background: var(--g-accent-wash); }
 html body .app-shell.nevora-portal .command-finder-results li[aria-selected="true"] .command-finder-label { color: var(--g-accent-strong); font-weight: 600; }
 html body .app-shell.nevora-portal .command-finder-status:empty { display: none; }
-html body .app-shell.nevora-portal .command-finder-status { margin: 0; padding: 8px 18px; color: var(--g-muted); font-size: 14px; }
-html body .app-shell.nevora-portal .command-finder-hint { margin: 0; padding: 10px 16px; border-top: 1px solid var(--g-hairline); color: var(--g-muted); font-size: 13px; }
+html body .app-shell.nevora-portal .command-finder-status { margin: 0; padding: 8px 18px; color: var(--g-muted); font-size: calc(14 * var(--type-unit, 1px)); }
+html body .app-shell.nevora-portal .command-finder-hint { margin: 0; padding: 10px 16px; border-top: 1px solid var(--g-hairline); color: var(--g-muted); font-size: calc(13 * var(--type-unit, 1px)); }
 @media (prefers-contrast: more) { html body .app-shell.nevora-portal .command-finder { border-color: #1C1C1C; } }
+/* The status line sits after the search row in the DOM (phones read it first); on
+ * desktop the grid keeps it under the list. Close and Clear are phone controls. */
+html body .app-shell.nevora-portal .command-finder-search { grid-row: 1; }
+html body .app-shell.nevora-portal .command-finder-results { grid-row: 2; }
+html body .app-shell.nevora-portal .command-finder-status { grid-row: 3; }
+html body .app-shell.nevora-portal .command-finder-hint { grid-row: 4; }
+html body .app-shell.nevora-portal .command-finder-field { display: contents; }
+html body .app-shell.nevora-portal :is(.command-finder-close, .command-finder-clear) { display: none; }
+
+/* Search on phones (phone search, slice 1): an icon button beside the bell opens the
+ * same dialog as a full-screen sheet. Type is in rem (phone foundations, slice 1). */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal .portal-account-menu { display: none; }
+  /* One row at 320 with a logo: the chip shrinks (to 40px) instead of the actions wrapping. */
+  html body .app-shell.nevora-portal .mobile-header { flex-wrap: nowrap; column-gap: 0; }
+  html body .app-shell.nevora-portal .mobile-header .mobile-header-actions { flex: none; gap: 0; }
+  html body .app-shell.nevora-portal .mobile-header .brand.compact { flex: none; }
+  html body .app-shell.nevora-portal .mobile-header .company-logo-chip.company-logo-chip { flex: 0 1 auto; min-width: 40px; max-width: 88px; }
+  html body .app-shell.nevora-portal .mobile-header .company-logo-chip img { max-width: 100%; object-fit: contain; }
+  html body .app-shell.nevora-portal .mobile-header .command-finder-trigger {
+    display: inline-grid; place-items: center; flex: none; width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0;
+    border: 0; border-radius: 999px; background: transparent; color: var(--g-muted); -webkit-tap-highlight-color: transparent;
+    transition: background-color var(--g-press) ease-out;
+  }
+  html body .app-shell.nevora-portal .mobile-header .command-finder-trigger svg { width: 22px; height: 22px; }
+  html body .app-shell.nevora-portal .mobile-header .command-finder-trigger span {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  html body .app-shell.nevora-portal .mobile-header .command-finder-trigger kbd { display: none; }
+  /* Pressed and hover discs follow the glyph: white on a masthead, grey on a light header. */
+  html body .app-shell.nevora-portal .mobile-header .command-finder-trigger.command-finder-trigger:active { background: color-mix(in srgb, currentColor 14%, transparent); }
+
+  html body .app-shell.nevora-portal .command-finder {
+    width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0;
+    border: 0; border-radius: 0; box-shadow: none; background: var(--g-canvas);
+  }
+  /* The panel fills the dialog, so no tap reaches the dialog's own close-on-click
+   * (taps in the status-bar band land here and keep the sheet open). */
+  html body .app-shell.nevora-portal .command-finder-panel {
+    height: 100%; max-height: none; padding-top: env(safe-area-inset-top); grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr);
+  }
+  html body .app-shell.nevora-portal .command-finder-search { grid-row: 1; gap: 8px; padding: 6px 8px 8px 16px; color: var(--g-muted); }
+  html body .app-shell.nevora-portal .command-finder-status { grid-row: 2; padding: 12px 16px; border-bottom: 1px solid var(--g-hairline); font-size: 0.9375rem; }
+  html body .app-shell.nevora-portal .command-finder-results {
+    grid-row: 3; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); overscroll-behavior: contain;
+  }
+  html body .app-shell.nevora-portal .command-finder-hint { display: none; }
+  html body .app-shell.nevora-portal .command-finder-field {
+    display: flex; flex: 1 1 auto; align-items: center; gap: 8px; min-width: 0; min-height: 44px; padding-left: 12px;
+    border: 1px solid transparent; border-radius: var(--g-control-radius); background: var(--g-inset);
+  }
+  html body .app-shell.nevora-portal .command-finder-field:has(input:focus) { border-color: var(--g-accent); box-shadow: 0 0 0 1px var(--g-accent); }
+  html body .app-shell.nevora-portal .command-finder-search .command-finder-field input { min-width: 0; min-height: 42px; padding: 0 12px 0 0; }
+  html body .app-shell.nevora-portal .command-finder-field input::placeholder { color: var(--g-muted); opacity: 1; }
+  html body .app-shell.nevora-portal .command-finder-field input:has(+ .command-finder-clear) { padding-right: 0; }
+  html body .app-shell.nevora-portal .command-finder-clear {
+    display: grid; place-items: center; flex: none; width: 44px; height: 44px; margin: -1px 0; padding: 0;
+    border: 0; border-radius: var(--g-control-radius); background: transparent; color: var(--g-muted); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .app-shell.nevora-portal .command-finder-close {
+    display: inline-flex; align-items: center; justify-content: center; flex: none; min-width: 56px; min-height: 44px; padding: 0 8px;
+    border: 0; border-radius: var(--g-control-radius); background: transparent; color: var(--g-accent);
+    font: 500 1.0625rem/1.3 var(--design-font-body); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .app-shell.nevora-portal :is(.command-finder-close, .command-finder-clear):focus-visible { outline: 2px solid var(--g-accent); outline-offset: 2px; }
+  /* Clear sits inside the field: its ring stays inside its 44px target, apart from the field edge (fix loop 1, UI-S2). */
+  html body .app-shell.nevora-portal .command-finder-clear:focus-visible { outline-offset: -2px; }
+  /* The sheet lives inside the header, whose white masthead ring (mobile-workforce, Home) otherwise wins here. */
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder :is(.command-finder-close, .command-finder-clear):focus-visible { outline-color: var(--g-accent); }
+  html body .app-shell.nevora-portal .command-finder-results li {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 12px; row-gap: 0;
+    min-height: 48px; padding: 6px 8px; -webkit-tap-highlight-color: transparent;
+  }
+  html body .app-shell.nevora-portal .command-finder-group {
+    flex: 1 0 100%; margin: 10px -8px 2px; padding: 0 8px; font-size: 0.9375rem; font-weight: 600; letter-spacing: 0; text-transform: none;
+  }
+  html body .app-shell.nevora-portal .command-finder-label { flex: 1 1 auto; min-width: 0; min-height: 0; font-size: 1.0625rem; line-height: 1.35; overflow-wrap: anywhere; }
+  html body .app-shell.nevora-portal .command-finder-detail { margin-left: auto; font-size: 0.9375rem; line-height: 1.35; text-align: right; }
+  html body .app-shell.nevora-portal .command-finder-results li:active { background: var(--g-accent-pressed); }
+
+  /* More › Search: the only icon in the manager More list marks it as a tool. */
+  html body .app-shell.nevora-portal #manager-more-navigation .nevora-action-menu-item.nevora-more-search { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  html body .app-shell.nevora-portal #manager-more-navigation .nevora-more-search > span { color: inherit; font-size: inherit; line-height: inherit; }
+  html body .app-shell.nevora-portal #manager-more-navigation .nevora-more-search svg { flex: none; }
+  html body .app-shell.nevora-portal #manager-more-navigation .nevora-more-search-divider { margin: 0 2px 4px; background: var(--g-hairline); }
+}
+@media (max-width: 760px) and (hover: hover), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (hover: hover) {
+  html body .app-shell.nevora-portal .mobile-header .command-finder-trigger.command-finder-trigger:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: reduce), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal .mobile-header .command-finder-trigger { transition: none; }
+}
+@media (max-width: 760px) and (prefers-contrast: more), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (prefers-contrast: more) {
+  html body .app-shell.nevora-portal .command-finder-field { border-color: var(--g-ink); }
+  html body .app-shell.nevora-portal :is(.command-finder-search, .command-finder-status) { border-bottom-color: var(--g-ink); }
+}
+@media (forced-colors: active) {
+  html body .app-shell.nevora-portal .command-finder-field { border-color: CanvasText; }
+  html body .app-shell.nevora-portal .command-finder-results li[aria-selected="true"] { background: Highlight; color: HighlightText; forced-color-adjust: none; }
+  html body .app-shell.nevora-portal .command-finder-results li[aria-selected="true"] :is(.command-finder-label, .command-finder-detail) { color: HighlightText; }
+}
 
 /* Company logo (B1): sits beside the unchanged NEVORA wordmark in a white chip,
  * so any logo reads on both the white sidebar and the dark phone header. */
@@ -354,7 +491,7 @@ html body .app-shell.nevora-portal .sidebar[data-collapsed="true"] .company-logo
 /* The desktop top bar carries no wordmark (the sidebar does), so its chip only shows with the phone chrome. */
 html body .app-shell.nevora-portal .mobile-header .company-logo-chip { display: none; }
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  html body .app-shell.nevora-portal .mobile-header .company-logo-chip { display: inline-flex; height: 30px; max-width: 88px; margin-right: auto; margin-left: 10px; border-color: transparent; }
+  html body .app-shell.nevora-portal .mobile-header .company-logo-chip { display: inline-flex; height: 30px; max-width: 88px; margin-right: auto; margin-left: 18px; border-color: transparent; }
   html body .app-shell.nevora-portal .mobile-header .company-logo-chip img { max-height: 22px; }
 }
 @media (forced-colors: active) { html body .app-shell.nevora-portal .company-logo-chip { border-color: CanvasText; } }

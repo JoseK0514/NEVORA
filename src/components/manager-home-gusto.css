@@ -221,7 +221,7 @@ html body .app-shell.nevora-portal .manager-portal-home .manager-attendance-link
   html body .app-shell.nevora-portal .manager-portal-home #manager-action-list article > a {
     min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--mh-accent); font-size: var(--mh-caption); font-weight: 600;
   }
-  html body .app-shell.nevora-portal .manager-portal-home #manager-action-list article > a::after { content: '›'; margin-left: 6px; font-size: 18px; line-height: 1; }
+  html body .app-shell.nevora-portal .manager-portal-home #manager-action-list article > a::after { content: '›'; margin-left: 6px; font-size: 1.125rem; line-height: 1; }
   html body .app-shell.nevora-portal .manager-portal-home #manager-action-list article [class*="icon"] { color: var(--mh-accent); background: var(--g-accent-wash); }
   html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-nav-link.active { background: transparent; color: var(--mh-accent); }
   html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-nav-link.active svg { color: var(--mh-accent); }
@@ -232,11 +232,11 @@ html body .app-shell.nevora-portal .manager-portal-home .manager-attendance-link
  * button tiers (primary fill, secondary outline, tertiary teal text); one
  * chevron for every disclosure; compact sidebar. */
 html body .app-shell.nevora-portal:has(.manager-portal-home) {
-  --g-t-display: 500 28px/1.25 var(--design-font-body);
-  --g-t-title: 500 20px/1.3 var(--design-font-body);
-  --g-t-body: 400 16px/1.5 var(--design-font-body);
-  --g-t-small: 400 14px/1.45 var(--design-font-body);
-  --g-t-caption: 400 12px/1.4 var(--design-font-body);
+  --g-t-display: 500 calc(28 * var(--type-unit, 1px))/1.25 var(--design-font-body);
+  --g-t-title: 500 calc(20 * var(--type-unit, 1px))/1.3 var(--design-font-body);
+  --g-t-body: 400 calc(16 * var(--type-unit, 1px))/1.5 var(--design-font-body);
+  --g-t-small: 400 calc(14 * var(--type-unit, 1px))/1.45 var(--design-font-body);
+  --g-t-caption: 400 calc(12 * var(--type-unit, 1px))/1.4 var(--design-font-body);
   --g-press: 120ms;
 }
 html body .app-shell.nevora-portal .manager-portal-home :is(dd,strong,.home-fact-value,[aria-label="Total tasks"],.manager-home-count,time) { font-variant-numeric: tabular-nums; }
@@ -244,7 +244,7 @@ html body .app-shell.nevora-portal .manager-portal-home :is(dd,strong,.home-fact
 /* Tier 3 — teal text buttons (refresh, links); tier 2 — outline; press feedback for all. */
 html body .app-shell.nevora-portal .manager-portal-home :is([aria-label="Refresh tasks"],.manager-live-refresh) {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 44px; min-height: 44px; padding: 0 10px;
-  border: 0; border-radius: 8px; background: transparent; box-shadow: none; color: var(--g-accent); font: 600 14px/1 var(--design-font-body);
+  border: 0; border-radius: 8px; background: transparent; box-shadow: none; color: var(--g-accent); font: 600 calc(14 * var(--type-unit, 1px))/1 var(--design-font-body);
   cursor: pointer; transition: background var(--g-press) ease-out, transform var(--g-press) ease-out;
 }
 html body .app-shell.nevora-portal .manager-portal-home :is([aria-label="Refresh tasks"],.manager-live-refresh):hover:not(:disabled) { background: var(--g-accent-wash); }
@@ -253,7 +253,7 @@ html body .app-shell.nevora-portal .manager-portal-home :is([aria-label="Refresh
 html body .app-shell.nevora-portal .manager-portal-home [aria-label="Manager Action Center"] > .button.secondary,
 html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content > .button.secondary {
   justify-self: start; min-height: 44px; padding: 0 16px; border: 1px solid var(--g-border); border-radius: 8px; background: var(--g-canvas);
-  color: var(--g-ink); font: 500 14px/1 var(--design-font-body); box-shadow: none;
+  color: var(--g-ink); font: 500 calc(14 * var(--type-unit, 1px))/1 var(--design-font-body); box-shadow: none;
 }
 
 /* Tasks header: title, quiet "Updated" line, count, refresh. */
@@ -261,13 +261,13 @@ html body .app-shell.nevora-portal .manager-portal-home .manager-tasks-updated {
 html body .app-shell.nevora-portal .manager-portal-home [aria-label="Manager Action Center"] > header { align-items: center; }
 
 /* Group summary: plain sentence, "Review" + chevron that turns when open. */
-html body .app-shell.nevora-portal .manager-portal-home .manager-task-review-label { font: 600 14px/1 var(--design-font-body); color: var(--g-accent); }
+html body .app-shell.nevora-portal .manager-portal-home .manager-task-review-label { font: 600 calc(14 * var(--type-unit, 1px))/1 var(--design-font-body); color: var(--g-accent); }
 html body .app-shell.nevora-portal .manager-portal-home .manager-task-caret { color: var(--g-accent); transition: transform var(--g-press) ease-out; }
 html body .app-shell.nevora-portal .manager-portal-home details[open] > summary .manager-task-caret { transform: rotate(180deg); }
 html body .app-shell.nevora-portal .manager-portal-home details[open] > summary .manager-task-review-label { color: var(--g-muted); }
 html body .app-shell.nevora-portal .manager-portal-home #manager-action-list > details > summary > span:first-child { gap: 4px; }
 html body .app-shell.nevora-portal .manager-portal-home #manager-action-list > details > summary small { font: var(--g-t-caption); color: var(--g-muted); }
-html body .app-shell.nevora-portal .manager-portal-home #manager-action-list > details > summary strong { font: 600 16px/1.4 var(--design-font-body); color: var(--g-ink); }
+html body .app-shell.nevora-portal .manager-portal-home #manager-action-list > details > summary strong { font: 600 calc(16 * var(--type-unit, 1px))/1.4 var(--design-font-body); color: var(--g-ink); }
 /* Rows inside a group: the employee sentence and its link only. */
 html body .app-shell.nevora-portal .manager-portal-home #manager-action-list details article { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 html body .app-shell.nevora-portal .manager-portal-home #manager-action-list details article > span:first-child { display: none; }
@@ -288,14 +288,14 @@ html body .app-shell.nevora-portal .manager-portal-home .home-fraction { display
 html body .app-shell.nevora-portal .manager-portal-home .home-fact-value { font-weight: 600; color: var(--g-ink); white-space: nowrap; }
 html body .app-shell.nevora-portal .manager-portal-home .home-fact-value > span { font-weight: 400; color: var(--g-muted); }
 html body .app-shell.nevora-portal .manager-portal-home .home-progress { flex: 0 0 100%; height: 4px; overflow: hidden; border-radius: 999px; background: var(--g-hairline); }
-html body .app-shell.nevora-portal .manager-portal-home .home-progress > span { display: block; height: 100%; border-radius: inherit; background: var(--g-accent); }
+html body .app-shell.nevora-portal .manager-portal-home .home-progress > span { display: block; height: 100%; border-radius: inherit; background: var(--home-progress-fill, var(--g-accent)); }
 
 /* Recent activity. */
 html body .app-shell.nevora-portal .manager-portal-home .home-recent-activity { min-width: 0; }
 html body .app-shell.nevora-portal .manager-portal-home .home-recent-row { display: grid; grid-template-columns: 20px minmax(0,1fr); gap: 12px; align-items: start; padding: 12px 0 4px; }
 html body .app-shell.nevora-portal .manager-portal-home .home-recent-row svg { margin-top: 2px; color: var(--g-accent); }
 html body .app-shell.nevora-portal .manager-portal-home .home-recent-row p { display: grid; gap: 2px; margin: 0; }
-html body .app-shell.nevora-portal .manager-portal-home .home-recent-row strong { font: 500 14px/1.4 var(--design-font-body); color: var(--g-ink); }
+html body .app-shell.nevora-portal .manager-portal-home .home-recent-row strong { font: 500 calc(14 * var(--type-unit, 1px))/1.4 var(--design-font-body); color: var(--g-ink); }
 html body .app-shell.nevora-portal .manager-portal-home .home-recent-row span { font: var(--g-t-caption); color: var(--g-muted); }
 
 @media (min-width: 761px) {
@@ -372,7 +372,7 @@ html body .app-shell.nevora-portal .today-tile:hover { border-color: var(--g-bor
 html body .app-shell.nevora-portal .today-tile:focus-visible { outline: 2px solid var(--g-accent); outline-offset: 2px; }
 html body .app-shell.nevora-portal .today-tile-label { display: flex; align-items: center; gap: 8px; color: var(--g-muted); font: var(--g-t-small); }
 html body .app-shell.nevora-portal .today-tile-label svg { flex: none; color: var(--g-accent-strong); }
-html body .app-shell.nevora-portal .today-tile strong { font: 500 30px/1 var(--design-font-body); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+html body .app-shell.nevora-portal .today-tile strong { font: 500 calc(30 * var(--type-unit, 1px))/1 var(--design-font-body); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 html body .app-shell.nevora-portal .today-tile[data-urgent] { border-color: #F2C2B8; box-shadow: inset 4px 0 0 var(--g-urgent); }
 html body .app-shell.nevora-portal .today-tile[data-urgent] .today-tile-label { color: var(--g-ink); }
 html body .app-shell.nevora-portal .today-tile[data-urgent] .today-tile-label svg { color: #B42318; }
@@ -383,10 +383,96 @@ html body .app-shell.nevora-portal .today-tiles-unavailable { display: flex; fle
 html body .app-shell.nevora-portal .today-tiles-unavailable p { margin: 0; color: var(--g-muted); }
 html body .app-shell.nevora-portal .today-tiles-unavailable .button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
 @media (max-width: 760px) {
-  html body .app-shell.nevora-portal .today-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  /* Two tiles per row; one per row once a tile would drop under 8rem (a larger text size), from a rem minimum, not a breakpoint. */
+  html body .app-shell.nevora-portal .today-tiles { grid-template-columns: repeat(auto-fit, minmax(max(8rem, calc(50% - 5px)), 1fr)); gap: 10px; }
   html body .app-shell.nevora-portal .today-tile { min-height: 96px; padding: 14px; border: 0; box-shadow: var(--mh-shadow, var(--g-card-shadow)); }
   html body .app-shell.nevora-portal .today-tile[data-urgent] { box-shadow: inset 4px 0 0 var(--g-urgent), var(--mh-shadow, var(--g-card-shadow)); }
-  html body .app-shell.nevora-portal .today-tile strong { font-size: 28px; }
+  html body .app-shell.nevora-portal .today-tile strong { font-size: 1.75rem; }
 }
 @media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal .today-tile { transition: none; } }
 @media (forced-colors: active) { html body .app-shell.nevora-portal .today-tile[data-urgent] { border: 2px solid CanvasText; } }
+
+/* Owner setup card (A10). Both Home bars count finished things nobody can press,
+ * so they take the ladder's done green instead of the action teal (J1). */
+html body .app-shell.nevora-portal .manager-portal-home { --home-progress-fill: var(--color-state-success, #1D6F42); }
+html body .app-shell.nevora-portal .manager-portal-home .home-layout-setup { min-width: 0; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-card { color: var(--g-ink); }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-count { margin: 0; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-progress { display: block; margin: 8px 0 4px; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-steps { display: grid; margin: 0; padding: 0; list-style: none; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-step { display: grid; grid-template-columns: 20px minmax(0, 1fr); column-gap: 12px; align-items: start; min-width: 0; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-mark { margin-top: 12px; color: var(--g-muted); }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-step[data-state="done"] .owner-setup-mark { color: var(--color-state-success, #1D6F42); }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-open { min-width: 0; padding-bottom: 8px; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-open p { margin: 0; color: var(--g-muted); text-wrap: pretty; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-link {
+  display: block; min-height: 44px; padding: 10px 0 2px; border-radius: 4px; color: var(--g-accent); font-weight: 600; text-decoration: none;
+  transition: color var(--g-press) ease;
+}
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-nowrap { white-space: nowrap; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-nowrap svg { margin-left: 2px; vertical-align: -2px; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-link:hover { color: var(--g-accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-link:focus-visible { outline: 2px solid var(--g-accent); outline-offset: 2px; border-radius: 4px; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-done-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; min-height: 44px; margin: 0; padding: 10px 0 8px; }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-done-row strong { font-weight: 600; color: var(--g-ink); }
+html body .app-shell.nevora-portal .manager-portal-home .owner-setup-done { margin-left: auto; font-weight: 600; color: var(--color-state-success, #1D6F42); }
+
+/* Desktop and tablet: a bordered card, first in the grid, 20px above the Today strip. */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .manager-portal-home .home-layout-setup { grid-area: setup; margin-bottom: -16px; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-card {
+    display: grid; grid-template-columns: 260px minmax(0, 1fr); column-gap: 24px; align-items: start;
+    padding: 16px 20px; border: 1px solid var(--g-border); border-radius: 12px; background: var(--g-canvas);
+  }
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home .home-layout .owner-setup-card h2 { margin: 0; font: 600 16px/1.4 var(--design-font-body); letter-spacing: 0; color: var(--g-ink); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-count { margin-top: 4px; font: 400 14px/1.45 var(--design-font-body); color: var(--g-muted); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-count > span { font-weight: 600; color: var(--g-ink); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 16px; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-step { padding-left: 16px; border-left: 1px solid var(--g-hairline); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-link { font-size: 16px; line-height: 1.4; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-open p { font: 400 14px/1.45 var(--design-font-body); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-done-row strong { font-size: 16px; line-height: 1.4; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-done { font-size: 14px; }
+}
+@media (min-width: 761px) and (max-width: 899px) {
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-card { grid-template-columns: minmax(0, 1fr); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-steps { grid-template-columns: minmax(0, 1fr); margin-top: 8px; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-step { padding-left: 0; border-left: 0; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-step + .owner-setup-step { border-top: 1px solid var(--g-hairline); }
+  html body .app-shell.nevora-portal .manager-portal-home .home-layout:has(> .home-layout-setup) { grid-template-areas: "setup" "today" "week" "tasks" "live" "activity" "shortcuts"; }
+}
+@media (min-width: 900px) {
+  html body .app-shell.nevora-portal .manager-portal-home .home-layout:has(> .home-layout-setup) {
+    grid-template-areas: "setup setup" "today today" "tasks week" "tasks live" "tasks activity" "tasks shortcuts" "tasks .";
+    grid-template-rows: auto auto auto auto auto auto 1fr;
+  }
+  /* The D3 rule drops an empty live row; the setup row stays with it. */
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home .home-layout:has(.today-tiles .today-tile):has(.home-layout-live .manager-home-empty):has(> .home-layout-setup) {
+    grid-template-areas: "setup setup" "today today" "tasks week" "tasks activity" "tasks shortcuts" "tasks ."; grid-template-rows: auto auto auto auto auto 1fr;
+  }
+}
+/* Phones: the card is the first white surface, straddling the masthead edge as the
+ * Today tiles did; the tiles follow 12px below. */
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal .manager-portal-home .home-layout-setup { margin-bottom: -4px; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-card { position: relative; padding: 16px 20px; border-radius: var(--mh-radius, 12px); background: var(--mh-surface); box-shadow: var(--mh-shadow); }
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home .home-layout .owner-setup-card h2 { margin: 0; font: 400 0.9375rem/1.5 var(--design-font-body); letter-spacing: 0; color: var(--g-muted); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-count { font: 600 1.25rem/1.3 var(--design-font-body); color: var(--g-ink); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-step + .owner-setup-step { border-top: 1px solid var(--g-hairline); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-link { font-size: 1.0625rem; line-height: 1.4; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-open p { font-size: 0.9375rem; line-height: 1.45; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-done-row strong { font-size: 1.0625rem; line-height: 1.4; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-done { font-size: 0.9375rem; }
+}
+@media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal .manager-portal-home .owner-setup-link { transition: none; } }
+@media (prefers-contrast: more) {
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-card { border-color: var(--g-ink); }
+  html body .app-shell.nevora-portal .manager-portal-home :is(.owner-setup-step, .owner-setup-step + .owner-setup-step) { border-color: var(--g-ink); }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-progress { background: var(--g-muted); }
+}
+@media (forced-colors: active) {
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-card { border: 1px solid CanvasText; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-progress { border: 1px solid CanvasText; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-progress > span { background: CanvasText; forced-color-adjust: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .owner-setup-mark { color: CanvasText; }
+}

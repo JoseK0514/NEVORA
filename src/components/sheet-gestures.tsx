@@ -84,11 +84,59 @@ export function SheetGestures() {
       sheet = null; pointerId = null; committed = false; velocity = 0;
     };
 
+    // A tap outside an open phone sheet only closes it (phone polish A2.10). The browser's
+    // light dismiss closes the sheet on that press, and the click that follows would also
+    // follow a link under the finger, so the click is swallowed once. Desktop menus never
+    // match isSheet(), and a press inside a sheet never sets the flag.
+    let outsidePress = false;
+    let swallowOutside: ((click: Event) => void) | null = null;
+    const disarmOutside = () => {
+      if (swallowOutside) window.removeEventListener("click", swallowOutside, { capture: true });
+      swallowOutside = null;
+    };
+    const onOutsideDown = (event: PointerEvent) => {
+      if (!event.isPrimary) return;
+      const open = Array.from(document.querySelectorAll(SHEET_SELECTOR)).filter(isSheet);
+      const target = event.target instanceof Node ? event.target : null;
+      outsidePress = open.length > 0 && !open.some(openSheet => target !== null && openSheet.contains(target));
+    };
+    const onOutsideUp = () => {
+      if (!outsidePress && !swallowOutside) return;
+      setTimeout(() => { outsidePress = false; disarmOutside(); }, 0);
+    };
+    const onOutsideCancel = () => { outsidePress = false; disarmOutside(); };
+
+    // Every close path (Back, tap outside, swipe, Close actions) starts with focus inside
+    // the sheet; the popover then returns focus to where it was. Closing a sheet whose exit
+    // transition runs while focus sits outside it crashed the tab in Android Chrome 133
+    // (phone polish A1). No ring shows: this is programmatic focus, not keyboard focus.
+    const onBeforeToggle = (event: Event) => {
+      const target = event.target;
+      if ((event as ToggleEvent).newState !== "closed" || !(target instanceof HTMLElement) || !target.matches("[popover]") || !isSheet(target)) return;
+      if (outsidePress && !swallowOutside) {
+        const swallow = (click: Event) => { click.stopPropagation(); click.preventDefault(); disarmOutside(); };
+        swallowOutside = swallow;
+        window.addEventListener("click", swallow, { capture: true });
+      }
+      if (target.contains(document.activeElement)) return;
+      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+    };
+
+    window.addEventListener("pointerdown", onOutsideDown, { capture: true, passive: true });
+    window.addEventListener("pointerup", onOutsideUp, { capture: true, passive: true });
+    window.addEventListener("pointercancel", onOutsideCancel, { capture: true, passive: true });
     window.addEventListener("pointerdown", onDown, { passive: true });
     window.addEventListener("pointermove", onMove, { passive: false });
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", reset);
+    document.addEventListener("beforetoggle", onBeforeToggle, true);
     return () => {
+      disarmOutside();
+      window.removeEventListener("pointerdown", onOutsideDown, { capture: true });
+      window.removeEventListener("pointerup", onOutsideUp, { capture: true });
+      window.removeEventListener("pointercancel", onOutsideCancel, { capture: true });
+      document.removeEventListener("beforetoggle", onBeforeToggle, true);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);

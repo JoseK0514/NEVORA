@@ -3,7 +3,8 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import type {ComponentProps} from 'react';
 
 vi.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => <a {...props}>{children}</a>}));
-vi.mock('../manager-action-center', () => ({ManagerActionCenter: () => <div data-live-reader="actions"/>}));
+vi.mock('../manager-action-center', () => ({ManagerActionCenter: () => <div data-live-reader="actions"/>,
+  HomeActionCenterProvider: ({children}: {children: React.ReactNode}) => <>{children}</>, useHomeSetupSteps: () => null}));
 vi.mock('../manager-clock-monitor', () => ({ManagerClockMonitor: () => <div data-live-reader="clock"/>}));
 vi.mock('next/navigation', () => ({notFound: () => {throw new Error('preview-disabled');}}));
 vi.mock('./home-preview', () => ({HomePreview: () => <div>Sample Home</div>}));
@@ -29,7 +30,8 @@ it('copies only fictional display fields with the original people, locations and
   };
   inspect(homePreviewRecords);
   expect(previewEmployeeHome).toMatchObject({snapshot: {nextShift: {date: '2026-10-14'}}});
-  expect(previewActionCenter).toMatchObject({state: 'ready', counts: {total: 10, scheduling: 10}});
+  // Ten availability items, coverage periods not configured and three people with no weekly hour target.
+  expect(previewActionCenter).toMatchObject({state: 'ready', counts: {total: 14, scheduling: 14}});
 });
 
 it('the preview composition replaces private readers while the native Home keeps both readers by default', () => {

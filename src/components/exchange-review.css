@@ -7,11 +7,11 @@
 .exchange-review .exchange-page-heading { margin-bottom: 28px; }
 .exchange-review .page-header, .exchange-review .employee-view-heading { margin: 0; align-items: center; gap: 20px; }
 .exchange-review .page-header h1, .exchange-review .employee-view-heading h1 {
-  max-width: 64rem; margin: 8px 0 10px; font-size: clamp(28px, 3vw, 38px); line-height: 1.15; font-weight: 500; letter-spacing: -.035em;
+  max-width: 64rem; margin: 8px 0 10px; font-size: clamp(calc(28 * var(--type-unit, 1px)), 3vw, calc(38 * var(--type-unit, 1px))); line-height: 1.15; font-weight: 500; letter-spacing: -.035em;
 }
-.exchange-review .eyebrow, .exchange-review .employee-view-eyebrow { margin: 0; color: var(--design-text-secondary); font-size: 12px; font-weight: 500; letter-spacing: .02em; text-transform: none; }
-.exchange-review .page-description, .exchange-review .exchange-page-heading > p { max-width: 640px; margin: 0; color: var(--design-text-secondary); font-size: 14px; line-height: 1.65; }
-.exchange-review .page-actions .button { gap: 8px; min-height: 44px; border-color: var(--exchange-line); white-space: nowrap; font-size: 13px; }
+.exchange-review .eyebrow, .exchange-review .employee-view-eyebrow { margin: 0; color: var(--design-text-secondary); font-size: calc(12 * var(--type-unit, 1px)); font-weight: 500; letter-spacing: .02em; text-transform: none; }
+.exchange-review .page-description, .exchange-review .exchange-page-heading > p { max-width: 640px; margin: 0; color: var(--design-text-secondary); font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.65; }
+.exchange-review .page-actions .button { gap: 8px; min-height: 44px; border-color: var(--exchange-line); white-space: nowrap; font-size: calc(13 * var(--type-unit, 1px)); }
 .app-shell .exchange-review .exchange-view-tabs, .exchange-review .exchange-view-tabs {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(100%, 540px); padding: 5px; margin: 0 0 28px;
   gap: 4px; border: 1px solid var(--exchange-line); border-radius: var(--design-radius-pill); background: var(--design-surface-inset);
@@ -19,16 +19,16 @@
 .app-shell .exchange-review .exchange-view-tabs > a, .exchange-review .exchange-view-tabs > a {
   display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 44px; padding: 8px 14px;
   border: 0; border-radius: var(--design-radius-pill); color: var(--design-text-secondary); background: transparent;
-  font-size: 13px; font-weight: 500; line-height: 1.35; text-align: center; text-decoration: none; white-space: normal;
+  font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.35; text-align: center; text-decoration: none; white-space: normal;
 }
 .app-shell .exchange-review .exchange-view-tabs > a.selected, .exchange-review .exchange-view-tabs > a.selected {
   color: var(--design-text-primary); background: var(--design-surface-elevated); box-shadow: 0 1px 4px #1118270b; font-weight: 600;
 }
 .exchange-review .manager-workflow-panel { padding: 0; background: transparent; border: 0; box-shadow: none; overflow: visible; }
 .exchange-review .exchange-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 0; margin: 0 0 18px; border: 0; }
-.exchange-review .exchange-section-heading h2 { margin: 0 0 6px; font-size: 18px; font-weight: 600; letter-spacing: -.02em; }
-.exchange-review .exchange-section-heading p { margin: 0; color: var(--design-text-secondary); font-size: 13px; line-height: 1.6; }
-.exchange-review .exchange-count { flex-shrink: 0; padding: 7px 11px; background: var(--exchange-soft); color: var(--design-accent-ink); border-radius: var(--design-radius-pill); font-size: 12px; font-weight: 500; }
+.exchange-review .exchange-section-heading h2 { margin: 0 0 6px; font-size: calc(18 * var(--type-unit, 1px)); font-weight: 600; letter-spacing: -.02em; }
+.exchange-review .exchange-section-heading p { margin: 0; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; }
+.exchange-review .exchange-count { flex-shrink: 0; padding: 7px 11px; background: var(--exchange-soft); color: var(--design-accent-ink); border-radius: var(--design-radius-pill); font-size: calc(12 * var(--type-unit, 1px)); font-weight: 500; }
 .exchange-review .manager-workflow-row {
   display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 16px; padding: 24px; margin: 0 0 18px;
   border: 1px solid var(--exchange-line); border-radius: var(--design-radius-card); background: var(--design-surface-elevated); box-shadow: 0 3px 12px #11182703;
@@ -39,60 +39,60 @@
 .exchange-review .exchange-request-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .exchange-review .exchange-request-identity > div { min-width: 0; }
 .exchange-review .exchange-kind-icon { display: inline-flex; justify-content: center; align-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; background: var(--exchange-soft); color: var(--design-accent-ink); }
-.exchange-review .exchange-request-identity h3 { margin: 0 0 5px; color: var(--design-text-primary); font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -.02em; overflow-wrap: anywhere; }
-.exchange-review .exchange-request-identity p { margin: 0; color: var(--design-text-secondary); font-size: 13px; line-height: 1.5; }
+.exchange-review .exchange-request-identity h3 { margin: 0 0 5px; color: var(--design-text-primary); font-size: calc(16 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.4; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.exchange-review .exchange-request-identity p { margin: 0; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.5; }
 .exchange-review .exchange-assignments { position: relative; display: grid; grid-auto-flow: dense; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
 .exchange-review .exchange-assignments.paired { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .exchange-review .exchange-assignment { min-width: 0; display: grid; align-content: start; gap: 8px; padding: 18px 20px; border: 1px solid var(--exchange-line); border-radius: 14px; background: var(--design-background); }
-.exchange-review .exchange-assignment-label { margin: 0 0 4px; color: var(--design-text-secondary); font-size: 12px; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
-.exchange-review .exchange-assignment-date { display: flex; align-items: center; gap: 8px; color: var(--design-text-primary); font-size: 13px; font-weight: 500; }
-.exchange-review .exchange-assignment-time { display: block; margin-bottom: 5px; font-size: clamp(17px, 1.6vw, 21px); font-weight: 600; line-height: 1.4; letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
+.exchange-review .exchange-assignment-label { margin: 0 0 4px; color: var(--design-text-secondary); font-size: calc(12 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.exchange-review .exchange-assignment-date { display: flex; align-items: center; gap: 8px; color: var(--design-text-primary); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; }
+.exchange-review .exchange-assignment-time { display: block; margin-bottom: 5px; font-size: clamp(calc(17 * var(--type-unit, 1px)), 1.6vw, calc(21 * var(--type-unit, 1px))); font-weight: 600; line-height: 1.4; letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
 .exchange-review .exchange-assignment-time > span { color: var(--design-text-secondary); font-weight: 400; }
-.exchange-review .exchange-assignment-detail { display: flex; align-items: flex-start; gap: 8px; color: var(--design-text-secondary); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.exchange-review .exchange-assignment-detail { display: flex; align-items: flex-start; gap: 8px; color: var(--design-text-secondary); font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.5; overflow-wrap: anywhere; }
 .exchange-review .exchange-assignment-detail svg { flex-shrink: 0; margin-top: 1px; }
-.exchange-review .exchange-assignment-lead, .exchange-review .exchange-assignment-zone { color: var(--design-text-secondary); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.exchange-review .exchange-assignment-lead, .exchange-review .exchange-assignment-zone { color: var(--design-text-secondary); font-size: calc(11 * var(--type-unit, 1px)); line-height: 1.5; overflow-wrap: anywhere; }
 .exchange-review .exchange-pair-connector { position: absolute; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--exchange-line); border-radius: 50%; background: var(--design-surface-elevated); color: var(--design-accent-ink); }
-.exchange-review .exchange-review-reason { display: flex; align-items: flex-start; gap: 9px; margin: 0; padding: 12px 14px; border-radius: 10px; background: var(--exchange-soft); color: var(--design-accent-ink); font-size: 13px; line-height: 1.6; }
+.exchange-review .exchange-review-reason { display: flex; align-items: flex-start; gap: 9px; margin: 0; padding: 12px 14px; border-radius: 10px; background: var(--exchange-soft); color: var(--design-accent-ink); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; }
 .exchange-review .exchange-review-reason svg { flex-shrink: 0; margin-top: 2px; }
-.exchange-review .exchange-decision-effect { margin: 0; color: var(--design-text-secondary); font-size: 12px; line-height: 1.6; }
+.exchange-review .exchange-decision-effect { margin: 0; color: var(--design-text-secondary); font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.6; }
 .exchange-review .manager-workflow-review { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; width: 100%; max-width: none; gap: 12px; padding-top: 16px; border-top: 1px solid var(--exchange-line); }
 .exchange-review .manager-workflow-review .shift-change-form { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; max-width: 100%; }
 .exchange-review .manager-workflow-review .shift-change-form > p { flex-basis: 100%; margin: 4px 0 0; }
-.exchange-review .button { min-height: 44px; border-radius: var(--design-radius-pill); font-size: 13px; font-weight: 600; }
+.exchange-review .button { min-height: 44px; border-radius: var(--design-radius-pill); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 600; }
 .exchange-review .manager-workflow-review .button { min-width: 112px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 18px; }
 .exchange-review .button.primary, .exchange-review .employee-action.primary { background: var(--design-primary); border: 1px solid var(--design-primary); color: #FFFFFF; }
 .exchange-review .button.secondary { background: var(--design-surface-elevated); border: 1px solid var(--exchange-line); color: var(--design-text-primary); }
 .exchange-review :is(.button, .employee-action):disabled { opacity: .55; cursor: wait; }
-.exchange-review .exchange-callout-shift { display: flex; gap: 10px; align-items: flex-start; padding: 16px 18px; border-radius: 14px; background: var(--design-background); border: 1px solid var(--exchange-line); font-size: 14px; line-height: 1.6; }
+.exchange-review .exchange-callout-shift { display: flex; gap: 10px; align-items: flex-start; padding: 16px 18px; border-radius: 14px; background: var(--design-background); border: 1px solid var(--exchange-line); font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.6; }
 .exchange-review .exchange-callout-shift svg { margin-top: 2px; flex-shrink: 0; color: var(--design-text-secondary); }
-.exchange-review .exchange-request-note { padding-left: 1px; font-size: 13px; line-height: 1.6; color: var(--design-text-secondary); }
+.exchange-review .exchange-request-note { padding-left: 1px; font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; color: var(--design-text-secondary); }
 .exchange-review .exchange-request-note strong { font-weight: 500; color: var(--design-text-primary); }
 .exchange-review .exchange-request-note p { margin: 6px 0 0; }
-.exchange-review .shift-change-history { padding-top: 2px; color: var(--design-text-secondary); font-size: 12px; }
+.exchange-review .shift-change-history { padding-top: 2px; color: var(--design-text-secondary); font-size: calc(12 * var(--type-unit, 1px)); }
 .exchange-review .shift-change-history summary { min-height: 44px; display: list-item; align-content: center; cursor: pointer; color: var(--design-text-primary); font-weight: 500; }
 .exchange-review .shift-change-history ol { padding: 14px 14px 14px 30px; margin: 0; background: var(--design-background); border-radius: 10px; }
 .exchange-review .shift-change-history li { margin-block: 8px; overflow-wrap: anywhere; }
 .exchange-review .shift-change-history li > :is(strong, span) { display: block; line-height: 1.6; }
 .exchange-review .exchange-empty { display: grid; justify-items: center; gap: 12px; padding: 56px 24px; border: 1px solid var(--exchange-line); border-radius: var(--design-radius-card); background: var(--design-surface-elevated); text-align: center; }
 .exchange-review .exchange-empty .exchange-kind-icon { width: 60px; height: 60px; border-radius: var(--design-radius-card); margin-bottom: 6px; }
-.exchange-review .exchange-empty strong { font-size: 18px; font-weight: 500; }
-.exchange-review .exchange-empty > span:last-child { max-width: 340px; font-size: 13px; line-height: 1.6; color: var(--design-text-secondary); }
+.exchange-review .exchange-empty strong { font-size: calc(18 * var(--type-unit, 1px)); font-weight: 500; }
+.exchange-review .exchange-empty > span:last-child { max-width: 340px; font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; color: var(--design-text-secondary); }
 .exchange-review :is(a, button, summary, article):focus-visible { outline: 3px solid var(--design-accent-ink); outline-offset: 4px; }
 .exchange-review .employee-exchange-feed { padding: 0; border: 0; background: transparent; box-shadow: none; }
 .exchange-review.employee-view .exchange-view-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(100%, 440px); }
 .exchange-review .employee-exchange-section { margin-bottom: 28px; }
-.exchange-review .employee-exchange-section > h2 { margin: 0 0 14px; color: var(--design-text-primary); font-size: 18px; font-weight: 600; letter-spacing: -.02em; }
+.exchange-review .employee-exchange-section > h2 { margin: 0 0 14px; color: var(--design-text-primary); font-size: calc(18 * var(--type-unit, 1px)); font-weight: 600; letter-spacing: -.02em; }
 .exchange-review .employee-shift-entry { display: grid; gap: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--exchange-line); border-radius: var(--design-radius-card); background: var(--design-surface-elevated); scroll-margin-block: 90px; }
 .exchange-review .employee-shift-entry-copy { width: 100%; display: grid; gap: 12px; }
-.exchange-review .employee-shift-entry-copy > strong { font-size: 16px; font-weight: 600; }
-.exchange-review .employee-shift-entry-copy > small { font-size: 12px; }
-.exchange-review .employee-shift-entry-copy > .shift-change-unavailable { padding: 12px 14px; background: var(--exchange-soft); border-radius: 10px; color: var(--design-accent-ink); font-size: 12px; line-height: 1.6; }
+.exchange-review .employee-shift-entry-copy > strong { font-size: calc(16 * var(--type-unit, 1px)); font-weight: 600; }
+.exchange-review .employee-shift-entry-copy > small { font-size: calc(12 * var(--type-unit, 1px)); }
+.exchange-review .employee-shift-entry-copy > .shift-change-unavailable { padding: 12px 14px; background: var(--exchange-soft); border-radius: 10px; color: var(--design-accent-ink); font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.6; }
 .exchange-review .employee-shift-entry-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding-top: 14px; border-top: 1px solid var(--exchange-line); }
 .exchange-review .employee-shift-entry-actions > .shift-change-form { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; }
-.exchange-review .employee-shift-entry-actions .employee-action { width: auto; min-width: 110px; font-size: 13px; padding: 10px 18px; }
-.exchange-review .employee-shift-entry-actions .status-pill { margin-right: auto; justify-self: start; font-size: 12px; }
-.exchange-review .employee-shift-entry-actions .shift-change-form > p { flex-basis: 100%; font-size: 13px; line-height: 1.6; margin: 0; }
-.exchange-review .form-error, .exchange-review .employee-notice { font-size: 13px; line-height: 1.6; }
+.exchange-review .employee-shift-entry-actions .employee-action { width: auto; min-width: 110px; font-size: calc(13 * var(--type-unit, 1px)); padding: 10px 18px; }
+.exchange-review .employee-shift-entry-actions .status-pill { margin-right: auto; justify-self: start; font-size: calc(12 * var(--type-unit, 1px)); }
+.exchange-review .employee-shift-entry-actions .shift-change-form > p { flex-basis: 100%; font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; margin: 0; }
+.exchange-review .form-error, .exchange-review .employee-notice { font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .exchange-review :is(.button, .employee-action, .exchange-view-tabs > a) { transition: background .18s ease, box-shadow .18s ease, transform .18s ease; }
   .exchange-review :is(.button, .employee-action):hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 3px 8px #1118270a; }
@@ -103,27 +103,27 @@
   .exchange-review .exchange-page-heading { margin-bottom: 22px; }
   .exchange-review .page-header { align-items: flex-start; }
   .exchange-review .page-actions { width: 100%; justify-content: flex-start; }
-  .exchange-review .page-description { font-size: 13px; }
+  .exchange-review .page-description { font-size: 0.8125rem; }
   .app-shell .exchange-review .exchange-view-tabs, .exchange-review .exchange-view-tabs { width: 100%; margin-bottom: 24px; }
-  .app-shell .exchange-review .exchange-view-tabs > a, .exchange-review .exchange-view-tabs > a { padding-inline: 7px; font-size: 12px; }
+  .app-shell .exchange-review .exchange-view-tabs > a, .exchange-review .exchange-view-tabs > a { padding-inline: 7px; font-size: 0.75rem; }
   .exchange-review .exchange-section-heading { align-items: flex-start; }
-  .exchange-review .exchange-section-heading h2 { font-size: 17px; }
-  .exchange-review .exchange-section-heading p { font-size: 12px; }
-  .exchange-review .exchange-count { padding: 6px 8px; font-size: 11px; }
+  .exchange-review .exchange-section-heading h2 { font-size: 1.0625rem; }
+  .exchange-review .exchange-section-heading p { font-size: 0.75rem; }
+  .exchange-review .exchange-count { padding: 6px 8px; font-size: 0.6875rem; }
   .exchange-review .manager-workflow-row { padding: 18px; gap: 14px; }
-  .exchange-review .exchange-request-identity h3 { font-size: 15px; }
-  .exchange-review .exchange-request-identity p { font-size: 12px; }
+  .exchange-review .exchange-request-identity h3 { font-size: 0.9375rem; }
+  .exchange-review .exchange-request-identity p { font-size: 0.75rem; }
   .exchange-review .exchange-assignments.paired { grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .exchange-review .exchange-pair-connector { display: none; }
   .exchange-review .exchange-assignment { padding: 16px; }
-  .exchange-review .exchange-assignment-time { font-size: 19px; }
+  .exchange-review .exchange-assignment-time { font-size: 1.1875rem; }
   .exchange-review .manager-workflow-review > .shift-change-form { width: 100%; justify-content: stretch; }
   .exchange-review .manager-workflow-review .shift-change-fields { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
   .exchange-review .manager-workflow-review .shift-change-fields > .button { flex: 1; min-width: 0; }
   .exchange-review .employee-shift-entry { padding: 18px; }
   .exchange-review .employee-shift-entry-actions > .shift-change-form { width: 100%; }
   .exchange-review .employee-shift-entry-actions .shift-change-fields { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
-  .exchange-review .employee-shift-entry-actions .employee-action { flex: 1 1 auto; min-width: 96px; font-size: 12px; padding-inline: 12px; }
+  .exchange-review .employee-shift-entry-actions .employee-action { flex: 1 1 auto; min-width: 96px; font-size: 0.75rem; padding-inline: 12px; }
   .exchange-review .employee-shift-entry-actions .status-pill { flex-basis: auto; }
   .exchange-review .exchange-empty { padding: 44px 20px; }
 }

@@ -6,7 +6,7 @@ import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
-import { XIcon } from "@phosphor-icons/react/ssr";
+import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
@@ -18,7 +18,7 @@ import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
 import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
-import { CommandFinder } from "./command-finder";
+import { CommandFinder, OPEN_FINDER_EVENT, type OpenFinderDetail } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
 import { handleRowNavigation } from "../lib/row-navigation";
@@ -320,6 +320,16 @@ export function AppShell({
               <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation"
                 triggerClassName={activeTab === "more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
                 triggerContent={<><NavIcon name="more" size={22} /><span>More</span></>}>
+                {/* A tool, not a destination: opens the one finder dialog in the same tap (no timer), so iOS raises the keyboard. */}
+                <button type="button" className="nevora-action-menu-item nevora-more-search" aria-haspopup="dialog"
+                  onClick={event => {
+                    event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover();
+                    const detail: OpenFinderDetail = { returnFocusTo: document.querySelector<HTMLElement>('[popovertarget="manager-more-navigation"]') };
+                    window.dispatchEvent(new CustomEvent(OPEN_FINDER_EVENT, { detail }));
+                  }}>
+                  <MagnifyingGlassIcon size={22} aria-hidden="true" /><span>Search</span>
+                </button>
+                <div className="nevora-action-menu-divider nevora-more-search-divider" />
                 {mobileMore.map(item => (
                   <Link key={item.href} href={item.href} className="nevora-action-menu-item"
                     aria-current={item.href === activeHref ? 'page' : undefined}

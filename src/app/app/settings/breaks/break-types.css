@@ -44,13 +44,13 @@ body:has(.break-types-page) {
 }
 .app-shell:has(.break-types-page) .page-frame { max-width: 1180px; margin-inline: auto; padding: 24px 36px 80px; }
 .break-types-page { min-width: 0; width: 100%; }
-.break-types-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-bottom: 24px; color: var(--muted); font-size: 13px; font-weight: 500; }
+.break-types-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-bottom: 24px; color: var(--muted); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; }
 .break-types-back:hover { color: var(--nevora-blue); }
 .break-types-back:focus-visible { outline: 2px solid var(--nevora-blue); outline-offset: 4px; border-radius: 4px; }
 .break-types-page .page-header { margin-bottom: 36px; }
-.break-types-page .page-header h1 { max-width: 100%; font-size: clamp(30px, 3.3vw, 40px); font-weight: 500; line-height: 1.15; letter-spacing: -.045em; margin: 0 0 12px; }
-.break-types-page .page-description { font-size: 15px; }
-.break-types-page .button { min-height: 44px; padding: 11px 17px; gap: 8px; border-radius: var(--design-radius-control); font-size: 13px; font-weight: 500; line-height: 1.5; white-space: normal; transition: background .18s; }
+.break-types-page .page-header h1 { max-width: 100%; font-size: clamp(calc(30 * var(--type-unit, 1px)), 3.3vw, calc(40 * var(--type-unit, 1px))); font-weight: 500; line-height: 1.15; letter-spacing: -.045em; margin: 0 0 12px; }
+.break-types-page .page-description { font-size: calc(15 * var(--type-unit, 1px)); }
+.break-types-page .button { min-height: 44px; padding: 11px 17px; gap: 8px; border-radius: var(--design-radius-control); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.5; white-space: normal; transition: background .18s; }
 .break-types-page .button.primary { background: var(--design-primary); color: #FFFFFF; }
 .break-types-page .button.primary:hover { background: var(--design-accent); }
 .break-types-page .button.secondary { border-color: var(--design-control-border); background: var(--surface); }
@@ -59,13 +59,13 @@ body:has(.break-types-page) {
 .break-types-page .button:focus-visible { outline: 2px solid var(--nevora-blue); outline-offset: 3px; }
 .break-types-unavailable { padding: 32px; }
 .break-types-unavailable > svg { color: var(--color-state-warning); }
-.break-types-unavailable h2 { margin: 16px 0 10px; font-size: 22px; font-weight: 500; }
+.break-types-unavailable h2 { margin: 16px 0 10px; font-size: calc(22 * var(--type-unit, 1px)); font-weight: 500; }
 .break-types-unavailable p { color: var(--muted); line-height: 1.7; }
 @media (max-width: 800px) {
   .app-shell:has(.break-types-page) .page-frame { padding: 20px 20px 110px; }
   .break-types-back { margin-bottom: 18px; }
   .break-types-page .page-header { margin-bottom: 28px; }
-  .break-types-page .page-description { max-width: 35ch; line-height: 1.7; font-size: 14px; }
+  .break-types-page .page-description { max-width: 35ch; line-height: 1.7; font-size: calc(14 * var(--type-unit, 1px)); }
 }
 @media (max-width: 380px) {
   .app-shell:has(.break-types-page) .page-frame { padding-inline: 16px; }

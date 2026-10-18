@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
@@ -68,12 +68,46 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   timeZone: string;
 }) {
   const container = useRef<HTMLElement>(null);
+  const picker = useRef<HTMLDivElement>(null);
+  const pickedByUser = useRef(false);
   const [query, setQuery] = useState("");
   const [selectedDay, setDay] = useState(reviewDay);
   const mobile = useSyncExternalStore(subscribeMobile, mobileSnapshot, serverMobileSnapshot);
   const day = selectedDay ?? (mobile ? dates.includes(today) ? today : dates[0] : "all");
   const filtered = filterRoster(employees, query);
   const visibleDates = day === "all" ? dates : dates.filter(date => date === day);
+
+  // Keep the chosen day in view inside the picker, which scrolls sideways on phones.
+  // On load only the picker scrolls (the page stays put: the picker can sit at the fold);
+  // after a tap or key press in the picker, the browser brings the segment in nearest-first.
+  useEffect(() => {
+    const row = picker.current;
+    const chosen = row?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!row || !chosen) return;
+    if (pickedByUser.current) {
+      pickedByUser.current = false;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      chosen.scrollIntoView({ inline: "nearest", block: "nearest", behavior: reduce ? "auto" : "smooth" });
+      return;
+    }
+    if (row.scrollWidth <= row.clientWidth) return;
+    const left = chosen.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft;
+    if (left < row.scrollLeft || left + chosen.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollLeft = left - (row.clientWidth - chosen.offsetWidth) / 2;
+  }, [day]);
+  // Fade whichever edge still has days beyond it, as the section tabs do.
+  useEffect(() => {
+    const row = picker.current;
+    if (!row) return;
+    const edges = () => {
+      row.toggleAttribute("data-more-start", row.scrollLeft > 1);
+      row.toggleAttribute("data-more-end", row.scrollLeft + row.clientWidth < row.scrollWidth - 1);
+    };
+    edges();
+    row.addEventListener("scroll", edges, { passive: true });
+    window.addEventListener("resize", edges);
+    return () => { row.removeEventListener("scroll", edges); window.removeEventListener("resize", edges); };
+  }, []);
+  const choose = (next: string) => { pickedByUser.current = next !== day; setDay(next); };
 
   useGSAP(() => {
     const media = gsap.matchMedia();
@@ -110,9 +144,9 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
         {query ? <button type="button" aria-label="Clear team search" onClick={() => setQuery("")}><XIcon size={16} aria-hidden="true" /></button> : null}
       </div>
     </header>
-    <div className="mws-day-navigation" role="group" aria-label="Schedule day">
-      <button className={day === "all" ? "selected" : ""} type="button" aria-pressed={day === "all"} onClick={() => setDay("all")}>Full week</button>
-      {dates.map(date => <button type="button" className={`${day === date ? "selected" : ""}${date === today ? " today" : ""}`} aria-pressed={day === date} aria-label={`${formatDayLabel(date).weekday}, ${formatDayLabel(date).day}${date === today ? ", today" : ""}`} key={date} onClick={() => setDay(date)}>
+    <div className="mws-day-navigation" role="group" aria-label="Schedule day" ref={picker}>
+      <button className={day === "all" ? "selected" : ""} type="button" aria-pressed={day === "all"} onClick={() => choose("all")}>Full week</button>
+      {dates.map(date => <button type="button" className={`${day === date ? "selected" : ""}${date === today ? " today" : ""}`} aria-pressed={day === date} aria-label={`${formatDayLabel(date).weekday}, ${formatDayLabel(date).day}${date === today ? ", today" : ""}`} key={date} onClick={() => choose(date)}>
         <span>{formatDayLabel(date).weekday}</span><strong>{Number(date.slice(8))}</strong>
       </button>)}
     </div>

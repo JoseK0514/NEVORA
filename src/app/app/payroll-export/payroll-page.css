@@ -47,12 +47,12 @@ body:has(.payroll-page) .sidebar .nav-link:is(:hover,.active) { color: #fff; bac
 body:has(.payroll-page) .employee-shell { --color-bg-main: var(--design-background); }
 .payroll-page { min-width: 0; max-width: 1180px; margin-inline: auto; color: var(--design-text-primary); }
 .payroll-page-heading { display: flex; gap: 16px; align-items: center; margin-bottom: 28px; }
-.payroll-page-heading h1 { margin: 0 0 7px; font-size: clamp(28px,3vw,36px); font-weight: 500; line-height: 1.2; letter-spacing: -.04em; }
-.payroll-page-heading p { margin: 0; color: var(--design-text-secondary); font-size: 14px; line-height: 1.6; }
+.payroll-page-heading h1 { margin: 0 0 7px; font-size: clamp(calc(28 * var(--type-unit, 1px)),3vw,calc(36 * var(--type-unit, 1px))); font-weight: 500; line-height: 1.2; letter-spacing: -.04em; }
+.payroll-page-heading p { margin: 0; color: var(--design-text-secondary); font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.6; }
 .payroll-page-mark { flex: 0 0 58px; width: 58px; height: 58px; display: grid; place-items: center; border: 1px solid var(--g-accent-line, #C9E0DE); border-radius: 18px; background: var(--g-accent-wash, #E7F3F2); color: var(--design-accent-ink); }
 .payroll-page-mark span { display: inline-flex; }
 @media(max-width:600px) {
   .payroll-page-heading { gap: 12px; align-items: flex-start; margin-bottom: 22px; }
   .payroll-page-mark { width: 48px; height: 48px; flex-basis: 48px; border-radius: 15px; }
-  .payroll-page-heading p { font-size: 13px; }
+  .payroll-page-heading p { font-size: 0.8125rem; }
 }

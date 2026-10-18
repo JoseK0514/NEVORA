@@ -9,34 +9,45 @@ import {SheetGestures} from '../sheet-gestures';
 import {Toaster, toast} from '../toaster';
 import {ManagerDashboard} from '../manager-dashboard';
 import {TodayTilesSurface} from '../manager-today';
-import type {Today} from '@/lib/today/project';
-
-/** Fictional numbers for the preview; the live Home reads /api/manager/today. */
-const previewToday: Today = {state: 'ready', observedAt: '2030-10-16T14:05:00.000Z', validForMs: 60000, timeZone: 'America/Puerto_Rico', today: '2030-10-16',
-  counts: {scheduled: 6, clockedIn: 4, late: 1, notClockedIn: 1}, shifts: [], missed: []};
 import {ActionCenterSurface} from '../manager-action-center';
+import {OwnerSetupCard} from '../owner-setup-card';
+import {setupSteps, withoutSetupItems} from '@/lib/action-center/setup';
+import type {PayrollCapabilities} from '@/lib/payroll/contracts';
 import {ClockMonitorCard} from '../manager-clock-monitor';
 import {EmployeeHomeReviewedView} from '../employee-home-reviewed';
 import {EmployeeTimeView} from '../employee-time-panel';
-import {navigationForRole, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole} from '@/lib/navigation';
+import {navigationForRole, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, sidebarActiveHref, sidebarNavigation} from '@/lib/navigation';
 import {NUVORA_BRAND} from '@/lib/brand';
-import {XIcon} from '@phosphor-icons/react/ssr';
-import {homePreviewRecords, previewActionCenter, previewEmployeeHome, previewManagerHome, previewMonitor, previewOwnTime} from './home-fixtures';
+import {MagnifyingGlassIcon, XIcon} from '@phosphor-icons/react/ssr';
+import {homePreviewRecords, previewActionCenter, previewEmployeeHome, previewManagerHome, previewMonitor, previewOwnTime, previewToday} from './home-fixtures';
 
-type PreviewRole = 'OWNER' | 'MANAGER' | 'EMPLOYEE';
+export type PreviewRole = 'OWNER' | 'MANAGER' | 'EMPLOYEE';
+
+/** Fictional payroll flags: they shape navigation only and mount no payroll reader. */
+export function previewPayroll(role: PreviewRole): PayrollCapabilities {
+  return {enabled: true, canConfigure: false, canReview: role === 'OWNER', canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED'};
+}
+/** The preview sidebar is the live D3 sidebar for the same role and capabilities. */
+export function previewSidebar(role: PreviewRole) {
+  const payroll = previewPayroll(role);
+  const items = sidebarNavigation(role, navigationForRole(role, payroll));
+  return {items, active: sidebarActiveHref(role, '/app', items, payroll)};
+}
 type Category = 'all' | 'scheduling' | 'requests' | 'timekeeping';
 
 /** Uses the app's brand, navigation and CSS; never mounts its authenticated
  * shell, private readers, signout action or notification/device controllers. */
 function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (message: string) => void; children: ReactNode}) {
   const employee = role === 'EMPLOYEE';
-  const navigation = navigationForRole(role);
+  const sidebar = previewSidebar(role);
+  const navigation = sidebar.items;
   const profile = homePreviewRecords.people.find(person => person.id === (role === 'OWNER' ? 'QAOWNER' : role === 'MANAGER' ? 'AUDIT-M' : 'AUDIT-E'))!;
   const primary = mobileTabsForRole(role);
   const secondary = mobileMoreForRole(role);
+  const lit = (item: (typeof navigation)[number], mobile: boolean) => mobile ? item.href === '/app' : item.href === sidebar.active;
   const navLink = (item: (typeof navigation)[number], mobile = false) => <a key={item.href} href={item.href}
-    className={`${mobile ? 'mobile-nav-link' : 'nav-link'}${item.href === '/app' ? ' active' : ''}`}
-    aria-current={item.href === '/app' ? 'page' : undefined}>
+    className={`${mobile ? 'mobile-nav-link' : 'nav-link'}${lit(item, mobile) ? ' active' : ''}`}
+    aria-current={lit(item, mobile) ? 'page' : undefined}>
     <span className={mobile ? undefined : 'nav-icon'}><NavIcon name={item.icon} employee={employee} size={mobile ? 22 : 20}/></span>
     <span className={mobile ? undefined : 'nav-label'}>{item.label}</span>
   </a>;
@@ -56,6 +67,9 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
         <span className="portal-workspace-name">{homePreviewRecords.workspace.name}</span>
         <a href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}><AuthBrand/></a>
         <div className="mobile-header-actions">
+          {!employee ? <button type="button" className="command-finder-trigger" aria-label="Search" onClick={() => notice('Search is not connected in this sample.')}>
+            <MagnifyingGlassIcon size={18} aria-hidden="true"/><span>Search</span>
+          </button> : null}
           <button type="button" className="portal-header-notifications" aria-label="Sample notifications" onClick={() => notice('This is a frozen sample. Notifications are not connected.')}><NavIcon name="notifications" size={22}/></button>
           <PortalAccountMenu initials={`${profile.first_name[0]}${profile.last_name[0]}`} name={`${profile.first_name} ${profile.last_name}`}>
             {employee ? <a href="/app/profile" className="nevora-action-menu-item">Your profile</a> : null}
@@ -79,6 +93,9 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
     <Toaster/>
   </div>;
 }
+
+/** Owners see the setup items in the card, so their Tasks leave them out. */
+const ownerTasks = withoutSetupItems(previewActionCenter);
 
 export function HomePreview() {
   const [role, setRole] = useState<PreviewRole>('OWNER');
@@ -104,7 +121,10 @@ export function HomePreview() {
         status="ready" refreshing={false} onRetry={refresh} displayName="Alexandra"
         ownTimeSlot={<EmployeeTimeView compact state={{time: previewOwnTime, paused: false, refreshing: false}} onRefresh={refresh}/>}/></div>
         : <ManagerDashboard {...previewManagerHome} role={role} firstName={role === 'OWNER' ? 'Fictional' : 'Morgan'}
-          overviewSlots={{today: <TodayTilesSurface snapshot={previewToday} />, actions: <ActionCenterSurface snapshot={previewActionCenter} connection="ready" timeZone={homePreviewRecords.workspace.time_zone}
+          overviewSlots={{today: <TodayTilesSurface snapshot={previewToday} />,
+            setup: role === 'OWNER' ? <OwnerSetupCard steps={setupSteps(previewActionCenter.state === 'ready' ? previewActionCenter.items : [])} locationCount={homePreviewRecords.locations.length}/> : null,
+            actions: <ActionCenterSurface snapshot={role === 'OWNER' ? ownerTasks.snapshot : previewActionCenter} setupListed={role === 'OWNER' ? ownerTasks.removed : 0}
+            connection="ready" timeZone={homePreviewRecords.workspace.time_zone}
             category={category} onCategoryChange={setCategory} expanded={expanded} onExpand={() => setExpanded(true)} onRefresh={refresh}/>,
           activity: <div className="manager-monitor-block"><ClockMonitorCard state={{monitor: previewMonitor, paused: false, refreshing: false}} onRefresh={refresh}/><a className="manager-attendance-link" href="/app?view=attendance"><NavIcon name="clock" size={18}/>Review attendance</a></div>}}/>}
     </PreviewShell>

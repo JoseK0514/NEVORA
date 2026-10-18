@@ -41,7 +41,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('Scheduled now',{exact:true}).isVisible());
  const hierarchy=await page.locator('[aria-labelledby="employee-reviewed-next-heading"],[data-home-group="actions"]').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot('ready');
- checks.push('H01 actual loading contains no private row/success; persisted future Next Shift leads, Scheduled now and actual recorded Clocked In coexist; six-source canonical communications complete and private notes absent');
+ checks.push('H01 actual loading contains no private row/success; Scheduled now leads and the persisted future Next shift follows, with actual recorded Clocked In coexisting; six-source canonical communications complete and private notes absent');
  // Native disclosures are independent. Complete row membership/order comes only
  // from the actual canonical response; opening a summary grants no authority.
  details.homeDisclosures=[];

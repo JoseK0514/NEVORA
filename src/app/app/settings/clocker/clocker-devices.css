@@ -15,9 +15,9 @@
 }
 .clocker-devices-page { min-width: 0; max-width: 1280px; margin-inline: auto; gap: 0; }
 .clocker-devices-page .page-header { align-items: flex-start; gap: 24px; margin-bottom: 28px; }
-.clocker-devices-page .page-header h1 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 500; line-height: 1.2; letter-spacing: -.04em; max-width: 100%; }
-.clocker-devices-page .page-description { font-size: 14px; line-height: 1.7; margin-top: 12px; }
-.clocker-devices-page .button { min-height: 44px; border-radius: var(--cd-control-radius); font-size: 13px; font-weight: 600; padding: 11px 17px; gap: 9px; transition: background 140ms ease, transform 140ms ease; }
+.clocker-devices-page .page-header h1 { font-size: clamp(calc(28 * var(--type-unit, 1px)), 3.2vw, calc(40 * var(--type-unit, 1px))); font-weight: 500; line-height: 1.2; letter-spacing: -.04em; max-width: 100%; }
+.clocker-devices-page .page-description { font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.7; margin-top: 12px; }
+.clocker-devices-page .button { min-height: 44px; border-radius: var(--cd-control-radius); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 600; padding: 11px 17px; gap: 9px; transition: background 140ms ease, transform 140ms ease; }
 .clocker-devices-page .button svg { flex-shrink: 0; }
 .clocker-devices-page .button.primary { background: var(--cd-primary); color: #111827; border: 1px solid transparent; }
 .clocker-devices-page .button.primary:hover { background: var(--cd-accent); color: #111827; }
@@ -30,8 +30,8 @@
 .clocker-devices-page .nevora-action-menu-trigger { border-radius: 12px; background: var(--cd-surface); border-color: #D1D5DB; color: #111827; }
 .clocker-devices-page .nevora-action-menu-panel { border-color: var(--cd-border); background: var(--cd-surface); }
 .clocker-devices-page .nevora-action-menu-item { display: flex; align-items: center; gap: 8px; }
-.clocker-devices-page .nevora-select { border-radius: 13px; background: var(--cd-surface); border-color: #D1D5DB; min-height: 48px; font-size: 16px; }
-.clocker-devices-page .nevora-field-hint { font-size: 12px; line-height: 1.6; }
+.clocker-devices-page .nevora-select { border-radius: 13px; background: var(--cd-surface); border-color: #D1D5DB; min-height: 48px; font-size: calc(16 * var(--type-unit, 1px)); }
+.clocker-devices-page .nevora-field-hint { font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.6; }
 .clocker-devices-page > .panel { border: 1px solid var(--cd-border); border-radius: var(--cd-card-radius); background: var(--cd-surface); box-shadow: none; }
-@media (max-width: 700px) { .clocker-devices-page .page-header { flex-direction: column; gap: 16px; margin-bottom: 24px; } .clocker-devices-page .page-actions { width: auto; } .clocker-devices-page .page-header h1 { font-size: 30px; } .clocker-devices-page .page-description { font-size: 13px; } }
+@media (max-width: 700px) { .clocker-devices-page .page-header { flex-direction: column; gap: 16px; margin-bottom: 24px; } .clocker-devices-page .page-actions { width: auto; } .clocker-devices-page .page-header h1 { font-size: 1.875rem; } .clocker-devices-page .page-description { font-size: 0.8125rem; } }
 @media (prefers-reduced-motion: reduce) { .clocker-devices-page *, .clocker-devices-page *::before, .clocker-devices-page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

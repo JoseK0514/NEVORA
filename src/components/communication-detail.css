@@ -6,7 +6,7 @@
 .communication-detail-view .communication-back {
   gap: 8px;
   margin-bottom: 16px;
-  font-size: 14px;
+  font-size: calc(14 * var(--type-unit, 1px));
   font-weight: 500;
   color: var(--design-accent-ink);
 }
@@ -17,7 +17,7 @@
   gap: 20px;
   padding: 0;
   min-width: 0;
-  font-size: 15px;
+  font-size: calc(15 * var(--type-unit, 1px));
   line-height: 1.55;
 }
 .communication-detail-view .communication-reader {
@@ -38,7 +38,7 @@
   gap: 9px;
   margin: 0;
   color: var(--design-text-secondary);
-  font-size: 13px;
+  font-size: calc(13 * var(--type-unit, 1px));
   font-weight: 500;
 }
 .communication-detail-view .communication-category svg { color: var(--design-accent-ink); flex: none; }
@@ -49,7 +49,7 @@
   padding: 5px 10px;
   background: var(--design-surface-inset);
   color: var(--design-text-secondary);
-  font-size: 12px;
+  font-size: calc(12 * var(--type-unit, 1px));
   font-weight: 500;
 }
 .communication-detail-view .communication-status.attention { color: var(--color-state-warning); background: var(--color-state-warning-bg); }
@@ -57,19 +57,19 @@
 .communication-detail-view .communication-reader h1 {
   max-width: 100%;
   margin: 24px 0;
-  font-size: clamp(28px, 3.2vw, 40px);
+  font-size: clamp(calc(28 * var(--type-unit, 1px)), 3.2vw, calc(40 * var(--type-unit, 1px)));
   font-weight: 500;
   line-height: 1.17;
   letter-spacing: -.035em;
   color: var(--design-text-primary);
 }
-.communication-detail-view .communication-meta { display: flex; align-items: center; gap: 12px; color: var(--design-text-secondary); font-size: 13px; }
-.communication-detail-view .communication-meta strong { color: var(--design-text-primary); font-size: 14px; font-weight: 550; }
+.communication-detail-view .communication-meta { display: flex; align-items: center; gap: 12px; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); }
+.communication-detail-view .communication-meta strong { color: var(--design-text-primary); font-size: calc(14 * var(--type-unit, 1px)); font-weight: 550; }
 .communication-detail-view .communication-meta p { margin: 3px 0 0; }
 .communication-detail-view .communication-author-avatar { width: 40px; height: 40px; display: grid; place-items: center; flex: none; border-radius: 13px; color: var(--design-accent-ink); background: var(--nevora-soft); }
-.communication-detail-view .communication-version { margin: 14px 0 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; color: var(--design-text-secondary); font-size: 13px; }
-.communication-detail-view .communication-body { max-width: 66ch; margin: 28px 0 0; padding-top: 28px; border-top: 1px solid var(--design-border); font-size: 16px; line-height: 1.75; color: var(--design-text-primary); }
-.communication-detail-view .communication-expiry { display: flex; align-items: center; gap: 8px; margin: 28px 0 0; font-size: 13px; color: var(--design-text-secondary); }
+.communication-detail-view .communication-version { margin: 14px 0 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); }
+.communication-detail-view .communication-body { max-width: 66ch; margin: 28px 0 0; padding-top: 28px; border-top: 1px solid var(--design-border); font-size: calc(16 * var(--type-unit, 1px)); line-height: 1.75; color: var(--design-text-primary); }
+.communication-detail-view .communication-expiry { display: flex; align-items: center; gap: 8px; margin: 28px 0 0; font-size: calc(13 * var(--type-unit, 1px)); color: var(--design-text-secondary); }
 .communication-detail-view .communication-expiry svg { flex: none; }
 .communication-detail-view .communication-receipt {
   display: grid;
@@ -81,12 +81,12 @@
 }
 .communication-detail-view .communication-result-icon { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; background: var(--design-surface-inset); color: var(--design-text-secondary); }
 .communication-detail-view .is-complete .communication-result-icon { color: var(--color-state-success); background: var(--color-state-success-bg); }
-.communication-detail-view .communication-detail h2 { margin: 0; font-size: 18px; font-weight: 550; line-height: 1.35; letter-spacing: -.025em; color: var(--design-text-primary); }
+.communication-detail-view .communication-detail h2 { margin: 0; font-size: calc(18 * var(--type-unit, 1px)); font-weight: 550; line-height: 1.35; letter-spacing: -.025em; color: var(--design-text-primary); }
 .communication-detail-view .communication-receipt-copy > p,
-.communication-detail-view .communication-receipt-copy > div > p { margin: 8px 0 0; max-width: 60ch; color: var(--design-text-secondary); font-size: 14px; }
-.communication-detail-view .communication-review-check { min-height: 48px; width: fit-content; max-width: 100%; align-items: center; gap: 12px; margin-top: 18px; font-size: 14px; color: var(--design-text-primary); cursor: pointer; }
+.communication-detail-view .communication-receipt-copy > div > p { margin: 8px 0 0; max-width: 60ch; color: var(--design-text-secondary); font-size: calc(14 * var(--type-unit, 1px)); }
+.communication-detail-view .communication-review-check { min-height: 48px; width: fit-content; max-width: 100%; align-items: center; gap: 12px; margin-top: 18px; font-size: calc(14 * var(--type-unit, 1px)); color: var(--design-text-primary); cursor: pointer; }
 .communication-detail-view .communication-review-check input { width: 22px; height: 22px; margin: 0; accent-color: var(--design-accent-ink); cursor: inherit; }
-.communication-detail-view .communication-detail .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; padding: 12px 18px; border-radius: var(--design-radius-control); font-size: 14px; font-weight: 600; line-height: 1.4; opacity: 1; }
+.communication-detail-view .communication-detail .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; padding: 12px 18px; border-radius: var(--design-radius-control); font-size: calc(14 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.4; opacity: 1; }
 .communication-detail-view .communication-detail .button svg { flex: none; }
 .communication-detail-view .communication-detail .button.secondary { border: 1px solid var(--design-border); background: var(--design-surface-elevated); color: var(--design-text-primary); }
 .communication-detail-view .communication-detail .button.secondary:hover:not(:disabled) { background: var(--design-secondary); border-color: var(--design-text-secondary); }
@@ -99,24 +99,24 @@
 .communication-detail-view .communication-management { margin: 0; padding: 24px 32px; border: 1px solid var(--design-border); box-shadow: none; }
 .communication-detail-view .communication-management summary { min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 16px; list-style: none; cursor: pointer; border-radius: 8px; }
 .communication-detail-view .communication-management summary::-webkit-details-marker { display: none; }
-.communication-detail-view .communication-management summary p { margin: 6px 0 0; color: var(--design-text-secondary); font-size: 14px; }
+.communication-detail-view .communication-management summary p { margin: 6px 0 0; color: var(--design-text-secondary); font-size: calc(14 * var(--type-unit, 1px)); }
 .communication-detail-view .communication-management summary > svg { color: var(--design-text-secondary); flex: none; transition: transform 160ms ease-out; }
 .communication-detail-view .communication-management details[open] summary > svg { transform: rotate(180deg); }
 .communication-detail-view .communication-management ul { gap: 0; margin: 20px 0 0; }
-.communication-detail-view .communication-management li { align-items: center; padding: 14px 0; gap: 8px 16px; border-top: 1px solid var(--design-border); font-size: 14px; }
+.communication-detail-view .communication-management li { align-items: center; padding: 14px 0; gap: 8px 16px; border-top: 1px solid var(--design-border); font-size: calc(14 * var(--type-unit, 1px)); }
 .communication-detail-view .communication-recipient-name { overflow-wrap: anywhere; font-weight: 500; }
-.communication-detail-view .communication-recipient-status { display: flex; align-items: center; gap: 6px; color: var(--design-text-secondary); font-size: 13px; }
+.communication-detail-view .communication-recipient-status { display: flex; align-items: center; gap: 6px; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); }
 .communication-detail-view .communication-recipient-status svg { flex: none; }
 .communication-detail-view .communication-recipient-status.success { color: var(--color-state-success); }
-.communication-detail-view .communication-empty-recipients { margin: 20px 0 0; color: var(--design-text-secondary); font-size: 14px; }
-.communication-detail-view .communication-delivery { margin: 20px 0 0; color: var(--design-text-secondary); font-size: 13px; }
+.communication-detail-view .communication-empty-recipients { margin: 20px 0 0; color: var(--design-text-secondary); font-size: calc(14 * var(--type-unit, 1px)); }
+.communication-detail-view .communication-delivery { margin: 20px 0 0; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); }
 .communication-detail-view .communication-management-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--design-border); }
 .communication-detail-view .communication-management-actions .button { margin: 0; }
 .communication-detail-view .communication-feedback { display: grid; grid-template-columns: 24px minmax(0, 1fr); align-items: start; gap: 12px; padding: 24px; border: 1px solid var(--design-border); border-radius: var(--design-radius-card); background: var(--design-surface-inset); color: var(--design-text-secondary); }
-.communication-detail-view .communication-feedback p { margin: 8px 0 0; font-size: 14px; }
+.communication-detail-view .communication-feedback p { margin: 8px 0 0; font-size: calc(14 * var(--type-unit, 1px)); }
 .communication-detail-view .communication-state { padding: 40px; justify-items: start; gap: 20px; box-shadow: none; }
 .communication-detail-view .communication-state-icon { width: 56px; height: 56px; display: grid; place-items: center; border-radius: var(--design-radius-control); background: var(--design-surface-inset); color: var(--design-text-secondary); }
-.communication-detail-view .communication-state h1 { margin: 0; font-size: clamp(26px, 3vw, 32px); line-height: 1.2; font-weight: 500; letter-spacing: -.03em; }
+.communication-detail-view .communication-state h1 { margin: 0; font-size: clamp(calc(26 * var(--type-unit, 1px)), 3vw, calc(32 * var(--type-unit, 1px))); line-height: 1.2; font-weight: 500; letter-spacing: -.03em; }
 .communication-detail-view .communication-state p { margin: 10px 0 0; max-width: 52ch; color: var(--design-text-secondary); }
 .communication-detail-view .communication-state .button { margin: 0; }
 .communication-detail-view :is(a,button,input,summary):focus-visible { outline: 2px solid var(--design-accent-ink); outline-offset: 4px; }
@@ -124,7 +124,7 @@
 @media (max-width: 767px) {
   .communication-detail-view .communication-detail { gap: 16px; }
   .communication-detail-view .communication-reader { padding: 24px; }
-  .communication-detail-view .communication-reader h1 { margin: 20px 0; font-size: 29px; }
+  .communication-detail-view .communication-reader h1 { margin: 20px 0; font-size: calc(29 * var(--type-unit, 1px)); }
   .communication-detail-view .communication-heading-row { align-items: flex-start; gap: 12px; }
   .communication-detail-view .communication-body { padding-top: 24px; margin-top: 24px; line-height: 1.7; }
   .communication-detail-view .communication-receipt { grid-template-columns: 1fr; padding: 24px; gap: 16px; }
@@ -140,7 +140,7 @@
   .communication-detail-view .communication-reader,
   .communication-detail-view .communication-receipt,
   .communication-detail-view .communication-management { padding-inline: 20px; }
-  .communication-detail-view .communication-reader h1 { font-size: 26px; }
+  .communication-detail-view .communication-reader h1 { font-size: 1.625rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .communication-detail-view .communication-management summary > svg { transition: none; }

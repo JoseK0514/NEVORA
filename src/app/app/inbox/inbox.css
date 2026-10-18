@@ -3,23 +3,23 @@
 .manager-inbox { display: grid; gap: 20px; max-width: 880px; }
 .inbox-header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
 .inbox-header h1 { margin: 0; }
-.inbox-header p { margin: 4px 0 0; color: var(--g-muted, #5F6368); font-size: 15px; }
+.inbox-header p { margin: 4px 0 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); }
 .inbox-freshness { display: flex; align-items: center; gap: 12px; }
-.inbox-freshness small { color: var(--g-muted, #5F6368); font-size: 14px; }
-.inbox-refresh { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 1px solid var(--g-border, #D7D9DC); border-radius: 8px; background: #FFFFFF; color: var(--g-ink, #1C1C1C); font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; }
+.inbox-freshness small { color: var(--g-muted, #5F6368); font-size: calc(14 * var(--type-unit, 1px)); }
+.inbox-refresh { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 1px solid var(--g-border, #D7D9DC); border-radius: 8px; background: #FFFFFF; color: var(--g-ink, #1C1C1C); font: inherit; font-size: calc(15 * var(--type-unit, 1px)); font-weight: 500; cursor: pointer; }
 .inbox-refresh:disabled { color: var(--g-muted, #5F6368); cursor: default; }
 
 .inbox-filters { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .inbox-filters button {
   flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid var(--g-border, #D7D9DC); border-radius: 999px;
-  background: #FFFFFF; color: var(--g-ink, #1C1C1C); font: inherit; font-size: 15px; font-weight: 500; white-space: nowrap; cursor: pointer;
+  background: #FFFFFF; color: var(--g-ink, #1C1C1C); font: inherit; font-size: calc(15 * var(--type-unit, 1px)); font-weight: 500; white-space: nowrap; cursor: pointer;
 }
 .inbox-filters button[aria-pressed="true"] { border-color: var(--g-ink, #1C1C1C); background: var(--g-ink, #1C1C1C); color: #FFFFFF; }
-.inbox-filter-count, .inbox-section-count { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 7px; border-radius: 999px; background: #F1F2F4; color: var(--g-ink, #1C1C1C); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.inbox-filter-count, .inbox-section-count { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 7px; border-radius: 999px; background: #F1F2F4; color: var(--g-ink, #1C1C1C); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 600; font-variant-numeric: tabular-nums; }
 .inbox-filters button[aria-pressed="true"] .inbox-filter-count { background: rgb(255 255 255 / .2); color: #FFFFFF; }
 
 .inbox-section { display: grid; gap: 10px; }
-.inbox-section h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 17px; }
+.inbox-section h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: calc(17 * var(--type-unit, 1px)); }
 .inbox-section[data-section="urgent"] h2 { color: #A8361F; }
 .inbox-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 
@@ -33,16 +33,16 @@
 .inbox-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--g-accent, #077572); background: var(--g-accent-wash, #E7F3F2); }
 .is-urgent .inbox-icon { color: #A8361F; background: #FCEBE7; }
 .inbox-copy { display: grid; gap: 4px; min-width: 0; }
-.inbox-copy strong { font-size: 16px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
-.inbox-copy p { margin: 0; color: var(--g-muted, #5F6368); font-size: 15px; line-height: 1.45; overflow-wrap: anywhere; }
-.inbox-link { display: inline-flex; align-items: center; width: fit-content; min-height: 44px; color: var(--g-accent, #077572); font-size: 15px; font-weight: 600; text-decoration: none; }
-.inbox-link::after { margin-left: 6px; content: "›"; font-size: 18px; line-height: 1; }
+.inbox-copy strong { font-size: calc(16 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.inbox-copy p { margin: 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); line-height: 1.45; overflow-wrap: anywhere; }
+.inbox-link { display: inline-flex; align-items: center; width: fit-content; min-height: 44px; color: var(--g-accent, #077572); font-size: calc(15 * var(--type-unit, 1px)); font-weight: 600; text-decoration: none; }
+.inbox-link::after { margin-left: 6px; content: "›"; font-size: calc(18 * var(--type-unit, 1px)); line-height: 1; }
 .inbox-decision { align-self: center; }
 .inbox-decision .nto-review-buttons { display: flex; gap: 8px; }
 .inbox-decision .nto-button { min-height: 44px; }
 
 /* The swipe backdrop: teal on the left (approve), coral on the right (decline). */
-.swipe-row-backdrop { position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 15px; font-weight: 600; color: #FFFFFF; }
+.swipe-row-backdrop { position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: calc(15 * var(--type-unit, 1px)); font-weight: 600; color: #FFFFFF; }
 .swipe-row-backdrop span { opacity: 0; transition: opacity 120ms ease; }
 .swipe-row[data-swipe="approve"] .swipe-row-backdrop { background: var(--g-accent, #077572); }
 .swipe-row[data-swipe="decline"] .swipe-row-backdrop { justify-content: flex-end; background: #B4361F; }
@@ -51,8 +51,8 @@
 .swipe-row[data-armed] .swipe-row-backdrop { filter: saturate(1.15); }
 
 .inbox-status { display: grid; gap: 12px; }
-.inbox-status p { margin: 0; color: var(--g-muted, #5F6368); font-size: 15px; }
-.inbox-note { margin: 0; color: var(--g-muted, #5F6368); font-size: 15px; }
+.inbox-status p { margin: 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); }
+.inbox-note { margin: 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); }
 .inbox-swipe-hint { display: none; }
 
 @media (max-width: 760px) {
@@ -79,7 +79,7 @@
 /* Decision buttons: the Time off page's pills, styled here too. */
 .inbox-decision .nto-button {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px;
-  font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  font: inherit; font-size: calc(15 * var(--type-unit, 1px)); font-weight: 600; cursor: pointer; white-space: nowrap;
 }
 .inbox-decision .nto-secondary { border: 1px solid var(--g-border, #D7D9DC); background: #FFFFFF; color: var(--g-ink, #1C1C1C); }
 .inbox-decision .nto-primary { border: 1px solid var(--g-accent, #077572); background: var(--g-accent, #077572); color: #FFFFFF; }
@@ -89,7 +89,7 @@
 /* Missed punches (B4): published shifts today with no clock-in, above everything else. */
 html body .app-shell.nevora-portal .missed-punches { display: grid; gap: 10px; margin: 0 0 24px; padding: 18px 20px; border: 1px solid #F2C2B8; border-radius: 12px; background: var(--g-canvas); box-shadow: inset 4px 0 0 var(--g-urgent); }
 html body .app-shell.nevora-portal .missed-punches-head h2 { display: flex; align-items: center; gap: 8px; margin: 0; font: var(--g-t-title); color: #9A2E1B; }
-html body .app-shell.nevora-portal .missed-count { display: inline-grid; place-items: center; min-width: 28px; height: 24px; padding: 0 8px; border-radius: 999px; background: #FDECEC; color: #9A2E1B; font: 600 14px/1 var(--design-font-body); }
+html body .app-shell.nevora-portal .missed-count { display: inline-grid; place-items: center; min-width: 28px; height: 24px; padding: 0 8px; border-radius: 999px; background: #FDECEC; color: #9A2E1B; font: 600 calc(14 * var(--type-unit, 1px))/1 var(--design-font-body); }
 html body .app-shell.nevora-portal .missed-punches-head p { margin: 4px 0 0; color: var(--g-muted); font: var(--g-t-small); }
 html body .app-shell.nevora-portal .missed-punches ul { display: grid; margin: 0; padding: 0; list-style: none; }
 html body .app-shell.nevora-portal .missed-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--g-hairline); }

@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import {useEffect,useRef,useState} from 'react';
+import {createContext,useContext,useEffect,useRef,useState,type ReactNode} from 'react';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import {parseActionCenter,type ActionCenter,type ActionItem} from '../lib/action-center/project';
 import styles from './manager-action-center.module.css';
@@ -9,6 +9,7 @@ import {formatBusinessTimestamp} from '../lib/business-time';
 import {actionCenterNavigation} from './action-center-navigation';
 import {MobileHomeDisclosure} from './mobile-home-disclosure';
 import {SkeletonRows} from './skeleton';
+import {hasSetupGaps,setupSteps,withoutSetupItems,type SetupSteps} from '../lib/action-center/setup';
 type Connection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 type Category='all'|'scheduling'|'requests'|'timekeeping';
 const categoryLabels={scheduling:'Scheduling',requests:'Requests',timekeeping:'Timekeeping'};
@@ -42,7 +43,9 @@ export function mobileActionDetail(detail:string){
   return space+new Intl.DateTimeFormat('en-US',{timeZone:'UTC',dateStyle:'medium'}).format(parsed);
  });
 }
-export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=false,onExpand,timeZone='UTC',category='all',onCategoryChange}:{snapshot:ActionCenter|null;connection:Connection;onRefresh?:()=>void;expanded?:boolean;onExpand?:()=>void;timeZone?:string;category?:Category;onCategoryChange?:(category:Category)=>void}){
+/** `setupListed`: setup items the Owner setup card took from this list. Counts come
+ * from the list as given; an empty list then says where the setup steps went. */
+export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=false,onExpand,timeZone='UTC',category='all',onCategoryChange,setupListed=0}:{snapshot:ActionCenter|null;connection:Connection;onRefresh?:()=>void;expanded?:boolean;onExpand?:()=>void;timeZone?:string;category?:Category;onCategoryChange?:(category:Category)=>void;setupListed?:number}){
  const ready=connection==='ready'&&snapshot?.state==='ready'?snapshot:null;
  const status=connection==='ready'&&!ready?'unavailable':connection;
  const matching=ready?.items.filter(item=>category==='all'||item.category===category)??[];
@@ -57,6 +60,8 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
  const visibleGroups=groups.slice(0,expanded?1000:20).map((group,index)=>group.slice(0,sizes[index]));
  const visible=visibleGroups.flat();
  const noun=category==='requests'?'request':category==='all'?'task':`${category} task`;
+ const emptyLine=setupListed?'Setup steps are listed above.':'No tasks found in the checked sources.';
+ const sourceTotal=(ready?.counts.total??0)+setupListed;
  const activeCategories=ready?(['scheduling','requests','timekeeping'] as const).filter(value=>ready.counts[value]>0).length:0;
  const renderItem=(item:ActionItem,nested=false)=>{
     const Icon=item.category==='timekeeping'?ClockIcon:item.category==='requests'?UserCheckIcon:CalendarBlankIcon;
@@ -73,16 +78,16 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
     label={ready?(category==='all'?`Review ${plural(ready.counts.total,'task','tasks')}`:category==='requests'?`Review ${matching.length} ${matching.length===1?'request':'requests'}`:`Review ${category} tasks`):'Review tasks'}
     summary={ready?<div>
       <dl className="mobile-home-action-summary">{(['scheduling','requests','timekeeping'] as const).filter(value=>ready.counts[value]>0).map(value=><div key={value}><dt>{categoryLabels[value]}</dt><dd>{ready.counts[value]}</dd></div>)}</dl>
-      {ready.counts.total===0?<p className="mobile-home-current-note">No tasks found in the checked sources.</p>:null}
+      {ready.counts.total===0?<p className="mobile-home-current-note">{emptyLine}</p>:null}
       {ready.limitedAttendance?<p className="mobile-home-current-note">Some attendance comparisons are unavailable.</p>:null}
     </div>:null}>
   {ready?<>
    {activeCategories>1||category!=='all'?<div className={styles.counts} role="group" aria-label="Filter tasks by category"><button type="button" data-action-category="all" aria-pressed={category==='all'} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.('all')}>All tasks</button>{(['scheduling','requests','timekeeping'] as const).map(value=><button type="button" key={value} data-action-category={value} aria-label={`${categoryLabels[value]}: ${plural(ready.counts[value],'task','tasks')}`} aria-pressed={category===value} aria-controls="manager-action-list" onClick={()=>onCategoryChange?.(value)}><span>{categoryLabels[value]}</span><strong>{ready.counts[value]}</strong></button>)}</div>:null}
    <div className={styles.filterBar}><p role="status" aria-live="polite" className={visible.length===matching.length?'sr-only':undefined}>Showing {visible.length} of {matching.length} {noun}{matching.length===1?'':'s'}</p></div>
-   {matching.length?<div id="manager-action-list" className={styles.list} data-row-nav="">{visibleGroups.map((group,index)=>groups[index].length===1?renderItem(group[0]):<details className={styles.actionGroup} key={group[0].id}><summary><span><small><span className="task-tag" data-priority={group[0].priority}>{priorityLabel(group[0].priority)}</span> {categoryLabels[group[0].category]}</small><strong>{taskGroupHeading(group[0].type,groups[index].length,group[0].title)}</strong></span><span className={styles.groupCount}><span className="manager-task-review-label">Review</span><CaretDownIcon className="manager-task-caret" size={18} aria-hidden="true"/></span></summary><div>{group.length<groups[index].length?<p className={styles.groupPreview}>Showing {group.length} of {groups[index].length}. Use “Show all tasks” below to review the rest.</p>:null}{group.map(item=>renderItem(item,true))}</div></details>)}</div>:<p id="manager-action-list" className={category==='all'?`${styles.status} manager-tasks-clear`:styles.status} role="status">{category==='all'?<><CheckCircleIcon size={28} aria-hidden="true"/><strong>You’re all caught up</strong><span>No tasks found in the checked sources.</span></>:`No ${category==='requests'?'requests':`${category} tasks`} to review in the checked sources.`}</p>}
-   {(matching.length>visible.length&&!expanded)||ready.counts.total?<div className="manager-tasks-footer">
+   {matching.length?<div id="manager-action-list" className={styles.list} data-row-nav="">{visibleGroups.map((group,index)=>groups[index].length===1?renderItem(group[0]):<details className={styles.actionGroup} key={group[0].id}><summary><span><small><span className="task-tag" data-priority={group[0].priority}>{priorityLabel(group[0].priority)}</span> {categoryLabels[group[0].category]}</small><strong>{taskGroupHeading(group[0].type,groups[index].length,group[0].title)}</strong></span><span className={styles.groupCount}><span className="manager-task-review-label">Review</span><CaretDownIcon className="manager-task-caret" size={18} aria-hidden="true"/></span></summary><div>{group.length<groups[index].length?<p className={styles.groupPreview}>Showing {group.length} of {groups[index].length}. Use “Show all tasks” below to review the rest.</p>:null}{group.map(item=>renderItem(item,true))}</div></details>)}</div>:<p id="manager-action-list" className={category==='all'?`${styles.status} manager-tasks-clear`:styles.status} role="status">{category==='all'?<><CheckCircleIcon size={28} aria-hidden="true"/><strong>You’re all caught up</strong><span>{emptyLine}</span></>:`No ${category==='requests'?'requests':`${category} tasks`} to review in the checked sources.`}</p>}
+   {(matching.length>visible.length&&!expanded)||sourceTotal?<div className="manager-tasks-footer">
     {matching.length>visible.length&&!expanded?<button className="button secondary" onClick={onExpand}>Show all {matching.length} tasks</button>:null}
-    {ready.counts.total?<Link className={styles.inboxLink} href="/app/inbox">Open inbox</Link>:null}
+    {sourceTotal?<Link className={styles.inboxLink} href="/app/inbox">Open inbox</Link>:null}
    </div>:null}
    {ready.limitedAttendance?<p className={styles.status}>Some attendance comparisons are unavailable. Check the attendance view for source limitations.</p>:null}
    <div className={styles.provenance}><details className={styles.note}><summary><InfoIcon size={16} aria-hidden="true"/>About these tasks</summary><p>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p></details></div>
@@ -108,7 +113,31 @@ export function useActionCenter(weekStart:string,actorId:string){
  return {snapshot,connection,refresh:()=>controller.current?.refresh()};
 }
 export type ActionCenterConnection=Connection;
-export function ManagerActionCenter({weekStart,actorId,timeZone}:{weekStart:string;actorId:string;timeZone?:string}){
+type ActionCenterRead=ReturnType<typeof useActionCenter>;
+type SharedHomeRead={read:ActionCenterRead;setup:SetupSteps|null};
+const SharedHomeActionCenter=createContext<SharedHomeRead|null>(null);
+/** One action-center read per refresh cycle on Home, shared by Tasks and the Owner
+ * setup card. The card keeps the last confirmed steps: only a ready read changes
+ * them, so a failed or loading read never makes setup look done or gone. */
+export function HomeActionCenterProvider({weekStart,actorId,owner,initialItems,children}:{weekStart:string;actorId:string;owner:boolean;initialItems:readonly {type:string;id:string}[];children:ReactNode}){
+ const read=useActionCenter(weekStart,actorId);
+ const [confirmed,setConfirmed]=useState<SetupSteps|null>(()=>owner?setupSteps(initialItems):null);
+ const [seen,setSeen]=useState<ActionCenter|null>(null);
+ const ready=read.connection==='ready'&&read.snapshot?.state==='ready'?read.snapshot:null;
+ if(owner&&ready&&ready!==seen){setSeen(ready);setConfirmed(setupSteps(ready.items));}
+ return <SharedHomeActionCenter.Provider value={{read,setup:owner&&hasSetupGaps(confirmed)?confirmed:null}}>{children}</SharedHomeActionCenter.Provider>;
+}
+/** The setup steps to show on Home, or null (not an Owner, no gaps, or no shared read). */
+export const useHomeSetupSteps=()=>useContext(SharedHomeActionCenter)?.setup??null;
+export function ManagerActionCenter(props:{weekStart:string;actorId:string;timeZone?:string}){
+ const shared=useContext(SharedHomeActionCenter);
+ return shared?<ActionCenterTasks {...props} read={shared.read} hideSetup={!!shared.setup}/>:<OwnActionCenterTasks {...props}/>;
+}
+function OwnActionCenterTasks(props:{weekStart:string;actorId:string;timeZone?:string}){
+ const read=useActionCenter(props.weekStart,props.actorId);
+ return <ActionCenterTasks {...props} read={read} hideSetup={false}/>;
+}
+function ActionCenterTasks({timeZone,read,hideSetup}:{weekStart:string;actorId:string;timeZone?:string;read:ActionCenterRead;hideSetup:boolean}){
  const [expanded,setExpanded]=useState(false);
  const [category,setCategory]=useState<Category>('all');
  useEffect(()=>{
@@ -120,8 +149,9 @@ export function ManagerActionCenter({weekStart,actorId,timeZone}:{weekStart:stri
   const url=new URL(window.location.href);if(value==='all')url.searchParams.delete('actionCategory');else url.searchParams.set('actionCategory',value);
   window.history.replaceState(window.history.state,'',url);
  };
- const {snapshot,connection,refresh}=useActionCenter(weekStart,actorId);
- return <ActionCenterSurface snapshot={snapshot} connection={connection} timeZone={timeZone} category={category} onCategoryChange={selectCategory} expanded={expanded} onExpand={()=>setExpanded(true)} onRefresh={refresh}/>;
+ const {connection,refresh}=read;
+ const {snapshot,removed}=hideSetup?withoutSetupItems(read.snapshot):{snapshot:read.snapshot,removed:0};
+ return <ActionCenterSurface snapshot={snapshot} connection={connection} timeZone={timeZone} category={category} onCategoryChange={selectCategory} expanded={expanded} onExpand={()=>setExpanded(true)} onRefresh={refresh} setupListed={removed}/>;
 }
 
 import { Temporal } from '@js-temporal/polyfill';

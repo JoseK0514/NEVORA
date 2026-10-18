@@ -1,4 +1,4 @@
 .heading { max-width: 960px; margin: 0 0 28px; color: var(--design-text-primary, #111827); }
-.heading h1 { margin: 0; font-size: clamp(30px, 3vw, 40px); font-weight: 500; line-height: 1.15; letter-spacing: -.035em; }
-.heading p { max-width: 620px; margin: 12px 0 0; color: var(--design-text-secondary, #4b5563); font-size: 15px; line-height: 1.7; }
-@media (max-width: 600px) { .heading { margin-bottom: 24px; }.heading p { font-size: 14px; } }
+.heading h1 { margin: 0; font-size: clamp(calc(30 * var(--type-unit, 1px)), 3vw, calc(40 * var(--type-unit, 1px))); font-weight: 500; line-height: 1.15; letter-spacing: -.035em; }
+.heading p { max-width: 620px; margin: 12px 0 0; color: var(--design-text-secondary, #4b5563); font-size: calc(15 * var(--type-unit, 1px)); line-height: 1.7; }
+@media (max-width: 600px) { .heading { margin-bottom: 24px; }.heading p { font-size: 0.875rem; } }

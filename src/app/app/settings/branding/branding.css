@@ -4,7 +4,7 @@ html body .app-shell.nevora-portal .branding-back { display: inline-flex; align-
 html body .app-shell.nevora-portal .branding-heading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 20px; }
 html body .app-shell.nevora-portal .branding-heading h1 { margin: 0; }
 html body .app-shell.nevora-portal .branding-heading p { max-width: 62ch; margin: 6px 0 0; color: var(--g-muted); }
-html body .app-shell.nevora-portal .branding-access { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; background: var(--g-accent-wash); color: var(--g-accent-strong); font-size: 14px; font-weight: 500; }
+html body .app-shell.nevora-portal .branding-access { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; background: var(--g-accent-wash); color: var(--g-accent-strong); font-size: calc(14 * var(--type-unit, 1px)); font-weight: 500; }
 
 html body .app-shell.nevora-portal .brand-editor { display: grid; gap: 20px; align-items: start; }
 html body .app-shell.nevora-portal .brand-controls { display: grid; gap: 16px; min-width: 0; }
@@ -25,16 +25,16 @@ html body .app-shell.nevora-portal .brand-swatch:focus-visible { outline: 3px so
 html body .app-shell.nevora-portal .brand-fields { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: end; }
 html body .app-shell.nevora-portal .brand-fields label { display: grid; gap: 6px; font-weight: 500; color: var(--g-ink); }
 html body .app-shell.nevora-portal .brand-picker input[type="color"] { width: 64px; height: 44px; padding: 3px; border: 1px solid var(--g-border); border-radius: var(--g-control-radius); background: var(--g-canvas); cursor: pointer; }
-html body .app-shell.nevora-portal .brand-hex input { width: 10ch; min-height: 44px; padding: 0 12px; border: 1px solid var(--g-border); border-radius: var(--g-control-radius); font: 500 16px/1 var(--design-font-mono, ui-monospace, monospace); text-transform: uppercase; }
+html body .app-shell.nevora-portal .brand-hex input { width: 10ch; min-height: 44px; padding: 0 12px; border: 1px solid var(--g-border); border-radius: var(--g-control-radius); font: 500 calc(16 * var(--type-unit, 1px))/1 var(--design-font-mono, ui-monospace, monospace); text-transform: uppercase; }
 html body .app-shell.nevora-portal .brand-hex input[aria-invalid="true"] { border-color: #B42318; }
-html body .app-shell.nevora-portal .brand-field-help, html body .app-shell.nevora-portal .brand-field-error { margin: -4px 0 0; font-size: 14px; color: var(--g-muted); }
+html body .app-shell.nevora-portal .brand-field-help, html body .app-shell.nevora-portal .brand-field-error { margin: -4px 0 0; font-size: calc(14 * var(--type-unit, 1px)); color: var(--g-muted); }
 html body .app-shell.nevora-portal .brand-field-error { color: #B42318; }
 html body .app-shell.nevora-portal .brand-adjustments { display: grid; gap: 8px; }
-html body .app-shell.nevora-portal .brand-adjustments p { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 12px; border-radius: 8px; background: var(--g-inset); color: var(--g-ink); font-size: 15px; }
+html body .app-shell.nevora-portal .brand-adjustments p { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 12px; border-radius: 8px; background: var(--g-inset); color: var(--g-ink); font-size: calc(15 * var(--type-unit, 1px)); }
 html body .app-shell.nevora-portal .brand-adjustments svg { flex: none; margin-top: 2px; color: var(--g-accent-strong); }
 
 html body .app-shell.nevora-portal .brand-logo-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
-html body .app-shell.nevora-portal .brand-logo-current { display: grid; place-items: center; width: 140px; height: 64px; padding: 8px; border: 1px dashed var(--g-border); border-radius: 10px; background: #FFFFFF; color: var(--g-muted); font-size: 14px; }
+html body .app-shell.nevora-portal .brand-logo-current { display: grid; place-items: center; width: 140px; height: 64px; padding: 8px; border: 1px dashed var(--g-border); border-radius: 10px; background: #FFFFFF; color: var(--g-muted); font-size: calc(14 * var(--type-unit, 1px)); }
 html body .app-shell.nevora-portal .brand-logo-current img { max-width: 100%; max-height: 44px; object-fit: contain; }
 html body .app-shell.nevora-portal .brand-logo-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 html body .app-shell.nevora-portal .brand-file { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -43,9 +43,9 @@ html body .app-shell.nevora-portal .brand-file:focus-visible + .brand-file-butto
 html body .app-shell.nevora-portal .brand-file-button[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
 html body .app-shell.nevora-portal .brand-logo-actions .button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
 
-html body .app-shell.nevora-portal .brand-checks { width: 100%; border-collapse: collapse; font-size: 15px; }
+html body .app-shell.nevora-portal .brand-checks { width: 100%; border-collapse: collapse; font-size: calc(15 * var(--type-unit, 1px)); }
 html body .app-shell.nevora-portal .brand-checks th, html body .app-shell.nevora-portal .brand-checks td { padding: 9px 8px 9px 0; border-bottom: 1px solid var(--g-hairline); text-align: left; vertical-align: top; }
-html body .app-shell.nevora-portal .brand-checks thead th { color: var(--g-muted); font-size: 14px; font-weight: 500; }
+html body .app-shell.nevora-portal .brand-checks thead th { color: var(--g-muted); font-size: calc(14 * var(--type-unit, 1px)); font-weight: 500; }
 html body .app-shell.nevora-portal .brand-checks tbody th { font-weight: 400; color: var(--g-ink); }
 html body .app-shell.nevora-portal .brand-checks td { white-space: nowrap; font-variant-numeric: tabular-nums; }
 html body .app-shell.nevora-portal .brand-check { display: inline-flex; align-items: center; gap: 4px; }
@@ -54,7 +54,7 @@ html body .app-shell.nevora-portal .brand-check[data-pass="false"] { color: #B42
 
 html body .app-shell.nevora-portal .brand-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 html body .app-shell.nevora-portal .brand-actions .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; }
-html body .app-shell.nevora-portal .brand-notice { margin: 0; padding: 12px 14px; border-radius: 10px; font-size: 15px; }
+html body .app-shell.nevora-portal .brand-notice { margin: 0; padding: 12px 14px; border-radius: 10px; font-size: calc(15 * var(--type-unit, 1px)); }
 html body .app-shell.nevora-portal .brand-notice-info { background: var(--g-inset); color: var(--g-ink); }
 html body .app-shell.nevora-portal .brand-notice-success { background: #EAF5EA; color: #14532D; }
 html body .app-shell.nevora-portal .brand-notice-error { background: #FDECEC; color: #8A1C12; }
@@ -67,11 +67,11 @@ html body .app-shell.nevora-portal .brand-history time { color: var(--g-muted); 
 html body .app-shell.nevora-portal .brand-preview { display: grid; gap: 12px; min-width: 0; }
 html body .app-shell.nevora-portal .brand-preview-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
 html body .app-shell.nevora-portal .brand-views { display: inline-flex; padding: 3px; border-radius: 10px; background: var(--g-inset); }
-html body .app-shell.nevora-portal .brand-views button { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--g-muted); font: 500 15px/1 var(--design-font-body); cursor: pointer; }
+html body .app-shell.nevora-portal .brand-views button { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--g-muted); font: 500 calc(15 * var(--type-unit, 1px))/1 var(--design-font-body); cursor: pointer; }
 html body .app-shell.nevora-portal .brand-views button[aria-pressed="true"] { background: #FFFFFF; color: var(--g-ink); box-shadow: var(--g-card-shadow); }
 html body .app-shell.nevora-portal .brand-views button:focus-visible { outline: 2px solid var(--g-accent); outline-offset: 1px; }
 html body .app-shell.nevora-portal .brand-stage { display: grid; place-items: center; padding: 20px 12px; border-radius: 16px; background: var(--g-inset); overflow: hidden; }
-html body .app-shell.nevora-portal .brand-preview-note { margin: 0; color: var(--g-muted); font-size: 14px; }
+html body .app-shell.nevora-portal .brand-preview-note { margin: 0; color: var(--g-muted); font-size: calc(14 * var(--type-unit, 1px)); }
 html body .app-shell.nevora-portal .brand-stage .login-brand-lockup { color: inherit; }
 html body .app-shell.nevora-portal .brand-preview-logo { display: inline-flex; align-items: center; height: 26px; max-width: 80px; padding: 3px 5px; border-radius: 6px; background: #FFFFFF; }
 html body .app-shell.nevora-portal .brand-preview-logo img { max-width: 100%; max-height: 20px; object-fit: contain; }
@@ -118,7 +118,7 @@ html body .app-shell.nevora-portal .bp-kiosk-button small { font-size: 13px; fon
 }
 @media (max-width: 760px) {
   html body .app-shell.nevora-portal .brand-card { padding: 16px; }
-  html body .app-shell.nevora-portal .brand-checks th, html body .app-shell.nevora-portal .brand-checks td { font-size: 15px; }
+  html body .app-shell.nevora-portal .brand-checks th, html body .app-shell.nevora-portal .brand-checks td { font-size: 0.9375rem; }
   html body .app-shell.nevora-portal .brand-actions .button { flex: 1 1 100%; }
 }
 @media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal .brand-swatch { transition: none; } html body .app-shell.nevora-portal .brand-swatch:active { transform: none; } }

@@ -1,7 +1,8 @@
 import { ManagerClockMonitor } from "./manager-clock-monitor";
 import { ManagerAttendanceReview } from "./manager-attendance-review";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
-import {ManagerActionCenter} from './manager-action-center';
+import {HomeActionCenterProvider, ManagerActionCenter} from './manager-action-center';
+import {OwnerSetupCardLive} from './owner-setup-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
 import { employeeRoleLabel } from "../lib/employee-display";
@@ -84,7 +85,7 @@ export type DashboardScheduleEmployeeItem = {
 
 type Props = {
   /** Display-only compositions can supply prepared panels without mounting readers. */
-  overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode };
+  overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode };
   role?: "OWNER" | "MANAGER";
   actorId?: string;
   correctionAuthority?:string;
@@ -426,6 +427,11 @@ function ActivityTab(props: Props) {
   );
 }
 
+/** The shared read runs only on live Home; the preview mounts no private reader. */
+function SharedHomeRead({live, children, ...read}: {live: boolean; weekStart: string; actorId: string; owner: boolean; initialItems: ManagerActionItem[]; children: ReactNode}) {
+  return live ? <HomeActionCenterProvider {...read}>{children}</HomeActionCenterProvider> : <>{children}</>;
+}
+
 export function ManagerDashboard(props: Props) {
   const actions = props.overviewSlots?.actions ?? <ManagerActionCenter key={`${props.actorId}:${props.weekStart}`} weekStart={props.weekStart} actorId={props.actorId??''} timeZone={props.timeZone}/>;
   const activity = props.overviewSlots?.activity ?? <div className="manager-monitor-block" key="recorded-activity">
@@ -495,8 +501,12 @@ export function ManagerDashboard(props: Props) {
       </nav> : null}
 
       {props.view === "overview" ? (
-        /* Gusto-style Home: Tasks lead; this week, live activity and shortcuts form the rail. */
+        /* Gusto-style Home: Tasks lead; this week, live activity and shortcuts form the rail.
+         * Live Home shares one action-center read between Tasks and the Owner setup card. */
+        <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live={!props.overviewSlots?.actions} weekStart={props.weekStart} actorId={props.actorId ?? ''}
+          owner={props.role === 'OWNER'} initialItems={props.managerActions}>
         <div className="home-layout">
+          {props.overviewSlots ? props.overviewSlots.setup ?? null : props.role === 'OWNER' ? <OwnerSetupCardLive locationCount={props.totalLocations}/> : null}
           <div className="home-layout-today">{props.overviewSlots?.today ?? <ManagerTodayTiles />}</div>
           <MobileHomeOverview weekStart={props.weekStart} weekLabel={props.weekLabel}
             previousWeek={props.previousWeek} nextWeek={props.nextWeek}
@@ -511,6 +521,7 @@ export function ManagerDashboard(props: Props) {
             detail={`Revision ${props.latestRevision.revisionNumber} · ${formatBusinessTimestamp(props.latestRevision.createdAt, props.timeZone)}`}/> : null}
           <MobileHomeTools weekStart={props.weekStart}/>
         </div>
+        </SharedHomeRead>
       ) : props.view === "attendance" ? (
         <div className="manager-attendance-stack">
           <ManagerAttendanceReview />

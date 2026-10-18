@@ -23,6 +23,21 @@ it('manifest_preserves_portal_identity', async () => {
     expect(png.subarray(1, 4).toString()).toBe('PNG'); expect(png.readUInt32BE(16)).toBe(width); expect(png.readUInt32BE(20)).toBe(height);
   }
 });
+it('android shortcuts: Schedule then Time off, inside the app scope, Phosphor PNGs; Time off leaves with its module', async () => {
+  const { manifest } = await import('./manifest');
+  const result = manifest();
+  expect(result.shortcuts).toEqual([
+    { name: 'Schedule', url: '/app/schedule', icons: [{ src: '/icons/shortcut-schedule-96.png', sizes: '96x96', type: 'image/png', purpose: 'any' }] },
+    { name: 'Time off', url: '/app/requests', icons: [{ src: '/icons/shortcut-time-off-96.png', sizes: '96x96', type: 'image/png', purpose: 'any' }] },
+  ]);
+  for (const shortcut of result.shortcuts!) {
+    expect(shortcut.url === result.scope || shortcut.url.startsWith(`${result.scope}/`)).toBe(true);
+    const png = readFileSync(`public${shortcut.icons![0].src}`);
+    expect(png.subarray(1, 4).toString()).toBe('PNG'); expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([96, 96]);
+  }
+  const { ALL_MODULES_ON } = await import('../workspace-presentation/modules');
+  expect(manifest('#1C4A47', { ...ALL_MODULES_ON, timeOff: false }).shortcuts!.map(shortcut => shortcut.name)).toEqual(['Schedule']);
+});
 it('regular public manifest endpoint returns revalidated metadata', async () => {
   expect(existsSync('src/app/fuel-portal.webmanifest/route.ts')).toBe(true);
   const { GET } = await import('../../app/fuel-portal.webmanifest/route'); const response = await GET();

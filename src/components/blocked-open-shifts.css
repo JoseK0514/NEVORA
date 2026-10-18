@@ -2,7 +2,7 @@
 .blocked-open-shifts { border: 1px solid var(--g-hairline, #ECEDEF); border-radius: 14px; background: #FFFFFF; }
 .blocked-open-shifts > summary {
   display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 0 16px;
-  border-radius: 14px; color: var(--g-ink, #1C1C1C); font-size: 15px; font-weight: 600; cursor: pointer; list-style: none;
+  border-radius: 14px; color: var(--g-ink, #1C1C1C); font-size: calc(15 * var(--type-unit, 1px)); font-weight: 600; cursor: pointer; list-style: none;
 }
 .blocked-open-shifts > summary::-webkit-details-marker { display: none; }
 .blocked-open-shifts > summary:focus-visible { outline: 2px solid var(--g-accent, #077572); outline-offset: 2px; }
@@ -10,21 +10,21 @@
 .blocked-open-shifts[open] > summary svg { transform: rotate(180deg); }
 .blocked-open-count {
   display: inline-grid; place-items: center; min-width: 22px; height: 22px; margin-inline-start: 6px; padding: 0 6px; border-radius: 999px;
-  color: var(--g-ink, #1C1C1C); background: var(--g-inset, #F6F7F8); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--g-ink, #1C1C1C); background: var(--g-inset, #F6F7F8); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 600; font-variant-numeric: tabular-nums;
 }
 .blocked-open-list { display: grid; gap: 0; margin: 0; padding: 0 14px; list-style: none; }
 .blocked-open-shift { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: start; gap: 12px; padding: 14px 0; border-top: 1px solid var(--g-hairline, #ECEDEF); }
 .blocked-open-date { display: grid; justify-items: center; padding: 6px 0; border-radius: 10px; color: var(--g-muted, #5F6368); background: var(--g-inset, #F6F7F8); }
-.blocked-open-date span { font-size: 13px; font-weight: 500; }
-.blocked-open-date strong { font-size: 20px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.blocked-open-date span { font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; }
+.blocked-open-date strong { font-size: calc(20 * var(--type-unit, 1px)); line-height: 1.2; font-variant-numeric: tabular-nums; }
 .blocked-open-copy { display: grid; gap: 4px; min-width: 0; }
-.blocked-open-copy > strong { color: var(--g-ink, #1C1C1C); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.blocked-open-place { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: var(--g-muted, #5F6368); font-size: 15px; overflow-wrap: anywhere; }
+.blocked-open-copy > strong { color: var(--g-ink, #1C1C1C); font-size: calc(16 * var(--type-unit, 1px)); font-weight: 600; font-variant-numeric: tabular-nums; }
+.blocked-open-place { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); overflow-wrap: anywhere; }
 .blocked-open-place svg { flex: none; }
 .blocked-open-reasons { display: grid; gap: 2px; margin: 4px 0 0; padding: 0; list-style: none; }
-.blocked-open-reasons li { position: relative; padding-inline-start: 14px; color: var(--g-ink, #1C1C1C); font-size: 15px; line-height: 1.45; }
+.blocked-open-reasons li { position: relative; padding-inline-start: 14px; color: var(--g-ink, #1C1C1C); font-size: calc(15 * var(--type-unit, 1px)); line-height: 1.45; }
 .blocked-open-reasons li::before { content: ""; position: absolute; inset-inline-start: 2px; top: 0.6em; width: 5px; height: 5px; border-radius: 50%; background: var(--g-muted, #5F6368); }
-.blocked-open-note { margin: 0; padding: 12px 16px 14px; border-top: 1px solid var(--g-hairline, #ECEDEF); color: var(--g-muted, #5F6368); font-size: 15px; }
+.blocked-open-note { margin: 0; padding: 12px 16px 14px; border-top: 1px solid var(--g-hairline, #ECEDEF); color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); }
 .blocked-open-note a { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; color: var(--g-accent-strong, #07605F); font-weight: 600; text-decoration: none; }
 .blocked-open-note a:focus-visible { outline: 2px solid var(--g-accent, #077572); outline-offset: 2px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { .blocked-open-shifts > summary svg { transition: none; } }

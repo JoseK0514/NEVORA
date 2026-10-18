@@ -2,9 +2,9 @@
 .my-schedule { --schedule-accent:var(--color-brand-accent); --schedule-soft:var(--nuvora-indigo-soft); width:min(1080px,100%); font-family:'Inter',var(--font-family-apple); }
 .my-schedule h1,.my-schedule h2,.my-schedule p { margin:0; }
 .my-schedule-heading { display:flex; justify-content:space-between; align-items:center; gap:20px; margin-bottom:26px; }
-.my-schedule-heading h1 { width:100%; font-size:clamp(28px,3vw,38px); line-height:1.2; letter-spacing:-.04em; font-weight:600; }
-.my-schedule-heading p { margin-top:7px; color:var(--muted); font-size:14px; line-height:1.6; }
-.my-schedule-link { display:inline-flex; justify-content:center; align-items:center; min-height:44px; gap:8px; padding:10px 14px; border-radius:12px; color:var(--schedule-accent); font:600 14px/1.4 'Inter',sans-serif; text-decoration:none; overflow-wrap:anywhere; }
+.my-schedule-heading h1 { width:100%; font-size:clamp(calc(28 * var(--type-unit, 1px)),3vw,calc(38 * var(--type-unit, 1px))); line-height:1.2; letter-spacing:-.04em; font-weight:600; }
+.my-schedule-heading p { margin-top:7px; color:var(--muted); font-size:calc(14 * var(--type-unit, 1px)); line-height:1.6; }
+.my-schedule-link { display:inline-flex; justify-content:center; align-items:center; min-height:44px; gap:8px; padding:10px 14px; border-radius:12px; color:var(--schedule-accent); font:600 calc(14 * var(--type-unit, 1px))/1.4 'Inter',sans-serif; text-decoration:none; overflow-wrap:anywhere; }
 .my-schedule-link svg { flex-shrink:0; }
 .my-schedule-link:hover { background:var(--schedule-soft); }
 .my-schedule-requests { border:1px solid var(--color-border-subtle); background:var(--color-bg-surface); white-space:nowrap; }
@@ -12,64 +12,64 @@
 .my-week-topline { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
 .my-week-title { display:flex; align-items:center; gap:12px; min-width:0; }
 .my-week-title>svg { color:var(--schedule-accent); flex-shrink:0; }
-.my-week-title h2 { font-size:21px; font-weight:600; letter-spacing:-.025em; line-height:1.3; }
-.my-week-title p { font-size:13px; margin-top:4px; line-height:1.4; color:var(--muted); overflow-wrap:anywhere; }
+.my-week-title h2 { font-size:calc(21 * var(--type-unit, 1px)); font-weight:600; letter-spacing:-.025em; line-height:1.3; }
+.my-week-title p { font-size:calc(13 * var(--type-unit, 1px)); margin-top:4px; line-height:1.4; color:var(--muted); overflow-wrap:anywhere; }
 .my-week-navigation { display:flex; gap:6px; align-items:center; flex-shrink:0; }
 .my-week-navigation a { min-width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:12px; color:var(--color-brand-primary); background:var(--color-bg-main); text-decoration:none; }
 .my-week-navigation a:hover { background:var(--schedule-soft); color:var(--schedule-accent); }
-.my-week-today { padding-inline:14px; font-size:14px; font-weight:600; }
+.my-week-today { padding-inline:14px; font-size:calc(14 * var(--type-unit, 1px)); font-weight:600; }
 .my-week-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); grid-auto-flow:dense; gap:8px; }
 .my-week-day { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:78px; gap:3px; padding:8px 4px; border-radius:12px; color:var(--color-brand-primary); text-decoration:none; font-variant-numeric:tabular-nums; border:1px solid transparent; }
-.my-week-day>span { color:var(--muted); font-size:12px; font-weight:500; }.my-week-day strong { font-size:20px; line-height:1.3; font-weight:600; }
+.my-week-day>span { color:var(--muted); font-size:calc(12 * var(--type-unit, 1px)); font-weight:500; }.my-week-day strong { font-size:calc(20 * var(--type-unit, 1px)); line-height:1.3; font-weight:600; }
 .my-week-day i { width:4px; height:4px; border-radius:50%; background:transparent; margin-top:3px; }.my-week-day i.has-shift { background:var(--schedule-accent); }
 .my-week-day:hover,.my-week-day.is-selected { background:var(--schedule-soft); border-color:var(--schedule-accent); }
 .my-week-day.is-today { color:var(--color-bg-surface); background:var(--schedule-accent); }.my-week-day.is-today>span { color:inherit; }.my-week-day.is-today i.has-shift { background:currentColor; }
-.my-schedule-feedback { padding:16px 20px; border:1px solid var(--color-border-subtle); border-radius:14px; background:var(--color-bg-surface); margin-bottom:16px; font-size:14px; line-height:1.6; }
+.my-schedule-feedback { padding:16px 20px; border:1px solid var(--color-border-subtle); border-radius:14px; background:var(--color-bg-surface); margin-bottom:16px; font-size:calc(14 * var(--type-unit, 1px)); line-height:1.6; }
 .my-schedule-feedback p { color:var(--muted); margin-top:3px; }.my-schedule-feedback .my-schedule-link { padding-left:0; margin-top:3px; }
 .my-schedule-feedback.error { border-color:var(--color-state-danger); background:var(--color-state-danger-bg); }.my-schedule-feedback.error strong { color:var(--color-state-danger); }
 .my-schedule-feedback.success { color:var(--color-state-success); background:var(--color-state-success-bg); }
 .my-schedule-review { display:grid; grid-template-columns:40px minmax(0,1fr) auto; gap:14px; align-items:center; padding:20px; border:1px solid color-mix(in srgb,var(--schedule-accent) 22%,var(--color-bg-surface)); border-radius:18px; background:var(--schedule-soft); margin-bottom:20px; }
-.my-review-icon { width:40px; height:40px; display:grid; place-items:center; color:var(--schedule-accent); }.my-review-copy h2 { font-size:16px; font-weight:600; line-height:1.4; letter-spacing:-.015em; }.my-review-copy p { margin-top:4px; font-size:14px; color:var(--muted); line-height:1.5; }
-.my-review-action { min-width:0; }.my-review-action .employee-action { min-height:46px; padding:12px 18px; border-radius:13px; font-size:14px; font-family:inherit; background:var(--schedule-accent); color:var(--color-bg-surface); box-shadow:0 2px 3px rgba(0,0,0,.05); }
-.my-review-action .employee-action:hover:not(:disabled) { background:var(--nuvora-indigo-hover); }.my-review-action .employee-action:disabled { opacity:.6; }.my-review-action .employee-quiet-status { font-size:14px; }
+.my-review-icon { width:40px; height:40px; display:grid; place-items:center; color:var(--schedule-accent); }.my-review-copy h2 { font-size:calc(16 * var(--type-unit, 1px)); font-weight:600; line-height:1.4; letter-spacing:-.015em; }.my-review-copy p { margin-top:4px; font-size:calc(14 * var(--type-unit, 1px)); color:var(--muted); line-height:1.5; }
+.my-review-action { min-width:0; }.my-review-action .employee-action { min-height:46px; padding:12px 18px; border-radius:13px; font-size:calc(14 * var(--type-unit, 1px)); font-family:inherit; background:var(--schedule-accent); color:var(--color-bg-surface); box-shadow:0 2px 3px rgba(0,0,0,.05); }
+.my-review-action .employee-action:hover:not(:disabled) { background:var(--nuvora-indigo-hover); }.my-review-action .employee-action:disabled { opacity:.6; }.my-review-action .employee-quiet-status { font-size:calc(14 * var(--type-unit, 1px)); }
 .my-schedule-review.is-confirmed { background:var(--color-state-success-bg); border-color:color-mix(in srgb,var(--color-state-success) 20%,white); }.my-schedule-review.is-confirmed .my-review-icon { color:var(--color-state-success); }
-.my-schedule-changes:empty { display:none; }.my-schedule-changes .schedule-publication-change { margin:0 0 20px; border:1px solid var(--color-border-subtle); border-radius:14px; background:var(--color-bg-surface); padding:0; font-size:14px; }
-.my-schedule-changes summary { padding:14px 20px; min-height:48px; color:var(--color-brand-primary); font-weight:500; cursor:pointer; }.my-schedule-changes ul { padding:0 20px 16px 40px; margin:0; }.my-schedule-changes li { margin:10px 0; overflow-wrap:anywhere; }.my-schedule-changes li span { display:block; font-size:14px; line-height:1.6; }
+.my-schedule-changes:empty { display:none; }.my-schedule-changes .schedule-publication-change { margin:0 0 20px; border:1px solid var(--color-border-subtle); border-radius:14px; background:var(--color-bg-surface); padding:0; font-size:calc(14 * var(--type-unit, 1px)); }
+.my-schedule-changes summary { padding:14px 20px; min-height:48px; color:var(--color-brand-primary); font-weight:500; cursor:pointer; }.my-schedule-changes ul { padding:0 20px 16px 40px; margin:0; }.my-schedule-changes li { margin:10px 0; overflow-wrap:anywhere; }.my-schedule-changes li span { display:block; font-size:calc(14 * var(--type-unit, 1px)); line-height:1.6; }
 .my-schedule .my-schedule-agenda { padding:0; border-radius:18px; overflow:visible; box-shadow:none; }
-.my-agenda-heading { padding:18px 24px; display:flex; justify-content:space-between; align-items:center; gap:16px; border-bottom:1px solid var(--color-border-subtle); }.my-agenda-heading h2 { font-size:16px; font-weight:600; }.my-agenda-heading>span { font-size:13px; color:var(--muted); }
+.my-agenda-heading { padding:18px 24px; display:flex; justify-content:space-between; align-items:center; gap:16px; border-bottom:1px solid var(--color-border-subtle); }.my-agenda-heading h2 { font-size:calc(16 * var(--type-unit, 1px)); font-weight:600; }.my-agenda-heading>span { font-size:calc(13 * var(--type-unit, 1px)); color:var(--muted); }
 .my-schedule .employee-schedule-day { display:grid; grid-template-columns:64px minmax(0,1fr); gap:20px; min-height:100px; padding:20px 24px; scroll-margin-top:24px; }.my-schedule .employee-schedule-day:nth-child(2) { border-top:0; }.my-schedule .employee-schedule-day:last-child { border-radius:0 0 18px 18px; }
 .my-schedule .employee-schedule-day.today { background:color-mix(in srgb,var(--schedule-soft) 55%,white); }.my-schedule .employee-schedule-day.today::before { display:none; }.my-schedule .employee-schedule-day.selected,.my-schedule .employee-schedule-day:target { background:var(--schedule-soft); box-shadow:inset 3px 0 0 var(--schedule-accent); }
-.my-schedule .employee-agenda-date { align-self:start; text-align:left; gap:4px; }.my-schedule .employee-agenda-date>span { font-size:12px; line-height:1.4; color:var(--muted); letter-spacing:0; text-transform:none; }.my-schedule .employee-agenda-date strong { font-size:27px; line-height:1.05; font-weight:500; color:var(--color-brand-primary); }.my-schedule .employee-agenda-date small { font-size:12px; color:var(--schedule-accent); font-weight:600; }
+.my-schedule .employee-agenda-date { align-self:start; text-align:left; gap:4px; }.my-schedule .employee-agenda-date>span { font-size:calc(12 * var(--type-unit, 1px)); line-height:1.4; color:var(--muted); letter-spacing:0; text-transform:none; }.my-schedule .employee-agenda-date strong { font-size:calc(27 * var(--type-unit, 1px)); line-height:1.05; font-weight:500; color:var(--color-brand-primary); }.my-schedule .employee-agenda-date small { font-size:calc(12 * var(--type-unit, 1px)); color:var(--schedule-accent); font-weight:600; }
 .my-schedule .employee-schedule-day-copy { gap:18px; }.my-schedule .my-shift { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:12px; }.my-shift+.my-shift { padding-top:18px; border-top:1px dashed var(--color-border-subtle); }
-.my-shift-copy { display:flex; flex-direction:column; align-items:flex-start; min-width:0; gap:6px; }.my-shift-copy>strong { font-size:17px; font-weight:600; line-height:1.4; letter-spacing:-.025em; font-variant-numeric:tabular-nums; color:var(--color-brand-primary); }.my-shift-copy>span { color:var(--muted); font-size:14px; line-height:1.45; overflow-wrap:anywhere; }
+.my-shift-copy { display:flex; flex-direction:column; align-items:flex-start; min-width:0; gap:6px; }.my-shift-copy>strong { font-size:calc(17 * var(--type-unit, 1px)); font-weight:600; line-height:1.4; letter-spacing:-.025em; font-variant-numeric:tabular-nums; color:var(--color-brand-primary); }.my-shift-copy>span { color:var(--muted); font-size:calc(14 * var(--type-unit, 1px)); line-height:1.45; overflow-wrap:anywhere; }
 .my-shift-location { display:flex; gap:5px; align-items:baseline; }.my-shift-location svg { flex-shrink:0; align-self:center; }.my-shift-overnight { font-weight:500; }
-.my-schedule .employee-schedule-tags { gap:6px; margin-top:2px; }.my-schedule .employee-schedule-tags small { font-size:12px; padding:4px 8px; border-radius:6px; background:var(--color-bg-main); }.my-schedule .employee-schedule-tags small+small::before { content:none; }
-.my-schedule .employee-schedule-off { color:var(--muted); font-size:14px; line-height:1.5; padding-top:5px; }
-.my-shift-options { min-width:0; width:150px; }.my-shift-options summary { list-style:none; display:flex; align-items:center; justify-content:center; gap:6px; min-height:44px; padding:8px 10px; color:var(--muted); border:1px solid var(--color-border-subtle); border-radius:10px; font-size:13px; font-weight:500; cursor:pointer; }.my-shift-options summary::-webkit-details-marker { display:none; }.my-shift-options summary:hover,.my-shift-options[open] summary { background:var(--schedule-soft); color:var(--schedule-accent); }
-.my-shift-options-body { padding-top:6px; }.my-shift-options-body .my-schedule-link { width:100%; justify-content:flex-start; padding:8px; font-size:13px; }.my-shift-options-body p { color:var(--muted); font-size:12px; line-height:1.5; padding:8px; }
-.my-schedule-footer { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:16px 0; margin-top:6px; }.my-schedule-footer p { font-size:14px; color:var(--muted); }.my-schedule-footer>div { display:flex; flex-wrap:wrap; gap:4px; }
+.my-schedule .employee-schedule-tags { gap:6px; margin-top:2px; }.my-schedule .employee-schedule-tags small { font-size:calc(12 * var(--type-unit, 1px)); padding:4px 8px; border-radius:6px; background:var(--color-bg-main); }.my-schedule .employee-schedule-tags small+small::before { content:none; }
+.my-schedule .employee-schedule-off { color:var(--muted); font-size:calc(14 * var(--type-unit, 1px)); line-height:1.5; padding-top:5px; }
+.my-shift-options { min-width:0; width:150px; }.my-shift-options summary { list-style:none; display:flex; align-items:center; justify-content:center; gap:6px; min-height:44px; padding:8px 10px; color:var(--muted); border:1px solid var(--color-border-subtle); border-radius:10px; font-size:calc(13 * var(--type-unit, 1px)); font-weight:500; cursor:pointer; }.my-shift-options summary::-webkit-details-marker { display:none; }.my-shift-options summary:hover,.my-shift-options[open] summary { background:var(--schedule-soft); color:var(--schedule-accent); }
+.my-shift-options-body { padding-top:6px; }.my-shift-options-body .my-schedule-link { width:100%; justify-content:flex-start; padding:8px; font-size:calc(13 * var(--type-unit, 1px)); }.my-shift-options-body p { color:var(--muted); font-size:calc(12 * var(--type-unit, 1px)); line-height:1.5; padding:8px; }
+.my-schedule-footer { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:16px 0; margin-top:6px; }.my-schedule-footer p { font-size:calc(14 * var(--type-unit, 1px)); color:var(--muted); }.my-schedule-footer>div { display:flex; flex-wrap:wrap; gap:4px; }
 .my-schedule :is(a,summary,button):focus-visible { outline:2px solid var(--schedule-accent); outline-offset:3px; }
 .my-schedule .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-@media(max-width:760px) { .my-schedule-heading { display:block; margin-bottom:20px; }.my-schedule-requests { margin-top:14px; }.my-week-overview { padding:18px 14px 12px; }.my-week-topline { align-items:flex-start; flex-direction:column; gap:14px; margin-bottom:14px; }.my-week-title h2 { font-size:20px; }.my-week-navigation { width:100%; justify-content:space-between; }.my-week-days { gap:3px; }.my-week-day { min-height:72px; border-radius:10px; }.my-week-day strong { font-size:18px; }.my-week-day>span { font-size:12px; }.my-schedule-review { grid-template-columns:32px minmax(0,1fr); padding:16px; gap:10px; }.my-review-icon { width:32px; height:32px; }.my-review-action { grid-column:1/-1; padding-top:4px; }.my-review-action .employee-action { width:100%; }.my-schedule-feedback { padding:16px; }.my-agenda-heading { display:block; padding:16px; }.my-agenda-heading>span { display:block; margin-top:3px; }.my-schedule .employee-schedule-day { padding:18px 16px; grid-template-columns:40px minmax(0,1fr); gap:14px; }.my-schedule .my-shift { grid-template-columns:minmax(0,1fr); gap:8px; }.my-shift-copy>strong { font-size:16px; }.my-shift-options { width:100%; }.my-shift-options summary { justify-content:flex-start; width:fit-content; padding-inline:10px; }.my-shift-options[open] summary { width:100%; }.my-shift-options-body .my-schedule-link { font-size:14px; }.my-shift-options-body p { font-size:14px; }.my-schedule-footer { display:block; padding:18px 0; }.my-schedule-footer>div { margin-top:6px; gap:0; }.my-schedule-footer .my-schedule-link { padding-inline:10px; } }
+@media(max-width:760px) { .my-schedule-heading { display:block; margin-bottom:20px; }.my-schedule-requests { margin-top:14px; }.my-week-overview { padding:18px 14px 12px; }.my-week-topline { align-items:flex-start; flex-direction:column; gap:14px; margin-bottom:14px; }.my-week-title h2 { font-size:1.25rem; }.my-week-navigation { width:100%; justify-content:space-between; }.my-week-days { gap:3px; }.my-week-day { min-height:72px; border-radius:10px; }.my-week-day strong { font-size:1.125rem; }.my-week-day>span { font-size:0.75rem; }.my-schedule-review { grid-template-columns:32px minmax(0,1fr); padding:16px; gap:10px; }.my-review-icon { width:32px; height:32px; }.my-review-action { grid-column:1/-1; padding-top:4px; }.my-review-action .employee-action { width:100%; }.my-schedule-feedback { padding:16px; }.my-agenda-heading { display:block; padding:16px; }.my-agenda-heading>span { display:block; margin-top:3px; }.my-schedule .employee-schedule-day { padding:18px 16px; grid-template-columns:40px minmax(0,1fr); gap:14px; }.my-schedule .my-shift { grid-template-columns:minmax(0,1fr); gap:8px; }.my-shift-copy>strong { font-size:1rem; }.my-shift-options { width:100%; }.my-shift-options summary { justify-content:flex-start; width:fit-content; padding-inline:10px; }.my-shift-options[open] summary { width:100%; }.my-shift-options-body .my-schedule-link { font-size:0.875rem; }.my-shift-options-body p { font-size:0.875rem; }.my-schedule-footer { display:block; padding:18px 0; }.my-schedule-footer>div { margin-top:6px; gap:0; }.my-schedule-footer .my-schedule-link { padding-inline:10px; } }
 @media(prefers-reduced-motion:no-preference) { .my-schedule :is(a,summary,button) { transition:background-color .15s ease,color .15s ease,border-color .15s ease; } }
-@media(max-width:400px) { .my-week-days { display:flex; flex-wrap:wrap; gap:6px; }.my-week-day { flex:1 1 calc(25% - 6px); min-width:44px; }.my-schedule-footer .my-schedule-link { font-size:13px; } }
+@media(max-width:400px) { .my-week-days { display:flex; flex-wrap:wrap; gap:6px; }.my-week-day { flex:1 1 calc(25% - 6px); min-width:44px; }.my-schedule-footer .my-schedule-link { font-size:0.8125rem; } }
 @media print { .my-week-navigation,.my-week-days,.my-shift-options,.my-review-action,.my-schedule-requests,.my-schedule-footer { display:none; }.my-schedule .employee-schedule-day { break-inside:avoid; } }
 
 /* U3 (2026-10-16): My shifts | Open shifts on real URLs, and open shift cards. */
 .my-schedule-views { display: flex; gap: 4px; width: fit-content; max-width: 100%; margin: 0 0 16px; padding: 4px; border-radius: 12px; background: #ECEDEF; }
 .my-schedule-views a {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 9px;
-  color: var(--g-muted, #5F6368); font-size: 15px; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 150ms ease, color 150ms ease;
+  color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 150ms ease, color 150ms ease;
 }
 .my-schedule-views a[aria-current="page"] { color: var(--g-ink, #1C1C1C); background: #FFFFFF; font-weight: 600; box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
 .my-schedule-views a:focus-visible { outline: 2px solid var(--g-accent, #077572); outline-offset: 2px; }
-.my-schedule-views-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; color: #FFFFFF; background: var(--g-accent, #077572); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.my-schedule-views-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; color: #FFFFFF; background: var(--g-accent, #077572); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 600; font-variant-numeric: tabular-nums; }
 @media (max-width: 760px) { .my-schedule-views { width: 100%; } .my-schedule-views a { flex: 1; padding: 0 10px; } }
 
 .my-open-shifts { display: grid; gap: 12px; padding: 0 20px 20px; }
 .my-open-shifts > .my-agenda-heading { margin-inline: -20px; }
 @media (max-width: 760px) { .my-open-shifts { padding: 0 16px 16px; } .my-open-shifts > .my-agenda-heading { margin-inline: -16px; } }
-.my-open-group { margin: 8px 0 0; color: var(--g-muted, #5F6368); font-size: 15px; font-weight: 500; }
+.my-open-group { margin: 8px 0 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); font-weight: 500; }
 .my-open-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .my-open-shift {
   display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 16px;
@@ -77,14 +77,14 @@
 }
 .my-open-shift.is-requested { border-color: #F0D9B5; background: #FFFBF4; }
 .my-open-date { display: grid; justify-items: center; gap: 0; padding: 6px 0; border-radius: 10px; background: var(--g-accent-wash, #E7F3F2); color: var(--g-accent-strong, #07605F); }
-.my-open-date span { font-size: 13px; font-weight: 500; }
-.my-open-date strong { font-size: 20px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.my-open-date span { font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; }
+.my-open-date strong { font-size: calc(20 * var(--type-unit, 1px)); line-height: 1.2; font-variant-numeric: tabular-nums; }
 .my-open-copy { display: grid; gap: 4px; min-width: 0; }
-.my-open-copy > strong { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.my-open-status { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 2px 8px; border-radius: 999px; color: #8A4B00; background: #FBF1E2; font-size: 14px; font-weight: 500; }
-.my-open-action { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px; color: var(--g-accent, #077572); font-size: 15px; font-weight: 600; text-decoration: none; white-space: nowrap; }
-.my-open-note { margin: 4px 0 0; color: var(--g-muted, #5F6368); font-size: 15px; }
-.my-open-none { margin: 0; padding: 4px 0; color: var(--g-muted, #5F6368); font-size: 15px; }
+.my-open-copy > strong { font-size: calc(16 * var(--type-unit, 1px)); font-weight: 600; font-variant-numeric: tabular-nums; }
+.my-open-status { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 2px 8px; border-radius: 999px; color: #8A4B00; background: #FBF1E2; font-size: calc(14 * var(--type-unit, 1px)); font-weight: 500; }
+.my-open-action { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px; color: var(--g-accent, #077572); font-size: calc(15 * var(--type-unit, 1px)); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.my-open-note { margin: 4px 0 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); }
+.my-open-none { margin: 0; padding: 4px 0; color: var(--g-muted, #5F6368); font-size: calc(15 * var(--type-unit, 1px)); }
 @media (max-width: 520px) {
   .my-open-shift { grid-template-columns: 48px minmax(0, 1fr); }
   .my-open-action { grid-column: 2; justify-self: start; padding: 0; }

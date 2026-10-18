@@ -54,10 +54,13 @@
 .zone { color: var(--home-muted); font-size: .75rem; }
 .arrow { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
 .assignmentMessage { margin-block: 12px 8px !important; font-size: 1.25rem; line-height: 1.4; font-weight: 500; }
-.current { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--home-line); }
-.current h3 { font-size: 1rem; line-height: 1.4; font-weight: 500; }
+/* A shift under way leads the card (phone polish B1); the next shift follows its own heading. */
+.current { margin: 0; padding: 0; border: 0; }
+:is(.current, .upcoming) h3 { margin-bottom: 4px !important; font-size: 1.0625rem; line-height: 1.4; font-weight: 600; }
+.current .assignmentFooter { margin-top: 8px; border-top: 0; }
+.upcoming { position: relative; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--home-line); }
+.cardZone { padding-block: 8px 6px; }
 .currentNote { margin-block: 6px 12px !important; color: var(--home-muted); font-size: .8125rem; }
-.current .interval { font-size: 1.5rem; }
 
 .recordedSlot { min-width: 0; padding: 16px 18px 12px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
 /* Style only the supplied original compact panel, without hiding its facts or controls. */
@@ -196,10 +199,11 @@
   position: absolute; inset: -40% -30% auto auto; width: 240px; height: 240px; border-radius: 50%;
   background: radial-gradient(circle, rgb(255 255 255 / .14), transparent 68%); content: ''; pointer-events: none;
 }
-.root.root.root .assignment[data-pass] .assignmentHeader h2 { color: rgb(255 255 255 / .82); }
+/* 94% white: 4.5:1 or more at the gradient's lightest corner (82% measured 4.44:1; J1). */
+.root.root.root .assignment[data-pass] .assignmentHeader h2 { color: rgb(255 255 255 / .94); }
 .assignment[data-pass] .published { color: #ffffff; background: rgb(255 255 255 / .16); }
 .assignment[data-pass] .published::before { background: #ffffff; }
-.assignment[data-pass] :is(.assignmentDate, .position, .zone, .currentNote, .notice, .intervalDash) { color: rgb(255 255 255 / .82); }
+.assignment[data-pass] :is(.assignmentDate, .position, .zone, .currentNote, .notice, .intervalDash) { color: rgb(255 255 255 / .94); }
 .assignment[data-pass] .assignmentDate strong { color: #ffffff; font-weight: 600; }
 .assignment[data-pass] .interval { font-size: 2rem; }
 .assignment[data-pass] .location { color: #ffffff; }
@@ -210,10 +214,17 @@
 .assignment[data-pass] .assignmentFooter::before { left: calc(-1 * var(--pass-pad) - 9px); }
 .assignment[data-pass] .assignmentFooter::after { right: calc(-1 * var(--pass-pad) - 9px); }
 .assignment[data-pass] .scheduleLink { color: #ffffff; }
-.assignment[data-pass] .current { border-top-color: rgb(255 255 255 / .24); }
-.assignment[data-pass] .current h3 { color: #ffffff; }
-.assignment[data-pass] .current .assignmentFooter { border-top-style: solid; border-top-color: rgb(255 255 255 / .2); }
-.assignment[data-pass] .current .assignmentFooter::before, .assignment[data-pass] .current .assignmentFooter::after { display: none; }
+.assignment[data-pass] :is(.current, .upcoming) h3 { color: #ffffff; }
+/* One tear per card: between now and next. Each block's link then sits on a plain rule. */
+.assignment[data-pass] .upcoming { border-top: 1.5px dashed rgb(255 255 255 / .32); }
+.assignment[data-pass] .upcoming::before, .assignment[data-pass] .upcoming::after {
+  position: absolute; top: -10px; width: 18px; height: 18px; border-radius: 50%; background: var(--pass-notch); content: '';
+}
+.assignment[data-pass] .upcoming::before { left: calc(-1 * var(--pass-pad) - 9px); }
+.assignment[data-pass] .upcoming::after { right: calc(-1 * var(--pass-pad) - 9px); }
+.assignment[data-pass] .current .assignmentFooter { border-top: 0; }
+.assignment[data-pass] .upcoming .assignmentFooter { border-top: 1px solid rgb(255 255 255 / .2); }
+.assignment[data-pass] :is(.current, .upcoming) .assignmentFooter::before, .assignment[data-pass] :is(.current, .upcoming) .assignmentFooter::after { display: none; }
 .root .assignment[data-pass] :is(a, button):focus-visible { outline-color: #ffffff; }
 .countdown {
   display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px !important; padding: 5px 12px 5px 10px; border-radius: 999px;
@@ -272,7 +283,8 @@
 @media (forced-colors: active) {
   .assignment[data-pass] { border: 2px solid CanvasText; background: Canvas; color: CanvasText; }
   .assignment[data-pass] :is(.assignmentDate, .position, .zone, .currentNote, .notice, .location, .scheduleLink, .countdown) { color: CanvasText; }
-  .assignment[data-pass] .assignmentFooter::before, .assignment[data-pass] .assignmentFooter::after { display: none; }
+  .assignment[data-pass] .assignmentFooter::before, .assignment[data-pass] .assignmentFooter::after,
+  .assignment[data-pass] .upcoming::before, .assignment[data-pass] .upcoming::after { display: none; }
 }
 /* D3 (desktop): quick actions as one-line tiles, so the right column ends closer
  * to the left one. Phones keep the larger two-row tiles. */

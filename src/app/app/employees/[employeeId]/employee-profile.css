@@ -88,7 +88,7 @@ body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: va
   min-height: 44px;
   padding: 0 4px;
   color: var(--profile-muted);
-  font-size: 13px;
+  font-size: calc(13 * var(--type-unit, 1px));
   font-weight: 500;
   text-decoration: none;
 }
@@ -121,9 +121,9 @@ body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: va
   font-weight: 500;
 }
 .profile-identity-copy { flex: 1; min-width: 0; }
-.profile-context { margin: 0 0 5px; color: var(--profile-muted); font-size: 12px; font-weight: 500; }
-.employee-profile-page h1 { margin: 0; max-width: 100%; font-size: clamp(26px, 2.7vw, 36px); line-height: 1.2; font-weight: 500; letter-spacing: -.035em; overflow-wrap: anywhere; }
-.profile-intro { margin: 8px 0 0; color: var(--profile-muted); font-size: 13px; line-height: 1.5; }
+.profile-context { margin: 0 0 5px; color: var(--profile-muted); font-size: calc(12 * var(--type-unit, 1px)); font-weight: 500; }
+.employee-profile-page h1 { margin: 0; max-width: 100%; font-size: clamp(calc(26 * var(--type-unit, 1px)), 2.7vw, calc(36 * var(--type-unit, 1px))); line-height: 1.2; font-weight: 500; letter-spacing: -.035em; overflow-wrap: anywhere; }
+.profile-intro { margin: 8px 0 0; color: var(--profile-muted); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.5; }
 .profile-status {
   display: inline-flex;
   align-items: center;
@@ -132,7 +132,7 @@ body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: va
   flex: 0 0 auto;
   padding: 5px 10px;
   border-radius: 9999px;
-  font-size: 12px;
+  font-size: calc(12 * var(--type-unit, 1px));
   font-weight: 500;
   line-height: 1.4;
 }
@@ -141,8 +141,8 @@ body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: va
 .profile-status::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 .profile-summary { display: grid; grid-template-columns: 1fr 1.5fr 1.25fr 1fr; gap: 24px; margin: 24px 0 0; padding-top: 20px; border-top: 1px solid var(--profile-inset); }
 .profile-summary > div { min-width: 0; }
-.profile-summary dt { margin-bottom: 6px; color: var(--profile-muted); font-size: 12px; }
-.profile-summary dd { margin: 0; font-size: 13px; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.profile-summary dt { margin-bottom: 6px; color: var(--profile-muted); font-size: calc(12 * var(--type-unit, 1px)); }
+.profile-summary dd { margin: 0; font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
 .profile-workspace { display: grid; gap: 20px; min-width: 0; }
 .profile-segments {
   position: relative;
@@ -181,7 +181,7 @@ body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: va
   background: transparent;
   color: var(--profile-muted);
   font: inherit;
-  font-size: 14px;
+  font-size: calc(14 * var(--type-unit, 1px));
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
@@ -193,13 +193,13 @@ body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: va
 .profile-tab-panel[hidden] { display: none; }
 .employee-profile-page .profile-editor { width: 100%; min-width: 0; padding: 28px 32px; }
 .employee-profile-page .employee-profile-section-heading { margin-bottom: 24px; }
-.employee-profile-page .employee-profile-section-heading h2 { color: var(--profile-ink); font-size: 22px; font-weight: 500; line-height: 1.3; }
-.employee-profile-page .employee-profile-section-heading p { font-size: 13px; line-height: 1.6; margin-top: 8px; }
+.employee-profile-page .employee-profile-section-heading h2 { color: var(--profile-ink); font-size: calc(22 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.3; }
+.employee-profile-page .employee-profile-section-heading p { font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; margin-top: 8px; }
 .employee-profile-page .employee-form { gap: 24px; min-width: 0; }
-.employee-profile-page .employee-form label { min-width: 0; color: var(--profile-ink); font-size: 13px; font-weight: 500; line-height: 1.5; }
+.employee-profile-page .employee-form label { min-width: 0; color: var(--profile-ink); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.5; }
 .employee-profile-page .employee-form label > span { font-weight: 400; }
 .employee-profile-page .employee-form .employee-email-label { display: flex; align-items: baseline; gap: 8px; color: var(--profile-ink); font-weight: 500; }
-.employee-profile-page .employee-email-label small { font-size: 12px; font-weight: 400; }
+.employee-profile-page .employee-email-label small { font-size: calc(12 * var(--type-unit, 1px)); font-weight: 400; }
 .employee-profile-page .employee-form input:not([type="checkbox"]):not([type="hidden"]),
 .employee-profile-page .employee-form select {
   min-width: 0;
@@ -209,26 +209,26 @@ body:has(.employee-profile-page) .sidebar .nav-link.active .nav-icon { color: va
   background: var(--profile-canvas);
   color: var(--profile-ink);
   font-family: inherit;
-  font-size: 16px;
+  font-size: calc(16 * var(--type-unit, 1px));
   font-weight: 400;
 }
 .employee-profile-page .employee-form :is(input, select):focus { border-color: var(--nevora-blue); box-shadow: 0 0 0 3px rgb(159 56 33 / 10%); }
-.employee-profile-page .nevora-field-hint { font-size: 12px; line-height: 1.6; }
+.employee-profile-page .nevora-field-hint { font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.6; }
 .employee-profile-page .form-columns { gap: 20px; }
 .employee-profile-page .employee-core-id { grid-template-columns: auto minmax(0, 1fr); gap: 5px 12px; padding-bottom: 20px; border-bottom: 1px solid var(--profile-inset); }
-.employee-profile-page .employee-core-id > span { font-size: 12px; font-weight: 500; }
-.employee-profile-page .employee-core-id > strong { color: var(--profile-ink); font-family: "NEVORA Profile Mono", ui-monospace, monospace; font-size: 13px; font-weight: 500; }
-.employee-profile-page .employee-core-id > small { font-size: 12px; }
+.employee-profile-page .employee-core-id > span { font-size: calc(12 * var(--type-unit, 1px)); font-weight: 500; }
+.employee-profile-page .employee-core-id > strong { color: var(--profile-ink); font-family: "NEVORA Profile Mono", ui-monospace, monospace; font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; }
+.employee-profile-page .employee-core-id > small { font-size: calc(12 * var(--type-unit, 1px)); }
 .employee-profile-page .employee-form .configuration-fields { display: contents; padding: 0; border: 0; }
 .employee-profile-page .employee-form fieldset:not(.configuration-fields) { min-width: 0; margin: 0; padding: 20px; border: 1px solid var(--profile-line); border-radius: var(--profile-radius); }
-.employee-profile-page .employee-form legend { padding: 0 8px; color: var(--profile-ink); font-size: 15px; font-weight: 500; }
-.employee-profile-page .employee-form fieldset p { font-size: 13px; line-height: 1.6; }
+.employee-profile-page .employee-form legend { padding: 0 8px; color: var(--profile-ink); font-size: calc(15 * var(--type-unit, 1px)); font-weight: 500; }
+.employee-profile-page .employee-form fieldset p { font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; }
 .employee-profile-page .checkbox-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; }
 .employee-profile-page .employee-scheduling-choice { padding: 8px 0; }
-.employee-profile-page .employee-scheduling-choice > span { color: var(--profile-ink); font-size: 14px; }
+.employee-profile-page .employee-scheduling-choice > span { color: var(--profile-ink); font-size: calc(14 * var(--type-unit, 1px)); }
 .employee-profile-page .employee-scheduling-choice input { accent-color: var(--nevora-blue); box-shadow: none; }
-.employee-profile-page .employee-choice-disclosure > summary { font-size: 14px; color: var(--profile-ink); }
-.employee-profile-page .employee-choice-disclosure > summary small { font-size: 12px; white-space: normal; }
+.employee-profile-page .employee-choice-disclosure > summary { font-size: calc(14 * var(--type-unit, 1px)); color: var(--profile-ink); }
+.employee-profile-page .employee-choice-disclosure > summary small { font-size: calc(12 * var(--type-unit, 1px)); white-space: normal; }
 html body .app-shell .employee-profile-page .button {
   display: inline-flex;
   align-items: center;
@@ -239,7 +239,7 @@ html body .app-shell .employee-profile-page .button {
   border-radius: var(--profile-control);
   padding: 12px 20px;
   font-family: inherit;
-  font-size: 14px;
+  font-size: calc(14 * var(--type-unit, 1px));
   line-height: 1.5;
   font-weight: 500;
   text-decoration: none;
@@ -257,13 +257,13 @@ html body .app-shell .employee-profile-page .employee-core-profile-form .form-fo
 .profile-pin { display: flex; align-items: center; gap: 16px; padding: 20px 24px; }
 .profile-pin-icon { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; background: var(--profile-inset); border-radius: 14px; color: var(--profile-muted); }
 .profile-pin > div { flex: 1; min-width: 0; }
-.profile-pin h2 { margin: 0; color: var(--profile-ink); font-size: 15px; line-height: 1.4; font-weight: 500; }
-.profile-pin p { margin: 5px 0 0; color: var(--profile-muted); font-size: 12px; line-height: 1.5; }
+.profile-pin h2 { margin: 0; color: var(--profile-ink); font-size: calc(15 * var(--type-unit, 1px)); line-height: 1.4; font-weight: 500; }
+.profile-pin p { margin: 5px 0 0; color: var(--profile-muted); font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.5; }
 .employee-profile-page .shift-policy-disclosure { margin: 24px 0 0; padding-top: 16px; border-color: var(--profile-inset); }
-.employee-profile-page .shift-policy-disclosure > summary { color: var(--profile-ink); font-size: 14px; font-weight: 500; }
+.employee-profile-page .shift-policy-disclosure > summary { color: var(--profile-ink); font-size: calc(14 * var(--type-unit, 1px)); font-weight: 500; }
 .employee-profile-page .shift-policy-disclosure p { color: var(--profile-muted); }
-.employee-profile-page .employee-management-notice { padding: 16px; background: var(--profile-canvas); border-radius: 12px; font-size: 14px; line-height: 1.6; }
-.employee-profile-page .employee-form > :is(.form-error, .form-success, [role="status"]) { margin: 0; font-size: 13px; line-height: 1.6; }
+.employee-profile-page .employee-management-notice { padding: 16px; background: var(--profile-canvas); border-radius: 12px; font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.6; }
+.employee-profile-page .employee-form > :is(.form-error, .form-success, [role="status"]) { margin: 0; font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.6; }
 @media (max-width: 760px) {
   .profile-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
   .profile-pin { flex-wrap: wrap; }
@@ -276,16 +276,16 @@ html body .app-shell .employee-profile-page .employee-core-profile-form .form-fo
   .profile-identity { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: start; gap: 12px; }
   .profile-avatar { width: 48px; height: 48px; border-radius: 17px; font-size: 17px; }
   .profile-status { grid-column: 2; justify-self: start; }
-  .profile-context { font-size: 11px; }
-  .employee-profile-page h1 { font-size: 26px; }
-  .profile-intro { font-size: 12px; }
+  .profile-context { font-size: 0.6875rem; }
+  .employee-profile-page h1 { font-size: 1.625rem; }
+  .profile-intro { font-size: 0.75rem; }
   .profile-summary { grid-template-columns: 1fr; gap: 12px; margin-top: 20px; padding-top: 16px; }
   .profile-summary > div { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px; }
   .profile-summary dt { margin: 0; line-height: 1.6; }
   .profile-segments { width: 100%; }
   .profile-workspace { gap: 16px; }
   .employee-profile-page .profile-editor { padding: 22px 20px; }
-  .employee-profile-page .employee-profile-section-heading h2 { font-size: 20px; }
+  .employee-profile-page .employee-profile-section-heading h2 { font-size: 1.25rem; }
   .employee-profile-page .employee-form { gap: 20px; }
   .employee-profile-page .form-columns { gap: 16px; }
   .employee-profile-page .employee-form fieldset:not(.configuration-fields) { padding: 16px; }

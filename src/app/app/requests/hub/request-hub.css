@@ -14,7 +14,7 @@
 .request-hub-heading h1 {
   margin: 0;
   max-width: 60rem;
-  font-size: clamp(30px, 3vw, 42px);
+  font-size: clamp(calc(30 * var(--type-unit, 1px)), 3vw, calc(42 * var(--type-unit, 1px)));
   font-weight: 500;
   line-height: 1.15;
   letter-spacing: -.04em;
@@ -23,7 +23,7 @@
 .request-hub-heading p {
   margin: 12px 0 0;
   color: var(--design-text-secondary);
-  font-size: 15px;
+  font-size: calc(15 * var(--type-unit, 1px));
   line-height: 1.6;
 }
 
@@ -39,7 +39,7 @@
   color: var(--design-text-primary);
   text-decoration: none;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: calc(13 * var(--type-unit, 1px));
   font-weight: 500;
 }
 
@@ -79,7 +79,7 @@
 
 .request-hub-card h2 {
   margin: 0;
-  font-size: 25px;
+  font-size: calc(25 * var(--type-unit, 1px));
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: -.025em;
@@ -88,7 +88,7 @@
 .request-hub-card-copy > p {
   margin: 12px 0 0;
   color: var(--design-text-secondary);
-  font-size: 14px;
+  font-size: calc(14 * var(--type-unit, 1px));
   line-height: 1.6;
 }
 
@@ -98,7 +98,7 @@
   margin: 24px 0 28px;
   padding-left: 17px;
   color: var(--design-text-secondary);
-  font-size: 13px;
+  font-size: calc(13 * var(--type-unit, 1px));
   line-height: 1.6;
 }
 
@@ -115,7 +115,7 @@
   border: 1px solid transparent;
   border-radius: var(--design-radius-control);
   color: var(--design-text-primary);
-  font-size: 14px;
+  font-size: calc(14 * var(--type-unit, 1px));
   font-weight: 600;
   line-height: 1.5;
   text-decoration: none;
@@ -134,7 +134,7 @@
   margin-top: 8px;
   border-radius: var(--design-radius-control);
   color: var(--design-accent-ink);
-  font-size: 13px;
+  font-size: calc(13 * var(--type-unit, 1px));
   font-weight: 500;
   line-height: 1.5;
   text-decoration: none;
@@ -148,7 +148,7 @@
   min-height: 44px;
   margin: 8px 0 0;
   color: var(--design-text-secondary);
-  font-size: 12px;
+  font-size: calc(12 * var(--type-unit, 1px));
   line-height: 1.6;
   text-align: center;
 }
@@ -163,17 +163,17 @@
 
 .request-hub-guidance-copy { display: flex; align-items: flex-start; gap: 14px; }
 .request-hub-guidance-icon { flex: 0 0 auto; padding-top: 1px; color: var(--design-text-secondary); }
-.request-hub-guidance h2 { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.5; }
-.request-hub-guidance-copy p { margin: 6px 0 0; font-size: 13px; color: var(--design-text-secondary); line-height: 1.65; }
+.request-hub-guidance h2 { margin: 0; font-size: calc(15 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.5; }
+.request-hub-guidance-copy p { margin: 6px 0 0; font-size: calc(13 * var(--type-unit, 1px)); color: var(--design-text-secondary); line-height: 1.65; }
 
 .request-hub-help { margin-top: 18px; padding-top: 10px; border-top: 1px solid var(--design-border); }
-.request-hub-help summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; cursor: pointer; list-style: none; font-size: 13px; font-weight: 500; border-radius: 4px; }
+.request-hub-help summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; cursor: pointer; list-style: none; font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; border-radius: 4px; }
 .request-hub-help summary::-webkit-details-marker { display: none; }
 .request-hub-help[open] summary svg { transform: rotate(180deg); }
 .request-hub-help-content { padding: 4px 0 0; max-width: 64ch; }
-.request-hub-help-content p { font-size: 13px; line-height: 1.7; color: var(--design-text-secondary); margin: 8px 0; }
+.request-hub-help-content p { font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.7; color: var(--design-text-secondary); margin: 8px 0; }
 .request-hub-help-content strong { color: var(--design-text-primary); font-weight: 600; }
-.request-hub-help-content a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 0; color: var(--design-accent-ink); font-size: 13px; font-weight: 500; text-underline-offset: 3px; }
+.request-hub-help-content a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 0; color: var(--design-accent-ink); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; text-underline-offset: 3px; }
 
 .request-hub :is(a, summary):focus-visible { outline: 2px solid var(--hub-focus); outline-offset: 4px; }
 
@@ -188,12 +188,12 @@
 
 @media (max-width: 700px) {
   .request-hub-heading { align-items: flex-start; flex-direction: column; gap: 16px; margin-bottom: 24px; }
-  .request-hub-heading p { margin-top: 10px; font-size: 14px; }
+  .request-hub-heading p { margin-top: 10px; font-size: 0.875rem; }
   .request-hub-schedule { padding: 8px 14px; }
   .request-hub-choices { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .request-hub-card { padding: 24px; }
   .request-hub-icon { width: 52px; height: 52px; margin-bottom: 20px; }
-  .request-hub-card h2 { font-size: 23px; }
+  .request-hub-card h2 { font-size: 1.4375rem; }
   .request-hub-card ul { margin: 18px 0 24px; }
   .request-hub-guidance { margin-top: 20px; padding: 20px; }
 }

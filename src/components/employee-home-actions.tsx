@@ -43,7 +43,7 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
     <p className="employee-home-eyebrow">Your schedule</p><h2 id="employee-next-heading">Next Shift</h2>
     {snapshot?<>
      {snapshot.publicationState==='unavailable'?<p>Schedule unavailable</p>:snapshot.nextShift?<Assignment shift={snapshot.nextShift} zone={snapshot.timeZone}/>:<><p>No upcoming published shift</p><Link className="employee-home-review" href="/app/schedule">View schedule</Link></>}
-     {snapshot.currentShift?<section className="employee-home-scheduled-now" aria-label="Scheduled now"><h3>Scheduled now</h3><p>Scheduled assignment; clock status is shown separately.</p><Assignment shift={snapshot.currentShift} zone={snapshot.timeZone}/></section>:null}
+     {snapshot.currentShift?<section className="employee-home-scheduled-now" aria-label="Scheduled now"><h3>Scheduled now</h3><p>Clock status below shows whether you&apos;re clocked in.</p><Assignment shift={snapshot.currentShift} zone={snapshot.timeZone}/></section>:null}
      {snapshot.publicationState==='partial'?<p className="employee-home-publication" role="status">Some of your locations haven’t published this week yet. The shifts shown are published.</p>:null}
     </>:<div className="employee-home-recovery" role="status"><p>{state.paused?'Home paused — return online to refresh.':denied?'Sign in again to view Home.':loading?'Loading Home…':'Home unavailable — try again.'}</p></div>}
    </section>
