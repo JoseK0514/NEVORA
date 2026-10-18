@@ -38,3 +38,8 @@ it('keeps counts separate from labels for assistive tech', () => {
   expect(output).toMatch(/Requests<span class="sr-only">,<\/span> <span class="inbox-filter-count">1<\/span>/);
   expect(output).toMatch(/>Requests<span class="sr-only">,<\/span> <span class="inbox-section-count">1<\/span><\/h2>/);
 });
+it('opens on the filter named in the URL (W2)', () => {
+  const output = renderToStaticMarkup(createElement(InboxSurface, {snapshot: ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT')]), connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', initialFilter: 'requests'}));
+  expect(output).toMatch(/aria-pressed="true"[^>]*>Requests/);
+  expect(output).not.toContain('id="inbox-urgent"');
+});

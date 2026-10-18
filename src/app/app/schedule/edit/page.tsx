@@ -50,7 +50,8 @@ export default async function EditShiftPage({
   }
 
   const location = locations.find((item) => item.id === shift.locationId);
-  const returnUrl = `/app/schedule?week=${shift.weekStart}`;
+  // W2: Cancel returns to this shift's location, day and person.
+  const returnUrl = `/app/schedule?week=${shift.weekStart}&location=${encodeURIComponent(shift.locationId)}&day=${shift.date}#schedule-employee-${encodeURIComponent(shift.employeeId)}`;
   const day = formatDayLabel(shift.date);
 
   return (

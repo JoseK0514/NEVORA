@@ -104,3 +104,10 @@ it('links authorized employee management to a separate Clocker PIN screen',async
  m.employeeRole='OWNER';
  expect(renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}))).not.toContain('/clocker-pin');
 });
+
+it('offers account recovery for this employee and links missing hour settings to their row (W2)',async()=>{
+ m.employeeRole='EMPLOYEE';
+ const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));
+ expect(html).toContain('href="/app/account-recovery?employee=worker"');
+ expect(html).toContain('href="/app/schedule/settings#target-worker"');
+});

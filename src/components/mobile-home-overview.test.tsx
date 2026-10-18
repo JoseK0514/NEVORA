@@ -20,9 +20,12 @@ it("keeps selected-week facts, draft context and exact week destinations in the 
 
 it("preserves the remaining manager views behind meaningful phone actions", () => {
   const html = renderToStaticMarkup(<MobileHomeTools weekStart="2026-10-12"/>);
-  for (const view of ['attendance', 'team', 'requests', 'activity']) {
+  for (const view of ['attendance', 'team', 'activity']) {
     expect(html).toContain(`href="/app?week=2026-10-12&amp;view=${view}"`);
   }
+  // R1: requests have one landing, the Inbox filtered to Requests.
+  expect(html).toContain('href="/app/inbox?filter=requests"');
+  expect(html).not.toContain('view=requests');
   expect(html).toContain('Review attendance');
   expect(html).toContain('Pending requests');
   expect(html).toContain('href="/app/clocker-recovery"');

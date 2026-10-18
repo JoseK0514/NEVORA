@@ -20,6 +20,13 @@ describe('finder', () => {
     expect(rankFinder(items, 'alex')[0]).toMatchObject({ group: 'People', href: '/app/employees/E1', detail: 'Employee' });
     expect(rankFinder(items, 'main').find(i => i.group === 'Locations')).toMatchObject({ href: '/app/schedule?location=l1' });
   });
+  it('names the export page Time exports and still finds it by its old name (C1)', () => {
+    const owner = finderItems('OWNER', undefined, null);
+    const exportPage = owner.find(i => i.href === '/app/payroll-export');
+    expect(exportPage?.label).toBe('Time exports');
+    expect(rankFinder(owner, 'payroll export').some(i => i.href === '/app/payroll-export')).toBe(true);
+    expect(rankFinder(owner, 'time exp')[0]?.href).toBe('/app/payroll-export');
+  });
   it('only offers pages the role can open', () => {
     expect(finderItems('MANAGER', undefined, null).some(i => i.href === '/app/settings')).toBe(false);
     expect(finderItems('OWNER', undefined, null).some(i => i.href === '/app/settings')).toBe(true);

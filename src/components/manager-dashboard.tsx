@@ -5,12 +5,9 @@ import {HomeActionCenterProvider, ManagerActionCenter} from './manager-action-ce
 import {OwnerSetupCardLive} from './owner-setup-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
-import { employeeRoleLabel } from "../lib/employee-display";
 import { NavIcon } from "@/components/nav-icon";
 import { StatusPill } from "@/components/status-pill";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
-import { formatDayLabel, formatTime } from "@/lib/date-utils";
-import type { UserRole } from "@/lib/domain";
 import { CaretLeftIcon, CaretRightIcon, CheckCircleIcon } from '@phosphor-icons/react/ssr';
 import { EmptyState } from './empty-state';
 import './manager-home.css';
@@ -28,12 +25,12 @@ function greeting(timeZone: string) {
   return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 }
 
+/** Home's own views. Schedule and Requests have one destination each
+ * (/app/schedule, Inbox filtered to Requests); /app redirects old links (R1). */
 export type ManagerDashboardView =
   | "overview"
   | "attendance"
-  | "schedule"
   | "team"
-  | "requests"
   | "activity";
 
 export type DashboardLocationItem = {
@@ -68,21 +65,6 @@ export type DashboardRevisionItem = {
   createdAt: string;
 } | null;
 
-export type DashboardScheduleShiftItem = {
-  id: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  isDesignatedLead: boolean;
-};
-
-export type DashboardScheduleEmployeeItem = {
-  employeeId: string;
-  employeeName: string;
-  role: UserRole;
-  shifts: DashboardScheduleShiftItem[];
-};
-
 type Props = {
   /** Display-only compositions can supply prepared panels without mounting readers. */
   overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode };
@@ -108,24 +90,16 @@ type Props = {
   coverageConfigured: boolean;
   pendingRequestCount: number;
   managerActions: ManagerActionItem[];
-  scheduleRoster: DashboardScheduleEmployeeItem[];
   locations: DashboardLocationItem[];
   days: DashboardDayItem[];
   hours: DashboardHourItem[];
-  requestCounts: {
-    timeOff: number;
-    exchange: number;
-    callout: number;
-  };
   latestRevision: DashboardRevisionItem;
 };
 
 const tabs: Array<{ id: ManagerDashboardView; label: string }> = [
   { id: "overview", label: "Overview" },
   { id: "attendance", label: "Attendance" },
-  { id: "schedule", label: "Schedule" },
-  { id: "team", label: "Team" },
-  { id: "requests", label: "Requests" },
+  { id: "team", label: "Team overview" },
   { id: "activity", label: "Activity" },
 ];
 
@@ -143,80 +117,6 @@ function revisionSourceLabel(sourceType: string) {
   if (sourceType === "EXCHANGE") return "Shift exchange applied";
   if (sourceType === "CALLOUT") return "Call-out applied";
   return "Published schedule updated";
-}
-
-function ScheduleTab(props: Props) {
-  return (
-    <section className="schedule-builder">
-      <header className="schedule-builder-header">
-        <div className="schedule-builder-week" aria-label="Schedule week">
-          <Link
-            href={dashboardHref(props.previousWeek, "schedule")}
-            aria-label="Previous week"
-          >
-            ‹
-          </Link>
-          <strong>{props.weekLabel}</strong>
-          <Link
-            href={dashboardHref(props.nextWeek, "schedule")}
-            aria-label="Next week"
-          >
-            ›
-          </Link>
-        </div>
-
-        <Link
-          className="schedule-builder-add"
-          href={`/app/schedule/new?week=${props.weekStart}`}
-        >
-          + Add Shift
-        </Link>
-      </header>
-
-      <div className="schedule-builder-roster">
-        {props.scheduleRoster.map((employee) => (
-          <div className="schedule-builder-row" key={employee.employeeId}>
-            <div className="schedule-builder-employee">
-              <strong>
-                {employee.employeeName}
-                <span> · {employeeRoleLabel(employee.role)}</span>
-              </strong>
-            </div>
-
-            <div
-              className="schedule-builder-shifts"
-              role="group"
-              aria-label={`${employee.employeeName} shifts`}
-            >
-              {employee.shifts.map((shift) => {
-                const day = formatDayLabel(shift.date).weekday;
-
-                return (
-                  <Link
-                    className={
-                      shift.isDesignatedLead
-                        ? "schedule-shift-pill lead"
-                        : "schedule-shift-pill"
-                    }
-                    href={`/app/schedule/edit?shiftId=${shift.id}`}
-                    key={shift.id}
-                  >
-                    {shift.isDesignatedLead ? (
-                      <span className="schedule-shift-lead-dot" aria-hidden="true" />
-                    ) : null}
-                    <span>{day}</span>
-                    <strong>
-                      {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
-                    </strong>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
 }
 
 function DashboardEmptyTray({
@@ -322,50 +222,6 @@ function TeamTab(props: Props) {
   );
 }
 
-function RequestsTab(props: Props) {
-  const requestActions = props.managerActions.filter((item) =>
-    ["TIME_OFF", "EXCHANGE", "CALLOUT"].includes(item.type),
-  );
-
-  return (
-    <section className="manager-subtab-card">
-      <header className="manager-subtab-header">
-        <div>
-          <span>Requests</span>
-          <h2>Pending requests</h2>
-          <p>Only items waiting for a manager decision appear here.</p>
-        </div>
-        <div className="manager-request-counts" aria-label="Pending request counts">
-          <span>Time Off <strong>{props.requestCounts.timeOff}</strong></span>
-          <span>Trades <strong>{props.requestCounts.exchange}</strong></span>
-          <span>Call-outs <strong>{props.requestCounts.callout}</strong></span>
-        </div>
-      </header>
-
-      {requestActions.length ? (
-        <div className="manager-subtab-list">
-          {requestActions.map((item) => (
-            <div className="manager-subtab-row" key={item.id}>
-              <div className="manager-subtab-row-copy">
-                <strong>{item.title}</strong>
-                <span>{item.detail}</span>
-              </div>
-              <Link className="manager-subtab-action" href={item.href}>
-                Review
-              </Link>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <DashboardEmptyTray
-          title="No pending requests"
-          detail="There are no time-off, shift-trade, or call-out requests waiting for review."
-        />
-      )}
-    </section>
-  );
-}
-
 function ActivityTab(props: Props) {
   const datedActions = props.managerActions
     .filter((item) => Boolean(item.dateTime))
@@ -463,7 +319,7 @@ export function ManagerDashboard(props: Props) {
           </span>
         </div>
 
-        {props.view !== "schedule" && props.view !== "attendance" && props.view !== 'overview' ? (
+        {props.view !== "attendance" && props.view !== 'overview' ? (
           <div className="dashboard-hero-actions">
             <div className="dashboard-week-nav">
               <Link
@@ -531,12 +387,8 @@ export function ManagerDashboard(props: Props) {
           <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
           <Link className="button secondary" href="/app/clocker-recovery">Clocker recovery</Link>
         </div>
-      ) : props.view === "schedule" ? (
-        <ScheduleTab {...props} />
       ) : props.view === "team" ? (
         <TeamTab {...props} />
-      ) : props.view === "requests" ? (
-        <RequestsTab {...props} />
       ) : (
         <ActivityTab {...props} />
       )}

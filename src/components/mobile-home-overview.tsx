@@ -51,7 +51,7 @@ export function MobileHomeTools({ weekStart }: { weekStart: string }) {
   const actions = [
     { href: `/app?week=${week}&view=attendance`, label: "Review attendance", Icon: ClockIcon },
     { href: `/app?week=${week}&view=team`, label: "Team overview", Icon: UsersThreeIcon },
-    { href: `/app?week=${week}&view=requests`, label: "Pending requests", Icon: ClipboardTextIcon },
+    { href: "/app/inbox?filter=requests", label: "Pending requests", Icon: ClipboardTextIcon },
     { href: `/app?week=${week}&view=activity`, label: "Schedule activity", Icon: ClockCounterClockwiseIcon },
     { href: "/app/clocker-recovery", label: "Clocker recovery", Icon: WrenchIcon },
     { href: "/app/account-recovery", label: "Account recovery", Icon: LockKeyIcon },

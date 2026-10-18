@@ -37,6 +37,8 @@ it("retains the editable assignment, notes, lead, and shift identity and restric
   expect(html).toContain('form="delete-shift-form"');
   expect(html).toContain('<details class="edit-shift-delete">');
   expect(html).toContain('/app/schedule?week=2026-10-12');
+  // W2: Cancel returns to this shift's location, day and person.
+  expect(html).toContain('href="/app/schedule?week=2026-10-12&amp;location=main&amp;day=2026-10-14#schedule-employee-AVERY"');
   expect(mocks.roles).toHaveBeenCalledWith(["OWNER", "MANAGER"]);
   expect(mocks.roles.mock.invocationCallOrder[0]).toBeLessThan(mocks.shift.mock.invocationCallOrder[0]);
 });

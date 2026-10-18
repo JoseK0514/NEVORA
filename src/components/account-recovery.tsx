@@ -5,7 +5,7 @@ import {AssistedRecovery} from './assisted-recovery';
 import {RecoveryReset} from './recovery-reset';
 const subscribe=()=>()=>{};
 type Issued={proof:string;expiresAt:string;employeeId:string};
-export function AccountRecovery({kind,actorId}:{kind:'request'|'reset'|'assisted';actorId?:string}){
+export function AccountRecovery({kind,actorId,employeeId}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string}){
  const hydrated=useSyncExternalStore(subscribe,()=>true,()=>false);
  const [message,setMessage]=useState(''),[busy,setBusy]=useState(false),[done,setDone]=useState(false),[issued,setIssued]=useState<Issued|null>(null);
  const proofInput=useRef<HTMLInputElement>(null);
@@ -39,7 +39,7 @@ export function AccountRecovery({kind,actorId}:{kind:'request'|'reset'|'assisted
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
  }
  if(kind==='request')return <RecoveryRequest hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
- if(kind==='assisted')return <AssistedRecovery hydrated={hydrated} busy={busy} message={message} issued={issued} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');}}/>;
+ if(kind==='assisted')return <AssistedRecovery hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');}}/>;
  return <RecoveryReset hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
   proofRef={input=>{proofInput.current=input;if(input&&incomingProof.current){input.value=incomingProof.current;incomingProof.current=null;}}}/>;
 }

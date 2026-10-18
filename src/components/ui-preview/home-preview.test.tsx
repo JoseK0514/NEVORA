@@ -51,7 +51,8 @@ it('the Gusto-style Overview leads with a greeting, drops the tab row and keeps 
   expect(html).not.toContain('manager-planning-summary');
   expect(html).toContain('This week');
   expect(html).toContain('Shortcuts');
-  for (const view of ['attendance', 'team', 'requests', 'activity']) expect(html).toContain(`&amp;view=${view}`);
+  for (const view of ['attendance', 'team', 'activity']) expect(html).toContain(`&amp;view=${view}`);
+  expect(html).toContain('href="/app/inbox?filter=requests"');
   const team = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} view="team"/>);
   expect(team).toContain('aria-label="Dashboard views"');
 });

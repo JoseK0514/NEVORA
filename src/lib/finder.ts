@@ -12,8 +12,11 @@ const GROUP_ORDER: FinderGroup[] = ['Actions', 'Pages', 'People', 'Locations'];
 
 /** Every place a manager can go, plus a few common starts. People and
  * locations come from the read-only finder route, never from this file. */
+/** C1: earlier page names still find their page. */
+const PAGE_KEYWORDS: Record<string, string> = { '/app/payroll-export': 'payroll export exports csv' };
+
 export function finderItems(role: UserRole, payroll: PayrollCapabilities | undefined, data: FinderData | null, context: NavContext = {}): FinderItem[] {
-  const pages = navigationForRole(role, payroll, context).map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, href: item.href }));
+  const pages = navigationForRole(role, payroll, context).map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, href: item.href, keywords: PAGE_KEYWORDS[item.href] }));
   const actions: FinderItem[] = [
     { id: 'action:shift', group: 'Actions', label: 'Add a shift', href: '/app/schedule/new', keywords: 'new create schedule' },
     { id: 'action:employee', group: 'Actions', label: 'Add an employee', href: '/app/employees/new', keywords: 'new hire person team' },

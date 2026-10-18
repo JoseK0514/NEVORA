@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { MissedPunches } from "./manager-today";
 import { useState, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { actionCenterNavigation } from "./action-center-navigation";
 import { EmptyState } from "./empty-state";
 import { Celebration } from "./celebration";
 import { SkeletonRows } from "./skeleton";
-import { groupInboxItems, inboxSections } from "@/lib/action-center/inbox";
+import { groupInboxItems, inboxFilter, inboxSections, type InboxFilter } from "@/lib/action-center/inbox";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 
-type Filter = "all" | "exceptions" | "requests";
 const statusText = {
   loading: "Loading inbox…", reconnecting: "Reconnecting…", offline: "Inbox unavailable offline", paused: "Updates paused — return to this tab to refresh.",
   unavailable: "Inbox unavailable — try again.", access_lost: "Sign in again to view the inbox.", ready: "Inbox unavailable — try again.",
@@ -35,12 +35,24 @@ function Row({ item }: { item: ActionItem }) {
 
 export function ManagerInbox({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
-  return <InboxSurface snapshot={snapshot} connection={connection} onRefresh={refresh} timeZone={timeZone} lead={<MissedPunches />} />;
+  // W2: ?filter= is the source of truth, so Back from a review restores it.
+  const initialFilter = inboxFilter(useSearchParams()?.get("filter"));
+  return <InboxSurface snapshot={snapshot} connection={connection} onRefresh={refresh} timeZone={timeZone} lead={<MissedPunches />} initialFilter={initialFilter} />;
 }
 
 /** Presentation only: receives the released action center observation. */
-export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZone, lead }: { snapshot: ActionCenter | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; /** Shown under the page header (D1), e.g. missed punches. */ lead?: ReactNode }) {
-  const [filter, setFilter] = useState<Filter>("all");
+export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZone, lead, initialFilter = "all" }: { snapshot: ActionCenter | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; /** Shown under the page header (D1), e.g. missed punches. */ lead?: ReactNode; initialFilter?: InboxFilter }) {
+  const [filter, setFilter] = useState<InboxFilter>(initialFilter);
+  // Follow the URL when it changes underneath us (Back, a new link).
+  const [urlFilter, setUrlFilter] = useState(initialFilter);
+  if (urlFilter !== initialFilter) { setUrlFilter(initialFilter); setFilter(initialFilter); }
+  // W2: the filter lives in the URL, so a review page's Back returns to it.
+  const choose = (value: InboxFilter) => {
+    setFilter(value);
+    const url = new URL(window.location.href);
+    if (value === "all") url.searchParams.delete("filter"); else url.searchParams.set("filter", value);
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  };
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
   const sections = ready ? inboxSections(ready.items) : [];
   const counts = { all: ready?.items.length ?? 0, exceptions: ready?.items.filter(item => item.category !== "requests").length ?? 0, requests: ready?.counts.requests ?? 0 };
@@ -59,7 +71,7 @@ export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZon
     </header>
     {lead}
     {ready && ready.items.length ? <div className="inbox-filters" role="group" aria-label="Show">
-      {(["all", "exceptions", "requests"] as const).map(value => <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)}>
+      {(["all", "exceptions", "requests"] as const).map(value => <button key={value} type="button" aria-pressed={filter === value} onClick={() => choose(value)}>
         {value === "all" ? "All" : value === "exceptions" ? "To review" : "Requests"}<span className="sr-only">,</span> <span className="inbox-filter-count">{counts[value]}</span>
       </button>)}
     </div> : null}

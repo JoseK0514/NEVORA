@@ -120,5 +120,5 @@ export const previewManagerHome: ComponentProps<typeof ManagerDashboard> = {
       totalBlocks: 0, coveredBlocks: 0, uncoveredBlocks: 0,
       scheduleStatus: schedule?.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | undefined};
   }),
-  scheduleRoster: [], hours: [], requestCounts: {timeOff: 0, exchange: 0, callout: 0}, latestRevision: {revisionNumber: 1, sourceType: 'PUBLISH', createdAt: '2026-10-09T18:30:00.000Z'},
+  hours: [], latestRevision: {revisionNumber: 1, sourceType: 'PUBLISH', createdAt: '2026-10-09T18:30:00.000Z'},
 };

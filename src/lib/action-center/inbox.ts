@@ -52,3 +52,9 @@ export function groupInboxItems(items: ActionItem[], minimum = 3): InboxEntry[] 
   }
   return entries;
 }
+
+export type InboxFilter = 'all' | 'exceptions' | 'requests';
+/** The Inbox filter carried in its URL (?filter=), so links and Back return to it. */
+export function inboxFilter(value: unknown): InboxFilter {
+  return value === 'exceptions' || value === 'requests' ? value : 'all';
+}

@@ -29,7 +29,7 @@ export default async function WorkspacePage() {
       </Link>
       <header className="workspace-heading">
         <div>
-          <h1>Workspace</h1>
+          <h1>Company profile</h1>
           <p>Your business name and the timezone your team works in.</p>
         </div>
         <span className="workspace-access">

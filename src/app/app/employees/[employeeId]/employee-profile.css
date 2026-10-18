@@ -308,3 +308,6 @@ html body .app-shell .employee-profile-page .employee-core-profile-form .form-fo
 @container (max-width: 420px) {
   .profile-summary { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Links inside a sentence are underlined so they read as links without colour alone. */
+.profile-inline-link { color: var(--g-accent, #077572); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }

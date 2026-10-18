@@ -32,6 +32,11 @@ function scheduleUrl(weekStart: string, suffix = "") {
   return `/app/schedule?week=${encodeURIComponent(weekStart)}${suffix}`;
 }
 
+/** W2: after a save or delete, return to the shift's own location, day and person. */
+function shiftReturnUrl(shift: { weekStart: string; locationId: string; date: string; employeeId: string }, suffix = "") {
+  return `${scheduleUrl(shift.weekStart, `&location=${encodeURIComponent(shift.locationId)}&day=${encodeURIComponent(shift.date)}${suffix}`)}#schedule-employee-${encodeURIComponent(shift.employeeId)}`;
+}
+
 export async function createShiftAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
@@ -129,9 +134,9 @@ export async function createShiftAction(formData: FormData) {
 
   const warning = validation.issues.find((issue) => issue.severity === "warning");
   redirect(
-    scheduleUrl(
-      weekStart,
-      `&location=${encodeURIComponent(locationId)}${warning ? `&warning=${encodeURIComponent(warning.code)}` : ""}`,
+    shiftReturnUrl(
+      { weekStart, locationId, date, employeeId },
+      warning ? `&warning=${encodeURIComponent(warning.code)}` : "",
     ),
   );
 }
@@ -276,8 +281,8 @@ export async function updateShiftAction(formData: FormData) {
   const warning = validation.issues.find((issue) => issue.severity === "warning");
 
   redirect(
-    scheduleUrl(
-      existing.weekStart,
+    shiftReturnUrl(
+      { weekStart: existing.weekStart, locationId: existing.locationId, date, employeeId },
       `&updated=1${warning ? `&warning=${encodeURIComponent(warning.code)}` : ""}`,
     ),
   );
@@ -302,7 +307,7 @@ export async function deleteShiftAction(formData: FormData) {
   }
 
   revalidatePath("/app/schedule");
-  redirect(scheduleUrl(existing.weekStart, "&deleted=1"));
+  redirect(shiftReturnUrl(existing, "&deleted=1"));
 }
 
 export async function copyPreviousWeekAction(formData: FormData) {

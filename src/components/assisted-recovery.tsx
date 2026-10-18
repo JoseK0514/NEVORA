@@ -19,11 +19,14 @@ type Props={
  busy:boolean;
  message:string;
  issued:AssistedRecoveryProof|null;
+ /** Prefill from the employee's page; Back then returns there. */
+ employeeId?:string;
  onSubmit:(event:FormEvent<HTMLFormElement>)=>void;
  onStartAgain:()=>void;
 };
 
-export function AssistedRecovery({hydrated,busy,message,issued,onSubmit,onStartAgain}:Props){
+export function AssistedRecovery({hydrated,busy,message,issued,employeeId,onSubmit,onStartAgain}:Props){
+ const back=employeeId?{href:`/app/employees/${encodeURIComponent(employeeId)}`,label:'Back to employee'}:{href:'/app/employees',label:'Back to Employees'};
  const root=useRef<HTMLElement>(null),feedback=useRef<HTMLDivElement>(null),proof=useRef<HTMLInputElement>(null);
  const previousProof=useRef<AssistedRecoveryProof|null>(null),employee=useRef<HTMLInputElement>(null);
  useEffect(()=>{
@@ -40,7 +43,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,onSubmit,onStartA
  },[message,issued]);
 
  return <section className="assisted-recovery" ref={root} aria-labelledby="assisted-title">
-  <Link className="assisted-back" href="/app?view=team"><ArrowLeftIcon size={18} aria-hidden="true"/>Back to team</Link>
+  <Link className="assisted-back" href={back.href}><ArrowLeftIcon size={18} aria-hidden="true"/>{back.label}</Link>
   <header className="assisted-intro">
    <h1 id="assisted-title">Assisted account recovery</h1>
    <p>Help a verified employee get back to their account.</p>
@@ -63,10 +66,10 @@ export function AssistedRecovery({hydrated,busy,message,issued,onSubmit,onStartA
      <p className="assisted-hint">Issuing another code retires any unused earlier code. Preparing the form alone does not cancel this one.</p>
     </>:<>
      <div className="assisted-card-heading"><span className="assisted-icon"><ShieldCheckIcon size={25} weight="regular" aria-hidden="true"/></span><div><h2>Verify the employee</h2><p>Confirm their identity before issuing a code.</p></div></div>
-     <noscript><p className="assisted-error assisted-no-script">Enable JavaScript to issue a recovery code. Back to team remains available.</p></noscript>
+     <noscript><p className="assisted-error assisted-no-script">Enable JavaScript to issue a recovery code. {back.label} remains available.</p></noscript>
      <form onSubmit={onSubmit} aria-busy={busy}>
       <fieldset disabled={!hydrated||busy}>
-       <div className="assisted-field"><label htmlFor="assisted-employee">Employee ID</label><input ref={employee} id="assisted-employee" name="employeeId" required maxLength={200} autoComplete="username" aria-describedby="assisted-employee-hint"/><p id="assisted-employee-hint" className="assisted-hint">Use the exact ID in your workplace records.</p></div>
+       <div className="assisted-field"><label htmlFor="assisted-employee">Employee ID</label><input ref={employee} id="assisted-employee" name="employeeId" defaultValue={employeeId} required maxLength={200} autoComplete="username" aria-describedby="assisted-employee-hint"/><p id="assisted-employee-hint" className="assisted-hint">Use the exact ID in your workplace records.</p></div>
        <div className="assisted-field"><label htmlFor="assisted-attestation">Identity verification record</label><textarea id="assisted-attestation" name="attestation" required minLength={10} maxLength={500} rows={4} placeholder="Briefly describe how you verified their identity." aria-describedby="assisted-verification-hint"/><p id="assisted-verification-hint" className="assisted-hint">Use an established in-person or trusted workplace process. Do not substitute a newly supplied email or phone number. Omit sensitive documents, codes and personal details.</p></div>
        <label className="assisted-confirm"><input type="checkbox" required/><span>I independently confirmed this employee’s identity and can transfer this code securely.</span></label>
        <button className="assisted-submit" type="submit">{busy?'Issuing recovery code…':'Issue recovery code'}{!busy?<ArrowRightIcon size={20} aria-hidden="true"/>:null}</button>
