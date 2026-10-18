@@ -109,6 +109,8 @@ Keep server APIs and web Server Actions as separate adapters over the same domai
 - [ ] Inspect scripts/environment before execution, install the locked baseline in the isolated checkout, and run the existing CI-required checks. Record failures as baseline issues and fix them in bounded commits without weakening tests.
 - [ ] Ensure exact-candidate CI runs through a PR targeting development or reviewed CI trigger changes. Keep automatic Vercel deployment disabled and confirm the local preview route is disabled in release configuration.
 
+Continuation: the reviewed exact-branch CI trigger and 36 passing owned payroll tests are recorded in [CI baseline](../../mobile/ci-baseline-2026-10-18.md). That document is committed before remote execution; require the actual GitHub run's candidate SHA and results before treating CI as verified. The web release candidate and remaining release acceptance stay separate.
+
 **Gate G0:** Exact source identity, migration order and current baseline results are recorded. Web workflows still work against fictional isolated data. No new mobile feature starts by silently accepting an unverified 270-commit baseline.
 
 **Verification commands:** npm test -- --maxWorkers=1; npm run typecheck; npm run lint; npm run build; npm run test:notifications:qa; npm run test:foundation:qa; npm run test:release-engineering; governed PostgreSQL/browser jobs, including test:clocker:owned, test:release:postgres, Phase D/E and test:payroll:owned where applicable. Use the scripts' explicit owned-environment requirements; review full CI workflow conditions rather than assuming every job runs on the new branch.

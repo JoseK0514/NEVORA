@@ -57,7 +57,7 @@ The review did not assess the 270 inherited commits, future native implementatio
 
 ## Remaining G0 work
 
-1. Establish exact-candidate remote CI. The current push filters in `.github/workflows/ci.yml` exclude this mobile branch. A reviewed PR targeting `development` or a reviewed CI trigger change is needed; no PR has been created by this checkpoint.
+1. Establish exact-candidate remote CI. At this starting checkpoint the push filters excluded the mobile branch. The approved [CI continuation](ci-baseline-2026-10-18.md) adds its exact push trigger after separate review; use the associated GitHub run to establish its result. No PR was created by this starting checkpoint.
 2. Complete and record the remaining applicable governed suites, including release PostgreSQL, Phase D/E SQL/browser/evidence, payroll, and migration upgrade coverage. The company and Clocker checks above cover only part of this requirement.
 3. Reconcile the upcoming web release's frozen SHA and schema candidate. The explicit 33-migration single-company order is documented in [source baseline](source-baseline.md); hosted schema identity, authorized migration, backup and rollback remain unverified. The paused SaaS migrations stay excluded.
 4. Record independent baseline/release review and confirm the release candidate disables preview/local-only surfaces. Production is not inferred from a local successful build.
