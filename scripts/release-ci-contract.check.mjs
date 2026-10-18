@@ -6,6 +6,10 @@ import {verifyRequiredJobs} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','phase-e-postgres','phase-e-ui'];
+test('approved mobile integration branch runs CI on push without a shared-branch PR',()=>{
+ assert(workflow.on.push.branches.includes('codex/nevora-mobile-launch'),
+  'The isolated mobile candidate must trigger CI before any development or main merge');
+});
 test('all triggered candidate branches receive mandatory SQL and browser gates',()=>{
  for(const name of mandatory) {
   assert(workflow.jobs[name], 'Missing mandatory gate '+name);
