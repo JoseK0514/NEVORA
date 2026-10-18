@@ -86,3 +86,11 @@ it('opens swap choosing from Home: a banner, open options on upcoming shifts, an
   expect(html()).not.toContain('Choose the shift you want to swap');
   expect(html()).not.toMatch(/<details class="my-shift-options" open="">/);
 });
+
+it('lists Planning ahead as one group of rows with the same destinations (Jose phone notes)', () => {
+  const markup = html();
+  expect(markup).toContain('id="my-schedule-more-title">Planning ahead</h2>');
+  for (const href of ['/app/exchange?tab=my', '/app/availability', '/app/requests', '/app/profile#employee-calendar-title']) {
+    expect(markup).toMatch(new RegExp(`<a href="${href.replace(/[?#]/g, m => '\\' + m)}" class="my-schedule-row">`));
+  }
+});

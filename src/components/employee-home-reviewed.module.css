@@ -62,7 +62,7 @@
 .cardZone { padding-block: 8px 6px; }
 .currentNote { margin-block: 6px 12px !important; color: var(--home-muted); font-size: .8125rem; }
 
-.recordedSlot { min-width: 0; padding: 16px 18px 12px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
+.recordedSlot { min-width: 0; padding: 16px 18px 8px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
 /* Style only the supplied original compact panel, without hiding its facts or controls. */
 .recordedSlot :global(.employee-clock-compact) { margin: 0; padding: 0; border: 0; }
 .recordedSlot :global(.employee-time-current-heading h2) { color: var(--home-ink); font-size: 1rem; font-weight: 500; line-height: 1.5; letter-spacing: -.02em; }
@@ -77,8 +77,8 @@
 .recordedFallback p { margin-top: 6px; color: var(--home-muted); font-size: .8125rem; }
 .recordedFallback small { display: block; margin-top: 6px; color: var(--home-muted); font-size: .75rem; }
 
-.actions { min-width: 0; padding: 16px 18px 4px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
-.updates { min-width: 0; padding-inline: 2px; }
+/* One card style for every Home section (Jose's phone notes, 2026-10-18): clock, To do and Recent activity match. */
+.actions, .updates { min-width: 0; padding: 16px 18px 4px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
 .groupHeader { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 2px; }
 .groupHeader h2 { font-size: 1.125rem; line-height: 1.45; font-weight: 600; letter-spacing: -.02em; }
 .count { color: var(--home-muted); font-size: .75rem; }
@@ -105,9 +105,11 @@
 .sourceNotices li { padding-block: 12px; }
 .sourceNotices p { font-size: .875rem; }
 .sourceNotices .textLink { justify-content: space-between; }
-.freshness { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; min-width: 0; }
+/* The update time is one quiet line under the last card, not a separate footer. */
+.freshness { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 6px; min-width: 0; margin-top: -4px; }
+.freshness small::after { content: '·' / ''; margin-left: 6px; }
 .freshness small { color: var(--home-muted); font-size: .75rem; overflow-wrap: anywhere; }
-.refreshButton { min-height: 44px; padding: 8px 0; border: 0; border-radius: 4px; color: var(--home-blue); background: transparent; font: inherit; font-size: .875rem; font-weight: 500; cursor: pointer; }
+.refreshButton { min-height: 44px; padding: 8px 4px; border: 0; border-radius: 4px; color: var(--home-blue); background: transparent; font: inherit; font-size: .875rem; font-weight: 500; cursor: pointer; }
 .refreshButton:disabled { color: var(--home-muted); cursor: default; }
 .recovery { min-height: 96px; padding-block: 8px 16px; font-size: 1rem; }
 .loadingLines { display: grid; gap: 10px; margin-top: 16px; }
@@ -136,7 +138,7 @@
 /* Gusto anatomy (2026-10-15): small muted card labels, big ink figures,
  * teal "›" link rows, a quiet clock card and Shortcuts. */
 .assignmentHeader h2, .groupHeader h2, .quick h2 { color: var(--home-muted); font-size: .9375rem; font-weight: 400; letter-spacing: 0; }
-.groupHeader h2 { color: var(--home-ink); font-size: 1.125rem; font-weight: 500; }
+/* Every Home card label uses the same small muted style (Next shift, Clock status, To do, Recent activity). */
 .published { color: var(--g-accent-strong, #07605f); }
 .assignmentFooter { margin-top: 16px; padding-top: 0; }
 .scheduleLink { font-weight: 600; }
@@ -175,10 +177,9 @@
   .root *, .root *::before, .root *::after { scroll-behavior: auto; }
 }
 /* Card labels stay quiet so the figures lead; the repeated class outranks the portal's .page-frame h2. */
-.root.root.root .assignmentHeader h2, .root.root.root .quick h2, .root.root.root .recordedSlot :global(.employee-time-current-heading h2) {
+.root.root.root .assignmentHeader h2, .root.root.root .quick h2, .root.root.root .groupHeader h2, .root.root.root .recordedSlot :global(.employee-time-current-heading h2) {
   color: var(--home-muted); font-size: .9375rem; font-weight: 400; letter-spacing: 0; line-height: 1.5;
 }
-.root.root.root .groupHeader h2 { color: var(--home-ink); font-size: 1.125rem; font-weight: 500; letter-spacing: -.01em; }
 
 /* U2 "Today" Home (2026-10-15). A light arrival lets the next-shift pass be the
  * one brand-colour moment; the To do card stacks; quick actions are tiles. */

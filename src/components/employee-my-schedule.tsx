@@ -11,6 +11,10 @@ import { DotsThreeIcon } from '@phosphor-icons/react/dist/ssr/DotsThree';
 import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { HourglassMediumIcon } from '@phosphor-icons/react/dist/ssr/HourglassMedium';
+import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { UserCheckIcon } from '@phosphor-icons/react/dist/ssr/UserCheck';
+import { CalendarMinusIcon } from '@phosphor-icons/react/dist/ssr/CalendarMinus';
+import { CalendarPlusIcon } from '@phosphor-icons/react/dist/ssr/CalendarPlus';
 import { EmptyState } from './empty-state';
 import { BlockedOpenShifts } from './blocked-open-shifts';
 import { Celebration } from './celebration';
@@ -174,7 +178,16 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       </section>
       </div>
       </>}
-      <footer className="my-schedule-footer"><p>Planning ahead?</p><div>{modules.marketplace ? <Link href="/app/exchange?tab=my" className="my-schedule-link"><ArrowsLeftRightIcon size={18} aria-hidden="true" />Shift requests</Link> : null}<Link href="/app/availability" className="my-schedule-link">Update availability</Link>{modules.timeOff ? <Link href="/app/requests" className="my-schedule-link">Request time off</Link> : null}<Link href="/app/profile#employee-calendar-title" className="my-schedule-link">Calendar subscription</Link></div></footer>
+      {/* One grouped list of rows, iOS-settings style (Jose's phone notes, 2026-10-18), instead of loose links. */}
+      <footer className="my-schedule-footer" aria-labelledby="my-schedule-more-title">
+        <h2 id="my-schedule-more-title">Planning ahead</h2>
+        <ul>
+          {modules.marketplace ? <li><Link href="/app/exchange?tab=my" className="my-schedule-row"><ArrowsLeftRightIcon size={20} aria-hidden="true" /><span>Shift requests</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li> : null}
+          <li><Link href="/app/availability" className="my-schedule-row"><UserCheckIcon size={20} aria-hidden="true" /><span>Update availability</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li>
+          {modules.timeOff ? <li><Link href="/app/requests" className="my-schedule-row"><CalendarMinusIcon size={20} aria-hidden="true" /><span>Request time off</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li> : null}
+          <li><Link href="/app/profile#employee-calendar-title" className="my-schedule-row"><CalendarPlusIcon size={20} aria-hidden="true" /><span>Calendar subscription</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li>
+        </ul>
+      </footer>
     </div>
   </EmployeeScheduleMotion>;
 }

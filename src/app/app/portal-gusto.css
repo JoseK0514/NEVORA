@@ -247,6 +247,11 @@ html body .app-shell.nevora-portal .page-frame .status-pill { font-weight: 500; 
      and the home indicator, so nothing scrolls past the last row into a blank strip. */
   html body .app-shell.nevora-portal .page-frame:has([data-home-state]) { padding: 0; }
   html body .app-shell.nevora-portal .page-frame [data-home-state] { padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)); }
+  /* iPhone Safari draws date and time fields at their own intrinsic width and ignores width:100%,
+     so side-by-side fields collide (Jose's phone notes, 2026-10-18). Without the native box they size like
+     any input; tapping still opens the iOS picker. */
+  html body .app-shell.nevora-portal input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"]) { -webkit-appearance: none; appearance: none; min-width: 0; max-width: 100%; box-sizing: border-box; -webkit-text-fill-color: currentColor; }
+  html body .app-shell.nevora-portal input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"])::-webkit-date-and-time-value { text-align: left; min-height: 1.4em; }
   /* Phones scroll in one direction only: no sideways drift, and no bounce past the page's end. */
   html:has(.app-shell.nevora-portal), html:has(.app-shell.nevora-portal) body { overflow-x: clip; overscroll-behavior: none; }
   html body .app-shell.nevora-portal .mobile-nav .mobile-nav-link.active { background: transparent; color: var(--g-accent); font-weight: 600; }

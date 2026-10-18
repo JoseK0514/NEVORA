@@ -100,8 +100,9 @@
   .nto-review-action { grid-column: 2; }
 }
 @media (max-width: 760px) {
-  .nto-header { align-items: flex-start; gap: 12px; margin-bottom: 20px; }
-  .nto-header p { font-size: 0.8125rem; max-width: 280px; }
+  /* The description and the New request / My requests switch get clear space between them (Jose's phone notes). */
+  .nto-header { align-items: flex-start; gap: 12px; margin-bottom: 24px; }
+  .nto-header p { font-size: 0.8125rem; max-width: 280px; margin-bottom: 4px; }
   .nto-back-link { font-size: 0.75rem; padding-left: 0; }
   .nto-tabs { display: grid; width: 100%; margin-bottom: 20px; }
   .nto-tabs a { padding-inline: 8px; font-size: 0.75rem; }

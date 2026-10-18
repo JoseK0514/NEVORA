@@ -98,6 +98,9 @@
  .compose-message-meta { flex-wrap: wrap; gap: 5px 12px; }
  .compose-feedback { margin-top: 16px; }
  .compose-page .compose-review { grid-template-columns: minmax(0,1fr); gap: 20px; padding: 20px; }
+ /* Headings line up with the fields (the panel already pads 20px), and the review button never outgrows its card on iPhone (Jose's phone notes). */
+ .compose-page .compose-review > * { min-width: 0; }
+ .compose-page .compose-review :is(.button, button) { width: 100%; max-width: 100%; box-sizing: border-box; }
  .compose-review-copy { align-items: flex-start; gap: 12px; }
  .communication-view.compose-page .compose-form .compose-action { width: 100%; }
  .compose-page .compose-alert { padding: 16px; }
