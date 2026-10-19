@@ -1,3 +1,5 @@
+2026-10-19 19:56 UTC · Profile exit round 4 at `ea58610bf3bdc85319895689c3d88e064f6a76d5` · five committed Mac reports read and final open P0/P1/P2 = 0/0/0 · **ready to merge this exact SHA**; application code `caef395`, only reports/screenshots after it · [verification and verbatim reports](release/readiness/profile-ea58610/README.md). Candidate publication remains with the other active release task; the separate initial-read commit is now due after this merge. No other source exit is certified zero.
+
 2026-10-19 19:47 UTC · source Wave A `7679133` failed the exit on ST-WA-8; [all five measured reports](p35-wave-a/round-2-7679133/summary.json) retained (282 visits / 564 samples,32 held one-POST cases,200 role visits with60 settled retries). New `7651490` fixes the reported hold and is now the exit target; its first matrix batch is paused for the final test run. Candidate `91ef655` includes coordinator `2ea7474`, backend `faca10f`, and latest premium CSS exactly; Wave A `7651490` is not merged pending a complete zero exit. Earlier `98b037b` full serial suite passed7336/0; `a26ab2d` hit3 unrelated backfill timeouts under competing browser load. Current candidate gates rerun with browser work paused; assertions and timeout budgets unchanged. [Candidate evidence](release/merge-3-coordinator-backend/README.md). No deploy/device exposure.
 
 2026-10-19 19:24 UTC · Wave A round 2 on `7679133` · verified P0 0 / P1 1 / P2 0 so far · **not zero; do not merge**. New [ST-WA-8](p35-wave-a/round-2-7679133/stability.md): Delete this shift still shrinks 88→52px at 320/200 while held, document −36px, scroll −29px; this separate button bypasses the new PendingButton hold. ST-WA-7 Swap fix passes the Chromium recheck. 160/160 first phone batch passes; remaining exit evidence continues. Browser mutations held/aborted; no source changes.
@@ -25,7 +27,7 @@ Reports branch: `codex/inspections`. Jose's October 19 rolling-merge instruction
 - Backend is not merged into the Wave A candidate: Coverage test conflict remains after the published root-layout resolution. Latest backend `1c8254a` adds evidence only; merge-tree still reports the same seams. The separate backend-first track at the top has its own evidence and is preserved; its results are not substituted for this Wave A candidate.
 - Merge only an immutable SHA whose own full exit round is zero in all five areas, or whose `ROUND.md` explicitly says `status: zero` and names an exit round whose five reports confirm zero. A request to run an exit round is not a zero verdict. Recheck any later push before merging it.
 - After every clean merge: locked install, TypeScript, lint, full Vitest; unchanged `checks.mjs` on the chat routes and Home/Inbox plus an opened More sheet for every role; five combined reports under `release/merge-<n>-<chat>/` naming fix owners. Push the candidate and add the required timestamp/test/check/P0-P2 line here. Unknown or incomplete evidence is never zero.
-- Merge readiness currently: 0/6 verified. Profile initial wiring waits for both Profile and backend; dead CSS cleanup waits for Wave C and a `src/` class-use search. Final every-page/five-area sweep, build, full tests and `test:dev:production` wait for all six chats.
+- Merge readiness currently: 1/6 verified (Profile `ea58610`, Mac exit round 4). Profile initial wiring waits for both Profile and backend; dead CSS cleanup waits for Wave C and a `src/` class-use search. Final every-page/five-area sweep, build, full tests and `test:dev:production` wait for all six chats.
 
 ## Conflicts for Claude
 
@@ -61,12 +63,12 @@ Teardown: revoke the tunnel/access rule, stop the local app and its owned databa
 
 | Chat | Branch | Fetched head | Handoff |
 |---|---|---|---|
-| Phase 3 | `claude/premium-phase-1` | `e7671e65b5a54e171422b6dbca887c416a5b0e0c` | round 4, exact handoff-adding commit f691dec; preview starting |
-| Wave A | `claude/p35-wave-a-1283c8` | `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0` | round 2 exit; matrix running; ST-WA-7 P1 verified |
-| Wave B | `claude/p35-wave-b-808dfd` | `b33b734302dd31d3b102e00b7f2b0e5995b8e505` | round 3 exit; inspect nominated 9f32ca6 (head only adds handoff) |
-| Wave C | `claude/p35-wave-c-93e13c` | `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8` | round 4 exit; new preview starting; round 3 incomplete/superseded |
-| Profile | `claude/p35-profile-6cdee8` | `829dfe6cf45beb71b77db573c0263c60a5f69856` | round 4 matrix running; exit round 5 still needed |
-| Desktop | `claude/p4-desktop-240fe0` | `2250275c0ad9a3192622d446731bf71d83171c25` | round 3 queued; handoff now present |
+| Phase 3 | `claude/premium-phase-1` | `4ed233947fca3e96393954c45fb091877923e768` | round 4 non-exit handoff; latest coordinator changes must be synced by publishing task |
+| Wave A | `claude/p35-wave-a-1283c8` | `76514905153c906bb76efc45808426e9d484cb64` | round 2 exit recheck pending on new ST-WA-8 fix; not zero |
+| Wave B | `claude/p35-wave-b-808dfd` | `b33b734302dd31d3b102e00b7f2b0e5995b8e505` | round 3 exit; status open; target 9f32ca6 |
+| Wave C | `claude/p35-wave-c-93e13c` | `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8` | round 4 exit full sweep incomplete; not zero |
+| Profile | `claude/p35-profile-6cdee8` | `ea58610bf3bdc85319895689c3d88e064f6a76d5` | status zero; exit round 4 Mac five-area reports verified; exact SHA ready |
+| Desktop | `claude/p4-desktop-240fe0` | `8012d9790e72987140f939c7d70e1df9612ea009` | round 5 exit requested; not zero yet |
 
 ## Inspection results
 
@@ -108,3 +110,5 @@ Wave C round 4 has 0 newly verified defects so far, with incomplete coverage. �
 2026-10-19 19:43 UTC · backend source-owner resolutions read and applied to local verification bf6c030 · tests pending · install/type/lint pass · publication remains with the other active release task · no deploy/exposure
 
 2026-10-19 19:52 UTC · verification bf6c030 full suite · tests 7332/7336, 801 skipped, 55 pending · four timeouts, targeted retry running · blocked; no passing planner or full-suite verdict
+
+2026-10-19 19:56 UTC · all six ROUND.md files fetched/read · Profile ea58610 status zero verified; Wave A 7651490 exit still unverified, Wave B status open, Wave C full exit incomplete, Desktop 8012d97 requests exit round 5, Phase 3 4ed2339 handoff remains non-exit round 4
