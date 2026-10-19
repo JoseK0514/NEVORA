@@ -134,3 +134,105 @@ October 19, build `7713d75`. Tested in Chromium at 320, 390 and 1440, with WebKi
 - **Sign out pending** (emulated in my browser by setting `disabled` and the label, with no submit): 64 px high before and after, label `rgb(95,102,106)` at opacity 1.
 
 Open P0–P2 in interaction and states: 1
+
+## Exit round 4
+
+October 19, preview on port 50933 (pooled database transport). The sweep ran on `5ce0d36` (app code as of `b8a3bad`); the exit commit `ee088cf` changes only the band summary text and the placeholder-band threshold, with no behaviour change. Covered:
+
+- **Widths and browsers**: 320, 390, 844×390, 768, 1024 and 1440 in Chromium; WebKit spot checks at 390 and 1440.
+- **Text size and motion**: 200% text at 390; reduced motion.
+- **Roles**: Owner and Manager.
+
+Saves and reads were answered in the browser, and Sign out was never pressed. Output is in `.../inspect/interaction/r4/` (`A.txt` focus and IS-15, `B.txt` read states, `C.txt` saves, `D.txt` retries, links, layout shift and roles); screenshots are `shots/r4-*`.
+
+The preview is fast now, and every planned check ran. One run of eleven 1440 states came back as "You’re offline" with 0 reads. That was the test machine's network dropping briefly while the browsers started, not the page. I re-ran all eleven and they were correct.
+
+### IS-15: fixed
+
+| Case | Result |
+|---|---|
+| Phone 390 Chromium (touch): tap "Shift requests", scroll to the top (focus still on it), leave and return | scrollY stays 0, and focus is back on the switch with no scroll |
+| Phone 390: tap the switch, tap the page elsewhere (focus moves to `MAIN`), scroll to the top, leave and return | focus stays on `MAIN`, scrollY stays 0 |
+| Phone 390: tap the switch, scroll to the top, wait 33 s (1 background read) | no scroll, focus unchanged |
+| Desktop 1440: click the switch, click a blank spot in the sidebar (focus on BODY), wait 33 s (1 background read) | focus stays on BODY |
+| Desktop 1440: the same, then leave and return | focus stays on BODY |
+| Keyboard, Chromium 390 and WebKit 1440: focus on "Shift requests", leave and return | focus back on "Shift requests" (`:focus-visible`), and the next Tab goes to "Unable to work" |
+| WebKit 390 (touch doesn't focus buttons) | focus stays on `MAIN`, no scroll |
+
+### New finding
+
+| ID | Where | Element | Measured problem | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|
+| IS-16 | Phones (one column): Manager at 390 and Owner at 320 in Chromium, Manager at 390 in WebKit. Not desktop. | "Try again" in the alerts panel → focus after a successful retry | After a successful retry from the alerts panel, focus goes to the details list, which on a phone is far above the screen. Manager at 390: the list ends at y −106 (top −532) with scrollY 770, so nothing on screen has focus or a ring. The next Tab scrolls the page up to "My pay" (scrollY 770 → 719, back above the alerts the reader was in). Owner at 320: the list sits at y −625 to −177, and the next Tab jumps up to "Edit your details" (scrollY 863 → 289). At 1440 the list is on screen (y 267–645), so desktop is fine. Round 3 measured scrollY 15 here because that build still scrolled to the focused list; adding `preventScroll` in round 4 left it off-screen. | `manager-profile-live.tsx:331` sends every successful retry to `#profile-details-list` with `preventScroll`, whichever Try again was pressed | Remember which Try again was pressed. For the alerts panel, focus the list it loaded: give `#profile-alerts-title` (or the `ul.pmp-topics`) `tabIndex={-1}` and focus it with `preventScroll`; it is where the button was, so it's on screen. Keep `#profile-details-list` for the card-head button. | P2 |
+
+Screenshot: `shots/r4-panel-retry-AUDIT-M-390-chromium.png` (viewport after the retry: the alert rows are loaded and no focus ring is visible).
+
+### Checked and correct (exit sweep)
+
+- **Keyboard order and rings**: one stop per control in reading order, and every ring is complete and inset on row-shaped controls.
+  - Owner: Edit your details → My pay → All notifications → 5 switches → Sign out, at 320, 390, 768, 844×390, 1440, at 200% text, and in WebKit at 1440.
+  - Manager: My pay → All notifications → 4 switches → Sign out, at 390 and in WebKit at 390 and 1440.
+  - Manager at 1024 with 8 locations: "Show all 8" comes first.
+  - No bar covers a focused control at 320, 844×390 or in WebKit at 390. At 200% text the tab bar (the shared shell) covers 3 px of two 194 px rows, as in round 1.
+- **Read states, both roles** (loading, ready, empty, 404 with no fixture, unavailable, blocked, 401, large, offline, paused):
+  - Alert and status texts are correct in each state: the alert reads "We couldn’t load…" or "Your session ended…"; the status reads "You’re offline" or "Updates paused"; both are otherwise empty.
+  - Sign out keeps its position across states: Owner 1510 at 390, 954 at 1440, 1652 at 320, 1451 at 844×390 and 768; Manager 1462 at 390, 886 at 1440, 926 at 1024. Owner at 200%: Sign out at 3082 for loading, failed and 401 and 3170 for ready and offline; the Notifications card is 1445 px in every state.
+  - Your details is the same height in loading, ready and failed: Owner 529 at 390 and 481 at 1440; Manager 549 at 390. The one exception is Manager at 320 (571 → 615), which is ST-03's agreed set-aside, not filed.
+  - The loading state gives up after 10 s (round 2 trace, behaviour unchanged).
+  - WebKit at 390 (Owner) and 1440 (Manager) match Chromium.
+- **Saves**:
+  - Pending shows "Saving…" with `aria-busy` and `aria-disabled`, and focus stays on the switch.
+  - Results: ok and slow flip `aria-checked` and re-read once; fail and abort say "Not saved. Try again."; 401 says "Not saved. Sign in again."; offline says "Not saved. You’re offline.". Each message is announced once with its topic, and focus stays on the switch throughout.
+  - The row height never changes: 68 px at 390 and 1440, 88 at 320, 190 at 200%.
+  - A save 401 followed by a read 401 moves focus to the panel's Sign in link (Chromium at 390, mouse at 1440, WebKit at 1440).
+  - After a connection lost mid-save, the switch gets focus back once online.
+  - Two topics failing are both announced.
+- **Repeat taps**: exactly one save each for 3 touch taps (Chromium and WebKit), 2 touch taps (Manager), 3 Space, 3 Enter, 3 clicks at 1440 and 2 clicks at 1024 (Manager), all during a 4 s save.
+- **Retry**:
+  - From the head, success moves focus to the details list (inset ring) and the always-present status says "Your details loaded." once. This holds at 390 and in WebKit at 1440.
+  - A failed retry keeps focus on the button (102 px wide whether idle or busy) and the alert changes to "Still couldn’t load…".
+  - The background read with focus on Try again changes nothing.
+  - Leaving and returning after a retry doesn't repeat the message; a bare focus makes 0 reads, a return makes 1.
+- **Show all**: "Show all 8" stays put when opened and closed (y 641 at 390, y 670 at 1024).
+- **Links, Back, Forward, reload**:
+  - Owner: Edit your details goes to `/app/employees/QAOWNER` ("Fictional Owner"); My pay and All notifications reach their pages; Back restores the ready page and scroll (393); Forward works; a saved toggle survives a reload.
+  - Manager: My pay and All notifications reach their pages; Back restores scroll 413.
+- **Layout shift on load** (read answered after 3 s): Owner 0.0005 at 320, 0.0004 at 390, 0.0001 at 1440; Manager 0.0004 at 390, 0.0001 at 1440.
+- **Employee and Lead**: AUDIT-E and AUDIT-LEAD get the Phase 3 employee Profile, with 0 management-profile reads.
+- **Hover, pressed and busy looks** (1440): rows go to `#F7F9F8` on hover and `#EEF1F0` when pressed; a busy switch has no hover, a `progress` cursor and "Saving…" at full opacity. Reduced motion turns the switch transitions to 0 s.
+- **Sign out pending** (emulated in my browser by setting `disabled` and the label, with no submit): 64 px high, label `rgb(95,102,106)` at opacity 1.
+- **Device alerts**: the flag is off in this preview, so the page shows the note and `#portal-device-settings` isn't in the DOM, as in round 1.
+
+Open P0–P2 in interaction and states: 1
+
+## Exit round 4, IS-16 re-check
+
+Build `caef395`, preview on port 50933. A narrow re-check of IS-16 and the focus code it shares with IS-02, IS-13 and IS-15. Saves and reads were answered in the browser, and Sign out was never pressed. Output is in `.../inspect/interaction/r5/all.txt`; screenshots are `shots/r5-*`.
+
+### IS-16: fixed
+
+After a successful retry from the alerts panel, focus goes to `UL#profile-alerts-list`. That list is on screen in every case below, has `:focus-visible` with an inset ring (outline offset −2 px), and the next Tab goes to the first switch, "Time-off requests".
+
+| Browser | Role | Width | List on screen (top–bottom, viewport 844) | scrollY before → after |
+|---|---|---|---|---|
+| Chromium | Manager | 390 | 376–676 | 770 → 770 |
+| Chromium | Manager | 320 | 325–685 | 883 → 927 |
+| Chromium | Owner | 390 | 308–676 | 818 → 818 |
+| Chromium | Owner | 320 | 325–773 | 863 → 863 |
+| WebKit | Manager | 390 | 376–676 | 770 → 770 |
+| WebKit | Manager | 320 | 316–676 | 892 → 936 |
+| WebKit | Owner | 390 | 308–676 | 818 → 818 |
+| WebKit | Owner | 320 | 228–676 | 960 → 960 |
+| Chromium | Manager | 1440 | 590–870 | 0 → 0 |
+| WebKit | Owner | 1440 | 590–938 | 0 → 0 |
+
+For the Manager at 320, the 44 px change in scrollY is the browser keeping the view in place while the Your details card above grows when the read arrives. That growth is ST-03's set-aside. The list stays on screen. Screenshot: `shots/r5-panel-retry-AUDIT-M-390-chromium.png` (the ring sits around the four switches, and Sign out is below).
+
+### Shared focus code, re-checked
+
+- **Retry from the card head**: on success at 390 (Owner, Chromium) and 320 (Manager, WebKit), focus goes to `DL#profile-details-list` with `:focus-visible` and an inset ring. The status says "Your details loaded." once (1,522 ms and 1,534 ms). A failed retry keeps focus on the button (102 px wide) and the alert changes to "Still couldn’t load…".
+- **No repeat after leaving**: after a retry, leaving and returning gives "Updates paused" → "", with no second "Your details loaded.". The return makes 1 read; a bare focus makes 0.
+- **IS-13**: keyboard focus on "Shift requests" comes back after leaving and returning (Chromium at 390, WebKit at 1440), and the next Tab goes to "Unable to work". A save 401 followed by a read 401 moves focus to the panel's Sign in link. A save that fails because the connection dropped gives the switch focus back once online, with the row at 68 px and Sign out at 1510.
+- **IS-15**: at 390, tap a switch, scroll to the top, leave and return: scrollY stays 0. At 1440, click a switch, click blank sidebar space, wait for a background read: focus stays on BODY.
+
+Open P0–P2 in interaction and states: 0
