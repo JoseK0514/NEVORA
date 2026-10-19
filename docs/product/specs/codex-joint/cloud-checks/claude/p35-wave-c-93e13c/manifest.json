@@ -7,6 +7,7 @@
   "commit": "e3a99fe7b6cda3c3b8049ff62f0de376d710b58f",
   "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
   "startedAt": "2026-10-19T17:52:56.815Z",
-  "status": "Queued after moving previews off memory-backed /tmp",
-  "batches": []
+  "status": "Queued; exact source/runtime SHA will be checked before the first batch",
+  "batches": [],
+  "planned": 12580
 }

@@ -68,7 +68,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
         "/app/updates/compose"
       ]
     },
@@ -91,7 +91,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
         "/app/updates/compose"
       ]
     },
@@ -114,7 +114,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
         "/app/updates/compose"
       ]
     },
@@ -137,7 +137,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
         "/app/updates/compose"
       ]
     },
@@ -160,7 +160,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
         "/app/updates/compose"
       ]
     },
@@ -183,7 +183,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
         "/app/updates/compose"
       ]
     },
@@ -206,7 +206,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
         "/app/updates/compose"
       ]
     },
@@ -230,7 +230,7 @@
         "/app/reports",
         "/app/requests",
         "/app/schedule",
-        "/app/schedule/copy-receipt?operation=3a8ef613-2ed4-4e7e-bdf7-ff248d346b3a",
+        "/app/schedule/copy-receipt?operation=0071c815-56ae-4d91-98e6-5928f1566090",
         "/app/schedule/coverage",
         "/app/schedule/edit?shiftId=audit-next-0-1",
         "/app/schedule/new",
@@ -238,7 +238,7 @@
         "/app/schedule/templates",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
         "/app/updates/compose"
       ]
     },
@@ -263,7 +263,7 @@
         "/app/reports",
         "/app/requests",
         "/app/schedule",
-        "/app/schedule/copy-receipt?operation=c932b057-a224-4930-bdf8-64d44c79a4de",
+        "/app/schedule/copy-receipt?operation=3fe8b9b4-c98c-4397-96eb-d8b89d408eb8",
         "/app/schedule/coverage",
         "/app/schedule/edit?shiftId=audit-next-0-1",
         "/app/schedule/new",
@@ -283,7 +283,7 @@
         "/app/settings/workspace",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
         "/app/updates/compose"
       ]
     },
@@ -1358,10 +1358,10 @@
     }
   ],
   "fixtures": {
-    "updateId": "a906f447-10cb-4484-8243-bc31a0053e1c",
+    "updateId": "234b3a2b-efa1-4f5a-895c-f7fe7c611881",
     "copyReceipts": {
-      "AUDIT-M": "3a8ef613-2ed4-4e7e-bdf7-ff248d346b3a",
-      "QAOWNER": "c932b057-a224-4930-bdf8-64d44c79a4de"
+      "AUDIT-M": "0071c815-56ae-4d91-98e6-5928f1566090",
+      "QAOWNER": "3fe8b9b4-c98c-4397-96eb-d8b89d408eb8"
     },
     "copyReceiptState": "TEMPLATE_UNAVAILABLE",
     "payrollFutureShifts": [
