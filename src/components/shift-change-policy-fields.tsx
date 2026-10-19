@@ -1,7 +1,7 @@
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { SelectField } from "./select-field";
 import type { ShiftChangePolicy } from "../lib/shift-changes/types";
-import { PolicySaveForm } from "./policy-save-form";
+import { PolicyForm } from "./wave-b-forms";
 import { saveShiftChangePolicyAction } from "../app/app/schedule/settings/actions";
 
 export function ShiftChangePolicyFields({
@@ -60,23 +60,19 @@ export function ShiftChangePolicyFields({
                 already sent keep their earlier deadline.
               </span>
             </label>
-            <div className="wb-actions">
-              <button type="submit" className="nv-btn" data-kind="primary">
-                Save {scope === "swap" ? "trade" : "coverage"} policy
-              </button>
-            </div>
           </>
         );
         return (
           <section key={scope} className="wb-policy-scope">
             <h3 className="wb-strong">{scope === "swap" ? "Trades" : "Coverage"}</h3>
             {canEdit ? (
-              <PolicySaveForm
+              <PolicyForm
                 revision={current?.revision ?? 0}
                 action={saveShiftChangePolicyAction}
+                saveLabel={`Save ${scope === "swap" ? "trade" : "coverage"} policy`}
               >
                 {content}
-              </PolicySaveForm>
+              </PolicyForm>
             ) : (
               <dl className="wb-facts">
                 <div><dt>How requests are approved</dt>

@@ -8,10 +8,10 @@ const f = vi.hoisted(() => ({
   proof: { employee: { id: "manager", role: "MANAGER" }, sessionTokenHash: "a".repeat(64) },
   templates: [{ id: "pattern-1", name: "Regular week", shiftCount: 12, createdAt: "2026-10-01" }],
 }));
-vi.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children) }));
+vi.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children), useLinkStatus: () => ({ pending: false }) }));
 vi.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["MANAGER", "OWNER"], requireRoles: f.requireRoles }));
 vi.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: f.requireProof }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }), unstable_rethrow: () => {} }));
 vi.mock("@/components/schedule-copy-form", async importOriginal => {
   const original = await importOriginal<typeof import("@/components/schedule-copy-form")>();
   return { ScheduleCopyForm: (props: ComponentProps<typeof original.ScheduleCopyForm>) => {

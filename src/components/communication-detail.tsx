@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import {useRef,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import {useGSAP} from '@gsap/react';
 import {gsap} from 'gsap';
 import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
@@ -21,6 +21,8 @@ gsap.registerPlugin(useGSAP);
 
 export function CommunicationDetailView({read,paused,pending,notice,onAction,onRefresh}:{read:CommunicationRead|null;paused:boolean;pending:boolean;notice:CommunicationNotice;onAction:(kind:'ACKNOWLEDGE'|'MARK_READ'|'WITHDRAW'|'LOOKUP')=>void;onRefresh:()=>void}){
  const [reviewed,setReviewed]=useState(false);
+ const [confirmWithdraw,setConfirmWithdraw]=useState(false);
+ const receiptRef=useRef<HTMLElement>(null),withdrawRef=useRef<HTMLButtonElement>(null),confirmRef=useRef<HTMLButtonElement>(null),askedWithdraw=useRef(false);
  const surface=useRef<HTMLElement>(null);
  const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&read?.state==='ready'?read:null;
  useGSAP(()=>{
@@ -31,6 +33,12 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   });
   return ()=>media.revert();
  },{scope:surface,dependencies:[ready?.ownAcknowledgedAt,ready?.ownReadAt],revertOnUpdate:true});
+ // IS-B12: when the review is recorded and the pressed button goes away, focus lands on the result, not the page.
+ const doneNow=!!(ready?.ownAcknowledgedAt||(ready?.acknowledgement!=='REQUIRED'&&ready?.ownReadAt));
+ const wasDone=useRef(doneNow);
+ useEffect(()=>{if(doneNow&&!wasDone.current&&(!document.activeElement||document.activeElement===document.body))receiptRef.current?.focus();wasDone.current=doneNow;},[doneNow]);
+ // IS-B5: the confirm step takes focus when it opens, and Keep update hands it back.
+ useEffect(()=>{if(askedWithdraw.current)(confirmWithdraw?confirmRef:withdrawRef).current?.focus();},[confirmWithdraw]);
  const stamp=(at:string)=>keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:ready?.timeZone??'UTC',dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));
  if(!ready){
   const loading=pending&&!read;
@@ -43,7 +51,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
     <section ref={surface} className="nv-card" aria-busy={loading} aria-label={title}>
      <div className="wb-body">
       <p className="nv-sr" role="status">{title}. {description}</p>
-      {loading?<SkeletonRows rows={3} variant="line"/>:read?.state==='unauthorized'?<div className="wb-actions"><Link href="/login" className="nv-btn" data-kind="secondary">Sign in</Link></div>:read?.state==='withdrawn'?<div className="wb-actions"><Link href="/app/updates" className="nv-btn" data-kind="secondary">All updates</Link></div>:<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={onRefresh} disabled={paused||pending}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{notice==='conflict'?'Review latest':'Retry'}</button></div>}
+      {loading?<SkeletonRows rows={3} variant="line"/>:read?.state==='unauthorized'||notice==='blocked'?<div className="wb-actions"><Link href="/login" className="nv-btn" data-kind="secondary">Sign in</Link></div>:read?.state==='withdrawn'?<div className="wb-actions"><Link href="/app/updates" className="nv-btn" data-kind="secondary">All updates</Link></div>:<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={onRefresh} disabled={paused||pending}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{notice==='conflict'?'Review latest':'Retry'}</button></div>}
      </div>
     </section>
    </div>
@@ -56,7 +64,8 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const count=ready.management?.recipients.filter(recipient=>recipient.acknowledgedAt).length??0;
  const locked=pending||notice==='unknown';
  const sent=ready.sentCount!==undefined?<p className="wb-note">Sent to {ready.sentCount} {ready.sentCount===1?'recipient':'recipients'}. Delivery does not confirm reading.</p>:null;
- const withdraw=ready.canWithdraw?<button type="button" className="nv-btn" data-kind="secondary" data-tone="urgent" disabled={locked} onClick={()=>onAction('WITHDRAW')}>Withdraw update</button>:null;
+ const audience=ready.management?.recipients.length??ready.sentCount;
+ const withdraw=ready.canWithdraw?(confirmWithdraw?<div className="wb-confirm" role="group" aria-labelledby="withdraw-confirm-text"><p className="wb-text" id="withdraw-confirm-text">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p><div className="wb-actions"><button ref={confirmRef} type="button" className="nv-btn" data-kind="danger" disabled={locked} aria-busy={pending||undefined} onClick={()=>onAction('WITHDRAW')}>{pending?'Withdrawing…':'Withdraw update'}</button><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(false);}}>Keep update</button></div></div>:<button ref={withdrawRef} type="button" className="nv-btn" data-kind="secondary" data-tone="urgent" disabled={locked} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(true);}}>Withdraw update</button>):null;
  return <>
   <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow={category} title={ready.title} summary={<MetaParts text={`${ready.authorContext} · Published ${stamp(ready.publishedAt)}`}/>}/>
   <article ref={surface} className="nv-content" data-update-revision={ready.revisionId}>
@@ -71,9 +80,8 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
     </div>
    </section>
 
-   {notice==='unknown'?<section className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Result not yet confirmed</h2><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>onAction('LOOKUP')}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{pending?'Checking…':'Check status'}</button></div></div></section>:notice==='unavailable'?<section className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Unable to confirm</h2><p>We could not confirm this update. Retry to check current information.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={onRefresh}><ArrowClockwiseIcon size={20} aria-hidden="true"/>Retry</button></div></div></section>:null}
 
-   <section className="nv-card" aria-label="Your review status" aria-busy={pending}>
+   <section className="nv-card" aria-label="Your review status" aria-busy={pending} ref={receiptRef} tabIndex={-1}>
     <div className="wb-body">
      <div className="wb-receipt"><span className="communication-result-icon"><Tile tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged||markedRead?<CheckCircleIcon size={22}/>:required?<FileTextIcon size={22}/>:<CircleIcon size={22}/>}</Tile></span>
       {acknowledged?<div role="status"><h2 className="wb-strong">Acknowledged</h2><p className="wb-note">You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<div><h2 className="wb-strong">{required?'Acknowledgement required':'Informational update'}</h2><p className="wb-note">{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></div>:required?<div><h2 className="wb-strong">Confirm you received this update</h2><p className="wb-note" id="communication-acknowledgement-help">Acknowledgement confirms receipt of this version. It does not indicate agreement or attendance.</p></div>:markedRead?<div role="status"><h2 className="wb-strong">Marked read</h2><p className="wb-note">Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<div><h2 className="wb-strong">No acknowledgement needed</h2><p className="wb-note">You can mark this update as read to keep your updates organized.</p></div>}
@@ -86,6 +94,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
     </div>
    </section>
 
+   {notice==='unknown'?<section className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Result not yet confirmed</h2><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>onAction('LOOKUP')}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{pending?'Checking…':'Check status'}</button></div></div></section>:notice==='unavailable'?<section className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Unable to confirm</h2><p>We could not confirm this update. Retry to check current information.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={onRefresh}><ArrowClockwiseIcon size={20} aria-hidden="true"/>Retry</button></div></div></section>:null}
    {ready.management?<section className="nv-card" aria-label="Acknowledgement status">
     <details className="wb-disclosure">
      <summary><span className="wb-summary-text"><span className="nv-card__title" role="heading" aria-level={2}>Recipient status</span><span>{count} of {ready.management.recipients.length} acknowledged</span></span><CaretDownIcon size={20} aria-hidden="true"/></summary>

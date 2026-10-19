@@ -12,7 +12,8 @@ import { ArchiveIcon } from "@phosphor-icons/react/dist/ssr/Archive";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { PageBand, Tile } from "@/components/kit/kit";
 import { keepWhole } from "@/lib/keep-whole";
-import { TemplateSubmit, TemplateFeedback, TemplateMotion, TemplateNameLink } from "@/components/schedule-template-controls";
+import { TemplateFeedback, TemplateMotion, TemplateNameLink, WeekPending } from "@/components/schedule-template-controls";
+import { ActionForm } from "@/components/wave-b-forms";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -64,14 +65,15 @@ export default async function ScheduleTemplatesPage({
             <span className="wb-note">Selected week</span>
             <strong className="wb-week__value">{keepWhole(`${weekLabel}, ${weekStart.slice(0, 4)}`)}</strong>
             <span className="wb-note">Save from or apply to this week.</span>
+            <span className="wb-week__loading" role="status">Loading the week…</span>
           </div>
           <nav className="wb-week__nav" aria-label="Choose schedule week">
             <Link className="wb-week__arrow" href={templateUrl(addDays(weekStart, -7))} aria-label="Previous week">
-              <CaretLeftIcon size={20} weight="bold" aria-hidden="true" />
+              <CaretLeftIcon size={20} weight="bold" aria-hidden="true" /><WeekPending />
             </Link>
-            <Link className="wb-week__today" href={templateUrl(currentWeek)} aria-current={weekStart === currentWeek ? "date" : undefined}>This week</Link>
+            <Link className="wb-week__today" href={templateUrl(currentWeek)} aria-current={weekStart === currentWeek ? "date" : undefined}>This week<WeekPending /></Link>
             <Link className="wb-week__arrow" href={templateUrl(addDays(weekStart, 7))} aria-label="Next week">
-              <CaretRightIcon size={20} weight="bold" aria-hidden="true" />
+              <CaretRightIcon size={20} weight="bold" aria-hidden="true" /><WeekPending />
             </Link>
           </nav>
         </div>
@@ -111,7 +113,7 @@ export default async function ScheduleTemplatesPage({
           <div className="nv-card__head"><h2 className="nv-card__title" id="st-save-title">Save this week</h2></div>
           <div className="wb-body">
             <p className="wb-note">Turn the selected week into a reusable schedule pattern.</p>
-            <form action={saveTemplateAction} className="wb-form">
+            <ActionForm action={saveTemplateAction} className="wb-form" failure="Template not saved. Check your connection and try again; your name is kept." submit={{ label: "Save template", pendingLabel: "Saving template…", className: "nv-btn", kind: "primary", icon: <CopySimpleIcon size={20} aria-hidden="true" /> }}>
               <input type="hidden" name="weekStart" value={weekStart} />
               <div className="wb-field">
                 <label htmlFor="st-template-name">Template name</label>
@@ -127,12 +129,7 @@ export default async function ScheduleTemplatesPage({
                 />
                 <p id="st-name-hint" className="wb-help">Use 3 to 50 characters.</p>
               </div>
-              <div className="wb-actions">
-                <TemplateSubmit label="Save template" pendingLabel="Saving template…" className="nv-btn" kind="primary">
-                  <CopySimpleIcon size={20} aria-hidden="true" />
-                </TemplateSubmit>
-              </div>
-            </form>
+            </ActionForm>
             <div className="wb-box"><p className="wb-strong wb-strong--small">What gets saved</p><p className="wb-note">Employee assignments, locations, shift times, notes and designated leads.</p></div>
           </div>
         </section>
@@ -156,13 +153,10 @@ export default async function ScheduleTemplatesPage({
                   </div>
                   <div className="wb-template-actions">
                     <ScheduleCopyForm actorId={session.id} label="Apply to this week" ariaLabel={`Apply ${template.name} to ${weekLabel}`} className="nv-btn wb-apply" command={{operationId:randomUUID(),kind:"TEMPLATE",weekStart,templateId:template.id}}><ArrowRightIcon size={20} aria-hidden="true" /></ScheduleCopyForm>
-                    <form action={archiveTemplateAction}>
+                    <ActionForm action={archiveTemplateAction} className="wb-archive" failure="Template not archived. Check your connection and try again." confirm={{ prompt: `Archive ${template.name}? Shifts already in your schedule stay.`, keepLabel: "Keep template" }} submit={{ label: "Archive", pendingLabel: "Archiving…", ariaLabel: `Archive ${template.name}`, className: "nv-btn", kind: "secondary", icon: <ArchiveIcon size={20} aria-hidden="true" /> }}>
                       <input type="hidden" name="weekStart" value={weekStart} />
                       <input type="hidden" name="templateId" value={template.id} />
-                      <TemplateSubmit label="Archive" pendingLabel="Archiving…" ariaLabel={`Archive ${template.name}`} className="nv-btn" kind="secondary">
-                        <ArchiveIcon size={20} aria-hidden="true" />
-                      </TemplateSubmit>
-                    </form>
+                    </ActionForm>
                   </div>
                 </li>
               ))}

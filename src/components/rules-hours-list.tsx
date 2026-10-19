@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/ssr";
 
 export type RulesHoursRow = {
@@ -24,13 +24,14 @@ export function RulesHoursList({ rows }: { rows: RulesHoursRow[] }) {
     && (!term || row.employeeName.toLocaleLowerCase().includes(term) || row.employeeId.toLocaleLowerCase().includes(term));
   const count = rows.filter(shown).length;
   const showEveryone = () => { setQuery(""); setMissingOnly(false); };
+  const search = useRef<HTMLInputElement>(null);
 
   return <>
     {rows.length > 1 ? <div className="wb-filterbar">
       <label className="wb-search">
         <MagnifyingGlassIcon size={20} aria-hidden="true" />
         <span className="sr-only">Find a person</span>
-        <input type="search" placeholder="Find a person" value={query} onChange={event => setQuery(event.target.value)}
+        <input ref={search} type="search" placeholder="Find a person" value={query} onChange={event => setQuery(event.target.value)}
           onKeyDown={event => { if (event.key === "Enter") event.preventDefault(); }} />
       </label>
       {missing ? <button type="button" className="wb-toggle" aria-pressed={missingOnly} onClick={() => setMissingOnly(value => !value)}>
@@ -50,6 +51,6 @@ export function RulesHoursList({ rows }: { rows: RulesHoursRow[] }) {
         </li>
       ))}
     </ul>
-    {rows.length && !count ? <div className="wb-body wb-body--ruled wb-none"><p className="wb-note">No one matches.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={showEveryone}>Show everyone</button></div></div> : null}
+    {rows.length && !count ? <div className="wb-body wb-body--ruled wb-none"><p className="wb-note">No one matches.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={() => { showEveryone(); requestAnimationFrame(() => search.current?.focus()); }}>Show everyone</button></div></div> : null}
   </>;
 }

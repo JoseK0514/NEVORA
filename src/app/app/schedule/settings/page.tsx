@@ -10,7 +10,7 @@ import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
-import { ConfigurationForm } from "@/components/configuration-form";
+import { ActionForm, InlineConfigForm, RulesSaveForm } from "@/components/wave-b-forms";
 import { PositionQuotaFields } from "@/components/position-quota-fields";
 import { ShiftChangePolicyFields } from "@/components/shift-change-policy-fields";
 import { ManagerIssueFocus } from "@/components/manager-issue-focus";
@@ -26,8 +26,10 @@ import { formatTimeRange } from "@/lib/date-utils";
 
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-function RuleHeading({ title, meta }: { title: string; meta?: React.ReactNode }) {
-  return <div className="nv-card__head"><h2 className="nv-card__title">{title}</h2>{meta ? <span className="nv-card__meta">{meta}</span> : null}</div>;
+/* IS-B9: the page's own section links target these headings. The sections keep their ids (coverage-staffing,
+ * target-hours, coverage-windows) for links from elsewhere, which the issue-focus helper centres. */
+function RuleHeading({ title, meta, id }: { title: string; meta?: React.ReactNode; id?: string }) {
+  return <div className="nv-card__head"><h2 className="nv-card__title" id={id} tabIndex={id ? -1 : undefined}>{title}</h2>{meta ? <span className="nv-card__meta">{meta}</span> : null}</div>;
 }
 
 function Empty({ icon, title, children, action }: { icon: React.ReactNode; title: string; children?: React.ReactNode; action?: { href: string; label: string } }) {
@@ -82,18 +84,18 @@ export default async function ScheduleSettingsPage({ searchParams }: {
         <aside className="wb-rules-nav">
           <nav className="wb-jump" aria-label="Scheduling rule sections">
             <span className="wb-jump__label">On this page</span>
-            <a href="#coverage-staffing">Location staffing</a>
-            <a href="#target-hours">Weekly hours</a>
-            <a href="#coverage-windows">Recurring coverage</a>
+            <a href="#rules-staffing">Location staffing</a>
+            <a href="#rules-hours">Weekly hours</a>
+            <a href="#rules-coverage">Recurring coverage</a>
             <a href="#rules-policy">Trade &amp; coverage</a>
           </nav>
           <p className="wb-note wb-rules-nav__note">Staffing and hours save together. Coverage periods and policies save separately.</p>
         </aside>
 
         <div className="wb-rules-content">
-          <ConfigurationForm action={saveScheduleHealthSettingsFormAction} className="wb-form wb-auto wb-config">
+          <RulesSaveForm action={saveScheduleHealthSettingsFormAction} bar={staffing.length > 0 || employees.length > 0}>
             <section className="nv-card manager-issue-target" id="coverage-staffing" tabIndex={-1}>
-              <RuleHeading title="Location staffing" />
+              <RuleHeading title="Location staffing" id="rules-staffing" />
               <p className="wb-note wb-card-lead">Choose the minimum staff needed during overlapping shift times, and whether a designated lead must be present.</p>
               <ul className="wb-setting-list">
                 {staffing.map(location => {
@@ -118,7 +120,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
             </section>
 
             <section className="nv-card manager-issue-target" id="target-hours" tabIndex={-1}>
-              <RuleHeading title="Weekly hours" meta={employees.length ? `${employees.length} ${employees.length === 1 ? "person" : "people"}` : undefined} />
+              <RuleHeading title="Weekly hours" id="rules-hours" meta={employees.length ? `${employees.length} ${employees.length === 1 ? "person" : "people"}` : undefined} />
               <p className="wb-note wb-card-lead">Targets guide balanced schedules. Maximums flag extra scheduled hours. Leave a target blank to leave it out of the hours review.</p>
               {employees.length ? <RulesHoursList rows={employees.map(employee => ({
                 employeeId: employee.employeeId, employeeName: employee.employeeName,
@@ -126,15 +128,14 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                 targetWeeklyHours: employee.targetWeeklyHours ?? null, maximumWeeklyHours: employee.maximumWeeklyHours ?? null,
               }))} /> : <div className="wb-body"><Empty icon={<UsersIcon size={22} />} title="No employees to set up" action={{ href: "/app/employees", label: "Manage employees" }}>Add active employees to set their weekly hour targets.</Empty></div>}
             </section>
-            {staffing.length || employees.length ? <div className="nv-actionbar wb-savebar" role="group" aria-label="Staffing and weekly hours"><p className="wb-note">Staffing &amp; weekly hours save together and apply right away.</p><button className="nv-btn" data-kind="primary" type="submit">Save staffing &amp; hours</button></div> : null}
-          </ConfigurationForm>
+          </RulesSaveForm>
 
           <section className="nv-card manager-issue-target" id="coverage-windows" tabIndex={-1}>
-            <RuleHeading title="Recurring coverage" meta={coverageWindows.length ? `${coverageWindows.length} ${coverageWindows.length === 1 ? "period" : "periods"}` : undefined} />
+            <RuleHeading title="Recurring coverage" id="rules-coverage" meta={coverageWindows.length ? `${coverageWindows.length} ${coverageWindows.length === 1 ? "period" : "periods"}` : undefined} />
             <p className="wb-note wb-card-lead">Add the periods you expect every week. The schedule can then flag open coverage, even before any shift is added.</p>
             {locations.length ? <details className="wb-disclosure wb-disclosure--ruled wb-add-period" open={!coverageWindows.length}>
               <summary><span className="wb-inline-icon"><PlusIcon size={20} aria-hidden="true" />Add coverage period</span><CaretDownIcon size={20} aria-hidden="true" /></summary>
-              <ConfigurationForm action={addCoverageWindowFormAction} className="wb-form wb-auto wb-config wb-period-form">
+              <InlineConfigForm action={addCoverageWindowFormAction} className="wb-period-form" submit={{ label: "Add coverage period", pendingLabel: "Adding…", kind: "primary" }} successText="Coverage period added.">
                 <div className="wb-grid">
                   <label className="wb-field wb-field--wide"><span>Location</span><select name="locationId" required defaultValue={locations[0]?.id}>{locations.map(location => <option key={location.id} value={location.id}>{locationLabel(location.id, location.shortName)}</option>)}</select></label>
                   <label className="wb-field"><span>Day</span><select name="dayOfWeek" defaultValue="1" required>{[1, 2, 3, 4, 5, 6, 0].map(day => <option key={day} value={day}>{dayNames[day]}</option>)}</select></label>
@@ -143,8 +144,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                   <label className="wb-field"><span>Minimum staff <span className="wb-optional">Optional</span></span><input type="number" name="minimumStaff" min={1} max={100} step={1} placeholder="Location default" aria-describedby="rules-staff-hint" /><span className="wb-help" id="rules-staff-hint">Leave blank to use the location requirement.</span></label>
                 </div>
                 <PositionQuotaFields positions={positions.filter(position => position.active)} />
-                <div className="wb-actions"><button className="nv-btn" data-kind="primary" type="submit">Add coverage period</button></div>
-              </ConfigurationForm>
+              </InlineConfigForm>
             </details> : <div className="wb-body"><Empty icon={<CalendarBlankIcon size={22} />} title="Add a location before creating a coverage period." action={{ href: "/app/settings/locations", label: "Manage locations" }} /></div>}
 
             {/* U3: periods grouped by location, in week order. A link to one period opens its group. */}
@@ -157,11 +157,11 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                       <div className="wb-period__head">
                         <span className="wb-day" aria-hidden="true">{dayNames[window.dayOfWeek].slice(0, 3)}</span>
                         <div className="wb-period__copy"><h3 className="wb-record__title">{dayNames[window.dayOfWeek]}</h3><p className="wb-record__meta">{keepWhole(formatTimeRange(window.startTime, window.endTime))}</p><p className="wb-record__meta">{window.minimumStaff ? window.minimumStaff + " staff required" : "Uses location staffing requirement"}</p></div>
-                        <form action={deleteCoverageWindowAction}><input type="hidden" name="windowId" value={window.id} /><button className="wb-remove" type="submit" aria-label={"Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period"}>Remove</button></form>
+                        <ActionForm action={deleteCoverageWindowAction} className="wb-period-remove" failure="Not removed. Check your connection and try again." confirm={{ prompt: `Remove ${dayNames[window.dayOfWeek]}, ${formatTimeRange(window.startTime, window.endTime)}?`, keepLabel: "Keep period" }} submit={{ label: "Remove", pendingLabel: "Removing…", ariaLabel: "Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period", className: "wb-remove", kind: "danger" }}><input type="hidden" name="windowId" value={window.id} /></ActionForm>
                       </div>
                       <details className="wb-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
                         <summary><span>Position quantities</span><span className="wb-record__meta">{window.positionRequirements.length ? window.positionRequirements.length + " set" : "Optional"}</span><CaretDownIcon size={18} aria-hidden="true" /></summary>
-                        <ConfigurationForm action={replaceCoverageWindowPositionRequirementsAction} className="wb-form wb-auto wb-config"><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields positions={positions} requirements={window.positionRequirements} /><div className="wb-actions"><button className="nv-btn" data-kind="secondary" type="submit">Save position quantities</button></div></ConfigurationForm>
+                        <InlineConfigForm action={replaceCoverageWindowPositionRequirementsAction} submit={{ label: "Save quantities", pendingLabel: "Saving…", kind: "secondary" }} successText="Position quantities saved."><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields positions={positions} requirements={window.positionRequirements} /></InlineConfigForm>
                       </details>
                     </li>
                   ))}

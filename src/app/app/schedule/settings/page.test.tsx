@@ -63,10 +63,12 @@ it("keeps every rule group and native fragment destination available from sectio
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(html).toMatch(/<h1[^>]*>Scheduling rules<\/h1>/);
   expect(html).toContain('aria-label="Scheduling rule sections"');
-  for (const id of ["coverage-staffing", "target-hours", "coverage-windows", "rules-policy"]) {
+  for (const id of ["rules-staffing", "rules-hours", "rules-coverage", "rules-policy"]) {
     expect(html).toContain(`href="#${id}"`);
     expect(html).toContain(`id="${id}"`);
   }
+  // Sections keep the ids other pages link to (Owner setup, Team member detail).
+  for (const id of ["coverage-staffing", "target-hours", "coverage-windows"]) expect(html).toContain(`id="${id}"`);
   expect(html).toContain('id="staffing-loc-1"');
   expect(html).toContain('Save staffing &amp; hours');
   expect(html).toContain('href="/app/schedule"');

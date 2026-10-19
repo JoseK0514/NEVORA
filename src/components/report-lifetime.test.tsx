@@ -116,3 +116,16 @@ it('R15 invalid period submission preserves the applied range and does not issue
  expect(output).toContain('Applied period</span>Sep 21 – Sep 27, 2026');
  expect(requests).toHaveLength(1);expect(output).toContain(originalName);
 });
+
+it('R16 a long-lived snapshot is replaced by a verified fresh one before it expires, without emptying the report',async()=>{
+ const requests=reads(originalName,15000);await mount();expect(html()).toContain(originalName);
+ const body=deferred<unknown>();vi.stubGlobal('fetch',async(path:string)=>{requests.push({path,body:null,signal:null});return bodyResponse(body.promise);});
+ await vi.advanceTimersByTimeAsync(12001);expect(requests).toHaveLength(2);expect(html()).toContain(originalName);
+ body.resolve(ready(freshName));await flush();expect(html()).toContain(freshName);expect(html()).not.toContain(originalName);
+});
+
+it('R16 a failed silent refresh leaves the verified report until its own expiry, then retires it',async()=>{
+ reads(originalName,15000);await mount();vi.stubGlobal('fetch',async()=>{throw new Error('offline');});
+ await vi.advanceTimersByTimeAsync(12001);expect(html()).toContain(originalName);
+ vi.stubGlobal('fetch',async()=>new Promise<Response>(()=>{}));await vi.advanceTimersByTimeAsync(3000);assertProtectedAbsent();
+});
