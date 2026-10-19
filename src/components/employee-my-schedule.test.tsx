@@ -58,7 +58,7 @@ it('My shifts and Open shifts are real URLs with an announced count',()=>{
 });
 it('Open shifts lists claimable shifts and own claims waiting for approval without the week agenda',()=>{
  const output=html({view:'open',openShifts:{available:[open],requested:[{...open,id:'mine-1',href:'/app/exchange?tab=requests&requestId=mine-1'}]}});
- for(const value of ['Waiting for approval','Requested · waiting for approval','View request','View and claim','#request-open-1','North Office · Barista','Claiming sends a request to your manager']) expect(output).toContain(value);
+ for(const value of ['Waiting for approval','Requested · waiting for approval','View request','View and claim','#request-open-1','North Office · Barista','Claiming sends a request to your manager']) expect(output.replace(/\u00a0/g," ")).toContain(value);
  expect(output).not.toContain('employee-schedule-agenda');
 });
 it('Open shifts shows a calm empty state and an honest unavailable state',()=>{

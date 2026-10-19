@@ -31,6 +31,9 @@ import { emptyScheduleLabel, type EmployeeScheduleRead } from '../lib/data/emplo
 import type { ScheduleShiftRow } from '../lib/data/schedules';
 
 type Shift = ScheduleShiftRow & { positionName?: string | null };
+/** TCD-21 / WR4-14: a short place name ("Main Office") never breaks inside itself; a long one may. */
+const placeName=(name:string)=>name.length<=24?name.replace(/ /g,'\u00a0'):name;
+
 export type OpenShift = { id: string; date: string; startTime: string; endTime: string; location: string; position: string | null; href: string; reasons?: string[] };
 export type EmployeeMyScheduleProps = {
   /** "mine" shows the week; "open" shows claimable shifts. Both are real URLs. */
@@ -88,7 +91,7 @@ function OpenShiftCard({ shift, requested = false }: { shift: OpenShift; request
     <time className="my-open-date" dateTime={shift.date}><span>{label.weekday}</span><strong>{Number(shift.date.slice(8))}</strong></time>
     <div className="my-open-copy">
       <strong>{keepWhole(formatTime(shift.startTime))} <span aria-hidden="true">–</span> {keepWhole(formatTime(shift.endTime))}</strong>
-      <span className="my-shift-location"><MapPinIcon size={16} aria-hidden="true" />{shift.location}{shift.position ? ` · ${shift.position}` : ''}</span>
+      <span className="my-shift-location"><MapPinIcon size={16} aria-hidden="true" />{keepWhole(`${placeName(shift.location)}${shift.position ? ` · ${shift.position}` : ''}`)}</span>
       {requested ? <span className="my-open-status"><HourglassMediumIcon size={14} weight="bold" aria-hidden="true" />Requested · waiting for approval</span> : null}
     </div>
     <Link href={shift.href} className="my-open-action">{requested ? 'View request' : 'View and claim'}<span className="sr-only"> for {label.weekday}, {label.day}, {formatTime(shift.startTime)}</span> <ArrowRightIcon size={16} aria-hidden="true" /></Link>
