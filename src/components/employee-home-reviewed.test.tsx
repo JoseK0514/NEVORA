@@ -280,7 +280,7 @@ describe('original redacted clock recovery preservation',()=>{
   for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra.','Clocked in'])expect(lost).not.toContain(field);
   const clock=lost.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/)![1];
   expect(clock).toContain('href="/app/my-time"');
-  if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign In');expect(clock).not.toContain('aria-label="Refresh recorded time"');}
+  if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign in');expect(clock).not.toContain('aria-label="Refresh recorded time"');}
   else {expect(clock).toContain('aria-label="Refresh recorded time"');if(status==='paused'||status==='loading')expect(clock).toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);else expect(clock).not.toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);}
  });
 });

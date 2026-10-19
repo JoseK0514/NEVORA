@@ -22,15 +22,17 @@ function render(role: "EMPLOYEE" | "LEAD" | "MANAGER" | "OWNER", pathname = "/ap
   return { html, mobile: html.split('aria-label="Mobile navigation"')[1].split("</nav>")[0] };
 }
 
-it.each(['/app/my-time', '/app/timecards'])('enables the approved employee presentation on %s', pathname => {
+// P3-WR-09 (Oct 19): Leads use the Employee app, so they get the same My time and Timecards presentation.
+it.each(['/app/my-time', '/app/timecards'])('enables the approved employee presentation on %s for Employees and Leads', pathname => {
   expect(render('EMPLOYEE', pathname).html).toContain('data-employee-corporate="true"');
+  expect(render('LEAD', pathname).html).toContain('data-employee-corporate="true"');
 });
 
 it.each(['EMPLOYEE', 'LEAD', 'MANAGER', 'OWNER'] as const)('keeps %s outside the two-page employee approval elsewhere', role => {
   for (const pathname of ['/app', '/app/schedule', '/app/profile', '/app/timecards/history', '/app/my-time/other']) {
     expect(render(role, pathname).html).not.toContain('data-employee-corporate="true"');
   }
-  if (role !== 'EMPLOYEE') {
+  if (role === 'MANAGER' || role === 'OWNER') {
     for (const pathname of ['/app/my-time', '/app/timecards']) {
       expect(render(role, pathname).html).not.toContain('data-employee-corporate="true"');
     }

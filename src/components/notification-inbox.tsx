@@ -57,7 +57,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
  return <section ref={root} className={styles.inbox} aria-label="Notifications" data-private-view="notifications">
   <header className={styles.toolbar}>
    <div className={styles.inboxTitle}><BellIcon size={22} aria-hidden="true"/><div><h2>Your alerts</h2><p>Review an update. Take the next step.</p></div></div>
-   {denied?<Link className={styles.refresh} href="/login">Sign in</Link>:<button className={styles.refresh} type="button" disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} aria-hidden="true"/><span>{state.refreshing?'Checking…':unavailable||ready?.coverage==='partial'?'Retry':'Refresh'}</span></button>}
+   {denied?<Link className={styles.refresh} href="/login">Sign in</Link>:<button className={styles.refresh} type="button" data-retry={unavailable?'true':undefined} disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} aria-hidden="true"/><span>{state.refreshing?'Checking…':unavailable||ready?.coverage==='partial'?'Try again':'Refresh'}</span></button>}
   </header>
   {readNotice?<p className={styles.notice} role="status">{readNotice}</p>:null}
   {ready?<>

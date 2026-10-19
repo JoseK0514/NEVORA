@@ -24,7 +24,7 @@ export default async function TimecardsPage({searchParams}:{searchParams:Promise
   return <div className="employee-view premium-legacy-page premium-employee-timecards" data-nv-page="">
     <PageBand eyebrow={periodLabel(period.startDate,period.endDate)} title="Timecards" summary="Each day’s clock-ins and clock-outs." overlap={false}/>
     <div className="nv-content premium-legacy-content">
-      <Timecards key={session.id} initialPeriod={period} manager={false} actorId={session.id} employeeCorporate={session.role==='EMPLOYEE'}/>
+      <Timecards key={session.id} initialPeriod={period} manager={false} actorId={session.id} employeeCorporate={session.role==='EMPLOYEE'||session.role==='LEAD'}/>
     </div>
   </div>;
 }

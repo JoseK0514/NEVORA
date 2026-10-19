@@ -15,7 +15,8 @@ export default async function MyTimePage() {
   }
 
   const authority=correctionAuthority(await requireSessionMutationProof());
-  const corporate=session.role==='EMPLOYEE';
+  // P3-WR-09: a Lead's own time uses the same layout as an Employee's.
+  const corporate=session.role==='EMPLOYEE'||session.role==='LEAD';
   // Jose, 2026-10-19: when the hours being worked now are paid, from the workspace's pay schedule.
   const pay=await currentPayPeriod();
   const shortDate=(date:string,weekday=false)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric',...(weekday?{weekday:'short' as const}:{})}).format(new Date(`${date}T12:00:00Z`));
