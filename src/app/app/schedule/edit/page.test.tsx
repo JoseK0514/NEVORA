@@ -34,8 +34,9 @@ it("retains the editable assignment, notes, lead, and shift identity and restric
   expect(html).toContain('min="2026-10-12" max="2026-10-18"');
   expect(html).toContain('value="support" selected=""');
   expect(html).toContain("Opening team</textarea>");
-  expect(html).toContain('form="delete-shift-form"');
-  expect(html).toContain('<details class="edit-shift-delete">');
+  // Delete is its own form, behind a disclosure, after the edit form (never nested in it).
+  expect(html.match(/<form/g)).toHaveLength(2);
+  expect(html.indexOf('<details class="wa-disclosure">')).toBeGreaterThan(html.indexOf('Save changes'));
   expect(html).toContain('/app/schedule?week=2026-10-12');
   // W2: Cancel returns to this shift's location, day and person.
   expect(html).toContain('href="/app/schedule?week=2026-10-12&amp;location=main&amp;day=2026-10-14#schedule-employee-AVERY"');
@@ -49,7 +50,7 @@ it("keeps invalid shift redirects and announced validation errors", async () => 
   expect(mocks.shift).not.toHaveBeenCalled();
   const html = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({ shiftId: "test-shift", error: "SHIFT_OVERLAP" }) }));
   expect(html).toContain('role="alert"');
-  expect(html).toContain("That employee already has an overlapping shift.");
+  expect(html).toContain("That person already has a shift at this time.");
   mocks.shift.mockResolvedValue(null);
   await expect(Page({ searchParams: Promise.resolve({ shiftId: "missing" }) })).rejects.toThrow('/app/schedule?error=INVALID_SHIFT');
 });
@@ -62,9 +63,9 @@ it("exposes the complete selected employee name when a native select may truncat
 });
 
 it("uses the canonical nominal shift period for fractional, overnight, midnight, and invalid durations", () => {
-  expect(shiftDurationLabel("2026-10-14", "08:00", "16:30")).toBe("8 hr 30 min scheduled");
-  expect(shiftDurationLabel("2026-10-14", "08:00", "08:15")).toBe("15 min scheduled");
-  expect(shiftDurationLabel("2026-10-14", "22:00", "06:00")).toBe("8 hr scheduled · Ends next day");
-  expect(shiftDurationLabel("2026-10-14", "16:00", "24:00")).toBe("8 hr scheduled");
+  expect(shiftDurationLabel("2026-10-14", "08:00", "16:30")).toBe("8h 30m scheduled");
+  expect(shiftDurationLabel("2026-10-14", "08:00", "08:15")).toBe("15m scheduled");
+  expect(shiftDurationLabel("2026-10-14", "22:00", "06:00")).toBe("8h scheduled · Ends next day");
+  expect(shiftDurationLabel("2026-10-14", "16:00", "24:00")).toBe("8h scheduled");
   for (const end of ["", "08:00", "25:00"]) expect(shiftDurationLabel("2026-10-14", "08:00", end)).toBe("Enter a valid start and end time.");
 });

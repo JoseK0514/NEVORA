@@ -48,14 +48,12 @@ export function ShiftAssignmentFields({
   positions,
   employeeId = "",
   positionId = "",
-  newShift = false,
   onSelectionChange,
 }: {
   employees: Employee[];
   positions: Position[];
   employeeId?: string;
   positionId?: string;
-  newShift?: boolean;
   onSelectionChange?: (selection: { employeeId: string; positionId: string }) => void;
 }) {
   const [selectedEmployee, setEmployee] = useState(employeeId);
@@ -71,9 +69,9 @@ export function ShiftAssignmentFields({
   return (
     <>
       <SelectField
-        className={newShift ? "new-shift-field" : undefined}
+        className="wa-select"
         name="employeeId"
-        label="Employee"
+        label="Person"
         value={selectedEmployee}
         required
         onChange={(event) => {
@@ -95,7 +93,7 @@ export function ShiftAssignmentFields({
           }
         }}
         options={[
-          { value: "", label: "Select employee", disabled: true },
+          { value: "", label: "Choose someone", disabled: true },
           ...employees
             .filter((item) => item.active)
             .map((item) => ({
@@ -105,11 +103,11 @@ export function ShiftAssignmentFields({
         ]}
       />
       <SelectField
-        className={newShift ? "new-shift-field" : undefined}
+        className="wa-select"
         name="positionId"
         label={
           <>
-            Position <small>Optional</small>
+            Position<span className="wa-field__optional">Optional</span>
           </>
         }
         value={selectedPosition}

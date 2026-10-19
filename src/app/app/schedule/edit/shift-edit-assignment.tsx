@@ -12,6 +12,7 @@ export function ShiftEditAssignment(
 
   return (
     <div
+      className="wa-fields-group"
       onChange={(event) => {
         const field = event.target;
         if (field instanceof HTMLSelectElement && field.name === "employeeId") {
@@ -19,10 +20,9 @@ export function ShiftEditAssignment(
         }
       }}
     >
-      <div className="edit-shift-fields">
-        <ShiftAssignmentFields {...props} />
-      </div>
-      <p className="edit-shift-selected-name" aria-live="polite">
+      <ShiftAssignmentFields {...props} />
+      {/* A native select can cut a long name; the full name is read and shown here. */}
+      <p className="wa-hint" aria-live="polite">
         {name.length > 24 ? <>Selected employee: {name}</> : null}
       </p>
     </div>

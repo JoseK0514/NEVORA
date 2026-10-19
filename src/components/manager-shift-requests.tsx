@@ -2,62 +2,69 @@ import {randomUUID} from 'node:crypto';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
 import {ShiftChangeForm} from './shift-change-form';
-import {ExchangeAssignment} from './exchange-assignment';
-import {ExchangeReviewShell} from './exchange-review-shell';
-import {NavIcon} from './nav-icon';
 import {ShiftChangeHistory} from './shift-change-history';
 import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
 import { businessDate } from "@/lib/business-time";
-import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
-import { StatusPill } from "@/components/status-pill";
+import { ArrowsDownUpIcon } from "@phosphor-icons/react/dist/ssr/ArrowsDownUp";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord, type ExchangeShift } from "@/lib/data/exchanges";
+import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord } from "@/lib/data/exchanges";
 import { listPendingCallouts, listTeamCalloutHistory, type CalloutRecord } from "@/lib/data/callouts";
-
-
-import {  formatDayLabel, formatTime } from "@/lib/date-utils";
+import { Card, FilterPills, PageBand, Status } from "./kit/kit";
+import { Fact, Facts, Notice } from "./wave-a/parts";
+import { PendingButton } from "./wave-a/pending-button";
+import { ShiftBlock } from "./wave-a/shift-block";
 import {ManagerIssueFocus} from './manager-issue-focus';
 
 const tabs = [{ id: "pending", label: "Pending" }, { id: "coverage", label: "Open coverage" }, { id: "activity", label: "Team activity" }] as const;
+// TC-WA-13: the same words the employee chose from (reviewed-callout-form.tsx).
 const reasons: Record<string, string> = { ILLNESS: "Illness / sick", FAMILY_EMERGENCY: "Family emergency", TRANSPORTATION: "Transportation issue", SCHOOL: "School conflict", PERSONAL_EMERGENCY: "Personal emergency", OTHER: "Other" };
 const errors: Record<string, string> = {
-  EXCHANGE_CHANGED: "The schedule changed before approval. Review the request again.",
-  SHIFT_OVERLAP: "The exchange would create an overlapping shift.",
-  APPROVED_TIME_OFF: "The exchange conflicts with approved time off.",
-  OUTSIDE_AVAILABILITY: "The exchange is outside the employee’s submitted availability.",
-  LOCATION_NOT_ELIGIBLE: "The employee is not eligible to work at that location.",
-  EMPLOYEE_INACTIVE: "An inactive employee cannot participate in the exchange.",
-  CALLOUT_EXISTS: "This shift already has an active call-out request.",
+  EXCHANGE_CHANGED: "The schedule changed before you decided. Check the request again.",
+  SHIFT_OVERLAP: "It would give someone two shifts at the same time.",
+  APPROVED_TIME_OFF: "It runs into approved time off.",
+  OUTSIDE_AVAILABILITY: "It’s outside the person’s availability.",
+  LOCATION_NOT_ELIGIBLE: "The person can’t work at that location.",
+  EMPLOYEE_INACTIVE: "Someone on this request is inactive.",
+  CALLOUT_EXISTS: "This shift already has an “Unable to work” report.",
 };
-function shiftLabel(shift: Pick<ExchangeShift, "date" | "startTime" | "endTime" | "locationName">) {
-  const day = formatDayLabel(shift.date);
-  return `${day.weekday}, ${day.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)} · ${shift.locationName}`;
-}
-function statusLabel(status: string) {
+function statusWord(status: string) {
   if (status === "DENIED") return "Declined";
+  if (status === "APPROVED") return "Approved";
+  if (status === "CANCELLED") return "Withdrawn";
   return status.toLowerCase().replaceAll("_", " ").replace(/^./, first => first.toUpperCase());
 }
-function ExchangeCopy({ exchange }: { exchange: ExchangeRecord }) {
+const possessive = (name: string) => `${name}’${name.endsWith("s") ? "" : "s"}`;
+
+/** The shifts on a swap or coverage request; a swap shows both, with the trade between them. */
+function ExchangeShifts({ exchange }: { exchange: ExchangeRecord }) {
   const historical = ["APPROVED", "DENIED", "CANCELLED", "EXPIRED"].includes(exchange.status);
-  return <div className="manager-workflow-copy exchange-request-copy">
-    <div className="exchange-request-identity"><span className="exchange-kind-icon"><NavIcon name={exchange.kind === "SWAP" ? "exchange" : "coverage"} size={22} /></span><div><h3>{exchange.kind === "SWAP" ? "Trade" : "Coverage"} · {exchange.requestedByName}</h3><p>{exchange.targetEmployeeName ? `${exchange.kind === "SWAP" ? "Trading with" : "Claimed by"} ${exchange.targetEmployeeName}` : exchange.kind === "SWAP" ? "Other employee details unavailable" : "Coverage has not been claimed"}</p></div></div>
-    <div className={`exchange-assignments${exchange.kind === "SWAP" && exchange.targetShift ? " paired" : ""}`}>
-      <ExchangeAssignment shift={exchange.sourceShift} label={`${exchange.sourceShift.employeeName}’s ${historical ? "original assignment" : "current shift"}`} />
-      {exchange.kind === "SWAP" && exchange.targetShift ? <><span className="exchange-pair-connector"><NavIcon name="exchange" size={20} /></span><ExchangeAssignment shift={exchange.targetShift} label={`${exchange.targetShift.employeeName}’s ${historical ? "original assignment" : "current shift"}`} /></> : null}
-    </div>
+  const label = (name: string) => `${possessive(name)} ${historical ? "shift then" : "shift"}`;
+  return <div className="wa-shifts">
+    <ShiftBlock shift={exchange.sourceShift} label={label(exchange.sourceShift.employeeName)} />
+    {exchange.kind === "SWAP" && exchange.targetShift ? <>
+      <span className="wa-shifts__trade" aria-hidden="true"><ArrowsDownUpIcon size={18} weight="bold" /></span>
+      <ShiftBlock shift={exchange.targetShift} label={label(exchange.targetShift.employeeName)} />
+    </> : null}
   </div>;
 }
 
-function CalloutCopy({ callout }: { callout: CalloutRecord }) {
-  return <div className="manager-workflow-copy exchange-request-copy">
-    <div className="exchange-request-identity"><span className="exchange-kind-icon"><NavIcon name="alert" size={22} /></span><div><h3>Call-out · {callout.employeeName}</h3><p>Unable to work an assigned shift</p></div></div>
-    <div className="exchange-callout-shift"><NavIcon name="schedule" size={20} /><span>{shiftLabel(callout)}</span></div>
-    <div className="exchange-request-note"><strong>{reasons[callout.reasonCode] ?? callout.reasonCode}</strong>{callout.reasonNote ? <p>{callout.reasonNote}</p> : null}</div>
-    {callout.status === "APPROVED" && !callout.releaseApplies ? <span className="shift-change-unavailable">Historical approval does not release the current assignment. Review the current assignment.</span> : null}
-  </div>;
+function exchangeLead(exchange: ExchangeRecord) {
+  if (exchange.kind === "SWAP") return exchange.targetEmployeeName ? `Swap with ${exchange.targetEmployeeName}` : "Swap";
+  return exchange.targetEmployeeName ? `${exchange.targetEmployeeName} picked up this shift` : "Offered for someone to pick up";
 }
 
+function CalloutFacts({ callout }: { callout: CalloutRecord }) {
+  return <>
+    <div className="wa-shifts"><ShiftBlock shift={callout} label={`${possessive(callout.employeeName)} shift`} /></div>
+    <Facts label="Reason">
+      <Fact label="Reason">{reasons[callout.reasonCode] ?? callout.reasonCode}</Fact>
+      {callout.reasonNote ? <Fact label="Note">{callout.reasonNote}</Fact> : null}
+    </Facts>
+  </>;
+}
+
+/** Phase 3.5 Wave A: Shift requests for Owners and Managers on the kit. One card per request that needs a decision,
+ * with its shifts, what approving does and the decision; open coverage and recent outcomes in their own views. */
 export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: {
   timeZone: string; tab?: string; error?: string; approved?: string; reviewed?: string; calloutApproved?: string; calloutDenied?: string; requestId?: string;
 }) {
@@ -75,33 +82,89 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   const liveCoverage=coverage.filter(e=>e.status==='OPEN');
   const approvals=new Map(await Promise.all([...livePending.map(e=>({id:e.id,revision:e.requestRevision,kind:'MANAGER_APPROVE' as const})),...callouts.map(e=>({id:e.id,revision:e.requestRevision,kind:'APPROVE_CALLOUT' as const}))].map(async e=>[e.id,e.revision?await readShiftChangeAvailability(proof,{kind:e.kind,requestId:e.id,expectedRevision:e.revision,operationId:randomUUID()}).catch(()=>({allowed:false,notice:'We couldn’t check this right now. Reload to try again.'})):{allowed:false,notice:'This request changed. Reload to see the latest.'}] as const)));
   const historyViews=new Map(await Promise.all([...exchanges,...history].map(async e=>[e.id,await readShiftChangeHistoryView(proof,e.id).catch(()=>null)] as const)));
-  const activity = [...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, copy: <><ExchangeCopy exchange={exchange} /><ShiftChangeHistory events={historyViews.get(exchange.id)??null}/></> })), ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, copy: <><CalloutCopy callout={callout} /><ShiftChangeHistory events={historyViews.get(callout.id)??null}/></> }))].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 30);
+  const activity = [
+    ...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, title: `${exchange.kind === "SWAP" ? "Swap" : "Coverage"} · ${exchange.requestedByName}`, lead: exchangeLead(exchange), body: <ExchangeShifts exchange={exchange} /> })),
+    ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, title: `Unable to work · ${callout.employeeName}`, lead: null, body: <>
+      <CalloutFacts callout={callout} />
+      {callout.status === "APPROVED" && !callout.releaseApplies ? <p className="wa-card-note">This approval was for an earlier version of the shift. Check who is assigned now.</p> : null}
+    </> })),
+  ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 30);
   const count = selected.id === "pending" ? livePending.length + callouts.length : selected.id === "coverage" ? liveCoverage.length : activity.length;
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
+  const decisionNotice = (id: string) => approvals.get(id)?.notice
+    ? <div className="wa-card-body wa-card-body--tight"><Notice tone="review" quiet>{approvals.get(id)?.notice}</Notice></div> : null;
 
-  return <ExchangeReviewShell view={selected.id} className="exchange-page marketplace-page manager-workflow-page manager-shift-requests">
-    <div className="exchange-page-heading"><PageHeader eyebrow="Team scheduling" title="Shift requests" description="Help your team adjust their schedule. Review the details, then decide." actions={<Link className="button secondary" href="/app/inbox?filter=requests"><NavIcon name="requests" />All requests<NavIcon name="arrowRight" size={16} /></Link>} /></div>
-    {error ? <p className="form-error" role="alert">{errors[error] ?? "The request could not be reviewed. It may have changed; review it again."}</p> : null}
+  return <div className="nv-page wa-page wa-shiftreq" data-nv-page="">
+    <PageBand title="Shift requests" overlap={false}
+      summary={selected.id === "pending" ? (count ? `${plural(count, "request needs", "requests need")} your decision.` : "Nothing needs your decision.")
+        : selected.id === "coverage" ? (count ? `${plural(count, "shift", "shifts")} nobody has picked up yet.` : "Every offered shift has been picked up.")
+        : "Recent outcomes, newest first."}
+      extra={<FilterPills label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} />} />
+    <div className="nv-content">
+      <ManagerIssueFocus prefix="request-" />
+      {error ? <Notice tone="urgent" title="That decision wasn’t saved">{errors[error] ?? "The request may have changed. Check it and decide again."}</Notice> : null}
 
-    <ManagerIssueFocus prefix="request-" />
-    <nav className="timeoff-tabs manager-workflow-tabs exchange-view-tabs" aria-label="Shift request sections">{tabs.map(item => <Link key={item.id} href={`/app/exchange?tab=${item.id}`} className={selected.id === item.id ? "selected" : ""} aria-current={selected.id === item.id ? "page" : undefined}>{item.label}</Link>)}</nav>
-    <section className="panel manager-workflow-panel" aria-label={selected.label}>
-      <div className="manager-workflow-heading exchange-section-heading"><div><h2>{selected.id === "pending" ? "Needs your review" : selected.label}</h2><p>{selected.id === "pending" ? "Check each assignment and the review reason before approving." : selected.id === "coverage" ? "These shifts are still unfilled. Closing a request stops new claims." : "Recent outcomes and original request history."}</p></div><span className="exchange-count">{count} {selected.id === "coverage" ? "shift" : "request"}{count === 1 ? "" : "s"}</span></div>
-      {livePending.map(exchange => <article className={`${requestId === exchange.id ? "manager-workflow-row selected" : "manager-workflow-row"} manager-issue-target`} tabIndex={-1} id={`request-${exchange.id}`} key={exchange.id}>
-        <ExchangeCopy exchange={exchange} />
-        {approvals.get(exchange.id)?.notice ? <p className="shift-change-unavailable exchange-review-reason"><NavIcon name="alert" />{approvals.get(exchange.id)?.notice}</p> : null}
-        <p className="exchange-decision-effect">{exchange.kind === "SWAP" ? "Approving trades the two assignments shown above." : "Approving assigns this shift to the employee who claimed it."}</p>
-        <div className="manager-workflow-review"><StatusPill tone="warning">Needs review</StatusPill>{exchange.requestRevision?<ShiftChangeForm fields={{requestId:exchange.id,expectedRevision:exchange.requestRevision}} className="request-actions shift-change-form"><button className="button secondary" name="kind" value="MANAGER_DECLINE" type="submit" aria-label={`Decline ${exchange.kind === "SWAP" ? "trade" : "coverage"} request from ${exchange.requestedByName}`}><span>Decline</span></button>{approvals.get(exchange.id)?.allowed?<button className="button primary" name="kind" value="MANAGER_APPROVE" type="submit" aria-label={`Approve ${exchange.kind === "SWAP" ? "trade" : "coverage"} request from ${exchange.requestedByName}`}><span>Approve</span><NavIcon name="arrowRight" size={16} /></button>:null}</ShiftChangeForm>:<span className="shift-change-unavailable">This request changed. Reload to see the latest.</span>}</div>
-      </article>)}
-      {callouts.map(callout => <article className={`${requestId === callout.id ? "manager-workflow-row selected" : "manager-workflow-row"} manager-issue-target`} tabIndex={-1} id={`request-${callout.id}`} key={callout.id}>
-        <CalloutCopy callout={callout} />
-        {approvals.get(callout.id)?.notice ? <p className="shift-change-unavailable exchange-review-reason"><NavIcon name="alert" />{approvals.get(callout.id)?.notice}</p> : null}
-        <p className="exchange-decision-effect">Approving releases the current assignment. The shift still needs coverage.</p>
-        <div className="manager-workflow-review"><StatusPill tone="warning">Pending</StatusPill>{callout.requestRevision?<ShiftChangeForm fields={{requestId:callout.id,expectedRevision:callout.requestRevision}} className="request-actions shift-change-form"><button className="button secondary" name="kind" value="DECLINE_CALLOUT" type="submit" aria-label={`Decline call-out from ${callout.employeeName}`}><span>Decline</span></button>{approvals.get(callout.id)?.allowed?<button className="button primary" name="kind" value="APPROVE_CALLOUT" type="submit" aria-label={`Approve call-out from ${callout.employeeName}`}><span>Approve</span><NavIcon name="arrowRight" size={16} /></button>:null}</ShiftChangeForm>:<span className="shift-change-unavailable">This request changed. Reload to see the latest.</span>}</div>
-      </article>)}
-      {liveCoverage.map(exchange => <article className="manager-workflow-row" key={exchange.id}><ExchangeCopy exchange={exchange} /><div className="manager-workflow-review"><StatusPill tone="warning">Released / offered — unfilled</StatusPill>{exchange.requestRevision?<ShiftChangeForm fields={{kind:"MANAGER_CLOSE",requestId:exchange.id,expectedRevision:exchange.requestRevision}}><button className="button secondary" type="submit">Close request</button></ShiftChangeForm>:null}</div></article>)}
-      {activity.map(item => <article className="manager-workflow-row" key={item.id}>{item.copy}<StatusPill tone={item.status === "APPROVED" ? "success" : "neutral"}>{statusLabel(item.status)}</StatusPill></article>)}
-      {!count ? <div className="timeoff-empty-state exchange-empty"><span className="exchange-kind-icon"><NavIcon name={selected.id === "pending" ? "coverage" : "exchange"} size={28} /></span><strong>{selected.id === "pending" ? "You’re all caught up" : selected.id === "coverage" ? "No open coverage" : "No recent outcomes"}</strong><span>{selected.id === "pending" ? "Requests needing a management decision will appear here." : selected.id === "coverage" ? "Unclaimed published shifts will appear here." : "Completed and declined requests will appear here."}</span></div> : null}
-    </section>
-  </ExchangeReviewShell>;
+      {livePending.length || callouts.length || liveCoverage.length ? <div className="wa-grid">
+      {livePending.map(exchange => <div className="wa-target" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id} data-selected={requestId === exchange.id ? "true" : undefined}>
+        <Card title={`${exchange.kind === "SWAP" ? "Swap" : "Coverage"} · ${exchange.requestedByName}`} meta={<Status tone="review">Waiting</Status>}>
+          <p className="wa-card-lead">{exchangeLead(exchange)}</p>
+          <ExchangeShifts exchange={exchange} />
+          {decisionNotice(exchange.id)}
+          <p className="wa-card-note">{exchange.kind === "SWAP" ? "Approving trades the two shifts above." : "Approving gives this shift to the person who picked it up."}</p>
+          <div className="wa-card-body">
+            {exchange.requestRevision?<ShiftChangeForm fields={{requestId:exchange.id,expectedRevision:exchange.requestRevision}} className="wa-form shift-change-form">
+              <div className="wa-decision">
+                <PendingButton kind="secondary" name="kind" value="MANAGER_DECLINE" pending="Declining…" label={`Decline ${exchange.kind === "SWAP" ? "swap" : "coverage"} request from ${exchange.requestedByName}`}>Decline</PendingButton>
+                {approvals.get(exchange.id)?.allowed?<PendingButton name="kind" value="MANAGER_APPROVE" pending="Approving…" label={`Approve ${exchange.kind === "SWAP" ? "swap" : "coverage"} request from ${exchange.requestedByName}`}>Approve</PendingButton>:null}
+              </div>
+            </ShiftChangeForm>:<Notice tone="review" quiet>This request changed. Reload to see the latest.</Notice>}
+          </div>
+        </Card>
+      </div>)}
+
+      {callouts.map(callout => <div className="wa-target" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
+        <Card title={`Unable to work · ${callout.employeeName}`} meta={<Status tone="review">Waiting</Status>}>
+          <p className="wa-card-lead">Can’t work this shift</p>
+          <CalloutFacts callout={callout} />
+          {callout.status === "APPROVED" && !callout.releaseApplies ? <p className="wa-card-note">This approval was for an earlier version of the shift. Check who is assigned now.</p> : null}
+          {decisionNotice(callout.id)}
+          <p className="wa-card-note">Approving takes the shift off their schedule. It will still need someone to cover it.</p>
+          <div className="wa-card-body">
+            {callout.requestRevision?<ShiftChangeForm fields={{requestId:callout.id,expectedRevision:callout.requestRevision}} className="wa-form shift-change-form">
+              <div className="wa-decision">
+                <PendingButton kind="secondary" name="kind" value="DECLINE_CALLOUT" pending="Declining…" label={`Decline the report from ${callout.employeeName}`}>Decline</PendingButton>
+                {approvals.get(callout.id)?.allowed?<PendingButton name="kind" value="APPROVE_CALLOUT" pending="Approving…" label={`Approve the report from ${callout.employeeName}`}>Approve</PendingButton>:null}
+              </div>
+            </ShiftChangeForm>:<Notice tone="review" quiet>This request changed. Reload to see the latest.</Notice>}
+          </div>
+        </Card>
+      </div>)}
+
+      {liveCoverage.map(exchange => <Card key={exchange.id} title={`Coverage · ${exchange.requestedByName}`} meta={<Status tone="neutral">Not picked up</Status>}>
+        <p className="wa-card-lead">{exchangeLead(exchange)}</p>
+        <ExchangeShifts exchange={exchange} />
+        <p className="wa-card-note">Closing stops anyone else from picking it up. The shift stays with {exchange.requestedByName}.</p>
+        {exchange.requestRevision?<div className="wa-card-body"><ShiftChangeForm fields={{kind:"MANAGER_CLOSE",requestId:exchange.id,expectedRevision:exchange.requestRevision}} className="wa-form shift-change-form">
+          <PendingButton kind="secondary" pending="Closing…" block label={`Close the coverage request from ${exchange.requestedByName}`}>Close request</PendingButton>
+        </ShiftChangeForm></div>:null}
+      </Card>)}
+      </div> : null}
+
+      {selected.id === "activity" && activity.length ? <Card title="Recent outcomes" meta={plural(activity.length, "request", "requests")}>
+        <ol className="wa-entries">
+          {activity.map(item => <li className="wa-entry" key={item.id}>
+            <div className="wa-entry__head"><span className="nv-row__title">{item.title}</span><Status tone={item.status === "APPROVED" ? "done" : "neutral"}>{statusWord(item.status)}</Status></div>
+            {item.lead ? <p className="wa-entry__lead">{item.lead}</p> : null}
+            {item.body}
+            <div className="wa-history"><ShiftChangeHistory events={historyViews.get(item.id)??null}/></div>
+          </li>)}
+        </ol>
+      </Card> : null}
+
+      {!count ? <Card title={selected.id === "pending" ? "You’re all caught up" : selected.id === "coverage" ? "No open coverage" : "No recent outcomes"}>
+        <div className="wa-card-body"><p className="wa-text wa-muted">{selected.id === "pending" ? "Swaps, pick-ups and “Unable to work” reports that need you show up here and in your Inbox." : selected.id === "coverage" ? "Shifts people offer up show here until someone picks them up." : "Approved, declined and withdrawn requests show up here."}</p></div>
+      </Card> : null}
+    </div>
+  </div>;
 }

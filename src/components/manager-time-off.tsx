@@ -1,17 +1,16 @@
-import Link from "next/link";
-import { StatusPill } from "@/components/status-pill";
-import { NavIcon } from "@/components/nav-icon";
 import { TimeOffReviewActions } from "@/components/time-off-review-actions";
-import { TimeOffMotion } from "@/components/time-off-motion";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime, weekStartFor } from "@/lib/date-utils";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
-import { Card, KitLink, PageBand, Row, Rows, Status, Tile } from "@/components/kit/kit";
+import { Card, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, Status, Tile } from "@/components/kit/kit";
+import { Fact, Facts, Notice } from "@/components/wave-a/parts";
+import { ActionForm } from "@/components/wave-a/action-form";
 import { TimeOffReviewDecision } from "@/components/time-off-review-decision";
 import { ManagerIssueFocus } from './manager-issue-focus';
 import { inboxFilter } from "@/lib/action-center/inbox";
+import { getWorkspace } from "@/lib/data/workspaces";
 
 const tabs = [
   { id: "pending", label: "Pending", status: "PENDING" },
@@ -86,6 +85,13 @@ function DecidedReview({ origin }: { origin: Origin }) {
   </div>;
 }
 
+function lengthLabel(request: { startDate: string; endDate: string; startTime?: string | null; endTime?: string | null }) {
+  const days = Math.round((Date.parse(`${request.endDate}T12:00:00Z`) - Date.parse(`${request.startDate}T12:00:00Z`)) / 86_400_000) + 1;
+  return request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)}\u00a0– ${formatTime(request.endTime)}` : days === 1 ? "Full day" : `${days} full days`;
+}
+const rangeLabel = (request: { startDate: string; endDate: string }) =>
+  request.endDate !== request.startDate ? `${shortDate(request.startDate)}\u00a0– ${shortDate(request.endDate)}` : shortDate(request.startDate);
+
 export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, filter }: {
   tab?: string; error?: string; reviewed?: string; requestId?: string; from?: string; filter?: string;
 }) {
@@ -99,32 +105,57 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
   if (focused) return <FocusedReview request={focused as PendingRequest} origin={origin} error={error} />;
   if (selected.status === "PENDING" && requestId && !error) return <DecidedReview origin={origin} />;
 
+  const count = requests.length;
+  // Codex C1: who decided and when, when the read includes it (optional until tonight's merge).
+  const zone = selected.status === "PENDING" ? "UTC" : await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
+  const decidedLine = (request: object) => {
+    const { reviewerName, reviewedAt } = request as { reviewerName?: string; reviewedAt?: string };
+    if (!reviewerName && !reviewedAt) return null;
+    let on = "";
+    try { on = reviewedAt ? new Intl.DateTimeFormat("en-US", { timeZone: zone, month: "short", day: "numeric" }).format(new Date(reviewedAt)).replace(" ", "\u00a0") : ""; } catch { on = ""; }
+    return <span className="wa-row-note">{`${selected.id === "approved" ? "Approved" : "Declined"}${reviewerName ? ` by ${reviewerName}` : ""}${on ? ` · ${on}` : ""}`}</span>;
+  };
+  const plural = (n: number) => `${n}\u00a0${n === 1 ? "request" : "requests"}`;
+  // Phase 3.5 Wave A: the full Time-off list on the kit. Pending requests are cards with the decision on them;
+  // approved and declined are one record card each. The single-request review above is unchanged.
   return (
-    <TimeOffMotion><div className="timeoff-page manager-workflow-page manager-timeoff nto-page">
-      <ManagerIssueFocus prefix="request-" />
-      <header className="nto-header" data-timeoff-intro><div><h1>Time off</h1><p>Review time away and keep your team informed.</p></div><Link href="/app/inbox?filter=requests" className="nto-back-link">All requests <NavIcon name="arrowRight" /></Link></header>
-      {error ? <p className="form-error" role="alert">The request could not be reviewed. It may have changed; review it again.</p> : null}
-      {reviewed ? <p className="form-success" role="status">The request was reviewed.</p> : null}
-      <nav className="nto-tabs nto-manager-tabs" aria-label="Time off sections">
-        {tabs.map(item => <Link key={item.id} className={selected.id === item.id ? "selected" : ""} href={`/app/requests?tab=${item.id}`} aria-current={selected.id === item.id ? "page" : undefined}>{item.label}</Link>)}
-      </nav>
-      <section className="nto-panel nto-review-panel" aria-label={`${selected.label} time off`}>
-        <div className="nto-panel-heading"><div><h2>{selected.id === "pending" ? "Awaiting your review" : `${selected.label} requests`}</h2><p>{selected.id === "pending" ? "Check the dates and note, then choose a decision." : "A record of your team's time-off decisions."}</p></div><span className="nto-count">{requests.length} request{requests.length === 1 ? "" : "s"}</span></div>
-        {requests.length ? requests.map(request => (
-          <article className={`nto-review-row manager-issue-target${requestId === request.id ? " selected" : ""}`} tabIndex={-1} id={`request-${request.id}`} key={request.id}>
-            <div className="nto-person"><span className="nto-avatar" aria-hidden="true">{request.employeeName.split(/\s+/).filter(Boolean).map(part => part[0]).slice(0, 2).join("")}</span><div><h3>{request.employeeName}</h3><StatusPill tone={request.status === "APPROVED" ? "success" : request.status === "PENDING" ? "warning" : "neutral"}>{selected.label}</StatusPill></div></div>
-            <div className="nto-request-facts">
-              <strong>{dateLabel(request.startDate)}{request.endDate !== request.startDate ? ` – ${dateLabel(request.endDate)}` : ""}</strong>
-              <span><NavIcon name={request.startTime ? "clock" : "schedule"} size={16} />{request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : "Full day"}</span>
-              {request.reason ? <p className="nto-request-note">{request.reason}</p> : null}
-            </div>
-            {request.status === "PENDING" ? <form action={reviewTimeOffAction} className="nto-review-action" aria-label={`Review time off for ${request.employeeName}`}>
+    <div className="nv-page wa-page wa-timeoff" data-nv-page="">
+      <PageBand title="Time off" overlap={false}
+        summary={selected.id === "pending" ? (count ? `${plural(count)} waiting for your review.` : "Nothing is waiting for your review.") : `Your team’s ${selected.label.toLowerCase()} time off, latest dates first.`}
+        extra={<FilterPills label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} />} />
+      <div className="nv-content">
+        <ManagerIssueFocus prefix="request-" />
+        {error ? <Notice tone="urgent" title="That decision wasn’t saved">The request may have changed. Check it and decide again.</Notice> : null}
+        {reviewed ? <Notice tone="done" title="Decision saved">The employee can see it in their requests.</Notice> : null}
+        {selected.id === "pending" ? (count ? <div className="wa-grid">{requests.map(request => (
+          <div className="wa-target" id={`request-${request.id}`} tabIndex={-1} key={request.id}>
+            <Card title={request.employeeName} meta={<Status tone="review">Waiting</Status>}>
+              <Facts label={`Time off for ${request.employeeName}`}>
+                <Fact label="Dates">{rangeLabel(request)}</Fact>
+                <Fact label="Length">{lengthLabel(request)}</Fact>
+                {request.reason ? <Fact label="Note">{request.reason}</Fact> : null}
+              </Facts>
+              <ActionForm action={reviewTimeOffAction} className="wa-card-body wa-decision-form" label={`Review time off for ${request.employeeName}`}
+                failure={{ title: "Your decision wasn’t saved", body: "Check your connection and try again. Nothing changed." }}>
                 <input type="hidden" name="requestId" value={request.id} />
-                <TimeOffReviewActions />
-              </form> : null}
-          </article>
-        )) : <div className="nto-empty-state"><span className="nto-empty-icon"><NavIcon name={selected.id === "pending" ? "calendar" : "timeOff"} size={28} /></span><strong>{selected.id === "pending" ? "You're all caught up" : `No ${selected.label.toLowerCase()} requests`}</strong><span>{selected.id === "pending" ? "New employee requests will appear here for your review." : "Requests will appear here after you make a decision."}</span></div>}
-      </section>
-    </div></TimeOffMotion>
+                <TimeOffReviewActions name={request.employeeName} />
+                <KitLink href={`/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}`}>Open request and that week’s schedule</KitLink>
+              </ActionForm>
+            </Card>
+          </div>
+        ))}</div> : <Card title="You’re all caught up">
+          <div className="wa-card-body"><p className="wa-text wa-muted">New time-off requests show up here and in your Inbox.</p></div>
+        </Card>) : (
+          <Card title={selected.label} meta={plural(count)} id={`timeoff-${selected.id}`}>
+            {count ? <Rows label={`${selected.label} time off`}>
+              {requests.map(request => (
+                <Row key={request.id} title={request.employeeName}
+                  meta={<><MetaParts text={`${rangeLabel(request)} · ${lengthLabel(request)}`} />{request.reason ? <span className="wa-row-note">Note: {request.reason}</span> : null}{decidedLine(request)}</>} />
+              ))}
+            </Rows> : <div className="wa-card-body"><p className="wa-text wa-muted">{`No ${selected.label.toLowerCase()} time off yet. Decisions you make show up here.`}</p></div>}
+          </Card>
+        )}
+      </div>
+    </div>
   );
 }

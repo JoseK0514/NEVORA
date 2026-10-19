@@ -1,14 +1,14 @@
+import type { ReactNode } from "react";
 import { EmployeeCoreProfileForm } from "@/components/employee-core-profile-form";
 import { EmployeeSchedulingFields } from "@/components/employee-scheduling-fields";
 import { ConfigurationForm } from "@/components/configuration-form";
 import { OperationalRuleFields } from "@/components/operational-rule-fields";
 import { EmployeeProfileTabs } from "@/components/employee-profile-tabs";
-import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
-import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
 import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr/LockKey";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
-import "./employee-profile.css";
+import { Card, MetaParts, PageBand, Row, Rows, Tile } from "@/components/kit/kit";
+import { FormActions, Notice } from "@/components/wave-a/parts";
+import { PendingButton } from "@/components/wave-a/pending-button";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
@@ -56,167 +56,61 @@ export default async function EmployeeProfilePage({
   );
   const canManageCore = actor.role === "OWNER" || employee.role !== "OWNER";
 
+  const roleLabel = employeeRoleLabel(employee.role);
+  // Phase 3.5 Wave A: Team member detail on the kit. Who they are in the band, contact at a glance,
+  // then Details (contact, access, tablet PIN, sign-in help) and Scheduling (positions, locations, Owner rules).
   return (
-    <div className="employee-profile-page">
-      <Link className="profile-back" href="/app/employees">
-        <ArrowLeftIcon size={18} aria-hidden="true" focusable="false" />
-        Back to Team
-      </Link>
-      <header className="profile-overview">
-        <div className="profile-identity">
-          <span className="profile-avatar" aria-hidden="true">
-            {employeeInitials(employee.firstName, employee.lastName)}
-          </span>
-          <div className="profile-identity-copy">
-            <p className="profile-context">Employee profile</p>
-            <h1>
-              {employee.firstName} {employee.lastName}
-            </h1>
-            <p className="profile-intro">
-              Contact, access and scheduling information.
-            </p>
-          </div>
-          <span className={`profile-status ${employee.active ? "active" : "inactive"}`}>
-            {employee.active ? "Active" : "Inactive"}
-          </span>
-        </div>
-        <dl className="profile-summary">
-          <div>
-            <dt>Phone</dt>
-            <dd>{formatPhoneNumber(employee.phone)}</dd>
-          </div>
-          <div>
-            <dt>Email</dt>
-            <dd>{employee.email ?? "Not provided"}</dd>
-          </div>
-          <div>
-            <dt>Primary location</dt>
-            <dd>
-              {primaryLocation?.shortName ?? "Not assigned"}
-              {primaryLocation && !primaryLocation.active ? " (Inactive)" : ""}
-            </dd>
-          </div>
-          <div>
-            <dt>Access role</dt>
-            <dd>{employeeRoleLabel(employee.role)}</dd>
-          </div>
-        </dl>
-      </header>
-      <EmployeeProfileTabs
-        details={
-          <>
-            <section className="profile-editor employee-core-management">
-              <div className="employee-profile-section-heading">
-                <div>
-                  <h2>Employee details</h2>
-                  <p>
-                    Manage contact information and workplace access. Historical
-                    records stay intact.
-                  </p>
-                </div>
-              </div>
+    <div className="nv-page wa-page wa-member" data-nv-page="">
+      <PageBand overlap={false} back={{ href: "/app/employees", label: "Team" }} eyebrow={`${roleLabel} · ${employee.active ? "Active" : "Inactive"}`}
+        title={`${employee.firstName} ${employee.lastName}`}
+        summary={<MetaParts text={[primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : " (inactive)"}` : "No primary location", formatPhoneNumber(employee.phone), employee.email].filter(Boolean).join(" · ")} />} />
+      <div className="nv-content wa-narrow">
+        <EmployeeProfileTabs
+          details={<>
+            <Card title="Employee details" id="member-details">
               {canManageCore ? (
-                <EmployeeCoreProfileForm
-                  employee={employee}
-                  locations={locations}
-                  actorRole={actor.role}
-                  action={saveEmployeeCoreProfileAction}
-                />
+                <EmployeeCoreProfileForm employee={employee} locations={locations} actorRole={actor.role} action={saveEmployeeCoreProfileAction} />
               ) : (
-                <p className="employee-management-notice">
-                  Only an Owner can change another Owner. Scheduling information
-                  remains available in Scheduling.
-                </p>
+                <div className="wa-card-body"><p className="wa-text wa-muted">Only an Owner can change another Owner. Scheduling information remains available in Scheduling.</p></div>
               )}
-            </section>
-            {canManageCore && employee.active ? (
-              <section className="profile-pin">
-                <span className="profile-pin-icon" aria-hidden="true">
-                  <KeyIcon size={22} />
-                </span>
-                <div>
-                  <h2>Clocker PIN</h2>
-                  <p>Shared-tablet access, separate from portal sign-in.</p>
+            </Card>
+            {canManageCore && employee.active ? <Card title="Access">
+              <Rows label="Access">
+                <Row href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`} title="Clocker PIN" meta="For the shared tablet. Separate from portal sign-in."
+                  leading={<Tile><KeyIcon size={20} weight="bold" /></Tile>} />
+                {employee.id !== actor.id ? <Row href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account recovery" meta="Help them back in after you check who they are."
+                  leading={<Tile><LockKeyIcon size={20} weight="bold" /></Tile>} /> : null}
+              </Rows>
+            </Card> : null}
+          </>}
+          scheduling={<>
+            <Card title="Scheduling profile" id="member-scheduling">
+              <p className="wa-card-lead">Positions and locations decide where they can be scheduled.</p>
+              <ConfigurationForm action={saveEmployeeSchedulingProfileAction} className="wa-form" reviewedUpdatedAt={employee.updatedAt}>
+                <input type="hidden" name="employeeId" value={employee.id} />
+                <div className="wa-fields"><EmployeeSchedulingFields employee={employee} locations={locations} positions={positions} /></div>
+                <div className="wa-card-body"><FormActions><PendingButton pending="Saving…" block>Save scheduling profile</PendingButton></FormActions></div>
+              </ConfigurationForm>
+            </Card>
+            <Card title="Operational rules" id="member-rules">
+              {profileUnavailable ? (
+                <div className="wa-card-body"><Notice tone="urgent" title="Couldn’t load the rules">Reconnect and reload the page.</Notice></div>
+              ) : operational ? (
+                <OperationalRuleFields employeeId={employee.id} profile={operational} canEdit={actor.role === "OWNER"} />
+              ) : (
+                <div className="wa-card-body">
+                  <p className="wa-text wa-muted">Set this person’s weekly hours first. No maximum is created by this review.</p>
+                  <KitLinkInline href={`/app/schedule/settings#target-${encodeURIComponent(employee.id)}`}>Set weekly hours</KitLinkInline>
                 </div>
-                <Link
-                  className="button secondary"
-                  href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`}
-                >
-                  Manage Clocker PIN
-                  <CaretRightIcon size={18} aria-hidden="true" focusable="false" />
-                </Link>
-              </section>
-            ) : null}
-            {canManageCore && employee.active && employee.id !== actor.id ? (
-              <section className="profile-pin">
-                <span className="profile-pin-icon" aria-hidden="true">
-                  <LockKeyIcon size={22} />
-                </span>
-                <div>
-                  <h2>Portal sign-in</h2>
-                  <p>Help them back in after you verify who they are.</p>
-                </div>
-                <Link
-                  className="button secondary"
-                  href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`}
-                >
-                  Account recovery
-                  <CaretRightIcon size={18} aria-hidden="true" focusable="false" />
-                </Link>
-              </section>
-            ) : null}
-          </>
-        }
-        scheduling={
-          <section className="profile-editor employee-scheduling-management">
-            <div className="employee-profile-section-heading">
-              <div>
-                <h2>Scheduling profile</h2>
-                <p>
-                  Positions and eligible locations control where this employee
-                  can be considered for scheduling.
-                </p>
-              </div>
-            </div>
-            <ConfigurationForm
-              action={saveEmployeeSchedulingProfileAction}
-              className="employee-form scheduling-profile-form"
-              reviewedUpdatedAt={employee.updatedAt}
-            >
-              <input type="hidden" name="employeeId" value={employee.id} />
-              <EmployeeSchedulingFields
-                employee={employee}
-                locations={locations}
-                positions={positions}
-              />
-              <button className="button primary" type="submit">
-                <CheckIcon size={18} aria-hidden="true" focusable="false" />
-                Save scheduling profile
-              </button>
-            </ConfigurationForm>
-            {profileUnavailable ? (
-              <p role="alert" className="form-error">
-                Operational review is unavailable. Reconnect and reload.
-              </p>
-            ) : operational ? (
-              <OperationalRuleFields
-                employeeId={employee.id}
-                profile={operational}
-                canEdit={actor.role === "OWNER"}
-              />
-            ) : (
-              <p>
-                Operational review is unavailable until scheduling hour settings
-                have been explicitly established. No maximum is created by this
-                review.{" "}
-                <Link className="profile-inline-link" href={`/app/schedule/settings#target-${encodeURIComponent(employee.id)}`}>
-                  Set weekly hours
-                </Link>
-              </p>
-            )}
-          </section>
-        }
-      />
+              )}
+            </Card>
+          </>}
+        />
+      </div>
     </div>
   );
+}
+
+function KitLinkInline({ href, children }: { href: string; children: ReactNode }) {
+  return <Link className="nv-link" href={href}>{children}</Link>;
 }

@@ -21,16 +21,16 @@ it("preserves source order and each employee's review destination in native disc
   expect(html.indexOf("Avery Cruz")).toBeLessThan(html.indexOf("Blair Rivera"));
   expect(html).toContain('href="/app/schedule/new?employeeId=E1&amp;start=08:00"');
   expect(html).toContain('href="/app/schedule/new?employeeId=E2&amp;start=08:00"');
-  expect(html.match(/<details class="coverage-employee-details"/g)).toHaveLength(2);
+  expect(html.match(/<li class="wa-candidate"[\s\S]*?<details class="wa-disclosure"/g)).toHaveLength(2);
   expect(html).not.toContain("<form");
 });
 
 it("keeps missing targets distinct from zero targets and exposes historical context", () => {
   const html = render();
-  expect(html).toContain("No target set"); expect(html).toContain("20h below target");
-  expect(html).toContain("Prior weeks short"); expect(html).toContain("context only");
+  expect(html).toContain("No target set"); expect(html).toContain("20h under");
+  expect(html).toContain("Earlier weeks under target"); expect(html).toContain("context only");
   const zero = render({ candidates: [{ ...props.candidates[1], targetHours: 0 }] });
-  expect(zero).not.toContain("No target set"); expect(zero).toContain("At or above target");
+  expect(zero).not.toContain("No target set"); expect(zero).toContain("At or above");
 });
 
 it.each(["STALE", "RESOLVED", "CHOOSE"] as const)("%s never exposes retained candidate review links", status => {
@@ -46,14 +46,15 @@ it("keeps signed replacement review links and selected requirements intact", () 
     requirements: [{ label: "Operations: 1 missing", href: "/app/schedule/coverage?repair=current-position", selected: true }],
   });
   expect(html).toContain('href="/app/schedule/new?review=signed-review-token"');
-  expect(html).toContain('aria-current="true"'); expect(html).toContain("Designated lead required");
+  expect(html).toContain('aria-current="true"'); expect(html).toContain("<dt>Shift lead</dt><dd>Needed</dd>");
   expect(html).toContain("Review replacement");
 });
 
 it("labels overnight context and empty results without an assignment action", () => {
-  const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] });
-  expect(html).toContain("Ends next day"); expect(html).toContain("8h shift");
-  expect(html).toContain("0 eligible"); expect(html).not.toContain("/app/schedule/new?");
+  // Dates and times are kept whole with no-break spaces; compare the words.
+  const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] }).replace(/\u00a0/g, " ");
+  expect(html).toContain("Ends Tue, Oct 13"); expect(html).toContain("· 8h");
+  expect(html).toContain("0 people"); expect(html).not.toContain("/app/schedule/new?");
   expect(html).toContain(props.backHref.replaceAll("&", "&amp;"));
 });
 

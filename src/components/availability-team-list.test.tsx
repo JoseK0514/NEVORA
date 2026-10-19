@@ -26,7 +26,7 @@ describe("availability review filters", () => {
     expect([missing, submitted, unavailable].every(item => matchesAvailabilityFilter(item, "all"))).toBe(true);
   });
   it("renders every submitted window, including two windows on the same day", () => {
-    const html = renderToStaticMarkup(<AvailabilityTeamList employees={[{ ...base, state: "SUBMITTED", submitted: true, windowCount: 2, windows: [{ id: "am", dayOfWeek: 1, startTime: "06:00", endTime: "10:00" }, { id: "pm", dayOfWeek: 1, startTime: "18:00", endTime: "24:00" }] }]} employeeId={base.employeeId} />);
+    const html = renderToStaticMarkup(<AvailabilityTeamList employees={[{ ...base, state: "SUBMITTED", submitted: true, windowCount: 2, windows: [{ id: "am", dayOfWeek: 1, startTime: "06:00", endTime: "10:00" }, { id: "pm", dayOfWeek: 1, startTime: "18:00", endTime: "24:00" }] }]} employeeId={base.employeeId} />).replace(/\u00a0/g, " ");
     expect(html).toContain('id="employee-fictional-employee"');
     expect(html).toContain('tabindex="-1"');
     expect(html).toContain("6:00 AM");
