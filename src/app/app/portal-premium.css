@@ -2081,3 +2081,7 @@ html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-c
   /* Employees' Schedule and Time off bands are flat (P3-ST-03), so their placeholder's first block sits 16px below. */
   html body .app-shell.nevora-portal.nevora-portal.employee-shell:not(.nv-shell-none) .route-skeleton:is([data-route="schedule"], [data-route="review"])[data-band] > .route-skeleton-band + .route-skeleton-header + *:not(#nv-kit) { margin-top: var(--nv-s-4); }
 }
+/* IS-81: section tab and notification row focus rings are drawn inside, so the band and card edges never clip them. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame > .section-tabs .section-tab:focus-visible:not(#nv-kit),
+html body .app-shell.nevora-portal.nevora-portal .page-frame [class*="notification-inbox-module"] :is(a, button):focus-visible:not(#nv-kit),
+html body .app-shell.nevora-portal.nevora-portal .page-frame .updates-list :is(a, button):focus-visible:not(#nv-kit) { outline-offset: -3px; }
