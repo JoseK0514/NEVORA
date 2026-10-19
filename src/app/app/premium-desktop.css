@@ -536,3 +536,20 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* Controls on the title row overhang it by 2px each side, so the row is the title's 40px and every title sits on the same line. */
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] > .nv-pageband .nv-masthead__title { align-self: start; }
 }
+
+/* Round 5 type fixes. */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* TCD-22: Manager and Owner Updates on the 14px floor too. */
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-updates :is(.updates-row-action, .updates-row-action *, .updates-footnote) { font-size: .875rem; line-height: 1.25rem; }
+  /* TCD-23: the Search dialog's group labels in the kit label role, sentence case; its key hints in the callout role. */
+  html body .app-shell.nevora-portal.nevora-portal .command-finder-group { font: var(--nv-t-label); text-transform: none; letter-spacing: 0; color: var(--nv-muted); }
+  html body .app-shell.nevora-portal.nevora-portal .command-finder-hint { font: var(--nv-t-callout); color: var(--nv-muted); }
+  /* TCD-24: text that grows with text size (rem, same sizes at 100%): the header's Search label, My time's card titles, My schedule's week. */
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger > span { font-size: .875rem; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .employee-my-time-view .employee-time-section-heading h2 { font: var(--nv-t-title-3); letter-spacing: -.012em; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-week-title h2 { font-size: 1.3125rem; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule :is(.my-week-today, .my-week-note) { font-size: .875rem; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-week-day > span { font-size: .875rem; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-week-day strong { font-size: 1.25rem; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-shift-copy > strong { font-size: 1rem; }
+}

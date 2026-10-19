@@ -229,3 +229,82 @@ None. Checked and correct this round:
 - WebKit in this round (round 2's WebKit spot check matched Chromium on the same rules).
 
 Open: 0 P0, 0 P1, 2 P2
+
+## Round 5 (exit round)
+
+October 19, 2026 · Build `8012d97` · Scripts `scan-r5.mjs` (sweep; `ZOOM=200` for large text) and `r5b.mjs` (re-checks, Search dialog, collapsed sidebar, WebKit). Data and crops are under `S/r5/`.
+
+### How it was measured
+
+184 page captures in Chromium (166 at 100% text, 18 at 200%). Every text node's size, line height, weight, colour, contrast, wrap and clipping was read.
+
+- **Manager and Owner** (`AUDIT-M`, `QAOWNER`):
+  - **1440:** all 21 routes in BRIEF.md, shell sample pages included.
+  - **1024 and 768 (Owner):** Home, Team overview, Inbox, Team, Schedule, Timecards, Payroll runs and Time exports.
+- **Employee and Lead:**
+  - **1440:** `AUDIT-E` and `AUDIT-LEAD` on all 14 routes.
+  - **1024 and 768:** `AUDIT-E` on all 14 routes.
+  - **`AUDIT-LONG`:** Home, Profile, My schedule and My time at 1440 and 768.
+- **200% text:**
+  - Owner Home, Inbox and Team at 1440 and 1024.
+  - `AUDIT-E` Home, My schedule, My time and Requests at 1440 and 1024.
+- **Phones:** 320 and 390, with `AUDIT-E`, `AUDIT-M` and `QAOWNER`, on Home, Inbox, Team, My schedule and My time.
+- **Also checked:**
+  - The Search dialog, opened.
+  - The sidebar collapsed at 1440.
+- **WebKit spot checks:**
+  - Time exports names.
+  - Updates for Owner, Lead and Employee.
+  - My time for Lead and Employee.
+- **Not counted as findings:**
+  - Wave A and Wave B page content: the Manager Availability, Shift requests and Insights bodies. I checked only their sidebar and trail.
+  - Server failures (500s), retried once.
+  - Contrast reads where the background is a gradient or the band behind the tabs (my collector can't see those). Each was checked by eye in its screenshot.
+
+### Status of open findings
+
+| ID | Status | Measured now |
+|---|---|---|
+| TCD-14 | Fixed | Time exports names are 16/22 at 500 in #16191C, the same as Timecards names, in Chromium and WebKit. |
+| TCD-16 | Fixed on Employee and Lead pages | • "Review update" is 14/20 at 500 for `AUDIT-E` and `AUDIT-LEAD` (WebKit the same). The Updates footnote is 14/20.<br>• The same label is still 12px on the **Manager and Owner** Updates page. That isn't covered by TCD-16's scope, so it's filed as TCD-22. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| TCD-22 | Updates (shell sample page) · `QAOWNER`, `AUDIT-M` · 1101–1440 (footnote at every desktop width) | Row action "Review update" and the footnote "Open an update to review the message and…" | • The row action is 12/24 at 500 and the footnote 12/19.2, both #5F6368, in Chromium and WebKit.<br>• The Employee and Lead Updates page now shows the same two at 14/20. | `S/r5/shots/finder-1440.png` (row and footnote visible behind the dialog) | • `src/components/updates-review.css:41` and `:48` (`calc(12 * --type-unit)`)<br>• The round-4 floor (`premium-desktop.css:398+`) is scoped to the Employee and Lead shell | Add `.updates-row-action, .updates-row-action *, .updates-footnote` to the Manager and Owner floor list at `premium-desktop.css:163-174` (`.875rem/1.25rem`), or move that floor rule up a level so it covers both shells. | P2 |
+| TCD-23 | Desktop header Search dialog · Manager and Owner · 761–1440 | Group headings "ACTIONS" and "PAGES"; the key hint row | • The group headings are 12/17.4 at 600, uppercase, in #5F6368: under the 14px floor, and the only all-caps labels left in the product. Every other group label (sidebar "Plan", More sheet) is sentence case.<br>• The hint "↑↓ to move · Enter to open · Esc to close" is 13/18.85.<br>• Results are 15px, so they're fine. | `S/r5/shots/finder-1440.png` | `src/app/app/portal-gusto.css:390` (12px plus the uppercase transform on `.command-finder-group`) and `:397` (13px hint) | • `.command-finder-group { font: var(--nv-t-label); text-transform: none; letter-spacing: 0 }`, so it reads "Actions" and "Pages".<br>• `.command-finder-hint { font: var(--nv-t-callout) }`, scoped to 761px and up. | P2 |
+| TCD-24 | Header (Manager and Owner); My time and My schedule (Employee and Lead) · 1024, 1440 · 200% text | Text that doesn't follow the text size | At 200% the page text doubles (body 28–32px, band titles 64px), but these stay put:<br>• The header "Search" label stays 14px (Owner Home, Inbox and Team).<br>• My time card titles ("Current status", "Today", "Recent entries", "Corrections") stay 20/26 at 550, smaller than the 28px notes under them, so the hierarchy inverts.<br>• My schedule: the week heading "Oct 19 – Oct 25" and the day numbers stay 20, "Today" 14, the week note 14, and shift times 17. That's 25 elements on the page.<br>(At 100% all of these are on or above the floor; only scaling is wrong.) | `S/r5/data/chromium-z200-AUDIT-E-1024-_app_schedule.json`, `S/r5/data/chromium-z200-QAOWNER-1440-_app.json` | • `my-time.css:22` (`calc(20 * var(--type-unit))`)<br>• `employee-schedule.css:15`, `:20`, `:23` and `:143`<br>• The header "Search" span gets kit type only under 761px (`portal-premium.css:1371`); on desktop it inherits a px size | Desktop rem overrides in `premium-desktop.css`:<br>• `.employee-time-section-heading h2, .employee-time-current-heading h2 { font: var(--nv-t-title-3) }`<br>• `.my-week-title h2 { font: var(--nv-t-title-3) }`<br>• `.my-week-day strong { font-size: 1.25rem }`<br>• `.my-week-today, .my-week-note { font: var(--nv-t-label) }`<br>• `.my-shift-copy strong { font-size: 1.0625rem }`<br>• `.mobile-header .command-finder-trigger span { font: var(--nv-t-label) }` | P2 |
+
+### Checked and correct in round 5
+
+- **Type floor at 100%.**
+  - Manager and Owner pages at 768, 1024 and 1440, and Employee and Lead pages at the same widths, have no text under 14px.
+  - The only exceptions are number badges (12), avatar initials (12), the ⌘K hint (12), "Workforce" (13, logo lockup) and TCD-22 and TCD-23.
+- **Phones (320, 390):** kit text is 15px or more, tab labels 13 and badges 12. Nothing is clipped, and no Phase 4 element shows.
+- **Contrast.** Every real text pair is 4.5:1 or better:
+  - section tabs on the band: 7.42 unselected, 9.91 selected
+  - selected Inbox row: 15.55, 5.15 and 4.87
+  - pane note: 8.8
+  - "Signed in as": 5.84
+  The only pairs under that are disabled Time exports controls (4.25 and 4.39), which are exempt.
+- **Wrapping and clipping.**
+  - No text is clamped or clipped, except two that are intended:
+    - The Updates preview at 768 (2 lines).
+    - `AUDIT-LONG`'s account name, which gives way with an ellipsis (192px at 1440, 128px at 768).
+  - At 200%, the workspace name in the trail is cut to 260px with an ellipsis (it keeps its `title`).
+  - No band title wraps, except "Good afternoon, Fictional" at 1024@200%, which breaks between words.
+  - No sideways scroll anywhere: `scrollWidth` equals the viewport in all 184 captures.
+- **Wording.**
+  - No "missing", "missed" or straight apostrophe in any Phase 4, Employee or Lead text.
+  - Names agree: Team, My pay / My time / Timecards, "Request pages", and "Scheduled until …".
+  - Pane notes match their buttons for all 8 item types.
+- **Collapsed sidebar at 1440:** labels are hidden and every icon has a `title` ("Home", …). No visible text changes size.
+
+**Not covered:**
+- The in-between widths 761, 1023, 1179 and 1180.
+- 125% and 150% text (200% only).
+- Lead at 768.
+- `payroll-qa-a` and `payroll-qa-b`.
+
+Open: 0 P0, 0 P1, 3 P2
