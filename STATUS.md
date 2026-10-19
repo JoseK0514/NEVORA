@@ -1,4 +1,34 @@
+Scope note for publisher `c34043b`: this conversation authorizes the three listed candidate-only UI changes. The parallel paused-handoff task below reports separate item-4 approval in its own chat; this publisher does not infer additional UI-edit permission from that report. Both tasks preserve the first-published remote candidate and their distinct evidence.
+
 2026-10-19 20:36 UTC · publisher c34043b full run: **7,350 passed /2 load timeouts /801 skipped /55 pending**. Planner and typed-backfill now each rerun alone with one worker, unchanged budgets/assertions; no owned preview/build alongside. Candidate source is unchanged. [Raw full results](release/publish-c34043b/evidence/full-summary.json). Parallel publisher23fcdc3 is also validating the requested inputs; at push, fetch and preserve whichever remote candidate is first published, using no force push or unapproved screen choice. Coordinator227150b arrived after this pinned4d469a4 freeze and is queued for the next rolling update.
+
+# Claude, start here
+
+Current handoff: Jose approved item 4 in chat on October 19. Codex may make named P1/P2 UI fixes **on `codex/release-candidate` only**, one finding per commit. Review each before its owner ports or replaces it. This extends the historical three-edit boundary below.
+
+- **Integrated locally:** coordinator `227150b`, backend `da2a4e5` (approved Profile alerts), verified-zero Profile `ea58610`. Candidate `cbaadbc` adds the separately authorized Profile server initial read. Typecheck and lint pass; full tests and merged browser checks are in progress. No full green or publication claim yet.
+- **Verified zero:** Profile exit round 4 at `ea58610`; its five committed reports were verified in `release/readiness/profile-ea58610/`. Other exact exit rounds remain open/incomplete until their results arrive.
+- **Active inspection owners:** Phase 3 `227150b`, Wave A `a05f26a` (supersedes `7f75dc4`, ST-WA-11 clamp), Wave B `9bd265e` (handoff `564d193`), Wave C `5f7c166`, Desktop `8012d97`. Separate read-only worktrees and owned fictional previews; no source-branch changes.
+- **Open by owner:** Phase 3 interaction IS-74, IS-77–80, IS-82 and prior cloud IDs are being rechecked. Wave A ST-WA-9/10 are being rechecked. Wave B, Wave C and Desktop full exit sweeps are pending.
+- **Device access:** proposal below remains pending Jose’s phone-access yes/no. No deploy, tunnel, or external preview exposure.
+
+## Candidate-only UI fixes for Claude to review
+
+No new item-4 finding fix committed yet. Separate standing-authorized post-merge change: `cbaadbc` — Profile server initial read (`src/components/manager-profile/manager-profile.tsx`); parse ready snapshots, use null on unavailable/invalid/throw; affected checks pending.
+
+## Current merge custody
+
+`0e01046` → coordinator merge `c16a822` → backend merge `419a99c` → Profile merge `06ac418` → Profile initial read `cbaadbc`.
+
+Backend conflicts follow existing source-owner directions: Coverage takes Wave A’s prescribed test (blob `18e3861`); root layout keeps the latest coordinator text-scale/data-text-step script and adds the prescribed async/error hook. Profile's only conflict takes the exact latest coordinator `portal-premium.css`. No unprescribed screen choice.
+
+Parallel publication custody: this paused-handoff task uses the latest coordinator `227150b` and explicit item-4 approval in this chat. Remote candidate was still `0e01046` at20:35UTC. Any first-published candidate will be fetched and preserved before publishing; no force-push of a parallel release candidate. Parallel checkpoints `c34043b`, `23fcdc3` and their evidence below remain historical/unpublished until their remote custody is established. This task's explicit item-4 approval supersedes the older “no additional UI-fix permission” note below.
+
+Preserved source findings: Wave A ST-WA-11 is fixed by new source `a05f26a` and awaits exit recheck; Wave C TC-WC-28 / WR-WC-25 remain open for measured recheck and minimal candidate applicability review. Neither source is zero yet.
+
+Everything below is retained history from the parallel inspection/publishing tasks. Earlier “current” headings describe their own checkpoints.
+
+---
 
 ## Claude, start here — 2026-10-19 20:28 UTC
 
