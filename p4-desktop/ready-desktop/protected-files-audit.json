@@ -1,0 +1,22 @@
+[
+  {
+    "file": "src/app/app/portal-premium.css",
+    "matchesFrozenCandidate": true,
+    "sha256": "c0a3a213ba88c7f6c60bcc97f0ef11f8ba5c4760d1dac44e9b40f1ddff5bea70"
+  },
+  {
+    "file": "src/app/layout.tsx",
+    "matchesFrozenCandidate": true,
+    "sha256": "cec8a5324aa0a313305a09b6566f6f0ef5e352e5a0cf62639d53d743e01335a6"
+  },
+  {
+    "file": "src/app/app/layout.tsx",
+    "matchesFrozenCandidate": true,
+    "sha256": "daf909658e8738898e580edc31a731955a6da0ace1fb989e436d0acd0c18ea16"
+  },
+  {
+    "file": "scripts/ui-checks/preview-runtime.mjs",
+    "matchesFrozenCandidate": true,
+    "sha256": "f9604310d5e7d87a7104fa28d563d138042d8906760dd89126130ec20f6f1e2e"
+  }
+]

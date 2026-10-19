@@ -1,0 +1,350 @@
+{
+  "candidate": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "base": "8e18a958dfbfd1e5c6d6da44396d82c95d4e18e7",
+  "commits": [
+    {
+      "commit": "6229ad4bfa11e00ef5d1c8ae0f5a3046dd89bbaf",
+      "finding": "IS-P3-03",
+      "change": "retain the controlled availability draft after a failed save",
+      "report": "premium-phase-3/round-5-227150b/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/availability-editor.tsx"
+      ]
+    },
+    {
+      "commit": "2dfc390c3aaa52c8a7602352bd46ed01c479067c",
+      "finding": "IS-82",
+      "change": "preserve withdrawal confirmation for the same-operation retry",
+      "report": "premium-phase-3/round-5-227150b/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/time-off-withdrawal.tsx"
+      ]
+    },
+    {
+      "commit": "74b527db3c4909358daa4db9afd30c091e676ee6",
+      "finding": "ST-P3-24",
+      "change": "reserve Availability submit labels while saving",
+      "report": "premium-phase-3/round-5-227150b/stability.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/availability-editor.tsx",
+        "src/components/employee-submit-button.tsx"
+      ]
+    },
+    {
+      "commit": "db48fb36df39f097cf6ad393eb64dde6763b3c84",
+      "finding": "IS-P3-02",
+      "change": "reveal and focus failed form outcomes above the phone bar",
+      "report": "premium-phase-3/round-5-227150b/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/app/app/requests/time-off-form.tsx",
+        "src/components/availability-editor.tsx",
+        "src/lib/reveal-feedback.ts"
+      ]
+    },
+    {
+      "commit": "69338fdad9343db13f30540e768c149af5b4814d",
+      "finding": "IS-PROFILE-17",
+      "change": "reveal user-initiated sign-in recovery before restoring focus",
+      "report": "p35-profile/round-4/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/manager-profile/manager-profile-live.tsx"
+      ]
+    },
+    {
+      "commit": "4b041f7bfc82eba7655f22a0d28fb22cf712db3e",
+      "finding": "IS-74",
+      "change": "retain the initiating action focus while guarded requests are pending",
+      "report": "premium-phase-3/round-5-227150b/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/availability-editor.tsx",
+        "src/components/calendar-subscription-panel.tsx",
+        "src/components/communication-detail.tsx",
+        "src/components/employee-time-corrections.tsx",
+        "src/components/reviewed-swap-form.tsx",
+        "src/components/shift-change-form.tsx",
+        "src/components/wave-a/pending-button.tsx"
+      ]
+    },
+    {
+      "commit": "ac265b97e748546a6ea5ac4695999d8683bf1c52",
+      "finding": "IS-77",
+      "change": "replace stale timecard counts with a paused or offline state",
+      "report": "premium-phase-3/round-5-227150b/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/timecards.tsx"
+      ]
+    },
+    {
+      "commit": "6990234ea005f9d070ac508b2522d1c3fcf8af58",
+      "finding": "IS-78",
+      "change": "provide sign-in recovery after denied employee actions",
+      "report": "premium-phase-3/round-5-227150b/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/calendar-subscription-panel.tsx",
+        "src/components/employee-time-corrections.tsx",
+        "src/components/time-off-withdrawal.tsx",
+        "src/components/timecards.batch.test.tsx",
+        "src/components/timecards.tsx",
+        "src/lib/time-corrections/client.test.ts",
+        "src/lib/time-corrections/client.ts"
+      ]
+    },
+    {
+      "commit": "f16da25568d0859d83e33e2045d4d058c58b51be",
+      "finding": "IS-79",
+      "change": "announce pending review and distinguish a signed-out acknowledgement",
+      "report": "premium-phase-3/round-5-227150b/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/communication-compose.tsx",
+        "src/components/communication-detail.test.tsx",
+        "src/components/communication-detail.tsx",
+        "src/lib/communications/client.ts",
+        "src/lib/communications/recovery.test.ts",
+        "src/lib/communications/recovery.ts"
+      ]
+    },
+    {
+      "commit": "ab7d86603db6efdcc3f5b3f4ae746dd1075f41b2",
+      "finding": "IS-80",
+      "change": "reveal calendar recovery beside the initiating action and reuse its command",
+      "report": "premium-phase-3/round-5-227150b/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/calendar-subscription-panel.tsx"
+      ]
+    },
+    {
+      "commit": "21e603bb1541522cfafbc4b084b62620f50e66fc",
+      "finding": "IS-B12",
+      "change": "restore update retry focus and retain the payroll save focus",
+      "report": "p35-wave-b/round-4-9bd265e/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/communication-detail.tsx",
+        "src/components/payroll/payroll-settings.tsx"
+      ]
+    },
+    {
+      "commit": "ed62b429b98dd34ef82987eeab766464a2158015",
+      "finding": "TC-B-32",
+      "change": "use kit labels for payroll filenames and workflow labels",
+      "report": "p35-wave-b/round-4-9bd265e/type-colour-copy.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/app/app/payroll/payroll-workflow.css"
+      ]
+    },
+    {
+      "commit": "3918350e26dde412b77b51ec75d946715a4ae564",
+      "finding": "TC-P4-23",
+      "change": "raise the statement payday line to the kit callout floor",
+      "report": "p4-desktop/round-5-8012d97/type-colour-copy.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/app/app/payroll/payroll-workflow.css"
+      ]
+    },
+    {
+      "commit": "7386c45ad3a6c5bedbdc105d2f4a30d5812f9b94",
+      "finding": "TC-P4-22",
+      "change": "use the desktop kit label role for availability times",
+      "report": "p4-desktop/round-5-8012d97/type-colour-copy.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/app/app/availability/availability.css"
+      ]
+    },
+    {
+      "commit": "b176ff5c12a43043493c725ca9a2072bcce8bf6b",
+      "finding": "RC-CB-TC-01",
+      "change": "use readable kit roles for desktop sidebar labels and credit",
+      "report": "release/paused-initial-cbaadbc/type-colour-copy.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/app/app/portal-gusto.css"
+      ]
+    },
+    {
+      "commit": "fe77095e55ead21d1b9632e9e2f29107fa79123e",
+      "finding": "TC-WA-16",
+      "change": "retain kit text contrast on pending actions",
+      "report": "p35-wave-a/round-2-a05f26a/cloud-paused-type-colour-copy.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/kit/kit.css"
+      ]
+    },
+    {
+      "commit": "2e4057333a736d1f374efdad931f8fdd6caede52",
+      "finding": "TC-B-16",
+      "change": "distinguish an ended session from changed update access",
+      "report": "p35-wave-b/round-4-9bd265e/type-colour-copy.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/communication-detail.tsx",
+        "src/lib/communications/client.ts"
+      ]
+    },
+    {
+      "commit": "31f87cd492d8d205b484cf1f03d503b4f5b08cc1",
+      "finding": "TCD-16",
+      "change": "apply the reported Employee and Lead desktop text floor",
+      "report": "p4-desktop/round-5-8012d97/evidence/source-type-colour-copy.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/app/app/portal-desktop.css"
+      ]
+    },
+    {
+      "commit": "22ea160b9c9d9c8096a50d7aefa708a4e5dc4bb7",
+      "finding": "WR-WC-25",
+      "change": "preserve dialog action label height on narrow phones",
+      "report": "p35-wave-c/round-4-5f7c166-exit/widths-roles.md",
+      "stagedForUnmergedUI": true,
+      "files": [
+        "src/app/app/premium-wave-c.css"
+      ]
+    },
+    {
+      "commit": "6dacbe0a2f183cee245929b54e1914698b1caea3",
+      "finding": "ST-13",
+      "change": "bound failed-save feedback inside the Wave C phone bar",
+      "report": "p35-wave-c/round-4-5f7c166-exit/stability.md",
+      "stagedForUnmergedUI": true,
+      "files": [
+        "src/app/app/premium-wave-c.css"
+      ]
+    },
+    {
+      "commit": "0e29e3881d35813026329ad5ade31fc334c4a970",
+      "finding": "ST-WA-7",
+      "change": "reserve both labels in the responsive swap submit button",
+      "report": "release/merge-4-profile/stability.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/wave-a/pending-button.tsx"
+      ]
+    },
+    {
+      "commit": "6e6719356855af7a28faf63bdc97344d8fb8a2d9",
+      "finding": "ST-WA-8",
+      "change": "reserve the delete shift label while its action is pending",
+      "report": "release/merge-4-profile/stability.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/app/app/schedule/edit/delete-shift-button.tsx"
+      ]
+    },
+    {
+      "commit": "22f0ba72914b24739357f70c6156edd4e7a15f8a",
+      "finding": "IS-RC-DELETE-01",
+      "change": "retain guarded delete action focus while pending",
+      "report": "release/paused-ui-fixes-90fbb4d/candidate-findings.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/app/app/schedule/edit/delete-shift-button.tsx"
+      ]
+    },
+    {
+      "commit": "58e100a3fc80de3b3276ec8e5c349133e1f984ee",
+      "finding": "ST-RC-CALENDAR-01",
+      "change": "reserve calendar action labels while saving",
+      "report": "release/paused-ui-fixes-90fbb4d/candidate-findings.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/calendar-subscription-panel.test.tsx",
+        "src/components/calendar-subscription-panel.tsx"
+      ]
+    },
+    {
+      "commit": "e05d6618a2a3f1bdaf367da3b807ae63fb3caae5",
+      "finding": "ST-RC-ACK-01",
+      "change": "reserve update review action labels while pending",
+      "report": "release/paused-ui-fixes-90fbb4d/candidate-findings.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/communication-detail.tsx"
+      ]
+    },
+    {
+      "commit": "e2d21fb2be3d45c4af98d173aa6cd4a0efa003cd",
+      "finding": "ST-RC-CORRECTION-01",
+      "change": "hold correction actions steady during the first send",
+      "report": "release/paused-ui-fixes-90fbb4d/candidate-findings.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/employee-time-corrections.tsx"
+      ]
+    },
+    {
+      "commit": "35c2c0a45de2ce4876c9174efd9abda740d16f0f",
+      "finding": "TC-RC-ASSISTED-01",
+      "change": "use the kit field edge on legacy assisted recovery",
+      "report": "release/paused-ui-fixes-90fbb4d/candidate-findings.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/app/app/account-recovery/assisted-recovery.css"
+      ]
+    },
+    {
+      "commit": "536dfe62d52203751b95c3793076022ac02f2540",
+      "finding": "IS-WA-2",
+      "change": "reveal failed action notices after React mounts each outcome",
+      "report": "p35-wave-a/round-2/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/wave-a/action-form.tsx"
+      ]
+    },
+    {
+      "commit": "04430302d2e8242489d028a1e3bba090497124af",
+      "finding": "IS-WB-34",
+      "change": "reveal publication recovery and focus its actual next step",
+      "report": "p35-wave-b/round-4/interaction-states.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/communication-compose.tsx"
+      ]
+    },
+    {
+      "commit": "980e823eba6e243d456483b33cd0571131389cb6",
+      "finding": "ST-WB-15",
+      "change": "preserve publication action labels while publishing",
+      "report": "p35-wave-b/round-4/stability.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/communication-compose.tsx"
+      ]
+    },
+    {
+      "commit": "b9567abc26b977a517b77622a1661b16172f5b16",
+      "finding": "IS-RC-COMPOSE-01",
+      "change": "retain guarded publication focus while pending",
+      "report": "release/paused-ui-fixes-980e823/candidate-findings.md",
+      "stagedForUnmergedUI": false,
+      "files": [
+        "src/components/communication-compose.css",
+        "src/components/communication-compose.tsx"
+      ]
+    },
+    {
+      "commit": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+      "finding": "TC-RC-PAYROLL-01",
+      "change": "use desktop kit roles for payroll next-step guidance",
+      "files": [
+        "src/app/app/payroll/payroll-workflow.css"
+      ],
+      "report": "root final candidate typography proof (parent owns final evidence publication)",
+      "stagedForUnmergedUI": false
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "reviewSha": "563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea",
+  "initialOnly": true,
+  "executed": false,
+  "sourceModules": {
+    "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+    "src/lib/auth/password.ts": "d7f62a0959322209f64457be0e8882ff2ce950ad64b9bb5278b1e552a79e628c",
+    "src/lib/business-time.ts": "7068d3c2355a7c744c197e3ab206af9d95d98955b5805c586fee4dea1531e46c",
+    "src/lib/date-utils.ts": "4e4545d0a4a70df78fde730fb3bd99823c47ec5758e12d2e471142f8454a1e41",
+    "src/test/integration/management-api.ts": "8575a34686d72c0d0d9f569034781915ba722e45d1ae6ec9fc3eb7eacc4891b3",
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/lib/communications/service.server.ts": "22d302752a77c76fcf60b492330e8db6008a66f8bf64efbf00c319980c1457b0",
+    "src/test/fixtures/shift-changes.ts": "4a244aa0d9c74b507fc2935b0d36b156bf56855413a9fbe289d627a6e0af5edb",
+    "src/lib/data/shift-change-snapshot.ts": "75e7e04998e8e17ad0e7da142b8f014641633545557bb457292787a330472e37",
+    "src/lib/data/shift-changes.ts": "6ec6c2ba95b34417890319dc150da8ed0703a85307f735ed2138612ad5d4038c",
+    "src/lib/data/schedule-copy.ts": "16dd10c4e930b4dca06a6f336cf352937a58cbee46d2eb3ec09a64344773192d",
+    "src/lib/data/generation-guards.ts": "a63622ce804204a04d846c0004e8d062131d10b03dada251697251f3b50edac5",
+    "src/lib/data/coverage-repair.server.ts": "a53cf3d1bc7b9e757193cd543ebe6e0a648e59ceddf6c5b6be765ea42334a5bf",
+    "src/lib/scheduling/coverage-repair.ts": "ca1aed303a9e8d29ebee09d4bdace57a63414d4cfef537b87df40fac747e1cbc",
+    "src/lib/payroll-export/json.ts": "23c16ed9139de5f349843a5766165d379804bf9246aec490df2fb0e8d1a11a8a",
+    "src/lib/clocker/pins.server.ts": "6f5e5d6687ffaf2bd3ce13a1a68f3da31c5ca539f5b2847f1a63ef61ed527e61",
+    "src/lib/notifications/types.ts": "2bddf0fed1bf7d3714b16b455fe8136f0d413c723f82e8409ecfe660efb877f1",
+    "src/lib/shift-changes/types.ts": "242a9873f9ad52f705f8c596d1b5dd94bb1ca108906d2979cf8b5c23034bdcc0",
+    "src/lib/timecards/service.ts": "fdd405b6ede4a102fcd0d480a02835c2914f11d6eab8d43b996b0ae9d3aaac39",
+    "src/lib/period-close/service.ts": "496582db2f13a761c997f440b9c6ea5e918135fc9480a15fe66665a1b43a2512",
+    "src/lib/payroll/service.ts": "28e8a0286b533aa31638f6b4d6da2a33df056693bb7e168272556f5ca3d220d8",
+    "src/lib/payroll/worker.ts": "3a8bef47ac894b414bb0f83f55b9a5614f2908744abb55f347c989f52effe640",
+    "src/lib/payroll/contracts.ts": "921cff7236ee014bafee137fe84a6ddcd47de91dcdec55c97ff687fb95c13c02",
+    "src/test/integration/payroll-fixture.ts": "7f830da23d54caea79f7a8bfa3be8cfa0b44850da8479d124bc487654824278f",
+    "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454"
+  },
+  "externalModules": {
+    "initial-fixture.mts": "a58f6e2f65b1ea3cbc24040b93304fff2ce607c4b231c8f016ff7a362293b27b",
+    "initial-positive-fixture.mts": "8eb82c93e791f3e5ca6ac3c13623a69696d7f28d2e4a8c40715a233f053de0b5",
+    "payroll-preview-fixture.ts": "7010600322670ba45cf27bb4d422e53606540be55a48d3c092d611f2680c15b4",
+    "stage-private-wave-a.py": "3c4b0ef724b6fed3ffd4ca349d3f8e7ce4bcdc8eb07773e9f60d7a57543adc48"
+  },
+  "coordinatorPayrollHelperOriginal": {
+    "path": "/workspace/NEVORA/src/test/integration/payroll-preview-fixture.ts",
+    "sha256": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
+    "adaptation": "all service/fixture imports remapped to exact Wave A source; no source app edit"
+  },
+  "privatelyForwardedRuntimeKey": "in-memory context only; absent from all manifests",
+  "updatedAt": "2026-10-19T21:53:25.761281+00:00"
+}

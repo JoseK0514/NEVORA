@@ -1,0 +1,14 @@
+--- a/src/components/manager-inbox.tsx
++++ b/src/components/manager-inbox.tsx
+@@ -256,9 +256,9 @@
+     observer.observe(column);
+     return () => observer.disconnect();
+   }, [showing]);
+-  // IS-P4-04: a selected row inside a closed group (a deep link, Back, or the Plan ahead fallback) opens its group, so it shows.
++  // IS-P4-04, ST-P4-13: open the selected group before paint, including the first ready frame.
+   const shownKey = wide && current ? current.key : null;
+-  useEffect(() => {
++  useLayoutEffect(() => {
+     if (!shownKey) return;
+     document.querySelector<HTMLElement>(`[data-inbox-key="${CSS.escape(shownKey)}"]`)?.closest("details:not([open])")?.setAttribute("open", "");
+   }, [shownKey]);

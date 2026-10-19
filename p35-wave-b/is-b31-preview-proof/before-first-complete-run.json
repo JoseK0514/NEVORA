@@ -1,0 +1,5037 @@
+[
+  {
+    "stage": "before",
+    "engine": "chromium",
+    "width": 390,
+    "text": 100,
+    "kind": "staffing",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "staffing-loc-1",
+          "1"
+        ],
+        [
+          "lead-configured-loc-1",
+          "true"
+        ],
+        [
+          "staffing-loc-2",
+          "1"
+        ],
+        [
+          "lead-configured-loc-2",
+          "true"
+        ],
+        [
+          "target-QAOWNER",
+          ""
+        ],
+        [
+          "maximum-QAOWNER",
+          "40"
+        ],
+        [
+          "target-payroll-qa-owner",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-owner",
+          "40"
+        ],
+        [
+          "target-AUDIT-M",
+          ""
+        ],
+        [
+          "maximum-AUDIT-M",
+          "40"
+        ],
+        [
+          "target-payroll-qa-manager",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-manager",
+          "40"
+        ],
+        [
+          "target-payroll-qa-reviewer",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-reviewer",
+          "40"
+        ],
+        [
+          "target-payroll-qa-b",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-b",
+          "40"
+        ],
+        [
+          "target-AUDIT-LEAD",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LEAD",
+          "40"
+        ],
+        [
+          "target-AUDIT-E",
+          ""
+        ],
+        [
+          "maximum-AUDIT-E",
+          "40"
+        ],
+        [
+          "target-payroll-qa-a",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-a",
+          "40"
+        ],
+        [
+          "target-AUDIT-LONG",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LONG",
+          "40"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "staffing-loc-1",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 1,
+          "name": "lead-configured-loc-1",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 2,
+          "name": "lead-loc-1",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 3,
+          "name": "staffing-loc-2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 4,
+          "name": "lead-configured-loc-2",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 5,
+          "name": "lead-loc-2",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 6,
+          "name": "",
+          "type": "search",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "",
+          "type": "button",
+          "disabled": false,
+          "readOnly": null,
+          "value": ""
+        },
+        {
+          "i": 8,
+          "name": "target-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 9,
+          "name": "maximum-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 10,
+          "name": "target-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 11,
+          "name": "maximum-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 12,
+          "name": "target-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 13,
+          "name": "maximum-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 14,
+          "name": "target-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 15,
+          "name": "maximum-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 16,
+          "name": "target-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 17,
+          "name": "maximum-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 18,
+          "name": "target-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 19,
+          "name": "maximum-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 20,
+          "name": "target-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 21,
+          "name": "maximum-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 22,
+          "name": "target-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 23,
+          "name": "maximum-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 24,
+          "name": "target-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 25,
+          "name": "maximum-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 26,
+          "name": "target-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 27,
+          "name": "maximum-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        }
+      ]
+    },
+    "field": {
+      "name": "staffing-loc-1",
+      "type": "number",
+      "value": "1"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "1",
+      "rootSize": "16px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "1",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "1"
+    },
+    "restored": {
+      "data": [
+        [
+          "staffing-loc-1",
+          "1"
+        ],
+        [
+          "lead-configured-loc-1",
+          "true"
+        ],
+        [
+          "staffing-loc-2",
+          "1"
+        ],
+        [
+          "lead-configured-loc-2",
+          "true"
+        ],
+        [
+          "target-QAOWNER",
+          ""
+        ],
+        [
+          "maximum-QAOWNER",
+          "40"
+        ],
+        [
+          "target-payroll-qa-owner",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-owner",
+          "40"
+        ],
+        [
+          "target-AUDIT-M",
+          ""
+        ],
+        [
+          "maximum-AUDIT-M",
+          "40"
+        ],
+        [
+          "target-payroll-qa-manager",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-manager",
+          "40"
+        ],
+        [
+          "target-payroll-qa-reviewer",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-reviewer",
+          "40"
+        ],
+        [
+          "target-payroll-qa-b",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-b",
+          "40"
+        ],
+        [
+          "target-AUDIT-LEAD",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LEAD",
+          "40"
+        ],
+        [
+          "target-AUDIT-E",
+          ""
+        ],
+        [
+          "maximum-AUDIT-E",
+          "40"
+        ],
+        [
+          "target-payroll-qa-a",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-a",
+          "40"
+        ],
+        [
+          "target-AUDIT-LONG",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LONG",
+          "40"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "staffing-loc-1",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 1,
+          "name": "lead-configured-loc-1",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 2,
+          "name": "lead-loc-1",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 3,
+          "name": "staffing-loc-2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 4,
+          "name": "lead-configured-loc-2",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 5,
+          "name": "lead-loc-2",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 6,
+          "name": "",
+          "type": "search",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "",
+          "type": "button",
+          "disabled": false,
+          "readOnly": null,
+          "value": ""
+        },
+        {
+          "i": 8,
+          "name": "target-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 9,
+          "name": "maximum-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 10,
+          "name": "target-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 11,
+          "name": "maximum-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 12,
+          "name": "target-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 13,
+          "name": "maximum-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 14,
+          "name": "target-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 15,
+          "name": "maximum-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 16,
+          "name": "target-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 17,
+          "name": "maximum-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 18,
+          "name": "target-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 19,
+          "name": "maximum-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 20,
+          "name": "target-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 21,
+          "name": "maximum-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 22,
+          "name": "target-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 23,
+          "name": "maximum-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 24,
+          "name": "target-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 25,
+          "name": "maximum-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 26,
+          "name": "target-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 27,
+          "name": "maximum-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "40b96fc1d7784737bc63787f121ab203ae3776e5ea",
+        "bodySha256": "dd6862c8b90d084ce7199ae871f32ac13f0d3f296af208b5122e1dfd197eab90"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "chromium",
+    "width": 390,
+    "text": 100,
+    "kind": "coverage-period",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "locationId",
+          "loc-1"
+        ],
+        [
+          "dayOfWeek",
+          "1"
+        ],
+        [
+          "startTime",
+          "09:00"
+        ],
+        [
+          "endTime",
+          "17:00"
+        ],
+        [
+          "minimumStaff",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos"
+        ],
+        [
+          "quota-qa-pos",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos2"
+        ],
+        [
+          "quota-qa-pos2",
+          ""
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "locationId",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "loc-1"
+        },
+        {
+          "i": 1,
+          "name": "dayOfWeek",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "1"
+        },
+        {
+          "i": 2,
+          "name": "startTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "09:00"
+        },
+        {
+          "i": 3,
+          "name": "endTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "17:00"
+        },
+        {
+          "i": 4,
+          "name": "minimumStaff",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 5,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos"
+        },
+        {
+          "i": 6,
+          "name": "quota-qa-pos",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos2"
+        },
+        {
+          "i": 8,
+          "name": "quota-qa-pos2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        }
+      ]
+    },
+    "field": {
+      "name": "startTime",
+      "type": "time",
+      "value": "09:00"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "09:00",
+      "rootSize": "16px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "09:00",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "09:00"
+    },
+    "restored": {
+      "data": [
+        [
+          "locationId",
+          "loc-1"
+        ],
+        [
+          "dayOfWeek",
+          "1"
+        ],
+        [
+          "startTime",
+          "09:00"
+        ],
+        [
+          "endTime",
+          "17:00"
+        ],
+        [
+          "minimumStaff",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos"
+        ],
+        [
+          "quota-qa-pos",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos2"
+        ],
+        [
+          "quota-qa-pos2",
+          ""
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "locationId",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "loc-1"
+        },
+        {
+          "i": 1,
+          "name": "dayOfWeek",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "1"
+        },
+        {
+          "i": 2,
+          "name": "startTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "09:00"
+        },
+        {
+          "i": 3,
+          "name": "endTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "17:00"
+        },
+        {
+          "i": 4,
+          "name": "minimumStaff",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 5,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos"
+        },
+        {
+          "i": 6,
+          "name": "quota-qa-pos",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos2"
+        },
+        {
+          "i": 8,
+          "name": "quota-qa-pos2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "40b8d68d4dec09fd525a6ec8a1f0b1eb5dd568f042",
+        "bodySha256": "54940942e0ed95941d1caa2cbbe4aa7a011347fb44173bec7582227597d28827"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "chromium",
+    "width": 390,
+    "text": 100,
+    "kind": "trade-policy",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "swap"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "swap"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "field": {
+      "name": "submissionAdvanceMinutes",
+      "type": "number",
+      "value": "60"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "60",
+      "rootSize": "16px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "60",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "60"
+    },
+    "restored": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "swap"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "swap"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "401ad4edc87900eb56afb94cbabc7ebf1672e39350",
+        "bodySha256": "92e50ec114eb57c009796bd74abbfa4828b42f2e7b55a7d296e541897ab44d14"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "chromium",
+    "width": 390,
+    "text": 100,
+    "kind": "coverage-policy",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "coverage"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "coverage"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "field": {
+      "name": "submissionAdvanceMinutes",
+      "type": "number",
+      "value": "60"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "60",
+      "rootSize": "16px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "60",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "60"
+    },
+    "restored": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "coverage"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "coverage"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "401ad4edc87900eb56afb94cbabc7ebf1672e39350",
+        "bodySha256": "5b5840760cca05bb1b69d07091b9cd16e49ac09b00b910df496d43cd80e811be"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "chromium",
+    "width": 320,
+    "text": 200,
+    "kind": "staffing",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "staffing-loc-1",
+          "1"
+        ],
+        [
+          "lead-configured-loc-1",
+          "true"
+        ],
+        [
+          "staffing-loc-2",
+          "1"
+        ],
+        [
+          "lead-configured-loc-2",
+          "true"
+        ],
+        [
+          "target-QAOWNER",
+          ""
+        ],
+        [
+          "maximum-QAOWNER",
+          "40"
+        ],
+        [
+          "target-payroll-qa-owner",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-owner",
+          "40"
+        ],
+        [
+          "target-AUDIT-M",
+          ""
+        ],
+        [
+          "maximum-AUDIT-M",
+          "40"
+        ],
+        [
+          "target-payroll-qa-manager",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-manager",
+          "40"
+        ],
+        [
+          "target-payroll-qa-reviewer",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-reviewer",
+          "40"
+        ],
+        [
+          "target-payroll-qa-b",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-b",
+          "40"
+        ],
+        [
+          "target-AUDIT-LEAD",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LEAD",
+          "40"
+        ],
+        [
+          "target-AUDIT-E",
+          ""
+        ],
+        [
+          "maximum-AUDIT-E",
+          "40"
+        ],
+        [
+          "target-payroll-qa-a",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-a",
+          "40"
+        ],
+        [
+          "target-AUDIT-LONG",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LONG",
+          "40"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "staffing-loc-1",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 1,
+          "name": "lead-configured-loc-1",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 2,
+          "name": "lead-loc-1",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 3,
+          "name": "staffing-loc-2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 4,
+          "name": "lead-configured-loc-2",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 5,
+          "name": "lead-loc-2",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 6,
+          "name": "",
+          "type": "search",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "",
+          "type": "button",
+          "disabled": false,
+          "readOnly": null,
+          "value": ""
+        },
+        {
+          "i": 8,
+          "name": "target-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 9,
+          "name": "maximum-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 10,
+          "name": "target-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 11,
+          "name": "maximum-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 12,
+          "name": "target-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 13,
+          "name": "maximum-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 14,
+          "name": "target-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 15,
+          "name": "maximum-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 16,
+          "name": "target-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 17,
+          "name": "maximum-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 18,
+          "name": "target-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 19,
+          "name": "maximum-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 20,
+          "name": "target-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 21,
+          "name": "maximum-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 22,
+          "name": "target-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 23,
+          "name": "maximum-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 24,
+          "name": "target-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 25,
+          "name": "maximum-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 26,
+          "name": "target-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 27,
+          "name": "maximum-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        }
+      ]
+    },
+    "field": {
+      "name": "staffing-loc-1",
+      "type": "number",
+      "value": "1"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "1",
+      "rootSize": "32px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "1",
+    "failed": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": false,
+      "value": "1"
+    },
+    "restored": {
+      "data": [
+        [
+          "staffing-loc-1",
+          "1"
+        ],
+        [
+          "lead-configured-loc-1",
+          "true"
+        ],
+        [
+          "staffing-loc-2",
+          "1"
+        ],
+        [
+          "lead-configured-loc-2",
+          "true"
+        ],
+        [
+          "target-QAOWNER",
+          ""
+        ],
+        [
+          "maximum-QAOWNER",
+          "40"
+        ],
+        [
+          "target-payroll-qa-owner",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-owner",
+          "40"
+        ],
+        [
+          "target-AUDIT-M",
+          ""
+        ],
+        [
+          "maximum-AUDIT-M",
+          "40"
+        ],
+        [
+          "target-payroll-qa-manager",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-manager",
+          "40"
+        ],
+        [
+          "target-payroll-qa-reviewer",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-reviewer",
+          "40"
+        ],
+        [
+          "target-payroll-qa-b",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-b",
+          "40"
+        ],
+        [
+          "target-AUDIT-LEAD",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LEAD",
+          "40"
+        ],
+        [
+          "target-AUDIT-E",
+          ""
+        ],
+        [
+          "maximum-AUDIT-E",
+          "40"
+        ],
+        [
+          "target-payroll-qa-a",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-a",
+          "40"
+        ],
+        [
+          "target-AUDIT-LONG",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LONG",
+          "40"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "staffing-loc-1",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 1,
+          "name": "lead-configured-loc-1",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 2,
+          "name": "lead-loc-1",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 3,
+          "name": "staffing-loc-2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 4,
+          "name": "lead-configured-loc-2",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 5,
+          "name": "lead-loc-2",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 6,
+          "name": "",
+          "type": "search",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "",
+          "type": "button",
+          "disabled": false,
+          "readOnly": null,
+          "value": ""
+        },
+        {
+          "i": 8,
+          "name": "target-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 9,
+          "name": "maximum-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 10,
+          "name": "target-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 11,
+          "name": "maximum-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 12,
+          "name": "target-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 13,
+          "name": "maximum-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 14,
+          "name": "target-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 15,
+          "name": "maximum-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 16,
+          "name": "target-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 17,
+          "name": "maximum-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 18,
+          "name": "target-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 19,
+          "name": "maximum-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 20,
+          "name": "target-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 21,
+          "name": "maximum-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 22,
+          "name": "target-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 23,
+          "name": "maximum-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 24,
+          "name": "target-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 25,
+          "name": "maximum-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 26,
+          "name": "target-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 27,
+          "name": "maximum-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "40b96fc1d7784737bc63787f121ab203ae3776e5ea",
+        "bodySha256": "cdea3d3e95181504305371778e7aa59bdbadd1be1793e28cd187e2104c7a8893"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": false
+  },
+  {
+    "stage": "before",
+    "engine": "chromium",
+    "width": 320,
+    "text": 200,
+    "kind": "coverage-period",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "locationId",
+          "loc-1"
+        ],
+        [
+          "dayOfWeek",
+          "1"
+        ],
+        [
+          "startTime",
+          "09:00"
+        ],
+        [
+          "endTime",
+          "17:00"
+        ],
+        [
+          "minimumStaff",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos"
+        ],
+        [
+          "quota-qa-pos",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos2"
+        ],
+        [
+          "quota-qa-pos2",
+          ""
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "locationId",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "loc-1"
+        },
+        {
+          "i": 1,
+          "name": "dayOfWeek",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "1"
+        },
+        {
+          "i": 2,
+          "name": "startTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "09:00"
+        },
+        {
+          "i": 3,
+          "name": "endTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "17:00"
+        },
+        {
+          "i": 4,
+          "name": "minimumStaff",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 5,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos"
+        },
+        {
+          "i": 6,
+          "name": "quota-qa-pos",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos2"
+        },
+        {
+          "i": 8,
+          "name": "quota-qa-pos2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        }
+      ]
+    },
+    "field": {
+      "name": "startTime",
+      "type": "time",
+      "value": "09:00"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "09:00",
+      "rootSize": "32px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "09:00",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "09:00"
+    },
+    "restored": {
+      "data": [
+        [
+          "locationId",
+          "loc-1"
+        ],
+        [
+          "dayOfWeek",
+          "1"
+        ],
+        [
+          "startTime",
+          "09:00"
+        ],
+        [
+          "endTime",
+          "17:00"
+        ],
+        [
+          "minimumStaff",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos"
+        ],
+        [
+          "quota-qa-pos",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos2"
+        ],
+        [
+          "quota-qa-pos2",
+          ""
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "locationId",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "loc-1"
+        },
+        {
+          "i": 1,
+          "name": "dayOfWeek",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "1"
+        },
+        {
+          "i": 2,
+          "name": "startTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "09:00"
+        },
+        {
+          "i": 3,
+          "name": "endTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "17:00"
+        },
+        {
+          "i": 4,
+          "name": "minimumStaff",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 5,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos"
+        },
+        {
+          "i": 6,
+          "name": "quota-qa-pos",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos2"
+        },
+        {
+          "i": 8,
+          "name": "quota-qa-pos2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "40b8d68d4dec09fd525a6ec8a1f0b1eb5dd568f042",
+        "bodySha256": "0a2e3c62e871e0f3fce3836b2267d32e381496138bb8dae1013ab55bd455c5ec"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "chromium",
+    "width": 320,
+    "text": 200,
+    "kind": "trade-policy",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "swap"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "swap"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "field": {
+      "name": "submissionAdvanceMinutes",
+      "type": "number",
+      "value": "60"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "60",
+      "rootSize": "32px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "60",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "60"
+    },
+    "restored": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "swap"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "swap"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "401ad4edc87900eb56afb94cbabc7ebf1672e39350",
+        "bodySha256": "6105368e29a3e391661c6a5e95d496861c68f5e79b76b140043e23e0b9e5db62"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "chromium",
+    "width": 320,
+    "text": 200,
+    "kind": "coverage-policy",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "coverage"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "coverage"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "field": {
+      "name": "submissionAdvanceMinutes",
+      "type": "number",
+      "value": "60"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "60",
+      "rootSize": "32px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "60",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "60"
+    },
+    "restored": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "coverage"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "coverage"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "401ad4edc87900eb56afb94cbabc7ebf1672e39350",
+        "bodySha256": "087e8677e04fe0c2a8e1742ab4a7f68fab6719bbe499b4b657a63e5728184095"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "webkit",
+    "width": 390,
+    "text": 100,
+    "kind": "staffing",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "staffing-loc-1",
+          "1"
+        ],
+        [
+          "lead-configured-loc-1",
+          "true"
+        ],
+        [
+          "staffing-loc-2",
+          "1"
+        ],
+        [
+          "lead-configured-loc-2",
+          "true"
+        ],
+        [
+          "target-QAOWNER",
+          ""
+        ],
+        [
+          "maximum-QAOWNER",
+          "40"
+        ],
+        [
+          "target-payroll-qa-owner",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-owner",
+          "40"
+        ],
+        [
+          "target-AUDIT-M",
+          ""
+        ],
+        [
+          "maximum-AUDIT-M",
+          "40"
+        ],
+        [
+          "target-payroll-qa-manager",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-manager",
+          "40"
+        ],
+        [
+          "target-payroll-qa-reviewer",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-reviewer",
+          "40"
+        ],
+        [
+          "target-payroll-qa-b",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-b",
+          "40"
+        ],
+        [
+          "target-AUDIT-LEAD",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LEAD",
+          "40"
+        ],
+        [
+          "target-AUDIT-E",
+          ""
+        ],
+        [
+          "maximum-AUDIT-E",
+          "40"
+        ],
+        [
+          "target-payroll-qa-a",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-a",
+          "40"
+        ],
+        [
+          "target-AUDIT-LONG",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LONG",
+          "40"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "staffing-loc-1",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 1,
+          "name": "lead-configured-loc-1",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 2,
+          "name": "lead-loc-1",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 3,
+          "name": "staffing-loc-2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 4,
+          "name": "lead-configured-loc-2",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 5,
+          "name": "lead-loc-2",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 6,
+          "name": "",
+          "type": "search",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "",
+          "type": "button",
+          "disabled": false,
+          "readOnly": null,
+          "value": ""
+        },
+        {
+          "i": 8,
+          "name": "target-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 9,
+          "name": "maximum-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 10,
+          "name": "target-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 11,
+          "name": "maximum-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 12,
+          "name": "target-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 13,
+          "name": "maximum-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 14,
+          "name": "target-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 15,
+          "name": "maximum-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 16,
+          "name": "target-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 17,
+          "name": "maximum-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 18,
+          "name": "target-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 19,
+          "name": "maximum-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 20,
+          "name": "target-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 21,
+          "name": "maximum-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 22,
+          "name": "target-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 23,
+          "name": "maximum-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 24,
+          "name": "target-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 25,
+          "name": "maximum-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 26,
+          "name": "target-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 27,
+          "name": "maximum-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        }
+      ]
+    },
+    "field": {
+      "name": "staffing-loc-1",
+      "type": "number",
+      "value": "1"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "1",
+      "rootSize": "16px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "1",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "1"
+    },
+    "restored": {
+      "data": [
+        [
+          "staffing-loc-1",
+          "1"
+        ],
+        [
+          "lead-configured-loc-1",
+          "true"
+        ],
+        [
+          "staffing-loc-2",
+          "1"
+        ],
+        [
+          "lead-configured-loc-2",
+          "true"
+        ],
+        [
+          "target-QAOWNER",
+          ""
+        ],
+        [
+          "maximum-QAOWNER",
+          "40"
+        ],
+        [
+          "target-payroll-qa-owner",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-owner",
+          "40"
+        ],
+        [
+          "target-AUDIT-M",
+          ""
+        ],
+        [
+          "maximum-AUDIT-M",
+          "40"
+        ],
+        [
+          "target-payroll-qa-manager",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-manager",
+          "40"
+        ],
+        [
+          "target-payroll-qa-reviewer",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-reviewer",
+          "40"
+        ],
+        [
+          "target-payroll-qa-b",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-b",
+          "40"
+        ],
+        [
+          "target-AUDIT-LEAD",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LEAD",
+          "40"
+        ],
+        [
+          "target-AUDIT-E",
+          ""
+        ],
+        [
+          "maximum-AUDIT-E",
+          "40"
+        ],
+        [
+          "target-payroll-qa-a",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-a",
+          "40"
+        ],
+        [
+          "target-AUDIT-LONG",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LONG",
+          "40"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "staffing-loc-1",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 1,
+          "name": "lead-configured-loc-1",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 2,
+          "name": "lead-loc-1",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 3,
+          "name": "staffing-loc-2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 4,
+          "name": "lead-configured-loc-2",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 5,
+          "name": "lead-loc-2",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 6,
+          "name": "",
+          "type": "search",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "",
+          "type": "button",
+          "disabled": false,
+          "readOnly": null,
+          "value": ""
+        },
+        {
+          "i": 8,
+          "name": "target-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 9,
+          "name": "maximum-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 10,
+          "name": "target-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 11,
+          "name": "maximum-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 12,
+          "name": "target-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 13,
+          "name": "maximum-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 14,
+          "name": "target-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 15,
+          "name": "maximum-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 16,
+          "name": "target-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 17,
+          "name": "maximum-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 18,
+          "name": "target-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 19,
+          "name": "maximum-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 20,
+          "name": "target-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 21,
+          "name": "maximum-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 22,
+          "name": "target-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 23,
+          "name": "maximum-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 24,
+          "name": "target-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 25,
+          "name": "maximum-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 26,
+          "name": "target-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 27,
+          "name": "maximum-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "40b96fc1d7784737bc63787f121ab203ae3776e5ea",
+        "bodySha256": "0f32c295c68b9c2e935f729e6d34fa196b80c624b62f2cd8c09c965a5fc752d6"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "webkit",
+    "width": 390,
+    "text": 100,
+    "kind": "coverage-period",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "locationId",
+          "loc-1"
+        ],
+        [
+          "dayOfWeek",
+          "1"
+        ],
+        [
+          "startTime",
+          "09:00"
+        ],
+        [
+          "endTime",
+          "17:00"
+        ],
+        [
+          "minimumStaff",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos"
+        ],
+        [
+          "quota-qa-pos",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos2"
+        ],
+        [
+          "quota-qa-pos2",
+          ""
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "locationId",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "loc-1"
+        },
+        {
+          "i": 1,
+          "name": "dayOfWeek",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "1"
+        },
+        {
+          "i": 2,
+          "name": "startTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "09:00"
+        },
+        {
+          "i": 3,
+          "name": "endTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "17:00"
+        },
+        {
+          "i": 4,
+          "name": "minimumStaff",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 5,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos"
+        },
+        {
+          "i": 6,
+          "name": "quota-qa-pos",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos2"
+        },
+        {
+          "i": 8,
+          "name": "quota-qa-pos2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        }
+      ]
+    },
+    "field": {
+      "name": "startTime",
+      "type": "time",
+      "value": "09:00"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "09:00",
+      "rootSize": "16px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "09:00",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "09:00"
+    },
+    "restored": {
+      "data": [
+        [
+          "locationId",
+          "loc-1"
+        ],
+        [
+          "dayOfWeek",
+          "1"
+        ],
+        [
+          "startTime",
+          "09:00"
+        ],
+        [
+          "endTime",
+          "17:00"
+        ],
+        [
+          "minimumStaff",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos"
+        ],
+        [
+          "quota-qa-pos",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos2"
+        ],
+        [
+          "quota-qa-pos2",
+          ""
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "locationId",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "loc-1"
+        },
+        {
+          "i": 1,
+          "name": "dayOfWeek",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "1"
+        },
+        {
+          "i": 2,
+          "name": "startTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "09:00"
+        },
+        {
+          "i": 3,
+          "name": "endTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "17:00"
+        },
+        {
+          "i": 4,
+          "name": "minimumStaff",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 5,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos"
+        },
+        {
+          "i": 6,
+          "name": "quota-qa-pos",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos2"
+        },
+        {
+          "i": 8,
+          "name": "quota-qa-pos2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "40b8d68d4dec09fd525a6ec8a1f0b1eb5dd568f042",
+        "bodySha256": "c9bfa1b4f6a77ca4134d08951723da25d57f780d66fcc1ad86576afc18bae5d3"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "webkit",
+    "width": 390,
+    "text": 100,
+    "kind": "trade-policy",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "swap"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "swap"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "field": {
+      "name": "submissionAdvanceMinutes",
+      "type": "number",
+      "value": "60"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "60",
+      "rootSize": "16px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "60",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "60"
+    },
+    "restored": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "swap"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "swap"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "401ad4edc87900eb56afb94cbabc7ebf1672e39350",
+        "bodySha256": "dde0254fa84664e329f57309aa739a1107399258ee081fc53fb1b03648a0812c"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "webkit",
+    "width": 390,
+    "text": 100,
+    "kind": "coverage-policy",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "coverage"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "coverage"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "field": {
+      "name": "submissionAdvanceMinutes",
+      "type": "number",
+      "value": "60"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "60",
+      "rootSize": "16px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "60",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "60"
+    },
+    "restored": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "coverage"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "coverage"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "401ad4edc87900eb56afb94cbabc7ebf1672e39350",
+        "bodySha256": "915526a9a2c5440ace24f6bb5f6d6071c629e2075f53edf5e24fd526f87b6917"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "webkit",
+    "width": 320,
+    "text": 200,
+    "kind": "staffing",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "staffing-loc-1",
+          "1"
+        ],
+        [
+          "lead-configured-loc-1",
+          "true"
+        ],
+        [
+          "staffing-loc-2",
+          "1"
+        ],
+        [
+          "lead-configured-loc-2",
+          "true"
+        ],
+        [
+          "target-QAOWNER",
+          ""
+        ],
+        [
+          "maximum-QAOWNER",
+          "40"
+        ],
+        [
+          "target-payroll-qa-owner",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-owner",
+          "40"
+        ],
+        [
+          "target-AUDIT-M",
+          ""
+        ],
+        [
+          "maximum-AUDIT-M",
+          "40"
+        ],
+        [
+          "target-payroll-qa-manager",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-manager",
+          "40"
+        ],
+        [
+          "target-payroll-qa-reviewer",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-reviewer",
+          "40"
+        ],
+        [
+          "target-payroll-qa-b",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-b",
+          "40"
+        ],
+        [
+          "target-AUDIT-LEAD",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LEAD",
+          "40"
+        ],
+        [
+          "target-AUDIT-E",
+          ""
+        ],
+        [
+          "maximum-AUDIT-E",
+          "40"
+        ],
+        [
+          "target-payroll-qa-a",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-a",
+          "40"
+        ],
+        [
+          "target-AUDIT-LONG",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LONG",
+          "40"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "staffing-loc-1",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 1,
+          "name": "lead-configured-loc-1",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 2,
+          "name": "lead-loc-1",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 3,
+          "name": "staffing-loc-2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 4,
+          "name": "lead-configured-loc-2",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 5,
+          "name": "lead-loc-2",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 6,
+          "name": "",
+          "type": "search",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "",
+          "type": "button",
+          "disabled": false,
+          "readOnly": null,
+          "value": ""
+        },
+        {
+          "i": 8,
+          "name": "target-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 9,
+          "name": "maximum-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 10,
+          "name": "target-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 11,
+          "name": "maximum-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 12,
+          "name": "target-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 13,
+          "name": "maximum-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 14,
+          "name": "target-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 15,
+          "name": "maximum-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 16,
+          "name": "target-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 17,
+          "name": "maximum-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 18,
+          "name": "target-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 19,
+          "name": "maximum-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 20,
+          "name": "target-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 21,
+          "name": "maximum-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 22,
+          "name": "target-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 23,
+          "name": "maximum-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 24,
+          "name": "target-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 25,
+          "name": "maximum-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 26,
+          "name": "target-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 27,
+          "name": "maximum-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        }
+      ]
+    },
+    "field": {
+      "name": "staffing-loc-1",
+      "type": "number",
+      "value": "1"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "1",
+      "rootSize": "32px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "1",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "1"
+    },
+    "restored": {
+      "data": [
+        [
+          "staffing-loc-1",
+          "1"
+        ],
+        [
+          "lead-configured-loc-1",
+          "true"
+        ],
+        [
+          "staffing-loc-2",
+          "1"
+        ],
+        [
+          "lead-configured-loc-2",
+          "true"
+        ],
+        [
+          "target-QAOWNER",
+          ""
+        ],
+        [
+          "maximum-QAOWNER",
+          "40"
+        ],
+        [
+          "target-payroll-qa-owner",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-owner",
+          "40"
+        ],
+        [
+          "target-AUDIT-M",
+          ""
+        ],
+        [
+          "maximum-AUDIT-M",
+          "40"
+        ],
+        [
+          "target-payroll-qa-manager",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-manager",
+          "40"
+        ],
+        [
+          "target-payroll-qa-reviewer",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-reviewer",
+          "40"
+        ],
+        [
+          "target-payroll-qa-b",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-b",
+          "40"
+        ],
+        [
+          "target-AUDIT-LEAD",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LEAD",
+          "40"
+        ],
+        [
+          "target-AUDIT-E",
+          ""
+        ],
+        [
+          "maximum-AUDIT-E",
+          "40"
+        ],
+        [
+          "target-payroll-qa-a",
+          ""
+        ],
+        [
+          "maximum-payroll-qa-a",
+          "40"
+        ],
+        [
+          "target-AUDIT-LONG",
+          ""
+        ],
+        [
+          "maximum-AUDIT-LONG",
+          "40"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "staffing-loc-1",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 1,
+          "name": "lead-configured-loc-1",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 2,
+          "name": "lead-loc-1",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 3,
+          "name": "staffing-loc-2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "1"
+        },
+        {
+          "i": 4,
+          "name": "lead-configured-loc-2",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "true"
+        },
+        {
+          "i": 5,
+          "name": "lead-loc-2",
+          "type": "checkbox",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "i": 6,
+          "name": "",
+          "type": "search",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "",
+          "type": "button",
+          "disabled": false,
+          "readOnly": null,
+          "value": ""
+        },
+        {
+          "i": 8,
+          "name": "target-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 9,
+          "name": "maximum-QAOWNER",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 10,
+          "name": "target-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 11,
+          "name": "maximum-payroll-qa-owner",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 12,
+          "name": "target-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 13,
+          "name": "maximum-AUDIT-M",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 14,
+          "name": "target-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 15,
+          "name": "maximum-payroll-qa-manager",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 16,
+          "name": "target-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 17,
+          "name": "maximum-payroll-qa-reviewer",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 18,
+          "name": "target-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 19,
+          "name": "maximum-payroll-qa-b",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 20,
+          "name": "target-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 21,
+          "name": "maximum-AUDIT-LEAD",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 22,
+          "name": "target-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 23,
+          "name": "maximum-AUDIT-E",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 24,
+          "name": "target-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 25,
+          "name": "maximum-payroll-qa-a",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        },
+        {
+          "i": 26,
+          "name": "target-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 27,
+          "name": "maximum-AUDIT-LONG",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "40"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "40b96fc1d7784737bc63787f121ab203ae3776e5ea",
+        "bodySha256": "b2e505ae73beff9da966f5a3841838a4f9dc3019b67c0a2bace190061591e89c"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "webkit",
+    "width": 320,
+    "text": 200,
+    "kind": "coverage-period",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "locationId",
+          "loc-1"
+        ],
+        [
+          "dayOfWeek",
+          "1"
+        ],
+        [
+          "startTime",
+          "09:00"
+        ],
+        [
+          "endTime",
+          "17:00"
+        ],
+        [
+          "minimumStaff",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos"
+        ],
+        [
+          "quota-qa-pos",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos2"
+        ],
+        [
+          "quota-qa-pos2",
+          ""
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "locationId",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "loc-1"
+        },
+        {
+          "i": 1,
+          "name": "dayOfWeek",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "1"
+        },
+        {
+          "i": 2,
+          "name": "startTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "09:00"
+        },
+        {
+          "i": 3,
+          "name": "endTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "17:00"
+        },
+        {
+          "i": 4,
+          "name": "minimumStaff",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 5,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos"
+        },
+        {
+          "i": 6,
+          "name": "quota-qa-pos",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos2"
+        },
+        {
+          "i": 8,
+          "name": "quota-qa-pos2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        }
+      ]
+    },
+    "field": {
+      "name": "startTime",
+      "type": "time",
+      "value": "09:00"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "09:00",
+      "rootSize": "32px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "09:00",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "09:00"
+    },
+    "restored": {
+      "data": [
+        [
+          "locationId",
+          "loc-1"
+        ],
+        [
+          "dayOfWeek",
+          "1"
+        ],
+        [
+          "startTime",
+          "09:00"
+        ],
+        [
+          "endTime",
+          "17:00"
+        ],
+        [
+          "minimumStaff",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos"
+        ],
+        [
+          "quota-qa-pos",
+          ""
+        ],
+        [
+          "quotaPositionId",
+          "qa-pos2"
+        ],
+        [
+          "quota-qa-pos2",
+          ""
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "locationId",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "loc-1"
+        },
+        {
+          "i": 1,
+          "name": "dayOfWeek",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "1"
+        },
+        {
+          "i": 2,
+          "name": "startTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "09:00"
+        },
+        {
+          "i": 3,
+          "name": "endTime",
+          "type": "time",
+          "disabled": false,
+          "readOnly": false,
+          "value": "17:00"
+        },
+        {
+          "i": 4,
+          "name": "minimumStaff",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 5,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos"
+        },
+        {
+          "i": 6,
+          "name": "quota-qa-pos",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "i": 7,
+          "name": "quotaPositionId",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "qa-pos2"
+        },
+        {
+          "i": 8,
+          "name": "quota-qa-pos2",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "40b8d68d4dec09fd525a6ec8a1f0b1eb5dd568f042",
+        "bodySha256": "ff3332dd52461b6a9694b43ab64d4c1c59f15d59b07c3e46ef31c1305f08ff0d"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  },
+  {
+    "stage": "before",
+    "engine": "webkit",
+    "width": 320,
+    "text": 200,
+    "kind": "trade-policy",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "swap"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "0"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "swap"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "0"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "field": {
+      "name": "submissionAdvanceMinutes",
+      "type": "number",
+      "value": "0"
+    },
+    "error": "Error: No intercepted action within 8s\n    at Timeout._onTimeout (file:///workspace/paused-evidence/wave-b/is-b31/prove.mjs:27:228)\n    at listOnTimeout (node:internal/timers:635:17)\n    at process.processTimers (node:internal/timers:571:7)",
+    "pass": false
+  },
+  {
+    "stage": "before",
+    "engine": "webkit",
+    "width": 320,
+    "text": 200,
+    "kind": "coverage-policy",
+    "serverReached": 0,
+    "original": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "coverage"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "coverage"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "field": {
+      "name": "submissionAdvanceMinutes",
+      "type": "number",
+      "value": "60"
+    },
+    "pending": {
+      "active": false,
+      "activeTag": "BODY",
+      "readOnly": false,
+      "disabled": true,
+      "value": "60",
+      "rootSize": "32px"
+    },
+    "whileHeldCount": 1,
+    "pendingValueAfterKeys": "60",
+    "failed": {
+      "active": true,
+      "activeTag": "INPUT",
+      "readOnly": false,
+      "disabled": false,
+      "value": "60"
+    },
+    "restored": {
+      "data": [
+        [
+          "expectedRevision",
+          "1"
+        ],
+        [
+          "scope",
+          "coverage"
+        ],
+        [
+          "mode",
+          "MANAGER_REVIEW"
+        ],
+        [
+          "submissionAdvanceMinutes",
+          "60"
+        ],
+        [
+          "completionAdvanceMinutes",
+          "30"
+        ]
+      ],
+      "controls": [
+        {
+          "i": 0,
+          "name": "scope",
+          "type": "hidden",
+          "disabled": false,
+          "readOnly": false,
+          "value": "coverage"
+        },
+        {
+          "i": 1,
+          "name": "mode",
+          "type": "select-one",
+          "disabled": false,
+          "readOnly": null,
+          "value": "MANAGER_REVIEW"
+        },
+        {
+          "i": 2,
+          "name": "submissionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "60"
+        },
+        {
+          "i": 3,
+          "name": "completionAdvanceMinutes",
+          "type": "number",
+          "disabled": false,
+          "readOnly": false,
+          "value": "30"
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/app/schedule/settings",
+        "action": "401ad4edc87900eb56afb94cbabc7ebf1672e39350",
+        "bodySha256": "06d12dcba568d0995d44ed024a2a144953ca218542662640cc4fe0906a0d2e24"
+      }
+    ],
+    "requestCount": 1,
+    "sameFormData": true,
+    "priorDisabledReadonlyRestored": true,
+    "pass": true
+  }
+]

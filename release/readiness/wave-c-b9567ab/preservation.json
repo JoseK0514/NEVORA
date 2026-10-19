@@ -1,0 +1,564 @@
+{
+  "candidateBase": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "waveCInput": "5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8",
+  "branch": "codex/ready-wave-c",
+  "worktree": "/workspace/ready-wave-c",
+  "reviewTree": "7d8f3716efa735008919356aea8f8c026e594d42",
+  "findingCommits": 32,
+  "findings": [
+    {
+      "finding": "IS-P3-03",
+      "commit": "6229ad4bfa11e00ef5d1c8ae0f5a3046dd89bbaf",
+      "files": [
+        {
+          "path": "src/components/availability-editor.tsx",
+          "candidateBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+          "reviewBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-82",
+      "commit": "2dfc390c3aaa52c8a7602352bd46ed01c479067c",
+      "files": [
+        {
+          "path": "src/components/time-off-withdrawal.tsx",
+          "candidateBlob": "b59332fb09eef732818dafbc1e864e0969935b62",
+          "reviewBlob": "b59332fb09eef732818dafbc1e864e0969935b62",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "ST-P3-24",
+      "commit": "74b527db3c4909358daa4db9afd30c091e676ee6",
+      "files": [
+        {
+          "path": "src/components/availability-editor.tsx",
+          "candidateBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+          "reviewBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/employee-submit-button.tsx",
+          "candidateBlob": "d1f7ed00090eaef0119357b71da3a68799f2f989",
+          "reviewBlob": "d1f7ed00090eaef0119357b71da3a68799f2f989",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-P3-02",
+      "commit": "db48fb36df39f097cf6ad393eb64dde6763b3c84",
+      "files": [
+        {
+          "path": "src/app/app/requests/time-off-form.tsx",
+          "candidateBlob": "03ecab7f789a80a5cc584e5c4662a30f45d209f9",
+          "reviewBlob": "03ecab7f789a80a5cc584e5c4662a30f45d209f9",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/availability-editor.tsx",
+          "candidateBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+          "reviewBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/lib/reveal-feedback.ts",
+          "candidateBlob": "04b1e63dc0b1ed3cfdee1cea929aa8513abaa2e5",
+          "reviewBlob": "04b1e63dc0b1ed3cfdee1cea929aa8513abaa2e5",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-PROFILE-17",
+      "commit": "69338fdad9343db13f30540e768c149af5b4814d",
+      "files": [
+        {
+          "path": "src/components/manager-profile/manager-profile-live.tsx",
+          "candidateBlob": "76ce24c8dc41098314942d869443e1d3987e1faa",
+          "reviewBlob": "76ce24c8dc41098314942d869443e1d3987e1faa",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-74",
+      "commit": "4b041f7bfc82eba7655f22a0d28fb22cf712db3e",
+      "files": [
+        {
+          "path": "src/components/availability-editor.tsx",
+          "candidateBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+          "reviewBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/calendar-subscription-panel.tsx",
+          "candidateBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+          "reviewBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/communication-detail.tsx",
+          "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/employee-time-corrections.tsx",
+          "candidateBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+          "reviewBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/reviewed-swap-form.tsx",
+          "candidateBlob": "2b2243975edfc46cffe255d1fcfe6597382efe44",
+          "reviewBlob": "2b2243975edfc46cffe255d1fcfe6597382efe44",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/shift-change-form.tsx",
+          "candidateBlob": "23c3bdac9ae04b58eca9b88d5031849b69367b99",
+          "reviewBlob": "23c3bdac9ae04b58eca9b88d5031849b69367b99",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/wave-a/pending-button.tsx",
+          "candidateBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+          "reviewBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-77",
+      "commit": "ac265b97e748546a6ea5ac4695999d8683bf1c52",
+      "files": [
+        {
+          "path": "src/components/timecards.tsx",
+          "candidateBlob": "7d1c4089f8ce930eef666c4eeb0d26cde69d5396",
+          "reviewBlob": "7d1c4089f8ce930eef666c4eeb0d26cde69d5396",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-78",
+      "commit": "6990234ea005f9d070ac508b2522d1c3fcf8af58",
+      "files": [
+        {
+          "path": "src/components/calendar-subscription-panel.tsx",
+          "candidateBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+          "reviewBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/employee-time-corrections.tsx",
+          "candidateBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+          "reviewBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/time-off-withdrawal.tsx",
+          "candidateBlob": "b59332fb09eef732818dafbc1e864e0969935b62",
+          "reviewBlob": "b59332fb09eef732818dafbc1e864e0969935b62",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/timecards.batch.test.tsx",
+          "candidateBlob": "b704a8ff1b49b84b5430bbc386c8e8e4df31aee5",
+          "reviewBlob": "b704a8ff1b49b84b5430bbc386c8e8e4df31aee5",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/timecards.tsx",
+          "candidateBlob": "7d1c4089f8ce930eef666c4eeb0d26cde69d5396",
+          "reviewBlob": "7d1c4089f8ce930eef666c4eeb0d26cde69d5396",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/lib/time-corrections/client.test.ts",
+          "candidateBlob": "4a4ad64c52703d13f5f344c7b5a0fcdd67db7835",
+          "reviewBlob": "4a4ad64c52703d13f5f344c7b5a0fcdd67db7835",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/lib/time-corrections/client.ts",
+          "candidateBlob": "47ae7879f7ec59b0aadcd6fa4e1a42d0042e1de6",
+          "reviewBlob": "47ae7879f7ec59b0aadcd6fa4e1a42d0042e1de6",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-79",
+      "commit": "f16da25568d0859d83e33e2045d4d058c58b51be",
+      "files": [
+        {
+          "path": "src/components/communication-compose.tsx",
+          "candidateBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+          "reviewBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/communication-detail.test.tsx",
+          "candidateBlob": "4341025b12adf9b88484f430d11543c6162c2469",
+          "reviewBlob": "4341025b12adf9b88484f430d11543c6162c2469",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/communication-detail.tsx",
+          "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/lib/communications/client.ts",
+          "candidateBlob": "b6053dcc67b9f24388b98c295830311734c7e72a",
+          "reviewBlob": "b6053dcc67b9f24388b98c295830311734c7e72a",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/lib/communications/recovery.test.ts",
+          "candidateBlob": "96ddc0a1261fd58b851c3b6029e6eee4d8cef28d",
+          "reviewBlob": "96ddc0a1261fd58b851c3b6029e6eee4d8cef28d",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/lib/communications/recovery.ts",
+          "candidateBlob": "05c8c7bd7d364f23aca545891071246efb62b6a7",
+          "reviewBlob": "05c8c7bd7d364f23aca545891071246efb62b6a7",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-80",
+      "commit": "ab7d86603db6efdcc3f5b3f4ae746dd1075f41b2",
+      "files": [
+        {
+          "path": "src/components/calendar-subscription-panel.tsx",
+          "candidateBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+          "reviewBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-B12",
+      "commit": "21e603bb1541522cfafbc4b084b62620f50e66fc",
+      "files": [
+        {
+          "path": "src/components/communication-detail.tsx",
+          "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/payroll/payroll-settings.tsx",
+          "candidateBlob": "1b6b53801faf2c5481412f5ad6567a6685b84285",
+          "reviewBlob": "1b6b53801faf2c5481412f5ad6567a6685b84285",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "TC-B-32",
+      "commit": "ed62b429b98dd34ef82987eeab766464a2158015",
+      "files": [
+        {
+          "path": "src/app/app/payroll/payroll-workflow.css",
+          "candidateBlob": "c794c43b1748fb6ebd478d92ce6069ce30805df2",
+          "reviewBlob": "c794c43b1748fb6ebd478d92ce6069ce30805df2",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "TC-P4-23",
+      "commit": "3918350e26dde412b77b51ec75d946715a4ae564",
+      "files": [
+        {
+          "path": "src/app/app/payroll/payroll-workflow.css",
+          "candidateBlob": "c794c43b1748fb6ebd478d92ce6069ce30805df2",
+          "reviewBlob": "c794c43b1748fb6ebd478d92ce6069ce30805df2",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "TC-P4-22",
+      "commit": "7386c45ad3a6c5bedbdc105d2f4a30d5812f9b94",
+      "files": [
+        {
+          "path": "src/app/app/availability/availability.css",
+          "candidateBlob": "1a369c64e647b5ae68f19fb812972ba4a47b3a51",
+          "reviewBlob": "1a369c64e647b5ae68f19fb812972ba4a47b3a51",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "RC-CB-TC-01",
+      "commit": "b176ff5c12a43043493c725ca9a2072bcce8bf6b",
+      "files": [
+        {
+          "path": "src/app/app/portal-gusto.css",
+          "candidateBlob": "110dff32230b53c1b6ff2c49dbd71a9b42b1a835",
+          "reviewBlob": "110dff32230b53c1b6ff2c49dbd71a9b42b1a835",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "TC-WA-16",
+      "commit": "fe77095e55ead21d1b9632e9e2f29107fa79123e",
+      "files": [
+        {
+          "path": "src/components/kit/kit.css",
+          "candidateBlob": "b8c2bc41acd43381a1662ee5770f10f23a2354bc",
+          "reviewBlob": "b8c2bc41acd43381a1662ee5770f10f23a2354bc",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "TC-B-16",
+      "commit": "2e4057333a736d1f374efdad931f8fdd6caede52",
+      "files": [
+        {
+          "path": "src/components/communication-detail.tsx",
+          "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/lib/communications/client.ts",
+          "candidateBlob": "b6053dcc67b9f24388b98c295830311734c7e72a",
+          "reviewBlob": "b6053dcc67b9f24388b98c295830311734c7e72a",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "TCD-16",
+      "commit": "31f87cd492d8d205b484cf1f03d503b4f5b08cc1",
+      "files": [
+        {
+          "path": "src/app/app/portal-desktop.css",
+          "candidateBlob": "6e6ec2679bb954e44280cc44eaf52fe4ac2d7f37",
+          "reviewBlob": "6e6ec2679bb954e44280cc44eaf52fe4ac2d7f37",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "WR-WC-25",
+      "commit": "22ea160b9c9d9c8096a50d7aefa708a4e5dc4bb7",
+      "files": [
+        {
+          "path": "src/app/app/premium-wave-c.css",
+          "candidateBlob": "b3dfd68e4b1c44f59d6bda089f233e82a0ad626c",
+          "reviewBlob": "9e4e1993196b9ad7eb43acd943a5d70b94d2f601",
+          "preservation": "full Wave C stylesheet plus exact candidate overrides at end"
+        }
+      ]
+    },
+    {
+      "finding": "ST-13",
+      "commit": "6dacbe0a2f183cee245929b54e1914698b1caea3",
+      "files": [
+        {
+          "path": "src/app/app/premium-wave-c.css",
+          "candidateBlob": "b3dfd68e4b1c44f59d6bda089f233e82a0ad626c",
+          "reviewBlob": "9e4e1993196b9ad7eb43acd943a5d70b94d2f601",
+          "preservation": "full Wave C stylesheet plus exact candidate overrides at end"
+        }
+      ]
+    },
+    {
+      "finding": "ST-WA-7",
+      "commit": "0e29e3881d35813026329ad5ade31fc334c4a970",
+      "files": [
+        {
+          "path": "src/components/wave-a/pending-button.tsx",
+          "candidateBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+          "reviewBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "ST-WA-8",
+      "commit": "6e6719356855af7a28faf63bdc97344d8fb8a2d9",
+      "files": [
+        {
+          "path": "src/app/app/schedule/edit/delete-shift-button.tsx",
+          "candidateBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+          "reviewBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-RC-DELETE-01",
+      "commit": "22f0ba72914b24739357f70c6156edd4e7a15f8a",
+      "files": [
+        {
+          "path": "src/app/app/schedule/edit/delete-shift-button.tsx",
+          "candidateBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+          "reviewBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "ST-RC-CALENDAR-01",
+      "commit": "58e100a3fc80de3b3276ec8e5c349133e1f984ee",
+      "files": [
+        {
+          "path": "src/components/calendar-subscription-panel.test.tsx",
+          "candidateBlob": "c8e44ef02268bfa00c2b2d561541c25760cf307a",
+          "reviewBlob": "c8e44ef02268bfa00c2b2d561541c25760cf307a",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/calendar-subscription-panel.tsx",
+          "candidateBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+          "reviewBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "ST-RC-ACK-01",
+      "commit": "e05d6618a2a3f1bdaf367da3b807ae63fb3caae5",
+      "files": [
+        {
+          "path": "src/components/communication-detail.tsx",
+          "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "ST-RC-CORRECTION-01",
+      "commit": "e2d21fb2be3d45c4af98d173aa6cd4a0efa003cd",
+      "files": [
+        {
+          "path": "src/components/employee-time-corrections.tsx",
+          "candidateBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+          "reviewBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "TC-RC-ASSISTED-01",
+      "commit": "35c2c0a45de2ce4876c9174efd9abda740d16f0f",
+      "files": [
+        {
+          "path": "src/app/app/account-recovery/assisted-recovery.css",
+          "candidateBlob": "06fc8c0e06c8c0b2dd9d5019e9f1866530a785e5",
+          "reviewBlob": null,
+          "preservation": "obsolete legacy stylesheet retired with replacement Wave C DOM; root approved; new field contrast needs browser proof"
+        }
+      ]
+    },
+    {
+      "finding": "IS-WA-2",
+      "commit": "536dfe62d52203751b95c3793076022ac02f2540",
+      "files": [
+        {
+          "path": "src/components/wave-a/action-form.tsx",
+          "candidateBlob": "2333d61c22026a5f67c5fd01186dc06d26092ef9",
+          "reviewBlob": "2333d61c22026a5f67c5fd01186dc06d26092ef9",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-WB-34",
+      "commit": "04430302d2e8242489d028a1e3bba090497124af",
+      "files": [
+        {
+          "path": "src/components/communication-compose.tsx",
+          "candidateBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+          "reviewBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "ST-WB-15",
+      "commit": "980e823eba6e243d456483b33cd0571131389cb6",
+      "files": [
+        {
+          "path": "src/components/communication-compose.tsx",
+          "candidateBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+          "reviewBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "IS-RC-COMPOSE-01",
+      "commit": "b9567abc26b977a517b77622a1661b16172f5b16",
+      "files": [
+        {
+          "path": "src/components/communication-compose.css",
+          "candidateBlob": "df31502cdf7b71c9f8f0b824fc8e0b839a183a69",
+          "reviewBlob": "df31502cdf7b71c9f8f0b824fc8e0b839a183a69",
+          "preservation": "byte-identical"
+        },
+        {
+          "path": "src/components/communication-compose.tsx",
+          "candidateBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+          "reviewBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+          "preservation": "byte-identical"
+        }
+      ]
+    },
+    {
+      "finding": "TC-RC-PAYROLL-01",
+      "commit": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+      "files": [
+        {
+          "path": "src/app/app/payroll/payroll-workflow.css",
+          "preservation": "byte-identical",
+          "candidateBlob": "c794c43b1748fb6ebd478d92ce6069ce30805df2",
+          "reviewBlob": "c794c43b1748fb6ebd478d92ce6069ce30805df2"
+        }
+      ]
+    }
+  ],
+  "criticalFilesByteIdentical": [
+    "src/app/layout.tsx",
+    "src/app/app/layout.tsx",
+    "src/app/app/portal-premium.css",
+    "src/components/payroll/use-payroll.ts",
+    "src/app/typeface-theme.css",
+    "src/components/kit/kit.css",
+    "src/app/app/payroll/payroll-workflow.css"
+  ],
+  "backendAndApiUnchanged": true,
+  "rootLoading": "13 additive Wave C route entries; existing coordinator entries preserved",
+  "conflictsResolved": [
+    "src/app/app/layout.tsx",
+    "src/app/app/portal-premium.css",
+    "src/app/app/premium-wave-c.css",
+    "src/components/payroll/use-payroll.ts",
+    "src/app/app/account-recovery/assisted-recovery.css"
+  ],
+  "validation": "Static preservation only; 32 candidate findings accounted for. Full exact-SHA five-area exit and actual merged WC25/ST13/field-contrast proofs pending; no zero claim.",
+  "reviewCommit": "de8b15851d6280fd31fba3db63dcbe976a19584a",
+  "reviewParents": [
+    "77784e62f8bf5e61ec90642a2302d634ee7f8a65",
+    "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b"
+  ],
+  "previousCandidateBase": "b9567abc26b977a517b77622a1661b16172f5b16",
+  "initialMergeCommit": "77784e62f8bf5e61ec90642a2302d634ee7f8a65"
+}

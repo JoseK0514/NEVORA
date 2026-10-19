@@ -1,0 +1,92 @@
+--- a/src/components/wave-b-forms.tsx
++++ b/src/components/wave-b-forms.tsx
+@@ -7,10 +7,25 @@
+ import type { ConfigurationResult } from "@/components/configuration-form";
+ import type { PolicyWriteResult } from "@/lib/shift-changes/types";
+ 
+-/** IS-B31: a field or button that was focused when a save started gets focus back when it ends (its fieldset was disabled meanwhile). */
+-function rememberFocus() {
++/** IS-B31: keep an Enter-submitting field focused and read-only while the captured command runs. */
++function preservePendingFields(form: HTMLFormElement) {
+   const before = document.activeElement as HTMLElement | null;
+-  return () => requestAnimationFrame(() => { if (!document.activeElement || document.activeElement === document.body) before?.focus({ preventScroll: true }); });
++  const controls = [...form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLButtonElement>("fieldset.configuration-fields :is(input, select, textarea, button)")];
++  const held = controls.find(control => control === before && (control instanceof HTMLTextAreaElement || control instanceof HTMLInputElement && !["button", "checkbox", "color", "file", "hidden", "image", "radio", "range", "reset", "submit"].includes(control.type)));
++  const previous = controls.map(control => ({ control, disabled: control.disabled, readOnly: "readOnly" in control ? control.readOnly : undefined }));
++  // Controls without a native read-only state hand focus to the still-focusable submit action.
++  if (before && controls.some(control => control === before) && !held) form.querySelector<HTMLButtonElement>('button[type="submit"]')?.focus({ preventScroll: true });
++  for (const control of controls) {
++    if (control === held && "readOnly" in control) control.readOnly = true;
++    else control.disabled = true;
++  }
++  return () => {
++    for (const { control, disabled, readOnly } of previous) {
++      control.disabled = disabled;
++      if (readOnly !== undefined && "readOnly" in control) control.readOnly = readOnly;
++    }
++    requestAnimationFrame(() => { if (!document.activeElement || document.activeElement === document.body) before?.focus({ preventScroll: true }); });
++  };
+ }
+ 
+ /* Phase 3.5 Wave B forms. Presentation and submit handling only: each form calls the same server
+@@ -93,8 +108,9 @@
+     event.preventDefault();
+     if (busy.current) return;
+     const data = new FormData(event.currentTarget);
+-    const restoreFocus = rememberFocus();
+-    busy.current = true; setPending(true); setResult(null);
++    busy.current = true;
++    const restoreFocus = preservePendingFields(event.currentTarget);
++    setPending(true); setResult(null);
+     try {
+       const saved = await action(data);
+       setResult(saved.error ? plain(saved.error) : "saved");
+@@ -105,7 +121,7 @@
+     }
+   }
+   return <form onSubmit={submit} className="wb-form wb-auto wb-config" aria-busy={pending || undefined}>
+-    <fieldset disabled={pending} className="configuration-fields">{children}</fieldset>
++    <fieldset aria-disabled={pending || undefined} className="configuration-fields">{children}</fieldset>
+     {bar ? <div className="nv-actionbar wb-savebar" role="group" aria-label="Staffing and weekly hours">
+       {result === "saved"
+         ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>Scheduling rules saved.</span></p>
+@@ -132,14 +148,15 @@
+     event.preventDefault();
+     if (busy.current) return;
+     const data = new FormData(event.currentTarget);
+-    const restoreFocus = rememberFocus();
+-    busy.current = true; setPending(true); setResult(null);
++    busy.current = true;
++    const restoreFocus = preservePendingFields(event.currentTarget);
++    setPending(true); setResult(null);
+     try { const saved = await action(data); setResult(saved.error ? plain(saved.error) : "saved"); }
+     catch { setResult("Couldn’t save your changes. They’re still here; try again."); }
+     finally { busy.current = false; setPending(false); restoreFocus(); }
+   }
+   return <form onSubmit={send} className={className ? `wb-form wb-auto wb-config ${className}` : "wb-form wb-auto wb-config"} aria-busy={pending || undefined}>
+-    <fieldset disabled={pending} className="configuration-fields">{children}</fieldset>
++    <fieldset aria-disabled={pending || undefined} className="configuration-fields">{children}</fieldset>
+     <div className="wb-actions"><button className="nv-btn" data-kind={submit.kind} type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? submit.pendingLabel : submit.label}</button></div>
+     {result === "saved" ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{successText}</span></p>
+       : result ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{result}</span></p> : null}
+@@ -187,8 +204,9 @@
+     finishField?.removeAttribute("aria-describedby");
+     setOrderError(false);
+     data.set("expectedRevision", String(currentRevision));
+-    const restoreFocus = rememberFocus();
+-    busy.current = true; setPending(true); setMessage(null);
++    busy.current = true;
++    const restoreFocus = preservePendingFields(event.currentTarget);
++    setPending(true); setMessage(null);
+     try {
+       const next = await action(data);
+       if (next.status === "saved") { setRevision(next.revision); setMessage({ tone: "saved", text: "Policy saved." }); router.refresh(); }
+@@ -200,7 +218,7 @@
+   }
+   return <form onSubmit={send} className="wb-form" aria-busy={pending || undefined} data-order-error={orderError || undefined}>
+     <input type="hidden" name="expectedRevision" value={currentRevision} />
+-    <PolicyOrder.Provider value={{ error: orderError, id: orderId }}><fieldset className="configuration-fields wb-form" disabled={pending}>{children}</fieldset></PolicyOrder.Provider>
++    <PolicyOrder.Provider value={{ error: orderError, id: orderId }}><fieldset className="configuration-fields wb-form" aria-disabled={pending || undefined}>{children}</fieldset></PolicyOrder.Provider>
+     <div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? "Saving…" : saveLabel}</button></div>
+     {message?.tone === "saved" ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{message.text}</span></p>
+       : message ? <><p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{message.text}</span></p>{message.tone === "conflict" ? <div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={() => window.location.reload()}>Reload current policy</button></div> : null}</> : null}

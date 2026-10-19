@@ -1,0 +1,4 @@
+eb83869 IS-B31: preserve Enter field focus while a captured rules save is pending
+ docs/product/specs/p35-wave-b/CODEX-IS-B31.md |  9 ++++++
+ src/components/wave-b-forms.tsx               | 42 +++++++++++++++++++--------
+ 2 files changed, 39 insertions(+), 12 deletions(-)

@@ -1,0 +1,41 @@
+{
+  "reviewSHA": "368e98a18c16d47df04a93f2bea560843e461e0e",
+  "base": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "files": [
+    {
+      "file": "src/app/app/portal-premium.css",
+      "matchesCandidate32": true,
+      "sha256": "c0a3a213ba88c7f6c60bcc97f0ef11f8ba5c4760d1dac44e9b40f1ddff5bea70"
+    },
+    {
+      "file": "src/app/layout.tsx",
+      "matchesCandidate32": true,
+      "sha256": "cec8a5324aa0a313305a09b6566f6f0ef5e352e5a0cf62639d53d743e01335a6"
+    },
+    {
+      "file": "src/app/app/layout.tsx",
+      "matchesCandidate32": true,
+      "sha256": "daf909658e8738898e580edc31a731955a6da0ace1fb989e436d0acd0c18ea16"
+    },
+    {
+      "file": "src/lib/reports/insights.ts",
+      "matchesCandidate32": true,
+      "sha256": "02ccc02e06d2881680af613b1c61b2ae93819b36ee24114fe2bde09497f69be3"
+    },
+    {
+      "file": "src/lib/reports/insights.test.ts",
+      "matchesCandidate32": true,
+      "sha256": "8eeff97f2f68c78937440b9b65a98d5a1344bda0432ef42ae5b69383fc4203ec"
+    },
+    {
+      "file": "src/components/payroll/use-payroll.ts",
+      "matchesCandidate32": true,
+      "sha256": "2e99275c8bb863988fe0d66d59a178d670feb76113d90e65c07aadfb41f97905"
+    },
+    {
+      "file": "src/app/app/payroll/payroll-workflow.css",
+      "matchesCandidate32": true,
+      "sha256": "7f11e245ebb7bec1006268e79ed38f2dec5f7a117eba334edd1a176887308a35"
+    }
+  ]
+}

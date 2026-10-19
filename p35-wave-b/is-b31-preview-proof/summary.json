@@ -1,0 +1,35 @@
+{
+  "source": "9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7",
+  "patchSha256": "87f9d9a0a9e9151b5ade8bae98ebaa9ea33289a2c17a2019b82a5c58e0268e84",
+  "before": {
+    "focusLossReproduced": 16,
+    "total": 16
+  },
+  "after": {
+    "passed": 16,
+    "total": 16
+  },
+  "cases": {
+    "forms": [
+      "staffing",
+      "coverage-period",
+      "trade-policy",
+      "coverage-policy"
+    ],
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "sizes": [
+      "390/100%",
+      "320/200%"
+    ]
+  },
+  "serverReached": 0,
+  "duplicateCountAllCases": 1,
+  "sameFormDataAllAfter": true,
+  "disabledReadonlyRestoredAllAfter": true,
+  "sameActionBindingBeforeAfter": true,
+  "closed": true,
+  "independentClosure": false
+}

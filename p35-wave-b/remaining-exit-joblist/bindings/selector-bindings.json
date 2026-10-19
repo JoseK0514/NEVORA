@@ -1,0 +1,143 @@
+{
+  "reviewSHA": "368e98a18c16d47df04a93f2bea560843e461e0e",
+  "selectors": [
+    {
+      "label": "Reports ready",
+      "selector": ".wb-insights-view",
+      "source": "src/components/reports.tsx",
+      "line": 66,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "8d420903b7e7b02793742449affb14eac2d26853bc04e02a24cc29aecc599433"
+    },
+    {
+      "label": "Reports error focus",
+      "selector": "#report-export-error",
+      "source": "src/components/reports.tsx",
+      "line": 149,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "8d420903b7e7b02793742449affb14eac2d26853bc04e02a24cc29aecc599433"
+    },
+    {
+      "label": "Templates root",
+      "selector": ".wb-templates",
+      "source": "src/app/app/schedule/templates/page.tsx",
+      "line": 54,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "52fc7145d471f0a97f0ae6819b707547b16076011a3620f03963caa03f1e9a84"
+    },
+    {
+      "label": "Template name",
+      "selector": "#st-template-name",
+      "source": "src/app/app/schedule/templates/page.tsx",
+      "line": 119,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "52fc7145d471f0a97f0ae6819b707547b16076011a3620f03963caa03f1e9a84"
+    },
+    {
+      "label": "Rules root",
+      "selector": ".wb-rules",
+      "source": "src/app/app/schedule/settings/page.tsx",
+      "line": 64,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "2d7a63152ce0bb4b563610db390cf717a744b0e15fdaa770042d9b859a5573ce"
+    },
+    {
+      "label": "Rules staffing form",
+      "selector": "form.wb-config:has(.wb-savebar)",
+      "source": "src/components/wave-b-forms.tsx",
+      "line": 123,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "28d057925ed8ed849fcc7a846c2135af2281f9d30bb09d11265f364d487e69bf"
+    },
+    {
+      "label": "Rules add period",
+      "selector": "form.wb-period-form",
+      "source": "src/app/app/schedule/settings/page.tsx",
+      "line": 138,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "2d7a63152ce0bb4b563610db390cf717a744b0e15fdaa770042d9b859a5573ce"
+    },
+    {
+      "label": "Rules policy",
+      "selector": "details.wb-policy form:has(input[name=scope][value=swap])",
+      "source": "src/components/shift-change-policy-fields.tsx",
+      "line": 25,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "9a013a9bc36b418158f5f4d991317fd3700b1882fc5808dce725495eb2f307d9"
+    },
+    {
+      "label": "Update ready",
+      "selector": "article[data-update-revision]",
+      "source": "src/components/communication-detail.tsx",
+      "line": 86,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "0ed63d6db2580fbd4f03d428581ed6e639f291e14d0012db7fa8f06f930f7390"
+    },
+    {
+      "label": "Compose title",
+      "selector": "#communication-title",
+      "source": "src/components/communication-compose.tsx",
+      "line": 78,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "3045912c3be0732a85960a0541a8249d307c7e2bf5d58bf525e909f9131e8044"
+    },
+    {
+      "label": "Compose recovery",
+      "selector": ".wb-compose .wb-notice[role=\"status\"]",
+      "source": "src/components/communication-compose.tsx",
+      "line": 111,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "3045912c3be0732a85960a0541a8249d307c7e2bf5d58bf525e909f9131e8044"
+    },
+    {
+      "label": "Company form",
+      "selector": "form[data-form=company]",
+      "source": "src/components/payroll/payroll-settings.tsx",
+      "line": 112,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "ee80b3cf0b5dbbe4dec10ad2155034c2bce9183cfb4888e1ae525cf903ff43e2"
+    },
+    {
+      "label": "Exception form",
+      "selector": "form[data-form=exception]",
+      "source": "src/components/payroll/payroll-settings.tsx",
+      "line": 168,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "ee80b3cf0b5dbbe4dec10ad2155034c2bce9183cfb4888e1ae525cf903ff43e2"
+    },
+    {
+      "label": "Grant form",
+      "selector": "form[data-form=access]",
+      "source": "src/components/payroll/payroll-settings.tsx",
+      "line": 193,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "ee80b3cf0b5dbbe4dec10ad2155034c2bce9183cfb4888e1ae525cf903ff43e2"
+    },
+    {
+      "label": "Payroll toolbar",
+      "selector": ".pw-toolbar",
+      "source": "src/components/payroll/payroll-runs.tsx",
+      "line": 32,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "9bfc7d8dd4e4358ecca9bc218823997f28a59f5e8a0ab028a0bc0f726f9066e1"
+    },
+    {
+      "label": "Payroll documents",
+      "selector": ".pw-document strong",
+      "source": "src/components/payroll/payroll-ui.tsx",
+      "line": 37,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "8c3649d1413078dc8b7567672a39d6f6ec7fd91df4e0f3623f5c19d25ceb4cd5"
+    },
+    {
+      "label": "Payroll job label",
+      "selector": ".pw-job strong",
+      "source": "src/components/payroll/payroll-runs.tsx",
+      "line": 46,
+      "proof": "static source binding only; browser count/visibility/unique matching pending",
+      "sha256": "9bfc7d8dd4e4358ecca9bc218823997f28a59f5e8a0ab028a0bc0f726f9066e1"
+    }
+  ],
+  "pendingLabelRule": "Acquire form once before submission, give it a browser-only data-probe marker or element handle; do not re-locate by the changing submit label.",
+  "closedDisclosureRule": "Open the actual named disclosure before selecting its control; hidden closed-disclosure matches are harness gaps, not app defects."
+}

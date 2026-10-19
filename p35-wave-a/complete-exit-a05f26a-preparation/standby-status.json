@@ -1,0 +1,28 @@
+{
+  "sourceSha": "563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea",
+  "phase": "standby-prepared-only",
+  "previewRunning": false,
+  "browserExecuted": false,
+  "fixtureDatabaseInitialized": false,
+  "fiveAreaExitCertified": false,
+  "requiredRelease": "Root exact-SHA browser/fixture release after candidate32 gates",
+  "counts": {
+    "checkerAxe": 1792,
+    "baselineAndVariantJudgments": 1244,
+    "passiveOverlap": 560,
+    "separateJudgmentVisits": 684,
+    "heldForms": 720,
+    "heldResize": 112,
+    "actualReceipts": 128,
+    "browserMockedSent": 64,
+    "roleGuards": 192
+  },
+  "preparedAt": "2026-10-19T21:53:25.767273+00:00",
+  "remainingRuntimeGaps": [
+    "Initial fixture exact-source eligibility/receipt assertions have not executed",
+    "Actual first Inbox Coverage discovery pending",
+    "Next Flight sent response acceptance unverified",
+    "Actual owned error-boundary failure/retry seam still needs runtime verification",
+    "Full five-area judgment, state extras and source test/lint/typecheck gates remain pending"
+  ]
+}

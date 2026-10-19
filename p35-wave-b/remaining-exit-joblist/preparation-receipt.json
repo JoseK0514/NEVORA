@@ -1,0 +1,43 @@
+{
+  "reviewSHA": "368e98a18c16d47df04a93f2bea560843e461e0e",
+  "sourceClean": true,
+  "candidateFindingCount": 32,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "javascriptSyntaxChecked": 9,
+  "pythonSyntaxChecked": true,
+  "fixtureTypeScriptTranspile": "passed; no module import or execution",
+  "mockPassiveAndRequestContractCheck": "passed",
+  "matrixDryRun": "3008 cells/47pairs; axe every cell;1125 passive captures/407 crop pairs",
+  "initialFixtureDryRun": "complete seed before listen, all12 actor/grant reads required; no execution",
+  "mode": "STATIC ONLY; no previews/browser/network/database activity",
+  "codeChangeSinceRootInstruction": "only authorized normal merge of exact9ec into isolated review branch; no other app edits",
+  "fileHashes": {
+    "joblist.json": "21430cce309a3d3d2eb08242fcbc2b7e6636c8a35f84e7b2c890b9319fe03306",
+    "completed-source-manual-index.json": "2d81f368d19293a8add8a62838c341a83e7060e9a1df8ce5dcbb630e0229b2f6",
+    "JOBLIST.md": "f9a57d7a74d3fd7c06afe59de00f23aa9d6a161844678bcd25194606bc710c42",
+    "bindings/fixture-bindings.json": "3fca8d8a78cc7ddaca0615ba5c2321fe689e0c70dc0c88fa601b8faca8ba7e6d",
+    "bindings/preview-runtime.before-listen.patch": "ce6d006f3699ad4f970d0772657b2c9776c231ded0661cbdd4d860cb1baa8f34",
+    "bindings/state-action-bindings.json": "f1dbd05dd5df0eed1cbbbbf326370e3ffaec4dbe960f8b5cc18bd7480fcaaf38",
+    "bindings/static-selfcheck.json": "35f2d969b4a5c9f13808807c39e3e40cb7c2fdea44d3bdc152289253f6c8ac24",
+    "bindings/preview-runtime.private.mjs": "8962b30d3ede7960594e2e3d03ba2590c092103980ac1f8116251f910e60eadb",
+    "bindings/README.md": "b0d5b583f4b652d7a239eb4dac8f33fa0b0e573f5330405dcb1b3b0ff6f64192",
+    "bindings/initial-fixture.mts": "0366ea23c1dfda9287608e7e0fdd261789438e62afff6d2064183e54756bf6c5",
+    "bindings/selector-bindings.json": "4d37af8b8a0b9c72ce26cfffa01ef93a12faf6c623428d1f7386c698ce64302e",
+    "bindings/owned-preview.before-listen.patch": "30ab6571be9328424d64f6ae333631f29bacb2018b4c401cce8a49d438afa57d",
+    "bindings/initial-fixture.mts.syntax.mjs": "7497b8a86177fe7de808b91c4e7c0c9961c40e17d456162f65cee8a897ee93f1",
+    "scripts/passive-close-core.mjs": "34ef5a6d8a34b20ae29790c130dcfa75a04ce067190c0aa1df3b1c5fdd5934a4",
+    "scripts/collection-policy.mjs": "421a76c1abe762d567c1ec89bf41e3f1ca717e163e28bd362b7cff534af49125",
+    "scripts/stage-private-before-listen.py": "a592c5a120a5bb26c6bb869c46ca24393cdab9dd6e90d9f6c4d4b2511330a4bc",
+    "scripts/after-check-collector.mjs": "a03fc76cad2af3f25bba2465db98446397cf0c5b7cf5685df459f10c796236b8",
+    "scripts/serial-matrix.mjs": "56759ed00f3a7233d62a88e7d8d8cdd966b11ee29174fa3964c46b8a89d180d7",
+    "scripts/geometry-measure.mjs": "35f752c299f63da032739c8c017e906d72429858cd609a1cdb734a07080961f1",
+    "scripts/static-selfcheck.mjs": "18c3b2f1db4f7053bc8d3d28f29bb7bba8875b0e4d152c73ff24c84e8c11d1eb",
+    "scripts/state-contracts.mjs": "fbcd5a3306ba64a2095e3fd0ba9533c1ed38ff407e7e40dc7b03607703bf4bf5"
+  },
+  "unverified": [
+    "Private beforeListen runtime has not executed",
+    "Initial fixture population/empty/large variants have not executed",
+    "Actual browser selector uniqueness/visibility pending",
+    "Full official checker,manual five-area judgments,independent exit pending"
+  ]
+}

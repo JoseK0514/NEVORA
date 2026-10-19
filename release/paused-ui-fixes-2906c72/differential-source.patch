@@ -1,0 +1,45 @@
+diff --git a/src/app/app/payroll/payroll-workflow.css b/src/app/app/payroll/payroll-workflow.css
+index 984a90a..c794c43 100644
+--- a/src/app/app/payroll/payroll-workflow.css
++++ b/src/app/app/payroll/payroll-workflow.css
+@@ -185,3 +185,9 @@ html body .app-shell.nevora-portal .page-frame .payroll-workflow :is(.pw-documen
+ 
+ /* TC-P4-23: the payday line follows the kit callout floor; filenames are TC-B32. */
+ html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-statements header p { font: var(--nv-t-callout); }
++
++/* TC-RC-PAYROLL-01: desktop next-step guidance follows the kit's readable, scalable roles. */
++@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
++  html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-workflow-guidance { font: var(--nv-t-callout); }
++  html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-workflow-guidance strong { font: var(--nv-t-label); }
++}
+diff --git a/src/components/employee-home-reviewed.module.css b/src/components/employee-home-reviewed.module.css
+index 3d565f9..339f4b4 100644
+--- a/src/components/employee-home-reviewed.module.css
++++ b/src/components/employee-home-reviewed.module.css
+@@ -33,6 +33,9 @@
+ .arrival { padding: 24px 24px 56px; background: var(--home-masthead); color: white; }
+ .arrival h1 { font-size: 1.625rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.25; text-wrap: balance; }
+ .arrival p { margin-top: 6px; color: #FFFFFF; font-size: .8125rem; }
++.summarySlot { display: grid; grid-template-columns: minmax(0, 1fr); }
++.summarySlot > span { grid-area: 1 / 1; min-width: 0; }
++.summarySizer { visibility: hidden; pointer-events: none; user-select: none; }
+ .content { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: -28px; padding-inline: 20px; }
+ .mainColumn, .sideColumn { display: grid; align-content: start; gap: 20px; min-width: 0; }
+ .sideColumn { gap: 24px; }
+diff --git a/src/components/employee-home-reviewed.tsx b/src/components/employee-home-reviewed.tsx
+index 9e2b7d6..e63a055 100644
+--- a/src/components/employee-home-reviewed.tsx
++++ b/src/components/employee-home-reviewed.tsx
+@@ -293,7 +293,11 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
+         // at 200% text), so the band doesn't grow when Home arrives. Local time is close enough for its length.
+         : <span aria-hidden="true" style={{visibility: 'hidden'}} suppressHydrationWarning>{placeholderEyebrow()}</span>}
+       title={name ? `Hi, ${name}.` : 'Home'}
+-      summary={summary}
++      // ST-RC-HOME-01: the loading sentence and a dated next-shift sentence share their responsive space.
++      summary={<span className={styles.summarySlot}>
++        <span className={styles.summarySizer} aria-hidden="true">{keepWhole('Next shift Wed, May 30 at 10:00 AM.')}</span>
++        <span>{summary}</span>
++      </span>}
+       // Codex mobile review M8: required work is noticed on the first screen; the full list stays below.
+       // P3-ST-01: the review line is always there (checking, the link, or a calm note), so the band never changes height.
+       extra={snapshot && actions.length ? <a className="premium-band-link" href="#employee-reviewed-actions-heading">{actions.length === 1 ? '1 item needs your review' : `${actions.length} items need your review`}</a>

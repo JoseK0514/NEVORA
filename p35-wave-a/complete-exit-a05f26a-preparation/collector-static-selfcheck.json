@@ -1,0 +1,19 @@
+{
+  "type": "synthetic-module-hook-selfcheck",
+  "reviewBrowserExecuted": false,
+  "previewStarted": false,
+  "events": [
+    "unchanged-checker-result-pushed",
+    "after-result-dom-read",
+    "after-result-screenshot",
+    "after-result-dom-read",
+    "after-result-dom-read",
+    "after-result-dom-read",
+    "after-result-screenshot",
+    "original-page-close"
+  ],
+  "pagePathOnly": true,
+  "realCheckerBehaviorVerified": false,
+  "at": "2026-10-19T21:48:46.159Z",
+  "databaseWrites": false
+}

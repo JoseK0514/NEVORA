@@ -1,0 +1,553 @@
+{
+  "candidate": "b9567abc26b977a517b77622a1661b16172f5b16",
+  "preparedTree": "9be32b2597f8d5f24b7bcdabf4e5bea58cca137e",
+  "findings": [
+    {
+      "finding": "IS-P3-03",
+      "commit": "6229ad4bfa11e00ef5d1c8ae0f5a3046dd89bbaf",
+      "files": [
+        {
+          "file": "src/components/availability-editor.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "88d885f89ea188bb59ca0e9f5f3655c4248d1ab7bfe4403c1c383c253648dd74",
+          "preparedSha256": "88d885f89ea188bb59ca0e9f5f3655c4248d1ab7bfe4403c1c383c253648dd74"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-82",
+      "commit": "2dfc390c3aaa52c8a7602352bd46ed01c479067c",
+      "files": [
+        {
+          "file": "src/components/time-off-withdrawal.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "b8724e644eba0090350289089052202644c9f4fcf17d66bb9548aad39ee86bc4",
+          "preparedSha256": "b8724e644eba0090350289089052202644c9f4fcf17d66bb9548aad39ee86bc4"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "ST-P3-24",
+      "commit": "74b527db3c4909358daa4db9afd30c091e676ee6",
+      "files": [
+        {
+          "file": "src/components/availability-editor.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "88d885f89ea188bb59ca0e9f5f3655c4248d1ab7bfe4403c1c383c253648dd74",
+          "preparedSha256": "88d885f89ea188bb59ca0e9f5f3655c4248d1ab7bfe4403c1c383c253648dd74"
+        },
+        {
+          "file": "src/components/employee-submit-button.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "6f46e6ebf899383654e46b3850aab887cc0a4dcd4c49fa068fb11eb965c58eae",
+          "preparedSha256": "6f46e6ebf899383654e46b3850aab887cc0a4dcd4c49fa068fb11eb965c58eae"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-P3-02",
+      "commit": "db48fb36df39f097cf6ad393eb64dde6763b3c84",
+      "files": [
+        {
+          "file": "src/app/app/requests/time-off-form.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "05e8f5995ef64ea6d34b55a3d11e254d94b05c4cea6893668d35fa7138b4af0c",
+          "preparedSha256": "05e8f5995ef64ea6d34b55a3d11e254d94b05c4cea6893668d35fa7138b4af0c"
+        },
+        {
+          "file": "src/components/availability-editor.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "88d885f89ea188bb59ca0e9f5f3655c4248d1ab7bfe4403c1c383c253648dd74",
+          "preparedSha256": "88d885f89ea188bb59ca0e9f5f3655c4248d1ab7bfe4403c1c383c253648dd74"
+        },
+        {
+          "file": "src/lib/reveal-feedback.ts",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "47782d9ea53ff28788ffcc317259bb3e92586b6abbcf98165739717caa50067d",
+          "preparedSha256": "47782d9ea53ff28788ffcc317259bb3e92586b6abbcf98165739717caa50067d"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-PROFILE-17",
+      "commit": "69338fdad9343db13f30540e768c149af5b4814d",
+      "files": [
+        {
+          "file": "src/components/manager-profile/manager-profile-live.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "0dd80c242e6a49343ce069e5fcd666507ff412499fe32eb349b75a7eba5751da",
+          "preparedSha256": "0dd80c242e6a49343ce069e5fcd666507ff412499fe32eb349b75a7eba5751da"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-74",
+      "commit": "4b041f7bfc82eba7655f22a0d28fb22cf712db3e",
+      "files": [
+        {
+          "file": "src/components/availability-editor.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "88d885f89ea188bb59ca0e9f5f3655c4248d1ab7bfe4403c1c383c253648dd74",
+          "preparedSha256": "88d885f89ea188bb59ca0e9f5f3655c4248d1ab7bfe4403c1c383c253648dd74"
+        },
+        {
+          "file": "src/components/calendar-subscription-panel.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "50fb2dddf519df96edbafe2606a3d36df2f82083918c211d6641aba574394b7e",
+          "preparedSha256": "50fb2dddf519df96edbafe2606a3d36df2f82083918c211d6641aba574394b7e"
+        },
+        {
+          "file": "src/components/communication-detail.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a",
+          "preparedSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a"
+        },
+        {
+          "file": "src/components/employee-time-corrections.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "7cb9fba3bc229cb069f5151bbbee7d23ac94334ea2071d5c6620d2a3306954e3",
+          "preparedSha256": "7cb9fba3bc229cb069f5151bbbee7d23ac94334ea2071d5c6620d2a3306954e3"
+        },
+        {
+          "file": "src/components/reviewed-swap-form.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "eacc982398af511a878fe2b8c697e5f087d70a80627090addf54b6cd23fb4b59",
+          "preparedSha256": "eacc982398af511a878fe2b8c697e5f087d70a80627090addf54b6cd23fb4b59"
+        },
+        {
+          "file": "src/components/shift-change-form.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "b7ad57e61bf9ebcbcc7b6aa5aadd2b463f04a7303d351252a7a56c6e4399829b",
+          "preparedSha256": "b7ad57e61bf9ebcbcc7b6aa5aadd2b463f04a7303d351252a7a56c6e4399829b"
+        },
+        {
+          "file": "src/components/wave-a/pending-button.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "e86193b8bb89a50fdc3e7e4a0be60f2772326f0d9be0b758fd3021f1c785ccef",
+          "preparedSha256": "e86193b8bb89a50fdc3e7e4a0be60f2772326f0d9be0b758fd3021f1c785ccef"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-77",
+      "commit": "ac265b97e748546a6ea5ac4695999d8683bf1c52",
+      "files": [
+        {
+          "file": "src/components/timecards.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "57a2fd10eb112739a5a5de81aa55babd604e6f7b9a32823a9a995b27642d1ecd",
+          "preparedSha256": "57a2fd10eb112739a5a5de81aa55babd604e6f7b9a32823a9a995b27642d1ecd"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-78",
+      "commit": "6990234ea005f9d070ac508b2522d1c3fcf8af58",
+      "files": [
+        {
+          "file": "src/components/calendar-subscription-panel.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "50fb2dddf519df96edbafe2606a3d36df2f82083918c211d6641aba574394b7e",
+          "preparedSha256": "50fb2dddf519df96edbafe2606a3d36df2f82083918c211d6641aba574394b7e"
+        },
+        {
+          "file": "src/components/employee-time-corrections.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "7cb9fba3bc229cb069f5151bbbee7d23ac94334ea2071d5c6620d2a3306954e3",
+          "preparedSha256": "7cb9fba3bc229cb069f5151bbbee7d23ac94334ea2071d5c6620d2a3306954e3"
+        },
+        {
+          "file": "src/components/time-off-withdrawal.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "b8724e644eba0090350289089052202644c9f4fcf17d66bb9548aad39ee86bc4",
+          "preparedSha256": "b8724e644eba0090350289089052202644c9f4fcf17d66bb9548aad39ee86bc4"
+        },
+        {
+          "file": "src/components/timecards.batch.test.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "e6a2471414f00af1ab9a116f7c05e2471580f0f11e5745d9078daee674ed3ebb",
+          "preparedSha256": "e6a2471414f00af1ab9a116f7c05e2471580f0f11e5745d9078daee674ed3ebb"
+        },
+        {
+          "file": "src/components/timecards.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "57a2fd10eb112739a5a5de81aa55babd604e6f7b9a32823a9a995b27642d1ecd",
+          "preparedSha256": "57a2fd10eb112739a5a5de81aa55babd604e6f7b9a32823a9a995b27642d1ecd"
+        },
+        {
+          "file": "src/lib/time-corrections/client.test.ts",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "63a0d3c4eee1206565e906e25722686a300a619e0f6a7ab2a13d8cd8f4d55376",
+          "preparedSha256": "63a0d3c4eee1206565e906e25722686a300a619e0f6a7ab2a13d8cd8f4d55376"
+        },
+        {
+          "file": "src/lib/time-corrections/client.ts",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "8fc48db125f3739d77101299aad51da091d882c36752da935a6903f476150a1d",
+          "preparedSha256": "8fc48db125f3739d77101299aad51da091d882c36752da935a6903f476150a1d"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-79",
+      "commit": "f16da25568d0859d83e33e2045d4d058c58b51be",
+      "files": [
+        {
+          "file": "src/components/communication-compose.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "ec3809006ff139db101ca91441f478d22f407d69d8878ea018aaeb2eb47aee34",
+          "preparedSha256": "ec3809006ff139db101ca91441f478d22f407d69d8878ea018aaeb2eb47aee34"
+        },
+        {
+          "file": "src/components/communication-detail.test.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "51babaff1179c176227126d8f2f55a110f37a1c4d774bf64175b6509ffac03b6",
+          "preparedSha256": "51babaff1179c176227126d8f2f55a110f37a1c4d774bf64175b6509ffac03b6"
+        },
+        {
+          "file": "src/components/communication-detail.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a",
+          "preparedSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a"
+        },
+        {
+          "file": "src/lib/communications/client.ts",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "b912546b8cb3cd68685695d5e0408e2202b2d85483249f3221e3040caf8159c8",
+          "preparedSha256": "b912546b8cb3cd68685695d5e0408e2202b2d85483249f3221e3040caf8159c8"
+        },
+        {
+          "file": "src/lib/communications/recovery.test.ts",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "97961304cfb112fa2203f38fcfc43772859d563169a10c9b1a994a2c09fcb61e",
+          "preparedSha256": "97961304cfb112fa2203f38fcfc43772859d563169a10c9b1a994a2c09fcb61e"
+        },
+        {
+          "file": "src/lib/communications/recovery.ts",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "d88fcceb9b0b2c8b1505ca2e8a575f5c7a08aacd4c214a501e3e2be2a60363a0",
+          "preparedSha256": "d88fcceb9b0b2c8b1505ca2e8a575f5c7a08aacd4c214a501e3e2be2a60363a0"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-80",
+      "commit": "ab7d86603db6efdcc3f5b3f4ae746dd1075f41b2",
+      "files": [
+        {
+          "file": "src/components/calendar-subscription-panel.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "50fb2dddf519df96edbafe2606a3d36df2f82083918c211d6641aba574394b7e",
+          "preparedSha256": "50fb2dddf519df96edbafe2606a3d36df2f82083918c211d6641aba574394b7e"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-B12",
+      "commit": "21e603bb1541522cfafbc4b084b62620f50e66fc",
+      "files": [
+        {
+          "file": "src/components/communication-detail.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a",
+          "preparedSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a"
+        },
+        {
+          "file": "src/components/payroll/payroll-settings.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "628fe4f0151d20b705218b1585b849129844658dac821e994b40e0707adba970",
+          "preparedSha256": "628fe4f0151d20b705218b1585b849129844658dac821e994b40e0707adba970"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "TC-B-32",
+      "commit": "ed62b429b98dd34ef82987eeab766464a2158015",
+      "files": [
+        {
+          "file": "src/app/app/payroll/payroll-workflow.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "c500665d6f56b9501f3d7f80d1f02bc172ab10a92a03016f7f672c284691ad0d",
+          "preparedSha256": "c500665d6f56b9501f3d7f80d1f02bc172ab10a92a03016f7f672c284691ad0d"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "TC-P4-23",
+      "commit": "3918350e26dde412b77b51ec75d946715a4ae564",
+      "files": [
+        {
+          "file": "src/app/app/payroll/payroll-workflow.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "c500665d6f56b9501f3d7f80d1f02bc172ab10a92a03016f7f672c284691ad0d",
+          "preparedSha256": "c500665d6f56b9501f3d7f80d1f02bc172ab10a92a03016f7f672c284691ad0d"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "TC-P4-22",
+      "commit": "7386c45ad3a6c5bedbdc105d2f4a30d5812f9b94",
+      "files": [
+        {
+          "file": "src/app/app/availability/availability.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "05789b77b7c991f92348b2fcc316859b93a8d4c6c04c8602aeddb2469c396a51",
+          "preparedSha256": "05789b77b7c991f92348b2fcc316859b93a8d4c6c04c8602aeddb2469c396a51"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "RC-CB-TC-01",
+      "commit": "b176ff5c12a43043493c725ca9a2072bcce8bf6b",
+      "files": [
+        {
+          "file": "src/app/app/portal-gusto.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "55d49b4f776e21e097c6dbb9b144fb36a63f813c96e9892dd4a06e23708571f2",
+          "preparedSha256": "55d49b4f776e21e097c6dbb9b144fb36a63f813c96e9892dd4a06e23708571f2"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "TC-WA-16",
+      "commit": "fe77095e55ead21d1b9632e9e2f29107fa79123e",
+      "files": [
+        {
+          "file": "src/components/kit/kit.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "7d63083a64c87b151df25f7fc5fe60f4fe35d444a770e5f02666a8fff278abfa",
+          "preparedSha256": "7d63083a64c87b151df25f7fc5fe60f4fe35d444a770e5f02666a8fff278abfa"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "TC-B-16",
+      "commit": "2e4057333a736d1f374efdad931f8fdd6caede52",
+      "files": [
+        {
+          "file": "src/components/communication-detail.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a",
+          "preparedSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a"
+        },
+        {
+          "file": "src/lib/communications/client.ts",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "b912546b8cb3cd68685695d5e0408e2202b2d85483249f3221e3040caf8159c8",
+          "preparedSha256": "b912546b8cb3cd68685695d5e0408e2202b2d85483249f3221e3040caf8159c8"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "TCD-16",
+      "commit": "31f87cd492d8d205b484cf1f03d503b4f5b08cc1",
+      "files": [
+        {
+          "file": "src/app/app/portal-desktop.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "f25052d59f4b942912c12b7f2bccd04694fa09fdff58e7efdaa730dccff7c93f",
+          "preparedSha256": "f25052d59f4b942912c12b7f2bccd04694fa09fdff58e7efdaa730dccff7c93f"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "WR-WC-25",
+      "commit": "22ea160b9c9d9c8096a50d7aefa708a4e5dc4bb7",
+      "files": [
+        {
+          "file": "src/app/app/premium-wave-c.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "e70163625c0a30bf0d009212632a0183dc71df699a7754777c8eeda664ec8f17",
+          "preparedSha256": "e70163625c0a30bf0d009212632a0183dc71df699a7754777c8eeda664ec8f17"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "ST-13",
+      "commit": "6dacbe0a2f183cee245929b54e1914698b1caea3",
+      "files": [
+        {
+          "file": "src/app/app/premium-wave-c.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "e70163625c0a30bf0d009212632a0183dc71df699a7754777c8eeda664ec8f17",
+          "preparedSha256": "e70163625c0a30bf0d009212632a0183dc71df699a7754777c8eeda664ec8f17"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "ST-WA-7",
+      "commit": "0e29e3881d35813026329ad5ade31fc334c4a970",
+      "files": [
+        {
+          "file": "src/components/wave-a/pending-button.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "e86193b8bb89a50fdc3e7e4a0be60f2772326f0d9be0b758fd3021f1c785ccef",
+          "preparedSha256": "e86193b8bb89a50fdc3e7e4a0be60f2772326f0d9be0b758fd3021f1c785ccef"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "ST-WA-8",
+      "commit": "6e6719356855af7a28faf63bdc97344d8fb8a2d9",
+      "files": [
+        {
+          "file": "src/app/app/schedule/edit/delete-shift-button.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "5040e25d43eb3469fd98973ab828646f3ae4c0023c1d8535c7a3fab48164a92d",
+          "preparedSha256": "5040e25d43eb3469fd98973ab828646f3ae4c0023c1d8535c7a3fab48164a92d"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-RC-DELETE-01",
+      "commit": "22f0ba72914b24739357f70c6156edd4e7a15f8a",
+      "files": [
+        {
+          "file": "src/app/app/schedule/edit/delete-shift-button.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "5040e25d43eb3469fd98973ab828646f3ae4c0023c1d8535c7a3fab48164a92d",
+          "preparedSha256": "5040e25d43eb3469fd98973ab828646f3ae4c0023c1d8535c7a3fab48164a92d"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "ST-RC-CALENDAR-01",
+      "commit": "58e100a3fc80de3b3276ec8e5c349133e1f984ee",
+      "files": [
+        {
+          "file": "src/components/calendar-subscription-panel.test.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "4e8ef83ea8bddb0c0b8225ee35cd28b8db7236bbed616f565fb63e7089b57e5c",
+          "preparedSha256": "4e8ef83ea8bddb0c0b8225ee35cd28b8db7236bbed616f565fb63e7089b57e5c"
+        },
+        {
+          "file": "src/components/calendar-subscription-panel.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "50fb2dddf519df96edbafe2606a3d36df2f82083918c211d6641aba574394b7e",
+          "preparedSha256": "50fb2dddf519df96edbafe2606a3d36df2f82083918c211d6641aba574394b7e"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "ST-RC-ACK-01",
+      "commit": "e05d6618a2a3f1bdaf367da3b807ae63fb3caae5",
+      "files": [
+        {
+          "file": "src/components/communication-detail.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a",
+          "preparedSha256": "cf8fce2857254b070fc26bebb368a3ffb2f364b15e296dee2d91a527da462f2a"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "ST-RC-CORRECTION-01",
+      "commit": "e2d21fb2be3d45c4af98d173aa6cd4a0efa003cd",
+      "files": [
+        {
+          "file": "src/components/employee-time-corrections.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "7cb9fba3bc229cb069f5151bbbee7d23ac94334ea2071d5c6620d2a3306954e3",
+          "preparedSha256": "7cb9fba3bc229cb069f5151bbbee7d23ac94334ea2071d5c6620d2a3306954e3"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "TC-RC-ASSISTED-01",
+      "commit": "35c2c0a45de2ce4876c9174efd9abda740d16f0f",
+      "files": [
+        {
+          "file": "src/app/app/account-recovery/assisted-recovery.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "ee1155a0d6d10029a0c0cd7a7fa90292fcc4ab5873a53449aab63d2c1fe91e80",
+          "preparedSha256": "ee1155a0d6d10029a0c0cd7a7fa90292fcc4ab5873a53449aab63d2c1fe91e80"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-WA-2",
+      "commit": "536dfe62d52203751b95c3793076022ac02f2540",
+      "files": [
+        {
+          "file": "src/components/wave-a/action-form.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "0740b43cb66c06ae8598794e44f78bb9e4124ce3654baf4872e85f1b4c559e74",
+          "preparedSha256": "0740b43cb66c06ae8598794e44f78bb9e4124ce3654baf4872e85f1b4c559e74"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-WB-34",
+      "commit": "04430302d2e8242489d028a1e3bba090497124af",
+      "files": [
+        {
+          "file": "src/components/communication-compose.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "ec3809006ff139db101ca91441f478d22f407d69d8878ea018aaeb2eb47aee34",
+          "preparedSha256": "ec3809006ff139db101ca91441f478d22f407d69d8878ea018aaeb2eb47aee34"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "ST-WB-15",
+      "commit": "980e823eba6e243d456483b33cd0571131389cb6",
+      "files": [
+        {
+          "file": "src/components/communication-compose.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "ec3809006ff139db101ca91441f478d22f407d69d8878ea018aaeb2eb47aee34",
+          "preparedSha256": "ec3809006ff139db101ca91441f478d22f407d69d8878ea018aaeb2eb47aee34"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    },
+    {
+      "finding": "IS-RC-COMPOSE-01",
+      "commit": "b9567abc26b977a517b77622a1661b16172f5b16",
+      "files": [
+        {
+          "file": "src/components/communication-compose.css",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "db1edffc70eac4a7c5aee0f86637cd5705fd2ca3922121db4d4412b78f46c19e",
+          "preparedSha256": "db1edffc70eac4a7c5aee0f86637cd5705fd2ca3922121db4d4412b78f46c19e"
+        },
+        {
+          "file": "src/components/communication-compose.tsx",
+          "matchesFrozenCandidate": true,
+          "candidateSha256": "ec3809006ff139db101ca91441f478d22f407d69d8878ea018aaeb2eb47aee34",
+          "preparedSha256": "ec3809006ff139db101ca91441f478d22f407d69d8878ea018aaeb2eb47aee34"
+        }
+      ],
+      "allFilesMatchFrozenCandidate": true
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "ownerId": "bfeefd6a-35aa-46b8-bf9e-cc5f42a94de7",
+  "source": "/workspace/inspect-wave-b",
+  "root": "/workspace/paused-previews/wave-b-isb31/evidence-2026-10-19T21-27-48-285Z/owned-next-8zhYEL",
+  "runtime": "Next production-mode review build + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 63148,
+  "port": 40897,
+  "url": "http://127.0.0.1:40897",
+  "identity": {
+    "name": "nevora_exchange_test_audit_1d93313e9a81",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:05b5dcf6-072f-4374-aef1-f45fe37d9718"
+  },
+  "closed": true,
+  "closedAt": "2026-10-19T21:35:17.317Z",
+  "sourceVerified": true,
+  "mirrorVerified": true
+}

@@ -1,0 +1,22 @@
+{
+  "sourceSha": "563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea",
+  "checkedAt": "2026-10-19T21:53:02.761Z",
+  "scope": "Transpile syntax only; not runtime or semantic typecheck",
+  "rows": [
+    {
+      "file": "initial-fixture.mts",
+      "syntaxErrors": [],
+      "executed": false
+    },
+    {
+      "file": "initial-positive-fixture.mts",
+      "syntaxErrors": [],
+      "executed": false
+    },
+    {
+      "file": "payroll-preview-fixture.ts",
+      "syntaxErrors": [],
+      "executed": false
+    }
+  ]
+}

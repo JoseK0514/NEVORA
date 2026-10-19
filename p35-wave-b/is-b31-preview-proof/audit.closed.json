@@ -1,0 +1,46 @@
+{
+  "checkpoint": "9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7",
+  "tree": "92710d9db66f629daf18d0f982fa2abe806e9ed6",
+  "startedAt": "2026-10-19T21:27:48.866Z",
+  "screens": [],
+  "errors": [],
+  "checks": [
+    {
+      "name": "Fictional update inserted through owned fixture executor",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Owned local Next/PostgreSQL with fictional data; only DB adapter, bounded test transport and generated development type references substituted.",
+    "Viewport emulation is not physical iPhone/iPad testing.",
+    "Automated axe and keyboard checks do not certify a screen-reader audit.",
+    "Route visual inspection is not complete business workflow regression or production verification."
+  ],
+  "runtimeAdapter": {
+    "source": "/workspace/inspect-wave-b",
+    "checkpoint": "9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7",
+    "runtimeMode": "Next dev Turbopack; physical copied dependencies; source branch migrations; fictional executor-only bootstrap; pool12 scratch transport",
+    "helperHashes": {
+      "payroll-preview-fixture.ts": "f831c93bbab2e625927eaee84e92608bf196fab1b5094be615f4e18c1f11a505",
+      "preview-runtime.mjs": "dc9be8b27d7a6294c51f68381197e2391c1ab8df54bd1956e2197ee488ebc092",
+      "owned-preview-app-dev.mts": "4057b152a2a9d67b4234891fcb139271241d42165ec05beed10be12a7bd1a91a"
+    }
+  },
+  "sourceManifest": "/workspace/paused-previews/wave-b-isb31/evidence-2026-10-19T21-27-48-285Z/owned-next-8zhYEL/source-manifest.json",
+  "fixtureDate": "2026-10-19",
+  "fixtureWeek": "2026-10-19",
+  "nextWeekSeeded": "2026-10-26",
+  "payrollFixtureSeeded": true,
+  "bootstrapMethod": "fixture-only executor; no browser publication",
+  "demoAccounts": {
+    "owner": "QAOWNER",
+    "manager": "AUDIT-M",
+    "lead": "AUDIT-LEAD",
+    "employee": "AUDIT-E",
+    "payrollOwner": "payroll-qa-owner",
+    "payrollEmployee": "payroll-qa-a"
+  },
+  "completedAt": "2026-10-19T21:35:16.928Z",
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true
+}

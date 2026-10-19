@@ -1,0 +1,29 @@
+{
+  "checkpoint": "b9567abc26b977a517b77622a1661b16172f5b16",
+  "source": "/workspace/inspect-final-b9567ab",
+  "sourceHead": "b9567abc26b977a517b77622a1661b16172f5b16",
+  "trackedStatus": "",
+  "targeted": {
+    "total": 152,
+    "completed": 152,
+    "passed": 152,
+    "incomplete": 0
+  },
+  "checker": {
+    "cells": 72,
+    "passed": 60,
+    "sha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+    "completed": true,
+    "protectedContexts": 72,
+    "blockedApplicationWrites": 0
+  },
+  "closedVerified": true,
+  "harnessSha256": {
+    "close.mjs": "ef16ce21532dfb38d01a7f49fe99b74c01751b42c85593ca90a5afe828c44fdf",
+    "extra-cases.mjs": "9e6c736b4bf3625c2122f6b74dda1f7612616772ccbcc587adfa5d4c5b90dbed",
+    "checks.mjs": "6f70aa73606079e3aab665a8f5186a08a49dc11aaa21763407e38dad712aab45",
+    "verify.mjs": "9677287d7cab633e1ca2304bd5f20cc4d3cf5f5129a3e746512c61d975deaa1f",
+    "supplied-checks.mjs": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+    "checker-guard.mjs": "382b0e4f9c490102a6f76eea60507c6f3e7d09e20a1dd19ec8a59ac8e7f8cbcb"
+  }
+}

@@ -1,0 +1,396 @@
+{
+  "reviewSha": "1c741fda0abf6312de7e3860be139cb2767c1ff8",
+  "candidateBase": "b9567abc26b977a517b77622a1661b16172f5b16",
+  "sourceHead": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
+  "candidateFixCommits": 31,
+  "allFixCommitsAncestors": true,
+  "allFixTouchedFileBlobsEqualCandidate": true,
+  "allSourceCssEqualCandidate": true,
+  "fileProofs": [
+    {
+      "finding": "IS-P3-03",
+      "file": "src/components/availability-editor.tsx",
+      "candidateBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+      "reviewBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+      "equal": true
+    },
+    {
+      "finding": "IS-82",
+      "file": "src/components/time-off-withdrawal.tsx",
+      "candidateBlob": "b59332fb09eef732818dafbc1e864e0969935b62",
+      "reviewBlob": "b59332fb09eef732818dafbc1e864e0969935b62",
+      "equal": true
+    },
+    {
+      "finding": "ST-P3-24",
+      "file": "src/components/availability-editor.tsx",
+      "candidateBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+      "reviewBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+      "equal": true
+    },
+    {
+      "finding": "ST-P3-24",
+      "file": "src/components/employee-submit-button.tsx",
+      "candidateBlob": "d1f7ed00090eaef0119357b71da3a68799f2f989",
+      "reviewBlob": "d1f7ed00090eaef0119357b71da3a68799f2f989",
+      "equal": true
+    },
+    {
+      "finding": "IS-P3-02",
+      "file": "src/app/app/requests/time-off-form.tsx",
+      "candidateBlob": "03ecab7f789a80a5cc584e5c4662a30f45d209f9",
+      "reviewBlob": "03ecab7f789a80a5cc584e5c4662a30f45d209f9",
+      "equal": true
+    },
+    {
+      "finding": "IS-P3-02",
+      "file": "src/components/availability-editor.tsx",
+      "candidateBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+      "reviewBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+      "equal": true
+    },
+    {
+      "finding": "IS-P3-02",
+      "file": "src/lib/reveal-feedback.ts",
+      "candidateBlob": "04b1e63dc0b1ed3cfdee1cea929aa8513abaa2e5",
+      "reviewBlob": "04b1e63dc0b1ed3cfdee1cea929aa8513abaa2e5",
+      "equal": true
+    },
+    {
+      "finding": "IS-PROFILE-17",
+      "file": "src/components/manager-profile/manager-profile-live.tsx",
+      "candidateBlob": "76ce24c8dc41098314942d869443e1d3987e1faa",
+      "reviewBlob": "76ce24c8dc41098314942d869443e1d3987e1faa",
+      "equal": true
+    },
+    {
+      "finding": "IS-74",
+      "file": "src/components/availability-editor.tsx",
+      "candidateBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+      "reviewBlob": "856607c2e8736cfe9a9d4c96256d6ebbd5ae6810",
+      "equal": true
+    },
+    {
+      "finding": "IS-74",
+      "file": "src/components/calendar-subscription-panel.tsx",
+      "candidateBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+      "reviewBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+      "equal": true
+    },
+    {
+      "finding": "IS-74",
+      "file": "src/components/communication-detail.tsx",
+      "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "equal": true
+    },
+    {
+      "finding": "IS-74",
+      "file": "src/components/employee-time-corrections.tsx",
+      "candidateBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+      "reviewBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+      "equal": true
+    },
+    {
+      "finding": "IS-74",
+      "file": "src/components/reviewed-swap-form.tsx",
+      "candidateBlob": "2b2243975edfc46cffe255d1fcfe6597382efe44",
+      "reviewBlob": "2b2243975edfc46cffe255d1fcfe6597382efe44",
+      "equal": true
+    },
+    {
+      "finding": "IS-74",
+      "file": "src/components/shift-change-form.tsx",
+      "candidateBlob": "23c3bdac9ae04b58eca9b88d5031849b69367b99",
+      "reviewBlob": "23c3bdac9ae04b58eca9b88d5031849b69367b99",
+      "equal": true
+    },
+    {
+      "finding": "IS-74",
+      "file": "src/components/wave-a/pending-button.tsx",
+      "candidateBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+      "reviewBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+      "equal": true
+    },
+    {
+      "finding": "IS-77",
+      "file": "src/components/timecards.tsx",
+      "candidateBlob": "7d1c4089f8ce930eef666c4eeb0d26cde69d5396",
+      "reviewBlob": "7d1c4089f8ce930eef666c4eeb0d26cde69d5396",
+      "equal": true
+    },
+    {
+      "finding": "IS-78",
+      "file": "src/components/calendar-subscription-panel.tsx",
+      "candidateBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+      "reviewBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+      "equal": true
+    },
+    {
+      "finding": "IS-78",
+      "file": "src/components/employee-time-corrections.tsx",
+      "candidateBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+      "reviewBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+      "equal": true
+    },
+    {
+      "finding": "IS-78",
+      "file": "src/components/time-off-withdrawal.tsx",
+      "candidateBlob": "b59332fb09eef732818dafbc1e864e0969935b62",
+      "reviewBlob": "b59332fb09eef732818dafbc1e864e0969935b62",
+      "equal": true
+    },
+    {
+      "finding": "IS-78",
+      "file": "src/components/timecards.batch.test.tsx",
+      "candidateBlob": "b704a8ff1b49b84b5430bbc386c8e8e4df31aee5",
+      "reviewBlob": "b704a8ff1b49b84b5430bbc386c8e8e4df31aee5",
+      "equal": true
+    },
+    {
+      "finding": "IS-78",
+      "file": "src/components/timecards.tsx",
+      "candidateBlob": "7d1c4089f8ce930eef666c4eeb0d26cde69d5396",
+      "reviewBlob": "7d1c4089f8ce930eef666c4eeb0d26cde69d5396",
+      "equal": true
+    },
+    {
+      "finding": "IS-78",
+      "file": "src/lib/time-corrections/client.test.ts",
+      "candidateBlob": "4a4ad64c52703d13f5f344c7b5a0fcdd67db7835",
+      "reviewBlob": "4a4ad64c52703d13f5f344c7b5a0fcdd67db7835",
+      "equal": true
+    },
+    {
+      "finding": "IS-78",
+      "file": "src/lib/time-corrections/client.ts",
+      "candidateBlob": "47ae7879f7ec59b0aadcd6fa4e1a42d0042e1de6",
+      "reviewBlob": "47ae7879f7ec59b0aadcd6fa4e1a42d0042e1de6",
+      "equal": true
+    },
+    {
+      "finding": "IS-79",
+      "file": "src/components/communication-compose.tsx",
+      "candidateBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+      "reviewBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+      "equal": true
+    },
+    {
+      "finding": "IS-79",
+      "file": "src/components/communication-detail.test.tsx",
+      "candidateBlob": "4341025b12adf9b88484f430d11543c6162c2469",
+      "reviewBlob": "4341025b12adf9b88484f430d11543c6162c2469",
+      "equal": true
+    },
+    {
+      "finding": "IS-79",
+      "file": "src/components/communication-detail.tsx",
+      "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "equal": true
+    },
+    {
+      "finding": "IS-79",
+      "file": "src/lib/communications/client.ts",
+      "candidateBlob": "b6053dcc67b9f24388b98c295830311734c7e72a",
+      "reviewBlob": "b6053dcc67b9f24388b98c295830311734c7e72a",
+      "equal": true
+    },
+    {
+      "finding": "IS-79",
+      "file": "src/lib/communications/recovery.test.ts",
+      "candidateBlob": "96ddc0a1261fd58b851c3b6029e6eee4d8cef28d",
+      "reviewBlob": "96ddc0a1261fd58b851c3b6029e6eee4d8cef28d",
+      "equal": true
+    },
+    {
+      "finding": "IS-79",
+      "file": "src/lib/communications/recovery.ts",
+      "candidateBlob": "05c8c7bd7d364f23aca545891071246efb62b6a7",
+      "reviewBlob": "05c8c7bd7d364f23aca545891071246efb62b6a7",
+      "equal": true
+    },
+    {
+      "finding": "IS-80",
+      "file": "src/components/calendar-subscription-panel.tsx",
+      "candidateBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+      "reviewBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+      "equal": true
+    },
+    {
+      "finding": "IS-B12",
+      "file": "src/components/communication-detail.tsx",
+      "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "equal": true
+    },
+    {
+      "finding": "IS-B12",
+      "file": "src/components/payroll/payroll-settings.tsx",
+      "candidateBlob": "1b6b53801faf2c5481412f5ad6567a6685b84285",
+      "reviewBlob": "1b6b53801faf2c5481412f5ad6567a6685b84285",
+      "equal": true
+    },
+    {
+      "finding": "TC-B-32",
+      "file": "src/app/app/payroll/payroll-workflow.css",
+      "candidateBlob": "984a90a26b7ec2a3476c3841d7d524affff3f2c1",
+      "reviewBlob": "984a90a26b7ec2a3476c3841d7d524affff3f2c1",
+      "equal": true
+    },
+    {
+      "finding": "TC-P4-23",
+      "file": "src/app/app/payroll/payroll-workflow.css",
+      "candidateBlob": "984a90a26b7ec2a3476c3841d7d524affff3f2c1",
+      "reviewBlob": "984a90a26b7ec2a3476c3841d7d524affff3f2c1",
+      "equal": true
+    },
+    {
+      "finding": "TC-P4-22",
+      "file": "src/app/app/availability/availability.css",
+      "candidateBlob": "1a369c64e647b5ae68f19fb812972ba4a47b3a51",
+      "reviewBlob": "1a369c64e647b5ae68f19fb812972ba4a47b3a51",
+      "equal": true
+    },
+    {
+      "finding": "RC-CB-TC-01",
+      "file": "src/app/app/portal-gusto.css",
+      "candidateBlob": "110dff32230b53c1b6ff2c49dbd71a9b42b1a835",
+      "reviewBlob": "110dff32230b53c1b6ff2c49dbd71a9b42b1a835",
+      "equal": true
+    },
+    {
+      "finding": "TC-WA-16",
+      "file": "src/components/kit/kit.css",
+      "candidateBlob": "b8c2bc41acd43381a1662ee5770f10f23a2354bc",
+      "reviewBlob": "b8c2bc41acd43381a1662ee5770f10f23a2354bc",
+      "equal": true
+    },
+    {
+      "finding": "TC-B-16",
+      "file": "src/components/communication-detail.tsx",
+      "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "equal": true
+    },
+    {
+      "finding": "TC-B-16",
+      "file": "src/lib/communications/client.ts",
+      "candidateBlob": "b6053dcc67b9f24388b98c295830311734c7e72a",
+      "reviewBlob": "b6053dcc67b9f24388b98c295830311734c7e72a",
+      "equal": true
+    },
+    {
+      "finding": "TCD-16",
+      "file": "src/app/app/portal-desktop.css",
+      "candidateBlob": "6e6ec2679bb954e44280cc44eaf52fe4ac2d7f37",
+      "reviewBlob": "6e6ec2679bb954e44280cc44eaf52fe4ac2d7f37",
+      "equal": true
+    },
+    {
+      "finding": "WR-WC-25",
+      "file": "src/app/app/premium-wave-c.css",
+      "candidateBlob": "b3dfd68e4b1c44f59d6bda089f233e82a0ad626c",
+      "reviewBlob": "b3dfd68e4b1c44f59d6bda089f233e82a0ad626c",
+      "equal": true
+    },
+    {
+      "finding": "ST-13",
+      "file": "src/app/app/premium-wave-c.css",
+      "candidateBlob": "b3dfd68e4b1c44f59d6bda089f233e82a0ad626c",
+      "reviewBlob": "b3dfd68e4b1c44f59d6bda089f233e82a0ad626c",
+      "equal": true
+    },
+    {
+      "finding": "ST-WA-7",
+      "file": "src/components/wave-a/pending-button.tsx",
+      "candidateBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+      "reviewBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+      "equal": true
+    },
+    {
+      "finding": "ST-WA-8",
+      "file": "src/app/app/schedule/edit/delete-shift-button.tsx",
+      "candidateBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+      "reviewBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+      "equal": true
+    },
+    {
+      "finding": "IS-RC-DELETE-01",
+      "file": "src/app/app/schedule/edit/delete-shift-button.tsx",
+      "candidateBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+      "reviewBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+      "equal": true
+    },
+    {
+      "finding": "ST-RC-CALENDAR-01",
+      "file": "src/components/calendar-subscription-panel.test.tsx",
+      "candidateBlob": "c8e44ef02268bfa00c2b2d561541c25760cf307a",
+      "reviewBlob": "c8e44ef02268bfa00c2b2d561541c25760cf307a",
+      "equal": true
+    },
+    {
+      "finding": "ST-RC-CALENDAR-01",
+      "file": "src/components/calendar-subscription-panel.tsx",
+      "candidateBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+      "reviewBlob": "86cfbb8898c4028723c7b1272f258d7520a2bd7b",
+      "equal": true
+    },
+    {
+      "finding": "ST-RC-ACK-01",
+      "file": "src/components/communication-detail.tsx",
+      "candidateBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "reviewBlob": "54af357711b8c20e8adfef8a7f6fd97386fce70c",
+      "equal": true
+    },
+    {
+      "finding": "ST-RC-CORRECTION-01",
+      "file": "src/components/employee-time-corrections.tsx",
+      "candidateBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+      "reviewBlob": "dc4f0274a09852f82333be5e0eaca18a8618470a",
+      "equal": true
+    },
+    {
+      "finding": "TC-RC-ASSISTED-01",
+      "file": "src/app/app/account-recovery/assisted-recovery.css",
+      "candidateBlob": "06fc8c0e06c8c0b2dd9d5019e9f1866530a785e5",
+      "reviewBlob": "06fc8c0e06c8c0b2dd9d5019e9f1866530a785e5",
+      "equal": true
+    },
+    {
+      "finding": "IS-WA-2",
+      "file": "src/components/wave-a/action-form.tsx",
+      "candidateBlob": "2333d61c22026a5f67c5fd01186dc06d26092ef9",
+      "reviewBlob": "2333d61c22026a5f67c5fd01186dc06d26092ef9",
+      "equal": true
+    },
+    {
+      "finding": "IS-WB-34",
+      "file": "src/components/communication-compose.tsx",
+      "candidateBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+      "reviewBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+      "equal": true
+    },
+    {
+      "finding": "ST-WB-15",
+      "file": "src/components/communication-compose.tsx",
+      "candidateBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+      "reviewBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+      "equal": true
+    },
+    {
+      "finding": "IS-RC-COMPOSE-01",
+      "file": "src/components/communication-compose.css",
+      "candidateBlob": "df31502cdf7b71c9f8f0b824fc8e0b839a183a69",
+      "reviewBlob": "df31502cdf7b71c9f8f0b824fc8e0b839a183a69",
+      "equal": true
+    },
+    {
+      "finding": "IS-RC-COMPOSE-01",
+      "file": "src/components/communication-compose.tsx",
+      "candidateBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+      "reviewBlob": "9e2549e8f4b59fb5171d086a41c417d64c770b28",
+      "equal": true
+    }
+  ]
+}

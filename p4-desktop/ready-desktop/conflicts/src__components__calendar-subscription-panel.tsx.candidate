@@ -1,0 +1,98 @@
+'use client';
+import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
+import {useCallback,useEffect,useRef,useState} from 'react';
+import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus} from '@/lib/calendar/types';
+import Link from 'next/link';
+import {revealFeedback} from '@/lib/reveal-feedback';
+import {AppleLogoIcon} from '@phosphor-icons/react/dist/ssr/AppleLogo';
+import {GoogleLogoIcon} from '@phosphor-icons/react/dist/ssr/GoogleLogo';
+import {MicrosoftOutlookLogoIcon} from '@phosphor-icons/react/dist/ssr/MicrosoftOutlookLogo';
+import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
+import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
+import {NavIcon} from './nav-icon';
+import './calendar-subscription-panel.css';
+import {PendingLabel} from './employee-submit-button';
+type ViewProps={status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;onCommand:(kind:'ISSUE'|'ROTATE'|'REVOKE')=>void;onCopy:()=>void;onRetry:()=>void};
+export function CalendarSubscriptionView({status,url,paused,busy,notice,onCommand,onCopy,onRetry}:ViewProps){
+ const link=useRef<HTMLTextAreaElement>(null),feedback=useRef<HTMLDivElement>(null),unknown=notice.includes('unknown');
+ useEffect(()=>{if(notice&&feedback.current)revealFeedback(feedback.current);},[notice]);
+ const active=status?.state==='active',available=status&&'generation' in status;
+ const currentUrl=active&&!paused?url:null;
+ return <section className="employee-view-surface employee-calendar" aria-labelledby="employee-calendar-title" data-calendar-setting>
+  <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="calendar" size={24}/></span><div><h2 id="employee-calendar-title">Calendar subscription</h2><p>Your shifts, alongside your plans.</p></div></header>
+  {paused?<p role="status">Calendar settings paused. Return to this window to check the link.</p>:<>
+   <p>View your published shifts in Apple Calendar, Google Calendar, or Outlook.</p>
+   <div className="employee-calendar-status-box">
+    {!status?<p role="status">Checking calendar link…</p>:!available?<p role="alert">Calendar settings unavailable. {status.state==='unauthorized'?'Sign in again.':'Retry to check the current link.'}</p>:<>
+     <span className={`employee-calendar-state${active?' is-active':''}`}>{active?'Link active':status.state==='revoked'?'Link revoked':'No calendar link'}</span>
+     {!active?<><p>Create a private link, then add it to your calendar app.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ISSUE')}><PendingLabel pending={busy} pendingText="Saving…">Create link</PendingLabel></button></>:null}
+     {active&&!currentUrl?<><p>The link is stored securely and cannot be retrieved. Replace link to create a new URL; the previous link will stop working.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button></>:null}
+    </>}
+    {currentUrl?<div className="employee-calendar-secret">
+     <label htmlFor="employee-calendar-link">Your private calendar link</label><textarea ref={link} id="employee-calendar-link" value={currentUrl} readOnly spellCheck={false} autoComplete="off" rows={3} aria-describedby="employee-calendar-link-hint"/>
+     <div className="employee-calendar-actions"><button type="button" className="button calendar-primary" onClick={onCopy} disabled={busy}>Copy link</button><button type="button" className="button secondary" onClick={()=>{link.current?.focus();link.current?.select();}} disabled={busy}>Select link</button></div>
+     <p id="employee-calendar-link-hint" className="profile-supporting-copy">This URL is shown once. Copy it now, or replace it later.</p>
+    </div>:null}
+    <div ref={feedback} tabIndex={-1}>
+   {notice?<p role="status" className="employee-notice">{notice}</p>:null}
+   {status?.state==='unauthorized'?<Link className="button secondary" href="/login">Sign in</Link>:(status?.state==='unavailable'||unknown)?<button type="button" className="nv-btn" data-kind="primary" disabled={busy} onClick={onRetry}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again<span className="nv-sr"> to load the calendar link</span></button>:null}
+    </div>
+   </div>
+   <p className="employee-calendar-privacy"><LockKeyIcon size={18} aria-hidden="true"/><span>This private link includes your shift times and location labels. Anyone with the link can view these details.</span></p>
+   <section className="employee-calendar-providers" aria-labelledby="calendar-provider-title">
+    <h3 id="calendar-provider-title">Subscribe in your calendar app</h3>
+    <details><summary><AppleLogoIcon size={22} aria-hidden="true"/><span>Apple Calendar<small>iPhone, iPad, and Mac</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>On iPhone or iPad, open Calendar, then Calendars and Add Calendar. Choose Add Subscription Calendar.</li><li>Paste the link and follow the prompts. On Mac, choose File, then New Calendar Subscription.</li></ol><a href="https://support.apple.com/en-la/102301" target="_blank" rel="noreferrer">Apple subscription guide</a></div></details>
+    <details><summary><GoogleLogoIcon size={22} aria-hidden="true"/><span>Google Calendar<small>Set up on a computer</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>On a computer, open Google Calendar. Next to Other calendars, choose Add other calendars, then From URL.</li><li>Paste the link and choose Add calendar.</li></ol><a href="https://support.google.com/calendar/answer/37100?hl=en" target="_blank" rel="noreferrer">Google subscription guide</a></div></details>
+    <details><summary><MicrosoftOutlookLogoIcon size={22} aria-hidden="true"/><span>Outlook<small>Set up on the web</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>In Outlook on the web, open Calendar. Choose Add calendar, then Subscribe from web.</li><li>Paste the link and complete the import.</li></ol><a href="https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web" target="_blank" rel="noreferrer">Outlook subscription guide</a></div></details>
+   </section>
+   <p className="profile-supporting-copy">Calendar apps refresh on their own schedule. <Link href="/app/schedule">Check NEVORA</Link> for the latest schedule. Creating or copying a link does not confirm a calendar connection.</p>
+   {active?<details className="employee-calendar-management"><summary>Manage private link<CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><p>Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.</p><div className="employee-calendar-actions">{currentUrl?<button type="button" className="button secondary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button>:null}<button type="button" className="button secondary calendar-revoke" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('REVOKE')}>Revoke link</button></div></details>:null}
+
+  </>}
+ </section>;
+}
+export function CalendarSubscriptionPanel({authority}:{authority:string}){
+ const [status,setStatus]=useState<CalendarSubscriptionStatus|null>(null),[url,setUrl]=useState<string|null>(null),[paused,setPaused]=useState(false),[busy,setBusy]=useState(false),[notice,setNotice]=useState('');
+ const generation=useRef(0),work=useRef(0),busyNow=useRef(false),request=useRef<AbortController|null>(null),pending=useRef<CalendarCommand|null>(null),visible=useRef(true);
+ const refresh=useCallback(async()=>{
+  request.current?.abort();const controller=new AbortController(),at=++generation.current;request.current=controller;
+  try{const response=await fetch('/api/employee/calendar-subscriptions',{headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json'},credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal});const result=await response.json() as CalendarSubscriptionStatus;
+   if(at!==generation.current||!visible.current)return;
+   if(!response.ok||!('authority' in result)||result.authority!==authority){setUrl(null);setStatus({state:response.status===401||response.status===403?'unauthorized':'unavailable',reason:'read_failed'});return;}
+   setStatus(result);
+  }catch{if(at===generation.current&&visible.current){setUrl(null);setStatus({state:'unavailable',reason:'read_failed'});}}
+ },[authority]);
+ useEffect(()=>{
+  let expiry:ReturnType<typeof setInterval>;
+  const pause=()=>{visible.current=false;generation.current++;work.current++;busyNow.current=false;request.current?.abort();setUrl(null);setStatus(null);setBusy(false);setNotice('');setPaused(true);};
+  const resume=()=>{if(document.visibilityState!=='visible'||!navigator.onLine){pause();return;}visible.current=true;setPaused(false);if(pending.current)setNotice('The result is unknown. Retry the same operation to check it.');void refresh();};
+  const visibility=()=>document.visibilityState==='hidden'?pause():resume();
+  for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
+  for(const event of ['focus','pageshow','online'])window.addEventListener(event,resume);
+  const replacement=()=>{pending.current=null;pause();resume();};window.addEventListener('storage',replacement);document.addEventListener('visibilitychange',visibility);
+  resume();expiry=setInterval(()=>{if(visible.current&&!busyNow.current){setUrl(null);void refresh();}},45000);
+  return()=>{pause();clearInterval(expiry);pending.current=null;for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online'])window.removeEventListener(event,resume);window.removeEventListener('storage',replacement);document.removeEventListener('visibilitychange',visibility);};
+ // Authority is server-bound; replacing it destroys all transient private state.
+ },[authority,refresh]);
+ async function submit(kind:'ISSUE'|'ROTATE'|'REVOKE',retry=false){
+  if(!visible.current||busyNow.current||pending.current&&!retry||status?.state==='unauthorized')return;
+  const original=retry?pending.current:null;
+  if(!original&&(!status||!('generation' in status)))return;
+  const command:CalendarCommand=original??{kind,operationId:crypto.randomUUID(),authority,expectedGeneration:status&&'generation'in status?status.generation:''};pending.current=command;
+  const at=++generation.current,operation=++work.current,controller=new AbortController();request.current?.abort();request.current=controller;busyNow.current=true;setBusy(true);setUrl(null);setNotice('');
+  try{const response=await fetch('/api/employee/calendar-subscriptions',{method:'POST',headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json','Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal,body:JSON.stringify(command)});
+   if(at!==generation.current||!visible.current)return;
+   if(response.status===401||response.status===403){pending.current=null;setUrl(null);setStatus({state:'unauthorized',reason:'access_denied'});setNotice(response.status===401?'Your session ended. Sign in again to manage the link.':'Your access changed. Sign in again to check your access.');return;}
+   const result=await response.json() as CalendarManagementResult;
+   if(at!==generation.current||!visible.current)return;
+   if(result.status==='created'){pending.current=null;setUrl(result.url);setStatus({state:'active',id:result.id,generation:result.generation,issuedAt:new Date().toISOString(),allowedLocationIds:[],authority});setNotice('Link created.');}
+   else if(result.status==='active_url_unavailable'){pending.current=null;setNotice('The link is active. Its URL cannot be retrieved; replace the link to create a new one.');await refresh();}
+   else if(result.status==='revoked'){pending.current=null;setNotice('Link revoked.');await refresh();}
+   else if(result.status==='outcome_unknown'||result.status==='unavailable'){setNotice('The result is unknown. Retry the same operation to check it.');}
+   else{pending.current=null;setNotice(result.status==='conflict'?'The link changed. Check the current status and try again.':'Your session may have ended. Sign in again, then create the link.');setUrl(null);await refresh();}
+  }catch{if(at===generation.current&&visible.current)setNotice('The result is unknown. Retry the same operation to check it.');}
+  finally{if(operation===work.current&&visible.current){busyNow.current=false;setBusy(false);}}
+ }
+ async function copy(){if(!url||!visible.current)return;const at=generation.current;try{await navigator.clipboard.writeText(url);if(at===generation.current&&visible.current)setNotice('Link copied.');}catch{if(at===generation.current&&visible.current)setNotice('Copy was unavailable. Use Select link, then copy it manually.');}}
+ return <CalendarSubscriptionView status={status} url={url} paused={paused} busy={busy} notice={notice} onCommand={kind=>void submit(kind)} onCopy={()=>void copy()} onRetry={()=>pending.current?void submit(pending.current.kind,true):void refresh()}/>;
+}

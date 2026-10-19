@@ -1,0 +1,73 @@
+{
+  "checkpoint": "b9567abc26b977a517b77622a1661b16172f5b16",
+  "completed": 151,
+  "passed": 148,
+  "total": 152,
+  "assertions": 1580,
+  "failures": [
+    {
+      "name": "updates-read-retry",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "Error: Successful Updates retry did not restore ready heading focus\n    at until (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:24:142)\n    at async register.sizes [as fn] (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:101:680)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:134:561",
+      "failed": []
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "moved-on",
+      "failed": [
+        {
+          "message": "Denied Profile does not move reader who moved on",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "moved-on",
+      "failed": [
+        {
+          "message": "Denied Profile does not move reader who moved on",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "field-contrast",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "assisted-employee edge meets3:1",
+          "passed": false,
+          "detail": {
+            "id": "assisted-employee",
+            "border": "rgb(215, 217, 220)",
+            "borderWidth": "1px",
+            "background": "rgb(255, 255, 255)",
+            "fontSize": "17px",
+            "ratio": 1.414330213497637
+          }
+        },
+        {
+          "message": "assisted-attestation edge meets3:1",
+          "passed": false,
+          "detail": {
+            "id": "assisted-attestation",
+            "border": "rgb(215, 217, 220)",
+            "borderWidth": "1px",
+            "background": "rgb(255, 255, 255)",
+            "fontSize": "17px",
+            "ratio": 1.414330213497637
+          }
+        }
+      ]
+    }
+  ]
+}

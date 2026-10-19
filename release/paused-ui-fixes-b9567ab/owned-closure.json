@@ -1,0 +1,19 @@
+{
+  "ownerId": "9dd75214-1c1d-45ea-88d8-992fa0cfbda1",
+  "source": "/workspace/inspect-final-b9567ab",
+  "root": "/workspace/paused-previews/final-b9567ab/evidence-2026-10-19T21-21-43-289Z/owned-next-9xUAuP",
+  "runtime": "Next production-mode review build + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 58909,
+  "port": 44855,
+  "url": "http://127.0.0.1:44855",
+  "identity": {
+    "name": "nevora_exchange_test_audit_6f4facfeb488",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:da5daf9d-b847-49d3-8dec-f9b51bac4501"
+  },
+  "closed": true,
+  "closedAt": "2026-10-19T21:41:39.094Z",
+  "sourceVerified": true,
+  "mirrorVerified": true
+}

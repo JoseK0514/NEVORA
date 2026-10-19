@@ -1,0 +1,36 @@
+{
+  "branch": "codex/ready-desktop",
+  "worktree": "/workspace/ready-desktop",
+  "reviewSha": "724b430f3693bc5a9d37677ad250581e33d0f866",
+  "frozenCandidate": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "desktopInput": "8012d9790e72987140f939c7d70e1df9612ea009",
+  "mergeCommit": "8dd92eb1ace86911c4b66e612a2d785225979319",
+  "findingCommits": [
+    {
+      "finding": "ST-P4-13",
+      "commit": "5b66aa39ed2182e51ecb710b235f1f9fe583d7fb",
+      "proof": "../st-p4-13-8012d97-proof/README.md",
+      "exactReviewRecheck": "pending"
+    },
+    {
+      "finding": "TC-DESKTOP-KBD-01",
+      "alias": "TC-P4-24 (renamed source report77ad3b3)",
+      "commit": "28266eb37f9d0865a9581a16083f5699fe5a9467",
+      "proof": "../st-p4-13-8012d97-proof/header-kbd-report-77ad3b3.md",
+      "exactReviewRecheck": "pending",
+      "originalSnapshotAlias": "TC-P4-22 header; distinct from Availability TC-P4-22"
+    }
+  ],
+  "cleanWorktree": true,
+  "independentCertification": false,
+  "mergeEligible": false,
+  "zero": false,
+  "blockers": [
+    "Root32-fix candidate72-checker/full CI resource window has not released heavy validation/full preview",
+    "Exact review SHA typecheck/affected tests and full five-area exit are pending"
+  ],
+  "previewRunning": false,
+  "candidateFindingCount": 32,
+  "candidateFixMergeCommit": "724b430f3693bc5a9d37677ad250581e33d0f866",
+  "previousReviewSha": "28266eb37f9d0865a9581a16083f5699fe5a9467"
+}

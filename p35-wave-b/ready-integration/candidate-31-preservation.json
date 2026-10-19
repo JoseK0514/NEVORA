@@ -1,0 +1,356 @@
+[
+  {
+    "candidateCommit": "6229ad4bfa11e00ef5d1c8ae0f5a3046dd89bbaf",
+    "finding": "IS-P3-03",
+    "title": "IS-P3-03: retain the controlled availability draft after a failed save",
+    "originalFiles": [
+      "src/components/availability-editor.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "2dfc390c3aaa52c8a7602352bd46ed01c479067c",
+    "finding": "IS-82",
+    "title": "IS-82: preserve withdrawal confirmation for the same-operation retry",
+    "originalFiles": [
+      "src/components/time-off-withdrawal.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "74b527db3c4909358daa4db9afd30c091e676ee6",
+    "finding": "ST-P3-24",
+    "title": "ST-P3-24: reserve Availability submit labels while saving",
+    "originalFiles": [
+      "src/components/availability-editor.tsx",
+      "src/components/employee-submit-button.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "db48fb36df39f097cf6ad393eb64dde6763b3c84",
+    "finding": "IS-P3-02",
+    "title": "IS-P3-02: reveal and focus failed form outcomes above the phone bar",
+    "originalFiles": [
+      "src/app/app/requests/time-off-form.tsx",
+      "src/components/availability-editor.tsx",
+      "src/lib/reveal-feedback.ts"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "69338fdad9343db13f30540e768c149af5b4814d",
+    "finding": "IS-PROFILE-17",
+    "title": "IS-PROFILE-17: reveal user-initiated sign-in recovery before restoring focus",
+    "originalFiles": [
+      "src/components/manager-profile/manager-profile-live.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "4b041f7bfc82eba7655f22a0d28fb22cf712db3e",
+    "finding": "IS-74",
+    "title": "IS-74: retain the initiating action focus while guarded requests are pending",
+    "originalFiles": [
+      "src/components/availability-editor.tsx",
+      "src/components/calendar-subscription-panel.tsx",
+      "src/components/communication-detail.tsx",
+      "src/components/employee-time-corrections.tsx",
+      "src/components/reviewed-swap-form.tsx",
+      "src/components/shift-change-form.tsx",
+      "src/components/wave-a/pending-button.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [
+      "src/components/communication-detail.tsx"
+    ],
+    "preservation": "Source already uses guarded focusable review actions; preserve guarded onClick and aria-disabled while pending."
+  },
+  {
+    "candidateCommit": "ac265b97e748546a6ea5ac4695999d8683bf1c52",
+    "finding": "IS-77",
+    "title": "IS-77: replace stale timecard counts with a paused or offline state",
+    "originalFiles": [
+      "src/components/timecards.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "6990234ea005f9d070ac508b2522d1c3fcf8af58",
+    "finding": "IS-78",
+    "title": "IS-78: provide sign-in recovery after denied employee actions",
+    "originalFiles": [
+      "src/components/calendar-subscription-panel.tsx",
+      "src/components/employee-time-corrections.tsx",
+      "src/components/time-off-withdrawal.tsx",
+      "src/components/timecards.batch.test.tsx",
+      "src/components/timecards.tsx",
+      "src/lib/time-corrections/client.test.ts",
+      "src/lib/time-corrections/client.ts"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "f16da25568d0859d83e33e2045d4d058c58b51be",
+    "finding": "IS-79",
+    "title": "IS-79: announce pending review and distinguish a signed-out acknowledgement",
+    "originalFiles": [
+      "src/components/communication-compose.tsx",
+      "src/components/communication-detail.test.tsx",
+      "src/components/communication-detail.tsx",
+      "src/lib/communications/client.ts",
+      "src/lib/communications/recovery.test.ts",
+      "src/lib/communications/recovery.ts"
+    ],
+    "integrationTouchedOriginalFiles": [
+      "src/components/communication-compose.tsx",
+      "src/components/communication-detail.test.tsx",
+      "src/components/communication-detail.tsx"
+    ],
+    "preservation": "Ported pending live review status and action signed-out kit state; read/client metadata retained from candidate."
+  },
+  {
+    "candidateCommit": "ab7d86603db6efdcc3f5b3f4ae746dd1075f41b2",
+    "finding": "IS-80",
+    "title": "IS-80: reveal calendar recovery beside the initiating action and reuse its command",
+    "originalFiles": [
+      "src/components/calendar-subscription-panel.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "21e603bb1541522cfafbc4b084b62620f50e66fc",
+    "finding": "IS-B12",
+    "title": "IS-B12: restore update retry focus and retain the payroll save focus",
+    "originalFiles": [
+      "src/components/communication-detail.tsx",
+      "src/components/payroll/payroll-settings.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [
+      "src/components/communication-detail.tsx",
+      "src/components/payroll/payroll-settings.tsx"
+    ],
+    "preservation": "Ported stable parent tracker to source article; Company button outside disabled fieldset plus locked guard and feedback reveal."
+  },
+  {
+    "candidateCommit": "ed62b429b98dd34ef82987eeab766464a2158015",
+    "finding": "TC-B-32",
+    "title": "TC-B-32: use kit labels for payroll filenames and workflow labels",
+    "originalFiles": [
+      "src/app/app/payroll/payroll-workflow.css"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "3918350e26dde412b77b51ec75d946715a4ae564",
+    "finding": "TC-P4-23",
+    "title": "TC-P4-23: raise the statement payday line to the kit callout floor",
+    "originalFiles": [
+      "src/app/app/payroll/payroll-workflow.css"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "7386c45ad3a6c5bedbdc105d2f4a30d5812f9b94",
+    "finding": "TC-P4-22",
+    "title": "TC-P4-22: use the desktop kit label role for availability times",
+    "originalFiles": [
+      "src/app/app/availability/availability.css"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "b176ff5c12a43043493c725ca9a2072bcce8bf6b",
+    "finding": "RC-CB-TC-01",
+    "title": "RC-CB-TC-01: use readable kit roles for desktop sidebar labels and credit",
+    "originalFiles": [
+      "src/app/app/portal-gusto.css"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "fe77095e55ead21d1b9632e9e2f29107fa79123e",
+    "finding": "TC-WA-16",
+    "title": "TC-WA-16: retain kit text contrast on pending actions",
+    "originalFiles": [
+      "src/components/kit/kit.css"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original kit rule unchanged; added Wave-B scoped pending colors/opacity1/transform:none against source high-specificity opacity.72."
+  },
+  {
+    "candidateCommit": "2e4057333a736d1f374efdad931f8fdd6caede52",
+    "finding": "TC-B-16",
+    "title": "TC-B-16: distinguish an ended session from changed update access",
+    "originalFiles": [
+      "src/components/communication-detail.tsx",
+      "src/lib/communications/client.ts"
+    ],
+    "integrationTouchedOriginalFiles": [
+      "src/components/communication-detail.tsx"
+    ],
+    "preservation": "Preserved session_ended read metadata and explicit ended-session kit band; access remains distinct."
+  },
+  {
+    "candidateCommit": "31f87cd492d8d205b484cf1f03d503b4f5b08cc1",
+    "finding": "TCD-16",
+    "title": "TCD-16: apply the reported Employee and Lead desktop text floor",
+    "originalFiles": [
+      "src/app/app/portal-desktop.css"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "22ea160b9c9d9c8096a50d7aefa708a4e5dc4bb7",
+    "finding": "WR-WC-25",
+    "title": "WR-WC-25: preserve dialog action label height on narrow phones",
+    "originalFiles": [
+      "src/app/app/premium-wave-c.css"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "6dacbe0a2f183cee245929b54e1914698b1caea3",
+    "finding": "ST-13",
+    "title": "ST-13: bound failed-save feedback inside the Wave C phone bar",
+    "originalFiles": [
+      "src/app/app/premium-wave-c.css"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "0e29e3881d35813026329ad5ade31fc334c4a970",
+    "finding": "ST-WA-7",
+    "title": "ST-WA-7: reserve both labels in the responsive swap submit button",
+    "originalFiles": [
+      "src/components/wave-a/pending-button.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "6e6719356855af7a28faf63bdc97344d8fb8a2d9",
+    "finding": "ST-WA-8",
+    "title": "ST-WA-8: reserve the delete shift label while its action is pending",
+    "originalFiles": [
+      "src/app/app/schedule/edit/delete-shift-button.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "22f0ba72914b24739357f70c6156edd4e7a15f8a",
+    "finding": "IS-RC-DELETE-01",
+    "title": "IS-RC-DELETE-01: retain guarded delete action focus while pending",
+    "originalFiles": [
+      "src/app/app/schedule/edit/delete-shift-button.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "58e100a3fc80de3b3276ec8e5c349133e1f984ee",
+    "finding": "ST-RC-CALENDAR-01",
+    "title": "ST-RC-CALENDAR-01: reserve calendar action labels while saving",
+    "originalFiles": [
+      "src/components/calendar-subscription-panel.test.tsx",
+      "src/components/calendar-subscription-panel.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "e05d6618a2a3f1bdaf367da3b807ae63fb3caae5",
+    "finding": "ST-RC-ACK-01",
+    "title": "ST-RC-ACK-01: reserve update review action labels while pending",
+    "originalFiles": [
+      "src/components/communication-detail.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [
+      "src/components/communication-detail.tsx"
+    ],
+    "preservation": "Ported PendingLabel to acknowledgement/mark-read actions."
+  },
+  {
+    "candidateCommit": "e2d21fb2be3d45c4af98d173aa6cd4a0efa003cd",
+    "finding": "ST-RC-CORRECTION-01",
+    "title": "ST-RC-CORRECTION-01: hold correction actions steady during the first send",
+    "originalFiles": [
+      "src/components/employee-time-corrections.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "35c2c0a45de2ce4876c9174efd9abda740d16f0f",
+    "finding": "TC-RC-ASSISTED-01",
+    "title": "TC-RC-ASSISTED-01: use the kit field edge on legacy assisted recovery",
+    "originalFiles": [
+      "src/app/app/account-recovery/assisted-recovery.css"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "536dfe62d52203751b95c3793076022ac02f2540",
+    "finding": "IS-WA-2",
+    "title": "IS-WA-2: reveal failed action notices after React mounts each outcome",
+    "originalFiles": [
+      "src/components/wave-a/action-form.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [],
+    "preservation": "Original candidate fix files remain unchanged from base; no replacement port needed."
+  },
+  {
+    "candidateCommit": "04430302d2e8242489d028a1e3bba090497124af",
+    "finding": "IS-WB-34",
+    "title": "IS-WB-34: reveal publication recovery and focus its actual next step",
+    "originalFiles": [
+      "src/components/communication-compose.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [
+      "src/components/communication-compose.tsx"
+    ],
+    "preservation": "Ported recoveryRef plus revealFeedback on both notice and actual first recovery button; preview heading uses revealFeedback."
+  },
+  {
+    "candidateCommit": "980e823eba6e243d456483b33cd0571131389cb6",
+    "finding": "ST-WB-15",
+    "title": "ST-WB-15: preserve publication action labels while publishing",
+    "originalFiles": [
+      "src/components/communication-compose.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [
+      "src/components/communication-compose.tsx"
+    ],
+    "preservation": "Ported PendingLabel to publish update/new-version action."
+  },
+  {
+    "candidateCommit": "b9567abc26b977a517b77622a1661b16172f5b16",
+    "finding": "IS-RC-COMPOSE-01",
+    "title": "IS-RC-COMPOSE-01: retain guarded publication focus while pending",
+    "originalFiles": [
+      "src/components/communication-compose.css",
+      "src/components/communication-compose.tsx"
+    ],
+    "integrationTouchedOriginalFiles": [
+      "src/components/communication-compose.css",
+      "src/components/communication-compose.tsx"
+    ],
+    "preservation": "Ported guarded publish/aria-disabled behavior to kit; scoped pending style preserves colors/opacity/transform."
+  }
+]

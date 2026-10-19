@@ -1,0 +1,315 @@
+{
+  "source": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "count": 44,
+  "rules": "Shared placeholder ownership covers the entire app route inventory. Resolve bracket IDs from the owned fixture, evaluate actual authorized roles and classify the actual loading boundary before running; no route silently disappears because a sibling chat owns its ready state. Shell-only inspection of other owners; do not refind their ready-state content.",
+  "routes": [
+    {
+      "routeTemplate": "/app/account-recovery",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/account-recovery",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/availability",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/availability",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/clocker-recovery",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/clocker-recovery",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/employees",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/employees",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/employees/[employeeId]",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "pending",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/employees/[employeeId]/clocker-pin",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "pending",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/employees/new",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/employees/new",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/exchange",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/exchange",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/exchange/callout",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/exchange/callout",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/exchange/swap",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/exchange/swap",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/inbox",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/inbox",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/my-pay",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/my-pay",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/my-time",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/my-time",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/notifications",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/notifications",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/payroll",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/payroll",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/payroll-export",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/payroll-export",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/profile",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/profile",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/reports",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/reports",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/requests",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/requests",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/requests/hub",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/requests/hub",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/schedule",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/schedule",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/copy-receipt",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/schedule/copy-receipt",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/coverage",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/schedule/coverage",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/edit",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/schedule/edit",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/new",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/schedule/new",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/settings",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/schedule/settings",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/templates",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/schedule/templates",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/branding",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/branding",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/breaks",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/breaks",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/clocker",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/clocker",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/company-policies",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/company-policies",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/features",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/features",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/locations",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/locations",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/locations/[locationId]",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "pending",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/locations/new",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/locations/new",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/payroll",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/payroll",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/positions",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/positions",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/settings/workspace",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/settings/workspace",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/timecards",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/timecards",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/updates",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/updates",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/updates/[id]",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "pending",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    },
+    {
+      "routeTemplate": "/app/updates/compose",
+      "roleAssignments": "pending-final-source-route-access-catalog",
+      "fixtureRoute": "/app/updates/compose",
+      "loadingBoundary": "pending-observation",
+      "status": "pending"
+    }
+  ]
+}

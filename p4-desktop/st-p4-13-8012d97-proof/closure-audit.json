@@ -1,0 +1,46 @@
+{
+  "checkpoint": "8012d9790e72987140f939c7d70e1df9612ea009",
+  "tree": "4d5f99b6bb1d14f15d4c557c1a3f6f720d4f1a9f",
+  "startedAt": "2026-10-19T21:26:50.075Z",
+  "screens": [],
+  "errors": [],
+  "checks": [
+    {
+      "name": "Fictional update inserted through owned fixture executor",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Owned local Next/PostgreSQL with fictional data; only DB adapter, bounded test transport and generated development type references substituted.",
+    "Viewport emulation is not physical iPhone/iPad testing.",
+    "Automated axe and keyboard checks do not certify a screen-reader audit.",
+    "Route visual inspection is not complete business workflow regression or production verification."
+  ],
+  "runtimeAdapter": {
+    "source": "/workspace/inspect-desktop",
+    "checkpoint": "8012d9790e72987140f939c7d70e1df9612ea009",
+    "runtimeMode": "Next dev Turbopack; physical copied dependencies; source branch migrations; fictional executor-only bootstrap; pool12 scratch transport",
+    "helperHashes": {
+      "payroll-preview-fixture.ts": "b377b4cbdbf365e2b2c3eddf66f746c8971eefa21fb9235ed7816d1713601499",
+      "preview-runtime.mjs": "dc9be8b27d7a6294c51f68381197e2391c1ab8df54bd1956e2197ee488ebc092",
+      "owned-preview-app-dev.mts": "4057b152a2a9d67b4234891fcb139271241d42165ec05beed10be12a7bd1a91a"
+    }
+  },
+  "sourceManifest": "/workspace/paused-previews/desktop-st-p4-13/evidence-2026-10-19T21-26-49-376Z/owned-next-LZxfwx/source-manifest.json",
+  "fixtureDate": "2026-10-19",
+  "fixtureWeek": "2026-10-19",
+  "nextWeekSeeded": "2026-10-26",
+  "payrollFixtureSeeded": true,
+  "bootstrapMethod": "fixture-only executor; no browser publication",
+  "demoAccounts": {
+    "owner": "QAOWNER",
+    "manager": "AUDIT-M",
+    "lead": "AUDIT-LEAD",
+    "employee": "AUDIT-E",
+    "payrollOwner": "payroll-qa-owner",
+    "payrollEmployee": "payroll-qa-a"
+  },
+  "completedAt": "2026-10-19T21:34:24.175Z",
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true
+}

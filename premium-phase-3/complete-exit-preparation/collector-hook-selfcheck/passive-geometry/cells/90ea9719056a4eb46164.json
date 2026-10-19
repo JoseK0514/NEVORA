@@ -1,0 +1,17 @@
+{
+ "engine": "chromium",
+ "account": "AUDIT-E",
+ "size": "390",
+ "text": 100,
+ "route": "/app",
+ "sha": "0000000000000000000000000000000000000000",
+ "lineage": "inert-mock-only-no-browser",
+ "scriptHash": "9b822f38d45911a542823790a95d3404a922e16e957b4c060c61594173f1b5a5",
+ "policy": "primary-role-judgment",
+ "phase": "after-unchanged-checker-cell",
+ "observedAt": "2026-10-19T21:38:20.236Z",
+ "pageUrl": "http://127.0.0.1/mock-only-0",
+ "topCrop": "/workspace/nevora-inspections/premium-phase-3/complete-exit-preparation/collector-hook-selfcheck/passive-geometry/crops/90ea9719056a4eb46164-top.png",
+ "bottom": {},
+ "bottomCrop": "/workspace/nevora-inspections/premium-phase-3/complete-exit-preparation/collector-hook-selfcheck/passive-geometry/crops/90ea9719056a4eb46164-bottom.png"
+}

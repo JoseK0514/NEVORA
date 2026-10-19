@@ -1,0 +1,66 @@
+08548f9 merge: stage Wave B source on the isolated Codex review branch
+
+ .../specs/p35-wave-b/CODEX-READY-PRESERVATION.md   |  54 ++
+ docs/product/specs/p35-wave-b/CODEX.md             |  33 ++
+ docs/product/specs/p35-wave-b/README.md            |  29 +
+ docs/product/specs/p35-wave-b/ROUND.md             |  81 +++
+ docs/product/specs/p35-wave-b/inspection/BRIEF.md  |  50 ++
+ .../product/specs/p35-wave-b/inspection/ROUND-2.md |  35 ++
+ .../specs/p35-wave-b/inspection/alignment.md       | 215 +++++++
+ .../p35-wave-b/inspection/interaction-states.md    | 248 ++++++++
+ .../specs/p35-wave-b/inspection/stability.md       | 208 +++++++
+ .../p35-wave-b/inspection/type-colour-copy.md      | 304 ++++++++++
+ .../specs/p35-wave-b/inspection/widths-roles.md    | 242 ++++++++
+ .../p35-wave-b/screens/compose-employee-1440.png   | Bin 0 -> 128507 bytes
+ .../p35-wave-b/screens/compose-employee-390.png    | Bin 0 -> 108070 bytes
+ .../p35-wave-b/screens/compose-manager-1440.png    | Bin 0 -> 138456 bytes
+ .../p35-wave-b/screens/compose-manager-390.png     | Bin 0 -> 108166 bytes
+ .../p35-wave-b/screens/insights-owner-1440.png     | Bin 0 -> 501895 bytes
+ .../p35-wave-b/screens/insights-owner-390.png      | Bin 0 -> 589787 bytes
+ .../screens/payroll-runs-manager-1440.png          | Bin 0 -> 345505 bytes
+ .../screens/payroll-runs-manager-390.png           | Bin 0 -> 299593 bytes
+ .../screens/payroll-settings-owner-1440.png        | Bin 0 -> 405375 bytes
+ .../screens/payroll-settings-owner-390.png         | Bin 0 -> 402017 bytes
+ .../screens/scheduling-rules-owner-1440.png        | Bin 0 -> 345695 bytes
+ .../screens/scheduling-rules-owner-390.png         | Bin 0 -> 311836 bytes
+ .../p35-wave-b/screens/templates-owner-1440.png    | Bin 0 -> 125359 bytes
+ .../p35-wave-b/screens/templates-owner-390.png     | Bin 0 -> 93196 bytes
+ .../screens/update-detail-employee-1440.png        | Bin 0 -> 94272 bytes
+ .../screens/update-detail-employee-390.png         | Bin 0 -> 75931 bytes
+ .../screens/update-detail-manager-1440.png         | Bin 0 -> 105859 bytes
+ .../screens/update-detail-manager-390.png          | Bin 0 -> 77542 bytes
+ src/app/app/premium-wave-b.css                     | 635 +++++++++++++++++++++
+ src/app/app/reports/loading.tsx                    |   3 +-
+ src/app/app/reports/page.tsx                       |   7 +-
+ src/app/app/root-loading.tsx                       |   6 +
+ src/app/app/schedule/settings/loading.tsx          |   6 +
+ src/app/app/schedule/settings/page.test.tsx        |  18 +-
+ src/app/app/schedule/settings/page.tsx             | 201 ++++---
+ src/app/app/schedule/settings/scheduling-rules.css | 168 ------
+ src/app/app/schedule/templates/loading.tsx         |   6 +
+ src/app/app/schedule/templates/page.test.tsx       |   6 +-
+ src/app/app/schedule/templates/page.tsx            | 172 +++---
+ src/app/app/schedule/templates/templates.css       |  83 ---
+ src/app/app/settings/payroll/loading.tsx           |   6 +
+ src/app/app/updates/[id]/loading.tsx               |   6 +
+ src/app/app/updates/compose/loading.tsx            |   6 +
+ src/components/communication-compose.css           | 114 ----
+ src/components/communication-compose.test.tsx      |   2 +-
+ src/components/communication-compose.tsx           | 108 ++--
+ src/components/communication-detail.css            | 152 -----
+ src/components/communication-detail.test.tsx       |   6 +-
+ src/components/communication-detail.tsx            | 130 +++--
+ src/components/payroll/backlog-review.tsx          |   7 +-
+ src/components/payroll/payroll-runs.tsx            |  18 +-
+ src/components/payroll/payroll-settings.tsx        | 106 ++--
+ src/components/position-quota-fields.tsx           |  28 +-
+ src/components/report-lifetime.test.tsx            |  23 +-
+ src/components/reports-entrance.tsx                |   3 +-
+ src/components/reports.module.css                  | 190 ------
+ src/components/reports.tsx                         | 147 +++--
+ src/components/rules-hours-list.test.tsx           |   2 +-
+ src/components/rules-hours-list.tsx                |  37 +-
+ src/components/schedule-template-controls.tsx      |  20 +-
+ src/components/shift-change-policy-fields.tsx      |  72 +--
+ src/components/wave-b-forms.tsx                    | 227 ++++++++
+ 63 files changed, 3047 insertions(+), 1173 deletions(-)

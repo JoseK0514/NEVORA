@@ -1,0 +1,146 @@
+[
+  {
+    "file": "docs/product/specs/premium-phase-3/ROUND.md",
+    "candidate": "docs__product__specs__premium-phase-3__ROUND.md.candidate",
+    "desktop": "docs__product__specs__premium-phase-3__ROUND.md.desktop"
+  },
+  {
+    "file": "docs/product/specs/premium-phase-3/inspection/alignment.md",
+    "candidate": "docs__product__specs__premium-phase-3__inspection__alignment.md.candidate",
+    "desktop": "docs__product__specs__premium-phase-3__inspection__alignment.md.desktop"
+  },
+  {
+    "file": "docs/product/specs/premium-phase-3/inspection/stability.md",
+    "candidate": "docs__product__specs__premium-phase-3__inspection__stability.md.candidate",
+    "desktop": "docs__product__specs__premium-phase-3__inspection__stability.md.desktop"
+  },
+  {
+    "file": "docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+    "candidate": "docs__product__specs__premium-phase-3__inspection__type-colour-copy.md.candidate",
+    "desktop": "docs__product__specs__premium-phase-3__inspection__type-colour-copy.md.desktop"
+  },
+  {
+    "file": "docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+    "candidate": "docs__product__specs__premium-phase-3__inspection__widths-roles-consistency.md.candidate",
+    "desktop": "docs__product__specs__premium-phase-3__inspection__widths-roles-consistency.md.desktop"
+  },
+  {
+    "file": "scripts/ui-checks/preview-runtime.mjs",
+    "candidate": "scripts__ui-checks__preview-runtime.mjs.candidate",
+    "desktop": "scripts__ui-checks__preview-runtime.mjs.desktop"
+  },
+  {
+    "file": "src/app/app/layout.tsx",
+    "base": "src__app__app__layout.tsx.base",
+    "candidate": "src__app__app__layout.tsx.candidate",
+    "desktop": "src__app__app__layout.tsx.desktop"
+  },
+  {
+    "file": "src/app/app/portal-premium.css",
+    "base": "src__app__app__portal-premium.css.base",
+    "candidate": "src__app__app__portal-premium.css.candidate",
+    "desktop": "src__app__app__portal-premium.css.desktop"
+  },
+  {
+    "file": "src/app/app/requests/hub/request-hub.tsx",
+    "base": "src__app__app__requests__hub__request-hub.tsx.base",
+    "candidate": "src__app__app__requests__hub__request-hub.tsx.candidate",
+    "desktop": "src__app__app__requests__hub__request-hub.tsx.desktop"
+  },
+  {
+    "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+    "base": "src__app__app__requests__page.withdrawal-carry-forward.test.tsx.base",
+    "candidate": "src__app__app__requests__page.withdrawal-carry-forward.test.tsx.candidate",
+    "desktop": "src__app__app__requests__page.withdrawal-carry-forward.test.tsx.desktop"
+  },
+  {
+    "file": "src/app/app/requests/time-off-form.tsx",
+    "base": "src__app__app__requests__time-off-form.tsx.base",
+    "candidate": "src__app__app__requests__time-off-form.tsx.candidate",
+    "desktop": "src__app__app__requests__time-off-form.tsx.desktop"
+  },
+  {
+    "file": "src/app/layout.tsx",
+    "base": "src__app__layout.tsx.base",
+    "candidate": "src__app__layout.tsx.candidate",
+    "desktop": "src__app__layout.tsx.desktop"
+  },
+  {
+    "file": "src/components/app-shell.tsx",
+    "base": "src__components__app-shell.tsx.base",
+    "candidate": "src__components__app-shell.tsx.candidate",
+    "desktop": "src__components__app-shell.tsx.desktop"
+  },
+  {
+    "file": "src/components/availability-editor.tsx",
+    "base": "src__components__availability-editor.tsx.base",
+    "candidate": "src__components__availability-editor.tsx.candidate",
+    "desktop": "src__components__availability-editor.tsx.desktop"
+  },
+  {
+    "file": "src/components/calendar-subscription-panel.test.tsx",
+    "base": "src__components__calendar-subscription-panel.test.tsx.base",
+    "candidate": "src__components__calendar-subscription-panel.test.tsx.candidate",
+    "desktop": "src__components__calendar-subscription-panel.test.tsx.desktop"
+  },
+  {
+    "file": "src/components/calendar-subscription-panel.tsx",
+    "base": "src__components__calendar-subscription-panel.tsx.base",
+    "candidate": "src__components__calendar-subscription-panel.tsx.candidate",
+    "desktop": "src__components__calendar-subscription-panel.tsx.desktop"
+  },
+  {
+    "file": "src/components/employee-home-reviewed.tsx",
+    "base": "src__components__employee-home-reviewed.tsx.base",
+    "candidate": "src__components__employee-home-reviewed.tsx.candidate",
+    "desktop": "src__components__employee-home-reviewed.tsx.desktop"
+  },
+  {
+    "file": "src/components/employee-submit-button.tsx",
+    "base": "src__components__employee-submit-button.tsx.base",
+    "candidate": "src__components__employee-submit-button.tsx.candidate",
+    "desktop": "src__components__employee-submit-button.tsx.desktop"
+  },
+  {
+    "file": "src/components/employee-time-corrections.tsx",
+    "base": "src__components__employee-time-corrections.tsx.base",
+    "candidate": "src__components__employee-time-corrections.tsx.candidate",
+    "desktop": "src__components__employee-time-corrections.tsx.desktop"
+  },
+  {
+    "file": "src/components/employee-time-panel.test.tsx",
+    "base": "src__components__employee-time-panel.test.tsx.base",
+    "candidate": "src__components__employee-time-panel.test.tsx.candidate",
+    "desktop": "src__components__employee-time-panel.test.tsx.desktop"
+  },
+  {
+    "file": "src/components/employee-time-panel.tsx",
+    "base": "src__components__employee-time-panel.tsx.base",
+    "candidate": "src__components__employee-time-panel.tsx.candidate",
+    "desktop": "src__components__employee-time-panel.tsx.desktop"
+  },
+  {
+    "file": "src/components/kit/hold-height.tsx",
+    "base": "src__components__kit__hold-height.tsx.base",
+    "candidate": "src__components__kit__hold-height.tsx.candidate",
+    "desktop": "src__components__kit__hold-height.tsx.desktop"
+  },
+  {
+    "file": "src/components/time-off-withdrawal.tsx",
+    "base": "src__components__time-off-withdrawal.tsx.base",
+    "candidate": "src__components__time-off-withdrawal.tsx.candidate",
+    "desktop": "src__components__time-off-withdrawal.tsx.desktop"
+  },
+  {
+    "file": "src/lib/keep-whole.test.ts",
+    "base": "src__lib__keep-whole.test.ts.base",
+    "candidate": "src__lib__keep-whole.test.ts.candidate",
+    "desktop": "src__lib__keep-whole.test.ts.desktop"
+  },
+  {
+    "file": "src/lib/keep-whole.ts",
+    "base": "src__lib__keep-whole.ts.base",
+    "candidate": "src__lib__keep-whole.ts.candidate",
+    "desktop": "src__lib__keep-whole.ts.desktop"
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "source": "9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7",
+  "editedOnlyOwnedMirror": "/workspace/paused-previews/wave-b-isb31/evidence-2026-10-19T21-27-48-285Z/owned-next-8zhYEL/app/src/components/wave-b-forms.tsx",
+  "sourcePath": "/workspace/inspect-wave-b/src/components/wave-b-forms.tsx",
+  "beforeSha256": "4bbbfce8072c0fe6cadecd723cd637b7b108db946d75b2af9873b399b95593e0",
+  "afterSha256": "28d057925ed8ed849fcc7a846c2135af2281f9d30bb09d11265f364d487e69bf",
+  "patchSha256": "87f9d9a0a9e9151b5ade8bae98ebaa9ea33289a2c17a2019b82a5c58e0268e84",
+  "modifiedAt": "2026-10-19T21:33:15.412223+00:00",
+  "restored": true,
+  "restoredAt": "2026-10-19T21:35:16.894057+00:00",
+  "restoredSha256": "4bbbfce8072c0fe6cadecd723cd637b7b108db946d75b2af9873b399b95593e0"
+}

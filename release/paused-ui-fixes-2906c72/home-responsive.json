@@ -1,0 +1,4758 @@
+{
+  "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+  "cases": [
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 48,
+            "after": 48
+          }
+        },
+        {
+          "passed": true,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 296,
+            "after": 296
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 224,
+            "after": 224
+          }
+        },
+        {
+          "passed": true,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 292,
+            "after": 292
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 320
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        },
+        {
+          "passed": true,
+          "message": "Overall initial navigation CLS stays below0.01",
+          "detail": {
+            "before": 0,
+            "after": 0.0005671305395206756
+          }
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 320,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…\n\n ",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 296,
+            "top": 68,
+            "right": 320,
+            "bottom": 364,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 254,
+            "height": 20,
+            "top": 88,
+            "right": 270,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 48,
+            "top": 168,
+            "right": 264,
+            "bottom": 216,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 16,
+            "y": 224,
+            "width": 288,
+            "height": 44,
+            "top": 224,
+            "right": 304,
+            "bottom": 268,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 292,
+            "width": 288,
+            "height": 354,
+            "top": 292,
+            "right": 304,
+            "bottom": 646,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 248,
+              "height": 48,
+              "top": 168,
+              "right": 264,
+              "bottom": 216,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 279.29999999981374,
+            "end": 297.20000000018626
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 320,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 296,
+            "top": 68,
+            "right": 320,
+            "bottom": 364,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 271,
+            "height": 20,
+            "top": 88,
+            "right": 287,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 48,
+            "top": 168,
+            "right": 264,
+            "bottom": 216,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 224,
+            "width": 288,
+            "height": 44,
+            "top": 224,
+            "right": 304,
+            "bottom": 268,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 10m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 292,
+            "width": 288,
+            "height": 430,
+            "top": 292,
+            "right": 304,
+            "bottom": 722,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 248,
+              "height": 48,
+              "top": 168,
+              "right": 264,
+              "bottom": 216,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [
+          {
+            "at": 3717.2000000001863,
+            "value": 0.0005671305395206756,
+            "hadRecentInput": false,
+            "sources": [
+              {
+                "node": "SPAN.employee-time-badge",
+                "previous": {
+                  "x": 260,
+                  "y": 759,
+                  "width": 24,
+                  "height": 28,
+                  "top": 759,
+                  "right": 284,
+                  "bottom": 787,
+                  "left": 260
+                },
+                "current": {
+                  "x": 203,
+                  "y": 759,
+                  "width": 81,
+                  "height": 28,
+                  "top": 759,
+                  "right": 284,
+                  "bottom": 787,
+                  "left": 203
+                }
+              }
+            ]
+          }
+        ],
+        "cls": 0.0005671305395206756,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 279.29999999981374,
+            "end": 297.20000000018626
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 3728.2999999998137,
+            "end": 3745.399999999441
+          }
+        ]
+      },
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 144,
+            "after": 144
+          }
+        },
+        {
+          "passed": false,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 543,
+            "after": 579
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 472.515625,
+            "after": 472.515625
+          }
+        },
+        {
+          "passed": false,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 547.515625,
+            "after": 583.515625
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 320
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        },
+        {
+          "passed": false,
+          "message": "Overall initial navigation CLS stays below0.01",
+          "detail": {
+            "before": 0,
+            "after": 0.018648502953662317
+          }
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 320,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…\n\n ",
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 320,
+            "height": 543,
+            "top": 76.515625,
+            "right": 320,
+            "bottom": 619.515625,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 84.515625,
+            "width": 288,
+            "height": 80,
+            "top": 84.515625,
+            "right": 304,
+            "bottom": 164.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 168.515625,
+            "width": 288,
+            "height": 144,
+            "top": 168.515625,
+            "right": 304,
+            "bottom": 312.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 320.515625,
+            "width": 248,
+            "height": 144,
+            "top": 320.515625,
+            "right": 264,
+            "bottom": 464.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 16,
+            "y": 472.515625,
+            "width": 288,
+            "height": 51,
+            "top": 472.515625,
+            "right": 304,
+            "bottom": 523.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 547.515625,
+            "width": 288,
+            "height": 554.5,
+            "top": 547.515625,
+            "right": 304,
+            "bottom": 1102.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 320.515625,
+              "width": 248,
+              "height": 144,
+              "top": 320.515625,
+              "right": 264,
+              "bottom": 464.515625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 189.29999999981374,
+            "end": 205.69999999925494
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 320,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 320,
+            "height": 579,
+            "top": 76.515625,
+            "right": 320,
+            "bottom": 655.515625,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 84.515625,
+            "width": 288,
+            "height": 80,
+            "top": 84.515625,
+            "right": 304,
+            "bottom": 164.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 168.515625,
+            "width": 288,
+            "height": 144,
+            "top": 168.515625,
+            "right": 304,
+            "bottom": 312.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 320.515625,
+            "width": 248,
+            "height": 144,
+            "top": 320.515625,
+            "right": 264,
+            "bottom": 464.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 472.515625,
+            "width": 288,
+            "height": 87,
+            "top": 472.515625,
+            "right": 304,
+            "bottom": 559.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 10m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 583.515625,
+            "width": 288,
+            "height": 1181,
+            "top": 583.515625,
+            "right": 304,
+            "bottom": 1764.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 320.515625,
+              "width": 248,
+              "height": 144,
+              "top": 320.515625,
+              "right": 264,
+              "bottom": 464.515625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [
+          {
+            "at": 2906.0999999996275,
+            "value": 0.018648502953662317,
+            "hadRecentInput": false,
+            "sources": [
+              {
+                "node": "SECTION.employee-home-reviewed-module__k4entG__assignment",
+                "previous": {
+                  "x": 0,
+                  "y": 519.515625,
+                  "width": 320,
+                  "height": 324.484375,
+                  "top": 519.515625,
+                  "right": 320,
+                  "bottom": 844,
+                  "left": 0
+                },
+                "current": {
+                  "x": 0,
+                  "y": 555.515625,
+                  "width": 320,
+                  "height": 288.484375,
+                  "top": 555.515625,
+                  "right": 320,
+                  "bottom": 844,
+                  "left": 0
+                }
+              },
+              {
+                "node": "svg.[object SVGAnimatedString]",
+                "previous": {
+                  "x": 176,
+                  "y": 419.515625,
+                  "width": 144,
+                  "height": 236,
+                  "top": 419.515625,
+                  "right": 320,
+                  "bottom": 655.515625,
+                  "left": 176
+                },
+                "current": {
+                  "x": 176,
+                  "y": 455.515625,
+                  "width": 144,
+                  "height": 200,
+                  "top": 455.515625,
+                  "right": 320,
+                  "bottom": 655.515625,
+                  "left": 176
+                }
+              }
+            ]
+          }
+        ],
+        "cls": 0.018648502953662317,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 189.29999999981374,
+            "end": 205.69999999925494
+          }
+        ]
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 24,
+            "after": 24
+          }
+        },
+        {
+          "passed": true,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 272,
+            "after": 272
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 200,
+            "after": 200
+          }
+        },
+        {
+          "passed": true,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 268,
+            "after": 268
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 390
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        },
+        {
+          "passed": true,
+          "message": "Overall initial navigation CLS stays below0.01",
+          "detail": {
+            "before": 0,
+            "after": 0.00046533787858106724
+          }
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 390,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…\n\n ",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 390,
+            "height": 272,
+            "top": 68,
+            "right": 390,
+            "bottom": 340,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 254,
+            "height": 20,
+            "top": 88,
+            "right": 270,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36,
+            "top": 124,
+            "right": 374,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 318,
+            "height": 24,
+            "top": 168,
+            "right": 334,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 16,
+            "y": 200,
+            "width": 358,
+            "height": 44,
+            "top": 200,
+            "right": 374,
+            "bottom": 244,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 268,
+            "width": 358,
+            "height": 354,
+            "top": 268,
+            "right": 374,
+            "bottom": 622,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 318,
+              "height": 24,
+              "top": 168,
+              "right": 334,
+              "bottom": 192,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 189.8999999994412,
+            "end": 204.69999999925494
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 390,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 390,
+            "height": 272,
+            "top": 68,
+            "right": 390,
+            "bottom": 340,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 271,
+            "height": 20,
+            "top": 88,
+            "right": 287,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36,
+            "top": 124,
+            "right": 374,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 318,
+            "height": 24,
+            "top": 168,
+            "right": 334,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 200,
+            "width": 358,
+            "height": 44,
+            "top": 200,
+            "right": 374,
+            "bottom": 244,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 10m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 268,
+            "width": 358,
+            "height": 366,
+            "top": 268,
+            "right": 374,
+            "bottom": 634,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 318,
+              "height": 24,
+              "top": 168,
+              "right": 334,
+              "bottom": 192,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [
+          {
+            "at": 3095.699999999255,
+            "value": 0.00046533787858106724,
+            "hadRecentInput": false,
+            "sources": [
+              {
+                "node": "SPAN.employee-time-badge",
+                "previous": {
+                  "x": 330,
+                  "y": 671,
+                  "width": 24,
+                  "height": 28,
+                  "top": 671,
+                  "right": 354,
+                  "bottom": 699,
+                  "left": 330
+                },
+                "current": {
+                  "x": 273,
+                  "y": 671,
+                  "width": 81,
+                  "height": 28,
+                  "top": 671,
+                  "right": 354,
+                  "bottom": 699,
+                  "left": 273
+                }
+              }
+            ]
+          }
+        ],
+        "cls": 0.00046533787858106724,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 189.8999999994412,
+            "end": 204.69999999925494
+          }
+        ]
+      },
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 200,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 144,
+            "after": 144
+          }
+        },
+        {
+          "passed": true,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 471,
+            "after": 471
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 402.015625,
+            "after": 402.015625
+          }
+        },
+        {
+          "passed": true,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 477.015625,
+            "after": 477.015625
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 390
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        },
+        {
+          "passed": true,
+          "message": "Overall initial navigation CLS stays below0.01",
+          "detail": {
+            "before": 0,
+            "after": 0
+          }
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 390,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…\n\n ",
+          "box": {
+            "x": 0,
+            "y": 78.015625,
+            "width": 390,
+            "height": 471,
+            "top": 78.015625,
+            "right": 390,
+            "bottom": 549.015625,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 86.015625,
+            "width": 358,
+            "height": 80,
+            "top": 86.015625,
+            "right": 374,
+            "bottom": 166.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 170.015625,
+            "width": 358,
+            "height": 72,
+            "top": 170.015625,
+            "right": 374,
+            "bottom": 242.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 250.015625,
+            "width": 318,
+            "height": 144,
+            "top": 250.015625,
+            "right": 334,
+            "bottom": 394.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 16,
+            "y": 402.015625,
+            "width": 358,
+            "height": 51,
+            "top": 402.015625,
+            "right": 374,
+            "bottom": 453.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 477.015625,
+            "width": 358,
+            "height": 554.5,
+            "top": 477.015625,
+            "right": 374,
+            "bottom": 1031.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 250.015625,
+              "width": 318,
+              "height": 144,
+              "top": 250.015625,
+              "right": 334,
+              "bottom": 394.015625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 165.8999999994412,
+            "end": 185.8999999994412
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 390,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 78.015625,
+            "width": 390,
+            "height": 471,
+            "top": 78.015625,
+            "right": 390,
+            "bottom": 549.015625,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 86.015625,
+            "width": 358,
+            "height": 80,
+            "top": 86.015625,
+            "right": 374,
+            "bottom": 166.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 170.015625,
+            "width": 358,
+            "height": 72,
+            "top": 170.015625,
+            "right": 374,
+            "bottom": 242.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 250.015625,
+            "width": 318,
+            "height": 144,
+            "top": 250.015625,
+            "right": 334,
+            "bottom": 394.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 402.015625,
+            "width": 358,
+            "height": 51,
+            "top": 402.015625,
+            "right": 374,
+            "bottom": 453.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 10m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 477.015625,
+            "width": 358,
+            "height": 971,
+            "top": 477.015625,
+            "right": 374,
+            "bottom": 1448.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 250.015625,
+              "width": 318,
+              "height": 144,
+              "top": 250.015625,
+              "right": 334,
+              "bottom": 394.015625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 165.8999999994412,
+            "end": 185.8999999994412
+          }
+        ]
+      },
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 844,
+      "height": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 24,
+            "after": 24
+          }
+        },
+        {
+          "passed": true,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 180,
+            "after": 180
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 0,
+            "after": 0
+          }
+        },
+        {
+          "passed": true,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 216,
+            "after": 216
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 844
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        },
+        {
+          "passed": true,
+          "message": "Overall initial navigation CLS stays below0.01",
+          "detail": {
+            "before": 0,
+            "after": 0
+          }
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 844,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 844,
+            "height": 180,
+            "top": 68,
+            "right": 844,
+            "bottom": 248,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 254,
+            "height": 20,
+            "top": 88,
+            "right": 270,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36,
+            "top": 124,
+            "right": 828,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 612,
+            "height": 24,
+            "top": 168,
+            "right": 628,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 216,
+            "width": 416.9375,
+            "height": 363,
+            "top": 216,
+            "right": 432.9375,
+            "bottom": 579,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 612,
+              "height": 24,
+              "top": 168,
+              "right": 628,
+              "bottom": 192,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 206,
+            "end": 232.5
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 844,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 844,
+            "height": 180,
+            "top": 68,
+            "right": 844,
+            "bottom": 248,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 271,
+            "height": 20,
+            "top": 88,
+            "right": 287,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36,
+            "top": 124,
+            "right": 828,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 612,
+            "height": 24,
+            "top": 168,
+            "right": 628,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 10m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 216,
+            "width": 416.9375,
+            "height": 375,
+            "top": 216,
+            "right": 432.9375,
+            "bottom": 591,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 612,
+              "height": 24,
+              "top": 168,
+              "right": 628,
+              "bottom": 192,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 206,
+            "end": 232.5
+          }
+        ]
+      },
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 844,
+      "height": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 48,
+            "after": 48
+          }
+        },
+        {
+          "passed": true,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 240,
+            "after": 240
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 0,
+            "after": 0
+          }
+        },
+        {
+          "passed": true,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 284.515625,
+            "after": 284.515625
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 844
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        },
+        {
+          "passed": true,
+          "message": "Overall initial navigation CLS stays below0.01",
+          "detail": {
+            "before": 0,
+            "after": 0
+          }
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 844,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…",
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 844,
+            "height": 240,
+            "top": 76.515625,
+            "right": 844,
+            "bottom": 316.515625,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 86.515625,
+            "width": 470,
+            "height": 40,
+            "top": 86.515625,
+            "right": 486,
+            "bottom": 126.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 132.515625,
+            "width": 812,
+            "height": 72,
+            "top": 132.515625,
+            "right": 828,
+            "bottom": 204.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 212.515625,
+            "width": 812,
+            "height": 48,
+            "top": 212.515625,
+            "right": 828,
+            "bottom": 260.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 284.515625,
+            "width": 812,
+            "height": 554.5,
+            "top": 284.515625,
+            "right": 828,
+            "bottom": 839.015625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 212.515625,
+              "width": 812,
+              "height": 48,
+              "top": 212.515625,
+              "right": 828,
+              "bottom": 260.515625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 180.29999999981374,
+            "end": 203.79999999981374
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 844,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 844,
+            "height": 240,
+            "top": 76.515625,
+            "right": 844,
+            "bottom": 316.515625,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 86.515625,
+            "width": 509,
+            "height": 40,
+            "top": 86.515625,
+            "right": 525,
+            "bottom": 126.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 132.515625,
+            "width": 812,
+            "height": 72,
+            "top": 132.515625,
+            "right": 828,
+            "bottom": 204.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 212.515625,
+            "width": 812,
+            "height": 48,
+            "top": 212.515625,
+            "right": 828,
+            "bottom": 260.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 10m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 284.515625,
+            "width": 812,
+            "height": 598,
+            "top": 284.515625,
+            "right": 828,
+            "bottom": 882.515625,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 212.515625,
+              "width": 812,
+              "height": 48,
+              "top": 212.515625,
+              "right": 828,
+              "bottom": 260.515625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": true,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 180.29999999981374,
+            "end": 203.79999999981374
+          }
+        ]
+      },
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 48,
+            "after": 48
+          }
+        },
+        {
+          "passed": true,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 296,
+            "after": 296
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 224,
+            "after": 224
+          }
+        },
+        {
+          "passed": true,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 292,
+            "after": 292
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 320
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 320,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…\n\n ",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 296,
+            "top": 68,
+            "right": 320,
+            "bottom": 364,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 255.40625,
+            "height": 20,
+            "top": 88,
+            "right": 271.40625,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 48,
+            "top": 168,
+            "right": 264,
+            "bottom": 216,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 16,
+            "y": 224,
+            "width": 288,
+            "height": 44,
+            "top": 224,
+            "right": 304,
+            "bottom": 268,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 292,
+            "width": 288,
+            "height": 354,
+            "top": 292,
+            "right": 304,
+            "bottom": 646,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 248,
+              "height": 48,
+              "top": 168,
+              "right": 264,
+              "bottom": 216,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 391,
+            "end": 398
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1787,
+            "end": 1835
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 320,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 296,
+            "top": 68,
+            "right": 320,
+            "bottom": 364,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 272.234375,
+            "height": 20,
+            "top": 88,
+            "right": 288.234375,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 48,
+            "top": 168,
+            "right": 264,
+            "bottom": 216,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 224,
+            "width": 288,
+            "height": 44,
+            "top": 224,
+            "right": 304,
+            "bottom": 268,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 10m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 292,
+            "width": 288,
+            "height": 429.5,
+            "top": 292,
+            "right": 304,
+            "bottom": 721.5,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 248,
+              "height": 48,
+              "top": 168,
+              "right": 264,
+              "bottom": 216,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 391,
+            "end": 398
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1787,
+            "end": 1835
+          }
+        ]
+      },
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 144,
+            "after": 144
+          }
+        },
+        {
+          "passed": false,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 543,
+            "after": 691
+          }
+        },
+        {
+          "passed": false,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 472.515625,
+            "after": 584.515625
+          }
+        },
+        {
+          "passed": false,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 547.515625,
+            "after": 695.515625
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 320
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 320,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…\n\n ",
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 320,
+            "height": 543,
+            "top": 76.515625,
+            "right": 320,
+            "bottom": 619.515625,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 84.515625,
+            "width": 288,
+            "height": 80,
+            "top": 84.515625,
+            "right": 304,
+            "bottom": 164.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 168.515625,
+            "width": 288,
+            "height": 144,
+            "top": 168.515625,
+            "right": 304,
+            "bottom": 312.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 320.515625,
+            "width": 248,
+            "height": 144,
+            "top": 320.515625,
+            "right": 264,
+            "bottom": 464.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 16,
+            "y": 472.515625,
+            "width": 288,
+            "height": 51,
+            "top": 472.515625,
+            "right": 304,
+            "bottom": 523.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 547.515625,
+            "width": 288,
+            "height": 554.5,
+            "top": 547.515625,
+            "right": 304,
+            "bottom": 1102.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 320.515625,
+              "width": 248,
+              "height": 144,
+              "top": 320.515625,
+              "right": 264,
+              "bottom": 464.515625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 214,
+            "end": 222
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 945,
+            "end": 949
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 320,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 320,
+            "height": 691,
+            "top": 76.515625,
+            "right": 320,
+            "bottom": 767.515625,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 84.515625,
+            "width": 288,
+            "height": 120,
+            "top": 84.515625,
+            "right": 304,
+            "bottom": 204.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 208.515625,
+            "width": 288,
+            "height": 216,
+            "top": 208.515625,
+            "right": 304,
+            "bottom": 424.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 432.515625,
+            "width": 248,
+            "height": 144,
+            "top": 432.515625,
+            "right": 264,
+            "bottom": 576.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 584.515625,
+            "width": 288,
+            "height": 87,
+            "top": 584.515625,
+            "right": 304,
+            "bottom": 671.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 9m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 695.515625,
+            "width": 288,
+            "height": 1228.984375,
+            "top": 695.515625,
+            "right": 304,
+            "bottom": 1924.5,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 432.515625,
+              "width": 248,
+              "height": 144,
+              "top": 432.515625,
+              "right": 264,
+              "bottom": 576.515625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 214,
+            "end": 222
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 945,
+            "end": 949
+          }
+        ]
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 24,
+            "after": 24
+          }
+        },
+        {
+          "passed": true,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 272,
+            "after": 272
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 200,
+            "after": 200
+          }
+        },
+        {
+          "passed": true,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 268,
+            "after": 268
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 390
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 390,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…\n\n ",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 390,
+            "height": 272,
+            "top": 68,
+            "right": 390,
+            "bottom": 340,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 255.40625,
+            "height": 20,
+            "top": 88,
+            "right": 271.40625,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36,
+            "top": 124,
+            "right": 374,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 318,
+            "height": 24,
+            "top": 168,
+            "right": 334,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 16,
+            "y": 200,
+            "width": 358,
+            "height": 44,
+            "top": 200,
+            "right": 374,
+            "bottom": 244,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 268,
+            "width": 358,
+            "height": 354,
+            "top": 268,
+            "right": 374,
+            "bottom": 622,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 318,
+              "height": 24,
+              "top": 168,
+              "right": 334,
+              "bottom": 192,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 219,
+            "end": 225
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1889,
+            "end": 1902
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 390,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 390,
+            "height": 272,
+            "top": 68,
+            "right": 390,
+            "bottom": 340,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 272.234375,
+            "height": 20,
+            "top": 88,
+            "right": 288.234375,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36,
+            "top": 124,
+            "right": 374,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 318,
+            "height": 24,
+            "top": 168,
+            "right": 334,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 200,
+            "width": 358,
+            "height": 44,
+            "top": 200,
+            "right": 374,
+            "bottom": 244,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 9m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 268,
+            "width": 358,
+            "height": 365.5,
+            "top": 268,
+            "right": 374,
+            "bottom": 633.5,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 318,
+              "height": 24,
+              "top": 168,
+              "right": 334,
+              "bottom": 192,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 219,
+            "end": 225
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1889,
+            "end": 1902
+          }
+        ]
+      },
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 200,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 144,
+            "after": 144
+          }
+        },
+        {
+          "passed": false,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 471,
+            "after": 579
+          }
+        },
+        {
+          "passed": false,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 402.015625,
+            "after": 474.015625
+          }
+        },
+        {
+          "passed": false,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 477.015625,
+            "after": 585.015625
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 390
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 390,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…\n\n ",
+          "box": {
+            "x": 0,
+            "y": 78.015625,
+            "width": 390,
+            "height": 471,
+            "top": 78.015625,
+            "right": 390,
+            "bottom": 549.015625,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 86.015625,
+            "width": 358,
+            "height": 80,
+            "top": 86.015625,
+            "right": 374,
+            "bottom": 166.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 170.015625,
+            "width": 358,
+            "height": 72,
+            "top": 170.015625,
+            "right": 374,
+            "bottom": 242.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 250.015625,
+            "width": 318,
+            "height": 144,
+            "top": 250.015625,
+            "right": 334,
+            "bottom": 394.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 16,
+            "y": 402.015625,
+            "width": 358,
+            "height": 51,
+            "top": 402.015625,
+            "right": 374,
+            "bottom": 453.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 477.015625,
+            "width": 358,
+            "height": 554.5,
+            "top": 477.015625,
+            "right": 374,
+            "bottom": 1031.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 250.015625,
+              "width": 318,
+              "height": 144,
+              "top": 250.015625,
+              "right": 334,
+              "bottom": 394.015625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 653,
+            "end": 686
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1735,
+            "end": 1740
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 390,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 78.015625,
+            "width": 390,
+            "height": 579,
+            "top": 78.015625,
+            "right": 390,
+            "bottom": 657.015625,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 86.015625,
+            "width": 358,
+            "height": 80,
+            "top": 86.015625,
+            "right": 374,
+            "bottom": 166.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 170.015625,
+            "width": 358,
+            "height": 144,
+            "top": 170.015625,
+            "right": 374,
+            "bottom": 314.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 322.015625,
+            "width": 318,
+            "height": 144,
+            "top": 322.015625,
+            "right": 334,
+            "bottom": 466.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 474.015625,
+            "width": 358,
+            "height": 87,
+            "top": 474.015625,
+            "right": 374,
+            "bottom": 561.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 9m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 585.015625,
+            "width": 358,
+            "height": 971,
+            "top": 585.015625,
+            "right": 374,
+            "bottom": 1556.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 322.015625,
+              "width": 318,
+              "height": 144,
+              "top": 322.015625,
+              "right": 334,
+              "bottom": 466.015625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 653,
+            "end": 686
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1735,
+            "end": 1740
+          }
+        ]
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 844,
+      "height": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 24,
+            "after": 24
+          }
+        },
+        {
+          "passed": true,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 180,
+            "after": 180
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 0,
+            "after": 0
+          }
+        },
+        {
+          "passed": true,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 216,
+            "after": 216
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 844
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 844,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 844,
+            "height": 180,
+            "top": 68,
+            "right": 844,
+            "bottom": 248,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 255.40625,
+            "height": 20,
+            "top": 88,
+            "right": 271.40625,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36,
+            "top": 124,
+            "right": 828,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 612,
+            "height": 24,
+            "top": 168,
+            "right": 628,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 216,
+            "width": 416.9375,
+            "height": 363,
+            "top": 216,
+            "right": 432.9375,
+            "bottom": 579,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 612,
+              "height": 24,
+              "top": 168,
+              "right": 628,
+              "bottom": 192,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 370,
+            "end": 409
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1426,
+            "end": 1432
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 844,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 844,
+            "height": 180,
+            "top": 68,
+            "right": 844,
+            "bottom": 248,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 272.234375,
+            "height": 20,
+            "top": 88,
+            "right": 288.234375,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "15px",
+          "lineHeight": "20px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36,
+            "top": 124,
+            "right": 828,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "36px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 612,
+            "height": 24,
+            "top": 168,
+            "right": 628,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "24px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 9m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 216,
+            "width": 416.9375,
+            "height": 374.5,
+            "top": 216,
+            "right": 432.9375,
+            "bottom": 590.5,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "17px",
+          "lineHeight": "25.5px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 168,
+              "width": 612,
+              "height": 24,
+              "top": 168,
+              "right": 628,
+              "bottom": 192,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 370,
+            "end": 409
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1426,
+            "end": 1432
+          }
+        ]
+      },
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "2906c72a57d24bb02d3c3e5bafc54df02076a428",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 844,
+      "height": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Fonts loaded before and after release"
+        },
+        {
+          "passed": true,
+          "message": "summary height remains reserved",
+          "detail": {
+            "before": 48,
+            "after": 48
+          }
+        },
+        {
+          "passed": true,
+          "message": "band height remains reserved",
+          "detail": {
+            "before": 240,
+            "after": 240
+          }
+        },
+        {
+          "passed": true,
+          "message": "extra vertical position stays fixed",
+          "detail": {
+            "before": 0,
+            "after": 0
+          }
+        },
+        {
+          "passed": true,
+          "message": "pass vertical position stays fixed",
+          "detail": {
+            "before": 284.515625,
+            "after": 284.515625
+          }
+        },
+        {
+          "passed": true,
+          "message": "No document horizontal overflow",
+          "detail": 844
+        },
+        {
+          "passed": true,
+          "message": "Sizing text is one aria-hidden invisible element"
+        },
+        {
+          "passed": true,
+          "message": "Sizing prototype absent from visible summary"
+        }
+      ],
+      "before": {
+        "state": "loading",
+        "scrollY": 0,
+        "width": 844,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Home\n\nChecking your shifts…",
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 844,
+            "height": 240,
+            "top": 76.515625,
+            "right": 844,
+            "bottom": 316.515625,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 86.515625,
+            "width": 510.796875,
+            "height": 40,
+            "top": 86.515625,
+            "right": 526.796875,
+            "bottom": 126.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 132.515625,
+            "width": 812,
+            "height": 72,
+            "top": 132.515625,
+            "right": 828,
+            "bottom": 204.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 212.515625,
+            "width": 812,
+            "height": 48,
+            "top": 212.515625,
+            "right": 828,
+            "bottom": 260.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": " ",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "box": {
+            "x": 16,
+            "y": 284.515625,
+            "width": 812,
+            "height": 554.5,
+            "top": 284.515625,
+            "right": 828,
+            "bottom": 839.015625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 212.515625,
+              "width": 812,
+              "height": 48,
+              "top": 212.515625,
+              "right": 828,
+              "bottom": 260.515625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 340,
+            "end": 371
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1196,
+            "end": 1198
+          }
+        ]
+      },
+      "after": {
+        "state": "ready",
+        "scrollY": 0,
+        "width": 844,
+        "fontStatus": "loaded",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "Inter Fallback",
+            "status": "unloaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ],
+        "band": {
+          "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 844,
+            "height": 240,
+            "top": 76.515625,
+            "right": 844,
+            "bottom": 316.515625,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "eyebrow": {
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 86.515625,
+            "width": 544.46875,
+            "height": 40,
+            "top": 86.515625,
+            "right": 560.46875,
+            "bottom": 126.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "30px",
+          "lineHeight": "40px"
+        },
+        "title": {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 132.515625,
+            "width": 812,
+            "height": 72,
+            "top": 132.515625,
+            "right": 828,
+            "bottom": 204.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "60px",
+          "lineHeight": "72px"
+        },
+        "summary": {
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 212.515625,
+            "width": 812,
+            "height": 48,
+            "top": 212.515625,
+            "right": 828,
+            "bottom": 260.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "48px"
+        },
+        "extra": {
+          "text": "3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "pass": {
+          "text": "Next shift\nPublished\n\nTomorrow · Tue, Oct 20\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 14h 9m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 284.515625,
+            "width": 812,
+            "height": 598,
+            "top": 284.515625,
+            "right": 828,
+            "bottom": 882.515625,
+            "left": 16
+          },
+          "font": "Inter, Inter Fallback, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+          "size": "34px",
+          "lineHeight": "51px"
+        },
+        "sizer": [
+          {
+            "text": "Next shift Wed, May 30, 10:00 AM.",
+            "visibility": "hidden",
+            "box": {
+              "x": 16,
+              "y": 212.515625,
+              "width": 812,
+              "height": 48,
+              "top": 212.515625,
+              "right": 828,
+              "bottom": 260.515625,
+              "left": 16
+            }
+          }
+        ],
+        "observer": false,
+        "shifts": [],
+        "cls": 0,
+        "fontResources": [
+          {
+            "path": "/fonts/typeface/inter/variable.woff2",
+            "start": 340,
+            "end": 371
+          },
+          {
+            "path": "/__nextjs_font/geist-latin.woff2",
+            "start": 1196,
+            "end": 1198
+          }
+        ]
+      },
+      "completed": true,
+      "passed": true
+    }
+  ]
+}

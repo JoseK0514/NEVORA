@@ -1,0 +1,88 @@
+{
+  "checkpoint": "de8b15851d6280fd31fba3db63dcbe976a19584a",
+  "mode": "static-only",
+  "sourceFiles": {
+    "src/components/assisted-recovery.tsx": "8aafb6f899f2d4c68d5e7c1ccfa065e7c91ab0dbf303875b1ab4369160396aaf",
+    "src/components/account-recovery.tsx": "1e5993e242705cb038e037f1943318f1af305374f8fc435326d1e37aee506010",
+    "src/components/clocker-recovery-review.tsx": "f97a571a89fe190c036db38ed3f8c1763090cc12708c3bce699b5027089f1544",
+    "src/components/brand-editor.tsx": "ed4f1991d8b503605429365d76d6befffd0f7273b0320826bc05e4d1c887d122",
+    "src/components/features-editor.tsx": "98d405ea675515a08c456eb0b87deef825f27bb6dbf8c75bb208f287776f1257",
+    "src/lib/workspace-presentation/modules.ts": "f86fe862d28d6914f27a7ee60a979ac8079db6d2828b4a438aac3568da1d2117",
+    "src/components/company-policy-editor.tsx": "8d053084dd02cc3c70e5f95db9d79cd91765dda0cbdc58fb0b29ea32e4d9be68",
+    "src/app/app/settings/positions/position-catalog.tsx": "cb9c63ee63b690b31d7a74ea8fb17d72b66b112b55eaa72ece290604b8ee3211",
+    "src/components/clocker-break-types.tsx": "01faca44a7368d8f220bfcd8b9e487597c5cd9bd48322755dc8aef4a74995d87",
+    "src/components/clocker-device-manager.tsx": "19fdd01c33ad03a140bf0cbf931d35458315f82a94bd28404637d8d67dc7f9ba",
+    "src/lib/clocker/views.ts": "c4d5bc2ebd830194a9684df3c64efac741752d063daaba7674c000c90ba6f6a5",
+    "src/app/app/settings/workspace/page.tsx": "93b1e9fd6c7e6df705fa8e0a6b339306dc42dd02365938a9f5bfc2753a1fa657",
+    "src/components/new-location-form.tsx": "788d15948d52cf83945d5eb8794928e9c68b3c8b0fdbf931de744f8b26b17c50"
+  },
+  "sourceAssertions": [
+    {
+      "path": "src/components/assisted-recovery.tsx",
+      "assertions": 4
+    },
+    {
+      "path": "src/components/account-recovery.tsx",
+      "assertions": 4
+    },
+    {
+      "path": "src/components/clocker-recovery-review.tsx",
+      "assertions": 6
+    },
+    {
+      "path": "src/components/brand-editor.tsx",
+      "assertions": 7
+    },
+    {
+      "path": "src/components/features-editor.tsx",
+      "assertions": 5
+    },
+    {
+      "path": "src/lib/workspace-presentation/modules.ts",
+      "assertions": 2
+    },
+    {
+      "path": "src/components/company-policy-editor.tsx",
+      "assertions": 5
+    },
+    {
+      "path": "src/app/app/settings/positions/position-catalog.tsx",
+      "assertions": 5
+    },
+    {
+      "path": "src/components/clocker-break-types.tsx",
+      "assertions": 5
+    },
+    {
+      "path": "src/components/clocker-device-manager.tsx",
+      "assertions": 5
+    },
+    {
+      "path": "src/lib/clocker/views.ts",
+      "assertions": 3
+    },
+    {
+      "path": "src/app/app/settings/workspace/page.tsx",
+      "assertions": 2
+    },
+    {
+      "path": "src/components/new-location-form.tsx",
+      "assertions": 2
+    }
+  ],
+  "baselineCells": 960,
+  "axeCells": 960,
+  "passiveJudgmentCells": 240,
+  "duplicateJudgmentVisits": 0,
+  "checkpointJobs": 1213,
+  "passiveHookOrder": "static assertions passed; live integration pending",
+  "flightActionEnvelopes": 12,
+  "clientPropModels": 18,
+  "previewStarted": false,
+  "browserStarted": false,
+  "dataWrites": 0,
+  "limitations": [
+    "Protocol/selector preparation is not rendered browser verification.",
+    "Server-only list read failures/first-run Location states still need faithful browser-response fixtures; unsupported states remain explicit gaps."
+  ]
+}

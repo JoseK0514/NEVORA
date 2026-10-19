@@ -1,0 +1,19 @@
+{
+  "mode": "dry-run",
+  "source": "/workspace/ready-desktop",
+  "sha": "724b430f3693bc5a9d37677ad250581e33d0f866",
+  "tree": "af81a473888f055b4c94aa0d089d3fb5c8c7e4a8",
+  "checkerHash": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "collectorHash": "fae3e56ddb22a1633e1b540e2436f60b5bffa4922ec93fc22ac27e520829160c",
+  "report": "/workspace/nevora-inspections/p4-desktop/ready-desktop/evidence/full-exit",
+  "fixtureWeek": "2026-10-19",
+  "baselineCells": 9888,
+  "passiveJudgmentCells": 2456,
+  "duplicateGeometryVisits": 0,
+  "groups": 960,
+  "maximumFourRouteBatches": 2976,
+  "minimumFixedWaitMinutes": 486,
+  "historicalEvidence": "Original8012 not zero;35 smoke cells and bounded Inbox/typography proofs remain separate; no cross-SHA substitution",
+  "previewStarted": false,
+  "browserStarted": false
+}

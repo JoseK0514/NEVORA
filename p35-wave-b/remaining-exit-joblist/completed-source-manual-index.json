@@ -1,0 +1,30 @@
+[
+  {
+    "file": "/workspace/nevora-inspections/p35-wave-b/round-4-9bd265e/manual-case-index.json",
+    "status": "preserve measured results at9bd; exact review rechecks still pending"
+  },
+  {
+    "file": "/workspace/nevora-inspections/p35-wave-b/round-4-9bd265e/manual-confirms.json",
+    "status": "preserve measured results at9bd; exact review rechecks still pending"
+  },
+  {
+    "file": "/workspace/nevora-inspections/p35-wave-b/round-4-9bd265e/manual-offline.json",
+    "status": "preserve measured results at9bd; exact review rechecks still pending"
+  },
+  {
+    "file": "/workspace/nevora-inspections/p35-wave-b/round-4-9bd265e/manual-payroll.json",
+    "status": "preserve measured results at9bd; exact review rechecks still pending"
+  },
+  {
+    "file": "/workspace/nevora-inspections/p35-wave-b/round-4-9bd265e/manual-rules.json",
+    "status": "preserve measured results at9bd; exact review rechecks still pending"
+  },
+  {
+    "file": "/workspace/nevora-inspections/p35-wave-b/round-4-9bd265e/manual-states.json",
+    "status": "preserve measured results at9bd; exact review rechecks still pending"
+  },
+  {
+    "file": "/workspace/nevora-inspections/p35-wave-b/round-4-9bd265e/manual-typography.json",
+    "status": "preserve measured results at9bd; exact review rechecks still pending"
+  }
+]

@@ -1,0 +1,15 @@
+merge: prepare Wave A a05f26a on verified-fix candidate b9567ab for exit review
+
+Review branch only. Base b9567abc26b977a517b77622a1661b16172f5b16;
+source a05f26a74b2979ce0efe1532f7f70d7064261bb9.
+
+Preserve candidate DeleteShiftButton and PendingButton exactly: the named
+ST-WA-7/8 and guarded pending-focus fixes reserve both labels responsively.
+Do not add redundant source dimension holds to those implementations.
+Preserve candidate IS-WA-2 ActionForm, reveal-feedback helper, and all latest
+coordinator portal/kit CSS exactly.
+
+Integrate source Coverage needed-label fallback, HoldHeight API adaptation,
+and responsive layout-size hold for Clocker PIN and time-off review actions.
+Full exact-SHA matrix, five-area exit and candidate merge remain pending;
+this commit does not claim zero or production authorization.

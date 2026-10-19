@@ -1,0 +1,51 @@
+# Complete Wave A exit — prepared, awaiting root resource release
+
+Exact review SHA: **`563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea`**, `/workspace/ready-wave-a`, `codex/ready-wave-a`. Integrates candidate `9ec3adc` and Wave A `a05f26a`; direct parents are prior review `1c741fd` and candidate `9ec3adc`. The original source is not falsely marked zero. No claude/main/release-candidate branch was changed or pushed.
+
+Root approved the isolated merge choices recorded in [merge-conflicts.md](merge-conflicts.md). The [32-fix proof](candidate-fix-preservation.json) confirms all56 touched-file blob entries and all CSS equal the candidate. No more port is required for IS-WA-2/helper or TC-WA-16 on this review target. ST-WA-7–11 are implemented through the approved reserved-label candidate controls and source PIN/time-off hook; all need review-SHA verification. TC-WA-15's old shared field snapshot already has the latest coordinator's accessible field boundary; do not duplicate that fix.
+
+## Admissible scope
+
+The full script matrix is **1792 fresh cells**: fourteen distinct views, each with its two applicable role categories, eight widths, four text sizes and Chromium/WebKit, axe enabled. The fourteen include Review replacement and member Scheduling; omitting these would give the incomplete1536 count. All historical cells are preserved, but none substitutes for this new review SHA.
+
+ROUND's error, long-name, tab, week and invalid-input variations remain explicit judgment jobs at320,390,844×390 and1440, four text sizes in Chromium plus WebKit spots. They are not multiplied into a padded4096-cell automated query crossproduct. QAOWNER target as Manager is the requested restricted-state case, not an extra Owner self-profile campaign. The previously-zero single time-off review gets four confirmation visits. Extra accounts are state fixtures, not extra permission roles. Unauthorized actor/routes are a separate192-visit guard suite.
+
+[plan.json](plan.json) records1244 baseline/variant judgment samples,720 held/aborted form-state scenarios,192 guard visits and11 additional state groups (read errors/loading, offline, paused/partial applicability, sent/copied/empty/large, keyboard/reduced motion). Every checklist must be reviewed; completion coverage is not automatic certification. IS-WA-2 Delete/Approve/Decline need repeated failures after each notice mounts. Applicable UI states are exercised; states not represented by a view must have an explicit source-based not-applicable disposition rather than invented controls.
+
+## Resumable harness
+
+`run-serial.mjs` supports matrix, judgment, forms, resize, sent, receipts and roles. It is dry-run by default. Execution requires explicit `WA_BROWSER_RELEASED=yes` and `WA_BROWSER_RELEASE_SHA=<exactSHA>`, a clean matching source tree, matching owned preview access checkpoint, and private fixture bindings. It never starts a preview. Only one child/browser runs at a time. It checkpoints after each small matrix batch (at most8 cells) or individual state case, skips completed exact-source cells on resume, and stops after the current safe checkpoint on SIGTERM/SIGINT or an output-directory `PAUSE` file. No automatic zero verdict is produced.
+
+The unchanged checker is wrapped for origin/mutation guards, browser-local Scheduling state, and a passive `Page.close` observer. The observer runs after each checker result has been pushed and collects560 overlapping judgment samples on the existing matrix visits. The other684 judgment samples remain distinct variant visits. Human visual review is still required for every collected sample; no synthetic or failed collector record is credited. The state executor retains element handles across pending-label changes, records action requests separately from Next development diagnostics, aborts all mutations, and writes screenshots/raw geometry/focus evidence. Real PINs/passwords/proofs are never recorded. Review URLs are actor-bound and populated bindings belong only in the private owned preview directory.
+
+Dry-run: `node run-serial.mjs --plan plan.json`. After root release and owned fictional setup, use `--execute --mode matrix --bindings <privateBindings> --out <exactShaEvidence>`, then the other modes. No browser has launched from this harness yet; syntax and dry-run are verified, behavior still needs real execution. The ledger pins source, fixture fingerprint and harness/checker hashes. A main-load/timeout5xx observation is retried once serially after warmup; both attempts remain visible and a second failure remains a gap.
+
+## Remaining prerequisites and gates
+
+- Wait for root's candidate full-gate resource release; do not start preview/browser early.
+- Discover Coverage href and a genuine eligible candidate's Review replacement URL separately for Owner and Manager. The token is actor-bound; reusing one actor's URL for the other is inadmissible. A stale/invalid review is an error-state check, not replacement-form coverage.
+- Baseline fixtures must expose manager swap/pickup/report decision cards, open coverage/activity, operational review, PIN save/reset, a copied/partial receipt and sent Swap/Unable-to-work states where required. Any unavailable fixture remains a recorded blocker until a read-only baseline fixture or own-browser response seam exists; never send a mutation to produce it. Large-data fixtures must be owned and ready before their inspection phase.
+- Populate action selectors/input preparation from the actual source/fixtures. The harness refuses unbound actions rather than counting them as passed.
+- Run typecheck, lint and required tests on this exact review after resource release; `git diff --check` alone is not a gate pass.
+- Finish all five human area judgments, classify shared-shell flags by the brief, rerun fixes, and publish the exact-SHA exit. Admission into release-candidate is a later root action after zero; combined-candidate checks remain separate.
+
+The checker's fixed wait alone is74.7min; allow roughly1.5–3h for the full matrix with axe/loads, plus serial manual state work. Measure early batch time before estimating an actual finish. No incomplete checkpoint is presented as zero.
+
+Root requested candidate fix32 (`TC-RC-PAYROLL-01`, `9ec3adc`) before final freeze. A clean normal merge produced `563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea`; only6 Payroll CSS lines changed from prior review `1c741fd`. All32 commits/56 finding-file entries and all CSS match candidate `9ec3adc`. The prior31-fix proof is preserved under `history-1c741fd/`. No old browser proof is relabelled as this SHA.
+
+
+## Initial fixtures and remaining execution
+
+The prepared private initializer `initial-fixture.mts` moves the whole base/payroll/seed-extra bootstrap into Wave B's awaited `beforeListen` hook. `initial-positive-fixture.mts` adds the positive Wave A states before listening and writes no fixture data during inspection. All45 admissible actor/action pairs are bound. The callback requires an empty owned initialization marker and the exact root release. It verifies real source eligibility and actor-scoped immutable receipts, then freezes the generation-source fingerprint and actor-bound replacement hints. It records captured local notification rows and prevents a second initialization. No code here has initialized a DB yet.
+
+`stage-private-wave-a.py` reuses Wave B's stager. Its only additional private helper delta passes the existing Clocker PIN key to the callback in memory, enabling a real configured Reset PIN target alongside the unconfigured Save PIN target. No key, password, browser storage or capability is serialized into inspection reports. The source lacks the coordinator's payroll preview fixture; the external copy remaps every service/fixture import to this exact review source, with provenance in `initial-fixture-preparation.json`.
+
+Before release, `python3 stage-private-wave-a.py` is a static dry run. After root explicitly releases this exact SHA, set `READY_REVIEW_RELEASED_SHA` and the existing `WA_BROWSER_RELEASED`/`WA_BROWSER_RELEASE_SHA` guards, then use `--materialize`. Materialization only prepares a new private helper and still does not start Next/Postgres. The returned launcher runs with explicit `PREVIEW_SOURCE`, disk-backed `PREVIEW_OUT` and `NEVORA_PREVIEW_TMP`. Do not call the old shared launcher's post-listen seed on this profile.
+
+The current job counts are1792 unchanged-checker axe cells;1244 baseline/variant judgment samples (560 passively collected on canonical visits,684 distinct variants);720 held/aborted form cases;112 additional held/rotated cases;128 actual receipt-state views;64 browser-fulfilled sent-state views;192 role-guard visits; and the11 explicit state groups in the plan. ROUND's QAOWNER PIN restricted case runs only as Manager, removing20 redundant Owner self-PIN visits. Canonical required cells remain1792.
+
+Prepared behavior checks are deliberately not runtime evidence. `collector-static-selfcheck.json` uses an entirely synthetic Playwright object to verify observer ordering and URL redaction; it does not establish an app or checker pass. The Next sent-state response uses `f:""`; source inspection shows `null` would throw in `normalizeFlightData`. Real browser acceptance, correct retained result copy, focused notice clearance and harmless GET refresh still need verification.
+
+Loading/error/retry, signed-out-mid-use, keyboard and reduced-motion require their explicit manual state jobs after release. A raw transport503 is not automatically a Wave A error-boundary state. Do not credit the boundary until the actual rendered component/retry focus is observed. Paused controls/dialog Escape are applicable only where a view actually supplies those controls; otherwise record the exact source-based not-applicable disposition. Full five-area reports and exact-SHA typecheck/lint/tests remain pending.
+
+Canonical Coverage is still the literal first Inbox href, as ROUND requires. Run `discover-inbox-coverage.mjs` read-only after initial setup/login; the matrix refuses to start while `needsInboxDiscovery` is true. The separately seeded eligible Coverage gap and replacement hints remain separate positive fixtures. Its40 judgment visits are included in the current1244 count. All fixture read assertions must pass before any coverage credit is available.

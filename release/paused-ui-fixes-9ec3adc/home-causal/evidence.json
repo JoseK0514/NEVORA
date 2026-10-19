@@ -1,0 +1,1760 @@
+[
+  {
+    "checkpoint": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+    "account": "AUDIT-E",
+    "mode": "baseline",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "before": {
+      "time": 3349.2999999998137,
+      "fontStatus": "loaded",
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter Fallback",
+          "status": "unloaded"
+        },
+        {
+          "family": "JetBrains Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "loaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        }
+      ],
+      "homeState": "ready",
+      "scrollY": 0,
+      "cls": 0.023107055518743962,
+      "shifts": [
+        {
+          "value": 0.022539924979223285,
+          "at": 1797.1000000005588,
+          "hadRecentInput": false,
+          "sources": [
+            {
+              "node": "DIV.nv-content.employee-home-reviewed-module__k4entG__content",
+              "previous": {
+                "x": 0,
+                "y": 268,
+                "width": 320,
+                "height": 576,
+                "top": 268,
+                "right": 320,
+                "bottom": 844,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 292,
+                "width": 320,
+                "height": 552,
+                "top": 292,
+                "right": 320,
+                "bottom": 844,
+                "left": 0
+              }
+            },
+            {
+              "node": "SECTION.employee-home-reviewed-module__k4entG__assignment",
+              "previous": {
+                "x": 0,
+                "y": 240,
+                "width": 320,
+                "height": 426,
+                "top": 240,
+                "right": 320,
+                "bottom": 666,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 264,
+                "width": 320,
+                "height": 502,
+                "top": 264,
+                "right": 320,
+                "bottom": 766,
+                "left": 0
+              }
+            },
+            {
+              "node": "svg",
+              "previous": {
+                "x": 176,
+                "y": 140,
+                "width": 144,
+                "height": 224,
+                "top": 140,
+                "right": 320,
+                "bottom": 364,
+                "left": 176
+              },
+              "current": {
+                "x": 176,
+                "y": 164,
+                "width": 144,
+                "height": 200,
+                "top": 164,
+                "right": 320,
+                "bottom": 364,
+                "left": 176
+              }
+            },
+            {
+              "node": "DIV.nv-masthead__extra",
+              "previous": {
+                "x": 16,
+                "y": 200,
+                "width": 288,
+                "height": 44,
+                "top": 200,
+                "right": 304,
+                "bottom": 244,
+                "left": 16
+              },
+              "current": {
+                "x": 16,
+                "y": 224,
+                "width": 288,
+                "height": 44,
+                "top": 224,
+                "right": 304,
+                "bottom": 268,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "value": 0.0005671305395206756,
+          "at": 2088.4000000003725,
+          "hadRecentInput": false,
+          "sources": [
+            {
+              "node": "SPAN.employee-time-badge",
+              "previous": {
+                "x": 260,
+                "y": 759,
+                "width": 24,
+                "height": 28,
+                "top": 759,
+                "right": 284,
+                "bottom": 787,
+                "left": 260
+              },
+              "current": {
+                "x": 203,
+                "y": 759,
+                "width": 81,
+                "height": 28,
+                "top": 759,
+                "right": 284,
+                "bottom": 787,
+                "left": 203
+              }
+            }
+          ]
+        }
+      ],
+      "geometry": [
+        {
+          "tag": "HEADER",
+          "cls": "nv-masthead nv-pageband",
+          "text": "Good afternoon · Monday, October 19Hi, Alexandra.Next shift tomorrow at 8:00 AM.3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 296,
+            "top": 68,
+            "right": 320,
+            "bottom": 364,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__eyebrow",
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 271,
+            "height": 20,
+            "top": 88,
+            "right": 287,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "H1",
+          "cls": "nv-masthead__title",
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "30px",
+          "lineHeight": "36px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__summary",
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 48,
+            "top": 168,
+            "right": 264,
+            "bottom": 216,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "24px"
+        },
+        {
+          "tag": "A",
+          "cls": "premium-band-link",
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 224,
+            "width": 184,
+            "height": 44,
+            "top": 224,
+            "right": 200,
+            "bottom": 268,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "employee-home-reviewed-module__k4entG__assignment",
+          "text": "Next shiftPublishedTomorrow · Tue, Oct 208:00 AM–4:00 PMStarts in 14h 15mMain Office · Customer SupportView schedule Times in Puerto Rico timeWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 292,
+            "width": 288,
+            "height": 430,
+            "top": 292,
+            "right": 304,
+            "bottom": 722,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        }
+      ],
+      "fontResources": [
+        {
+          "path": "/fonts/typeface/inter/variable.woff2",
+          "start": 439.5,
+          "end": 464.70000000018626,
+          "duration": 25.200000000186265
+        },
+        {
+          "path": "/__nextjs_font/geist-latin.woff2",
+          "start": 2113.2999999998137,
+          "end": 2135.600000000559,
+          "duration": 22.300000000745058
+        }
+      ]
+    },
+    "heldRequests": 0
+  },
+  {
+    "checkpoint": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+    "account": "AUDIT-E",
+    "mode": "held-home",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "before": {
+      "time": 3555.5,
+      "fontStatus": "loaded",
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter Fallback",
+          "status": "unloaded"
+        },
+        {
+          "family": "JetBrains Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        }
+      ],
+      "homeState": "loading",
+      "scrollY": 0,
+      "cls": 0,
+      "shifts": [],
+      "geometry": [
+        {
+          "tag": "HEADER",
+          "cls": "nv-masthead nv-pageband",
+          "text": "Good evening · Monday, October 19HomeChecking your shifts…",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 272,
+            "top": 68,
+            "right": 320,
+            "bottom": 340,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__eyebrow",
+          "text": "Good evening · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 254,
+            "height": 20,
+            "top": 88,
+            "right": 270,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "H1",
+          "cls": "nv-masthead__title",
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "30px",
+          "lineHeight": "36px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__summary",
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 24,
+            "top": 168,
+            "right": 264,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "24px"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "premium-band-note",
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 200,
+            "width": 4,
+            "height": 44,
+            "top": 200,
+            "right": 20,
+            "bottom": 244,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "employee-home-reviewed-module__k4entG__assignment",
+          "text": "Next shiftLoading Home…",
+          "box": {
+            "x": 16,
+            "y": 268,
+            "width": 288,
+            "height": 354,
+            "top": 268,
+            "right": 304,
+            "bottom": 622,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        }
+      ],
+      "fontResources": [
+        {
+          "path": "/fonts/typeface/inter/variable.woff2",
+          "start": 575.4000000003725,
+          "end": 603.7000000001863,
+          "duration": 28.299999999813735
+        }
+      ]
+    },
+    "heldRequests": 1,
+    "after": {
+      "time": 4512.600000000559,
+      "fontStatus": "loaded",
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter Fallback",
+          "status": "unloaded"
+        },
+        {
+          "family": "JetBrains Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        }
+      ],
+      "homeState": "loading",
+      "scrollY": 0,
+      "cls": 0,
+      "shifts": [],
+      "geometry": [
+        {
+          "tag": "HEADER",
+          "cls": "nv-masthead nv-pageband",
+          "text": "Good evening · Monday, October 19HomeChecking your shifts…",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 272,
+            "top": 68,
+            "right": 320,
+            "bottom": 340,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__eyebrow",
+          "text": "Good evening · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 254,
+            "height": 20,
+            "top": 88,
+            "right": 270,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "H1",
+          "cls": "nv-masthead__title",
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "30px",
+          "lineHeight": "36px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__summary",
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 24,
+            "top": 168,
+            "right": 264,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "24px"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "premium-band-note",
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 200,
+            "width": 4,
+            "height": 44,
+            "top": 200,
+            "right": 20,
+            "bottom": 244,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "employee-home-reviewed-module__k4entG__assignment",
+          "text": "Next shiftLoading Home…",
+          "box": {
+            "x": 16,
+            "y": 268,
+            "width": 288,
+            "height": 354,
+            "top": 268,
+            "right": 304,
+            "bottom": 622,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        }
+      ],
+      "fontResources": [
+        {
+          "path": "/fonts/typeface/inter/variable.woff2",
+          "start": 575.4000000003725,
+          "end": 603.7000000001863,
+          "duration": 28.299999999813735
+        }
+      ]
+    }
+  },
+  {
+    "checkpoint": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+    "account": "AUDIT-E",
+    "mode": "held-home",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "before": {
+      "time": 3285.100000000559,
+      "fontStatus": "loaded",
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter Fallback",
+          "status": "unloaded"
+        },
+        {
+          "family": "JetBrains Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        }
+      ],
+      "homeState": "loading",
+      "scrollY": 0,
+      "cls": 0,
+      "shifts": [],
+      "geometry": [
+        {
+          "tag": "HEADER",
+          "cls": "nv-masthead nv-pageband",
+          "text": "Good evening · Monday, October 19HomeChecking your shifts…",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 272,
+            "top": 68,
+            "right": 320,
+            "bottom": 340,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__eyebrow",
+          "text": "Good evening · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 254,
+            "height": 20,
+            "top": 88,
+            "right": 270,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "H1",
+          "cls": "nv-masthead__title",
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "30px",
+          "lineHeight": "36px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__summary",
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 24,
+            "top": 168,
+            "right": 264,
+            "bottom": 192,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "24px"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "premium-band-note",
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 200,
+            "width": 4,
+            "height": 44,
+            "top": 200,
+            "right": 20,
+            "bottom": 244,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "employee-home-reviewed-module__k4entG__assignment",
+          "text": "Next shiftLoading Home…",
+          "box": {
+            "x": 16,
+            "y": 268,
+            "width": 288,
+            "height": 354,
+            "top": 268,
+            "right": 304,
+            "bottom": 622,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        }
+      ],
+      "fontResources": [
+        {
+          "path": "/fonts/typeface/inter/variable.woff2",
+          "start": 305.29999999981374,
+          "end": 335.6000000005588,
+          "duration": 30.300000000745058
+        }
+      ]
+    },
+    "heldRequests": 1,
+    "after": {
+      "time": 4726.799999999814,
+      "fontStatus": "loaded",
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter Fallback",
+          "status": "unloaded"
+        },
+        {
+          "family": "JetBrains Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        }
+      ],
+      "homeState": "ready",
+      "scrollY": 0,
+      "cls": 0.023107055518743962,
+      "shifts": [
+        {
+          "value": 0.022539924979223285,
+          "at": 4012.4000000003725,
+          "hadRecentInput": false,
+          "sources": [
+            {
+              "node": "DIV.nv-content.employee-home-reviewed-module__k4entG__content",
+              "previous": {
+                "x": 0,
+                "y": 268,
+                "width": 320,
+                "height": 576,
+                "top": 268,
+                "right": 320,
+                "bottom": 844,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 292,
+                "width": 320,
+                "height": 552,
+                "top": 292,
+                "right": 320,
+                "bottom": 844,
+                "left": 0
+              }
+            },
+            {
+              "node": "SECTION.employee-home-reviewed-module__k4entG__assignment",
+              "previous": {
+                "x": 0,
+                "y": 240,
+                "width": 320,
+                "height": 426,
+                "top": 240,
+                "right": 320,
+                "bottom": 666,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 264,
+                "width": 320,
+                "height": 502,
+                "top": 264,
+                "right": 320,
+                "bottom": 766,
+                "left": 0
+              }
+            },
+            {
+              "node": "svg",
+              "previous": {
+                "x": 176,
+                "y": 140,
+                "width": 144,
+                "height": 224,
+                "top": 140,
+                "right": 320,
+                "bottom": 364,
+                "left": 176
+              },
+              "current": {
+                "x": 176,
+                "y": 164,
+                "width": 144,
+                "height": 200,
+                "top": 164,
+                "right": 320,
+                "bottom": 364,
+                "left": 176
+              }
+            },
+            {
+              "node": "DIV.nv-masthead__extra",
+              "previous": {
+                "x": 16,
+                "y": 200,
+                "width": 288,
+                "height": 44,
+                "top": 200,
+                "right": 304,
+                "bottom": 244,
+                "left": 16
+              },
+              "current": {
+                "x": 16,
+                "y": 224,
+                "width": 288,
+                "height": 44,
+                "top": 224,
+                "right": 304,
+                "bottom": 268,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "value": 0.0005671305395206756,
+          "at": 4075.2999999998137,
+          "hadRecentInput": false,
+          "sources": [
+            {
+              "node": "SPAN.employee-time-badge",
+              "previous": {
+                "x": 260,
+                "y": 759,
+                "width": 24,
+                "height": 28,
+                "top": 759,
+                "right": 284,
+                "bottom": 787,
+                "left": 260
+              },
+              "current": {
+                "x": 203,
+                "y": 759,
+                "width": 81,
+                "height": 28,
+                "top": 759,
+                "right": 284,
+                "bottom": 787,
+                "left": 203
+              }
+            }
+          ]
+        }
+      ],
+      "geometry": [
+        {
+          "tag": "HEADER",
+          "cls": "nv-masthead nv-pageband",
+          "text": "Good afternoon · Monday, October 19Hi, Alexandra.Next shift tomorrow at 8:00 AM.3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 296,
+            "top": 68,
+            "right": 320,
+            "bottom": 364,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__eyebrow",
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 271,
+            "height": 20,
+            "top": 88,
+            "right": 287,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "H1",
+          "cls": "nv-masthead__title",
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "30px",
+          "lineHeight": "36px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__summary",
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 48,
+            "top": 168,
+            "right": 264,
+            "bottom": 216,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "24px"
+        },
+        {
+          "tag": "A",
+          "cls": "premium-band-link",
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 224,
+            "width": 184,
+            "height": 44,
+            "top": 224,
+            "right": 200,
+            "bottom": 268,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "employee-home-reviewed-module__k4entG__assignment",
+          "text": "Next shiftPublishedTomorrow · Tue, Oct 208:00 AM–4:00 PMStarts in 14h 12mMain Office · Customer SupportView schedule Times in Puerto Rico timeWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 292,
+            "width": 288,
+            "height": 430,
+            "top": 292,
+            "right": 304,
+            "bottom": 722,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        }
+      ],
+      "fontResources": [
+        {
+          "path": "/fonts/typeface/inter/variable.woff2",
+          "start": 305.29999999981374,
+          "end": 335.6000000005588,
+          "duration": 30.300000000745058
+        }
+      ]
+    }
+  },
+  {
+    "checkpoint": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+    "account": "AUDIT-E",
+    "mode": "reserved-home",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "before": {
+      "time": 3126.0999999996275,
+      "fontStatus": "loaded",
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter Fallback",
+          "status": "unloaded"
+        },
+        {
+          "family": "JetBrains Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        }
+      ],
+      "homeState": "loading",
+      "scrollY": 0,
+      "cls": 0,
+      "shifts": [
+        {
+          "value": 0.022539924979223285,
+          "at": 581.8999999994412,
+          "hadRecentInput": true,
+          "sources": [
+            {
+              "node": "DIV.nv-content.employee-home-reviewed-module__k4entG__content",
+              "previous": {
+                "x": 0,
+                "y": 268,
+                "width": 320,
+                "height": 576,
+                "top": 268,
+                "right": 320,
+                "bottom": 844,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 292,
+                "width": 320,
+                "height": 552,
+                "top": 292,
+                "right": 320,
+                "bottom": 844,
+                "left": 0
+              }
+            },
+            {
+              "node": "SECTION.employee-home-reviewed-module__k4entG__assignment",
+              "previous": {
+                "x": 0,
+                "y": 240,
+                "width": 320,
+                "height": 426,
+                "top": 240,
+                "right": 320,
+                "bottom": 666,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 264,
+                "width": 320,
+                "height": 426,
+                "top": 264,
+                "right": 320,
+                "bottom": 690,
+                "left": 0
+              }
+            },
+            {
+              "node": "svg",
+              "previous": {
+                "x": 176,
+                "y": 140,
+                "width": 144,
+                "height": 224,
+                "top": 140,
+                "right": 320,
+                "bottom": 364,
+                "left": 176
+              },
+              "current": {
+                "x": 176,
+                "y": 164,
+                "width": 144,
+                "height": 200,
+                "top": 164,
+                "right": 320,
+                "bottom": 364,
+                "left": 176
+              }
+            },
+            {
+              "node": "DIV.nv-masthead__extra",
+              "previous": {
+                "x": 16,
+                "y": 200,
+                "width": 288,
+                "height": 44,
+                "top": 200,
+                "right": 304,
+                "bottom": 244,
+                "left": 16
+              },
+              "current": {
+                "x": 16,
+                "y": 224,
+                "width": 288,
+                "height": 44,
+                "top": 224,
+                "right": 304,
+                "bottom": 268,
+                "left": 16
+              }
+            }
+          ]
+        }
+      ],
+      "geometry": [
+        {
+          "tag": "HEADER",
+          "cls": "nv-masthead nv-pageband",
+          "text": "Good evening · Monday, October 19HomeChecking your shifts…",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 296,
+            "top": 68,
+            "right": 320,
+            "bottom": 364,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__eyebrow",
+          "text": "Good evening · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 254,
+            "height": 20,
+            "top": 88,
+            "right": 270,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "H1",
+          "cls": "nv-masthead__title",
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "30px",
+          "lineHeight": "36px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__summary",
+          "text": "Checking your shifts…",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 48,
+            "top": 168,
+            "right": 264,
+            "bottom": 216,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "24px"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "premium-band-note",
+          "text": "",
+          "box": {
+            "x": 16,
+            "y": 224,
+            "width": 4,
+            "height": 44,
+            "top": 224,
+            "right": 20,
+            "bottom": 268,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "employee-home-reviewed-module__k4entG__assignment",
+          "text": "Next shiftLoading Home…",
+          "box": {
+            "x": 16,
+            "y": 292,
+            "width": 288,
+            "height": 354,
+            "top": 292,
+            "right": 304,
+            "bottom": 646,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        }
+      ],
+      "fontResources": [
+        {
+          "path": "/fonts/typeface/inter/variable.woff2",
+          "start": 227.79999999981374,
+          "end": 253.8999999994412,
+          "duration": 26.09999999962747
+        }
+      ]
+    },
+    "heldRequests": 1,
+    "after": {
+      "time": 4522.299999999814,
+      "fontStatus": "loaded",
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter Fallback",
+          "status": "unloaded"
+        },
+        {
+          "family": "JetBrains Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        }
+      ],
+      "homeState": "ready",
+      "scrollY": 0,
+      "cls": 0.0005671305395206756,
+      "shifts": [
+        {
+          "value": 0.022539924979223285,
+          "at": 581.8999999994412,
+          "hadRecentInput": true,
+          "sources": [
+            {
+              "node": "DIV.nv-content.employee-home-reviewed-module__k4entG__content",
+              "previous": {
+                "x": 0,
+                "y": 268,
+                "width": 320,
+                "height": 576,
+                "top": 268,
+                "right": 320,
+                "bottom": 844,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 292,
+                "width": 320,
+                "height": 552,
+                "top": 292,
+                "right": 320,
+                "bottom": 844,
+                "left": 0
+              }
+            },
+            {
+              "node": "SECTION.employee-home-reviewed-module__k4entG__assignment",
+              "previous": {
+                "x": 0,
+                "y": 240,
+                "width": 320,
+                "height": 426,
+                "top": 240,
+                "right": 320,
+                "bottom": 666,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 264,
+                "width": 320,
+                "height": 426,
+                "top": 264,
+                "right": 320,
+                "bottom": 690,
+                "left": 0
+              }
+            },
+            {
+              "node": "svg",
+              "previous": {
+                "x": 176,
+                "y": 140,
+                "width": 144,
+                "height": 224,
+                "top": 140,
+                "right": 320,
+                "bottom": 364,
+                "left": 176
+              },
+              "current": {
+                "x": 176,
+                "y": 164,
+                "width": 144,
+                "height": 200,
+                "top": 164,
+                "right": 320,
+                "bottom": 364,
+                "left": 176
+              }
+            },
+            {
+              "node": "DIV.nv-masthead__extra",
+              "previous": {
+                "x": 16,
+                "y": 200,
+                "width": 288,
+                "height": 44,
+                "top": 200,
+                "right": 304,
+                "bottom": 244,
+                "left": 16
+              },
+              "current": {
+                "x": 16,
+                "y": 224,
+                "width": 288,
+                "height": 44,
+                "top": 224,
+                "right": 304,
+                "bottom": 268,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "value": 0.0005671305395206756,
+          "at": 3893.7000000001863,
+          "hadRecentInput": false,
+          "sources": [
+            {
+              "node": "SPAN.employee-time-badge",
+              "previous": {
+                "x": 260,
+                "y": 759,
+                "width": 24,
+                "height": 28,
+                "top": 759,
+                "right": 284,
+                "bottom": 787,
+                "left": 260
+              },
+              "current": {
+                "x": 203,
+                "y": 759,
+                "width": 81,
+                "height": 28,
+                "top": 759,
+                "right": 284,
+                "bottom": 787,
+                "left": 203
+              }
+            }
+          ]
+        }
+      ],
+      "geometry": [
+        {
+          "tag": "HEADER",
+          "cls": "nv-masthead nv-pageband",
+          "text": "Good afternoon · Monday, October 19Hi, Alexandra.Next shift tomorrow at 8:00 AM.3 items need your review",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 296,
+            "top": 68,
+            "right": 320,
+            "bottom": 364,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__eyebrow",
+          "text": "Good afternoon · Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 271,
+            "height": 20,
+            "top": 88,
+            "right": 287,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "H1",
+          "cls": "nv-masthead__title",
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36,
+            "top": 124,
+            "right": 304,
+            "bottom": 160,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "30px",
+          "lineHeight": "36px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__summary",
+          "text": "Next shift tomorrow at 8:00 AM.",
+          "box": {
+            "x": 16,
+            "y": 168,
+            "width": 248,
+            "height": 48,
+            "top": 168,
+            "right": 264,
+            "bottom": 216,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "24px"
+        },
+        {
+          "tag": "A",
+          "cls": "premium-band-link",
+          "text": "3 items need your review",
+          "box": {
+            "x": 16,
+            "y": 224,
+            "width": 184,
+            "height": 44,
+            "top": 224,
+            "right": 200,
+            "bottom": 268,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "employee-home-reviewed-module__k4entG__assignment",
+          "text": "Next shiftPublishedTomorrow · Tue, Oct 208:00 AM–4:00 PMStarts in 14h 12mMain Office · Customer SupportView schedule Times in Puerto Rico timeWest Office hasn’t published this week yet. Shifts shown are published.",
+          "box": {
+            "x": 16,
+            "y": 292,
+            "width": 288,
+            "height": 430,
+            "top": 292,
+            "right": 304,
+            "bottom": 722,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "25.5px"
+        }
+      ],
+      "fontResources": [
+        {
+          "path": "/fonts/typeface/inter/variable.woff2",
+          "start": 227.79999999981374,
+          "end": 253.8999999994412,
+          "duration": 26.09999999962747
+        }
+      ]
+    }
+  },
+  {
+    "checkpoint": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+    "account": "AUDIT-M",
+    "mode": "manager-control",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "before": {
+      "time": 3392.7000000001863,
+      "fontStatus": "loaded",
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        },
+        {
+          "family": "Inter Fallback",
+          "status": "unloaded"
+        },
+        {
+          "family": "JetBrains Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        },
+        {
+          "family": "__nextjs-Geist",
+          "status": "loaded"
+        },
+        {
+          "family": "__nextjs-Geist Mono",
+          "status": "unloaded"
+        }
+      ],
+      "scrollY": 0,
+      "cls": 0,
+      "shifts": [],
+      "geometry": [
+        {
+          "tag": "HEADER",
+          "cls": "nv-masthead nv-pageband",
+          "text": "Monday, October 19Good afternoon, Morgan26 things need you today.",
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 256,
+            "top": 68,
+            "right": 320,
+            "bottom": 324,
+            "left": 0
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "24px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__eyebrow",
+          "text": "Monday, October 19",
+          "box": {
+            "x": 16,
+            "y": 88,
+            "width": 142,
+            "height": 20,
+            "top": 88,
+            "right": 158,
+            "bottom": 108,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "20px"
+        },
+        {
+          "tag": "H1",
+          "cls": "nv-masthead__title",
+          "text": "Good afternoon, Morgan",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 72,
+            "top": 124,
+            "right": 304,
+            "bottom": 196,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "30px",
+          "lineHeight": "36px"
+        },
+        {
+          "tag": "P",
+          "cls": "nv-masthead__summary",
+          "text": "26 things need you today.",
+          "box": {
+            "x": 16,
+            "y": 204,
+            "width": 248,
+            "height": 24,
+            "top": 204,
+            "right": 264,
+            "bottom": 228,
+            "left": 16
+          },
+          "font": "Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "fontSize": "17px",
+          "lineHeight": "24px"
+        }
+      ],
+      "fontResources": [
+        {
+          "path": "/fonts/typeface/inter/variable.woff2",
+          "start": 254.79999999981374,
+          "end": 367.29999999981374,
+          "duration": 112.5
+        },
+        {
+          "path": "/__nextjs_font/geist-latin.woff2",
+          "start": 1596.8999999994412,
+          "end": 1634.7000000001863,
+          "duration": 37.80000000074506
+        }
+      ]
+    },
+    "heldRequests": 0
+  }
+]

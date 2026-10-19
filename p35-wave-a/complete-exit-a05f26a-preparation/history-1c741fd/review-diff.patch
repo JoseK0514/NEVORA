@@ -1,0 +1,168 @@
+diff --git a/docs/product/specs/p35-wave-a/ROUND.md b/docs/product/specs/p35-wave-a/ROUND.md
+index a25138d..e3be658 100644
+--- a/docs/product/specs/p35-wave-a/ROUND.md
++++ b/docs/product/specs/p35-wave-a/ROUND.md
+@@ -1,5 +1,19 @@
+ # Wave A: round 2 (exit round)
+ 
++**Update after Codex's interim round-2 report and the first combined candidate (October 19, about 3 PM):** fixed at the head of this branch:
++- **ST-WA-7:** while sending, the pressed button keeps the height it had (a two-line label at 200% no longer shrinks to one line and pulls the page up 36px). `src/components/wave-a/pending-button.tsx`.
++- **Combined build TypeScript error:** the coordinator's kit no longer exports `useHoldHeight`; Team availability now uses the kit's `HoldHeight` component (present on both this branch and the candidate). `src/components/availability-team-list.tsx`. This also unblocks the candidate's browser checks (Availability compiled with a 500).
++- **Coverage test conflict with the backend (`release/merge-1-wave-a/conflicts`):** take Wave A's side of `src/app/app/schedule/coverage/page.test.tsx`. With Codex C2 the targets carry `count`, so the page shows "barista: 1 more needed" and "1 more person needed" whatever the server's sentence; the label fallback now also reads the backend's new "N needed" wording.
++
++Please re-check ST-WA-7 and continue the exit sweep on the head.
++
++**Update after Codex's report on `7679133` (19:24 UTC):** **ST-WA-8** fixed: Delete this shift, and every other Wave A button that changes its words while sending without being a `PendingButton` (Time off Decline/Approve, Clocker PIN Save/Reset), now keeps its height while pending (`src/components/wave-a/keep-height.ts`: the height is taken at submit, at the current text size, and released when sending ends). Verified locally: Delete this shift at 320/200% stays 88px while "Deleting…" shows; document height and scroll unchanged; one POST. Please re-check ST-WA-8 on the head.
++
++**Update after Codex's early exit checks on `7651490` (19:56 UTC):** **ST-WA-9** and **ST-WA-10** fixed. Every Wave A submit button now holds its layout size (`offsetWidth`/`offsetHeight`, which ignore the .98 press scale) for both height and width while its words change, in `PendingButton` and `keep-height.ts`. Verified locally with a 200ms held mouse press: Save scheduling profile at 1440/100% stays 219.72×52 at x962; Send swap request at 1440 stays 187.23×52 at x1015; Delete this shift and Send swap request at 320/200% stay 88px. One POST each, held and aborted.
++
++**Update after Codex's report on `7f75dc4` (ST-WA-7 to 10 pass):** **ST-WA-11** fixed. The width hold is now `min(<width>px, 100%)`, so a rotation or resize while sending can't push the button out of its card. Verified locally: Delete this shift pending at 844×390, then rotated to 320×844, stays 248px wide inside its card (right edge 284 against the card's 304) at 100% and 200%, still reading "Deleting…"; Send swap request at 200% stays 288px within the 320 viewport. One POST each, held and aborted.
++
++
+ - **Round:** 2. Round 1 was run locally by five inspectors; its reports are in `inspection/` (alignment, stability, type-colour-copy, interaction-states, widths-roles). Every round-1 finding is fixed.
+ - **Commit:** the head of `claude/p35-wave-a-1283c8`. Pushed first at `2859ac4`; the head adds the swap and "Unable to work" sent states (below). Inspect the head.
+ - **Exit round:** **yes.** Please run the full sweep by all five areas (the matrix in `INSPECTION-BRIEF.md`), plus the re-checks below. The fixes touched every Wave A page, so a re-check-only round would cover almost everything anyway.
+diff --git a/src/app/app/schedule/coverage/page.tsx b/src/app/app/schedule/coverage/page.tsx
+index d736e74..2976bf6 100644
+--- a/src/app/app/schedule/coverage/page.tsx
++++ b/src/app/app/schedule/coverage/page.tsx
+@@ -24,9 +24,9 @@ function needLabel({ target, label, count, positionName }: NeedTarget) {
+   if (target === "LEAD") return "Shift lead needed";
+   if (typeof count === "number" && target === "STAFFING") return people(count);
+   if (typeof count === "number" && target === "POSITION" && positionName) return `${positionName}: ${count} more needed`;
+-  const staff = /^(\d+) employees missing$/.exec(label);
++  const staff = /^(\d+) employees (?:missing|needed)$/.exec(label);
+   if (staff) return people(Number(staff[1]));
+-  const position = /^(.+): (\d+) missing$/.exec(label);
++  const position = /^(.+): (\d+) (?:missing|needed)$/.exec(label);
+   if (position) return `${position[1]}: ${position[2]} more needed`;
+   return label;
+ }
+diff --git a/src/components/availability-team-list.tsx b/src/components/availability-team-list.tsx
+index 462e6ca..59a9a9d 100644
+--- a/src/components/availability-team-list.tsx
++++ b/src/components/availability-team-list.tsx
+@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
+ import { formatTime } from "@/lib/date-utils";
+ import { keepWhole } from "@/lib/keep-whole";
+ import { Avatar, Card, Status } from "@/components/kit/kit";
+-import { useHoldHeight } from "@/components/kit/hold-height";
++import { HoldHeight } from "@/components/kit/hold-height";
+ import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
+ import type { AvailabilityRecord } from "@/lib/data/availability";
+ 
+@@ -40,8 +40,6 @@ export function AvailabilityTeamList({ employees, employeeId }: {
+   const [filter, setFilter] = useState<Filter>("all");
+   const target = useRef<HTMLLIElement>(null);
+   const chips = useRef<HTMLDivElement>(null);
+-  // ST-WA-3: a filter keeps the list at the full team's height, so the chips never jump under the finger.
+-  const list = useHoldHeight<HTMLDivElement>(filter !== "all");
+   const visible = employees.filter(employee => matchesAvailabilityFilter(employee, filter));
+   useEffect(() => { target.current?.focus(); }, [employeeId]);
+ 
+@@ -55,7 +53,9 @@ export function AvailabilityTeamList({ employees, employeeId }: {
+       })}
+     </div>
+     <p className="nv-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
+-    <div ref={list}>
++    {/* ST-WA-3: a filter keeps the list at the full team's height, so the chips never jump under the finger.
++        HoldHeight (the kit component) applies the hold in the same render as the change. */}
++    <HoldHeight holding={filter !== "all"}>
+     {visible.length ? <ul className="wa-people">
+       {visible.map(employee => <li ref={employee.employeeId === employeeId ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} className="wa-person" data-selected={employee.employeeId === employeeId ? "true" : undefined} key={employee.employeeId} aria-label={`${employee.employeeName} availability`}>
+         <div className="wa-person__head">
+@@ -74,6 +74,6 @@ export function AvailabilityTeamList({ employees, employeeId }: {
+       <p className="wa-text wa-muted">{employees.length ? "No one matches this filter." : "Employees and Leads show here once they’re added."}</p>
+       {employees.length ? <button className="nv-btn" data-kind="secondary" data-block="true" type="button" onClick={() => { setFilter("all"); chips.current?.querySelector<HTMLButtonElement>("button")?.focus(); }}>Show everyone</button> : null}
+     </div>}
+-    </div>
++    </HoldHeight>
+   </Card>;
+ }
+diff --git a/src/components/clocker-pin-form.tsx b/src/components/clocker-pin-form.tsx
+index e2a9100..3a6afa2 100644
+--- a/src/components/clocker-pin-form.tsx
++++ b/src/components/clocker-pin-form.tsx
+@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
+ import type { PinActionResult } from '@/app/app/employees/[employeeId]/clocker-pin/actions';
+ import { Card } from './kit/kit';
+ import { Field, FieldPair, FormActions, Notice } from './wave-a/parts';
++import { useKeepHeight } from './wave-a/keep-height';
+ 
+ /** Phase 3.5 Wave A: Clocker PIN in the shared form pattern. The PIN never enters React state, the fields clear
+  * before the request leaves, one request at a time, and the button says "Saving…" while it is out. */
+@@ -16,6 +17,7 @@ export function ClockerPinForm({ employeeId, initialVersion, action }: {
+   const [pending, setPending] = useState(false);
+   const [result, setResult] = useState<PinActionResult | null>(null);
+   const lock = useRef(false);
++  const saveButton = useKeepHeight<HTMLButtonElement>(pending);
+   const feedback = useRef<HTMLDivElement>(null);
+   const employeeHref = `/app/employees/${encodeURIComponent(employeeId)}`;
+   const blocked = Boolean(result && !result.ok && result.refresh);
+@@ -72,7 +74,7 @@ export function ClockerPinForm({ employeeId, initialVersion, action }: {
+           </div>
+           <div className="wa-card-body">
+             <FormActions>
+-              <button type="submit" className="nv-btn" data-kind="primary" data-block="true">{pending ? 'Saving…' : configured ? 'Reset PIN' : 'Save PIN'}</button>
++              <button ref={saveButton} type="submit" className="nv-btn" data-kind="primary" data-block="true">{pending ? 'Saving…' : configured ? 'Reset PIN' : 'Save PIN'}</button>
+               <a className="nv-btn" data-kind="secondary" data-block="true" href={employeeHref}>Cancel</a>
+             </FormActions>
+           </div>
+diff --git a/src/components/time-off-review-actions.tsx b/src/components/time-off-review-actions.tsx
+index 3a76bba..653e57e 100644
+--- a/src/components/time-off-review-actions.tsx
++++ b/src/components/time-off-review-actions.tsx
+@@ -1,6 +1,7 @@
+ "use client";
+ 
+ import { useFormStatus } from "react-dom";
++import { useKeepHeight } from "./wave-a/keep-height";
+ import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+ import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+ 
+@@ -9,11 +10,13 @@ import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+ export function TimeOffReviewActions({ name }: { name?: string }) {
+   const { pending, data } = useFormStatus();
+   const decision = data?.get("decision");
++  const decline = useKeepHeight<HTMLButtonElement>(pending);
++  const approve = useKeepHeight<HTMLButtonElement>(pending);
+   return <div className="wa-decision" aria-busy={pending}>
+-    <button className="nv-btn" data-kind="secondary" type="submit" name="decision" value="DENIED" disabled={pending} aria-label={name && !pending ? `Decline time off for ${name}` : undefined}>
++    <button ref={decline} className="nv-btn" data-kind="secondary" type="submit" name="decision" value="DENIED" disabled={pending} aria-label={name && !pending ? `Decline time off for ${name}` : undefined}>
+       {pending && decision === "DENIED" ? null : <XIcon size={18} weight="bold" aria-hidden="true" />}{pending && decision === "DENIED" ? "Declining…" : "Decline"}
+     </button>
+-    <button className="nv-btn" data-kind="primary" type="submit" name="decision" value="APPROVED" disabled={pending} aria-label={name && !pending ? `Approve time off for ${name}` : undefined}>
++    <button ref={approve} className="nv-btn" data-kind="primary" type="submit" name="decision" value="APPROVED" disabled={pending} aria-label={name && !pending ? `Approve time off for ${name}` : undefined}>
+       {pending && decision === "APPROVED" ? null : <CheckIcon size={18} weight="bold" aria-hidden="true" />}{pending && decision === "APPROVED" ? "Approving…" : "Approve"}
+     </button>
+     <span className="nv-sr" role="status">{pending ? "Saving your decision…" : ""}</span>
+diff --git a/src/components/wave-a/keep-height.ts b/src/components/wave-a/keep-height.ts
+new file mode 100644
+index 0000000..861c95e
+--- /dev/null
++++ b/src/components/wave-a/keep-height.ts
+@@ -0,0 +1,24 @@
++"use client";
++
++import { useEffect, useRef } from "react";
++
++/** ST-WA-7/8: a submit button whose words change while sending ("Deleting…", "Approving…", "Saving…") keeps the height
++ * and width it had, so a two-line label at large text never shrinks to one line and pulls the page up. The height is taken when
++ * the form is submitted (before the words change, at the current text size) and released when sending ends. */
++export function useKeepHeight<T extends HTMLButtonElement>(pending: boolean) {
++  const ref = useRef<T>(null);
++  useEffect(() => {
++    const button = ref.current;
++    const form = button?.form;
++    if (!button || !form) return;
++    // Layout sizes (offsetWidth/Height), so a press in progress (scale .98) isn't counted (ST-WA-9); width too (ST-WA-10),
++    // capped at the space available, so a rotation mid-send can't push the button out of its card (ST-WA-11).
++    const hold = () => { button.style.minHeight = `${button.offsetHeight}px`; button.style.minWidth = `min(${button.offsetWidth}px, 100%)`; };
++    form.addEventListener("submit", hold, true);
++    return () => form.removeEventListener("submit", hold, true);
++  }, []);
++  useEffect(() => {
++    if (!pending && ref.current) { ref.current.style.minHeight = ""; ref.current.style.minWidth = ""; }
++  }, [pending]);
++  return ref;
++}

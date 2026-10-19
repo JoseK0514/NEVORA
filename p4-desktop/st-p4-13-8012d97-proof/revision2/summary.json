@@ -1,0 +1,97 @@
+{
+  "afterOpening": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "text": 100,
+      "cls": 0.00011175411522633745,
+      "geometry": true,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "text": 200,
+      "cls": 0.00525216049382716,
+      "geometry": true,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "width": 1024,
+      "text": 100,
+      "cls": 0.00021652221679687502,
+      "geometry": true,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "width": 1024,
+      "text": 200,
+      "cls": 0.005341370900472006,
+      "geometry": true,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "text": 100,
+      "cls": null,
+      "geometry": true,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "text": 200,
+      "cls": null,
+      "geometry": true,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1024,
+      "text": 100,
+      "cls": null,
+      "geometry": true,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1024,
+      "text": 200,
+      "cls": null,
+      "geometry": true,
+      "pass": true
+    }
+  ],
+  "afterGuards": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "text": 100,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "width": 1024,
+      "text": 200,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "text": 100,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1024,
+      "text": 200,
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "mutationsForwarded": 0,
+  "blockedMutations": 0
+}

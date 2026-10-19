@@ -1,0 +1,18 @@
+{
+  "reviewSHA": "368e98a18c16d47df04a93f2bea560843e461e0e",
+  "checks": {
+    "mergeTypecheck": "passed",
+    "finalTypecheck": "passed at previous eb83869, rerun exact SHA after gate release",
+    "affectedESLint": "passed",
+    "stagedWhitespace": "passed",
+    "worktreeClean": true
+  },
+  "fullTests": "pending coordinator candidate32 canonical gate release",
+  "fullOfficialChecker": "pending exact review SHA",
+  "fiveAreaExit": "pending",
+  "independentClosure": false,
+  "ownedPreview": "closed; source/mirror/PG verified",
+  "phase": "prepared awaiting candidate32 release",
+  "previousSHA": "eb83869aac75aeae874258c0b3523345d126e7cf",
+  "canonicalBase32": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b"
+}

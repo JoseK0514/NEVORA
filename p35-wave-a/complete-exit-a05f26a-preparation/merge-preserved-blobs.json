@@ -1,0 +1,55 @@
+{
+  "base": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "sourceHead": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
+  "records": [
+    {
+      "path": "src/app/app/schedule/edit/delete-shift-button.tsx",
+      "baseBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+      "reviewBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+      "decision": "keep exact verified candidate implementation; approved by root"
+    },
+    {
+      "path": "src/components/wave-a/pending-button.tsx",
+      "baseBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+      "reviewBlob": "9f06696469473f1ade656c93970f5b9a3cffea3e",
+      "decision": "keep exact verified candidate implementation; approved by root"
+    },
+    {
+      "path": "src/components/wave-a/action-form.tsx",
+      "baseBlob": "2333d61c22026a5f67c5fd01186dc06d26092ef9",
+      "reviewBlob": "2333d61c22026a5f67c5fd01186dc06d26092ef9",
+      "decision": "preserved exact candidate blob"
+    },
+    {
+      "path": "src/lib/reveal-feedback.ts",
+      "baseBlob": "04b1e63dc0b1ed3cfdee1cea929aa8513abaa2e5",
+      "reviewBlob": "04b1e63dc0b1ed3cfdee1cea929aa8513abaa2e5",
+      "decision": "preserved exact candidate blob"
+    },
+    {
+      "path": "src/app/app/portal-premium.css",
+      "baseBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+      "reviewBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+      "decision": "preserved exact candidate blob"
+    },
+    {
+      "path": "src/app/app/portal-gusto.css",
+      "baseBlob": "110dff32230b53c1b6ff2c49dbd71a9b42b1a835",
+      "reviewBlob": "110dff32230b53c1b6ff2c49dbd71a9b42b1a835",
+      "decision": "preserved exact candidate blob"
+    },
+    {
+      "path": "src/components/kit/kit.css",
+      "baseBlob": "b8c2bc41acd43381a1662ee5770f10f23a2354bc",
+      "reviewBlob": "b8c2bc41acd43381a1662ee5770f10f23a2354bc",
+      "decision": "preserved exact candidate blob"
+    },
+    {
+      "path": "src/app/app/payroll/payroll-workflow.css",
+      "baseBlob": "c794c43b1748fb6ebd478d92ce6069ce30805df2",
+      "reviewBlob": "c794c43b1748fb6ebd478d92ce6069ce30805df2",
+      "decision": "root requested exact candidate32 fix; clean normal merge"
+    }
+  ],
+  "reviewSha": "563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea"
+}

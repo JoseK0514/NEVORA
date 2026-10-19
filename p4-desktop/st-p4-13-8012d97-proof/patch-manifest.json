@@ -1,0 +1,9 @@
+{
+  "base": "8012d9790e72987140f939c7d70e1df9612ea009",
+  "sourceFile": "src/components/manager-inbox.tsx",
+  "originalSha256": "15c496c3ceb862f49e08198c8e5a0a15793d2981f89f97df7f05c2c046aaa1f1",
+  "patchedSha256": "818e97f791dbce94b858e4fde0aaf56c0561ed60d7e236a7239cb813f8b93c00",
+  "patchSha256": "aacb8422d12c472af4ab6bf4dea372db22dc9ff10f59f3017c0ab6179f6c92df",
+  "scope": "Effect timing only; source untouched; patch to owned external preview mirror only; root owns candidate application",
+  "independentCertification": false
+}

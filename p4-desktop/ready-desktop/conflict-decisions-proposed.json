@@ -1,0 +1,128 @@
+[
+  {
+    "file": "docs/product/specs/premium-phase-3/ROUND.md",
+    "proposal": "candidate-full-file",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "docs/product/specs/premium-phase-3/inspection/alignment.md",
+    "proposal": "candidate-full-file",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "docs/product/specs/premium-phase-3/inspection/stability.md",
+    "proposal": "candidate-full-file",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+    "proposal": "candidate-full-file",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+    "proposal": "candidate-full-file",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "scripts/ui-checks/preview-runtime.mjs",
+    "proposal": "candidate-full-file",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/app/app/layout.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/app/app/portal-premium.css",
+    "proposal": "candidate-full-file",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/app/app/requests/hub/request-hub.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/app/app/requests/time-off-form.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/app/layout.tsx",
+    "proposal": "candidate-full-file",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/app-shell.tsx",
+    "proposal": "desktop-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/availability-editor.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/calendar-subscription-panel.test.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/calendar-subscription-panel.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/employee-home-reviewed.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/employee-submit-button.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/employee-time-corrections.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/employee-time-panel.test.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/employee-time-panel.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/components/kit/hold-height.tsx",
+    "proposal": "candidate-full-file",
+    "status": "prepared-for-root-review",
+    "reason": "Hunk-level auto merge transplanted state setter into ref hook; candidate already contains correct state component plus separate ref hook."
+  },
+  {
+    "file": "src/components/time-off-withdrawal.tsx",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/lib/keep-whole.test.ts",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  },
+  {
+    "file": "src/lib/keep-whole.ts",
+    "proposal": "candidate-conflict-hunks-keep-auto-merge",
+    "status": "prepared-for-root-review"
+  }
+]

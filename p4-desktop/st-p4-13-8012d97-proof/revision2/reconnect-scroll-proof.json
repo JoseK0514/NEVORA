@@ -1,0 +1,41 @@
+{
+  "derivedFrom": "results.json existing raw guarded state snapshots",
+  "cases": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "text": 100,
+      "offlineScroll": 800,
+      "reconnectedScroll": 800,
+      "reconnectedRows": 29,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "width": 1024,
+      "text": 200,
+      "offlineScroll": 800,
+      "reconnectedScroll": 800,
+      "reconnectedRows": 29,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "text": 100,
+      "offlineScroll": 800,
+      "reconnectedScroll": 800,
+      "reconnectedRows": 29,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1024,
+      "text": 200,
+      "offlineScroll": 800,
+      "reconnectedScroll": 800,
+      "reconnectedRows": 29,
+      "pass": true
+    }
+  ]
+}
