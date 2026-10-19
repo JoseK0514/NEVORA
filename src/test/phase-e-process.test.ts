@@ -5,6 +5,15 @@ import { join, resolve } from 'node:path';
 import { expect, it } from 'vitest';
 
 const runner = resolve('scripts/phase-e-owned.mjs');
+/** Container PID 1 may retain an exited orphan as a zombie. kill(pid,0)
+ * reports that PID exists, not that it can execute. Require positive zombie
+ * evidence; failed observations and live processes still fail this check. */
+function processHasStopped(pid:number):boolean {
+  try{process.kill(pid,0);}catch(error){if((error as NodeJS.ErrnoException).code==='ESRCH')return true;throw error;}
+  const observed=spawnSync('ps',['-p',String(pid),'-o','stat='],{encoding:'utf8',timeout:2000});
+  return !observed.error&&observed.status===0&&/^Z/.test(observed.stdout.trim());
+}
+it('does not classify a live process as stopped',()=>{expect(processHasStopped(process.pid)).toBe(false);});
 it.each(['graceful', 'forced', 'forced-title-worker'])('a short %s timeout stops detached Next/browser process resources and fails', mode => {
   const root = mkdtempSync(join(tmpdir(), 'nevora-e-timeout-')), trace = join(root, 'resources.json');
   try {
@@ -42,10 +51,10 @@ setInterval(()=>{},100);\n`);
       // This timestamp precedes the supervisor call, so the original 1250ms
       // boundary is conservative; title mutation during cleanup grace cannot pass.
       expect(title.changedAt).toBeLessThan(supervised.fixtureStartedAt + 1250);
-      expect(() => process.kill(worker.pid, 0)).toThrow();
+      expect(processHasStopped(worker.pid)).toBe(true);
     }
     const pids = JSON.parse(readFileSync(trace, 'utf8')) as number[];
-    for (const pid of pids) expect(() => process.kill(pid, 0)).toThrow();
+    for (const pid of pids) expect(processHasStopped(pid)).toBe(true);
     if (mode === 'graceful') expect(readFileSync(join(root, 'graceful-closed'), 'utf8')).toBe('closed');
   } finally {
     // Only independently recorded invocation-created fixture PIDs are eligible.
