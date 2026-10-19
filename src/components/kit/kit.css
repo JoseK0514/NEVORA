@@ -13,6 +13,7 @@
   --nv-muted: #5F666A;        /* 5.84 on white, 5.29 on the canvas */
   --nv-icon: #858B8F;         /* 3.45, chevrons and idle icons */
   --nv-border: #D5DAD9;
+  --nv-field-border: #858B8F;  /* 3.45 on white: a field's only edge must reach 3:1 (WCAG 1.4.11) */
   --nv-hairline: #E8ECEB;
   --nv-track: #DDE2E1;
   --nv-inset: #EEF1F0;

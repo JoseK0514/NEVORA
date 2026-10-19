@@ -598,9 +598,9 @@ html body .app-shell.nevora-portal .premium-team-status { flex-wrap: nowrap; ove
 html body .app-shell.nevora-portal .premium-team-status::-webkit-scrollbar { display: none; }
 /* WR-40: a Next up button stays a button-sized target on wide screens. */
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) { .nv-nextup .nv-btn { align-self: flex-start; min-width: 240px; max-width: 360px; } }
-/* WR-41: landscape keeps the band summary to one line instead of hiding it. */
+/* WR-41: landscape shows the band summary in full (a clamp cut longer summaries, Wave B AL). */
 @media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  html body .app-shell.nevora-portal .page-frame [data-nv-page] .nv-masthead__summary { display: -webkit-box !important; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; }
+  html body .app-shell.nevora-portal .page-frame [data-nv-page] .nv-masthead__summary { display: block !important; }
 }
 /* AL-32, WR-16, WR-43, AL-24: the More sheet is one full-width bottom sheet, its Close sits after the list. */
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
@@ -879,7 +879,7 @@ html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none) .portal-not
 /* WR-55: one text size inside every field (17px on phones, 16px on desktop), Schedule's search included. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea):not(.nv-x) { font: var(--nv-t-body); }
 /* WR-55: date and number fields grew to 50–54px from their own padding; every single-line field is exactly 48px. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]), select):not(.nv-x) { height: 48px; padding-block: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]), select):not(.nv-x) { height: auto; min-height: 3rem; padding-block: var(--nv-s-2); }
 /* WR-56: Schedule's search wrapper is 48px like every other field (mobile-workforce.css:122 made it 52). */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .manager-schedule-page .mws-search, html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .manager-schedule-page.premium-legacy-page .mws-search { min-height: 48px; height: 48px; box-sizing: border-box; }
 /* TC-48: the freshness dot says the state: green live, grey while checking, a coral ring when it can't update. */
@@ -1361,3 +1361,18 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv
   html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger span { font: var(--nv-t-label); }
   html body .app-shell.nevora-portal.nevora-portal .mobile-header a.brand { display: inline-flex; align-items: center; min-height: 44px; }
 }
+/* Clocked in or on break: the location is the card's lead line, the times are callout. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-current-copy > strong { display: block; font: var(--nv-t-row); color: var(--nv-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-current-copy > p { font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal .employee-time-panel[data-time-loading] .employee-time-current :is(.employee-time-note, .employee-time-footer, .employee-time-badge) { visibility: hidden; }
+html body .app-shell.nevora-portal [data-nv-page]:has(.employee-profile-panel[data-loading]) :is(.employee-account-footer, .profile-settings, .profile-signout, .profile-signout-row) { visibility: hidden; }
+/* The clock's own loading, failed and paused message, on the kit roles. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-message > strong { display: block; font: var(--nv-t-label); color: var(--nv-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-message > p { font: var(--nv-t-callout); color: var(--nv-muted); }
+
+/* Field edges reach 3:1 against white (WCAG 1.4.11): inputs, selects, textareas and the wrappers that draw a search field's edge. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea):not(.nv-x):not(.nv-y) { border-color: var(--nv-field-border); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*="__search"], .mws-search, .schedule-period-control):not(.nv-x) { border-color: var(--nv-field-border); }
+/* Payroll's error line carries an icon beside its words. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-error { display: flex; align-items: flex-start; gap: var(--nv-s-2); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-error > svg { flex: none; margin-top: 2px; }
