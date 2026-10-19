@@ -1,0 +1,710 @@
+{
+  "ST-03-proof": [
+    {
+      "engine": "chromium",
+      "before": {
+        "rows": [
+          {
+            "row": "email",
+            "box": {
+              "x": 36,
+              "y": 471,
+              "width": 308,
+              "height": 77,
+              "top": 471,
+              "right": 344,
+              "bottom": 548,
+              "left": 36
+            },
+            "text": "\u2013\nNot shown yet"
+          },
+          {
+            "row": "phone",
+            "box": {
+              "x": 36,
+              "y": 548,
+              "width": 308,
+              "height": 77,
+              "top": 548,
+              "right": 344,
+              "bottom": 625,
+              "left": 36
+            },
+            "text": "\u2013\nNot shown yet"
+          },
+          {
+            "row": "locations",
+            "box": {
+              "x": 36,
+              "y": 625,
+              "width": 308,
+              "height": 53,
+              "top": 625,
+              "right": 344,
+              "bottom": 678,
+              "left": 36
+            },
+            "text": "\u2013\nNot shown yet"
+          }
+        ],
+        "signout": {
+          "x": 16,
+          "y": 1544,
+          "width": 328,
+          "height": 64,
+          "top": 1544,
+          "right": 344,
+          "bottom": 1608,
+          "left": 16
+        },
+        "shifts": [
+          {
+            "value": 1.385114140892313e-05,
+            "recent": true
+          }
+        ],
+        "scroll": 0,
+        "visibility": "visible"
+      },
+      "after": {
+        "rows": [
+          {
+            "row": "email",
+            "box": {
+              "x": 36,
+              "y": 471,
+              "width": 308,
+              "height": 99,
+              "top": 471,
+              "right": 344,
+              "bottom": 570,
+              "left": 36
+            },
+            "text": "morgan.rivera@northside-qa.example"
+          },
+          {
+            "row": "phone",
+            "box": {
+              "x": 36,
+              "y": 570,
+              "width": 308,
+              "height": 77,
+              "top": 570,
+              "right": 344,
+              "bottom": 647,
+              "left": 36
+            },
+            "text": "787-555-0101"
+          },
+          {
+            "row": "locations",
+            "box": {
+              "x": 36,
+              "y": 647,
+              "width": 308,
+              "height": 75,
+              "top": 647,
+              "right": 344,
+              "bottom": 722,
+              "left": 36
+            },
+            "text": "Main OfficeWest Office"
+          }
+        ],
+        "signout": {
+          "x": 16,
+          "y": 1588,
+          "width": 328,
+          "height": 64,
+          "top": 1588,
+          "right": 344,
+          "bottom": 1652,
+          "left": 16
+        },
+        "shifts": [
+          {
+            "value": 1.385114140892313e-05,
+            "recent": true
+          },
+          {
+            "value": 0.02974175420338467,
+            "recent": false
+          }
+        ],
+        "scroll": 0,
+        "visibility": "visible"
+      }
+    },
+    {
+      "engine": "webkit",
+      "before": {
+        "rows": [
+          {
+            "row": "email",
+            "box": {
+              "x": 36,
+              "y": 471,
+              "width": 308,
+              "height": 77,
+              "top": 471,
+              "right": 344,
+              "bottom": 548,
+              "left": 36
+            },
+            "text": "\u2013Not shown yet"
+          },
+          {
+            "row": "phone",
+            "box": {
+              "x": 36,
+              "y": 548,
+              "width": 308,
+              "height": 77,
+              "top": 548,
+              "right": 344,
+              "bottom": 625,
+              "left": 36
+            },
+            "text": "\u2013Not shown yet"
+          },
+          {
+            "row": "locations",
+            "box": {
+              "x": 36,
+              "y": 625,
+              "width": 308,
+              "height": 53,
+              "top": 625,
+              "right": 344,
+              "bottom": 678,
+              "left": 36
+            },
+            "text": "\u2013Not shown yet"
+          }
+        ],
+        "signout": {
+          "x": 16,
+          "y": 1544,
+          "width": 328,
+          "height": 64,
+          "top": 1544,
+          "right": 344,
+          "bottom": 1608,
+          "left": 16
+        },
+        "shifts": [],
+        "scroll": 0,
+        "visibility": "visible"
+      },
+      "after": {
+        "rows": [
+          {
+            "row": "email",
+            "box": {
+              "x": 36,
+              "y": 471,
+              "width": 308,
+              "height": 99,
+              "top": 471,
+              "right": 344,
+              "bottom": 570,
+              "left": 36
+            },
+            "text": "morgan.rivera@northside-qa.example"
+          },
+          {
+            "row": "phone",
+            "box": {
+              "x": 36,
+              "y": 570,
+              "width": 308,
+              "height": 77,
+              "top": 570,
+              "right": 344,
+              "bottom": 647,
+              "left": 36
+            },
+            "text": "787-555-0101"
+          },
+          {
+            "row": "locations",
+            "box": {
+              "x": 36,
+              "y": 647,
+              "width": 308,
+              "height": 75,
+              "top": 647,
+              "right": 344,
+              "bottom": 722,
+              "left": 36
+            },
+            "text": "Main OfficeWest Office"
+          }
+        ],
+        "signout": {
+          "x": 16,
+          "y": 1588,
+          "width": 328,
+          "height": 64,
+          "top": 1588,
+          "right": 344,
+          "bottom": 1652,
+          "left": 16
+        },
+        "shifts": [],
+        "scroll": 0,
+        "visibility": "visible"
+      }
+    }
+  ],
+  "ST-08-proof": [
+    {
+      "engine": "chromium",
+      "ready": {
+        "band": {
+          "x": 0,
+          "y": 70.015625,
+          "width": 390,
+          "height": 134,
+          "top": 70.015625,
+          "right": 390,
+          "bottom": 204.015625,
+          "left": 0
+        },
+        "summary": {
+          "x": 16,
+          "y": 144.015625,
+          "width": 318,
+          "height": 36,
+          "top": 144.015625,
+          "right": 334,
+          "bottom": 180.015625,
+          "left": 16
+        },
+        "font": "25.5px / 36px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "root": "24px",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ]
+      },
+      "loading": {
+        "band": {
+          "x": 0,
+          "y": 70.015625,
+          "width": 390,
+          "height": 134,
+          "top": 70.015625,
+          "right": 390,
+          "bottom": 204.015625,
+          "left": 0
+        },
+        "rootWidth": 390
+      },
+      "delta": 0,
+      "mode": "Actual server-rendered fallback placed in its original parent; browser-only geometry probe, not a navigation/CLS measurement"
+    },
+    {
+      "engine": "webkit",
+      "ready": {
+        "band": {
+          "x": 0,
+          "y": 70.015625,
+          "width": 390,
+          "height": 170,
+          "top": 70.015625,
+          "right": 390,
+          "bottom": 240.015625,
+          "left": 0
+        },
+        "summary": {
+          "x": 16,
+          "y": 144.015625,
+          "width": 318,
+          "height": 72,
+          "top": 144.015625,
+          "right": 334,
+          "bottom": 216.015625,
+          "left": 16
+        },
+        "font": "25.5px / 36px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "root": "24px",
+        "fonts": [
+          {
+            "family": "Inter",
+            "status": "loaded"
+          },
+          {
+            "family": "JetBrains Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "__nextjs-Geist",
+            "status": "loaded"
+          },
+          {
+            "family": "__nextjs-Geist Mono",
+            "status": "unloaded"
+          }
+        ]
+      },
+      "loading": {
+        "band": {
+          "x": 0,
+          "y": 70.015625,
+          "width": 390,
+          "height": 134,
+          "top": 70.015625,
+          "right": 390,
+          "bottom": 204.015625,
+          "left": 0
+        },
+        "rootWidth": 390
+      },
+      "delta": 36,
+      "mode": "Actual server-rendered fallback placed in its original parent; browser-only geometry probe, not a navigation/CLS measurement"
+    }
+  ],
+  "focus": [
+    {
+      "id": "IS-15",
+      "engine": "chromium",
+      "width": 390,
+      "tapped": {
+        "scroll": 814,
+        "active": "BUTTON",
+        "topic": "shift-changes",
+        "visible": false
+      },
+      "before": {
+        "scroll": 0,
+        "active": "BUTTON",
+        "topic": "shift-changes",
+        "visible": false
+      },
+      "away": {
+        "scroll": 0,
+        "active": "BODY",
+        "topic": null,
+        "visible": false
+      },
+      "returned": {
+        "scroll": 0,
+        "active": "BUTTON",
+        "topic": "shift-changes",
+        "visible": false
+      },
+      "counts": {
+        "reads": 3,
+        "saves": 1
+      }
+    },
+    {
+      "id": "IS-15",
+      "engine": "webkit",
+      "width": 390,
+      "tapped": {
+        "scroll": 814,
+        "active": "BUTTON",
+        "topic": "shift-changes",
+        "visible": false
+      },
+      "before": {
+        "scroll": 0,
+        "active": "BUTTON",
+        "topic": "shift-changes",
+        "visible": false
+      },
+      "away": {
+        "scroll": 0,
+        "active": "BODY",
+        "topic": null,
+        "visible": false
+      },
+      "returned": {
+        "scroll": 0,
+        "active": "BUTTON",
+        "topic": "shift-changes",
+        "visible": false
+      },
+      "counts": {
+        "reads": 3,
+        "saves": 1
+      }
+    },
+    {
+      "id": "IS-15",
+      "engine": "chromium",
+      "width": 1440,
+      "before": {
+        "scroll": 0,
+        "active": "BODY",
+        "topic": null,
+        "visible": false
+      },
+      "after": {
+        "scroll": 0,
+        "active": "BODY",
+        "topic": null,
+        "visible": false
+      },
+      "backgroundReads": 1
+    }
+  ],
+  "WR-5-verified": [
+    {
+      "test": "WR-5",
+      "width": 320,
+      "text": 100,
+      "rows": [
+        {
+          "row": "email",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        },
+        {
+          "row": "phone",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        }
+      ]
+    },
+    {
+      "test": "WR-5",
+      "width": 320,
+      "text": 200,
+      "rows": [
+        {
+          "row": "email",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        },
+        {
+          "row": "phone",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        }
+      ]
+    },
+    {
+      "test": "WR-5",
+      "width": 390,
+      "text": 100,
+      "rows": [
+        {
+          "row": "email",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        },
+        {
+          "row": "phone",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        }
+      ]
+    },
+    {
+      "test": "WR-5",
+      "width": 390,
+      "text": 200,
+      "rows": [
+        {
+          "row": "email",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        },
+        {
+          "row": "phone",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        }
+      ]
+    },
+    {
+      "test": "WR-5",
+      "width": 430,
+      "text": 100,
+      "rows": [
+        {
+          "row": "email",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        },
+        {
+          "row": "phone",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        }
+      ]
+    },
+    {
+      "test": "WR-5",
+      "width": 430,
+      "text": 200,
+      "rows": [
+        {
+          "row": "email",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        },
+        {
+          "row": "phone",
+          "value": "Not added",
+          "labelX": 36,
+          "valueX": 36,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        }
+      ]
+    },
+    {
+      "test": "WR-5",
+      "width": 1024,
+      "text": 100,
+      "rows": [
+        {
+          "row": "email",
+          "value": "Not added",
+          "labelX": 280,
+          "valueX": 280,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        },
+        {
+          "row": "phone",
+          "value": "Not added",
+          "labelX": 280,
+          "valueX": 280,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        }
+      ]
+    },
+    {
+      "test": "WR-5",
+      "width": 1024,
+      "text": 200,
+      "rows": [
+        {
+          "row": "email",
+          "value": "Not added",
+          "labelX": 280,
+          "valueX": 280,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        },
+        {
+          "row": "phone",
+          "value": "Not added",
+          "labelX": 280,
+          "valueX": 280,
+          "inset": 20,
+          "gap": 4,
+          "stacked": true
+        }
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "account": "AUDIT-E",
+      "managementRequests": {
+        "reads": 0,
+        "saves": 0
+      },
+      "managerPage": 0,
+      "title": [
+        "Profile"
+      ]
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "managementRequests": {
+        "reads": 0,
+        "saves": 0
+      },
+      "managerPage": 0,
+      "title": [
+        "Profile"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,8 @@
+2026-10-19 19:24 UTC · Wave A round 2 on `7679133` · verified P0 0 / P1 1 / P2 0 so far · **not zero; do not merge**. New [ST-WA-8](p35-wave-a/round-2-7679133/stability.md): Delete this shift still shrinks 88→52px at 320/200 while held, document −36px, scroll −29px; this separate button bypasses the new PendingButton hold. ST-WA-7 Swap fix passes the Chromium recheck. 160/160 first phone batch passes; remaining exit evidence continues. Browser mutations held/aborted; no source changes.
+
 In progress, 2026-10-19 19:10 UTC: coordinator `8c4264c` and backend `c6a5954` are integrated locally at candidate `98b037b`. Claude’s Coverage wording and supplied root-layout resolution applied; latest coordinator premium CSS retained exactly. TypeScript passes; lint passes with zero warnings. Original isolated cleanup reproduces 3 failures; backend isolated cleanup passes 12/12 with one worker (positive zombie evidence plus live-process rejection). Full candidate tests/checks/build and exact Wave A `7679133` exit inspection are running. New Wave A SHA is not merged pending a complete zero exit. Inbox flag skipped; reviewed checklist retained; no device access or deployment. Older results below are historical checkpoints.
 
-In progress: Phase 3 round 4 on `f691decb5496377a35ca7777d3025674f45bb94e` is starting first; Wave A round 2 exit on `c05e0c7` has one verified P1 (ST-WA-7). Wave B round 3 exit on `9f32ca6` and Wave C round 4 exit on `5f7c166` previews are preparing; Profile round 4 on `829dfe6` continues. Desktop round 3 on `2250275` is queued. Wave C round 3 was checkpointed incomplete when round 4 arrived; its two P1s await independent re-check on round 4. No round has a completed zero verdict. This inspection session performs no merges or deployments; polling continues every ten minutes.
+In progress: Phase 3 round 4 on `f691dec` has TC-P3-32 (P1); Wave A round 2 exit on `c05e0c7` has ST-WA-7 (P1). Profile round 4 on `829dfe6` has two P2 remainders (ST-03 at 360px; ST-08 in WebKit 390/150). Wave C round 4 exit on `5f7c166` independently fixes its two reported P1s, but its full sweep is incomplete. Wave B round 3 exit on `9f32ca6` continues; Desktop round 3 on `2250275` is queued. Five matrices are running. No round has a completed zero verdict. This inspection session performs no merges or deployments.
 
 Verification task, 2026-10-19 19:43 UTC: source-owner instructions now resolve both backend conflicts (Wave A ROUND at `7679133` plus coordinator layout file at `8c4264c`). Local verification snapshot `bf6c030` integrates backend `c6a5954` without the newer Wave A UI commit; install/TypeScript/lint pass, and its full one-worker suite is still running with no failure reported so far. The planner benchmark and all 12 process-cleanup cases pass. Another release task owns publication; this task is verifying to avoid another branch race. [Current verification record](release/merge-3-backend/README.md). The prior unpublished coordinator-only `25dca8d` run completed at 7,282 passed / 5 failed; its results are not current-candidate gates.
 
@@ -25,7 +27,13 @@ Reports branch: `codex/inspections`. Jose's October 19 rolling-merge instruction
 
 ## Conflicts for Claude
 
-**Current backend blocker — candidate `0e01046` (coordinator `e7671e6` + Wave A `c05e0c7`) / backend `1c8254a` (application inputs unchanged from `31ec698`): `src/app/app/schedule/coverage/page.test.tsx`.** Candidate asserts “1 more needed”, “1 more person needed” and “Choose what to fill”; backend asserts “1 needed”, “1 employees needed” and “Choose the requirement”. Both complete sides are in `release/merge-1-wave-a/conflicts/coverage-test-{candidate,backend}.txt`. Merge aborted; no side chosen. Owner: backend / Wave A / coordinator.
+Wave A `7679133` ROUND.md explicitly prescribes its Coverage test, whose blob `18e3861` equals the existing candidate test. The coordinator supplies the root-layout file at `8c4264c`. Both prescriptions were applied verbatim to local verification snapshot `bf6c030`; no newer Wave A UI was merged. Publication and complete gates remain pending in the other release task.
+
+**Current integration `98b037b`: resolved under Jose’s explicit instructions.** Root layout follows the coordinator’s supplied resolution. Coverage assertions use Wave A’s on-screen wording (“1 more needed”, “1 more person needed”, “Choose what to fill”); backend nonwording assertions remain. Backend `c6a5954` is integrated locally. There is no unresolved merge conflict in this candidate. The older conflicts below describe retained historical checkpoints only.
+
+### Historical conflict records
+
+**Historical backend conflict; both choices now prescribed by source owners — candidate `0e01046` (coordinator `e7671e6` + Wave A `c05e0c7`) / backend `1c8254a` (application inputs unchanged from `31ec698`): `src/app/app/schedule/coverage/page.test.tsx`.** Candidate asserts “1 more needed”, “1 more person needed” and “Choose what to fill”; backend asserts “1 needed”, “1 employees needed” and “Choose the requirement”. Both complete sides are in `release/merge-1-wave-a/conflicts/coverage-test-{candidate,backend}.txt`. Merge aborted; no side chosen. Owner: backend / Wave A / coordinator.
 
 **Resolved by coordinator, not applied yet — root layout:** `f691dec` includes `docs/product/specs/codex-joint/RESOLVED-src-app-layout.tsx.txt`, explicitly directing the combined async layout/error hook and text-scale script. This resolves the earlier choice; the backend merge as a whole awaits the separate Coverage test conflict. The supplied resolution is retained with this merge report.
 
@@ -86,5 +94,13 @@ All page submissions must be answered, held or aborted in the browser. Only fict
 
 2026-10-19 19:10 UTC · coordinator 8c4264c merged locally at 25dca8d · install/type/lint pass · full tests and combined checks pending · blocked
 2026-10-19 19:10 UTC · backend 1c8254a into candidate 25dca8d aborted · Coverage test sides retained under release/merge-2-coordinator/conflicts/ · no choice, clean candidate retained
+
+2026-10-19 19:16:45 UTC · Phase 3 round 4 on f691decb5496377a35ca7777d3025674f45bb94e · P0 0, P1 1, P2 0 · not zero
+
+2026-10-19 19:16:45 UTC · Profile round 4 on 829dfe6cf45beb71b77db573c0263c60a5f69856 · P0 0, P1 0, P2 2 · not zero
+
+2026-10-19 19:16:45 UTC · Wave C round 4 on 5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8 · P0 0, P1 0, P2 0 · not zero
+
+Wave C round 4 has 0 newly verified defects so far, with incomplete coverage. “not zero” above means no completed five-area exit certificate. Confirmed legacy ST-02 and WR-21 are fixed on this commit.
 
 2026-10-19 19:43 UTC · backend source-owner resolutions read and applied to local verification bf6c030 · tests pending · install/type/lint pass · publication remains with the other active release task · no deploy/exposure
