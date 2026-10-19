@@ -1,5 +1,14 @@
 # Wave A inspection brief (Phase 3.5)
 
+## Cuts from round 2 on (Jose, October 19; PARALLEL.md "Cuts")
+
+- Don't inspect the shared shell (phone header, tab bar, More sheet, section tabs, desktop sidebar and header). Ignore shell flags.
+- `checks.mjs` does the width, text-size and browser sweep (Chromium and WebKit). Inspectors use its results and spend their time on judgment (alignment, wording, states, focus, behaviour, consistency) at 320, 390, 844×390 and 1440 in Chromium, with WebKit spot checks.
+- Rounds 2 and later re-check open findings by ID plus whatever the fixes touched. The last round is one full pass by all five inspectors.
+- Findings stay complete; "checked and found correct" is a short bullet list.
+- No Firefox, and no Firefox-only findings.
+- Fields stay 48px (the coordinator's decision; PARALLEL is corrected).
+
 October 19, 2026. Read `docs/product/reviews/phase-7-inspection-2026-10-18/PARALLEL.md` (main checkout) for the matrix and the design rules, and `BRIEF.md` there for the report format and severities (P0, P1, P2). This file says what is different for Wave A.
 
 ## What you inspect
@@ -51,7 +60,7 @@ Also check that Employee and Lead get no access to the manager pages (they redir
 | Section tabs above the band fade in on load | shell |
 | The tab bar shows Inbox as current on Time off and Shift requests | shell |
 | Everything in `docs/product/specs/p35-wave-a/CODEX.md` (server reads, the swap choose state, the PIN form, a real copy receipt, legal wording) | Codex or Jose |
-| Field height 48px (PARALLEL says 52px; the shared rule in portal-premium.css decides) | coordinator, asked |
+| Field height 48px | decided by the coordinator |
 
 ## Report
 
