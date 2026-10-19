@@ -1,3 +1,7 @@
+**This independent verification task stopped at 2026-10-19 20:06 UTC.** All owned tests/previews are stopped; results and exact resume inputs are saved in [the checkpoint](release/verification-checkpoint-2026-10-19/queue.json). Publication remains with the existing parallel release task; local `bf6c030` is preserved as `codex/verification-bf6c030` and was not pushed over its work. Remote candidate is still `0e010464aeb5f532981ac6071c48e1527e9419db` at the last successful fetch. This is **not the all-six release result**.
+
+Next for the publishing/inspection loop: sync coordinator `5f6ed19` (latest premium CSS blob `0ecdc345`, different from published `ecf0761`), integrate backend `da2a4e5` (approved Profile alert wording), merge verified-zero Profile `ea58610`, then make its separate authorized server-initial-read commit and rerun gates/combined inspection on each resulting SHA. Reprobe the8 unsettled Home/Inbox captures. Wave B now requests exit round4 on `9bd265e` (handoff `564d193`, status open); the other source exits remain incomplete/not zero. Preserve their existing findings. Device proposal remains pending; no deploy or exposure.
+
 2026-10-19 20:03 UTC · independent verification checkpoint: frozen `bf6c030` focused rerun finished122/126 (planner300s timeout repeats; three backfill5s timeouts; Employee Home2/2 pass). No owned test/preview remains running. [Raw results](release/merge-3-backend/README.md). Secondary review of publisher `98b037b` artifacts found **8/16 Home/Inbox captures still loading**; retain valid More results but rerun settled panels before a ready-state verdict. [Five review reports and exact pending cases](release/merge-3-coordinator-backend/secondary-review/README.md). This task is not pushing its divergent snapshot; the other active release task owns publication. Profile `ea58610` remains verified merge-ready, with only the explicitly permitted premium-CSS conflict in a dry-run against published `0e01046`.
 
 2026-10-19 19:56 UTC · Profile exit round 4 at `ea58610bf3bdc85319895689c3d88e064f6a76d5` · five committed Mac reports read and final open P0/P1/P2 = 0/0/0 · **ready to merge this exact SHA**; application code `caef395`, only reports/screenshots after it · [verification and verbatim reports](release/readiness/profile-ea58610/README.md). Candidate publication remains with the other active release task; the separate initial-read commit is now due after this merge. No other source exit is certified zero.
@@ -67,9 +71,9 @@ Teardown: revoke the tunnel/access rule, stop the local app and its owned databa
 
 | Chat | Branch | Fetched head | Handoff |
 |---|---|---|---|
-| Phase 3 | `claude/premium-phase-1` | `4ed233947fca3e96393954c45fb091877923e768` | round 4 non-exit handoff; latest coordinator changes must be synced by publishing task |
+| Phase 3 | `claude/premium-phase-1` | `5f6ed19b10127158bc4f4b3fc1fe1af8e3913309` | round4 non-exit handoff; newer coordinator/CSS sync needed |
 | Wave A | `claude/p35-wave-a-1283c8` | `76514905153c906bb76efc45808426e9d484cb64` | round 2 exit recheck pending on new ST-WA-8 fix; not zero |
-| Wave B | `claude/p35-wave-b-808dfd` | `b33b734302dd31d3b102e00b7f2b0e5995b8e505` | round 3 exit; status open; target 9f32ca6 |
+| Wave B | `claude/p35-wave-b-808dfd` | `564d19380e933278c73bb79cb1ea239465e0ab89` | round4 exit; status open; exact target9bd265e |
 | Wave C | `claude/p35-wave-c-93e13c` | `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8` | round 4 exit full sweep incomplete; not zero |
 | Profile | `claude/p35-profile-6cdee8` | `ea58610bf3bdc85319895689c3d88e064f6a76d5` | status zero; exit round 4 Mac five-area reports verified; exact SHA ready |
 | Desktop | `claude/p4-desktop-240fe0` | `8012d9790e72987140f939c7d70e1df9612ea009` | round 5 exit requested; not zero yet |
@@ -118,3 +122,5 @@ Wave C round 4 has 0 newly verified defects so far, with incomplete coverage. �
 2026-10-19 19:56 UTC · all six ROUND.md files fetched/read · Profile ea58610 status zero verified; Wave A 7651490 exit still unverified, Wave B status open, Wave C full exit incomplete, Desktop 8012d97 requests exit round 5, Phase 3 4ed2339 handoff remains non-exit round 4
 
 2026-10-19 20:03 UTC · verification bf6c030 retry · tests122/126 · checks not run on this SHA · no full-suite green, not published · blocked
+
+2026-10-19 20:06 UTC · all six handoffs reread after successful fetch · verified zero1/6 (Profile); Wave B exit4 remains open; coordinator5f6ed19 and backendda2a4e5 are newer than published candidate · this verification task stopped, no owned running jobs

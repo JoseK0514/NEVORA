@@ -1,6 +1,6 @@
 # Backend integration — independent verification snapshot
 
-Local snapshot **`bf6c030e79c10bd4e115f15dadc80b59bc194ba2`**, Git tree **`4553beec8ab73db129d9d3d1c74d99636148ddcc`**, at `/workspace/nevora-rc-backend`. Parents: coordinator refresh `25dca8d` and backend `c6a5954`. It retains the already-published Wave A `c05e0c7` and lint-only `9df0f47`. No newer Wave A UI commit was admitted without zero exit evidence.
+Local snapshot **`bf6c030e79c10bd4e115f15dadc80b59bc194ba2`**, Git tree **`4553beec8ab73db129d9d3d1c74d99636148ddcc`**, at `/workspace/nevora-rc-backend`, retained on local `codex/verification-bf6c030`. Parents: coordinator refresh `25dca8d` and backend `c6a5954`. It retains the already-published Wave A `c05e0c7` and lint-only `9df0f47`. No newer Wave A UI commit was admitted without zero exit evidence.
 
 This is a local verification snapshot; another authorized release task owns publication of its integration (`98b037b` at its last report). The current public head will be compared when it lands. Do not substitute this snapshot's results for a different source tree or imply a published/zero candidate.
 

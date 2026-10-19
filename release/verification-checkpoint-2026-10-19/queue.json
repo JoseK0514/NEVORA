@@ -1,0 +1,65 @@
+{
+  "lastSuccessfulFetch": "2026-10-19 20:06 UTC",
+  "publishedCandidate": "0e010464aeb5f532981ac6071c48e1527e9419db",
+  "backend": "da2a4e51cef1dd70aa465fa187ce5321b143d8d3",
+  "cssBlobs": {
+    "origin/claude/premium-phase-1": "0ecdc3459de009423351d4c354f23ec61aad1fdd",
+    "origin/codex/release-candidate": "ecf0761a040924f1613ce1237c6168dbba035c07"
+  },
+  "roundsRead": [
+    {
+      "chat": "Phase 3",
+      "branch": "claude/premium-phase-1",
+      "head": "5f6ed19b10127158bc4f4b3fc1fe1af8e3913309",
+      "handoffPath": "docs/product/specs/premium-phase-3/ROUND.md",
+      "handoffSha256": "b8370f24edc797216f1fb8a180e23c2a20fc91dc922fd712a83b38131433cb1b",
+      "statusZeroInHandoff": false
+    },
+    {
+      "chat": "Wave A",
+      "branch": "claude/p35-wave-a-1283c8",
+      "head": "76514905153c906bb76efc45808426e9d484cb64",
+      "handoffPath": "docs/product/specs/p35-wave-a/ROUND.md",
+      "handoffSha256": "505972376a9d02328783b03e6f1645726adc44c2d5a0052cebc7eb2c05728371",
+      "statusZeroInHandoff": false
+    },
+    {
+      "chat": "Wave B",
+      "branch": "claude/p35-wave-b-808dfd",
+      "head": "564d19380e933278c73bb79cb1ea239465e0ab89",
+      "handoffPath": "docs/product/specs/p35-wave-b/ROUND.md",
+      "handoffSha256": "8e541c9ead86205aa450d4d364a5420b7bf67827f0e59dd9d622e2d4a94631b4",
+      "statusZeroInHandoff": false
+    },
+    {
+      "chat": "Wave C",
+      "branch": "claude/p35-wave-c-93e13c",
+      "head": "5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8",
+      "handoffPath": "docs/product/specs/p35-wave-c/ROUND.md",
+      "handoffSha256": "a2842fec775dc992ce17347565bdfcbfa06dc6f17bf30afa8d560de7b5f55434",
+      "statusZeroInHandoff": false
+    },
+    {
+      "chat": "Profile",
+      "branch": "claude/p35-profile-6cdee8",
+      "head": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+      "handoffPath": "docs/product/specs/p35-profile/ROUND.md",
+      "handoffSha256": "3b579d31af2dfbb018d941ed50d80d700caafbf62cc92b45995ea5ac899985f2",
+      "statusZeroInHandoff": true
+    },
+    {
+      "chat": "Desktop",
+      "branch": "claude/p4-desktop-240fe0",
+      "head": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "handoffPath": "docs/product/specs/p4-desktop/ROUND.md",
+      "handoffSha256": "d4d49de96f92170bc23285e0addf772094e5583588e6f7af7b5b0d920801f7cb",
+      "statusZeroInHandoff": false
+    }
+  ],
+  "verifiedZero": [
+    "Profile ea58610 exit round 4"
+  ],
+  "ownRunningJobs": [],
+  "frozenVerificationBranch": "codex/verification-bf6c030",
+  "publicationOwner": "existing parallel release task"
+}
