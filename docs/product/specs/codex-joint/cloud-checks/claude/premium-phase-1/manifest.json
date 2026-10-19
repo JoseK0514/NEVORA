@@ -7,7 +7,7 @@
   "commit": "51f731d399e9b94306f5d98556151933efe2ac7a",
   "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
   "startedAt": "2026-10-19T17:52:56.800Z",
-  "status": "Restarting isolated preview after lifecycle correction",
+  "status": "Running matrix",
   "batches": [
     {
       "name": "00001-matrix-AUDIT-E-chromium-390",
@@ -30,13 +30,59 @@
       "code": 1,
       "passed": 15,
       "failed": 1
+    },
+    {
+      "name": "00002-matrix-AUDIT-E-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T18-16-58-090Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00002-matrix-AUDIT-E-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/exchange/swap?sourceShiftId=audit-next-0-1,/app/my-pay,/app/my-time,/app/notifications",
+        "--accounts",
+        "AUDIT-E",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "becf34c1dea019c64444fa9e939551046b2b97a0c44540e35c7076a294ef2cfa",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
+    },
+    {
+      "name": "00003-matrix-AUDIT-E-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T18-18-03-099Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00003-matrix-AUDIT-E-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/profile,/app/requests,/app/requests/hub,/app/schedule",
+        "--accounts",
+        "AUDIT-E",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "0358915906cdd81ed1dbf8865808a956b145b507822704a06441d01e8962ff7b",
+      "code": 0,
+      "passed": 16,
+      "failed": 0
     }
   ],
   "planned": 12580,
   "latestPushedCommit": "672232896b66a520d39939c1ae3e0227c8b1dc90",
   "runtimeCheckpoint": "51f731d399e9b94306f5d98556151933efe2ac7a",
   "sourceTree": "84f1af476350f7dcb3ca9e6739b11a6141a3f636",
-  "sourceManifest": "/workspace/nevora-previews/premium-phase-1/evidence-2026-10-19T18-00-32-017Z/owned-next-Aquf2f/source-manifest.json",
+  "sourceManifest": "/workspace/nevora-previews/premium-phase-1/evidence-2026-10-19T18-14-49-120Z/owned-next-KaOCNB/source-manifest.json",
   "infrastructureRestarts": [
     {
       "reason": "Attached runtime was retired with its controller; fixed with independent process group and direct log descriptors. No new UI failure is inferred from the interrupted loads.",
@@ -44,5 +90,7 @@
       "previousCommit": "51f731d399e9b94306f5d98556151933efe2ac7a",
       "retainedCompletedBatches": 1
     }
-  ]
+  ],
+  "runtimePid": 42632,
+  "url": "http://127.0.0.1:35333"
 }

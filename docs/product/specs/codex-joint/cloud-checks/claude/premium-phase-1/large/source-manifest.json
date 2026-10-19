@@ -1,5 +1,5 @@
 {
-  "checkpoint": "51f731d399e9b94306f5d98556151933efe2ac7a",
+  "checkpoint": "672232896b66a520d39939c1ae3e0227c8b1dc90",
   "hashes": {
     "next-env.d.ts": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
     "next.config.ts": "b4ae20e60493e66080a41443449feb29ebdab46bcfa2db13b59dec8a57822721",
@@ -111,7 +111,7 @@
     "scripts/ui-checks/login.mjs": "f796889550f067edec2451972c2f4bc7bfeb22937c810a218f97b65561fcd48e",
     "scripts/ui-checks/owned-preview-app-dev.mts": "7b5cf83b31c672b44bdb965a707fe68cc65d67fb778ecee326fd8294cd063687",
     "scripts/ui-checks/preview-runtime.mjs": "e5d6977bfea306367229c81e302e924409e54f7c138a3c4ce83b201bdd0d0736",
-    "scripts/ui-checks/seed-extra.mts": "48249a57b57e71ed600f2827ed2fc46751a49def85f8b97eec146c918925376b",
+    "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
     "scripts/ui-checks/sync.sh": "c79e3a0fb1537340fa58c9d17f3b14a8e12ee4c9178dc16104a4f4c918504594",
     "scripts/verify-fuel-phase-3-config.check.mjs": "801b2e80477c5f2ded5cabc222a3631a4a092f92ae0f84c398d90d9bf8e39ff3",
     "scripts/verify-fuel-phase-3-config.mjs": "729ba9b1a95eb4df2257d6fdf7cbe66f895b7a5497898e353d2387b856355676",

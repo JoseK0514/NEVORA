@@ -68,7 +68,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -91,7 +91,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -114,7 +114,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -137,7 +137,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -160,7 +160,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -183,7 +183,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -206,7 +206,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -227,10 +227,11 @@
         "/app/my-pay",
         "/app/notifications",
         "/app/payroll-export",
+        "/app/profile",
         "/app/reports",
         "/app/requests",
         "/app/schedule",
-        "/app/schedule/copy-receipt?operation=0071c815-56ae-4d91-98e6-5928f1566090",
+        "/app/schedule/copy-receipt?operation=05fe4d95-9264-464a-8fea-cd82c006b767",
         "/app/schedule/coverage",
         "/app/schedule/edit?shiftId=audit-next-0-1",
         "/app/schedule/new",
@@ -238,9 +239,8 @@
         "/app/schedule/templates",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
-        "/app/updates/compose",
-        "/app/profile"
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
+        "/app/updates/compose"
       ]
     },
     {
@@ -261,10 +261,11 @@
         "/app/notifications",
         "/app/payroll",
         "/app/payroll-export",
+        "/app/profile",
         "/app/reports",
         "/app/requests",
         "/app/schedule",
-        "/app/schedule/copy-receipt?operation=3fe8b9b4-c98c-4397-96eb-d8b89d408eb8",
+        "/app/schedule/copy-receipt?operation=5866661b-9c64-4ca0-8c98-adbe95cd3107",
         "/app/schedule/coverage",
         "/app/schedule/edit?shiftId=audit-next-0-1",
         "/app/schedule/new",
@@ -284,9 +285,8 @@
         "/app/settings/workspace",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
-        "/app/updates/compose",
-        "/app/profile"
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
+        "/app/updates/compose"
       ]
     },
     {
@@ -1350,10 +1350,10 @@
     }
   ],
   "fixtures": {
-    "updateId": "234b3a2b-efa1-4f5a-895c-f7fe7c611881",
+    "updateId": "6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
     "copyReceipts": {
-      "AUDIT-M": "0071c815-56ae-4d91-98e6-5928f1566090",
-      "QAOWNER": "3fe8b9b4-c98c-4397-96eb-d8b89d408eb8"
+      "AUDIT-M": "05fe4d95-9264-464a-8fea-cd82c006b767",
+      "QAOWNER": "5866661b-9c64-4ca0-8c98-adbe95cd3107"
     },
     "copyReceiptState": "TEMPLATE_UNAVAILABLE",
     "payrollFutureShifts": [
