@@ -207,8 +207,9 @@ export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCa
       { label: "Requests", items: [{ href: "/app/requests/hub", label: "Overview" }, ...requests] },
       // Timecards stays in the employee's Pay / Hours family (Codex mobile review M7).
       ...(payroll?.enabled && modules.payStatements
-        ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "Statements" }, { href: "/app/my-time", label: "Hours" }, { href: "/app/timecards", label: "Timecards" }] }]
-        : [{ label: "Hours", items: [{ href: "/app/my-time", label: "Hours" }, { href: "/app/timecards", label: "Timecards" }] }]),
+        // TCD-19: the tabs use the names the sidebar and page titles use.
+        ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "My pay" }, { href: "/app/my-time", label: "My time" }, { href: "/app/timecards", label: "Timecards" }] }]
+        : [{ label: "Hours", items: [{ href: "/app/my-time", label: "My time" }, { href: "/app/timecards", label: "Timecards" }] }]),
     ]
     : [
       { label: "Requests", items: requests },
