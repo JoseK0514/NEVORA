@@ -73,7 +73,7 @@ export function deriveBrand(seedInput: string): DerivedBrand {
       .filter(h => STATUS.every(s => hueDistance(h, s.hue) >= STATUS_BAND - 1e-9))
       .sort((a, b) => hueDistance(a, base.h) - hueDistance(b, base.h));
     base = { ...base, h: candidates[0] };
-    adjustments.push({ code: "status-hue", message: `The hue was shifted slightly so it can't be mistaken for ${clash.name} used for alerts.` });
+    adjustments.push({ code: "status-hue", message: `The hue was shifted slightly so it can’t be mistaken for ${clash.name} used for alerts.` });
   }
 
   // Accent: white button text at 5:1 or better; never so dark it merges with the masthead.
