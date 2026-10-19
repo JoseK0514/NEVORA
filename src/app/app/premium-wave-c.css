@@ -571,3 +571,14 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [d
 
 /* AL-18: a hub card head's title and note never run past the card's 20px inset. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-card__head > * { max-width: 100%; }
+
+/* WR-WC-25: staged for the unmerged Wave C dialogs; preserve full button labels on narrow phones. */
+@media (max-width: 599px) {
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-dialog .wc-actions > .nv-btn { flex: 0 0 auto; }
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-dialog .wc-swap > span { align-self: center; }
+}
+
+/* ST-13: keep long failed-save feedback scrollable inside the docked action bar. */
+@media (max-width: 599px) {
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar > .wc-feedback { max-height: min(28dvh, 12rem); overflow-y: auto; overscroll-behavior: contain; }
+}

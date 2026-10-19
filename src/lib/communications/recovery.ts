@@ -1,5 +1,5 @@
 import type {CommandResult} from './types';
-export type CommunicationNotice='conflict'|'unknown'|'blocked'|'unavailable'|'committed'|null;
+export type CommunicationNotice='conflict'|'unknown'|'signed-out'|'blocked'|'unavailable'|'committed'|null;
 export type CommunicationRecoveryState={pending:boolean;notice:CommunicationNotice;hasUnknown:boolean;canRetry:boolean};
 /** In-memory, authority-scoped recovery lives above disposable private content.
  * Pausing fences completions but keeps the exact original command. Only a fresh
@@ -24,14 +24,14 @@ export function createCommunicationRecovery(request:(path:string,body:unknown,si
    if(result.status==='committed'){
     command=null;operationId=null;publish({notice:'committed',canRetry:false});onCommit(result);
    }else if(result.status==='conflict'||result.status==='blocked'||'state'in result&&result.state==='unauthorized'){
-    command=null;operationId=null;if(result.status!=='conflict')onBlocked();publish({notice:result.status==='conflict'?'conflict':'blocked',canRetry:false});
+    command=null;operationId=null;if(result.status!=='conflict')onBlocked();publish({notice:result.status==='conflict'?'conflict':'httpStatus'in result&&result.httpStatus===401?'signed-out':'blocked',canRetry:false});
    }else publish({notice:operationId?'unknown':'unavailable',canRetry:lookup&&result.status==='unavailable'&&result.reason==='operation_not_found'});
   }catch{if(sequence===generation&&authorized)publish({notice:operationId?'unknown':'unavailable',canRetry:false});}
   finally{if(sequence===generation){abort=null;publish({pending:false});}}
  }
  return {
   snapshot:()=>({...state}),
-  authorize(value:boolean){if(value===authorized)return;authorized=value;if(!value){fence();publish({pending:false,notice:operationId?'unknown':state.notice,canRetry:false});}else if(!operationId&&state.notice==='blocked')publish({notice:null});},
+  authorize(value:boolean){if(value===authorized)return;authorized=value;if(!value){fence();publish({pending:false,notice:operationId?'unknown':state.notice,canRetry:false});}else if(!operationId&&(state.notice==='blocked'||state.notice==='signed-out'))publish({notice:null});},
   send:(body:unknown)=>run(body,false),lookup:()=>run(undefined,true),retry:()=>state.canRetry?run(command,false):Promise.resolve(),clear,
   setNotice(notice:CommunicationNotice){if(!operationId)publish({notice});},
   stop(){authorized=false;clear();},

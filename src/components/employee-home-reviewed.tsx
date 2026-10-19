@@ -26,6 +26,7 @@ export type EmployeeHomeReviewedViewProps = {
   onRetry: () => void;
   ownTimeSlot: ReactNode;
   displayName?: string;
+  timeZone?: string;
 };
 
 const sourceNames: Record<HomeSource, string> = {
@@ -157,9 +158,10 @@ function attentionLabel(item: AttentionItem) {
     .replace(/ — review required$/, item.required ? '' : ' — review required');
 }
 
-function placeholderEyebrow() {
-  const now = new Date(), zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  return `${greeting(now.toISOString(), zone)}\u00a0· ${keepWhole(new Intl.DateTimeFormat('en-US', {weekday: 'long', month: 'long', day: 'numeric'}).format(now))}`;
+function placeholderEyebrow(timeZone?: string) {
+  // The longest greeting and the workspace's public date reserve the same inline
+  // structure as the released eyebrow, including across UTC/business midnight.
+  return <>Good afternoon{'\u00a0· '}<time suppressHydrationWarning>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date()))}</time></>;
 }
 
 function AttentionRow({item, zone, celebrate = false}: {item: AttentionItem; zone: string; celebrate?: boolean}) {
@@ -251,7 +253,7 @@ function SourceNotices({snapshot}: {snapshot: HomeSnapshot}) {
  * refresh on its own, replace authority/lifetime guards, or operate a time entry.
  * The enclosing application shell supplies brand and navigation exactly once.
  */
-export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, ownTimeSlot, displayName}: EmployeeHomeReviewedViewProps) {
+export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, ownTimeSlot, displayName, timeZone}: EmployeeHomeReviewedViewProps) {
   // IS-68: offline and "window in the background" both pause Home; the band says which.
   // Read when the pause re-renders Home (going offline pauses it), so no subscription is needed.
   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
@@ -288,16 +290,23 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
 
   return <div className={`nv-page premium-employee-home ${styles.root}`} data-nv-page="" data-home-state={viewState} aria-busy={refreshing || loading}>
     <PageBand
-      eyebrow={snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)}{'\u00a0· '}<time dateTime={snapshot.observedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time></>
-        // P3-ST-17: while loading, an invisible greeting and date of the same shape hold the eyebrow's lines (two or three
-        // at 200% text), so the band doesn't grow when Home arrives. Local time is close enough for its length.
-        : <span aria-hidden="true" style={{visibility: 'hidden'}} suppressHydrationWarning>{placeholderEyebrow()}</span>}
+      eyebrow={<span className={styles.eyebrowSlot}>
+        <span className={styles.eyebrowSizer} aria-hidden="true" suppressHydrationWarning>{placeholderEyebrow(timeZone)}</span>
+        <span>{snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)}{'\u00a0· '}<time dateTime={snapshot.observedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time></> : null}</span>
+      </span>}
       title={name ? `Hi, ${name}.` : 'Home'}
-      summary={summary}
+      // ST-RC-HOME-01: the loading sentence and a dated next-shift sentence share their responsive space.
+      summary={<span className={styles.summarySlot}>
+        <span className={styles.summarySizer} aria-hidden="true">{keepWhole('Next shift Wed, May 30 at 10:00 AM.')}</span>
+        <span>{summary}</span>
+      </span>}
       // Codex mobile review M8: required work is noticed on the first screen; the full list stays below.
       // P3-ST-01: the review line is always there (checking, the link, or a calm note), so the band never changes height.
-      extra={snapshot && actions.length ? <a className="premium-band-link" href="#employee-reviewed-actions-heading">{actions.length === 1 ? '1 item needs your review' : `${actions.length} items need your review`}</a>
-        : <span className="premium-band-note">{snapshot ? 'Nothing needs your review.' : '\u00a0'}</span>}
+      extra={<span className={styles.reviewSlot}>
+        <span className={`${styles.reviewSizer} premium-band-link`} aria-hidden="true">999 items need your review</span>
+        {snapshot && actions.length ? <a className="premium-band-link" href="#employee-reviewed-actions-heading">{actions.length === 1 ? '1 item needs your review' : `${actions.length} items need your review`}</a>
+          : <span className="premium-band-note">{snapshot ? 'Nothing needs your review.' : '\u00a0'}</span>}
+      </span>}
     />
     <KitStack className={styles.content}>
       {/* P3-ST-02/12: the pass and clock hold their last ready height while Home is a placeholder. */}

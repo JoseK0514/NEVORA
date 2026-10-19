@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { PendingLabel } from "../employee-submit-button";
 import { guardSingleSubmit } from "./single-submit";
 
 /* Wave A form pattern: the submit button says what it is doing while its form is busy.
@@ -62,9 +63,9 @@ export function PendingButton({ children, pending, kind = "primary", block = fal
 
   return (
     <button ref={button} className="nv-btn" data-kind={kind} data-block={block ? "true" : undefined} data-busy={busy ? "true" : undefined}
-      type="submit" name={name} value={value} disabled={disabled} aria-label={busy ? undefined : label}>
-      {busy ? null : icon}
-      <span className="wa-btn__words">{busy ? pending : children}</span>
+      type="submit" name={name} value={value} disabled={disabled} aria-disabled={busy} onClick={event => { if (event.currentTarget.form?.getAttribute("aria-busy") === "true") event.preventDefault(); }} aria-label={busy ? undefined : label}>
+      {icon ? <span style={busy ? {visibility: "hidden"} : undefined} aria-hidden="true">{icon}</span> : null}
+      <PendingLabel className="wa-btn__words" pending={busy} pendingText={pending}>{children}</PendingLabel>
     </button>
   );
 }

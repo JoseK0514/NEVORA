@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Temporal } from '@js-temporal/polyfill';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { EmployeeTimeEntry } from '@/lib/employee-time';
@@ -10,6 +11,7 @@ import {
 } from '@/lib/time-corrections/client';
 import type { EmployeeTimeCorrections } from '@/lib/time-corrections/read-model';
 import type { CorrectionRequestCommand } from '@/lib/time-corrections/validation';
+import {PendingLabel} from './employee-submit-button';
 import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-context';
 
 const changedEvent='nevora:time-correction-changed';
@@ -46,6 +48,8 @@ function actionMessage(result:CorrectionActionResponse|null){
   if(result.state==='pending')return 'Correction request sent for manager review.';
   if(result.state==='conflict')return 'This record changed or already has a pending correction. Refresh before trying again.';
   if(result.state==='outcome_unknown')return 'The server outcome could not be confirmed. Retry the same request safely.';
+  if(result.state==='unavailable'&&result.httpStatus===401)return 'Your session ended. Sign in again to send your correction.';
+  if(result.state==='unavailable'&&result.httpStatus===403)return 'Your access changed. Sign in again to check your current access.';
   if(result.state==='unavailable')return 'We couldn’t send your correction. Try again. If this keeps happening, sign in again.';
   if(result.state==='invalid')return 'Check the proposed times and reason.';
   if(result.state==='blocked'){
@@ -91,6 +95,8 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
   const [end,setEnd]=useState('');
   const [reason,setReason]=useState('');
   const [busy,setBusy]=useState(false);
+  const sending=useRef(false);
+  const [resending,setResending]=useState(false);
   const [retry,setRetry]=useCorrectionRetry(`entry:${entry.id}`);
   const [result,setResult]=useState<CorrectionActionResponse|null>(retry?{state:'outcome_unknown',operationId:retry.operationId}:null);
   const [contextSnapshot,setContextSnapshot]=useState<EmployeeTimeCorrections|null>(null);
@@ -139,6 +145,8 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
   };
 
   const send=async(command:CorrectionRequestCommand)=>{
+    if(sending.current)return;
+    sending.current=true;setResending(retry!==null);
     // A private-reader pause can unmount this form before delivery settles.
     setRetry(command);setBusy(true);setResult(null);
     try{
@@ -151,11 +159,12 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
       }
     }catch{
       setResult({state:'outcome_unknown',operationId:command.operationId});setRetry(command);
-    }finally{setBusy(false);}
+    }finally{sending.current=false;setBusy(false);}
   };
 
   const submit=async(event:React.FormEvent)=>{
     event.preventDefault();
+    if(sending.current||retry)return;
     if(!effective)return;
     try{
       const proposedStartAt=localInstant(start,zone),proposedEndAt=localInstant(end,zone);
@@ -173,8 +182,8 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
     <button className="employee-time-correction-trigger" type="button" aria-expanded={open} aria-controls={formId} onClick={()=>{setOpen(value=>!value);setStart('');setEnd('');setResult(current=>current?.state==='outcome_unknown'?current:null);}}>
       {open?'Cancel correction':'Request a correction'}
     </button>
-    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}</p>:null}
-    {retry?<button className="employee-time-correction-retry" type="button" disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
+    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}{feedback.state==='unavailable'?<> <Link href="/login">Sign in</Link></>:null}</p>:null}
+    {retry&&(!busy||resending)?<button className="employee-time-correction-retry" type="button" aria-disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
     {open?<form className="employee-time-correction-form" id={formId} onSubmit={submit}>
       <label>What needs correction?
         <select disabled={busy||retry!==null} value={target.key} onChange={(event)=>choose(event.target.value)}>
@@ -198,8 +207,8 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
       <p className="employee-time-correction-note">
         The original Clocker record stays unchanged. A manager reviews the proposed adjustment.
       </p>
-      <button className="employee-time-correction-submit" type="submit" disabled={busy||retry!==null||!reason.trim()||!effective}>
-        {busy?'Sending…':'Send request'}
+      <button className="employee-time-correction-submit" type="submit" aria-disabled={busy} disabled={!busy&&(retry!==null||!reason.trim()||!effective)}>
+        <PendingLabel pending={busy} pendingText="Sending…">Send request</PendingLabel>
       </button>
     </form>:null}
   </div>;
@@ -215,6 +224,8 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
   const [end,setEnd]=useState('');
   const [reason,setReason]=useState('');
   const [busy,setBusy]=useState(false);
+  const sending=useRef(false);
+  const [resending,setResending]=useState(false);
   const [retry,setRetry]=useCorrectionRetry('missing');
   const [result,setResult]=useState<CorrectionActionResponse|null>(retry?{state:'outcome_unknown',operationId:retry.operationId}:null);
   const [replacementTarget,setReplacementTarget]=useState<{id:string;revision:number}|null>(null);
@@ -251,7 +262,8 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
   },[setRetry,recovery?.authority]);
 
   const send=async(command:CorrectionRequestCommand)=>{
-    if(authorityLost.current)return;
+    if(authorityLost.current||sending.current)return;
+    sending.current=true;setResending(retry!==null);
     setRetry(command);setBusy(true);setResult(null);
     try{
       const response=await submitEmployeeTimeCorrection(command,recovery?.authority);
@@ -262,11 +274,12 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
         window.dispatchEvent(new Event(changedEvent));
       }
     }catch{if(!authorityLost.current){setResult({state:'outcome_unknown',operationId:command.operationId});setRetry(command);}}
-    finally{setBusy(false);}
+    finally{sending.current=false;setBusy(false);}
   };
 
   const submit=async(event:React.FormEvent)=>{
     event.preventDefault();
+    if(sending.current||retry)return;
     try{
       await send({
         operationId:crypto.randomUUID(),kind:'MISSING_ENTRY',locationId:location,
@@ -286,8 +299,8 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
         {open?'Cancel':'Request a correction'}
       </button>
     </header>
-    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}</p>:null}
-    {retry?<button className="employee-time-correction-retry" type="button" disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
+    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}{feedback.state==='unavailable'?<> <Link href="/login">Sign in</Link></>:null}</p>:null}
+    {retry&&(!busy||resending)?<button className="employee-time-correction-retry" type="button" aria-disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
     {open&&ready?<form className="employee-time-correction-form missing" id="employee-missing-time-correction" onSubmit={submit}>
       <label>Location
         <select disabled={busy||retry!==null||replacementTarget!==null} required value={location} onChange={(event)=>setLocation(event.target.value)}>
@@ -300,10 +313,10 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
       </div>
       <label>Reason<textarea disabled={busy||retry!==null} required maxLength={500} value={reason} onChange={(event)=>setReason(event.target.value)} placeholder="Explain why the time was not recorded." /></label>
       <p className="employee-time-correction-note">{replacementTarget?'This replaces the selected approved missing time after manager review. The previous adjustment stays in history.':'Missing time is submitted as a correction record. It does not create a recorded Clocker punch.'}</p>
-      <button className="employee-time-correction-submit" type="submit" disabled={busy||retry!==null||!location||!reason.trim()}>{busy?'Sending…':'Send request'}</button>
+      <button className="employee-time-correction-submit" type="submit" aria-disabled={busy} disabled={!busy&&(retry!==null||!location||!reason.trim())}><PendingLabel pending={busy} pendingText="Sending…">Send request</PendingLabel></button>
     </form>:null}
     {loading&&!snapshot?<p className="employee-time-empty">Loading correction history…</p>:
-      snapshot?.state==='unavailable'?<p className="employee-time-empty">Correction history is unavailable right now.</p>:
+      snapshot?.state==='unavailable'?<p className="employee-time-empty">Correction history is unavailable right now.{snapshot.reason==='access_denied'?<> <Link href="/login">Sign in</Link></>:null}</p>:
       recent.length?<div className="employee-correction-history">
         {recent.map((item)=><div className="employee-correction-history-row" key={item.id}>
           <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>

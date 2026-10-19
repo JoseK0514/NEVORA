@@ -13,6 +13,7 @@ import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { Card, KitLink, Row, Rows, Tile } from '@/components/kit/kit';
 import { PortalSignout } from '@/components/portal-signout';
 import { createPrivateSnapshotController, type PrivatePanelState } from '@/lib/private-snapshot-client';
+import { revealFeedback } from '@/lib/reveal-feedback';
 import { ALERT_TOPIC_SIZING, MANAGER_ALERTS_ENDPOINT, MANAGER_PROFILE_ENDPOINT, parseManagerProfile, type ManagerAlertTopic, type ManagerProfileSnapshot } from './contract';
 
 /** What the page already knows from today's session and workspace reads. */
@@ -324,7 +325,8 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
 
   // Focus never falls to the page: a successful retry moves it to the details it loaded (the button is gone); a switch
   // that had focus when the page was left gets it back once when the list returns; an ended session moves it to Sign in.
-  // Only when focus would otherwise be nowhere, and without scrolling, so a reader who moved on is never pulled back.
+  // Only when focus would otherwise be nowhere; an ended-session action is revealed before focus, while ready and
+  // background returns keep their no-scroll behavior. A reader who moved on is never pulled back.
   const denied = state.snapshot?.state === 'unavailable' && state.snapshot.reason === 'access_denied';
   useEffect(() => {
     const lost = !document.activeElement || document.activeElement === document.body;
@@ -336,7 +338,8 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
     if (!topic || !(ready || denied)) return;
     restoreTo.current = null;
     const target = ready ? document.querySelector<HTMLElement>(`[data-topic="${CSS.escape(topic)}"]`) : document.querySelector<HTMLElement>('.pmp-topics-note a');
-    target?.focus({ preventScroll: true });
+    if (target && denied) revealFeedback(target);
+    else target?.focus({ preventScroll: true });
   }, [outcome, ready, denied, retriedFrom]);
 
   async function toggle(topic: ManagerAlertTopic, on: boolean) {

@@ -27,3 +27,12 @@ it('clear after proven authority loss removes private command and prevents later
  const create=await subject(),request=vi.fn(async()=>({status:'outcome_unknown',operationId:command.operationId} as CommandResult));
  const control=create(request,()=>{},()=>{});control.authorize(true);await control.send(command);control.clear();await control.lookup();await control.retry();expect(request).toHaveBeenCalledTimes(1);expect(control.snapshot()).toMatchObject({hasUnknown:false,pending:false,notice:null,canRetry:false});
 });
+
+it('distinguishes a signed-out action from changed permission and clears its command',async()=>{
+ const createCommunicationRecovery=await subject();
+ for(const [httpStatus,notice] of [[401,'signed-out'],[403,'blocked']] as const){
+  const recovery=createCommunicationRecovery(async()=>({state:'unauthorized',httpStatus}),()=>{},()=>{});
+  recovery.authorize(true);await recovery.send({operationId:'auth-case'});
+  expect(recovery.snapshot()).toMatchObject({pending:false,notice,hasUnknown:false,canRetry:false});
+ }
+});

@@ -179,3 +179,15 @@
   .pw-step-label { font-size: 0.8125rem; }
 }
 @media (prefers-contrast: more) { .pw-payday { background: #FFFFFF; border-color: #1C1C1C; } }
+
+/* TC-B32: kit labels for document names, correction disclosure and job labels. */
+html body .app-shell.nevora-portal .page-frame .payroll-workflow :is(.pw-document strong, .pw-secondary-actions > summary, .pw-job strong) { font: var(--nv-t-label); }
+
+/* TC-P4-23: the payday line follows the kit callout floor; filenames are TC-B32. */
+html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-statements header p { font: var(--nv-t-callout); }
+
+/* TC-RC-PAYROLL-01: desktop next-step guidance follows the kit's readable, scalable roles. */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-workflow-guidance { font: var(--nv-t-callout); }
+  html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-workflow-guidance strong { font: var(--nv-t-label); }
+}

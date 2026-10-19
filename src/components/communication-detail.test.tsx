@@ -40,3 +40,8 @@ it('unknown results leave acknowledgement and withdrawal disabled while lookup r
  expect(html).toMatch(/<input[^>]*disabled=""/);expect(html).toMatch(/<button[^>]*disabled=""[^>]*>[\s\S]*?Acknowledge update/);
  expect(html).toContain('Check status');expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Withdraw update/);
 });
+
+it('announces a pending review and offers sign-in after a signed-out action',async()=>{
+ const pending=await render({pending:true});expect(pending).toContain('Confirming your review…');
+ const denied=await render({notice:'signed-out'});expect(denied).toContain('Your session ended');expect(denied).toContain('href="/login"');expect(denied).not.toContain('Last line');
+});

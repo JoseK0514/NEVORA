@@ -6,7 +6,7 @@ import {shiftChangeAction,reconcileShiftChangeAction} from '@/app/app/exchange/a
 import {ShiftChangeFormState,shiftChangeFeedback} from './shift-change-form-state';
 import type {ShiftChangeResult} from '../lib/shift-changes/types';
 type View={pending:boolean;result:ShiftChangeResult|null;uncertain:boolean;offline:boolean};
-export function ShiftChangeForm({fields,children,className='shift-change-form',resolvedHref}:{fields:Readonly<Record<string,string|number>>;children:ReactNode;className?:string;resolvedHref?:string}){
+export function ShiftChangeForm({fields,children,actions,className='shift-change-form',resolvedHref}:{fields:Readonly<Record<string,string|number>>;children:ReactNode;actions?:ReactNode;className?:string;resolvedHref?:string}){
  const controller=useRef<ShiftChangeFormState|null>(null),router=useRouter();
  const [view,setView]=useState<View>({pending:false,result:null,uncertain:false,offline:false});
  function update(state:ShiftChangeFormState){setView({pending:state.pending,result:state.result,uncertain:state.uncertain,offline:!navigator.onLine});}
@@ -22,6 +22,7 @@ export function ShiftChangeForm({fields,children,className='shift-change-form',r
  const resolved=view.result&&['completed','pending','closed'].includes(view.result.status);
  return <form onSubmit={submit} className={className} aria-busy={view.pending}>
   <fieldset className="shift-change-fields" disabled={view.pending||view.uncertain||!!resolved}>{Object.entries(fields).map(([key,value])=><input key={key} type="hidden" name={key} value={value}/>)}{children}</fieldset>
+  {actions?<fieldset className="shift-change-fields" disabled={view.uncertain||!!resolved}>{actions}</fieldset>:null}
   {view.pending?<p role="status">Processing…</p>:null}
   {view.result?<p className={resolved?'form-success':'form-error'} role={resolved?'status':'alert'}>{view.result.status==='pending'&&resolvedHref?'Request recorded. Open Shift requests to review its current status.':shiftChangeFeedback(view.result)}{view.offline?' Offline. Reconnect before continuing.':''}</p>:null}
   {resolved&&resolvedHref?<Link className="swap-button secondary" href={resolvedHref}>View request status</Link>:null}

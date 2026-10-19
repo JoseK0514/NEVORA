@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
@@ -10,6 +10,8 @@ import { addDays, formatDayLabel } from "@/lib/date-utils";
 import { saveAvailabilityAction, saveWeeklyAvailabilityAction } from "@/app/app/availability/actions";
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
+import { EmployeeSubmitButton } from "./employee-submit-button";
+import { revealFeedback } from "@/lib/reveal-feedback";
 
 const DAYS = [
   { dayOfWeek: 1, label: "Monday" },
@@ -71,7 +73,7 @@ function AvailabilityFields({ initialAvailability, weekStart, locked }: {
       <p role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? "This week is closed for changes." : dirty ? "You have unsaved changes." : weekStart ? "Submit these hours for this week." : "Your saved usual week."}</p>
       <div className="av-form-actions">
         <button className="av-button secondary" type="button" disabled={disabled || !dirty} onClick={() => setAvailability(initialAvailability)}><ArrowCounterClockwiseIcon size={18} aria-hidden="true" />Reset changes</button>
-        <button className="av-button primary" type="submit" disabled={disabled || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{pending ? "Saving…" : weekStart ? "Submit weekly availability" : "Save usual week"}{!locked && !pending ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</button>
+        <EmployeeSubmitButton className="av-button primary" pendingText="Saving…" disabled={locked || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{weekStart ? "Submit weekly availability" : "Save usual week"}{!locked ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</EmployeeSubmitButton>
       </div>
     </footer>
   </>;
@@ -84,15 +86,22 @@ export function AvailabilityEditor({ initialAvailability, weekStart, locked = fa
   employeeView?: boolean;
 }) {
   // IS (round 3): a failed save (network, 401, 403) keeps the page and the hours entered, and says nothing was saved.
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState(0);
+  const failures = useRef(0);
+  const feedback = useRef<HTMLParagraphElement>(null);
+  useEffect(() => { if (failed && feedback.current) revealFeedback(feedback.current); }, [failed]);
+  const saving = useRef(false);
   async function save(data: FormData) {
-    setFailed(false);
+    if (saving.current) return;
+    saving.current = true;
+    setFailed(0);
     try { await (weekStart ? saveWeeklyAvailabilityAction : saveAvailabilityAction)(data); }
-    catch (error) { unstable_rethrow(error); setFailed(true); }
+    catch (error) { unstable_rethrow(error); setFailed(++failures.current); }
+    finally { saving.current = false; }
   }
-  return <form action={save} className={`av-editor${employeeView ? " av-employee-editor" : ""}`} aria-label={weekStart ? "Weekly availability submission" : "Normal availability preferences"}>
+  return <form action={save} onReset={event => event.preventDefault()} className={`av-editor${employeeView ? " av-employee-editor" : ""}`} aria-label={weekStart ? "Weekly availability submission" : "Normal availability preferences"}>
     <AvailabilityFields initialAvailability={initialAvailability} weekStart={weekStart} locked={locked} />
     {/* IS-75: the alert sits next to Save, where the person is looking. */}
-    {failed ? <p className="form-error" role="alert">Your availability wasn’t saved. Check your connection and save again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
+    {failed ? <p ref={feedback} tabIndex={-1} className="form-error" role="alert">Your availability wasn’t saved. Check your connection and save again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
   </form>;
 }

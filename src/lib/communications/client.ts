@@ -10,12 +10,12 @@ export type CommunicationLifetime={state:'ready';observedAt:string;validForMs:nu
 export const communicationHeaders=(authority:string)=>({'Accept':'application/json','X-Nevora-Communication':'1','X-Nevora-Communication-Authority':authority});
 export async function communicationRequest(mode:CommunicationMode,authority:string,path='',body?:unknown,signal?:AbortSignal){
  const response=await fetch(`/api/${mode}/communications${path}`,{method:body===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',redirect:'error',signal,headers:{...communicationHeaders(authority),...(body===undefined?{}:{'Content-Type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});
- if(response.status===401||response.status===403)return {state:'unauthorized',reason:'access_denied'};
+ if(response.status===401||response.status===403)return {state:'unauthorized',reason:'access_denied',httpStatus:response.status};
  return response.json();
 }
 export function parseCommunicationLifetime(value:unknown,authority:string):CommunicationLifetime{
  if(!value||typeof value!=='object')throw Error('Update unavailable');const v=value as CommunicationResource;
- if(v.state!=='ready'&&v.state!=='complete'&&v.state!=='partial')return {state:'unavailable',reason:v.state==='unauthorized'?'access_denied':v.state==='withdrawn'?'withdrawn':'read_failed'};
+ if(v.state!=='ready'&&v.state!=='complete'&&v.state!=='partial')return {state:'unavailable',reason:v.state==='unauthorized'?('httpStatus'in v&&v.httpStatus===401?'session_ended':'access_denied'):v.state==='withdrawn'?'withdrawn':'read_failed'};
  if(v.authority!==authority)return {state:'unavailable',reason:'access_denied'};
  if(!Number.isFinite(Date.parse(v.observedAt))||!Number.isFinite(v.validForMs)||v.validForMs<=0||v.validForMs>45000)throw Error('Update unavailable');
  if(JSON.stringify(v).length>1_000_000)throw Error('Update unavailable');

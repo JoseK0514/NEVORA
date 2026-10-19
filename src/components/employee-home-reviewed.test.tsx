@@ -64,6 +64,20 @@ function nativeElements(node: ReactNode): ReactElement<Record<string, unknown>>[
 }
 
 describe('released Home data and navigation', () => {
+  it('reserves the workspace date across UTC midnight without releasing private Home data', () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date('2030-10-07T01:00:00Z'));
+      const loading = html(props(undefined, {status: 'loading', timeZone: 'America/Puerto_Rico'}));
+      expect(loading).toContain('Sunday, October');
+      expect(loading).not.toContain('Monday, October');
+      expect(loading).not.toContain('Private location');
+      expect(loading).not.toContain('Alexandra');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('pairs a released ready view with loading and suppresses every prior private field/slot', () => {
     const ready = props();
     expect(html(ready)).toContain('Private location');

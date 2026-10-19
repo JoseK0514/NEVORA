@@ -42,7 +42,12 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
   }, [selected, targets, source, markSent]);
   const sorted = [...targets].sort((a, b) => a.shift.date.localeCompare(b.shift.date) || a.shift.startTime.localeCompare(b.shift.startTime) || a.shift.employeeName.localeCompare(b.shift.employeeName));
 
-  return <ShiftChangeForm fields={{ kind: 'PROPOSE_SWAP', ...sourceFields }} className="wa-form shift-change-form" resolvedHref="/app/exchange?tab=requests">
+  return <ShiftChangeForm fields={{ kind: 'PROPOSE_SWAP', ...sourceFields }} className="wa-form shift-change-form" resolvedHref="/app/exchange?tab=requests" actions={<>
+    <FormActions>
+      <PendingButton pending="Sending…" disabled={!target} block>Send swap request</PendingButton>
+      <Link className="nv-btn" data-kind="secondary" data-block="true" href="/app/exchange?tab=requests">Cancel</Link>
+    </FormActions>
+    </>}>
     <div ref={body} className="wa-swap-body">
     <SwapSourcePanel source={source} />
 
@@ -79,10 +84,7 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
       </> : <p className="wa-card-note wa-card-note--top">Choose a shift above to see both side by side.</p>}
     </Card>
 
-    <FormActions>
-      <PendingButton pending="Sending…" disabled={!target} block>Send swap request</PendingButton>
-      <Link className="nv-btn" data-kind="secondary" data-block="true" href="/app/exchange?tab=requests">Cancel</Link>
-    </FormActions>
+
     <noscript><p className="wa-card-note">Turn on JavaScript to compare and send a swap. Cancel goes back to Shift requests.</p></noscript>
     </div>
   </ShiftChangeForm>;

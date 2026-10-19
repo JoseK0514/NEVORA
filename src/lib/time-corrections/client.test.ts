@@ -25,7 +25,7 @@ describe('D2 same-operation response recovery',()=>{
     });
     it.each([401,403])(`${name} treats authority denial %i as definitive`,async(status)=>{
       vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response('',{status})));
-      await expect(send()).resolves.toEqual({state:'unavailable'});
+      await expect(send()).resolves.toEqual({state:'unavailable',httpStatus:status});
     });
     it(`${name} retains a definitive validation response`,async()=>{
       vi.stubGlobal('fetch',vi.fn().mockResolvedValue(Response.json({state:'invalid'},{status:400})));

@@ -342,3 +342,6 @@ a.nv-row:active { background: var(--nv-inset); }
   .nv-card { box-shadow: 0 0 0 1px var(--nv-ink); }
   .nv-masthead { background: var(--nv-masthead); }
 }
+
+/* TC-WA16: disabled kit colours already express pending state; do not fade their contrast. */
+html body .app-shell.nevora-portal .page-frame .nv-btn:is(:disabled, [aria-disabled="true"]) { opacity: 1; }

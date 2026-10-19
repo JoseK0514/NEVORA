@@ -206,3 +206,8 @@
 /* The specific-week entry is a link styled as the primary action; keep its label white on teal at every width (axe contrast). */
 html body .app-shell.nevora-portal .availability-page .av-upcoming-banner a.av-button.primary,
 html body .app-shell.nevora-portal .availability-page .av-upcoming-banner a.av-button.primary:is(:visited,:hover) { color: #fff; }
+
+/* TC-P4-22: desktop From/Until labels use the same kit role as the phone. */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-availability .av-time-range label > span { font: var(--nv-t-label); }
+}

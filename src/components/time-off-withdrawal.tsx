@@ -1,6 +1,7 @@
 'use client';
 
 import {useActionState,useEffect} from 'react';
+import Link from 'next/link';
 import {useRouter,unstable_rethrow} from 'next/navigation';
 import {EmployeeSubmitButton} from './employee-submit-button';
 import {withdrawTimeOffAction} from '@/app/app/requests/actions';
@@ -16,7 +17,7 @@ export function TimeOffWithdrawal({requestId,dateLabel}:{requestId:string;dateLa
  },{outcome:'idle'} as WithdrawalActionState);
  useEffect(()=>{if(state.outcome==='withdrawn'||state.outcome==='conflict')router.refresh();},[state.outcome,router]);
  const complete=state.outcome==='withdrawn'||state.outcome==='conflict'||state.outcome==='denied';
- return <form action={action} aria-label={`Withdraw request for ${dateLabel}`} aria-busy={pending}>
+ return <form action={action} onReset={event=>event.preventDefault()} aria-label={`Withdraw request for ${dateLabel}`} aria-busy={pending}>
   <input type="hidden" name="requestId" value={requestId}/>
   <input type="hidden" name="operationId" value={withdrawalIdentity(requestId)}/>
   {!complete?<>
@@ -30,6 +31,7 @@ export function TimeOffWithdrawal({requestId,dateLabel}:{requestId:string;dateLa
     state.outcome==='unavailable'?'We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.':
     state.outcome==='denied'?'Your session ended. Sign in again to see your requests.':
     state.outcome==='invalid'?'Check the box to confirm, then withdraw.':null}
+   {!pending&&(state.outcome==='denied'||state.outcome==='unavailable')?<> <Link href="/login">Sign in</Link></>:null}
   </p>
  </form>;
 }
