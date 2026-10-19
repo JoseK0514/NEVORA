@@ -1,6 +1,6 @@
 # Cloud backend handoff
 
-Base: `claude/premium-phase-1` at `21c4525`. Work branch: `codex/premium-backend`, isolated cloud worktree `/workspace/NEVORA-premium-backend`. Local commits only; no push, PR, merge, deployment, real-person data, or external delivery. The Mac preview, swap and reset work belongs to the separate local session.
+Base: `claude/premium-phase-1` at `21c4525`. Work branch: `codex/premium-backend`, isolated cloud worktree `/workspace/NEVORA-premium-backend`. Jose authorized pushing this backend branch. No PR, merge into shared branches, deployment, real-person data or external delivery. Cloud release follow-up is recorded below; the Mac previews remain untouched.
 
 Latest six-branch snapshot checks: [October 19 validation matrix, failures and exact fixes](SNAPSHOTS-2026-10-19.md). The initial baseline evidence below remains separate from this later push.
 
@@ -39,7 +39,7 @@ Implemented `readManagementProfile(proof, executor?)` and `saveManagementAlertCh
 - `GET /api/management/profile`: the agreed contact, active locations, role-specific alerts, database `observedAt`, and session-bounded `validForMs`. Owner scope is all; Manager scope uses the existing administrative-scope storage, including legacy all-company behavior. Empty locations and missing contact values are valid. No employee selector is accepted. Signed out is 401; Employee/Lead or lost authority is 403; storage failure is the agreed 200 unavailable snapshot. Private responses are not cached.
 - `POST /api/management/profile/alerts`: exact `{topicId,on}`, same-origin/custom-header protection, own-account authority before and after the write, idempotent per-topic JSONB updates on the employee row. Independent concurrent topic saves do not overwrite one another. The second authentication read's session-expiry redirect is translated to 401.
 - Apply **`db/migrations/0033_management_alert_preferences.sql`** before using these endpoints. This additive migration persists choices and applies them centrally to notification inserts without altering intent IDs or business write results. Opted-out notifications remain cancelled audit rows. Saving an opt-out also cancels pending deliveries; opting back in enables future messages without resurrecting old ones. Mixed manager summaries retain enabled members. Employees and Leads retain existing behavior. The clock-review choice does not invent a new clock notification producer; it handles explicitly typed review events when produced.
-- Contract wording matches the supplied draft. Final topic wording, especially the new payroll topic, is pending Jose's approval. No existing payroll/legal wording was changed. Owners retain five rows; payroll-ready is off while payroll is disabled. Managers have four.
+- Contract wording matches the supplied draft. Jose approved the drafted topics and wording on October 19, including Owner “Payroll ready to review” when payroll is enabled (Owner five topics, Manager four). No existing payroll/legal wording was changed. Owners retain five rows; payroll-ready is off while payroll is disabled. Managers have four.
 
 Review hardening: preferences are stored atomically on the employee record, and notification delivery/source reads recheck the current choice. This prevents an uncommitted producer from escaping an opt-out sweep. Existing legacy list/count exports exclude specifically preference-suppressed rows; ordinary cancellation history retains its prior behavior. Both current JSON and legacy colon summary keys are supported. The migration has not been published or applied outside owned test databases.
 
@@ -110,7 +110,7 @@ Implementation owner: cloud Codex. UI wiring/joint inspection: Claude coordinato
 
 ## 7. Commits, verification and next gate
 
-All commits are local on `codex/premium-backend`; none has been pushed. The implementation is split for review:
+These implementation commits are on `codex/premium-backend`, pushed with Jose’s authorization; later item commits are recorded below. The implementation is split for review:
 
 | Item | Commits | Main files |
 |---|---|---|
@@ -137,7 +137,7 @@ Final verification on the backend branch:
 
 The extra database suites use `node scripts/phase-c-clocker-postgres.mjs <config>` with `NEVORA_TEST_PG_BIN` above. **All 1,318 backend-branch PostgreSQL test executions passed.** No existing database was selected; every runner reported its owned cluster stopped. Raw logs/JSON are in `/workspace/nevora-backend-evidence/` outside the repository; the report contains the durable result summary. Two read-only source/contract reviews of `22c4320` found no remaining material findings after the hardening commits.
 
-Coordinator next steps: review these local commits, arrange the backend/migration handoff when Jose requests it, wire the endpoints/fields described above, enable local flags only at each preview's next round break, then run the authenticated/browser/submission inspections. The six newly pushed snapshots are now checked separately below; future snapshots and the merged release candidate need fresh checks. Jose still needs to approve the proposed topic wording and any move of Inbox decisions from the full review. No production release, independent inspection sign-off, or physical-device approval is claimed.
+Coordinator next steps: review these local commits, arrange the backend/migration handoff when Jose requests it, wire the endpoints/fields described above, enable local flags only at each preview's next round break, then run the authenticated/browser/submission inspections. The six newly pushed snapshots are now checked separately below; future snapshots and the merged release candidate need fresh checks. Jose approved the Profile topic wording. O1 is not approved: Inbox decisions stay on the full review page. No production release, independent inspection sign-off, or physical-device approval is claimed.
 
 ## 8. All six pushed snapshots: October 19
 
@@ -146,3 +146,45 @@ All six exact commits supplied by Jose passed `npm ci`, TypeScript and a product
 Wave A has zero lint errors. The other five snapshots retain the known swap-page immutability error already fixed on Wave A; all six have the existing effect-cleanup warning. Each snapshot's PostgreSQL checks executed all five release groups across the original and supplemental runs: **736 passed, 1 failed**. The common catalog-comparison fixture omits migrations `0031`/`0032`; the existing backend fix is in `22c4320`, and the detailed report supplies a fixture-only patch for snapshots that do not yet include Profile migration `0033`.
 
 See [the full report](SNAPSHOTS-2026-10-19.md) for exact commits, every failure and its owner, commands, skipped/pending counts, environment/reaper evidence, supplemental SQL provenance and remaining gates. Snapshot application code and tests stayed unchanged. This task changed only this README and the new snapshot report on the backend branch.
+
+
+## 9. A1: cloud swap reproduction and fictional seed repair
+
+**Result:** data refusal reproduced on actual owned PostgreSQL 17.11; no server eligibility rule was weakened. New regression: `src/test/integration/premium-swap-seed.integration.ts`. Runner: `NEVORA_TEST_PG_BIN=<local pg bin> node scripts/premium-release-postgres.mjs`. It creates a new marked loopback database, installs current migrations and stops its own cluster afterward. The first two setup attempts failed (wrong runner database prefix, then a missing fixture phone); both were corrected before the passing run.
+
+The pushed tree does **not** contain `.claude/parallel/scripts/seed-extra.mts` or `CODEX-RELEASE-PROMPT.md`. Consequently this is a reproduction of Jose’s specified rows, not a claim to have inspected the missing Mac file. Original seeding code has been requested. Before calling the Mac cause conclusively identified, compare its actual `employee_scheduling_settings`, availability windows/overrides, position eligibility and location readiness with these tested inputs.
+
+Fixture: AUDIT-E has five next-week weekday shifts at loc-1, qa-pos, 08:00–16:00, assignment_origin MANAGER; Riley Rivera (AUDIT-SWAP) has only `x-swap-5`/`x-swap-6` on Saturday/Sunday. Week is published through `publishScheduleWithRevision()`. Both are active and have loc-1/qa-pos eligibility. Policy is AUTOMATIC_WHEN_VALID with both advances zero.
+
+Exact observations:
+
+- `listSwapTargets()` returns both weekend shifts. `readShiftChangeTerms()` returns both current terms; `matchesDisplayedShift()` is true for the source and targets. Episode/revision defaults and the publication snapshot are not the refusal in this fixture.
+- Without availability/rule rows, evaluation includes `OUTSIDE_AVAILABILITY` and `RULE_UNVERIFIABLE`; availability returns `{allowed:false, refusal:'review', notice:'Needs Owner rule review'}`.
+- After adding only availability, the ten remaining unverified-rule issues are `minimumRest`, `maximumShift`, `maximumDaily`, `breaks`, `projectedOvertime` for **each receiving employee**. A workflow policy does not configure these employee rule profiles.
+- With explicit fictional profiles, **both** `PROPOSE_SWAP` checks return `allowed:true`. The test uses the same terms/availability checks as the page, submits a stored proposal, accepts it as Riley, and verifies the two employee IDs exchanged in SQL. No actual browser/page-render claim is made by this integration test.
+
+Coordinator’s exact seed additions (fictional databases only; do not use as customer defaults):
+
+```ts
+import { fictionalProfile } from '../../../src/test/fixtures/shift-changes';
+// Resolve this import relative to the actual seeder location/source checkout.
+await q(`INSERT INTO availability_windows
+  (id,employee_id,day_of_week,start_time,end_time)
+  SELECT 'audit-swap-availability-'||e.id||'-'||d,e.id,d,'08:00','16:00'
+  FROM employees e CROSS JOIN generate_series(0,6) d
+  WHERE e.id IN ('AUDIT-E','AUDIT-SWAP')
+  ON CONFLICT(id) DO UPDATE SET start_time=excluded.start_time,end_time=excluded.end_time`);
+await q(`INSERT INTO employee_scheduling_settings
+  (employee_id,target_weekly_hours,maximum_weekly_hours,operational_rule_profile)
+  SELECT id,40,40,$1::jsonb FROM employees
+  WHERE id IN ('AUDIT-E','AUDIT-SWAP')
+  ON CONFLICT(employee_id) DO UPDATE SET
+    target_weekly_hours=excluded.target_weekly_hours,
+    maximum_weekly_hours=excluded.maximum_weekly_hours,
+    operational_rule_profile=excluded.operational_rule_profile`,
+  [JSON.stringify(fictionalProfile())]);
+```
+
+`fictionalProfile()` supplies all five NOT_APPLICABLE rules with explicit fictional reviewer/time metadata. Availability includes Monday for Riley and Saturday/Sunday for AUDIT-E: the days they **work** before a swap must not become the only days they are **available**. Existing weekly unavailable overrides or approved time off can still block these windows; the isolated fixture has none. Forty-hour limits suffice: AUDIT-E remains at 40 hours and Riley at 16 after a swap. No extra revision snapshot or 80-hour limit is needed.
+
+Tests: new actual-Postgres regression **1 passed**, TypeScript passed, targeted ESLint passed. The test covers candidate discovery, displayed/current terms, staged refusal reasons, both eligible targets, proposal, acceptance and saved assignments. Raw evidence: `/workspace/nevora-release-evidence/2026-10-19/swap.log`. Files: new regression, `vitest.premium-release-integration.config.mts`, owned `scripts/premium-release-postgres.mjs`, this report. No Mac files or UI files edited. Claude’s next gate: apply only missing fictional seed rows at its next safe round break, inspect the rendered target list and compare/send screens. Original Mac seed verification remains conditional on receiving that file.
