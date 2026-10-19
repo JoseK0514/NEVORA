@@ -38,15 +38,15 @@ const sourceDestinations: Record<HomeSource, string> = {
 };
 
 function stamp(at: string, zone: string) {
-  return new Intl.DateTimeFormat('en-US', {
+  return keepWhole(new Intl.DateTimeFormat('en-US', {
     timeZone: zone, weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
-  }).format(new Date(at));
+  }).format(new Date(at)));
 }
 
 function dateLabel(date: string) {
-  return new Intl.DateTimeFormat('en-US', {
+  return keepWhole(new Intl.DateTimeFormat('en-US', {
     timeZone: 'UTC', weekday: 'short', month: 'long', day: 'numeric', year: 'numeric',
-  }).format(new Date(`${date}T12:00:00Z`));
+  }).format(new Date(`${date}T12:00:00Z`)));
 }
 
 function businessDate(at: string, zone: string) {
@@ -113,7 +113,7 @@ function Assignment({shift, zone, observedAt, countdown = false, showZone = true
     timeZone: zone, hour: 'numeric', minute: '2-digit',
   }).format(new Date(at));
   return <>
-    <p className={styles.assignmentDate}>{observedAt && relativeDay(shift.date, observedAt, zone) ? <><strong>{relativeDay(shift.date, observedAt, zone)}</strong> · </> : null}<time dateTime={shift.date}>{dateLabel(shift.date)}</time></p>
+    <p className={styles.assignmentDate}>{observedAt && relativeDay(shift.date, observedAt, zone) ? <><strong>{relativeDay(shift.date, observedAt, zone)}</strong>{'\u00a0· '}</> : null}<time dateTime={shift.date}>{dateLabel(shift.date)}</time></p>
     <p className={styles.interval}>
       <time dateTime={shift.startAt}>{formatTime(shift.startAt)}</time>
       <span className={styles.intervalDash} aria-hidden="true">–</span>
@@ -147,6 +147,14 @@ export function approvalCelebration(item: AttentionItem): {kind: CelebrationKind
   return null;
 }
 
+/** TC-P3-24: the same outcome words as the Time off page (waiting, approved, declined, withdrawn). Display only. */
+const outcomeWords: Record<string, string> = {pending: 'waiting', denied: 'declined', rejected: 'declined', cancelled: 'withdrawn'};
+function attentionLabel(item: AttentionItem) {
+  return item.label
+    .replace(/^(Time off|Time correction|Shift request) (pending|denied|rejected|cancelled)\b/, (_, what: string, status: string) => `${what} ${outcomeWords[status]}`)
+    .replace(/ — review required$/, item.required ? '' : ' — review required');
+}
+
 function AttentionRow({item, zone, celebrate = false}: {item: AttentionItem; zone: string; celebrate?: boolean}) {
   const moment = celebrate ? approvalCelebration(item) : null;
   const Icon = kindIcons[item.ref.kind] ?? ChatTextIcon;
@@ -155,9 +163,9 @@ function AttentionRow({item, zone, celebrate = false}: {item: AttentionItem; zon
       <span className={styles.itemIcon} aria-hidden="true"><Icon size={20}/>{moment ? <Celebration kind={moment.kind} eventKey={moment.key} confirmed/> : null}</span>
       <span className={styles.itemCopy}>
         {/* TC-P3-10: the "Review needed" tag names the state, so the title doesn't repeat it. */}
-        <strong>{keepWhole(item.label.replace(/^Time off pending\b/, 'Time off waiting').replace(/ — review required$/, item.required ? '' : ' — review required'))}</strong>
+        <strong>{keepWhole(attentionLabel(item))}</strong>
         {item.ref.kind === 'SCHEDULE' ? <small>Week of <time dateTime={item.ref.id}>{dateLabel(item.ref.id)}</time></small>
-          : <small>Recorded <time dateTime={item.changedAt}>{keepWhole(stamp(item.changedAt, zone))}</time></small>}
+          : <small>Recorded <time dateTime={item.changedAt}>{stamp(item.changedAt, zone)}</time></small>}
         {item.required ? <small className={styles.required}>Review needed</small> : null}
         {item.deadlineAt ? <small className={styles.deadline}>Respond by <time dateTime={item.deadlineAt}>{stamp(item.deadlineAt, zone)}</time></small> : null}
       </span>
@@ -259,7 +267,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
   // A shift under way leads the card; the next shift follows under its own heading.
   const underWay = snapshot?.currentShift && snapshot.publicationState !== 'unavailable' ? snapshot.currentShift : null;
   // TC-P3-16: the band names the state; the pass says what happens to the shift, so the two never repeat.
-  const recovery = paused ? (online ? 'Your shift updates when you come back.' : 'Your shift updates when you reconnect.') : denied ? 'Sign in again to see your shift.' : loading ? 'Loading Home…' : 'Couldn’t load your shift. Try again below.';
+  const recovery = paused ? (online ? 'Your shift updates when you come back.' : 'Your shift updates when you reconnect.') : denied ? 'Sign in again to see your shift.' : loading ? 'Loading Home…' : 'Couldn’t load your shift.';
 
   const zone = snapshot?.timeZone;
   const clock = (at: string) => new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(at));
@@ -273,7 +281,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
 
   return <div className={`nv-page premium-employee-home ${styles.root}`} data-nv-page="" data-home-state={viewState} aria-busy={refreshing || loading}>
     <PageBand
-      eyebrow={snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)} · <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt))}</time></> : '\u00a0'}
+      eyebrow={snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)}{'\u00a0· '}<time dateTime={snapshot.observedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time></> : '\u00a0'}
       title={name ? `Hi, ${name}.` : 'Home'}
       summary={summary}
       // Codex mobile review M8: required work is noticed on the first screen; the full list stays below.
@@ -297,7 +305,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
               : underWay ? <>
                 <section className={styles.current} aria-label="Scheduled now">
                   <h3>Scheduled now</h3>
-                  <p className={styles.currentNote}>Clock status below shows whether you&apos;re clocked in.</p>
+                  <p className={styles.currentNote}>Clock status below shows whether you’re clocked in.</p>
                   <Assignment shift={underWay} zone={snapshot.timeZone} observedAt={snapshot.observedAt} showZone={false}/>
                 </section>
                 <section className={styles.upcoming} aria-labelledby="employee-reviewed-upcoming-heading">

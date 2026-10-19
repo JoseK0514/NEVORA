@@ -77,7 +77,7 @@ function ShiftOptions({ shift, today, observedAt, timeZone, open = false }: { sh
     <div className="my-shift-options-body">
       {shift.date >= today ? <Link href={`/app/exchange/swap?sourceShiftId=${id}`} className="my-schedule-link" aria-label={`Request a swap, ${formatDayLabel(shift.date).day}, ${formatTime(shift.startTime)}`}><ArrowsLeftRightIcon size={18} aria-hidden="true" />Request a swap</Link> : null}
       <Link href={`/app/exchange/callout?shiftId=${id}`} className="my-schedule-link" aria-label={`Unable to work, ${formatDayLabel(shift.date).day}, ${formatTime(shift.startTime)}`}><CalendarXIcon size={18} aria-hidden="true" />Unable to work</Link>
-      <p>Your shift stays assigned until a swap completes or a call-out is approved.</p>
+      <p>Your shift stays yours until a swap completes or your manager approves Unable to work.</p>
     </div>
   </details>;
 }

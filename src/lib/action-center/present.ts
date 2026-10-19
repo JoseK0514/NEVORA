@@ -17,6 +17,18 @@ export function spacedRanges(text: string) {
     .replace(/(\d{1,2}:\d{2} [AP]M|midnight|noon)\s*[–-]\s*/gi, `$1${NBSP}– `);
 }
 
+/** TC-P3-19: "2026-10-19–2026-10-25" → "Oct 19 – Oct 25" (each date whole); a plain ISO date reads "Oct 19". */
+const isoDay = (iso: string) => {
+  const date = new Date(`${iso}T12:00:00Z`);
+  return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'}).format(date).replace(' ', NBSP) : iso;
+};
+export function readableDates(text: string) {
+  return text
+    .replace(/\b(\d{4}-\d{2}-\d{2})\s*[–-]\s*(\d{4}-\d{2}-\d{2})\b/g, (_, a: string, b: string) => `${isoDay(a)}${NBSP}– ${isoDay(b)}`)
+    .replace(/\b\d{4}-\d{2}-\d{2}\b/g, isoDay)
+    .replace(/Resolve recorded-time exceptions before finalizing\./g, 'Fix recorded-time issues before finalizing.');
+}
+
 const requestKind: Partial<Record<ActionItem['type'], string>> = {TIME_OFF: 'Time off', EXCHANGE: 'Shift request', CALLOUT: 'Unable to work'};
 
 const sentDate = (iso: string | undefined, timeZone: string) => {
@@ -68,7 +80,7 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
       break;
   }
   const action = actionLabel === 'Set hour target' ? 'Set weekly hour target' : actionLabel;
-  return {title, detail: spacedRanges(detail), person, action};
+  return {title, detail: spacedRanges(readableDates(detail)), person, action};
 }
 
 /** One plain heading for a collapsed group of same-kind items. */

@@ -18,7 +18,7 @@ export default function Error({reset}:{error:Error & {digest?:string};reset:()=>
        <p className="premium-error__text">Try loading the page again before taking an action.</p>
        <div className="premium-error__actions">
         <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry('[data-nv-page]:not(.premium-error) [data-nv-band] h1', '.premium-error .nv-btn[data-kind="primary"]'); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
-        <Link className="nv-btn" data-kind="secondary" href="/app">Back to home</Link>
+        <Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>
        </div>
       </div>
      </CardBody>

@@ -26,6 +26,11 @@ describe('presented action items (Phase 7)', () => {
     expect(spacedRanges('12:00 AM–7:00 AM')).toBe('midnight\u00a0– 7:00\u00a0AM');
     expect(spacedRanges('4:00 PM–midnight')).toBe('4:00 PM – midnight');
   });
+  it('writes period dates the way people read them (TC-P3-19)', () => {
+    const card = presentItem(item({type: 'TIMECARD', category: 'timekeeping', priority: 'REVIEW', title: 'Period timecard needs review', detail: 'Casey Rivera · 2026-10-19–2026-10-25 · Resolve recorded-time exceptions before finalizing.'}), 'Open timecard review');
+    expect(plain(card.detail)).toBe('Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.');
+    expect(card.detail).not.toMatch(/\d{4}-\d{2}/);
+  });
   it('heads a group with its count and kind', () => {
     expect(plain(groupHeading('COVERAGE_GAP', 12, 'Coverage gap at Main Office'))).toBe('12 coverage gaps at Main Office');
     expect(plain(groupHeading('TARGET_MISSING', 10, 'Weekly hour target missing'))).toBe('10 people with no weekly hour target');

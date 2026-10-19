@@ -70,7 +70,7 @@ export default async function DashboardPage({
       <p className="premium-error__text">Try loading the page again before taking an action.</p>
       <div className="premium-error__actions">
         <Link className="nv-btn" data-kind="primary" href={retry?`/app?${retry}`:'/app'}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again</Link>
-        {view!=='overview'?<Link className="nv-btn" data-kind="secondary" href="/app">Back to home</Link>:null}
+        {view!=='overview'?<Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>:null}
       </div>
     </div></CardBody></Card></KitStack>
   </div>;

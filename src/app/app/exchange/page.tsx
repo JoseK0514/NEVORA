@@ -1,3 +1,4 @@
+import { keepWhole } from "@/lib/keep-whole";
 import {randomUUID} from 'node:crypto';
 import { FilterPills, PageBand } from "@/components/kit/kit";
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
@@ -47,11 +48,11 @@ import {matchesDisplayedShift} from '../../../lib/shift-changes/displayed-terms'
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_SHIFT: "That shift is no longer available for exchange.",
   SHIFT_ALREADY_OFFERED: "One of those shifts already has an active coverage or swap request.",
-  LOCATION_NOT_ELIGIBLE: "The employee is not eligible to work at that location.",
-  SHIFT_OVERLAP: "The exchange would create an overlapping shift.",
-  APPROVED_TIME_OFF: "The exchange conflicts with approved time off.",
-  OUTSIDE_AVAILABILITY: "The exchange is outside the employee's submitted availability.",
-  EMPLOYEE_INACTIVE: "An inactive employee cannot participate in the exchange.",
+  LOCATION_NOT_ELIGIBLE: "One of you can’t work at that location.",
+  SHIFT_OVERLAP: "That would give one of you two shifts at the same time.",
+  APPROVED_TIME_OFF: "That conflicts with approved time off.",
+  OUTSIDE_AVAILABILITY: "That’s outside the availability one of you sent.",
+  EMPLOYEE_INACTIVE: "One of you is no longer active, so this can’t go ahead.",
   INVALID_TIME_RANGE: "The shift time is invalid.",
   EXCHANGE_UNAVAILABLE: "That exchange is no longer available.",
   EXCHANGE_TAKEN: "Another employee already claimed that shift.",
@@ -59,11 +60,11 @@ const ERROR_MESSAGES: Record<string, string> = {
   NOT_SHIFT_OWNER: "You can only swap one of your own shifts.",
   SAME_EMPLOYEE: "A direct swap must be with another employee.",
   DIFFERENT_WEEK: "Direct swaps must stay within the same schedule week.",
-  EMPLOYEE_NOT_FOUND: "An employee on this request could not be found.",
-  INVALID_DECISION: "That response could not be processed.",
-  NOT_TARGET_EMPLOYEE: "Only the employee receiving the swap request can accept it.",
+  EMPLOYEE_NOT_FOUND: "We couldn’t find one of the people on this request.",
+  INVALID_DECISION: "We couldn’t save that answer. Try again.",
+  NOT_TARGET_EMPLOYEE: "Only the person you asked can accept this swap.",
   EXCHANGE_CHANGED: "The schedule changed before approval. Review the request again.",
-  CALLOUT_EXISTS: "This shift already has an active call-out request.",
+  CALLOUT_EXISTS: "This shift already has an Unable to work request.",
 };
 
 function statusLabel(status: string) {
@@ -275,7 +276,7 @@ export default async function ExchangePage({
                 {visibleCallouts.map((callout) => (
                   <div className="employee-shift-entry" id={`request-${callout.id}`} tabIndex={-1} key={callout.id}>
                     <div className="employee-shift-entry-copy">
-                      <strong>{marketplaceDate(callout.date)} · {formatTime(callout.startTime)} – {formatTime(callout.endTime)}</strong>
+                      <strong>{keepWhole(`${marketplaceDate(callout.date)} · ${formatTime(callout.startTime)} – ${formatTime(callout.endTime)}`)}</strong>
                       <span>{calloutReason(callout.reasonCode)}</span><span>{callout.locationName}</span><ShiftChangeHistory events={histories.get(callout.id)??null}/>
                       {callout.status==='APPROVED'&&!callout.releaseApplies?<StatusPill tone="neutral">Previously approved — review current assignment</StatusPill>:null}
                       {callout.status==='APPROVED'&&!callout.releaseApplies?<span className="shift-change-unavailable">Historical approval does not release the current assignment. Ask management to review.</span>:null}

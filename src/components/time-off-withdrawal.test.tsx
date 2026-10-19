@@ -25,21 +25,21 @@ afterEach(()=>vi.unstubAllEnvs());
 it('recovers rejected browser proxy into an unconfirmed outcome with the same protected retry controls',async()=>{
  vi.mocked(withdrawTimeOffAction).mockRejectedValueOnce(TypeError('Failed to fetch'));
  expect(await submit()).toEqual({outcome:'unavailable'});
- expect(html()).toContain('The outcome could not be confirmed');expect(html()).toContain('Retry same withdrawal');
+ expect(html()).toContain('We couldn’t confirm the withdrawal');expect(html()).toContain('Try again');
  expect(html()).toContain(`value="${requestId}"`);expect(html()).toContain(`value="${operationId}"`);expect(html()).toContain('name="confirmed"');
 });
 it('after a committed response is lost, retry sends the original identity and renders the first cancellation receipt',async()=>{
  const attempts:Record<string,FormDataEntryValue>[]=[];let committed=false;
  vi.mocked(withdrawTimeOffAction).mockImplementation(async(_state,data)=>{attempts.push(Object.fromEntries(data));if(!committed){committed=true;throw Error('Response lost after commit');}return {outcome:'withdrawn',receipt};});
- expect(await submit()).toEqual({outcome:'unavailable'});expect(html()).toContain('Retry same withdrawal');
+ expect(await submit()).toEqual({outcome:'unavailable'});expect(html()).toContain('Try again');
  expect(await submit()).toEqual({outcome:'withdrawn',receipt});
  expect(attempts).toEqual([{requestId,operationId,confirmed:'yes'},{requestId,operationId,confirmed:'yes'}]);
- expect(host.state.receipt).toEqual(receipt);expect(html()).toContain('Your request was withdrawn');expect(html()).not.toContain('Retry same withdrawal');
+ expect(host.state.receipt).toEqual(receipt);expect(html()).toContain('Your request was withdrawn');expect(html()).not.toContain('Try again');
 });
 it.each(['redirect','not-found','forbidden','unauthorized','nested-redirect'] as const)('preserves actual Next %s navigation/auth signal instead of labeling it transport loss',async kind=>{
  let signal:unknown;try{if(kind==='redirect'||kind==='nested-redirect')redirect('/login');else if(kind==='not-found')notFound();else if(kind==='forbidden')forbidden();else unauthorized();}catch(error){signal=error;}
  expect(signal).toBeDefined();expect(signal).toHaveProperty('digest');
  vi.mocked(withdrawTimeOffAction).mockRejectedValueOnce(kind==='nested-redirect'?new Error('Wrapped framework signal',{cause:signal}):signal);
  await expect(submit()).rejects.toBe(signal);
- expect(host.state.outcome).toBe('idle');expect(html()).not.toContain('Retry same withdrawal');
+ expect(host.state.outcome).toBe('idle');expect(html()).not.toContain('Try again');
 });

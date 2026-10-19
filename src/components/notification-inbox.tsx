@@ -1,5 +1,6 @@
 'use client';
 
+import {keepWhole} from '@/lib/keep-whole';
 import Link from 'next/link';
 import {useRef,useState} from 'react';
 import {useGSAP} from '@gsap/react';
@@ -68,13 +69,13 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
    </div>
    <p className={styles.viewCount} role="status" aria-live="polite">{items.length} {items.length===1?'notification':'notifications'} in this view{filter==='required'?' · Action required':filter==='unread'?' · Unread':''}</p>
    {groups.length?<div className={styles.groups}>{groups.map(group=><section className={styles.group} key={group.key} aria-label={group.label}>
-    <h3 className={styles.groupHeading}>{group.label}</h3>
+    <h3 className={styles.groupHeading}>{keepWhole(group.label)}</h3>
     <ul className={styles.list}>{group.items.map(item=>{
      const presentation=notificationPresentation(item.label),Icon=icons[presentation.icon];
      const review=item.reviewState??'unavailable',action=item.actionState??'unavailable';
      return <li key={item.id} data-inbox-row><Link className={styles.row} data-unread={review==='unread'} href={item.href}>
       <span className={styles.icon}><Icon size={22} weight="regular" aria-hidden="true"/></span>
-      <div className={styles.copy}><div className={styles.rowHeading}><strong>{item.label}</strong><time dateTime={item.at}>{new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date(item.at))}</time></div>
+      <div className={styles.copy}><div className={styles.rowHeading}><strong>{item.label}</strong><time dateTime={item.at}>{keepWhole(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date(item.at)))}</time></div>
        <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} aria-hidden="true"/>:null}{reviewLabels[review]}</span><span className={styles.action} data-state={action}>{actionLabels[action]}</span></div>
        <span className={styles.destination}>{presentation.destination}</span>
       </div>
@@ -87,6 +88,6 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
     {search?<button type="button" className={styles.secondary} onClick={()=>setSearch('')}>Clear search</button>:filter!=='all'?<button type="button" className={styles.secondary} onClick={()=>setFilter('all')}>View all notifications</button>:null}
    </div>}
    <footer className={styles.footer}><p>Updates about your requests and schedule. Opening one doesn’t complete its action.</p><div><Link href={onMarkRead?"/app/inbox?filter=requests":"/app/requests/hub"}>Requests<CaretRightIcon size={16} aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<CaretRightIcon size={16} aria-hidden="true"/></Link></div></footer>
-  </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} aria-hidden="true"/></span><h3>{state.paused?'Updates paused':denied?'Sign in again':unavailable?'Notifications unavailable':'Loading notifications…'}</h3><p>{state.paused?'Return to this window while online to check current information.':denied?'Your current employee session is required.':unavailable?'We could not confirm your current information. Try again.':'Checking your current access.'}</p></div>}
+  </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} aria-hidden="true"/></span><h3>{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load notifications':'Loading notifications…'}</h3><p>{state.paused?'Return to this window while online to check current information.':denied?'Sign in again to see notifications.':unavailable?'Check your connection, then try again.':'Checking your current access.'}</p></div>}
  </section>;
 }

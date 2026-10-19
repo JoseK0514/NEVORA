@@ -59,7 +59,7 @@ it('renders all mixed employee issue reasons without changing their order or exp
  vi.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-27T12:00:00Z',cards:[{...own,source}]}));
  await mount();const rendered=html();
  expect(rendered).toContain('data-tone="warning"');
- const reasons=['Period is still open','Correction awaiting review','Missing clock out','Open break','Overlapping recorded time'];
+ const reasons=['Period is still open','Correction awaiting review','No clock-out yet','Open break','Overlapping recorded time'];
  const positions=reasons.map(reason=>rendered.indexOf(reason));
  expect(positions.every(position=>position>=0)).toBe(true);
  expect(positions).toEqual([...positions].sort((a,b)=>a-b));
