@@ -1,0 +1,10 @@
+{
+  "appCommit": "caef395",
+  "handoffCommit": "ea58610",
+  "sourceCodeChangedAfterZeroAppCommit": false,
+  "decision": "Five Mac exit-round4 reports checked:0 open P0/P1/P2,IS-16 final recheck atcaef395. Manager initial-data item explicitly set aside for candidate and applied in4ff37e5.",
+  "profileMerge": "57413be",
+  "initialWiring": "4ff37e5",
+  "backendApprovedLabelFix": "da2a4e5",
+  "validationCandidate": "8351538"
+}

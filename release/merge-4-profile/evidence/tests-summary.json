@@ -1,0 +1,36 @@
+{
+  "applicationCheckpoint": "0bdaa4d1efa4111283e007d777197453942bcbdf",
+  "fullSerial": {
+    "success": true,
+    "numPassedTests": 7352,
+    "numFailedTests": 0,
+    "numPendingTests": 801,
+    "numTodoTests": 0,
+    "numTotalTests": 8208
+  },
+  "files": 474,
+  "processCleanup": {
+    "passed": 12,
+    "failed": 0
+  },
+  "finalTestOnlyCandidate": "8e18a95",
+  "focusedCoverage": {
+    "passed": 6,
+    "failed": 0
+  },
+  "prior23fcdc3Full": {
+    "passed": 7351,
+    "failed": 1,
+    "reason": "5-second backfill timeout under load"
+  },
+  "priorAffectedFileAlone": {
+    "passed": 68,
+    "failed": 0
+  },
+  "assertionsAndTimeoutBudgetsUnchanged": true,
+  "caseStatusCounts": {
+    "passed": 7352,
+    "skipped": 801,
+    "pending": 55
+  }
+}

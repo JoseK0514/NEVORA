@@ -1,6 +1,6 @@
 # Wave A stability — targeted fixes pass, exit incomplete
 
-Exact sourcea05f26a, Wave A exit round2. This is a failed early exit, with measured P0 0 / P1 1 / P2 0. The full checker matrix and five-area exit sweep are incomplete after the active-field contrast failure; this is not zero and the SHA is not merged. Fictional local fixtures only.16 submitted requests were held/aborted; no mutation reached the server.10 further colour-probe pages use reads only.
+Exact sourcea05f26a, Wave A exit round2. The Wave A-owned exit is incomplete; no new owned P0/P1/P2 is established by the focused checks. The standalone shared-style observation below is resolved by the latest coordinator used on the candidate. The full checker matrix and five-area exit sweep are incomplete after the focused rechecks; this is not zero and the SHA is not merged. Fictional local fixtures only.16 submitted requests were held/aborted; no mutation reached the server.10 further colour-probe pages use reads only.
 
 ## Earlier findings
 
@@ -10,7 +10,7 @@ Exact sourcea05f26a, Wave A exit round2. This is a failed early exit, with measu
 
 ## Findings
 
-No new stability defect established in these16 targeted cases. This does not complete the full ST exit. The one new P1 is counted in [type-colour-copy.md](type-colour-copy.md).
+No new stability defect established in these16 targeted cases. This does not complete the full ST exit. The shared-style observation is documented separately; the latest coordinator already fixes it.
 
 ## Checked and correct
 

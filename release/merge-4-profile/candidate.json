@@ -1,0 +1,51 @@
+{
+  "frozenAt": "2026-10-19T20:30:30.696490+00:00",
+  "candidate": "8e18a958dfbfd1e5c6d6da44396d82c95d4e18e7",
+  "tree": "49f3d496e9657f8c302b9f6335c692a541e0251e",
+  "coordinator": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+  "backend": "da2a4e51cef1dd70aa465fa187ce5321b143d8d3",
+  "profile": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+  "profileApplication": "caef3956827c9796de1183f2c35c6cf82a145c95",
+  "initialReadCommit": "4ff37e5140833ac7fc93dcb30086d245800b9385",
+  "premiumCssBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+  "retainedWaveA": "c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0",
+  "excludedWaveA": [
+    "7679133",
+    "7651490",
+    "7f75dc4"
+  ],
+  "sourceExit": "Profile Mac round4 zero; other exits incomplete/not zero",
+  "deviceAccess": "Not approved; no deployment or tunnel",
+  "applicationGateCheckpoint": "0bdaa4d1efa4111283e007d777197453942bcbdf",
+  "testOnlyDelta": "8e18a95 retains original backend loc-1 assertion alongside the stronger location=loc-1 check; no application/build/config change; focused Coverage6/6 pass",
+  "applicationGateTree": "e41a063b4fc4b0de3bee96d1d08ec0475100e83d",
+  "applicationInputsUnchangedExceptTest": {
+    "from": "0bdaa4d",
+    "to": "8e18a95",
+    "changedFiles": [
+      "src/app/app/schedule/coverage/page.test.tsx"
+    ],
+    "focusedCoverage": {
+      "passed": 6,
+      "failed": 0
+    },
+    "typecheck": "pass",
+    "targetedLint": "pass"
+  },
+  "publishedAt": "2026-10-19T20:50:00Z",
+  "publishedBranch": "codex/release-candidate",
+  "publication": "fast-forward from0e01046; no force",
+  "combinedConfirmed": {
+    "P0": 0,
+    "P1": 8,
+    "P2": 0,
+    "scope": "partial combined; release blocked"
+  },
+  "checks": {
+    "passed": 92,
+    "failed": 88,
+    "total": 180,
+    "nonTextGateFailures": 0
+  },
+  "ownedPreviewsClosed": true
+}

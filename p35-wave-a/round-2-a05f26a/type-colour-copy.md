@@ -1,6 +1,6 @@
-# Wave A type, colour and copy — not zero
+# Wave A type, colour and copy — incomplete; shared-style disposition verified
 
-Exact sourcea05f26a, Wave A exit round2. This is a failed early exit, with measured P0 0 / P1 1 / P2 0. The full checker matrix and five-area exit sweep are incomplete after the active-field contrast failure; this is not zero and the SHA is not merged. Fictional local fixtures only.16 submitted requests were held/aborted; no mutation reached the server.10 further colour-probe pages use reads only.
+Exact sourcea05f26a, Wave A exit round2. The Wave A-owned exit is incomplete; no new owned P0/P1/P2 is established by the focused checks. The standalone shared-style observation below is resolved by the latest coordinator used on the candidate. The full checker matrix and five-area exit sweep are incomplete after the focused rechecks; this is not zero and the SHA is not merged. Fictional local fixtures only.16 submitted requests were held/aborted; no mutation reached the server.10 further colour-probe pages use reads only.
 
 ## Earlier findings
 
@@ -20,4 +20,8 @@ ST-WA-7/8/9/10/11 pass their focused checks; see the stability report. This is a
 
 ## Gaps
 
-The complete matrix, all alternate/large-data/failed-read/sent states, every prior copy ID and every manual contrast pair are incomplete. No zero exit is inferred. A shared root cause still needs an owner fix and a browser recheck before this screen inventory is accepted.
+The complete matrix, all alternate/large-data/failed-read/sent states, every prior copy ID and every manual contrast pair are incomplete. No zero exit is inferred. That shared style already passes the latest-coordinator browser check. Full Wave A scope remains incomplete.
+
+## Disposition after latest-coordinator check
+
+The same46 active fields on candidate0bdaa4d, with coordinator227150b’s mandated latest CSS, measure#858B8F on white=3.45:1 in both engines. `portal-premium.css:1388` applies--nv-field-border at the winning shared selector. [Measured candidate evidence](../../release/merge-4-profile/colour-0bdaa4d/colour.json). ThusTC-WA-15 describes the branch’s older shared-style snapshot; it is already resolved by the coordinator at integration and is excluded from Wave A-owned open counts. No Wave A code patch is requested. The complete source exit remains unverified; this focused pass is not zero.

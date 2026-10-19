@@ -1,3 +1,26 @@
+# Claude, start here — published 2026-10-19 20:50 UTC
+
+- **Published `codex/release-candidate` at `8e18a958dfbfd1e5c6d6da44396d82c95d4e18e7`**, a fast-forward from0e01046. Includes coordinator227150b, backendda2a4e5, verified-zero Profileea58610/appcaef395, separate initial-read4ff37e5, and original lint cleanup9df0f47. Premium CSS equals the coordinator’s latest c72c855 blob exactly. No force push; parallel publisher records are preserved below.
+- **Gates:** npmci, TypeScript, lint, full one-worker7352 passed/0 failed/801 skipped/55 pending, process-cleanup12/12, build and2298-artifact/5-marker absence pass. Final8e18a95 is one extra retained backend Coverage assertion; all application/build/config bytes match tested0bdaa4d, and focused Coverage6/6 plus TypeScript/lint pass. Earlier backfill load timeout is retained; that file passes68/68 alone and the final full suite is green.
+- **Checks:**92/180 pass;88 text-floor failures,0 nontext gate failures under the unmodified checker.40 fresh settled captures and8 More cases pass for every standard role. Profile24 views and4 intercepted double clicks pass; server-initial details hold their height, maximum CLS0.000548. All owned previews close with strict source/mirror verification, PostgreSQL stopped and no guard error.
+- **Blocked / partial combined inspection: P0 0 / P1 8 / P2 0 confirmed.** Wave A’s retainedc05e0c7 has2 pending-height P1s. Coordinator has desktop personal-page type floor plus Availability ST-P3-24 and IS-P3-01/02/03:88→52px pending, focus toBODY, error below the tab bar, and checkbox/FormData reset opposite to the visible draft after failure. Desktop owns the shell type floor. [Five combined reports, raw data, screenshots and gates](release/merge-4-profile/README.md). No all-six zero or production acceptance.
+- **Wave A a05f26a:** all16 focused pending cases pass; full five-area exit/matrix is incomplete, so it is not merged. The apparent field-edge issue belongs to its old coordinator snapshot:46 fields are1.413:1 there, but3.45:1 with the mandatory latest coordinator CSS on the candidate. [Corrected shared-style disposition](p35-wave-a/round-2-a05f26a/type-colour-copy.md). Do not duplicate that shared fix. Older7679133/7651490/7f75dc4 failed-round evidence remains intact.
+- **Where this publishing run stopped:** candidate is published and all owned jobs/previews are finished. Profile is the only verified-zero source exit. Phase3, WaveA, WaveB, WaveC and Desktop full exits remain with the active independent inspection loop; preserve its records and merge only a completed zero or a verified five-report Mac zero. Next publishing update starts from8e18a95, fetches first and preserves any newer remote candidate. Dead settings-hub CSS waits for Wave C’s zero merge.
+- This run used only the original three candidate-only UI authorizations. Another task’s separate item-4 approval claim is retained in its own record below and was not inferred here. Device access uses **DEVICE-CHECKLIST-REVIEWED.md** and still waits for Jose. No main/claude push, deployment, tunnel or device exposure.
+
+## Candidate-only UI changes from this run for Claude to review
+
+| Commit | Authorized change | Validation |
+|---|---|---|
+|9df0f47 | Employee weekly-confirmation ref cleanup; behavior unchanged | Included in subsequent full gates |
+|4ff37e5 | Profile authorized management server read parsed and passed asinitial, null on failed/unready read |16 management initial-height samples stable;24 views and4 held one-POST cases pass |
+
+2026-10-19 20:50 UTC · merged Profile at ea58610 (appcaef395), backendda2a4e5 and coordinator227150b · candidate8e18a95 · tests7352 passed/0 failed,801 skipped,55 pending; focused Coverage6/6 · checks fail92/180 · combined P0 0 / P1 8 / P2 0 confirmed, partial scope · blocked
+
+2026-10-19 20:50 UTC · candidate-only Profile initial-read4ff37e5 · full tests/type/lint/build and latest combined checks as above; Profile’s measured integration passes · release remains blocked by the named owner findings
+
+## Preserved parallel and historical records
+
 ## Claude, start here — 2026-10-19 20:35 UTC
 Scope note for publisher `c34043b`: this conversation authorizes the three listed candidate-only UI changes. The parallel paused-handoff task below reports separate item-4 approval in its own chat; this publisher does not infer additional UI-edit permission from that report. Both tasks preserve the first-published remote candidate and their distinct evidence.
 
@@ -34,7 +57,8 @@ Everything below is retained history from the parallel inspection/publishing tas
 ## Claude, start here — 2026-10-19 20:28 UTC
 
 - Publishing target is now **8e18a95**, with application gates on0bdaa4d: latest fetched coordinator227150b, backendda2a4e5, verified-zero Profileea58610/appcaef395 and separate initial-read4ff37e5. Latest premium CSS equals coordinator blobc72c855 exactly.8e18a95 only explicitly retains the original backend Coverage locator assertion; focused Coverage6/6, TypeScript and focused lint pass; application/build/config bytes match0bdaa4d. npmci/type/lint/build and2298-artifact/5-marker absence pass. Full one-worker suite and180-cell merged checker are running;40 fresh settled page captures and8 More cases pass. Earlier23fcdc3 full run7351 pass/1 backfill timeout; affected file68/68 passes alone without changing limits. The parallel publisher’sc34043b record is preserved; remote RC was still0e01046 at20:31. No force push; preserve any first-published remote candidate at publication.
-- Latest Wave A **a05f26a is not zero / not merged**. All16 pending rechecks pass, including ST-WA-11’s844→320 width clamp (Delete248px;Swap288px, both engines/100/200). New **TC-WA-15P1**:46 enabled fields acrossAdd/Edit shift,New employee,PIN andUnable to work use#D5DAD9 on white,1.413:1 against the required3:1. Coordinator/shared-kit owner; Wave A coordinates its screens. This cross-references Wave C’s relatedTC-WC-28 shared-style symptom. [Five explicit-scope reports](p35-wave-a/round-2-a05f26a/README.md). No full zero sweep is claimed. Earlier7f75dc4’s ST-WA-11 report is preserved; its fix now passes. Strict source/mirror guard and owned PostgreSQL shutdown pass on a05f26a.
+- Wave A **a05f26a**: all16 focused pending fixes pass, including ST-WA-11. Full source exit is incomplete, so no newer merge. Its old shared field CSS measures1.413:1; latest coordinator227150b on the candidate already measures3.45:1 on the same46 active fields. TC-WA-15 is a resolved shared integration observation, excluded from Wave A-owned open counts; no duplicate Wave A patch requested. [Disposition and evidence](p35-wave-a/round-2-a05f26a/type-colour-copy.md).
+
 - Profile is the only verified zero source exit available to this publishing task. Phase3, WaveB, WaveC and Desktop exits remain with the independent inspection loop; their incomplete results are not zero. Candidate shared-shell type-floor findings remain open; fresh current-source combined reports will name each owner.
 - Candidate-only UI commits are the already authorized lint ref cleanup9df0f47 and Profile initial read4ff37e5. No additional UI-fix permission is inferred from the paused-Claude plan. Device setup uses DEVICE-CHECKLIST-REVIEWED.md and still waits for Jose’s explicit approval; nothing deployed or exposed.
 
@@ -124,7 +148,7 @@ Teardown: revoke the tunnel/access rule, stop the local app and its owned databa
 | Chat | Source / nominated app commit | Current gate |
 |---|---|---|
 | Phase3 | coordinator227150b, exit round5 | Integrated; independent source exit open |
-| Wave A |a05f26a, exit round2 | Not zero:TC-WA-15P1; ST-WA-7 through11 rechecks pass; no newer merge |
+| Wave A |a05f26a, exit round2 | Full exit incomplete; ST-WA-7 through11 pass; old shared field CSS fixed by latest coordinator |
 | Wave B |564d193 handoff /9bd265e app, exit round4 | Open; independent loop owns source sweep |
 | Wave C |5f7c166, exit round4 | Not zero/incomplete; preserve its publishedWR-WC-25 andTC-WC-28 findings |
 | Profile |ea58610 handoff /caef395 app, exit round4 | Five Mac reports zero; merged locally, initial-read4ff37e5 measured |

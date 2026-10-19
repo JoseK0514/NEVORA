@@ -1,0 +1,4609 @@
+{
+  "checkpoint": "23fcdc3b748e22bd7c25fce559e56ff934b2aebe",
+  "views": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 320,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 320,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 320,
+        "scrollY": 0,
+        "cls": 0.0005472312223445116
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 320,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 288,
+                "height": 571
+              },
+              {
+                "x": 16,
+                "y": 775,
+                "width": 288,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 917,
+                "width": 288,
+                "height": 651
+              },
+              {
+                "x": 16,
+                "y": 1584,
+                "width": 288,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 288
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 108,
+                "width": 288
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 288
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 320,
+            "cards": [
+              {
+                "x": 16,
+                "y": 304.515625,
+                "width": 288,
+                "height": 1281
+              },
+              {
+                "x": 16,
+                "y": 1601.515625,
+                "width": 288,
+                "height": 270
+              },
+              {
+                "x": 16,
+                "y": 1887.515625,
+                "width": 288,
+                "height": 1827
+              },
+              {
+                "x": 16,
+                "y": 3730.515625,
+                "width": 288,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 190,
+                "width": 288
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 358,
+                "width": 288
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 234,
+                "width": 288
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 234,
+                "width": 288
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 288
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-AUDIT-M-320-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 360,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 360,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 360,
+        "scrollY": 0,
+        "cls": 0.00048642775319512145
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 360,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 328,
+                "height": 571
+              },
+              {
+                "x": 16,
+                "y": 775,
+                "width": 328,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 917,
+                "width": 328,
+                "height": 611
+              },
+              {
+                "x": 16,
+                "y": 1544,
+                "width": 328,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 328
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 88,
+                "width": 328
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 328
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 328
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 328
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 328
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 328
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 360,
+            "cards": [
+              {
+                "x": 16,
+                "y": 304.515625,
+                "width": 328,
+                "height": 1237
+              },
+              {
+                "x": 16,
+                "y": 1557.515625,
+                "width": 328,
+                "height": 230
+              },
+              {
+                "x": 16,
+                "y": 1803.515625,
+                "width": 328,
+                "height": 1499
+              },
+              {
+                "x": 16,
+                "y": 3318.515625,
+                "width": 328,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 150,
+                "width": 328
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 358,
+                "width": 328
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 328
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 190,
+                "width": 328
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 328
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 234,
+                "width": 328
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 328
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-AUDIT-M-360-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 390,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 426,
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 426,
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0.0004490102337185736
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 358,
+                "height": 549
+              },
+              {
+                "x": 16,
+                "y": 753,
+                "width": 358,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 895,
+                "width": 358,
+                "height": 551
+              },
+              {
+                "x": 16,
+                "y": 1462,
+                "width": 358,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 88,
+                "width": 358
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 358
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 358
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [
+              {
+                "x": 16,
+                "y": 306.015625,
+                "width": 358,
+                "height": 1197
+              },
+              {
+                "x": 16,
+                "y": 1519.015625,
+                "width": 358,
+                "height": 230
+              },
+              {
+                "x": 16,
+                "y": 1765.015625,
+                "width": 358,
+                "height": 1375
+              },
+              {
+                "x": 16,
+                "y": 3156.015625,
+                "width": 358,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 150,
+                "width": 358
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 274,
+                "width": 358
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 358
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 190,
+                "width": 358
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 358
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 358
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 358
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-AUDIT-M-390-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 844,
+      "height": 390,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 844,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 844,
+        "scrollY": 0,
+        "cls": 0.0004490102337185736
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 844,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 812,
+                "height": 481
+              },
+              {
+                "x": 16,
+                "y": 685,
+                "width": 812,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 827,
+                "width": 812,
+                "height": 511
+              },
+              {
+                "x": 16,
+                "y": 1354,
+                "width": 812,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 812
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 844,
+            "cards": [
+              {
+                "x": 16,
+                "y": 256.515625,
+                "width": 812,
+                "height": 717
+              },
+              {
+                "x": 16,
+                "y": 989.515625,
+                "width": 812,
+                "height": 190
+              },
+              {
+                "x": 16,
+                "y": 1195.515625,
+                "width": 812,
+                "height": 803
+              },
+              {
+                "x": 16,
+                "y": 2014.515625,
+                "width": 812,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 812
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-AUDIT-M-844-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 1440,
+      "height": 900,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0.00016500342935528122
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [
+              {
+                "x": 292,
+                "y": 217,
+                "width": 536,
+                "height": 481
+              },
+              {
+                "x": 844,
+                "y": 217,
+                "width": 536,
+                "height": 126
+              },
+              {
+                "x": 844,
+                "y": 359,
+                "width": 536,
+                "height": 511
+              },
+              {
+                "x": 844,
+                "y": 886,
+                "width": 536,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "32px"
+              },
+              {
+                "text": "Your details",
+                "size": "16px"
+              },
+              {
+                "text": "Pay",
+                "size": "16px"
+              },
+              {
+                "text": "Notifications",
+                "size": "16px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 536
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [
+              {
+                "x": 292,
+                "y": 281,
+                "width": 536,
+                "height": 849
+              },
+              {
+                "x": 844,
+                "y": 281,
+                "width": 536,
+                "height": 190
+              },
+              {
+                "x": 844,
+                "y": 487,
+                "width": 536,
+                "height": 923
+              },
+              {
+                "x": 844,
+                "y": 1426,
+                "width": 536,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "64px"
+              },
+              {
+                "text": "Your details",
+                "size": "32px"
+              },
+              {
+                "text": "Pay",
+                "size": "32px"
+              },
+              {
+                "text": "Notifications",
+                "size": "32px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 536
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-AUDIT-M-1440-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 320,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 320,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        },
+        {
+          "id": "payroll-ready",
+          "label": "Payroll ready to review",
+          "detail": "When a pay period is ready for you"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 320,
+        "scrollY": 0,
+        "cls": 0.0005472312223445116
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 320,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 288,
+                "height": 551
+              },
+              {
+                "x": 16,
+                "y": 755,
+                "width": 288,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 897,
+                "width": 288,
+                "height": 739
+              },
+              {
+                "x": 16,
+                "y": 1652,
+                "width": 288,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 115
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 288
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 108,
+                "width": 288
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 288
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 320,
+            "cards": [
+              {
+                "x": 16,
+                "y": 304.515625,
+                "width": 288,
+                "height": 1097
+              },
+              {
+                "x": 16,
+                "y": 1417.515625,
+                "width": 288,
+                "height": 270
+              },
+              {
+                "x": 16,
+                "y": 1703.515625,
+                "width": 288,
+                "height": 2105
+              },
+              {
+                "x": 16,
+                "y": 3824.515625,
+                "width": 288,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 213
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 190,
+                "width": 288
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 358,
+                "width": 288
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 234,
+                "width": 288
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 234,
+                "width": 288
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 278,
+                "width": 288
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 288
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-QAOWNER-320-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 360,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 360,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        },
+        {
+          "id": "payroll-ready",
+          "label": "Payroll ready to review",
+          "detail": "When a pay period is ready for you"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 360,
+        "scrollY": 0,
+        "cls": 0.00048642775319512145
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 360,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 328,
+                "height": 551
+              },
+              {
+                "x": 16,
+                "y": 755,
+                "width": 328,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 897,
+                "width": 328,
+                "height": 699
+              },
+              {
+                "x": 16,
+                "y": 1612,
+                "width": 328,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 115
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 328
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 88,
+                "width": 328
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 328
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 328
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 328
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 328
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 328
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 328
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 360,
+            "cards": [
+              {
+                "x": 16,
+                "y": 304.515625,
+                "width": 328,
+                "height": 1053
+              },
+              {
+                "x": 16,
+                "y": 1373.515625,
+                "width": 328,
+                "height": 230
+              },
+              {
+                "x": 16,
+                "y": 1619.515625,
+                "width": 328,
+                "height": 1733
+              },
+              {
+                "x": 16,
+                "y": 3368.515625,
+                "width": 328,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 213
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 150,
+                "width": 328
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 358,
+                "width": 328
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 328
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 190,
+                "width": 328
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 328
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 234,
+                "width": 328
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 234,
+                "width": 328
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 328
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-QAOWNER-360-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 390,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 426,
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        },
+        {
+          "id": "payroll-ready",
+          "label": "Payroll ready to review",
+          "detail": "When a pay period is ready for you"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 426,
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0.0004490102337185736
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 358,
+                "height": 529
+              },
+              {
+                "x": 16,
+                "y": 733,
+                "width": 358,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 875,
+                "width": 358,
+                "height": 619
+              },
+              {
+                "x": 16,
+                "y": 1510,
+                "width": 358,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 115
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 88,
+                "width": 358
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 358
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 358
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [
+              {
+                "x": 16,
+                "y": 306.015625,
+                "width": 358,
+                "height": 1053
+              },
+              {
+                "x": 16,
+                "y": 1375.015625,
+                "width": 358,
+                "height": 230
+              },
+              {
+                "x": 16,
+                "y": 1621.015625,
+                "width": 358,
+                "height": 1569
+              },
+              {
+                "x": 16,
+                "y": 3206.015625,
+                "width": 358,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 213
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 150,
+                "width": 358
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 274,
+                "width": 358
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 358
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 190,
+                "width": 358
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 358
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 358
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 358
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 358
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-QAOWNER-390-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 844,
+      "height": 390,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 844,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        },
+        {
+          "id": "payroll-ready",
+          "label": "Payroll ready to review",
+          "detail": "When a pay period is ready for you"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 844,
+        "scrollY": 0,
+        "cls": 0.0004490102337185736
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 844,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 812,
+                "height": 481
+              },
+              {
+                "x": 16,
+                "y": 685,
+                "width": 812,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 827,
+                "width": 812,
+                "height": 579
+              },
+              {
+                "x": 16,
+                "y": 1422,
+                "width": 812,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 115
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 812
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 812
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 844,
+            "cards": [
+              {
+                "x": 16,
+                "y": 256.515625,
+                "width": 812,
+                "height": 657
+              },
+              {
+                "x": 16,
+                "y": 929.515625,
+                "width": 812,
+                "height": 190
+              },
+              {
+                "x": 16,
+                "y": 1135.515625,
+                "width": 812,
+                "height": 913
+              },
+              {
+                "x": 16,
+                "y": 2064.515625,
+                "width": 812,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 213
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 812
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 812
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-QAOWNER-844-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 1440,
+      "height": 900,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        },
+        {
+          "id": "payroll-ready",
+          "label": "Payroll ready to review",
+          "detail": "When a pay period is ready for you"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0.00016726680384087793
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [
+              {
+                "x": 292,
+                "y": 217,
+                "width": 536,
+                "height": 481
+              },
+              {
+                "x": 844,
+                "y": 217,
+                "width": 536,
+                "height": 126
+              },
+              {
+                "x": 844,
+                "y": 359,
+                "width": 536,
+                "height": 579
+              },
+              {
+                "x": 844,
+                "y": 954,
+                "width": 536,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "32px"
+              },
+              {
+                "text": "Your details",
+                "size": "16px"
+              },
+              {
+                "text": "Pay",
+                "size": "16px"
+              },
+              {
+                "text": "Notifications",
+                "size": "16px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 109
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 536
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [
+              {
+                "x": 292,
+                "y": 281,
+                "width": 536,
+                "height": 789
+              },
+              {
+                "x": 844,
+                "y": 281,
+                "width": 536,
+                "height": 190
+              },
+              {
+                "x": 844,
+                "y": 487,
+                "width": 536,
+                "height": 1033
+              },
+              {
+                "x": 844,
+                "y": 1536,
+                "width": 536,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "64px"
+              },
+              {
+                "text": "Your details",
+                "size": "32px"
+              },
+              {
+                "text": "Pay",
+                "size": "32px"
+              },
+              {
+                "text": "Notifications",
+                "size": "32px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 200
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 536
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/chromium-QAOWNER-1440-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "reads": 0,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 0,
+        "employee": 1,
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\n\nChecking your current details…\n\nName\n–\nCompany\n–\nWork locations\n–\nApp access\n–\nTime zone\n–",
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "settled": {
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nSign out",
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        }
+      ],
+      "crop": "crops/chromium-AUDIT-E-390-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 1440,
+      "height": 900,
+      "reads": 0,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 0,
+        "employee": 1,
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\n\nChecking your current details…\n\nName\n–\nCompany\n–\nWork locations\n–\nApp access\n–\nTime zone\n–",
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "settled": {
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nSign out",
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        }
+      ],
+      "crop": "crops/chromium-AUDIT-E-1440-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "width": 390,
+      "height": 844,
+      "reads": 0,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 0,
+        "employee": 1,
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\n\nChecking your current details…\n\nName\n–\nCompany\n–\nWork locations\n–\nApp access\n–\nTime zone\n–",
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "settled": {
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nTaylor Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nLead\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nSign out",
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        }
+      ],
+      "crop": "crops/chromium-AUDIT-LEAD-390-200.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "width": 1440,
+      "height": 900,
+      "reads": 0,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 0,
+        "employee": 1,
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\n\nChecking your current details…\n\nName\n–\nCompany\n–\nWork locations\n–\nApp access\n–\nTime zone\n–",
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "settled": {
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nTaylor Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nLead\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nSign out",
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        }
+      ],
+      "crop": "crops/chromium-AUDIT-LEAD-1440-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "width": 320,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 320,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 320,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 320,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 288,
+                "height": 571
+              },
+              {
+                "x": 16,
+                "y": 775,
+                "width": 288,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 917,
+                "width": 288,
+                "height": 651
+              },
+              {
+                "x": 16,
+                "y": 1584,
+                "width": 288,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 288
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 108,
+                "width": 288
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 288
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 320,
+            "cards": [
+              {
+                "x": 16,
+                "y": 304.515625,
+                "width": 288,
+                "height": 1365
+              },
+              {
+                "x": 16,
+                "y": 1685.515625,
+                "width": 288,
+                "height": 230
+              },
+              {
+                "x": 16,
+                "y": 1931.515625,
+                "width": 288,
+                "height": 1987
+              },
+              {
+                "x": 16,
+                "y": 3934.515625,
+                "width": 288,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 150,
+                "width": 288
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 398,
+                "width": 288
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 314,
+                "width": 288
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 288
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/webkit-AUDIT-M-320-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "width": 390,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 426,
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 426,
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 358,
+                "height": 549
+              },
+              {
+                "x": 16,
+                "y": 753,
+                "width": 358,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 895,
+                "width": 358,
+                "height": 551
+              },
+              {
+                "x": 16,
+                "y": 1462,
+                "width": 358,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 88,
+                "width": 358
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 358
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 358
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [
+              {
+                "x": 16,
+                "y": 306.015625,
+                "width": 358,
+                "height": 1197
+              },
+              {
+                "x": 16,
+                "y": 1519.015625,
+                "width": 358,
+                "height": 230
+              },
+              {
+                "x": 16,
+                "y": 1765.015625,
+                "width": 358,
+                "height": 1459
+              },
+              {
+                "x": 16,
+                "y": 3240.015625,
+                "width": 358,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 150,
+                "width": 358
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 358,
+                "width": 358
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 358
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 190,
+                "width": 358
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 358
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 358
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 358
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/webkit-AUDIT-M-390-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "width": 1440,
+      "height": 900,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nMorgan Rivera\nRole\nManager\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\naudit-m@example.invalid\nPhone\n7875550101\nLocations\nAll 2 locations\n\nSomething wrong here? Ask the account owner to update it.\n\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [
+              {
+                "x": 292,
+                "y": 217,
+                "width": 536,
+                "height": 481
+              },
+              {
+                "x": 844,
+                "y": 217,
+                "width": 536,
+                "height": 126
+              },
+              {
+                "x": 844,
+                "y": 359,
+                "width": 536,
+                "height": 511
+              },
+              {
+                "x": 844,
+                "y": 886,
+                "width": 536,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "32px"
+              },
+              {
+                "text": "Your details",
+                "size": "16px"
+              },
+              {
+                "text": "Pay",
+                "size": "16px"
+              },
+              {
+                "text": "Notifications",
+                "size": "16px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 536
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [
+              {
+                "x": 292,
+                "y": 281,
+                "width": 536,
+                "height": 849
+              },
+              {
+                "x": 844,
+                "y": 281,
+                "width": 536,
+                "height": 190
+              },
+              {
+                "x": 844,
+                "y": 487,
+                "width": 536,
+                "height": 1003
+              },
+              {
+                "x": 844,
+                "y": 1506,
+                "width": 536,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "64px"
+              },
+              {
+                "text": "Your details",
+                "size": "32px"
+              },
+              {
+                "text": "Pay",
+                "size": "32px"
+              },
+              {
+                "text": "Notifications",
+                "size": "32px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 536
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/webkit-AUDIT-M-1440-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "width": 320,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 320,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        },
+        {
+          "id": "payroll-ready",
+          "label": "Payroll ready to review",
+          "detail": "When a pay period is ready for you"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 448,
+        "documentWidth": 320,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 320,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 288,
+                "height": 551
+              },
+              {
+                "x": 16,
+                "y": 755,
+                "width": 288,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 897,
+                "width": 288,
+                "height": 739
+              },
+              {
+                "x": 16,
+                "y": 1652,
+                "width": 288,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 114.859375
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 288
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 108,
+                "width": 288
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 288
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 288
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 320,
+            "cards": [
+              {
+                "x": 16,
+                "y": 304.515625,
+                "width": 288,
+                "height": 1141
+              },
+              {
+                "x": 16,
+                "y": 1461.515625,
+                "width": 288,
+                "height": 230
+              },
+              {
+                "x": 16,
+                "y": 1707.515625,
+                "width": 288,
+                "height": 2265
+              },
+              {
+                "x": 16,
+                "y": 3988.515625,
+                "width": 288,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 229.703125
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 150,
+                "width": 288
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 398,
+                "width": 288
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 314,
+                "width": 288
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 274,
+                "width": 288
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 278,
+                "width": 288
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 288
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/webkit-QAOWNER-320-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "width": 390,
+      "height": 844,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 426,
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        },
+        {
+          "id": "payroll-ready",
+          "label": "Payroll ready to review",
+          "detail": "When a pay period is ready for you"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 426,
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [
+              {
+                "x": 16,
+                "y": 188,
+                "width": 358,
+                "height": 529
+              },
+              {
+                "x": 16,
+                "y": 733,
+                "width": 358,
+                "height": 126
+              },
+              {
+                "x": 16,
+                "y": 875,
+                "width": 358,
+                "height": 619
+              },
+              {
+                "x": 16,
+                "y": 1510,
+                "width": 358,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "30px"
+              },
+              {
+                "text": "Your details",
+                "size": "17px"
+              },
+              {
+                "text": "Pay",
+                "size": "17px"
+              },
+              {
+                "text": "Notifications",
+                "size": "17px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 114.859375
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 88,
+                "width": 358
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 88,
+                "width": 358
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 358
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 358
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [
+              {
+                "x": 16,
+                "y": 306.015625,
+                "width": 358,
+                "height": 1053
+              },
+              {
+                "x": 16,
+                "y": 1375.015625,
+                "width": 358,
+                "height": 230
+              },
+              {
+                "x": 16,
+                "y": 1621.015625,
+                "width": 358,
+                "height": 1693
+              },
+              {
+                "x": 16,
+                "y": 3330.015625,
+                "width": 358,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "60px"
+              },
+              {
+                "text": "Your details",
+                "size": "34px"
+              },
+              {
+                "text": "Pay",
+                "size": "34px"
+              },
+              {
+                "text": "Notifications",
+                "size": "34px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 229.703125
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 150,
+                "width": 358
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 358,
+                "width": 358
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 358
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 190,
+                "width": 358
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 358
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 194,
+                "width": 358
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 234,
+                "width": 358
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 358
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/webkit-QAOWNER-390-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "width": 1440,
+      "height": 900,
+      "reads": 1,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 1,
+        "employee": 0,
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\nChecking…\n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "readStatus": 200,
+      "readState": "ready",
+      "alertLabels": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        },
+        {
+          "id": "payroll-ready",
+          "label": "Payroll ready to review",
+          "detail": "When a pay period is ready for you"
+        }
+      ],
+      "settled": {
+        "text": "Profile\n\nDetails, pay and alerts.\n\nYour details\n \n\nName\nFictional Owner\nRole\nOwner\nCompany\nNorthside QA Workforce\nTime zone\nPuerto Rico time\nEmail\nNot added\nPhone\n555-0100\nLocations\nAll 2 locations\nEdit your details\nPay\nMy pay\nYour pay statements\nNotifications\nAll notifications\nRequests, schedule changes and team updates\nAlerts on this device aren’t turned on for your workplace yet.\nYou’re told about\nTime-off requests\nWhen someone asks for time off\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you\n\nSign out",
+        "detailsHeight": 378,
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [
+              {
+                "x": 292,
+                "y": 217,
+                "width": 536,
+                "height": 481
+              },
+              {
+                "x": 844,
+                "y": 217,
+                "width": 536,
+                "height": 126
+              },
+              {
+                "x": 844,
+                "y": 359,
+                "width": 536,
+                "height": 579
+              },
+              {
+                "x": 844,
+                "y": 954,
+                "width": 536,
+                "height": 64
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "32px"
+              },
+              {
+                "text": "Your details",
+                "size": "16px"
+              },
+              {
+                "text": "Pay",
+                "size": "16px"
+              },
+              {
+                "text": "Notifications",
+                "size": "16px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 107.203125
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 68,
+                "width": 536
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 64,
+                "width": 536
+              }
+            ]
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [
+              {
+                "x": 292,
+                "y": 281,
+                "width": 536,
+                "height": 789
+              },
+              {
+                "x": 844,
+                "y": 281,
+                "width": 536,
+                "height": 190
+              },
+              {
+                "x": 844,
+                "y": 487,
+                "width": 536,
+                "height": 1153
+              },
+              {
+                "x": 844,
+                "y": 1656,
+                "width": 536,
+                "height": 104
+              }
+            ],
+            "headers": [
+              {
+                "text": "Profile",
+                "size": "64px"
+              },
+              {
+                "text": "Your details",
+                "size": "32px"
+              },
+              {
+                "text": "Pay",
+                "size": "32px"
+              },
+              {
+                "text": "Notifications",
+                "size": "32px"
+              }
+            ],
+            "targets": [
+              {
+                "name": "Edit your details",
+                "role": null,
+                "height": 44,
+                "width": 214.390625
+              },
+              {
+                "name": "My payYour pay statements",
+                "role": null,
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "All notificationsRequests, schedule changes and team updates",
+                "role": null,
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 110,
+                "width": 536
+              },
+              {
+                "name": "Shift requestsWhen someone asks to swap or give up a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Unable to workWhen someone can’t make a shiftSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Clock-ins to reviewWhen a clock-in needs your reviewSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Payroll ready to reviewWhen a pay period is ready for youSaving…Not saved. You’re offline.",
+                "role": "switch",
+                "height": 150,
+                "width": 536
+              },
+              {
+                "name": "Sign out",
+                "role": null,
+                "height": 104,
+                "width": 536
+              }
+            ]
+          }
+        }
+      ],
+      "crop": "crops/webkit-QAOWNER-1440-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "reads": 0,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 0,
+        "employee": 1,
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\n\nChecking your current details…\n\nName\n–\nCompany\n–\nWork locations\n–\nApp access\n–\nTime zone\n–",
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "settled": {
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nSign out",
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        }
+      ],
+      "crop": "crops/webkit-AUDIT-E-390-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 1440,
+      "height": 900,
+      "reads": 0,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 0,
+        "employee": 1,
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\n\nChecking your current details…\n\nName\n–\nCompany\n–\nWork locations\n–\nApp access\n–\nTime zone\n–",
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "settled": {
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nSign out",
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        }
+      ],
+      "crop": "crops/webkit-AUDIT-E-1440-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "width": 390,
+      "height": 844,
+      "reads": 0,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 0,
+        "employee": 1,
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\n\nChecking your current details…\n\nName\n–\nCompany\n–\nWork locations\n–\nApp access\n–\nTime zone\n–",
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "settled": {
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nTaylor Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nLead\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nSign out",
+        "documentWidth": 390,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 390,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        }
+      ],
+      "crop": "crops/webkit-AUDIT-LEAD-390-200.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "width": 1440,
+      "height": 900,
+      "reads": 0,
+      "posts": 0,
+      "status": 200,
+      "initial": {
+        "management": 0,
+        "employee": 1,
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\n\nChecking your current details…\n\nName\n–\nCompany\n–\nWork locations\n–\nApp access\n–\nTime zone\n–",
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "settled": {
+        "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nTaylor Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nLead\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nSign out",
+        "documentWidth": 1440,
+        "scrollY": 0,
+        "cls": 0
+      },
+      "samples": [
+        {
+          "text": 100,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        },
+        {
+          "text": 200,
+          "metrics": {
+            "documentWidth": 1440,
+            "cards": [],
+            "headers": [],
+            "targets": []
+          }
+        }
+      ],
+      "crop": "crops/webkit-AUDIT-LEAD-1440-200.png"
+    }
+  ],
+  "saves": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "posts": 1,
+      "before": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 756,
+        "documentY": 1146,
+        "documentHeight": 1614
+      },
+      "pending": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 756,
+        "documentY": 1146,
+        "documentHeight": 1614
+      },
+      "pendingText": "Time-off requests\nSaving…\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review",
+      "after": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 756,
+        "documentY": 1146,
+        "documentHeight": 1614
+      },
+      "afterText": "Time-off requests\nNot saved. Try again.\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review",
+      "focus": {
+        "tag": "BUTTON",
+        "label": null
+      }
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "posts": 1,
+      "before": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 736,
+        "documentY": 1126,
+        "documentHeight": 1662
+      },
+      "pending": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 736,
+        "documentY": 1126,
+        "documentHeight": 1662
+      },
+      "pendingText": "Time-off requests\nSaving…\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you",
+      "after": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 736,
+        "documentY": 1126,
+        "documentHeight": 1662
+      },
+      "afterText": "Time-off requests\nNot saved. Try again.\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you",
+      "focus": {
+        "tag": "BUTTON",
+        "label": null
+      }
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "posts": 1,
+      "before": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 756,
+        "documentY": 1146,
+        "documentHeight": 1614
+      },
+      "pending": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 756,
+        "documentY": 1146,
+        "documentHeight": 1614
+      },
+      "pendingText": "Time-off requests\nSaving…\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review",
+      "after": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 756,
+        "documentY": 1146,
+        "documentHeight": 1614
+      },
+      "afterText": "Time-off requests\nNot saved. Try again.\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review",
+      "focus": {
+        "tag": "BUTTON",
+        "label": null
+      }
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "posts": 1,
+      "before": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 736,
+        "documentY": 1126,
+        "documentHeight": 1662
+      },
+      "pending": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 736,
+        "documentY": 1126,
+        "documentHeight": 1662
+      },
+      "pendingText": "Time-off requests\nSaving…\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you",
+      "after": {
+        "x": 16,
+        "y": 390,
+        "width": 358,
+        "height": 68,
+        "checked": "true",
+        "disabled": false,
+        "scrollY": 736,
+        "documentY": 1126,
+        "documentHeight": 1662
+      },
+      "afterText": "Time-off requests\nNot saved. Try again.\nShift requests\nWhen someone asks to swap or give up a shift\nUnable to work\nWhen someone can’t make a shift\nClock-ins to review\nWhen a clock-in needs your review\nPayroll ready to review\nWhen a pay period is ready for you",
+      "focus": {
+        "tag": "BUTTON",
+        "label": null
+      }
+    }
+  ],
+  "errors": [],
+  "completedAt": "2026-10-19T20:31:16.957Z"
+}
