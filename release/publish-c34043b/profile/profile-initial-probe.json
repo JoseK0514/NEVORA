@@ -1,0 +1,893 @@
+{
+  "serverHtml": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "status": 200,
+      "javaScriptEnabled": false,
+      "metrics": {
+        "email": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsAll": 0,
+        "entries": []
+      }
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "status": 200,
+      "javaScriptEnabled": false,
+      "metrics": {
+        "email": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsAll": 0,
+        "entries": []
+      }
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "status": 200,
+      "javaScriptEnabled": false,
+      "metrics": {
+        "email": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsAll": 0,
+        "entries": []
+      }
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "status": 200,
+      "javaScriptEnabled": false,
+      "metrics": {
+        "email": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 0,
+          "height": 0,
+          "width": 0,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsAll": 0,
+        "entries": []
+      }
+    }
+  ],
+  "heldReads": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 320,
+      "clientReads": 1,
+      "apiResponses": [
+        200
+      ],
+      "status": 200,
+      "before": {
+        "email": {
+          "y": 511,
+          "height": 44,
+          "width": 248,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 663,
+          "height": 22,
+          "width": 152,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1606,
+          "height": 64,
+          "width": 288,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsSupported": true,
+        "clsAll": 0,
+        "entries": []
+      },
+      "after": {
+        "email": {
+          "y": 511,
+          "height": 44,
+          "width": 248,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 663,
+          "height": 22,
+          "width": 152,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1606,
+          "height": 64,
+          "width": 288,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsSupported": true,
+        "clsAll": 0.0005472312223445116,
+        "entries": [
+          {
+            "value": 0.0005472312223445116,
+            "hadRecentInput": false,
+            "at": 3251.2000000001863
+          }
+        ]
+      },
+      "signoutDelta": 0,
+      "emailHeightDelta": 0,
+      "initialValuesVisible": true,
+      "geometryPass": true
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 360,
+      "clientReads": 1,
+      "apiResponses": [
+        200
+      ],
+      "status": 200,
+      "before": {
+        "email": {
+          "y": 511,
+          "height": 44,
+          "width": 288,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 663,
+          "height": 22,
+          "width": 192,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1566,
+          "height": 64,
+          "width": 328,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 360,
+        "viewport": 360,
+        "clsSupported": true,
+        "clsAll": 0,
+        "entries": []
+      },
+      "after": {
+        "email": {
+          "y": 511,
+          "height": 44,
+          "width": 288,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 663,
+          "height": 22,
+          "width": 192,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1566,
+          "height": 64,
+          "width": 328,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 360,
+        "viewport": 360,
+        "clsSupported": true,
+        "clsAll": 0.00048642775319512145,
+        "entries": [
+          {
+            "value": 0.00048642775319512145,
+            "hadRecentInput": false,
+            "at": 1909.3999999994412
+          }
+        ]
+      },
+      "signoutDelta": 0,
+      "emailHeightDelta": 0,
+      "initialValuesVisible": true,
+      "geometryPass": true
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 320,
+      "clientReads": 1,
+      "apiResponses": [
+        200
+      ],
+      "status": 200,
+      "before": {
+        "email": {
+          "y": 511,
+          "height": 22,
+          "width": 248,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 641,
+          "height": 22,
+          "width": 152,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1652,
+          "height": 64,
+          "width": 288,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsSupported": true,
+        "clsAll": 0,
+        "entries": []
+      },
+      "after": {
+        "email": {
+          "y": 511,
+          "height": 22,
+          "width": 248,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 641,
+          "height": 22,
+          "width": 152,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1652,
+          "height": 64,
+          "width": 288,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsSupported": true,
+        "clsAll": 0.0005472312223445116,
+        "entries": [
+          {
+            "value": 0.0005472312223445116,
+            "hadRecentInput": false,
+            "at": 1909.7999999998137
+          }
+        ]
+      },
+      "signoutDelta": 0,
+      "emailHeightDelta": 0,
+      "initialValuesVisible": true,
+      "geometryPass": true
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 360,
+      "clientReads": 1,
+      "apiResponses": [
+        200
+      ],
+      "status": 200,
+      "before": {
+        "email": {
+          "y": 511,
+          "height": 22,
+          "width": 288,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 641,
+          "height": 22,
+          "width": 192,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1612,
+          "height": 64,
+          "width": 328,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 360,
+        "viewport": 360,
+        "clsSupported": true,
+        "clsAll": 0,
+        "entries": []
+      },
+      "after": {
+        "email": {
+          "y": 511,
+          "height": 22,
+          "width": 288,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 641,
+          "height": 22,
+          "width": 192,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1612,
+          "height": 64,
+          "width": 328,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 360,
+        "viewport": 360,
+        "clsSupported": true,
+        "clsAll": 0.00048642775319512145,
+        "entries": [
+          {
+            "value": 0.00048642775319512145,
+            "hadRecentInput": false,
+            "at": 1552.7999999998137
+          }
+        ]
+      },
+      "signoutDelta": 0,
+      "emailHeightDelta": 0,
+      "initialValuesVisible": true,
+      "geometryPass": true
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "width": 320,
+      "clientReads": 1,
+      "apiResponses": [
+        200
+      ],
+      "status": 200,
+      "before": {
+        "email": {
+          "y": 511,
+          "height": 44,
+          "width": 248,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 663,
+          "height": 22,
+          "width": 152,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1606,
+          "height": 64,
+          "width": 288,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsSupported": false,
+        "clsAll": 0,
+        "entries": []
+      },
+      "after": {
+        "email": {
+          "y": 511,
+          "height": 44,
+          "width": 248,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 663,
+          "height": 22,
+          "width": 152,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1606,
+          "height": 64,
+          "width": 288,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsSupported": false,
+        "clsAll": 0,
+        "entries": []
+      },
+      "signoutDelta": 0,
+      "emailHeightDelta": 0,
+      "initialValuesVisible": true,
+      "geometryPass": true
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "width": 360,
+      "clientReads": 1,
+      "apiResponses": [
+        200
+      ],
+      "status": 200,
+      "before": {
+        "email": {
+          "y": 511,
+          "height": 44,
+          "width": 288,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 663,
+          "height": 22,
+          "width": 192,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1566,
+          "height": 64,
+          "width": 328,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 360,
+        "viewport": 360,
+        "clsSupported": false,
+        "clsAll": 0,
+        "entries": []
+      },
+      "after": {
+        "email": {
+          "y": 511,
+          "height": 44,
+          "width": 288,
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        "locations": {
+          "y": 663,
+          "height": 22,
+          "width": 192,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1566,
+          "height": 64,
+          "width": 328,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 4,
+        "documentWidth": 360,
+        "viewport": 360,
+        "clsSupported": false,
+        "clsAll": 0,
+        "entries": []
+      },
+      "signoutDelta": 0,
+      "emailHeightDelta": 0,
+      "initialValuesVisible": true,
+      "geometryPass": true
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "width": 320,
+      "clientReads": 1,
+      "apiResponses": [
+        200
+      ],
+      "status": 200,
+      "before": {
+        "email": {
+          "y": 511,
+          "height": 22,
+          "width": 248,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 641,
+          "height": 22,
+          "width": 152,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1652,
+          "height": 64,
+          "width": 288,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsSupported": false,
+        "clsAll": 0,
+        "entries": []
+      },
+      "after": {
+        "email": {
+          "y": 511,
+          "height": 22,
+          "width": 248,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 641,
+          "height": 22,
+          "width": 152,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1652,
+          "height": 64,
+          "width": 288,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 320,
+        "viewport": 320,
+        "clsSupported": false,
+        "clsAll": 0,
+        "entries": []
+      },
+      "signoutDelta": 0,
+      "emailHeightDelta": 0,
+      "initialValuesVisible": true,
+      "geometryPass": true
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "width": 360,
+      "clientReads": 1,
+      "apiResponses": [
+        200
+      ],
+      "status": 200,
+      "before": {
+        "email": {
+          "y": 511,
+          "height": 22,
+          "width": 288,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 641,
+          "height": 22,
+          "width": 192,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1612,
+          "height": 64,
+          "width": 328,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 360,
+        "viewport": 360,
+        "clsSupported": false,
+        "clsAll": 0,
+        "entries": []
+      },
+      "after": {
+        "email": {
+          "y": 511,
+          "height": 22,
+          "width": 288,
+          "text": "Not added"
+        },
+        "locations": {
+          "y": 641,
+          "height": 22,
+          "width": 192,
+          "text": "All 2 locations"
+        },
+        "signout": {
+          "y": 1612,
+          "height": 64,
+          "width": 328,
+          "text": "Sign out"
+        },
+        "profile": true,
+        "topicCount": 5,
+        "documentWidth": 360,
+        "viewport": 360,
+        "clsSupported": false,
+        "clsAll": 0,
+        "entries": []
+      },
+      "signoutDelta": 0,
+      "emailHeightDelta": 0,
+      "initialValuesVisible": true,
+      "geometryPass": true
+    }
+  ],
+  "roles": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "status": 200,
+      "managementReads": 0,
+      "employee": 1,
+      "management": 0
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "status": 200,
+      "managementReads": 0,
+      "employee": 1,
+      "management": 0
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "status": 200,
+      "managementReads": 1,
+      "employee": 0,
+      "management": 1
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "status": 200,
+      "managementReads": 1,
+      "employee": 0,
+      "management": 1
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "status": 200,
+      "managementReads": 0,
+      "employee": 1,
+      "management": 0
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "status": 200,
+      "managementReads": 0,
+      "employee": 1,
+      "management": 0
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "status": 200,
+      "managementReads": 1,
+      "employee": 0,
+      "management": 1
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "status": 200,
+      "managementReads": 1,
+      "employee": 0,
+      "management": 1
+    }
+  ],
+  "api": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "endpoint": "/api/management/profile",
+      "status": 403,
+      "state": "unavailable"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "endpoint": "/api/manager/inbox-count",
+      "status": 403,
+      "state": "unavailable"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "endpoint": "/api/management/profile",
+      "status": 403,
+      "state": "unavailable"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "endpoint": "/api/manager/inbox-count",
+      "status": 403,
+      "state": "unavailable"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "endpoint": "/api/management/profile",
+      "status": 200,
+      "state": "ready",
+      "kind": "management-profile",
+      "scope": "all",
+      "locationCount": 2,
+      "alerts": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "endpoint": "/api/manager/inbox-count",
+      "status": 200,
+      "state": "ready",
+      "count": 26
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "endpoint": "/api/management/profile",
+      "status": 200,
+      "state": "ready",
+      "kind": "management-profile",
+      "scope": "all",
+      "locationCount": 2,
+      "alerts": [
+        {
+          "id": "time-off",
+          "label": "Time-off requests",
+          "detail": "When someone asks for time off"
+        },
+        {
+          "id": "shift-changes",
+          "label": "Shift requests",
+          "detail": "When someone asks to swap or give up a shift"
+        },
+        {
+          "id": "unable-to-work",
+          "label": "Unable to work",
+          "detail": "When someone can’t make a shift"
+        },
+        {
+          "id": "clock-review",
+          "label": "Clock-ins to review",
+          "detail": "When a clock-in needs your review"
+        },
+        {
+          "id": "payroll-ready",
+          "label": "Payroll ready to review",
+          "detail": "When a pay period is ready for you"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "endpoint": "/api/manager/inbox-count",
+      "status": 200,
+      "state": "ready",
+      "count": 26
+    },
+    {
+      "account": "signed out",
+      "endpoint": "/api/management/profile",
+      "status": 401
+    }
+  ],
+  "gaps": [],
+  "mutationsReachedServer": 0,
+  "checkpoint": "c34043b4349633275b2ca75368564178c99c33dc",
+  "startedAt": "2026-10-19T20:46:48.288Z",
+  "completedAt": "2026-10-19T20:47:41.247Z"
+}

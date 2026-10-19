@@ -3,7 +3,7 @@
 Jose explicitly approved handoff item 4 in this chat. All application changes below are on `codex/release-candidate`; no `claude/*` branch was edited. Review each finding commit, then have its owner port or replace it.
 
 - **Merged and preserved:** first-published candidate `8e18a95`, including coordinator `227150b`, backend `da2a4e5`, Profile `ea58610`, and authorized Profile server initial read `4ff37e5`. The parallel local bootstrap `cbaadbc` is retained as a checkpoint, not pushed over the published history.
-- **Candidate under validation:** `64f15e6193c7d5ac4d564220d7eb399a9c08926d`, twenty separate finding commits on top of `8e18a95`. Focused affected tests **51/51 pass**. Final **typecheck and lint pass** (zero warnings); full suite and exact-candidate browser proofs are pending. No final green claim yet.
+- **Candidate under validation:** `90fbb4de7dde5c6d0661e74cec3340459a7a10c3`, twenty-two separate finding commits on top of `8e18a95`. Focused affected tests **51/51 pass**. Predecessor64f15e6 **typecheck and lint pass** (zero warnings); the two final Wave A markup fixes and exact candidate proof/gates are pending. The obsolete64 full run was intentionally interrupted (exit130) before source changes; no result is claimed. Browser proofs run before the final uncontended full suite to avoid certifying an obsolete revision.
 - **Zero:** Profile's committed Mac exit at `ea58610` was accepted for its merge. New independent cloud Profile finding IS-PROFILE-17 is separately patched below. No other source exit has a new complete zero certificate.
 - **Open by owner:** Phase 3 round5 `227150b` has 7 P1/2 P2 with targeted proofs complete; Wave A `a05f26a` full matrix incomplete; Wave B `9bd265e` has four measured P2s and incomplete exit; Wave C `5f7c166` has WR-WC-25, TC-WC-28 and ST-13 continuation; Desktop `8012d97` has TC-P4-22/23 and ST-P4-13. Candidate applicability and evidence are listed below. Do not merge these source heads merely because candidate patches exist.
 - **Owner-only code absent from candidate:** Wave B IS-B31 (`wave-b-forms.tsx` pending Enter focus) and Desktop ST-P4-13 (passive-effect Inbox group opening; measured CLS ~0.064) remain source-owner work. WC override commits are staged for its unmerged UI and proved by browser-only source CSS injection, not by a combined-candidate WC runtime claim. Latest coordinator already repairs source TC-WA-15/TC-WC-28 field borders; no duplicate border commit.
@@ -35,12 +35,14 @@ Each row is one finding and one application commit. Validation is in progress; f
 | `186a0e3` | **TCD-16** — apply the reported Employee and Lead desktop text floor | [Evidence](p4-desktop/round-5-8012d97/evidence/source-type-colour-copy.md) |
 | `7c79368` | **WR-WC-25** — preserve dialog action label height on narrow phones | [Evidence](p35-wave-c/round-4-5f7c166-exit/widths-roles.md) |
 | `64f15e6` | **ST-13** — bound failed-save feedback inside the Wave C phone bar | [Evidence](p35-wave-c/round-4-5f7c166-exit/stability.md) |
+| `28b5be9` | **ST-WA-7** — reserve idle/pending Swap labels with existing responsive kit grid | [Evidence](release/merge-4-profile/stability.md) |
+| `90fbb4d` | **ST-WA-8** — reserve the separate Delete shift label while pending | [Evidence](release/merge-4-profile/stability.md) |
 
 ## Source exit coverage and limits
 
 The paused-handoff workers finished their bounded final proofs and are closing their owned previews for uncontended gates. Phase 3: 15/15 smoke cells and 17 targeted cases, 15 intercepted mutation POSTs. Wave A: smoke and clamp/swap rechecks preserved; full exit incomplete. Wave B: 45/48 smoke plus targeted typography, auth and focus proofs. Wave C: 26/26 smoke plus guarded docked-error and dialog proofs. Desktop: 35 initial cells plus font crops and controlled Inbox CLS attribution. These totals are different scopes, not a combined zero tally. Every report records its missing matrix cases.
 
-ST-PROFILE-03 contact-read movement is addressed by the separately authorized initial read `4ff37e5`; the final candidate proof includes the long Manager fixture at320–360. `IS-PROFILE-17`/`IS-80`/`IS-B12` reuse the reveal helper introduced in `IS-P3-02`; review/port that dependency together. Filename part of `TC-P4-23` is covered once by `TC-B-32`.
+ST-PROFILE-03 contact-read movement is addressed by the separately authorized initial read `4ff37e5`; the final candidate proof includes the long Manager fixture at320–360. `IS-PROFILE-17`/`IS-80`/`IS-B12` reuse the reveal helper introduced in `IS-P3-02`; review/port that dependency together. Filename part of `TC-P4-23` is covered once by `TC-B-32`. Combined aliases RC-PC-TC-01/02 refer to RC-CB-TC-01/TCD-16 and TC-P4-22; IS-P3-01 refers to the IS-74 Availability focus repair. ST-WA-9/10/11 are responsive/press variants of the same label-reservation family; their source fixes are not merged, and the candidate grid must receive its own proof.
 
 The earlier `cbaadbc` full suite had 9 load timeouts; every affected file subsequently passed alone with one worker and unchanged budgets (271 tests). The preserved publisher `8e18a95` reports 7,352 passed/0 failed. Neither result substitutes for the new UI candidate's final gates.
 
@@ -51,6 +53,17 @@ The earlier `cbaadbc` full suite had 9 load timeouts; every affected file subseq
 Earlier “current”, permission and candidate statements below belong to their dated tasks. The explicit approval and candidate ledger above supersede their older scope notes for this paused-handoff task.
 
 ### Prior publisher record — preserved below
+
+### Additional independent verification record
+
+## Publication verified — 2026-10-19 21:05 UTC
+
+- **Remote candidate is `8e18a958dfbfd1e5c6d6da44396d82c95d4e18e7`**; final push returned “Everything up-to-date” and the remote SHA was rechecked. This task adopted the first-published candidate, preserving local `c34043b` as `codex/publish-c34043b`. No divergent or forced push.
+- Includes requested coordinator `4d469a4` through newer `227150b`, backend `da2a4e5`, verified-zero Profile `ea58610`, separate Profile initial-read `4ff37e5`, and lint cleanup `9df0f47`. Premium CSS matches coordinator blob `c72c855`. New Wave A `7f75dc4` / `a05f26a` remain excluded.
+- **Verified gates:** raw full application suite **7,352 passed / 0 failed / 801 skipped / 55 pending**,474 files at `0bdaa4d`. Final `8e18a95` changes only one retained Coverage assertion; all application/build/config inputs match. Its Coverage6/6 passes; this task freshly passes typecheck, focused lint and Coverage/Profile22/22 on `8e18a95`. [Provenance and verification](release/publish-c34043b/canonical-8e18a95/README.md). Older local load timeouts and individual one-worker reruns are retained under their actual `c34043b` SHA.
+- **Checks fail92/180; combined confirmed P0 0 / P1 8 / P2 0, partial scope.** All180 responses200 and no nontext checker failure. [Canonical five reports and fix owners](release/merge-4-profile/README.md). No all-six release result or production acceptance.
+- Own supplemental proof:72 settled captures;60/60 More cases;8/8 held Profile reads with0px Sign out movement, wrapping Manager email at320, Chromium CLS0.000547. Those browser measurements remain explicitly `c34043b` evidence. [Five-area supplement](release/merge-6-profile-ea58610/README.md).
+- **This publication task’s owned jobs/services are finished.** Source/mirror verification passes, PostgreSQL stopped, no errors. Remaining source exits stay with the active inspection loop; merge only completed exact-SHA zeros. Wave C cleanup waits for its merge; final every-page/build/full-suite/test:dev:production sweep waits for all six. Device proposal below still awaits Jose; nothing deployed or exposed by this task.
 
 # Claude, start here — published 2026-10-19 20:50 UTC
 
@@ -284,3 +297,7 @@ TC-WC-28 adds Account recovery’s verification textarea edge: #D5DAD9 on white 
 2026-10-19 20:41:21 UTC · Phase 3 round 5 on 676358cd1d30c9c8027d4563bf709c434a9cfbe5 · P0 0, P1 4, P2 0 · not zero
 
 2026-10-19 20:41:21 UTC · Profile round 4 on ea58610bf3bdc85319895689c3d88e064f6a76d5 · P0 0, P1 1, P2 1 · not zero
+
+2026-10-19 21:05 UTC · merged Profile at ea58610, backend at da2a4e5, coordinator through227150b · candidate8e18a95 verified/push up-to-date · tests7352/7352 executed (801 skipped,55 pending; final Coverage6/6, fresh Coverage/Profile22/22) · checks fail92/180 · combined P0 0 / P1 8 / P2 0 partial · blocked
+
+2026-10-19 21:05 UTC · candidate-only Profile initial-read4ff37e5 and lint cleanup9df0f47 · canonical gate evidence above; local alternativec34043b retained, not republished · phone proposal pending, no exposure

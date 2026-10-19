@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/lib/scheduling/generation/planner.test.ts",
+    "exitCode": 1,
+    "seconds": 387.16,
+    "oneFileAlone": true,
+    "maxWorkers": 1,
+    "timeoutAndAssertionsUnchanged": true
+  },
+  {
+    "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "exitCode": 1,
+    "seconds": 110.43,
+    "oneFileAlone": true,
+    "maxWorkers": 1,
+    "timeoutAndAssertionsUnchanged": true
+  }
+]
