@@ -18,8 +18,9 @@ jobs:
         suite: [navigation, calendar, communications]
     env:
       PHASE_E_EXPECTED_SHA: c8752f2bab60f1a85da5d408dfc8537cebc50007
-      PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/phase-e-browser-probe
     steps:
+      - name: Select owned evidence directory
+        run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-browser-probe" >> "$GITHUB_ENV"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: c8752f2bab60f1a85da5d408dfc8537cebc50007
