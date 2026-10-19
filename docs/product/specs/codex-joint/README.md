@@ -4,9 +4,31 @@ Base: `claude/premium-phase-1` at `21c4525`. Work branch: `codex/premium-backend
 
 ## 1. Branch validation
 
-A separate detached worktree at `21c4525` keeps shared-branch results independent of backend edits. Node 24.19.0, npm 11.9.0. `npm ci` passed. Type checking passed. Lint reproduces the known UI-owned swap-page error at line 51 and the existing effect-cleanup warning in `employee-weekly-confirmation.tsx`. Wave A owns the former. Full default-suite results are pending. The five other UI branches have not been pushed; none has been marked passing.
+A separate detached worktree at `21c4525` keeps shared-branch results independent of backend edits. Node 24.19.0, npm 11.9.0. `npm ci` and `npx tsc --noEmit -p .` passed. `npx eslint src` reproduces the known UI-owned swap-page error at line 51 (`react-hooks/immutability`: “Cannot reassign variable in async function”) and the existing effect-cleanup warning in `employee-weekly-confirmation.tsx`. Wave A owns the error; neither UI file was edited.
+
+| Branch / revision | Default Vitest | Types | Lint |
+|---|---|---|---|
+| `claude/premium-phase-1` / `21c4525`, unmodified | 7,278 passed, 5 failed, 801 reported skipped | Pass | Known UI error above |
+| `codex/premium-backend` / `22c4320` | 7,328 passed, 0 failed, 801 reported skipped | Pass | Same UI error; changed backend files pass |
+| `claude/p35-profile-6cdee8` | Not pushed; not run | Not run | Not run |
+| `claude/p35-wave-a-1283c8` | Not pushed; not run | Not run | Not run |
+| `claude/p35-wave-b-808dfd` | Not pushed; not run | Not run | Not run |
+| `claude/p35-wave-c-93e13c` | Not pushed; not run | Not run | Not run |
+| `claude/p4-desktop-240fe0` | Not pushed; not run | Not run | Not run |
+
+The five baseline failures, with ownership/disposition:
+
+1. `src/test/phase-e-process.test.ts`, **a short graceful timeout stops detached Next/browser process resources and fails**: `AssertionError: expected [Function] to throw an error`, line 48.
+2. Same file, **a short forced timeout stops detached Next/browser process resources and fails**: the same assertion, line 48.
+3. Same file, **a short forced-title-worker timeout stops detached Next/browser process resources and fails**: the same assertion, line 45.
+4. `src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts`, **whole-plan typed executor fictional transport lifecycle > locks all70 source/sidecar tables before transaction MVCC/protocol reads and applies only compiler metadata**: `Test timed out in 5000ms`.
+5. Same suite, **identical complete retry does no DML and retains original manifest**: `Test timed out in 5000ms`.
+
+Items 1–3 were test-environment defects: this Linux container's PID 1 retains exited orphan processes as zombies, so `kill(pid,0)` alone does not prove a running resource. `22c4320` requires either ESRCH or a positively identified zombie and includes a live-process rejection control. Production cleanup code is unchanged. Items 4–5 passed in the isolated 80-test regression run and the final whole suite at the existing timeout; no timeout or assertion was relaxed. The final default command used `npx vitest run --maxWorkers=2 --reporter=json` to bound cloud process contention. PostgreSQL tests are separate from the default skip list.
 
 PostgreSQL 17.11 was installed under `/workspace/nevora-tools/postgres` using packages authenticated by Debian's signed package index; no system package or real database was changed. Owned runners create loopback clusters and tear them down. Set `NEVORA_TEST_PG_BIN=/workspace/nevora-tools/postgres/usr/lib/postgresql/17/bin` when using them in this cloud machine.
+
+The **unmodified base** release-PostgreSQL command failed its first foundation group: **274 passed, 1 failed**. Failure: `foundation.integration.ts > Task 11 generic fixture replacement preserves the upgraded schema catalog`, line 1092, `expected ... to deeply equal ...`. Its explicit upgrade path stopped at migration `0030`, while the generic fixture already installed `0031`/`0032` (including workspace-presentation tables). The runner then stopped by design, so the other four base groups are not reported as run. `22c4320` aligns the explicit comparison path with `CURRENT_MIGRATIONS`, including the new `0033`; the complete backend-branch release run passes all five groups. This is backend test-fixture maintenance, not a production schema downgrade.
 
 ## 2. Own Owner/Manager Profile and alert choices
 
@@ -19,7 +41,7 @@ Implemented `readManagementProfile(proof, executor?)` and `saveManagementAlertCh
 
 Review hardening: preferences are stored atomically on the employee record, and notification delivery/source reads recheck the current choice. This prevents an uncommitted producer from escaping an opt-out sweep. Existing legacy list/count exports exclude specifically preference-suppressed rows; ordinary cancellation history retains its prior behavior. Both current JSON and legacy colon summary keys are supported. The migration has not been published or applied outside owned test databases.
 
-Validation: the initial 13 unit/HTTP-contract tests passed; an additional second-authentication-expiry case was added. 8 actual PostgreSQL tests passed in `management-profile.integration.ts`, including installed Manager scope, empty locations, expired sessions, concurrent saves, per-person suppression, mixed summaries, a two-connection producer/opt-out race, and cancellation of an actual queued push-delivery row. Targeted ESLint and type checking passed before the follow-up; final verification is recorded below. Run the database tests with the existing owned runner and `vitest.management-profile-integration.config.mts`.
+Validation: 14 unit/HTTP-contract tests passed, including second-authentication-read expiry. The final `management-profile.integration.ts` run passed 10 actual PostgreSQL tests, including installed Manager scope, empty locations, expired sessions, concurrent saves, per-person suppression, mixed summaries, a two-connection producer/opt-out race, cancellation of an actual queued push-delivery row, and the request-fact authority/terms tests below. Targeted ESLint, final type checking and the full default suite passed. Run the database tests with the existing owned runner and `vitest.management-profile-integration.config.mts`.
 
 Claude: wire the Profile session to the exact endpoints and response already specified in HANDOFF.md. Preserve the existing session-derived name/role and company reads. Refresh GET after saves. The migration must land with the backend before the UI integration. No component/page/CSS changes were made here. Joint browser checks remain Claude's next gate.
 
@@ -36,7 +58,9 @@ Implemented `src/lib/dev/inspection.server.ts` and strict loopback/request gates
 
 Remove the cookie before retrying. The two probe pages contain only server logic and no JSX; without the matching enabled cookie they return 404. The only layout hook is a non-JSX line in the root layout. No existing portal page/layout or error-screen JSX was edited. Home's hook is in its backend reader. Next's development error overlay may need dismissal during visual inspection; rendering the existing boundaries in the actual Mac preview remains Claude's joint check.
 
-Gate tests cover every value, no flag, production, exact IPv4/IPv6 loopback hosts, external origins and forwarded requests. `npm run test:dev:production` builds with production NODE_ENV **and both dev flags deliberately set**, scans every generated file (including source maps/cache), and fails on any switch/capture marker. A successful run built and scanned 2,245 artifacts. The initial run correctly failed because Turbopack's filesystem cache retained original erased sources; `next.config.ts` now uses its supported `turbopackFileSystemCacheForBuild:false` option. Fresh output passed. This changes build caching only. The runner preserves tracked Next-generated files and refuses an active dev-build lock. Final verification reruns after the remaining backend changes.
+Gate tests cover every value, no flag, production, exact IPv4/IPv6 loopback hosts, external origins and forwarded requests. The final `npm run test:dev:production` check built with production NODE_ENV **and both dev flags deliberately set**, scanned **2,256 artifacts**, and found every switch/capture marker absent. It includes source maps and caches. The initial run correctly failed because Turbopack's filesystem cache retained original erased sources; `next.config.ts` now uses its supported `turbopackFileSystemCacheForBuild:false` option. Fresh output passed. This changes build caching only. The runner preserves tracked Next-generated files and refuses an active dev-build lock.
+
+An actual development HTTP smoke run on the cloud's own `127.0.0.1:3347` server verified: no cookie → 404, `root` → 500, `global` → 500, and `root` plus an external `X-Forwarded-For` → 404. The server was stopped afterward and tracked Next-generated files restored. Portal/Home visual and authenticated checks remain on Claude's Mac.
 
 ## 4. Local email and push capture
 
@@ -54,7 +78,7 @@ Local push workers retain the existing test-environment/account allowlist, enrol
 
 Request provenance is checked as well as configured origin: the recovery route passes its actual headers into the deferred delivery factory, and internal worker routes carry the initiating headers to the sender. Remote/forwarded requests or missing context fail closed. The manual `notifications:worker` script supplies a distinct local-CLI context only when it is the directly invoked entry point, with the same loopback capture configuration and explicit test-account scope. The capture binding travels with the runtime configuration, so an injected configuration cannot accidentally select the ambient network transport. Regression tests cover injected capture settings with the ambient flag absent, remote headers and missing provenance.
 
-Tests capture an actual buffered `.eml` through `recoveryDelivery()` and a JSON push through `createPushSender()`, assert no provider transport call, exercise production/flag/origin/path gates, and preserve the existing provider timeout/status suite. The current targeted run passed 81 tests across eight files (including other projections). Production-erasure verification covers capture markers too. Claude: render the local captured messages like screens; no UI transport wiring is required.
+Tests capture an actual buffered `.eml` through `recoveryDelivery()` and a JSON push through `createPushSender()`, assert no provider transport call, exercise production/flag/origin/path gates, and preserve the existing provider timeout/status suite. The final focused delivery/auth/worker/config run passed 77 tests across seven files; all are also in the passing full default suite. Production-erasure verification covers capture markers too. Claude: enable the preview environment above and render the local captured messages like screens; no UI transport wiring is required.
 
 ## 5. Remaining agreed projections
 
@@ -78,6 +102,37 @@ Two read-only review axes (repository standards and the supplied contract) exami
 
 Confirmed and fixed P2: `openPeriod()` compared the **end** of monthly/semimonthly periods with `anchorDate`, so an anchor of `2026-10-20` and today `2026-10-19` incorrectly returned a period/payday. Both cases were reproduced, then two regression tests were observed failing before the fix. Calendar periods now require their start to meet the rollout boundary, matching the existing due-period implementation and `docs/payroll-backend-handoff.md`. Tests cover before the anchor, the incomplete rollout period after it, and the first complete period. All 5 open-period tests passed. This repairs the new display read; it changes no paid amounts, exports or payroll/legal wording.
 
-The display changes are present at `21c4525`: `durationText()` is used by the timecard and employee duration formatters, and unavailable schedule days render an en dash. Formatter consumers include timecards, export-selection summaries and report insights. **CSV serialization does not use these formatters:** reports emit raw nanoseconds; payroll export uses raw canonical fields or dedicated `decimalHours()` and explicit rounding policy. Payroll PDF/payment artifacts use approved run amounts. No numeric export/calculation change was found by source tracing. Verification of those existing suites is pending.
+The display changes are present at `21c4525`: `durationText()` is used by the timecard and employee duration formatters, and unavailable schedule days render an en dash. Formatter consumers include timecards, export-selection summaries and report insights. **CSV serialization does not use these formatters:** reports emit raw nanoseconds; payroll export uses raw canonical fields or dedicated `decimalHours()` and explicit rounding policy. Payroll PDF/payment artifacts use approved run amounts. No numeric export/calculation change was found by source tracing. The default payroll/export tests, 36 configurable-payroll database tests, and Clocker payroll-export/report database suites supply regression coverage; see the final matrix below.
 
 Implementation owner: cloud Codex. UI wiring/joint inspection: Claude coordinator and the owning chat. Release impact: no production authorization; implementation and local verification do not close independent inspection or real-device gates.
+
+## 7. Commits, verification and next gate
+
+All commits are local on `codex/premium-backend`; none has been pushed. The implementation is split for review:
+
+| Item | Commits | Main files |
+|---|---|---|
+| Own Profile and saved/delivered alert choices | `ff845d4`, `0295afb` | `management-profile.ts`, `data/management-profile.server.ts`, the two management Profile routes, migration `0033`, notification state/source reads |
+| Local error probes and capture, production absence | `2d74622` | `lib/dev/*`, the zero-JSX probe pages, root layout hook, dashboard read, recovery factory, push provider, `next.config.ts`, `scripts/verify-dev-production-absence.mjs` |
+| Capture provenance and injected runtime binding | `e42eea5` | recovery route/factory, notification config/provider/worker, internal worker routes and CLI entry point |
+| Reviewed payday boundary defect | `9c7951f` | `payroll/calendar.ts`, `payroll/open-period.test.ts` |
+| Inbox/request facts and Wave A C1–C3 | `8f341e8` | `data/inbox-count.server.ts`, Inbox route, `data/action-request-facts.server.ts`, action-center service/parser, requests/coverage/copy projections |
+| Owned test portability and current migration catalog | `22c4320` | `phase-e-process.test.ts`, `integration/local-postgres.ts`, `integration/foundation.integration.ts` |
+
+Final verification on the backend branch:
+
+| Check | Result |
+|---|---|
+| Default `npx vitest run --maxWorkers=2` | 7,328 passed; 0 failed; 801 reported skipped |
+| `npx tsc --noEmit -p .` | Passed |
+| `npx eslint src` | Known UI error and warning recorded in section 1; changed backend files pass targeted ESLint |
+| `npm run test:dev:production` | Actual production build passed; all 2,256 artifacts clear of dev markers |
+| `node scripts/phase-c-release-postgres.mjs` | 737 passed: foundation 275, authority 46, generation 176, exchanges 163, notifications 77 |
+| Owned runner + `vitest.management-profile-integration.config.mts` | 10 passed |
+| Owned runner + `vitest.configurable-payroll-integration.config.mts` | 36 passed |
+| Owned runner + `vitest.six-findings.config.mts` | 15 passed, including persisted copy-receipt retry facts |
+| Owned runner + `vitest.clocker-integration.config.mts` | 520 passed across 35 files; includes attendance, manager scope, recovery, timecards, report/CSV and payroll exports |
+
+The extra database suites use `node scripts/phase-c-clocker-postgres.mjs <config>` with `NEVORA_TEST_PG_BIN` above. **All 1,318 backend-branch PostgreSQL test executions passed.** No existing database was selected; every runner reported its owned cluster stopped. Raw logs/JSON are in `/workspace/nevora-backend-evidence/` outside the repository; the report contains the durable result summary. Two read-only source/contract reviews of `22c4320` found no remaining material findings after the hardening commits.
+
+Coordinator next steps: review these local commits, arrange the backend/migration handoff when Jose requests it, wire the endpoints/fields described above, enable local flags only at each preview's next round break, then run the authenticated/browser/submission inspections. The five UI branches need separate clean cloud checks when pushed. Jose still needs to approve the proposed topic wording and any move of Inbox decisions from the full review. No production release, independent inspection sign-off, or physical-device approval is claimed.
