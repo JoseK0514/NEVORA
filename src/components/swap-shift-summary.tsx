@@ -25,7 +25,7 @@ export function SwapShiftSummary({ shift, label, employee = false }: { shift: Ex
     <p className="wa-shift__label">{label}</p>
     <p className="wa-shift__when"><time dateTime={shift.date}>{keepWhole(swapDateLabel(shift.date))}</time></p>
     <p className="wa-shift__when wa-shift__time">{keepWhole(swapTimeLabel(shift))}</p>
-    <p className="wa-shift__where">{details.map((part, index) => <span className="nv-keep" key={index}>{part}{index < details.length - 1 ? ' ·' : ''} </span>)}</p>
+    <p className="wa-shift__where"><MetaParts text={details.join(' · ')} /></p>
     {shift.timeZone ? <p className="wa-shift__where">Times in {timeZoneLabel(shift.timeZone)}</p> : null}
   </section>;
 }

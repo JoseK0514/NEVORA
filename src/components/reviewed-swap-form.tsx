@@ -42,7 +42,7 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
               <span className="wa-option__text">
                 <span className="wa-option__title">{keepWhole(`${day.weekday}, ${day.day}`)} · <span className="nv-keep">{keepWhole(swapTimeLabel(shift))}</span></span>
                 <span className="wa-option__meta">{shift.employeeName}</span>
-                <span className="wa-option__meta">{details.map((part, index) => <span className="nv-keep" key={index}>{part}{index < details.length - 1 ? ' ·' : ''} </span>)}</span>
+                <span className="wa-option__meta"><MetaParts text={details.join(' · ')} /></span>
                 {shift.timeZone ? <span className="wa-option__meta">{timeZoneLabel(shift.timeZone)}</span> : null}
               </span>
             </label>;

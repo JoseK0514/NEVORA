@@ -31,7 +31,7 @@ export function ShiftBlock({ shift, label, showPerson = false }: { shift: ShiftB
       <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span>{" "}
       <span className="wa-shift__length">· {durationText(durationMinutes(shift.startTime, shift.endTime))}</span>
     </p>
-    <p className="wa-shift__where">{where.map((part, index) => <span className="nv-keep" key={index}>{part}{index < where.length - 1 ? " ·" : ""} </span>)}</p>
+    <p className="wa-shift__where"><MetaParts text={where.join(" · ")} /></p>
     {ends ? <p className="wa-shift__where">{keepWhole(`Ends ${ends.weekday}, ${ends.day}`)}</p> : null}
     {shift.timeZone ? <p className="wa-shift__where">Times in {timeZoneLabel(shift.timeZone)}</p> : null}
   </div>;
