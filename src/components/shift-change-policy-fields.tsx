@@ -1,7 +1,7 @@
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { SelectField } from "./select-field";
 import type { ShiftChangePolicy } from "../lib/shift-changes/types";
-import { PolicyForm } from "./wave-b-forms";
+import { PolicyForm, PolicyOrderError } from "./wave-b-forms";
 import { saveShiftChangePolicyAction } from "../app/app/schedule/settings/actions";
 
 export function ShiftChangePolicyFields({
@@ -55,6 +55,7 @@ export function ShiftChangePolicyFields({
                 step="1"
                 defaultValue={current?.completionAdvanceMinutes ?? ""}
               />
+              {canEdit ? <PolicyOrderError /> : null}
               <span className="wb-help">
                 Use the same number or less than the time to ask. Requests
                 already sent keep their earlier deadline.

@@ -18,9 +18,10 @@ import {StatGrid,Status,Tile,type KitTone} from './kit/kit';
 import {keepWhole} from '../lib/keep-whole';
 import { timeZoneLabel } from '../lib/time-zone-label';
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
-/** IS-B1: a fresh snapshot is read this long before the current one expires and swapped in when verified,
- * so the report only empties if that read fails. Short-lived snapshots (5s or less) just expire. */
-const REFRESH_LEAD_MS=3000;
+/** IS-B1: a fresh snapshot is read halfway through the current one's life (and retried while there's time)
+ * and swapped in when verified, so the report only empties if every read fails before expiry.
+ * Short-lived snapshots (5s or less) just expire. */
+const REFRESH_RETRY_MS=1000,REFRESH_MIN_LEFT_MS=2000;
 const PERIOD_ERROR='Choose a valid period of 1 to 31 days.';
 const hours=(value:string|null)=>value===null?'Unavailable':value.startsWith('-')?`−${formatRecordedHours(value.slice(1))}`:formatRecordedHours(value);
 const periodLabel=(period:Period)=>formatDateRange(period.startDate,period.endDate);
@@ -28,7 +29,7 @@ const readable=(value:string)=>value.toLowerCase().replaceAll('_',' ');
 const observedLabel=(at:string,timeZone:string)=>{try{return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));}catch{return at;}};
 const changeEvents:Record<string,string>={CREATED:'sent',SUBMITTED:'sent',APPROVED:'approved',COMPLETED:'completed',DECLINED:'declined',REJECTED:'declined',CANCELLED:'withdrawn',WITHDRAWN:'withdrawn',EXPIRED:'expired'};
 /** TC-B-13: a shift change in words, never as raw codes. */
-const changeText=(e:PeriodReports['shiftChanges'][number])=>{const what=e.requestKind==='CALLOUT'?'Callout':e.kind==='COVERAGE'?'Coverage request':e.kind==='SWAP'?'Shift trade':'Older shift change';const event=e.kind==='COVERAGE'&&e.eventKind==='COMPLETED'?'filled':changeEvents[e.eventKind]??'updated';return `${what} ${event}`;};
+const changeText=(e:PeriodReports['shiftChanges'][number])=>{const what=e.requestKind==='CALLOUT'?'Unable to work':e.kind==='COVERAGE'?'Coverage request':e.kind==='SWAP'?'Shift trade':'Older shift change';const event=e.kind==='COVERAGE'&&e.eventKind==='COMPLETED'?'filled':changeEvents[e.eventKind]??'updated';return `${what} ${event}`;};
 const sentence=(value:string)=>value.charAt(0).toUpperCase()+value.slice(1);
 const cardTone:Record<string,KitTone>={DRAFT:'neutral',APPROVED:'done',FINALIZED:'done',REOPENED:'review',NEEDS_REVIEW:'review'};
 const requestTone=(status:string):KitTone=>/approv|complet|fill/i.test(status)?'done':/declin|reject|cancel|withdr/i.test(status)?'neutral':/pend|wait|review|open/i.test(status)?'review':'neutral';
@@ -59,7 +60,7 @@ export function ReportsView({report,state}:{report:PeriodReports|null;state:Stat
  },[report]);
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
-  return <section className="nv-card wb-report-state" role="status" aria-busy={waiting}><div className="wb-body"><div className="wb-receipt"><Tile tone={waiting?'neutral':'review'}>{waiting?<ClockIcon size={22}/>:<WarningCircleIcon size={22}/>}</Tile><div><h2 className="wb-strong">{({loading:'Loading insights',offline:'You’re offline',reconnecting:'Reconnecting',unavailable:'Insights unavailable',paused:'Insights paused',access_lost:'Insights access ended',ready:'Insights unavailable'})[state]}</h2><p className="wb-note">{state==='access_lost'?'Sign in again with a manager or owner account.':state==='paused'?'Return to this page to see the current numbers.':state==='offline'?'Connect to the internet, then refresh to see this period.':state==='unavailable'?'Refresh to load this period again.':'Getting this period’s numbers…'}</p></div></div>{state==='access_lost'?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div>:null}</div></section>;
+  return <section className="nv-card wb-report-state" role="status" aria-busy={waiting}><div className="wb-body"><div className="wb-receipt"><Tile tone={waiting?'neutral':'review'}>{waiting?<ClockIcon size={22}/>:<WarningCircleIcon size={22}/>}</Tile><div><h2 className="wb-strong">{({loading:'Loading insights',offline:'You’re offline',reconnecting:'Reconnecting',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Insights access ended',ready:'Couldn’t load insights'})[state]}</h2><p className="wb-note">{state==='access_lost'?'Sign in again with a manager or owner account.':state==='paused'?'Return to this page to see the current numbers.':state==='offline'?'Connect to the internet, then refresh to see this period.':state==='unavailable'?'Check your connection, then try again.':'Getting this period’s numbers…'}</p></div></div>{state==='access_lost'?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div>:null}</div></section>;
  }
  const requests=[...report.callouts,...report.timeOff];
  return <div className="wb-insights-view" ref={content}>
@@ -70,7 +71,7 @@ export function ReportsView({report,state}:{report:PeriodReports|null;state:Stat
   <div className="wb-insights-grid"><HoursTable title="Hours by employee" rows={report.hoursByEmployee}/><HoursTable title="Hours by location" rows={report.hoursByLocation}/><HoursTable title="Hours by position" rows={report.hoursByPosition}/></div>
   <section className="nv-card" id="report-attendance" tabIndex={-1}><Heading title="Clock-in notes"/><div className="wb-body wb-body--tight"><p className="wb-note">Clock-ins compared with each person’s schedule and break targets. These notes don’t decide lateness, discipline or pay.</p>{report.attendance.state==='limited'&&<p className="wb-box wb-note wb-inline-icon" role="status"><InfoIcon size={18} aria-hidden="true"/><span>Some clock-ins couldn’t be compared with the schedule.</span></p>}</div>{report.attendance.groups.length?<ul className="wb-records">{report.attendance.groups.map(g=><li key={g.entryId}><span className="wb-record__title">{report.hoursByEmployee.find(e=>e.id===g.employeeId)?.name??'Former employee'}</span><span className="wb-record__meta">{report.hoursByLocation.find(l=>l.id===g.locationId)?.name??'Former location'}</span><ul className="wb-observations">{g.observations.map(o=><li key={o.id}>{o.message}</li>)}</ul></li>)}</ul>:<Empty>{report.attendance.state==='ready'?'Nothing to note for this period.':'Not every clock-in could be checked for this period.'}</Empty>}</section>
   <div className="wb-insights-grid wb-insights-grid--two" id="report-changes" tabIndex={-1}>
-   <section className="nv-card"><Heading title="Time off and callouts" meta={requests.length?String(requests.length):undefined}/>{requests.length?<ul className="wb-records">{requests.map(r=><li key={`${r.kind}:${r.id}`}><span className="wb-record__head"><span className="wb-record__title">{r.employeeName}</span><Status tone={requestTone(r.status)}>{sentence(readable(r.status))}</Status></span><span className="wb-record__meta">{r.kind==='CALLOUT'?'Callout':'Time off'} · {keepWhole(r.endDate!==r.date?formatDateRange(r.date,r.endDate):formatDisplayDate(r.date))}</span></li>)}</ul>:<Empty>No requests in this period.</Empty>}</section>
+   <section className="nv-card"><Heading title="Time off and unable to work" meta={requests.length?String(requests.length):undefined}/>{requests.length?<ul className="wb-records">{requests.map(r=><li key={`${r.kind}:${r.id}`}><span className="wb-record__head"><span className="wb-record__title">{r.employeeName}</span><Status tone={requestTone(r.status)}>{sentence(readable(r.status))}</Status></span><span className="wb-record__meta">{r.kind==='CALLOUT'?'Unable to work':'Time off'} · {keepWhole(r.endDate!==r.date?formatDateRange(r.date,r.endDate):formatDisplayDate(r.date))}</span></li>)}</ul>:<Empty>No requests in this period.</Empty>}</section>
    <section className="nv-card"><Heading title="Shift changes & coverage"/><div className="wb-body"><p className="wb-text">{report.coverageReliability.observedCoverageRequests?`${report.coverageReliability.completedCoverageRequests} of ${report.coverageReliability.observedCoverageRequests} coverage requests filled.`:'No coverage requests in this period.'}{report.coverageReliability.unclassifiedEvents?` ${report.coverageReliability.unclassifiedEvents} older ${report.coverageReliability.unclassifiedEvents===1?'change':'changes'} couldn’t be classified.`:''}</p><p className="wb-note">{report.coverageReliability.definition}</p></div>{report.shiftChanges.length>0&&<details className="wb-disclosure wb-disclosure--ruled"><summary><span>View {report.shiftChanges.length} {report.shiftChanges.length===1?'change':'changes'}</span><CaretDownIcon size={20} aria-hidden="true"/></summary><ul className="wb-records">{report.shiftChanges.map(e=><li key={e.id}><span className="wb-record__meta">{keepWhole(formatDisplayDate(e.sourceDate))} · {changeText(e)}</span></li>)}</ul></details>}</section>
    <section className="nv-card"><Heading title="Schedule stability"/><div className="wb-body"><p className="wb-text">{report.scheduleStability.revisionCount} {report.scheduleStability.revisionCount===1?'schedule change':'schedule changes'} published for this period.</p><p className="wb-note">{report.scheduleStability.definition}</p></div></section>
    <section className="nv-card"><Heading title="Overtime"/><div className="wb-body"><p className="wb-text">{report.overtime.reason}</p></div></section>
@@ -84,8 +85,12 @@ export function Reports({initialPeriod}:{initialPeriod:Period}){
  const reloadRef=useRef<()=>void>(()=>{}),exportRef=useRef<()=>Promise<void>>(async()=>{}),printRef=useRef<()=>void>(()=>{});
  const [exporting,setExporting]=useState(false);
  useEffect(()=>{
-  let active=true,focused=document.hasFocus(),printing=false,printBlurred=false,validUntil=0,generation=0,controller:AbortController|null=null,exportController:AbortController|null=null,timer:ReturnType<typeof setTimeout>|null=null,refresher:ReturnType<typeof setTimeout>|null=null;
-  const clear=(next:State)=>{generation++;controller?.abort();exportController?.abort();if(timer)clearTimeout(timer);timer=null;if(refresher)clearTimeout(refresher);refresher=null;validUntil=0;printing=false;printBlurred=false;if(active){setReport(null);setState(next);setExporting(false);}};
+  let active=true,focused=document.hasFocus(),printing=false,printBlurred=false,validUntil=0,generation=0,controller:AbortController|null=null,exportController:AbortController|null=null,timer:ReturnType<typeof setTimeout>|null=null,refresher:ReturnType<typeof setTimeout>|null=null,heldScroll:number|null=null;
+  // ST-B01: if a snapshot expires before its replacement arrives, the page keeps its height and the reader's place
+  // while the new one loads (only the size is kept, never the content).
+  const holdPlace=()=>{const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(!box)return;box.style.minHeight=`${box.getBoundingClientRect().height}px`;heldScroll=typeof window.scrollY==='number'?window.scrollY:null;};
+  const releasePlace=()=>{const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(box)box.style.minHeight='';if(heldScroll!==null&&typeof window.scrollTo==='function')window.scrollTo({top:heldScroll});heldScroll=null;};
+  const clear=(next:State)=>{if(next!=='loading'&&next!=='reconnecting'&&heldScroll!==null){const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(box)box.style.minHeight='';heldScroll=null;}generation++;controller?.abort();exportController?.abort();if(timer)clearTimeout(timer);timer=null;if(refresher)clearTimeout(refresher);refresher=null;validUntil=0;printing=false;printBlurred=false;if(active){setReport(null);setState(next);setExporting(false);}};
   const load=async(reconnecting=false,silent=false)=>{
    if(!active||!focused||printing||document.visibilityState==='hidden')return;
    // A silent refresh keeps the verified report on screen; its own expiry timer still retires it if this read fails.
@@ -100,9 +105,12 @@ export function Reports({initialPeriod}:{initialPeriod:Period}){
     const remaining=body.validForMs-(performance.now()-started);if(remaining<=0)throw new Error('Expired snapshot');
     validUntil=started+body.validForMs;setReport(result);setState('ready');
     if(timer)clearTimeout(timer);if(refresher)clearTimeout(refresher);refresher=null;
-    timer=setTimeout(()=>{clear('loading');void load();},remaining);
-    if(remaining>REFRESH_LEAD_MS+2000)refresher=setTimeout(()=>{refresher=null;void load(false,true);},remaining-REFRESH_LEAD_MS);
-   }catch{if(active&&current===generation&&!silent)clear(navigator.onLine?'unavailable':'offline');}
+    timer=setTimeout(()=>{holdPlace();clear('loading');void load();},remaining);
+    if(heldScroll!==null)(window.requestAnimationFrame??((step:()=>void)=>setTimeout(step,0)))(releasePlace);
+    if(remaining>5000)refresher=setTimeout(()=>{refresher=null;void load(false,true);},remaining/2);
+   }catch{if(!active||current!==generation)return;if(!silent){clear(navigator.onLine?'unavailable':'offline');return;}
+    // A failed quiet refresh tries again while the current snapshot still has time left.
+    if(validUntil-performance.now()>REFRESH_MIN_LEFT_MS+REFRESH_RETRY_MS)refresher=setTimeout(()=>{refresher=null;void load(false,true);},REFRESH_RETRY_MS);}
   };
   reloadRef.current=()=>{void load();};
   exportRef.current=async()=>{
@@ -115,7 +123,7 @@ export function Reports({initialPeriod}:{initialPeriod:Period}){
     if(!response.ok||!response.headers.get('content-type')?.startsWith('text/csv'))throw new Error('Unavailable export');
     const blob=await response.blob();if(!active||generation!==current||!focused||performance.now()>=validUntil)return;
     const url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=`nevora-reports-${period.startDate}-${period.endDate}.csv`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-   }catch{if(active&&generation===current)setNotice('The export could not be confirmed. Refresh reports and try again.');}
+   }catch{if(active&&generation===current)setNotice('Couldn’t prepare the CSV. Refresh and try again.');}
    finally{if(active&&generation===current)setExporting(false);}
   };
   const beginPrint=()=>{if(active&&validUntil>performance.now()){if(!printing)printBlurred=false;printing=true;}};
@@ -136,6 +144,8 @@ export function Reports({initialPeriod}:{initialPeriod:Period}){
  },[period]);
  const changed=draft.startDate!==period.startDate||draft.endDate!==period.endDate;
  const busy=state==='loading'||state==='reconnecting';
+ // IS-B26: an export failure comes into view above the tab bar.
+ useEffect(()=>{if(notice&&notice!==PERIOD_ERROR)document.getElementById?.('report-export-error')?.scrollIntoView?.({block:'nearest'});},[notice]);
  return <div className="wb-insights">
   <div className="wb-insights-top">
    <section className="nv-card" aria-label="Report period and export" data-report-entrance="">
@@ -159,7 +169,7 @@ export function Reports({initialPeriod}:{initialPeriod:Period}){
       <button className="nv-btn" data-kind="secondary" type="button" aria-label={exporting?'Preparing CSV…':'Download CSV'} aria-busy={exporting||undefined} disabled={!report||exporting} onClick={()=>void exportRef.current()}><DownloadSimpleIcon size={20} aria-hidden="true"/>{exporting?'Preparing CSV…':'Download CSV'}</button>
       <button className="nv-btn" data-kind="secondary" type="button" aria-label="Print / Save PDF" disabled={!report} onClick={()=>printRef.current()}><PrinterIcon size={20} aria-hidden="true"/>Print / Save PDF</button>
      </div>
-     {notice&&notice!==PERIOD_ERROR&&<p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true"/><span>{notice}</span></p>}
+     {notice&&notice!==PERIOD_ERROR&&<p className="wb-error" id="report-export-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true"/><span>{notice}</span></p>}
      <p className="wb-help">PDF: choose Save as PDF in your browser’s print dialog. Includes this period and how each number is defined.</p>
     </div>
    </section>

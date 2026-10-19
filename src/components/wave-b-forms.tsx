@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useId, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { unstable_rethrow, useRouter } from "next/navigation";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
@@ -29,6 +29,9 @@ export function ActionForm({ action, submit, failure, confirm, className, childr
   const busy = useRef(false), asked = useRef(false);
   const askRef = useRef<HTMLButtonElement>(null), openRef = useRef<HTMLButtonElement>(null);
   useEffect(() => { if (asked.current) (asking ? askRef : openRef).current?.focus(); }, [asking]);
+  const errorRef = useRef<HTMLParagraphElement>(null);
+  // IS-B26: a failure comes into view above the tab bar.
+  useEffect(() => { if (error) errorRef.current?.scrollIntoView({ block: "nearest" }); }, [error]);
   function send(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy.current) return;
@@ -53,7 +56,7 @@ export function ActionForm({ action, submit, failure, confirm, className, childr
     </div> : <button ref={openRef} type="submit" className={submit.className} data-kind={submit.kind === "danger" ? undefined : submit.kind} aria-label={pending ? submit.pendingLabel : submit.ariaLabel} aria-disabled={pending || undefined} aria-busy={pending || undefined}>
       <span aria-live="polite">{label}</span>{submit.icon}
     </button>}
-    {error ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{error}</span></p> : null}
+    {error ? <p ref={errorRef} className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{error}</span></p> : null}
   </form>;
 }
 
@@ -75,7 +78,7 @@ export function RulesSaveForm({ action, children, bar }: {
       const saved = await action(data);
       setResult(saved.error ? saved.error : "saved");
     } catch {
-      setResult("Changes could not be saved. Your entries are preserved; try again.");
+      setResult("Couldn’t save your changes. They’re still here; try again.");
     } finally {
       busy.current = false; setPending(false);
     }
@@ -110,7 +113,7 @@ export function InlineConfigForm({ action, children, submit, successText, classN
     const data = new FormData(event.currentTarget);
     busy.current = true; setPending(true); setResult(null);
     try { const saved = await action(data); setResult(saved.error ? saved.error : "saved"); }
-    catch { setResult("Changes could not be saved. Your entries are preserved; try again."); }
+    catch { setResult("Couldn’t save your changes. They’re still here; try again."); }
     finally { busy.current = false; setPending(false); }
   }
   return <form onSubmit={send} className={className ? `wb-form wb-auto wb-config ${className}` : "wb-form wb-auto wb-config"} aria-busy={pending || undefined}>
@@ -119,6 +122,14 @@ export function InlineConfigForm({ action, children, submit, successText, classN
     {result === "saved" ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{successText}</span></p>
       : result ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{result}</span></p> : null}
   </form>;
+}
+
+const PolicyOrder = createContext<{ error: boolean; id: string }>({ error: false, id: "" });
+
+/** IS-B28: the trade policy's order message, placed under the finishing-time field it describes. */
+export function PolicyOrderError() {
+  const { error, id } = useContext(PolicyOrder);
+  return error ? <span className="wb-error" id={id} role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>Finishing time can’t be more minutes ahead than the time to ask.</span></span> : null;
 }
 
 /** Trade or coverage policy for one workflow (Owner). Same request as the shared PolicySaveForm (expected
@@ -136,6 +147,7 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
   const [message, setMessage] = useState<{ tone: "saved" | "error" | "conflict"; text: string } | null>(null);
   const [orderError, setOrderError] = useState(false);
   const busy = useRef(false);
+  const orderId = useId();
   async function send(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy.current) return;
@@ -145,10 +157,12 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
     if (ask !== "" && finish !== "" && Number(finish) > Number(ask)) {
       setOrderError(true); setMessage(null);
       finishField?.setAttribute("aria-invalid", "true");
+      finishField?.setAttribute("aria-describedby", orderId);
       finishField?.focus();
       return;
     }
     finishField?.removeAttribute("aria-invalid");
+    finishField?.removeAttribute("aria-describedby");
     setOrderError(false);
     data.set("expectedRevision", String(currentRevision));
     busy.current = true; setPending(true); setMessage(null);
@@ -158,13 +172,12 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
       else if (next.status === "invalid") setMessage({ tone: "error", text: next.fieldErrors.map(item => item.message).join(" ") });
       else setMessage({ tone: "conflict", text: "This policy changed. Reload and review the current values before saving again." });
     } catch {
-      setMessage({ tone: "conflict", text: "We couldn’t confirm the save. Reload the current policy before saving again; your entries are kept." });
+      setMessage({ tone: "conflict", text: "Couldn’t save the policy. Reload it before saving again; your entries are kept." });
     } finally { busy.current = false; setPending(false); }
   }
   return <form onSubmit={send} className="wb-form" aria-busy={pending || undefined} data-order-error={orderError || undefined}>
     <input type="hidden" name="expectedRevision" value={currentRevision} />
-    <fieldset className="configuration-fields wb-form" disabled={pending}>{children}</fieldset>
-    {orderError ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>Finishing time can’t be more minutes ahead than the time to ask.</span></p> : null}
+    <PolicyOrder.Provider value={{ error: orderError, id: orderId }}><fieldset className="configuration-fields wb-form" disabled={pending}>{children}</fieldset></PolicyOrder.Provider>
     <div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? "Saving…" : saveLabel}</button></div>
     {message?.tone === "saved" ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{message.text}</span></p>
       : message ? <><p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{message.text}</span></p>{message.tone === "conflict" ? <div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={() => window.location.reload()}>Reload current policy</button></div> : null}</> : null}

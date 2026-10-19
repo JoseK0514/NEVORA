@@ -22,6 +22,7 @@ gsap.registerPlugin(useGSAP);
 export function CommunicationDetailView({read,paused,pending,notice,onAction,onRefresh}:{read:CommunicationRead|null;paused:boolean;pending:boolean;notice:CommunicationNotice;onAction:(kind:'ACKNOWLEDGE'|'MARK_READ'|'WITHDRAW'|'LOOKUP')=>void;onRefresh:()=>void}){
  const [reviewed,setReviewed]=useState(false);
  const [confirmWithdraw,setConfirmWithdraw]=useState(false);
+ const noticeRef=useRef<HTMLElement>(null);
  const receiptRef=useRef<HTMLElement>(null),withdrawRef=useRef<HTMLButtonElement>(null),confirmRef=useRef<HTMLButtonElement>(null),askedWithdraw=useRef(false);
  const surface=useRef<HTMLElement>(null);
  const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&read?.state==='ready'?read:null;
@@ -39,11 +40,13 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  useEffect(()=>{if(doneNow&&!wasDone.current&&(!document.activeElement||document.activeElement===document.body))receiptRef.current?.focus();wasDone.current=doneNow;},[doneNow]);
  // IS-B5: the confirm step takes focus when it opens, and Keep update hands it back.
  useEffect(()=>{if(askedWithdraw.current)(confirmWithdraw?confirmRef:withdrawRef).current?.focus();},[confirmWithdraw]);
+ // IS-B26: a failure notice comes into view above the tab bar when it appears.
+ useEffect(()=>{if(notice==='unknown'||notice==='unavailable')noticeRef.current?.scrollIntoView({block:'nearest'});},[notice]);
  const stamp=(at:string)=>keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:ready?.timeZone??'UTC',dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));
  if(!ready){
   const loading=pending&&!read;
-  const title=paused?'Paused while you were away':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'You can’t open this update':loading?'Loading update…':'Update unavailable';
-  const description=paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available.':read?.state==='unauthorized'?'Your access may have changed. Sign in again to check.':loading?'Getting the latest version and your review status.':'We couldn’t load this update. Try again.';
+  const title=paused?'Paused while you were away':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'You can’t open this update':loading?'Loading update…':'Couldn’t load this update';
+  const description=paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available.':read?.state==='unauthorized'?'Your access may have changed. Sign in again to check.':loading?'Getting the latest version and your review status.':'Check your connection, then try again.';
   // The band says what happened; the card holds only what to do next (TC-B-16).
   return <>
    <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow="Update" title={title} summary={description}/>
@@ -51,7 +54,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
     <section ref={surface} className="nv-card" aria-busy={loading} aria-label={title}>
      <div className="wb-body">
       <p className="nv-sr" role="status">{title}. {description}</p>
-      {loading?<SkeletonRows rows={3} variant="line"/>:read?.state==='unauthorized'||notice==='blocked'?<div className="wb-actions"><Link href="/login" className="nv-btn" data-kind="secondary">Sign in</Link></div>:read?.state==='withdrawn'?<div className="wb-actions"><Link href="/app/updates" className="nv-btn" data-kind="secondary">All updates</Link></div>:<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={onRefresh} disabled={paused||pending}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{notice==='conflict'?'Review latest':'Retry'}</button></div>}
+      {loading?<SkeletonRows rows={3} variant="line"/>:read?.state==='unauthorized'||notice==='blocked'?<div className="wb-actions"><Link href="/login" className="nv-btn" data-kind="secondary">Sign in</Link></div>:read?.state==='withdrawn'?<div className="wb-actions"><Link href="/app/updates" className="nv-btn" data-kind="secondary">All updates</Link></div>:<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={onRefresh} disabled={paused||pending}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{notice==='conflict'?'Review latest':'Try again'}</button></div>}
      </div>
     </section>
    </div>
@@ -60,12 +63,12 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const required=ready.acknowledgement==='REQUIRED';
  const acknowledged=!!ready.ownAcknowledgedAt;
  const markedRead=!required&&!!ready.ownReadAt;
- const category=ready.type==='TODAYS_TEAM'?'Today’s team':ready.type==='SHIFT_NOTE'?'Shift note':ready.type==='OPERATIONAL_UPDATE'?'Important update':'Location announcement';
+ const category=ready.type==='TODAYS_TEAM'?'Today’s team':ready.type==='SHIFT_NOTE'?'Shift note':ready.type==='OPERATIONAL_UPDATE'?'Important update':'Announcement';
  const count=ready.management?.recipients.filter(recipient=>recipient.acknowledgedAt).length??0;
  const locked=pending||notice==='unknown';
  const sent=ready.sentCount!==undefined?<p className="wb-note">Sent to {ready.sentCount} {ready.sentCount===1?'recipient':'recipients'}. Delivery does not confirm reading.</p>:null;
  const audience=ready.management?.recipients.length??ready.sentCount;
- const withdraw=ready.canWithdraw?(confirmWithdraw?<div className="wb-confirm" role="group" aria-labelledby="withdraw-confirm-text"><p className="wb-text" id="withdraw-confirm-text">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p><div className="wb-actions"><button ref={confirmRef} type="button" className="nv-btn" data-kind="danger" disabled={locked} aria-busy={pending||undefined} onClick={()=>onAction('WITHDRAW')}>{pending?'Withdrawing…':'Withdraw update'}</button><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(false);}}>Keep update</button></div></div>:<button ref={withdrawRef} type="button" className="nv-btn" data-kind="secondary" data-tone="urgent" disabled={locked} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(true);}}>Withdraw update</button>):null;
+ const withdraw=ready.canWithdraw?(confirmWithdraw?<div className="wb-confirm" role="group" aria-labelledby="withdraw-confirm-text"><p className="wb-text" id="withdraw-confirm-text">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p><div className="wb-actions"><button ref={confirmRef} type="button" className="nv-btn" data-kind="danger" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('WITHDRAW');}}>{pending?'Withdrawing…':'Withdraw update'}</button><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(false);}}>Keep update</button></div></div>:<button ref={withdrawRef} type="button" className="nv-btn" data-kind="secondary" data-tone="urgent" disabled={locked} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(true);}}>Withdraw update</button>):null;
  return <>
   <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow={category} title={ready.title} summary={<MetaParts text={`${ready.authorContext} · Published ${stamp(ready.publishedAt)}`}/>}/>
   <article ref={surface} className="nv-content" data-update-revision={ready.revisionId}>
@@ -88,13 +91,12 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
      </div>
      {!acknowledged&&!ready.management&&required?<>
       <label className="wb-check"><input type="checkbox" checked={reviewed} disabled={locked} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label>
-      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||locked} aria-busy={pending||undefined} onClick={()=>onAction('ACKNOWLEDGE')}><CheckCircleIcon size={20} aria-hidden="true"/>{pending?'Confirming…':'Acknowledge update'}</button></div>
+      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><CheckCircleIcon size={20} aria-hidden="true"/>{pending?'Confirming…':'Acknowledge update'}</button></div>
      </>:null}
-     {!acknowledged&&!ready.management&&!required&&!markedRead?<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={locked} aria-busy={pending||undefined} onClick={()=>onAction('MARK_READ')}><CheckCircleIcon size={20} aria-hidden="true"/>{pending?'Saving…':'Mark read'}</button></div>:null}
+     {!acknowledged&&!ready.management&&!required&&!markedRead?<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><CheckCircleIcon size={20} aria-hidden="true"/>{pending?'Saving…':'Mark read'}</button></div>:null}
     </div>
    </section>
 
-   {notice==='unknown'?<section className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Result not yet confirmed</h2><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>onAction('LOOKUP')}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{pending?'Checking…':'Check status'}</button></div></div></section>:notice==='unavailable'?<section className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Unable to confirm</h2><p>We could not confirm this update. Retry to check current information.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={onRefresh}><ArrowClockwiseIcon size={20} aria-hidden="true"/>Retry</button></div></div></section>:null}
    {ready.management?<section className="nv-card" aria-label="Acknowledgement status">
     <details className="wb-disclosure">
      <summary><span className="wb-summary-text"><span className="nv-card__title" role="heading" aria-level={2}>Recipient status</span><span>{count} of {ready.management.recipients.length} acknowledged</span></span><CaretDownIcon size={20} aria-hidden="true"/></summary>
@@ -105,6 +107,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
      <div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href={'/app/updates/compose?update='+ready.id}><PencilSimpleIcon size={20} aria-hidden="true"/>Edit update</Link>{withdraw}</div>
     </div>
    </section>:sent||withdraw?<section className="nv-card" aria-label="Delivery"><div className="wb-body">{sent}{withdraw?<div className="wb-actions">{withdraw}</div>:null}</div></section>:null}
+  {notice==='unknown'?<section ref={noticeRef} className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Result not yet confirmed</h2><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>onAction('LOOKUP')}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{pending?'Checking…':'Check status'}</button></div></div></section>:notice==='unavailable'?<section ref={noticeRef} className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Unable to confirm</h2><p>We couldn’t check this update. Try again.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={onRefresh}><ArrowClockwiseIcon size={20} aria-hidden="true"/>Try again</button></div></div></section>:null}
   </article>
  </>;
 }

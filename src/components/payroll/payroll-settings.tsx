@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { createContext, useContext, useEffect, useState, type FormEvent } from 'react';
 import { PlusIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import type { PayrollPreferences, PayrollRule, PayrollSettingsResponse } from '@/lib/payroll/contracts';
 import { readSettings } from './api';
@@ -11,6 +11,9 @@ import { OperationFeedback, PayrollFrame, PayrollState, PrivacyNote } from './pa
 import { noticeReadiness, reminderWindow } from './workflow-status';
 import { formatDateRange } from '@/lib/date-utils';
 import { keepWhole } from '@/lib/keep-whole';
+
+/** IS-B27: which form sent the running save, so only its button says "Saving…". */
+const SavingForm = createContext<[string | null, (id: string) => void]>([null, () => {}]);
 
 /** A kit card for one group of payroll settings (Phase 3.5 Wave B). Wording stays as approved. */
 function SettingsCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
@@ -50,9 +53,13 @@ function rulesFromForm(values: FormData, rules: PayrollRule[]): PayrollRule[] {
 export function PayrollSettings({ recoveryScope }: { recoveryScope: string }) {
   const resource = usePayrollResource('/api/payroll/settings', readSettings);
   const operation = usePayrollOperation('/api/payroll/settings', resource.reload, recoveryScope);
+  const savingForm = useState<string | null>(null);
+  const savingId = savingForm[0];
+  // IS-B12: when a save ends, focus returns to that form's button instead of the page.
+  useEffect(() => { if (!operation.busy && savingId && (!document.activeElement || document.activeElement === document.body)) document.querySelector<HTMLElement>(`form[data-form="${savingId}"] button[type="submit"]`)?.focus(); }, [operation.busy, savingId]);
   const revision = resource.data?.revisions.reduce((latest, item) => item.revision > (latest?.revision ?? 0) ? item : latest, resource.data.revisions[0]);
   return <PayrollFrame title="Payroll settings" description="Set company defaults, effective dates and authorized employee exceptions.">
-    <div className="wb-page wb-payroll-settings"><div className="wb-auto wb-payroll-settings">
+    <SavingForm.Provider value={savingForm}><div className="wb-page wb-payroll-settings"><div className="wb-auto wb-payroll-settings">
     {/* IS-B10: progress and failures of a save float above the tab bar, so they show wherever the form was submitted. */}
     <div className="wb-payroll-feedback"><OperationFeedback operation={operation} /></div>
     {resource.loading && !resource.data ? <PayrollState title="Loading payroll settings">Checking current owner access and configuration revisions.</PayrollState> : resource.error ? <PayrollState title="Settings unavailable" error retry={() => void resource.reload()}>{resource.error}</PayrollState> : resource.data && <>
@@ -63,7 +70,7 @@ export function PayrollSettings({ recoveryScope }: { recoveryScope: string }) {
       <SettingsCard title="Settings history" description="Saved revisions record their effective date and reason.">{resource.data.revisions.length ? <div className="wb-history">{[...resource.data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</SettingsCard>
       <PrivacyNote>Only the owner can configure payroll and access grants. Provider imports supply actual payroll amounts. {noticeReadiness(resource.data.capabilities)}</PrivacyNote>
     </>}
-    </div></div>
+    </div></div></SavingForm.Provider>
   </PayrollFrame>;
 }
 
@@ -72,8 +79,9 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
   const [error, setError] = useState('');
   const [noticesEnabled, setNoticesEnabled] = useState(preferences.automation.reminders);
   const locked = operation.locked;
+  const [savingId, setSaving] = useContext(SavingForm);
   const save = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
+    event.preventDefault(); setSaving('company'); setError(''); const values = new FormData(event.currentTarget);
     try {
       const reminderLeadDays = values.has('reminders') ? [integer(values.get('reminderDays'), 'Preparation reminder window', 0, 31)] : [];
       const next: PayrollPreferences = {
@@ -90,7 +98,7 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       void operation.submit({ action: 'SAVE_SETTINGS', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), preferences: next });
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Check payroll preferences.'); }
   };
-  return <section className="wb-section" aria-labelledby="payroll-company-defaults"><div className="wb-section-head"><h2 className="wb-section-title" id="payroll-company-defaults">Company defaults</h2><p className="wb-note">{`Revision ${revision} · Currency USD`}</p></div><form className="wb-form" onSubmit={save}><fieldset disabled={locked} className="wb-form">
+  return <section className="wb-section" aria-labelledby="payroll-company-defaults"><div className="wb-section-head"><h2 className="wb-section-title" id="payroll-company-defaults">Company defaults</h2><p className="wb-note">{`Revision ${revision} · Currency USD`}</p></div><form className="wb-form" data-form="company" onSubmit={save}><fieldset disabled={locked} className="wb-form">
     <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Company and documents</h3></div><div className="wb-body"><div className="wb-grid">
       <label>Company name on documents<input name="companyName" defaultValue={preferences.companyName} maxLength={160} required /></label>
       <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
@@ -107,7 +115,7 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       <label>Output profile<select aria-label="Output profile" name="bankProfile" defaultValue={preferences.bankProfile ?? ''}><option value="">No payment output configured</option><option value="NEUTRAL_UNVERIFIED">Neutral instructions · compatibility unverified</option></select></label>
       <label>Desired bank channel<select aria-label="Desired bank channel" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No channel preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or channel</option></select></label>
     </div><p className="wb-note">Channel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.</p></div></section>
-    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Review the change</h3></div><div className="wb-body"><div className="wb-grid"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}<button type="submit" className="nv-btn" data-kind="primary">{operation.busy ? 'Saving…' : 'Save company preferences'}</button></div></section>
+    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Review the change</h3></div><div className="wb-body"><div className="wb-grid"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}<button type="submit" className="nv-btn" data-kind="primary">{operation.busy && savingId === 'company' ? 'Saving…' : 'Save company preferences'}</button></div></section>
   </fieldset></form></section>;
 }
 
@@ -145,7 +153,9 @@ function ExceptionForm({ employeeId, revision, language, initialRules, preferenc
   const [inherit, setInherit] = useState(initialRules === null);
   const [rules, setRules] = useState(initialRules ?? preferences.rules);
   const [error, setError] = useState('');
-  return <form className="wb-form" onSubmit={event => {
+  const [savingId, setSaving] = useContext(SavingForm);
+  return <form className="wb-form" data-form="exception" onSubmit={event => {
+    setSaving('exception');
     event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
     try { const chosen = values.get('exceptionLanguage'); void operation.submit({ action: 'SAVE_EXCEPTION', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), exception: { employeeId, language: chosen === 'en' || chosen === 'es' ? chosen : null, rules: inherit ? null : rulesFromForm(values, rules) } }); }
     catch (failure) { setError(failure instanceof Error ? failure.message : 'Check this employee exception.'); }
@@ -156,7 +166,7 @@ function ExceptionForm({ employeeId, revision, language, initialRules, preferenc
     {!inherit && <><RuleEditor rules={rules} onChange={setRules} /><button className="nv-btn" data-kind="secondary" type="button" data-add-rule="" onClick={() => setRules(items => [...items, newRule()])}><PlusIcon size={18} aria-hidden />Add employee rule</button></>}
     <div className="wb-grid"><label>Exception effective date<input name="effectiveFrom" type="date" required defaultValue={today()} /></label><label>Exception reason<input name="reason" required maxLength={300} /></label></div>
     <ImpactPreview data={data} />{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}
-    <button className="nv-btn" data-kind="primary" type="submit">{operation.busy ? 'Saving…' : 'Save employee exception'}</button>
+    <button className="nv-btn" data-kind="primary" type="submit">{operation.busy && savingId === 'exception' ? 'Saving…' : 'Save employee exception'}</button>
   </fieldset></form>;
 }
 
@@ -168,7 +178,9 @@ function PayrollAccess({ data, operation }: { data: PayrollSettingsResponse; ope
 function GrantForm({ employeeId, revision, review, approve, operation }: { employeeId: string; revision: number; review: boolean; approve: boolean; operation: ReturnType<typeof usePayrollOperation> }) {
   const [canReview, setReview] = useState(review);
   const [canApprove, setApprove] = useState(approve);
-  return <form className="wb-form" onSubmit={event => {
+  const [savingId, setSaving] = useContext(SavingForm);
+  return <form className="wb-form" data-form="access" onSubmit={event => {
+    setSaving('access');
     event.preventDefault(); const values = new FormData(event.currentTarget);
     void operation.submit({ action: 'SET_GRANT', expectedRevision: revision, reason: String(values.get('reason')).trim(), grant: { employeeId, review: canReview, approve: canApprove } });
   }}><fieldset disabled={operation.locked} className="wb-form">
@@ -176,6 +188,6 @@ function GrantForm({ employeeId, revision, review, approve, operation }: { emplo
     <label className="wb-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>Approve an exact reviewed payroll revision</span></label>
     <label>Access change reason<textarea name="reason" required maxLength={300} rows={3} /></label>
     <p className="wb-note">Approval requires review access. Clear both permissions to revoke this grant. The server checks the current grant on every action.</p>
-    <button type="submit" className="nv-btn" data-kind="primary">{operation.busy ? 'Saving…' : 'Save payroll access'}</button>
+    <button type="submit" className="nv-btn" data-kind="primary">{operation.busy && savingId === 'access' ? 'Saving…' : 'Save payroll access'}</button>
   </fieldset></form>;
 }

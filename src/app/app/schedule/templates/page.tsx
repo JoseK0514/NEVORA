@@ -167,7 +167,7 @@ export default async function ScheduleTemplatesPage({
               <Tile tone="neutral"><StackIcon size={22} /></Tile>
               <h3 className="wb-strong">Your next week starts here</h3>
               <p className="wb-note">Save a week you’d like to reuse. Your templates appear here, ready for your next schedule.</p>
-              <div className="wb-actions"><TemplateNameLink>Name your first template <ArrowRightIcon size={20} aria-hidden="true" /></TemplateNameLink></div>
+              <div className="wb-actions"><TemplateNameLink>Name a template <ArrowRightIcon size={20} aria-hidden="true" /></TemplateNameLink></div>
             </div>
           )}
         </section>

@@ -78,3 +78,73 @@ Measured on all seven pages in Chromium at 320, 390 and 1440 for every role that
 - On Update detail at phone widths the band meta wraps after "Management ·", leaving the separator at the end of the first line.
 
 Zero open P0, P1 and P2 in alignment and geometry: **no** (3 P1, 18 P2 open).
+
+## Round 2
+
+October 19, 2026 · build `2e7495c` on the frozen preview · same accounts. Chromium at 320, 390, 844×390, 768, 1024, 1180 and 1440, with WebKit spot checks (Insights at 390 and 1024, Scheduling rules at 1440). Every non-GET request was aborted. The one exception was the read-only `POST /api/reports` for the Insights first load, as in round 1. Nothing was saved. One script's generic `form button[type=submit]` selector matched the desktop sign-out button. That button was hidden, so the script never clicked it, and the route would have aborted the POST anyway. I re-ran the script with the selector scoped to `.wb-page`. Crops are in `crops/r2/` (same folder as round 1). One test-only style was injected into a page to measure the AL-B05 fix; it isn't in the code.
+
+**Verdict.** 16 of the 21 round-1 findings are fixed. Fields, tables, the At a glance subgrid, desktop rows and the landscape save bar now measure right. The AL-B05 fix regressed: it hides every success toast on Scheduling rules and Templates. The new heading links on Scheduling rules land under the desktop header. Both are P1. Count: **0 P0, 2 P1, 9 P2 open.**
+
+### Status of round-1 findings
+
+| ID | Status | Measured now | Where |
+|---|---|---|---|
+| AL-B01 | Fixed | Overflow 0 in all four tables at 320, 390, 768, 1024, 1440 and 844×390 (Owner and Manager). The 460 px column at 768 and the 350 px half-cards at 1024 use stacked rows. Names take 2 lines at most. | `premium-wave-b.css:159, 171-194` |
+| AL-B02 | Fixed | Below 27rem the card uses one-column rows: "14h 26m" and "4h 53m" each fit on 1 line at 320 and 390. From 768, the three values sit on 1 line with equal baselines (1317 / 1317 / 1317). WebKit is the same. | `:431-436` |
+| AL-B03 | Fixed | Value baselines in a row differ by 0 px at 320, 390, 768, 1024, 1440 and 844×390, including rows with two-line labels. WebKit is the same. | `:136-138` |
+| AL-B04 | Fixed | Every single-line field is 48 px on Scheduling rules, Compose and Payroll settings, with the darker border rgb(133,139,143). | `:38, 45-49` |
+| AL-B05 | **Regressed** (P1) | The gap is right: 16 px (band → "On this page" 264 → 280; week card → next 437 → 453). But `display:none` on the wrapper also hides the fixed toast inside it. "Scheduling rules saved.", "Coverage period added.", "Coverage period removed.", "Template saved." and "Template archived." are 0 × 0 and hidden by `.wb-feedback`. Polled for 10 s, they never appear, and the `role="status"` is never announced. The server actions still redirect to these URLs (`schedule/settings/actions.ts:109, 161, 184`; `schedule/templates/actions.ts:43, 66`). Crops: `crops/r2/rules-saved-390.png`, `crops/r2/tpl-saved-390.png`. | `:438` |
+| AL-B06 | Fixed in CSS (can't be seen until AL-B05 is fixed) | With the wrapper set to `display:contents`, the toast is 8 px above the bar: 390: toast 636–692, bar from 700. 1024: toast 744–800, bar from 808. | `:440-445` |
+| AL-B07 | Fixed | Remove's cap centre is 0.7 px from the title's at 390 and 844×390 (3744.54 against 3743.82), and 1.7 px at 768, 1024 and 1440. Baselines differ by 0–1 px. | `:349` |
+| AL-B08 | Fixed | First day → Last day 16 (768+: 16 across). Target → Maximum 16. Minimum staff → "Designated lead required" 16. Name → fields 16. | `:127, 312, 316-317` |
+| AL-B09 | Fixed | Rows stack until 1180. At 1024 the staffing field is 466 px, with the checkbox 16 px under it. The hours row is 168 px (the same as on phones). At 1180: name 230, fields 322. | `:369-372` |
+| AL-B10 | Fixed | At 1024 the paired cards have equal heights: 170/170, 174/174 and 147/147. 1440: 150/150, 130/130 and 142/142. | `:224` |
+| AL-B11 | Fixed | "View period" and "Refresh" share a row at every desktop width: 184 + 184 at 1024, 204 + 204 at 768, 296 + 296 at 1440. | `:449`, `reports.tsx:151` |
+| AL-B12 | Fixed | The icon centre is 0.5 px from the first line's centre at 320, 390, 768, 1024, 1440 and 844×390 (WebKit 0). | `:141-142` |
+| AL-B13 | Fixed | On two-line labels the box centre is 0.18 px from the first line's cap centre (320, 390). | `:68, 71` |
+| AL-B14 | Fixed | Text at x 16 on phones (band 16) and 318 at 1440 (band and card text 318). | `:386, 445` |
+| AL-B15 | Fixed | A full-width hairline, then the note 17 px under the last row (16 padding + 1 border). Crop: `crops/r2/upd-manage-1024.png`. | `communication-detail.tsx:103` |
+| AL-B16 | Partly fixed (P2) | Records, recipients, settings, periods, templates, history and the stacked table rows now inset 20 / 0, with no divider above the first row. Still open: the Manager's policy facts (`.wb-facts`) draw `border-top` inset 20 on **both** sides. Fix: `.wb-facts{margin-right:calc(-1*var(--nv-s-5))}` and `.wb-facts > div{padding-right:var(--nv-s-5)}`, so the divider runs from the text edge to the card edge. | `:365` |
+| AL-B17 | Partly fixed (P2) | Fixed: "Save quantities" fits on 1 line at 320, and the form is 248 px (`:352`). Still open: **"Name your first template"** wraps at 320 (248 px), and its arrow is 11 px below the first line's centre (1143 against 1132). Fix: shorten it to "Name a template" with the copy owner, or `.wb-actions .nv-btn > svg{align-self:flex-start;margin-top:2px}`. "Save company preferences" (2 lines at 320) is payroll wording, deferred to Jose and not counted. | `templates/page.tsx:170`, `:21` |
+| AL-B18 | Fixed | "Review schedule" is 44 px tall (508–552), and the lines stay 24 px apart. | `:249` |
+| AL-B19 | Fixed at 1024 and 1440 (see AL-B24 for 768) | The nav top equals the first card's top (285). The label sits on the first title's line (305). Label and link text are at the band title's x (280 at 1024, 318 at 1440; WebKit the same). | `:373-379` |
+| AL-B20 | Partly fixed (P2) | Fields grow with text: 72 px at 150% and 96 px at 200%, with 8 px padding. Still open at 200%: the select chevron stays **18 px** beside 34 px text. Weekly hours' **"Find a person"** search stays **52 px** with 1 px top and bottom padding, while the fields beside it are 96. The `type=search` field is left out of the WR-55 rule, and `:324` only sets the left padding. Fix: `:53, :286` `background-size:1.125rem 1.125rem`; `:324` add `padding-block:var(--nv-s-2)`. Crop: `crops/r2/z200-rules-search.png`. | `:53, 286, 324` |
+| AL-B21 | Fixed | At 844×390 the bar is static at the end of the form (y 3148), 16 px from the cards above and below, and clear of the tab bar. | `:451-453` |
+
+### New findings, worst first
+
+| ID | Page · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| AL-B22 | Scheduling rules · O, M · 1024, 1440; phones | "On this page" links → `#rules-staffing`, `#rules-hours` (and `#rules-coverage` when the page can scroll) | **1440:** after the click, the heading's top is at **0** and the card's top at −20. The header ends at 65, so the heading that takes focus, plus the top of its card, sits **completely under the header** (WCAG 2.4.11). **390:** heading at 84 and card top at 64, so the card's top edge is 4 px under the 68 px header. | crops/r2/rules-jump-1440-rules-hours.png, crops/r2/rules-jump-390-rules-staffing.png | The links now target the `h2` ids (`settings/page.tsx:32, 87-90`), but `scroll-margin-top` is set only on the section ids (`premium-wave-b.css:309`). | `.wb-rules .nv-card__title[id]{scroll-margin-top:20px}` on phones, and `108px` from 761. Checked in the page: phones put the card top at 84 (16 below the header). Desktop puts the card at 88 and the heading at 108, matching the section rule. Note: an uncommitted change in the worktree (not on the preview) adds these ids to `:309` at 88px. That would put the desktop heading at 88, with its card top at 68, only 3 px under the header. On phones the card would land at 152. Use 108 (desktop) and 20 (phones) on the headings instead. | P1 |
+| AL-B23 | Insights · O, M · 1024; 844×390 | At a glance grid | `auto-fill` leaves empty cells: **1024** shows 4 + 2, with two empty 179 px cells (358 px of blank card). **844×390** shows 5 + 1, with four empty cells (650 px). The hairlines stop in the middle of the card. | crops/r2/ins-glance-1024.png, crops/r2/ins-glance-land.png | `premium-wave-b.css:136` `repeat(auto-fill, minmax(min(100%,10rem),1fr))` | Make the card a container, `.nv-card:has(> .wb-glance){container-type:inline-size}`. Keep `:136` for narrow cards, and add `@container (min-width:36rem){.wb-glance{grid-template-columns:repeat(3,minmax(0,1fr))}}` and `@container (min-width:60rem){…repeat(6,…)}`. That gives 3 + 3 at 1024 and in landscape, and 6 at 1440. | P2 |
+| AL-B24 | Scheduling rules · O, M · 768 (761–1023) | "On this page" label and note | The nav stays a row of pills here (pills at x 260, pill text at 276), but the label and note moved to **280**. They're 20 px off the pill edge and 4 px off the pill text. On phones the label sits on the pill edge (16 = 16). | crops/r2/rules-nav-768.png | `:446` adds `padding-inline` from 761. The column nav only starts at 1024 (`:373`). | Move `:446` into the 1024 block (`:373-379`). | P2 |
+| AL-B25 | Insights · O, M · 1024, 1440 | Top row: Report period against Export | The two cards in one row end at different heights: **1440** 274 against 242 (**32 px**), and 1024 274 against 282 (8 px). The card below starts 16 px under the taller one. AL-B10 fixed this for the card grid, but not here. | crops/r2/ins-top-1440.png | `:126` `align-items:start` | In the 1024 block (`:223`), add `align-items:stretch` to `.wb-insights-top`. | P2 |
+| AL-B26 | Scheduling rules › Recurring coverage · O · 320 (wraps below about 360) | "Remove" on a period | Remove wraps under the period text. Its label sits **8 px right** of the text edge: label at 44, while the day tile and "Position quantities" are at 36. | crops/r2/rules-period-320.png | `:349` gives the button 8 px left padding with no negative left margin. `:535` (`flex:1 1 9rem`) makes it wrap. | `:349` → `margin:-11px -8px -11px -8px`. The label then lands on 36 when it wraps; on one line nothing moves. | P2 |
+| AL-B27 | Update detail · O, M · 768, 1024, 1440 | Withdraw confirm (`.wb-confirm`) | From 761 the confirm takes its natural width: **280–780 at 1024**, ending 176 px short of the card's text edge (956), beside the full-width note above it. On phones it spans 20 / 20. | crops/r2/upd-withdraw-1024.png | `:82` gives `.wb-actions > div` `flex:0 1 auto`. The confirm is a direct child of `.wb-actions`. | `.wb-actions > .wb-confirm{flex:1 1 100%}` | P2 |
+| AL-B28 | Insights · O, M · phones | Section shortcuts (`#report-hours` and the other three) | On phones a jump lands the card at **172**, 104 px under the 68 px header, while Scheduling rules lands at 84 (16 under). The 88 px section margin adds to the phone `scroll-padding-top` (84). Desktop is right (88). | No crop; measured with `jump.mjs` (card top 172 at 390, 88 at 1440) | `:153` (and `:309`) set `scroll-margin-top:88px` at every width. | Apply `:153` and `:309` only from 761. | P2 |
+
+### Checked and correct this round
+
+- **Card frame.** Card edges 16 / W−16 and 16 px gaps on every page measured. Scheduling rules' gaps are 16 in landscape too, with the save bar in flow.
+- **Scheduling rules.** Inset row dividers (20 / 0). The day tile grows (44.05–44.69 px) with its text centred within 0.5 px. Remove's right text edge is 20 px from the card. Save bar: phones 700–768 (tab bar from 776); desktop 16 px from the bottom on the content column (470–976 at 1024, 530–1386 at 1440).
+- **Field-level errors on Compose (Title, Message).** 8 px under the field. The icon sits at the text edge and the text 24 px in (icon 18 + gap 6). The icon is within 1.5 px of the cap centre. The red border appears with `aria-invalid`. Help text is 8 px under the error. Measured at 390 and 1440.
+- **Insights export error.** 16 px under its buttons, inside the Export card, with text at the icon + 24 (390, 1440). "As of" sits at the card text edge on 1 line.
+- **Withdraw confirm on phones.** Inset 20 / 20, 16 px padding, radius 12, buttons full width.
+- **Payroll runs stepper (payroll reviewer, 320 and 390).** Five 28 px dots are evenly spaced and centred in the 318 px wrap (18 px in on both sides). The current-step box is full width.
+- **WebKit.** Insights at 390 and 1024 and Scheduling rules at 1440 match Chromium within 0.5 px.
+
+### Not covered this round
+
+- Saved template rows (Apply, Archive confirm): there's no saved template, and inserting one wouldn't run the React confirm.
+- The notice and focus after Acknowledge: the button was disabled for the Employee on this update, and I didn't force it.
+- Loading placeholders: band heights are in stability's area. I checked no placeholder geometry.
+- Payroll settings and Compose at 768 and 1024, and Update detail at 1440.
+
+### Outside my area, noticed in passing
+
+- **Insights.** When View period fails, the message is the page-level "Insights unavailable" card (16 px under the top row), not an error beside the period control. The Export buttons are disabled and the export error clears.
+- **Type.** `hyphens:auto` splits glance details in landscape ("compar-isons", "re-quests").
+- **Scheduling rules › Position quantities.** At 320 the summary "Position quantities · Optional" is repeated as the form's legend just below it.
+- **Toast (shared).** On desktop the toast's right edge (1000 at 1024) sits 24 px past the content column (976).
+
+Zero open P0, P1 and P2 in alignment and geometry: **no** (2 P1: AL-B05, AL-B22; 9 P2: AL-B16, AL-B17, AL-B20, AL-B23 to AL-B28).

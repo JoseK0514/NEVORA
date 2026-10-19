@@ -24,7 +24,7 @@ export function periodInsights(report: PeriodReports): Insight[] {
     report.attendance.state === 'limited'
       ? { id: 'attendance', label: 'Clock-in notes', value: 'Incomplete', detail: 'Some comparisons are unavailable', href: '#report-attendance', tone: 'neutral' as const }
       : { id: 'attendance', label: 'Clock-in notes', value: String(notes), detail: notes ? `${plural(notes, 'clock-in', 'clock-ins')} to look at` : 'Nothing to note', href: '#report-attendance', tone: notes ? 'attention' as const : undefined },
-    { id: 'requests', label: 'Time off and callouts', value: String(report.timeOff.length + report.callouts.length), detail: `${plural(report.timeOff.length, 'time-off request', 'time-off requests')} · ${plural(report.callouts.length, 'callout', 'callouts')}`, href: '#report-changes' },
+    { id: 'requests', label: 'Time off and unable to work', value: String(report.timeOff.length + report.callouts.length), detail: `${plural(report.timeOff.length, 'time-off request', 'time-off requests')} · ${report.callouts.length} unable to work`, href: '#report-changes' },
     { id: 'coverage', label: 'Coverage filled', value: coverage.observedCoverageRequests ? `${coverage.completedCoverageRequests} of ${coverage.observedCoverageRequests}` : '—', detail: coverage.observedCoverageRequests ? 'coverage requests filled' : 'No coverage requests', href: '#report-changes' },
     { id: 'approvals', label: 'Timecards to finish', value: String(pendingCards), detail: pendingCards ? `of ${plural(report.approvals.length, 'timecard', 'timecards')} still open` : 'All timecards finalized', href: '#report-approvals', tone: pendingCards ? 'attention' as const : undefined },
   ];

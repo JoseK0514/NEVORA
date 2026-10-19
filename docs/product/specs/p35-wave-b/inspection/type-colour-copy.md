@@ -155,3 +155,84 @@ October 19, 2026 · Inspector: type, colour and copy (prefix TC-B) · Read only:
 - **No access.** Employee on Insights and Manager on Payroll settings or Payroll runs land on Home with no error text. Whether they should see a reason is the widths-roles area.
 
 **Does the type, colour and copy area have zero open P0, P1 and P2? No.** It has 5 P1 and 14 P2 open.
+
+## Round 2
+
+October 19, 2026 · Preview frozen at `2e7495c` · Read only. Every non-GET request was aborted or held, and nothing reached the server. Line numbers are at `2e7495c`.
+
+`S2/` stands for `S/` plus `shots2/`, `crops2/`, `raw2/` and `raw-states2/`. The scripts are `scan2.mjs` and `collect2.js` (round 1's collector plus a check for words broken across lines), `states2.mjs`, `savebar.mjs` and `ta.mjs`.
+
+**What ran:**
+- 368 page snapshots (Chromium) with every `details` open:
+  - Owner and Manager on the six pages at 320, 390 and 844×390 (100/125/150/200%), and at 768, 1024 and 1440 (100/200%)
+  - Lead, Employee and AUDIT-LONG on Update detail and Compose at 320, 390 and 844×390 (100/150/200%)
+  - Payroll runs (`payroll-qa-reviewer`, `payroll-qa-owner`)
+  - the Templates and Scheduling rules URL variants
+- WebKit spot checks at 390 and 1440 (Owner), and 320 (Employee)
+- 46 state scenarios at 390
+- Three loads hit the shared server's "could not be loaded" page (Manager Compose 390, WebKit 1440 Insights and Templates). Each passed on its retry.
+
+**Uncommitted fixes.** The worktree already holds uncommitted round-2 edits. They touch `premium-wave-b.css`, Compose, Update detail, Insights, the policy form and `backlog-review.tsx`. Those edits are not on the preview, so nothing below counts them as fixed. Where one already covers an item, the item says so.
+
+### Status of round-1 findings
+
+| ID | Status | Measured on `2e7495c` |
+|---|---|---|
+| TC-B-01 | **Partly fixed (P1 open)** | Fixed at 125% and at 390@150. Still failing at large text:<br>• **320@200:** the pill reads "Acknowledgeme…". Its right edge is 331 against the card's 304. Seen as Owner, Manager, Lead, Employee and AUDIT-LONG.<br>• **Employee and Lead help text, 320@200:** "Acknowledgeme…" ends at 334 against 304.<br>• **Receipt heading, 320@150/200 and 390@200:** it breaks mid-word with no hyphen, as "Acknowledgeme / nt required".<br>Cause: `premium-wave-b.css:457–459` lets the pill wrap but not break a long word, and `.wb-receipt` (`:121`) still doesn't wrap. Crops: `crops2/r2-detail-head-320-200.png`, `r2-detail-receipt-320-150.png`, `r2-detail-e-receipt-320-200.png`. Same defect as WR-B-04, which the worktree partly addresses. |
+| TC-B-02 | Fixed | No value breaks mid-word and no label is cut at any width or size. Values stay whole ("15h 35m", "Not available"). The new hyphenation is filed as TC-B-23. |
+| TC-B-03 | Fixed | The dates read "Revision 1 · Effective Thu, Jan 1, 2026" and "Recorded Oct 19, 2026, 9:12 AM", and the impact range reads "Sep 21 – Sep 27, 2026". No split at 320–390, 100–200%. "Recorded" uses the browser's time zone, because payroll data carries no zone (noted only). |
+| TC-B-05 | Fixed | A failed read on both pages shows "Payroll could not load." with its icon, instead of "Failed to fetch". `.pw-error` has an icon. The 401 text and the action reference are payroll wording (decided), so they stay in the suggestions. |
+| TC-B-04 | Fixed | At 1024@200, the buttons sit inside 976: Download CSV and Print end at 956, Add coverage period at 874, Save trade policy at 874, Save template at 472. |
+| TC-B-06 | Fixed | "Optional" wraps under its title (320@200: 36–147). "Designated lead required" ends at 871 at 1024@200, 661 at 768@200 and 284 at 320@200. |
+| TC-B-07 | Fixed | Zero U+0027 apostrophes in visible text, `aria-label`s or options across all 414 snapshots. |
+| TC-B-08 | Fixed | The label reads "Available until (Puerto Rico time)". The error reads "Choose a valid date and time in Puerto Rico time." |
+| TC-B-09 | Fixed at the filed size | At 320@100: the placeholder "Add a short, clear title" fits (202 in 218), and the select fits ("Location announcement" in 194 after `padding-right:40px`). Still cut: "Find a person" at 320@200 (200/188). The select cuts from 125% up, which a closed select can't avoid. |
+| TC-B-10 | **Partly fixed (P2 open)** | Fixed: the loading, offline, failed and export wording; "Some clock-ins couldn’t be compared with the schedule."; "Former employee"; "As of …".<br>Still shown:<br>• The glance detail "Some comparisons are unavailable" (`src/lib/reports/insights.ts:25`), beside the card's new "Some clock-ins couldn’t be compared". Fix: "Some clock-ins couldn’t be checked".<br>• On 401, "Insights access ended / Sign in again with a manager or owner account." (`reports.tsx:62`). Fix: "Signed out / Sign in again to see Insights."<br>The `project.ts` strings ("Position not captured", "A count, not a reliability score.") come under the decided report-definitions item. |
+| TC-B-11 | Decided: kept as a suggestion | Report definitions wording (`project.ts`) needs Jose's approval. My suggested set stays in round 1. Not counted. |
+| TC-B-12 | Fixed | "Time off and callouts" is used in both places. "Scheduled vs recorded" is used in the glance, card and table, and "Recorded time" throughout. The card says "No coverage requests in this period." The "&" against "and" is in TC-B-26. |
+| TC-B-13 | Fixed (source) | `reports.tsx:31` builds "Coverage request filled", "Shift trade completed" and "Older shift change updated". There's no data to show it on screen. |
+| TC-B-14 | **Partly fixed (P2 open)** | The page banners are fixed: "Scheduling rules saved.", "Coverage period added/removed.", "That coverage period already exists.", lowercase "lead" and "Enter a day, a start and end time…".<br>The new client forms instead show the server's inline text, which is still the round-1 wording (`src/app/app/schedule/settings/actions.ts:187–191`, `:197–198`, `:208`, reached through `wave-b-forms.tsx:78` and `:139`). For example:<br>• "Coverage window could not be saved. Check duplicate periods, active positions…" (a duplicate period, reachable by a normal Owner)<br>• "…designated Lead is required for each unconfigured location."<br>• "Review approval mode … completion advance must not exceed submission advance."<br>Fix: use the page's wording (settings `page.tsx` `?error=` map) for `inputErrors` and the two fallbacks. |
+| TC-B-15 | Fixed (on screen) | Seen:<br>• "How requests are approved": "Not set yet", "Automatically, when the request is valid" and "A manager reviews each one"<br>• "Ask at least / Finish at least this many minutes before the shift"<br>• "Leave blank if you haven’t decided. 0 means right up to the start."<br>• "Couldn’t load this policy…"<br>The server's invalid message is in TC-B-14. |
+| TC-B-16 | **Partly fixed (P2 open)** | Fixed:<br>• Update detail: the band carries the state and the card only the action<br>• 403 reads "You can’t open this update"<br>• Compose: "Loading the form" and "Can’t open the form right now"<br>• Preview failure: "Audience couldn’t be checked. Try again."<br>• The legend matches the title<br>Still open:<br>• **Offline on Update detail** shows "Paused while you were away / Come back to this page to see the current update." on that page (`communication-detail.tsx:45–46`, `state-detail-offline-390.png`). Insights says "You’re offline" here.<br>• **Compose signed out (401, Owner and Employee)** says "Check your connection, then retry. If it keeps happening, you may not have access." There's no "Sign in again", because `signedOut` (`communication-compose.tsx:126`) never matches the parsed `unavailable/access_denied` (`state-compose-401-390.png`). The worktree already has the fix.<br>• **Leftover wording:**<br>  • "We could not confirm the result" (`communication-compose.tsx:99`) against "We couldn’t…" on line 102<br>  • "Unable to confirm / We could not confirm this update. Retry to check current information." (`communication-detail.tsx:97–98`)<br>  • "Review the latest context and preview again." (`:99`) |
+| TC-B-17 | Fixed | Reads "Applied 3 shifts. 1 skipped because of current conflicts or unavailable employees. 1 added with a warning to review." |
+| TC-B-18 | Fixed | The count is 12/16/600 at 100%, scaling to 24/32 at 200%. |
+| TC-B-19 | Decided: kept as a suggestion | The cut is caused by payroll option wording ("Neutral instructions · compatibility unverified" is 354px in 220 at 320). Payroll strings need Jose's approval. The payroll selects still have 220px of room at 320 (no padding change). Not counted. |
+
+### New findings
+
+| ID | Page · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| TC-B-20 | Scheduling rules · Owner (Manager by the same code) · every phone width and 844×390 | Save bar status `.wb-savebar > p.wb-error` and `p.wb-saved` | **On a phone the save bar never shows its result.**<br>• Phone: after an aborted save, the bar shows only "Save staffing & hours" at 0.5, 3 and 8s. It has no error, and it would show no "Scheduling rules saved." either.<br>• 1440: the same press shows "Changes could not be saved. Your entries are preserved; try again." inside the bar. | `S2/shots2/savebar-fail-390.png`, `savebar-fail-1440.png` | `premium-wave-b.css:337`: `.wb-savebar > p{display:none}` (meant for the note) also hides the status paragraphs. Same as IS-B8 and ST-B12. | `.wb-savebar > p.wb-note{display:none}` only. The worktree already has this, uncommitted. | **P1** |
+| TC-B-21 | Insights · Owner, Manager · 320@200 | Period summary values `.nv-stat__value` | The values are cut by the card:<br>• "15h 35m" reads "15h 35" (right 327–339 against 304)<br>• "5h 27m" reads "5h 27"<br>• "12" reads "1"<br>Numbers losing digits is worse than a wrap. | `S2/crops2/r2-summary-320-200.png` | `premium-wave-b.css:433–436`: a row layout with a nowrap value and a `1fr` track. Same as WR-B-09. | `.wb-summary-card .nv-stats{grid-template-columns:minmax(0,1fr)}`, plus `.nv-stat{flex-wrap:wrap}`. The worktree has this inside a container query. | **P1** |
+| TC-B-22 | Scheduling rules · Owner · 320, 390 at **100%** and up | Trade and coverage "How requests are approved" `select[name=mode]`, closed | The selected value "Automatically, when the request is valid" is 313px of text in 220px (320) and 290px (390), so it shows "…when the request is…". It's cut on both policy forms. | `S2/crops2/r2-policy-select-390.png` | `shift-change-policy-fields.tsx:18` option label (the wording I suggested in round 1, too long for a closed select) | Option "Automatically" with the condition in help text ("When a request is valid, it’s approved automatically.") or the Manager's read-only "Automatically, when valid" | P2 |
+| TC-B-23 | Insights, Update detail · all roles · 844×390@100, 768@100, WebKit 1440@100; 320@125+, 390@150+ | `.wb-glance__detail`, `.wb-glance__label`, `h2.wb-strong` | `hyphens:auto` hyphenates words that would fit on the next line, at default text size:<br>• "Some compar- / isons are unavailable", "0 time-off re- / quests" (landscape and 768)<br>• "Timecards to fin- / ish" (WebKit 1440)<br>• "isn’t pub- / lished" (320@125)<br>• "Confirm you re- / ceived" (WebKit 320@125)<br>Short UI labels shouldn't hyphenate. | `S2/crops2/r2-glance-844-100.png`, `r2-glance-320-125.png` | `premium-wave-b.css:459` (round-1 fix) | `hyphens:manual` on those selectors. Keep `overflow-wrap:break-word` for a single word wider than its box. The worktree sets `manual` for the glance only, and adds `hyphens:auto` to `.nv-status, .nv-btn`; check that it doesn't do the same there. | P2 |
+| TC-B-24 | Compose · all roles · every width (also the Payroll textareas and search) | Message `textarea#communication-body` border | The Message field's border is #D5DAD9, **1.41:1** on white. Every other Wave B field is at 3.45:1 (`--nv-field-border`). The payroll textareas are 1.24:1 and the payroll search 1.41:1. | `ta.mjs` matched-rule trace; `raw2/*updates_compose*` `fields` | Shared `portal-premium.css:870` `:is(textarea, input[type="search"]){border:1px solid var(--nv-border)}` outranks `premium-wave-b.css:45` | In `:870`, `border-color: var(--nv-field-border)` (coordinator's shared file) | P2 |
+| TC-B-25 | Payroll runs · Manager `payroll-qa-reviewer`, Owner · 320@150/200, 390@200, 1440@200 | Run period `strong`, payday `small`, run heading `h2` | Dates split inside themselves:<br>• "Sep 21 – Sep 27, / 2026"<br>• "Tue, Oct / 13"<br>• "Payday Tue, Sep / 29"<br>That's 12 splits at 320@200. Round 1 missed this. | `raw2/chromium-payroll-qa-reviewer-320-payroll-open-200.json` (`splits`) | `src/components/payroll/payroll-runs.tsx:36`, `:77`, `:104`; `backlog-review.tsx:24`, with no `keepWhole` | Wrap them in `keepWhole(...)`. Formatting only; the payroll wording stays. The worktree covers `backlog-review.tsx:21` only. | P2 |
+| TC-B-26 | Scheduling rules, Insights · Owner, Manager · every width | Names and connectors | **The trade policy has three names in a row:** the nav link "Trade & coverage", the heading "Trade & coverage policy", then the disclosure "Shift trade & coverage policy" (`settings/page.tsx:92`, `:175`; `shift-change-policy-fields.tsx:16`).<br>**"&" in running text:** "Staffing & weekly hours save together and apply right away." (`wave-b-forms.tsx:90`, desktop bar), which repeats the nav note "Staffing and hours save together…".<br>**Mixed connectors and names:**<br>• "Shift changes & coverage" next to "Time off and callouts" (`reports.tsx:74`)<br>• "cover requests" against "coverage requests" (`shift-change-policy-fields.tsx:32`) | `S2/raw-states2/settings-manager-390.json` | as listed | • One name: "Trades and coverage" (link) / "Trade and coverage policy" (heading), with the disclosure as "Policy details"<br>• Bar note: "Staffing and weekly hours save together."<br>• "Shift changes and coverage"<br>• "coverage requests" | P2 |
+
+**For other inspectors (not filed here):** in landscape at 100%, At a glance shows five cells and leaves the sixth alone on a second row (`crops2/r2-glance-844-100.png`; AL-B23 in the worktree). The masthead title "Scheduling rules" breaks inside "Scheduling" at 320@200 (kit `nv-masthead__title`).
+
+### Payroll wording suggestions added (not defects)
+
+- The stepper hint reads "Approve: Approve this revision", which repeats the step name. Suggested: "Approve: check the totals, then approve this revision".
+- Save failure reads "The action response was interrupted. Check its reference." with the UUID shown. Suggested: "We’re not sure this saved. Check before trying again." with the reference kept behind "Show details".
+
+### Checked and correct
+
+- **Contrast.** The lowest text is 5.14:1 (muted on the inset, Compose). The lowest meaningful icon is 3.04:1. Other fields' borders are 3.45:1. The invalid border and the focus ring pass.
+- **Type.** On phones, nothing is under 15px at any size, and landscape keeps the phone roles. Every Wave B text run matches a kit role, except the masthead Back link (kit). The Payroll runs `pw-` desktop sizes were noted in round 1 (Desktop session).
+- **New wording reads plainly:**
+  - "Withdraw this update for 5 people? They won’t see it anymore." then "Withdrawing…"
+  - "Remove Monday, All day?" / "Keep period"
+  - "Saving template…" and "Template not saved. Check your connection and try again; your name is kept."
+  - "Not removed. Check your connection and try again."
+  - "Finishing time can’t be more minutes ahead than the time to ask."
+  - "Policy saved." and "We couldn’t confirm the save…"
+  - Compose field errors under Title, Message and Available until: "Choose a time later than now."
+  - "As of Oct 19, 2026, 2:04 PM"
+  - "Payroll could not load." with its icon
+- **Every error seen has an icon and a word.** These included the inline save errors on Scheduling rules and Templates, the Insights period and export errors, Compose's field errors, the Update notices and payroll.
+- **No ISO dates or straight apostrophes.** No UUID either, except the payroll action reference (suggestion).
+- **Dates and times.** On Insights, Templates, Scheduling rules, Update detail, Compose and Payroll settings, none split at any width or size, in Chromium or WebKit.
+
+**Does the type, colour and copy area have zero open P0, P1 and P2? No.** It has 0 P0, 3 P1 (TC-B-01, TC-B-20, TC-B-21) and 8 P2 (TC-B-10, TC-B-14, TC-B-16, TC-B-22 to TC-B-26).

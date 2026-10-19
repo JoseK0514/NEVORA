@@ -19,7 +19,7 @@ import {Reports,ReportsView} from './reports';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 const nextPeriod={startDate:'2026-09-28',endDate:'2026-10-04'};
 const originalName='PRIVATE Original Employee',freshName='PRIVATE Fresh Employee';
-const sections=['Period summary','Scheduled vs recorded','Hours by employee','Hours by location','Hours by position','Clock-in notes','Overtime','Time off and callouts','Shift changes &amp; coverage','Schedule stability','Approval status','Report definitions'];
+const sections=['Period summary','Scheduled vs recorded','Hours by employee','Hours by location','Hours by position','Clock-in notes','Overtime','Time off and unable to work','Shift changes &amp; coverage','Schedule stability','Approval status','Report definitions'];
 function ready(name=originalName,validForMs=15000,p=period){
  const day=p.startDate==='2026-09-21'?'2026-09-22':'2026-09-29';
  const source={employeeId:'E1',employeeName:name,timeZone:'America/Puerto_Rico',...p,pendingCorrections:0,corrections:[],entries:[{id:'T1',locationId:'L1',locationName:'PRIVATE Office',positionId:'P1',positionName:'PRIVATE Captured Support',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:day+'T12:00:00Z',endAt:day+'T20:00:00Z',rawStartAt:day+'T12:00:00Z',rawEndAt:day+'T20:00:00Z',breaks:[]}]};

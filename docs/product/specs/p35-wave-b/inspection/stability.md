@@ -105,3 +105,47 @@ Screenshot: `shots/print-1280-small.png`.
 None in this area.
 
 **Does bars and stability have zero open P0, P1 and P2? No.** There is 1 P0 (ST-B01), 3 P1 (ST-B02, ST-B03, ST-B04) and 7 P2 (ST-B05 to ST-B11).
+
+## Round 2
+
+Re-check on the frozen preview at `2e7495c`, Chromium, October 19. Line numbers refer to `2e7495c`. The worktree already has uncommitted edits in some of these files. Every non-GET was aborted (or held for the pending state). `POST /api/reports` (a read) was let through as in round 1. Nothing reached the server as a change. Scripts and evidence: `…/scratchpad/inspect/stability/r2/` (shortened to `r2/`), raw lines in `r2/*.jsonl`.
+
+### Status by ID
+
+| ID | Status | Now, measured | Where |
+|---|---|---|---|
+| ST-B01 | **Partly fixed**. Still open, now **P1** | The quiet refresh works while a read takes less than 3s. Manager at 390 read for 65s with 6 silent swaps of 52–149ms each. The page didn't change once: the same row node stayed at top 298, height 7670, CLS 0. At 1440, swaps of up to 2,966ms held too. **Any read of about 3.0s or longer still empties the page.** The refresher starts 3,000ms before expiry, expiry aborts it, and `clear('loading')` runs. Seen on the shared server: Owner at 390 emptied at 17.1s and 43.4s out of 65s. The page went 7670→1094 and scroll went 5300→250, then stayed at 250. At 1440 it emptied at 23.7s and scroll went 1400→0. With every read delayed to a fixed 3.5s, it emptied at 8.3s, 23.3s and 38.2s and Download CSV was disabled. It's P1 rather than P0 because a fast connection now holds. A phone on a slow network still can't read past the first screen. `r2/read-QAOWNER-390-*.png`, `r2/readD3500-QAOWNER-390-*.png` | `src/components/reports.tsx:23` (fixed `REFRESH_LEAD_MS=3000`), `:103-104`. **Fix:** set the lead from the last round trip, `min(validForMs/2, max(3000, 2×lastRoundTrip + 500))`. When an expiry does retire the report, keep `scrollY` and restore it when the next report renders. The privacy retire itself stays. |
+| ST-B02 | **Partly fixed**. Open, P1 | Desktop and landscape are fixed. 768 and 1440: `scroll-padding-bottom` 108px, 0 of 30 stops covered. 1440 at 200%: 160px, 0 covered. Landscape: the bar is static and 0 covered. **Phones are not fixed.** Computed `scroll-padding-bottom` is still **80px**. 320: 10 of 30 stops covered (up to 48 of 48px under the bar). 390: 7. 390 at 200%: 11, at 93px under. `r2/savebar2.jsonl` | `premium-wave-b.css:512`. `html:has(.wb-rules .wb-savebar)` has specificity (0,2,1) and loses to `portal-gusto.css:362`, `html:has(body .app-shell.nevora-portal .mobile-nav) { scroll-padding-block: … }` at (0,3,2). **Fix:** use `html:has(body .app-shell.nevora-portal .mobile-nav):has(.wb-rules .wb-savebar) { scroll-padding-block: 84px calc(101px + 3.6875rem + env(safe-area-inset-bottom)) }`. |
+| ST-B03 | **Fixed** (Wave B's part) | Hard load at 390 now matches exactly. Insights 200=200, Templates 244=244, Rules 196=196, Compose 312=312, Payroll settings 128=128. Update detail still shows `updates` at 106px (Owner) or 128px (Lead) → 288. That remainder is the coordinator's `/app/updates/<id>` fix (decided). | `root-loading.tsx:14-18` |
+| ST-B04 | **Partly fixed**. Open, now P2 | Landscape placeholders now come from CSS. Since a62cc79 (full landscape summary) the ready bands changed, though. Placeholder → ready: Insights 140→136, Templates 184→180, Update detail 228→224, Compose 228→224, Payroll settings 108→104 (−4 each), **Rules 152→172 (+20)**. | `premium-wave-b.css:524` (landscape line). **Fix:** insights `calc(72px + 4rem)`, templates `calc(116px + 4rem)`, rules `calc(108px + 4rem)`, update and compose `calc(160px + 4rem)`, payroll settings `calc(40px + 4rem)`. |
+| ST-B05 | **Partly fixed**. Open, P2 | Owner on in-app navigation: all 24 portrait bands match at 320, 360, 390 and 430 (for example, 320: 224/268/220/348/312/152). **Lead and Employee Compose at 320 is not fixed:** 312→348 (+36). | `premium-wave-b.css:520`. The ≤339px `wb-compose` value is shared by both shells. **Fix:** add `html body .app-shell.employee-shell .route-skeleton[data-route="wb-compose"] { --route-band: calc(24px + 20.25rem) }` inside `(max-width: 339px)`. Check 200% after. |
+| ST-B06 | **Not fixed**. Open, P2 | The read arrived after a 2.5s hold. At 320: band 288→348 and first card 284→344 (+60). At 360: 288→324 (+36). | `communication-detail.tsx:45-49`, the loading branch's `PageBand`. Fix as in round 1. |
+| ST-B07 | **Deferred** (decided: coordinator's Inter fix arrives with the merge) | Compose hard load still steps 288→312 on the font swap, at 390 for both Owner and Lead. | not counted |
+| ST-B08 | **Partly fixed**. Open, P2 | 200%: exact at 320 (6 of 6) and at 390 for 5 of 6. **Update detail at 390, 200%: 560→612 (+52).** The steps in between are off because rem interpolation assumes linear wrapping. At 125% (390), placeholder minus ready: Insights +24, Templates −6, Rules +24, Detail +2, Compose +30, Payroll settings +24. At 150%: +12, +12, **+72**, +4, **+60**, +36. A taller placeholder means the content jumps up when the page arrives. | `premium-wave-b.css:520-524`. **Fix:** CSS can't query text size, so measure 125% and 150% and fit each route's value as two segments (for example `max()`/`clamp()` of two rem slopes) instead of one straight line from 100% to 200%. At minimum, correct wb-update at 390 to `calc(-36px + 20.25rem)` (612 at 200%, 288 at 100%). |
+| ST-B09 | **Partly fixed**. Open, P2 | There's no overlap any more, but the gap shrinks. The tab bar is 68, 75 and 83px at 100, 150 and 200%. The stuck bar's bottom sits 8px, 4.5px and **0px** above it (at 200%, bar 657–761 and tab bar 761–844). The CSS comment assumes 75px at 200%. `r2/stuck-QAOWNER-390-f200.png` | `premium-wave-b.css:336`. **Fix:** `bottom: calc(53px + .9375rem + var(--nv-s-2) + env(safe-area-inset-bottom, 0px))`, which matches 68, 75.5 and 83. |
+| ST-B10 | **Fixed** | Landscape: the bar is static and ends the form (3148–3216). 0 of 30 stops are covered. | `premium-wave-b.css:452` |
+| ST-B11 | Decided, not refiled | Coordinator: More is current. | n/a |
+
+### New findings
+
+| ID | Page, role, width | Element | What's wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| ST-B12 | Scheduling rules, Owner (and Manager by the same code), every phone width ≤760 | Status inside `.wb-savebar` | **On a phone, the save bar never shows its result.** I aborted "Save staffing & hours" at 390. `p.wb-error` ("Changes could not be saved. Your entries are preserved; try again.") is in the bar, but its computed style is `display: none`. The bar reads only "Save staffing & hours", so the owner sees no failure. A `role="alert"` with `display: none` isn't announced either. "Scheduling rules saved." is a `p` in the same place, so success is hidden too. The pending label "Saving…" on the button does show. | `r2/savebar-abort-QAOWNER-390-f0.png` | `premium-wave-b.css:337`: `.wb-savebar > p { display: none; }` is meant for the `wb-note` but also matches `.wb-saved` and `.wb-error`. Line `:472` sets only `flex-basis`. | Change `:337` to `.wb-savebar > p.wb-note { display: none; }`. The bar then grows by one or two lines, so add that height to the ST-B02 phone scroll padding (or set it from a `--wb-savebar-h` measured with a ResizeObserver). | **P1** |
+
+### Checked and correct
+
+- Insights: a successful silent swap keeps every node, the scroll position and the height (Manager 390, 65s; Owner 1440). CLS 0 in all runs.
+- Save bar pending: the button reads "Saving…", the bar keeps its height (480–548) and focus stays on the button.
+- In-app navigation placeholders at 100%: 24 of 24 exact for Owner at 320, 360, 390 and 430. Hard load: 5 of 6 exact (the sixth is decided).
+- Desktop save bar: 0 of 30 stops covered at 768, 1440 and 1440 at 200%.
+- Templates week stepper (390): pending state shown for 263ms, height 1233 unchanged, CLS 0.
+- No change reached the server. The writes the route saw were `POST /app/schedule/settings` (aborted) and one dev-overlay `POST /__nextjs_original-stack-frames` (aborted).
+
+### Gaps
+
+- WebKit spot checks weren't run this round.
+- Scheduling rules focus sweep was re-run for Owner only. Manager uses the same form.
+- I didn't trigger a save success, because letting the write through isn't allowed. The hidden "saved" state is inferred from the code at `wave-b-forms.tsx:87-89` and `:337`.
+- `r2/` has a `checks.mjs` result only for Owner Insights. `wb/checks-r2-chromium.txt` ends with "Target page, context or browser has been closed", so the round-2 sweep looks incomplete.
+
+**Does bars and stability have zero open P0, P1 and P2? No.** 0 P0. 3 P1: ST-B01, ST-B02, ST-B12. 5 P2: ST-B04, ST-B05, ST-B06, ST-B08, ST-B09.

@@ -93,3 +93,81 @@ On a 1440 desktop at 100% the pages look finished. A demanding client would noti
 - Payroll stepper labels ("Amounts", "Approve", "Publish"): if the step names were shorter or the stepper used numbers on phones, WR-B-11 would disappear without layout changes.
 
 **Zero open P0, P1 and P2 in widths, roles and consistency: no** (11 P1, 9 P2).
+
+## Round 2
+
+October 19, 2026 · build `2e7495c` (the preview mirror's `src` files match the branch byte for byte) · Chromium at 320, 360, 390, 430, 844×390, 768, 1024, 1180 and 1440, with WebKit spot checks of every open item · every non-GET aborted; Insights' report read answered by the round-1 fictional fixture. Paths: `S/shots/r2/`, `S/data/r2-*.json`, `r2b-*.json`, `r2c-*.json`; scripts `r2.mjs`, `r2b.mjs`–`r2i.mjs` (`S` as above).
+
+**Verdict: not at zero (4 P1, 3 P2).** Most round-1 items are fixed. The Insights tables now pick their layout by card width and never scroll sideways. The Rules navigation, staffing pair and day tiles hold at 200%, the payroll stepper fits, and the At a glance values line up. Four P1s remain. Two are text at 200% clipped by `overflow: hidden` cards, which checks.mjs can't see (no page overflow): the Period summary values and the update's pill. The other two: payroll money and dates still split, and the new Archive confirm breaks the Templates row on desktop.
+
+### Status of round-1 findings
+
+| ID | Status | Now measured (Chromium; WebKit the same where checked) | Where |
+|---|---|---|---|
+| WR-B-01 | **Fixed** | Container queries: `sw == cw` for all four tables at 320–1440 and 100–200%. Real table at 1024/100 (716px cards) and 1440, label-and-value rows in the 350px half cards at 1024 and at 761/768. WebKit 1024 the same. | `premium-wave-b.css:159-194` |
+| WR-B-02 | **Fixed** | "Designated lead required" ends 20–264px inside the card at 768–1440, 100–200% (was 6px past at 768/125%). Rows stack below 1180. | `:369-372` |
+| WR-B-03 | **Fixed** | Nav 186px vs content 506px at 1024/200% (was 416 vs 276). 1440/200%: 283 vs 781. | `:374` |
+| WR-B-04 | **Partly fixed** | Fixed at 320/125–150 and 390/150–200 (pill wraps inside, 20px inset). **Still cut at 320/200%:** "Acknowledgement" is one word wider than the card. The pill is 307px in a 248px body and runs 39px past the card edge, so it reads "Acknowledgemen". "Acknowledge update" is 278px wide and 10px past the edge. Every role; WebKit the same. `S/shots/r2/upd-pill-320-200.png`, `upd-ack-320-200.png` | `:457` (pill has `white-space:normal` but `overflow-wrap:normal`); `:21` (`.nv-btn`) |
+| WR-B-05 | **Fixed** | No spin buttons (`appearance: textfield`). "Not set" needs 57px and has 76 at 360, 91 at 390 and 165 at 1024. One column at 200%. | `:528-530` |
+| WR-B-06 | **Partly fixed** | Nothing breaks one word per line any more: at 360/200%, Apply is 288×88 and Archive stacks under it. But the two buttons are still two widths. On phones, Apply fills the row (248–358px) and Archive keeps its own 131–186px, left-aligned. At 430/100% Archive is 131px in a 173px column, and on desktop 127px under a 209px Apply. *(Inserted row, as in round 1.)* `S/shots/r2/tpl-pair-chromium-390-100.png` | `:261` (only `.wb-apply` gets `width:100%`) |
+| WR-B-07 | **Fixed** | Insights Export and period buttons end 20px inside the card at 1024 and 1440, 100–200%; Save template likewise. | `:82` `min(100%,12rem)` |
+| WR-B-08 | **Fixed** | Day names on one line at 320–1440, 100–200%. The tile grows with the text (73×44 at 200%) and Remove moves under the period. | `:534-536` |
+| WR-B-09 | **Partly fixed** | 320/100% fixed: "269h 36m" on one line, inside the card, in the kit's one-column rows. **Larger text now clips.** The row layout's grid track is `1fr`, so it can't shrink below its nowrap content: 374px in a 288px card at 320/200%. The card cuts it at "269h 3", and "0h" and "6" are off the card entirely. At 320/150% the values sit 8px from the edge (track 296), and at 390/200% 4px from it, instead of 20. At a glance is fixed (one line at every width). WebKit the same. `S/shots/r2/ins-summary-chromium-320-200.png`, `ins-summary-chromium-390-200.png` | `:432` (`grid-template-columns: 1fr`), `:433` row without wrap; `kit.css:282` same |
+| WR-B-10 | **Partly fixed** | At 1024 "No provider preference saved" now fits (two columns of 330). "Neutral instructions · compatibility unverified" is still cut at 320, 360, 390 and 1024: it needs 335px and has 300 at 1024, and it's also cut at 1440/200%. At 320 "No provider…" (236/218) and "No channel…" (233/218) are still cut. 768 and 1440/100% are clean. `S/shots/r2/pset-chromium-1024-100.png` | `:538`; `payroll-settings.tsx:107` |
+| WR-B-11 | **Partly fixed** | Stepper fixed: dots with an "Approve: Approve this revision" line at 320–430 and at 768/150%, and labels shown at 768/100%, 844×390 and 1440, for Manager and Owner. WebKit the same. **Not fixed:** in an opened employee amount at 320/100%, "$123.40" breaks as "$123.4" / "0". "$1,000.00" breaks at 320/150% and 390/200%, in both the totals and the lines. "Checked Mon, Sep 21 – Mon, Oct 19" splits "Mon, Oct 19" at 320/100% and 390/150%. `S/shots/r2/payroll-detailsopenpwemployeeamount-320-100.png`, `payroll-checked-320-100.png` | `payroll-workflow.css:60,80` (`overflow-wrap:anywhere` on `dd`); `backlog-review.tsx:21` (no `keepWhole`) |
+| WR-B-12 | **Closed (decided)** | Shared WR-55 rule. Every field is 48px at 100% (3rem, growing with text) with the `rgb(133,139,143)` border on Wave B pages and Timecards alike. | `:38` |
+| WR-B-13 | **Fixed** | "Find a person" is white with the 1px field border (`rgb(133,139,143)`). | `:322-324` |
+| WR-B-14 | **Closed (decided D3)** | Sidebar and breadcrumb unchanged (Owner: Settings; Manager: Scheduling rules). The back link "Schedule" matches the page's place under Schedule, so it isn't refiled. | — |
+| WR-B-15 | **Fixed** | Subgrid: values share one y per row: 598 for all six at 1440, 606 ×4 and 750 ×2 at 1024; WebKit 606 ×4 and 770 ×2. | `:136-138` |
+| WR-B-16 | **Fixed** | At 1024 "View period" and "Refresh" share a row at 184px each; at 768 they're 204px each. They stack full width at 125%+ where they can't fit. | `:449` |
+| WR-B-17 | **Partly fixed** | The title placeholder fits at 320/100 and 125% (218px available, 174 and 212 needed), and "Regular week" fits at every width. The "Update type" select "Location announcement" is still cut at 320 and 360 from 125%: it needs 235px and has 192 or 232. At 320/100% it has 1px to spare. | `communication-compose.tsx:84`; `:51` (40px chevron padding) |
+| WR-B-18 | **Closed (decided WR-41)** | Landscape band 224px on Update and Compose, as decided. | — |
+| WR-B-19 | **Fixed** | Legend = title: "Message today’s team" for Lead, Employee and AUDIT-LONG; "Create update" for Owner and Manager. | `communication-compose.tsx:63` |
+| WR-B-20 | **Fixed** | "1–15" and "16–month end" in `.nv-nowrap`: one line at 320–1440. | `payroll-settings.tsx:103` |
+
+### New findings
+
+| ID | Page · role · width | Element | What's wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| WR-B-21 | Templates · Owner, Manager · 1024–1279 at 100% (Chromium, WebKit); 1440 at 200% | Template row while Archive asks to confirm (the new client form) | When Archive is pressed, `.wb-confirm` spans the actions grid, and on desktop that grid is `flex: none`. The grid widens to the prompt's one-line width: 477px, two 232px columns. That leaves the identity column 0px wide. The name "Regular week" breaks **one letter per line (11 lines)**. Apply moves to the middle of the row, and the confirm runs **89px past the card** at 1024 (14px at 1180), cutting off "Keep template". At 1440/100% it fits, but the name wraps; at 1440/200% "Keep template" is 185px past the card. WebKit the same. *Inserted row with the page's own `ActionForm` markup.* | `S/shots/r2/tpl-confirm-chromium-1024x900.png` | `premium-wave-b.css:272` (`.wb-template-actions{flex:none}` in the ≥1024 row layout) + `:481` (`grid-column:1/-1`) + `:532` (auto-fit columns sized by max-content) | While confirming, stack the row: `P .wb-template-list > li:has(.wb-archive[data-confirming]){flex-direction:column;align-items:stretch}` at ≥1024. Or give the actions `flex:0 1 auto;min-width:0;max-width:min(100%,24rem)` with `.wb-confirm{max-width:100%}`. | P1 |
+
+### Fixes for the open items
+
+- **WR-B-09:** `.wb-summary-card .nv-stats{grid-template-columns:minmax(0,1fr)}` and `.wb-summary-card .nv-stat{flex-wrap:wrap;column-gap:var(--nv-s-3)}`, so the value moves under its label instead of past the card. The same `minmax(0,1fr)` belongs in `kit.css:282` (send it to the coordinator).
+- **WR-B-04:** `P .nv-status{overflow-wrap:anywhere}` (or `hyphens:auto` with `lang="en"`), and `P .nv-btn{max-width:100%;overflow-wrap:break-word}`.
+- **WR-B-11:** in `payroll-workflow.css:60,80`, use `white-space:nowrap` on money `dd` and let the row wrap instead. Pass both dates in `backlog-review.tsx:21` through `keepWhole()`. The wording stays as it is.
+- **WR-B-06:** `P .wb-template-actions .wb-archive > .nv-btn{width:100%}`.
+- **WR-B-10:** make the Output profile field span the row (`grid-column:1/-1`) in the payroll grid. On phones only shorter wording solves it: "Neutral instructions (unverified)" goes in the wording list for Jose.
+- **WR-B-17:** a shorter option, "Location update", or `padding-right:36px` on selects at ≤360px.
+
+### Checked and correct
+
+- **Roles (390, Chromium):**
+  - Employee and Lead on Insights, Templates and Rules, and Manager, `payroll-qa-manager` and `payroll-qa-reviewer` on Payroll settings, land on `/app` with status 200 and no flash of the denied page. Manager and `payroll-qa-manager` on Payroll runs do the same.
+  - Owner and Manager open Insights, Templates and Rules. Lead, Employee and AUDIT-LONG open Update detail (Acknowledge) and Compose ("Message today’s team"). `QAOWNER` and `payroll-qa-owner` open Payroll settings; `payroll-qa-reviewer` and `QAOWNER` open Payroll runs.
+- **AUDIT-LONG:** the long name wraps inside the Insights and Rules rows (right edge 354 against the card's 374) and on the payroll amount rows.
+- **New states, by width:**
+  - Withdraw confirm: 216–286px buttons, 20px inset, at 320, 390, 844 and 1440, up to 200%.
+  - Compose field error under Title: 20px inset at 320/200%.
+  - Insights paused card: 20px inset at 320/200%.
+  - "As of" keeps its date and time whole.
+- **Rules:**
+  - Section links go to `#rules-staffing`, `-hours`, `-coverage` and `-policy`, 44px tall (80px at 200%).
+  - The save bar is 68px at phone 100% and 104px at 200%, sticky 76px above the bottom. It's static in landscape.
+  - Rows stack until 1180 and form two columns (230/322px) at 1180.
+- **Consistency with Phase 2 and 3:**
+  - Bands, titles 30/36 and 32/40, cards (radius 20/16, shadow e1, no border) and fields (48px, radius 12, 17/16px) match Timecards on Insights, Rules, Compose and Payroll settings.
+- **checks.mjs** (`S/../wb/r2/*.txt`, Chromium Owner, run in progress while I worked):
+  - No sideways overflow on Insights, Rules, Templates, Payroll settings or Compose.
+  - The remaining failures belong to other areas: sidebar labels at 12px (the shell), one 503, one 500 and one timeout under load, Insights CLS 0.0243 at 320 (stability), and one axe target-size on Rules at 390 (interaction).
+  - Card-clipped text (WR-B-04, WR-B-09) passes the script, because the page itself doesn't overflow.
+
+### Gaps
+
+- Payroll settings' floating save feedback wasn't reached: "Save company preferences" sent no request with the fields unchanged. Its width is left to the interaction inspector's run.
+- Templates is still measured on inserted rows (decided).
+- Large-data preview not available.
+- WebKit was spot-checked on the open items only.
+- checks.mjs WebKit and the Update and Payroll runs routes were still running.
+
+**Zero open P0, P1 and P2 in widths, roles and consistency: no** (4 P1: WR-B-04, WR-B-09, WR-B-11, WR-B-21; 3 P2: WR-B-06, WR-B-10, WR-B-17).

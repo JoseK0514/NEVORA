@@ -120,3 +120,63 @@ On a 390 touch context, measurements taken right after hover looked unchanged on
 - The operation feedback shows the bare reference UUID. Suggested: label it “Reference” in smaller muted text.
 
 Zero open P0, P1 and P2 in interaction and states: **no**.
+
+## Round 2
+
+Re-check on build `2e7495c`, October 19, 2026. Chromium at 390, 844×390 (touch), 768, 1024 and 1440, with WebKit 390 spot checks on Scheduling rules. Same safety rules as round 1: every non-GET was aborted, held or answered locally before a press; only the Insights read `POST /api/reports` passed (and, for the slow-read test, was delayed locally before passing). No POST, PUT, PATCH or DELETE reached the server. Scripts and logs are in `.../scratchpad/inspect/interaction-states/r2/`, and screenshots in `.../shots/r2/`.
+
+**Verdict.** Most fixes hold: Withdraw and Remove ask first, the client forms keep the page on failure and send one request per press, Compose shows its errors under the fields, and the paused, toast-focus, jump-ring and table-stop fixes are all correct. Three P1s are still open. The Insights quiet refresh still empties the report when a read takes 2.5s or more. The Scheduling rules save bar hides its own error and success on phones. The new rules section links land under the desktop sticky header.
+
+### Status by ID
+
+| ID | Status | Measurement now | Where |
+|---|---|---|---|
+| IS-B1 | **Partly fixed (P1 open)** | With reads of 200–300ms, 4 quiet refreshes in 50s kept the report, scroll, focus and an open disclosure. One natural 3.1s read on the shared server didn't finish in time, so the report emptied at 48s: height 8,226 → 1,094, `scrollY` 4,219 → 250, focus fell to `<body>` and the disclosure closed. With each read delayed locally: at 1.5s, 0 empties in 40s; at 2.5s, empty 3 times (23 of 80 samples); at 3.5s, empty twice. Shots: `ins-refresh-failed-*`; logs: `ins-refresh-390.log`, `ins-slow-*.log` | `reports.tsx:23` (`REFRESH_LEAD_MS=3000`), `:104` (the quiet read starts only 3s before expiry), `:100`/`:103` (remaining time is counted from the request start, so slow reads also shorten the next window) |
+| IS-B2 | Partly fixed | Period error: top 430 of 844 (390) and 343 of 900 (1440), inside the period card. `aria-invalid` and `aria-describedby` are on both dates, and focus moves to First day with a ring. Export error: inside the Export card, but at 390 it renders at 808–848, behind the tab bar (top 776), and isn't scrolled into view. The rest is tracked as IS-B26 | `reports.tsx:162` |
+| IS-B3 | Fixed | After a failed preview and a retry, the error is empty and the preview shows “3 eligible recipients” | — |
+| IS-B4 | Fixed | Empty title: “Title must contain 1–120 characters.” at 442–462, under Title. Title has focus, with `aria-invalid="true"` and `aria-describedby` set to the error. Empty message: the error shows at 627–667 under Message. The same holds for Manager and Employee | — |
+| IS-B5 | Fixed | The first press sends 0 requests and opens “Withdraw this update for 5 people? They won’t see it anymore.” (`role=group`), with focus on Withdraw update. Keep update closes it and returns focus. The confirm press reads “Withdrawing…”, busy, with 1 request for 2 presses | — |
+| IS-B6 | Fixed (Save); Archive by code only | Save with the request aborted: the page stays on Templates and shows “Template not saved…” at 723 under the button. The name is kept and focus stays on Save. Held: “Saving template…”, `aria-disabled`, 1 request for 3 presses. Archive uses the same `ActionForm` with a confirm step (`templates/page.tsx:156`); there's no saved template to press | — |
+| IS-B7 | Fixed | The first press sends 0 requests and opens “Remove Monday, All day? Remove / Keep period” with focus on Remove. Keep period returns focus. Confirm: “Removing…”, `aria-disabled`, 1 request. Aborted: “Not removed. Check your connection and try again.” at 678–718; the page stays and focus stays on Remove. WebKit matches | — |
+| IS-B8 | **Not fixed on phones (P1)**; fixed at 1440 | The button reads “Saving…” while pending at every width (1 request). At 1440 the error shows inside the bar (826–866). At 390, 844×390 and in WebKit 390, the error `p` in the bar computes to `display:none`, as does an injected success line (“Scheduling rules saved.”). A failed or successful save on a phone shows nothing; the label just goes back to “Save staffing & hours”. Shots: `rul-save-abort-QAOWNER-390.png`; logs: `rul-save-*.log` | `premium-wave-b.css:337` (`.wb-savebar > p { display:none }`, specificity 0,8,1) beats `.wb-saved`/`.wb-error` (0,8,0); the `:is()` rule at `:472` sets no `display` |
+| IS-B9 | **Fixed at 390; regressed at 1024 and 1440 (P1)** | At 390, Location staffing and Weekly hours land at 84 (under the 68px header), focused with a ring. At 1024 and 1440, both headings land at top 0, under the 65px sticky header: `elementFromPoint` on the heading returns the header, so the heading and its focus ring are hidden. Round 1 landed the old section targets at the 88px margin. Shot: `rul-link-hours-QAOWNER-1440.png` | The links now target the `h2` ids (`settings/page.tsx:87-89`, `98`, `123`, `134`), but the scroll margin is still only on the section ids (`premium-wave-b.css:309`), and desktop has `scroll-padding-top: auto` |
+| IS-B10 | Fixed | Pending and failure now float above the tab bar. At 390, “Recording action…” shows at 480–760 and the failure at 352–760. At 1440 they sit at 506–876, and at 844×390 at 111–306 (50vh, scrolls inside). The panel covers Save company preferences, but the form is locked while the action is unconfirmed, and Check and Retry are in the panel | — |
+| IS-B11 | Fixed | An aborted Acknowledge leaves the button at 650 → 650 with 0px movement, and the notice renders below the review card. Its visibility is IS-B26 | — |
+| IS-B12 | **Partly fixed (P2 open)** | Fixed: focus moves to the review card (ring) after Acknowledge; to the search field after Show everyone; to Add rule after Remove rule; and the new client forms keep focus on the pressed button (`aria-disabled`). Still falls to `<body>`: Acknowledge pending or failed, Withdraw confirm pending or failed, Publish pending, and Payroll save pending or failed | `communication-detail.tsx:68`, `:91` (`disabled`); `communication-compose.tsx:63` (fieldset), `:100`; `payroll-settings.tsx` fieldsets |
+| IS-B13 | **Partly fixed (P2 open)** | Fixed: a 401 on Acknowledge or Withdraw shows “Access changed” with a Sign in link (`/login`), and a 401 on Publish shows “Sign in again”. Still open: a 401 on the Compose read (Manager and Employee) shows “Can’t open the form right now… Retry” with no Sign in link, because `signedOut` reads `resource.value`, which is null whenever the snapshot is unavailable | `communication-compose.tsx:126`; `client.ts:36` |
+| IS-B14 | Fixed | Saving… (rules bar, quantities, policy, payroll), Adding…, Removing…, Withdrawing…, Confirming…, Publishing…, Saving template…. A related new defect is IS-B27 | — |
+| IS-B15 | Fixed | `?saved=1`: focus stays on `body`, `.wb-feedback` is 0px tall and there's no ring. `?error=save` focuses the feedback, with a ring | — |
+| IS-B16 | Fixed | The Changes link focuses `#report-changes` with a 2px `#077572` ring at top 172, like the other three | — |
+| IS-B17 | Fixed | While loading, View period reads “Loading…” and both buttons are `aria-busy`, with no movement (y 490 → 490). Two taps on Refresh send 2 reads, and the first is aborted (reads only) | — |
+| IS-B18 | Fixed | No `tabindex` on the four regions. `scrollWidth` equals `clientWidth` at 390 (358), 768 (460), 1024 (716 and 350) and 1440 (1,088 and 536) | — |
+| IS-B19 | Fixed | Blur shows “Insights paused / Return to this page to see the current numbers.” and focus reloads the report | — |
+| IS-B20 | Fixed | While held, the week value is at 0.45 opacity, the nav has `pointer-events:none` and the screen reader hears “Loading the week…”; focus stays on Next week. A second Enter re-requests the same URL, which is invisible to the user (not filed) | — |
+| IS-B21 | Fixed | By keyboard, the Audience preview heading takes focus with a 2px ring at offset 4. A failed preview focuses the feedback block, with a ring | — |
+| IS-B22 | Fixed | 2020-01-01 09:00 shows “Choose a time later than now.” under the field, with focus, `aria-invalid` and 0 requests | — |
+| IS-B23 | Fixed | 60/120 gives 0 requests; focus goes to the Finish field with `aria-invalid="true"`, and the message is `role=alert`. The message's linkage and position are IS-B28 | — |
+| IS-B24 | Fixed | Hover `rgb(228,232,231)` (from `rgb(238,241,240)`), pressed `scale(.98)`, and no transform under reduced motion | — |
+
+### New findings
+
+| ID | Page | Role | Width | Element | What’s wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|---|---|
+| IS-B25 | Update detail | Manager, Owner | 390 | Withdraw failure | The aborted confirm inserts “Result not yet confirmed” (379–541) above the management card. The confirm button moves 604 → 782, behind the tab bar (776), and focus falls to `<body>` | `shots/r2/upd-withdraw-abort-390.png` | `communication-detail.tsx:97` (notice rendered before the management card at `:98`) | Render the notice inside the management/Delivery card under its actions, or after the card | P2 |
+| IS-B26 | Insights, Update detail, Templates | all | 390 | Failure text under the tab bar | Failure messages appear below the pressed button but aren't scrolled into view, so they sit behind the 68px tab bar (top 776). Insights CSV export error: 808–848, fully hidden. Acknowledge “Result not yet confirmed”: 738–900; only the title shows, and Check status is hidden. Templates “Template not saved…”: 723–783, so its last line (“is kept”) is cut | `shots/r2/ins-export-error-QAOWNER-390-chromium.png`, `upd-ack-abort-390.png`, `tpl-save-abort-QAOWNER-390.png` | `reports.tsx:162`; `communication-detail.tsx:97`; `wave-b-forms.tsx:56` | After rendering, call `scrollIntoView({block:'nearest'})` on the message. The phone `scroll-padding-bottom` (80px, `portal-gusto.css:362`) then keeps it clear of the tab bar | P2 |
+| IS-B27 | Payroll settings | Owner | 390, 1440 | Save buttons while one save is pending | Pressing Save company preferences turns **both** buttons into “Saving…” (Save employee exception too), because both read the shared `operation.busy` | `shots/r2/pay-save-hold-390.png` | `payroll-settings.tsx:110`, `:159`, `:179` | Track which form submitted and show “Saving…” only on that button; leave the others with their label (locked) | P2 |
+| IS-B28 | Scheduling rules | Owner | 390 | Trade policy order message | The message renders under the whole fieldset (398–438), 80px below the focused Finish field (270–318), and the field has no `aria-describedby` linking to it | `shots/r2/rul-policy-order-QAOWNER-390.png` | `wave-b-forms.tsx:147`, `:167` | Render the message under the Finish field, give it an id, and set `aria-describedby` with `aria-invalid` | P2 |
+
+### Also checked, correct
+
+- Add coverage period and Save quantities: “Adding…” and “Saving…” with `aria-disabled`, focus kept and 1 request each. On failure, “Changes could not be saved…” shows in view under the button (top 470 and 466).
+- Trade policy save: “Saving…” and 1 request. On failure: “We couldn’t confirm the save…” plus Reload current policy.
+- A successful Acknowledge (answered locally with `committed`, then the read patched locally) shows “Acknowledged” and focuses the review card.
+- Role gates are unchanged: Employee on Insights and Scheduling rules, and Manager on Payroll settings, go to `/app`.
+- Payroll runs (reviewer, 320): the stepper shows step 4 as `aria-current` with spoken states, there's no overflow (248/248) and the keyboard order is unchanged.
+- Reduced motion: the toggle press has no transform, and no animation runs when the Remove confirm opens.
+
+### Gaps
+
+- Archive and Apply weren't pressed (no saved template; see Decided). The Insights quiet refresh was measured at 390 only; its timing is the same at every width.
+- Firefox isn't in scope this round. Lead wasn't re-run (it uses the same component as Employee).
+
+Zero open P0, P1 and P2 in interaction and states: **no** (P1: IS-B1, IS-B8, IS-B9; P2: IS-B12, IS-B13, IS-B25, IS-B26, IS-B27, IS-B28).
