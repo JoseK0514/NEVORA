@@ -45,8 +45,8 @@ export function RulesHoursList({ rows }: { rows: RulesHoursRow[] }) {
         <li className="wb-setting manager-issue-target" id={"target-" + row.employeeId} tabIndex={-1} key={row.employeeId} hidden={!shown(row)}>
           <div className="wb-setting__name"><span className="wb-record__title">{row.employeeName}</span><span className="wb-record__meta">{row.detail}</span></div>
           <div className="wb-setting__fields wb-setting__fields--pair">
-            <label className="wb-field"><span>Target</span><span className="wb-suffix"><input type="number" name={"target-" + row.employeeId} aria-label={row.employeeName + " target weekly hours"} defaultValue={row.targetWeeklyHours ?? ""} min={0} max={168} step={0.25} placeholder="Not set" /><span aria-hidden="true">hrs</span></span></label>
-            <label className="wb-field"><span>Maximum</span><span className="wb-suffix"><input type="number" name={"maximum-" + row.employeeId} aria-label={row.employeeName + " maximum weekly hours"} defaultValue={row.maximumWeeklyHours ?? 40} min={0} max={168} step={0.25} required /><span aria-hidden="true">hrs</span></span></label>
+            <label className="wb-field"><span>Target</span><span className="wb-suffix wb-suffix--short"><input type="number" name={"target-" + row.employeeId} aria-label={row.employeeName + " target weekly hours"} defaultValue={row.targetWeeklyHours ?? ""} min={0} max={168} step={0.25} placeholder="Not set" /><span aria-hidden="true">hrs</span></span></label>
+            <label className="wb-field"><span>Maximum</span><span className="wb-suffix wb-suffix--short"><input type="number" name={"maximum-" + row.employeeId} aria-label={row.employeeName + " maximum weekly hours"} defaultValue={row.maximumWeeklyHours ?? 40} min={0} max={168} step={0.25} required /><span aria-hidden="true">hrs</span></span></label>
           </div>
         </li>
       ))}
