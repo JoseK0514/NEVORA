@@ -88,3 +88,70 @@ Also 11 P2s: validation gaps, destructive dialogs that focus the destructive but
 - Native window blur (it hides the recovery code) can't be produced in Playwright.
 
 Zero open P0–P2 in this area: **no**.
+
+## Round 2
+
+October 19, 2026, on the same frozen preview at HEAD `0490d84`. Chromium at 320×568, 390×844 and 1440×900, with WebKit spot checks at 390. Every POST was blocked or mocked, except one real Features save that was then reversed (see IS-9). Round 2 scripts and logs are in `SP/r2/`; screenshots in `SP/shots/` (`r2-*`, `val-*`, `dlg-*`, `trap-*`).
+
+**Verdict:** 11 of 13 actionable round-1 findings are fixed, and IS-14 is now decided. One is not fixed: **IS-6**, the destructive dialogs still open on the destructive button. The fix adds `data-autofocus` to Cancel, but the selector it uses can't pick it. There is one new P2, **IS-15**: the Features save bar is two rows at 390, so the "Features saved" toast covers the Save button.
+
+**Count: 0 P0, 0 P1, 2 P2 open (IS-6, IS-15).**
+
+### Status of round-1 findings
+
+| ID | Status | Evidence (round 2) |
+|---|---|---|
+| IS-1 | Fixed | Tab from "How you verified them" at 390 goes: checkbox → Issue recovery code → guide disclosure → onward. Shift+Tab leaves too. No injected error. Same at 1440. WebKit at 390: no trap. |
+| IS-2 | Fixed | "Bad Key" + Tab: focus moves on to the next control and no error appears on blur. A short attestation and then a click on the checkbox: **checked = true**, and the box stays at y 736 (390) and y 681 (1440). Clicking the label text also checks it. |
+| IS-3 | Fixed | Exactly one error sentence per field on every form, with 0 `.field-error` nodes. Checked: Company profile 1, New location 2, Clocker key 1, Edit location 2, Positions add and edit 1, Break types 2, Devices 2, Policies 2, Account recovery 3, Clocker recovery 1, at 390 and 1440. WebKit: New location 1 and Account recovery 3, with 0 duplicates. In each case the first invalid field takes focus, 0 POSTs are sent, and `aria-describedby` holds the error plus the help only. |
+| IS-4 | Fixed | Reference time "0" and "9999" show "Enter whole minutes, from 1 to 1,440." on the field, focus it, and send 0 POSTs. "abc" gives the same. |
+| IS-5 | Fixed | A custom rule with both fields empty shows "Enter the threshold in minutes." and "Choose when this rule starts." on the fields, and focus goes to the threshold. "-5" shows "Enter whole minutes, 0 or more." 0 POSTs. |
+| IS-6 | **Not fixed** | At 320 and 1440, Archive break type, Revoke device and Create new code still open with focus on the destructive primary ("Archive break type", "Revoke device", "Create new code"). Cancel carries `data-autofocus`, but `querySelector('input[name="name"], [data-autofocus], button[type="submit"]')` returns the **first match in document order**, not in selector order. The submit button comes before Cancel in the DOM, so it wins. Cause: `src/components/clocker-break-types.tsx:54`, `src/components/clocker-device-manager.tsx:71`. Fix: `(element.querySelector('[data-autofocus]') ?? element.querySelector('input[name="name"], button[type="submit"]'))?.focus({ preventScroll: true })`. Screenshots: `dlg-chromium-320-breakArchive.png`, `dlg-chromium-320-deviceRevoke.png`, `dlg-chromium-1440-deviceRevoke.png`. P2. |
+| IS-7 | Fixed | Wheel over the backdrop: the page moves 0 px for all 7 dialogs at 320 and the 3 checked at 1440. `html` is `overflow: hidden` while a dialog is open and restored after Escape, Cancel or Close. |
+| IS-8 | Fixed | A 401 on Branding, Features and Policies shows "Sign in again", the sentence, and **Go to sign in → /login**, with focus on the notice. |
+| IS-9 | Fixed | A real Features save (word preset Standard → Retail, then back to Standard, so the fictional data ends unchanged): focus lands on "Saved" (`span.wc-save-state--done`) with a visible 2 px teal ring (`r2-features-saved-standard.png`). During pending, focus still drops to `<body>` on every action, but the outcome notice or the "Saved" line takes it back each time. |
+| IS-10 | Fixed | Typing "#12" shows no error and help stays visible. After blur, "Enter a color like #1D4ED8." appears, once. |
+| IS-11 | Fixed | One live region is left in the Branding editor (`wc-adjustments`). The preview sentence is plain `nv-sr` text. |
+| IS-12 | Fixed | Row buttons are named "Rename Fictional payroll clock", "Replace tablet for Fictional payroll clock" and "Revoke access for Fictional payroll clock". |
+| IS-13 | Fixed | Clear filters (pressed with the keyboard) puts focus in the search field on Positions, Break types and Devices, and empties it. |
+| IS-14 | Decided | Moved to `CODEX.md` (no-access redirect); not refiled. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| IS-15 | Features & words · Owner · 390 | Save bar after a save, and the "Features saved" toast | The save bar is **two rows**, 132 px tall (y 644–776): the Save button at y 656–708, then "Saved" at y 720–764. ROUND-2.md says it stays one row. The toast is lifted for a 76 px bar, so it sits at about y 648–692, **on top of the Save button**, for the toast's lifetime. The button is disabled at that moment, but the bar reads as broken. As soon as someone edits again, the Save button is covered until the toast goes. | `r2-features-saved-standard.png` | `src/app/app/portal-premium.css:479` assumes a 76 px bar (`calc(68px + 76px + 8px)`). The Features bar wraps its state under the full-width button (`.wc-actions` on phones, `premium-wave-c.css`). | Keep the bar one row on phones: `.wc-actions.nv-actionbar:has(.wc-save-state) { flex-wrap: nowrap }` with the button `flex: 1 1 auto` and the state `flex: none`. Or lift the toast by the bar's real height through a `--nv-actionbar-h` variable set on the bar. | P2 |
+
+### Checked and correct (round 2)
+
+- **noValidate on every Wave C form:**
+  - no browser bubble and no blur checks;
+  - the first invalid field focused after a requestAnimationFrame;
+  - errors clear on input once the value is valid;
+  - 0 requests on an invalid submit.
+- **Dialogs at 320:**
+  - bottom sheets, full width, bottom gap 0; the Add sheet at 568 tall scrolls inside itself;
+  - focus starts in the name field for Add, Edit and Rename;
+  - Escape, Cancel and Close return focus to the exact opener (7 of 7);
+  - Tab never reaches the page.
+- **Back targets:**
+  - Manager with `?from=settings` on Account and Clocker recovery: **Home → /app**.
+  - Owner with `?from=settings`: **Settings → /app/settings**.
+  - `?employee=AUDIT-E`: "AUDIT-E" → `/app/employees/AUDIT-E`, with the ID prefilled.
+  - Location detail and New location: Locations.
+- **Location not found** (`/app/settings/locations/does-not-exist`):
+  - Settings frame with Back to Locations;
+  - h1 "Location not found";
+  - empty state "We couldn't find this location";
+  - "Go to Locations".
+- **Count lines:**
+  - "Showing 0 of 2 locations matching "zzz"";
+  - "Showing 0 of 2 positions";
+  - "Showing 0 of 1 break type";
+  - "Showing 0 of 1 device";
+  - the status filters: setup 0, ready 2, inactive 0, with `aria-current` on the pill.
+- **Locations search:** browser Back restores an enabled "Search locations" button with `aria-busy=false`.
+
+**Not covered in round 2:** 844×390, 200% text (checks.mjs covers both), hover, loading by client navigation, and reduced motion.
+
+Zero open P0–P2 in this area: **no** (IS-6 and IS-15 are open, both P2).

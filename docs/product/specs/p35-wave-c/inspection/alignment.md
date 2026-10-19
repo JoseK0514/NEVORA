@@ -48,3 +48,52 @@ Method: Playwright with the saved sessions. Each page was loaded once per contex
 - At 320 and 100%, a decorative `path` in Branding's preview miniature measured 151–359 against the card (16–304). It is clipped by the stage, so the preview cuts off something. Not confirmed visually.
 
 Zero open P0–P2 in alignment and geometry: **no**.
+
+## Round 2
+
+October 19, 2026 · Same preview, frozen. Chromium at 320, 390, 844×390 and 1440, at 100% and 200%, on all 13 routes (Owner). Dialogs and editors at 390 and 1440. WebKit spot checks of the Add break type and Revoke device sheets at 390. Shell ignored. Scripts and data: `.../scratchpad/inspect/alignment/` (`data/r2-*`, `data/r2st-*`, `data/r2heads-*`). Crops: `crops2/`.
+
+**Verdict:** 10 of 12 round-1 findings are fixed, AL-08 is partly fixed, and AL-12 is closed as decided. The large-text fixes work: no label, word or link box leaves its button or card at 200% anywhere. The fixes brought **one regression** (the hub footnote now touches the cards at ≥1024) and **two new precision issues** (icons that wrap onto their own line inside buttons, and the wrapped band "Add" control sitting 12px right of Back). One older pattern is now filed: trailing link chevrons centre on a wrapped label. Count of open items: **0 P0, 0 P1, 5 P2** (AL-08 partly fixed, plus AL-13 to AL-16).
+
+### Status of round-1 findings
+
+| ID | Status | Round-2 measurement |
+|---|---|---|
+| AL-01 | Fixed | Word choices size to the column (`repeat(auto-fill, minmax(min(100%,15rem),1fr))`). At 1440 and 200% they form one column and every word is whole ("Restaurant", "Technicians · Sites"). No text runs past a card edge on Features at any checked cell. (crops2/r2-features-choices-1440-200.png) |
+| AL-02 | Fixed | Labels wrap inside their buttons: "Issue recovery / code" and "Check / receipt" at 320 and 200%, "Reset to / NEVORA teal" at 320 and 390 and 200%. No text outside a button on any page (btnClip 0). The icon placement this introduced is AL-13. |
+| AL-03 | Fixed | At 320 and 200%, "/clocker/2" stays on one line and Copy wraps under it. Copy is 68 tall, the 200% single-line height of every button. At 844×390 and 200% they sit side by side, path 56 and Copy 68, centres 1873/1872.5. (crops2/r2-linkbox-320-200.png) |
+| AL-04 | Fixed | At 320 and 200% the preview tabs wrap to three full-width rows with no overlap. Card text inset is 20. (crops2/r2-brand-preview-320-200.png) |
+| AL-05 | Fixed, with the regression AL-14 | 1440 hub columns: left 233–581 and 597–945, right 233–445, 461–605, 621–833 and 849–1013. Every gap is 16 and the column tops are equal (233/233). |
+| AL-06 | Fixed | At 320 and 200% nothing passes the card edge: words break ("commu-nications", "require-ments"). Note for type and copy: "Announcements" breaks as "Announcem / ents," with no hyphen. (crops2/r2-hub-team-320-200.png) |
+| AL-07 | Fixed | Location head title against the Ready pill baseline: ≤0.6 at 320 and 390 (100 and 200%) and at 1440 100%. 1.8 at 1440 200%, the same as other pill heads. |
+| AL-08 | Partly fixed | `align-items:flex-start` with a 2px caret margin puts the caret on the first line at 100% (≤1.2 off). At 200% the caret centre sits **9.5–10px above** the first line's centre on every disclosure: Company profile, Account recovery and Clocker recovery, at 320, 390, 844×390 and 1440. The 2px margin doesn't scale with the 40px line. (crops2/r2-disclosure-320-200.png) Cause `premium-wave-c.css:187` `margin-top: 2px`. Fix: `margin-top: calc(0.5lh - 9px)` (centres the 18px caret on line 1 at any text size). |
+| AL-09 | Fixed, with the new AL-15 | The control drops under Back on one line at 320 and 390 and 200% (e.g. Break types: Back 76.5–120.5, Add 132.5–176.5), with its icon on its label. The bar baseline at 100% is 0.8. |
+| AL-10 | Fixed | Footnote icon at 36 (390) and 318 (1440), equal to card text (36/318). The text follows at 62/344. |
+| AL-11 | Fixed (by code, not re-measured) | `premium-wave-c.css:262` is now `padding: 0`, so the line's x equals the action row's left edge. Not measured this round because of the server load. |
+| AL-12 | Closed (decided) | The ROUND-2 decided table sets 48px (3rem) and lets fields grow with text. Measured: 48 at 100% and 96 at 200% in both Chromium and WebKit. The dead 52 at `:47` is gone. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| AL-14 | Settings hub · O · 1024 and up (measured at 1440, 100% and 200%) | Footnote under the hub columns | The footnote touches the tallest card: footnote top **1013** = card bottom 1013 at 1440 and 100%, and 1837 = 1837 at 200%. Phones keep 16 (2016 → 2032). This regression came from the AL-05 fix. | crops2/r2-hub-1440.png | `premium-wave-c.css:497` `.wc-hub{margin-bottom:-16px}` at ≥1024. In multi-column layout the last card's 16px bottom margin is truncated at the column end, so the negative margin removes the content gap instead of the card margin. | Delete `:497`. The hub then ends at the card bottom (1013), and the content gap puts the footnote at 1029. | P2 |
+| AL-13 | Account recovery, Clocker recovery · O and M · 320 and 390 at 200% | Icons inside wrapped buttons ("Issue recovery code →", "Check receipt") | When the label wraps, the icon wraps as its own flex line. At 320 the **→ sits alone on a third line**, 84.5 below the first line's centre (48.5 at 390). The **search glyph sits alone above** "Check / receipt" (−39.5). "Reset to NEVORA teal" and "Upload logo" keep their icon beside the 2-line label, centred on it, so buttons now disagree. | crops2/r2-acct-issue-320-200.png, crops2/r2-clk-check-320-200.png | `premium-wave-c.css:139` `.wc-swap > span{flex-wrap:wrap}` lets the svg wrap separately from the text. | `:139` → `flex-wrap: nowrap`, and wrap the words in their own span (`min-width:0; white-space:normal`) in `ButtonLabel` (`wave-c-form.tsx`). Every icon then sits beside a 1–2 line label, as on Reset. | P2 |
+| AL-15 | Break types, Locations, Clocker devices · O · 320 and 390 at 200% (wherever Add drops under Back) | Band control wrapped under Back | The control box starts at x 16 with 12px padding, so the "+" sits at **x 28**. Back's caret is at x 16 (Back box 8 plus 8px padding). The two left edges in the band are 12px apart. Measured on Break types, Locations and Clocker devices (320 and 390 at 200%). | crops2/r2-breaks-band-320-200.png | `kit.css:154` `.nv-band-control{padding:0 12px; margin-right:-12px}`. There is no matching left offset when it wraps. | In Wave C: `.wc-page.wc-page .nv-pageband__bar > .nv-band-control{margin-left:calc(-1 * var(--nv-s-3))}` (no visible change when it sits at the right). The "+" then lands on 16, with Back's caret. | P2 |
+| AL-16 | Positions (320, 390 and 1440 at 200%), Clocker devices and Company profile (320 at 200%), Clocker recovery (320 at 200%) | Teal links with a trailing chevron that wrap ("Review scheduling rules", "Manage locations", "Review timecards") | The chevron centres on the 2-line label, **20px below** the first line's centre. That is the AL-08 pattern on links: it points between the lines, not at the end of the text. | (measured: iconY 20 in `data/r2-*.json`) | `kit.css` `.nv-link{display:inline-flex;align-items:center}` with the svg as a separate flex item. | In Wave C scope, for links with a trailing icon: `.wc-page.wc-page a.nv-link:has(> svg:last-child){align-items:flex-start}` and `> svg:last-child{margin-top:calc(0.5lh - 9px)}`. Or make the chevron inline with the text (`display:inline; vertical-align:-3px`) so it follows the last word. | P2 |
+
+### Checked and correct (round 2)
+
+- **Frame:** at 100% on all 13 routes, cards sit at 16 on phones and landscape and 298 at 1440. Card text inset is 20, titles 20 from the left and 21 from the top, the band overlap is 72/32/56, and stacked blocks are 16 apart. The two-column layouts (1180+) show at 1440: main 298–1050, aside 1066–1386, tops equal (277/277).
+- **Dialogs** (Add and Archive break type, Add device, Revoke device; Chromium at 390 and 1440, 100% and 200%; WebKit at 390): on phones a bottom sheet with x 0, 390 wide, flush bottom (gap 0) and radius 20 20 0 0. At 1440 centred, 480 wide, top and bottom gaps equal (e.g. 309/309), radius 16. Title and text inset 20. Close centre 42 against title line centre 42.5 (100%), icon 19 from the right. Actions are 52 (68 at 200%), stacked on phones and 214 + 12 + 214 at 1440, 20 from the bottom. At 390 and 200% the sheet scrolls and the actions stay reachable. WebKit matches Chromium to the pixel.
+- **Positions inline editor** and **Company policies "Custom threshold" fields** (390 and 1440, 100% and 200%): label to field 8, field to help 8, field to field 16, field and label left edges equal. No text escapes the editor body or the card.
+- **Hub** (AL-05): every column gap is 16. Footnote icon on card text (AL-10).
+- **Card heads with pills** (Clocker link "Active", Company policies "Off by default" and "Custom", Location "Ready"): baselines within 0.6 at 100%, 1.8 at 1440 and 200%.
+- **Branding:** no overflow at 200%. The logo box and Upload logo share a centre.
+
+### Gaps and notes
+
+- **Loading placeholder against ready:** the probe catches the placeholder only while React has it hidden (all boxes 0×0), so I have no band measurement from it. Ready bands for comparison: Break types and Clocker devices are 276 at 390 and 240 at 1440, with the title at 164/189. This needs a probe that renders `loading.tsx` on its own (e.g. a throttled first document load) to close.
+- Not run this round: the Rename and Replace tablet dialogs, Edit break type, the profile and features save bars at 200%, and AL-11's x position.
+- **For the coordinator (shell, not filed):** at 844×390 with root text ≥125%, every Wave C page renders the desktop shell (cards at x 260, sidebar shown) instead of the phone layout. It does the same in round-1 data. The landscape-phone rule seems to be dropped when the text size grows.
+
+Zero open P0–P2 in alignment and geometry after round 2: **no** (5 open P2: AL-08 partly fixed, AL-13, AL-14, AL-15, AL-16).

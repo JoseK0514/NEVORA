@@ -90,3 +90,59 @@ Screenshots: `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINE
   - Features and Policies at 1440 in the sweep (covered by the sticky and aside runs).
 
 Zero open P0–P2 in my area: **no**.
+
+## Round 2
+
+October 19, 2026, same preview (frozen), Owner. Chromium at 320×568, 390×844, 844×390 and 1440×900 (plus 1280×900 and 1440×800 for the sticky guides), 200% text at 390, WebKit spot checks at 390. Every save and dialog submit was blocked in the browser. The Clocker recovery receipt read was let through for the unknown reference, as in round 1. Scripts and logs: `.../scratchpad/inspect/stability/r2-*.log`. Screenshots: `shots/`.
+
+**Open now: 0 P0, 2 P1, 6 P2.** Round 1: 9 fixed (ST-12 handed to the desktop chat), 1 not fixed, 2 partly fixed. New: 1 P1 and 4 P2.
+
+### Round 1 findings
+
+| ID | Status | Measured now |
+|---|---|---|
+| ST-01 | Fixed | 1440×900 and 1280×900: the guides dock at 89 px (header bottom 65), 0 px covered, titles at 109. Branding preview docks at 89–783, inside the 900 px window. At 1440×800 the guides are `static` and scroll with the page, as intended. |
+| ST-02 | **Not fixed (phones)** | Features, 390×844, Chromium and WebKit: the toast is at 648–692 and Save changes at 656–708, so 36 of the button's 52 px are covered, and `elementFromPoint` hits `nevora-toast`. At 320×568 the toast is at 372–416 over 380–432. The shared lift (`portal-premium.css:479`, 68 + 76 + 8) assumes a 76 px bar, but Features' phone bar is **132 px**: "Saved" wraps under a full-width button. Cause: `premium-wave-c.css:122` (`.wc-actions > .nv-btn { width: 100% }`) still applies inside the bar; `:437` doesn't override it. Fix: under 600 px, `.wc-actions.nv-actionbar > .nv-btn { width: auto; flex: 1 1 auto; }`. Save (≈240 px) and "Saved"/"Unsaved changes" (84/142 px) then fit on one 76 px row at 390, and the shared lift clears it. Fine at 844×390 (toast at the top) and 1440. P1. |
+| ST-03 | Fixed | Policies has only Save in its bar: 76 px at 320 and 390 (92 px at 200% text). "Reload policies" is in the history card. |
+| ST-04 | Fixed (scroll), see ST-13 | Failure now shows in the bar. Features 390: scrollY 898 → 898. Policies 320: 504 → 504. Features 1440: 403 → 403. Policies 390: 32 → 110, and the bar there is clipped (new ST-13). |
+| ST-05 | **Partly fixed** | Portrait matches everywhere (parent placeholder band = ready band). **390:** 232 (hub, profile, policies, account recovery, Clocker recovery), 276 (locations, location detail, breaks, positions, devices), 208 (new location), 256 (branding, features). **320:** 300 (locations, location detail, devices), 280 (branding), 256 (features, Clocker recovery). **Landscape 844×390 still jumps:** placeholder 232 → 168 (hub, profile, policies, account recovery, Clocker recovery), 276 → 212 (locations, location detail, breaks, positions), 256 → 192 (branding, features), 208 → 168 (new location), 232 → 212 (devices). That is −64, −40 or −20 px. Cause: `premium-wave-c.css:481-492` has no landscape query. Fix: `@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse)` with 168 for hub, profile, policies, new location and both recovery pages; 192 for branding and features; 212 for locations, location detail, breaks, positions and devices. P2. |
+| ST-06 | Fixed | Bar bottom = tab bar top (gap 0) at 320 and 390, Chromium and WebKit. At 200% text see new ST-15. |
+| ST-07 | Fixed | 844×390: Features and Policies bars are `position: static` and end the form. |
+| ST-08 | **Partly fixed** | Features: the bar stays docked to the end, then rests 20 px above the tab bar (page padding). **Policies still lifts:** at the page bottom the bar is at 521–597 at 390, **179 px** above the tab bar, and 200 px at 320. The Policy history card follows the form inside the editor (`company-policy-editor.tsx`, the history `section` after `</form>`). Fix: put Policy history before the form on phones (`order: -1` alongside the guide), or dock the bar as in ST-13's fix. P2. |
+| ST-09 | Fixed | The root lock holds. The wheel doesn't move the page under any dialog: break type Add, Edit, Archive and Clocker device Add, Rename, Replace, Revoke at 390, 844×390 and 1440 (for example scrollY 200 → 200, 661 → 661). |
+| ST-10 | Fixed | The receipt card is 216 px idle, checking and failed at 320 and 390. The real "unknown reference" result grows to 464 px (390) or 504 px (320); that is the answer appearing, so it is expected. |
+| ST-11 | Fixed as far as measured | `preload()` of Inter is in `src/app/app/layout.tsx:42`. No layout shift on any first page in a fresh context this round (CLS 0.0000 at 320, 390, 844×390). Inter is still a TTF with no metric-matched fallback, so on a slow network the swap can still reflow. |
+| ST-12 | Handed on | Desktop chat's (decided list); not refiled. |
+
+### New findings
+
+| ID | Screen, role, width | Element | What is wrong, measured | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| ST-13 | Company policies, Owner, 390×844 (Chromium) | `.wc-actions.nv-actionbar` | The bar can't rise above its form's top. The guide now comes first on phones, so near the page top the form starts low and the bar hangs under the tab bar. **At load (scrollY 0):** bar 732–808, Save policies 744–796, so the bottom 20 px of the button is under the tab bar (top 776) and the bar's 32 px tail is hidden. **After a blocked save (scrollY 110):** the in-bar notice grows the bar to 218 px (622–840), and **"Retry the same save" is at 776–828, wholly under the tab bar**. Only scrolling down brings it out. At 320 a failed save makes the docked bar 238 px tall: 55% of the 432 px between header and tab bar. | `shots/failed-chromium-policies-390x844.png`, `r2-pending.log` | `premium-wave-c.css:512` (guide `order: -1`) moves the form start down. `:132` sticky can't move above the containing `form`. `:517` puts the notice inside the bar, so the bar grows. | Dock the phone bar for real: under 761 px, `.wc-actions.nv-actionbar { position: fixed; left: 0; right: 0; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }`. Give the page `padding-bottom` equal to the bar's height plus 16 px. Cap the in-bar notice at two lines with "Details" below (or show the notice in the page above the form and keep only a one-line status in the bar), so the docked bar stays ≤ 140 px at 320. | P1 |
+| ST-14 | Company policies, Owner, 1440×900 | Save policies button | The button widens **35 px** the moment it's tapped (right edge 458 → 493, label "Saving…"): the idle label behind the swap has already become "Retry the same save", and `.wc-swap` sizes to the widest. Pending must not move anything. | `r2-pending.log` | `src/components/company-policy-editor.tsx:106` `setRetry(command)` runs before the request, so the idle label switches during pending | Set `retry` only when a send fails (in the failure branches), or keep "Retry the same save" in the swap's grid from the start so the width is reserved | P2 |
+| ST-15 | Features and Policies, Owner, 390×844 at 200% text | Docked save bar vs the tab bar | At 200% the tab bar grows to 83 px (top 761), but the bar still docks at 68 px. Bar 628–776 (Features) and 684–776 (Policies): **15 px under the tab bar**. On Features the "Saved" line (720–764) runs 3 px under it. | `shots/r2-200-features-390.png`, `shots/r2-200-company-policies-390.png` | `premium-wave-c.css:505` fixed `68px` offset | Dock to the tab bar's real height. Coordinator: expose `--nv-tabbar-h` from the shell (68 px at 100%, 83 at 200%) and use `calc(var(--nv-tabbar-h, 68px) + env(safe-area-inset-bottom, 0px))`. | P2 |
+| ST-16 | Branding, Owner, 390×844, before hydration | Color swatches (`.wc-swatch`) | With the JS chunks held, the guarded page shows the eight swatches pale (faded) with a grey selected ring. After hydration they snap to full color with an ink ring. The guard is meant to keep the finished look. The Policies selects and switches are unchanged across hydration (same background, border and text color; only the cursor changes). | `shots/r2-hydration-diff.png` (left: before, right: after; the tab bar in the right crops is an element-capture artifact) | `premium-wave-c.css:287-290` and `:527` keep fields, primary button and switches unfaded under `[data-guard]`, but not `.wc-swatch`. Disabled buttons fall back to the shared faded look. | `[data-guard] .wc-swatch:disabled { opacity: 1; cursor: default; }` with the selected ring unchanged (`box-shadow: 0 0 0 2px var(--nv-canvas), 0 0 0 4px var(--nv-ink)`). Same for the preview tabs (`[data-guard] .wc-segmented .nv-filter:disabled`). | P2 |
+| ST-17 | Break types, Edit dialog after a blocked save, Owner, 844×390 | `.wc-dialog .wc-actions` | "Reload break types" wraps to two lines (68 px, 394–462) beside a 52 px Cancel (402–454). The two buttons in one row differ by 16 px in height and their labels don't line up. | `shots/dialog-fail-chromium-breaks-edit-844x390.png` | Round-2 "buttons wrap their labels" in the 214 px dialog column; `premium-wave-c.css:217` (`flex: 1 1 0`) with `align-items: center` | `.wc-dialog .wc-actions { align-items: stretch; }` so both buttons share the row height. Better, shorten the label to "Reload" so it stays on one line at 214 px. | P2 |
+
+### Checked and correct this round
+
+- **Header joins the band:** 0 px gap, the same color, at 320, 390 and 844×390 on all 13 pages. No sideways scroll.
+- **Pending:**
+  - Features (390, 1440): button size, band and scrollY unchanged.
+  - Policies (320, 390): the same, aside from ST-14 at 1440.
+  - Exactly one request on a double tap, Features and Policies.
+- **In-bar outcomes:** at 1440 the bar grows upward (Features 742–900, Policies 722–900) and stays docked at the bottom.
+- **Dialogs:**
+  - The sheet and centred sizes are unchanged from round 1.
+  - Pending keeps the height.
+  - A failure grows the sheet upward with the buttons fixed (390: 708–760).
+  - Escape returns focus to the trigger.
+  - The Archive and Revoke confirms now open and were checked.
+- **Clocker recovery:** the malformed-reference error doesn't move the receipt card's height (216).
+- **WebKit 390 Features:** bar docking and the toast collision are identical to Chromium.
+
+Note for the interaction inspector (not my area): the Archive break type, Revoke device and Replace tablet confirms took initial focus on the destructive or submit button ("Archive break type", "Revoke device", "Create new code"), not on Cancel as ROUND-2.md says (`clocker-break-types.tsx:54`, `clocker-device-manager.tsx:70`).
+
+Gaps: no Manager-role pass this round; 200% text only at 390 on the two save-bar pages; no Firefox (cut).
+
+Zero open P0–P2 in my area: **no** (2 P1: ST-02, ST-13; 6 P2: ST-05, ST-08, ST-14, ST-15, ST-16, ST-17).

@@ -76,3 +76,58 @@ The list pages also follow four slightly different patterns, which weakens the c
 - **Capture artifact:** Chromium full-page shots at 844×390 render the desktop shell, because the capture grows the height past 430px. Landscape measurements were taken at 390 height and are valid; check landscape visuals with viewport shots only.
 
 Zero open P0–P2 in my area: **no**.
+
+## Round 2
+
+October 19, 2026 · same preview, frozen · Chromium at 320, 390, 844×390, 1024, 1180 and 1440, at 100% and 200% text · WebKit spot checks at 320 and 1440 · Owner, plus Manager for Back · Read only.
+
+New evidence: `S/r2/` (full-page shots `<browser>-QAOWNER-<route>-<width>-t<100|200>.png`, element shots), crops `S/shots/crops/R2-*.png`, data `S/data/r2-*.json`, scripts `S/r2.mjs`, `S/r2probe.js`, `S/r2extra.mjs`.
+
+**Verdict:** most of round 1 is fixed. Nothing scrolls sideways or is clipped at 320 or 390 at 200% (`off`, `clip` and `cardOver` are all empty), and the 1024 layout is now a single 716px column. One fix caused a regression: the Branding colour well is now an empty white box in Chromium and WebKit. A few smaller items remain.
+
+**Count: 0 P0, 1 P1, 6 P2 open in my area.** The P1 is WR-21. The P2s are WR-09, WR-11 and WR-13 (partly fixed) and WR-22, WR-23 and WR-24 (new). WR-15 is superseded by WR-24.
+
+### Status of round-1 findings
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-01 | **Fixed** | At 320 / 200% the button spans x 16–304, label 36–284 (round 1: −21…341). At 390 / 200% it is 16–374. No content beyond the viewport. Same in WebKit at 320. Its height is WR-22. |
+| WR-02 | **Fixed** | At 320 / 200%, 0 of 10 readability titles are clamped. Titles read in full ("White text on buttons") and the pill sits under the title (kit row status). At 1440 the rows also stack (about 104px each); that is the kit pattern, accepted. |
+| WR-03 | **Fixed** | At 320 / 200%, Reset spans 16–304 with its label wrapped inside (112px tall). Phone, Desktop and Clocker each take a full row (36–284) with no clipping. At 100% the first two share a row (36–149, 157–284). |
+| WR-04 | **Fixed** | **1024:** one column, 716px; Features choices 2 × 332 at 100% and 1 × 676 at 200%. **1180:** layout 504 / 320; Branding 424 / 400. **1440:** 752 / 320; Branding 672 / 400. The guide and the preview are `sticky; top: 89px` from 1180. |
+| WR-05 | **Fixed** | "Location not found" in the Settings frame, Back "Locations", kit card, "Go to Locations" button (36–284 at 320 / 200%). Same in WebKit. |
+| WR-06 | Decided (Codex) | Not refiled. ROUND-2.md lists the redirect and the flash for Codex in `CODEX.md`. |
+| WR-07 | **Fixed** | Location titles are 1 line at 100% and 2 at 200% with no word broken. The head is `flex-wrap: wrap` and the pill drops under the title. |
+| WR-08 | **Fixed** | At 200% the box grows to 169 × 64 and the text sits inside it (12–52px). |
+| WR-09 | **Partly fixed** | The options are shorter ("Off by default" needs 172px at 100%), and at 320 they fit up to 125%. From 150% they are still cut:<br>• 320 / 200%: "Off by default" needs 264px and has 246; "Company default" needs 318 and has 246.<br>• 390 / 200%: "Company default" needs 318 and has 316.<br>The select grows to 96px tall, but its text can't wrap.<br>Cause: `company-policy-editor.tsx` (select labels), `premium-wave-c.css:60` (48px caret padding).<br>Fix: under 360px use 16px card body padding and 40px caret padding, or "Company" / "Off" as the visible labels. **P2 open.** |
+| WR-10 | **Fixed** | `AUDIT-M` with `?from=settings` gets Back "Home → /app" on both recovery pages (`account-recovery/page.tsx:19`, `clocker-recovery/page.tsx:9`). |
+| WR-11 | **Partly fixed** (rest decided) | Every count line now reads "Showing n of m noun" (Locations, Break types, Devices, Positions), and search is the same field on all four. One difference remains: Devices' first pill is "**All devices**", where the other three say "**All**" (`clocker-device-manager.tsx:180`). Fix: label it "All". **P2 open.** The Add entry point is decided. |
+| WR-12 | Pills decided; band control **Fixed** | At 200% the Add control drops under Back on one line (Locations 16–232, Break types 16–270, Devices 16–214 at 320). |
+| WR-13 | **Partly fixed** | The list, detail and new pages now use the company's words: "Edit {place}", eyebrow "Edit {place}", Back `words.locations`, "eligible {people}", "No matching {places}". Three places are still hard-coded:<br>• `[locationId]/not-found.tsx:8`: Back "Locations" and title "Location not found".<br>• `[locationId]/loading.tsx:4`: Back "Locations". Under Retail words, Back would read "Locations" while loading and "Stores" once ready.<br>• `locations/page.tsx:147`: "Add a location, then …"<br>Fix: read the words in those two files and use `place` on line 147. **P2 open.** |
+| WR-14 | Decided (sent on) | Not refiled. |
+| WR-15 | **Changed; see WR-24** | Back now shows the employee's ID ("AUDIT-E → /app/employees/AUDIT-E"). |
+| WR-16 | **Fixed** | The miniature's time reads "8:00 AM –" then "4:00 PM", breaking only at the dash (`S/shots/crops/R2-branding-preview-320.png`). |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| WR-21 | Branding · Owner · every width, Chromium and WebKit (**regression**) | The Colour well (`input.wc-colour`) | The well is an empty white 64 × 48 box with no swatch. Computed: `height: 48px`, `padding: 8px 4px`, `background: #FFFFFF`, value `#077572`. In round 1 it showed the teal swatch (`S/shots/chromium/QAOWNER-settings_branding-320-t100-full.png`). The Hex code beside it still reads #077572. | `S/r2/colour-well-390.png`, `S/shots/crops/R2-branding-colour-320-t100.png`, `S/shots/crops/R2-webkit-colour-320.png` | `premium-wave-c.css:346` changed `height: 52px` to `height: auto` (with the shared `padding-block: 8px` from `a62cc79`). The swatch wrapper collapses in an auto-height colour input. | `input.wc-colour { height: 3rem; padding: 4px; }`. 3rem keeps it growing with text. Or add `::-webkit-color-swatch-wrapper { height: 100% }` and keep the fixed height. Check both engines. | P1 |
+| WR-22 | Clocker recovery, Account recovery · Owner, Manager · 320 and 390 at 200% | `Check receipt`, `Issue recovery code` (`.wc-swap`) | The button is sized for its hidden busy label. At 390 / 200%, "Check receipt" needs one line (label 243px wide in a 278px button) but the button is **140px tall**, because "Checking receipt…" (278px) wraps to three lines in the same grid cell. "Issue recovery code" is 140px at 320 and 112px at 390. Other buttons are 68px at 200%. | `S/r2/check-receipt-390-t200.png` | `wave-c-form.tsx:103-105` (`ButtonLabel` stacks both labels in one grid cell); `premium-wave-c.css` `.wc-swap { display: inline-grid }` | Keep the width reservation and drop the height one. Lay the busy label over the idle one (`.nv-btn { position: relative } .wc-swap > span + span { position: absolute; inset: 0; justify-content: center }`). Or make each busy label no longer than its idle label ("Checking…", "Issuing…"). | P2 |
+| WR-23 | Settings hub · Owner · 320 at 200% | Row titles and meta (`.wc-hub .nv-row__title`, `.nv-row__meta`) | The text column is about 166px (288 card − 40 tile − 12 gap − 40 padding − 18 chevron − 12 gap). Long words break with **no hyphen**: "Schedulin / g rules", "Announcem / ents". Others are hyphenated: "Location de- / tails", "Turn fea- / tures", and the card title "Team & commu- / nications". The same word list reads three different ways. | `S/r2/chromium-QAOWNER-settings-320-t200.png` | `premium-wave-c.css:522` (`hyphens: auto; overflow-wrap: break-word`) plus the 40px decorative tile | At large text, give the words room: `.wc-hub .nv-rows { container-type: inline-size } @container (max-width: 20rem) { .wc-hub .nv-tile { display: none } }`. That adds 52px, so "Scheduling" (about 175px at 200%) fits. Keep `hyphens: auto` for meta only. | P2 |
+| WR-24 | Account recovery from an employee · Owner, Manager · all widths | Back in the band | Back now shows the raw employee ID (`AUDIT-E`) instead of a name or a place. A realistic ID such as `EMP-2026-NORTHSIDE-RIVERFRONT-DISTRIBUTION-0004812` fills the whole bar (x 8–374 at 390). At 200% Back becomes **220px tall** (5 lines) above the title. The ID is up to 200 characters (`account-recovery/page.tsx:19` slices at 200). | `S/r2/long-id-390-t100.png`, `S/r2/long-id-390-t200.png` | `assisted-recovery.tsx:34`; `wave-c-recovery-loading.tsx:10` | Name the person (`firstName` from the employee record, which the page can read on the server), or use `words.person`. Cap the label: `.nv-masthead__back { max-width: 100%; } .nv-masthead__back span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }`. | P2 |
+
+### Checked and correct (round 2)
+
+- **No overflow at 320 or 390:** all 14 checked routes at 100% and 200% have `scrollWidth − innerWidth` = 0, with nothing off screen, clipped or overflowing a card (Chromium). WebKit at 320 (Account recovery, Branding, Locations, unknown location) and 1440 (Company profile, Branding) shows the same.
+- **844×390:** no overflow at 100% or 200% on Features, Policies, Locations and Account recovery. The save bars stay in the page (Features bar 76px, 92px at 200%) and the layout stays one column.
+- **Buttons wrap inside their boxes:** every `.nv-btn` label sits within its button at 200% (`btns` probe: label x inside button x).
+- **Hub** is two balanced CSS columns at 1024, 1180 and 1440. The Locations grid is 2 × 350 / 412 / 536.
+- **Back for Owner:** Settings pages → "Settings"; location detail, new and not-found → "Locations"; recovery → Home, Settings with `?from=settings`, or the employee.
+- **Count lines** all read "Showing n of m noun", singular for one ("Showing 1 of 1 device").
+
+### Gaps
+
+Firefox wasn't run, by decision. Neither was Employee or Lead this round; the role path is unchanged, and WR-06 is decided. Dialogs, the Policies pair and long injected names weren't re-run. The shell was ignored.
+
+Zero open P0–P2 in my area: **no** (WR-21 P1; WR-09, WR-11, WR-13, WR-22, WR-23 and WR-24 P2).

@@ -169,3 +169,95 @@ Payroll and legal wording: I changed and propose nothing for "These rules do not
 **Refused roles:** Manager, Lead and Employee on `/app/settings` are sent to Home with no message. That's the routing area's call, and it has no copy to check.
 
 Zero open P0–P2 in my area: **no**.
+
+## Round 2
+
+October 19, 2026 · Same preview, frozen at `0490d84`.
+
+**Verdict: no P0 or P1 left in my area. 9 P2 are open: 7 from round 1 that are partly or not fixed, and 2 new.**
+
+**Fixed:**
+- Duplicate errors
+- Branding rows, tabs and long buttons
+- Clocker link box
+- Protected timezone
+- Off switch
+- Disabled fade
+- Count lines
+- Apostrophes
+- Recovery strings
+
+**Still open:**
+- One mid-word break at 320@200.
+- Hyphens added on the round-2 fix now split words at 100% on phones.
+- Leftovers in company words, names and spelling.
+
+**How it was checked:**
+- **Ready states (Chromium):** all 13 routes at 320, 390 and 1440, text 100% and 200%.
+- **Landscape 844×390:** Hub, Company profile, Branding, Features and Company policies, at 100% and 200%.
+- **Other states:** 30 snapshots at 390, with 320 and 1440 where they matter:
+  - field errors on 6 forms
+  - Location and Features toggled
+  - Branding with yellow
+  - Policies custom, and range error
+  - long names (simulated)
+  - Account recovery issued (mocked) and opened from an employee
+  - Branding 401 (mocked)
+  - Locations no-match
+  - Archive and Revoke dialogs
+  - unknown location
+- **WebKit:** Hub 390, Branding 320, Location 320 and Company profile 390, at 100% and 200%.
+- **Saving:** every submission was aborted or answered by a mock.
+- **Not checked:** Firefox, and the shell.
+- **Files:** crops are in `S/r2/`, data in `S/data/`. Round 1 data moved to `S/r1-data/`.
+
+### Status of round-1 findings
+
+| ID | Status | Measurement now |
+|---|---|---|
+| TC-01 | Fixed | One error per field on Company profile, New location, Policies threshold, the Break and Device dialogs, and Account recovery (all 3 fields and the checkbox), at 390 and 1440. No `.field-error` nodes. The checkbox sentence stays inside its card. |
+| TC-02 | Fixed | Branding Readability at 320@200: every label shows in full on 2 lines ("White text on / pressed buttons"). The pill sits below at x 36–188. Nothing is clamped (`S/r2/r2-brand-checks-320-200.png`). |
+| TC-03 | Fixed | Location detail 320@200: "/clocker/2" is on one line, and Copy drops below it (`S/r2/r2-location-320-200-link.png`). WebKit 320@200 is the same. |
+| TC-04 | Fixed | "Reset to NEVORA teal" wraps to 2 lines inside the button at 320@200 (text 110–274, button edge 304). "Clear search and filters" and "Archive break type" don't overflow at 390@200 or 320@200. |
+| TC-05 | Fixed | The preview tabs stack one per row at 320@200: Phone 128–216, Desktop 116–228, Clocker 120–224, pill edge 284 (`S/r2/r2-brand-tabs-320-200.png`). |
+| TC-06 | Fixed | The timezone is text in `p.wc-readonly`. At 320@200 it wraps and shows "America/Puerto_Rico" in full. The help reads "Schedules and time records already use this timezone, so it’s protected." The raw IANA id is still shown; that's a judgment call, not refiled. |
+| TC-07 | Fixed | Off switch (Features "Company updates", Location "Active"): the ring is #858B8F, 3.45:1 against white. On is #077572, 5.53:1. The white knob on the #F1F3F4 track is 1.11:1, but the state shows through the fill change (no fill against teal), so I accept it. |
+| TC-08 | Fixed | No mid-word break in location card titles at 320@200, or with the simulated 90-character name at 320 and 390. The pill drops under the title. |
+| TC-09 | Fixed | Disabled "Save changes", "Save brand" and "Reset to NEVORA teal" read #5F666A on #EEF1F0 at 5.14:1. The guarded "Issue recovery code" stays white on teal at 5.53:1. |
+| TC-10 | **Not fixed** | At 320@200 (Chromium) the row titles still break mid-word with no hyphen: "Schedulin / g rules" on the Hub, "Operation / s" on Positions (`S/r2/r2-hub-320-200-sched.png`, `S/r2/r2-positions-320-200.png`). `hyphens:auto` (`premium-wave-c.css:522`) doesn't take for these words, so `overflow-wrap:break-word` breaks them. The 30/34px `h1` of a simulated long location name also breaks "Distribution" at 320@200. **Fix:** let the trail ("Edit", chevron) drop below at large text with `@container (max-width:18rem){ .wc-page .nv-row{flex-wrap:wrap} }`. Or use `overflow-wrap:normal` with `min-width:min-content` on `.nv-row__text`, so a whole word pushes the trail instead of being split. P2 |
+| TC-11 | Partly fixed | Company profile "Monday at 12:00 AM" stays whole at 390@200 (`keepWhole`). Policy history uses `keepWhole`. Still unguarded: Clocker devices `date()` for "Expires …" and "Last checked …" (`clocker-device-manager.tsx:56-64`, not wrapped). Not seen with this data. **Fix:** `return keepWhole(…)`. P2 |
+| TC-12 | Fixed | "No clock‑in recorded" and "No clock‑out recorded" stay whole at 320@200 and 390@200 (U+2011). |
+| TC-13 | Fixed | No straight apostrophes or quotes in any scanned string. The source has none left in `settings/page.tsx`, `modules.ts` or `derive.ts`. |
+| TC-14 | Fixed | "Showing 2 of 2 locations", "Showing 1 of 1 device", "Showing 1 of 1 break type", "Showing 2 of 2 positions": one pattern, singular for 1, no period. |
+| TC-15 | Partly fixed | Company words now apply to the count line, filters, "Edit {place}", empty no-match, footnote, Location detail (Back, eyebrow, summary, labels, notices), New location, and "eligible {people}". Still hard-coded:<br>• First-run empty state: "Your first workplace starts here" and "Add a location, then … your eligible team." (`locations/page.tsx:145-147`).<br>• Issue link "Employee eligibility" (`:27`).<br>• Error page "Locations" and "Locations didn’t load" (`locations/error.tsx:12-15`).<br>• The new unknown-location page: "Location not found", "We couldn’t find this location", "your list of locations", Back "Locations" (`[locationId]/not-found.tsx:8-12`).<br>**Fix:** read `wordPreset` in those three files the way `[locationId]/page.tsx` now does. P2 |
+| TC-16 | Partly fixed | Fixed: "Company profile" link, "Check {Locations}", Off/Off by default/Use company default, "Reference time" throughout, "across NEVORA" on both forms. Still open:<br>• **Idle save line has three versions:** "No changes yet." / "All changes saved." (Location, `edit-location-form.tsx:133`), "No changes to save." (Branding, `brand-editor.tsx:223`), "Saved" / "Unsaved changes" (Features, `features-editor.tsx:116`).<br>• **Revoke:** the link says "Revoke access", the button says "Revoke device" (`clocker-device-manager.tsx:131`).<br>• **Add break type dialog:** still subtitled "Changes apply to future breaks only." (`clocker-break-types.tsx:179`).<br>**Fix:** use Features' "Saved" / "Unsaved changes" on all three, "Revoke access", and for Add "It’s offered for new breaks right away." P2 |
+| TC-17 | Partly fixed | Location success now shows only the server's second sentence (`successBody`, `edit-location-form.tsx:17`). The generic failure still reads "Not saved" / "Changes could not be saved. Your entries are kept; try again." (`wave-c-form.tsx:187`). **Fix:** "Your entries are kept. Try again." P2 |
+| TC-18 | Fixed | The ratio is floored before display (`brand-editor.tsx`). "At least 5:1" is decided as accurate. |
+| TC-19 | Fixed | ACTIVE with no check-in reads "Registered, not checked in yet". |
+| TC-20 | Fixed | The assisted fallback reads "The code wasn’t issued. Try again." "Valid until" reads "1:57 PM AST" (company time, zone shown, kept whole). |
+| TC-21 | Fixed (non-policy) | "Enter a timezone name, such as America/New_York." "Schedules and time records already use…" "No recorded action was found yet." "correct the time in Timecards." "Greater than or equal to". The policy terms are decided for Jose. |
+| TC-22 | Fixed | Branding swatches and hex, and the Policies form, are disabled until hydration. At 1440, choosing Custom threshold now shows its fields (49 text items against 33 before). |
+| TC-23 | Fixed (shared `a62cc79`) | The field border is #858B8F, 3.45:1, height 48. |
+| TC-24 | Partly fixed | At 390@100 the calendar icon sits inside the field ("mm/dd/yyyy, --:-- --" in full). At 390@200 the format is cut: "mm/dd/yyyy, --:" runs into the icon (`S/r2/r2-policies-390-200-effective.png`). This is native control text. **Fix:** under 600px, `.wc-page input[type=datetime-local].wc-control{font-size:max(1rem,15px)}`, or accept it as a native limit. Your call; P2 |
+| TC-25 | Partly fixed | Branding and Hub strings are now "color". Left:<br>• "This colour is too close to grey…" (`lib/workspace-presentation/derive.ts:64`; also "grey", US "gray").<br>• The Readability row "Focus ring on grey panels" (`derive.ts`, `contrastReport`).<br>• "acknowledgement" (`modules.ts:24`).<br>**Fix:** "color", "gray", "acknowledgment". P2 |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| TC-26 | Hub (and every `.nv-row__meta` on Wave C) · Owner · 390@100, 320@100, 844×390@200, 1440@200 | Row descriptions | Automatic hyphenation now splits ordinary words at the default text size:<br>• 390@100: "option- / al reference durations", "man- / age their access".<br>• 320@100: "and re- / vision history".<br>Before round 2, those lines wrapped at word boundaries. WebKit 390@200 shows the same pattern. | `S/r2/tc-r2-hub-390-hyphen.png`, `S/r2/tc-r2-hub-390-hyphen2.png`, `S/r2/r2-hub-320-100-policies.png` | `premium-wave-c.css:522` (`hyphens:auto` on `.nv-row__meta`, `.wc-choice__name` and `.wc-switch-row__label`, as well as titles) | • Drop `.nv-row__meta` from that rule; meta wraps whole words fine.<br>• On titles, limit hyphenation to long words: `hyphenate-limit-chars: 10 4 4` (Chromium 109+, WebKit `-webkit-hyphenate-limit-before/after`). | P2 |
+| TC-27 | Account recovery from an employee · Owner · 390 | Band Back link | Back now reads the raw ID, "AUDIT-E", in place of "Employee". The ID can be up to 200 characters (`assisted-recovery.tsx:32`, `page.tsx` slice 200). It would wrap the band, and an ID isn't a name. Judgment call. | `S/shots/acctrec-employee__390__100.png` | `assisted-recovery.tsx:32` | Use the employee's name when the page has it. Otherwise keep "Employee", or cap the label at about 24 characters with `keepWhole`. | P2 |
+
+### Checked and correct (round 2)
+
+- **Type roles** are unchanged at 100% on all 13 routes: phone 17/15, desktop 16/14. No text is under the floor at any width, including the 844×390 landscape (15px phone tokens).
+- **Contrast:** every enabled text is 4.5:1 or more. Disabled buttons are 5.14:1. Notices, pills and links match the round-1 values.
+- **Large text:** no clamp, overflow or clip on any page at 320@200, 390@200 or 1440@200. Branding, Locations, Location, Policies and Features at 844×390 are clean.
+- **Errors:** one error per field, each with its icon and words. Notice titles read "Sign in again" with a "Go to sign in" link on the Branding 401.
+- **Words:**
+  - Unknown location: "Location not found". The copy is clean; the company words are noted under TC-15.
+  - Features idle state: "Saved" / "Unsaved changes".
+  - Policies help: "A rule that’s off flags nothing."
+  - Break rows: "Reference time 15 min", with a non-breaking space before "min".
+
+Zero open P0–P2 in my area: **no** (9 P2 open: TC-10, 11, 15, 16, 17, 24, 25, 26 and 27; no P0 or P1).
