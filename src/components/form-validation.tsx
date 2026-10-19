@@ -83,12 +83,16 @@ export function FormValidation() {
     let firstInvalid: Field | null = null;
     const onBlur = (event: FocusEvent) => {
       const field = event.target;
-      if (!isField(field) || !field.value && !field.dataset.errorId && field.validity.valueMissing) return; // don't nag an untouched empty field
-      if (field.checkValidity()) clear(field); else show(field);
+      if (!isField(field)) return;
+      // A checkbox or radio always has a value, so "untouched" can't be read from it: it's checked on change and submit only.
+      if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio") && !field.dataset.errorId) return;
+      if (!field.value && !field.dataset.errorId && field.validity.valueMissing) return; // don't nag an untouched empty field
+      // validity.valid, not checkValidity(): checkValidity() fires "invalid", which moved focus back into the field (Wave C focus trap).
+      if (field.validity.valid) clear(field); else show(field);
     };
     const onInput = (event: Event) => {
       const field = event.target;
-      if (isField(field) && field.dataset.errorId && field.checkValidity()) clear(field);
+      if (isField(field) && field.dataset.errorId && field.validity.valid) clear(field);
       else if (isField(field) && field.dataset.errorId) show(field);
     };
     const onInvalid = (event: Event) => {

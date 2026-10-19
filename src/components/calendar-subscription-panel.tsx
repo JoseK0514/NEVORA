@@ -1,4 +1,5 @@
 'use client';
+import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus} from '@/lib/calendar/types';
 import Link from 'next/link';
@@ -40,7 +41,7 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
    <p className="profile-supporting-copy">Calendar apps refresh on their own schedule. <Link href="/app/schedule">Check NEVORA</Link> for the latest schedule. Creating or copying a link does not confirm a calendar connection.</p>
    {active?<details className="employee-calendar-management"><summary>Manage private link<CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><p>Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.</p><div className="employee-calendar-actions">{currentUrl?<button type="button" className="button secondary" disabled={busy||unknown} onClick={()=>onCommand('ROTATE')}>{busy?'Saving…':'Replace link'}</button>:null}<button type="button" className="button secondary calendar-revoke" disabled={busy||unknown} onClick={()=>onCommand('REVOKE')}>Revoke link</button></div></details>:null}
    {notice?<p role="status" className="employee-notice">{notice}</p>:null}
-   {status?.state==='unauthorized'?<Link className="button secondary" href="/login">Sign in</Link>:(status?.state==='unavailable'||unknown)?<button type="button" className="button secondary" disabled={busy} onClick={onRetry} aria-label="Retry calendar link">Retry</button>:null}
+   {status?.state==='unauthorized'?<Link className="button secondary" href="/login">Sign in</Link>:(status?.state==='unavailable'||unknown)?<button type="button" className="nv-btn" data-kind="primary" disabled={busy} onClick={onRetry}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again<span className="nv-sr"> to load the calendar link</span></button>:null}
   </>}
  </section>;
 }

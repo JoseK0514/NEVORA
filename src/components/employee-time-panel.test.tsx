@@ -12,7 +12,7 @@ it('keeps exact freshness and timezone available in the employee record disclosu
  const disclosure=html.split('<details class="employee-corporate-record-details">')[1]?.split('</details>')[0];
  expect(disclosure).toContain('Record details');
  expect(disclosure).toContain('dateTime="2030-10-07T16:00:00Z"');
- expect(disclosure).toContain('12:00:00 PM');
+ expect(disclosure).toContain('12:00:00\u00a0PM');
  expect(disclosure).toContain('Puerto Rico time');
  expect(disclosure).toContain('Updates every 30s while active.');
  expect(html.match(/aria-label="Refresh recorded time"/g)).toHaveLength(1);
@@ -31,9 +31,9 @@ it('removes the corporate record disclosure and all earlier private data on paus
 });
 it('never displays Off Clock or healthy zero metrics before a successful read',()=>{const html=render(null);expect(html).toContain('Loading recorded time');expect(html).not.toMatch(/Off Clock|0m|No recorded punches/);});
 it('distinguishes empty actual time from disconnected timekeeping',()=>{const html=render(ready());expect(html).toContain('Off clock');expect(html).toContain('No recorded punches today');expect(html).toContain('No earlier entries');expect(html).not.toContain('isn&#x27;t connected');});
-it('a failed read clears current state, counters and history',()=>{const html=render({state:'unavailable',reason:'read_failed'});expect(html).toContain('Recorded time unavailable');expect(html).not.toMatch(/Off Clock|0m|Actual Office/);});
+it('a failed read clears current state, counters and history',()=>{const html=render({state:'unavailable',reason:'read_failed'});expect(html).toContain('Couldn’t load your time records');expect(html).not.toMatch(/Off Clock|0m|Actual Office/);});
 it('a paused page exposes none of its earlier private history',()=>{const html=render(ready([raw()]),false,true);expect(html).toContain('Updates paused');expect(html).not.toContain('Actual Office');});
-it('offers reauthentication rather than stale activity after denial',()=>{const html=render({state:'unavailable',reason:'access_denied'});expect(html).toContain('Sign in again');expect(html).toContain('href="/login"');});
+it('offers reauthentication rather than stale activity after denial',()=>{const html=render({state:'unavailable',reason:'access_denied'});expect(html).toContain('Your session ended');expect(html).toContain('href="/login"');});
 it('shows actual status, location, recorded durations and non-payroll clarification',()=>{const html=render(ready([raw()]));expect(html).toContain('Clocked in');expect(html).toContain('Actual Office');expect(html).toMatch(/[>\s]4h[<\s]/);expect(html).toContain('aren’t payroll hours');expect(html).toContain('Break time');});
 it('on-break state includes the original break name and open end',()=>{const html=render(ready([raw({status:'ON_BREAK',breaks:[{id:'b',break_start_at:'2030-10-07T15:45:00Z',break_end_at:null,break_type_id:'t',break_type_snapshot:{id:'t',version:1,name:'Meal break',category:'MEAL',targetMinutes:30}}]})]));expect(html).toContain('On break');expect(html).toContain('Meal break');expect(html).toContain('In progress');});
 it('compact Home mode retains navigation but does not duplicate the full history view',()=>{const html=render(ready([raw()]),true);expect(html).toContain('href="/app/my-time"');expect(html).toContain('Clocked in');expect(html).not.toContain('Recent entries');});
@@ -50,7 +50,7 @@ it('groups each clock value with its meridiem so narrow ranges can wrap between 
 it('keeps an open range end together without dropping the original start time',()=>{
  const html=renderCorporate(ready([raw()]));
  expect(html).toContain('<span class="employee-time-entry-clock">8:00 AM</span>');
- expect(html).toContain('<span class="employee-time-entry-clock">In progress</span>');
+ expect(html).toContain('<span class="employee-time-entry-clock">now</span>');
 });
 
 it('makes an overnight entry end date explicit in the business timezone while retaining exact punches',()=>{
@@ -60,6 +60,6 @@ it('makes an overnight entry end date explicit in the business timezone while re
  expect(text).toContain('Oct 6, 1:00 AM');
  expect(html).toContain('dateTime="2030-10-05T23:30:12Z"');
  expect(html).toContain('dateTime="2030-10-06T05:00:34Z"');
- expect(html).toContain('7:30:12 PM');
- expect(html).toContain('1:00:34 AM');
+ expect(html).toContain('7:30:12\u00a0PM');
+ expect(html).toContain('1:00:34\u00a0AM');
 });

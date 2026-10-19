@@ -259,7 +259,7 @@ export function buildManagerActionItems(
       type: "DEADLINE_MISSING",
       priority: "MISSING_INPUT",
       title: "Availability deadline not set",
-      detail: "Set the weekly cutoff before employees finalize availability.",
+      detail: "Set the availability deadline before employees finalize availability.",
       href: `/app/schedule?week=${encode(input.weekStart)}`,
     });
   }

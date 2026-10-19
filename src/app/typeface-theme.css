@@ -19,6 +19,16 @@
   font-display: swap;
 }
 
+/* ST-WA-2, ST-P4-08: until Inter arrives, Arial is scaled to Inter's metrics, so text doesn't re-wrap or move on the swap. */
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial"), local("ArialMT");
+  ascent-override: 90.49%;
+  descent-override: 22.56%;
+  line-gap-override: 0%;
+  size-adjust: 107.06%;
+}
+
 @font-face {
   font-family: "JetBrains Mono";
   src: url("/fonts/typeface/jetbrains-mono/variable.ttf") format("truetype");
@@ -43,7 +53,7 @@
   --design-radius-card: 18px;
   --design-radius-control: 17px;
   --design-radius-pill: 9999px;
-  --design-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --design-font-body: "Inter", "Inter Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --design-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   /* Compatibility names remain stable for the existing components. */

@@ -266,7 +266,7 @@ export default async function SchedulePage({
     <div className="manager-schedule-page premium-legacy-page" data-nv-page="">
       {/* F8: the summary says what each number counts. */}
       <PageBand eyebrow={formatWeekRange(weekStart)} title="Schedule"
-        summary={`${publishedCount !== null && locations.length ? `${publishedCount} of ${locations.length} ${locations.length === 1 ? "location" : "locations"} published · ` : ""}${rosterShifts.length} ${rosterShifts.length === 1 ? "shift" : "shifts"} this week`}
+        summary={`${publishedCount !== null && locations.length ? `${publishedCount} of ${locations.length} ${locations.length === 1 ? "location" : "locations"} published\u00a0· ` : ""}${rosterShifts.length}\u00a0${rosterShifts.length === 1 ? "shift" : "shifts"} this week`}
         aside={<Link className="nv-band-control schedule-add-shift" href={`/app/schedule/new?week=${weekStart}${selectedLocation === "all" ? "" : `&locationId=${encodeURIComponent(selectedLocation)}`}`}>
           <PlusIcon size={18} weight="bold" aria-hidden="true" />Add shift
         </Link>} />

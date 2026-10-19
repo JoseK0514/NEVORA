@@ -11,7 +11,7 @@ it('hides all new private content while paused, including previously ready snaps
 it('partial and unavailable are never verified empty or Important Actions all-clear',()=>{
  for(const snapshot of [{...inbox,coverage:'partial' as const,items:[]},{state:'unavailable' as const,reason:'read_failed' as const}]){
   const html=renderToStaticMarkup(<EmployeeAccountView kind="notifications" state={{snapshot,paused:false,refreshing:false}} onRetry={()=>{}}/>);
-  expect(html).not.toContain('No notifications in this current view');expect(html).not.toContain("You&#x27;re all set");expect(html).toContain('Retry');
+  expect(html).not.toContain('No notifications in this current view');expect(html).not.toContain("You&#x27;re all set");expect(html).toContain('Try again');
  }
 });
 it('renders safe-open links without read/ack or consent actions',()=>{

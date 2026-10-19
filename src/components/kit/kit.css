@@ -13,6 +13,7 @@
   --nv-muted: #5F666A;        /* 5.84 on white, 5.29 on the canvas */
   --nv-icon: #858B8F;         /* 3.45, chevrons and idle icons */
   --nv-border: #D5DAD9;
+  --nv-field-border: #858B8F;  /* 3.45 on white: a field's only edge must reach 3:1 (WCAG 1.4.11) */
   --nv-hairline: #E8ECEB;
   --nv-track: #DDE2E1;
   --nv-inset: #EEF1F0;
@@ -56,7 +57,7 @@
   --nv-ease-sheet: cubic-bezier(.32, .72, 0, 1);
 
   /* Type roles (phone). In rem, so text follows the reader's text size. 15px floor. */
-  --nv-font: var(--design-font-body, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  --nv-font: var(--design-font-body, "Inter", "Inter Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
   --nv-t-title-1: 600 1.875rem/2.25rem var(--nv-font);   /* 30/36 */
   --nv-t-title-2: 600 1.375rem/1.75rem var(--nv-font);   /* 22/28 */
   --nv-t-title-3: 600 1.1875rem/1.5625rem var(--nv-font);/* 19/25 */
@@ -208,7 +209,7 @@ a.nv-row:active { background: var(--nv-inset); }
 .nv-row__chev { flex: none; color: var(--nv-icon); }
 .nv-avatar, .nv-tile {
   flex: none; display: inline-flex; align-items: center; justify-content: center;
-  width: 40px; height: 40px; border-radius: 20px;
+  width: 2.5rem; height: 2.5rem; border-radius: 1.25rem; /* AL4-16: in rem, so initials and icons stay inside at large text */
 }
 .nv-avatar { background: var(--nv-neutral-fill); box-shadow: inset 0 0 0 1px var(--nv-hairline); color: var(--nv-neutral-ink); font: var(--nv-t-label); font-weight: 600; }
 .nv-avatar[data-waiting="true"] { background: var(--nv-accent-wash); box-shadow: none; color: var(--nv-accent-strong); }

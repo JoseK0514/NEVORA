@@ -21,13 +21,13 @@ it('marks a waiting request amber and an approval green, with a timeline', async
   expect(html).toMatch(/data-tone="review"><svg[^]*?<\/svg>Waiting<\/span>/);
   expect(html).toMatch(/data-tone="done"><svg[^]*?<\/svg>Approved<\/span>/);
   expect(html).toContain('aria-label="Request timeline"');
-  expect(html).toContain('Waiting for your manager');
+  expect(html).toContain('Waiting for approval');
   expect(html).toContain('Fictional pending request');
 });
 
 it('offers a confirmed withdrawal only for the current employee pending request',async()=>{
  const html=renderToStaticMarkup(await RequestsPage({searchParams:Promise.resolve({tab:'my'})}));
- expect(html).toContain('Withdraw pending request');expect(html.match(/>Withdraw pending request<\/button>/g)).toHaveLength(1);
+ expect(html).toContain('Withdraw request');expect(html.match(/>Withdraw request<\/button>/g)).toHaveLength(1);
  expect(html).toContain('TIME_OFF_WITHDRAW:dc6b44c9-6e3f-4f0e-890c-328067ebfe9e');
  expect(html).toContain('name="confirmed"');expect(html).toContain('required=""');
 });

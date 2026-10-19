@@ -111,7 +111,7 @@ describe('released Home data and navigation', () => {
     expect(markup).toContain('Ends');
     expect(markup).toContain('Designated lead');
     expect(markup).toContain('week=2030-10-07&amp;day=2030-10-08');
-    expect(markup).toContain("Clock status below shows whether you're clocked in.");
+    expect(markup).toContain("Clock status below shows whether you’re clocked in.");
     expect(markup).not.toContain('Clocked in');
     expect(markup.indexOf('Next shift')).toBeLessThan(markup.indexOf('data-test-own-time'));
   });
@@ -280,8 +280,8 @@ describe('original redacted clock recovery preservation',()=>{
   for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra.','Clocked in'])expect(lost).not.toContain(field);
   const clock=lost.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/)![1];
   expect(clock).toContain('href="/app/my-time"');
-  if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign In');expect(clock).not.toContain('aria-label="Refresh recorded time"');}
-  else {expect(clock).toContain('aria-label="Refresh recorded time"');if(status==='paused'||status==='loading')expect(clock).toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);else expect(clock).not.toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);}
+  if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign in');expect(clock).not.toContain('aria-label="Refresh recorded time"');}
+  else {expect(clock).toMatch(/aria-label="(?:Refresh recorded time|Try again to load your time records)"/);if(status==='paused'||status==='loading')expect(clock).toMatch(/aria-label="(?:Refresh recorded time|Try again to load your time records)"[^>]*disabled/);else expect(clock).not.toMatch(/aria-label="(?:Refresh recorded time|Try again to load your time records)"[^>]*disabled/);}
  });
 });
 
@@ -289,8 +289,8 @@ describe('Today Home (U2)', () => {
   it('shows the next shift as a pass with a relative day, greeting and quick actions', () => {
     const markup = html(props());
     expect(markup).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
-    expect(markup).toContain('<strong>Tomorrow</strong> · <time dateTime="2030-10-08">');
-    expect(markup).toContain('Good morning · <time');
+    expect(markup).toContain('<strong>Tomorrow</strong>\u00a0· <time dateTime="2030-10-08">');
+    expect(markup).toContain('Good morning\u00a0· <time');
     for (const label of ['Quick actions', 'Request time off', 'Swap a shift', 'Update availability', 'My time']) expect(markup).toContain(label);
     // Codex F1/W1: time off opens its form directly; Swap a shift opens shift choosing, never the source-less swap route.
     expect(markup).toMatch(/href="\/app\/requests"[^>]*>(?:<[^>]+>)*<\/span><span>Request time off/);
