@@ -1,3 +1,9 @@
 /* Phase 3.5 Wave C session: the Settings hub and every Settings page, Account recovery, Clocker recovery.
  * Only that session edits this file. Shared rules (kit, shell, portal-premium.css) are changed by the coordinating
  * session; ask it by message. Scope every rule to your own pages, using the same high-specificity prefix as portal-premium.css. */
+
+/* WR-WC-25: staged for the unmerged Wave C dialogs; preserve full button labels on narrow phones. */
+@media (max-width: 599px) {
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-dialog .wc-actions > .nv-btn { flex: 0 0 auto; }
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-dialog .wc-swap > span { align-self: center; }
+}
