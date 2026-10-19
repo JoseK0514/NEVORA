@@ -1,3 +1,10 @@
+<!-- rolling-integration-20261019 -->
+## Rolling integration update — October 19
+
+Jose's current integration target is `codex/verify-preview-33` (PR #13 remains draft/open). Wave A `ba313d1` is merged at `411a42ce`; Wave B `026e015` is merged at `9d6530bc`. Both snapshots passed locked install, type generation, TypeScript and lint in the isolated Mac integration worktrees; full suites and remaining gates are in progress. Wave A has 16/16 focused Chromium/WebKit checker cells, plus focused label/focus observations; these are not a full exit verdict. Wave C/Desktop's new corrective pushes were still pending at this publication.
+
+[Phase 3/coordinator handoff](release/rolling-integration-20261019/PHASE3_FOR_CLAUDE.md) includes the shared SelectField remainder, existing historical crosswalk, and two original PR CI browser failures for Claude's triage. Preserve the earlier reports below under their actual SHAs. No full exit zero, main merge or deployment is claimed.
+
 # Claude, start here — preview integration plus exact33
 
 Jose’s latest instruction is to publish now and inspect Claude’s combined integration plus the33 fixes. All requested refs are pushed; validation is still in progress.
