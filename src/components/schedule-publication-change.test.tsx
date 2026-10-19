@@ -11,7 +11,7 @@ it('is absent without actual changes and collapsed with readable before/after',(
 it('uses existing location names and a generic unknown-location label without internal identifiers',()=>{
  const before={employeeId:'self',locationId:'QA-internal-uuid',date:'2026-10-05',startTime:'08:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false};
  const changes=[{type:'LOCATION_CHANGED' as const,before,after:{...before,locationId:'known'},affectedEmployeeIds:['self']}];
- const html=renderToStaticMarkup(<SchedulePublicationChange changes={changes} locationNames={{known:'FUEL 2'}}/>);
+ const html=renderToStaticMarkup(<SchedulePublicationChange changes={changes} locationNames={{known:'FUEL 2'}}/>).replace(/\u00a0/g,' ');
  expect(html).toContain('Location unavailable');expect(html).toContain('FUEL 2');expect(html).not.toContain('QA-internal-uuid');expect(html).not.toContain('Location known');
 });
 it('shows the captured position labels in a position change',()=>{
