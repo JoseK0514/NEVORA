@@ -1,10 +1,25 @@
 # Desktop (Phase 4): inspection round for Codex
 
-- **Round:** 5 (rounds 1, 2 and 4 ran locally; their reports are in `inspection/`, round 4 appended to each)
-- **Status:** not zero yet (rounds 1–2 ran locally; their reports are in `inspection/`)
-- **Exit round:** yes, if it reports zero. Every round-4 finding is fixed in this commit; this round is a full sweep by all five areas plus the re-checks.
-- **Branch and commit:** `claude/p4-desktop-240fe0`, the commit this file was pushed with (after `97d4611`).
-- **Chat prefix for IDs:** `P4` (for example `AL-P4-01`).
+- **Round:** 6, on the release candidate. The branch is merged with `origin/codex/verify-preview-33` (`cd764f6`), so these fixes land on exactly what ships.
+- **Status:** not zero yet. Round 5 (local, five full sweeps) and Codex's round 5 on `8012d97` reported only P2s; every one is fixed in this commit. Full unit suite on the merged branch: 7,362 passed, 0 failed (801 skipped); tsc and eslint clean.
+- **Exit round:** yes, if it reports zero. Re-check the IDs below and run the exit sweep Codex already prepared (`p4-desktop/exit-cd764f6/`).
+- **Branch and commit:** `claude/p4-desktop-240fe0`, the commit this file was pushed with.
+- **Chat prefix for IDs:** `P4`.
+
+## Fixed since round 5 (re-check by ID)
+
+| ID | Fix |
+|---|---|
+| ST-P4-13 | Codex's `5b66aa3`: the selected Inbox group renders open before its first paint (`manager-inbox.tsx`). Measured on the merged build: `/app/inbox?filter=planning`, Owner, 1440, no layout shift. |
+| TC-P4-24 (TC-DESKTOP-KBD-01) | Codex's `28266eb`: the header ⌘K hint uses the desktop callout role. |
+| TC-P4-22 | Availability's "From" and "Until" labels on the Employee 14px desktop floor. |
+| TC-P4-23 | My pay's document names and earlier-payday line on the same floor. |
+| IS-P4-22 | Try again and coming back online put focus back on the list (selected row or first heading), never on the page body. |
+| TCD-22, TCD-23, TCD-24 | Manager Updates on the floor; Search dialog labels in kit roles, sentence case; Employee schedule and My time titles in rem. |
+| AL4-31, AL4-32, AL4-33, AL4-34, AL4-21 | Time exports mapping card inset; open Shift options span the row; Home clock Refresh on the text edge; collapsed sidebar shows the wordmark alone; no chip fade from 1060. |
+| WR4-19 | Below 900px the account button is avatar and chevron, and Search drops its key hint, so the trail keeps the page's name. |
+| Employee placeholders | Employee Home and My schedule placeholder bands match their final bands (168/116 from 1024, 160/170 at 761–1023), found in the local stability pass. |
+| P3-WR-11 (coordinator's report) | Inbox row and pane times stay whole and wrap as units at large text. |
 
 ## Scope
 

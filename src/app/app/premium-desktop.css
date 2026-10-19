@@ -469,8 +469,8 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 
 /* ST-P4-09: Employee and Lead placeholder bands at each page's measured desktop height (a tab row adds its 48px on top). */
 @media (min-width: 1024px) {
-  .employee-shell .route-skeleton[data-route="home"] { --route-band-desktop: 172px; }
-  .employee-shell .route-skeleton[data-route="schedule"] { --route-band-desktop: 120px; }
+  .employee-shell .route-skeleton[data-route="home"] { --route-band-desktop: 168px; }
+  .employee-shell .route-skeleton[data-route="schedule"] { --route-band-desktop: 116px; }
   .employee-shell .route-skeleton[data-route="hub"] { --route-band-desktop: 136px; }
   .employee-shell .route-skeleton[data-route="review"] { --route-band-desktop: 136px; }
   .employee-shell .route-skeleton[data-route="exchange"] { --route-band-desktop: 136px; }
@@ -481,8 +481,8 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   .employee-shell .route-skeleton:is([data-route="profile"], [data-route="updates"], [data-route="notifications"]) { --route-band-desktop: 116px; }
 }
 @media (min-width: 761px) and (max-width: 1023px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
-  .employee-shell .route-skeleton[data-route="home"] { --route-band-desktop: 164px; }
-  .employee-shell .route-skeleton[data-route="schedule"] { --route-band-desktop: 172px; }
+  .employee-shell .route-skeleton[data-route="home"] { --route-band-desktop: 160px; }
+  .employee-shell .route-skeleton[data-route="schedule"] { --route-band-desktop: 170px; }
   .employee-shell .route-skeleton[data-route="hub"] { --route-band-desktop: 128px; }
   .employee-shell .route-skeleton[data-route="review"] { --route-band-desktop: 128px; }
   .employee-shell .route-skeleton[data-route="exchange"] { --route-band-desktop: 150px; }
