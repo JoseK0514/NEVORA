@@ -27,7 +27,7 @@ export function TimeOffWithdrawal({requestId,dateLabel}:{requestId:string;dateLa
    {pending?'Withdrawing…':
     state.outcome==='withdrawn'?'Your request was withdrawn. Your list is updating.':
     state.outcome==='conflict'?'This request can no longer be withdrawn. Your list is updating.':
-    state.outcome==='unavailable'?'We couldn’t confirm the withdrawal. Try again. It won’t withdraw twice.':
+    state.outcome==='unavailable'?'We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.':
     state.outcome==='denied'?'Your session ended. Sign in again to see your requests.':
     state.outcome==='invalid'?'Check the box to confirm, then withdraw.':null}
   </p>

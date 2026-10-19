@@ -78,7 +78,7 @@ export function CalendarSubscriptionPanel({authority}:{authority:string}){
    else if(result.status==='active_url_unavailable'){pending.current=null;setNotice('The link is active. Its URL cannot be retrieved; replace the link to create a new one.');await refresh();}
    else if(result.status==='revoked'){pending.current=null;setNotice('Link revoked.');await refresh();}
    else if(result.status==='outcome_unknown'||result.status==='unavailable'){setNotice('The result is unknown. Retry the same operation to check it.');}
-   else{pending.current=null;setNotice(result.status==='conflict'?'The link changed. Check the current status and try again.':'This action is no longer authorized.');setUrl(null);await refresh();}
+   else{pending.current=null;setNotice(result.status==='conflict'?'The link changed. Check the current status and try again.':'Your session may have ended. Sign in again, then create the link.');setUrl(null);await refresh();}
   }catch{if(at===generation.current&&visible.current)setNotice('The result is unknown. Retry the same operation to check it.');}
   finally{if(operation===work.current&&visible.current){busyNow.current=false;setBusy(false);}}
  }
