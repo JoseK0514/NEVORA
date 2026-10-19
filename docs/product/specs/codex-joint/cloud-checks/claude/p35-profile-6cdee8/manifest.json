@@ -122,6 +122,75 @@
       "code": 1,
       "passed": 14,
       "failed": 2
+    },
+    {
+      "name": "00006-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T18-19-54-643Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00006-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/payroll,/app/payroll-export,/app/reports,/app/requests",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "c6205b1e06cea92d047db20373e9e560e154bbdce316fd76713aab46c077356e",
+      "code": 1,
+      "passed": 11,
+      "failed": 5
+    },
+    {
+      "name": "00007-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T18-21-01-518Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00007-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/schedule,/app/schedule/copy-receipt?operation=5866661b-9c64-4ca0-8c98-adbe95cd3107,/app/schedule/coverage,/app/schedule/edit?shiftId=audit-next-0-1",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "10533ce508e1b00afb067377c13a3716204837bea46fe91160baeba35e99567e",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
+    },
+    {
+      "name": "00008-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T18-22-05-998Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00008-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/schedule/new,/app/schedule/settings,/app/schedule/templates,/app/settings",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "683c4c42f7fe765a2d33365f052255f946ef899a9c916e07714fe5f83d144052",
+      "code": 1,
+      "passed": 11,
+      "failed": 5
     }
   ],
   "planned": 12716,

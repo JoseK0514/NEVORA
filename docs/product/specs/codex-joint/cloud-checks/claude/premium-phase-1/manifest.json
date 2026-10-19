@@ -76,6 +76,98 @@
       "code": 0,
       "passed": 16,
       "failed": 0
+    },
+    {
+      "name": "00004-matrix-AUDIT-E-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T18-19-55-925Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00004-matrix-AUDIT-E-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/schedule/coverage,/app/timecards,/app/updates,/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+        "--accounts",
+        "AUDIT-E",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "fa709eeeb0c4f12c05fce40be6100c84f3fc227c80e034f753c9adad570ae299",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
+    },
+    {
+      "name": "00005-matrix-AUDIT-E-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T18-20-12-210Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00005-matrix-AUDIT-E-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/updates/compose",
+        "--accounts",
+        "AUDIT-E",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "e98d9043d5bf6f215ffce10aae7e428d85f35087a0766bf3cecb250c08cc36fc",
+      "code": 1,
+      "passed": 2,
+      "failed": 2
+    },
+    {
+      "name": "00006-matrix-AUDIT-LEAD-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T18-21-15-251Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00006-matrix-AUDIT-LEAD-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0",
+        "--accounts",
+        "AUDIT-LEAD",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "74ee86a594c96723c08a05c6f2c6580f5c2f65c301b28a00b0bb307e62873086",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
+    },
+    {
+      "name": "00007-matrix-AUDIT-LEAD-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T18-22-15-563Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00007-matrix-AUDIT-LEAD-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-0,/app/my-pay,/app/my-time,/app/notifications",
+        "--accounts",
+        "AUDIT-LEAD",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "e665d37f513a59160ae422c5072c03df83f69d54c85c35c2084b4282e3b8e53e",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
     }
   ],
   "planned": 12580,
