@@ -70,7 +70,8 @@ export default async function NewShiftPage({
     return <div className="nv-page wa-page wa-shift" data-nv-page="">
       <PageBand back={{ href: refreshHref, label: "Coverage" }} eyebrow={keepWhole(formatWeekRange(locator.weekStart))} title="Review replacement"
         summary={`${selected.employeeName} for ${keepWhole(`${day.weekday},\u00a0${day.day}`)}.`} />
-      <ConfigurationForm action={createShiftAction} className="nv-content wa-narrow wa-form">
+      <div className="nv-content wa-narrow">
+      <ConfigurationForm action={createShiftAction} className="wa-form">
       <input type="hidden" name="coverageRepairReview" value={params.review} />
       {Object.entries({ weekStart: locator.weekStart, employeeId: selected.employeeId, locationId: locator.locationId,
         date: locator.date, startTime: locator.startTime, endTime: locator.endTime, positionId: locator.positionId ?? '',
@@ -90,7 +91,9 @@ export default async function NewShiftPage({
         <PendingButton pending="Saving…" block>Save replacement</PendingButton>
         <Link className="nv-btn" data-kind="secondary" data-block="true" href={refreshHref}>Back to coverage</Link>
       </FormActions>
-    </ConfigurationForm></div>;
+    </ConfigurationForm>
+      </div>
+    </div>;
   }
   const workspace = await getWorkspace();
   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
