@@ -1,9 +1,9 @@
 # Claude, start here — paused-handoff fixes
 
-Jose explicitly approved item4 in this chat. Review each candidate finding commit below, then have its owner port or replace it. The31 finding fixes are on `codex/release-candidate`; source `claude/*` branches were not edited. Jose’s latest instruction is a merge-ready handoff: isolated `codex/ready-wave-a`, `codex/ready-wave-b`, `codex/ready-wave-c` and `codex/ready-desktop` review targets are being prepared from frozen candidate `b9567ab` plus each owner input. They do not authorize a nonzero merge into the candidate.
+Jose explicitly approved item4 in this chat. Review each candidate finding commit below, then have its owner port or replace it. The32 finding fixes are on `codex/release-candidate`; source `claude/*` branches were not edited. Jose’s latest instruction is a merge-ready handoff: isolated `codex/ready-wave-a`, `codex/ready-wave-b`, `codex/ready-wave-c` and `codex/ready-desktop` review targets are being prepared from frozen candidate `b9567ab` plus each owner input. They do not authorize a nonzero merge into the candidate.
 
 - **Merged and preserved:** first-published `8e18a95`, with coordinator `227150b`, backend `da2a4e5`, verified-zero Profile `ea58610`, and separate authorized Profile initial-read `4ff37e5`. The parallel local bootstrap `cbaadbc` is preserved as a checkpoint and was not pushed over published history.
-- **Candidate under validation:** `b9567abc26b977a517b77622a1661b16172f5b16`, **31 finding commits**. Affected tests **58/58 pass** and preflight TypeScript passes. Exact-candidate targeted browser proofs pass **152/152** across Chromium and WebKit; the72-cell unchanged checker is running. Final full one-worker suite, lint and production build/marker check are pending. No final green or all-six acceptance is claimed. [Commit manifest](release/paused-ui-fixes-b9567ab/fix-commits.json).
+- **Candidate under validation:** `9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b`, **32 finding commits**. Affected tests **58/58 pass** and preflight TypeScript passes. Original31 fixes pass152/152 targeted browser cases on `b9567ab`; its72-cell checker found one additional desktop Payroll P2, repaired in this32nd commit. Exact new-candidate checker, final full one-worker suite, lint and production build/marker check are pending. No final green or all-six acceptance is claimed. [Commit manifest](release/paused-ui-fixes-9ec3adc/fix-commits.json).
 - **Zero:** Profile's five committed Mac reports at `ea58610` justified its merge. Independent cloud IS-PROFILE-17 is separately repaired; ST-PROFILE-03 is addressed by initial-read `4ff37e5`. No other complete new source zero certificate exists.
 - **Five full exits in preparation:** Phase3 will inspect frozen candidate `b9567ab` (coordinator `227150b` is already included). WaveA input `a05f26a`, WaveB app `9bd265e`/handoff `564d193`, WaveC `5f7c166`, and Desktop `8012d97` are being integrated into separate Codex review targets with existing fixes preserved. Original source exits remain incomplete/nonzero. The actual candidate accepts only exact completed zero targets. Phase3’s required baseline alone is4,480 cases; partial smoke results are not a full exit.
 - **Two remaining repairs implemented:** WaveB IS-B31 (`wave-b-forms.tsx` Enter pending focus) and Desktop ST-P4-13 (passive-effect Inbox opening; measured CLS~0.064) now have passing bounded before/after proofs and separate named commits on the isolated Codex review targets: IS-B31 `eb83869` (16/16), ST-P4-13 `5b66aa3` (8 openings +4 behavior checks; Chromium CLS<0.006). Both affected implementations are absent from the current candidate. WC overrides remain staged for unmerged UI; source injection proofs are preserved, and the merged review tree still needs its own acceptance. WC dialog centering passes28/28 source cases, bounds delta0px, glyph centering≤0.5px.
@@ -11,14 +11,14 @@ Jose explicitly approved item4 in this chat. Review each candidate finding commi
 
 ## Isolated integration targets — full exits still required
 
-These targets contain the candidate base and their owner’s source input. They are prepared for verification; none is labeled zero or merged into the release candidate yet. The31-fix candidate remains frozen while final gates run.
+These targets contain the candidate base and their owner’s source input. They are prepared for verification; none is labeled zero or merged into the release candidate yet. All review targets include the32nd Payroll guidance fix; final candidate browser triage and gates remain in progress.
 
 | Review branch | Frozen SHA | Status |
 |---|---|---|
-| `codex/ready-wave-a` | `1c741fda0abf6312de7e3860be139cb2767c1ff8` | Approved preservation choices; full exit queued |
-| `codex/ready-wave-b` | `eb83869aac75aeae874258c0b3523345d126e7cf` | IS-B31 separate commit; typecheck and affected lint pass; full exit queued |
-| `codex/ready-wave-c` | `77784e62f8bf5e61ec90642a2302d634ee7f8a65` | Approved preservation ledger; full exit queued |
-| `codex/ready-desktop` | `28266eb37f9d0865a9581a16083f5699fe5a9467` | ST-P4-13 and header shortcut each separate; full exit queued |
+| `codex/ready-wave-a` | `563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea` | Approved preservation choices; full exit queued |
+| `codex/ready-wave-b` | `368e98a18c16d47df04a93f2bea560843e461e0e` | IS-B31 separate commit; typecheck and affected lint pass; full exit queued |
+| `codex/ready-wave-c` | `de8b15851d6280fd31fba3db63dcbe976a19584a` | Approved preservation ledger; full exit queued |
+| `codex/ready-desktop` | `724b430f3693bc5a9d37677ad250581e33d0f866` | ST-P4-13 and header shortcut each separate; full exit queued |
 
 [Wave B Enter-focus proof](p35-wave-b/is-b31-preview-proof/README.md) · [Desktop Inbox proof](p4-desktop/st-p4-13-8012d97-proof/README.md). Header `TC-DESKTOP-KBD-01` aliases `TC-P4-24` in the updated source report (originally colliding `TC-P4-22`); it is distinct from the existing Availability-label `TC-P4-22` finding. Source inputs and original nonzero reports are retained.
 
@@ -59,6 +59,7 @@ One row is one finding and one application commit. All are unpublished until fin
 | `0443030` | **IS-WB-34** — reveal publication recovery and focus its actual next step | [Evidence](p35-wave-b/round-4/interaction-states.md) |
 | `980e823` | **ST-WB-15** — preserve publication action labels while publishing | [Evidence](p35-wave-b/round-4/stability.md) |
 | `b9567ab` | **IS-RC-COMPOSE-01** — retain guarded publication focus while pending | [Evidence](release/paused-ui-fixes-980e823/candidate-findings.md) |
+| `9ec3adc` | **TC-RC-PAYROLL-01** — use desktop kit roles for payroll next-step guidance | [Evidence](release/paused-ui-fixes-b9567ab/candidate-findings.md) |
 
 The centered `PendingLabel` helper introduced with ST-P3-24 is reused by the later reserved-label fixes. IS-PROFILE-17, IS-80 and IS-B12 depend on the reveal helper in IS-P3-02. The filename part of TC-P4-23 is covered once by TC-B-32. Combined aliases RC-PC-TC-01/02 refer to RC-CB-TC-01/TCD-16 and TC-P4-22; IS-P3-01 refers to the IS-74 Availability focus repair. ST-WA-9/10/11 are press/resize variants of the same reserved-label family and require the candidate's own proof.
 

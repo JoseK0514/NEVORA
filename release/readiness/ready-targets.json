@@ -1,10 +1,10 @@
 {
-  "candidateBase": "b9567abc26b977a517b77622a1661b16172f5b16",
+  "candidateBase": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
   "targets": [
     {
       "owner": "wave-a",
       "branch": "codex/ready-wave-a",
-      "sha": "1c741fda0abf6312de7e3860be139cb2767c1ff8",
+      "sha": "563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea",
       "exitStatus": "queued",
       "zero": false,
       "published": false
@@ -12,7 +12,7 @@
     {
       "owner": "wave-b",
       "branch": "codex/ready-wave-b",
-      "sha": "eb83869aac75aeae874258c0b3523345d126e7cf",
+      "sha": "368e98a18c16d47df04a93f2bea560843e461e0e",
       "exitStatus": "queued",
       "zero": false,
       "published": false
@@ -20,7 +20,7 @@
     {
       "owner": "wave-c",
       "branch": "codex/ready-wave-c",
-      "sha": "77784e62f8bf5e61ec90642a2302d634ee7f8a65",
+      "sha": "de8b15851d6280fd31fba3db63dcbe976a19584a",
       "exitStatus": "queued",
       "zero": false,
       "published": false
@@ -28,10 +28,11 @@
     {
       "owner": "desktop",
       "branch": "codex/ready-desktop",
-      "sha": "28266eb37f9d0865a9581a16083f5699fe5a9467",
+      "sha": "724b430f3693bc5a9d37677ad250581e33d0f866",
       "exitStatus": "queued",
       "zero": false,
       "published": false
     }
-  ]
+  ],
+  "findingCount": 32
 }
