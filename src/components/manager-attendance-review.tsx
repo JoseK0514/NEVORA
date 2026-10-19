@@ -106,6 +106,8 @@ export function AttendanceReviewSurface({
   const denied = review?.state === 'unavailable' && review.reason === 'access_denied';
   const unavailable = review?.state === 'unavailable' && !denied;
   const rows = ready ? groupRows(ready.groups, ready.labels) : [];
+  // Busy only while the first read is in flight: desktop hides the footer (and Refresh) while busy.
+  const loading = !ready && !paused && !denied && !unavailable;
 
   return (
     <section className="attendance-review" aria-labelledby="attendance-review-title">
@@ -117,7 +119,7 @@ export function AttendanceReviewSurface({
           <span>Clock-ins and breaks that may need a look.</span>
         </div>
         {/* The summary row is there while loading too ("–" for each count), so nothing moves when the numbers arrive. */}
-        <div className="attendance-review-summary" aria-label="Attendance exception summary" aria-busy={ready ? undefined : true}>
+        <div className="attendance-review-summary" aria-label="Attendance exception summary" aria-busy={loading || undefined}>
           <span>
             <strong>{ready ? ready.signalCount : '–'}</strong>
             {' to review'}
