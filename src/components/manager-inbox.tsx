@@ -200,7 +200,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   // ST-P4-03: once the list has shown, a pause, an offline spell, a refresh or a failed read keeps both columns
   // and the list's last height on desktop (as Home does), so nothing collapses and the scroll position holds.
   const listColumn = useRef<HTMLDivElement>(null);
-  const lastListHeight = useRef(0);
+  const [lastListHeight, setLastListHeight] = useState(0);
   const [hasShown, setHasShown] = useState(false);
   // Follow the URL when it changes underneath us (Back, a new link).
   const [urlFilter, setUrlFilter] = useState(initialFilter);
@@ -244,17 +244,13 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   if (showing && !hasShown) setHasShown(true);
   useLayoutEffect(() => {
     const column = listColumn.current;
-    if (!column) return;
-    if (showing) {
-      column.style.minHeight = "";
-      const measure = () => { lastListHeight.current = column.getBoundingClientRect().height; };
-      measure();
-      const observer = new ResizeObserver(measure);
-      observer.observe(column);
-      return () => observer.disconnect();
-    }
-    column.style.minHeight = !ready && lastListHeight.current ? `${lastListHeight.current}px` : "";
-  }, [showing, ready]);
+    if (!column || !showing) return;
+    const measure = () => setLastListHeight(Math.round(column.getBoundingClientRect().height));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(column);
+    return () => observer.disconnect();
+  }, [showing]);
   // IS-P4-04: a selected row inside a closed group (a deep link, Back, or the Plan ahead fallback) opens its group, so it shows.
   const shownKey = wide && current ? current.key : null;
   useEffect(() => {
@@ -289,7 +285,9 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
       {/* The pane's column is there in every state but "all caught up", so the list never changes width. */}
       <div className="inbox-columns" data-detail={!ready || total ? "true" : undefined}>
       {/* IS-P4-06: Up and Down move between rows and group headings (D6). */}
-      <div className="inbox-list-column" ref={listColumn} data-row-nav=".inbox-row, .premium-group > details > summary">
+      {/* ST-P4-03: the held height is part of this render, so the page never empties under the reader and scroll stays put. */}
+      <div className="inbox-list-column" ref={listColumn} data-row-nav=".inbox-row, .premium-group > details > summary"
+        style={!ready && hasShown && lastListHeight ? { minHeight: `${lastListHeight}px` } : undefined}>
       {/* Desktop only, first in reading and Tab order (IS-P4-16). It appears once the list has shown, so it doesn't jump on load. */}
       {ready || hasShown ? <AllRequests /> : null}
       {!ready ? <Card><div className="inbox-status nv-card__body">

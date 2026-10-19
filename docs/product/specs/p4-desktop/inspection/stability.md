@@ -65,3 +65,76 @@ Not covered this round, because the server timed out or returned "could not be l
 Not repeated: the automated sweep (CLS at every width and text size, overflow, axe).
 
 Open: 0 P0, 3 P1, 5 P2
+
+## Round 2
+
+October 19, 2026, 14:10–15:20, on the round-2 build (same preview and states). I worked read only: Refresh and the 30-second re-read are reads, and I simulated failed reads in my own browser (500 on `/api/manager/*`). I mostly used Chromium, with WebKit spot checks.
+- **Manager and Owner:** 768, 1024 and 1440 for the re-checks, plus 320 and 390.
+- **Employee and Lead (first pass):** every page in ROUND-2.md for `AUDIT-E` and `AUDIT-LEAD`, plus Home for `AUDIT-ON`, `AUDIT-BREAK` and `AUDIT-LONG`, at 768, 1024 and 1440, plus 390 and 320.
+
+The server was responsive this round (about 0.2s per request), so every cell completed. Data and scripts: `SI/r2/`. Screenshots: `SI/shots/r2-*`.
+
+### Status of round-1 findings
+
+| ID | Status | Measurement now |
+|---|---|---|
+| ST-P4-01 Sticky pane under the header | **Fixed** | The side column holds only the pane now and sticks at `top: 81px`, 16px under the 65px header. `elementFromPoint` at the pane's top centre returns the pane at every scroll position, at 1440 (pane 81–457) and at 1024 (81–529 on a 768px screen, so the whole pane is visible). At maximum scroll the list ends below the pane (1440: list bottom 788 against pane 457; 1024: 656 against 529), so the pane never detaches or covers anything. |
+| ST-P4-02 Desktop placeholders without a band (Manager and Owner) | **Fixed** (1440 measured) | Placeholder band against final band, Owner, sidebar navigation: Team 168/168, Schedule 168/168, Home 168/168, Inbox 196/196, Timecards 184/184 and Payroll 164/164 (the last two include the section-tab row). All start at y=93. One leftover is filed separately as ST-P4-10 (the tabs slide sideways). Employee and Lead placeholders are still bandless (ST-P4-09). |
+| ST-P4-03 Inbox collapses on pause, offline, Refresh or failure | **Partly fixed** (still P1) | **Columns held:** in paused, offline, failed, reconnecting and loading the grid stays two columns. The list column keeps its last height (1440: 3580; 1024: 4022), the pane is a 200px placeholder in place and the Request pages row stays. A 30-second re-read and Refresh change nothing at all (no frame differed over 36s of polling). **Scroll still lost:** scrolled to 800, the page jumps to 0 the moment it pauses, goes offline or a read fails. That's 4 of 4 transitions at 1024 (Owner) and 1440 (Manager), in Chromium and WebKit, and the document height never changes (3941 / 4383). When the data returns you're at the top. Proof of cause: if I hold the same height with CSS in my own page (`.inbox-list-column { min-height: 3580px }`) before the pause, scroll stays at 800. So the hold arrives one layout too late. It's set in a `useLayoutEffect` (`src/components/manager-inbox.tsx:241-253`), which runs after the commit that empties the list and after the children's layout effects. A layout forced in between (for example the band filter row's `KeepSelectedVisible`, which reads `scrollWidth` on every render, `src/components/kit/keep-selected-visible.tsx`) sees the short page and clamps the scroll. **Fix:** apply the hold during render, so it lands in the same DOM commit: `style={{ minHeight: !ready && lastListHeight.current ? lastListHeight.current : undefined }}` on `.inbox-list-column`, with the ResizeObserver still recording the height while ready. Then re-test 800 → paused → 800. |
+| ST-P4-04 Team filter row moves the list | **Fixed** | 1440, Manager. The Find card stays 200px and the people list stays at y=437 through typing, choosing a role, a status segment and Clear filters. "Updating employees…" and "Clear filters" sit on the status row (y=357–413). The only layout shift is the list's own rows changing (12 → 2 people). |
+| ST-P4-05 Home loading rows taller than the real ones | **Partly fixed** (P2) | The loading column is now **shorter** than the real one. 1024 and 1440: 611 against 640, so the setup card (Owner) or This week (Manager at 1024) moves down 29px (1054 → 1083). **768: 611 against 680 (+69),** setup 1054 → 1123 and This week 1325 → 1394. At 768 the real rows wrap to a second meta line. All of it is below the fold (viewport 1024/768/900 tall), so CLS is 0. Fix: at 761–1023 make the rows `min-height: 127px` (104 + 69/3). At ≥1024 make them 114px (104 + 29/3). Re-measure both. |
+| ST-P4-06 Inbox band reserves a second summary line | **Kept by decision** | I agree: it's under the cap (196) and it prevents growth when the summary wraps. |
+| ST-P4-07 All requests jumps under the pane | **Fixed** | The Request pages row is at the top of the list (1440: 60px tall; 1024: 112px). Nothing sits under the pane, so its height (shift 376/448, request 286/306, planning 222/262) moves nothing. |
+| ST-P4-08 Header font swap | **Waiting on the coordinator** | Not counted. I saw one more symptom of the same swap: the sidebar "Powered by" footer goes from 48 to 28px tall (y 704 → 724) during load at 1024, a layout shift of 0.0002. |
+
+### New findings
+
+| ID | Screen, role, width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| ST-P4-09 | Every Employee and Lead sidebar navigation, 768–1440 (measured `AUDIT-E` at 1440: My schedule, Requests, My time, My pay, Updates, Home) | `.route-skeleton`, `.page-frame > .section-tabs` | **Placeholder:** the desktop placeholder has no band (the band element is there but 0×0). It shows for 60–470ms, then the teal band appears at its final height: My schedule 120, Requests 184, My time 184, My pay 192, Updates 116, Home 172. The placeholder is also 1132px wide against the 1120px page. **Section tabs:** on the tabbed pages (Requests, My time, My pay) the tabs are already in the band position and coloured for the band (white, 600 for the current one), but there's no teal behind them. So "Statements · Hours · Timecards" is white on the light page and runs over the grey placeholder bars. This is the Manager defect fixed in ST-P4-02, still present for the Employee and Lead shell. | `SI/shots/r2-ph-E-mytime.png` | `src/app/app/premium-desktop.css:199-212`: every desktop placeholder-band rule is scoped `:not(.employee-shell)`, and the `--route-band-desktop` values (`:214-230`) cover Manager routes only. The tab colours at `:284-292` match `.route-skeleton[data-band]` in either shell. | Drop `:not(.employee-shell)` from `:199-212`. Add `--route-band-desktop` per Employee route at ≥1024: Home 172, My schedule 120, Requests 184 (hub 164 + tabs), Time off and Availability 168, Shift requests 188, My time and Timecards 184, My pay 192, Profile, Updates and Notifications 116. At 761–1023: Home 164, My schedule 172, Availability 192, My pay 196, Notifications 140. Add `data-route` in those routes' `loading.tsx`. | P1 |
+| ST-P4-10 | Timecards, Payroll runs and Time exports, and the Employee tabbed pages, on navigation, 1024 and 1440 (measured Owner 1440, Manager 1024) | `.section-tabs .section-tab` | When the page replaces the placeholder, each tab narrows by 4px (76 → 72, 83 → 79, 92 → 88, 107 → 103), so the tabs slide left 0, 4, 8 and 12px, and the underline with them. The computed `padding-inline` is 2px in the placeholder and 0 on the page. | `SI/shots/r2-ph-Timecards.png` against `r2-fi-Timecards.png` | `src/app/app/portal-premium.css:215` sets `padding-inline: 0` only under `.page-frame:has([data-nv-page])`, which the placeholder doesn't match. | Add `padding-inline: 0` to the desktop tab rule at `src/app/app/premium-desktop.css:288`, which already matches both states. | P2 |
+| ST-P4-11 | My schedule, `AUDIT-E` and `AUDIT-LEAD`, ≥1100 (measured 1100 and 1440, Chromium and WebKit) | `.my-schedule-side` | The side column is `position: sticky; top: 81px`, but it is stretched to the week's height, so it has nowhere to stick. Side column against its content: 617 against 248 (E, 1440), 808 against 248 (Lead, 1440) and 962 against 248 (Lead, 1100). The content is the review card (200) and What changed (48). Scrolling 600px takes the "Confirm your schedule" card off screen (top at −128, under the header) while the week continues below. It never holds at 81. | `SI/shots/r2-mysched-AUDIT-E-1440-chromium.png` | `src/app/app/premium-desktop.css:365` (`align-self: stretch` on `.my-schedule-agenda, .my-schedule-side`) overrides the grid's `align-items: start` (`:370`). | In the ≥1100 block, add `align-self: start` to the side-column rule at `:374`. Then check the review card holds at y=81 while the week scrolls and releases at the end of the week. | P2 |
+
+### Employee and Lead desktop, first pass: checked and correct
+
+- **Band height, 100% text (cap 200), `AUDIT-E` and `AUDIT-LEAD`:**
+
+  | Page | 1440 and 1024 | 768 |
+  |---|---|---|
+  | Home | 172 | 164 |
+  | My schedule (all three views) | 120 | 172 |
+  | Requests overview | 164 | 164 |
+  | Time off | 168 | 168 |
+  | Shift requests | 188 | 188 (eyebrow and description hidden as designed) |
+  | Availability | 168 | 192 |
+  | My time, Timecards | 184 | 184 |
+  | My pay | 172 | 196 |
+  | Profile, Updates | 116 | 116 |
+  | Notifications | 116 | 140 |
+
+  `AUDIT-ON`, `AUDIT-BREAK` and `AUDIT-LONG` Home bands are the same, 172 (164 at 768). The tallest is My pay at 768 (196). The section tabs sit inside the band (48px) on the Requests and Pay pages.
+- **Loading → ready:** CLS 0–0.0017 on all 78 Employee and Lead page loads (13 pages, 2 accounts, 3 widths).
+  - Only Home has a source: the review link appears on the title row (`x 952 → 786`, `w 4 → 170`) without moving anything else.
+  - One Lead Time off load at 1024 measured 0.011 (the band grew 20px at 4.7s). Three repeats measured 0–0.0002, so I didn't file it.
+- **WebKit, reduced motion, Lead (1440, 1024):** Home, My schedule, Time off, My time and Profile load and lay out the same as in Chromium. WebKit has no layout-shift API, so its numbers are geometry only.
+- **Phones:** unchanged.
+  - **Manager 390:** Home 220, Inbox 308, Schedule 244, Team 220, Timecards 148.
+  - **Manager 320:** Home 256, Inbox 332, Schedule 244, Team 244, Timecards 148.
+  - **Employee 390:** Home 272, My schedule 168, Updates and Notifications 128, Profile 104. These match Phase 3's recorded values.
+  - **Employee 320:** the same, except Profile is 128.
+  - Header 68 and band top 68 (112 under tabs) at both widths.
+
+### Other changes re-checked
+
+- **Inbox selection (1024, 1440):** no row moves, scroll is kept, focus goes to `#inbox-detail-title`, Escape goes back to the row, and `aria-current` is on one row.
+- **Inbox filter changes:** the band holds at 196. Shifts happen only inside the click window.
+- **Home paused and offline at 768, 1024 and 1440:** no grid child moves, and scroll is kept (400 → 400 → 400 for Owner at 1024 and Manager at 1440).
+- **Section tabs inside the band** (Timecards, Payroll, Time exports; Employee Requests and Pay): the tab row is in the same place in placeholder and page (y=93, 48px). Only the sideways slide in ST-P4-10 remains.
+- **Header:** 65px with a solid fill (`rgba(255,255,255,.97)`). Its height and colour never change in any load or navigation frame.
+
+Not covered this round:
+- placeholder bands at 1024 and 768 (1440 only)
+- Team filter changes at 1024
+- My time and Profile while paused or offline for Employees (those components are the coordinator's, and phone P3-ST-14 tracks My time)
+
+Open: 0 P0, 2 P1, 3 P2
