@@ -4078,6 +4078,29 @@
       "code": 1,
       "passed": 9,
       "failed": 3
+    },
+    {
+      "name": "00178-matrix-AUDIT-M-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T20-52-16-245Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00178-matrix-AUDIT-M-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app,/app/account-recovery,/app/availability,/app/clocker-recovery",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "85a542bedbb0a6ffaf82c33590c397633cecbf99b2f7e6935e8566738506fd80",
+      "code": 1,
+      "passed": 12,
+      "failed": 4
     }
   ],
   "planned": 12716,

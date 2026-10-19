@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T20:51:10.899Z. p35-profile-6cdee8 partial. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T20:52:51.704Z. premium-phase-1 partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,9 +22,9 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1050 | 1354 | 2404 / 12580 |
-| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 1354 | 1054 | 2408 / 12716 |
-| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 665 | 335 | 1000 / 12580 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1082 | 1358 | 2440 / 12580 |
+| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 1366 | 1058 | 2424 / 12716 |
+| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 665 | 367 | 1032 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p35-wave-c-93e13c | `e3a99fe7b6cda3c3b8049ff62f0de376d710b58f` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p4-desktop-240fe0 | `578748d705b941d14f37c0b01bfcfb1332343e31` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / pending inventory |
@@ -59,7 +59,7 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1050 passed; 1354 failed. Completed checker batches: 172. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1082 passed; 1358 failed. Completed checker batches: 175. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -1818,6 +1818,10 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1050 passed;
 | /app/updates/compose | AUDIT-LEAD | 360 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-LEAD 360 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
 | /app/exchange/callout?shiftId=audit-next-0-2 | AUDIT-LONG | 360 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-LONG 360 100% /app/exchange/callout?shiftId=audit-next-0-2 small=span. «Main Office» 14px; span. «Times in Puerto Rico time» 12px; span. «Customer Support · No designat» 12px; strong. «This shift is still assigned t» 13px |
 | /app/exchange/swap?sourceShiftId=audit-next-0-2 | AUDIT-LONG | 360 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-LONG 360 100% /app/exchange/swap?sourceShiftId=audit-next-0-2 small=span. «Your shift» 13px; span. «Monday, Oct 26, 2026 · Main Of» 12px; summary. «How a swap works» 14px |
+| /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f | AUDIT-LONG | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-LONG 360 100% /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f small=span.communication-status.attention «Acknowledgement required» 12px; strong. «Management» 14px |
+| /app/updates/compose | AUDIT-LONG | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-LONG 360 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px; strong. «Today's team» 13px; span. «2026-10-19» 11px |
+| /app/updates/compose | AUDIT-LONG | 360 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-LONG 360 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
+| /app/exchange/callout?shiftId=x-audit-next-AUDIT-ON-0 | AUDIT-ON | 360 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-ON 360 100% /app/exchange/callout?shiftId=x-audit-next-AUDIT-ON-0 small=span. «Main Office» 14px; span. «Times in Puerto Rico time» 12px; span. «Customer Support · No designat» 12px; strong. «This shift is still assigned t» 13px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -1827,7 +1831,7 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1050 passed;
 
 ## claude/p35-profile-6cdee8
 
-Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 1354 passed; 1054 failed. Completed checker batches: 177. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
+Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 1366 passed; 1058 failed. Completed checker batches: 178. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -2908,6 +2912,10 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 1354 passed;
 | /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 360 100% /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca small=span.communication-status.attention «Acknowledgement required» 12px; strong. «Management» 14px; span.communication-recipient-status «No acknowledgement recorded» 13px |
 | /app/updates/compose | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 360 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px |
 | /app/updates/compose | QAOWNER | 360 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 360 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px |
+| /app/account-recovery | AUDIT-M | 360 | 100 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium AUDIT-M 360 100% /app/account-recovery small=summary. «What changes after a reset?» 14px |
+| /app/availability | AUDIT-M | 360 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-M 360 100% /app/availability small=strong. «Availability deadline» 13px; span. «Set a cutoff in the schedule t» 12px; span. «All8» 12px; span. «Missing8» 12px |
+| /app/clocker-recovery | AUDIT-M | 360 | 100 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium AUDIT-M 360 100% /app/clocker-recovery small=summary. «Can others still use the table» 13px |
+| /app/availability | AUDIT-M | 360 | 125 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-M 360 125% /app/availability small=span.status-pill.neutral «Not submitted» 13.75px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -2917,7 +2925,7 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 1354 passed;
 
 ## claude/p35-wave-a-1283c8
 
-Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 665 passed; 335 failed. Completed checker batches: 70. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
+Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 665 passed; 367 failed. Completed checker batches: 72. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -3262,6 +3270,39 @@ Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 665 passed; 
 | /app/updates/compose | AUDIT-M | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 150% /app/updates/compose small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
 | /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
 | /app/updates/compose | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/updates/compose small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app | AUDIT-E | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 100% /app small=small. «Powered by VELANI LLC» 10px; p.employee-home-reviewed-module__k4entG__zone «Times in Puerto Rico time» 12px; p.employee-time-empty «No open time entry was recorde» 13px; button.employee-time-refresh «Refresh» 13px |
+| /app/availability | AUDIT-E | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 100% /app/availability small=small. «Powered by VELANI LLC» 10px; p. «Choose the days and times you » 13px; p.av-no-hours «No available hours» 13px; p.av-input-hint «An end time of midnight includ» 12px |
+| /app/exchange | AUDIT-E | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 100% /app/exchange small=small. «Powered by VELANI LLC» 10px |
+| /app/exchange/callout?shiftId=audit-next-0-1 | AUDIT-E | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 100% /app/exchange/callout?shiftId=audit-next-0-1 small=small. «Powered by VELANI LLC» 10px |
+| /app | AUDIT-E | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 125% /app small=small. «Powered by VELANI LLC» 10px |
+| /app/availability | AUDIT-E | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 125% /app/availability small=small. «Powered by VELANI LLC» 10px; p. «Choose the days and times you » 13px; p.av-no-hours «No available hours» 13px; p.av-input-hint «An end time of midnight includ» 12px |
+| /app/exchange | AUDIT-E | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 125% /app/exchange small=small. «Powered by VELANI LLC» 10px |
+| /app/exchange/callout?shiftId=audit-next-0-1 | AUDIT-E | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 125% /app/exchange/callout?shiftId=audit-next-0-1 small=small. «Powered by VELANI LLC» 10px |
+| /app | AUDIT-E | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 150% /app small=small. «Powered by VELANI LLC» 10px |
+| /app/availability | AUDIT-E | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 150% /app/availability small=small. «Powered by VELANI LLC» 10px; p. «Choose the days and times you » 13px; p.av-no-hours «No available hours» 13px; p.av-input-hint «An end time of midnight includ» 12px |
+| /app/exchange | AUDIT-E | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 150% /app/exchange small=small. «Powered by VELANI LLC» 10px |
+| /app/exchange/callout?shiftId=audit-next-0-1 | AUDIT-E | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 150% /app/exchange/callout?shiftId=audit-next-0-1 small=small. «Powered by VELANI LLC» 10px |
+| /app | AUDIT-E | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 200% /app small=small. «Powered by VELANI LLC» 10px |
+| /app/availability | AUDIT-E | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 200% /app/availability small=small. «Powered by VELANI LLC» 10px; p. «Choose the days and times you » 13px; p.av-no-hours «No available hours» 13px; p.av-input-hint «An end time of midnight includ» 12px |
+| /app/exchange | AUDIT-E | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 200% /app/exchange small=small. «Powered by VELANI LLC» 10px |
+| /app/exchange/callout?shiftId=audit-next-0-1 | AUDIT-E | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 200% /app/exchange/callout?shiftId=audit-next-0-1 small=small. «Powered by VELANI LLC» 10px |
+| /app/exchange/swap?sourceShiftId=audit-next-0-1 | AUDIT-E | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 100% /app/exchange/swap?sourceShiftId=audit-next-0-1 small=small. «Powered by VELANI LLC» 10px |
+| /app/my-pay | AUDIT-E | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 100% /app/my-pay small=small. «Powered by VELANI LLC» 10px |
+| /app/my-time | AUDIT-E | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 100% /app/my-time small=small. «Powered by VELANI LLC» 10px; p.employee-time-empty «No open time entry was recorde» 13px; p.employee-time-note «Use your location’s Clocker to» 13px; span. «Updated Oct 19, 4:51 PM» 12px cls=0.0507 |
+| /app/my-time | AUDIT-E | 1440 | 100 | chromium | layout shift | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 100% /app/my-time small=small. «Powered by VELANI LLC» 10px; p.employee-time-empty «No open time entry was recorde» 13px; p.employee-time-note «Use your location’s Clocker to» 13px; span. «Updated Oct 19, 4:51 PM» 12px cls=0.0507 |
+| /app/notifications | AUDIT-E | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 100% /app/notifications small=small. «Powered by VELANI LLC» 10px |
+| /app/exchange/swap?sourceShiftId=audit-next-0-1 | AUDIT-E | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 125% /app/exchange/swap?sourceShiftId=audit-next-0-1 small=small. «Powered by VELANI LLC» 10px |
+| /app/my-pay | AUDIT-E | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 125% /app/my-pay small=small. «Powered by VELANI LLC» 10px |
+| /app/my-time | AUDIT-E | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 125% /app/my-time small=small. «Powered by VELANI LLC» 10px; p.employee-time-empty «No open time entry was recorde» 13px; p.employee-time-note «Use your location’s Clocker to» 13px; span. «Updated Oct 19, 4:52 PM» 12px |
+| /app/notifications | AUDIT-E | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 125% /app/notifications small=small. «Powered by VELANI LLC» 10px |
+| /app/exchange/swap?sourceShiftId=audit-next-0-1 | AUDIT-E | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 150% /app/exchange/swap?sourceShiftId=audit-next-0-1 small=small. «Powered by VELANI LLC» 10px |
+| /app/my-pay | AUDIT-E | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 150% /app/my-pay small=small. «Powered by VELANI LLC» 10px |
+| /app/my-time | AUDIT-E | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 150% /app/my-time small=small. «Powered by VELANI LLC» 10px; p.employee-time-empty «No open time entry was recorde» 13px; p.employee-time-note «Use your location’s Clocker to» 13px; span. «Updated Oct 19, 4:52 PM» 12px |
+| /app/notifications | AUDIT-E | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 150% /app/notifications small=small. «Powered by VELANI LLC» 10px |
+| /app/exchange/swap?sourceShiftId=audit-next-0-1 | AUDIT-E | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 200% /app/exchange/swap?sourceShiftId=audit-next-0-1 small=small. «Powered by VELANI LLC» 10px |
+| /app/my-pay | AUDIT-E | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 200% /app/my-pay small=small. «Powered by VELANI LLC» 10px |
+| /app/my-time | AUDIT-E | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 200% /app/my-time small=small. «Powered by VELANI LLC» 10px; p.employee-time-empty «No open time entry was recorde» 13px; p.employee-time-note «Use your location’s Clocker to» 13px; span. «Updated Oct 19, 4:52 PM» 12px |
+| /app/notifications | AUDIT-E | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 1440 200% /app/notifications small=small. «Powered by VELANI LLC» 10px |
 
 ### Timeout and server observations (separate from UI findings)
 

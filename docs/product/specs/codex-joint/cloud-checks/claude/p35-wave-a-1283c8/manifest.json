@@ -1618,6 +1618,52 @@
       "code": 1,
       "passed": 0,
       "failed": 8
+    },
+    {
+      "name": "00071-matrix-AUDIT-E-chromium-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T20-51-41-051Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00071-matrix-AUDIT-E-chromium-1440.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=audit-next-0-1",
+        "--accounts",
+        "AUDIT-E",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "58d6e131e18c2e20b4bfa31c86b6f3703a4516b76c09a9c73454985fdff6bc18",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "name": "00072-matrix-AUDIT-E-chromium-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T20-52-42-723Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00072-matrix-AUDIT-E-chromium-1440.log",
+      "args": [
+        "--routes",
+        "/app/exchange/swap?sourceShiftId=audit-next-0-1,/app/my-pay,/app/my-time,/app/notifications",
+        "--accounts",
+        "AUDIT-E",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "21272e229392c58e7c46d4e59bf8fe4ff5ac7151e9b872b17892a56d8ce13b6b",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12580,
