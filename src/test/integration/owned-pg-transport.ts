@@ -1,4 +1,4 @@
-import { Client, type QueryResult } from 'pg';
+import { Pool, type QueryResult } from 'pg';
 
 export type OwnedDatabaseIdentity = { name: string; oid: number; marker: string };
 export type LocalQueryOptions = { fetchOptions?: { signal?: AbortSignal } };
@@ -8,6 +8,7 @@ export type OwnedPgTransport = {
   (strings: TemplateStringsArray, ...values: unknown[]): LocalQuery;
   query(text: string, values?: readonly unknown[], options?: LocalQueryOptions): LocalQuery;
   transaction(queries: readonly LocalQuery[], options?: LocalQueryOptions): Promise<LocalRows[]>;
+  close(): Promise<void>;
 };
 export type LocalTransportHooks = {
   /** Test barriers may delay real IO but may not manufacture query results. */
@@ -38,15 +39,23 @@ export function createOwnedPgTransport(
     throw new Error('Refusing unowned or non-loopback application test database.');
   }
   const queries = new WeakMap<LocalQuery, PendingQuery>();
+  // A portal read fans out into many statements. Bound connections per owned
+  // runtime instead of opening hundreds during concurrent browser requests.
+  // Production uses Neon HTTP and never imports this test-only transport.
+  const pool = new Pool({ connectionString, max: 12, connectionTimeoutMillis: 3000, statement_timeout: 5000, idleTimeoutMillis: 1000, allowExitOnIdle: true });
+  // An owned cluster may be torn down while an idle connection is parked. pg
+  // removes that connection; active query failures still reject their caller.
+  pool.on('error', () => {});
 
   async function run(statements: readonly Statement[], transaction: boolean, signal?: AbortSignal): Promise<LocalRows[]> {
     const signals = [...statements.flatMap(s => s.signal ? [s.signal] : []), ...(signal ? [signal] : [])];
     const effectiveSignal = signals.length ? AbortSignal.any(signals) : undefined;
     effectiveSignal?.throwIfAborted();
-    const client = new Client({ connectionString, connectionTimeoutMillis: 3000, statement_timeout: 5000 });
-    const abort = () => { void client.end().catch(() => {}); };
+    const client = await pool.connect();
+    let released = false;
+    const release = (destroy = false) => { if (!released) { released = true; client.release(destroy); } };
+    const abort = () => release(true);
     try {
-      await client.connect();
       effectiveSignal?.addEventListener('abort', abort, { once: true });
       effectiveSignal?.throwIfAborted();
       const ownership = await client.query<OwnedDatabaseIdentity>(
@@ -75,7 +84,7 @@ export function createOwnedPgTransport(
       throw error;
     } finally {
       effectiveSignal?.removeEventListener('abort', abort);
-      await client.end().catch(() => {});
+      release();
     }
   }
 
@@ -100,6 +109,7 @@ export function createOwnedPgTransport(
   };
   return Object.assign(tagged, {
     query,
+    close: () => pool.end(),
     async transaction(batch: readonly LocalQuery[], options?: LocalQueryOptions): Promise<LocalRows[]> {
       const pending = batch.map(item => queries.get(item));
       if (new Set(batch).size !== batch.length || pending.some(item => !item || item.started)) {
