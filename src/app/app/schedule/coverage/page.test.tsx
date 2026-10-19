@@ -68,7 +68,7 @@ it('actual manager position/Lead action opens the matching location/interval and
 it('several missing positions expose all targets and require an explicit choice before candidates', async () => {
   m.source!.coverage_window_position_requirements.push({ coverage_window_id: 'coverage', position_id: 'cashier', quantity: 1 });
   const html = renderToStaticMarkup(await CoveragePage({ searchParams: Promise.resolve(params(action({ positionCoverage: [...gap.positionCoverage, { positionId: 'cashier', positionName: 'cashier', missing: 1 }] }).href)) }));
-  expect(html).toContain('barista: 1 missing'); expect(html).toContain('cashier: 1 missing'); expect(html).not.toContain('Review replacement');
+  expect(html).toContain('barista: 1 needed'); expect(html).toContain('cashier: 1 needed'); expect(html).not.toContain('Review replacement');
 });
 
 it('stale first review, stale second visit and stale selected form never refresh themselves', async () => {
@@ -87,7 +87,7 @@ it('known successful position/Lead return truthfully shows the remaining staffin
   m.source!.schedules = [{ id: 'schedule', location_id: 'loc-1', week_start: week, status: 'DRAFT' }];
   m.source!.shifts = [{ id: 'saved', schedule_id: 'schedule', employee_id: 'E', date: week, start_time: '08:00', end_time: '12:00', position_id: 'barista', is_designated_lead: true }];
   const html = renderToStaticMarkup(await CoveragePage({ searchParams: Promise.resolve({ ...params(action().href), refresh: '1', saved: '1' }) }));
-  expect(html).toContain('Replacement saved'); expect(html).toContain('1 employees missing'); expect(html).toContain('Choose the requirement');
+  expect(html).toContain('Replacement saved'); expect(html).toContain('1 employees needed'); expect(html).toContain('Choose the requirement');
   expect(html).not.toContain('No shift was saved'); expect(html).not.toContain('Coverage changed'); expect(html).not.toContain('Review replacement');
 });
 

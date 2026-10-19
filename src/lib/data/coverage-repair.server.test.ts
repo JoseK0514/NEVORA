@@ -128,7 +128,7 @@ it('a known position/Lead save returns an explicit chooser for the remaining sta
   expect(deriveCoverageRepair(r.source, r.locator).status).toBe('STALE');
   const current = deriveCoverageRepair(r.source, r.locator, true);
   expect(current.status).toBe('CHOOSE'); expect(current.locator.target).toBe('CHOOSE'); expect(current.locator.positionId).toBeUndefined();
-  expect(current.targets).toEqual([{ target: 'STAFFING', count:1,label: '1 employees missing' }]); expect(current.candidates).toEqual([]);
+  expect(current.targets).toEqual([{ target: 'STAFFING', count:1,label: '1 employees needed' }]); expect(current.candidates).toEqual([]);
   expect(current.locator.reported).toEqual({ missingStaff: 1, requiresLead: false, positions: [] });
 });
 
