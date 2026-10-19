@@ -1,0 +1,12 @@
+{
+  "key": "premium-phase-1",
+  "branch": "claude/premium-phase-1",
+  "source": "/workspace/nevora-sources/premium-phase-1",
+  "out": "/tmp/nv-phase1-debug",
+  "large": false,
+  "commit": "62cd0338176020bfbb692ee75438c5642197b9f6",
+  "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
+  "startedAt": "2026-10-19T17:52:56.800Z",
+  "status": "Starting preview",
+  "batches": []
+}

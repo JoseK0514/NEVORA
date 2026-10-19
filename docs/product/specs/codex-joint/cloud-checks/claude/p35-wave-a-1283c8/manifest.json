@@ -1,0 +1,13 @@
+{
+  "key": "p35-wave-a-1283c8",
+  "branch": "claude/p35-wave-a-1283c8",
+  "source": "/workspace/nevora-sources/p35-wave-a-1283c8",
+  "out": "/tmp/nv-p35-wave-a-1283c8",
+  "large": false,
+  "commit": "157e25f7dab7a21542f54722746b237dc7b52afc",
+  "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
+  "startedAt": "2026-10-19T17:52:56.803Z",
+  "status": "Starting preview",
+  "batches": [],
+  "runtimePid": 7471
+}

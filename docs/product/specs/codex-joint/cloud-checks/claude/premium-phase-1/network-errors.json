@@ -1,0 +1,86 @@
+[
+ {
+  "at": "2026-10-19T17:49:30.323Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:49:34.393Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:49:38.376Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:49:41.944Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:49:45.198Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:49:48.699Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:49:52.538Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:49:56.062Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:50:00.112Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:50:03.851Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:50:07.765Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T17:50:11.545Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ }
+]
