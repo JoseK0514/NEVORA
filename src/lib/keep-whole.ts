@@ -5,6 +5,8 @@ export function keepWhole(text: string) {
   return text
     .replace(/(\d) at (\d{1,2}:\d{2})/g, '$1, $2')
     .replace(/(\d{1,2}:\d{2}(?::\d{2})?) ([AP]M)/g, '$1 $2')
+    // WR-B-11: a short weekday stays with a short date ("Mon, Oct 19"); a long one ("Monday, October 19, 2026") may wrap.
+    .replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d)/g, '$1, ')
     .replace(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*) (\d{1,2})(, (\d{4}))?/g, (_, month, day, _y, year) => `${month} ${day}${year ? `, ${year}` : ''}`)
     .replace(/\b(\d+h) (\d+m)\b/g, '$1 $2')
     .replace(/ – /g, ' – ')
