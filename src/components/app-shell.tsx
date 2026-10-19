@@ -209,7 +209,7 @@ export function AppShell({
                 href={item.href}
                 className={active ? "nav-link active" : "nav-link"}
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
-                aria-current={active ? (item.href === activeHref && !pageItem ? "page" : "true") : undefined}
+                aria-current={active ? (item.href === activeHref && !pageItem && !deeper ? "page" : "true") : undefined}
                 aria-label={item.href === "/app/inbox" && inboxCount ? `${item.label}, ${inboxCount} need${inboxCount === 1 ? "s" : ""} you` : item.label}
                 title={collapsed ? item.label : undefined}
               >

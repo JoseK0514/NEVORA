@@ -242,6 +242,11 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const userRefreshing = refreshFrom !== null && !!ready && ready.observedAt === refreshFrom;
   if (refreshFrom !== null && !userRefreshing) setRefreshFrom(null);
   if (showing && !hasShown) setHasShown(true);
+  // IS-P4-21: when the list goes away under the reader's focus, focus lands on the status message, not on the page body.
+  useEffect(() => {
+    if (ready || !hasShown) return;
+    if (document.activeElement === document.body || document.activeElement === null) document.querySelector<HTMLElement>(".premium-inbox .inbox-status-message")?.focus({ preventScroll: true });
+  }, [ready, hasShown]);
   useLayoutEffect(() => {
     const column = listColumn.current;
     if (!column || !showing) return;
@@ -292,7 +297,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
       {ready || hasShown ? <AllRequests /> : null}
       {!ready ? <Card><div className="inbox-status nv-card__body">
         {/* ST-26: the status line comes first, so it stays put when the placeholder rows go. */}
-        <p role="status">{statusText[connection]}</p>
+        <p role="status" tabIndex={-1} className="inbox-status-message">{statusText[connection]}</p>
         {connection === "loading" || connection === "reconnecting" ? <div className="premium-skeleton" aria-hidden="true">{[0, 1, 2].map(i => <span key={i} className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span>)}</div> : null}
         {connection === "access_lost" ? <Link className="nv-link" href="/login">Sign in</Link>
           : connection === "unavailable" || connection === "ready" ? <button type="button" className="nv-btn" data-kind="primary" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .nv-content .nv-card:not(:has(.inbox-status)) :is(.nv-card__title, h2, h3)", ".inbox-status .nv-btn"); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button> : null}

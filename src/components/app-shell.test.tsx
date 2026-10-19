@@ -164,7 +164,7 @@ it.each(['MANAGER','OWNER'] as const)('keeps %s Updates in the mobile menu with 
  expect(direct).toContain('class="mobile-nav-link manager-more-trigger active"');
  expect(menu).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
  expect(menu.match(/href="\/app\/updates"/g)).toHaveLength(1);
- expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
+ expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="true"/);
  expect(sidebar.match(/href="\/app\/updates"/g)).toHaveLength(1);
 });
 

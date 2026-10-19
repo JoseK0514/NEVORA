@@ -511,3 +511,8 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* AL4-23: the Employee "Your timecard" card puts its text 20px in. */
   html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-timecards [class*="timecards-module"][class*="__card"]:not(.nv-x) { padding-inline: var(--nv-s-5); }
 }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* IS-P4-21: while the list's height is held, its status card (offline, failed, signed out) stays in view below the header. */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-list-column > .nv-card:has(.inbox-status) { position: sticky; top: calc(65px + var(--nv-s-4)); z-index: 1; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-status-message:focus { outline: none; }
+}

@@ -210,3 +210,53 @@ Pages: Home (`AUDIT-E`, `AUDIT-LEAD`, `AUDIT-ON`, `AUDIT-BREAK`, `AUDIT-LONG`); 
 - No 200% text pass this round. Large data is not in this preview.
 
 Open: 0 P0, 0 P1, 6 P2
+
+## Round 4
+
+Re-checked on October 19, 2026, 15:10–16:20 AST, on `a6f009d`, with the same preview and saved states. Chromium at 1440×900, 1024×768 and 768, plus phones at 390 and 320. Inbox reads were served in my own browser from one cached real response with a fresh `observedAt`. Slow (3 s), 500, 401 and offline states were made in that browser only. Read only.
+
+Evidence is in `SP/r4/`: scripts, `out-*.txt` logs, and crops under `SP/r4/shots/`.
+
+### Status of open findings
+
+| ID | Status | New measurement |
+|---|---|---|
+| IS-P4-06 | **Partly fixed** | Down from `Review time off` now lands on the "12 people with no weekly hour target" heading (292,646). Up from the first row of an open group returns to its heading.<br>**Down from a closed group heading is stuck:** three presses leave focus on the same heading at y 646, and the page doesn't scroll either. Plan ahead has three closed groups, so a keyboard user moving down the list stops at the first one and has to switch to Tab.<br>Cause: `src/lib/row-navigation.ts:8` and `:16`. `visible()` uses `getClientRects()`, which still counts the rows inside a closed `<details>`. The next row is one of those hidden rows, its `focus()` fails silently, and the key's default is already prevented.<br>Fix: drop rows inside a closed group from the list: `.filter(el => visible(el) && !(el.parentElement?.closest('details:not([open])') && !el.matches('summary')))`. **P2** |
+| IS-P4-08 | **Fixed** (named cases) | Section entries are now `aria-current="true"` on their sub-pages: Settings on Payroll settings, Home on Team overview, Attendance and Schedule activity, Inbox on Time off and Shift requests, Timecards on Time exports, and Schedule on Templates. The top pages themselves are `"page"`: Timecards, Settings, Schedule. Residual: see IS-P4-20. |
+| IS-P4-16 | **Fixed** | Request pages is now DOM and Tab stop 5, with the first Inbox row at stop 8. After the filters, Tab goes Time off → Shift requests → Availability (y 253) → the first row (y 377), so the Tab order matches what you see. |
+| IS-P4-17 | **Fixed** | With a 3 s read, Enter on Refresh shows "Refreshing…" with `aria-disabled="true"`, so `disabled` stays false and focus stays on the button. The accessible name is "Refreshing…", and it contains a `status` that says "Refreshing the Inbox…". A second Enter sends no second read. Afterwards it reads "Refresh" again, with focus kept. A failed refresh returns to "Refresh", with focus kept and the failure card shown. The 30 s background poll stays silent: the button only ever read "Refresh", and focus and scroll (2615) held. |
+| IS-P4-18 | **Fixed** (known 404 counted under Gaps) | The count stops after its first 404. Owner session: 14 requests over 305 s across 8 full page loads, two per load (the dev server runs effects twice). There was no repeat during a 65 s wait and none on client navigation. |
+| IS-P4-19 | Waiting on the coordinator (not counted) | Still open as measured. Lead, 1024: Enter on `Refresh recorded time` sets `disabled=true`, and focus drops to `<body>`. |
+| IS-P4-05, IS-P4-11 | Waiting (not counted) | Unchanged. |
+
+### New findings (round 4)
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| IS-P4-21 | Inbox · Manager · 1440 (same code at 1024 and on Owner) | Failure, sign-out and offline states arriving while the list is scrolled | Now that the list column keeps its height and the scroll stays put (ST-P4-03), a state that replaces the list leaves the reader looking at an **empty screen**. Scrolled to y 2000, with focus on a row:<br>• the poll returns 500;<br>• the poll returns 401;<br>• the network goes offline.<br>In all three, scrollY stays **2000** and document height stays 3941. The status card ("The Inbox isn't available right now. / Try again", "Sign in again to see your Inbox. / Sign in", "You're offline…") is at top **−1675**, far above the window. **No text at all** is in the window: the visible-text scan returned `[]`. Only the pane's still grey skeleton shows. Focus goes to `<body>`. The band's eyebrow ("Not available", "Offline") is off screen too. A screen reader hears the `role="status"`, but a sighted manager sees a blank page and has no Try again or Sign in in reach. | `r4/shots/AUDIT-M-1440-poll-fails-500-.png`, `AUDIT-M-1440-401-on-poll.png`, `AUDIT-M-1440-offline.png`; `out-scrolledstates-M-1440.txt` | `src/components/manager-inbox.tsx:293` puts the status card at the top of a list column held at its last height. The sticky side column (`:335`) shows only `DetailPlaceholder still`. | Show the state where the reader is. Render the status message and its action (Try again or Sign in) in the sticky side column instead of the still skeleton, for every state except `loading`; the sticky side column stays in view at top 81. Or make `.inbox-status` `position: sticky; top: 81px` inside the held column. Either way, move focus to that action only if focus was inside the list (`focusAfterRetry` pattern). | P1 |
+| IS-P4-20 | Sidebar · both · 768–1440 | A sidebar entry on a page *below* it that has no trail page of its own | On `/app/employees/AUDIT-E` (Team member detail), **Team** is `aria-current="page"`. The trail ends with "People › Team", where Team is a link and nothing is marked current. A screen reader hears "Team, current page" on Alexandra's page. This is the same rule as IS-P4-08, for `deeper` pages. | `out-shell-r4-O.txt` | `src/components/app-shell.tsx:212`: `item.href === activeHref && !pageItem` ignores `deeper` | `aria-current={active ? (item.href === activeHref && !pageItem && !deeper ? "page" : "true") : undefined}` | P2 |
+
+### Fix areas looked at again: correct
+
+- **Request pages row:** three links across at y 253 with teal rings. ↓ on them scrolls the page, which is fine for a horizontal row.
+- **Refresh:** only one read per press, and the silent poll is unchanged (see IS-P4-17).
+- **Trails:** "Workspace › Settings › *Payroll settings*", "Plan › Home › *Team overview* / *Schedule activity* / *Attendance*", "Plan › Schedule › *Templates*".
+- **Employee and Lead desktop (`AUDIT-E` at 1440 on My time, My pay, Requests, My schedule; `AUDIT-LEAD` at 768 on Shift requests, Timecards, Profile):**
+  - The skip link is the first stop.
+  - Pay tabs read My pay / My time / Timecards, inside the band at y 97 with white 2px rings.
+  - The Requests tabs and the My schedule and Shift requests chips have white rings.
+  - No stop is under the header, zero-sized, off screen or without a ring.
+  - My time keeps focus and scroll (528) through a 30 s poll, and the height stays 1296.
+- **Phones (390 Manager, 320 Owner, 390 Employee, 320 Lead):**
+  - The Inbox has no `aria-current`, a hidden side column, the Request pages row hidden, and no held height.
+  - A tapped row navigates, the skip link is hidden, and the first Tab is the brand link with a white ring.
+  - No sideways scroll.
+
+### Gaps (round 4)
+
+- `/api/manager/inbox-count` is 404 on this branch, as expected. It logs one console 404 per full page load (two in dev), counted once here.
+- Window blur (paused) still can't be produced in Playwright. Its code path is the same as offline, so IS-P4-21 applies to paused too, from the code.
+- The Manager client-navigation part of the count check timed out on the slow server, so I used the Owner run.
+- No 200% text pass this round.
+
+Open: 0 P0, 1 P1, 2 P2
