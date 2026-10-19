@@ -1,0 +1,942 @@
+{
+  "checkpoint": "90fbb4de7dde5c6d0661e74cec3340459a7a10c3",
+  "scope": "Targeted candidate-fix regression; no full exit certification",
+  "cases": [
+    {
+      "name": "delete-pending",
+      "ids": [
+        "ST-WA-8",
+        "ST-WA-9",
+        "ST-WA-10",
+        "ST-WA-11",
+        "IS-RC-DELETE-01"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T21:08:27.745Z",
+      "before": {
+        "box": {
+          "x": 36,
+          "y": 631.515625,
+          "width": 248,
+          "height": 88,
+          "top": 631.515625,
+          "right": 284,
+          "bottom": 719.515625,
+          "left": 36
+        },
+        "focused": true,
+        "disabled": false,
+        "ariaDisabled": null,
+        "fieldsetDisabled": false,
+        "text": "Delete this shift",
+        "kit": true,
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(138, 45, 25)",
+        "opacity": "1"
+      },
+      "states": {
+        "before": {
+          "path": "/app/schedule/edit?shiftId=audit-next-0-1",
+          "scrollY": 2894,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 84.515625,
+            "bottom": 753
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nv-btn",
+            "text": "Delete this shiftDeleting…",
+            "box": {
+              "x": 36,
+              "y": 631.515625,
+              "width": 248,
+              "height": 88,
+              "top": 631.515625,
+              "right": 284,
+              "bottom": 719.515625,
+              "left": 36
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Alexandra Rivera",
+              "box": {
+                "x": 16,
+                "y": -2717.484375,
+                "width": 288,
+                "height": 144,
+                "top": -2717.484375,
+                "right": 304,
+                "bottom": -2573.484375,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-who-title",
+              "cls": "nv-card__title",
+              "text": "Who",
+              "box": {
+                "x": 36,
+                "y": -2329.484375,
+                "width": 69.484375,
+                "height": 44,
+                "top": -2329.484375,
+                "right": 105.484375,
+                "bottom": -2285.484375,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-when-title",
+              "cls": "nv-card__title",
+              "text": "When",
+              "box": {
+                "x": 36,
+                "y": -1386.484375,
+                "width": 87.96875,
+                "height": 44,
+                "top": -1386.484375,
+                "right": 123.96875,
+                "bottom": -1342.484375,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-notes-title",
+              "cls": "nv-card__title",
+              "text": "Notes",
+              "box": {
+                "x": 36,
+                "y": -622.484375,
+                "width": 88.453125,
+                "height": 44,
+                "top": -622.484375,
+                "right": 124.453125,
+                "bottom": -578.484375,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-delete-title",
+              "cls": "nv-card__title",
+              "text": "Delete this shift",
+              "box": {
+                "x": 36,
+                "y": 223.515625,
+                "width": 231.34375,
+                "height": 44,
+                "top": 223.515625,
+                "right": 267.34375,
+                "bottom": 267.515625,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Schedule\n\nEdit shift\n\nAlexandra Rivera\n\nMon, Oct 26 · 8:00 AM – 4:00 PM · Main Office\n\nWho\nPerson\nChoose someone\nAlexandra Rivera\nCasey Rivera\nFictional Owner\nJordan Rivera\nMaría José Fictional QA\nMaría José Rivera Santiago With A Long Name\nMorgan Rivera\nRiley Rivera\nRobin Fictional QA\nTaylor Rivera\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nPosition\nOptional\nNo position\nCustomer Support\nShift lead\nOnly an Owner, Manager or Lead can lead a shift.\nLocation\nMain Office\nA shift keeps its location. To move it, delete it and add a new one.\nWhen\nDate\nDays in this schedule week: Oct 26 – Nov 1.\nStarts\nEnds\n8h scheduled\nNotes\nOptional\nNotes for the team\nEveryone on this shift can read them.\n\nAvailability, time off, other shifts and weekly hours are checked when you save.\n\nSave changes\nCancel\nDelete this shift\nDelete shift\n\nAlexandra Rivera won’t be scheduled on Mon, Oct 26. This can’t be undone.\n\nDelete this shift",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-delete-pending-AUDIT-M-320x844-t200-default-before.png"
+        },
+        "execution-error": {
+          "path": "/app/schedule/edit?shiftId=audit-next-0-1",
+          "scrollY": 2894,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 84.515625,
+            "bottom": 753
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BODY",
+            "id": "",
+            "cls": "",
+            "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules MRMorgan RiveraSign outNorthside QA WorkforcePowered by VELANI LLCNorthside QA WorkforceNorthside QA WorkforcePlanScheduleWorkforceSearchCtrl KCloseActionsAdd a shiftAdd employeeSend an updatePagesHomeInboxScheduleAvailabilityTime offShift",
+            "box": {
+              "x": 0,
+              "y": -2894,
+              "width": 320,
+              "height": 3737.515625,
+              "top": -2894,
+              "right": 320,
+              "bottom": 843.515625,
+              "left": 0
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Alexandra Rivera",
+              "box": {
+                "x": 16,
+                "y": -2717.484375,
+                "width": 288,
+                "height": 144,
+                "top": -2717.484375,
+                "right": 304,
+                "bottom": -2573.484375,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-who-title",
+              "cls": "nv-card__title",
+              "text": "Who",
+              "box": {
+                "x": 36,
+                "y": -2329.484375,
+                "width": 69.484375,
+                "height": 44,
+                "top": -2329.484375,
+                "right": 105.484375,
+                "bottom": -2285.484375,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-when-title",
+              "cls": "nv-card__title",
+              "text": "When",
+              "box": {
+                "x": 36,
+                "y": -1386.484375,
+                "width": 87.96875,
+                "height": 44,
+                "top": -1386.484375,
+                "right": 123.96875,
+                "bottom": -1342.484375,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-notes-title",
+              "cls": "nv-card__title",
+              "text": "Notes",
+              "box": {
+                "x": 36,
+                "y": -622.484375,
+                "width": 88.453125,
+                "height": 44,
+                "top": -622.484375,
+                "right": 124.453125,
+                "bottom": -578.484375,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-delete-title",
+              "cls": "nv-card__title",
+              "text": "Delete this shift",
+              "box": {
+                "x": 36,
+                "y": 223.515625,
+                "width": 231.34375,
+                "height": 44,
+                "top": 223.515625,
+                "right": 267.34375,
+                "bottom": 267.515625,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Schedule\n\nEdit shift\n\nAlexandra Rivera\n\nMon, Oct 26 · 8:00 AM – 4:00 PM · Main Office\n\nWho\nPerson\nChoose someone\nAlexandra Rivera\nCasey Rivera\nFictional Owner\nJordan Rivera\nMaría José Fictional QA\nMaría José Rivera Santiago With A Long Name\nMorgan Rivera\nRiley Rivera\nRobin Fictional QA\nTaylor Rivera\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nPosition\nOptional\nNo position\nCustomer Support\nShift lead\nOnly an Owner, Manager or Lead can lead a shift.\nLocation\nMain Office\nA shift keeps its location. To move it, delete it and add a new one.\nWhen\nDate\nDays in this schedule week: Oct 26 – Nov 1.\nStarts\nEnds\n8h scheduled\nNotes\nOptional\nNotes for the team\nEveryone on this shift can read them.\n\nAvailability, time off, other shifts and weekly hours are checked when you save.\n\nSave changes\nCancel\nDelete this shift\nDelete shift\n\nAlexandra Rivera won’t be scheduled on Mon, Oct 26. This can’t be undone.\n\nDeleting…",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-delete-pending-AUDIT-M-320x844-t200-default-execution-error.png"
+        }
+      },
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Delete this shift', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:28:49)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:4:423)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:125:561",
+      "completedAt": "2026-10-19T21:08:51.145Z"
+    },
+    {
+      "name": "delete-pending",
+      "ids": [
+        "ST-WA-8",
+        "ST-WA-9",
+        "ST-WA-10",
+        "ST-WA-11",
+        "IS-RC-DELETE-01"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 1440,
+      "height": 900,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T21:08:51.154Z",
+      "before": {
+        "box": {
+          "x": 496,
+          "y": 828,
+          "width": 680,
+          "height": 52,
+          "top": 828,
+          "right": 1176,
+          "bottom": 880,
+          "left": 496
+        },
+        "focused": true,
+        "disabled": false,
+        "ariaDisabled": null,
+        "fieldsetDisabled": false,
+        "text": "Delete this shift",
+        "kit": true,
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(163, 54, 31)",
+        "opacity": "1"
+      },
+      "states": {
+        "before": {
+          "path": "/app/schedule/edit?shiftId=audit-next-0-1",
+          "scrollY": 718,
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "usable": {
+            "top": 73,
+            "bottom": 892
+          },
+          "documentWidth": 1440,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nv-btn",
+            "text": "Delete this shiftDeleting…",
+            "box": {
+              "x": 496,
+              "y": 828,
+              "width": 680,
+              "height": 52,
+              "top": 828,
+              "right": 1176,
+              "bottom": 880,
+              "left": 496
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Alexandra Rivera",
+              "box": {
+                "x": 312,
+                "y": -525,
+                "width": 1048,
+                "height": 40,
+                "top": -525,
+                "right": 1360,
+                "bottom": -485,
+                "left": 312
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-who-title",
+              "cls": "nv-card__title",
+              "text": "Who",
+              "box": {
+                "x": 496,
+                "y": -409,
+                "width": 35.046875,
+                "height": 22,
+                "top": -409,
+                "right": 531.046875,
+                "bottom": -387,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-when-title",
+              "cls": "nv-card__title",
+              "text": "When",
+              "box": {
+                "x": 496,
+                "y": 32,
+                "width": 43.734375,
+                "height": 22,
+                "top": 32,
+                "right": 539.734375,
+                "bottom": 54,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-notes-title",
+              "cls": "nv-card__title",
+              "text": "Notes",
+              "box": {
+                "x": 496,
+                "y": 358,
+                "width": 44.40625,
+                "height": 22,
+                "top": 358,
+                "right": 540.40625,
+                "bottom": 380,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-delete-title",
+              "cls": "nv-card__title",
+              "text": "Delete this shift",
+              "box": {
+                "x": 496,
+                "y": 706,
+                "width": 114.5625,
+                "height": 22,
+                "top": 706,
+                "right": 610.5625,
+                "bottom": 728,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Schedule\n\nEdit shift\n\nAlexandra Rivera\n\nMon, Oct 26 · 8:00 AM – 4:00 PM · Main Office\n\nWho\nPerson\nChoose someone\nAlexandra Rivera\nCasey Rivera\nFictional Owner\nJordan Rivera\nMaría José Fictional QA\nMaría José Rivera Santiago With A Long Name\nMorgan Rivera\nRiley Rivera\nRobin Fictional QA\nTaylor Rivera\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nPosition\nOptional\nNo position\nCustomer Support\nShift lead\nOnly an Owner, Manager or Lead can lead a shift.\nLocation\nMain Office\nA shift keeps its location. To move it, delete it and add a new one.\nWhen\nDate\nDays in this schedule week: Oct 26 – Nov 1.\nStarts\nEnds\n8h scheduled\nNotes\nOptional\nNotes for the team\nEveryone on this shift can read them.\n\nAvailability, time off, other shifts and weekly hours are checked when you save.\n\nSave changes\nCancel\nDelete this shift\nDelete shift\n\nAlexandra Rivera won’t be scheduled on Mon, Oct 26. This can’t be undone.\n\nDelete this shift",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-delete-pending-AUDIT-M-1440x900-t100-default-before.png"
+        },
+        "execution-error": {
+          "path": "/app/schedule/edit?shiftId=audit-next-0-1",
+          "scrollY": 718,
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "usable": {
+            "top": 73,
+            "bottom": 892
+          },
+          "documentWidth": 1440,
+          "active": {
+            "tag": "BODY",
+            "id": "",
+            "cls": "",
+            "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules MRMorgan RiveraSign outNorthside QA WorkforcePowered by VELANI LLCNorthside QA WorkforceNorthside QA WorkforcePlanScheduleWorkforceSearchCtrl KCloseActionsAdd a shiftAdd employeeSend an updatePagesHomeInboxScheduleAvailabilityTime offShift",
+            "box": {
+              "x": 0,
+              "y": -718,
+              "width": 1440,
+              "height": 1730,
+              "top": -718,
+              "right": 1440,
+              "bottom": 1012,
+              "left": 0
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Alexandra Rivera",
+              "box": {
+                "x": 312,
+                "y": -525,
+                "width": 1048,
+                "height": 40,
+                "top": -525,
+                "right": 1360,
+                "bottom": -485,
+                "left": 312
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-who-title",
+              "cls": "nv-card__title",
+              "text": "Who",
+              "box": {
+                "x": 496,
+                "y": -409,
+                "width": 35.046875,
+                "height": 22,
+                "top": -409,
+                "right": 531.046875,
+                "bottom": -387,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-when-title",
+              "cls": "nv-card__title",
+              "text": "When",
+              "box": {
+                "x": 496,
+                "y": 32,
+                "width": 43.734375,
+                "height": 22,
+                "top": 32,
+                "right": 539.734375,
+                "bottom": 54,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-notes-title",
+              "cls": "nv-card__title",
+              "text": "Notes",
+              "box": {
+                "x": 496,
+                "y": 358,
+                "width": 44.40625,
+                "height": 22,
+                "top": 358,
+                "right": 540.40625,
+                "bottom": 380,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-delete-title",
+              "cls": "nv-card__title",
+              "text": "Delete this shift",
+              "box": {
+                "x": 496,
+                "y": 706,
+                "width": 114.5625,
+                "height": 22,
+                "top": 706,
+                "right": 610.5625,
+                "bottom": 728,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Schedule\n\nEdit shift\n\nAlexandra Rivera\n\nMon, Oct 26 · 8:00 AM – 4:00 PM · Main Office\n\nWho\nPerson\nChoose someone\nAlexandra Rivera\nCasey Rivera\nFictional Owner\nJordan Rivera\nMaría José Fictional QA\nMaría José Rivera Santiago With A Long Name\nMorgan Rivera\nRiley Rivera\nRobin Fictional QA\nTaylor Rivera\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nPosition\nOptional\nNo position\nCustomer Support\nShift lead\nOnly an Owner, Manager or Lead can lead a shift.\nLocation\nMain Office\nA shift keeps its location. To move it, delete it and add a new one.\nWhen\nDate\nDays in this schedule week: Oct 26 – Nov 1.\nStarts\nEnds\n8h scheduled\nNotes\nOptional\nNotes for the team\nEveryone on this shift can read them.\n\nAvailability, time off, other shifts and weekly hours are checked when you save.\n\nSave changes\nCancel\nDelete this shift\nDelete shift\n\nAlexandra Rivera won’t be scheduled on Mon, Oct 26. This can’t be undone.\n\nDeleting…",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-delete-pending-AUDIT-M-1440x900-t100-default-execution-error.png"
+        }
+      },
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Delete this shift', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:28:49)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:4:423)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:125:561",
+      "completedAt": "2026-10-19T21:09:12.776Z"
+    },
+    {
+      "name": "delete-pending",
+      "ids": [
+        "ST-WA-8",
+        "ST-WA-9",
+        "ST-WA-10",
+        "ST-WA-11",
+        "IS-RC-DELETE-01"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 1440,
+      "height": 900,
+      "text": 200,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T21:09:12.786Z",
+      "before": {
+        "box": {
+          "x": 496,
+          "y": 716,
+          "width": 680,
+          "height": 52,
+          "top": 716,
+          "right": 1176,
+          "bottom": 768,
+          "left": 496
+        },
+        "focused": true,
+        "disabled": false,
+        "ariaDisabled": null,
+        "fieldsetDisabled": false,
+        "text": "Delete this shift",
+        "kit": true,
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(138, 45, 25)",
+        "opacity": "1"
+      },
+      "states": {
+        "before": {
+          "path": "/app/schedule/edit?shiftId=audit-next-0-1",
+          "scrollY": 1682,
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "usable": {
+            "top": 73,
+            "bottom": 892
+          },
+          "documentWidth": 1440,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nv-btn",
+            "text": "Delete this shiftDeleting…",
+            "box": {
+              "x": 496,
+              "y": 716,
+              "width": 680,
+              "height": 52,
+              "top": 716,
+              "right": 1176,
+              "bottom": 768,
+              "left": 496
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Alexandra Rivera",
+              "box": {
+                "x": 312,
+                "y": -1489,
+                "width": 1048,
+                "height": 80,
+                "top": -1489,
+                "right": 1360,
+                "bottom": -1409,
+                "left": 312
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-who-title",
+              "cls": "nv-card__title",
+              "text": "Who",
+              "box": {
+                "x": 496,
+                "y": -1309,
+                "width": 65.09375,
+                "height": 44,
+                "top": -1309,
+                "right": 561.09375,
+                "bottom": -1265,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-when-title",
+              "cls": "nv-card__title",
+              "text": "When",
+              "box": {
+                "x": 496,
+                "y": -566,
+                "width": 82.453125,
+                "height": 44,
+                "top": -566,
+                "right": 578.453125,
+                "bottom": -522,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-notes-title",
+              "cls": "nv-card__title",
+              "text": "Notes",
+              "box": {
+                "x": 496,
+                "y": -42,
+                "width": 82.8125,
+                "height": 44,
+                "top": -42,
+                "right": 578.8125,
+                "bottom": 2,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-delete-title",
+              "cls": "nv-card__title",
+              "text": "Delete this shift",
+              "box": {
+                "x": 496,
+                "y": 500,
+                "width": 211.125,
+                "height": 44,
+                "top": 500,
+                "right": 707.125,
+                "bottom": 544,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Schedule\n\nEdit shift\n\nAlexandra Rivera\n\nMon, Oct 26 · 8:00 AM – 4:00 PM · Main Office\n\nWho\nPerson\nChoose someone\nAlexandra Rivera\nCasey Rivera\nFictional Owner\nJordan Rivera\nMaría José Fictional QA\nMaría José Rivera Santiago With A Long Name\nMorgan Rivera\nRiley Rivera\nRobin Fictional QA\nTaylor Rivera\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nPosition\nOptional\nNo position\nCustomer Support\nShift lead\nOnly an Owner, Manager or Lead can lead a shift.\nLocation\nMain Office\nA shift keeps its location. To move it, delete it and add a new one.\nWhen\nDate\nDays in this schedule week: Oct 26 – Nov 1.\nStarts\nEnds\n8h scheduled\nNotes\nOptional\nNotes for the team\nEveryone on this shift can read them.\n\nAvailability, time off, other shifts and weekly hours are checked when you save.\n\nSave changes\nCancel\nDelete this shift\nDelete shift\n\nAlexandra Rivera won’t be scheduled on Mon, Oct 26. This can’t be undone.\n\nDelete this shift",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-delete-pending-AUDIT-M-1440x900-t200-default-before.png"
+        },
+        "execution-error": {
+          "path": "/app/schedule/edit?shiftId=audit-next-0-1",
+          "scrollY": 1682,
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "usable": {
+            "top": 73,
+            "bottom": 892
+          },
+          "documentWidth": 1440,
+          "active": {
+            "tag": "BODY",
+            "id": "",
+            "cls": "",
+            "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules MRMorgan RiveraSign outNorthside QA WorkforcePowered by VELANI LLCNorthside QA WorkforceNorthside QA WorkforcePlanScheduleWorkforceSearchCtrl KCloseActionsAdd a shiftAdd employeeSend an updatePagesHomeInboxScheduleAvailabilityTime offShift",
+            "box": {
+              "x": 0,
+              "y": -1682,
+              "width": 1440,
+              "height": 2582,
+              "top": -1682,
+              "right": 1440,
+              "bottom": 900,
+              "left": 0
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Alexandra Rivera",
+              "box": {
+                "x": 312,
+                "y": -1489,
+                "width": 1048,
+                "height": 80,
+                "top": -1489,
+                "right": 1360,
+                "bottom": -1409,
+                "left": 312
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-who-title",
+              "cls": "nv-card__title",
+              "text": "Who",
+              "box": {
+                "x": 496,
+                "y": -1309,
+                "width": 65.09375,
+                "height": 44,
+                "top": -1309,
+                "right": 561.09375,
+                "bottom": -1265,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-when-title",
+              "cls": "nv-card__title",
+              "text": "When",
+              "box": {
+                "x": 496,
+                "y": -566,
+                "width": 82.453125,
+                "height": 44,
+                "top": -566,
+                "right": 578.453125,
+                "bottom": -522,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-notes-title",
+              "cls": "nv-card__title",
+              "text": "Notes",
+              "box": {
+                "x": 496,
+                "y": -42,
+                "width": 82.8125,
+                "height": 44,
+                "top": -42,
+                "right": 578.8125,
+                "bottom": 2,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "edit-delete-title",
+              "cls": "nv-card__title",
+              "text": "Delete this shift",
+              "box": {
+                "x": 496,
+                "y": 500,
+                "width": 211.125,
+                "height": 44,
+                "top": 500,
+                "right": 707.125,
+                "bottom": 544,
+                "left": 496
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Schedule\n\nEdit shift\n\nAlexandra Rivera\n\nMon, Oct 26 · 8:00 AM – 4:00 PM · Main Office\n\nWho\nPerson\nChoose someone\nAlexandra Rivera\nCasey Rivera\nFictional Owner\nJordan Rivera\nMaría José Fictional QA\nMaría José Rivera Santiago With A Long Name\nMorgan Rivera\nRiley Rivera\nRobin Fictional QA\nTaylor Rivera\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nPosition\nOptional\nNo position\nCustomer Support\nShift lead\nOnly an Owner, Manager or Lead can lead a shift.\nLocation\nMain Office\nA shift keeps its location. To move it, delete it and add a new one.\nWhen\nDate\nDays in this schedule week: Oct 26 – Nov 1.\nStarts\nEnds\n8h scheduled\nNotes\nOptional\nNotes for the team\nEveryone on this shift can read them.\n\nAvailability, time off, other shifts and weekly hours are checked when you save.\n\nSave changes\nCancel\nDelete this shift\nDelete shift\n\nAlexandra Rivera won’t be scheduled on Mon, Oct 26. This can’t be undone.\n\nDeleting…",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-delete-pending-AUDIT-M-1440x900-t200-default-execution-error.png"
+        }
+      },
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Delete this shift', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:28:49)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:4:423)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:125:561",
+      "completedAt": "2026-10-19T21:09:34.437Z"
+    }
+  ]
+}

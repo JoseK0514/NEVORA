@@ -1,0 +1,11 @@
+{
+  "candidate": "35c2c0a45de2ce4876c9174efd9abda740d16f0f",
+  "sourceClean": true,
+  "focusedTests": {
+    "passed": 58,
+    "failed": 0,
+    "files": 6
+  },
+  "typecheck": "passed",
+  "finalLintFullTestsBuildAndBrowser": "pending"
+}

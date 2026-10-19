@@ -1,0 +1,19 @@
+{
+  "ownerId": "9599a409-3a19-40ef-b701-2c2528a0fd89",
+  "source": "/workspace/inspect-final-90fbb4d",
+  "root": "/workspace/paused-previews/final-90fbb4d/evidence-2026-10-19T21-07-49-422Z/owned-next-msPkFW",
+  "runtime": "Next production-mode review build + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 47661,
+  "port": 36599,
+  "url": "http://127.0.0.1:36599",
+  "identity": {
+    "name": "nevora_exchange_test_audit_e4e94be0a9bc",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:869af421-e81b-4a9e-b987-c0259d90af6a"
+  },
+  "closed": true,
+  "closedAt": "2026-10-19T21:15:44.562Z",
+  "sourceVerified": true,
+  "mirrorVerified": true
+}

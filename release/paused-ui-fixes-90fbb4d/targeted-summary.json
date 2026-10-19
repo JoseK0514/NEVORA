@@ -1,0 +1,1149 @@
+{
+  "checkpoint": "90fbb4de7dde5c6d0661e74cec3340459a7a10c3",
+  "completed": 51,
+  "passed": 38,
+  "total": 122,
+  "assertions": 664,
+  "failures": [
+    {
+      "name": "delete-pending",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "ST-WA-8: reserved pending Delete text is vertically centered",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 36,
+              "y": 631.515625,
+              "width": 248,
+              "height": 88,
+              "top": 631.515625,
+              "right": 284,
+              "bottom": 719.515625,
+              "left": 36
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Deleting…",
+            "kit": true,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(238, 241, 240)",
+            "opacity": "1",
+            "visibleText": "Deleting…",
+            "textBounds": {
+              "top": 632.515625,
+              "bottom": 673.515625
+            },
+            "textCenterDeltaY": -22.5,
+            "labelAlign": "normal"
+          }
+        },
+        {
+          "message": "IS-RC-DELETE-01: pending Delete retains initiating focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 36,
+              "y": 631.515625,
+              "width": 248,
+              "height": 88,
+              "top": 631.515625,
+              "right": 284,
+              "bottom": 719.515625,
+              "left": 36
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Deleting…",
+            "kit": true,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(238, 241, 240)",
+            "opacity": "1",
+            "visibleText": "Deleting…",
+            "textBounds": {
+              "top": 632.515625,
+              "bottom": 673.515625
+            },
+            "textCenterDeltaY": -22.5,
+            "labelAlign": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "delete-pending",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "IS-RC-DELETE-01: pending Delete retains initiating focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 496,
+              "y": 828,
+              "width": 680,
+              "height": 52,
+              "top": 828,
+              "right": 1176,
+              "bottom": 880,
+              "left": 496
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Deleting…",
+            "kit": true,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(238, 241, 240)",
+            "opacity": "1",
+            "visibleText": "Deleting…",
+            "textBounds": {
+              "top": 844,
+              "bottom": 864
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "delete-pending",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "IS-RC-DELETE-01: pending Delete retains initiating focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 496,
+              "y": 716,
+              "width": 680,
+              "height": 52,
+              "top": 716,
+              "right": 1176,
+              "bottom": 768,
+              "left": 496
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Deleting…",
+            "kit": true,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(238, 241, 240)",
+            "opacity": "1",
+            "visibleText": "Deleting…",
+            "textBounds": {
+              "top": 722,
+              "bottom": 761
+            },
+            "textCenterDeltaY": -0.5,
+            "labelAlign": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "delete-pending",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "IS-RC-DELETE-01: pending Delete retains initiating focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 36,
+              "y": 230,
+              "width": 772,
+              "height": 52,
+              "top": 230,
+              "right": 808,
+              "bottom": 282,
+              "left": 36
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Deleting…",
+            "kit": true,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(238, 241, 240)",
+            "opacity": "1",
+            "visibleText": "Deleting…",
+            "textBounds": {
+              "top": 246,
+              "bottom": 266
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "delete-pending",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "IS-RC-DELETE-01: pending Delete retains initiating focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 36,
+              "y": 213.515625,
+              "width": 772,
+              "height": 52,
+              "top": 213.515625,
+              "right": 808,
+              "bottom": 265.515625,
+              "left": 36
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Deleting…",
+            "kit": true,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(238, 241, 240)",
+            "opacity": "1",
+            "visibleText": "Deleting…",
+            "textBounds": {
+              "top": 218.515625,
+              "bottom": 259.515625
+            },
+            "textCenterDeltaY": -0.5,
+            "labelAlign": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "swap",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "send: reserved pending text is vertically centered",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 16,
+              "y": 587.515625,
+              "width": 288,
+              "height": 88,
+              "top": 587.515625,
+              "right": 304,
+              "bottom": 675.515625,
+              "left": 16
+            },
+            "focused": true,
+            "disabled": false,
+            "ariaDisabled": "true",
+            "fieldsetDisabled": false,
+            "text": "Sending…",
+            "kit": true,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(238, 241, 240)",
+            "opacity": "1",
+            "visibleText": "Sending…",
+            "textBounds": {
+              "top": 588.515625,
+              "bottom": 629.515625
+            },
+            "textCenterDeltaY": -22.5,
+            "labelAlign": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "availability",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "attempt-1: reserved pending text is vertically centered",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 36,
+              "y": 469.515625,
+              "width": 248,
+              "height": 132,
+              "top": 469.515625,
+              "right": 284,
+              "bottom": 601.515625,
+              "left": 36
+            },
+            "focused": true,
+            "disabled": false,
+            "ariaDisabled": "true",
+            "fieldsetDisabled": false,
+            "text": "Saving…",
+            "kit": false,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(238, 241, 240)",
+            "opacity": "1",
+            "visibleText": "Saving…",
+            "textBounds": {
+              "top": 470.515625,
+              "bottom": 511.515625
+            },
+            "textCenterDeltaY": -44.5,
+            "labelAlign": "normal"
+          }
+        },
+        {
+          "message": "attempt-2: reserved pending text is vertically centered",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 36,
+              "y": 136.515625,
+              "width": 248,
+              "height": 132,
+              "top": 136.515625,
+              "right": 284,
+              "bottom": 268.515625,
+              "left": 36
+            },
+            "focused": true,
+            "disabled": false,
+            "ariaDisabled": "true",
+            "fieldsetDisabled": false,
+            "text": "Saving…",
+            "kit": false,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(238, 241, 240)",
+            "opacity": "1",
+            "visibleText": "Saving…",
+            "textBounds": {
+              "top": 137.515625,
+              "bottom": 178.515625
+            },
+            "textCenterDeltaY": -44.5,
+            "labelAlign": "normal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "timeoff",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "AssertionError [ERR_ASSERTION]: Date fixture did not commit to controlled form\n    at register.sizes [as fn] (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:62:455)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "calendar-retry-auth",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "create: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 52,
+              "y": 457.5,
+              "width": 128,
+              "height": 52,
+              "top": 457.5,
+              "right": 180,
+              "bottom": 509.5,
+              "left": 52
+            },
+            "pending": {
+              "x": 52,
+              "y": 457.5,
+              "width": 112,
+              "height": 52,
+              "top": 457.5,
+              "right": 164,
+              "bottom": 509.5,
+              "left": 52
+            },
+            "delta": {
+              "x": 0,
+              "y": 0,
+              "width": -16,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": false,
+          "detail": [
+            {
+              "kind": "unmatched-write",
+              "path": "/__nextjs_original-stack-frames",
+              "method": "POST"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "correction-auth",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "send: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 51,
+              "y": 720,
+              "width": 143,
+              "height": 44,
+              "top": 720,
+              "right": 194,
+              "bottom": 764,
+              "left": 51
+            },
+            "pending": {
+              "x": 51,
+              "y": 768,
+              "width": 117,
+              "height": 44,
+              "top": 768,
+              "right": 168,
+              "bottom": 812,
+              "left": 51
+            },
+            "delta": {
+              "x": 0,
+              "y": 48,
+              "width": -26,
+              "height": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "timecards-pause-auth",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "Timecards401 shows ended session",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "updates-ack-auth",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "acknowledge: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 36,
+              "y": 620.6875,
+              "width": 272,
+              "height": 107,
+              "top": 620.6875,
+              "right": 308,
+              "bottom": 727.6875,
+              "left": 36
+            },
+            "pending": {
+              "x": 36,
+              "y": 671.6875,
+              "width": 258,
+              "height": 64.5,
+              "top": 671.6875,
+              "right": 294,
+              "bottom": 736.1875,
+              "left": 36
+            },
+            "delta": {
+              "x": 0,
+              "y": 51,
+              "width": -14,
+              "height": -42.5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "reveal",
+      "executionError": "Error: Expected intercepted operation was not sent\n    at until (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:24:142)\n    at async register.accounts [as fn] (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:103:396)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "moved-on",
+      "executionError": "Error: Expected intercepted operation was not sent\n    at until (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:24:142)\n    at async register.accounts [as fn] (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:103:396)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "reveal",
+      "executionError": "Error: Expected intercepted operation was not sent\n    at until (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:24:142)\n    at async register.accounts [as fn] (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:103:396)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "moved-on",
+      "executionError": "Error: Expected intercepted operation was not sent\n    at until (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:24:142)\n    at async register.accounts [as fn] (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:103:396)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "field-contrast",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "assisted-employee edge meets3:1",
+          "passed": false,
+          "detail": {
+            "id": "assisted-employee",
+            "border": "rgb(215, 217, 220)",
+            "borderWidth": "1px",
+            "background": "rgb(255, 255, 255)",
+            "fontSize": "17px",
+            "ratio": 1.414330213497637
+          }
+        },
+        {
+          "message": "assisted-attestation edge meets3:1",
+          "passed": false,
+          "detail": {
+            "id": "assisted-attestation",
+            "border": "rgb(215, 217, 220)",
+            "borderWidth": "1px",
+            "background": "rgb(255, 255, 255)",
+            "fontSize": "17px",
+            "ratio": 1.414330213497637
+          }
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": false,
+          "detail": [
+            {
+              "kind": "unmatched-write",
+              "path": "/__nextjs_original-stack-frames",
+              "method": "POST"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "field-contrast",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "assisted-employee edge meets3:1",
+          "passed": false,
+          "detail": {
+            "id": "assisted-employee",
+            "border": "rgb(215, 217, 220)",
+            "borderWidth": "1px",
+            "background": "rgb(255, 255, 255)",
+            "fontSize": "17px",
+            "ratio": 1.414330213497637
+          }
+        },
+        {
+          "message": "assisted-attestation edge meets3:1",
+          "passed": false,
+          "detail": {
+            "id": "assisted-attestation",
+            "border": "rgb(215, 217, 220)",
+            "borderWidth": "1px",
+            "background": "rgb(255, 255, 255)",
+            "fontSize": "17px",
+            "ratio": 1.414330213497637
+          }
+        }
+      ]
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[popover]:popover-open') to be visible\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:219)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "chromium",
+      "account": "payroll-qa-a",
+      "variant": "default",
+      "executionError": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[popover]:popover-open') to be visible\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:219)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "payroll-settings-focus",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "Error: Company payroll failure did not settle\n    at until (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:24:142)\n    at async register.accounts [as fn] (file:///workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:22:545)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": [
+        {
+          "message": "Company payroll fields stay locked while save action stays focusable",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "payroll-settings-focus",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "Error: Company payroll failure did not settle\n    at until (file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:24:142)\n    at async register.accounts [as fn] (file:///workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:22:545)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": [
+        {
+          "message": "Company payroll fields stay locked while save action stays focusable",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "availability-time-label-floor",
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "variant": "default",
+      "executionError": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.av-time-range label > span').first() to be visible\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:30:120)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "delete-pending",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/schedule/edit?shiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:4:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "delete-pending",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/schedule/edit?shiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:4:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "delete-pending",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/schedule/edit?shiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:4:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "delete-pending",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/schedule/edit?shiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:4:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "delete-pending",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/schedule/edit?shiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:4:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "swap",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/exchange/swap?sourceShiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:73:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "swap",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/exchange/swap?sourceShiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:73:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "swap",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/exchange/swap?sourceShiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:73:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "swap",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/exchange/swap?sourceShiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:73:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "swap",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/exchange/swap?sourceShiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:73:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "swap",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/exchange/swap?sourceShiftId=audit-next-0-1\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:73:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "availability",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/availability?week=2026-10-26\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:56:97)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "availability",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/availability?week=2026-10-26\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:56:97)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "timeoff",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/requests?tab=new\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:62:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "timeoff",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/requests?tab=new\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:62:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "calendar-retry-auth",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile#employee-calendar-title\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:81:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "correction-auth",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/my-time\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:77:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "withdrawal",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/requests?tab=my\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:67:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "timecards-pause-auth",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/timecards\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:88:101)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "updates-ack-auth",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/updates\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:95:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "updates-ack-auth",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/updates\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:95:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "updates-read-retry",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/updates\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:99:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "updates-read-retry",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/updates\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.sizes (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:99:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "reveal",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:103:159)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "moved-on",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:103:159)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "reveal",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:103:159)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "management-profile-reveal",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "moved-on",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:103:159)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "field-contrast",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/account-recovery\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:109:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "field-contrast",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/account-recovery\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:109:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "payroll-type-floor",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/payroll\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:113:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "payroll-type-floor",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/payroll\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:113:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "payroll-type-floor",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/payroll\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:113:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "payroll-type-floor",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/payroll\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:113:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "desktop-type-floor",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:117:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "desktop-type-floor",
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:117:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "desktop-type-floor",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:117:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "desktop-type-floor",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:117:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "payroll-qa-b",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "payroll-qa-a",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "AUDIT-LONG",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "AUDIT-ON",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "AUDIT-BREAK",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "phone-more-shell",
+      "engine": "webkit",
+      "account": "AUDIT-SWAP",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:121:8)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "profile-initial-read",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:10:114)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "profile-initial-read",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/profile\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:10:114)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:561",
+      "failed": []
+    },
+    {
+      "name": "updates-read-auth",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "401",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/updates\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:17:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "updates-read-auth",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "403",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/updates\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:17:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "updates-read-auth",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "401",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/updates\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:17:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "updates-read-auth",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "403",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/updates\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:17:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "payroll-settings-focus",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/settings/payroll\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:22:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "payroll-settings-focus",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/settings/payroll\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:22:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "statement-payday-floor",
+      "engine": "webkit",
+      "account": "payroll-qa-a",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/my-pay\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:26:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "statement-payday-floor",
+      "engine": "webkit",
+      "account": "payroll-qa-a",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/my-pay\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:26:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "statement-payday-floor",
+      "engine": "webkit",
+      "account": "payroll-qa-b",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/my-pay\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:26:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "statement-payday-floor",
+      "engine": "webkit",
+      "account": "payroll-qa-b",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/my-pay\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:26:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "availability-time-label-floor",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/availability\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:30:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    },
+    {
+      "name": "availability-time-label-floor",
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "variant": "default",
+      "executionError": "page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:36599/app/availability\", waiting until \"load\"\u001b[22m\n\n    at go (/workspace/nevora-inspection-runtime/final-verification/verify.mjs:52:45)\n    at register.accounts (/workspace/nevora-inspection-runtime/final-verification/extra-cases.mjs:30:9)\n    at /workspace/nevora-inspection-runtime/final-verification/verify.mjs:131:578",
+      "failed": []
+    }
+  ]
+}

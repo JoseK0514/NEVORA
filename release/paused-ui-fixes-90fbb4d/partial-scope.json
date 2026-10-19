@@ -1,0 +1,13 @@
+{
+  "checkpoint": "90fbb4de7dde5c6d0661e74cec3340459a7a10c3",
+  "scope": "Coordinator stopped superseded90 checkpoint after current closed-context row; no WebKit or unchanged checker run at this checkpoint. No final acceptance claim.",
+  "total": 61,
+  "completed": 51,
+  "passed": 38,
+  "setupIncomplete": 10,
+  "engines": [
+    "chromium"
+  ],
+  "checkerStarted": false,
+  "ownedWorkerProcessesTerminated": 3
+}

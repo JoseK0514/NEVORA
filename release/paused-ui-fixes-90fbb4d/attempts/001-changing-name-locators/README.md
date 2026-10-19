@@ -1,0 +1,1 @@
+Startup harness attempts only. A changing accessible-name locator failed after pending began; those cases are incomplete, excluded from final counts, and rerun with stable DOM anchors. All held actions were aborted locally on context closure.
