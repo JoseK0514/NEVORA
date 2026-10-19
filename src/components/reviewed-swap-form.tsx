@@ -1,6 +1,7 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { useSwapSent } from './wave-a/swap-sent';
 import { timeZoneLabel } from '@/lib/time-zone-label';
 import Link from 'next/link';
 import { ShiftChangeForm } from './shift-change-form';
@@ -23,9 +24,26 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
   const [selected, setSelected] = useState('');
   const id = useId();
   const target = targets.find(item => item.shift.id === selected);
+  // After a send is recorded the server stops offering that shift and the page refreshes; SwapSentBoundary keeps the result.
+  const markSent = useSwapSent();
+  const sending = useRef<ExchangeShift | null>(null);
+  const body = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const form = body.current?.closest('form');
+    if (!form) return;
+    const onSubmit = () => { sending.current = targets.find(item => item.shift.id === selected)?.shift ?? null; };
+    const check = () => {
+      if (form.querySelector(':scope > .form-success') && sending.current) markSent({ give: source, receive: sending.current });
+    };
+    form.addEventListener('submit', onSubmit, true);
+    const observer = new MutationObserver(check);
+    observer.observe(form, { childList: true });
+    return () => { form.removeEventListener('submit', onSubmit, true); observer.disconnect(); };
+  }, [selected, targets, source, markSent]);
   const sorted = [...targets].sort((a, b) => a.shift.date.localeCompare(b.shift.date) || a.shift.startTime.localeCompare(b.shift.startTime) || a.shift.employeeName.localeCompare(b.shift.employeeName));
 
   return <ShiftChangeForm fields={{ kind: 'PROPOSE_SWAP', ...sourceFields }} className="wa-form shift-change-form" resolvedHref="/app/exchange?tab=requests">
+    <div ref={body} className="wa-swap-body">
     <SwapSourcePanel source={source} />
 
     <Card title="Shifts you can take" id="swap-choices" meta={`${targets.length} ${targets.length === 1 ? 'shift' : 'shifts'}`}>
@@ -66,5 +84,6 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
       <Link className="nv-btn" data-kind="secondary" data-block="true" href="/app/exchange?tab=requests">Cancel</Link>
     </FormActions>
     <noscript><p className="wa-card-note">Turn on JavaScript to compare and send a swap. Cancel goes back to Shift requests.</p></noscript>
+    </div>
   </ShiftChangeForm>;
 }

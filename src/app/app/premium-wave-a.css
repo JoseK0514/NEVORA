@@ -387,3 +387,6 @@ html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-new"], [da
   html body .app-shell.nevora-portal .route-skeleton[data-route="wa-member"] { --route-band: 196px; }
   html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-new"], [data-route="wa-callout"]) { --route-band: 184px; }
 }
+
+/* The swap form's body is one column of cards, like the form itself. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-swap-body { display: flex; flex-direction: column; gap: var(--nv-s-4); }
