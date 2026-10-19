@@ -18,15 +18,15 @@ export type ModuleDefinition = {
 
 export const MODULES: ModuleDefinition[] = [
   { id: "timeOff", name: "Time off", description: "Employees request time off and managers approve it.",
-    offNote: "Employees can't request time off. Approved time off stays on the schedule." },
+    offNote: "Employees can’t request time off. Approved time off stays on the schedule." },
   { id: "marketplace", name: "Shift swaps and cover", description: "Employees offer, swap and pick up open shifts.",
-    offNote: "Employees can't offer, swap or pick up shifts. Shifts already traded stay as they are." },
+    offNote: "Employees can’t offer, swap or pick up shifts. Shifts already traded stay as they are." },
   { id: "updates", name: "Company updates", description: "Announcements with optional acknowledgement.",
     offNote: "Updates are hidden from everyone and nothing new can be posted. Past updates are kept." },
   { id: "payStatements", name: "Pay statements", description: "Employees see their statements in NEVORA.", requires: "payroll",
     offNote: "Employees see their hours instead of statements. Payroll runs are unaffected." },
   { id: "breaks", name: "Breaks on the Clocker", description: "Employees start and end breaks on Clocker tablets.",
-    offNote: "Employees can't start a break on the Clocker. A break already started can still be ended." },
+    offNote: "Employees can’t start a break on the Clocker. A break already started can still be ended." },
 ];
 
 export const ALL_MODULES_ON: EnabledModules = { timeOff: true, marketplace: true, updates: true, payStatements: true, breaks: true };
