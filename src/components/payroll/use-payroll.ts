@@ -8,6 +8,9 @@ import { toast } from '../toaster';
 type Command = PayrollRunCommand | PayrollSettingsCommand;
 type WithoutOperation<T> = T extends unknown ? Omit<T, 'operationId'> : never;
 
+/** The read failed because the session ended (HTTP 401). */
+export const PAYROLL_SIGNED_OUT = 'Your session ended. Sign in again to see payroll.';
+
 export function usePayrollResource<T>(path: string, decode: (value: unknown) => T) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +26,9 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
       if (generation.current.value === current) {
         setData(null);
         // A dropped connection surfaces as the browser's own TypeError ("Failed to fetch"); show the existing words instead.
-        setError(failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'Payroll could not load.');
+        // IS-B13: an ended session says so, and the state offers Sign in (PayrollState), not a retry that can't work.
+        setError(failure instanceof PayrollRequestError && failure.status === 401 ? PAYROLL_SIGNED_OUT
+          : failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'Payroll could not load.');
       }
     } finally { if (generation.current.value === current) setLoading(false); }
   }, [path, decode]);
