@@ -1,20 +1,18 @@
-**Zero in the completed re-check scope — 0 P0, 0 P1, 0 P2.** Round 4 on `829dfe6cf45beb71b77db573c0263c60a5f69856`, a re-check round. The complete matrix is still running; this is not an exit certificate.
+**Incomplete — 0 P0, 0 P1, 0 P2 newly verified in this area; no zero certificate.** Exit round 4 on `ea58610bf3bdc85319895689c3d88e064f6a76d5`. Earlier exact-source evidence is archived under [history](history/829dfe6/alignment.md); the full new exit sweep remains incomplete.
 
 ## Status of earlier findings
 
-No alignment IDs were open in the handoff. The changed stacked contact rows were re-measured.
+No earlier AL ID was open in the handoff. The full exit pass is still required; earlier zero results are not carried forward as a new certificate.
 
 ## Findings
 
-None in the measured scope.
+None newly verified in the completed alignment scope. The recovery-focus defect is counted once as IS-PROFILE-17.
 
 ## Checked and correct
 
-- Email and Phone: label and value at **x36** in the phone card starting at **x16**: **20px** inset. Both labels/values share that edge at 320/390/430, 100/200%.
-- At 1024 the same inset is **20px** (x280 relative to card x260).
-- Label-to-value gap **4px** in every measured stacked row. Hairlines begin at the 20px text inset and end at the card edge.
-- Empty rows use the same stacking as populated rows. Evidence and crops are linked from the widths report.
+- **32 card boxes** from eight role/browser/phone-text samples have **16px** page insets: widths **358px** at 390 and **288px** at 320. [Baseline measurements](baseline.json).
+- Manager 360's contact-row left edge is **36px**, giving the intended **20px** card inset; its height change remains ST-PROFILE-03.
 
 ## Gaps
 
-The full automated regression matrix remains incomplete. No exit verdict is claimed.
+Empty/large fixtures, row/divider baselines, desktop geometry and the remaining width/text matrix still need the full exit pass.

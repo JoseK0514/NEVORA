@@ -1,0 +1,202 @@
+[
+  {
+    "case": "chromium-QAOWNER-390-t100-retry-save-failure",
+    "source": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+    "documentWidth": 390,
+    "viewportWidth": 390,
+    "cards": [
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      }
+    ],
+    "under15": []
+  },
+  {
+    "case": "chromium-AUDIT-M-320-t200-retry-save-failure",
+    "source": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+    "documentWidth": 320,
+    "viewportWidth": 320,
+    "cards": [
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      }
+    ],
+    "under15": []
+  },
+  {
+    "case": "chromium-QAOWNER-320-t200-retry-save-failure",
+    "source": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+    "documentWidth": 320,
+    "viewportWidth": 320,
+    "cards": [
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      }
+    ],
+    "under15": []
+  },
+  {
+    "case": "webkit-QAOWNER-390-t100-retry-save-failure",
+    "source": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+    "documentWidth": 390,
+    "viewportWidth": 390,
+    "cards": [
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      }
+    ],
+    "under15": []
+  },
+  {
+    "case": "chromium-AUDIT-M-390-t100-retry-save-failure",
+    "source": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+    "documentWidth": 390,
+    "viewportWidth": 390,
+    "cards": [
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      }
+    ],
+    "under15": []
+  },
+  {
+    "case": "webkit-AUDIT-M-390-t100-retry-save-failure",
+    "source": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+    "documentWidth": 390,
+    "viewportWidth": 390,
+    "cards": [
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      },
+      {
+        "x": 16,
+        "width": 358
+      }
+    ],
+    "under15": []
+  },
+  {
+    "case": "webkit-AUDIT-M-320-t200-retry-save-failure",
+    "source": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+    "documentWidth": 320,
+    "viewportWidth": 320,
+    "cards": [
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      }
+    ],
+    "under15": []
+  },
+  {
+    "case": "webkit-QAOWNER-320-t200-retry-save-failure",
+    "source": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+    "documentWidth": 320,
+    "viewportWidth": 320,
+    "cards": [
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      },
+      {
+        "x": 16,
+        "width": 288
+      }
+    ],
+    "under15": []
+  }
+]
