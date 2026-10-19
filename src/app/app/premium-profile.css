@@ -88,6 +88,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack { display: inline-grid; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack > span { grid-area: 1 / 1; text-align: center; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack > span[data-shown="false"] { visibility: hidden; }
+/* In the card head the action ends at the card's text edge, like the other head metas. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-head-action .pmp-label-stack > span { text-align: right; }
 
 /* Contact parts (TC-02, TC-03): each part moves whole to the next line and wraps inside only if wider than the line. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-part { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
