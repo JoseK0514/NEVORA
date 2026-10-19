@@ -10,7 +10,7 @@ import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
-import { ActionForm, InlineConfigForm, RulesSaveForm } from "@/components/wave-b-forms";
+import { ActionForm, InlineConfigForm, KeepFocusClear, RulesSaveForm } from "@/components/wave-b-forms";
 import { PositionQuotaFields } from "@/components/position-quota-fields";
 import { ShiftChangePolicyFields } from "@/components/shift-change-policy-fields";
 import { ManagerIssueFocus } from "@/components/manager-issue-focus";
@@ -64,7 +64,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
     <div className="nv-page wb-page wb-rules" data-nv-page="">
       <PageBand back={{ href: "/app/schedule", label: "Schedule" }} title={"Sched\u00aduling rules"} summary="Set staffing, weekly hours and recurring coverage so your team knows what a complete schedule needs." overlap={false} />
       <div className="nv-content">
-      <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" />
+      <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" /><KeepFocusClear />
       {params.error || params.saved || params.windowSaved || params.windowDeleted ? <div className="wb-feedback">
       {params.error ? <p className="form-error" role="alert"><WarningCircleIcon size={22} aria-hidden="true" /><span>{
         params.error === "invalid_staffing"

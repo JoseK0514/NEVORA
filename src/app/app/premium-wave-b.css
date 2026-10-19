@@ -627,3 +627,4 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { flex: 0 1 auto; min-width: 0; }
 /* WR-B-10: the payment output profile takes the whole row, so its long value fits from tablet up. */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-grid > label:has(select[name="bankProfile"]) { grid-column: 1 / -1; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-focus-target:focus:not(:focus-visible) { outline: none; }

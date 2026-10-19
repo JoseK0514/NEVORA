@@ -8,6 +8,7 @@ import { dollarsToMinor, minorToDollars } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import type { ReactNode } from 'react';
 import { OperationFeedback, PayrollFrame, PayrollState, PrivacyNote } from './payroll-ui';
+import { KeepFocusClear } from '../wave-b-forms';
 import { noticeReadiness, reminderWindow } from './workflow-status';
 import { formatDateRange } from '@/lib/date-utils';
 import { keepWhole } from '@/lib/keep-whole';
@@ -61,6 +62,7 @@ export function PayrollSettings({ recoveryScope }: { recoveryScope: string }) {
   return <PayrollFrame title="Payroll settings" description="Set company defaults, effective dates and authorized employee exceptions.">
     <SavingForm.Provider value={savingForm}><div className="wb-page wb-payroll-settings"><div className="wb-auto wb-payroll-settings">
     {/* IS-B10: progress and failures of a save float above the tab bar, so they show wherever the form was submitted. */}
+    <KeepFocusClear />
     <div className="wb-payroll-feedback"><OperationFeedback operation={operation} /></div>
     {resource.loading && !resource.data ? <PayrollState title="Loading payroll settings">Checking current owner access and configuration revisions.</PayrollState> : resource.error ? <PayrollState title="Settings unavailable" error retry={() => void resource.reload()}>{resource.error}</PayrollState> : resource.data && <>
       {!revision && <PayrollState title="Configure payroll before preparing runs">These are unsaved starting preferences. Choose your company settings and an effective date; imported provider amounts remain the authority.</PayrollState>}

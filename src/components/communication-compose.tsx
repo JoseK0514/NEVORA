@@ -125,6 +125,10 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
  const editing=(context as (Context&{editing?:Extract<CommunicationRead,{state:'ready'}>})|null)?.editing;
  const signedOut=(!!resource.value&&'state' in resource.value&&resource.value.state==='unauthorized')||(resource.state.snapshot?.state==='unavailable'&&resource.state.snapshot.reason==='access_denied');
  const offline=resource.state.paused&&typeof navigator!=='undefined'&&navigator.onLine===false;
+ // IS-B12: when the form arrives after a failed load (Try again), focus goes to its first field.
+ const composeFailed=!context&&!resource.state.refreshing;
+ const hadFailure=useRef(false);
+ useEffect(()=>{if(composeFailed){hadFailure.current=true;return;}if(context&&hadFailure.current){hadFailure.current=false;if(!document.activeElement||document.activeElement===document.body)document.getElementById('communication-title')?.focus({preventScroll:true});}},[composeFailed,context]);
  const title=updateId?'Edit update':mode==='manager'?'Create update':'Message today’s team';
  return <div ref={pageRef} className="nv-page wb-page wb-narrow wb-compose" data-nv-page="">
   <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow={updateId?'New version':'Unpublished'} title={title} summary={updateId?'Revise your message and review the audience before publishing a new version.':'Write your message, choose its audience, then review before publishing.'}/>

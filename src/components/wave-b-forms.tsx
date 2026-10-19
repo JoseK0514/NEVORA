@@ -7,6 +7,12 @@ import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import type { ConfigurationResult } from "@/components/configuration-form";
 import type { PolicyWriteResult } from "@/lib/shift-changes/types";
 
+/** IS-B31: a field or button that was focused when a save started gets focus back when it ends (its fieldset was disabled meanwhile). */
+function rememberFocus() {
+  const before = document.activeElement as HTMLElement | null;
+  return () => requestAnimationFrame(() => { if (!document.activeElement || document.activeElement === document.body) before?.focus({ preventScroll: true }); });
+}
+
 /* Phase 3.5 Wave B forms. Presentation and submit handling only: each form calls the same server
  * action as before, with the same fields. What changes is what the screen does around the call:
  * one request per press, a pending label, an optional confirm step, and a failure shown in place
@@ -42,7 +48,7 @@ export function ActionForm({ action, submit, failure, confirm, className, childr
   const [asking, setAsking] = useState(false);
   const busy = useRef(false), asked = useRef(false);
   const askRef = useRef<HTMLButtonElement>(null), openRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => { if (asked.current) (asking ? askRef : openRef).current?.focus(); }, [asking]);
+  useEffect(() => { if (!asked.current) return; const target = (asking ? askRef : openRef).current; target?.focus(); if (asking) target?.closest(".wb-confirm")?.scrollIntoView({ block: "nearest" }); }, [asking]);
   const errorRef = useRef<HTMLParagraphElement>(null);
   // IS-B26: a failure comes into view above the tab bar.
   useEffect(() => { if (error) errorRef.current?.scrollIntoView({ block: "nearest" }); }, [error]);
@@ -87,6 +93,7 @@ export function RulesSaveForm({ action, children, bar }: {
     event.preventDefault();
     if (busy.current) return;
     const data = new FormData(event.currentTarget);
+    const restoreFocus = rememberFocus();
     busy.current = true; setPending(true); setResult(null);
     try {
       const saved = await action(data);
@@ -94,7 +101,7 @@ export function RulesSaveForm({ action, children, bar }: {
     } catch {
       setResult("Couldn’t save your changes. They’re still here; try again.");
     } finally {
-      busy.current = false; setPending(false);
+      busy.current = false; setPending(false); restoreFocus();
     }
   }
   return <form onSubmit={submit} className="wb-form wb-auto wb-config" aria-busy={pending || undefined}>
@@ -125,10 +132,11 @@ export function InlineConfigForm({ action, children, submit, successText, classN
     event.preventDefault();
     if (busy.current) return;
     const data = new FormData(event.currentTarget);
+    const restoreFocus = rememberFocus();
     busy.current = true; setPending(true); setResult(null);
     try { const saved = await action(data); setResult(saved.error ? plain(saved.error) : "saved"); }
     catch { setResult("Couldn’t save your changes. They’re still here; try again."); }
-    finally { busy.current = false; setPending(false); }
+    finally { busy.current = false; setPending(false); restoreFocus(); }
   }
   return <form onSubmit={send} className={className ? `wb-form wb-auto wb-config ${className}` : "wb-form wb-auto wb-config"} aria-busy={pending || undefined}>
     <fieldset disabled={pending} className="configuration-fields">{children}</fieldset>
@@ -179,6 +187,7 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
     finishField?.removeAttribute("aria-describedby");
     setOrderError(false);
     data.set("expectedRevision", String(currentRevision));
+    const restoreFocus = rememberFocus();
     busy.current = true; setPending(true); setMessage(null);
     try {
       const next = await action(data);
@@ -187,7 +196,7 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
       else setMessage({ tone: "conflict", text: "This policy changed. Reload to see the current values, then enter your changes again." });
     } catch {
       setMessage({ tone: "conflict", text: "Couldn’t save the policy. Reload to see the current values, then enter your changes again if they’re missing." });
-    } finally { busy.current = false; setPending(false); }
+    } finally { busy.current = false; setPending(false); restoreFocus(); }
   }
   return <form onSubmit={send} className="wb-form" aria-busy={pending || undefined} data-order-error={orderError || undefined}>
     <input type="hidden" name="expectedRevision" value={currentRevision} />
@@ -196,4 +205,23 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
     {message?.tone === "saved" ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{message.text}</span></p>
       : message ? <><p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{message.text}</span></p>{message.tone === "conflict" ? <div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={() => window.location.reload()}>Reload current policy</button></div> : null}</> : null}
   </form>;
+}
+
+/** IS-B30: WebKit doesn't apply scroll-padding when Tab moves focus, so a focused field can land under the
+ * tab bar or the save bar. This nudges the page by the same padding the stylesheet sets. Renders nothing. */
+export function KeepFocusClear() {
+  useEffect(() => {
+    const onFocus = (event: FocusEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.getBoundingClientRect) return;
+      const style = getComputedStyle(document.documentElement);
+      const top = parseFloat(style.scrollPaddingTop) || 0, bottom = parseFloat(style.scrollPaddingBottom) || 0;
+      const box = target.getBoundingClientRect();
+      if (box.bottom > window.innerHeight - bottom) window.scrollBy({ top: box.bottom - (window.innerHeight - bottom) });
+      else if (box.top < top) window.scrollBy({ top: box.top - top });
+    };
+    document.addEventListener("focusin", onFocus);
+    return () => document.removeEventListener("focusin", onFocus);
+  }, []);
+  return null;
 }

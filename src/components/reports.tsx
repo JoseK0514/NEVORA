@@ -18,7 +18,7 @@ import {StatGrid,Status,Tile,type KitTone} from './kit/kit';
 import {keepWhole} from '../lib/keep-whole';
 import { timeZoneLabel } from '../lib/time-zone-label';
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
-/** IS-B1: a fresh snapshot is read halfway through the current one's life (and retried while there's time)
+/** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
  * and swapped in when verified, so the report only empties if every read fails before expiry.
  * Short-lived snapshots (5s or less) just expire. */
 const REFRESH_RETRY_MS=1000,REFRESH_MIN_LEFT_MS=2000;
@@ -107,7 +107,7 @@ export function Reports({initialPeriod}:{initialPeriod:Period}){
     if(timer)clearTimeout(timer);if(refresher)clearTimeout(refresher);refresher=null;
     timer=setTimeout(()=>{holdPlace();clear('loading');void load();},remaining);
     if(heldScroll!==null)(window.requestAnimationFrame??((step:()=>void)=>setTimeout(step,0)))(releasePlace);
-    if(remaining>5000)refresher=setTimeout(()=>{refresher=null;void load(false,true);},remaining/2);
+    if(remaining>5000)refresher=setTimeout(()=>{refresher=null;void load(false,true);},remaining/3);
    }catch{if(!active||current!==generation)return;if(!silent){clear(navigator.onLine?'unavailable':'offline');return;}
     // A failed quiet refresh tries again while the current snapshot still has time left.
     if(validUntil-performance.now()>REFRESH_MIN_LEFT_MS+REFRESH_RETRY_MS)refresher=setTimeout(()=>{refresher=null;void load(false,true);},REFRESH_RETRY_MS);}
