@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import {useRef,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import {useGSAP} from '@gsap/react';
 import {gsap} from 'gsap';
 import {ArrowLeftIcon} from '@phosphor-icons/react/dist/ssr/ArrowLeft';
@@ -17,6 +17,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {useCommunicationAction,useCommunicationResource,type CommunicationMode,type CommunicationNotice} from '../lib/communications/client';
 import type {CommunicationRead} from '../lib/communications/types';
 import './communication-detail.css';
+import {revealFeedback} from '@/lib/reveal-feedback';
 
 gsap.registerPlugin(useGSAP);
 
@@ -93,6 +94,15 @@ function CurrentDetail({read,mode,authority,refresh}:{read:CommunicationRead;mod
  return <CommunicationDetailView read={read} paused={false} pending={action.pending} notice={action.notice} onAction={send} onRefresh={()=>{if(action.notice!=='conflict')action.setNotice(null);refresh();}}/>;
 }
 export function CommunicationDetail({id,authority,mode}:{id:string;authority:string;mode:CommunicationMode}){
+ const recovery=useRef<HTMLElement|null>(null),root=useRef<HTMLDivElement>(null);
  const resource=useCommunicationResource(mode,authority,'/'+id);const read=resource.value&&'id'in resource.value?resource.value as CommunicationRead:null;
- return <div className="employee-view communication-view communication-detail-view"><Link className="communication-back" href="/app/updates"><ArrowLeftIcon size={18} aria-hidden="true"/>All updates</Link>{read?<CurrentDetail key={read.state==='ready'?read.revisionId:'unavailable'} read={read} mode={mode} authority={authority} refresh={resource.refresh}/>:<CommunicationDetailView read={resource.state.snapshot?.state==='unavailable'?{state:resource.state.snapshot.reason==='access_denied'?'unauthorized':resource.state.snapshot.reason==='withdrawn'?'withdrawn':'unavailable',reason:'read_failed'}:null} paused={resource.state.paused} pending={resource.state.refreshing} notice={null} onAction={()=>{}} onRefresh={resource.refresh}/>}</div>;
+ useEffect(()=>{
+  if(read?.state!=='ready'||!recovery.current)return;
+  const initiator=recovery.current;recovery.current=null;
+  if(document.activeElement!==document.body&&document.activeElement!==initiator)return;
+  const heading=root.current?.querySelector<HTMLElement>('article h1');
+  if(heading){heading.tabIndex=-1;revealFeedback(heading);}
+ },[read]);
+ const retry=()=>{recovery.current=document.activeElement instanceof HTMLElement?document.activeElement:null;resource.refresh();};
+ return <div ref={root} className="employee-view communication-view communication-detail-view"><Link className="communication-back" href="/app/updates"><ArrowLeftIcon size={18} aria-hidden="true"/>All updates</Link>{read?<CurrentDetail key={read.state==='ready'?read.revisionId:'unavailable'} read={read} mode={mode} authority={authority} refresh={resource.refresh}/>:<CommunicationDetailView read={resource.state.snapshot?.state==='unavailable'?{state:resource.state.snapshot.reason==='access_denied'?'unauthorized':resource.state.snapshot.reason==='withdrawn'?'withdrawn':'unavailable',reason:'read_failed'}:null} paused={resource.state.paused} pending={resource.state.refreshing} notice={null} onAction={()=>{}} onRefresh={retry}/>}</div>;
 }

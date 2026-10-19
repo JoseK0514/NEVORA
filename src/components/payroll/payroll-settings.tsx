@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { PlusIcon, TrashIcon } from '@phosphor-icons/react/ssr';
 import type { PayrollPreferences, PayrollRule, PayrollSettingsResponse } from '@/lib/payroll/contracts';
 import { readSettings } from './api';
@@ -8,6 +8,7 @@ import { dollarsToMinor, minorToDollars } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import { OperationFeedback, PayrollFrame, PayrollPanel, PayrollState, PrivacyNote } from './payroll-ui';
 import { noticeReadiness, reminderWindow } from './workflow-status';
+import { revealFeedback } from '@/lib/reveal-feedback';
 import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
 
 function today() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
@@ -60,8 +61,15 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
   const [error, setError] = useState('');
   const [noticesEnabled, setNoticesEnabled] = useState(preferences.automation.reminders);
   const locked = operation.locked;
+  const form = useRef<HTMLFormElement>(null),sent=useRef(false);
+  useEffect(()=>{
+    if(operation.busy||!sent.current)return;
+    sent.current=false;
+    const feedback=form.current?.closest('.payroll-workflow')?.querySelector<HTMLElement>('.pw-feedback');
+    if(feedback?.textContent?.trim()){feedback.tabIndex=-1;revealFeedback(feedback);}
+  },[operation.busy]);
   const save = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
+    event.preventDefault(); if(locked)return; setError(''); const values = new FormData(event.currentTarget);
     try {
       const reminderLeadDays = values.has('reminders') ? [integer(values.get('reminderDays'), 'Preparation reminder window', 0, 31)] : [];
       const next: PayrollPreferences = {
@@ -75,10 +83,11 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       const provider = values.get('sourceProvider'), channel = values.get('bankChannel');
       if (provider === 'ADP_RUN' || provider === 'QUICKBOOKS_PAYROLL' || provider === 'PAYCHEX' || provider === 'GUSTO' || provider === 'OTHER') next.sourceProvider = provider;
       if (channel === 'POPULAR_WCM_TEXT' || channel === 'POPULAR_WCM_NACHA' || channel === 'POPULAR_COMMERCIAL_MANUAL' || channel === 'OTHER') next.bankChannel = channel;
+      sent.current=true;
       void operation.submit({ action: 'SAVE_SETTINGS', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), preferences: next });
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Check payroll preferences.'); }
   };
-  return <PayrollPanel title="Company defaults" description={`Revision ${revision} · Currency USD`}><form className="pw-form" onSubmit={save}><fieldset disabled={locked}>
+  return <PayrollPanel title="Company defaults" description={`Revision ${revision} · Currency USD`}><form ref={form} className="pw-form" onSubmit={save}><fieldset disabled={locked}>
     <section className="pw-section pw-section-first"><h3>Company and documents</h3><div className="pw-fields">
       <label>Company name on documents<input name="companyName" defaultValue={preferences.companyName} maxLength={160} required /></label>
       <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
@@ -95,8 +104,8 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       <label>Output profile<select aria-label="Output profile" name="bankProfile" defaultValue={preferences.bankProfile ?? ''}><option value="">No payment output configured</option><option value="NEUTRAL_UNVERIFIED">Neutral instructions · compatibility unverified</option></select></label>
       <label>Desired bank channel<select aria-label="Desired bank channel" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No channel preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or channel</option></select></label>
     </div><p className="pw-small">Channel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.</p></section>
-    <section className="pw-section"><h3>Review the change</h3><div className="pw-fields"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="pw-small">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="pw-error" role="alert">{error}</p>}<button type="submit" className="pw-button">Save company preferences</button></section>
-  </fieldset></form></PayrollPanel>;
+    <section className="pw-section"><h3>Review the change</h3><div className="pw-fields"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="pw-small">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="pw-error" role="alert">{error}</p>}</section>
+  </fieldset><button type="submit" className="pw-button" aria-disabled={locked}>Save company preferences</button></form></PayrollPanel>;
 }
 
 function newRule(): PayrollRule { return { id: crypto.randomUUID(), name: '', kind: 'EMPLOYEE_DEDUCTION', method: 'FIXED', amountMinor: null, basisPoints: null, base: 'GROSS', applicability: 'ALL', effectiveFrom: today(), effectiveTo: null, capMinor: null, remittance: 'EMPLOYER' }; }
