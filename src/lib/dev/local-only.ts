@@ -1,5 +1,5 @@
 /** Development helpers use exact loopback hosts, never suffix matching. */
-const hosts=new Set(['localhost','127.0.0.1','[::1]']);
+const hosts=/* @__PURE__ */ new Set(['localhost','127.0.0.1','[::1]']);
 export type LocalCaptureContext={kind:'request';headers:Pick<Headers,'get'>}|{kind:'cli'};
 export function loopbackOrigin(value:string|undefined):boolean {
   try {const u=new URL(value??'');return ['http:','https:'].includes(u.protocol)&&hosts.has(u.hostname)&&!u.username&&!u.password&&u.pathname==='/'&&!u.search&&!u.hash;}catch{return false;}

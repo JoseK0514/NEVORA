@@ -6,20 +6,8 @@ import type {RecoveryDelivery} from '../auth/recovery.server';
 import type {PushSender} from '../notifications/provider';
 import type {PushRuntimeConfig} from '../notifications/types';
 import {localDevEnabled,loopbackOrigin,localRequest,type LocalCaptureContext} from './local-only';
-
-function captureDirectory(env:Record<string,string|undefined>):string|null|undefined {
-  if(!localDevEnabled(env,'NEVORA_DEV_CAPTURE_DELIVERY'))return undefined;
-  const out=env.NEVORA_DEV_CAPTURE_OUT;
-  if(!loopbackOrigin(env.FUEL_PORTAL_ORIGIN)||!out||!isAbsolute(out))return null;
-  return out;
-}
-/** Local workers retain test-account, enrollment and encryption-key checks.
- * Only their outbound transport readiness changes in explicit capture mode. */
-export function captureNotificationRuntime(config:PushRuntimeConfig,env:Record<string,string|undefined>):PushRuntimeConfig {
-  const directory=captureDirectory(env);
-  return directory&&config.environment==='test'&&config.featureEnabled&&config.testAccountIds.length
-    ?{...config,deliveryEnabled:true,testDeliveryEnabled:true,localCapture:{directory,origin:env.FUEL_PORTAL_ORIGIN!}}:config;
-}
+import {captureDirectory} from './capture-gate';
+export {captureNotificationRuntime} from './capture-gate';
 async function record(directory:string,kind:'email'|'push',extension:string,value:Buffer|string) {
   const folder=join(directory,kind);
   await mkdir(folder,{recursive:true,mode:0o700});

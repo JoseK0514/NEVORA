@@ -1,11 +1,22 @@
 import 'server-only';
 import nodemailer from 'nodemailer';
 import type {RecoveryDelivery} from './recovery.server';
-const developmentCapture=process.env.NODE_ENV!=='production'?await import('../dev/capture.server'):null;
+import {captureDirectory} from '../dev/capture-gate';
+import {localRequest} from '../dev/local-only';
 /** Explicit existing SMTP account configuration; no vendor preset or activation. */
 export function recoveryDelivery(env:Record<string,string|undefined>=process.env,requestHeaders?:Pick<Headers,'get'>):RecoveryDelivery|null{
- if(process.env.NODE_ENV!=='production'&&developmentCapture){
-  const captured=developmentCapture.devRecoveryDelivery(env,requestHeaders);if(captured!==undefined)return captured;
+ if(process.env.NODE_ENV!=='production'){
+  const directory=captureDirectory(env);
+  if(directory===null)return null;
+  if(directory!==undefined){
+   if(!requestHeaders||!localRequest(requestHeaders))return null;
+   const capturedEnv={...env};
+   return {async send(email,proof){
+    const captured=(await import('../dev/capture.server')).devRecoveryDelivery(capturedEnv,requestHeaders);
+    if(!captured)throw Error('Local recovery capture is unavailable');
+    await captured.send(email,proof);
+   }};
+  }
  }
  try{
   const host=env.NEVORA_RECOVERY_SMTP_HOST?.trim(),port=Number(env.NEVORA_RECOVERY_SMTP_PORT??465),from=env.NEVORA_RECOVERY_FROM?.trim(),origin=new URL(env.FUEL_PORTAL_ORIGIN??'');
