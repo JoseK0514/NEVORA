@@ -2,7 +2,7 @@
 
 import { PayrollStepper } from './payroll-stepper';
 import { useState, type FormEvent } from 'react';
-import { ArrowRightIcon, CalendarDotsIcon, CheckCircleIcon, FileArrowUpIcon } from '@phosphor-icons/react/ssr';
+import { ArrowRightIcon, CalendarDotsIcon, CheckCircleIcon, FileArrowUpIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import type { PayrollCapabilities, PayrollRun } from '@/lib/payroll/contracts';
 import { parsePayrollImport, readRuns } from './api';
 import { formatPayrollMoney } from './money';
@@ -42,7 +42,7 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
         <div className="pw-job-list">{resource.data.jobs.map(job => <div className="pw-job" key={job.id}>
           <div><strong>{jobLabels[job.kind]}</strong><small>{job.status.toLowerCase().replaceAll('_', ' ')} · {job.attempts} {job.attempts === 1 ? 'attempt' : 'attempts'}</small>
             {job.kind === 'REMINDER' && <p className="pw-small">{noticeOutcome(job.outcome)}</p>}
-            {job.error && <p className="pw-error">{job.error}</p>}
+            {job.error && <p className="pw-error"><WarningCircleIcon size={18} aria-hidden="true" /><span>{job.error}</span></p>}
           </div>
           {job.status === 'FAILED' && resource.data?.capabilities.canApprove && <button className="pw-button pw-secondary" type="button" disabled={locked} onClick={() => void operation.submit({ action: 'RETRY_JOB', jobId: job.id })}>Retry {job.kind === 'REMINDER' ? 'notice queue' : jobLabels[job.kind].toLowerCase()}</button>}
         </div>)}</div>
@@ -91,7 +91,7 @@ function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabili
       const file = event.target.files?.[0]; if (!file) return;
       setImportError('');
       try { if (file.size > 524288) throw new Error('Choose an import smaller than 512 KB.'); setImportText(await file.text()); } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'The import file could not be read.'); }
-    }} /></label><details className="pw-import-format"><summary>Import format and contents</summary><p className="pw-small">Required: schema NEVORA_PAYROLL_IMPORT_V1, currency USD, sourceName, sourceReference, period, payday and rows. Each row includes employeeId, grossMinor, employeeDeductions, employerContributions and netMinor. Each amount is a whole-cent string; each line includes code, label and amountMinor.</p><label>Import JSON<textarea rows={8} value={importText} onChange={event => setImportText(event.target.value)} spellCheck={false} /></label></details>{importText && <p className="pw-small">Import loaded in this page. Review employee amounts after the server validates it.</p>}{correctionOpen && <label>Correction reason<textarea name="correctionReason" required maxLength={300} rows={3} /></label>}{importError && <p className="pw-error" role="alert">{importError}</p>}<button className="pw-button" type="submit" disabled={!importText}>{correctionOpen ? 'Create correction draft' : 'Validate and import amounts'}<ArrowRightIcon size={18} aria-hidden /></button></fieldset></form></section>}
+    }} /></label><details className="pw-import-format"><summary>Import format and contents</summary><p className="pw-small">Required: schema NEVORA_PAYROLL_IMPORT_V1, currency USD, sourceName, sourceReference, period, payday and rows. Each row includes employeeId, grossMinor, employeeDeductions, employerContributions and netMinor. Each amount is a whole-cent string; each line includes code, label and amountMinor.</p><label>Import JSON<textarea rows={8} value={importText} onChange={event => setImportText(event.target.value)} spellCheck={false} /></label></details>{importText && <p className="pw-small">Import loaded in this page. Review employee amounts after the server validates it.</p>}{correctionOpen && <label>Correction reason<textarea name="correctionReason" required maxLength={300} rows={3} /></label>}{importError && <p className="pw-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{importError}</span></p>}<button className="pw-button" type="submit" disabled={!importText}>{correctionOpen ? 'Create correction draft' : 'Validate and import amounts'}<ArrowRightIcon size={18} aria-hidden /></button></fieldset></form></section>}
     {run.status === 'REVIEW_REQUIRED' && <section className="pw-section">
       <h3>Approve this revision</h3>
       <p className="pw-small">Approval freezes the reviewed amounts, finalized time, settings and employee exceptions. A changed source requires a fresh review.</p>

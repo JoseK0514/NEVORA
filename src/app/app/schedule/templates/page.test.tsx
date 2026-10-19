@@ -79,7 +79,7 @@ describe("schedule template workflow presentation", () => {
     const output = await html(Promise.resolve({ week: "2026-10-12", applied: "3", skipped: "2", warnings: "1" }));
     expect(output).toContain("Applied 3 shifts.");
     expect(output).toContain("2 skipped because of current conflicts or unavailable employees.");
-    expect(output).toContain("1 applied with manager warnings.");
+    expect(output).toContain("1 added with a warning to review.");
     expect(output).toContain("Review schedule");
     expect(output).toContain('role="status" class="form-warning"');
   });

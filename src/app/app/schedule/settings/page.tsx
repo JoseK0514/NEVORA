@@ -66,16 +66,16 @@ export default async function ScheduleSettingsPage({ searchParams }: {
       {params.error || params.saved || params.windowSaved || params.windowDeleted ? <div className="wb-feedback">
       {params.error ? <p className="form-error" role="alert"><WarningCircleIcon size={22} aria-hidden="true" /><span>{
         params.error === "invalid_staffing"
-          ? "Staffing requirements must be whole numbers between 1 and 100. Choose whether a designated Lead is required for each unconfigured location."
+          ? "Minimum staff must be a whole number from 1 to 100, and each new location needs a designated lead choice."
           : params.error === "invalid_hours"
-            ? "Targets and maximums must be between 0 and 168 hours."
+            ? "Targets and maximums must be from 0 to 168 hours."
             : params.error === "duplicate_window"
-              ? "That coverage window already exists."
-              : "Enter a valid day, time range, and optional staffing override."
+              ? "That coverage period already exists."
+              : "Enter a day, a start and end time, and staff numbers if you need them."
       }</span></p> : null}
-      {params.saved ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Schedule health settings updated.</span></p> : null}
-      {params.windowSaved ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Coverage window added.</span></p> : null}
-      {params.windowDeleted ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Coverage window removed.</span></p> : null}
+      {params.saved ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Scheduling rules saved.</span></p> : null}
+      {params.windowSaved ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Coverage period added.</span></p> : null}
+      {params.windowDeleted ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Coverage period removed.</span></p> : null}
       </div> : null}
 
       <div className="wb-rules-layout">
@@ -94,7 +94,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           <ConfigurationForm action={saveScheduleHealthSettingsFormAction} className="wb-form wb-auto wb-config">
             <section className="nv-card manager-issue-target" id="coverage-staffing" tabIndex={-1}>
               <RuleHeading title="Location staffing" />
-              <p className="wb-note wb-card-lead">Choose the minimum staff needed during overlapping shift times, and whether a designated Lead must be present.</p>
+              <p className="wb-note wb-card-lead">Choose the minimum staff needed during overlapping shift times, and whether a designated lead must be present.</p>
               <ul className="wb-setting-list">
                 {staffing.map(location => {
                   const name = locationLabel(location.locationId, location.locationName);
@@ -105,16 +105,16 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                       <div className="wb-setting__fields">
                         <label className="wb-field"><span>Minimum staff</span><span className="wb-suffix"><input type="number" name={"staffing-" + location.locationId} aria-label={name + " minimum staff per shift"} defaultValue={location.minimumStaffPerShift ?? undefined} min={1} max={100} step={1} required /><span aria-hidden="true">people</span></span></label>
                         {location.requiresDesignatedLead === null ? (
-                          <label className="wb-field"><span>Designated lead</span><select name={"lead-choice-" + location.locationId} defaultValue="" required aria-label={name + " designated Lead rule"}><option value="" disabled>Choose a Lead rule</option><option value="true">Designated lead required</option><option value="false">Designated lead not required</option></select></label>
+                          <label className="wb-field"><span>Designated lead</span><select name={"lead-choice-" + location.locationId} defaultValue="" required aria-label={name + " designated lead rule"}><option value="" disabled>Choose a lead rule</option><option value="true">Designated lead required</option><option value="false">Designated lead not required</option></select></label>
                         ) : (
-                          <label className="wb-check"><input type="hidden" name={"lead-configured-" + location.locationId} value="true" /><input type="checkbox" name={"lead-" + location.locationId} defaultChecked={location.requiresDesignatedLead} aria-label={name + " designated Lead required"} /><span>Designated lead required</span></label>
+                          <label className="wb-check"><input type="hidden" name={"lead-configured-" + location.locationId} value="true" /><input type="checkbox" name={"lead-" + location.locationId} defaultChecked={location.requiresDesignatedLead} aria-label={name + " designated lead required"} /><span>Designated lead required</span></label>
                         )}
                       </div>
                     </li>
                   );
                 })}
               </ul>
-              {!staffing.length ? <div className="wb-body"><Empty icon={<MapPinIcon size={22} />} title="Add your first location" action={{ href: "/app/settings/locations", label: "Manage locations" }}>Set up a location, then choose its staffing and Lead requirements.</Empty></div> : null}
+              {!staffing.length ? <div className="wb-body"><Empty icon={<MapPinIcon size={22} />} title="Add your first location" action={{ href: "/app/settings/locations", label: "Manage locations" }}>Set up a location, then choose its staffing and lead requirements.</Empty></div> : null}
             </section>
 
             <section className="nv-card manager-issue-target" id="target-hours" tabIndex={-1}>
@@ -131,7 +131,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
 
           <section className="nv-card manager-issue-target" id="coverage-windows" tabIndex={-1}>
             <RuleHeading title="Recurring coverage" meta={coverageWindows.length ? `${coverageWindows.length} ${coverageWindows.length === 1 ? "period" : "periods"}` : undefined} />
-            <p className="wb-note wb-card-lead">Add the periods you expect every week. Schedule Health can then flag open coverage, even when no shift has been scheduled.</p>
+            <p className="wb-note wb-card-lead">Add the periods you expect every week. The schedule can then flag open coverage, even before any shift is added.</p>
             {locations.length ? <details className="wb-disclosure wb-disclosure--ruled wb-add-period" open={!coverageWindows.length}>
               <summary><span className="wb-inline-icon"><PlusIcon size={20} aria-hidden="true" />Add coverage period</span><CaretDownIcon size={20} aria-hidden="true" /></summary>
               <ConfigurationForm action={addCoverageWindowFormAction} className="wb-form wb-auto wb-config wb-period-form">
@@ -174,7 +174,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           <section className="nv-card wb-auto" id="rules-policy" tabIndex={-1}>
             <RuleHeading title="Trade & coverage policy" />
             <p className="wb-note wb-card-lead">How shift trades and coverage requests are approved, and how far ahead they must be sent and completed.</p>
-            {policyUnavailable ? <div className="wb-body"><p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>Shift change policy is unavailable. Reconnect and reload before editing.</span></p></div> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}
+            {policyUnavailable ? <div className="wb-body"><p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>Couldn’t load this policy. Reload the page to try again.</span></p></div> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}
           </section>
         </div>
       </div>

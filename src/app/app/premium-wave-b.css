@@ -35,7 +35,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-box { padding: var(--nv-s-3) var(--nv-s-4); border-radius: var(--nv-r-control); background: var(--nv-inset); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-divider { height: 1px; margin: 0; border: 0; background: var(--nv-hairline); }
 
-/* Fields: the six-fold .wb-control outranks portal-premium.css's 48px field rule (0,12,3). */
+/* Fields: height and text size come from the shared WR-55 rule (48px, kit body). Wave B sets only padding, the chevron and states. */
 /* ---------- Form pattern (PARALLEL.md): labels above, 52px fields, help 8px under, errors with icon and word ---------- */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-form { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-field { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; }
@@ -43,18 +43,18 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-label, .wb-field > label:not(.wb-check), .wb-label-row > label) { font: var(--nv-t-label); color: var(--nv-ink-2); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-optional { font: var(--nv-t-callout); color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control {
-  box-sizing: border-box; width: 100%; min-width: 0; height: 52px; min-height: 52px; margin: 0; padding: 0 14px;
-  border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background-color: var(--nv-canvas); box-shadow: none;
-  color: var(--nv-ink); font: var(--nv-t-body); text-overflow: ellipsis;
+  box-sizing: border-box; width: 100%; min-width: 0; margin: 0; padding-inline: 14px;
+  border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background-color: var(--nv-canvas); box-shadow: none;
+  color: var(--nv-ink); text-overflow: ellipsis;
 }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page select.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control {
-  padding-right: 44px; -webkit-appearance: none; appearance: none; cursor: pointer;
+  padding-right: 40px; -webkit-appearance: none; appearance: none; cursor: pointer;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 256 256'%3E%3Cpath fill='%235F666A' d='M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32Z'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 14px center; background-size: 18px 18px;
 }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page textarea.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control { height: auto; min-height: 9.5rem; padding: 14px; resize: vertical; line-height: 1.5rem; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page textarea.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control { height: auto; min-height: 9.5rem; padding: 14px; resize: vertical; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control::placeholder { color: var(--nv-muted); opacity: 1; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control:hover:not(:disabled) { border-color: #B9C1BF; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control:hover:not(:disabled) { border-color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control:focus-visible { border-color: var(--nv-accent); outline: 2px solid var(--nv-accent); outline-offset: 2px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control[aria-invalid="true"] { border-color: var(--nv-urgent-mark); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control:disabled { background-color: var(--nv-inset); color: var(--nv-muted); cursor: not-allowed; }
@@ -65,10 +65,10 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-error > svg { flex: none; margin-top: 2px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-error:empty { display: none; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check {
-  display: flex; align-items: center; gap: var(--nv-s-3); min-height: 44px; margin: 0; padding: 0;
+  display: flex; align-items: flex-start; gap: var(--nv-s-3); min-height: 44px; margin: 0; padding: 10px 0;
   font: var(--nv-t-body); color: var(--nv-ink); cursor: pointer;
 }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check > input { flex: none; width: 22px; height: 22px; min-height: 0; margin: 0; accent-color: var(--nv-accent); cursor: pointer; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check > input { flex: none; width: 22px; height: 22px; min-height: 0; margin: 1px 0 0; accent-color: var(--nv-accent); cursor: pointer; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check > input:disabled { cursor: not-allowed; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check > input:disabled + span { color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check > input:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
@@ -79,7 +79,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(.nv-btn, form, div) { flex: 1 1 100%; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(form, div) > .nv-btn { width: 100%; }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(.nv-btn, form, div) { flex: 0 1 auto; min-width: 12rem; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(.nv-btn, form, div) { flex: 0 1 auto; min-width: min(100%, 12rem); }
 }
 
 /* Alerts and notices: a word and an icon, never colour alone. */
@@ -116,7 +116,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-update-facts { display: flex; flex-direction: column; gap: var(--nv-s-1); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-update-facts > p { display: flex; align-items: flex-start; gap: var(--nv-s-2); font: var(--nv-t-callout); color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-update-facts > p > svg { flex: none; margin-top: 2px; color: var(--nv-icon); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-recipients > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nv-s-2) var(--nv-s-3); min-height: 56px; padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-recipients > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nv-s-2) var(--nv-s-3); min-height: 56px; padding: var(--nv-s-3) var(--nv-s-5); position: relative; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-recipients > li > span:first-child { min-width: 0; font: var(--nv-t-row); overflow-wrap: break-word; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-receipt { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-receipt > div { display: flex; flex-direction: column; gap: var(--nv-s-1); min-width: 0; }
@@ -124,7 +124,7 @@
 /* ---------- Insights ---------- */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-insights, .wb-insights-view, .wb-insights-grid) { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nv-s-4); align-items: start; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: var(--nv-s-3) var(--nv-s-4); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: var(--nv-s-4); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-applied { display: flex; flex-direction: column; gap: 2px; font: var(--nv-t-headline); color: var(--nv-ink); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-applied > span { font: var(--nv-t-callout); color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-applied > strong { display: flex; align-items: flex-start; gap: 6px; margin-top: var(--nv-s-1); font: var(--nv-t-callout); color: var(--nv-review-ink); }
@@ -133,16 +133,14 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-body--tight { padding-bottom: var(--nv-s-4); }
 
 /* At a glance: hairline grid of six answers, each a link to its section. */
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin-top: var(--nv-s-2); border-top: 1px solid var(--nv-hairline); background: var(--nv-hairline); }
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 1180px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance > li { display: flex; background: var(--nv-canvas); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance a { display: flex; flex: 1; flex-direction: column; gap: var(--nv-s-1); min-width: 0; padding: var(--nv-s-3) var(--nv-s-5) var(--nv-s-4); color: var(--nv-ink); text-decoration: none; transition: background-color var(--nv-m-press) linear; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr)); gap: 0; margin: var(--nv-s-2) -1px -1px 0; border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance > li { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; background: var(--nv-canvas); box-shadow: inset -1px 0 0 var(--nv-hairline), inset 0 -1px 0 var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance a { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: var(--nv-s-1); align-content: start; min-width: 0; padding: var(--nv-s-3) var(--nv-s-5) var(--nv-s-4); color: var(--nv-ink); text-decoration: none; transition: background-color var(--nv-m-press) linear; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance a:hover { background: #F7F9F8; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance a:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__label { display: flex; align-items: center; gap: 6px; font: var(--nv-t-callout); color: var(--nv-muted); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__label > svg { flex: none; color: var(--nv-review-mark); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__value { font: var(--nv-t-title-2); letter-spacing: -.015em; color: var(--nv-ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__label { display: flex; align-items: flex-start; gap: 6px; font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__label > svg { flex: none; margin-top: 2px; color: var(--nv-review-mark); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__value { font: var(--nv-t-title-2); letter-spacing: -.015em; color: var(--nv-ink); font-variant-numeric: tabular-nums; overflow-wrap: break-word; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance a[data-tone="attention"] .wb-glance__value { color: var(--nv-review-ink); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__detail { font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stats { border-top: 1px solid var(--nv-hairline); margin-top: var(--nv-s-2); }
@@ -156,32 +154,59 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#report-hours, #report-attendance, #report-changes, #report-approvals):focus { outline: none; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#report-hours, #report-attendance, #report-approvals):focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
 
-/* Tables: rows of label-and-value on phones, a real table from tablet. */
+/* Tables (AL-B01): a real table when the card is wide enough, label-and-value rows when it isn't.
+ * Decided by the card's own width, so half-width cards on desktop stack too. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card:has(> .wb-table-scroll) { container-type: inline-size; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table-scroll { min-width: 0; overflow-x: auto; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table-scroll:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table { width: 100%; border-collapse: collapse; font: var(--nv-t-callout); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table :is(th, td) { padding: 0; border: 0; background: none; text-align: left; vertical-align: top; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table th[role="rowheader"] { font: var(--nv-t-row); color: var(--nv-ink); overflow-wrap: break-word; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-cell-label { display: block; font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-cell-label { display: none; font: var(--nv-t-callout); color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-cell-value { display: block; font: var(--nv-t-label); font-weight: 600; color: var(--nv-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
-@media (max-width: 760px), (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table thead th { padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); font: var(--nv-t-callout); color: var(--nv-muted); white-space: nowrap; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody :is(th, td) { padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); vertical-align: middle; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table :is(thead th:not(:first-child), td) { text-align: right; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody tr:hover { background: #F7F9F8; }
+@container (max-width: 30rem) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody { display: block; }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tr { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr)); gap: var(--nv-s-2) var(--nv-s-3); padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tr { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr)); gap: var(--nv-s-2) var(--nv-s-4); padding: var(--nv-s-3) var(--nv-s-5); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody tr:first-child { border-top: 1px solid var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody tr + tr::before { content: ""; position: absolute; top: 0; left: var(--nv-s-5); right: 0; height: 1px; background: var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody :is(th, td) { padding: 0; border: 0; text-align: left; vertical-align: top; }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tr > th[role="rowheader"] { grid-column: 1 / -1; }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table td { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table-scroll { overflow: visible; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table .wb-cell-label { display: block; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody tr:hover { background: none; }
 }
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-cell-label { display: none; }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table thead th { padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); font: var(--nv-t-callout); color: var(--nv-muted); white-space: nowrap; }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody :is(th, td) { padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); vertical-align: middle; }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table :is(thead th:not(:first-child), td) { text-align: right; }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody tr:hover { background: #F7F9F8; }
+@container (max-width: 40rem) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody { display: block; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tr { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr)); gap: var(--nv-s-2) var(--nv-s-4); padding: var(--nv-s-3) var(--nv-s-5); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody tr:first-child { border-top: 1px solid var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody tr + tr::before { content: ""; position: absolute; top: 0; left: var(--nv-s-5); right: 0; height: 1px; background: var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody :is(th, td) { padding: 0; border: 0; text-align: left; vertical-align: top; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tr > th[role="rowheader"] { grid-column: 1 / -1; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four td { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four .wb-cell-label { display: block; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody tr:hover { background: none; }
 }
 
-/* Record lists (clock-in notes, requests, approvals). */
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-records > li { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); }
+/* Record lists (clock-in notes, requests, approvals). Rows are divided by inset hairlines, as kit rows are (AL-28). */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-records > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-recipients > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting-list > .wb-setting + .wb-setting::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-periods > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history > div + div::before { content: ""; position: absolute; top: 0; left: var(--nv-s-5); right: 0; height: 1px; background: var(--nv-hairline); }
+@media (min-resolution: 2dppx) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-records > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-recipients > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting-list > .wb-setting + .wb-setting::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-periods > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history > div + div::before { height: .5px; } }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-records > li { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: var(--nv-s-3) var(--nv-s-5); position: relative; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-records > li:last-child { padding-bottom: var(--nv-s-4); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-record__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nv-s-1) var(--nv-s-3); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-record__title { min-width: 0; font: var(--nv-t-row); color: var(--nv-ink); overflow-wrap: break-word; }
@@ -196,7 +221,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.nv-card.wb-disclosure > summary { min-height: 64px; padding: var(--nv-s-4) var(--nv-s-5); font: var(--nv-t-headline); }
 @media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-top { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-grid:not(.wb-insights-grid--two) > :first-child { grid-column: 1 / -1; }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-grid--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-jump__label { flex: none; }
@@ -221,12 +246,12 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback > .form-error > svg { color: var(--nv-urgent-mark); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback > .form-success > svg { color: var(--nv-done-mark); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback > .form-warning > svg { color: var(--nv-review-mark); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback .nv-link { display: inline; min-height: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback .nv-link { display: inline-flex; align-items: center; min-height: 44px; margin-block: -12px; vertical-align: baseline; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-templates-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nv-s-4); align-items: start; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-strong--small { font: var(--nv-t-label); font-weight: 600; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-box > p + p { margin-top: 2px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-card-lead { padding: 0 var(--nv-s-5) var(--nv-s-3); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li { display: flex; flex-direction: column; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li { display: flex; flex-direction: column; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5); position: relative; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-identity { display: flex; align-items: center; gap: var(--nv-s-3); min-width: 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-identity > div { min-width: 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--nv-s-3); align-items: start; }
@@ -248,21 +273,21 @@
 }
 
 /* ---------- Fields inside forms built by shared components (.wb-auto) ----------
- * The same 52px field as .wb-control, for inputs whose markup comes from shared components
- * (SelectField, PolicySaveForm, payroll forms). Weight (0,14,1) clears portal-premium's (0,12,3). */
+ * The same field as .wb-control, for inputs whose markup comes from shared components
+ * (SelectField, PolicySaveForm, payroll forms). Height and text size stay with WR-55. */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]), select, textarea):not(.wb-x):not(.wb-y) {
-  box-sizing: border-box; width: 100%; min-width: 0; height: 52px; min-height: 52px; margin: 0; padding: 0 14px;
-  border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background-color: var(--nv-canvas); box-shadow: none;
-  color: var(--nv-ink); font: var(--nv-t-body); text-overflow: ellipsis;
+  box-sizing: border-box; width: 100%; min-width: 0; margin: 0; padding-inline: 14px;
+  border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background-color: var(--nv-canvas); box-shadow: none;
+  color: var(--nv-ink); text-overflow: ellipsis;
 }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto select:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v) {
-  padding-right: 44px; -webkit-appearance: none; appearance: none; cursor: pointer;
+  padding-right: 40px; -webkit-appearance: none; appearance: none; cursor: pointer;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 256 256'%3E%3Cpath fill='%235F666A' d='M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32Z'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 14px center; background-size: 18px 18px;
 }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .nevora-select-chevron { display: none; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .nevora-select-shell { display: block; position: relative; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto textarea:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v) { height: auto; min-height: 7.5rem; padding: 14px; resize: vertical; line-height: 1.5rem; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto textarea:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v) { height: auto; min-height: 7.5rem; padding: 14px; resize: vertical; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(input, select, textarea):not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):focus-visible { border-color: var(--nv-accent); outline: 2px solid var(--nv-accent); outline-offset: 2px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(input, select, textarea):not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):disabled { background-color: var(--nv-inset); color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(input, select, textarea)::placeholder { color: var(--nv-muted); opacity: 1; }
@@ -284,22 +309,22 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#coverage-staffing, #target-hours, #coverage-windows, #rules-policy) { scroll-margin-top: 88px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card.manager-issue-target:focus:not(:focus-visible), .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page #rules-policy:focus:not(:focus-visible) { outline: none; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting-list > li[hidden] { display: none; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting { display: flex; flex-direction: column; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: var(--nv-s-4) var(--nv-s-5); position: relative; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__name { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__name > .nv-status { margin-top: var(--nv-s-1); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields { display: flex; flex-direction: column; gap: var(--nv-s-3); min-width: 0; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields--pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields--pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: var(--nv-s-4); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-suffix { position: relative; display: block; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-suffix > span { position: absolute; top: 50%; right: 14px; transform: translateY(-50%); font: var(--nv-t-callout); color: var(--nv-muted); pointer-events: none; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .wb-suffix > input:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u) { padding-right: 4.25rem; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-filterbar { display: flex; flex-wrap: wrap; gap: var(--nv-s-3); padding: 0 var(--nv-s-5) var(--nv-s-4); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-search { position: relative; display: block; flex: 1 1 12rem; min-width: 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-search > svg { position: absolute; top: 50%; left: 14px; transform: translateY(-50%); color: var(--nv-icon); pointer-events: none; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .wb-search > input:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u) { padding-left: 44px; border-color: transparent; background-color: var(--nv-inset); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .wb-search > input:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u) { padding-left: 44px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle { display: inline-flex; align-items: center; gap: var(--nv-s-2); min-height: 52px; padding: 0 var(--nv-s-4); border: 0; border-radius: var(--nv-r-pill); background: var(--nv-inset); color: var(--nv-ink-2); font: var(--nv-t-label); cursor: pointer; white-space: nowrap; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle[aria-pressed="true"] { background: var(--nv-accent-wash); box-shadow: inset 0 0 0 1px var(--nv-accent); color: var(--nv-accent-strong); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle .rules-hours-count { min-width: 24px; padding: 0 6px; border-radius: var(--nv-r-pill); background: var(--nv-canvas); font: var(--nv-t-badge); font-size: .8125rem; line-height: 1.5rem; text-align: center; font-variant-numeric: tabular-nums; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle .rules-hours-count { display: inline-grid; place-items: center; min-width: 24px; min-height: 24px; padding: 0 6px; border-radius: var(--nv-r-pill); background: var(--nv-canvas); font: var(--nv-t-badge); font-variant-numeric: tabular-nums; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-body--ruled { padding-top: var(--nv-s-4); border-top: 1px solid var(--nv-hairline); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-empty-row { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-empty-row > div { display: flex; flex-direction: column; align-items: flex-start; gap: var(--nv-s-1); min-width: 0; }
@@ -315,15 +340,16 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-quota > .wb-grid { margin-top: var(--nv-s-2); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-quota > legend { float: left; width: 100%; margin-bottom: 0; padding: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-quota > legend + * { clear: both; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-periods > li { border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-periods > li { position: relative; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period__head { display: flex; align-items: flex-start; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5) var(--nv-s-2); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period__copy { flex: 1; min-width: 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-day { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--nv-r-control); background: var(--nv-accent-wash); color: var(--nv-accent-strong); font: var(--nv-t-label); font-weight: 600; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-remove { min-height: 44px; margin: -2px -8px 0 0; padding: 0 var(--nv-s-2); border: 0; border-radius: var(--nv-r-inner); background: transparent; color: var(--nv-urgent-ink); font: var(--nv-t-label); cursor: pointer; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-remove { min-height: 44px; margin: -11px -8px -11px 0; padding: 0 var(--nv-s-2); border: 0; border-radius: var(--nv-r-inner); background: transparent; color: var(--nv-urgent-ink); font: var(--nv-t-label); cursor: pointer; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-remove:hover { background: var(--nv-urgent-fill); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities { margin: 0 var(--nv-s-5) var(--nv-s-4) calc(var(--nv-s-5) + 44px + var(--nv-s-3)); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities > summary { display: flex; align-items: center; gap: var(--nv-s-2); min-height: 44px; list-style: none; color: var(--nv-accent); font: var(--nv-t-label); cursor: pointer; }
+@media (max-width: 399px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities { margin-left: var(--nv-s-5); } }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities > summary { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--nv-s-2); min-height: 44px; list-style: none; color: var(--nv-accent); font: var(--nv-t-label); cursor: pointer; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities > summary::-webkit-details-marker { display: none; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities > summary > svg { color: var(--nv-accent); transition: transform var(--nv-m-quick) var(--nv-ease-out); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities[open] > summary > svg { transform: rotate(180deg); }
@@ -339,16 +365,16 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts > div:first-child { border-top: 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts dt { font: var(--nv-t-callout); color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts dd { font: var(--nv-t-label); font-weight: 600; color: var(--nv-ink); }
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 1180px) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: center; gap: var(--nv-s-4); }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields:not(.wb-setting__fields--pair) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields:not(.wb-setting__fields--pair) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); align-items: end; }
 }
 @media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-layout { grid-template-columns: 13rem minmax(0, 1fr); gap: var(--nv-s-6); }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav { position: sticky; top: 88px; padding-top: var(--nv-s-2); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav { position: sticky; top: 88px; padding-top: var(--nv-s-5); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav .wb-jump { flex-direction: column; align-items: stretch; }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav .wb-jump__label { flex: none; }
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav .wb-jump > a { justify-content: flex-start; border-radius: var(--nv-r-control); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav .wb-jump > a { justify-content: flex-start; padding-inline: var(--nv-s-5); border-radius: var(--nv-r-control); }
 }
 
 /* ---------- Payroll settings (wording unchanged; payroll copy waits for Jose) ---------- */
@@ -356,7 +382,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto label:not(.wb-check):not(.wb-field):not(.nevora-field):has(> :is(input, select, textarea)) { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; margin: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto label > small.wb-help { font: var(--nv-t-callout); color: var(--nv-muted); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section { display: flex; flex-direction: column; gap: var(--nv-s-4); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--nv-s-1) var(--nv-s-3); padding: var(--nv-s-2) var(--nv-s-1) 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--nv-s-1) var(--nv-s-3); padding: var(--nv-s-2) 0 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section-title { margin: 0; font: var(--nv-t-title-3); letter-spacing: -.012em; color: var(--nv-ink); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rule-list { display: flex; flex-direction: column; gap: var(--nv-s-3); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page fieldset.wb-rule { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: var(--nv-s-4); border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); }
@@ -367,7 +393,7 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-impact :is(p, li) { font: var(--nv-t-callout); color: var(--nv-ink-2); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-impact > ul { display: flex; flex-direction: column; gap: var(--nv-s-1); padding-left: 1.125rem; list-style: disc; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history { display: flex; flex-direction: column; margin: 0 calc(-1 * var(--nv-s-5)) calc(-1 * var(--nv-s-5)); }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history > div { display: flex; flex-direction: column; gap: 2px; padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history > div { display: flex; flex-direction: column; gap: 2px; padding: var(--nv-s-3) var(--nv-s-5); position: relative; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history strong { font: var(--nv-t-row); color: var(--nv-ink); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history p { font: var(--nv-t-body); color: var(--nv-ink-2); overflow-wrap: break-word; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history small { font: var(--nv-t-callout); color: var(--nv-muted); }
@@ -398,3 +424,41 @@
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-foot-action .nv-link { display: none; }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-insights-grid, .wb-insights-grid--two) { display: flex; flex-direction: column; align-items: stretch; gap: 4mm; }
 }
+
+/* ---------- Round 1 fixes (alignment) ---------- */
+/* Root loading frame for Wave B routes (root-loading.tsx): the band at its 390 height. */
+.route-skeleton[data-route="wb-templates"] { --route-band: 244px; }
+.route-skeleton[data-route="wb-rules"] { --route-band: 196px; }
+.route-skeleton[data-route="wb-insights"] { --route-band: 200px; }
+.route-skeleton[data-route="wb-compose"] { --route-band: 312px; }
+.route-skeleton[data-route="wb-payroll-settings"] { --route-band: 128px; }
+/* AL-B02: Period summary switches to the kit's one-column rows before a whole duration stops fitting. */
+@container (max-width: 27rem) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stats { grid-template-columns: 1fr; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat:first-child { flex-direction: row; align-items: baseline; justify-content: space-between; padding: var(--nv-s-3) var(--nv-s-5); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat + .nv-stat { border-left: 0; border-top: 1px solid var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat__value { margin-top: 0; font: var(--nv-t-title-2); }
+}
+/* AL-B05: a success-only feedback block leaves no gap (its message shows as the toast). */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback:not(:has(> :not(.form-success[role="status"]))) { display: none; }
+/* AL-B06: the success toast sits above the Scheduling rules save bar. */
+@media (max-width: 760px), (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal:has(.wb-rules .wb-savebar) .page-frame .form-success[role="status"] { bottom: calc(68px + 76px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal:has(.wb-rules .wb-savebar) .page-frame .form-success[role="status"] { bottom: calc(var(--nv-s-4) + 76px + var(--nv-s-2)); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section-head { padding-inline: var(--nv-s-5); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav :is(.wb-jump__label, .wb-rules-nav__note) { padding-inline: var(--nv-s-5); }
+}
+/* AL-B11: the period card's two actions share a row when they fit, like Export's stack. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions--fill > .nv-btn { flex: 1 1 10rem; min-width: 0; }
+/* AL-B21: on a landscape phone the save bar ends the form instead of sticking over a 390px screen. */
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar { position: static; box-shadow: var(--nv-e1); }
+}
+
+/* ---------- Round 1 fixes (type, colour and copy) ---------- */
+/* TC-B-01: a condition pill wraps inside its card instead of losing its word; long single words break rather than clip. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-status { white-space: normal; max-width: 100%; min-width: 0; padding-block: 4px; border-radius: 14px; text-align: start; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card__meta { min-width: 0; max-width: 100%; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-strong, .wb-record__title, .nv-card__title, .wb-glance__label, .wb-glance__detail) { overflow-wrap: break-word; hyphens: auto; }

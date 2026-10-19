@@ -9,12 +9,16 @@ import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import type { ReactNode } from 'react';
 import { OperationFeedback, PayrollFrame, PayrollState, PrivacyNote } from './payroll-ui';
 import { noticeReadiness, reminderWindow } from './workflow-status';
-import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
+import { formatDateRange } from '@/lib/date-utils';
+import { keepWhole } from '@/lib/keep-whole';
 
 /** A kit card for one group of payroll settings (Phase 3.5 Wave B). Wording stays as approved. */
 function SettingsCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return <section className="nv-card"><div className="nv-card__head"><h2 className="nv-card__title">{title}</h2></div><div className="wb-body">{description && <p className="wb-note">{description}</p>}{children}</div></section>;
 }
+/* TC-B-03: dates read whole and with their year; the wording around them is unchanged. */
+function effectiveDate(date: string) { return keepWhole(new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`))); }
+function recordedAt(at: string) { return keepWhole(new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(at))); }
 function today() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
 const defaults: PayrollPreferences = {
   companyName: '', language: 'en', currency: 'USD',
@@ -55,7 +59,7 @@ export function PayrollSettings({ recoveryScope }: { recoveryScope: string }) {
       <CompanyPreferences key={revision?.revision ?? 0} preferences={revision?.preferences ?? defaults} revision={revision?.revision ?? 0} data={resource.data} operation={operation} />
       <EmployeeException data={resource.data} preferences={revision?.preferences ?? defaults} operation={operation} />
       <PayrollAccess data={resource.data} operation={operation} />
-      <SettingsCard title="Settings history" description="Saved revisions record their effective date and reason.">{resource.data.revisions.length ? <div className="wb-history">{[...resource.data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {formatDisplayDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {new Date(item.createdAt).toLocaleString()}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</SettingsCard>
+      <SettingsCard title="Settings history" description="Saved revisions record their effective date and reason.">{resource.data.revisions.length ? <div className="wb-history">{[...resource.data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</SettingsCard>
       <PrivacyNote>Only the owner can configure payroll and access grants. Provider imports supply actual payroll amounts. {noticeReadiness(resource.data.capabilities)}</PrivacyNote>
     </>}
     </div></div>
@@ -128,7 +132,7 @@ function RuleEditor({ rules, onChange }: { rules: PayrollRule[]; onChange: (rule
   })}</div>;
 }
 function ImpactPreview({ data }: { data: PayrollSettingsResponse }) {
-  return <div className="wb-box wb-impact"><strong>Future draft impact</strong>{data.futureDraftImpact.length ? <ul>{data.futureDraftImpact.map(item => <li key={item.runId}>{formatDateRange(item.period.startDate, item.period.endDate)}: {item.reason}</li>)}</ul> : <p>No affected future drafts were returned by the server.</p>}</div>;
+  return <div className="wb-box wb-impact"><strong>Future draft impact</strong>{data.futureDraftImpact.length ? <ul>{data.futureDraftImpact.map(item => <li key={item.runId}>{keepWhole(formatDateRange(item.period.startDate, item.period.endDate))}: {item.reason}</li>)}</ul> : <p>No affected future drafts were returned by the server.</p>}</div>;
 }
 
 function EmployeeException({ data, preferences, operation }: { data: PayrollSettingsResponse; preferences: PayrollPreferences; operation: ReturnType<typeof usePayrollOperation> }) {

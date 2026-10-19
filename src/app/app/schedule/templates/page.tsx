@@ -98,7 +98,7 @@ export default async function ScheduleTemplatesPage({
             ? ` ${params.skipped} skipped because of current conflicts or unavailable employees.`
             : ""}
           {Number(params.warnings ?? 0)
-            ? ` ${params.warnings} applied with manager warnings.`
+            ? ` ${params.warnings} added with a warning to review.`
             : ""}
           {" "}<Link className="nv-link" href={`/app/schedule?week=${weekStart}`}>Review schedule</Link></span>
         </p>
@@ -119,7 +119,7 @@ export default async function ScheduleTemplatesPage({
                   id="st-template-name"
                   className="wb-control"
                   name="name"
-                  placeholder="For example, Regular week"
+                  placeholder="Regular week"
                   minLength={3}
                   maxLength={50}
                   required

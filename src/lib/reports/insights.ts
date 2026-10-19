@@ -17,10 +17,10 @@ export function periodInsights(report: PeriodReports): Insight[] {
   const pendingCards = report.approvals.filter(card => card.state !== 'FINALIZED').length;
   const coverage = report.coverageReliability;
   return [
-    { id: 'hours', label: 'Hours worked', value: formatRecordedHours(report.summary.recordedNanoseconds), detail: `${plural(report.summary.employeeCount, 'person', 'people')} · breaks included`, href: '#report-hours' },
+    { id: 'hours', label: 'Recorded time', value: formatRecordedHours(report.summary.recordedNanoseconds), detail: `${plural(report.summary.employeeCount, 'person', 'people')} · breaks included`, href: '#report-hours' },
     report.planCoverage.state === 'unpublished'
-      ? { id: 'plan', label: 'Scheduled vs worked', value: 'Not available', detail: 'Part of this period isn’t published yet', href: '#report-hours', tone: 'neutral' as const }
-      : { id: 'plan', label: 'Scheduled vs worked', value: `${difference < BigInt(0) ? '−' : '+'}${formatRecordedHours((difference < BigInt(0) ? -difference : difference).toString())}`, detail: `${formatRecordedHours(scheduled.toString())} scheduled · ${formatRecordedHours(worked.toString())} worked`, href: '#report-hours' },
+      ? { id: 'plan', label: 'Scheduled vs recorded', value: 'Not available', detail: 'Part of this period isn’t published yet', href: '#report-hours', tone: 'neutral' as const }
+      : { id: 'plan', label: 'Scheduled vs recorded', value: `${difference < BigInt(0) ? '−' : '+'}${formatRecordedHours((difference < BigInt(0) ? -difference : difference).toString())}`, detail: `${formatRecordedHours(scheduled.toString())} scheduled · ${formatRecordedHours(worked.toString())} recorded`, href: '#report-hours' },
     report.attendance.state === 'limited'
       ? { id: 'attendance', label: 'Clock-in notes', value: 'Incomplete', detail: 'Some comparisons are unavailable', href: '#report-attendance', tone: 'neutral' as const }
       : { id: 'attendance', label: 'Clock-in notes', value: String(notes), detail: notes ? `${plural(notes, 'clock-in', 'clock-ins')} to look at` : 'Nothing to note', href: '#report-attendance', tone: notes ? 'attention' as const : undefined },

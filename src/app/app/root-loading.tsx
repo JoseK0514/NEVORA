@@ -10,6 +10,12 @@ type Shape = { route: string; label: string; shape: "grid" | "list" | "cards"; b
 const shapes: [string, Shape][] = [
   ["/app/employees", { route: "team", label: "team", shape: "list", band: 220 }],
   ["/app/inbox", { route: "inbox", label: "inbox", shape: "list", band: 308 }],
+  // Phase 3.5 Wave B: more specific routes first; band heights measured at 390 (set in premium-wave-b.css).
+  ["/app/schedule/templates", { route: "wb-templates", label: "templates", shape: "list", band: 244 }],
+  ["/app/schedule/settings", { route: "wb-rules", label: "scheduling rules", shape: "list", band: 196, overlap: false }],
+  ["/app/reports", { route: "wb-insights", label: "insights", shape: "cards", band: 200 }],
+  ["/app/updates/compose", { route: "wb-compose", label: "the update form", shape: "list", band: 312 }],
+  ["/app/settings/payroll", { route: "wb-payroll-settings", label: "payroll settings", shape: "cards", band: 128, overlap: false }],
   ["/app/schedule", { route: "schedule", label: "schedule", shape: "grid", band: 244 }],
   ["/app/timecards", { route: "timecards", label: "timecards", shape: "list", band: 172, overlap: false }],
   ["/app/payroll-export", { route: "exports", label: "time exports", shape: "cards", band: 152, overlap: false }],
