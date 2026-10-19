@@ -95,7 +95,7 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
             <Card title="Shift to cover" id="coverage-shift">
               <Facts label="Shift to cover">
                 <Fact label="Day">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</Fact>
-                <Fact label="Time">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(minutes)}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
+                <Fact label="Time">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(minutes)}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
                 <Fact label="Location">{props.locationName}</Fact>
                 {props.positionName ? <Fact label="Position">{props.positionName}</Fact> : null}
                 {props.designatedLead ? <Fact label="Shift lead">Needed</Fact> : null}
