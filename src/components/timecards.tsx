@@ -62,11 +62,14 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const request=useRef<AbortController|null>(null),generation=useRef(0),commandRef=useRef<TimecardCommand|null>(null);
   const source=useRef<{period:Period;actorId:string;cards:TimecardItem[]}|null>(null),validUntil=useRef(0),previousActor=useRef(actorId);
   const running=useRef(false);
+  const [paused,setPaused]=useState(false);
   const expires=useRef<ReturnType<typeof setTimeout>|null>(null);
   const clearBatch=useCallback(()=>{setSelected([]);setReview(null);setConfirmed(false);setOutcomes(null);},[]);
   const invalidate=useCallback(()=>{generation.current++;request.current?.abort();if(expires.current)clearTimeout(expires.current);expires.current=null;source.current=null;validUntil.current=0;},[]);
   const expireProtected=useCallback(()=>{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setMessage('Timecards expired. Refresh a current protected snapshot.');},[invalidate,clearBatch]);
   const refresh=useCallback(async(selected:Period)=>{
+    if(document.visibilityState==='hidden'||!navigator.onLine)return;
+    setPaused(false);
     invalidate();const own=generation.current,started=performance.now();const abort=new AbortController();request.current=abort;
     clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(true);setMessage('Checking period timecards…');
     try{
@@ -87,7 +90,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   useEffect(()=>{
     if(previousActor.current!==actorId){commandRef.current=null;setPending(null);}previousActor.current=actorId;
     let active=false;
-    const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);};
+    const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setPaused(true);setMessage(navigator.onLine?'Timecards paused. Return to this window to check the current period.':'You’re offline. Reconnect to see timecards.');};
     const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;clear();active=document.visibilityState!=='hidden'&&navigator.onLine;if(active)void refresh(period);};
     const account=()=>{commandRef.current=null;setPending(null);sync();};
     document.addEventListener('visibilitychange',sync);window.addEventListener('pagehide',clear);window.addEventListener('pageshow',sync);
@@ -97,7 +100,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     return ()=>{clearInterval(poll);window.removeEventListener('blur',clear);invalidate();document.removeEventListener('visibilitychange',sync);window.removeEventListener('pagehide',clear);
       window.removeEventListener('pageshow',sync);window.removeEventListener('offline',clear);window.removeEventListener('online',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',account);};
   },[period,refresh,invalidate,clearBatch,actorId]);
-  function choose(event:FormEvent){event.preventDefault();try{const next=parsePeriod(draft.startDate,draft.endDate);setPeriod(next);if(next.startDate===period.startDate&&next.endDate===period.endDate)void refresh(next);}catch(error){setMessage(error instanceof Error?error.message:'Choose a valid period');}}
+  function choose(event:FormEvent){event.preventDefault();if(paused)return;try{const next=parsePeriod(draft.startDate,draft.endDate);setPeriod(next);if(next.startDate===period.startDate&&next.endDate===period.endDate)void refresh(next);}catch(error){setMessage(error instanceof Error?error.message:'Choose a valid period');}}
   async function act(item?:TimecardItem,action?:TimecardCommand['action']){
     if(!source.current||source.current.actorId!==actorId)return;
     if(performance.now()>=validUntil.current){expireProtected();return;}
@@ -160,8 +163,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     <form onSubmit={choose} className={(corporate?'employee-corporate-period-form ':'')+styles.toolbar}>
       <label>Period start<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>
       <label>Period end<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.endDate} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label>
-      <button className={corporate?employeeButtonClass('primary','button primary'):'button primary'} disabled={busy||!!pending}>View period</button>
-      <button type="button" className={corporate?employeeButtonClass('secondary','button secondary'):'button secondary'} aria-label="Refresh timecards" disabled={busy} onClick={()=>void refresh(period)}>{corporate?<><span className="employee-corporate-desktop-copy">Refresh timecards</span><span className="employee-corporate-mobile-copy">Refresh</span></>:<><span className={styles.desktopCopy}>Refresh timecards</span><span className={styles.phoneCopy}>Refresh</span></>}</button>
+      <button className={corporate?employeeButtonClass('primary','button primary'):'button primary'} disabled={paused||busy||!!pending}>View period</button>
+      <button type="button" className={corporate?employeeButtonClass('secondary','button secondary'):'button secondary'} aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>{corporate?<><span className="employee-corporate-desktop-copy">Refresh timecards</span><span className="employee-corporate-mobile-copy">Refresh</span></>:<><span className={styles.desktopCopy}>Refresh timecards</span><span className={styles.phoneCopy}>Refresh</span></>}</button>
     </form>
     <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}</p>
     </div>
