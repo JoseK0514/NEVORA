@@ -8,6 +8,8 @@ import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
 import type { AvailabilityState } from "@/lib/availability-presets";
 import { addDays, formatDayLabel } from "@/lib/date-utils";
 import { saveAvailabilityAction, saveWeeklyAvailabilityAction } from "@/app/app/availability/actions";
+import Link from "next/link";
+import { unstable_rethrow } from "next/navigation";
 
 const DAYS = [
   { dayOfWeek: 1, label: "Monday" },
@@ -81,7 +83,15 @@ export function AvailabilityEditor({ initialAvailability, weekStart, locked = fa
   locked?: boolean;
   employeeView?: boolean;
 }) {
-  return <form action={weekStart ? saveWeeklyAvailabilityAction : saveAvailabilityAction} className={`av-editor${employeeView ? " av-employee-editor" : ""}`} aria-label={weekStart ? "Weekly availability submission" : "Normal availability preferences"}>
+  // IS (round 3): a failed save (network, 401, 403) keeps the page and the hours entered, and says nothing was saved.
+  const [failed, setFailed] = useState(false);
+  async function save(data: FormData) {
+    setFailed(false);
+    try { await (weekStart ? saveWeeklyAvailabilityAction : saveAvailabilityAction)(data); }
+    catch (error) { unstable_rethrow(error); setFailed(true); }
+  }
+  return <form action={save} className={`av-editor${employeeView ? " av-employee-editor" : ""}`} aria-label={weekStart ? "Weekly availability submission" : "Normal availability preferences"}>
+    {failed ? <p className="form-error" role="alert">Your availability wasn’t saved. Check your connection and save again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
     <AvailabilityFields initialAvailability={initialAvailability} weekStart={weekStart} locked={locked} />
   </form>;
 }
