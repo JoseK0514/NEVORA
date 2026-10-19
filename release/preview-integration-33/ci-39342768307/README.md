@@ -2,7 +2,7 @@
 
 [Workflow39342768307](https://github.com/JoseK0514/NEVORA/actions/runs/39342768307) tests **2a67a4d3eef4d8b275f67b1239238535ee1d5060**, tree5f7314638d6e9a01d618e89a686af31e0a42d4b7, for headc8752f2b. [Source comparison](source-comparison.json) verifies all2,846 manifest entries matchc8752f2b exactly. CurrentRCa21650de differs in its seven documented UI/test leaves. These are distinct exact sources.
 
-**Partial results:** Phase E PostgreSQL passes; both browser jobs have failed at later assertions. Validate, Release and Clocker PostgreSQL were still running when captured. No workflow-green result.
+**Completed results:** validate passes7,363tests/0fail,801skip/55pending, configuration checks, typecheck, lint, source-bound production build and both dependency audits. Release, Clocker and all10Phase E PostgreSQL suites pass, Home40/40. Both browser jobs fail at the later assertions below; aggregate correctly fails. [Final job/step conclusions](job-conclusions.json), [unit summary](validate-summary.json), [build custody](build-source.json), [SQL report](sql-report.json), [Home40/40](sql-home.json). The earlier in-progress capture remains in repository history. The independent five-marker scan is a separate local candidate gate.
 
 | Browser gate | New actual failure | Evidence and proposal |
 |---|---|---|

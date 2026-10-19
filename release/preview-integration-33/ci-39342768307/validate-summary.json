@@ -1,0 +1,19 @@
+{
+  "actualMerge": "2a67a4d3eef4d8b275f67b1239238535ee1d5060",
+  "passed": 7363,
+  "failed": 0,
+  "skipped": 801,
+  "pending": 55,
+  "filesPassed": 447,
+  "filesSkipped": 27,
+  "jobConcluded": "success",
+  "selectedOriginalLogLines": [
+    "2026-10-19T23:38:44.5854437Z found 0 vulnerabilities",
+    "2026-10-19T23:48:56.3016957Z  Test Files  447 passed | 27 skipped (474)",
+    "2026-10-19T23:48:56.3058573Z       Tests  7363 passed | 801 skipped (8219)",
+    "2026-10-19T23:50:36.9641044Z \u2713 Compiled successfully in 18.9s",
+    "2026-10-19T23:51:10.5231397Z found 0 vulnerabilities",
+    "2026-10-19T23:51:11.0616921Z found 0 vulnerabilities"
+  ],
+  "rawLogSha256": "b9128d3263b5c17b7e6cbe90ab6a8266c5ac8ed0ea0a3dcf480f4d07bb9d8577"
+}
