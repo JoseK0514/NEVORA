@@ -120,7 +120,8 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
         <div className="wc-colour-row">
           <div className="wc-field">
             <label className="wc-label" htmlFor="brand-picker">Color</label>
-            <input id="brand-picker" className="wc-colour" type="color" disabled={!hydrated} value={valid ?? savedSeed} onChange={e => choose(e.target.value.toUpperCase())} />
+            {/* WR-21: an inline height outranks the shared field rule's height:auto, which collapses the native swatch. */}
+            <input id="brand-picker" className="wc-colour" type="color" style={{ height: "3rem" }} disabled={!hydrated} value={valid ?? savedSeed} onChange={e => choose(e.target.value.toUpperCase())} />
           </div>
           <Field label="Hex code" fieldClassName="wc-hex" helpId="brand-hex-help"
             error={valid || (!hexTouched && draft.length < 7) ? undefined : "Enter a color like #1D4ED8."}
