@@ -1,0 +1,643 @@
+[
+  {
+    "route": "/login",
+    "width": 390,
+    "status": 200,
+    "fonts": [
+      {
+        "family": "Inter",
+        "weight": "100 900",
+        "status": "loaded"
+      },
+      {
+        "family": "Inter Fallback",
+        "weight": "normal",
+        "status": "error"
+      },
+      {
+        "family": "JetBrains Mono",
+        "weight": "100 800",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist Mono",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist Mono",
+        "weight": "400 600",
+        "status": "unloaded"
+      }
+    ],
+    "geometry": [
+      {
+        "text": "Brighter work ahead",
+        "x": 49,
+        "y": 126.90625,
+        "w": 190,
+        "h": 68.375
+      },
+      {
+        "text": "Employee login",
+        "x": 49,
+        "y": 274.90625,
+        "w": 292,
+        "h": 33.59375
+      },
+      {
+        "text": "Employee ID",
+        "x": 49,
+        "y": 336.5,
+        "w": 292,
+        "h": 83.296875
+      },
+      {
+        "text": "Password",
+        "x": 49,
+        "y": 437.796875,
+        "w": 292,
+        "h": 83.296875
+      },
+      {
+        "text": "Sign In",
+        "x": 49,
+        "y": 543.09375,
+        "w": 292,
+        "h": 54
+      }
+    ],
+    "resources": [
+      {
+        "name": "http://127.0.0.1:3100/fonts/typeface/inter/variable.ttf",
+        "bytes": 469226
+      }
+    ]
+  },
+  {
+    "route": "/ui-preview/home",
+    "width": 390,
+    "status": 200,
+    "fonts": [
+      {
+        "family": "Inter",
+        "weight": "100 900",
+        "status": "loaded"
+      },
+      {
+        "family": "Inter Fallback",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "JetBrains Mono",
+        "weight": "100 800",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist Mono",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist Mono",
+        "weight": "400 600",
+        "status": "unloaded"
+      }
+    ],
+    "geometry": [
+      {
+        "text": "Fictional data · No login or database needed",
+        "x": 16,
+        "y": 33.296875,
+        "w": 190,
+        "h": 33.59375
+      },
+      {
+        "text": "View\nOwner\nManager\nEmployee",
+        "x": 238,
+        "y": 16.4375,
+        "w": 136,
+        "h": 44
+      },
+      {
+        "text": "Plan",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Team",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Time & Pay",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Workspace",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Search",
+        "x": 286,
+        "y": 89.890625,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "text": "",
+        "x": 330,
+        "y": 89.890625,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "text": "FOFictional Owner",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Signed in as Fictional Owner",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Sign out",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Close",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Monday, October 19",
+        "x": 16,
+        "y": 165.890625,
+        "w": 142,
+        "h": 20
+      },
+      {
+        "text": "Good afternoon, Fictional",
+        "x": 16,
+        "y": 201.890625,
+        "w": 358,
+        "h": 36
+      },
+      {
+        "text": "Nothing needs you right now.",
+        "x": 16,
+        "y": 245.890625,
+        "w": 318,
+        "h": 24
+      },
+      {
+        "text": "Today",
+        "x": 36,
+        "y": 313.890625,
+        "w": 49.3125,
+        "h": 22
+      },
+      {
+        "text": "Needs you",
+        "x": 36,
+        "y": 541.890625,
+        "w": 83.953125,
+        "h": 22
+      },
+      {
+        "text": "Nothing needs you right now. New requests and shifts with no clock‑in show up here.",
+        "x": 36,
+        "y": 571.890625,
+        "w": 318,
+        "h": 40
+      },
+      {
+        "text": "Finish setting up",
+        "x": 36,
+        "y": 667.890625,
+        "w": 318,
+        "h": 22
+      },
+      {
+        "text": "0 of 2 done",
+        "x": 36,
+        "y": 693.890625,
+        "w": 318,
+        "h": 20
+      },
+      {
+        "text": "Each location needs a minimum staff count, a lead rule and a coverage period.",
+        "x": 68,
+        "y": 793.890625,
+        "w": 286,
+        "h": 60
+      },
+      {
+        "text": "3 employees have no weekly hour target.",
+        "x": 68,
+        "y": 916.890625,
+        "w": 286,
+        "h": 40
+      },
+      {
+        "text": "This week",
+        "x": 36,
+        "y": 1020.890625,
+        "w": 78.953125,
+        "h": 22
+      },
+      {
+        "text": "Team tools",
+        "x": 36,
+        "y": 1464.890625,
+        "w": 84.609375,
+        "h": 22
+      },
+      {
+        "text": "More",
+        "x": 316.53125,
+        "y": 837,
+        "w": 69.46875,
+        "h": 57
+      },
+      {
+        "text": "Close",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      }
+    ],
+    "resources": [
+      {
+        "name": "http://127.0.0.1:3100/fonts/typeface/inter/variable.ttf",
+        "bytes": 469226
+      }
+    ]
+  },
+  {
+    "route": "/login",
+    "width": 1440,
+    "status": 200,
+    "fonts": [
+      {
+        "family": "Inter",
+        "weight": "100 900",
+        "status": "loaded"
+      },
+      {
+        "family": "Inter Fallback",
+        "weight": "normal",
+        "status": "error"
+      },
+      {
+        "family": "JetBrains Mono",
+        "weight": "100 800",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist Mono",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist Mono",
+        "weight": "400 600",
+        "status": "unloaded"
+      }
+    ],
+    "geometry": [
+      {
+        "text": "Brighter work ahead",
+        "x": 205,
+        "y": 197.953125,
+        "w": 306,
+        "h": 125.25
+      },
+      {
+        "text": "Employee login",
+        "x": 753.625,
+        "y": 201.953125,
+        "w": 469.375,
+        "h": 38.390625
+      },
+      {
+        "text": "Employee ID",
+        "x": 753.625,
+        "y": 272.34375,
+        "w": 469.375,
+        "h": 83.296875
+      },
+      {
+        "text": "Password",
+        "x": 753.625,
+        "y": 375.640625,
+        "w": 469.375,
+        "h": 83.296875
+      },
+      {
+        "text": "Sign In",
+        "x": 753.625,
+        "y": 482.9375,
+        "w": 469.375,
+        "h": 54
+      }
+    ],
+    "resources": [
+      {
+        "name": "http://127.0.0.1:3100/fonts/typeface/inter/variable.ttf",
+        "bytes": 469226
+      }
+    ]
+  },
+  {
+    "route": "/ui-preview/home",
+    "width": 1440,
+    "status": 200,
+    "fonts": [
+      {
+        "family": "Inter",
+        "weight": "100 900",
+        "status": "loaded"
+      },
+      {
+        "family": "Inter Fallback",
+        "weight": "normal",
+        "status": "unloaded"
+      },
+      {
+        "family": "JetBrains Mono",
+        "weight": "100 800",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist Mono",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist",
+        "weight": "400 600",
+        "status": "unloaded"
+      },
+      {
+        "family": "__nextjs-Geist Mono",
+        "weight": "400 600",
+        "status": "unloaded"
+      }
+    ],
+    "geometry": [
+      {
+        "text": "Fictional data · No login or database needed",
+        "x": 24,
+        "y": 36.953125,
+        "w": 246,
+        "h": 17.390625
+      },
+      {
+        "text": "View\nOwner\nManager\nEmployee",
+        "x": 1269,
+        "y": 12,
+        "w": 147,
+        "h": 44
+      },
+      {
+        "text": "Plan",
+        "x": 16,
+        "y": 181,
+        "w": 211,
+        "h": 20.796875
+      },
+      {
+        "text": "Team",
+        "x": 16,
+        "y": 343.796875,
+        "w": 211,
+        "h": 20.796875
+      },
+      {
+        "text": "Time & Pay",
+        "x": 16,
+        "y": 506.59375,
+        "w": 211,
+        "h": 20.796875
+      },
+      {
+        "text": "Workspace",
+        "x": 16,
+        "y": 669.390625,
+        "w": 211,
+        "h": 20.796875
+      },
+      {
+        "text": "Search",
+        "x": 1067,
+        "y": 79,
+        "w": 96,
+        "h": 44
+      },
+      {
+        "text": "",
+        "x": 1171,
+        "y": 79,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "text": "FO\nFictional Owner",
+        "x": 1223,
+        "y": 79,
+        "w": 185,
+        "h": 44
+      },
+      {
+        "text": "Signed in as Fictional Owner",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Sign out",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Close",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Monday, October 19",
+        "x": 308,
+        "y": 186,
+        "w": 134,
+        "h": 20
+      },
+      {
+        "text": "Good afternoon, Fictional",
+        "x": 308,
+        "y": 222,
+        "w": 1048,
+        "h": 40
+      },
+      {
+        "text": "Nothing needs you right now.",
+        "x": 308,
+        "y": 270,
+        "w": 576,
+        "h": 24
+      },
+      {
+        "text": "Today",
+        "x": 949.328125,
+        "y": 338,
+        "w": 46.40625,
+        "h": 22
+      },
+      {
+        "text": "Needs you",
+        "x": 308,
+        "y": 338,
+        "w": 79.125,
+        "h": 22
+      },
+      {
+        "text": "Nothing needs you right now. New requests and shifts with no clock‑in show up here.",
+        "x": 308,
+        "y": 368,
+        "w": 585.328125,
+        "h": 20
+      },
+      {
+        "text": "Finish setting up",
+        "x": 949.328125,
+        "y": 544,
+        "w": 406.671875,
+        "h": 22
+      },
+      {
+        "text": "0 of 2 done",
+        "x": 949.328125,
+        "y": 570,
+        "w": 406.671875,
+        "h": 20
+      },
+      {
+        "text": "Each location needs a minimum staff count, a lead rule and a coverage period.",
+        "x": 981.328125,
+        "y": 670,
+        "w": 374.671875,
+        "h": 40
+      },
+      {
+        "text": "3 employees have no weekly hour target.",
+        "x": 981.328125,
+        "y": 773,
+        "w": 374.671875,
+        "h": 20
+      },
+      {
+        "text": "This week",
+        "x": 949.328125,
+        "y": 857,
+        "w": 75.125,
+        "h": 22
+      },
+      {
+        "text": "Team tools",
+        "x": 949.328125,
+        "y": 1249,
+        "w": 81.8125,
+        "h": 22
+      },
+      {
+        "text": "More",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Close",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "",
+        "x": 22,
+        "y": 846,
+        "w": 32,
+        "h": 32
+      }
+    ],
+    "resources": [
+      {
+        "name": "http://127.0.0.1:3100/fonts/typeface/inter/variable.ttf",
+        "bytes": 469226
+      }
+    ]
+  }
+]

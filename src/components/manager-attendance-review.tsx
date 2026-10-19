@@ -1,5 +1,6 @@
 'use client';
 
+import { keepWhole } from "@/lib/keep-whole";
 import Link from 'next/link';
 import {ConfiguredAttendancePolicies} from './configured-attendance-policies';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
@@ -204,7 +205,7 @@ export function AttendanceReviewSurface({
           {/* ST-16: always two lines, so the footer keeps its height from loading to ready.
               TC-48: each state says what is true now; the dot is green live, grey checking, a coral ring when it can't update. */}
           <small data-state={ready ? 'live' : unavailable || denied || paused ? 'stale' : 'checking'}>
-            {ready ? <>Updated <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt, ready.timeZone)}</time></>
+            {ready ? <>Updated <time dateTime={ready.observedAt}>{keepWhole(checkedAt(ready.observedAt, ready.timeZone))}</time></>
               : paused ? (online ? 'Paused.' : 'Offline.')
                 : denied ? 'No access.'
                   : unavailable ? 'Couldn’t update.'

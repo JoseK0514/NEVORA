@@ -18,12 +18,12 @@ it('marks a waiting request amber and an approval green, with a timeline', async
   expect(html).toMatch(/data-tone="review"><svg[^]*?<\/svg>Waiting<\/span>/);
   expect(html).toMatch(/data-tone="done"><svg[^]*?<\/svg>Approved<\/span>/);
   expect(html).toContain('aria-label="Request timeline"');
-  expect(html).toContain('Waiting for your manager');
+  expect(html).toContain('Waiting for approval');
   expect(html).toContain('Fictional pending request');
 });
 
 it('names who decided a request and when, and never names anyone on a withdrawal', async () => {
-  const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) }));
+  const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) })).replace(/\u00a0/g, ' ');
   expect(html).toContain('Sent Oct 1');
   expect(html).toContain('Approved by Fictional Manager · Oct 2');
   expect(html).toContain('Withdrawn · Oct 3');

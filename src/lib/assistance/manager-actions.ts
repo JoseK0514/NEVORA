@@ -106,8 +106,8 @@ function coverageAction(
     reported: reportedCoverageState({ ...gap, requiresLead: gap.requiresLead ?? gap.gap === 0 }) });
   if (missingPositions.length) return {
     id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'URGENT',
-    title: `Position coverage missing at ${gap.locationName}`,
-    detail: `${gapWhen(gap)} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} missing`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
+    title: `Position not covered at ${gap.locationName}`,
+    detail: `${gapWhen(gap)} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} open`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
     href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`, locationId: gap.locationId,
   };
@@ -119,7 +119,7 @@ function coverageAction(
     type: "COVERAGE_GAP",
     priority: "URGENT",
     title: leadOnly
-      ? `Lead coverage missing at ${gap.locationName}`
+      ? `No lead scheduled at ${gap.locationName}`
       : `Coverage gap at ${gap.locationName}`,
     detail: leadOnly
       ? `${gapWhen(gap)} · Designated lead required`
@@ -177,7 +177,7 @@ function hourAction(
       id: `HOURS:${issue.employeeId}`,
       type: "TARGET_MISSING",
       priority: "MISSING_INPUT",
-      title: "Weekly hour target missing",
+      title: "No weekly hour target",
       detail: `${issue.employeeName} is not included in hours-balance checks.`,
       href: `/app/schedule/settings?employeeId=${encode(issue.employeeId)}`,
       employeeId: issue.employeeId,
@@ -259,7 +259,7 @@ export function buildManagerActionItems(
       type: "DEADLINE_MISSING",
       priority: "MISSING_INPUT",
       title: "Availability deadline not set",
-      detail: "Set the weekly cutoff before employees finalize availability.",
+      detail: "Set the availability deadline before employees finalize availability.",
       href: `/app/schedule?week=${encode(input.weekStart)}`,
     });
   }
@@ -270,7 +270,7 @@ export function buildManagerActionItems(
       type: "COVERAGE_RULES_MISSING",
       priority: "MISSING_INPUT",
       title: "Coverage periods not fully configured",
-      detail: "Configure expected coverage windows so missing shifts can be detected.",
+      detail: "Configure expected coverage windows so staffing issues can be detected.",
       href: "/app/schedule/settings",
     });
   }

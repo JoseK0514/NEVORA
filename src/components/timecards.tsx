@@ -18,7 +18,7 @@ import {employeeButtonClass,employeeInputClass,employeeRowClass} from './employe
 import {employeeTimecardPresentation} from './employee-timecard-presentation';
 
 const stamp=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at));
-const issueNames:Record<string,string>={period_open:'Period is still open',open_entry:'Missing clock out',open_break:'Open break',pending_correction:'Correction awaiting review',overlapping_time:'Overlapping recorded time'};
+const issueNames:Record<string,string>={period_open:'Period is still open',open_entry:'No clock-out yet',open_break:'Open break',pending_correction:'Correction awaiting review',overlapping_time:'Overlapping recorded time'};
 // C2: a period that hasn't ended is normal waiting, not an exception. The server
 // flag still blocks approval; only its presentation changes.
 const needsAttention=(card:Timecard)=>employeeTimecardPresentation(card.issues).tone==='warning';
@@ -81,7 +81,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       validUntil.current=started+next.validForMs;source.current={period:selected,actorId,cards:next.cards};
       expires.current=setTimeout(expireProtected,remaining);
       setSnapshotActor(actorId);setData(next);setMessage(`${next.cards.length} ${next.cards.length===1?'timecard':'timecards'} in this period.`);
-    }catch{if(own===generation.current&&!abort.signal.aborted)setMessage(navigator.onLine?'Timecards unavailable. Try refreshing.':'You are offline. Reconnect to check timecards.');}
+    }catch{if(own===generation.current&&!abort.signal.aborted)setMessage(navigator.onLine?'Couldn’t load timecards. Check your connection, then try again.':'You’re offline. Reconnect to see timecards.');}
     finally{if(own===generation.current)setBusy(false);}
   },[actorId,invalidate,clearBatch,expireProtected]);
   useEffect(()=>{

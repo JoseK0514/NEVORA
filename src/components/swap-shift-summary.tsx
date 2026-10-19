@@ -1,3 +1,4 @@
+import { keepWhole } from '@/lib/keep-whole';
 import { CalendarBlankIcon } from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import { timeZoneLabel } from '@/lib/time-zone-label';
 import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
@@ -8,13 +9,13 @@ import type { ExchangeShift } from '@/lib/data/exchanges';
 import { addDays, formatDayLabel, formatTime } from '@/lib/date-utils';
 
 export function swapDateLabel(date: string) {
-  return new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`));
+  return keepWhole(new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`)));
 }
 
 export function swapTimeLabel(shift: ExchangeShift) {
   const overnight = shift.endTime.slice(0, 5) < shift.startTime.slice(0, 5) || shift.endTime.slice(0, 5) === '24:00';
   const endDate = formatDayLabel(addDays(shift.date, 1));
-  return `${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}${overnight ? ` (${endDate.weekday}, ${endDate.day})` : ''}`;
+  return keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}${overnight ? ` (${endDate.weekday}, ${endDate.day})` : ''}`);
 }
 
 export function swapPositionLabel(shift: ExchangeShift) {
@@ -30,7 +31,7 @@ export function SwapShiftSummary({ shift, label, employee = false }: { shift: Ex
       {employee ? <li><UserCircleIcon size={18} aria-hidden="true" /><span>{shift.employeeName}</span></li> : null}
       <li><MapPinIcon size={18} aria-hidden="true" /><span>{shift.locationName}</span></li>
       <li><BriefcaseIcon size={18} aria-hidden="true" /><span>{swapPositionLabel(shift)}</span></li>
-      <li><MedalIcon size={18} aria-hidden="true" /><span>{shift.isDesignatedLead ? 'Designated lead' : 'No designated Lead'}</span></li>
+      <li><MedalIcon size={18} aria-hidden="true" /><span>{shift.isDesignatedLead ? 'Designated lead' : 'No designated lead'}</span></li>
     </ul>
     {shift.timeZone ? <p className="swap-timezone">Times in {timeZoneLabel(shift.timeZone)}</p> : null}
   </section>;

@@ -94,16 +94,16 @@ describe('reviewed Home renderer uses the original release boundary', () => {
     const state: PrivatePanelState<HomeLifetime> = {snapshot: {state: 'unavailable', reason: 'access_denied'}, refreshing: false, paused: false};
     const view = adapter(state); expect(view.props.status).toBe('unauthorized'); expect(view.props.home).toBeNull(); expect(view.props.ownTimeSlot).toBeNull();
     const markup = html(state); suppressPrivate(markup);
-    expect(clockRegion(markup)).toContain('href="/login"'); expect(clockRegion(markup)).toContain('Sign In');
+    expect(clockRegion(markup)).toContain('href="/login"'); expect(clockRegion(markup)).toContain('Sign in');
     expect(clockRegion(markup)).toContain('href="/app/my-time"'); expect(clockRegion(markup)).not.toContain('aria-label="Refresh recorded time"');
   });
 
   it.each([{reason: 'read_failed'}, {reason: 'unexpected-read-failure'}])('keeps original nonprivate recovery on $reason', ({reason}) => {
     const state: PrivatePanelState<HomeLifetime> = {snapshot: {state: 'unavailable', reason}, refreshing: false, paused: false};
     const view = adapter(state); expect(view.props.status).toBe('unavailable'); expect(view.props.home).toBeNull(); expect(view.props.ownTimeSlot).toBeNull();
-    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Retry home');
-    expect(clockRegion(markup)).toContain('Recorded time unavailable'); expect(clockRegion(markup)).toContain('href="/app/my-time"');
-    expect(clockRegion(markup)).toContain('aria-label="Refresh recorded time"'); expect(clockRegion(markup)).not.toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);
+    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Try again');
+    expect(clockRegion(markup)).toContain('Couldn’t load your time records'); expect(clockRegion(markup)).toContain('href="/app/my-time"');
+    expect(clockRegion(markup)).toContain('aria-label="Try again to load your time records"'); expect(clockRegion(markup)).not.toMatch(/aria-label="Try again to load your time records"[^>]*disabled/);
   });
 
   it('keeps the initial pending state private and preserves disabled recorded-time loading controls', () => {

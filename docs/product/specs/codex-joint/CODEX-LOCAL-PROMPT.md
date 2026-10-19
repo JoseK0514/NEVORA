@@ -82,7 +82,9 @@ PREVIEW_OUT=/tmp/codex-preview node .claude/parallel/scripts/login.mjs AUDIT-E A
 
 **Done when:** the reproduction, the cause and the change are in your report. Also say when a change to a file the previews load can be applied safely, for example at each chat's next round break.
 
-## Task 3, if time allows: snapshot and restore for submission tests
+## Task 3: snapshot and restore. Deferred by Jose (Oct 19); don't do it today
+
+Kept for later joint testing. The description below is for reference only.
 
 Write a script, on your branch under `scripts/` or as a proposed file for `.claude/parallel/scripts/`. It snapshots a preview's database right after seeding and restores it on demand, keyed by `PREVIEW_OUT`. With it, each real submission test (Save, Approve, Decline, Publish, Submit, Delete, Copy week) can run end to end on fictional data and then be reset.
 

@@ -316,7 +316,7 @@ export function summarySourceItems(source: SourceSnapshot): ManagerActionItem[] 
     if (source.kind==='MANAGER_SUMMARY') return source.items.filter(i=>i.type==='COVERAGE_GAP');
     if (source.kind==='AVAILABILITY') {
         if (!source.settings.availabilityDeadline || !source.submissions.some(s=>!s.submitted)) return [];
-        return [{id:`AVAILABILITY:${source.source.version}`,type:'AVAILABILITY_MISSING',priority:'MISSING_INPUT',title:'Availability review',detail:'Review missing submissions.',href:`/app/availability?week=${source.settings.weekStart}`}];
+        return [{id:`AVAILABILITY:${source.source.version}`,type:'AVAILABILITY_MISSING',priority:'MISSING_INPUT',title:'Availability review',detail:'Review availability not sent yet.',href:`/app/availability?week=${source.settings.weekStart}`}];
     }
     if (source.kind==='TIME_OFF' || source.kind==='CALLOUT' || source.kind==='EXCHANGE') {
         if (!(source.kind==='EXCHANGE' ? ['OPEN','MANAGER_PENDING'] : ['PENDING']).includes(source.record.status)) return [];

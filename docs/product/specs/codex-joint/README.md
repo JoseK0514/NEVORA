@@ -198,6 +198,37 @@ The fix is in `src/test/integration/owned-pg-transport.ts`, used only by owned l
 
 Jose’s remaining production risk: Manager Schedule p95 **10.6 s** and inbox-count p95 **3.0 s** at concurrency 20. No missing index was proved; recent-time lookup used its existing index. Production storage failures can still surface the same workspace message, and mutation statement/lock timeouts are real production controls. Hosted Neon/Vercel load and main-query/CPU profiles remain required to set a production SLO. See the report for exact scope; this is local production-runtime evidence, not hosted certification.
 
+## October 20 release — item 1: smaller Inter
+
+Branch `codex/premium-backend`, implementation commit `2cc9a9f`. Based on latest pushed Phase 1 `62cd033` (merged without conflicts, preserving prior backend commits).
+
+Inter TTF: **876,576 bytes**. WOFF2: **242,400 bytes**, **72.3% smaller**. FontTools `pyftsubset` with Brotli retained Latin/Latin Extended (`0000–036F`, `1D00–1EFF`, `2C60–2C7F`, `A720–A7FF`, `AB30–AB6F`, `10780–107BF`, `1DF00–1DFFF`), General Punctuation, currency, trademark, arrows and minus. All requested Spanish/punctuation characters were checked in the cmap. Both original variable axes remain: weight **100–900**, optical size **14–32**. Reproduce:
+
+```sh
+pyftsubset public/fonts/typeface/inter/variable.ttf --output-file=public/fonts/typeface/inter/variable.woff2 --flavor=woff2 --unicodes='U+0000-036F,U+1D00-1EFF,U+2000-206F,U+20A0-20CF,U+2122,U+2190-21FF,U+2212,U+2C60-2C7F,U+A720-A7FF,U+AB30-AB6F,U+10780-107BF,U+1DF00-1DFFF,U+FEFF,U+FFFD' --layout-features='*' --name-IDs='*' --name-languages='*'
+```
+
+Only the two authorized UI files changed: Inter sources list WOFF2 then TTF; portal layout preloads `font/woff2`. Inter Fallback is byte-for-byte unchanged. Actual Chromium before/after captures at 390 and 1440, reduced motion, fonts ready, same fictional `/login` and `/ui-preview/home`: **zero changed pixels in all four pairs**. Network entries confirm WOFF2 loaded after the change. [Captures, metrics and pixel comparison](font-evidence/) are committed. Browser emulation does not replace real-device testing.
+
+Font verification used FontTools 4.x/Brotli and Chromium 151. Initial WOFF2 generation needed the Brotli extension; it was installed before the successful generation/captures. No failed setup attempt is counted as visual evidence.
+
+## October 20 release — item 2: server wording
+
+Branch `codex/premium-backend`, commit `a7a8a0c`. Both action-center producers now write `Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.` for that period. Plain workspace calendar dates are formatted with an explicit UTC calendar formatter; they are never converted from local midnight into another date. Employee Home writes waiting/declined/withdrawn states, including exchange outcomes. Shift history writes `Designated lead` and `No designated lead`. Notification builders, employee/management notification reads, notification presentation and report request descriptions use `Unable to work`. Persisted event/status keys and destinations are unchanged. Existing UI compatibility presentation remains available for older strings. Coverage/hour-target messages also avoid the old vocabulary.
+
+Evidence: **224 unit tests across 12 files passed**, targeted ESLint and TypeScript passed. Actual-Postgres new Home copy coverage plus existing premium pool/swap probes passed (**6 tests**); the subsequent preview payroll run also passed all **7 tests**. Updated existing correction/history integration expectations are included in the later full PostgreSQL checks. Full default-suite results follow in the candidate report; no component/page JSX was edited for this item.
+
+## October 20 release — item 3: fictional pay and Profile reads
+
+Branch `codex/premium-backend`. Payroll implementation `8de1ba7`; Profile probe `f9066ea`. The font’s final complete-Latin subset and refreshed capture metadata are in `d7290a3` (supersedes the earlier 174,464-byte subset).
+
+**Payroll root cause:** `scripts/ui-checks/preview-runtime.mjs` called `seedPayrollFixture()` without publication. `seed-extra.mts` changed `payroll-qa-b` to a Lead but did not publish any statements. A new owned-only `payroll-preview-fixture.ts` explicitly approves/publishes the original fixture period and adds a second finalized/imported/approved/published period. The second period includes fictional recorded time and nonzero pay for the lead. Default integration-fixture behavior is preserved. The actual employee statement reader returns at least two distinct published periods, and both authorized PDF downloads start with `%PDF`. The PostgreSQL regression passed with the other premium probes (**7/7**). A first attempt changed the employee before approval and correctly hit `SOURCE_CONFLICT`; the passing implementation changes identity only after the original approval/publication, preserving that source guard.
+
+**Profile investigation:** extended the exact prior workload (200 fictional employees, 350 shifts, 4,015 entries; production Next build/start with bounded owned loopback PostgreSQL transport). Forty measured reads per surface at each concurrency 10 and 20, plus excluded warmups. Employee Profile: **80/80 HTTP 200, state ready**, c10 p50/p95 **61/97 ms**, c20 **84/116 ms**. Management Profile: **80/80 ready**, c10 **60/80 ms**, c20 **101/142 ms**. All 24 surface/concurrency groups completed and the cluster stopped. No Profile timeout or server error reproduced, so no speculative production read change was made. A dedicated followup includes Lead Profile with the same data volume and load; results are recorded below when complete. Prior all-account inspection symptoms could reflect the old unpooled local transport, client rendering or its runtime; that cause is not established by this successful reproduction. Hosted Neon and real-phone behavior remain separate evidence.
+
+## October 20 release — item 5: phone checklist
+
+`DEVICE-CHECKLIST.md` is a one-hour draft for two real phones, four roles, VoiceOver/TalkBack, sign-in, tabs/More, one send-and-withdraw form per role plus unsent cancellation, offline/retry, maximum text size, landscape and dark-mode legibility. Fictional accounts only, external delivery disabled, credentials supplied privately. **Claude review pending before distribution to Jose.** This session has not claimed Claude’s approval or a completed physical-device test.
 
 ## 11. Release merge rehearsal
 

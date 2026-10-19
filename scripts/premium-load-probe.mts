@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import { employeeViewAuthority } from '../src/lib/employee-view-authority.server';
 import { writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { ownedRuntime, sessionCookie } from './lib/premium-owned-runtime.mjs';
@@ -27,6 +29,10 @@ try {
   await q('ANALYZE');
   results.seed = (await q("SELECT (SELECT count(*) FROM employees)::int AS employees,(SELECT count(*) FROM shifts)::int AS shifts,(SELECT count(*) FROM time_entries)::int AS closed_entries"))[0];
   const manager = await sessionCookie(app.database, 'LOAD-0'), employee = await sessionCookie(app.database, 'LOAD-1');
+  await q("UPDATE employees SET role='LEAD' WHERE id='LOAD-2'");
+  const lead=await sessionCookie(app.database,'LOAD-2');
+  const leadAuthority=employeeViewAuthority({employee:{id:'LOAD-2',firstName:'Fictional',lastName:'Lead',role:'LEAD',primaryLocationId:'loc-1'},sessionTokenHash:createHash('sha256').update(lead.slice('fuel_session='.length)).digest('hex')},'profile');
+  const profileAuthority = employeeViewAuthority({employee:{id:'LOAD-1',firstName:'Fictional',lastName:'Employee',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:createHash('sha256').update(employee.slice('fuel_session='.length)).digest('hex')},'profile');
   const period = { startDate: week, endDate: addDays(week, 6) };
   const targets = [
     { name: 'Home-manager', path: '/app', cookie: manager },
@@ -37,20 +43,22 @@ try {
     { name: 'Timecards', path: '/api/timecards', cookie: manager, header: 'x-nevora-timecards', body: period },
     { name: 'My-time', path: '/api/employee/my-time', cookie: employee, header: 'x-nevora-my-time' },
     { name: 'Insights', path: '/api/reports', cookie: manager, header: 'x-nevora-reports', body: period },
-    { name: 'Profile', path: '/api/management/profile', cookie: manager },
+    { name: 'Profile-manager', path: '/api/management/profile', cookie: manager },
+    { name: 'Profile-employee', path: '/api/employee/profile', cookie: employee, authority: profileAuthority },
+    { name: 'Profile-lead', path: '/api/employee/profile', cookie: lead, authority: leadAuthority },
     { name: 'Inbox-count', path: '/api/manager/inbox-count', cookie: manager },
     { name: 'Attendance', path: '/api/manager/attendance', cookie: manager, header: 'x-nevora-attendance' },
   ];
   const run = async (target: typeof targets[number]) => {
     const start = performance.now();
     try {
-      const response = await fetch(app.url + target.path, { method: target.body ? 'POST' : 'GET', redirect: 'manual', headers: { Cookie: target.cookie, Origin: app.url, 'Sec-Fetch-Site': 'same-origin', 'x-nevora-actor': target.cookie === manager ? 'LOAD-0' : 'LOAD-1', ...(target.header ? { [target.header]: '1' } : {}), ...(target.body ? { 'Content-Type': 'application/json' } : {}) }, ...(target.body ? { body: JSON.stringify(target.body) } : {}), signal: AbortSignal.timeout(60000) });
+      const response = await fetch(app.url + target.path, { method: target.body ? 'POST' : 'GET', redirect: 'manual', headers: { Cookie: target.cookie, Origin: app.url, 'Sec-Fetch-Site': 'same-origin', 'x-nevora-actor': target.cookie === manager ? 'LOAD-0' : 'LOAD-1', ...('authority' in target ? { 'x-nevora-employee-view': target.authority! } : {}), ...(target.header ? { [target.header]: '1' } : {}), ...(target.body ? { 'Content-Type': 'application/json' } : {}) }, ...(target.body ? { body: JSON.stringify(target.body) } : {}), signal: AbortSignal.timeout(60000) });
       const body = await response.text();
       const state = response.headers.get('content-type')?.includes('application/json') ? JSON.parse(body).state : /This page could not be loaded|Workspace configuration is unavailable/.test(body) ? 'rendered-failure' : 'html';
       return { ms: performance.now() - start, status: response.status, state };
     } catch (error) { return { ms: performance.now() - start, status: 0, state: error instanceof Error ? error.name : 'error' }; }
   };
-  for (const concurrency of [10, 20]) for (const target of targets) {
+  for (const concurrency of [10, 20]) for (const target of targets.filter(t=>process.env.NEVORA_PROFILE_ONLY!=='1'||t.name.startsWith('Profile-'))) {
     const warmup = await run(target), samples: Awaited<ReturnType<typeof run>>[] = [];
     let next = 0;
     await Promise.all(Array.from({ length: concurrency }, async () => { while (next++ < 40) samples.push(await run(target)); }));
@@ -59,6 +67,7 @@ try {
     (results.probes as unknown[]).push(result);
     await writeFile(join(evidence, 'load-results.json'), JSON.stringify(results, null, 2));
     console.log(JSON.stringify(result));
+    if(target.name.startsWith('Profile-')&&samples.some(s=>s.status!==200||s.state!=='ready'))throw Error(target.name+' returned an unavailable or unsuccessful response');
   }
   results.indexes = await q("SELECT tablename,indexname,indexdef FROM pg_indexes WHERE schemaname='public' AND tablename IN ('time_entries','timecard_revisions','shifts','schedules','employee_sessions') ORDER BY tablename,indexname");
   results.plans = await q("EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) SELECT * FROM time_entries WHERE employee_id='LOAD-1' ORDER BY clock_in_at DESC LIMIT 20");

@@ -8,6 +8,10 @@ vi.mock('react', async original => ({ ...await original<Record<string, unknown>>
   const index = hooks.index++;
   if (!(index in hooks.slots)) hooks.slots[index] = typeof initial === 'function' ? (initial as () => unknown)() : initial;
   return [hooks.slots[index], (next: unknown) => { hooks.slots[index] = next; }];
+}, useRef: (initial: unknown) => {
+  const index = hooks.index++;
+  if (!(index in hooks.slots)) hooks.slots[index] = { current: initial };
+  return hooks.slots[index];
 } }));
 import { ConfigurationForm, type ConfigurationResult } from './configuration-form';
 

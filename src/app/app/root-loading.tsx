@@ -7,7 +7,7 @@ type Shape = { route: string; label: string; shape: "grid" | "list" | "cards"; b
 
 /* ST-22: on a tab tap Next can show this parent placeholder for a frame before the destination's own.
  * Draw the destination's shape (the same props as its loading.tsx), so that frame matches what follows. */
-const shapes: [string, Shape][] = [
+const shapes: [string | RegExp, Shape][] = [
   ["/app/employees", { route: "team", label: "team", shape: "list", band: 220 }],
   ["/app/inbox", { route: "inbox", label: "inbox", shape: "list", band: 308 }],
   ["/app/schedule", { route: "schedule", label: "schedule", shape: "grid", band: 244 }],
@@ -22,6 +22,8 @@ const shapes: [string, Shape][] = [
   ["/app/my-time", { route: "mytime", label: "your time", shape: "cards", band: 172, overlap: false }],
   ["/app/my-pay", { route: "mypay", label: "your pay", shape: "cards", band: 128, overlap: false }],
   ["/app/profile", { route: "profile", label: "profile", shape: "cards", band: 128, overlap: false }],
+  // Wave B: a direct load of one update draws Update detail's shape; its band heights are in premium-wave-b.css.
+  [/^\/app\/updates\/[^/]+$/, { route: "wb-update", label: "update", shape: "cards", band: 288 }],
   ["/app/updates", { route: "updates", label: "updates", shape: "list", band: 128, overlap: false }],
   ["/app/notifications", { route: "notifications", label: "notifications", shape: "list", band: 128, overlap: false }],
 ];
@@ -29,6 +31,6 @@ const home: Shape = { route: "home", label: "your workspace", shape: "cards", ba
 
 export function RootLoading() {
   const pathname = usePathname() ?? "/app";
-  const match = shapes.find(([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`))?.[1] ?? home;
+  const match = shapes.find(([prefix]) => typeof prefix === "string" ? pathname === prefix || pathname.startsWith(`${prefix}/`) : prefix.test(pathname))?.[1] ?? home;
   return <RouteSkeleton {...match} />;
 }
