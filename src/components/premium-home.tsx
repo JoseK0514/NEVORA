@@ -325,7 +325,7 @@ function ToolsCard({ week }: { week: PremiumHomeWeek }) {
       <Row href={`/app?week=${w}&view=attendance`} title="Attendance" meta="Clock-ins today and corrections to review" leading={<Tile><ClockIcon size={20} weight="bold" /></Tile>} />
       <Row href={`/app?week=${w}&view=team`} title="Team overview" meta="Hours and availability by person" leading={<Tile><UsersThreeIcon size={20} weight="bold" /></Tile>} />
       <Row href={`/app?week=${w}&view=activity`} title="Schedule activity" meta={week.lastPublished ? `Last published ${week.lastPublished}` : "Publications and changes"} leading={<Tile><ClockCounterClockwiseIcon size={20} weight="bold" /></Tile>} />
-      <Row href="/app/clocker-recovery" title="Clocker recovery" meta={"Reconnect a shared clock\u2011in device"} leading={<Tile><WrenchIcon size={20} weight="bold" /></Tile>} />
+      <Row href="/app/clocker-recovery" title="Clocker recovery" meta="Check a saved Clocker action" leading={<Tile><WrenchIcon size={20} weight="bold" /></Tile>} />
       <Row href="/app/account-recovery" title="Account recovery" meta="Help someone get back into their account" leading={<Tile><LockKeyIcon size={20} weight="bold" /></Tile>} />
     </Rows>
   </Card>;
