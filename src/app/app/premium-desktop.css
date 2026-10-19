@@ -1,3 +1,188 @@
 /* Phase 4 session: desktop layout (768 to 1440) of the Manager and Owner pages built in Phase 2.
  * Only that session edits this file. Shared rules (kit, shell, portal-premium.css) are changed by the coordinating
- * session; ask it by message. Scope every rule to your own pages, using the same high-specificity prefix as portal-premium.css. */
+ * session; ask it by message. Scope every rule to your own pages, using the same high-specificity prefix as portal-premium.css.
+ *
+ * Pages (Manager and Owner shell only): Home and its views, Inbox, Schedule, Team, Timecards, Payroll runs, Time exports.
+ * Every rule sits under the desktop query portal-premium.css uses (761px and wider, not a landscape phone),
+ * so phone layouts (320 to 430, and landscape phones) are untouched. */
+
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* Band: at most 200px tall (PLAN Phase 4, WR-35). The band keeps its order (eyebrow, title, summary);
+   * its controls stop adding height: the eyebrow-row control overhangs the 20px eyebrow line by its own
+   * 44px target, and filters sit beside the title instead of in a row of their own. */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) {
+    --nv-overlap: 40px;
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-auto-flow: row dense; align-items: center; column-gap: var(--nv-s-6);
+    padding: var(--nv-s-4) 36px calc(var(--nv-overlap) + var(--nv-s-4));
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband--flat {
+    padding-bottom: var(--nv-s-6);
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband:has(> .nv-pageband__bar) {
+    padding-top: var(--nv-s-1);
+  }
+  /* The band's rows become the grid's rows; the title row has a second cell for filters. */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband > .nv-masthead__body { display: contents; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband :is(.nv-pageband__bar, .nv-pageband__eyebrow-row, .nv-masthead__summary) { grid-column: 1 / -1; position: relative; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband .nv-masthead__title { grid-column: 1; position: relative; min-width: 0; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband > .nv-masthead__extra { grid-column: 1 / -1; position: relative; margin-top: var(--nv-s-4); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband .nv-pageband__eyebrow-row { min-height: 20px; flex-wrap: nowrap; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband .nv-pageband__eyebrow-row > :not(.nv-masthead__eyebrow) { flex: none; margin-block: -12px; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband .nv-masthead__eyebrow { min-width: 0; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband .nv-masthead__summary { max-width: 46em; }
+
+  /* Inbox: the filters sit on the title row (WR-35). */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox > .nv-pageband > .nv-masthead__extra { grid-column: 2; margin-top: var(--nv-s-1); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox > .nv-pageband .nv-filters { margin: 0; padding: 0; overflow: visible; }
+}
+
+/* Narrow desktop and tablet (761 to 1023): a shallower overlap keeps every band at 200px or less. */
+@media (min-width: 761px) and (max-width: 1023px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) {
+    --nv-overlap: 32px;
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error) > .nv-pageband { padding-inline: var(--nv-s-6); column-gap: var(--nv-s-4); }
+  /* Home's views: the chips need a row of their own here, so the one-line description gives way (the chips and title name the view). */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view > .nv-pageband .nv-masthead__summary { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view > .nv-pageband > .nv-masthead__extra { margin-top: var(--nv-s-3); }
+}
+
+/* Wide desktop (1024 and up): Home's views put their view chips on the title row too. */
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view > .nv-pageband > .nv-masthead__extra { grid-column: 2; margin-top: var(--nv-s-1); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view > .nv-pageband .nv-masthead__extra > * { margin: 0; padding: 0; overflow: visible; }
+}
+
+/* Home (WR-34). Today runs the full width with its three numbers side by side. Below 1180px everything
+ * else is one column, so no card is squeezed (WR-17); from 1180px what needs you (and the Owner's setup card)
+ * is on the left and the week, Plan ahead and Team tools on the right, so the two columns end close together. */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home > .premium-home__grid {
+    display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "today" "now" "setup" "week"; grid-template-rows: none; align-items: start; gap: var(--nv-s-4);
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home > .premium-home__grid > .premium-home__today { grid-area: today; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home > .premium-home__grid > .premium-home__now { grid-area: now; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home > .premium-home__grid > .premium-home__setup { grid-area: setup; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home > .premium-home__grid > .premium-home__week { grid-area: week; }
+}
+@media (min-width: 1180px) {
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home > .premium-home__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-areas: "today today" "now week" "setup week" ". week"; grid-template-rows: auto auto auto 1fr;
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home > .premium-home__grid:not(:has(> .premium-home__setup)) {
+    grid-template-areas: "today today" "now week" "now ."; grid-template-rows: auto auto 1fr;
+  }
+}
+
+/* Inbox: list and detail (PLAN Phase 4). Phones and landscape phones keep one list: the column wrappers
+ * vanish (display: contents) and the side column, which only desktop uses, is hidden. */
+.premium-inbox .inbox-columns, .premium-inbox .inbox-list-column { display: contents; }
+.premium-inbox .inbox-side-column { display: none; }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* 761 to 1023: one column; the All requests card follows the list (the sidebar no longer lists Requests). */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox :is(.inbox-columns, .inbox-list-column, .inbox-side-column) {
+    display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0;
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-side-column > .inbox-detail { display: none; }
+
+  /* The detail pane. */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-detail { padding: var(--nv-s-5); }
+  .premium-inbox .inbox-detail__head { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
+  .premium-inbox .inbox-detail__head > :is(.nv-avatar, .nv-tile) { width: 48px; height: 48px; border-radius: 24px; }
+  .premium-inbox .inbox-detail__heading { flex: 1; min-width: 0; padding-top: 2px; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-inbox .inbox-detail__title { margin: 0; font: var(--nv-t-title-3); letter-spacing: -.012em; color: var(--nv-ink); overflow-wrap: break-word; text-wrap: balance; }
+  .premium-inbox .inbox-detail__title:focus { outline: none; }
+  .premium-inbox .inbox-detail__title:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 4px; border-radius: 4px; }
+  .premium-inbox .inbox-detail__meta { margin: var(--nv-s-1) 0 0; font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
+  .premium-inbox .inbox-detail__status { display: flex; margin-top: var(--nv-s-4); }
+  .premium-inbox .inbox-detail__facts { margin: var(--nv-s-4) 0 0; padding: 0; }
+  .premium-inbox .inbox-detail__facts > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--nv-s-4); min-height: 48px; padding: var(--nv-s-3) 0; border-top: 1px solid var(--nv-hairline); box-sizing: border-box; }
+  .premium-inbox .inbox-detail__facts dt { font: var(--nv-t-label); color: var(--nv-muted); }
+  .premium-inbox .inbox-detail__facts dd { margin: 0; font: var(--nv-t-row); color: var(--nv-ink); text-align: right; min-width: 0; overflow-wrap: break-word; }
+  .premium-inbox .inbox-detail__note { margin: var(--nv-s-4) 0 0; padding: var(--nv-s-3) var(--nv-s-4); border-radius: var(--nv-r-control); background: var(--nv-inset); font: var(--nv-t-callout); color: var(--nv-ink-2); text-wrap: pretty; }
+  .premium-inbox .inbox-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nv-s-2) var(--nv-s-5); margin-top: var(--nv-s-5); }
+  .premium-inbox .inbox-detail__actions > .nv-btn { min-width: 200px; }
+  .premium-inbox .inbox-detail--placeholder { min-height: 200px; }
+}
+@media (min-width: 1024px) {
+  /* 1024 and up: the list on the left, the selected item beside it, held in view while the list scrolls. */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-columns[data-detail] {
+    display: grid; grid-template-columns: minmax(0, 11fr) minmax(0, 9fr); align-items: start; gap: var(--nv-s-4);
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-columns[data-detail] > .inbox-side-column { position: sticky; top: var(--nv-s-4); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-side-column > .inbox-detail { display: block; }
+  /* The selected row reads as selected: a teal wash and a 3px teal edge, never colour alone (aria-current). */
+  .premium-inbox .inbox-row[data-selected] > .nv-row { background: var(--nv-accent-wash); }
+  .premium-inbox .inbox-row[data-selected] > .nv-row::after { content: ""; position: absolute; top: 6px; bottom: 6px; left: 0; width: 3px; border-radius: 0 3px 3px 0; background: var(--nv-accent); }
+}
+@media (min-width: 761px) and (max-width: 1023px) {
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-side-column:not(:has(> .nv-card:not(.inbox-detail))) { display: none; }
+}
+@media (forced-colors: active) {
+  .premium-inbox .inbox-row[data-selected] > .nv-row::after { background: Highlight; forced-color-adjust: none; }
+}
+
+/* Desktop sidebar (every role): nothing under the 14px desktop floor. Group labels were 12px and the
+ * "Powered by" line 10px (coordinator's check script, Oct 19). */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .sidebar .sidebar-group-label { font: 500 14px/1.4 var(--design-font-body); letter-spacing: 0; text-transform: none; color: var(--nv-muted); }
+  html body .app-shell.nevora-portal.nevora-portal .sidebar .sidebar-platform-footer small { font: 400 14px/1.4 var(--design-font-body); letter-spacing: 0; text-transform: none; color: var(--nv-muted); }
+}
+
+/* Team (Gusto's People list): from 1024px the finder is one row (search, role, location, then status) and
+ * the people list reads as a table: name, role, location and phone in columns under a quiet header. */
+.premium-team .premium-team-columns { display: none; }
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-team .premium-team-form {
+    display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 2fr); align-items: end; gap: var(--nv-s-3) var(--nv-s-3);
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-team .premium-team-form > :is(.premium-team-status, .premium-team-actions, .premium-apply) { grid-column: 1 / -1; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-team .premium-team-form > .premium-team-actions:empty { display: none; }
+
+  .premium-team .premium-team-columns, .premium-team .nv-rows > li > .nv-row > .nv-row__text {
+    display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); column-gap: var(--nv-s-4); align-items: center;
+  }
+  .premium-team .premium-team-columns { padding: 0 calc(var(--nv-s-5) + 18px + var(--nv-s-3)) var(--nv-s-2) calc(var(--nv-s-5) + 40px + var(--nv-s-3)); border-bottom: 1px solid var(--nv-hairline); font: var(--nv-t-label); color: var(--nv-muted); }
+  .premium-team .nv-rows > li > .nv-row > .nv-row__text > .nv-row__meta { display: contents; }
+  .premium-team .nv-rows > li > .nv-row .premium-team-sep { display: none; }
+  .premium-team .nv-rows > li > .nv-row :is(.premium-team-role, .premium-team-where, .premium-team-phone) { grid-row: 1; font: var(--nv-t-body); color: var(--nv-ink-2); min-width: 0; overflow-wrap: break-word; }
+  .premium-team .nv-rows > li > .nv-row .premium-team-role { grid-column: 2; }
+  .premium-team .nv-rows > li > .nv-row .premium-team-where { grid-column: 3; }
+  .premium-team .nv-rows > li > .nv-row .premium-team-phone { grid-column: 4; }
+  .premium-team .nv-rows > li > .nv-row .premium-person-name { grid-column: 1; grid-row: 1; }
+  .premium-team .nv-rows > li > .nv-row .nv-row__status { grid-column: 1; grid-row: 2; }
+  .premium-team .nv-rows > li > .nv-row { min-height: 60px; }
+  .premium-team .nv-rows > li:first-child > .nv-row::before { display: none; }
+}
+
+/* Desktop text floor (14px, in rem so it follows text size) on the legacy parts of Schedule, Timecards,
+ * Payroll runs and Time exports: roster cells, person meta, notes, legends and fact lists were 10 to 13px. */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .manager-schedule-page :is(
+    .mws-shift strong, .mws-shift strong > span, .mws-shift small, .mws-shift-meta, .mws-shift-meta span, .mws-no-assignment,
+    .mws-person p, .mws-person small, .mws-hours small, .mws-result-summary, .mws-timezone-full, .mws-planning-body p,
+    .nevora-action-menu > button > span, summary > span > small, .mws-mobile-empty) {
+    font-size: .875rem; line-height: 1.25rem;
+  }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-legacy-page.employee-view:not(.premium-employee-pay) :is(
+    [class*="timecards-module"][class*="__actions"] > label, [class*="timecards-module"][class*="__entrySource"], [class*="timecards-module"][class*="__definition"],
+    [class*="timecards-module"][class*="__rowAttention"] small, [class*="timecards-module"][class*="__rowIdentity"] > small,
+    dl > div > dt, dl > div > dd, summary > span > small, .pw-workflow-guidance, .pw-workflow-guidance strong, form.employee-form > fieldset > legend) {
+    font-size: .875rem; line-height: 1.25rem;
+  }
+}
+
+/* Load shifts on every width (the coordinator's Phase 2 re-check, Oct 19, asked for the phone fix too).
+ * Time exports: while finalized time loads, the period-close panel waits, so it isn't pushed down when the
+ * employee list arrives (layout shift 0.02 to 0.14). It appears with the list. */
+html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports :is(section[data-export-loading] ~ section.panel) { display: none; }
+
+/* Attendance view: "Some comparisons are limited" is only known once the read arrives. It sits after the list,
+ * and the footer, "What we compare" and Corrections wait for the read, so nothing is pushed down as it appears
+ * (layout shift 0.035 to 0.052). */
+html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view .attendance-review { display: flex; flex-direction: column; }
+html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view .attendance-review > .attendance-review-limited { order: 1; }
+html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view .attendance-review > :is(.attendance-review-footer, details) { order: 2; }
+html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view:has(.attendance-review-summary[aria-busy="true"]) :is(.attendance-review-footer, .attendance-review > details, .manager-corrections, .manager-corrections ~ *) { display: none; }

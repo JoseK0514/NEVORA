@@ -69,6 +69,8 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         </section>
         {visibleEmployees.length ? <section className="nv-card" aria-labelledby="team-people-title">
           <div className="nv-card__head"><h2 className="nv-card__title" id="team-people-title">{words.people}</h2></div>
+          {/* Column names for the wide-screen table; each row's own label already says all of this aloud. */}
+          <div className="premium-team-columns" aria-hidden="true"><span>Name</span><span>Role</span><span>{words.location}</span><span>Phone</span></div>
           <ul className="nv-rows" aria-label={words.people} data-row-nav="li">{visibleEmployees.map(employee => {
             const location = locationsById.get(employee.primaryLocationId);
             const name = `${employee.firstName} ${employee.lastName}`;
@@ -78,7 +80,8 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
                 <span className="nv-avatar" aria-hidden="true">{employeeInitials(employee.firstName, employee.lastName)}</span>
                 <span className="nv-row__text">
                   <span className="nv-row__title premium-person-name">{name}</span>
-                  <span className="nv-row__meta"><span className="nv-keep">{employeeRoleLabel(employee.role)}&nbsp;·</span> <span className="nv-keep">{where}</span><span className="premium-team-phone"> · <span className="nv-nowrap">{formatPhoneNumber(employee.phone)}</span></span></span>
+                  {/* Phase 4: each part has its own span, so a wide screen lays them out as columns (the dots are hidden there). */}
+                  <span className="nv-row__meta"><span className="nv-keep premium-team-role">{employeeRoleLabel(employee.role)}<span className="premium-team-sep">&nbsp;·</span></span> <span className="nv-keep premium-team-where">{where}</span><span className="premium-team-phone"><span className="premium-team-sep"> · </span><span className="nv-nowrap">{formatPhoneNumber(employee.phone)}</span></span></span>
                   {employee.active ? null : <span className="nv-row__status"><Status tone="neutral">Inactive</Status></span>}
                 </span>
                 <CaretRight className="nv-row__chev" size={18} weight="bold" aria-hidden="true" />

@@ -3,14 +3,16 @@ import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
 import Link from "next/link";
 import { useToday } from "./manager-today";
-import { useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
+import { ArrowsClockwiseIcon, ArrowsLeftRightIcon, CalendarBlankIcon, CalendarMinusIcon, CaretDownIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { actionCenterNavigation } from "./action-center-navigation";
 import { EmptyState } from "./empty-state";
 import { Celebration } from "./celebration";
-import { Avatar, Card, Freshness, KitStack, MetaParts, PageBand, Status, Tile } from "./kit/kit";
+import { Avatar, Button, Card, Freshness, KitStack, MetaParts, PageBand, Row, Rows, Status, Tile } from "./kit/kit";
+import { usePresentation } from "./presentation-context";
+import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { KeepSelectedVisible } from "./kit/keep-selected-visible";
 import { CLOCK_IN, groupHeading, presentItem } from "@/lib/action-center/present";
 import { groupInboxItems, inboxFilter, type InboxFilter } from "@/lib/action-center/inbox";
@@ -37,18 +39,30 @@ const emptyText: Record<InboxFilter, string> = {
 const clock = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
 const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
 
+/** What one Inbox row shows, and what the desktop detail pane shows for it (Phase 4). */
+type InboxEntry = {
+  key: string; href: string; label: string; leading: ReactNode; title: ReactNode; meta?: ReactNode; action: string; status?: ReactNode; urgent?: boolean;
+  /** Detail pane only: labelled facts and one plain sentence on what to do. */
+  facts?: [string, ReactNode][]; note?: string; secondary?: { href: string; label: string };
+};
+
+/** Desktop list and detail (Phase 4): the row a wide screen has selected, and how to select one. */
+const Selection = createContext<{ selected: string | null; select: (entry: InboxEntry, event: MouseEvent<HTMLAnchorElement>) => void } | null>(null);
+
 /** One row. The whole row opens the item's full review; its action is a teal link line (F4),
- * its condition a status pill. O1: never a decision from here. */
-function KitRow({ href, label, leading, title, meta, action, status, urgent = false }: {
-  href: string; label: string; leading: ReactNode; title: ReactNode; meta?: ReactNode; action: string; status?: ReactNode; urgent?: boolean;
-}) {
-  return <li className="inbox-row" data-urgent={urgent || undefined}>
-    <Link className="nv-row" data-leading="true" href={href} aria-label={label}>
-      {leading}
+ * its condition a status pill. O1: never a decision from here. On a wide screen the row shows the item in
+ * the detail pane instead, and the pane's button opens the full review. */
+function KitRow({ entry }: { entry: InboxEntry }) {
+  const selection = useContext(Selection);
+  const selected = selection?.selected === entry.key;
+  return <li className="inbox-row" data-urgent={entry.urgent || undefined} data-selected={selected || undefined}>
+    <Link className="nv-row" data-leading="true" href={entry.href} aria-label={entry.label} data-inbox-key={entry.key}
+      aria-current={selected ? "true" : undefined} onClick={event => selection?.select(entry, event)}>
+      {entry.leading}
       <span className="nv-row__text">
-        <span className="nv-row__title">{title}</span>
-        {meta ? <span className="nv-row__meta">{meta}</span> : null}
-        <span className="nv-row__status">{status}<span className="inbox-action" aria-hidden="true">{action}</span></span>
+        <span className="nv-row__title">{entry.title}</span>
+        {entry.meta ? <span className="nv-row__meta">{entry.meta}</span> : null}
+        <span className="nv-row__status">{entry.status}<span className="inbox-action" aria-hidden="true">{entry.action}</span></span>
       </span>
     </Link>
   </li>;
@@ -63,29 +77,48 @@ function withFilter(href: string, filter: InboxFilter) {
   return url.pathname + url.search;
 }
 
-function ItemRow({ item, calm = false, filter = "all", timeZone = "UTC" }: { item: ActionItem; /** Past work (C2): no urgent styling. */ calm?: boolean; filter?: InboxFilter; timeZone?: string }) {
+const requestNote = "The dates, the length and any note are on the request. Approve or decline it there.";
+const categoryNote: Record<ActionItem["category"], string> = {
+  scheduling: "Open it to see the schedule and fix it there.",
+  timekeeping: "Open it to see the recorded time and review it there.",
+  requests: requestNote,
+};
+
+function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string): InboxEntry {
   const urgent = item.priority === "URGENT" && !calm;
   const request = item.category === "requests";
   const Icon = urgent ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : request ? UserCheckIcon : CalendarBlankIcon;
   const action = actionCenterNavigation(item);
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
-  return <KitRow href={withFilter(action.href, filter)} label={`${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`} urgent={urgent}
-    leading={request && shown.person ? <Avatar initials={initials(shown.person)} waiting /> : <Tile tone={urgent ? "urgent" : request ? "review" : "neutral"}><Icon size={20} weight="bold" /></Tile>}
-    title={shown.title} meta={<MetaParts text={shown.detail} />} action={shown.action}
-    status={request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined} />;
+  return { key: item.id, href: withFilter(action.href, filter), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
+    leading: request && shown.person ? <Avatar initials={initials(shown.person)} waiting /> : <Tile tone={urgent ? "urgent" : request ? "review" : "neutral"}><Icon size={20} weight="bold" /></Tile>,
+    title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
+    status: request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
+    note: calm ? "This time has passed. Review it for the record; it doesn’t need action now." : categoryNote[item.category] };
 }
 
-function ShiftRow({ shift, timeZone }: { shift: TodayShift; timeZone: string }) {
+function ItemRow({ item, calm = false, filter = "all", timeZone = "UTC" }: { item: ActionItem; /** Past work (C2): no urgent styling. */ calm?: boolean; filter?: InboxFilter; timeZone?: string }) {
+  return <KitRow entry={itemEntry(item, calm, filter, timeZone)} />;
+}
+
+function shiftEntry(shift: TodayShift, timeZone: string): InboxEntry {
   const running = shift.status === "not_clocked_in";
   const href = running ? `/app/employees/${encodeURIComponent(shift.employeeId)}` : `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`;
   const action = running ? "Contact" : "Review timecard";
   // The pill says what happened, so the meta line is only when and where.
   const when = running ? `Started ${clock(shift.startAt, timeZone)}` : `${clock(shift.startAt, timeZone)}\u00a0– ${clock(shift.endAt, timeZone)}`;
   const condition = running ? "Not clocked in" : `No ${CLOCK_IN}`;
-  return <KitRow href={href} label={`${action} for ${shift.employeeName}: ${condition}`} urgent
-    leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName}
-    meta={<><span className="nv-nowrap">{when}</span> · <span className="nv-nowrap">{shift.locationName}</span></>} action={action}
-    status={<Status tone="urgent">{condition}</Status>} />;
+  return { key: `shift:${shift.id}`, href, label: `${action} for ${shift.employeeName}: ${condition}`, urgent: true,
+    leading: <Avatar initials={initials(shift.employeeName)} />, title: shift.employeeName,
+    meta: <><span className="nv-nowrap">{when}</span> · <span className="nv-nowrap">{shift.locationName}</span></>, action,
+    status: <Status tone="urgent">{condition}</Status>,
+    facts: [["Shift", <span key="t" className="nv-nowrap">{clock(shift.startAt, timeZone)}&nbsp;– {clock(shift.endAt, timeZone)}</span>], ["Location", shift.locationName], ["Clock-in", running ? "None yet" : "None recorded"]],
+    note: running ? "The shift has started and there’s no clock-in yet. Check in with them, or look at the Clocker." : "The shift has ended with no clock-in. Check the timecard before you approve it.",
+    secondary: running ? { href: `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`, label: "Open timecard" } : undefined };
+}
+
+function ShiftRow({ shift, timeZone }: { shift: TodayShift; timeZone: string }) {
+  return <KitRow entry={shiftEntry(shift, timeZone)} />;
 }
 
 function Group({ items, calm, filter, timeZone }: { items: ActionItem[]; calm: boolean; filter: InboxFilter; timeZone: string }) {
@@ -125,6 +158,10 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; initialFilter?: InboxFilter;
 }) {
   const [filter, setFilter] = useState<InboxFilter>(initialFilter);
+  // Phase 4: on a wide screen the Inbox is a list with a detail pane. The URL keeps the selection, so Back from a review restores it.
+  const wide = useSyncExternalStore(wideSubscribe, () => window.matchMedia(WIDE).matches, () => false);
+  const [selectedKey, setSelectedKey] = useState<string | null>(() => typeof window === "undefined" ? null : new URL(window.location.href).searchParams.get("item"));
+  const focusPane = useRef(false);
   // Follow the URL when it changes underneath us (Back, a new link).
   const [urlFilter, setUrlFilter] = useState(initialFilter);
   if (urlFilter !== initialFilter) { setUrlFilter(initialFilter); setFilter(initialFilter); }
@@ -145,6 +182,27 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const total = value ? value.count + value.planning.length + value.past.length : 0;
   const updated = ready ? clock(ready.observedAt, timeZone) : null;
   const show = (group: InboxFilter) => filter === "all" || filter === group;
+  // The rows on screen, in order; the pane shows the selected one, or the first.
+  const entries: InboxEntry[] = value ? [
+    ...(show("now") ? [...value.noClockIn.map(shift => shiftEntry(shift, timeZone)), ...value.now.map(item => itemEntry(item, false, filter, timeZone))] : []),
+    ...(show("requests") ? value.requests.map(item => itemEntry(item, false, filter, timeZone)) : []),
+    ...(show("planning") ? [...value.planning.map(item => itemEntry(item, false, filter, timeZone)), ...value.past.map(item => itemEntry(item, true, filter, timeZone))] : []),
+  ] : [];
+  const current = entries.find(entry => entry.key === selectedKey) ?? entries[0] ?? null;
+  const select = (entry: InboxEntry, event: MouseEvent<HTMLAnchorElement>) => {
+    if (!wide || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    event.preventDefault();
+    focusPane.current = true;
+    setSelectedKey(entry.key);
+    const url = new URL(window.location.href);
+    url.searchParams.set("item", entry.key);
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  };
+  useEffect(() => {
+    if (!focusPane.current) return;
+    focusPane.current = false;
+    document.getElementById("inbox-detail-title")?.focus({ preventScroll: true });
+  }, [selectedKey]);
 
   return <div className="nv-page manager-inbox premium-inbox" data-nv-page="" data-inbox-state={ready ? (total ? "ready" : "clear") : connection}>
     <PageBand title="Inbox"
@@ -162,6 +220,10 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         <KeepSelectedVisible />
       </div> : null} />
     <KitStack>
+      <Selection.Provider value={{ selected: wide && current ? current.key : null, select }}>
+      {/* The pane's column is there while loading too, so the list doesn't change width when items arrive. */}
+      <div className="inbox-columns" data-detail={(ready && total) || (!ready && (connection === "loading" || connection === "reconnecting")) ? "true" : undefined}>
+      <div className="inbox-list-column">
       {!ready ? <Card><div className="inbox-status nv-card__body">
         {/* ST-26: the status line comes first, so it stays put when the placeholder rows go. */}
         <p role="status">{statusText[connection]}</p>
@@ -201,8 +263,71 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         </Card> : null}
         {ready.limitedAttendance ? <p className="inbox-note">Some attendance comparisons are unavailable. Check the attendance view for details.</p> : null}
       </>}
+      </div>
+      <div className="inbox-side-column">
+        {ready && total ? current ? <InboxDetail entry={current} /> : null
+          : !ready && (connection === "loading" || connection === "reconnecting") ? <DetailPlaceholder /> : null}
+        {/* Only once the list is in, so it never moves down as items arrive (narrow desktop shows it under the list). */}
+        {ready ? <AllRequests /> : null}
+      </div>
+      </div>
+      </Selection.Provider>
     </KitStack>
   </div>;
+}
+
+const WIDE = "(min-width: 1024px)";
+function wideSubscribe(change: () => void) {
+  const query = window.matchMedia(WIDE);
+  query.addEventListener("change", change);
+  return () => query.removeEventListener("change", change);
+}
+
+/** The desktop detail pane: the selected row's facts and its one action, which opens the full review. */
+function InboxDetail({ entry }: { entry: InboxEntry }) {
+  return <section className="nv-card inbox-detail" aria-labelledby="inbox-detail-title"
+    onKeyDown={event => {
+      if (event.key !== "Escape") return;
+      document.querySelector<HTMLElement>(`[data-inbox-key="${CSS.escape(entry.key)}"]`)?.focus();
+    }}>
+    <div className="inbox-detail__head">
+      {entry.leading}
+      <div className="inbox-detail__heading">
+        <h2 className="inbox-detail__title" id="inbox-detail-title" tabIndex={-1}>{entry.title}</h2>
+        {entry.meta ? <p className="inbox-detail__meta">{entry.meta}</p> : null}
+      </div>
+    </div>
+    {entry.status ? <div className="inbox-detail__status">{entry.status}</div> : null}
+    {entry.facts ? <dl className="inbox-detail__facts">{entry.facts.map(([label, fact]) => <div key={label}><dt>{label}</dt><dd>{fact}</dd></div>)}</dl> : null}
+    {entry.note ? <p className="inbox-detail__note">{entry.note}</p> : null}
+    <div className="inbox-detail__actions">
+      <Button href={entry.href}>{entry.action}</Button>
+      {entry.secondary ? <Link className="nv-link" href={entry.secondary.href}>{entry.secondary.label}</Link> : null}
+    </div>
+  </section>;
+}
+
+/** While the Inbox loads, the pane holds its place. */
+function DetailPlaceholder() {
+  return <section className="nv-card inbox-detail inbox-detail--placeholder" aria-hidden="true">
+    <div className="premium-skeleton"><span className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span></div>
+  </section>;
+}
+
+/** D-4: Requests folds into Inbox on desktop, so its three pages are one step away here. Desktop only. */
+function AllRequests() {
+  const { modules } = usePresentation();
+  const pages = [
+    { href: "/app/requests", title: "Time off", meta: "Pending, approved and declined", icon: <CalendarMinusIcon size={20} weight="bold" /> },
+    { href: "/app/exchange", title: "Shift requests", meta: "Swaps and shifts people can’t work", icon: <ArrowsLeftRightIcon size={20} weight="bold" /> },
+    { href: "/app/availability", title: "Availability", meta: "When people can work", icon: <UserCheckIcon size={20} weight="bold" /> },
+  ].filter(page => pathEnabled(page.href, modules));
+  if (!pages.length) return null;
+  return <Card id="inbox-all-requests" title="All requests">
+    <Rows label="All requests">
+      {pages.map(page => <Row key={page.href} href={page.href} title={page.title} meta={page.meta} leading={<Tile>{page.icon}</Tile>} />)}
+    </Rows>
+  </Card>;
 }
 
 function hasEntries(filter: InboxFilter, value: ReturnType<typeof needsYou>) {

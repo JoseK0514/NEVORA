@@ -58,3 +58,18 @@ it('opens older Planning links (?filter=exceptions) on Planning', async () => {
   expect(inboxFilter('now')).toBe('now');
   expect(inboxFilter('anything')).toBe('all');
 });
+it('Phase 4: the desktop pane shows the first item and opens its full review; decisions stay on the review', () => {
+  const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT')]));
+  expect(output).toContain('class="inbox-columns" data-detail="true"');
+  const pane = output.split('class="nv-card inbox-detail"')[1].split('</section>')[0];
+  // The urgent gap comes first in the list, so the pane shows it.
+  expect(pane).toContain('id="inbox-detail-title" tabindex="-1">Title gap</h2>');
+  expect(pane).toContain('class="nv-btn" data-kind="primary"');
+  expect(pane).not.toMatch(/Approve|Decline|<form/);
+  expect(output).toContain('data-inbox-key="TIME_OFF:r1"');
+  // D-4: Requests folds into Inbox; its three pages are one step away.
+  for (const href of ['/app/requests', '/app/exchange', '/app/availability']) expect(output).toContain(`href="${href}"`);
+  // No pane while loading data that isn't there, and none when all is clear.
+  expect(html(ready([]))).not.toContain('inbox-detail__title');
+  expect(html(null, 'loading')).toContain('inbox-detail--placeholder');
+});

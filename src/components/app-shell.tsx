@@ -77,6 +77,8 @@ export function AppShell({
   // A page reached from the account menu (Profile, My pay) has no sidebar entry; the trail still names it.
   const activeItem = activeGroup?.items.find(item => item.href === sidebarActive) ?? navigation.find(item => item.href === activeHref);
   const deeper = !!activeItem && pathname !== activeItem.href;
+  // A page whose own entry left the sidebar (Time off under Inbox, Time exports under Timecards) still ends the trail with its own name.
+  const pageItem = activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined;
 
   // Keep the current page visible in a sidebar that scrolls on short screens,
   // clear of the pinned Workspace group.
@@ -234,6 +236,7 @@ export function AppShell({
               <li className="portal-location-workspace" title={workspaceName}>{workspaceName}</li>
               {activeGroup?.label ? <li>{activeGroup.label}</li> : null}
               <li>{deeper ? <Link href={activeItem.href}>{activeItem.label}</Link> : <span aria-current="page">{activeItem.label}</span>}</li>
+              {pageItem ? <li>{pathname !== pageItem.href ? <Link href={pageItem.href}>{pageItem.label}</Link> : <span aria-current="page">{pageItem.label}</span>}</li> : null}
             </ol>
           </nav> : null}
           <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
@@ -244,7 +247,7 @@ export function AppShell({
           {!employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
           {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
           <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
-            {employee ? <Link href="/app/profile" className="nevora-action-menu-item"
+            {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
               onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
             {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
               onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your pay statements</Link> : null}
